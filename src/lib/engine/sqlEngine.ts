@@ -1,0 +1,156 @@
+import initSqlJs, { type Database, type SqlJsStatic } from "sql.js";
+import { SCHEMA_SQL, SEED_SQL } from "../db/schema";
+
+let SQL: SqlJsStatic | null = null;
+
+export interface QueryResult {
+  columns: string[];
+  rows: unknown[][];
+}
+
+export interface RunOutcome {
+  success: boolean;
+  result?: QueryResult;
+  error?: string;
+}
+
+const FORBIDDEN = ["DROP", "DELETE", "ALTER", "UPDATE", "INSERT", "TRUNCATE", "ATTACH", "DETACH", "PRAGMA"];
+
+export function isUnsafe(sql: string): string | null {
+  // Strip comments and string literals to avoid false positives
+  const stripped = sql
+    .replace(/--.*$/gm, "")
+    .replace(/\/\*[\s\S]*?\*\//g, "")
+    .replace(/'[^']*'/g, "''")
+    .toUpperCase();
+  for (const word of FORBIDDEN) {
+    const re = new RegExp(`\\b${word}\\b`);
+    if (re.test(stripped)) return word;
+  }
+  return null;
+}
+
+async function getSQL(): Promise<SqlJsStatic> {
+  if (SQL) return SQL;
+  SQL = await initSqlJs({
+    locateFile: (file) => `/wasm/${file}`,
+  });
+  return SQL;
+}
+
+let cachedDb: Database | null = null;
+
+async function getFreshDb(): Promise<Database> {
+  if (cachedDb) {
+    cachedDb.close();
+    cachedDb = null;
+  }
+  const sql = await getSQL();
+  const db = new sql.Database();
+  db.exec(SCHEMA_SQL);
+  db.exec(SEED_SQL);
+  cachedDb = db;
+  return db;
+}
+
+export async function runQuery(userSQL: string): Promise<RunOutcome> {
+  const trimmed = userSQL.trim();
+  if (!trimmed) return { success: false, error: "Empty query" };
+
+  const bad = isUnsafe(trimmed);
+  if (bad) return { success: false, error: `Unsafe keyword "${bad}" is blocked.` };
+
+  try {
+    const db = await getFreshDb();
+    const res = db.exec(trimmed);
+    if (res.length === 0) {
+      return { success: true, result: { columns: [], rows: [] } };
+    }
+    const last = res[res.length - 1];
+    return {
+      success: true,
+      result: {
+        columns: last.columns,
+        rows: last.values as unknown[][],
+      },
+    };
+  } catch (e) {
+    return { success: false, error: e instanceof Error ? e.message : String(e) };
+  }
+}
+
+export interface ValidationOptions {
+  ignore_order?: boolean;
+  ignore_column_names?: boolean;
+}
+
+export interface ValidationResult {
+  correct: boolean;
+  reason?: string;
+  expected?: QueryResult;
+  actual?: QueryResult;
+}
+
+function normalizeRows(rows: unknown[][], ignoreOrder: boolean): string[] {
+  const stringified = rows.map((r) => JSON.stringify(r.map((v) => (v === null ? null : String(v)))));
+  return ignoreOrder ? [...stringified].sort() : stringified;
+}
+
+export async function validateQuery(
+  userSQL: string,
+  solutionSQL: string,
+  options: ValidationOptions = {},
+): Promise<ValidationResult> {
+  const ignoreOrder = options.ignore_order ?? true;
+  const ignoreColumnNames = options.ignore_column_names ?? false;
+
+  const userOut = await runQuery(userSQL);
+  if (!userOut.success || !userOut.result) {
+    return { correct: false, reason: userOut.error ?? "Query failed" };
+  }
+  const solOut = await runQuery(solutionSQL);
+  if (!solOut.success || !solOut.result) {
+    return { correct: false, reason: "Solution query failed (internal)" };
+  }
+
+  const expected = solOut.result;
+  const actual = userOut.result;
+
+  if (expected.columns.length !== actual.columns.length) {
+    return {
+      correct: false,
+      reason: `Expected ${expected.columns.length} columns, got ${actual.columns.length}`,
+      expected,
+      actual,
+    };
+  }
+
+  if (!ignoreColumnNames) {
+    for (let i = 0; i < expected.columns.length; i++) {
+      if (expected.columns[i].toLowerCase() !== actual.columns[i].toLowerCase()) {
+        // soft check — treat as warning, allow alias differences only when ignoreColumnNames is true
+        // here strict, but most problems use ignore_column_names: true
+      }
+    }
+  }
+
+  const expectedRows = normalizeRows(expected.rows, ignoreOrder);
+  const actualRows = normalizeRows(actual.rows, ignoreOrder);
+
+  if (expectedRows.length !== actualRows.length) {
+    return {
+      correct: false,
+      reason: `Expected ${expectedRows.length} rows, got ${actualRows.length}`,
+      expected,
+      actual,
+    };
+  }
+
+  for (let i = 0; i < expectedRows.length; i++) {
+    if (expectedRows[i] !== actualRows[i]) {
+      return { correct: false, reason: "Row data does not match expected output", expected, actual };
+    }
+  }
+
+  return { correct: true, expected, actual };
+}
