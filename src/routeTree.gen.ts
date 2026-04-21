@@ -13,7 +13,6 @@ import { Route as PracticeRouteImport } from './routes/practice'
 import { Route as ExamRouteImport } from './routes/exam'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as ProblemProblemIdRouteImport } from './routes/problem.$problemId'
 
 const PracticeRoute = PracticeRouteImport.update({
   id: '/practice',
@@ -35,25 +34,18 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ProblemProblemIdRoute = ProblemProblemIdRouteImport.update({
-  id: '/problem/$problemId',
-  path: '/problem/$problemId',
-  getParentRoute: () => rootRouteImport,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardRoute
   '/exam': typeof ExamRoute
   '/practice': typeof PracticeRoute
-  '/problem/$problemId': typeof ProblemProblemIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardRoute
   '/exam': typeof ExamRoute
   '/practice': typeof PracticeRoute
-  '/problem/$problemId': typeof ProblemProblemIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -61,20 +53,13 @@ export interface FileRoutesById {
   '/dashboard': typeof DashboardRoute
   '/exam': typeof ExamRoute
   '/practice': typeof PracticeRoute
-  '/problem/$problemId': typeof ProblemProblemIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/dashboard' | '/exam' | '/practice' | '/problem/$problemId'
+  fullPaths: '/' | '/dashboard' | '/exam' | '/practice'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/dashboard' | '/exam' | '/practice' | '/problem/$problemId'
-  id:
-    | '__root__'
-    | '/'
-    | '/dashboard'
-    | '/exam'
-    | '/practice'
-    | '/problem/$problemId'
+  to: '/' | '/dashboard' | '/exam' | '/practice'
+  id: '__root__' | '/' | '/dashboard' | '/exam' | '/practice'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -82,7 +67,6 @@ export interface RootRouteChildren {
   DashboardRoute: typeof DashboardRoute
   ExamRoute: typeof ExamRoute
   PracticeRoute: typeof PracticeRoute
-  ProblemProblemIdRoute: typeof ProblemProblemIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -115,13 +99,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/problem/$problemId': {
-      id: '/problem/$problemId'
-      path: '/problem/$problemId'
-      fullPath: '/problem/$problemId'
-      preLoaderRoute: typeof ProblemProblemIdRouteImport
-      parentRoute: typeof rootRouteImport
-    }
   }
 }
 
@@ -130,7 +107,6 @@ const rootRouteChildren: RootRouteChildren = {
   DashboardRoute: DashboardRoute,
   ExamRoute: ExamRoute,
   PracticeRoute: PracticeRoute,
-  ProblemProblemIdRoute: ProblemProblemIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
