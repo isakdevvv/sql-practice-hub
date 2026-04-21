@@ -45,7 +45,7 @@ export const Route = createFileRoute("/problem/$problemId")({
 });
 
 function ProblemPage() {
-  const problem = Route.useLoaderData();
+  const problem = Route.useLoaderData() as import("@/lib/problems/types").Problem;
   const navigate = useNavigate();
 
   const [sql, setSql] = useState(problem.starter_sql);
