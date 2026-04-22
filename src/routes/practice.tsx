@@ -400,6 +400,9 @@ function ProblemWorkspace({
     setError(null);
     setVerdict(null);
     setVerdictReason(null);
+    setValidation(null);
+    setExplain(null);
+    setBottomTab("result");
   }
 
   const diff = difficultyLabel(problem.difficulty);
