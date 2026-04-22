@@ -94,6 +94,85 @@ export async function runQuery(userSQL: string, datasetId: DatasetId = "ecommerc
   }
 }
 
+export async function explainQuery(
+  userSQL: string,
+  datasetId: DatasetId = "ecommerce",
+): Promise<ExplainReport | null> {
+  const trimmed = userSQL.trim().replace(/;+\s*$/g, "");
+  if (!trimmed) return null;
+  if (isUnsafe(trimmed)) return null;
+  try {
+    const db = await getFreshDb(datasetId);
+    const res = db.exec(`EXPLAIN QUERY PLAN ${trimmed}`);
+    const plan: string[] = [];
+    if (res.length) {
+      const detailIdx = res[0].columns.findIndex((c) => c.toLowerCase() === "detail");
+      for (const row of res[0].values) {
+        plan.push(String(row[detailIdx >= 0 ? detailIdx : row.length - 1]));
+      }
+    }
+    const hints: ExplainHint[] = [];
+    const upper = trimmed.toUpperCase();
+    const joined = plan.join(" | ").toUpperCase();
+    const scanCount = (joined.match(/SCAN /g) ?? []).length;
+    const searchCount = (joined.match(/SEARCH /g) ?? []).length;
+
+    if (scanCount >= 2 && searchCount === 0) {
+      hints.push({
+        level: "warn",
+        message: `Plan does ${scanCount} full table scans without an index search — consider joining on indexed columns (primary keys / foreign keys).`,
+      });
+    } else if (scanCount >= 1) {
+      hints.push({
+        level: "info",
+        message: `Full table scan detected. Fine for small tables, but on large data prefer filtering on indexed columns.`,
+      });
+    }
+    if (joined.includes("USE TEMP B-TREE FOR ORDER BY")) {
+      hints.push({
+        level: "info",
+        message: "ORDER BY uses a temporary B-tree (sorting in memory). On big datasets, an index matching the ORDER BY columns avoids this.",
+      });
+    }
+    if (joined.includes("USE TEMP B-TREE FOR GROUP BY")) {
+      hints.push({
+        level: "info",
+        message: "GROUP BY uses a temporary B-tree. An index on the grouped columns can remove the sort step.",
+      });
+    }
+    if (joined.includes("USE TEMP B-TREE FOR DISTINCT")) {
+      hints.push({
+        level: "info",
+        message: "DISTINCT requires a temporary sort. Consider whether GROUP BY or an index would be cheaper.",
+      });
+    }
+    if (/\bSELECT\s+\*/.test(upper)) {
+      hints.push({
+        level: "info",
+        message: "SELECT * fetches every column. Listing only needed columns reduces I/O and makes intent clearer.",
+      });
+    }
+    if (/\bLIKE\s+'%[^']/.test(trimmed)) {
+      hints.push({
+        level: "warn",
+        message: "Leading-wildcard LIKE ('%foo') cannot use a regular index — full scan is forced.",
+      });
+    }
+    if (upper.includes(" JOIN ") && !/\bON\b|\bUSING\b/.test(upper)) {
+      hints.push({
+        level: "warn",
+        message: "JOIN without ON/USING produces a Cartesian product. Add a join condition.",
+      });
+    }
+    if (hints.length === 0) {
+      hints.push({ level: "info", message: "Plan looks lean — no obvious red flags." });
+    }
+    return { plan, hints };
+  } catch {
+    return null;
+  }
+}
+
 export interface ValidationOptions {
   ignore_order?: boolean;
   ignore_column_names?: boolean;
@@ -104,6 +183,8 @@ export interface ValidationResult {
   reason?: string;
   expected?: QueryResult;
   actual?: QueryResult;
+  columnMismatch?: boolean;
+  rowCountDelta?: number;
 }
 
 function normalizeRows(rows: unknown[][], ignoreOrder: boolean): string[] {
