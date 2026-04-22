@@ -134,7 +134,7 @@ function PracticeWorkbench() {
   );
 
   const solvedCount = progress
-    ? Object.values(progress.attempts).filter((a) => a.solved).length
+    ? datasetProblems.filter((p) => progress.attempts[p.id]?.solved).length
     : 0;
 
   return (
