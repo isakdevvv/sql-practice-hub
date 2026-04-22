@@ -299,6 +299,9 @@ function ProblemWorkspace({
   const [error, setError] = useState<string | null>(null);
   const [verdict, setVerdict] = useState<"correct" | "wrong" | null>(null);
   const [verdictReason, setVerdictReason] = useState<string | null>(null);
+  const [validation, setValidation] = useState<ValidationResult | null>(null);
+  const [explain, setExplain] = useState<ExplainReport | null>(null);
+  const [bottomTab, setBottomTab] = useState<"result" | "diff" | "explain">("result");
   const [hintsShown, setHintsShown] = useState(0);
   const [showSolution, setShowSolution] = useState(false);
   const [showSchema, setShowSchema] = useState(true);
