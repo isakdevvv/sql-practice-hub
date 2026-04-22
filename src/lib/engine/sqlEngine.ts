@@ -219,14 +219,16 @@ export async function validateQuery(
       reason: `Expected ${expected.columns.length} columns, got ${actual.columns.length}`,
       expected,
       actual,
+      columnMismatch: true,
+      rowCountDelta: actual.rows.length - expected.rows.length,
     };
   }
 
+  let columnMismatch = false;
   if (!ignoreColumnNames) {
     for (let i = 0; i < expected.columns.length; i++) {
       if (expected.columns[i].toLowerCase() !== actual.columns[i].toLowerCase()) {
-        // soft check — treat as warning, allow alias differences only when ignoreColumnNames is true
-        // here strict, but most problems use ignore_column_names: true
+        columnMismatch = true;
       }
     }
   }
@@ -240,14 +242,23 @@ export async function validateQuery(
       reason: `Expected ${expectedRows.length} rows, got ${actualRows.length}`,
       expected,
       actual,
+      columnMismatch,
+      rowCountDelta: actual.rows.length - expected.rows.length,
     };
   }
 
   for (let i = 0; i < expectedRows.length; i++) {
     if (expectedRows[i] !== actualRows[i]) {
-      return { correct: false, reason: "Row data does not match expected output", expected, actual };
+      return {
+        correct: false,
+        reason: "Row data does not match expected output",
+        expected,
+        actual,
+        columnMismatch,
+        rowCountDelta: 0,
+      };
     }
   }
 
-  return { correct: true, expected, actual };
+  return { correct: true, expected, actual, columnMismatch, rowCountDelta: 0 };
 }
