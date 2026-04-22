@@ -1,5 +1,5 @@
 import initSqlJs, { type Database, type SqlJsStatic } from "sql.js";
-import { SCHEMA_SQL, SEED_SQL } from "../db/schema";
+import { getDataset, type DatasetId } from "../db/datasets";
 
 let SQL: SqlJsStatic | null = null;
 
@@ -39,21 +39,25 @@ async function getSQL(): Promise<SqlJsStatic> {
 }
 
 let cachedDb: Database | null = null;
+let cachedDbDataset: DatasetId | null = null;
 
-async function getFreshDb(): Promise<Database> {
+async function getFreshDb(datasetId: DatasetId): Promise<Database> {
   if (cachedDb) {
     cachedDb.close();
     cachedDb = null;
+    cachedDbDataset = null;
   }
   const sql = await getSQL();
   const db = new sql.Database();
-  db.exec(SCHEMA_SQL);
-  db.exec(SEED_SQL);
+  const ds = getDataset(datasetId);
+  db.exec(ds.schemaSql);
+  db.exec(ds.seedSql);
   cachedDb = db;
+  cachedDbDataset = datasetId;
   return db;
 }
 
-export async function runQuery(userSQL: string): Promise<RunOutcome> {
+export async function runQuery(userSQL: string, datasetId: DatasetId = "ecommerce"): Promise<RunOutcome> {
   const trimmed = userSQL.trim();
   if (!trimmed) return { success: false, error: "Empty query" };
 
@@ -61,7 +65,8 @@ export async function runQuery(userSQL: string): Promise<RunOutcome> {
   if (bad) return { success: false, error: `Unsafe keyword "${bad}" is blocked.` };
 
   try {
-    const db = await getFreshDb();
+    const db = await getFreshDb(datasetId);
+    void cachedDbDataset;
     const res = db.exec(trimmed);
     if (res.length === 0) {
       return { success: true, result: { columns: [], rows: [] } };
@@ -100,15 +105,16 @@ export async function validateQuery(
   userSQL: string,
   solutionSQL: string,
   options: ValidationOptions = {},
+  datasetId: DatasetId = "ecommerce",
 ): Promise<ValidationResult> {
   const ignoreOrder = options.ignore_order ?? true;
   const ignoreColumnNames = options.ignore_column_names ?? false;
 
-  const userOut = await runQuery(userSQL);
+  const userOut = await runQuery(userSQL, datasetId);
   if (!userOut.success || !userOut.result) {
     return { correct: false, reason: userOut.error ?? "Query failed" };
   }
-  const solOut = await runQuery(solutionSQL);
+  const solOut = await runQuery(solutionSQL, datasetId);
   if (!solOut.success || !solOut.result) {
     return { correct: false, reason: "Solution query failed (internal)" };
   }
