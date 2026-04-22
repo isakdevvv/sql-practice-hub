@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { PROBLEMS } from "@/lib/problems/data";
 import type { Problem, Level } from "@/lib/problems/types";
 import { LEVEL_NAMES } from "@/lib/problems/types";
+import { DATASET_LIST, type DatasetId } from "@/lib/db/datasets";
 import { runQuery, validateQuery, type QueryResult } from "@/lib/engine/sqlEngine";
 import {
   recordAttempt,
@@ -75,14 +76,21 @@ function PracticeWorkbench() {
   const [hideDone, setHideDone] = useState(false);
   const [levelFilter, setLevelFilter] = useState<Level | "all">("all");
   const [topicFilter, setTopicFilter] = useState<string>("all");
-  const [activeId, setActiveId] = useState<string>(PROBLEMS[0].id);
+  const [datasetId, setDatasetId] = useState<DatasetId>("ecommerce");
+  const [activeId, setActiveId] = useState<string>(
+    PROBLEMS.find((p) => (p.dataset ?? "ecommerce") === "ecommerce")?.id ?? PROBLEMS[0].id,
+  );
 
   // Load saved last problem on mount
   useEffect(() => {
     setProgress(loadProgress());
     if (typeof window !== "undefined") {
       const last = window.localStorage.getItem(STORAGE_LAST_ID);
-      if (last && PROBLEMS.find((p) => p.id === last)) setActiveId(last);
+      const found = last ? PROBLEMS.find((p) => p.id === last) : undefined;
+      if (found) {
+        setActiveId(found.id);
+        setDatasetId((found.dataset ?? "ecommerce") as DatasetId);
+      }
     }
   }, []);
 
@@ -91,20 +99,34 @@ function PracticeWorkbench() {
       window.localStorage.setItem(STORAGE_LAST_ID, activeId);
   }, [activeId]);
 
+  const datasetProblems = useMemo(
+    () => PROBLEMS.filter((p) => (p.dataset ?? "ecommerce") === datasetId),
+    [datasetId],
+  );
+
   const allTopics = useMemo(() => {
     const s = new Set<string>();
-    PROBLEMS.forEach((p) => p.topics.forEach((t) => s.add(t)));
+    datasetProblems.forEach((p) => p.topics.forEach((t) => s.add(t)));
     return Array.from(s).sort();
-  }, []);
+  }, [datasetProblems]);
 
   const filtered = useMemo(() => {
-    return PROBLEMS.filter((p) => {
+    return datasetProblems.filter((p) => {
       if (hideDone && progress?.attempts[p.id]?.solved) return false;
       if (levelFilter !== "all" && p.level !== levelFilter) return false;
       if (topicFilter !== "all" && !p.topics.includes(topicFilter)) return false;
       return true;
     });
-  }, [hideDone, levelFilter, topicFilter, progress]);
+  }, [hideDone, levelFilter, topicFilter, progress, datasetProblems]);
+
+  // When switching dataset, jump to its first problem if active doesn't belong
+  useEffect(() => {
+    const active = PROBLEMS.find((p) => p.id === activeId);
+    if (!active || (active.dataset ?? "ecommerce") !== datasetId) {
+      const first = datasetProblems[0];
+      if (first) setActiveId(first.id);
+    }
+  }, [datasetId, datasetProblems, activeId]);
 
   const active = useMemo(
     () => PROBLEMS.find((p) => p.id === activeId) ?? PROBLEMS[0],
@@ -112,7 +134,7 @@ function PracticeWorkbench() {
   );
 
   const solvedCount = progress
-    ? Object.values(progress.attempts).filter((a) => a.solved).length
+    ? datasetProblems.filter((p) => progress.attempts[p.id]?.solved).length
     : 0;
 
   return (
@@ -124,12 +146,28 @@ function PracticeWorkbench() {
         <aside className="w-full lg:w-[340px] lg:border-r border-b lg:border-b-0 border-border bg-card/40 flex flex-col max-h-[50vh] lg:max-h-none">
           {/* Filters */}
           <div className="p-3 border-b border-border space-y-2 sticky top-0 bg-card/60 backdrop-blur-sm z-10">
+            <div>
+              <label className="text-[11px] uppercase tracking-wide text-muted-foreground font-semibold">
+                Database
+              </label>
+              <select
+                value={datasetId}
+                onChange={(e) => setDatasetId(e.target.value as DatasetId)}
+                className="mt-1 h-8 w-full rounded-md border border-brand/40 bg-background px-2 text-xs font-medium focus:outline-none focus:ring-1 focus:ring-ring"
+              >
+                {DATASET_LIST.map((d) => (
+                  <option key={d.id} value={d.id}>
+                    {d.name}
+                  </option>
+                ))}
+              </select>
+            </div>
             <div className="flex items-center justify-between">
               <h2 className="text-sm font-semibold flex items-center gap-1.5">
                 <Filter className="h-3.5 w-3.5" /> Problems
               </h2>
               <span className="text-[11px] text-muted-foreground">
-                {solvedCount}/{PROBLEMS.length} solved
+                {solvedCount}/{datasetProblems.length} solved
               </span>
             </div>
             <div className="grid grid-cols-2 gap-2">
@@ -275,12 +313,14 @@ function ProblemWorkspace({
     saveDraft(problem.id, sql);
   }, [problem.id, sql]);
 
+  const datasetId = (problem.dataset ?? "ecommerce") as DatasetId;
+
   async function handleRun() {
     setRunning(true);
     setError(null);
     setVerdict(null);
     setVerdictReason(null);
-    const out = await runQuery(sql);
+    const out = await runQuery(sql, datasetId);
     setRunning(false);
     if (!out.success) {
       setError(out.error ?? "Query failed");
@@ -293,7 +333,7 @@ function ProblemWorkspace({
   async function handleSubmit() {
     setRunning(true);
     setError(null);
-    const out = await runQuery(sql);
+    const out = await runQuery(sql, datasetId);
     if (!out.success) {
       setError(out.error ?? "Query failed");
       setResult(null);
@@ -301,7 +341,7 @@ function ProblemWorkspace({
       return;
     }
     setResult(out.result ?? null);
-    const v = await validateQuery(sql, problem.solution, problem.validation);
+    const v = await validateQuery(sql, problem.solution, problem.validation, datasetId);
     setRunning(false);
     if (v.correct) {
       setVerdict("correct");
@@ -438,7 +478,7 @@ function ProblemWorkspace({
               )}
             </div>
           ) : (
-            <SchemaPanel />
+            <SchemaPanel datasetId={datasetId} />
           )}
         </div>
 

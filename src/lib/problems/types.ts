@@ -1,3 +1,5 @@
+import type { DatasetId } from "../db/datasets";
+
 export type Level = 0 | 1 | 2 | 3 | 4 | 5;
 
 export interface Problem {
@@ -6,6 +8,7 @@ export interface Problem {
   level: Level;
   difficulty: 1 | 2 | 3 | 4 | 5;
   topics: string[];
+  dataset?: DatasetId; // defaults to "ecommerce"
   goal: string;
   problem: string;
   starter_sql: string;

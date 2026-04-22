@@ -1,10 +1,14 @@
-import { SCHEMA_REFERENCE } from "@/lib/db/schema";
+import { getDataset, type DatasetId } from "@/lib/db/datasets";
 
-export function SchemaPanel() {
+export function SchemaPanel({ datasetId = "ecommerce" }: { datasetId?: DatasetId }) {
+  const ds = getDataset(datasetId);
   return (
     <div className="space-y-3 text-sm">
-      <h3 className="font-semibold text-foreground">Schema</h3>
-      {SCHEMA_REFERENCE.map((t) => (
+      <div>
+        <h3 className="font-semibold text-foreground">Schema · {ds.name}</h3>
+        <p className="text-xs text-muted-foreground mt-0.5">{ds.description}</p>
+      </div>
+      {ds.reference.map((t) => (
         <div key={t.name} className="rounded-lg border border-border bg-card p-3">
           <div className="font-mono text-brand text-sm font-semibold mb-1.5">{t.name}</div>
           <ul className="space-y-0.5">
