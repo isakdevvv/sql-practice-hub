@@ -658,3 +658,29 @@ function TabButton({
     </button>
   );
 }
+
+function BottomTab({
+  active,
+  onClick,
+  label,
+  disabled,
+}: {
+  active: boolean;
+  onClick: () => void;
+  label: string;
+  disabled?: boolean;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      disabled={disabled}
+      className={`px-3 py-1 rounded-md text-[11px] font-mono transition-colors ${
+        active
+          ? "bg-background text-foreground border border-border shadow-sm"
+          : "text-muted-foreground hover:text-foreground"
+      } disabled:opacity-40 disabled:cursor-not-allowed`}
+    >
+      {label}
+    </button>
+  );
+}
