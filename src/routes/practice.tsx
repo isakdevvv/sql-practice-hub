@@ -478,7 +478,7 @@ function ProblemWorkspace({
               )}
             </div>
           ) : (
-            <SchemaPanel />
+            <SchemaPanel datasetId={datasetId} />
           )}
         </div>
 
