@@ -16,6 +16,16 @@ export interface RunOutcome {
 
 const FORBIDDEN = ["DROP", "DELETE", "ALTER", "UPDATE", "INSERT", "TRUNCATE", "ATTACH", "DETACH", "PRAGMA"];
 
+export interface ExplainHint {
+  level: "info" | "warn";
+  message: string;
+}
+
+export interface ExplainReport {
+  plan: string[];
+  hints: ExplainHint[];
+}
+
 export function isUnsafe(sql: string): string | null {
   // Strip comments and string literals to avoid false positives
   const stripped = sql
