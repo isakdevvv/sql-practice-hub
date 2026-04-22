@@ -313,12 +313,14 @@ function ProblemWorkspace({
     saveDraft(problem.id, sql);
   }, [problem.id, sql]);
 
+  const datasetId = (problem.dataset ?? "ecommerce") as DatasetId;
+
   async function handleRun() {
     setRunning(true);
     setError(null);
     setVerdict(null);
     setVerdictReason(null);
-    const out = await runQuery(sql);
+    const out = await runQuery(sql, datasetId);
     setRunning(false);
     if (!out.success) {
       setError(out.error ?? "Query failed");
@@ -331,7 +333,7 @@ function ProblemWorkspace({
   async function handleSubmit() {
     setRunning(true);
     setError(null);
-    const out = await runQuery(sql);
+    const out = await runQuery(sql, datasetId);
     if (!out.success) {
       setError(out.error ?? "Query failed");
       setResult(null);
@@ -339,7 +341,7 @@ function ProblemWorkspace({
       return;
     }
     setResult(out.result ?? null);
-    const v = await validateQuery(sql, problem.solution, problem.validation);
+    const v = await validateQuery(sql, problem.solution, problem.validation, datasetId);
     setRunning(false);
     if (v.correct) {
       setVerdict("correct");
