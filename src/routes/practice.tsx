@@ -324,14 +324,21 @@ function ProblemWorkspace({
     setError(null);
     setVerdict(null);
     setVerdictReason(null);
+    setValidation(null);
     const out = await runQuery(sql, datasetId);
-    setRunning(false);
     if (!out.success) {
       setError(out.error ?? "Query failed");
       setResult(null);
+      setExplain(null);
+      setRunning(false);
+      setBottomTab("result");
       return;
     }
     setResult(out.result ?? null);
+    const ex = await explainQuery(sql, datasetId);
+    setExplain(ex);
+    setRunning(false);
+    setBottomTab("result");
   }
 
   async function handleSubmit() {
@@ -341,15 +348,22 @@ function ProblemWorkspace({
     if (!out.success) {
       setError(out.error ?? "Query failed");
       setResult(null);
+      setValidation(null);
+      setExplain(null);
       setRunning(false);
+      setBottomTab("result");
       return;
     }
     setResult(out.result ?? null);
     const v = await validateQuery(sql, problem.solution, problem.validation, datasetId);
+    setValidation(v);
+    const ex = await explainQuery(sql, datasetId);
+    setExplain(ex);
     setRunning(false);
     if (v.correct) {
       setVerdict("correct");
       setVerdictReason(null);
+      setBottomTab("result");
       const timeMs = Date.now() - startRef.current;
       const { xpEarned, newAchievements } = recordAttempt(problem, {
         correct: true,
@@ -364,6 +378,7 @@ function ProblemWorkspace({
     } else {
       setVerdict("wrong");
       setVerdictReason(v.reason ?? null);
+      setBottomTab("diff");
       recordAttempt(problem, {
         correct: false,
         hintsUsed: hintsShown,
