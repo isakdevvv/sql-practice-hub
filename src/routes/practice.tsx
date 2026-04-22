@@ -10,7 +10,8 @@ import { PROBLEMS } from "@/lib/problems/data";
 import type { Problem, Level } from "@/lib/problems/types";
 import { LEVEL_NAMES } from "@/lib/problems/types";
 import { DATASET_LIST, type DatasetId } from "@/lib/db/datasets";
-import { runQuery, validateQuery, type QueryResult } from "@/lib/engine/sqlEngine";
+import { runQuery, validateQuery, explainQuery, type QueryResult, type ValidationResult, type ExplainReport } from "@/lib/engine/sqlEngine";
+import { ResultDiff, ExplainPanel } from "@/components/DiffPanel";
 import {
   recordAttempt,
   recordHintUsed,
