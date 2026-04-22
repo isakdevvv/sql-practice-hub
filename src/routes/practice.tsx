@@ -146,12 +146,28 @@ function PracticeWorkbench() {
         <aside className="w-full lg:w-[340px] lg:border-r border-b lg:border-b-0 border-border bg-card/40 flex flex-col max-h-[50vh] lg:max-h-none">
           {/* Filters */}
           <div className="p-3 border-b border-border space-y-2 sticky top-0 bg-card/60 backdrop-blur-sm z-10">
+            <div>
+              <label className="text-[11px] uppercase tracking-wide text-muted-foreground font-semibold">
+                Database
+              </label>
+              <select
+                value={datasetId}
+                onChange={(e) => setDatasetId(e.target.value as DatasetId)}
+                className="mt-1 h-8 w-full rounded-md border border-brand/40 bg-background px-2 text-xs font-medium focus:outline-none focus:ring-1 focus:ring-ring"
+              >
+                {DATASET_LIST.map((d) => (
+                  <option key={d.id} value={d.id}>
+                    {d.name}
+                  </option>
+                ))}
+              </select>
+            </div>
             <div className="flex items-center justify-between">
               <h2 className="text-sm font-semibold flex items-center gap-1.5">
                 <Filter className="h-3.5 w-3.5" /> Problems
               </h2>
               <span className="text-[11px] text-muted-foreground">
-                {solvedCount}/{PROBLEMS.length} solved
+                {solvedCount}/{datasetProblems.length} solved
               </span>
             </div>
             <div className="grid grid-cols-2 gap-2">
