@@ -16,6 +16,16 @@ export interface RunOutcome {
 
 const FORBIDDEN = ["DROP", "DELETE", "ALTER", "UPDATE", "INSERT", "TRUNCATE", "ATTACH", "DETACH", "PRAGMA"];
 
+export interface ExplainHint {
+  level: "info" | "warn";
+  message: string;
+}
+
+export interface ExplainReport {
+  plan: string[];
+  hints: ExplainHint[];
+}
+
 export function isUnsafe(sql: string): string | null {
   // Strip comments and string literals to avoid false positives
   const stripped = sql
@@ -84,6 +94,85 @@ export async function runQuery(userSQL: string, datasetId: DatasetId = "ecommerc
   }
 }
 
+export async function explainQuery(
+  userSQL: string,
+  datasetId: DatasetId = "ecommerce",
+): Promise<ExplainReport | null> {
+  const trimmed = userSQL.trim().replace(/;+\s*$/g, "");
+  if (!trimmed) return null;
+  if (isUnsafe(trimmed)) return null;
+  try {
+    const db = await getFreshDb(datasetId);
+    const res = db.exec(`EXPLAIN QUERY PLAN ${trimmed}`);
+    const plan: string[] = [];
+    if (res.length) {
+      const detailIdx = res[0].columns.findIndex((c) => c.toLowerCase() === "detail");
+      for (const row of res[0].values) {
+        plan.push(String(row[detailIdx >= 0 ? detailIdx : row.length - 1]));
+      }
+    }
+    const hints: ExplainHint[] = [];
+    const upper = trimmed.toUpperCase();
+    const joined = plan.join(" | ").toUpperCase();
+    const scanCount = (joined.match(/SCAN /g) ?? []).length;
+    const searchCount = (joined.match(/SEARCH /g) ?? []).length;
+
+    if (scanCount >= 2 && searchCount === 0) {
+      hints.push({
+        level: "warn",
+        message: `Plan does ${scanCount} full table scans without an index search — consider joining on indexed columns (primary keys / foreign keys).`,
+      });
+    } else if (scanCount >= 1) {
+      hints.push({
+        level: "info",
+        message: `Full table scan detected. Fine for small tables, but on large data prefer filtering on indexed columns.`,
+      });
+    }
+    if (joined.includes("USE TEMP B-TREE FOR ORDER BY")) {
+      hints.push({
+        level: "info",
+        message: "ORDER BY uses a temporary B-tree (sorting in memory). On big datasets, an index matching the ORDER BY columns avoids this.",
+      });
+    }
+    if (joined.includes("USE TEMP B-TREE FOR GROUP BY")) {
+      hints.push({
+        level: "info",
+        message: "GROUP BY uses a temporary B-tree. An index on the grouped columns can remove the sort step.",
+      });
+    }
+    if (joined.includes("USE TEMP B-TREE FOR DISTINCT")) {
+      hints.push({
+        level: "info",
+        message: "DISTINCT requires a temporary sort. Consider whether GROUP BY or an index would be cheaper.",
+      });
+    }
+    if (/\bSELECT\s+\*/.test(upper)) {
+      hints.push({
+        level: "info",
+        message: "SELECT * fetches every column. Listing only needed columns reduces I/O and makes intent clearer.",
+      });
+    }
+    if (/\bLIKE\s+'%[^']/.test(trimmed)) {
+      hints.push({
+        level: "warn",
+        message: "Leading-wildcard LIKE ('%foo') cannot use a regular index — full scan is forced.",
+      });
+    }
+    if (upper.includes(" JOIN ") && !/\bON\b|\bUSING\b/.test(upper)) {
+      hints.push({
+        level: "warn",
+        message: "JOIN without ON/USING produces a Cartesian product. Add a join condition.",
+      });
+    }
+    if (hints.length === 0) {
+      hints.push({ level: "info", message: "Plan looks lean — no obvious red flags." });
+    }
+    return { plan, hints };
+  } catch {
+    return null;
+  }
+}
+
 export interface ValidationOptions {
   ignore_order?: boolean;
   ignore_column_names?: boolean;
@@ -94,6 +183,8 @@ export interface ValidationResult {
   reason?: string;
   expected?: QueryResult;
   actual?: QueryResult;
+  columnMismatch?: boolean;
+  rowCountDelta?: number;
 }
 
 function normalizeRows(rows: unknown[][], ignoreOrder: boolean): string[] {
@@ -128,14 +219,16 @@ export async function validateQuery(
       reason: `Expected ${expected.columns.length} columns, got ${actual.columns.length}`,
       expected,
       actual,
+      columnMismatch: true,
+      rowCountDelta: actual.rows.length - expected.rows.length,
     };
   }
 
+  let columnMismatch = false;
   if (!ignoreColumnNames) {
     for (let i = 0; i < expected.columns.length; i++) {
       if (expected.columns[i].toLowerCase() !== actual.columns[i].toLowerCase()) {
-        // soft check — treat as warning, allow alias differences only when ignoreColumnNames is true
-        // here strict, but most problems use ignore_column_names: true
+        columnMismatch = true;
       }
     }
   }
@@ -149,14 +242,23 @@ export async function validateQuery(
       reason: `Expected ${expectedRows.length} rows, got ${actualRows.length}`,
       expected,
       actual,
+      columnMismatch,
+      rowCountDelta: actual.rows.length - expected.rows.length,
     };
   }
 
   for (let i = 0; i < expectedRows.length; i++) {
     if (expectedRows[i] !== actualRows[i]) {
-      return { correct: false, reason: "Row data does not match expected output", expected, actual };
+      return {
+        correct: false,
+        reason: "Row data does not match expected output",
+        expected,
+        actual,
+        columnMismatch,
+        rowCountDelta: 0,
+      };
     }
   }
 
-  return { correct: true, expected, actual };
+  return { correct: true, expected, actual, columnMismatch, rowCountDelta: 0 };
 }
