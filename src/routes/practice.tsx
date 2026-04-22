@@ -560,11 +560,72 @@ function ProblemWorkspace({
             </div>
           )}
 
-          <div className="px-4 py-2 text-xs font-mono text-muted-foreground border-b border-border">
-            Result {result ? `· ${result.rows.length} rows` : ""}
+          <div className="flex items-center gap-1 px-3 py-1.5 border-b border-border bg-muted/20">
+            <BottomTab
+              active={bottomTab === "result"}
+              onClick={() => setBottomTab("result")}
+              label={`Result${result ? ` · ${result.rows.length}` : ""}`}
+            />
+            <BottomTab
+              active={bottomTab === "diff"}
+              onClick={() => setBottomTab("diff")}
+              disabled={!validation || !validation.expected || !validation.actual}
+              label={
+                validation && !validation.correct
+                  ? `Diff · ${
+                      (validation.expected
+                        ? validation.expected.rows.filter(
+                            (r) =>
+                              !validation.actual!.rows.some(
+                                (a) => JSON.stringify(a) === JSON.stringify(r),
+                              ),
+                          ).length
+                        : 0) +
+                      (validation.actual
+                        ? validation.actual.rows.filter(
+                            (r) =>
+                              !validation.expected!.rows.some(
+                                (e) => JSON.stringify(e) === JSON.stringify(r),
+                              ),
+                          ).length
+                        : 0)
+                    } off`
+                  : "Diff"
+              }
+            />
+            <BottomTab
+              active={bottomTab === "explain"}
+              onClick={() => setBottomTab("explain")}
+              disabled={!explain}
+              label={
+                explain && explain.hints.some((h) => h.level === "warn")
+                  ? `Explain · ${explain.hints.filter((h) => h.level === "warn").length} ⚠`
+                  : "Explain"
+              }
+            />
           </div>
-          <div className="min-h-[120px]">
-            <ResultTable result={result} />
+          <div className="min-h-[160px]">
+            {bottomTab === "result" && <ResultTable result={result} />}
+            {bottomTab === "diff" &&
+              (validation && validation.expected && validation.actual ? (
+                <ResultDiff
+                  expected={validation.expected}
+                  actual={validation.actual}
+                  ignoreOrder={problem.validation.ignore_order ?? true}
+                />
+              ) : (
+                <div className="px-5 py-6 text-xs text-muted-foreground">
+                  Submit your query to see a row-by-row diff against the expected result.
+                </div>
+              ))}
+            {bottomTab === "explain" &&
+              (explain ? (
+                <ExplainPanel report={explain} />
+              ) : (
+                <div className="px-5 py-6 text-xs text-muted-foreground">
+                  Run a query to see its execution plan and performance hints.
+                </div>
+              ))}
           </div>
         </div>
       </div>
