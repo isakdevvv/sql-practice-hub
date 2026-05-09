@@ -1,4 +1,5 @@
 import type { PyExercise } from "./types";
+import { DEMO_APP_PYTHON } from "../api-konsoll/demoApp";
 
 // All exercises target DAT1000-pensum: Flask, Jinja, MySQL via prepared
 // statements, sessions, login, CSRF, JSON-API, HTTP-statuskoder.
@@ -882,6 +883,239 @@ for prodnr, priser in sorted(priser_per_produkt.items()):
       "statistics.mean(liste) er innebygd — slipper å dele sum/len selv",
       "min(liste) og max(liste) virker direkte på en liste tall",
       "setdefault(noekkel, []).append(...) er et vanlig group-by-mønster",
+    ],
+  },
+
+  // ============= API-KALL OG RESPONSE-PROSESSERING (Phase C) =============
+  // Disse oppgavene bruker den samme demo-appen som /konsoll. Brukeren sender
+  // requester via app.test_client() og prosesserer responsen med Python-idiomer
+  // — samme kjede som /konsoll, men nå skrevet i kode i stedet for klikket.
+  {
+    id: "py-api-get-list",
+    topic: "API-kall i Python",
+    title: "GET /api/produkter — parse JSON og tell rader",
+    description:
+      "Send en GET-request til /api/produkter, hent JSON-bodyen, og print antall produkter samt navnet på de tre første. Du skal se hvordan response-objektet henger sammen med Python-data.",
+    requires: ["flask"],
+    setup: DEMO_APP_PYTHON,
+    starter: `client = app.test_client()
+respons = client.get("/api/produkter")
+
+print("Status:", respons.status_code)
+print("Content-Type:", respons.content_type)
+
+# .get_json() parser JSON-bodyen til en Python-liste/dict.
+produkter = respons.get_json()
+print("Antall produkter:", len(produkter))
+
+print("De tre første:")
+for produkt in produkter[:3]:
+    print(f"  - {produkt['navn']} ({produkt['kategori']}, {produkt['pris']} kr)")
+`,
+    hints: [
+      "respons.status_code — heltallet, f.eks. 200",
+      "respons.get_json() — gir Python-liste/dict (None hvis ikke JSON)",
+      "produkter[:3] henter de tre første elementene",
+    ],
+  },
+  {
+    id: "py-api-filter-response",
+    topic: "API-kall i Python",
+    title: "Filtrer respons i Python — bare elektronikk under 10 000",
+    description:
+      "Hent alle produkter, og filtrer dem ned til kun Elektronikk-kategori med pris under 10 000 — i Python, ikke via query-param. Sorter resultatet etter pris stigende.",
+    requires: ["flask"],
+    setup: DEMO_APP_PYTHON,
+    starter: `client = app.test_client()
+produkter = client.get("/api/produkter").get_json()
+
+# Filtrer i Python — list comprehension med flere vilkår
+billig_elektronikk = [
+    p for p in produkter
+    if p["kategori"] == "Elektronikk" and p["pris"] < 10000
+]
+
+# Sortér på pris stigende
+billig_elektronikk.sort(key=lambda p: p["pris"])
+
+print(f"Funnet {len(billig_elektronikk)} produkter:")
+for produkt in billig_elektronikk:
+    print(f"  {produkt['navn']:>10} — {produkt['pris']} kr")
+`,
+    hints: [
+      "[x for x in liste if vilkår] — list comprehension med filter",
+      "liste.sort(key=lambda p: p['pris']) — sorterer in-place",
+      "Bruk operatoren and for å kombinere to vilkår",
+    ],
+  },
+  {
+    id: "py-api-status-check",
+    topic: "API-kall i Python",
+    title: "POST uten autentisering — sjekk feilmeldingen",
+    description:
+      "Forsøk å POSTe et nytt produkt UTEN Authorization-header. Server skal returnere 401. Skriv ut statuskoden og feil-meldingen så vi ser hva endepunktet gir tilbake.",
+    requires: ["flask"],
+    setup: DEMO_APP_PYTHON,
+    starter: `client = app.test_client()
+
+ny_data = {
+    "id": 99,
+    "navn": "Pirat-T-skjorte",
+    "kategori": "Klaer",
+    "pris": 199,
+    "lager": 5,
+}
+
+respons = client.post("/api/produkter", json=ny_data)
+
+print("Status:", respons.status_code)
+print("Body:", respons.get_json())
+
+if respons.status_code == 401:
+    print("Forventet — endepunktet krever Authorization-header.")
+elif respons.status_code == 201:
+    print("Uventet suksess — burde vi ha lagt på en token?")
+`,
+    hints: [
+      "client.post(url, json=dict) — Flask serialiserer automatisk og setter Content-Type",
+      "respons.status_code er heltall — sammenlign med == 401",
+      "Server returnerer feilkroppen som JSON, så .get_json() virker",
+    ],
+  },
+  {
+    id: "py-api-bearer-token",
+    topic: "API-kall i Python",
+    title: "POST med Bearer-token — opprett produkt riktig",
+    description:
+      "Send samme POST som i forrige oppgave, men nå med korrekt Authorization: Bearer-header. Verifiser at status blir 201, og hent deretter listen for å bekrefte at produktet faktisk ble lagret.",
+    requires: ["flask"],
+    setup: DEMO_APP_PYTHON,
+    starter: `client = app.test_client()
+
+ny_data = {
+    "id": 100,
+    "navn": "Lykt",
+    "kategori": "Elektronikk",
+    "pris": 450,
+    "lager": 20,
+}
+
+# Authorization-header sendes via headers-dict
+opprett = client.post(
+    "/api/produkter",
+    json=ny_data,
+    headers={"Authorization": "Bearer demo-token-abc123"},
+)
+print("Opprettet:", opprett.status_code, opprett.get_json())
+
+# Sjekk at produktet finnes nå
+nytt_produkt = client.get("/api/produkter/100").get_json()
+print("Hentet etter opprettelse:", nytt_produkt)
+`,
+    hints: [
+      "headers={...} — dict med header-navn som nøkler",
+      "Bearer demo-token-abc123 er det demo-appen forventer (se /api-konsoll)",
+      "Etter opprettelse: GET /api/produkter/100 skal nå returnere 200, ikke 404",
+    ],
+  },
+  {
+    id: "py-api-login-flow",
+    topic: "API-kall i Python",
+    title: "Login-flyt — cookie deles automatisk",
+    description:
+      "Logg inn med POST /api/login og kall deretter GET /api/min-side. test_client beholder session-cookien automatisk mellom requestene — som en ekte browser ville gjort.",
+    requires: ["flask"],
+    setup: DEMO_APP_PYTHON,
+    starter: `client = app.test_client()
+
+# 1) Først UTEN login — skal gi 401
+foer_login = client.get("/api/min-side")
+print("Uten login:", foer_login.status_code, foer_login.get_json())
+
+# 2) Logg inn — server setter Set-Cookie i responsen, klienten husker den
+login = client.post(
+    "/api/login",
+    json={"brukernavn": "ola", "passord": "hemmelig"},
+)
+print("Login:", login.status_code, login.get_json())
+
+# 3) Nytt kall til /api/min-side — cookien er med, så server kjenner oss
+etter_login = client.get("/api/min-side")
+print("Etter login:", etter_login.status_code, etter_login.get_json())
+`,
+    hints: [
+      "Samme test_client-instans = samme cookie-jar — som én browser-tab",
+      "Set-Cookie i responsen håndteres automatisk; ingen manuell parsing",
+      "Lager du en NY test_client() etter login, mister du cookien",
+    ],
+  },
+  {
+    id: "py-api-csrf-flow",
+    topic: "API-kall i Python",
+    title: "CSRF-flyt — hent token og send det med",
+    description:
+      "Endepunktet /api/notat krever et CSRF-token i header. Først hent tokenet via GET /api/csrf, deretter POST notat-en med X-CSRF-Token-headeren satt. Vis hva som skjer når tokenet mangler.",
+    requires: ["flask"],
+    setup: DEMO_APP_PYTHON,
+    starter: `client = app.test_client()
+
+# 1) Forsøk POST UTEN token — skal gi 403
+uten_token = client.post(
+    "/api/notat",
+    json={"notat": "Husk å handle"},
+)
+print("Uten token:", uten_token.status_code, uten_token.get_json())
+
+# 2) Hent token (server lagrer det også i session — koblingen skjer via cookie)
+csrf_respons = client.get("/api/csrf").get_json()
+token = csrf_respons["token"]
+print("Token mottatt:", token)
+
+# 3) POST med token i header — skal gi 200
+med_token = client.post(
+    "/api/notat",
+    json={"notat": "Husk å handle"},
+    headers={"X-CSRF-Token": token},
+)
+print("Med token:", med_token.status_code, med_token.get_json())
+`,
+    hints: [
+      "Server-token lagres i session (cookie) — klient-token må komme i headeren",
+      "X-CSRF-Token er konvensjonen — andre rammeverk bruker X-XSRF-Token",
+      "Forskjellen mellom Authorization og X-CSRF-Token: auth = hvem du ER, csrf = at requesten faktisk kom fra ditt skjema",
+    ],
+  },
+  {
+    id: "py-api-aggregate-response",
+    topic: "API-kall i Python",
+    title: "Aggregér responsen — totalverdi av lager",
+    description:
+      "Hent alle produkter og regn ut total lagerverdi (pris × lager) per kategori i Python. Kombinerer API-kall med data-prosesserings-mønsteret fra forrige arc.",
+    requires: ["flask"],
+    setup: DEMO_APP_PYTHON,
+    starter: `client = app.test_client()
+produkter = client.get("/api/produkter").get_json()
+
+# Bygg {kategori: total_verdi}
+verdi_per_kategori = {}
+for produkt in produkter:
+    kategori = produkt["kategori"]
+    delsum = produkt["pris"] * produkt["lager"]
+    verdi_per_kategori[kategori] = verdi_per_kategori.get(kategori, 0) + delsum
+
+# Sortér kategorier på total verdi synkende
+sortert = sorted(verdi_per_kategori.items(), key=lambda p: -p[1])
+
+print("Total lagerverdi per kategori:")
+for kategori, verdi in sortert:
+    print(f"  {kategori:>12}: {verdi:>8} kr")
+
+print(f"\\nTotalt på lager: {sum(verdi_per_kategori.values())} kr")
+`,
+    hints: [
+      "dict.get(noekkel, 0) gir 0 som default når kategorien ikke er sett før",
+      "sorted(items, key=lambda p: -p[1]) — minus foran for synkende",
+      "sum(dict.values()) summerer alle verdiene i dict-en",
     ],
   },
 ];
