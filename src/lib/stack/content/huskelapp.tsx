@@ -1,4 +1,4 @@
-import { Placeholder } from "@/components/stack/Placeholder";
+import { HuskelappPage } from "@/components/stack/huskelapp/HuskelappPage";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -7,8 +7,9 @@ export const content: TrinnContent = {
   title: "SQL huskelapp",
   group: "eksamen",
   order: 3,
-  status: "stub",
-  shortDescription: "Interaktiv hurtigreferanse: SELECT, JOIN, GROUP BY, NULL, DDL — alt på én side.",
+  status: "ready",
+  shortDescription:
+    "Interaktiv hurtigreferanse: SELECT, JOIN, GROUP BY, NULL, DDL — alt på én side.",
   prerequisites: [],
-  Component: () => <Placeholder title="SQL huskelapp" group="eksamen" />,
+  Component: HuskelappPage,
 };
