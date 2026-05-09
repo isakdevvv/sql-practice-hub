@@ -584,7 +584,170 @@ print("4. Etter login:", client.get("/dashboard").data.decode())
     hints: [
       "Status 1 skal være 302 (redirect), 2 skal være 401",
       "Step 4 fungerer fordi test_client beholder session-cookien fra step 3",
-      "I ekte kode skal passord hashes med bcrypt — her er det allerede 'hashet' i seed-data",
+      "ADVARSEL: passordene i seed-data er KLARTEKST, og SELECT-en sammenligner direkte i SQL. Det er et anti-pattern. Se py-pwd-1 / py-pwd-2 / py-pwd-3 for hvordan dette skal gjøres riktig (werkzeug.security + check_password_hash).",
+    ],
+  },
+
+  // ============ PASSORD-SIKKERHET ============
+  // Fjerner et aktivt anti-pattern fra pensum: tidligere oppgaver lagrer
+  // passord i klartekst i kunde-tabellen ('hash_av_hemmelig' er bare en
+  // streng som ser ut som en hash, ikke en ekte hash). Disse tre øvelsene
+  // viser problemet, fixen, og en sikker login-flyt.
+  {
+    id: "py-pwd-1-plaintext-problem",
+    topic: "Passord-sikkerhet",
+    title: "Hvorfor klartekst-passord er katastrofe",
+    description:
+      "Se på hva som faktisk ligger i kunde-tabellen fra seed-dataen. Hvis databasen lekker (SQL injection, glemt backup, intern tilgang), er ALLE passordene umiddelbart eksponert. Her dumper vi passordene fra en angripers perspektiv.",
+    setup: DB_SETUP,
+    starter: `import mysql.connector
+
+db = mysql.connector.connect(database="exam")
+cur = db.cursor()
+
+cur.execute("SELECT kundenr, navn, passord FROM kunde")
+print("PASSORD-DUMP fra kunde-tabellen:")
+print()
+for kundenr, navn, passord in cur.fetchall():
+    print(f"  kundenr={kundenr:>2}  navn={navn!r:20}  passord={passord!r}")
+
+print()
+print("=" * 60)
+print("Problemet:")
+print("  - ALLE passord er lest av oss på et øyeblikk.")
+print("  - Brukere bruker ofte samme passord på Gmail, banken, jobb.")
+print("    → ett DB-tap = kompromittering av flere systemer.")
+print("  - Selv DU som utvikler skal ikke kunne se passordene til brukerne.")
+print()
+print("Løsningen:")
+print("  - Lagre BARE en kryptografisk hash av passordet.")
+print("  - Hashen er enveis — ingen kan regne tilbake til passordet.")
+print("  - Ved login: hash det innsendte passordet og sammenlign hashes.")
+print()
+print("Se neste oppgave (py-pwd-2) for hvordan i praksis.")
+`,
+    hints: [
+      "kunde-tabellen brukes av flere oppgaver. Vi rør den ikke her — neste oppgave bygger en NY tabell med riktig hash.",
+      "I produksjon: du skal heller ikke kunne SELECT passord_hash FROM ... uten god grunn. Logg slike spørringer.",
+      "Tips: Even med en hash er korte/svake passord sårbare for ordbok-angrep. Salt + slow hash (bcrypt/argon2/scrypt) gjør det dyrt for angriperen.",
+    ],
+  },
+  {
+    id: "py-pwd-2-werkzeug-hash",
+    topic: "Passord-sikkerhet",
+    title: "werkzeug.security: generate_password_hash + check_password_hash",
+    description:
+      "Werkzeug (følger automatisk med Flask) har innebygd støtte for trygg hashing. Lær: hashen ser annerledes ut hver gang (tilfeldig salt), og check_password_hash er den ENESTE riktige måten å sammenligne på — aldri ==.",
+    requires: ["werkzeug"],
+    starter: `from werkzeug.security import generate_password_hash, check_password_hash
+
+passord = "supersecret"
+
+# Generer hash:
+hash1 = generate_password_hash(passord)
+print("Hash 1:", hash1)
+
+# Generer ÉN GANG TIL — samme passord, ny hash:
+hash2 = generate_password_hash(passord)
+print("Hash 2:", hash2)
+print()
+print("Like?", hash1 == hash2)
+print("→ NEI! Salt er tilfeldig — to kjøringer av samme passord gir to hashes.")
+print("→ Dette stopper rainbow-table-angrep: en pre-beregnet tabell av hashes")
+print("  hjelper ikke når salt er ukjent for hver bruker.")
+print()
+
+# Verifisering — Werkzeug pakker algoritme + iterasjoner + salt + digest
+# i ÉN streng. check_password_hash henter ut salt og kjører riktig algoritme:
+print("Riktig passord:    ", check_password_hash(hash1, "supersecret"))
+print("Feil passord:      ", check_password_hash(hash1, "feil"))
+print("Riktig mot hash2:  ", check_password_hash(hash2, "supersecret"))
+print()
+
+# Format-inspeksjon:
+algoritme, _, _ = hash1.split("$", 2)
+print(f"Algoritme:         {algoritme}")
+print(f"Total lengde:      {len(hash1)} tegn")
+print()
+print("Hashen inneholder alt nødvendig for verifisering, men er praktisk")
+print("umulig å reverse uten å gjette passordet.")
+`,
+    hints: [
+      "ALDRI sammenlign passord med ==. check_password_hash bruker constant-time-sammenligning som hindrer timing-attacks.",
+      "Werkzeug velger en god default-algoritme (scrypt eller pbkdf2). Du kan overstyre med method='argon2' hvis du har installert pakka.",
+      "Verdien av 'slow hashing': hver gjetning fra en angriper koster CPU-tid. En rask hash som SHA256 ville la angriperen prøve milliarder per sekund.",
+      "Werkzeug følger med Flask som transitive avhengighet — du har den allerede i Flask-prosjekter.",
+    ],
+  },
+  {
+    id: "py-pwd-3-secure-login",
+    topic: "Passord-sikkerhet",
+    title: "Sikker login-flyt: hash ved registrering, sjekk ved login",
+    description:
+      "Bygg en bruker-tabell der passord_hash er reell hash, og en /login-route som bruker check_password_hash. Sammenlign med py-flask-login (som bruker klartekst og direkte SQL-sammenligning) — det er DENNE versjonen som hører hjemme i produksjon.",
+    requires: ["flask"],
+    starter: `from flask import Flask, request
+from werkzeug.security import generate_password_hash, check_password_hash
+import mysql.connector
+
+# 1) Bygg en NY bruker-tabell — uavhengig av kunde-tabellen fra DB_SETUP.
+#    Dette simulerer en registrerings-flyt der hashen genereres når brukeren
+#    velger passord (her: ved oppstart for enkelhets skyld).
+db = mysql.connector.connect(database="auth_demo")
+cur = db.cursor()
+cur.execute("DROP TABLE IF EXISTS bruker")
+cur.execute("""
+CREATE TABLE bruker (
+    id INTEGER PRIMARY KEY,
+    brukernavn TEXT NOT NULL UNIQUE,
+    passord_hash TEXT NOT NULL
+)
+""")
+cur.executemany(
+    "INSERT INTO bruker (id, brukernavn, passord_hash) VALUES (%s, %s, %s)",
+    [
+        (1, "ola",  generate_password_hash("supersecret")),
+        (2, "kari", generate_password_hash("passord1234")),
+    ],
+)
+db.commit()
+
+app = Flask(__name__)
+
+@app.route("/login", methods=["POST"])
+def login():
+    navn    = request.form.get("brukernavn", "")
+    passord = request.form.get("passord", "")
+
+    db = mysql.connector.connect(database="auth_demo")
+    cur = db.cursor()
+    # Slå opp bruker UTEN passord-test i SQL — sammenligner hash i Python:
+    cur.execute("SELECT id, passord_hash FROM bruker WHERE brukernavn = %s", (navn,))
+    rad = cur.fetchone()
+
+    # Konstant respons-tekst — ikke avslør om brukernavnet finnes
+    # (forsvar mot username-enumeration):
+    feilmelding = ("Feil brukernavn eller passord", 401)
+
+    if rad is None:
+        return feilmelding
+    user_id, lagret_hash = rad
+    if not check_password_hash(lagret_hash, passord):
+        return feilmelding
+
+    return f"Innlogget som id={user_id}", 200
+
+client = app.test_client()
+print("Riktig passord:    ", client.post("/login", data={"brukernavn": "ola",  "passord": "supersecret"}).status_code)
+print("Feil passord:      ", client.post("/login", data={"brukernavn": "ola",  "passord": "feil"}).status_code)
+print("Ukjent bruker:     ", client.post("/login", data={"brukernavn": "tull", "passord": "noe"}).status_code)
+print("Riktig kari:       ", client.post("/login", data={"brukernavn": "kari", "passord": "passord1234"}).status_code)
+`,
+    hints: [
+      "Sammenlign med py-flask-login: der står 'WHERE navn=%s AND passord=%s' direkte i SQL, og passordene er klartekst. Begge feil rettes her.",
+      "Identisk feilmelding for 'ukjent bruker' og 'feil passord' — angripere skal ikke kunne enumerate eksisterende brukernavn ved å se på status/respons.",
+      "I en ekte registrerings-route: navn = request.form['brukernavn']; hash = generate_password_hash(request.form['passord']); INSERT INTO bruker ...",
+      "Sammen med Flask-Login: erstatt `return f\"Innlogget...\"` med login_user(bruker) (se py-ext-flask-login).",
     ],
   },
 
@@ -1930,6 +2093,7 @@ print("Etter logout:", r.status_code)
       "login_user(user) setter cookie + session. logout_user() fjerner. Du rører aldri session selv.",
       "current_user fungerer i alle views OG i Jinja-templates: {% if current_user.is_authenticated %} ...",
       "Sammenlign med py-flask-login: der hadde vi 12+ linjer kode for å bygge @login_required selv — her er det én import",
+      "Passordene 'supersecret' / 'passord1234' er KLARTEKST her av pedagogiske grunner. I produksjon: generate_password_hash ved registrering, check_password_hash i login_user-flyten — se py-pwd-3-secure-login.",
     ],
   },
 ];
