@@ -2697,4 +2697,238 @@ def load_user(user_id):
       },
     ],
   },
+
+  // ============ APP-ARKITEKTUR ============
+  // Broa fra "leketøy" (alt i én fil med `app = Flask(__name__)`) til
+  // "ekte prosjekt" (mange filer, blueprints, late-binding extensions).
+  // Mega-Tutorial Part XV behandler dette i detalj. Plattformen kjører
+  // hver oppgave som én fil, så vi simulerer mappestruktur med tydelige
+  // # === app/auth/__init__.py ===-kommentarer. Patternene er identiske.
+  {
+    id: "py-arch-1-factory",
+    topic: "App-arkitektur",
+    title: "Application factory: create_app() istedenfor global app",
+    description:
+      "Hittil i pensum har du sett `app = Flask(__name__)` på modul-nivå. Det fungerer for små eksempler, men gjør tester vanskelige (kan ikke opprette en separat app med TESTING=True) og roter til imports. Løsningen: pakk app-opprettelsen i en funksjon. Mega-Tutorial bytter til dette mønsteret i Part XV.",
+    requires: ["flask"],
+    starter: `from flask import Flask
+
+# === DET NAIVE MØNSTERET (slik alle Flask-øvelsene har gjort hittil) ===
+# app = Flask(__name__)
+# app.config["SECRET_KEY"] = "test"
+# @app.route("/") ...
+#
+# Problem: ÉN app per Python-prosess. Tester får ingen egen instans
+# med ulik config. Module-level imports trigger Flask-oppstart.
+
+# === APPLICATION FACTORY-MØNSTERET ===
+def create_app(config: dict):
+    """Bygg og returner en ny Flask-app-instans. Hele appen lever inne her."""
+    app = Flask(__name__)
+    app.config.update(config)
+
+    @app.route("/info")
+    def info():
+        return f"App: {app.name} | secret={app.config['SECRET_KEY'][:6]}… | testing={app.config.get('TESTING', False)}"
+
+    return app
+
+
+# Lag to UAVHENGIGE app-instanser med ulik config:
+prod_app = create_app({
+    "SECRET_KEY": "prod-key-aldri-i-git",
+})
+test_app = create_app({
+    "SECRET_KEY": "test-key",
+    "TESTING": True,
+})
+
+print("Prod-app: ", prod_app.test_client().get("/info").data.decode())
+print("Test-app: ", test_app.test_client().get("/info").data.decode())
+print()
+print("Hvorfor verdt det:")
+print("  • Tester kan opprette egen app med TESTING=True og separat in-memory DB")
+print("  • Module-level 'from app import db' trigger ikke Flask-oppstart")
+print("  • All config + extension-binding samlet ett sted (create_app)")
+print("  • Du kan kjøre flere instanser i samme prosess (sjeldent, men mulig)")
+`,
+    hints: [
+      "I et ekte prosjekt: create_app() ligger i app/__init__.py og kalles fra wsgi.py / run.py / conftest.py",
+      "config_class-parameter er vanligere enn dict — class Config / class TestConfig(Config) gir typed config med arv",
+      "Du kan ikke lenger bruke 'from app import app' i blueprints — bruk 'from flask import current_app' istedenfor når du er INNE i en request",
+      "Mega-Tutorial Part XV viser nøyaktig denne refaktoreringen fra global app til create_app",
+    ],
+  },
+  {
+    id: "py-arch-2-blueprint",
+    topic: "App-arkitektur",
+    title: "Blueprints: del routes opp i moduler med url_prefix",
+    description:
+      "Når en Flask-app vokser blir én routes.py uleselig. Blueprint er Flask sin måte å gruppere routes (og senere views, error handlers, og statiske filer) i selvstendige moduler. Vi simulerer to 'filer' her — auth-bp og main-bp — og registrerer begge i create_app.",
+    requires: ["flask"],
+    starter: `from flask import Flask, Blueprint, url_for
+
+# === ville vært i app/auth/__init__.py ===
+# Auth-relaterte routes: /auth/login, /auth/logout, /auth/registrer
+auth_bp = Blueprint("auth", __name__)
+
+@auth_bp.route("/login")
+def login():
+    return "auth.login — login-side"
+
+@auth_bp.route("/logout")
+def logout():
+    return "auth.logout — logget ut"
+
+
+# === ville vært i app/main/__init__.py ===
+# Hovedroute-grupper: forsiden og profil
+main_bp = Blueprint("main", __name__)
+
+@main_bp.route("/")
+def index():
+    return "main.index — forsiden"
+
+@main_bp.route("/profil")
+def profil():
+    return "main.profil — min profil"
+
+
+# === ville vært i app/__init__.py — create_app() ===
+def create_app():
+    app = Flask(__name__)
+
+    # url_prefix gir auth-routes prefiks /auth/...
+    app.register_blueprint(auth_bp, url_prefix="/auth")
+    # main_bp får ingen prefix — den eier rot-pathene
+    app.register_blueprint(main_bp)
+
+    return app
+
+
+app = create_app()
+client = app.test_client()
+
+# Sjekk at alle routene er registrert med riktig prefix:
+print("Forsiden:    ", client.get("/").data.decode())
+print("Profil:      ", client.get("/profil").data.decode())
+print("Login:       ", client.get("/auth/login").data.decode())
+print("Logout:      ", client.get("/auth/logout").data.decode())
+print()
+
+# url_for med blueprint-prefiks: bruk "blueprint_navn.view_navn"
+with app.test_request_context():
+    print("url_for('auth.login') →", url_for("auth.login"))
+    print("url_for('main.index') →", url_for("main.index"))
+    print("url_for('main.profil')→", url_for("main.profil"))
+`,
+    hints: [
+      "Inne i en blueprint: bruk url_for('auth.login') ikke url_for('login') — Flask trenger blueprint-navnet som scope",
+      "Inne i SAMME blueprint kan du droppe prefiks: url_for('.login') = url_for('auth.login') hvis du allerede er i auth_bp",
+      "Blueprints kan ha egne templates/-mapper (template_folder='templates') og statiske filer — full modulær separasjon",
+      "Du kan registrere samme blueprint flere ganger med ulik url_prefix — sjelden brukt, men nyttig for f.eks. /api/v1 vs /api/v2",
+    ],
+  },
+  {
+    id: "py-arch-3-extensions-init-app",
+    topic: "App-arkitektur",
+    title: "Late-binding extensions: db.init_app(app) i factory-en",
+    description:
+      "Det siste arkitektur-prinsippet som binder alt sammen: opprett extensions UTEN app på modul-nivå (db = SQLAlchemy(), login_manager = LoginManager()), og knytt dem til appen via init_app() inne i create_app(). Dette er HVORFOR factory-mønsteret eksisterer — det lar blueprints importere extensions uten sirkulære imports.",
+    requires: ["flask", "flask-login"],
+    starter: `from flask import Flask, Blueprint, request
+from flask_login import (
+    LoginManager, UserMixin,
+    login_user, logout_user, login_required, current_user,
+)
+
+# === ville vært i app/extensions.py ===
+# Lag manager-instansen UTEN app — bindes senere via init_app()
+login_manager = LoginManager()
+login_manager.login_view = "auth.login"
+
+
+# === ville vært i app/models.py ===
+class Bruker(UserMixin):
+    def __init__(self, id, navn):
+        self.id = id
+        self.navn = navn
+
+# In-memory bruker-DB (her av enkelhets grunn — i ekte app: SQLAlchemy)
+brukere = {1: Bruker(1, "ola"), 2: Bruker(2, "kari")}
+
+# user_loader registreres på extension-instansen — IKKE på app-en.
+# Dette er nøyaktig hvorfor late-binding er nødvendig: brukere må kunne
+# importere login_manager før appen finnes.
+@login_manager.user_loader
+def load_user(uid):
+    return brukere.get(int(uid))
+
+
+# === ville vært i app/auth/__init__.py ===
+auth_bp = Blueprint("auth", __name__)
+
+@auth_bp.route("/login", methods=["POST"])
+def login():
+    navn = request.form.get("brukernavn", "")
+    funn = next((u for u in brukere.values() if u.navn == navn), None)
+    if funn:
+        login_user(funn)
+        return f"Innlogget: {funn.navn}", 200
+    return "Feil brukernavn", 401
+
+@auth_bp.route("/logout")
+@login_required
+def logout():
+    logout_user()
+    return "Logget ut", 200
+
+
+# === ville vært i app/main/__init__.py ===
+main_bp = Blueprint("main", __name__)
+
+@main_bp.route("/profil")
+@login_required
+def profil():
+    return f"Hei, {current_user.navn} (id={current_user.id})", 200
+
+
+# === ville vært i app/__init__.py — selve create_app() ===
+def create_app(config):
+    app = Flask(__name__)
+    app.config.update(config)
+
+    # 1) Bind extensions til DENNE appen
+    login_manager.init_app(app)
+
+    # 2) Registrer blueprints
+    app.register_blueprint(auth_bp, url_prefix="/auth")
+    app.register_blueprint(main_bp)
+
+    return app
+
+
+# === ville vært i wsgi.py / conftest.py ===
+app = create_app({"SECRET_KEY": "test-key"})
+client = app.test_client()
+
+# Demo full flyt:
+print("/profil uten login:    ", client.get("/profil").status_code)
+print("Login:                 ", client.post("/auth/login", data={"brukernavn": "ola"}).data.decode())
+print("/profil etter login:   ", client.get("/profil").data.decode())
+print("/auth/logout:          ", client.get("/auth/logout").data.decode())
+print("/profil etter logout:  ", client.get("/profil").status_code)
+print()
+print("Til testene:")
+test_app = create_app({"SECRET_KEY": "ulik-test-key", "TESTING": True})
+print("  Test-app er separat instans:", test_app is not app)
+print("  Bruker SAMME login_manager:", test_app.login_manager is app.login_manager)
+`,
+    hints: [
+      "Hvorfor late binding? Blueprint i app/auth/routes.py har \\\"from app.extensions import login_manager\\\" øverst — det funker fordi instansen finnes UTEN app, og init_app() knytter den senere.",
+      "Samme mønster gjelder Flask-SQLAlchemy: db = SQLAlchemy() i extensions.py, db.init_app(app) i create_app. models.py importerer 'db' direkte.",
+      "test_app.login_manager peker på SAMME instans som app.login_manager — extensionet er én, appene er to. user_loader registreres bare én gang.",
+      "I ekte prosjekt: extensions.py samler ALLE: db, login_manager, mail, csrf, migrate, ... én linje per. Hver create_app kaller init_app på alle.",
+    ],
+  },
 ];
