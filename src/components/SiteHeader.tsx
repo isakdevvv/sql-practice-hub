@@ -19,6 +19,13 @@ export function SiteHeader() {
             Kurs
           </Link>
           <Link
+            to="/stack"
+            className="rounded-md px-3 py-1.5 text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
+            activeProps={{ className: "rounded-md px-3 py-1.5 text-foreground bg-accent" }}
+          >
+            Stack
+          </Link>
+          <Link
             to="/practice"
             className="rounded-md px-3 py-1.5 text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
             activeProps={{ className: "rounded-md px-3 py-1.5 text-foreground bg-accent" }}
