@@ -42,7 +42,10 @@ export function saveProgress(p: Progress) {
   window.localStorage.setItem(STORAGE_KEY, JSON.stringify(p));
 }
 
-const DRAFTS_KEY = "sql-practice-drafts-v1";
+// Must match STORAGE_DRAFTS in routes/practice.tsx — the practice editor saves
+// drafts here, and import/export in this file must read/write the same key or
+// users lose their drafts when moving progress between devices.
+const DRAFTS_KEY = "sql-practice-drafts-v2";
 const LAST_ID_KEY = "sql-practice-last-id";
 
 export interface ExportBundle {

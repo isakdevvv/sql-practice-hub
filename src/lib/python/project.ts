@@ -254,6 +254,20 @@ def checkout():
         return jsonify({"feil": str(e)}), 500
 `;
 
+// Hjelper-route som testene bruker — la denne komme før brukerens TODO så
+// /_testhjelp/login-som-admin alltid finnes.
+const ADMIN_LOGIN_TESTHELPER = `
+@app.route("/_testhjelp/login-som-admin", methods=["POST"])
+def _login_som_admin():
+    cur = get_db().cursor()
+    cur.execute("SELECT kundenr FROM kunde WHERE brukernavn = 'admin'")
+    rad = cur.fetchone()
+    if rad:
+        session["kundenr"] = rad[0]
+        return jsonify({"ok": True})
+    return jsonify({"feil": "ingen admin"}), 500
+`;
+
 const ORDER_HISTORY_AND_ADMIN_SOLUTION = `
 def admin_required(view):
     @wraps(view)
@@ -298,17 +312,6 @@ def admin_ordrer():
         {"ordrenr": nr, "kunde": k, "dato": d, "total": t} for nr, k, d, t in cur.fetchall()
     ])
 
-# Hjelp for tester: la admin logge inn (admin-brukeren har dummy-hash, så vi
-# setter passordet manuelt her). Vanlig kode bør IKKE eksponere noe slikt.
-@app.route("/_testhjelp/login-som-admin", methods=["POST"])
-def _login_som_admin():
-    cur = get_db().cursor()
-    cur.execute("SELECT kundenr FROM kunde WHERE brukernavn = 'admin'")
-    rad = cur.fetchone()
-    if rad:
-        session["kundenr"] = rad[0]
-        return jsonify({"ok": True})
-    return jsonify({"feil": "ingen admin"}), 500
 `;
 
 const HTML_TEMPLATES_SOLUTION = `
@@ -361,7 +364,8 @@ def csrf_endpoint():
 
 @app.before_request
 def sjekk_csrf():
-    if request.method == "POST" and request.path not in ("/login", "/register"):
+    if request.method == "POST" and request.path not in ("/login", "/register") \\
+            and not request.path.startswith("/_testhjelp/"):
         token = request.headers.get("X-CSRF-Token", "")
         if not token or token != session.get("csrf"):
             return jsonify({"feil": "ugyldig CSRF-token"}), 403
@@ -785,25 +789,24 @@ const S7_SOLUTION =
 
 const S8_STARTER =
   DB_INIT + APP_INIT + PASSWORD_HELPERS + REGISTER_SOLUTION + LOGIN_SOLUTION +
-  LOGIN_REQUIRED_SOLUTION + PRODUCTS_AND_CART_SOLUTION + CHECKOUT_SOLUTION + `
+  LOGIN_REQUIRED_SOLUTION + PRODUCTS_AND_CART_SOLUTION + CHECKOUT_SOLUTION +
+  ADMIN_LOGIN_TESTHELPER + `
 # TODO:
 #   - Lag @admin_required-decorator: 401 uten login, 403 uten admin-flag
 #   - GET /mine-ordrer (login_required): returner kundens ordrer + totalsum
 #   - GET /admin/ordrer (admin_required): returner ALLE ordrer + brukernavn
-# Test-endepunktet /_testhjelp/login-som-admin er allerede satt opp under,
-# slik at testene kan verifisere admin-routen uten å håndtere passord-hash.
 
 ` + TEST_ORDER_HISTORY;
 
 const S8_SOLUTION =
   DB_INIT + APP_INIT + PASSWORD_HELPERS + REGISTER_SOLUTION + LOGIN_SOLUTION +
   LOGIN_REQUIRED_SOLUTION + PRODUCTS_AND_CART_SOLUTION + CHECKOUT_SOLUTION +
-  ORDER_HISTORY_AND_ADMIN_SOLUTION + TEST_ORDER_HISTORY;
+  ADMIN_LOGIN_TESTHELPER + ORDER_HISTORY_AND_ADMIN_SOLUTION + TEST_ORDER_HISTORY;
 
 const S9_STARTER =
   DB_INIT + APP_INIT + PASSWORD_HELPERS + REGISTER_SOLUTION + LOGIN_SOLUTION +
   LOGIN_REQUIRED_SOLUTION + PRODUCTS_AND_CART_SOLUTION + CHECKOUT_SOLUTION +
-  ORDER_HISTORY_AND_ADMIN_SOLUTION + `
+  ADMIN_LOGIN_TESTHELPER + ORDER_HISTORY_AND_ADMIN_SOLUTION + `
 # TODO: Render produktlista som ekte HTML med Jinja:
 #   - Lag en string-template PRODUKT_HTML med {% for %}-løkke over produkter
 #   - GET /butikk: hent produkter, finn brukernavn fra session, render
@@ -815,12 +818,13 @@ const S9_STARTER =
 const S9_SOLUTION =
   DB_INIT + APP_INIT + PASSWORD_HELPERS + REGISTER_SOLUTION + LOGIN_SOLUTION +
   LOGIN_REQUIRED_SOLUTION + PRODUCTS_AND_CART_SOLUTION + CHECKOUT_SOLUTION +
-  ORDER_HISTORY_AND_ADMIN_SOLUTION + HTML_TEMPLATES_SOLUTION + TEST_HTML_TEMPLATE;
+  ADMIN_LOGIN_TESTHELPER + ORDER_HISTORY_AND_ADMIN_SOLUTION + HTML_TEMPLATES_SOLUTION +
+  TEST_HTML_TEMPLATE;
 
 const S10_STARTER =
   DB_INIT + APP_INIT + PASSWORD_HELPERS + REGISTER_SOLUTION + LOGIN_SOLUTION +
   LOGIN_REQUIRED_SOLUTION + PRODUCTS_AND_CART_SOLUTION + CHECKOUT_SOLUTION +
-  ORDER_HISTORY_AND_ADMIN_SOLUTION + HTML_TEMPLATES_SOLUTION + `
+  ADMIN_LOGIN_TESTHELPER + ORDER_HISTORY_AND_ADMIN_SOLUTION + HTML_TEMPLATES_SOLUTION + `
 # TODO: Beskytt alle POST-endepunkter (unntatt /login og /register) med CSRF:
 #   - GET /csrf returnerer en token, lagret i session
 #   - @app.before_request sjekker X-CSRF-Token-headeren på alle POSTs
@@ -831,7 +835,7 @@ const S10_STARTER =
 const S10_SOLUTION =
   DB_INIT + APP_INIT + PASSWORD_HELPERS + REGISTER_SOLUTION + LOGIN_SOLUTION +
   LOGIN_REQUIRED_SOLUTION + PRODUCTS_AND_CART_SOLUTION + CHECKOUT_SOLUTION +
-  ORDER_HISTORY_AND_ADMIN_SOLUTION + HTML_TEMPLATES_SOLUTION +
+  ADMIN_LOGIN_TESTHELPER + ORDER_HISTORY_AND_ADMIN_SOLUTION + HTML_TEMPLATES_SOLUTION +
   CSRF_SOLUTION + TEST_CSRF;
 
 export const PROJECT_STEPS: ProjectStep[] = [
