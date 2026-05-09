@@ -207,6 +207,11 @@ function PythonPage() {
                         krever flask
                       </Badge>
                     )}
+                    {exercise.requires?.includes("sqlalchemy") && (
+                      <Badge variant="outline" className="text-[10px] border-warning/50 text-warning">
+                        krever sqlalchemy
+                      </Badge>
+                    )}
                     {exercise.setup && (
                       <Badge variant="outline" className="text-[10px] border-success/50 text-success">
                         seedet DB
