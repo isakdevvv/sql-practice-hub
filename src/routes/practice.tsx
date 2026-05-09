@@ -47,7 +47,23 @@ import {
 } from "lucide-react";
 import { format as formatSql } from "sql-formatter";
 
+interface PracticeSearch {
+  level?: Level;
+  dataset?: DatasetId;
+  id?: string;
+}
+
 export const Route = createFileRoute("/practice")({
+  validateSearch: (search: Record<string, unknown>): PracticeSearch => {
+    const out: PracticeSearch = {};
+    if (search.level != null) {
+      const n = Number(search.level);
+      if (Number.isInteger(n) && n >= 0 && n <= 5) out.level = n as Level;
+    }
+    if (typeof search.dataset === "string") out.dataset = search.dataset as DatasetId;
+    if (typeof search.id === "string") out.id = search.id;
+    return out;
+  },
   head: () => ({
     meta: [
       { title: "Practice — SQL Sandbox" },
@@ -115,20 +131,34 @@ function difficultyLabel(d: number): { text: string; cls: string } {
 }
 
 function PracticeWorkbench() {
+  const urlSearch = Route.useSearch();
   const [progress, setProgress] = useState<Progress | null>(null);
   const [hideDone, setHideDone] = useState(false);
-  const [levelFilter, setLevelFilter] = useState<Level | "all">("all");
+  const [levelFilter, setLevelFilter] = useState<Level | "all">(
+    urlSearch.level !== undefined ? urlSearch.level : "all",
+  );
   const [topicFilter, setTopicFilter] = useState<string>("all");
   const [search, setSearch] = useState("");
-  const [datasetId, setDatasetId] = useState<DatasetId>("ecommerce");
-  const [activeId, setActiveId] = useState<string>(
-    PROBLEMS.find((p) => (p.dataset ?? "ecommerce") === "ecommerce")?.id ?? PROBLEMS[0].id,
-  );
+  const [datasetId, setDatasetId] = useState<DatasetId>(urlSearch.dataset ?? "ecommerce");
+  const [activeId, setActiveId] = useState<string>(() => {
+    if (urlSearch.id) {
+      const fromUrl = PROBLEMS.find((p) => p.id === urlSearch.id);
+      if (fromUrl) return fromUrl.id;
+    }
+    const ds = urlSearch.dataset ?? "ecommerce";
+    const lvl = urlSearch.level;
+    const matching = PROBLEMS.find(
+      (p) =>
+        (p.dataset ?? "ecommerce") === ds && (lvl === undefined || p.level === lvl),
+    );
+    return matching?.id ?? PROBLEMS[0].id;
+  });
   const listRef = useRef<HTMLOListElement | null>(null);
 
-  // Load saved last problem on mount
+  // Load saved last problem on mount — only when no URL params direct us to a specific spot.
   useEffect(() => {
     setProgress(loadProgress());
+    if (urlSearch.id || urlSearch.level !== undefined || urlSearch.dataset) return;
     if (typeof window !== "undefined") {
       const last = window.localStorage.getItem(STORAGE_LAST_ID);
       const found = last ? PROBLEMS.find((p) => p.id === last) : undefined;
@@ -137,6 +167,7 @@ function PracticeWorkbench() {
         setDatasetId((found.dataset ?? "ecommerce") as DatasetId);
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {

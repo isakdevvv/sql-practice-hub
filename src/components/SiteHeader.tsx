@@ -12,6 +12,13 @@ export function SiteHeader() {
         </Link>
         <nav className="flex items-center gap-1 text-sm">
           <Link
+            to="/kurs"
+            className="rounded-md px-3 py-1.5 text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
+            activeProps={{ className: "rounded-md px-3 py-1.5 text-foreground bg-accent" }}
+          >
+            Kurs
+          </Link>
+          <Link
             to="/practice"
             className="rounded-md px-3 py-1.5 text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
             activeProps={{ className: "rounded-md px-3 py-1.5 text-foreground bg-accent" }}
