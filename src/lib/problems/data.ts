@@ -1174,6 +1174,113 @@ export const PROBLEMS: Problem[] = [
       "Subquery-DELETE er trygg og leselig: indre SELECT identifiserer hva som skal slettes, ytre DELETE utfører. Test alltid ved å bytte 'DELETE' for 'SELECT * FROM order_items' med samme WHERE — du ser eksakt hva som blir slettet før du gjør det.",
     estimated_time_min: 5,
   },
+  // ============= VIEW-ARC (p67-p70) — CREATE / SELECT / JOIN / REPLACE =============
+  // Views er navngitte spørringer — abstraksjon for å gjenbruke en kompleks
+  // SELECT under et enklere navn. Pedagogisk verdi: viser at en spørring kan
+  // bli en "tabell" man kan bygge videre på.
+  {
+    id: "p67",
+    title: "VIEW — lag en navngitt spørring",
+    level: 5,
+    difficulty: 2,
+    topics: ["VIEW", "DDL"],
+    mode: "ddl",
+    goal: "Skriv din første CREATE VIEW — gjør en aggregat-spørring til en gjenbrukbar 'tabell'.",
+    problem:
+      "Lag en VIEW som heter ordre_total og inneholder kolonnene order_id og total_sum (sum av quantity * price per ordre fra order_items). Bruk CREATE VIEW-syntaksen. Etterpå kan denne brukes i SELECT som om den var en vanlig tabell.",
+    starter_sql:
+      "CREATE VIEW <ViewName> AS\nSELECT <Columns>\nFROM <Table>\nGROUP BY <Column>;",
+    solution:
+      "CREATE VIEW ordre_total AS SELECT order_id, SUM(quantity * price) AS total_sum FROM order_items GROUP BY order_id;",
+    verify_sql: "SELECT order_id, total_sum FROM ordre_total ORDER BY order_id;",
+    validation: { ignore_order: true, ignore_column_names: true },
+    hints: [
+      "CREATE VIEW navn AS <hele SELECT-spørringen>",
+      "View-en lagrer ikke data — den lagrer SELECT-en",
+      "Etterpå kan du gjøre SELECT * FROM ordre_total som om det var en ekte tabell",
+    ],
+    explanation:
+      "En VIEW er et navngitt 'vindu' inn i data — selve raddataen ligger fortsatt i de underliggende tabellene. Hver gang du SELECTer fra view-en, kjøres den lagrede spørringen på nytt mot ferskt data. Bruk views når den samme komplekse spørringen brukes mange steder.",
+    estimated_time_min: 3,
+  },
+  {
+    id: "p68",
+    title: "Bruk VIEW-en i en ny spørring",
+    level: 5,
+    difficulty: 2,
+    topics: ["VIEW", "JOIN", "ORDER BY"],
+    mode: "ddl",
+    pre_sql:
+      "CREATE VIEW ordre_total AS SELECT order_id, SUM(quantity * price) AS total_sum FROM order_items GROUP BY order_id;",
+    goal: "SELECT FROM en VIEW akkurat som fra en tabell.",
+    problem:
+      "View-en ordre_total er allerede laget for deg (kolonner: order_id, total_sum). Returner ordrenummeret og totalsummen for de tre dyreste ordrene, sortert synkende på total_sum.",
+    starter_sql:
+      "SELECT order_id, total_sum\nFROM <ViewName>\nORDER BY <Column> DESC\nLIMIT <Number>;",
+    solution: "SELECT order_id, total_sum FROM ordre_total ORDER BY total_sum DESC LIMIT 3;",
+    verify_sql: "SELECT order_id, total_sum FROM ordre_total ORDER BY total_sum DESC LIMIT 3;",
+    validation: { ignore_order: false, ignore_column_names: true },
+    hints: [
+      "SELECT … FROM ordre_total — bruk view-navnet som tabell",
+      "ORDER BY total_sum DESC sorterer høyest først",
+      "LIMIT 3 kutter til topp 3",
+    ],
+    explanation:
+      "Brukeren av view-en trenger ikke vite at det er en aggregat-spørring under panseret. Det er hele poenget — kompleksitet skjules bak et enkelt navn.",
+    estimated_time_min: 3,
+  },
+  {
+    id: "p69",
+    title: "VIEW med JOIN — kunde + ordresum",
+    level: 5,
+    difficulty: 3,
+    topics: ["VIEW", "JOIN", "AGGREGATE"],
+    mode: "ddl",
+    goal: "Bygg en mer komplisert view som JOINer flere tabeller.",
+    problem:
+      "Lag en view som heter kunde_oversikt med kolonnene user_id, name, total_orders (antall ordrer), total_spent (samlet sum fra alle deres ordrelinjer). Den skal kombinere users, orders og order_items. Brukere uten ordrer skal ikke være med (INNER JOIN).",
+    starter_sql:
+      "CREATE VIEW <ViewName> AS\nSELECT u.id AS user_id, u.name,\n  COUNT(DISTINCT <Column>) AS total_orders,\n  SUM(<Expression>) AS total_spent\nFROM users u\nJOIN orders o ON <Condition>\nJOIN order_items oi ON <Condition>\nGROUP BY u.id, u.name;",
+    solution:
+      "CREATE VIEW kunde_oversikt AS SELECT u.id AS user_id, u.name, COUNT(DISTINCT o.id) AS total_orders, SUM(oi.quantity * oi.price) AS total_spent FROM users u JOIN orders o ON o.user_id = u.id JOIN order_items oi ON oi.order_id = o.id GROUP BY u.id, u.name;",
+    verify_sql: "SELECT user_id, name, total_orders, total_spent FROM kunde_oversikt ORDER BY user_id;",
+    validation: { ignore_order: true, ignore_column_names: true },
+    hints: [
+      "COUNT(DISTINCT o.id) hindrer at samme ordre telles én gang per ordrelinje",
+      "u.id og u.name introduseres som aliaser etter FROM users u og order_items oi",
+      "GROUP BY må inkludere alle ikke-aggregerte kolonner i SELECT",
+    ],
+    explanation:
+      "Kompliserte views erstatter hyppig forekommende JOIN+aggregat-mønstre — applikasjonskoden kaller bare 'SELECT * FROM kunde_oversikt' og databasen håndterer resten. Vær obs på COUNT(DISTINCT …) når du JOINer 1:N-relasjoner — uten DISTINCT teller du ordrelinjer, ikke ordrer.",
+    estimated_time_min: 5,
+  },
+  {
+    id: "p70",
+    title: "Endre en VIEW (DROP + CREATE)",
+    level: 5,
+    difficulty: 2,
+    topics: ["VIEW", "DDL"],
+    mode: "ddl",
+    pre_sql:
+      "CREATE VIEW kunde_oversikt AS SELECT u.id AS user_id, u.name FROM users u;",
+    goal: "Lær riktig mønster for å oppdatere en eksisterende view i SQLite.",
+    problem:
+      "View-en kunde_oversikt finnes allerede, men har feil kolonner (mangler total_spent). Skriv to setninger: først DROP VIEW IF EXISTS, deretter en ny CREATE VIEW med kolonnene user_id, name, total_spent (sum av deres ordrelinjer fra order_items, inner-joinet via orders).",
+    starter_sql:
+      "DROP VIEW IF EXISTS <ViewName>;\nCREATE VIEW <ViewName> AS\nSELECT u.id AS user_id, u.name,\n  SUM(<Expression>) AS total_spent\nFROM users u\nJOIN orders o ON <Condition>\nJOIN order_items oi ON <Condition>\nGROUP BY u.id, u.name;",
+    solution:
+      "DROP VIEW IF EXISTS kunde_oversikt;\nCREATE VIEW kunde_oversikt AS SELECT u.id AS user_id, u.name, SUM(oi.quantity * oi.price) AS total_spent FROM users u JOIN orders o ON o.user_id = u.id JOIN order_items oi ON oi.order_id = o.id GROUP BY u.id, u.name;",
+    verify_sql: "SELECT user_id, name, total_spent FROM kunde_oversikt ORDER BY user_id;",
+    validation: { ignore_order: true, ignore_column_names: true },
+    hints: [
+      "SQLite har ikke CREATE OR REPLACE VIEW — du må droppe og lage på nytt",
+      "DROP VIEW IF EXISTS er trygt selv om view-en ikke finnes",
+      "Begge setninger kan kjøres som én flerlinjet SQL — semikolon mellom",
+    ],
+    explanation:
+      "Postgres og MySQL støtter CREATE OR REPLACE VIEW i én operasjon — i SQLite må du DROP + CREATE. I produksjon pakkes dette ofte i en migrasjon eller transaksjon så ingen treffer view-en mens den er borte.",
+    estimated_time_min: 4,
+  },
   // ============= UNIVERSITY DATASET =============
   {
     id: "u1",
