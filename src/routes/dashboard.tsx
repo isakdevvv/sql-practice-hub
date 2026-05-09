@@ -1,16 +1,19 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { SiteHeader } from "@/components/SiteHeader";
 import { Progress as ProgressBar } from "@/components/ui/progress";
+import { Button } from "@/components/ui/button";
 import { PROBLEMS } from "@/lib/problems/data";
 import {
   loadProgress,
   levelFromXP,
   xpToNextLevel,
   topicMastery,
+  downloadProgressJson,
+  importFromJson,
   type Progress,
 } from "@/lib/progress/storage";
-import { Flame, Trophy, Target, Zap } from "lucide-react";
+import { Flame, Trophy, Target, Zap, Download, Upload } from "lucide-react";
 
 export const Route = createFileRoute("/dashboard")({
   head: () => ({
@@ -24,7 +27,28 @@ export const Route = createFileRoute("/dashboard")({
 
 function DashboardPage() {
   const [progress, setProgress] = useState<Progress | null>(null);
+  const [importMsg, setImportMsg] = useState<{ kind: "ok" | "err"; text: string } | null>(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
   useEffect(() => setProgress(loadProgress()), []);
+
+  function handleImportClick() {
+    fileInputRef.current?.click();
+  }
+
+  async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file) return;
+    const text = await file.text();
+    const result = importFromJson(text);
+    if (result.ok) {
+      setProgress(loadProgress());
+      setImportMsg({ kind: "ok", text: `Imported from ${file.name}.` });
+    } else {
+      setImportMsg({ kind: "err", text: result.error });
+    }
+    setTimeout(() => setImportMsg(null), 4000);
+  }
 
   if (!progress) {
     return (
@@ -55,10 +79,43 @@ function DashboardPage() {
     <div className="min-h-screen bg-background">
       <SiteHeader />
       <main className="container mx-auto px-4 py-10 max-w-5xl">
-        <h1 className="text-3xl font-bold tracking-tight">Your progress</h1>
-        <p className="text-sm text-muted-foreground mt-1">
-          Saved locally in your browser.
-        </p>
+        <div className="flex items-start justify-between gap-4 flex-wrap">
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight">Your progress</h1>
+            <p className="text-sm text-muted-foreground mt-1">
+              Saved locally in your browser. Export to a JSON file to back up or move between
+              devices.
+            </p>
+          </div>
+          <div className="flex items-center gap-2">
+            <Button size="sm" variant="outline" onClick={() => downloadProgressJson()}>
+              <Download className="h-3.5 w-3.5 mr-1.5" />
+              Export JSON
+            </Button>
+            <Button size="sm" variant="outline" onClick={handleImportClick}>
+              <Upload className="h-3.5 w-3.5 mr-1.5" />
+              Import JSON
+            </Button>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="application/json,.json"
+              className="hidden"
+              onChange={handleFileChange}
+            />
+          </div>
+        </div>
+        {importMsg && (
+          <div
+            className={`mt-3 rounded-md border px-3 py-2 text-xs ${
+              importMsg.kind === "ok"
+                ? "border-success/40 bg-success/10 text-success"
+                : "border-destructive/40 bg-destructive/10 text-destructive"
+            }`}
+          >
+            {importMsg.text}
+          </div>
+        )}
 
         {/* Stats */}
         <div className="mt-8 grid sm:grid-cols-2 lg:grid-cols-4 gap-4">

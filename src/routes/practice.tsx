@@ -10,8 +10,23 @@ import { PROBLEMS } from "@/lib/problems/data";
 import type { Problem, Level } from "@/lib/problems/types";
 import { LEVEL_NAMES } from "@/lib/problems/types";
 import { DATASET_LIST, type DatasetId } from "@/lib/db/datasets";
-import { runQuery, validateQuery, explainQuery, type QueryResult, type ValidationResult, type ExplainReport } from "@/lib/engine/sqlEngine";
+import {
+  runQuery,
+  validateQuery,
+  explainQuery,
+  type QueryResult,
+  type ValidationResult,
+  type ExplainReport,
+} from "@/lib/engine/sqlEngine";
 import { ResultDiff, ExplainPanel } from "@/components/DiffPanel";
+import { SqlText } from "@/components/SqlText";
+import { Input } from "@/components/ui/input";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import {
   recordAttempt,
   recordHintUsed,
@@ -23,10 +38,14 @@ import {
   X,
   Lightbulb,
   BookOpen,
-  Eye,
-  EyeOff,
   Filter,
+  ChevronLeft,
+  ChevronRight,
+  Search,
+  Loader2,
+  Copy,
 } from "lucide-react";
+import { format as formatSql } from "sql-formatter";
 
 export const Route = createFileRoute("/practice")({
   head: () => ({
@@ -49,7 +68,7 @@ export const Route = createFileRoute("/practice")({
 });
 
 const STORAGE_LAST_ID = "sql-practice-last-id";
-const STORAGE_DRAFTS = "sql-practice-drafts-v1";
+const STORAGE_DRAFTS = "sql-practice-drafts-v2";
 
 function loadDrafts(): Record<string, string> {
   if (typeof window === "undefined") return {};
@@ -66,10 +85,33 @@ function saveDraft(id: string, sql: string) {
   window.localStorage.setItem(STORAGE_DRAFTS, JSON.stringify(all));
 }
 
+// Format starter SQL so users see canonical line-broken layout. Placeholders
+// like `<condition>` are swapped for safe tokens during formatting (sql-formatter
+// chokes on `<...>`), then restored.
+function prettifyStarter(raw: string): string {
+  if (!raw.trim()) return raw;
+  const placeholders: string[] = [];
+  const masked = raw.replace(/<[A-Za-z][A-Za-z0-9 ]*>/g, (m) => {
+    const id = `__PH_${placeholders.length}__`;
+    placeholders.push(m);
+    return id;
+  });
+  try {
+    const pretty = formatSql(masked, {
+      language: "sqlite",
+      keywordCase: "upper",
+      tabWidth: 2,
+    });
+    return pretty.replace(/__PH_(\d+)__/g, (_, i) => placeholders[Number(i)] ?? "");
+  } catch {
+    return raw;
+  }
+}
+
 function difficultyLabel(d: number): { text: string; cls: string } {
-  if (d <= 2) return { text: "Easy", cls: "bg-success/15 text-success border-success/30" };
-  if (d <= 3) return { text: "Medium", cls: "bg-warning/15 text-warning border-warning/30" };
-  return { text: "Hard", cls: "bg-destructive/15 text-destructive border-destructive/30" };
+  if (d <= 2) return { text: "Easy", cls: "bg-success/25 text-success border-success/50" };
+  if (d <= 3) return { text: "Medium", cls: "bg-warning/25 text-warning border-warning/50" };
+  return { text: "Hard", cls: "bg-destructive/25 text-destructive border-destructive/50" };
 }
 
 function PracticeWorkbench() {
@@ -77,10 +119,12 @@ function PracticeWorkbench() {
   const [hideDone, setHideDone] = useState(false);
   const [levelFilter, setLevelFilter] = useState<Level | "all">("all");
   const [topicFilter, setTopicFilter] = useState<string>("all");
+  const [search, setSearch] = useState("");
   const [datasetId, setDatasetId] = useState<DatasetId>("ecommerce");
   const [activeId, setActiveId] = useState<string>(
     PROBLEMS.find((p) => (p.dataset ?? "ecommerce") === "ecommerce")?.id ?? PROBLEMS[0].id,
   );
+  const listRef = useRef<HTMLOListElement | null>(null);
 
   // Load saved last problem on mount
   useEffect(() => {
@@ -96,8 +140,7 @@ function PracticeWorkbench() {
   }, []);
 
   useEffect(() => {
-    if (typeof window !== "undefined")
-      window.localStorage.setItem(STORAGE_LAST_ID, activeId);
+    if (typeof window !== "undefined") window.localStorage.setItem(STORAGE_LAST_ID, activeId);
   }, [activeId]);
 
   const datasetProblems = useMemo(
@@ -112,13 +155,63 @@ function PracticeWorkbench() {
   }, [datasetProblems]);
 
   const filtered = useMemo(() => {
+    const q = search.trim().toLowerCase();
     return datasetProblems.filter((p) => {
       if (hideDone && progress?.attempts[p.id]?.solved) return false;
       if (levelFilter !== "all" && p.level !== levelFilter) return false;
       if (topicFilter !== "all" && !p.topics.includes(topicFilter)) return false;
+      if (q && !`${p.title} ${p.problem} ${p.topics.join(" ")}`.toLowerCase().includes(q))
+        return false;
       return true;
     });
-  }, [hideDone, levelFilter, topicFilter, progress, datasetProblems]);
+  }, [hideDone, levelFilter, topicFilter, search, progress, datasetProblems]);
+
+  const activeIdx = useMemo(
+    () => filtered.findIndex((p) => p.id === activeId),
+    [filtered, activeId],
+  );
+
+  function gotoIdx(idx: number) {
+    if (filtered.length === 0) return;
+    const wrapped = ((idx % filtered.length) + filtered.length) % filtered.length;
+    setActiveId(filtered[wrapped].id);
+  }
+  function gotoPrev() {
+    if (activeIdx === -1) gotoIdx(0);
+    else gotoIdx(activeIdx - 1);
+  }
+  function gotoNext() {
+    if (activeIdx === -1) gotoIdx(0);
+    else gotoIdx(activeIdx + 1);
+  }
+
+  // Global keyboard shortcuts: Alt+Up/Down (or Alt+J/K) to switch problem,
+  // ignore when focus is in editor or text input.
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      const tag = (document.activeElement?.tagName ?? "").toUpperCase();
+      const inField = tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT";
+      const inMonaco = !!document.activeElement?.closest(".monaco-editor");
+      if (inField || inMonaco) return;
+      if (!e.altKey) return;
+      if (e.key === "ArrowDown" || e.key.toLowerCase() === "j") {
+        e.preventDefault();
+        gotoNext();
+      } else if (e.key === "ArrowUp" || e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        gotoPrev();
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeIdx, filtered]);
+
+  // Scroll active item into view in the sidebar
+  useEffect(() => {
+    const el = listRef.current?.querySelector(`[data-pid="${activeId}"]`) as HTMLElement | null;
+    el?.scrollIntoView({ block: "nearest" });
+  }, [activeId]);
 
   // When switching dataset, jump to its first problem if active doesn't belong
   useEffect(() => {
@@ -129,24 +222,21 @@ function PracticeWorkbench() {
     }
   }, [datasetId, datasetProblems, activeId]);
 
-  const active = useMemo(
-    () => PROBLEMS.find((p) => p.id === activeId) ?? PROBLEMS[0],
-    [activeId],
-  );
+  const active = useMemo(() => PROBLEMS.find((p) => p.id === activeId) ?? PROBLEMS[0], [activeId]);
 
   const solvedCount = progress
     ? datasetProblems.filter((p) => progress.attempts[p.id]?.solved).length
     : 0;
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <div className="h-[100dvh] bg-background flex flex-col overflow-hidden">
       <SiteHeader />
 
-      <div className="flex-1 flex flex-col lg:flex-row min-h-0">
+      <div className="flex-1 flex flex-col lg:flex-row min-h-0 overflow-hidden">
         {/* LEFT: problem list */}
-        <aside className="w-full lg:w-[340px] lg:border-r border-b lg:border-b-0 border-border bg-card/40 flex flex-col max-h-[50vh] lg:max-h-none">
+        <aside className="w-full lg:w-[300px] lg:shrink-0 lg:border-r border-b lg:border-b-0 border-border bg-card/40 flex flex-col max-h-[220px] lg:max-h-none lg:h-full overflow-hidden">
           {/* Filters */}
-          <div className="p-3 border-b border-border space-y-2 sticky top-0 bg-card/60 backdrop-blur-sm z-10">
+          <div className="p-3 border-b border-border space-y-2 bg-card/60 backdrop-blur-sm shrink-0">
             <div>
               <label className="text-[11px] uppercase tracking-wide text-muted-foreground font-semibold">
                 Database
@@ -210,22 +300,35 @@ function PracticeWorkbench() {
               />
               Hide done
             </label>
+            <div className="relative">
+              <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground pointer-events-none" />
+              <Input
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Søk i oppgaver…"
+                className="h-8 pl-7 text-xs"
+              />
+            </div>
           </div>
 
           {/* List */}
-          <div className="overflow-y-auto flex-1">
+          <div className="overflow-y-auto flex-1 min-h-0">
             {filtered.length === 0 && (
-              <div className="p-6 text-center text-xs text-muted-foreground">
-                No problems match your filters.
+              <div className="text-sm text-muted-foreground p-4 text-center">
+                Ingen oppgaver matcher filtrene. Prøv å fjerne et filter eller endre søket.
               </div>
             )}
-            <ol className="divide-y divide-border">
+            <ol ref={listRef} className="divide-y divide-border">
               {filtered.map((p, i) => {
                 const solved = progress?.attempts[p.id]?.solved;
                 const isActive = p.id === activeId;
                 const diff = difficultyLabel(p.difficulty);
                 return (
-                  <li key={p.id}>
+                  <li
+                    key={p.id}
+                    data-pid={p.id}
+                    className={solved && !hideDone && !isActive ? "opacity-60" : ""}
+                  >
                     <button
                       onClick={() => setActiveId(p.id)}
                       className={`w-full flex items-center gap-2 px-3 py-2 text-left text-sm transition-colors ${
@@ -266,7 +369,7 @@ function PracticeWorkbench() {
             </ol>
           </div>
 
-          <div className="p-2 border-t border-border text-center">
+          <div className="p-2 border-t border-border text-center shrink-0">
             <Link to="/dashboard" className="text-[11px] text-brand hover:underline">
               View dashboard →
             </Link>
@@ -278,6 +381,11 @@ function PracticeWorkbench() {
           key={active.id}
           problem={active}
           onSolved={() => setProgress(loadProgress())}
+          onPrev={gotoPrev}
+          onNext={gotoNext}
+          position={
+            activeIdx >= 0 ? { current: activeIdx + 1, total: filtered.length } : undefined
+          }
         />
       </div>
     </div>
@@ -287,14 +395,17 @@ function PracticeWorkbench() {
 function ProblemWorkspace({
   problem,
   onSolved,
+  onPrev,
+  onNext,
+  position,
 }: {
   problem: Problem;
   onSolved: () => void;
+  onPrev: () => void;
+  onNext: () => void;
+  position?: { current: number; total: number };
 }) {
-  const [sql, setSql] = useState<string>(() => {
-    const drafts = loadDrafts();
-    return drafts[problem.id] ?? problem.starter_sql;
-  });
+  const [sql, setSql] = useState<string>(problem.starter_sql);
   const [result, setResult] = useState<QueryResult | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [verdict, setVerdict] = useState<"correct" | "wrong" | null>(null);
@@ -304,20 +415,49 @@ function ProblemWorkspace({
   const [bottomTab, setBottomTab] = useState<"result" | "diff" | "explain">("result");
   const [hintsShown, setHintsShown] = useState(0);
   const [showSolution, setShowSolution] = useState(false);
-  const [showSchema, setShowSchema] = useState(true);
   const [running, setRunning] = useState(false);
-  const [tab, setTab] = useState<"problem" | "schema">("problem");
-  const [xpToast, setXpToast] = useState<{ xp: number; achievements: string[] } | null>(
-    null,
-  );
-  const startRef = useRef<number>(Date.now());
+  const [xpToast, setXpToast] = useState<{ xp: number; achievements: string[] } | null>(null);
+  const [solutionCopied, setSolutionCopied] = useState(false);
+  const [savedSnapshot, setSavedSnapshot] = useState<string>(problem.starter_sql);
+  const [draftHydrated, setDraftHydrated] = useState(false);
 
-  // Persist draft
   useEffect(() => {
+    const drafts = loadDrafts();
+    const draft = drafts[problem.id];
+    if (draft != null && draft !== problem.starter_sql) {
+      setSql(draft);
+      setSavedSnapshot(draft);
+    } else {
+      const pretty = prettifyStarter(problem.starter_sql);
+      setSql(pretty);
+      setSavedSnapshot(pretty);
+    }
+    setDraftHydrated(true);
+  }, [problem.id, problem.starter_sql]);
+  const startRef = useRef<number>(Date.now());
+  const isDirty = sql !== savedSnapshot;
+
+  function copySolution() {
+    if (typeof navigator === "undefined" || !navigator.clipboard) return;
+    navigator.clipboard.writeText(problem.solution).then(() => {
+      setSolutionCopied(true);
+      setTimeout(() => setSolutionCopied(false), 1500);
+    });
+  }
+
+  // Persist draft (skip until we've hydrated from localStorage to avoid clobbering)
+  useEffect(() => {
+    if (!draftHydrated) return;
     saveDraft(problem.id, sql);
-  }, [problem.id, sql]);
+  }, [problem.id, sql, draftHydrated]);
 
   const datasetId = (problem.dataset ?? "ecommerce") as DatasetId;
+  const runOpts = {
+    mode: problem.mode,
+    preSql: problem.pre_sql,
+    verifySql: problem.verify_sql,
+  };
+  const isDdl = problem.mode === "ddl";
 
   async function handleRun() {
     setRunning(true);
@@ -325,7 +465,8 @@ function ProblemWorkspace({
     setVerdict(null);
     setVerdictReason(null);
     setValidation(null);
-    const out = await runQuery(sql, datasetId);
+    setSavedSnapshot(sql);
+    const out = await runQuery(sql, datasetId, runOpts);
     if (!out.success) {
       setError(out.error ?? "Query failed");
       setResult(null);
@@ -335,8 +476,31 @@ function ProblemWorkspace({
       return;
     }
     setResult(out.result ?? null);
-    const ex = await explainQuery(sql, datasetId);
+    const ex = isDdl ? null : await explainQuery(sql, datasetId);
     setExplain(ex);
+    setRunning(false);
+    setBottomTab("result");
+  }
+
+  async function handlePreviewSql(previewSql: string) {
+    setSql(previewSql);
+    setSavedSnapshot(previewSql);
+    setRunning(true);
+    setError(null);
+    setVerdict(null);
+    setVerdictReason(null);
+    setValidation(null);
+    const out = await runQuery(previewSql, datasetId, { mode: "select" });
+    if (!out.success) {
+      setError(out.error ?? "Query failed");
+      setResult(null);
+      setExplain(null);
+      setRunning(false);
+      setBottomTab("result");
+      return;
+    }
+    setResult(out.result ?? null);
+    setExplain(null);
     setRunning(false);
     setBottomTab("result");
   }
@@ -344,7 +508,8 @@ function ProblemWorkspace({
   async function handleSubmit() {
     setRunning(true);
     setError(null);
-    const out = await runQuery(sql, datasetId);
+    setSavedSnapshot(sql);
+    const out = await runQuery(sql, datasetId, runOpts);
     if (!out.success) {
       setError(out.error ?? "Query failed");
       setResult(null);
@@ -355,9 +520,9 @@ function ProblemWorkspace({
       return;
     }
     setResult(out.result ?? null);
-    const v = await validateQuery(sql, problem.solution, problem.validation, datasetId);
+    const v = await validateQuery(sql, problem.solution, problem.validation, datasetId, runOpts);
     setValidation(v);
-    const ex = await explainQuery(sql, datasetId);
+    const ex = isDdl ? null : await explainQuery(sql, datasetId);
     setExplain(ex);
     setRunning(false);
     if (v.correct) {
@@ -395,7 +560,7 @@ function ProblemWorkspace({
   }
 
   function resetEditor() {
-    setSql(problem.starter_sql);
+    setSql(prettifyStarter(problem.starter_sql));
     setResult(null);
     setError(null);
     setVerdict(null);
@@ -408,9 +573,10 @@ function ProblemWorkspace({
   const diff = difficultyLabel(problem.difficulty);
 
   return (
-    <section className="flex-1 flex flex-col min-w-0 min-h-0 relative">
+    <TooltipProvider>
+    <section className="flex-1 flex flex-col min-w-0 min-h-0 h-full overflow-hidden relative">
       {xpToast && (
-        <div className="absolute top-4 right-4 z-50 rounded-lg border border-success bg-card shadow-lg p-4 max-w-xs">
+        <div className="absolute top-4 left-1/2 -translate-x-1/2 z-50 rounded-lg border border-success bg-card shadow-lg p-4 max-w-xs">
           <div className="font-semibold text-success">+{xpToast.xp} XP earned!</div>
           {xpToast.achievements.length > 0 && (
             <div className="mt-2 text-xs text-muted-foreground">
@@ -420,242 +586,340 @@ function ProblemWorkspace({
         </div>
       )}
 
-      {/* Top tabs */}
-      <div className="flex items-center justify-between border-b border-border bg-card/40 px-4">
-        <div className="flex">
-          <TabButton active={tab === "problem"} onClick={() => setTab("problem")}>
-            Problem
-          </TabButton>
-          <TabButton active={tab === "schema"} onClick={() => setTab("schema")}>
-            Schema
-          </TabButton>
+      {/* Top bar */}
+      <div className="flex items-center justify-between border-b border-border bg-card/40 px-4 py-1.5">
+        <div className="flex items-center gap-2">
+          <h2 className="text-sm font-semibold">Problem</h2>
         </div>
         <div className="flex items-center gap-2 text-xs text-muted-foreground">
-          <Badge variant="outline" className="text-[10px]">
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={onPrev}
+            title="Forrige oppgave (Alt+↑ / Alt+K)"
+            className="h-7 w-7 p-0"
+          >
+            <ChevronLeft className="h-4 w-4" />
+          </Button>
+          {position && (
+            <span className="tabular-nums text-[11px]">
+              {position.current} / {position.total}
+            </span>
+          )}
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={onNext}
+            title="Neste oppgave (Alt+↓ / Alt+J)"
+            className="h-7 w-7 p-0"
+          >
+            <ChevronRight className="h-4 w-4" />
+          </Button>
+          <Badge variant="outline" className="text-[10px] ml-2">
             L{problem.level} · {LEVEL_NAMES[problem.level]}
           </Badge>
-          <span
-            className={`rounded border px-1.5 py-0.5 text-[10px] font-medium ${diff.cls}`}
-          >
+          <span className={`rounded border px-1.5 py-0.5 text-[10px] font-medium ${diff.cls}`}>
             {diff.text}
           </span>
         </div>
       </div>
 
-      <div className="flex-1 grid grid-rows-[auto_1fr_auto] min-h-0">
-        {/* Problem / schema panel */}
-        <div className="px-5 py-4 border-b border-border max-h-[36vh] overflow-y-auto">
-          {tab === "problem" ? (
-            <div>
-              <h1 className="text-xl font-bold tracking-tight">{problem.title}</h1>
-              <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
-                {problem.topics.map((t) => (
-                  <Badge key={t} variant="secondary" className="text-[10px]">
-                    {t}
-                  </Badge>
-                ))}
-                <span className="text-[11px] text-muted-foreground ml-1">
-                  ~{problem.estimated_time_min} min
-                </span>
-              </div>
-              <p className="mt-3 text-sm text-foreground/90 leading-relaxed">
-                {problem.problem}
-              </p>
-
-              <div className="mt-4 flex flex-wrap items-center gap-2">
-                <Button size="sm" variant="ghost" onClick={revealHint} disabled={hintsShown >= problem.hints.length}>
-                  <Lightbulb className="h-3.5 w-3.5 mr-1 text-warning" />
-                  Hint ({hintsShown}/{problem.hints.length})
-                </Button>
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  onClick={() => setShowSolution((s) => !s)}
-                >
-                  <BookOpen className="h-3.5 w-3.5 mr-1" />
-                  {showSolution ? "Hide solution" : "Show solution"}
-                </Button>
-                <Button size="sm" variant="ghost" onClick={resetEditor}>
-                  Reset editor
-                </Button>
-              </div>
-
-              {hintsShown > 0 && (
-                <ul className="mt-3 space-y-1 text-sm text-foreground/90 list-disc list-inside">
-                  {problem.hints.slice(0, hintsShown).map((h, i) => (
-                    <li key={i}>{h}</li>
+      <div className="flex-1 min-h-0 flex flex-col lg:flex-row lg:overflow-hidden overflow-y-auto">
+        {/* MAIN COLUMN: problem text, editor, results stacked vertically */}
+        <div className="flex-1 min-w-0 lg:min-h-0 flex flex-col lg:overflow-hidden">
+          <div className="flex-1 lg:min-h-0 flex flex-col">
+            {/* Problem text */}
+            <div className="shrink-0 overflow-y-auto lg:max-h-[45%]">
+              <div className="px-5 py-4">
+                <h1 className="text-xl font-bold tracking-tight">{problem.title}</h1>
+                <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
+                  {problem.topics.map((t) => (
+                    <Badge key={t} variant="secondary" className="text-[10px]">
+                      {t}
+                    </Badge>
                   ))}
-                </ul>
-              )}
-
-              {showSolution && (
-                <div className="mt-3 space-y-2">
-                  <pre className="rounded-md bg-[#1e1e1e] p-3 text-xs font-mono text-foreground/90 overflow-auto border border-border">
-                    {problem.solution}
-                  </pre>
-                  <p className="text-xs text-muted-foreground leading-relaxed">
-                    {problem.explanation}
-                  </p>
+                  <span className="text-[11px] text-muted-foreground ml-1">
+                    ~{problem.estimated_time_min} min
+                  </span>
                 </div>
-              )}
-            </div>
-          ) : (
-            <SchemaPanel datasetId={datasetId} />
-          )}
-        </div>
+                <p className="mt-3 text-sm text-foreground/90 leading-relaxed">
+                  <SqlText>{problem.problem}</SqlText>
+                </p>
 
-        {/* Editor */}
-        <div className="flex flex-col min-h-0 border-b border-border">
-          <div className="flex items-center justify-between px-4 py-2 border-b border-border bg-muted/30">
-            <div className="text-xs font-mono text-muted-foreground">
-              query.sql · ⌘/Ctrl + Enter to submit
-            </div>
-            <div className="flex items-center gap-2">
-              <Button
-                size="sm"
-                variant="ghost"
-                onClick={() => setShowSchema((s) => !s)}
-                title="Toggle results / schema split"
-              >
-                {showSchema ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
-              </Button>
-              <Button size="sm" variant="outline" onClick={handleRun} disabled={running}>
-                Run
-              </Button>
-              <Button size="sm" onClick={handleSubmit} disabled={running}>
-                Submit
-              </Button>
-            </div>
-          </div>
-          <div className="flex-1 min-h-[200px]">
-            <SqlEditor value={sql} onChange={setSql} onRun={handleSubmit} />
-          </div>
-        </div>
+                <div className="mt-4 flex flex-wrap items-center gap-2">
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <span>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={revealHint}
+                          disabled={hintsShown >= problem.hints.length}
+                          className="disabled:bg-muted disabled:text-muted-foreground"
+                        >
+                          <Lightbulb className="h-3.5 w-3.5 mr-1 text-warning" />
+                          Hint ({hintsShown}/{problem.hints.length})
+                        </Button>
+                      </span>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      {hintsShown >= problem.hints.length
+                        ? "Alle hint er vist"
+                        : "Vis neste hint"}
+                    </TooltipContent>
+                  </Tooltip>
+                  <Button size="sm" variant="ghost" onClick={() => setShowSolution((s) => !s)}>
+                    <BookOpen className="h-3.5 w-3.5 mr-1" />
+                    {showSolution ? "Hide solution" : "Show solution"}
+                  </Button>
+                  <Button size="sm" variant="ghost" onClick={resetEditor}>
+                    Reset editor
+                  </Button>
+                </div>
 
-        {/* Results / verdict */}
-        <div className="bg-card/30 max-h-[40vh] overflow-y-auto">
-          {verdict === "correct" && (
-            <div className="flex items-start gap-3 px-5 py-3 border-b border-success/40 bg-success/10">
-              <Check className="h-5 w-5 text-success shrink-0 mt-0.5" />
-              <div>
-                <div className="font-semibold text-success">Correct!</div>
-                <p className="text-xs text-foreground/80 mt-1">{problem.explanation}</p>
-              </div>
-            </div>
-          )}
-          {verdict === "wrong" && (
-            <div className="flex items-start gap-3 px-5 py-3 border-b border-destructive/40 bg-destructive/10">
-              <X className="h-5 w-5 text-destructive shrink-0 mt-0.5" />
-              <div>
-                <div className="font-semibold text-destructive">Not quite</div>
-                {verdictReason && (
-                  <p className="text-xs text-foreground/80 mt-1">{verdictReason}</p>
+                {hintsShown > 0 && (
+                  <ul className="mt-3 space-y-1 text-sm text-foreground/90 list-disc list-inside">
+                    {problem.hints.slice(0, hintsShown).map((h, i) => (
+                      <li key={i}>
+                        <SqlText>{h}</SqlText>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+
+                {showSolution && (
+                  <div className="mt-3 space-y-2">
+                    <div className="relative">
+                      <pre className="rounded-md bg-[#1e1e1e] p-3 pr-10 text-xs font-mono text-foreground/90 overflow-auto border border-border">
+                        {problem.solution}
+                      </pre>
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        onClick={copySolution}
+                        className="absolute top-1 right-1 h-7 w-7"
+                        aria-label={solutionCopied ? "Kopiert!" : "Kopier løsning"}
+                      >
+                        {solutionCopied ? (
+                          <Check className="h-3.5 w-3.5 text-success" />
+                        ) : (
+                          <Copy className="h-3.5 w-3.5" />
+                        )}
+                      </Button>
+                    </div>
+                    <p className="text-xs text-muted-foreground leading-relaxed">
+                      {problem.explanation}
+                    </p>
+                  </div>
                 )}
               </div>
             </div>
-          )}
-          {error && (
-            <div className="px-5 py-3 border-b border-destructive/40 bg-destructive/10 font-mono text-xs text-destructive whitespace-pre-wrap">
-              {error}
-            </div>
-          )}
+            <div className="border-t border-border" />
 
-          <div className="flex items-center gap-1 px-3 py-1.5 border-b border-border bg-muted/20">
-            <BottomTab
-              active={bottomTab === "result"}
-              onClick={() => setBottomTab("result")}
-              label={`Result${result ? ` · ${result.rows.length}` : ""}`}
-            />
-            <BottomTab
-              active={bottomTab === "diff"}
-              onClick={() => setBottomTab("diff")}
-              disabled={!validation || !validation.expected || !validation.actual}
-              label={
-                validation && !validation.correct
-                  ? `Diff · ${
-                      (validation.expected
-                        ? validation.expected.rows.filter(
-                            (r) =>
-                              !validation.actual!.rows.some(
-                                (a) => JSON.stringify(a) === JSON.stringify(r),
-                              ),
-                          ).length
-                        : 0) +
-                      (validation.actual
-                        ? validation.actual.rows.filter(
-                            (r) =>
-                              !validation.expected!.rows.some(
-                                (e) => JSON.stringify(e) === JSON.stringify(r),
-                              ),
-                          ).length
-                        : 0)
-                    } off`
-                  : "Diff"
-              }
-            />
-            <BottomTab
-              active={bottomTab === "explain"}
-              onClick={() => setBottomTab("explain")}
-              disabled={!explain}
-              label={
-                explain && explain.hints.some((h) => h.level === "warn")
-                  ? `Explain · ${explain.hints.filter((h) => h.level === "warn").length} ⚠`
-                  : "Explain"
-              }
-            />
-          </div>
-          <div className="min-h-[160px]">
-            {bottomTab === "result" && <ResultTable result={result} />}
-            {bottomTab === "diff" &&
-              (validation && validation.expected && validation.actual ? (
-                <ResultDiff
-                  expected={validation.expected}
-                  actual={validation.actual}
-                  ignoreOrder={problem.validation.ignore_order ?? true}
-                />
-              ) : (
-                <div className="px-5 py-6 text-xs text-muted-foreground">
-                  Submit your query to see a row-by-row diff against the expected result.
+            {/* Editor */}
+            <div className="flex-1 min-h-[320px] lg:min-h-[240px]">
+              <div className="flex h-full flex-col min-h-0">
+                <div className="flex items-center justify-between px-4 py-2 border-b border-border bg-muted/30">
+                  <div className="text-xs font-mono text-muted-foreground flex items-center">
+                    {isDirty && (
+                      <span className="inline-block w-1.5 h-1.5 rounded-full bg-orange-500 mr-1.5" />
+                    )}
+                    query.sql · ⌘/Ctrl + Enter to submit
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={handleRun}
+                          disabled={running}
+                        >
+                          {running ? (
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                          ) : (
+                            "Run"
+                          )}
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>Kjør spørringen lokalt (Ctrl/Cmd+Enter)</TooltipContent>
+                    </Tooltip>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        {verdict === "correct" ? (
+                          <Button
+                            size="sm"
+                            onClick={onNext}
+                            className="bg-success hover:bg-success/90 text-success-foreground"
+                          >
+                            Next
+                            <ChevronRight className="h-4 w-4 ml-0.5" />
+                          </Button>
+                        ) : (
+                          <Button size="sm" onClick={handleSubmit} disabled={running}>
+                            {running ? (
+                              <Loader2 className="h-4 w-4 animate-spin" />
+                            ) : (
+                              "Submit"
+                            )}
+                          </Button>
+                        )}
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        {verdict === "correct" ? "Gå til neste oppgave" : "Lever og få vurdering"}
+                      </TooltipContent>
+                    </Tooltip>
+                  </div>
                 </div>
-              ))}
-            {bottomTab === "explain" &&
-              (explain ? (
-                <ExplainPanel report={explain} />
-              ) : (
-                <div className="px-5 py-6 text-xs text-muted-foreground">
-                  Run a query to see its execution plan and performance hints.
+                <div className="flex-1 min-h-0">
+                  <SqlEditor value={sql} onChange={setSql} onRun={handleSubmit} />
                 </div>
-              ))}
+              </div>
+            </div>
+            <div className="border-t border-border" />
+
+            {/* Results / verdict */}
+            <div className="shrink-0 overflow-y-auto min-h-[200px] lg:max-h-[40%]">
+              <div className="bg-card/30 h-full">
+                {verdict === "correct" && (
+                  <div className="flex items-start gap-3 px-5 py-3 border-b border-success/40 bg-success/10">
+                    <Check className="h-5 w-5 text-success shrink-0 mt-0.5" />
+                    <div className="flex-1">
+                      <div className="font-semibold text-success">Correct!</div>
+                      <p className="text-xs text-foreground/80 mt-1">{problem.explanation}</p>
+                    </div>
+                    {position && position.current < position.total && (
+                      <Button size="sm" onClick={onNext} className="shrink-0">
+                        Next
+                        <ChevronRight className="h-4 w-4 ml-1" />
+                      </Button>
+                    )}
+                  </div>
+                )}
+                {verdict === "wrong" && (
+                  <div className="flex items-start gap-3 px-5 py-3 border-b border-destructive/40 bg-destructive/10">
+                    <X className="h-5 w-5 text-destructive shrink-0 mt-0.5" />
+                    <div>
+                      <div className="font-semibold text-destructive">Not quite</div>
+                      {verdictReason && (
+                        <p className="text-xs text-foreground/80 mt-1">{verdictReason}</p>
+                      )}
+                    </div>
+                  </div>
+                )}
+                {error && (
+                  <div className="px-5 py-3 border-b border-destructive/40 bg-destructive/10 font-mono text-xs text-destructive whitespace-pre-wrap">
+                    {error}
+                  </div>
+                )}
+
+                <div
+                  role="tablist"
+                  aria-label="Result panels"
+                  className="flex items-center gap-1 px-3 py-1.5 border-b border-border bg-muted/20"
+                >
+                  <BottomTab
+                    active={bottomTab === "result"}
+                    onClick={() => setBottomTab("result")}
+                    controls="practice-tabpanel-result"
+                    label={`Result${result ? ` · ${result.rows.length}` : ""}`}
+                  />
+                  <BottomTab
+                    active={bottomTab === "diff"}
+                    onClick={() => setBottomTab("diff")}
+                    controls="practice-tabpanel-diff"
+                    disabled={!validation || !validation.expected || !validation.actual}
+                    label={
+                      validation && !validation.correct
+                        ? `Diff · ${
+                            (validation.expected
+                              ? validation.expected.rows.filter(
+                                  (r) =>
+                                    !validation.actual!.rows.some(
+                                      (a) => JSON.stringify(a) === JSON.stringify(r),
+                                    ),
+                                ).length
+                              : 0) +
+                            (validation.actual
+                              ? validation.actual.rows.filter(
+                                  (r) =>
+                                    !validation.expected!.rows.some(
+                                      (e) => JSON.stringify(e) === JSON.stringify(r),
+                                    ),
+                                ).length
+                              : 0)
+                          } off`
+                        : "Diff"
+                    }
+                  />
+                  <BottomTab
+                    active={bottomTab === "explain"}
+                    onClick={() => setBottomTab("explain")}
+                    controls="practice-tabpanel-explain"
+                    disabled={!explain}
+                    label={
+                      explain && explain.hints.some((h) => h.level === "warn")
+                        ? `Explain · ${explain.hints.filter((h) => h.level === "warn").length} ⚠`
+                        : "Explain"
+                    }
+                  />
+                </div>
+                <div className="min-h-[160px]">
+                  {bottomTab === "result" && (
+                    <div role="tabpanel" id="practice-tabpanel-result">
+                      <ResultTable result={result} />
+                    </div>
+                  )}
+                  {bottomTab === "diff" && (
+                    <div role="tabpanel" id="practice-tabpanel-diff">
+                      {validation && validation.expected && validation.actual ? (
+                        <ResultDiff
+                          expected={validation.expected}
+                          actual={validation.actual}
+                          ignoreOrder={problem.validation.ignore_order ?? true}
+                        />
+                      ) : (
+                        <div className="px-5 py-6 text-xs text-muted-foreground">
+                          Submit your query to see a row-by-row diff against the expected result.
+                        </div>
+                      )}
+                    </div>
+                  )}
+                  {bottomTab === "explain" && (
+                    <div role="tabpanel" id="practice-tabpanel-explain">
+                      {explain ? (
+                        <ExplainPanel report={explain} />
+                      ) : (
+                        <div className="px-5 py-6 text-xs text-muted-foreground">
+                          Run a query to see its execution plan and performance hints.
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+                <div className="px-5 py-2 border-t border-border">
+                  <p className="text-xs text-muted-foreground">
+                    Tips: Alt+↑/↓ for å bytte oppgave · Ctrl/Cmd+Enter for å kjøre
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
+
+        {/* SCHEMA SIDEBAR — always visible so the user can refer to tables while solving */}
+        <aside className="lg:w-[320px] lg:shrink-0 lg:border-l border-t lg:border-t-0 border-border bg-card/20 lg:overflow-y-auto">
+          <div className="px-5 py-4">
+            <SchemaPanel
+              datasetId={datasetId}
+              currentSql={sql}
+              onRunSql={handlePreviewSql}
+            />
+          </div>
+        </aside>
       </div>
     </section>
-  );
-}
-
-function TabButton({
-  active,
-  onClick,
-  children,
-}: {
-  active: boolean;
-  onClick: () => void;
-  children: React.ReactNode;
-}) {
-  return (
-    <button
-      onClick={onClick}
-      className={`relative px-4 py-2.5 text-sm font-medium transition-colors ${
-        active
-          ? "text-foreground"
-          : "text-muted-foreground hover:text-foreground"
-      }`}
-    >
-      {children}
-      {active && (
-        <span className="absolute bottom-0 left-0 right-0 h-[2px] bg-brand" />
-      )}
-    </button>
+    </TooltipProvider>
   );
 }
 
@@ -664,14 +928,19 @@ function BottomTab({
   onClick,
   label,
   disabled,
+  controls,
 }: {
   active: boolean;
   onClick: () => void;
   label: string;
   disabled?: boolean;
+  controls?: string;
 }) {
   return (
     <button
+      role="tab"
+      aria-selected={active}
+      aria-controls={controls}
       onClick={onClick}
       disabled={disabled}
       className={`px-3 py-1 rounded-md text-[11px] font-mono transition-colors ${

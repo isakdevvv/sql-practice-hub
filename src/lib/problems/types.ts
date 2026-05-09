@@ -21,6 +21,14 @@ export interface Problem {
   hints: string[];
   explanation: string;
   estimated_time_min: number;
+  /** "select" (default) — pure SELECT problem, validated by comparing query result.
+   *  "ddl" — user runs CREATE/INSERT/UPDATE/DELETE; engine then runs verify_sql to compare resulting state. */
+  mode?: "select" | "ddl";
+  /** SQL run on the fresh DB BEFORE the user's code (DDL mode). Useful for INSERT/UPDATE/DELETE problems
+   *  that need a schema or partial seed beyond the dataset default. */
+  pre_sql?: string;
+  /** SQL run AFTER user's code in DDL mode; its result is what the engine compares against the solution's. */
+  verify_sql?: string;
 }
 
 export const LEVEL_NAMES: Record<Level, string> = {

@@ -1,7 +1,4 @@
-import initSqlJs, { type Database, type SqlJsStatic } from "sql.js";
-import { getDataset, type DatasetId } from "../db/datasets";
-
-let SQL: SqlJsStatic | null = null;
+import type { DatasetId } from "../db/datasets";
 
 export interface QueryResult {
   columns: string[];
@@ -14,8 +11,6 @@ export interface RunOutcome {
   error?: string;
 }
 
-const FORBIDDEN = ["DROP", "DELETE", "ALTER", "UPDATE", "INSERT", "TRUNCATE", "ATTACH", "DETACH", "PRAGMA"];
-
 export interface ExplainHint {
   level: "info" | "warn";
   message: string;
@@ -26,71 +21,80 @@ export interface ExplainReport {
   hints: ExplainHint[];
 }
 
-export function isUnsafe(sql: string): string | null {
-  // Strip comments and string literals to avoid false positives
+const FORBIDDEN_SELECT = [
+  "DROP",
+  "DELETE",
+  "ALTER",
+  "UPDATE",
+  "INSERT",
+  "TRUNCATE",
+  "ATTACH",
+  "DETACH",
+  "PRAGMA",
+  "REPLACE",
+  "VACUUM",
+  "CREATE",
+];
+const FORBIDDEN_DDL = ["ATTACH", "DETACH", "VACUUM", "PRAGMA"];
+
+export function isUnsafe(sql: string, allowMutations = false): string | null {
+  const list = allowMutations ? FORBIDDEN_DDL : FORBIDDEN_SELECT;
   const stripped = sql
     .replace(/--.*$/gm, "")
     .replace(/\/\*[\s\S]*?\*\//g, "")
     .replace(/'[^']*'/g, "''")
     .toUpperCase();
-  for (const word of FORBIDDEN) {
-    const re = new RegExp(`\\b${word}\\b`);
-    if (re.test(stripped)) return word;
+  for (const word of list) {
+    if (new RegExp(`\\b${word}\\b`).test(stripped)) return word;
   }
   return null;
 }
 
-async function getSQL(): Promise<SqlJsStatic> {
-  if (SQL) return SQL;
-  SQL = await initSqlJs({
-    locateFile: (file) => `/wasm/${file}`,
+async function api<T>(path: string, body: unknown): Promise<T> {
+  const res = await fetch(path, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
   });
-  return SQL;
-}
-
-let cachedDb: Database | null = null;
-let cachedDbDataset: DatasetId | null = null;
-
-async function getFreshDb(datasetId: DatasetId): Promise<Database> {
-  if (cachedDb) {
-    cachedDb.close();
-    cachedDb = null;
-    cachedDbDataset = null;
+  if (!res.ok) {
+    const text = await res.text().catch(() => "");
+    throw new Error(`HTTP ${res.status}: ${text || res.statusText}`);
   }
-  const sql = await getSQL();
-  const db = new sql.Database();
-  const ds = getDataset(datasetId);
-  db.exec(ds.schemaSql);
-  db.exec(ds.seedSql);
-  cachedDb = db;
-  cachedDbDataset = datasetId;
-  return db;
+  return (await res.json()) as T;
 }
 
-export async function runQuery(userSQL: string, datasetId: DatasetId = "ecommerce"): Promise<RunOutcome> {
+export interface RunOptions {
+  /** "select" (default) — pure SELECT. "ddl" — allow CREATE/INSERT/UPDATE/DELETE/etc. */
+  mode?: "select" | "ddl";
+  /** SQL run on the fresh DB BEFORE the user's code (DDL mode only). */
+  preSql?: string;
+  /** SQL run AFTER the user's code in DDL mode; its result is what gets returned. */
+  verifySql?: string;
+}
+
+export async function runQuery(
+  userSQL: string,
+  datasetId: DatasetId = "ecommerce",
+  options: RunOptions = {},
+): Promise<RunOutcome> {
   const trimmed = userSQL.trim();
   if (!trimmed) return { success: false, error: "Empty query" };
-
-  const bad = isUnsafe(trimmed);
-  if (bad) return { success: false, error: `Unsafe keyword "${bad}" is blocked.` };
-
   try {
-    const db = await getFreshDb(datasetId);
-    void cachedDbDataset;
-    const res = db.exec(trimmed);
-    if (res.length === 0) {
-      return { success: true, result: { columns: [], rows: [] } };
-    }
-    const last = res[res.length - 1];
-    return {
-      success: true,
-      result: {
-        columns: last.columns,
-        rows: last.values as unknown[][],
-      },
-    };
+    return await api<RunOutcome>("/api/query", {
+      sql: trimmed,
+      datasetId,
+      mode: options.mode,
+      preSql: options.preSql,
+      verifySql: options.verifySql,
+    });
   } catch (e) {
-    return { success: false, error: e instanceof Error ? e.message : String(e) };
+    return {
+      success: false,
+      error:
+        e instanceof Error
+          ? `Could not reach SQL server (${e.message}). Make sure the backend is running: bun run server`
+          : String(e),
+    };
   }
 }
 
@@ -102,15 +106,8 @@ export async function explainQuery(
   if (!trimmed) return null;
   if (isUnsafe(trimmed)) return null;
   try {
-    const db = await getFreshDb(datasetId);
-    const res = db.exec(`EXPLAIN QUERY PLAN ${trimmed}`);
-    const plan: string[] = [];
-    if (res.length) {
-      const detailIdx = res[0].columns.findIndex((c) => c.toLowerCase() === "detail");
-      for (const row of res[0].values) {
-        plan.push(String(row[detailIdx >= 0 ? detailIdx : row.length - 1]));
-      }
-    }
+    const out = await api<{ plan: string[] }>("/api/explain", { sql: trimmed, datasetId });
+    const plan = out.plan ?? [];
     const hints: ExplainHint[] = [];
     const upper = trimmed.toUpperCase();
     const joined = plan.join(" | ").toUpperCase();
@@ -131,25 +128,29 @@ export async function explainQuery(
     if (joined.includes("USE TEMP B-TREE FOR ORDER BY")) {
       hints.push({
         level: "info",
-        message: "ORDER BY uses a temporary B-tree (sorting in memory). On big datasets, an index matching the ORDER BY columns avoids this.",
+        message:
+          "ORDER BY uses a temporary B-tree (sorting in memory). On big datasets, an index matching the ORDER BY columns avoids this.",
       });
     }
     if (joined.includes("USE TEMP B-TREE FOR GROUP BY")) {
       hints.push({
         level: "info",
-        message: "GROUP BY uses a temporary B-tree. An index on the grouped columns can remove the sort step.",
+        message:
+          "GROUP BY uses a temporary B-tree. An index on the grouped columns can remove the sort step.",
       });
     }
     if (joined.includes("USE TEMP B-TREE FOR DISTINCT")) {
       hints.push({
         level: "info",
-        message: "DISTINCT requires a temporary sort. Consider whether GROUP BY or an index would be cheaper.",
+        message:
+          "DISTINCT requires a temporary sort. Consider whether GROUP BY or an index would be cheaper.",
       });
     }
     if (/\bSELECT\s+\*/.test(upper)) {
       hints.push({
         level: "info",
-        message: "SELECT * fetches every column. Listing only needed columns reduces I/O and makes intent clearer.",
+        message:
+          "SELECT * fetches every column. Listing only needed columns reduces I/O and makes intent clearer.",
       });
     }
     if (/\bLIKE\s+'%[^']/.test(trimmed)) {
@@ -188,7 +189,9 @@ export interface ValidationResult {
 }
 
 function normalizeRows(rows: unknown[][], ignoreOrder: boolean): string[] {
-  const stringified = rows.map((r) => JSON.stringify(r.map((v) => (v === null ? null : String(v)))));
+  const stringified = rows.map((r) =>
+    JSON.stringify(r.map((v) => (v === null ? null : String(v)))),
+  );
   return ignoreOrder ? [...stringified].sort() : stringified;
 }
 
@@ -197,15 +200,16 @@ export async function validateQuery(
   solutionSQL: string,
   options: ValidationOptions = {},
   datasetId: DatasetId = "ecommerce",
+  runOpts: RunOptions = {},
 ): Promise<ValidationResult> {
   const ignoreOrder = options.ignore_order ?? true;
   const ignoreColumnNames = options.ignore_column_names ?? false;
 
-  const userOut = await runQuery(userSQL, datasetId);
+  const userOut = await runQuery(userSQL, datasetId, runOpts);
   if (!userOut.success || !userOut.result) {
     return { correct: false, reason: userOut.error ?? "Query failed" };
   }
-  const solOut = await runQuery(solutionSQL, datasetId);
+  const solOut = await runQuery(solutionSQL, datasetId, runOpts);
   if (!solOut.success || !solOut.result) {
     return { correct: false, reason: "Solution query failed (internal)" };
   }
@@ -225,11 +229,23 @@ export async function validateQuery(
   }
 
   let columnMismatch = false;
+  let mismatchedIdx = -1;
   if (!ignoreColumnNames) {
     for (let i = 0; i < expected.columns.length; i++) {
       if (expected.columns[i].toLowerCase() !== actual.columns[i].toLowerCase()) {
         columnMismatch = true;
+        if (mismatchedIdx === -1) mismatchedIdx = i;
       }
+    }
+    if (columnMismatch) {
+      return {
+        correct: false,
+        reason: `Forventet kolonne "${expected.columns[mismatchedIdx]}", fikk "${actual.columns[mismatchedIdx]}". Bruk AS for å gi kolonnen riktig navn.`,
+        expected,
+        actual,
+        columnMismatch: true,
+        rowCountDelta: actual.rows.length - expected.rows.length,
+      };
     }
   }
 

@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { PROBLEMS } from "@/lib/problems/data";
 import type { Problem } from "@/lib/problems/types";
 import { runQuery, validateQuery, type QueryResult } from "@/lib/engine/sqlEngine";
+import { SqlText } from "@/components/SqlText";
 import { Check, X, Clock } from "lucide-react";
 
 export const Route = createFileRoute("/exam")({
@@ -234,7 +235,21 @@ function ExamPage() {
               Question {idx + 1} of {problems.length}
             </div>
           </div>
-          <SchemaPanel />
+          <SchemaPanel
+            onRunSql={async (s) => {
+              setSql(s);
+              setError(null);
+              setRunning(true);
+              const out = await runQuery(s);
+              setRunning(false);
+              if (!out.success) {
+                setError(out.error ?? "Query failed");
+                setResult(null);
+                return;
+              }
+              setResult(out.result ?? null);
+            }}
+          />
         </aside>
 
         <div className="space-y-4 order-1 lg:order-2 min-w-0">
@@ -246,7 +261,9 @@ function ExamPage() {
               ))}
             </div>
             <h1 className="text-lg font-bold">{current.title}</h1>
-            <p className="mt-2 text-sm text-foreground/90">{current.problem}</p>
+            <p className="mt-2 text-sm text-foreground/90">
+              <SqlText>{current.problem}</SqlText>
+            </p>
           </div>
 
           <div className="rounded-xl border border-border bg-card overflow-hidden">
