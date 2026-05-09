@@ -1,3 +1,4 @@
+import type { DocRef } from "@/lib/docs";
 import type { Attribute, Entity, ErModel, ErRelationship } from "./types";
 
 // Exercises walk the user from a single-entity table all the way to a 4-table
@@ -19,6 +20,13 @@ export interface ErExercise {
   hints: string[];
   /** The model the user is trying to build. */
   target: ErModel;
+  /** Optional id of a previous exercise. If the user has saved progress for
+   *  THIS exercise, that wins. Otherwise, the model is seeded from the user's
+   *  saved progress for `seedFrom` — so e2 starts with the kunde they drew
+   *  in e1, instead of a blank canvas. */
+  seedFrom?: string;
+  /** Documentation links + snippets shown next to the prompt. */
+  docs?: DocRef[];
 }
 
 // ───── helpers — keep ids deterministic so tests are stable ─────
@@ -89,6 +97,21 @@ export const ER_EXERCISES: ErExercise[] = [
       "Bestilling har bare bestnr og dato — ikke legg til kundenr selv",
       "Kråkefot-symbolet `||` er på kunde-siden (én og bare én)",
       "Kråkefot-symbolet `O<` er på bestilling-siden (null eller flere)",
+    ],
+    seedFrom: "er-1-kunde",
+    docs: [
+      {
+        title: "Kråkefot-notasjon (Wikipedia)",
+        url: "https://en.wikipedia.org/wiki/Entity%E2%80%93relationship_model#Crow's_foot_notation",
+        note: "Symbolene || (én), O| (valgfri én), |< (én eller flere), O< (null eller flere).",
+      },
+      {
+        title: "FOREIGN KEY i SQLite",
+        url: "https://www.sqlite.org/foreignkeys.html",
+        note: "Hva FK-en bestilling.kundenr genererer:",
+        snippet:
+          "FOREIGN KEY (kundenr) REFERENCES kunde(kundenr)",
+      },
     ],
     target: {
       entities: [
