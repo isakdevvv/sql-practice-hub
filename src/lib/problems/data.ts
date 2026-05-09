@@ -1281,6 +1281,110 @@ export const PROBLEMS: Problem[] = [
       "Postgres og MySQL støtter CREATE OR REPLACE VIEW i én operasjon — i SQLite må du DROP + CREATE. I produksjon pakkes dette ofte i en migrasjon eller transaksjon så ingen treffer view-en mens den er borte.",
     estimated_time_min: 4,
   },
+  // ============= TRANSACTION-ARC (p71-p74) =============
+  // BEGIN / COMMIT / ROLLBACK — alt-eller-ingenting-mønsteret. Bygger på
+  // DML-arcet og forklarer hvorfor halvferdige operasjoner er farlige.
+  {
+    id: "p71",
+    title: "BEGIN + COMMIT — første transaksjon",
+    level: 5,
+    difficulty: 2,
+    topics: ["TRANSACTION", "BEGIN", "COMMIT", "DML"],
+    mode: "ddl",
+    goal: "Pakk en endring i BEGIN ... COMMIT — alt skjer som ÉN enhet.",
+    problem:
+      "Endre prisen på Phone (id = 2) fra 800 til 750. Pakk endringen i en transaksjon: start med BEGIN, gjør UPDATE-en, og avslutt med COMMIT. Resultatet skal være det samme som en vanlig UPDATE — men nå er endringen eksplisitt en avgrenset enhet.",
+    starter_sql:
+      "BEGIN;\n  UPDATE products SET <Column> = <Value> WHERE <Condition>;\nCOMMIT;",
+    solution: "BEGIN; UPDATE products SET price = 750 WHERE id = 2; COMMIT;",
+    verify_sql: "SELECT id, name, price FROM products WHERE id = 2;",
+    validation: { ignore_order: true, ignore_column_names: true },
+    hints: [
+      "BEGIN starter en transaksjon",
+      "COMMIT lagrer alt som ble gjort siden BEGIN — endringen blir synlig for andre",
+      "Indenter gjerne UPDATE-en mellom BEGIN og COMMIT for lesbarhet",
+    ],
+    explanation:
+      "Uten BEGIN/COMMIT kjører hver setning i sin egen auto-commit-transaksjon. Med BEGIN/COMMIT samler du flere setninger til én logisk enhet. Det er meningsløst for én UPDATE — men essensielt så snart du har to eller flere endringer som må lykkes sammen.",
+    estimated_time_min: 2,
+  },
+  {
+    id: "p72",
+    title: "ROLLBACK — angre en endring",
+    level: 5,
+    difficulty: 2,
+    topics: ["TRANSACTION", "ROLLBACK", "DML"],
+    mode: "ddl",
+    goal: "ROLLBACK reverserer alt som er gjort siden BEGIN.",
+    problem:
+      "Innenfor en transaksjon: sett prisen på Laptop (id = 1) til 9999, og deretter angre med ROLLBACK. Etterpå skal prisen være TILBAKE til den opprinnelige verdien (1200) — endringen ble aldri lagret.",
+    starter_sql:
+      "BEGIN;\n  UPDATE products SET <Column> = <Value> WHERE <Condition>;\nROLLBACK;",
+    solution: "BEGIN; UPDATE products SET price = 9999 WHERE id = 1; ROLLBACK;",
+    verify_sql: "SELECT id, name, price FROM products WHERE id = 1;",
+    validation: { ignore_order: true, ignore_column_names: true },
+    hints: [
+      "ROLLBACK kaster alle endringer siden BEGIN",
+      "Verify-spørringen leser ETTER ROLLBACK — den skal vise gammel pris (1200)",
+      "Mønsteret brukes når en sjekk inne i transaksjonen feiler",
+    ],
+    explanation:
+      "ROLLBACK er sikkerhetsnettet til transaksjoner. Uten det måtte du kompensere manuelt med en omvendt UPDATE — vanskelig å få riktig hvis flere endringer er gjort. Vanlig mønster: BEGIN, gjør N endringer, sjekk en betingelse, COMMIT hvis ok ELLER ROLLBACK hvis feil.",
+    estimated_time_min: 2,
+  },
+  {
+    id: "p73",
+    title: "Atomisk overføring mellom kontoer",
+    level: 5,
+    difficulty: 3,
+    topics: ["TRANSACTION", "BEGIN", "COMMIT", "DML"],
+    mode: "ddl",
+    pre_sql:
+      "CREATE TABLE konto (id INTEGER PRIMARY KEY, eier TEXT, saldo NUMERIC); INSERT INTO konto VALUES (1, 'Ola', 5000), (2, 'Kari', 1000);",
+    goal: "Den klassiske bankoverføringen — to UPDATEs som MÅ lykkes sammen.",
+    problem:
+      "Tabellen konto er allerede laget med to kontoer: Ola (id=1, saldo=5000) og Kari (id=2, saldo=1000). Overfør 1500 kr fra Ola til Kari som én atomisk transaksjon. Resultat: Ola har 3500, Kari har 2500.",
+    starter_sql:
+      "BEGIN;\n  UPDATE konto SET saldo = saldo - <Value> WHERE id = <Value>;\n  UPDATE konto SET saldo = saldo + <Value> WHERE id = <Value>;\nCOMMIT;",
+    solution:
+      "BEGIN; UPDATE konto SET saldo = saldo - 1500 WHERE id = 1; UPDATE konto SET saldo = saldo + 1500 WHERE id = 2; COMMIT;",
+    verify_sql: "SELECT id, eier, saldo FROM konto ORDER BY id;",
+    validation: { ignore_order: true, ignore_column_names: true },
+    hints: [
+      "Trekk fra Ola først, legg til Kari etterpå — eller motsatt rekkefølge",
+      "saldo = saldo - 1500 leser den gamle saldoen og lagrer den nye",
+      "Uten BEGIN/COMMIT — hvis maskinen krasjer mellom de to UPDATE-ene har Ola tapt 1500 men Kari har ikke fått dem",
+    ],
+    explanation:
+      "Dette er klassikeren: en bankoverføring er to operasjoner, men datapunktet (det samlede beløpet) skal være konstant. ACID-Atomicity sikrer at man enten ser begge operasjoner eller ingen — aldri halvveis. Akkurat dette eksempelet er grunnen til at databaser har transaksjoner.",
+    estimated_time_min: 4,
+  },
+  {
+    id: "p74",
+    title: "Checkout-transaksjon — flere tabeller",
+    level: 5,
+    difficulty: 4,
+    topics: ["TRANSACTION", "INSERT", "UPDATE", "DML"],
+    mode: "ddl",
+    goal: "Realistisk eksempel: opprett ordre, ordrelinjer og oppdater lager — alt eller ingenting.",
+    problem:
+      "En kunde (user_id = 1) kjøper 2 stk Laptop (product_id = 1, pris 1200). Inne i én transaksjon: (1) INSERT en ny ordre (id=100, status='completed', dato='2024-09-01'), (2) INSERT en ordrelinje (id=100, ordre 100, produkt 1, antall 2, pris 1200), (3) UPDATE products SET stock = stock - 2 for product 1. COMMIT helt til slutt.",
+    starter_sql:
+      "BEGIN;\n  INSERT INTO orders (id, user_id, created_at, status)\n    VALUES (<Values>);\n  INSERT INTO order_items (id, order_id, product_id, quantity, price)\n    VALUES (<Values>);\n  UPDATE products SET stock = stock - <Value> WHERE id = <Value>;\nCOMMIT;",
+    solution:
+      "BEGIN; INSERT INTO orders (id, user_id, created_at, status) VALUES (100, 1, '2024-09-01', 'completed'); INSERT INTO order_items (id, order_id, product_id, quantity, price) VALUES (100, 100, 1, 2, 1200); UPDATE products SET stock = stock - 2 WHERE id = 1; COMMIT;",
+    verify_sql:
+      "SELECT 'order' AS tag, id, user_id, status FROM orders WHERE id = 100 UNION ALL SELECT 'line' AS tag, id, order_id, NULL FROM order_items WHERE order_id = 100 UNION ALL SELECT 'stock' AS tag, id, stock, NULL FROM products WHERE id = 1;",
+    validation: { ignore_order: true, ignore_column_names: true },
+    hints: [
+      "Tre operasjoner mellom BEGIN og COMMIT — alle treffer én transaksjon",
+      "Hadde stock vært utilstrekkelig kunne du ROLLBACKet i stedet for COMMIT",
+      "I Python ville du sjekket cursor.rowcount etter hver operasjon og kalt db.rollback() ved feil",
+    ],
+    explanation:
+      "Dette er mønsteret /prosjekt-checkouten bygger på, oversatt til ren SQL. Hele kjøpet — ordre, linjer, lager — må enten lagres samlet eller ikke i det hele tatt. Sentralt på eksamen, og direkte broa over til Python-koden i nettbutikk-prosjektet.",
+    estimated_time_min: 5,
+  },
   // ============= UNIVERSITY DATASET =============
   {
     id: "u1",
