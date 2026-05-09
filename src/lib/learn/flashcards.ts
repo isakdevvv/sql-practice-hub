@@ -65,6 +65,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Hva betyr 1:1, 1:M og M:N?",
     answer:
       "1:1: én rad i A hører til én rad i B. 1:M: én rad i A kan høre til mange rader i B. M:N: mange rader i A kan høre til mange rader i B — løses med koblingstabell.",
+    visual: "relationship-kinds",
   },
   {
     id: "c-mn",
@@ -80,7 +81,8 @@ export const FLASHCARDS: FlashCard[] = [
     topic: "Relasjoner",
     question: "Hva er kardinalitet?",
     answer:
-      "Beskriver hvor mange forekomster av én entitet som kan kobles til en annen — f.eks. én kunde kan ha mange utleier (1:M).",
+      "Beskriver hvor mange forekomster av én entitet som kan kobles til en annen — f.eks. én kunde kan ha mange utleier (1:M). I kråkefotnotasjonen vises dette med symboler i hver ende av relasjonslinjen.",
+    visual: "crows-foot-cheat",
   },
   {
     id: "c-ref-int",
@@ -129,6 +131,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Hva er en transitiv avhengighet?",
     answer:
       "Et felt som avhenger av et annet ikke-nøkkelfelt. Eks: KundeNr → PostNr → Poststed. Poststed avhenger ikke direkte av KundeNr — løses ved egen Poststed-tabell.",
+    visual: "normalization-split",
   },
   {
     id: "c-fwd-rev",
@@ -237,6 +240,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Hva er INNER JOIN?",
     answer:
       "Returnerer kun rader som har match i begge tabeller. Rader uten match (på begge sider) faller bort.",
+    visual: "join-venn-inner",
   },
   {
     id: "c-left-join",
@@ -245,6 +249,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Hva er LEFT JOIN?",
     answer:
       "Tar med ALLE rader fra venstre tabell. Hvis høyre side ikke matcher, fylles de høyre kolonnene med NULL.",
+    visual: "join-venn-left",
   },
   {
     id: "c-right-join",
@@ -261,6 +266,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Hva er FULL OUTER JOIN?",
     answer:
       "Tar med alle rader fra BÅDE venstre og høyre tabell. Manglende side fylles med NULL. Støttes ikke av MySQL — emuleres med UNION av LEFT og RIGHT JOIN.",
+    visual: "join-venn-full",
   },
   {
     id: "c-cross-join",
@@ -311,6 +317,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "I hvilken rekkefølge evalueres en SELECT-spørring?",
     answer:
       "FROM → JOIN → WHERE → GROUP BY → HAVING → SELECT → ORDER BY → LIMIT. Forklarer hvorfor alias fra SELECT ikke kan brukes i WHERE, men kan brukes i ORDER BY.",
+    visual: "sql-eval-order",
   },
   {
     id: "c-index",
@@ -319,6 +326,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Hva er en indeks?",
     answer:
       "En datastruktur som gjør oppslag raskere, som registeret bakerst i en bok. Gjør SELECT/WHERE/JOIN raskere, men gjør INSERT/UPDATE/DELETE litt tregere fordi indeksen må oppdateres.",
+    visual: "btree-index",
   },
   {
     id: "c-view",
@@ -343,6 +351,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Hva står ACID for?",
     answer:
       "Atomicity (alt eller ingenting), Consistency (databasen forblir gyldig), Isolation (transaksjoner forstyrrer ikke hverandre), Durability (committet data overlever krasj).",
+    visual: "acid-atomic",
   },
   {
     id: "c-commit",
@@ -449,6 +458,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Hva brukes Flask sessions til?",
     answer:
       "Lagre informasjon om brukeren mellom requests — typisk innlogget bruker-ID. Lagres signert i en cookie hos klienten.",
+    visual: "session-flow",
   },
   {
     id: "c-secret-key",
@@ -466,6 +476,7 @@ export const FLASHCARDS: FlashCard[] = [
     answer:
       "Brukerdata sendes som parametre, atskilt fra SQL-koden. Databasen behandler dem som verdier, aldri som SQL.",
     code: "cursor.execute(\n  \"SELECT * FROM users WHERE id = %s\",\n  (user_id,)\n)",
+    visual: "sql-injection-compare",
   },
   {
     id: "c-commit-py",
@@ -483,6 +494,7 @@ export const FLASHCARDS: FlashCard[] = [
     topic: "HTTP",
     question: "Hva står HTTP for?",
     answer: "HyperText Transfer Protocol — protokollen klient og server bruker for å snakke sammen.",
+    visual: "http-sequence",
   },
   {
     id: "c-get-post",
@@ -1288,6 +1300,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "HDD vs SSD — hva betyr det for databaser?",
     answer:
       "HDD (Hard Disk Drive) har roterende plater og er billig, men tregere. SSD (Solid State Drive) har ingen bevegelige deler og er mye raskere — særlig på random reads, som er typisk for databaser. Resultat: SSD gir raskere SELECT/JOIN, særlig når data ikke får plass i RAM.",
+    visual: "memory-hierarchy",
   },
   {
     id: "c-storage-ram",
@@ -1296,6 +1309,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Hva bruker databasen RAM til?",
     answer:
       "Caching av varme data (buffer pool), midlertidige sortere/joins, og resultatsett som bygges opp. RAM er ekstremt raskt, men flyktig — derfor må COMMIT også skrive til disk (durability i ACID).",
+    visual: "memory-hierarchy",
   },
   {
     id: "c-storage-pages",
@@ -1304,6 +1318,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Hvorfor leser databasen i sider/blokker, ikke én rad om gangen?",
     answer:
       "Disk-I/O har en stor fast kostnad per operasjon. Å lese 8 KB blokker (sider) i stedet for én rad reduserer antall I/O-operasjoner dramatisk. Naborader havner ofte på samme side, så én lesing kan gi mange treff.",
+    visual: "db-page",
   },
   {
     id: "c-storage-seq-scan",
@@ -1312,6 +1327,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Hva er sekvensielt søk (full table scan)?",
     answer:
       "Databasen leser hver eneste rad i tabellen og sjekker WHERE-betingelsen mot dem. Greit på små tabeller, men skalerer dårlig — på 10M rader leser den 10M rader. Indeks lar databasen hoppe direkte til riktig sted.",
+    visual: "index-vs-scan",
   },
   {
     id: "c-index-why",
@@ -1320,6 +1336,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Hvorfor gjør en indeks søk raskere?",
     answer:
       "Indeksen er en sortert datastruktur (typisk B-tre) på siden av tabellen. Databasen kan finne riktig verdi i O(log n) treghoppe-steg i stedet for å skanne O(n) rader. Sammenlignbart med å bruke registeret bakerst i en bok.",
+    visual: "index-vs-scan",
   },
 
   // ============= BACKUP / RESTORE (kap. 4 + 8) =============
@@ -1492,6 +1509,7 @@ export const FLASHCARDS: FlashCard[] = [
     answer:
       "Tags som beskriver INNHOLDETS rolle, ikke bare utseendet: <header>, <nav>, <main>, <section>, <article>, <footer>, <aside>. Bedre for skjermlesere, søkemotorer og lesbarhet enn å fylle siden med <div>-er.",
     code: "<header><h1>Tittel</h1></header>\n<nav>...</nav>\n<main>\n  <article>...</article>\n</main>\n<footer>...</footer>",
+    visual: "html-semantic",
   },
   {
     id: "c-html-class-id",
@@ -1545,6 +1563,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Forskjell på margin og padding?",
     answer:
       "margin er plass UTENFOR elementets ramme (avstand mellom dette og neste element). padding er plass INNENFOR rammen (mellom innhold og ramme). Bakgrunnsfarge dekker padding, ikke margin.",
+    visual: "css-box-model",
   },
   {
     id: "c-css-selector",

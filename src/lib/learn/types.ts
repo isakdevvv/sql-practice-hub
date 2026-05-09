@@ -21,6 +21,11 @@ export interface FlashCard {
   answer: string; // plain text or simple inline-code via `backticks`
   /** Optional code block shown below the answer. */
   code?: string;
+  /** Optional visual diagram, key into the VISUALS registry
+   *  (see src/components/learn/visuals/Visuals.tsx). Shown above the
+   *  answer text — used for the iconic diagrams data engineers expect
+   *  (CSS box model, JOIN Venn, B-tree, memory hierarchy, etc.). */
+  visual?: string;
 }
 
 // ---------- DRAG EXERCISES ----------

@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import type { FlashCard as Card } from "@/lib/learn/types";
 import { Check, X, RotateCcw } from "lucide-react";
+import { VISUALS } from "./visuals/Visuals";
 
 interface FlashCardViewProps {
   card: Card;
@@ -68,10 +69,16 @@ export function FlashCardView({ card, onKnown, onUnknown }: FlashCardViewProps) 
               </h2>
             </div>
           ) : (
-            <div className="w-full max-w-xl">
+            <div className="w-full max-w-2xl">
               <div className="text-xs uppercase tracking-wider text-success mb-3 text-center">
                 Svar
               </div>
+              {card.visual && VISUALS[card.visual] ? (
+                (() => {
+                  const Visual = VISUALS[card.visual]!;
+                  return <Visual />;
+                })()
+              ) : null}
               <p className="text-base leading-relaxed text-foreground/90">
                 <InlineCode text={card.answer} />
               </p>
