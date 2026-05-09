@@ -1,4 +1,4 @@
-import { Placeholder } from "@/components/stack/Placeholder";
+import { FlaskLifecyclePage } from "@/components/stack/flask-livssyklus/FlaskLifecyclePage";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -7,8 +7,11 @@ export const content: TrinnContent = {
   title: "Flask request-livssyklus",
   group: "eksamen",
   order: 5,
-  status: "stub",
+  status: "ready",
   shortDescription: "Fra HTTP-bytes til request.form til DB-spørring og tilbake.",
-  prerequisites: [],
-  Component: () => <Placeholder title="Flask request-livssyklus" group="eksamen" />,
+  prerequisites: [
+    { slug: "bytes-encoding", title: "Bytes & encoding" },
+    { slug: "tcp-sockets", title: "TCP & sockets (kort)" },
+  ],
+  Component: FlaskLifecyclePage,
 };
