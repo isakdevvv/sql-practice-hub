@@ -51,7 +51,11 @@ INSERT INTO users VALUES
 (5,'Eve','eve@test.com','2023-05-01'),
 (6,'Frank','frank@test.com','2023-06-01'),
 (7,'Grace','grace@test.com','2023-07-01'),
-(8,'Henry','henry@test.com','2023-08-01');
+(8,'Henry','henry@test.com','2023-08-01'),
+(9,'Iris','iris@test.com','2023-09-01'),
+(10,'Jack','jack@test.com','2023-10-01'),
+(11,'Kara',NULL,'2023-11-01'),
+(12,'Leo','leo@test.com','2024-01-15');
 
 INSERT INTO products VALUES
 (1,'Laptop','Electronics',1200,10),
@@ -63,7 +67,11 @@ INSERT INTO products VALUES
 (7,'Desk','Furniture',300,5),
 (8,'Chair','Furniture',150,15),
 (9,'Tablet','Electronics',500,25),
-(10,'Jacket','Clothing',200,40);
+(10,'Jacket','Clothing',200,40),
+(11,'Mouse','Electronics',45,0),
+(12,'Keyboard','Electronics',95,8),
+(13,'Notebook','Books',8,150),
+(14,'Lamp','Furniture',60,0);
 
 INSERT INTO orders VALUES
 (1,1,'2024-01-01','completed'),
@@ -75,7 +83,12 @@ INSERT INTO orders VALUES
 (7,2,'2024-04-01','completed'),
 (8,5,'2024-04-10','completed'),
 (9,3,'2024-05-01','pending'),
-(10,6,'2024-05-15','completed');
+(10,6,'2024-05-15','completed'),
+(11,7,'2024-06-01','completed'),
+(12,8,'2024-06-15','pending'),
+(13,2,'2024-07-01','completed'),
+(14,10,'2024-07-15','cancelled'),
+(15,1,'2024-08-01','completed');
 
 INSERT INTO order_items VALUES
 (1,1,1,1,1200),
@@ -91,7 +104,13 @@ INSERT INTO order_items VALUES
 (11,8,8,2,150),
 (12,9,2,1,800),
 (13,10,10,1,200),
-(14,10,3,1,100);
+(14,10,3,1,100),
+(15,11,5,1,150),
+(16,11,9,2,500),
+(17,13,2,1,800),
+(18,13,6,3,15),
+(19,15,1,1,1200),
+(20,15,3,2,100);
 
 INSERT INTO payments VALUES
 (1,1,1500,'card','paid'),
@@ -103,7 +122,10 @@ INSERT INTO payments VALUES
 (7,7,500,'vipps','paid'),
 (8,8,600,'card','paid'),
 (9,9,800,'card','pending'),
-(10,10,300,'vipps','paid');
+(10,10,300,'vipps','paid'),
+(11,11,1150,'card','paid'),
+(12,13,845,'vipps','paid'),
+(13,15,1400,'card','paid');
 `;
 
 export interface TableSchema {

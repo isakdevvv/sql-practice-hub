@@ -161,3 +161,14 @@
     color: var(--color-foreground);
   }
 }
+
+/* Placeholder pill: Monaco breaks <foo> into 3 syntax tokens (`<`, `foo`, `>`),
+   each rendered as a separate span. Per-span padding/outline/border-radius
+   would draw them as 3 separate boxes. We keep the styling edge-free so the
+   spans visually merge into one continuous highlighted block. */
+.monaco-editor .sql-placeholder {
+  background-color: rgba(99, 102, 241, 0.22);
+  color: rgba(199, 210, 254, 0.95) !important;
+  cursor: pointer;
+  font-style: italic;
+}

@@ -1,0 +1,451 @@
+<!doctype html>
+<html lang="no">
+<head>
+<meta charset="utf-8" />
+<title>Eksamens-huskelapp — SQL & ER-diagram (krakefot)</title>
+<style>
+  @page {
+    size: A4;
+    margin: 14mm 12mm 16mm 12mm;
+    @bottom-center {
+      content: "Side " counter(page) " av " counter(pages);
+      font-family: "Helvetica Neue", Arial, sans-serif;
+      font-size: 8pt;
+      color: #888;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    font-family: "Helvetica Neue", Arial, sans-serif;
+    font-size: 9pt;
+    line-height: 1.3;
+    color: #111;
+    margin: 0;
+  }
+  h1 {
+    font-size: 18pt;
+    margin: 0 0 2mm 0;
+    color: #0a3d62;
+    border-bottom: 2px solid #0a3d62;
+    padding-bottom: 1mm;
+  }
+  h2 {
+    font-size: 13pt;
+    margin: 4mm 0 1.5mm 0;
+    color: #0a3d62;
+    border-bottom: 1px solid #ccd6dd;
+    padding-bottom: 0.5mm;
+    page-break-after: avoid;
+  }
+  h3 {
+    font-size: 10pt;
+    margin: 2mm 0 1mm 0;
+    color: #143a59;
+    page-break-after: avoid;
+  }
+  p { margin: 0 0 1.5mm 0; }
+  ul, ol { margin: 0 0 1.5mm 4mm; padding: 0; }
+  li { margin: 0 0 0.4mm 0; }
+  code, pre, .kw, kbd {
+    font-family: "Menlo", "Consolas", monospace;
+    font-size: 8.5pt;
+  }
+  code {
+    background: #f1f3f5;
+    padding: 0 2px;
+    border-radius: 2px;
+  }
+  pre {
+    background: #f6f8fa;
+    border: 1px solid #d8dee4;
+    border-radius: 3px;
+    padding: 2mm 2.5mm;
+    margin: 1mm 0 2mm 0;
+    white-space: pre-wrap;
+    font-size: 8pt;
+    line-height: 1.35;
+    page-break-inside: avoid;
+  }
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 1mm 0 2mm 0;
+    font-size: 8.2pt;
+    page-break-inside: avoid;
+  }
+  th, td {
+    border: 1px solid #d8dee4;
+    padding: 1mm 2mm;
+    text-align: left;
+    vertical-align: top;
+  }
+  th {
+    background: #eef2f6;
+    font-weight: 600;
+  }
+  .kw { color: #d63384; font-weight: 600; }
+  .grid2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3mm;
+  }
+  .grid3 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 3mm;
+  }
+  .box {
+    border: 1px solid #d8dee4;
+    border-radius: 3px;
+    padding: 2mm 2.5mm;
+    background: #fafbfc;
+    page-break-inside: avoid;
+  }
+  .warn {
+    background: #fff7e6;
+    border-color: #f0c36d;
+  }
+  .tip {
+    background: #e9f7ef;
+    border-color: #88c8a3;
+  }
+  .small { font-size: 8pt; color: #555; }
+  .center { text-align: center; }
+  .pagebreak { page-break-before: always; }
+  .nobreak { page-break-inside: avoid; }
+  .symbol {
+    font-family: "Menlo", monospace;
+    font-size: 13pt;
+    color: #0a3d62;
+  }
+  .cf-table td:nth-child(1) { width: 14%; text-align: center; font-size: 11pt; }
+  .cf-table td:nth-child(2) { width: 22%; }
+  hr.thin { border: 0; border-top: 1px solid #ccd6dd; margin: 3mm 0; }
+  .toc { columns: 2; column-gap: 6mm; font-size: 9pt; }
+  .toc a { text-decoration: none; color: #0a3d62; }
+</style>
+</head>
+<body>
+
+<h1>Eksamens-huskelapp — SQL og ER-diagram (krakefot)</h1>
+<p class="small">Komprimert referanse for eksamen. Eksempler i SQLite-/standard-SQL-stil.</p>
+
+<div class="box tip">
+  <strong>Logisk utføringsrekkefølge i SELECT</strong> (ikke skriverekkefølgen):
+  <ol style="margin: 1mm 0 0 5mm;">
+    <li><span class="kw">FROM</span> / <span class="kw">JOIN</span> — bygg råtabellen</li>
+    <li><span class="kw">WHERE</span> — filtrer rader</li>
+    <li><span class="kw">GROUP BY</span> — grupper rader</li>
+    <li><span class="kw">HAVING</span> — filtrer grupper</li>
+    <li><span class="kw">SELECT</span> — velg/regn ut kolonner (alias laget her)</li>
+    <li><span class="kw">DISTINCT</span> — fjern duplikater</li>
+    <li><span class="kw">ORDER BY</span> — sortér</li>
+    <li><span class="kw">LIMIT</span> / <span class="kw">OFFSET</span> — begrens antall rader</li>
+  </ol>
+  <p class="small" style="margin-top:1mm;">Konsekvens: alias laget i SELECT kan brukes i ORDER BY, men ikke i WHERE/GROUP BY/HAVING (med mindre motoren tillater det).</p>
+</div>
+
+<h2>1. Grunnleggende setningsstruktur</h2>
+<pre><span class="kw">SELECT</span> [DISTINCT] kolonner | uttrykk [AS alias]
+<span class="kw">FROM</span>   tabell [AS alias] [JOIN ... ON ...]
+<span class="kw">WHERE</span>  radbetingelser
+<span class="kw">GROUP BY</span> kolonner
+<span class="kw">HAVING</span> gruppebetingelser
+<span class="kw">ORDER BY</span> kolonner [ASC|DESC]
+<span class="kw">LIMIT</span> n [OFFSET m];</pre>
+
+<h2>2. WHERE — filtrering av rader</h2>
+<table>
+  <tr><th>Operator</th><th>Eksempel</th><th>Merknad</th></tr>
+  <tr><td><code>= &lt;&gt; &lt; &lt;= &gt; &gt;=</code></td><td><code>pris &gt; 100</code></td><td>Standard sammenligning</td></tr>
+  <tr><td><code>AND / OR / NOT</code></td><td><code>aar=2025 AND land='NO'</code></td><td>Bruk parentes når du blander AND/OR</td></tr>
+  <tr><td><code>BETWEEN x AND y</code></td><td><code>aar BETWEEN 1990 AND 1999</code></td><td>Inklusive begge ender</td></tr>
+  <tr><td><code>IN (...)</code></td><td><code>land IN ('NO','SE')</code></td><td>Kortere enn flere OR</td></tr>
+  <tr><td><code>NOT IN (...)</code></td><td><code>id NOT IN (SELECT ...)</code></td><td>Pass på NULL i sub-spørring</td></tr>
+  <tr><td><code>LIKE '%a_'</code></td><td><code>navn LIKE 'P%'</code></td><td><code>%</code> = 0+ tegn, <code>_</code> = ett tegn</td></tr>
+  <tr><td><code>IS NULL / IS NOT NULL</code></td><td><code>kommentar IS NULL</code></td><td>NULL kan IKKE testes med <code>=</code></td></tr>
+  <tr><td><code>EXISTS / NOT EXISTS</code></td><td><code>EXISTS (SELECT 1 FROM ...)</code></td><td>NULL-trygg variant av IN</td></tr>
+</table>
+
+<h2>3. JOIN-typer</h2>
+<div class="grid2">
+  <div class="box">
+    <h3>INNER JOIN</h3>
+    <p>Bare rader som matcher i <em>begge</em> tabeller.</p>
+    <pre><span class="kw">SELECT</span> b.tittel, f.navn
+<span class="kw">FROM</span>   bok b
+<span class="kw">JOIN</span>   forfatter f <span class="kw">ON</span> b.fid = f.id;</pre>
+  </div>
+  <div class="box">
+    <h3>LEFT (OUTER) JOIN</h3>
+    <p>Alle rader fra venstre tabell. Manglende høyre &rarr; NULL.</p>
+    <pre><span class="kw">SELECT</span> k.navn, b.id
+<span class="kw">FROM</span>   kunde k
+<span class="kw">LEFT JOIN</span> bestilling b <span class="kw">ON</span> b.kid = k.id;</pre>
+  </div>
+  <div class="box">
+    <h3>RIGHT / FULL JOIN</h3>
+    <p>Speilet av LEFT, hhv. begge sider med NULL der match mangler. Mange motorer (SQLite) støtter ikke disse — bytt rekkefølge og bruk LEFT JOIN.</p>
+  </div>
+  <div class="box">
+    <h3>SELF JOIN</h3>
+    <p>Tabell joinet med seg selv (med ulike alias). Brukt for hierarkier (sjef/ansatt).</p>
+    <pre><span class="kw">SELECT</span> a.navn, s.navn AS sjef
+<span class="kw">FROM</span>   ansatt a
+<span class="kw">JOIN</span>   ansatt s <span class="kw">ON</span> a.sjef_id = s.id;</pre>
+  </div>
+  <div class="box">
+    <h3>CROSS JOIN</h3>
+    <p>Kartesisk produkt — alle kombinasjoner. <code>FROM a, b</code> uten ON gir det samme.</p>
+  </div>
+  <div class="box warn">
+    <h3>Anti-join (finn det som mangler)</h3>
+    <pre><span class="kw">SELECT</span> k.* <span class="kw">FROM</span> kunde k
+<span class="kw">LEFT JOIN</span> bestilling b <span class="kw">ON</span> b.kid = k.id
+<span class="kw">WHERE</span>  b.id <span class="kw">IS NULL</span>;</pre>
+    <p class="small">Kunder uten bestilling.</p>
+  </div>
+</div>
+
+<h2>4. Aggregat og GROUP BY</h2>
+<table>
+  <tr><th>Funksjon</th><th>Hva den gjør</th></tr>
+  <tr><td><code>COUNT(*)</code></td><td>Teller alle rader (også NULL).</td></tr>
+  <tr><td><code>COUNT(kol)</code></td><td>Teller rader der <em>kol</em> ikke er NULL.</td></tr>
+  <tr><td><code>COUNT(DISTINCT kol)</code></td><td>Teller unike ikke-null-verdier.</td></tr>
+  <tr><td><code>SUM, AVG</code></td><td>Summerer / snitt over ikke-null-verdier.</td></tr>
+  <tr><td><code>MIN, MAX</code></td><td>Minste / største verdi.</td></tr>
+</table>
+<pre><span class="kw">SELECT</span> land, <span class="kw">COUNT</span>(*) AS antall, <span class="kw">AVG</span>(pris) AS snitt
+<span class="kw">FROM</span>   film
+<span class="kw">WHERE</span>  aar &gt;= 2000
+<span class="kw">GROUP BY</span> land
+<span class="kw">HAVING</span> <span class="kw">COUNT</span>(*) &gt; 5
+<span class="kw">ORDER BY</span> antall <span class="kw">DESC</span>;</pre>
+<div class="box warn">
+  <strong>Regel:</strong> Alle ikke-aggregerte kolonner i SELECT må også stå i GROUP BY (i streng SQL).<br/>
+  <strong>WHERE</strong> filtrerer <em>før</em> aggregering, <strong>HAVING</strong> filtrerer <em>etter</em>.
+</div>
+
+<h2>5. Sub-spørringer (subquery)</h2>
+<div class="grid2">
+  <div class="box">
+    <h3>Skalar (returnerer 1 verdi)</h3>
+    <pre><span class="kw">SELECT</span> * <span class="kw">FROM</span> film
+<span class="kw">WHERE</span> pris &gt; (<span class="kw">SELECT</span> <span class="kw">AVG</span>(pris) <span class="kw">FROM</span> film);</pre>
+  </div>
+  <div class="box">
+    <h3>IN / NOT IN (liste)</h3>
+    <pre><span class="kw">SELECT</span> * <span class="kw">FROM</span> kunde
+<span class="kw">WHERE</span> id <span class="kw">IN</span> (<span class="kw">SELECT</span> kid <span class="kw">FROM</span> bestilling);</pre>
+  </div>
+  <div class="box">
+    <h3>Korrelert (refererer til ytre rad)</h3>
+    <pre><span class="kw">SELECT</span> a.* <span class="kw">FROM</span> ansatt a
+<span class="kw">WHERE</span> lonn = (
+  <span class="kw">SELECT</span> <span class="kw">MAX</span>(lonn)
+  <span class="kw">FROM</span> ansatt
+  <span class="kw">WHERE</span> avd = a.avd);</pre>
+    <p class="small">Høyest lønn i hver avdeling.</p>
+  </div>
+  <div class="box">
+    <h3>Inline view (FROM-subspørring)</h3>
+    <pre><span class="kw">SELECT</span> avd, snitt <span class="kw">FROM</span> (
+  <span class="kw">SELECT</span> avd, <span class="kw">AVG</span>(lonn) AS snitt
+  <span class="kw">FROM</span> ansatt <span class="kw">GROUP BY</span> avd) t
+<span class="kw">WHERE</span> snitt &gt; 50000;</pre>
+  </div>
+</div>
+
+<h2>6. NULL — tre-verdi-logikk</h2>
+<ul>
+  <li><code>NULL = NULL</code> &rarr; <em>UKJENT</em> (ikke sant). Bruk <code>IS NULL</code>.</li>
+  <li><code>NULL + 1</code>, <code>NULL || 'x'</code> &rarr; <code>NULL</code>.</li>
+  <li>Aggregater (SUM/AVG/MIN/MAX/COUNT(kol)) ignorerer NULL. <code>COUNT(*)</code> teller alt.</li>
+  <li><code>COALESCE(a, b, c)</code> &rarr; første ikke-NULL.</li>
+  <li><code>NOT IN (...)</code> blir <em>tomt resultat</em> hvis subspørringen kan returnere NULL — bruk <code>NOT EXISTS</code>.</li>
+</ul>
+
+<h2>7. Sortering, paginering og strenger</h2>
+<pre><span class="kw">SELECT</span> navn, pris <span class="kw">FROM</span> film
+<span class="kw">ORDER BY</span> pris <span class="kw">DESC</span>, navn <span class="kw">ASC</span>
+<span class="kw">LIMIT</span> 10 <span class="kw">OFFSET</span> 20;     -- topp 10, hopp over 20</pre>
+<table>
+  <tr><th>Funksjon</th><th>Eksempel</th></tr>
+  <tr><td>Strengkonkat</td><td><code>fornavn || ' ' || etternavn</code> (SQLite/PG); <code>CONCAT(...)</code> (MySQL)</td></tr>
+  <tr><td><code>UPPER / LOWER</code></td><td><code>UPPER(navn) = 'OLA'</code></td></tr>
+  <tr><td><code>SUBSTR(s, start[, len])</code></td><td><code>SUBSTR(navn, 1, 3)</code></td></tr>
+  <tr><td><code>LENGTH(s)</code></td><td>Antall tegn</td></tr>
+  <tr><td><code>ROUND(x [,n])</code></td><td><code>ROUND(snitt, 2)</code></td></tr>
+</table>
+
+<h2>8. Datofunksjoner (SQLite)</h2>
+<pre><span class="kw">SELECT</span> <span class="kw">DATE</span>('now'), <span class="kw">DATETIME</span>('now', '-7 days');
+<span class="kw">SELECT</span> strftime('%Y', dato) <span class="kw">AS</span> aar <span class="kw">FROM</span> bestilling;
+<span class="kw">WHERE</span> dato &gt;= <span class="kw">DATE</span>('now', 'start of month');</pre>
+<p class="small"><code>%Y</code>=år, <code>%m</code>=mnd, <code>%d</code>=dag, <code>%w</code>=ukedag (0=søndag).</p>
+
+<div class="pagebreak"></div>
+
+<h2>9. CASE — betinget uttrykk</h2>
+<pre><span class="kw">SELECT</span> navn,
+  <span class="kw">CASE</span>
+    <span class="kw">WHEN</span> pris &lt; 100 <span class="kw">THEN</span> 'Billig'
+    <span class="kw">WHEN</span> pris &lt; 500 <span class="kw">THEN</span> 'Middels'
+    <span class="kw">ELSE</span> 'Dyr'
+  <span class="kw">END</span> <span class="kw">AS</span> kategori
+<span class="kw">FROM</span> film;</pre>
+
+<h2>10. UNION / INTERSECT / EXCEPT</h2>
+<ul>
+  <li><code>UNION</code> stabler to spørringer, fjerner duplikater. <code>UNION ALL</code> beholder dem (raskere).</li>
+  <li>Antall kolonner og datatyper må stemme.</li>
+  <li><code>INTERSECT</code> = felles rader. <code>EXCEPT</code> = i A, men ikke i B.</li>
+</ul>
+
+<h2>11. DML — endre data</h2>
+<pre><span class="kw">INSERT INTO</span> kunde (navn, land) <span class="kw">VALUES</span> ('Ola', 'NO');
+<span class="kw">INSERT INTO</span> kunde (navn) <span class="kw">SELECT</span> navn <span class="kw">FROM</span> gammel_kunde;
+
+<span class="kw">UPDATE</span> film <span class="kw">SET</span> pris = pris * 1.1 <span class="kw">WHERE</span> aar &lt; 2000;
+
+<span class="kw">DELETE FROM</span> kunde <span class="kw">WHERE</span> id = 7;</pre>
+<div class="box warn"><strong>Glem aldri WHERE</strong> i UPDATE/DELETE — uten WHERE rammes hele tabellen.</div>
+
+<h2>12. DDL — opprette tabeller</h2>
+<pre><span class="kw">CREATE TABLE</span> kunde (
+  id        <span class="kw">INTEGER PRIMARY KEY</span>,
+  navn      <span class="kw">TEXT NOT NULL</span>,
+  epost     <span class="kw">TEXT UNIQUE</span>,
+  registrert <span class="kw">DATE DEFAULT</span> (<span class="kw">DATE</span>('now'))
+);
+
+<span class="kw">CREATE TABLE</span> bestilling (
+  id     <span class="kw">INTEGER PRIMARY KEY</span>,
+  kid    <span class="kw">INTEGER NOT NULL</span>,
+  belop  <span class="kw">REAL CHECK</span>(belop &gt;= 0),
+  <span class="kw">FOREIGN KEY</span>(kid) <span class="kw">REFERENCES</span> kunde(id)
+);</pre>
+
+<h2>13. Vanlige feller på eksamen</h2>
+<ul>
+  <li>Glemmer parentes rundt OR i WHERE: <code>WHERE a=1 AND (b=2 OR c=3)</code>.</li>
+  <li>Bruker <code>=</code> mot NULL i stedet for <code>IS NULL</code>.</li>
+  <li>Glemmer kolonner i GROUP BY (de som ikke er aggregert).</li>
+  <li>Bruker WHERE i stedet for HAVING på et aggregat: <code>WHERE COUNT(*)&gt;1</code> &rarr; <em>feil</em>.</li>
+  <li>LIMIT uten ORDER BY — rekkefølge er udefinert.</li>
+  <li>«Mangler» rader i resultatet etter join? Sjekk om det burde vært LEFT JOIN.</li>
+  <li>NOT IN med subspørring som returnerer NULL &rarr; tomt sett.</li>
+  <li>Forskjell mellom <code>COUNT(*)</code> og <code>COUNT(kolonne)</code> når kolonnen kan være NULL.</li>
+</ul>
+
+<div class="pagebreak"></div>
+
+<h1>ER-diagram — Krakefot-notasjon (Crow's Foot)</h1>
+<p class="small">Også kalt Chen/Martin-notasjon med krakefot. Brukes til å vise tabeller (entiteter) og hvordan de henger sammen (relasjoner) i en database.</p>
+
+<h2>14. Symbolene på linjen</h2>
+<p>Endene av linjen mellom to entiteter forteller <em>hvor mange</em> det kan være, og om det er <em>obligatorisk</em>. Hver ende har <strong>to symboler</strong>: indre symbol = minimum, ytre symbol = maksimum.</p>
+
+<table class="cf-table">
+  <tr><th>Symbol</th><th>Betyr</th><th>Eksempel-tekst</th></tr>
+  <tr><td class="symbol">|&nbsp;|</td><td>Nøyaktig én (1..1, obligatorisk)</td><td>«Hver bestilling har én og bare én kunde»</td></tr>
+  <tr><td class="symbol">O&nbsp;|</td><td>Null eller én (0..1, valgfri)</td><td>«En ansatt kan ha én partner (eller ingen)»</td></tr>
+  <tr><td class="symbol">|&nbsp;&lt;</td><td>Én eller flere (1..N, obligatorisk mange)</td><td>«En faktura har minst én linje»</td></tr>
+  <tr><td class="symbol">O&nbsp;&lt;</td><td>Null eller flere (0..N, valgfri mange)</td><td>«En kunde kan ha 0..N bestillinger»</td></tr>
+</table>
+
+<div class="box tip">
+  <strong>Hvordan lese symbolene:</strong> Symbolet nær <em>den andre</em> entiteten forteller hvor mange av <em>denne</em> entiteten som hører til én av <em>den andre</em>. Det er den vanlige fellen — les alltid <em>«hvor mange B per A»</em> ved siden av A.
+</div>
+
+<h2>15. Kardinaliteter — de tre hovedtilfellene</h2>
+<div class="grid3">
+  <div class="box nobreak">
+    <h3>1 : 1 (én-til-én)</h3>
+    <pre>PERSON ||——|| PASS</pre>
+    <p>Hver person har ett pass; hvert pass tilhører én person.</p>
+    <p class="small"><strong>Mapping:</strong> slå sammen til én tabell, eller legg FK på den ene siden med <code>UNIQUE</code>.</p>
+  </div>
+  <div class="box nobreak">
+    <h3>1 : N (én-til-mange)</h3>
+    <pre>KUNDE ||——O&lt; BESTILLING</pre>
+    <p>Én kunde kan ha 0..N bestillinger; én bestilling har akkurat én kunde.</p>
+    <p class="small"><strong>Mapping:</strong> FK på <em>mange-siden</em> (<code>BESTILLING.kunde_id &rarr; KUNDE.id</code>).</p>
+  </div>
+  <div class="box nobreak">
+    <h3>M : N (mange-til-mange)</h3>
+    <pre>STUDENT &gt;O——O&lt; FAG</pre>
+    <p>En student kan ha mange fag; et fag har mange studenter.</p>
+    <p class="small"><strong>Mapping:</strong> krever <em>koblingstabell</em> med to FK-er som primærnøkkel sammen.</p>
+  </div>
+</div>
+
+<h2>16. Eksempel: les diagrammet</h2>
+<pre>KUNDE  ||————O&lt;  BESTILLING  ||————|&lt;  ORDRELINJE  &gt;|————||  PRODUKT</pre>
+<ul>
+  <li><strong>KUNDE — BESTILLING:</strong> 1 kunde har 0..N bestillinger; hver bestilling har 1 kunde.</li>
+  <li><strong>BESTILLING — ORDRELINJE:</strong> 1 bestilling har 1..N linjer (obligatorisk minst én); hver linje hører til 1 bestilling.</li>
+  <li><strong>ORDRELINJE — PRODUKT:</strong> 1..N linjer per produkt; hver linje peker på 1 produkt.</li>
+</ul>
+
+<h2>17. Fra ER til relasjoner (mapping-regler)</h2>
+<table>
+  <tr><th>ER-konstruksjon</th><th>Bli til i tabellene</th></tr>
+  <tr><td>Entitet (rektangel)</td><td>Egen tabell. Primærnøkkel = identifikator-attributt.</td></tr>
+  <tr><td>Attributt</td><td>Kolonne i tabellen. <em>Sammensatt</em> attributt &rarr; flere kolonner. <em>Flerverdi</em> &rarr; egen tabell.</td></tr>
+  <tr><td>1 : N relasjon</td><td>Fremmednøkkel på <em>mange-siden</em>.</td></tr>
+  <tr><td>1 : 1 relasjon</td><td>FK på én av sidene + <code>UNIQUE</code>; eller slå sammen til én tabell.</td></tr>
+  <tr><td>M : N relasjon</td><td>Egen koblingstabell med (FK_a, FK_b) som sammensatt PK. Eventuelle relasjons-attributter legges her.</td></tr>
+  <tr><td>Svak entitet</td><td>Tabell med PK = (FK til eier, eget delvis ID). Total deltakelse mot eier.</td></tr>
+  <tr><td>Total deltakelse (heltrukken/«|» innerst)</td><td><code>NOT NULL</code> på FK.</td></tr>
+  <tr><td>Valgfri deltakelse («O» innerst)</td><td>FK kan være NULL.</td></tr>
+</table>
+
+<h2>18. Eksempel: M:N med koblingstabell</h2>
+<pre>STUDENT(<u>sid</u>, navn)
+FAG(<u>fkode</u>, tittel)
+TAR(<u>sid</u>, <u>fkode</u>, semester)         -- koblingstabell
+   FOREIGN KEY (sid)   REFERENCES STUDENT(sid)
+   FOREIGN KEY (fkode) REFERENCES FAG(fkode)</pre>
+<p class="small">Sammensatt primærnøkkel <code>(sid, fkode)</code> hindrer at samme student tar samme fag dobbelt. Relasjons-attributtet <code>semester</code> hører hjemme i koblingstabellen.</p>
+
+<h2>19. Sjekkliste for å tegne et ER-diagram</h2>
+<ol>
+  <li>Finn entitetene (substantivene): KUNDE, ORDRE, PRODUKT…</li>
+  <li>Sett opp attributter; marker primærnøkkel (understrek).</li>
+  <li>Finn relasjonene (verbene): «kunde <em>legger inn</em> ordre».</li>
+  <li>For hver relasjon, spør to ganger:
+    <ul>
+      <li><em>Hvor mange B kan én A ha?</em> &rarr; ytre symbol nær B.</li>
+      <li><em>Må A ha minst én B?</em> &rarr; indre symbol nær B.</li>
+    </ul>
+    Gjenta motsatt retning.
+  </li>
+  <li>Identifiser M:N — lag koblingstabell med eventuelle relasjons-attributter.</li>
+  <li>Sjekk svake entiteter (eksisterer bare gjennom en eier).</li>
+  <li>Skriv ut tabellene: PK understreket, FK med pil/notasjon.</li>
+</ol>
+
+<div class="box warn nobreak">
+  <strong>Huskeregel for FK-plassering (1:N):</strong> «<em>FK-en bor på mange-siden</em>». Hvis du er i tvil — den siden som <em>peker mot 1</em> er der FK-en hører hjemme.
+</div>
+
+<h2>20. Mini-ordliste (norsk)</h2>
+<table>
+  <tr><th>Norsk</th><th>Engelsk / SQL</th></tr>
+  <tr><td>Entitet</td><td>Entity (≈ tabell)</td></tr>
+  <tr><td>Attributt</td><td>Attribute (≈ kolonne)</td></tr>
+  <tr><td>Primærnøkkel</td><td>Primary key (PK)</td></tr>
+  <tr><td>Fremmednøkkel</td><td>Foreign key (FK)</td></tr>
+  <tr><td>Kardinalitet</td><td>Cardinality (1, N, M)</td></tr>
+  <tr><td>Deltakelse</td><td>Participation (total / partial)</td></tr>
+  <tr><td>Koblingstabell</td><td>Junction / linking table</td></tr>
+  <tr><td>Svak entitet</td><td>Weak entity</td></tr>
+  <tr><td>Krakefot</td><td>Crow's foot</td></tr>
+</table>
+
+<p class="center small" style="margin-top: 4mm;">— Lykke til på eksamen —</p>
+
+</body>
+</html>

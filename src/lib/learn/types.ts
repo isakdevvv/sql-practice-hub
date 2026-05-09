@@ -1,0 +1,136 @@
+// Types for the learn module: flashcards, drag exercises, JOIN visualizer.
+// These are intentionally separate from the SQL `Problem` type — they don't
+// run SQL, they're answered in-page.
+
+// ---------- FLASHCARDS ----------
+
+export type CardCategory =
+  | "begrep"
+  | "sql"
+  | "design"
+  | "flask"
+  | "http"
+  | "sikkerhet"
+  | "praktisk";
+
+export interface FlashCard {
+  id: string;
+  category: CardCategory;
+  topic: string;
+  question: string;
+  answer: string; // plain text or simple inline-code via `backticks`
+  /** Optional code block shown below the answer. */
+  code?: string;
+}
+
+// ---------- DRAG EXERCISES ----------
+
+export type DragExercise = MatchExercise | OrderExercise | FillExercise | CrowsFootExercise;
+
+export interface MatchExercise {
+  id: string;
+  kind: "match";
+  title: string;
+  prompt: string;
+  topic: string;
+  /** Each pair: left stays put, right gets shuffled and dragged onto left. */
+  pairs: { left: string; right: string }[];
+}
+
+export interface OrderExercise {
+  id: string;
+  kind: "order";
+  title: string;
+  prompt: string;
+  topic: string;
+  /** Items in the correct order. They will be shuffled in the UI. */
+  items: string[];
+  /** Short note shown after the user solves it. */
+  explanation?: string;
+}
+
+export interface FillExercise {
+  id: string;
+  kind: "fill";
+  title: string;
+  prompt: string;
+  topic: string;
+  /** Template with __1__, __2__, ... placeholders. */
+  template: string;
+  /** Correct value for each placeholder, in order. */
+  blanks: string[];
+  /** Items the user can drag — should include `blanks` plus distractors. */
+  options: string[];
+  /** Optional reference snippet shown above the exercise — a complete code
+   *  example illustrating the same pattern, so the user has something to
+   *  pattern-match against. Best for Flask/Python where structure matters. */
+  example?: string;
+  /** Optional language hint for the example/template ("python" | "html" | "sql"). */
+  language?: "python" | "html" | "sql";
+  explanation?: string;
+}
+
+// ---------- CROW'S FOOT ----------
+
+/** Min-symbol on a relationship end: "|" = obligatorisk (1), "O" = valgfri (0). */
+export type CfMin = "|" | "O";
+/** Max-symbol on a relationship end: "|" = én, "<" = mange (krage). */
+export type CfMax = "|" | "<";
+
+export interface CrowsFootExercise {
+  id: string;
+  kind: "crowsfoot";
+  title: string;
+  prompt: string;
+  topic: string;
+  /** Scenario text — describes the relationship in plain Norwegian. */
+  scenario: string;
+  /** Left entity name (e.g. "KUNDE"). */
+  entityA: string;
+  /** Right entity name (e.g. "BESTILLING"). */
+  entityB: string;
+  /** Symbols placed at the line ends, read left-to-right.
+   *  Convention: symbol near entity X tells "how many X per one of the other".
+   *  So `aMin/aMax` (near A) = cardinality of A, read as «for én B, hvor mange A?». */
+  answer: {
+    aMin: CfMin;
+    aMax: CfMax;
+    bMin: CfMin;
+    bMax: CfMax;
+  };
+  explanation: string;
+}
+
+// ---------- VISUAL JOIN ----------
+
+export type JoinType = "INNER" | "LEFT" | "RIGHT" | "FULL" | "CROSS";
+
+export type Cell = string | number | null;
+
+export interface VisualTable {
+  name: string;
+  columns: string[];
+  rows: Cell[][];
+}
+
+export interface JoinExercise {
+  id: string;
+  title: string;
+  scenario: string;
+  topic: string;
+  difficulty: 1 | 2 | 3;
+  left: VisualTable;
+  right: VisualTable;
+  /** Column(s) on the left used for the join. Pass an array for composite-key joins. */
+  leftKey: string | string[];
+  /** Column(s) on the right used for the join. Pass an array for composite-key joins. */
+  rightKey: string | string[];
+  /** Optional SQL alias for the left side. Required for self-joins (same table on both sides). */
+  leftAlias?: string;
+  /** Optional SQL alias for the right side. */
+  rightAlias?: string;
+  /** Optional set of join types this exercise is most instructive for.
+   *  Defaults to all four [INNER, LEFT, RIGHT, FULL]. */
+  joinTypes?: JoinType[];
+  explanation: string;
+}

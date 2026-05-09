@@ -42,6 +42,73 @@ export function saveProgress(p: Progress) {
   window.localStorage.setItem(STORAGE_KEY, JSON.stringify(p));
 }
 
+const DRAFTS_KEY = "sql-practice-drafts-v1";
+const LAST_ID_KEY = "sql-practice-last-id";
+
+export interface ExportBundle {
+  version: 1;
+  exportedAt: string;
+  progress: Progress;
+  drafts: Record<string, string>;
+  lastId: string | null;
+}
+
+export function exportToJson(): string {
+  const drafts = (() => {
+    try {
+      return JSON.parse(window.localStorage.getItem(DRAFTS_KEY) ?? "{}");
+    } catch {
+      return {};
+    }
+  })();
+  const bundle: ExportBundle = {
+    version: 1,
+    exportedAt: new Date().toISOString(),
+    progress: loadProgress(),
+    drafts,
+    lastId: window.localStorage.getItem(LAST_ID_KEY),
+  };
+  return JSON.stringify(bundle, null, 2);
+}
+
+export function downloadProgressJson() {
+  const json = exportToJson();
+  const blob = new Blob([json], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  const stamp = new Date().toISOString().slice(0, 19).replace(/[:T]/g, "-");
+  a.href = url;
+  a.download = `sql-practice-progress-${stamp}.json`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
+
+export function importFromJson(text: string): { ok: true } | { ok: false; error: string } {
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(text);
+  } catch {
+    return { ok: false, error: "File is not valid JSON." };
+  }
+  if (!parsed || typeof parsed !== "object") {
+    return { ok: false, error: "JSON root must be an object." };
+  }
+  const b = parsed as Partial<ExportBundle>;
+  if (!b.progress || typeof b.progress !== "object") {
+    return { ok: false, error: "Missing 'progress' object." };
+  }
+  saveProgress({ ...EMPTY, ...b.progress });
+  if (b.drafts && typeof b.drafts === "object") {
+    window.localStorage.setItem(DRAFTS_KEY, JSON.stringify(b.drafts));
+  }
+  if (typeof b.lastId === "string") {
+    window.localStorage.setItem(LAST_ID_KEY, b.lastId);
+  }
+  return { ok: true };
+}
+
 export function levelFromXP(xp: number): number {
   // Each level = +100 xp
   return Math.floor(xp / 100) + 1;
