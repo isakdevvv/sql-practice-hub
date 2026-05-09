@@ -13,6 +13,7 @@ import { Route as PythonRouteImport } from './routes/python'
 import { Route as ProsjektRouteImport } from './routes/prosjekt'
 import { Route as PracticeRouteImport } from './routes/practice'
 import { Route as LearnRouteImport } from './routes/learn'
+import { Route as KonsollRouteImport } from './routes/konsoll'
 import { Route as JoinsRouteImport } from './routes/joins'
 import { Route as ExamRouteImport } from './routes/exam'
 import { Route as DragRouteImport } from './routes/drag'
@@ -38,6 +39,11 @@ const PracticeRoute = PracticeRouteImport.update({
 const LearnRoute = LearnRouteImport.update({
   id: '/learn',
   path: '/learn',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const KonsollRoute = KonsollRouteImport.update({
+  id: '/konsoll',
+  path: '/konsoll',
   getParentRoute: () => rootRouteImport,
 } as any)
 const JoinsRoute = JoinsRouteImport.update({
@@ -78,6 +84,7 @@ export interface FileRoutesByFullPath {
   '/drag': typeof DragRoute
   '/exam': typeof ExamRoute
   '/joins': typeof JoinsRoute
+  '/konsoll': typeof KonsollRoute
   '/learn': typeof LearnRoute
   '/practice': typeof PracticeRoute
   '/prosjekt': typeof ProsjektRoute
@@ -90,6 +97,7 @@ export interface FileRoutesByTo {
   '/drag': typeof DragRoute
   '/exam': typeof ExamRoute
   '/joins': typeof JoinsRoute
+  '/konsoll': typeof KonsollRoute
   '/learn': typeof LearnRoute
   '/practice': typeof PracticeRoute
   '/prosjekt': typeof ProsjektRoute
@@ -103,6 +111,7 @@ export interface FileRoutesById {
   '/drag': typeof DragRoute
   '/exam': typeof ExamRoute
   '/joins': typeof JoinsRoute
+  '/konsoll': typeof KonsollRoute
   '/learn': typeof LearnRoute
   '/practice': typeof PracticeRoute
   '/prosjekt': typeof ProsjektRoute
@@ -117,6 +126,7 @@ export interface FileRouteTypes {
     | '/drag'
     | '/exam'
     | '/joins'
+    | '/konsoll'
     | '/learn'
     | '/practice'
     | '/prosjekt'
@@ -129,6 +139,7 @@ export interface FileRouteTypes {
     | '/drag'
     | '/exam'
     | '/joins'
+    | '/konsoll'
     | '/learn'
     | '/practice'
     | '/prosjekt'
@@ -141,6 +152,7 @@ export interface FileRouteTypes {
     | '/drag'
     | '/exam'
     | '/joins'
+    | '/konsoll'
     | '/learn'
     | '/practice'
     | '/prosjekt'
@@ -154,6 +166,7 @@ export interface RootRouteChildren {
   DragRoute: typeof DragRoute
   ExamRoute: typeof ExamRoute
   JoinsRoute: typeof JoinsRoute
+  KonsollRoute: typeof KonsollRoute
   LearnRoute: typeof LearnRoute
   PracticeRoute: typeof PracticeRoute
   ProsjektRoute: typeof ProsjektRoute
@@ -188,6 +201,13 @@ declare module '@tanstack/react-router' {
       path: '/learn'
       fullPath: '/learn'
       preLoaderRoute: typeof LearnRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/konsoll': {
+      id: '/konsoll'
+      path: '/konsoll'
+      fullPath: '/konsoll'
+      preLoaderRoute: typeof KonsollRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/joins': {
@@ -242,6 +262,7 @@ const rootRouteChildren: RootRouteChildren = {
   DragRoute: DragRoute,
   ExamRoute: ExamRoute,
   JoinsRoute: JoinsRoute,
+  KonsollRoute: KonsollRoute,
   LearnRoute: LearnRoute,
   PracticeRoute: PracticeRoute,
   ProsjektRoute: ProsjektRoute,
