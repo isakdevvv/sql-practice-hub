@@ -1,4 +1,4 @@
-import { Placeholder } from "@/components/stack/Placeholder";
+import { BytesEncodingPage } from "@/components/stack/bytes-encoding/BytesEncodingPage";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -7,8 +7,9 @@ export const content: TrinnContent = {
   title: "Bytes & encoding",
   group: "eksamen",
   order: 1,
-  status: "stub",
-  shortDescription: "En byte er bare et tall 0–255. Hvordan blir tegn til bytes? UTF-8, ASCII, hex.",
+  status: "ready",
+  shortDescription:
+    "En byte er bare et tall 0–255. Hvordan blir tegn til bytes? UTF-8, ASCII, hex.",
   prerequisites: [],
-  Component: () => <Placeholder title="Bytes & encoding" group="eksamen" />,
+  Component: BytesEncodingPage,
 };
