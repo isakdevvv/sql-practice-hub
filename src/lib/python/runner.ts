@@ -60,7 +60,10 @@ export async function runScript(code: string, opts: RunOpts = {}): Promise<PyRun
     py.globals.set("__user_code__", code);
     await py.runPythonAsync(`
 import json as _json
-_ns = {}
+# __name__ defaults to 'builtins' in exec'd code which breaks Flask(__name__)
+# (Flask can't resolve a root path for that). Set it to "__main__" so the
+# user's code behaves like a normal Python script.
+_ns = {"__name__": "__main__"}
 exec(__user_code__, _ns)
 def _safe(v):
     try:
@@ -127,7 +130,7 @@ def _tracer(frame, event, arg):
         })
     return _tracer
 
-_ns = {}
+_ns = {"__name__": "__main__"}
 sys.settrace(_tracer)
 try:
     exec(_compiled, _ns)
