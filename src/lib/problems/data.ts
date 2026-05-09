@@ -786,6 +786,190 @@ export const PROBLEMS: Problem[] = [
     explanation: "Same Top-N pattern, applied to product sales.",
     estimated_time_min: 5,
   },
+  // ============= AGGREGATE-TEACHING ARC (p51-p58) =============
+  // Trinnvis introduksjon til aggregat-funksjoner og hvordan SELECT-lista
+  // styrer formen på resultatet. Bygger på samme datasett (e-commerce).
+  {
+    id: "p51",
+    title: "Total revenue across all orders",
+    level: 2,
+    difficulty: 2,
+    topics: ["AGGREGATE", "SUM", "AS"],
+    goal: "Bruk SUM på et regnestykke, og navngi resultat-kolonnen med AS.",
+    problem:
+      "Returner totalomsetning for hele butikken. Hver rad i order_items har quantity og price — multipliser dem og summér over alle radene. Kall kolonnen `total_revenue`.",
+    starter_sql:
+      "SELECT SUM(<Expression>) AS <Alias>\nFROM order_items;",
+    solution:
+      "SELECT SUM(quantity * price) AS total_revenue FROM order_items;",
+    alt_solutions: ["SELECT SUM(price * quantity) AS total_revenue FROM order_items;"],
+    validation: { ignore_order: true, ignore_column_names: true },
+    hints: [
+      "SUM(quantity * price) summerer hele uttrykket per rad",
+      "Uten GROUP BY blir resultatet ÉN rad — totalsummen",
+      "AS gir kolonnen et lesbart navn",
+    ],
+    explanation:
+      "Uten GROUP BY kollapser SUM hele tabellen til én rad. Du kan summere et uttrykk (quantity*price), ikke bare en enkelt kolonne — det regnes per rad og summeres deretter.",
+    estimated_time_min: 3,
+  },
+  {
+    id: "p52",
+    title: "COUNT(*) vs SUM(quantity)",
+    level: 2,
+    difficulty: 2,
+    topics: ["AGGREGATE", "COUNT", "SUM"],
+    goal: "Forstå forskjellen mellom å telle rader og å summere en kolonne.",
+    problem:
+      "Returner to tall fra order_items: antall ordrelinjer (rader) og totalt antall solgte enheter (sum av quantity-feltet). Kall kolonnene `total_lines` og `total_units`.",
+    starter_sql:
+      "SELECT COUNT(<Expression>) AS <Alias>, SUM(<Expression>) AS <Alias>\nFROM order_items;",
+    solution:
+      "SELECT COUNT(*) AS total_lines, SUM(quantity) AS total_units FROM order_items;",
+    validation: { ignore_order: true, ignore_column_names: true },
+    hints: [
+      "COUNT(*) teller rader — uavhengig av verdier",
+      "SUM(quantity) summerer tall — én rad med antall=5 og én med antall=3 gir 8, ikke 2",
+      "Du kan ha flere aggregater i samme SELECT",
+    ],
+    explanation:
+      "COUNT(*) returnerer antall rader. SUM(kolonne) summerer tallene i kolonnen. Begge er aggregater og kan stå sammen i samme SELECT — resultatet blir én rad med flere kolonner.",
+    estimated_time_min: 3,
+  },
+  {
+    id: "p53",
+    title: "Per-product summary",
+    level: 2,
+    difficulty: 3,
+    topics: ["AGGREGATE", "GROUP BY", "SUM", "COUNT"],
+    goal: "Kombiner flere aggregater per gruppe.",
+    problem:
+      "For hvert produkt (product_id), returner antall ordrelinjer det vises på (`times_sold`), totalt solgt antall enheter (`total_units`), og samlet inntekt (`revenue` = sum av quantity*price).",
+    starter_sql:
+      "SELECT product_id,\n  COUNT(<Expression>) AS <Alias>,\n  SUM(<Expression>) AS <Alias>,\n  SUM(<Expression>) AS <Alias>\nFROM order_items\nGROUP BY <Column>;",
+    solution:
+      "SELECT product_id, COUNT(*) AS times_sold, SUM(quantity) AS total_units, SUM(quantity * price) AS revenue FROM order_items GROUP BY product_id;",
+    validation: { ignore_order: true, ignore_column_names: true },
+    hints: [
+      "Du kan ha tre aggregater i samme SELECT",
+      "GROUP BY product_id — én rad per produkt",
+      "revenue er aggregat over et uttrykk: SUM(quantity * price)",
+    ],
+    explanation:
+      "GROUP BY definerer hva som skal samles til én rad. Aggregatene (COUNT, SUM, SUM) regnes per gruppe. Resultatet får så mange rader som det finnes unike grupper.",
+    estimated_time_min: 5,
+  },
+  {
+    id: "p54",
+    title: "Average price per order",
+    level: 2,
+    difficulty: 2,
+    topics: ["AGGREGATE", "AVG", "GROUP BY"],
+    goal: "AVG istedenfor SUM — gjennomsnitt per gruppe.",
+    problem:
+      "For hver ordre, returner gjennomsnittlig linjepris (`avg_line_price`). Avrund ikke — la databasen gi rådata.",
+    starter_sql:
+      "SELECT order_id, AVG(<Column>) AS <Alias>\nFROM order_items\nGROUP BY <Column>;",
+    solution:
+      "SELECT order_id, AVG(price) AS avg_line_price FROM order_items GROUP BY order_id;",
+    validation: { ignore_order: true, ignore_column_names: true },
+    hints: [
+      "AVG(price) = SUM(price) / COUNT(*) implisitt",
+      "GROUP BY order_id gir én rad per ordre",
+    ],
+    explanation:
+      "AVG er en aggregat akkurat som SUM og COUNT. Den ignorerer NULL-verdier. Bytter du AVG for SUM får du totalpris per ordre istedenfor gjennomsnittspris.",
+    estimated_time_min: 3,
+  },
+  {
+    id: "p55",
+    title: "Min, max and price spread per category",
+    level: 2,
+    difficulty: 3,
+    topics: ["AGGREGATE", "MIN", "MAX", "GROUP BY"],
+    goal: "MIN og MAX, og uttrykk basert på flere aggregater.",
+    problem:
+      "For hver produktkategori, returner laveste pris (`min_price`), høyeste pris (`max_price`), og spredning (`spread` = max minus min).",
+    starter_sql:
+      "SELECT category,\n  MIN(<Column>) AS <Alias>,\n  MAX(<Column>) AS <Alias>,\n  MAX(<Column>) - MIN(<Column>) AS <Alias>\nFROM products\nGROUP BY <Column>;",
+    solution:
+      "SELECT category, MIN(price) AS min_price, MAX(price) AS max_price, MAX(price) - MIN(price) AS spread FROM products GROUP BY category;",
+    validation: { ignore_order: true, ignore_column_names: true },
+    hints: [
+      "MIN og MAX fungerer på både tall, tekst og dato",
+      "Et uttrykk kan kombinere flere aggregater i samme rad",
+    ],
+    explanation:
+      "Aggregat-uttrykk kan blandes: `MAX(price) - MIN(price)` regnes per gruppe og gir spredningen. Hver kategori blir én rad i resultatet.",
+    estimated_time_min: 4,
+  },
+  {
+    id: "p56",
+    title: "Sale price (math i SELECT)",
+    level: 1,
+    difficulty: 2,
+    topics: ["SELECT", "EXPRESSION", "AS"],
+    goal: "Uttrykk i SELECT — uten aggregat eller GROUP BY.",
+    problem:
+      "Returner navn, ordinærpris og 10 %-rabattert pris (`sale_price` = price × 0.9) for hvert produkt.",
+    starter_sql:
+      "SELECT name, price, <Expression> AS <Alias>\nFROM products;",
+    solution:
+      "SELECT name, price, price * 0.9 AS sale_price FROM products;",
+    validation: { ignore_order: true, ignore_column_names: true },
+    hints: [
+      "price * 0.9 regnes per rad — ingen GROUP BY trengs",
+      "Du får tilbake samme antall rader som products har",
+    ],
+    explanation:
+      "Et uttrykk i SELECT (uten aggregat) regnes for HVER rad individuelt. Resultatet beholder samme rad-antall som tabellen. Sammenlign med p51 der SUM kollapset alle radene til én.",
+    estimated_time_min: 2,
+  },
+  {
+    id: "p57",
+    title: "Hvor mange rader gir GROUP BY?",
+    level: 2,
+    difficulty: 2,
+    topics: ["AGGREGATE", "GROUP BY", "COUNT"],
+    goal: "Forstå hvordan GROUP BY former resultat-tabellen.",
+    problem:
+      "Returner status og antall ordre med den statusen (`n`). Resultat-tabellen skal ha nøyaktig én rad per unik status — bruk GROUP BY.",
+    starter_sql:
+      "SELECT status, COUNT(<Expression>) AS <Alias>\nFROM orders\nGROUP BY <Column>;",
+    solution:
+      "SELECT status, COUNT(*) AS n FROM orders GROUP BY status;",
+    validation: { ignore_order: true, ignore_column_names: true },
+    hints: [
+      "GROUP BY status — én rad per unik verdi i status-kolonnen",
+      "COUNT(*) teller hvor mange rader som havnet i hver gruppe",
+    ],
+    explanation:
+      "GROUP BY-kolonnen styrer rad-antallet i resultatet: er det 3 unike statuser, blir det 3 rader. Det er en av de viktigste forskjellene mellom 'vanlig' SELECT (én rad inn = én rad ut) og aggregat-SELECT (mange rader inn = én rad per gruppe ut).",
+    estimated_time_min: 3,
+  },
+  {
+    id: "p58",
+    title: "SELECT-lista styrer hva du ser",
+    level: 1,
+    difficulty: 2,
+    topics: ["SELECT", "EXPRESSION", "AS"],
+    goal: "Kontrast mellom forskjellige SELECT-lister på samme tabell.",
+    problem:
+      "Fra products: returner kun tre kolonner — produktnavn (`name`), pris-i-øre (`price_oere` = price × 100), og en konstant tekst 'kr' i kolonnen `valuta`. Da ser du at SELECT-lista bestemmer både hvilke kolonner som er med, hvordan de heter, og hvilke beregninger som gjøres.",
+    starter_sql:
+      "SELECT name,\n  <Expression> AS <Alias>,\n  <Literal> AS <Alias>\nFROM products;",
+    solution:
+      "SELECT name, price * 100 AS price_oere, 'kr' AS valuta FROM products;",
+    validation: { ignore_order: true, ignore_column_names: true },
+    hints: [
+      "price * 100 — uttrykk regnes per rad",
+      "'kr' — en streng-konstant blir like-stor kolonne med samme tekst i hver rad",
+      "AS gir kolonnen ditt eget navn — uten det blir kolonnenavnet stygt",
+    ],
+    explanation:
+      "SELECT-lista er ikke bare 'hvilke kolonner skal med'. Den kan også: regne ut nye verdier per rad (uttrykk), legge til konstanter, og navngi resultat-kolonnene (AS). Dette er forskjellen mellom hva som finnes i tabellen og hva brukeren ser.",
+    estimated_time_min: 3,
+  },
   // ============= UNIVERSITY DATASET =============
   {
     id: "u1",
