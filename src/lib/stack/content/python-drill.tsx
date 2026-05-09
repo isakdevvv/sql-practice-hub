@@ -1,4 +1,4 @@
-import { Placeholder } from "@/components/stack/Placeholder";
+import { PythonDrillPage } from "@/components/stack/python-drill/PythonDrillPage";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -7,8 +7,8 @@ export const content: TrinnContent = {
   title: "Python eksamens-drill",
   group: "eksamen",
   order: 6,
-  status: "stub",
+  status: "ready",
   shortDescription: "Filtrer dict-lister, parse logger, dict comprehensions — eksamenstypen.",
   prerequisites: [],
-  Component: () => <Placeholder title="Python eksamens-drill" group="eksamen" />,
+  Component: PythonDrillPage,
 };
