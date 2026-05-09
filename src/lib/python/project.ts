@@ -618,6 +618,76 @@ r = client.post("/register", json={"brukernavn": "ny", "passord": "x"})
 print(f"PASS: register ok uten CSRF" if r.status_code == 201 else f"FAIL: {r.status_code}")
 `;
 
+// Sluttest — kjører hele kundereisen ende-til-ende mot test_client.
+const TEST_FULL_FLOW = `
+# ──── Sluttest: hele kundereisen ────
+client = app.test_client()
+
+# 1. Hent CSRF-token (GET er trygt — ingen CSRF-sjekk på GETs)
+r = client.get("/csrf")
+token = r.get_json()["token"] if r.status_code == 200 else ""
+print(f"PASS: 1) /csrf gir token" if r.status_code == 200 and token
+      else f"FAIL: 1) /csrf {r.status_code}")
+
+# 2. Registrér ny kunde (CSRF-fritak på /register)
+r = client.post("/register", json={"brukernavn": "lina", "passord": "hemmelig", "epost": "lina@x.no"})
+print(f"PASS: 2) /register opprettet kunde" if r.status_code == 201
+      else f"FAIL: 2) /register {r.status_code} {r.get_json()}")
+
+# 3. Logg inn (CSRF-fritak på /login)
+r = client.post("/login", json={"brukernavn": "lina", "passord": "hemmelig"})
+print(f"PASS: 3) /login ok" if r.status_code == 200
+      else f"FAIL: 3) /login {r.status_code} {r.get_json()}")
+
+# 4. Hent CSRF på nytt etter login (session kan være modifisert)
+token = client.get("/csrf").get_json()["token"]
+print(f"PASS: 4) ny CSRF-token etter login" if token
+      else f"FAIL: 4) tom token")
+
+# 5. Bla i produktkatalog (GET — ingen CSRF nødvendig)
+r = client.get("/produkter")
+produkter = r.get_json() if r.status_code == 200 else []
+print(f"PASS: 5) /produkter listet {len(produkter)} produkter" if len(produkter) >= 2
+      else f"FAIL: 5) /produkter {r.status_code} {produkter}")
+
+# 6. Legg 2 varer i kurven (POST krever X-CSRF-Token)
+hdr = {"X-CSRF-Token": token}
+r1 = client.post("/kurv/legg-til", json={"prodnr": 1, "antall": 2}, headers=hdr)
+r2 = client.post("/kurv/legg-til", json={"prodnr": 4, "antall": 3}, headers=hdr)
+print(f"PASS: 6) la 2 varer i kurven" if r1.status_code == 200 and r2.status_code == 200
+      else f"FAIL: 6) {r1.status_code}/{r2.status_code}")
+
+# 7. Checkout — krever CSRF, returnerer ordrenr + 201
+r = client.post("/checkout", headers=hdr)
+data = r.get_json() or {}
+print(f"PASS: 7) /checkout ga ordrenr={data.get('ordrenr')}"
+      if r.status_code == 201 and data.get("ordrenr")
+      else f"FAIL: 7) /checkout {r.status_code} {data}")
+
+# 8. Se egen ordrehistorikk — 1 ordre med totalsum > 0
+r = client.get("/mine-ordrer")
+mine = r.get_json() or []
+total = mine[0].get("total") if mine else None
+print(f"PASS: 8) /mine-ordrer: 1 ordre, totalsum={total}"
+      if r.status_code == 200 and len(mine) == 1 and (total or 0) > 0
+      else f"FAIL: 8) /mine-ordrer {r.status_code} {mine}")
+
+# 9. Logg inn som admin via testhjelp-endepunktet (CSRF-fritak via /_testhjelp/-prefiks)
+client.post("/logout", headers=hdr)
+r = client.post("/_testhjelp/login-som-admin")
+print(f"PASS: 9) admin-login ok" if r.status_code == 200
+      else f"FAIL: 9) admin-login {r.status_code} {r.get_json()}")
+
+# 10. Admin ser ALLE ordrer
+r = client.get("/admin/ordrer")
+alle = r.get_json() or []
+print(f"PASS: 10) /admin/ordrer ser {len(alle)} ordre(r)"
+      if r.status_code == 200 and len(alle) >= 1
+      else f"FAIL: 10) /admin/ordrer {r.status_code} {alle}")
+
+print("──── Sluttest ferdig ────")
+`;
+
 // ────────────────────────────────────────────────────────────────────────────
 // Steps — each step's `starter` is what the student opens. Solutions add one
 // more block of code and one matching test block.
@@ -838,6 +908,15 @@ const S10_SOLUTION =
   ADMIN_LOGIN_TESTHELPER + ORDER_HISTORY_AND_ADMIN_SOLUTION + HTML_TEMPLATES_SOLUTION +
   CSRF_SOLUTION + TEST_CSRF;
 
+// Steg 11 — sluttest. Starter == solution: hele app fra steg 10 + ende-til-ende-test.
+const S11_STARTER =
+  DB_INIT + APP_INIT + PASSWORD_HELPERS + REGISTER_SOLUTION + LOGIN_SOLUTION +
+  LOGIN_REQUIRED_SOLUTION + PRODUCTS_AND_CART_SOLUTION + CHECKOUT_SOLUTION +
+  ADMIN_LOGIN_TESTHELPER + ORDER_HISTORY_AND_ADMIN_SOLUTION + HTML_TEMPLATES_SOLUTION +
+  CSRF_SOLUTION + TEST_FULL_FLOW;
+
+const S11_SOLUTION = S11_STARTER;
+
 export const PROJECT_STEPS: ProjectStep[] = [
   {
     id: "p1-schema-basics",
@@ -1010,6 +1089,23 @@ export const PROJECT_STEPS: ProjectStep[] = [
       "secrets.token_hex(16) gir 32 hex-tegn — nok entropi",
       "@app.before_request kjøres før hver request — perfekt sted for global sjekk",
       "request.headers.get('X-CSRF-Token', '') gir tom streng som default",
+    ],
+  },
+  {
+    id: "p11-sluttest",
+    concept: "End-to-end-test",
+    title: "11. Sluttest — hele kundereisen",
+    task:
+      "Trykk «Kjør & test» for å validere at alle 10 stegene henger sammen. Hele kundereisen — registrer, logg inn, handle, sjekk ut, se historikk, admin-rapport — kjører som ÉN test som gir PASS/FAIL per fase.",
+    context:
+      "Etter 10 steg har du bygget hele backenden. Denne sluttesten verifiserer at delene fungerer SAMMEN — at CSRF ikke blokkerer interne flyter, at session-cookien deles mellom requestene, at admin-rollen leser data fra alle kunder. Hvis ALLE PASS-linjer kommer her, har du en fungerende mini-nettbutikk.",
+    starter: S11_STARTER,
+    solution: S11_SOLUTION,
+    requires: ["flask"],
+    hints: [
+      "Det er ingen TODO her — du skal bare kjøre testen og lese output",
+      "Hvis en linje feiler, gå tilbake til steget den tester og finn feilen der",
+      "test_client beholder cookies på tvers av requester — derfor virker session uten manuelt arbeid",
     ],
   },
 ];
