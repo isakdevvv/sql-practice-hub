@@ -1869,4 +1869,166 @@ __5__ endfor __6__
     explanation:
       "SAVEPOINT s1 setter et merke. ROLLBACK TO s1 ruller bare tilbake til merket — UPDATE A består, COMMIT gjelder.",
   },
+
+  // ============= LAGRINGSMEDIER (kap. 4) =============
+  {
+    id: "d-match-storage",
+    kind: "match",
+    title: "Lagringsmedier — egenskap",
+    prompt: "Match hvert lagringsmedium til den viktigste egenskapen.",
+    topic: "Lagring",
+    pairs: [
+      { left: "HDD", right: "Roterende plater — billig, mye plass, men tregere" },
+      { left: "SSD", right: "Ingen bevegelige deler — rask random read, dyrere" },
+      { left: "RAM", right: "Ekstremt rask, men flyktig — data forsvinner ved strømbrudd" },
+      { left: "Sider/blokker", right: "Enheten databasen leser av gangen for å redusere I/O" },
+    ],
+  },
+
+  // ============= ON DELETE / FK-OPPFØRSEL (kap. 3) =============
+  {
+    id: "d-match-on-delete",
+    kind: "match",
+    title: "ON DELETE — hva skjer i barn-tabellen?",
+    prompt: "Når en rad i foreldretabellen slettes — hva gjør hver ON DELETE-strategi?",
+    topic: "Integritet",
+    pairs: [
+      { left: "CASCADE", right: "Slett relaterte rader i barn-tabellen automatisk" },
+      { left: "SET NULL", right: "Sett FK-kolonnen til NULL i barn-radene" },
+      { left: "RESTRICT", right: "Forhindre slettingen hvis det finnes barn-rader" },
+      { left: "NO ACTION", right: "Ligner RESTRICT — sjekken kan utsettes til transaksjons-slutt" },
+    ],
+  },
+
+  // ============= MYSQL WORKBENCH (kap. 8) =============
+  {
+    id: "d-match-workbench",
+    kind: "match",
+    title: "MySQL Workbench — funksjoner",
+    prompt: "Match hver Workbench-funksjon til hva den gjør.",
+    topic: "Verktøy",
+    pairs: [
+      { left: "Forward Engineer", right: "Generer database (CREATE TABLE) fra ER-diagram" },
+      { left: "Reverse Engineer", right: "Bygg ER-diagram fra eksisterende database" },
+      { left: "Data Export", right: "Lag SQL-fil (mysqldump) for backup eller flytting" },
+      { left: "Data Import", right: "Kjør en SQL-fil for å gjenopprette eller importere database" },
+      { left: "Set as Default Schema", right: "Velg hvilken database SQL-spørringer kjøres mot" },
+    ],
+  },
+
+  // ============= GIT (kap. 8) =============
+  {
+    id: "d-order-git",
+    kind: "order",
+    title: "Første push av et nytt prosjekt til GitHub",
+    prompt: "Sett kommandoene i riktig rekkefølge fra tom mappe til pushet repo.",
+    topic: "Git",
+    items: [
+      "git init",
+      "git add .",
+      "git commit -m \"første commit\"",
+      "git remote add origin <url>",
+      "git push -u origin main",
+    ],
+    explanation:
+      "init lager .git-mappen, add staser endringer, commit lagrer dem lokalt, remote add kobler til GitHub-repoet, push -u sender dem opp og setter upstream slik at senere `git push` alene fungerer.",
+  },
+
+  // ============= HTTP-METODER (kap. 7) =============
+  {
+    id: "d-match-http-methods",
+    kind: "match",
+    title: "HTTP-metoder — bruksområde",
+    prompt: "Match hver HTTP-metode til vanlig bruk i et REST-API.",
+    topic: "HTTP",
+    pairs: [
+      { left: "GET", right: "Hente data — skal ikke endre serverstate" },
+      { left: "POST", right: "Opprette ny ressurs (eller annen ikke-idempotent handling)" },
+      { left: "PUT", right: "Erstatte hele ressursen" },
+      { left: "PATCH", right: "Oppdatere deler av ressursen" },
+      { left: "DELETE", right: "Slette ressursen" },
+    ],
+  },
+
+  // ============= HTML SEMANTIKK (kap. 5) =============
+  {
+    id: "d-match-html-semantic",
+    kind: "match",
+    title: "Semantiske HTML5-elementer",
+    prompt: "Match hver semantiske tag til hva den representerer.",
+    topic: "HTML",
+    pairs: [
+      { left: "<header>", right: "Toppen av siden eller en seksjon — typisk logo og tittel" },
+      { left: "<nav>", right: "Navigasjonsmeny — lenker til andre sider" },
+      { left: "<main>", right: "Hovedinnholdet — det unike på akkurat denne siden" },
+      { left: "<section>", right: "En tematisk del av innholdet" },
+      { left: "<article>", right: "Selvstendig innhold som kan stå alene (blogg-innlegg, nyhet)" },
+      { left: "<footer>", right: "Bunnen av siden — copyright, lenker, kontakt" },
+    ],
+  },
+
+  // ============= CSS-EGENSKAPER (kap. 5) =============
+  {
+    id: "d-match-css",
+    kind: "match",
+    title: "CSS-egenskaper",
+    prompt: "Match hver CSS-egenskap til hva den styrer.",
+    topic: "CSS",
+    pairs: [
+      { left: "color", right: "Tekstfarge" },
+      { left: "background-color", right: "Bakgrunnsfarge" },
+      { left: "margin", right: "Plass UTENFOR elementets ramme" },
+      { left: "padding", right: "Plass INNENFOR elementets ramme" },
+      { left: "font-family", right: "Hvilken skrifttype som brukes" },
+      { left: "display", right: "Hvordan elementet legger seg ut (block, flex, grid, none)" },
+    ],
+  },
+
+  // ============= DATATYPER (kap. 1) =============
+  {
+    id: "d-match-datatypes",
+    kind: "match",
+    title: "SQL-datatyper",
+    prompt: "Match hver kolonneverdi til riktig datatype.",
+    topic: "Datatyper",
+    pairs: [
+      { left: "KundeNr (1, 2, 3, …)", right: "INT" },
+      { left: "Fornavn (\"Ola\", \"Kari\")", right: "VARCHAR(50)" },
+      { left: "Født (1995-04-12)", right: "DATE" },
+      { left: "Pris (199.90)", right: "DECIMAL(10,2)" },
+      { left: "Beskrivelse (lang tekst)", right: "TEXT" },
+      { left: "Aktiv (sant/usant)", right: "BOOLEAN / TINYINT(1)" },
+    ],
+  },
+
+  // ============= GRANT-SYNTAKS (kap. 4) =============
+  {
+    id: "d-fill-grant",
+    kind: "fill",
+    title: "Gi en bruker leserettighet",
+    prompt: "Fyll inn riktig SQL for å gi student-brukeren bare lesetilgang.",
+    topic: "Rettigheter",
+    template: "__1__ __2__\n  __3__ EmployeeDB.*\n  __4__ 'student'@'localhost';",
+    blanks: ["GRANT", "SELECT", "ON", "TO"],
+    options: ["GRANT", "SELECT", "INSERT", "ON", "TO", "FROM", "REVOKE", "WITH"],
+    language: "sql",
+    explanation:
+      "GRANT <privilegier> ON <database>.<tabell> TO '<bruker>'@'<host>'. SELECT alene gir kun lesetilgang — prinsippet om minste privilegium.",
+  },
+
+  // ============= MYSQLDUMP (kap. 8) =============
+  {
+    id: "d-fill-mysqldump",
+    kind: "fill",
+    title: "Backup av database med mysqldump",
+    prompt: "Fyll inn kommandoen som lager en SQL-backup av databasen EmployeeDB.",
+    topic: "Backup",
+    template: "__1__ -u root __2__ EmployeeDB __3__ backup.sql",
+    blanks: ["mysqldump", "-p", ">"],
+    options: ["mysqldump", "mysql", "-p", "-u", ">", "<", "|", "backup"],
+    explanation:
+      "mysqldump er eksport-verktøyet (mysql er klienten for å kjøre SQL). -p ber om passord. > omdirigerer output til fila. For å importere igjen: mysql -u root -p EmployeeDB < backup.sql",
+  },
+
+  // ============= ANOMALIER + ISOLATION (eksisterende d-match-anomalier finnes — droppes for å unngå duplikat) =============
 ];

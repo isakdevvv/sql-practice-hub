@@ -1279,6 +1279,385 @@ export const FLASHCARDS: FlashCard[] = [
       "f-strings (Python 3.6+) er kortest og raskest, og er det idiomatiske valget i moderne kode. .format() er fortsatt OK for templating der strengen lages før verdiene er kjent. ALDRI bruk f-string i SQL-queries — bruk parameter-binding.",
     code: "navn = \"Ada\"\nf\"Hei {navn}\"        # anbefalt\n\"Hei {}\".format(navn)  # eldre stil",
   },
+
+  // ============= FYSISK LAGRING (kap. 4) =============
+  {
+    id: "c-storage-hdd",
+    category: "praktisk",
+    topic: "Lagring",
+    question: "HDD vs SSD — hva betyr det for databaser?",
+    answer:
+      "HDD (Hard Disk Drive) har roterende plater og er billig, men tregere. SSD (Solid State Drive) har ingen bevegelige deler og er mye raskere — særlig på random reads, som er typisk for databaser. Resultat: SSD gir raskere SELECT/JOIN, særlig når data ikke får plass i RAM.",
+  },
+  {
+    id: "c-storage-ram",
+    category: "praktisk",
+    topic: "Lagring",
+    question: "Hva bruker databasen RAM til?",
+    answer:
+      "Caching av varme data (buffer pool), midlertidige sortere/joins, og resultatsett som bygges opp. RAM er ekstremt raskt, men flyktig — derfor må COMMIT også skrive til disk (durability i ACID).",
+  },
+  {
+    id: "c-storage-pages",
+    category: "praktisk",
+    topic: "Lagring",
+    question: "Hvorfor leser databasen i sider/blokker, ikke én rad om gangen?",
+    answer:
+      "Disk-I/O har en stor fast kostnad per operasjon. Å lese 8 KB blokker (sider) i stedet for én rad reduserer antall I/O-operasjoner dramatisk. Naborader havner ofte på samme side, så én lesing kan gi mange treff.",
+  },
+  {
+    id: "c-storage-seq-scan",
+    category: "praktisk",
+    topic: "Lagring",
+    question: "Hva er sekvensielt søk (full table scan)?",
+    answer:
+      "Databasen leser hver eneste rad i tabellen og sjekker WHERE-betingelsen mot dem. Greit på små tabeller, men skalerer dårlig — på 10M rader leser den 10M rader. Indeks lar databasen hoppe direkte til riktig sted.",
+  },
+  {
+    id: "c-index-why",
+    category: "praktisk",
+    topic: "Lagring",
+    question: "Hvorfor gjør en indeks søk raskere?",
+    answer:
+      "Indeksen er en sortert datastruktur (typisk B-tre) på siden av tabellen. Databasen kan finne riktig verdi i O(log n) treghoppe-steg i stedet for å skanne O(n) rader. Sammenlignbart med å bruke registeret bakerst i en bok.",
+  },
+
+  // ============= BACKUP / RESTORE (kap. 4 + 8) =============
+  {
+    id: "c-mysqldump",
+    category: "praktisk",
+    topic: "Backup",
+    question: "Hva gjør `mysqldump`?",
+    answer:
+      "Eksporterer en database (struktur + data) som ren SQL — vanligvis en `.sql`-fil med CREATE TABLE og INSERT. Brukes til backup, flytting og innleveringer.",
+    code: "mysqldump -u root -p EmployeeDB > backup.sql",
+  },
+  {
+    id: "c-mysql-restore",
+    category: "praktisk",
+    topic: "Backup",
+    question: "Hvordan importerer du en mysqldump-fil tilbake?",
+    answer:
+      "Kjør SQL-fila mot databasen med `mysql`-kommandoen. Databasen må eksistere på forhånd (eller fila må inneholde CREATE DATABASE).",
+    code: "mysql -u root -p EmployeeDB < backup.sql",
+  },
+  {
+    id: "c-workbench-export",
+    category: "praktisk",
+    topic: "Backup",
+    question: "Hvordan eksporterer du en database i MySQL Workbench?",
+    answer:
+      "Server → Data Export. Velg schema, og om du vil ha bare struktur, bare data, eller begge. Resultatet er en .sql-fil som kan importeres igjen via Server → Data Import.",
+  },
+
+  // ============= DATABASERETTIGHETER (kap. 4) =============
+  {
+    id: "c-grant",
+    category: "sikkerhet",
+    topic: "Rettigheter",
+    question: "Hva gjør GRANT i MySQL?",
+    answer:
+      "Gir en bruker rettigheter på en database eller tabell. Vanlige privilegier: SELECT, INSERT, UPDATE, DELETE, ALL PRIVILEGES. Prinsippet om minste privilegium tilsier å gi akkurat det brukeren trenger — ikke mer.",
+    code: "GRANT SELECT, INSERT\n  ON EmployeeDB.*\n  TO 'student'@'localhost';",
+  },
+  {
+    id: "c-revoke",
+    category: "sikkerhet",
+    topic: "Rettigheter",
+    question: "Hvordan trekker du tilbake en rettighet?",
+    answer:
+      "Med REVOKE — speilbildet av GRANT. Etter REVOKE kan det være lurt å kjøre FLUSH PRIVILEGES for å sikre at endringen tar effekt umiddelbart.",
+    code: "REVOKE INSERT\n  ON EmployeeDB.*\n  FROM 'student'@'localhost';",
+  },
+  {
+    id: "c-privileges",
+    category: "sikkerhet",
+    topic: "Rettigheter",
+    question: "Vanlige MySQL-privilegier?",
+    answer:
+      "SELECT (lese), INSERT (legge inn), UPDATE (endre), DELETE (slette), CREATE/DROP (lage/slette tabeller), ALL PRIVILEGES (alt — bruk sparsomt). En vanlig app-bruker trenger typisk SELECT/INSERT/UPDATE/DELETE, ikke DDL.",
+  },
+
+  // ============= MYSQL WORKBENCH (kap. 8) =============
+  {
+    id: "c-wb-vs-server",
+    category: "praktisk",
+    topic: "Verktøy",
+    question: "Forskjell på MySQL Server og MySQL Workbench?",
+    answer:
+      "MySQL Server er selve databasesystemet — der dataene faktisk lagres og SQL kjøres (lytter på port 3306). MySQL Workbench er et grafisk verktøy som kobler seg til serveren for å skrive SQL, lage ER-diagrammer og administrere brukere.",
+  },
+  {
+    id: "c-wb-fwd-eng",
+    category: "praktisk",
+    topic: "Verktøy",
+    question: "Hva er Forward Engineer i Workbench?",
+    answer:
+      "Tar en EER-modell (ER-diagrammet du har tegnet) og genererer SQL-skriptet som lager hele databasen — CREATE TABLE, PRIMARY KEY, FOREIGN KEY, indekser. Database → Forward Engineer.",
+  },
+  {
+    id: "c-wb-rev-eng",
+    category: "praktisk",
+    topic: "Verktøy",
+    question: "Hva er Reverse Engineer i Workbench?",
+    answer:
+      "Det motsatte: tar en eksisterende database og bygger et EER-diagram fra den. Nyttig for å dokumentere et system du ikke har laget selv. Database → Reverse Engineer → velg schema.",
+  },
+  {
+    id: "c-wb-default-schema",
+    category: "praktisk",
+    topic: "Verktøy",
+    question: "Hvorfor må du sette \"default schema\" i Workbench?",
+    answer:
+      "Uten valgt schema vet ikke serveren hvilken database SQL-en skal kjøre mot — du får feil eller tabeller havner i feil schema. Høyreklikk schema i venstre panel → Set as Default Schema (det blir uthevet i fet skrift).",
+  },
+
+  // ============= VS CODE / DEBUGGING (kap. 8) =============
+  {
+    id: "c-vscode-launch",
+    category: "praktisk",
+    topic: "Debugging",
+    question: "Hva er `launch.json`?",
+    answer:
+      "VS Code sin debug-konfigurasjon. Forteller debuggeren hva som skal kjøres (modul, miljøvariabler, args). For Flask: type `python`, module `flask`, env med FLASK_APP=app.py, args [\"run\"]. F5 starter debug-økten.",
+    code: "{\n  \"name\": \"Python: Flask\",\n  \"type\": \"python\",\n  \"request\": \"launch\",\n  \"module\": \"flask\",\n  \"env\": { \"FLASK_APP\": \"app.py\" },\n  \"args\": [\"run\"]\n}",
+  },
+  {
+    id: "c-breakpoint",
+    category: "praktisk",
+    topic: "Debugging",
+    question: "Hva er et breakpoint?",
+    answer:
+      "Et stoppunkt — programmet pauser akkurat før den linjen kjører, og du kan inspisere variabler, kjøre uttrykk, og steppe linje for linje. Sett ved å klikke til venstre for linjenummeret i VS Code.",
+  },
+  {
+    id: "c-no-module-flask",
+    category: "praktisk",
+    topic: "Feil",
+    question: "Hvorfor får du \"No module named flask\"?",
+    answer:
+      "Flask er ikke installert i det Python-miljøet som kjører. Vanligste årsaker: venv ikke aktivert, VS Code valgte feil interpreter, eller pip install ble kjørt i annet miljø. Sjekk Python-interpreter nede til høyre i VS Code.",
+  },
+  {
+    id: "c-pylance",
+    category: "praktisk",
+    topic: "Verktøy",
+    question: "Hva gjør Pylance?",
+    answer:
+      "Microsofts Python-extension for VS Code: gir autocomplete, hover-info, type-hint-sjekking og rød understreking av feil. Bruker type-hints om de finnes — så `def foo(x: int)` gir bedre forslag enn utypet kode.",
+  },
+
+  // ============= GIT / GITHUB (kap. 8) =============
+  {
+    id: "c-git-flow",
+    category: "praktisk",
+    topic: "Git",
+    question: "Hva er den typiske Git-flyten for ett oppdrag?",
+    answer:
+      "git init (én gang) → endre filer → git add . → git commit -m \"melding\" → git push. Push krever at du har koblet til en remote (typisk GitHub) først, med git remote add origin <url>.",
+    code: "git init\ngit add .\ngit commit -m \"første commit\"\ngit remote add origin <url>\ngit push -u origin main",
+  },
+  {
+    id: "c-gitignore",
+    category: "praktisk",
+    topic: "Git",
+    question: "Hva legger du i `.gitignore`?",
+    answer:
+      "Filer som ALDRI skal til Git: venv/, __pycache__/, .env (hemmeligheter!), instance/, *.db. Pushede secrets må antas lekket for alltid — derfor er .env i .gitignore en kritisk vane.",
+    code: "venv/\n__pycache__/\n.env\ninstance/\n*.pyc",
+  },
+  {
+    id: "c-readme",
+    category: "praktisk",
+    topic: "Git",
+    question: "Hva bør stå i README.md?",
+    answer:
+      "Hva prosjektet er, hvordan installere det (venv + requirements.txt), hvordan kjøre det (flask run / python app.py), og hvilke miljøvariabler som må settes. Sensorer leser README først — så jobb litt med den.",
+  },
+  {
+    id: "c-git-vs-github",
+    category: "praktisk",
+    topic: "Git",
+    question: "Forskjell på Git og GitHub?",
+    answer:
+      "Git er versjonskontrollverktøyet — kjører lokalt på maskinen din, sporer endringer, lager commits og branches. GitHub er en nettjeneste som hoster Git-repoer, gjør samarbeid mulig, og har issues, pull requests og CI på toppen.",
+  },
+
+  // ============= HTML (kap. 5) =============
+  {
+    id: "c-html-semantic",
+    category: "flask",
+    topic: "HTML",
+    question: "Hva er semantiske HTML5-elementer?",
+    answer:
+      "Tags som beskriver INNHOLDETS rolle, ikke bare utseendet: <header>, <nav>, <main>, <section>, <article>, <footer>, <aside>. Bedre for skjermlesere, søkemotorer og lesbarhet enn å fylle siden med <div>-er.",
+    code: "<header><h1>Tittel</h1></header>\n<nav>...</nav>\n<main>\n  <article>...</article>\n</main>\n<footer>...</footer>",
+  },
+  {
+    id: "c-html-class-id",
+    category: "flask",
+    topic: "HTML",
+    question: "Forskjell på `class` og `id` i HTML?",
+    answer:
+      "`class` brukes mange steder (en knapp-stil, en kortstil) — selektor i CSS er `.navn`. `id` skal være UNIK på siden (én header, én form med id=\"login\") — selektor er `#navn`. Hvis du er i tvil, bruk class.",
+  },
+  {
+    id: "c-html-link-img",
+    category: "flask",
+    topic: "HTML",
+    question: "Hvordan lager du lenker og bilder?",
+    answer:
+      "Lenker med <a href=\"...\"> — absolutt URL eller relativ sti. Bilder med <img src=\"...\" alt=\"...\">. `alt` er obligatorisk for tilgjengelighet og vises hvis bildet feiler.",
+    code: "<a href=\"/about\">Om oss</a>\n<img src=\"logo.png\" alt=\"Firmalogo\">",
+  },
+  {
+    id: "c-html-lists",
+    category: "flask",
+    topic: "HTML",
+    question: "Forskjell på <ul>, <ol> og <li>?",
+    answer:
+      "<ul> = unordered list (kuler). <ol> = ordered list (1, 2, 3). Begge inneholder <li>-elementer. Bruk <ul> for navigasjon og <ol> der rekkefølgen betyr noe (oppskrifter, steg).",
+  },
+  {
+    id: "c-html-form-method",
+    category: "flask",
+    topic: "HTML",
+    question: "Hva betyr `method=\"POST\"` på et HTML-form?",
+    answer:
+      "Skjemadata sendes i request body, ikke i URL-en. Brukes for login, registrering og opprettelser — der data ikke skal vises i URL eller havne i historikk/bookmarks. method=\"GET\" legger felt i URL (?navn=Ola).",
+    code: "<form method=\"POST\" action=\"/kunde/ny\">\n  <input name=\"navn\">\n  <button type=\"submit\">Lagre</button>\n</form>",
+  },
+
+  // ============= CSS (kap. 5) =============
+  {
+    id: "c-css-link",
+    category: "flask",
+    topic: "CSS",
+    question: "Hvordan kobler du CSS til HTML?",
+    answer:
+      "Med <link rel=\"stylesheet\"> i <head>. I Flask brukes ofte url_for('static', filename=...) så stien fungerer uansett hvor appen kjører.",
+    code: "<link rel=\"stylesheet\"\n  href=\"{{ url_for('static', filename='main.css') }}\">",
+  },
+  {
+    id: "c-css-margin-padding",
+    category: "flask",
+    topic: "CSS",
+    question: "Forskjell på margin og padding?",
+    answer:
+      "margin er plass UTENFOR elementets ramme (avstand mellom dette og neste element). padding er plass INNENFOR rammen (mellom innhold og ramme). Bakgrunnsfarge dekker padding, ikke margin.",
+  },
+  {
+    id: "c-css-selector",
+    category: "flask",
+    topic: "CSS",
+    question: "Hvordan velger du elementer i CSS?",
+    answer:
+      "Tag-navn matcher alle: `p { ... }`. Klasser med punktum: `.message { ... }`. ID-er med firkanttegn: `#header { ... }`. Du kan kombinere: `nav .btn` matcher klasse btn inni nav.",
+  },
+  {
+    id: "c-bootstrap",
+    category: "flask",
+    topic: "CSS",
+    question: "Hva er Bootstrap, og hvorfor brukes det?",
+    answer:
+      "Et ferdig CSS-rammeverk med klasser som `btn btn-primary`, `navbar`, `container`, `card`. Gir raskt et profesjonelt utseende uten å skrive CSS selv, og er responsive ut av boksen (tilpasser mobil/PC).",
+    code: "<button class=\"btn btn-primary\">Lagre</button>\n<div class=\"container\">\n  <div class=\"card\">...</div>\n</div>",
+  },
+  {
+    id: "c-css-responsive",
+    category: "flask",
+    topic: "CSS",
+    question: "Hva betyr \"responsiv design\"?",
+    answer:
+      "Siden tilpasser seg skjermstørrelsen — mobil, nettbrett, PC. Oppnås med relative enheter (%, rem), media queries (@media (max-width: 600px)), eller et rammeverk som Bootstrap. Krev <meta name=\"viewport\"> i <head>.",
+  },
+
+  // ============= HTTP DETALJER (kap. 7) =============
+  {
+    id: "c-put-vs-patch",
+    category: "http",
+    topic: "HTTP-metoder",
+    question: "Forskjell på PUT og PATCH?",
+    answer:
+      "PUT erstatter hele ressursen — du sender hele objektet. PATCH oppdaterer DELER av ressursen — du sender bare feltene som skal endres. PUT må være idempotent; PATCH er det vanligvis også, men ikke garantert.",
+  },
+  {
+    id: "c-cookies",
+    category: "http",
+    topic: "Cookies",
+    question: "Hva er cookies, og hvordan skiller de seg fra sessions?",
+    answer:
+      "Cookies er små data lagret i nettleseren og sendes med hver request. Sessions ligger på serveren — cookien inneholder bare en session-ID som server slår opp. Sett HttpOnly + Secure + SameSite=Lax på session-cookies for å hindre XSS- og CSRF-angrep.",
+  },
+  {
+    id: "c-postman",
+    category: "http",
+    topic: "Verktøy",
+    question: "Hva brukes Postman til?",
+    answer:
+      "Et verktøy for å teste API-er manuelt — sende GET/POST/PUT/DELETE, sette headers, sende JSON-body, og se respons med statuskode. Nyttig når du bygger et REST API og vil verifisere før frontend er klar.",
+  },
+  {
+    id: "c-file-upload",
+    category: "sikkerhet",
+    topic: "File upload",
+    question: "Hvordan beskytter du file-upload?",
+    answer:
+      "Begrens filtyper (whitelist, ikke blacklist). Sjekk MIME-type OG faktisk innhold (magic bytes). Gi filen et nytt randomisert navn — aldri stol på brukerens. Lagre utenfor webroot så filen ikke kan kjøres direkte. Sett max størrelse.",
+  },
+  {
+    id: "c-content-type",
+    category: "http",
+    topic: "Headers",
+    question: "Hva forteller `Content-Type`-headeren?",
+    answer:
+      "Hvilket dataformat body-en har. Vanlige: text/html (HTML-side), application/json (JSON-API), application/x-www-form-urlencoded (vanlig form), multipart/form-data (form med filopplasting). Klienten/serveren bruker dette til å parse innholdet riktig.",
+  },
+
+  // ============= DATATYPER (kap. 1) =============
+  {
+    id: "c-dt-int",
+    category: "sql",
+    topic: "Datatyper",
+    question: "Når bruker du INT?",
+    answer:
+      "For heltall — ID-er (KundeNr), antall, status-koder. INT i MySQL er 4 bytes (~2 mrd). For svært store tall, bruk BIGINT. Typisk kombinert med AUTO_INCREMENT for primærnøkler.",
+    code: "KundeNr INT AUTO_INCREMENT PRIMARY KEY",
+  },
+  {
+    id: "c-dt-varchar",
+    category: "sql",
+    topic: "Datatyper",
+    question: "VARCHAR(50) vs TEXT?",
+    answer:
+      "VARCHAR(n) har en maksimal lengde — bra for korte felt som navn, e-post, telefonnummer. TEXT er for lange tekster (kommentarer, artikler) — kan ikke ha standard-verdi i samme grad og kan ikke indekseres i sin helhet.",
+  },
+  {
+    id: "c-dt-date",
+    category: "sql",
+    topic: "Datatyper",
+    question: "Forskjell på DATE, DATETIME og TIMESTAMP?",
+    answer:
+      "DATE = bare dato (YYYY-MM-DD). DATETIME = dato + tid (YYYY-MM-DD HH:MM:SS). TIMESTAMP = dato + tid med tidssone-håndtering, men begrenset rekkevidde (1970–2038). Bruk DATETIME for fremtidige datoer.",
+  },
+  {
+    id: "c-dt-decimal",
+    category: "sql",
+    topic: "Datatyper",
+    question: "Hvorfor DECIMAL og ikke FLOAT for penger?",
+    answer:
+      "FLOAT/DOUBLE bruker binær representasjon og kan ikke lagre 0.10 eksakt — du får avrundingsfeil. DECIMAL(10,2) er eksakt og lagrer alltid riktig. Regelen: bruk DECIMAL for penger, FLOAT bare for vitenskapelige målinger.",
+    code: "Pris DECIMAL(10,2)  -- opp til 99 999 999.99",
+  },
+  {
+    id: "c-dt-not-null",
+    category: "sql",
+    topic: "Datatyper",
+    question: "Hva gjør NOT NULL og DEFAULT?",
+    answer:
+      "NOT NULL betyr at kolonnen ALDRI kan være NULL — INSERT uten verdi feiler. DEFAULT setter en automatisk verdi hvis ingen oppgis. Sammen lager de robuste skjemaer der dataene ikke kan havne i en udefinert tilstand.",
+    code: "Status VARCHAR(20) NOT NULL DEFAULT 'aktiv',\nOpprettet DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP",
+  },
 ];
 
 export const CARD_CATEGORIES: { id: FlashCard["category"]; label: string }[] = [
