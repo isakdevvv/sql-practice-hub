@@ -16,10 +16,10 @@ import { Route as LearnRouteImport } from './routes/learn'
 import { Route as KonsollRouteImport } from './routes/konsoll'
 import { Route as JoinsRouteImport } from './routes/joins'
 import { Route as ExamRouteImport } from './routes/exam'
+import { Route as ErTegnerRouteImport } from './routes/er-tegner'
 import { Route as DragRouteImport } from './routes/drag'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as CardsRouteImport } from './routes/cards'
-import { Route as ErTegnerRouteImport } from './routes/er-tegner'
 import { Route as IndexRouteImport } from './routes/index'
 
 const PythonRoute = PythonRouteImport.update({
@@ -57,6 +57,11 @@ const ExamRoute = ExamRouteImport.update({
   path: '/exam',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ErTegnerRoute = ErTegnerRouteImport.update({
+  id: '/er-tegner',
+  path: '/er-tegner',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DragRoute = DragRouteImport.update({
   id: '/drag',
   path: '/drag',
@@ -70,11 +75,6 @@ const DashboardRoute = DashboardRouteImport.update({
 const CardsRoute = CardsRouteImport.update({
   id: '/cards',
   path: '/cards',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ErTegnerRoute = ErTegnerRouteImport.update({
-  id: '/er-tegner',
-  path: '/er-tegner',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -237,6 +237,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ExamRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/er-tegner': {
+      id: '/er-tegner'
+      path: '/er-tegner'
+      fullPath: '/er-tegner'
+      preLoaderRoute: typeof ErTegnerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/drag': {
       id: '/drag'
       path: '/drag'
@@ -256,13 +263,6 @@ declare module '@tanstack/react-router' {
       path: '/cards'
       fullPath: '/cards'
       preLoaderRoute: typeof CardsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/er-tegner': {
-      id: '/er-tegner'
-      path: '/er-tegner'
-      fullPath: '/er-tegner'
-      preLoaderRoute: typeof ErTegnerRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
