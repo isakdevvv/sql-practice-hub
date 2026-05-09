@@ -69,6 +69,23 @@ export const ER_EXERCISES: ErExercise[] = [
       "Legg til tre attributter under den",
       "Trykk på nøkkel-ikonet ved siden av kundenr for å sette den som PK",
     ],
+    docs: [
+      {
+        title: "CREATE TABLE i SQLite",
+        url: "https://www.sqlite.org/lang_createtable.html",
+        note: "SQL-en denne entiteten genererer:",
+        snippet: `CREATE TABLE kunde (
+  kundenr INTEGER PRIMARY KEY,
+  navn    TEXT NOT NULL,
+  epost   TEXT
+);`,
+      },
+      {
+        title: "PRIMARY KEY og NOT NULL — datatyper i SQLite",
+        url: "https://www.sqlite.org/datatype3.html",
+        note: "INTEGER, TEXT, REAL, BLOB. PK er unik + alltid satt; NOT NULL krever at kolonnen fylles inn.",
+      },
+    ],
     target: {
       entities: [
         entity(
@@ -153,6 +170,20 @@ export const ER_EXERCISES: ErExercise[] = [
       "Begge endene må være `||` for total deltakelse",
       "Generert SQL skal ha UNIQUE på FK-kolonnen",
     ],
+    docs: [
+      {
+        title: "UNIQUE constraint i SQLite",
+        url: "https://www.sqlite.org/lang_createtable.html#unique_constraints",
+        note: "1:1 håndheves med UNIQUE på FK-kolonnen — sørger for at ingen to rader peker på samme person.",
+        snippet: `pid INTEGER UNIQUE,
+FOREIGN KEY (pid) REFERENCES person(pid)`,
+      },
+      {
+        title: "Total vs partiell deltakelse",
+        url: "https://en.wikipedia.org/wiki/Entity%E2%80%93relationship_model#Cardinalities",
+        note: "Symbolet `||` på begge sider = total deltakelse: hver person MÅ ha et pass og hvert pass MÅ tilhøre en person.",
+      },
+    ],
     target: {
       entities: [
         entity(
@@ -191,6 +222,25 @@ export const ER_EXERCISES: ErExercise[] = [
       "Bare to entiteter — koblingstabellen genereres for deg",
       "Begge endene av relasjonen er `O<`",
       "I generert SQL skal du se en tredje CREATE TABLE",
+    ],
+    docs: [
+      {
+        title: "M:N — koblings-/junction-tabell",
+        url: "https://en.wikipedia.org/wiki/Associative_entity",
+        note: "M:N kan ikke uttrykkes med én FK. Mappes til en tredje tabell med sammensatt PK av de to FK-ene.",
+        snippet: `CREATE TABLE student_fag (
+  sid    INTEGER,
+  fkode  TEXT,
+  PRIMARY KEY (sid, fkode),
+  FOREIGN KEY (sid)   REFERENCES student(sid),
+  FOREIGN KEY (fkode) REFERENCES fag(fkode)
+);`,
+      },
+      {
+        title: "Sammensatt primærnøkkel (composite PK)",
+        url: "https://www.sqlite.org/lang_createtable.html#the_primary_key",
+        note: "PRIMARY KEY (a, b) — kombinasjonen av kolonnene må være unik. Klassisk for koblingstabeller.",
+      },
     ],
     target: {
       entities: [
@@ -231,6 +281,25 @@ export const ER_EXERCISES: ErExercise[] = [
       "Symbol nær 'leder-rollen': `O|` (null eller én — toppsjefen har ingen)",
       "Symbol nær 'underordnet-siden': `O<` (en leder kan ha 0..N underordnede)",
     ],
+    docs: [
+      {
+        title: "Self-referencing FOREIGN KEY",
+        url: "https://www.sqlite.org/foreignkeys.html",
+        note: "En tabell kan referere til seg selv. Treet bygges via leder-FK-en.",
+        snippet: `CREATE TABLE ansatt (
+  ansattnr  INTEGER PRIMARY KEY,
+  navn      TEXT NOT NULL,
+  stilling  TEXT,
+  leder     INTEGER,
+  FOREIGN KEY (leder) REFERENCES ansatt(ansattnr)
+);`,
+      },
+      {
+        title: "Rekursive spørringer (CTE) — bla gjennom hierarkiet",
+        url: "https://www.sqlite.org/lang_with.html#recursive_common_table_expressions",
+        note: "Senere kan du finne hele underordnede-treet under en leder med en `WITH RECURSIVE`-spørring.",
+      },
+    ],
     target: {
       entities: [
         entity(
@@ -262,6 +331,23 @@ export const ER_EXERCISES: ErExercise[] = [
       "kunde 1:N ordre — bruk `||——O<`",
       "ordre M:N produkt — bruk `O<——O<`. Generatoren lager `ordre_produkt`-tabellen.",
       "Hvis du vil ha `antall` og `pris` på koblingstabellen må du bruke det enkle utvalget — for nå holder det at relasjonen blir registrert.",
+    ],
+    docs: [
+      {
+        title: "Komplett ER-mapping til relasjonsmodell",
+        url: "https://en.wikipedia.org/wiki/Entity%E2%80%93relationship_model#Mapping_natural_language",
+        note: "Entiteter blir tabeller. 1:N legger FK på mange-siden. M:N gir en koblingstabell. Det er hele oppskriften.",
+      },
+      {
+        title: "REAL-typen for pris",
+        url: "https://www.sqlite.org/datatype3.html#real",
+        note: "Bruk REAL for desimaltall. (For ekte penger ville du brukt INTEGER med øre — men det er en annen lekse.)",
+        snippet: `CREATE TABLE produkt (
+  prodnr INTEGER PRIMARY KEY,
+  navn   TEXT NOT NULL,
+  pris   REAL NOT NULL
+);`,
+      },
     ],
     target: {
       entities: [
