@@ -906,6 +906,301 @@ __5__ endfor __6__
       "Det er minst 10 steg fra klikk til ferdig side — hvert kan gå galt. DNS kan være tregt, TLS kan feile, server kan time ut, DB kan svare 500. Dev-tools sin Network-fane viser alle disse stegene målt i millisekunder for hver request.",
   },
 
+  // ============ SIKKERHET / JWT / CORS / TLS ============
+  {
+    id: "d-match-owasp",
+    kind: "match",
+    title: "OWASP Top 10 — sårbarhet → forsvar",
+    prompt:
+      "Match hver vanlig sårbarhet til det viktigste forsvaret mot den.",
+    topic: "Sikkerhet",
+    pairs: [
+      {
+        left: "SQL Injection",
+        right: "Bruk parameteriserte spørringer / prepared statements",
+      },
+      {
+        left: "Cross-Site Scripting (XSS)",
+        right: "Escape brukerinput ved utskrift i HTML (auto-escape i Jinja2)",
+      },
+      {
+        left: "Cross-Site Request Forgery (CSRF)",
+        right: "CSRF-token i skjema + SameSite-cookies",
+      },
+      {
+        left: "Broken Authentication",
+        right: "Sterke passordkrav, hashing med bcrypt/argon2, rate limiting",
+      },
+      {
+        left: "Sensitive Data Exposure",
+        right: "TLS i transit + kryptering av data i hvile",
+      },
+      {
+        left: "Broken Access Control",
+        right: "Sjekk autorisasjon på serversiden for hver request",
+      },
+    ],
+  },
+  {
+    id: "d-match-hash-algos",
+    kind: "match",
+    title: "Hash-algoritmer og kjente svakheter",
+    prompt:
+      "Match hver hash-algoritme til status og typisk bruk i 2025.",
+    topic: "Hashing",
+    pairs: [
+      {
+        left: "MD5",
+        right: "Brutt — kollisjoner kjent siden 2004, aldri til passord",
+      },
+      {
+        left: "SHA-1",
+        right: "Brutt — kollisjon demonstrert i 2017 (SHAttered), unngå",
+      },
+      {
+        left: "SHA-256",
+        right: "Trygg som generell hash, men FOR RASK til passord",
+      },
+      {
+        left: "bcrypt",
+        right: "Treg passord-hash med innebygget salt og work factor",
+      },
+      {
+        left: "argon2",
+        right: "Moderne anbefaling for passord — minne-hard, vant PHC i 2015",
+      },
+    ],
+  },
+  {
+    id: "d-order-sql-injection",
+    kind: "order",
+    title: "SQL Injection-angrep — steg for steg",
+    prompt:
+      "Dra stegene i den rekkefølgen et klassisk SQL injection-angrep utfolder seg.",
+    topic: "Sikkerhet",
+    items: [
+      "Utvikler bygger SQL-streng ved å konkatenere brukerinput",
+      "Angriper finner et input-felt som ikke er sanitised",
+      "Angriper sender input som inneholder ' OR 1=1 --",
+      "Serveren bygger og sender SQL-en til databasen som én streng",
+      "Databasen kjører den manipulerte spørringen og returnerer alle rader",
+      "Angriper får tilgang til data hen ikke skulle hatt",
+    ],
+    explanation:
+      "Roten er alltid det samme: brukerinput tolkes som SQL-kode. Forsvar = parameteriserte spørringer (`?`-plassholdere) — da kan ikke input bryte ut av streng-konteksten.",
+  },
+  {
+    id: "d-order-password-handling",
+    kind: "order",
+    title: "Trygg passord-håndtering",
+    prompt:
+      "Dra stegene i riktig rekkefølge fra brukeren registrerer passordet til hen logger inn neste gang.",
+    topic: "Sikkerhet",
+    items: [
+      "Bruker sender passord over HTTPS",
+      "Server genererer et tilfeldig salt",
+      "Server hasher passord + salt med bcrypt/argon2",
+      "Server lagrer hash + salt i databasen (aldri klartekst)",
+      "Ved login: server henter lagret hash for brukeren",
+      "Server hasher innsendt passord med samme salt og sammenligner",
+    ],
+    explanation:
+      "Passord skal ALDRI lagres i klartekst. Salt forhindrer rainbow-table-angrep, og en treg hash som bcrypt gjør brute force upraktisk.",
+  },
+  {
+    id: "d-match-jwt-parts",
+    kind: "match",
+    title: "JWT-deler og innhold",
+    prompt:
+      "Et JWT består av tre base64url-kodede deler skilt med punktum. Match hver del til hva den inneholder.",
+    topic: "JWT",
+    pairs: [
+      {
+        left: "Header",
+        right: "Algoritme (alg) og token-type (typ), f.eks. HS256 og JWT",
+      },
+      {
+        left: "Payload",
+        right: "Claims om brukeren — sub, exp, iat, custom-felter",
+      },
+      {
+        left: "Signature",
+        right: "HMAC/RSA av header.payload med serverens hemmelige nøkkel",
+      },
+      {
+        left: "exp-claim",
+        right: "Unix-tidspunkt når tokenet utløper",
+      },
+      {
+        left: "sub-claim",
+        right: "Subject — typisk bruker-ID",
+      },
+    ],
+  },
+  {
+    id: "d-fill-jwt-anatomy",
+    kind: "fill",
+    title: "JWT — anatomi av et token",
+    prompt:
+      "Et JWT består av tre deler skilt med punktum. Dra riktig navn til hver del av tokenet under.",
+    topic: "JWT",
+    template:
+      "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJvbGEifQ.signature\n# del 1: __1__\n# del 2: __2__\n# del 3: __3__",
+    blanks: ["header", "payload", "signature"],
+    options: ["header", "payload", "signature", "salt", "claim", "secret", "nonce"],
+    explanation:
+      "Del 1 og 2 er base64url-kodet JSON og kan dekodes av hvem som helst. Del 3 er en HMAC/RSA-signatur av de to første med serverens hemmelige nøkkel — den hindrer manipulering.",
+  },
+  {
+    id: "d-order-jwt-flow",
+    kind: "order",
+    title: "JWT login-flyt",
+    prompt:
+      "Dra stegene i en typisk JWT-basert autentiseringsflyt i riktig rekkefølge.",
+    topic: "JWT",
+    items: [
+      "Klient sender brukernavn og passord til /login",
+      "Server verifiserer passordet mot hashen i databasen",
+      "Server signerer et JWT med sin hemmelige nøkkel",
+      "Klient mottar tokenet og lagrer det (localStorage eller cookie)",
+      "Klient sender tokenet i Authorization-headeren med hver request",
+      "Server verifiserer signaturen og leser claims fra payloaden",
+    ],
+    explanation:
+      "Etter login holder serveren ikke session-state — alt som trengs står i tokenet, og signaturen beviser at det er ekte. Det gjør JWT godt for mikrotjenester og APIer.",
+  },
+  {
+    id: "d-match-cors-headers",
+    kind: "match",
+    title: "CORS-headere → formål",
+    prompt:
+      "Match hver CORS-header til hva den styrer.",
+    topic: "CORS",
+    pairs: [
+      {
+        left: "Access-Control-Allow-Origin",
+        right: "Hvilke origins (domener) som har lov til å lese responsen",
+      },
+      {
+        left: "Access-Control-Allow-Methods",
+        right: "Hvilke HTTP-metoder (GET, POST, PUT…) som er tillatt",
+      },
+      {
+        left: "Access-Control-Allow-Headers",
+        right: "Hvilke custom request-headere klienten har lov til å sende",
+      },
+      {
+        left: "Access-Control-Allow-Credentials",
+        right: "Om cookies/auth-headere får sendes med cross-origin",
+      },
+      {
+        left: "Access-Control-Max-Age",
+        right: "Hvor lenge browseren kan cache preflight-svaret",
+      },
+    ],
+  },
+  {
+    id: "d-order-cors-preflight",
+    kind: "order",
+    title: "CORS preflight-flyt",
+    prompt:
+      "Dra stegene i en CORS preflight-request i riktig rekkefølge (f.eks. en POST med JSON-body fra et annet domene).",
+    topic: "CORS",
+    items: [
+      "Browseren ser at requesten er cross-origin og ikke 'simple'",
+      "Browseren sender en OPTIONS-request med Access-Control-Request-* headere",
+      "Server svarer med Access-Control-Allow-Origin/Methods/Headers",
+      "Browseren sjekker om svaret tillater den planlagte requesten",
+      "Browseren sender den ekte POST-requesten med body",
+      "Server returnerer den faktiske responsen med Access-Control-Allow-Origin",
+    ],
+    explanation:
+      "Preflight skjer for ikke-trivielle cross-origin-requests (custom headere, JSON content-type, PUT/DELETE m.m.). Den ekte requesten sendes ALDRI hvis preflight feiler.",
+  },
+  {
+    id: "d-match-tls-handshake",
+    kind: "match",
+    title: "TLS-handshake-steg → hva som skjer",
+    prompt:
+      "Match hvert steg i TLS 1.2-handshaket til hva som faktisk skjer.",
+    topic: "TLS",
+    pairs: [
+      {
+        left: "ClientHello",
+        right: "Klient sender støttede cipher suites og en tilfeldig nonce",
+      },
+      {
+        left: "ServerHello",
+        right: "Server velger cipher suite og sender egen nonce",
+      },
+      {
+        left: "Certificate",
+        right: "Server sender X.509-sertifikatet sitt (kjede til CA)",
+      },
+      {
+        left: "Key Exchange",
+        right: "Partene avleder en delt symmetrisk sesjonsnøkkel (ECDHE)",
+      },
+      {
+        left: "Finished",
+        right: "Begge bekrefter handshaket med en MAC over alle meldingene",
+      },
+    ],
+  },
+  {
+    id: "d-match-cert-fields",
+    kind: "match",
+    title: "Sertifikat-felter → betydning",
+    prompt:
+      "Match hvert felt i et X.509-sertifikat til hva det betyr.",
+    topic: "TLS",
+    pairs: [
+      {
+        left: "CN (Common Name)",
+        right: "Hovednavnet sertifikatet er utstedt for, f.eks. example.com",
+      },
+      {
+        left: "SAN (Subject Alt Name)",
+        right: "Liste over alle gyldige domener — det browsere faktisk sjekker",
+      },
+      {
+        left: "Issuer",
+        right: "Sertifiseringsmyndigheten (CA) som har signert sertifikatet",
+      },
+      {
+        left: "Not After (expiry)",
+        right: "Tidspunktet når sertifikatet utløper og må fornyes",
+      },
+      {
+        left: "Public Key",
+        right: "Serverens offentlige nøkkel — brukes til å verifisere signaturer",
+      },
+    ],
+  },
+  {
+    id: "d-fill-werkzeug-hash",
+    kind: "fill",
+    title: "Hashing av passord med werkzeug",
+    prompt:
+      "Fyll inn riktige funksjoner for å hashe og verifisere et passord i Flask med werkzeug.security.",
+    topic: "Hashing",
+    template:
+      "from werkzeug.security import __1__, __2__\n\n# ved registrering\nhash = __1__('hemmelig')\n\n# ved login\nok = __2__(hash, 'hemmelig')",
+    blanks: ["generate_password_hash", "check_password_hash"],
+    options: [
+      "generate_password_hash",
+      "check_password_hash",
+      "hash_password",
+      "verify_password",
+      "bcrypt",
+      "sha256",
+      "encrypt",
+      "decrypt",
+    ],
+    explanation:
+      "werkzeug.security håndterer salt og iterasjoner automatisk — du trenger bare gi inn klartekst-passordet. Lagre returverdien fra generate_password_hash som en streng i databasen.",
+  },
+
   // ============ NORMALISERING ============
   {
     id: "d-match-norm-anomalier",
