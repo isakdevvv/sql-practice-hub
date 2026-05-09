@@ -1118,4 +1118,482 @@ print(f"\\nTotalt på lager: {sum(verdi_per_kategori.values())} kr")
       "sum(dict.values()) summerer alle verdiene i dict-en",
     ],
   },
+
+  // ============ FLASK-SQLALCHEMY (ORM) ============
+  // Bygget rundt Miguel Grinberg sin Flask Mega-Tutorial Part IV (Database).
+  // Vi bruker SQLAlchemy 2.x direkte (samme Mapped/mapped_column/session-API som
+  // Flask-SQLAlchemy bruker under panseret), mot in-memory SQLite. Migrasjoner
+  // (flask db init/migrate/upgrade) kan ikke kjøres i nettleser — vi bruker
+  // Base.metadata.create_all() istedenfor og forklarer migrasjons-workflowen
+  // som tekst. Ellers er API-et identisk med det som står i artikkelen.
+  {
+    id: "py-sqla-1-model",
+    topic: "Flask-SQLAlchemy (ORM)",
+    title: "Definér første ORM-modell og lag tabellen",
+    description:
+      "I Mega-Tutorial Part IV defineres User-modellen med Mapped-typehints (SQLAlchemy 2.x). Skriv en User-modell, lag tabellen med Base.metadata.create_all(), og verifisér schemaet med sa.inspect(engine). I en ekte Flask-app ville du kjørt `flask db init` + `flask db migrate -m \"users table\"` + `flask db upgrade` — her i nettleseren bruker vi create_all() siden CLI-en ikke er tilgjengelig.",
+    requires: ["sqlalchemy"],
+    starter: `import sqlalchemy as sa
+import sqlalchemy.orm as so
+from typing import Optional
+
+# Base-klassen alle modeller arver fra. I Flask-SQLAlchemy brukes db.Model;
+# her bruker vi DeclarativeBase direkte — samme greie under panseret.
+class Base(so.DeclarativeBase):
+    pass
+
+class User(Base):
+    __tablename__ = "user"
+    id: so.Mapped[int] = so.mapped_column(primary_key=True)
+    username: so.Mapped[str] = so.mapped_column(sa.String(64), index=True, unique=True)
+    email: so.Mapped[str] = so.mapped_column(sa.String(120), index=True, unique=True)
+    # Optional[...] = nullable kolonne
+    password_hash: so.Mapped[Optional[str]] = so.mapped_column(sa.String(256))
+
+    def __repr__(self):
+        return f"<User {self.username}>"
+
+# In-memory SQLite — Mega-Tutorial bruker fil (sqlite:///app.db),
+# vi holder alt i RAM så hver kjøring starter blank.
+engine = sa.create_engine("sqlite:///:memory:")
+Base.metadata.create_all(engine)
+
+# Verifisér schemaet:
+inspector = sa.inspect(engine)
+print("Tabeller:", inspector.get_table_names())
+print("user-kolonner:", [c["name"] for c in inspector.get_columns("user")])
+print("Indekser på user:", [ix["column_names"] for ix in inspector.get_indexes("user")])
+`,
+    hints: [
+      "primary_key=True gjør id auto-increment i SQLite",
+      "unique=True + index=True er to forskjellige ting — unique er en constraint, index gjør oppslag raskere",
+      "Optional[str] = kolonnen kan være NULL; uten Optional krever SQLAlchemy en verdi",
+      "sa.inspect() er nyttig for å se hva CREATE TABLE faktisk genererte",
+    ],
+  },
+  {
+    id: "py-sqla-2-add-query",
+    topic: "Flask-SQLAlchemy (ORM)",
+    title: "Sett inn rader med session.add() og hent dem ut igjen",
+    description:
+      "Mønsteret fra Mega-Tutorial: instansiér modellen, kall session.add(), så session.commit(). For å hente data brukes sa.select(...) + session.scalars(...).all() — den nye SQLAlchemy 2.x-API-en (eldre kode bruker Model.query.all(), som fortsatt funker men er på vei ut).",
+    requires: ["sqlalchemy"],
+    starter: `import sqlalchemy as sa
+import sqlalchemy.orm as so
+
+class Base(so.DeclarativeBase):
+    pass
+
+class User(Base):
+    __tablename__ = "user"
+    id: so.Mapped[int] = so.mapped_column(primary_key=True)
+    username: so.Mapped[str] = so.mapped_column(sa.String(64), unique=True)
+    email: so.Mapped[str] = so.mapped_column(sa.String(120), unique=True)
+
+    def __repr__(self):
+        return f"<User {self.username}>"
+
+engine = sa.create_engine("sqlite:///:memory:")
+Base.metadata.create_all(engine)
+
+with so.Session(engine) as session:
+    # 1) Lag instanser i Python (ingen INSERT enda):
+    u1 = User(username="ola", email="ola@test.no")
+    u2 = User(username="kari", email="kari@test.no")
+
+    # 2) Legg dem til sesjonen — fortsatt ingen INSERT, bare merket som nye:
+    session.add(u1)
+    session.add(u2)
+
+    # 3) commit() er det som faktisk skriver til databasen:
+    session.commit()
+    print("Etter commit fikk u1 id =", u1.id)
+
+    # 4) Hent alle — sa.select() bygger SELECT, session.scalars() returnerer instanser:
+    query = sa.select(User)
+    users = session.scalars(query).all()
+    print("Antall brukere:", len(users))
+    for u in users:
+        print(" ", u)
+`,
+    hints: [
+      "session.add() planlegger INSERT — commit() utfører den",
+      "Etter commit får objektet sin id automatisk (auto-increment)",
+      "session.scalars(query) returnerer instanser (User-objekter); session.execute(query) returnerer Row-objekter",
+      "I Flask-SQLAlchemy er dette db.session.add() / db.session.commit() — samme API",
+    ],
+  },
+  {
+    id: "py-sqla-3-get-where",
+    topic: "Flask-SQLAlchemy (ORM)",
+    title: "Hent én rad: session.get() og where()-filter",
+    description:
+      "To måter å hente én rad: session.get(Model, pk) er det raskeste oppslaget på primærnøkkel. For andre kriterier brukes sa.select(...).where(...) med .first() eller .all(). LIKE-filter med kolonne.like('mønster%').",
+    requires: ["sqlalchemy"],
+    starter: `import sqlalchemy as sa
+import sqlalchemy.orm as so
+
+class Base(so.DeclarativeBase):
+    pass
+
+class User(Base):
+    __tablename__ = "user"
+    id: so.Mapped[int] = so.mapped_column(primary_key=True)
+    username: so.Mapped[str] = so.mapped_column(sa.String(64), unique=True)
+    email: so.Mapped[str] = so.mapped_column(sa.String(120))
+
+    def __repr__(self):
+        return f"<User {self.username}>"
+
+engine = sa.create_engine("sqlite:///:memory:")
+Base.metadata.create_all(engine)
+
+with so.Session(engine) as session:
+    session.add_all([
+        User(username="ola", email="ola@test.no"),
+        User(username="kari", email="kari@test.no"),
+        User(username="ole", email="ole@test.no"),
+        User(username="ola_andre", email="o2@test.no"),
+    ])
+    session.commit()
+
+    # 1) get() — primærnøkkeloppslag, O(1) i indekset tabell:
+    u = session.get(User, 2)
+    print("Bruker 2:", u)
+
+    # 2) where med likhet:
+    q = sa.select(User).where(User.username == "kari")
+    print("kari:", session.scalars(q).first())
+
+    # 3) where + LIKE:
+    q = sa.select(User).where(User.username.like("ola%"))
+    print("Begynner med ola:", session.scalars(q).all())
+
+    # 4) Ikke-eksisterende — get returnerer None:
+    print("Ikke-eksisterende:", session.get(User, 999))
+`,
+    hints: [
+      "session.get returnerer None (ikke exception) hvis raden ikke finnes — tilsvarer Flask sin db.get_or_404()-pattern",
+      "User.username.like('o%') — % er wildcard, akkurat som SQL LIKE",
+      ".first() returnerer første treff eller None; .one() krever nøyaktig ett treff (exception ellers)",
+      "I Mega-Tutorial Part IV brukes nøyaktig dette mønsteret i shell-en",
+    ],
+  },
+  {
+    id: "py-sqla-4-order-limit",
+    topic: "Flask-SQLAlchemy (ORM)",
+    title: "Sortering og paginering: order_by() + limit()",
+    description:
+      "Sorter med kolonne.desc() eller .asc(). Begrens med .limit(n). Sammen utgjør disse byggesteinene for paginering — Mega-Tutorial bruker dem rett før den introduserer Flask-SQLAlchemy sin paginate()-helper i senere kapitler.",
+    requires: ["sqlalchemy"],
+    starter: `import sqlalchemy as sa
+import sqlalchemy.orm as so
+
+class Base(so.DeclarativeBase):
+    pass
+
+class User(Base):
+    __tablename__ = "user"
+    id: so.Mapped[int] = so.mapped_column(primary_key=True)
+    username: so.Mapped[str] = so.mapped_column(sa.String(64), unique=True)
+
+    def __repr__(self):
+        return f"<User {self.username}>"
+
+engine = sa.create_engine("sqlite:///:memory:")
+Base.metadata.create_all(engine)
+
+with so.Session(engine) as session:
+    session.add_all([
+        User(username="ola"),
+        User(username="kari"),
+        User(username="bjørn"),
+        User(username="åse"),
+        User(username="lars"),
+    ])
+    session.commit()
+
+    # Synkende:
+    q = sa.select(User).order_by(User.username.desc())
+    print("Synkende alfabetisk:")
+    for u in session.scalars(q):
+        print(" ", u)
+
+    print("---")
+    # Stigende, topp 2:
+    q = sa.select(User).order_by(User.username.asc()).limit(2)
+    print("Topp 2 stigende:")
+    for u in session.scalars(q):
+        print(" ", u)
+
+    print("---")
+    # Side 2 (offset 2, limit 2):
+    q = sa.select(User).order_by(User.username.asc()).offset(2).limit(2)
+    print("Side 2 (offset=2, limit=2):")
+    for u in session.scalars(q):
+        print(" ", u)
+`,
+    hints: [
+      "order_by(...).limit(n).offset(m) er klassisk paginering — limit + offset",
+      "I Flask-SQLAlchemy: db.paginate(query, page=2, per_page=2) — samme greie pakket inn",
+      "Husk at uten ORDER BY er rekkefølgen udefinert — derfor ALLTID order_by før limit",
+    ],
+  },
+  {
+    id: "py-sqla-5-foreign-key",
+    topic: "Flask-SQLAlchemy (ORM)",
+    title: "En-til-mange: Post-modell med fremmednøkkel og relasjon",
+    description:
+      "Mega-Tutorial Part IV legger til Post-modellen med user_id-fremmednøkkel og bidirekkjonal relasjon (back_populates). Bygg samme schema her: User har posts, Post har author. Inspect viser at FK-en er på plass.",
+    requires: ["sqlalchemy"],
+    starter: `import sqlalchemy as sa
+import sqlalchemy.orm as so
+from datetime import datetime, timezone
+
+class Base(so.DeclarativeBase):
+    pass
+
+class User(Base):
+    __tablename__ = "user"
+    id: so.Mapped[int] = so.mapped_column(primary_key=True)
+    username: so.Mapped[str] = so.mapped_column(sa.String(64), unique=True)
+
+    # Forward-ref med streng — Post er ikke definert enda:
+    posts: so.Mapped[list["Post"]] = so.relationship(back_populates="author")
+
+    def __repr__(self):
+        return f"<User {self.username}>"
+
+class Post(Base):
+    __tablename__ = "post"
+    id: so.Mapped[int] = so.mapped_column(primary_key=True)
+    body: so.Mapped[str] = so.mapped_column(sa.String(140))
+    timestamp: so.Mapped[datetime] = so.mapped_column(
+        index=True,
+        default=lambda: datetime.now(timezone.utc),
+    )
+    # Fremmednøkkel + index — Mega-Tutorial sier "always index FKs":
+    user_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey(User.id), index=True)
+
+    author: so.Mapped[User] = so.relationship(back_populates="posts")
+
+    def __repr__(self):
+        return f"<Post {self.body!r}>"
+
+engine = sa.create_engine("sqlite:///:memory:")
+Base.metadata.create_all(engine)
+
+inspector = sa.inspect(engine)
+print("Tabeller:", inspector.get_table_names())
+print("post-kolonner:", [c["name"] for c in inspector.get_columns("post")])
+print("post FK:")
+for fk in inspector.get_foreign_keys("post"):
+    print(" ", fk["constrained_columns"], "→", fk["referred_table"], fk["referred_columns"])
+`,
+    hints: [
+      "back_populates på BEGGE sider — knytter author ↔ posts sammen, så endringer på en side speiles automatisk",
+      "default=lambda: datetime.now(timezone.utc) — lambdaen kjører ved INSERT, så hver rad får sin egen timestamp (default=datetime.now(timezone.utc) ville frosset tiden ved import)",
+      "list[\"Post\"] med streng for forward-ref — klassisk Python-typing-mønster når klassen er definert lengre ned",
+      "I Mega-Tutorial brukes WriteOnlyMapped istedenfor list — mer skalerbart for store relasjoner. list er enklere for små eksempler.",
+    ],
+  },
+  {
+    id: "py-sqla-6-relationship-nav",
+    topic: "Flask-SQLAlchemy (ORM)",
+    title: "Naviger relasjoner: post.author og user.posts",
+    description:
+      "Når relasjonene er på plass slipper du å skrive JOIN — bare aksessér attributtene. Lag en bruker, gi hen to innlegg ved å sette author=ola, og naviger begge veier. Dette er ORM-ens kjerne-løfte: objekter istedenfor SQL.",
+    requires: ["sqlalchemy"],
+    starter: `import sqlalchemy as sa
+import sqlalchemy.orm as so
+from datetime import datetime, timezone
+
+class Base(so.DeclarativeBase):
+    pass
+
+class User(Base):
+    __tablename__ = "user"
+    id: so.Mapped[int] = so.mapped_column(primary_key=True)
+    username: so.Mapped[str] = so.mapped_column(sa.String(64), unique=True)
+    posts: so.Mapped[list["Post"]] = so.relationship(back_populates="author")
+
+class Post(Base):
+    __tablename__ = "post"
+    id: so.Mapped[int] = so.mapped_column(primary_key=True)
+    body: so.Mapped[str] = so.mapped_column(sa.String(140))
+    timestamp: so.Mapped[datetime] = so.mapped_column(
+        default=lambda: datetime.now(timezone.utc),
+    )
+    user_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey(User.id), index=True)
+    author: so.Mapped[User] = so.relationship(back_populates="posts")
+
+engine = sa.create_engine("sqlite:///:memory:")
+Base.metadata.create_all(engine)
+
+with so.Session(engine) as session:
+    ola = User(username="ola")
+    kari = User(username="kari")
+    session.add_all([ola, kari])
+
+    # Vi setter author= direkte — SQLAlchemy fyller user_id automatisk:
+    session.add_all([
+        Post(body="Hei verden!", author=ola),
+        Post(body="Andre innlegg", author=ola),
+        Post(body="Karis bidrag", author=kari),
+    ])
+    session.commit()
+
+    # Naviger fra Post → User (mange-til-én):
+    print("Alle innlegg med forfatter:")
+    for p in session.scalars(sa.select(Post)):
+        print(f"  '{p.body}' — av {p.author.username}")
+
+    # Naviger fra User → Post (én-til-mange):
+    print("\\nOlas innlegg:")
+    for p in ola.posts:
+        print(f"  - {p.body}")
+`,
+    hints: [
+      "author=ola fyller user_id automatisk — du trenger aldri sette FK-en manuelt når relasjonen er definert",
+      "ola.posts gir Python-listen rett ut, ingen ekstra SELECT du selv må skrive",
+      "I bakgrunnen kjører SQLAlchemy en SELECT mot post WHERE user_id = ola.id — du ser bare attributtet",
+      "Pass på N+1-fellen: en for-løkke som aksesserer p.author kan trigge én SELECT per post. Bruk selectinload() for eager-loading hvis du har mange rader.",
+    ],
+  },
+  {
+    id: "py-sqla-7-update-delete-rollback",
+    topic: "Flask-SQLAlchemy (ORM)",
+    title: "Oppdater, slett, og rull tilbake (transaksjoner i ORM)",
+    description:
+      "ORM-en gjør UPDATE og DELETE til vanlige Python-operasjoner: endre attributtet og commit; eller session.delete(obj) og commit. Hvis noe går galt før commit, kall session.rollback() — alle ulagrede endringer forsvinner. Dette er samme ACID-garantier som Mega-Tutorial nevner i avsnittet om sessions.",
+    requires: ["sqlalchemy"],
+    starter: `import sqlalchemy as sa
+import sqlalchemy.orm as so
+
+class Base(so.DeclarativeBase):
+    pass
+
+class User(Base):
+    __tablename__ = "user"
+    id: so.Mapped[int] = so.mapped_column(primary_key=True)
+    username: so.Mapped[str] = so.mapped_column(sa.String(64), unique=True)
+    email: so.Mapped[str] = so.mapped_column(sa.String(120))
+
+    def __repr__(self):
+        return f"<User {self.username} {self.email}>"
+
+engine = sa.create_engine("sqlite:///:memory:")
+Base.metadata.create_all(engine)
+
+with so.Session(engine) as session:
+    session.add_all([
+        User(username="ola", email="ola@test.no"),
+        User(username="kari", email="kari@test.no"),
+        User(username="per", email="per@test.no"),
+    ])
+    session.commit()
+
+    # 1) UPDATE — bare endre attributt og commit, ingen UPDATE-statement:
+    u = session.get(User, 1)
+    u.email = "ola.nordmann@firma.no"
+    session.commit()
+    print("Etter oppdatering:", session.get(User, 1))
+
+    # 2) DELETE — session.delete + commit:
+    kari = session.get(User, 2)
+    session.delete(kari)
+    session.commit()
+    print("Etter slett, alle:", session.scalars(sa.select(User)).all())
+
+    # 3) ROLLBACK — endring blir IKKE skrevet:
+    per = session.get(User, 3)
+    per.username = "FEIL_NAVN"
+    print("Før rollback (in-memory state):", per.username)
+    session.rollback()
+    # Rollback laster objektet på nytt fra DB:
+    session.refresh(per)
+    print("Etter rollback:", per.username)
+`,
+    hints: [
+      "Du skriver aldri UPDATE/DELETE selv — endre attributtet eller kall session.delete(), commit gjør jobben",
+      "rollback() fungerer bare på endringer som IKKE er commit-et enda — committed data er borte for godt",
+      "session.refresh(obj) tvinger en ny SELECT etter rollback så Python-objektet matcher DB",
+      "I produksjon: pakk endringer i try/except og rollback ved feil — så atomicity holder selv ved exceptions",
+    ],
+  },
+  {
+    id: "py-sqla-8-flask-route",
+    topic: "Flask-SQLAlchemy (ORM)",
+    title: "Koble ORM til Flask: JSON-API-route mot User-tabellen",
+    description:
+      "Den endelige sammenkoblingen: en Flask-route som bruker SQLAlchemy istedenfor rå mysql.connector. Sammenlign med py-flask-json-api-oppgaven (samme funksjonalitet, men cursor.execute → session.scalars). I en ekte app ville Flask-SQLAlchemy gitt deg db.session bundet til app-konteksten; her bruker vi sessionmaker direkte for enkelhets skyld.",
+    requires: ["sqlalchemy", "flask"],
+    starter: `from flask import Flask, jsonify, abort, request
+import sqlalchemy as sa
+import sqlalchemy.orm as so
+
+class Base(so.DeclarativeBase):
+    pass
+
+class User(Base):
+    __tablename__ = "user"
+    id: so.Mapped[int] = so.mapped_column(primary_key=True)
+    username: so.Mapped[str] = so.mapped_column(sa.String(64), unique=True)
+    email: so.Mapped[str] = so.mapped_column(sa.String(120))
+
+    def to_dict(self):
+        return {"id": self.id, "username": self.username, "email": self.email}
+
+engine = sa.create_engine("sqlite:///:memory:")
+Base.metadata.create_all(engine)
+SessionLocal = so.sessionmaker(engine)
+
+# Seed-data:
+with SessionLocal() as s:
+    s.add_all([
+        User(username="ola", email="ola@test.no"),
+        User(username="kari", email="kari@test.no"),
+    ])
+    s.commit()
+
+app = Flask(__name__)
+
+@app.route("/api/users", methods=["GET"])
+def liste():
+    with SessionLocal() as s:
+        users = s.scalars(sa.select(User).order_by(User.username)).all()
+        return jsonify([u.to_dict() for u in users])
+
+@app.route("/api/users/<int:user_id>", methods=["GET"])
+def detalj(user_id):
+    with SessionLocal() as s:
+        u = s.get(User, user_id)
+        if u is None:
+            abort(404)
+        return jsonify(u.to_dict())
+
+@app.route("/api/users", methods=["POST"])
+def opprett():
+    data = request.get_json()
+    with SessionLocal() as s:
+        ny = User(username=data["username"], email=data["email"])
+        s.add(ny)
+        s.commit()
+        return jsonify(ny.to_dict()), 201
+
+client = app.test_client()
+print("GET /api/users:", client.get("/api/users").get_json())
+print("GET /api/users/1:", client.get("/api/users/1").get_json())
+print("GET /api/users/999 status:", client.get("/api/users/999").status_code)
+r = client.post("/api/users", json={"username": "per", "email": "per@test.no"})
+print("POST /api/users:", r.status_code, r.get_json())
+print("Etter POST:", client.get("/api/users").get_json())
+`,
+    hints: [
+      "with SessionLocal() as s: gir auto-close — ingen lekkende DB-tilkoblinger",
+      "Sammenlign med py-flask-json-api: identisk respons, men null SQL-strenger i Python-koden",
+      "I Flask-SQLAlchemy bytter du sessionmaker med db.session — den er bundet til app-konteksten og ryddes opp etter hver request automatisk",
+      "to_dict()-metoden er en vanlig pattern; større prosjekter bruker biblioteket marshmallow eller pydantic for serialisering",
+    ],
+  },
 ];
