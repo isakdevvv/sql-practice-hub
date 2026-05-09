@@ -10,6 +10,91 @@ import type { PyExercise } from "./types";
 // Flask exercises use `app.test_client()` so users see HTTP-resultatet uten å
 // måtte starte en server.
 
+const DB_SETUP_PROSESS = `
+import mysql.connector
+db = mysql.connector.connect(database="prosess")
+cur = db.cursor()
+cur.execute("DROP TABLE IF EXISTS produkt")
+cur.execute("DROP TABLE IF EXISTS ordrelinje")
+cur.execute("DROP TABLE IF EXISTS kunde_p")
+cur.execute("DROP TABLE IF EXISTS betaling")
+cur.execute("""
+CREATE TABLE produkt (
+    prodnr INTEGER PRIMARY KEY,
+    navn TEXT NOT NULL,
+    kategori TEXT
+)
+""")
+cur.execute("""
+CREATE TABLE ordrelinje (
+    id INTEGER PRIMARY KEY,
+    prodnr INTEGER,
+    antall INTEGER,
+    pris REAL,
+    FOREIGN KEY (prodnr) REFERENCES produkt(prodnr)
+)
+""")
+cur.execute("""
+CREATE TABLE kunde_p (
+    kundenr INTEGER PRIMARY KEY,
+    navn TEXT NOT NULL,
+    epost TEXT,
+    registrert TEXT
+)
+""")
+cur.execute("""
+CREATE TABLE betaling (
+    betalingsnr INTEGER PRIMARY KEY,
+    ordrenr INTEGER,
+    belop REAL,
+    metode TEXT
+)
+""")
+cur.executemany(
+    "INSERT INTO produkt VALUES (%s, %s, %s)",
+    [
+        (1, "Laptop", "Elektronikk"),
+        (2, "Telefon", "Elektronikk"),
+        (3, "Sko", "Klær"),
+        (4, "T-skjorte", "Klær"),
+        (5, "Bok", "Bøker"),
+    ],
+)
+cur.executemany(
+    "INSERT INTO ordrelinje VALUES (%s, %s, %s, %s)",
+    [
+        (1, 1, 1, 12000),
+        (2, 1, 2, 300),
+        (3, 2, 1, 8000),
+        (4, 3, 3, 1000),
+        (5, 4, 2, 250),
+        (6, 5, 5, 150),
+        (7, 1, 1, 12000),
+        (8, 3, 2, 1000),
+    ],
+)
+cur.executemany(
+    "INSERT INTO kunde_p VALUES (%s, %s, %s, %s)",
+    [
+        (1, "Ola Nordmann", "ola@test.no", "2025-01-15"),
+        (2, "Kari Hansen", None, "2025-02-03"),
+        (3, "Per Olsen", "per@test.no", "2025-03-20"),
+        (4, "Lise Berg", None, "2025-04-08"),
+    ],
+)
+cur.executemany(
+    "INSERT INTO betaling VALUES (%s, %s, %s, %s)",
+    [
+        (501, 1, 12300.0, "Kort"),
+        (502, 2, 8000.0, "Vipps"),
+        (503, 3, 1000.0, "Kort"),
+        # ordre 4 har ingen betaling — for å vise merge-edge case
+        (504, 5, 150.0, "Kontant"),
+    ],
+)
+db.commit()
+`;
+
 const DB_SETUP = `
 import mysql.connector
 db = mysql.connector.connect(database="exam")
@@ -615,6 +700,188 @@ print("DELETE 999:", client.delete("/kunder/999").status_code)
     hints: [
       "201 Created etter POST, 204 No Content etter DELETE, 404 hvis ressursen ikke finnes",
       "request.get_json() leser JSON-bodyen",
+    ],
+  },
+
+  // ============ PYTHON DATA-PROSESSERING ============
+  {
+    id: "py-prosess-sum",
+    topic: "Python data-prosessering",
+    title: "Summer en kolonne i Python (uten SUM)",
+    description:
+      "Hent alle ordrelinjer med en enkel SELECT, og regn ut totalsummen i Python ved å iterere over radene. Samme oppgave som SUM(antall*pris) i SQL — men her gjør vi jobben i Python.",
+    setup: DB_SETUP_PROSESS,
+    starter: `import mysql.connector
+
+db = mysql.connector.connect(database="prosess")
+cursor = db.cursor()
+
+cursor.execute("SELECT antall, pris FROM ordrelinje")
+ordrelinjer = cursor.fetchall()
+
+total = 0
+for antall, pris in ordrelinjer:
+    total += antall * pris
+
+print(f"Antall ordrelinjer: {len(ordrelinjer)}")
+print(f"Total omsetning: {total} kr")
+`,
+    hints: [
+      "fetchall() gir liste av tupler — pakk ut med (antall, pris)",
+      "Du kunne også brukt sum(antall*pris for antall, pris in ordrelinjer)",
+      "Sjekk at totalen blir 38900 — samme som SUM(antall*pris) ville gitt",
+    ],
+  },
+  {
+    id: "py-prosess-group",
+    topic: "Python data-prosessering",
+    title: "Grupper rader etter kategori i Python (uten GROUP BY)",
+    description:
+      "Hent alle produkter, og bygg en dict {kategori: [navn, ...]} i Python. Bruk dict.setdefault eller en if-sjekk for å lage tomme lister automatisk.",
+    setup: DB_SETUP_PROSESS,
+    starter: `import mysql.connector
+
+db = mysql.connector.connect(database="prosess")
+cursor = db.cursor()
+
+cursor.execute("SELECT navn, kategori FROM produkt")
+produkter = cursor.fetchall()
+
+per_kategori = {}
+for navn, kategori in produkter:
+    if kategori not in per_kategori:
+        per_kategori[kategori] = []
+    per_kategori[kategori].append(navn)
+
+for kategori, navnliste in per_kategori.items():
+    print(f"{kategori}: {navnliste}")
+`,
+    hints: [
+      "per_kategori.setdefault(kategori, []).append(navn) gjør samme i én linje",
+      "from collections import defaultdict gir en enda renere variant",
+      "I SQL ville dette vært GROUP_CONCAT(navn) GROUP BY kategori",
+    ],
+  },
+  {
+    id: "py-prosess-sort",
+    topic: "Python data-prosessering",
+    title: "Sorter etter beregnet felt i Python (uten ORDER BY)",
+    description:
+      "Hent alle ordrelinjer, og sorter dem i Python etter linjebeløp (antall * pris) i synkende rekkefølge. Skriv ut de tre største linjene.",
+    setup: DB_SETUP_PROSESS,
+    starter: `import mysql.connector
+
+db = mysql.connector.connect(database="prosess")
+cursor = db.cursor()
+
+cursor.execute("SELECT id, prodnr, antall, pris FROM ordrelinje")
+ordrelinjer = cursor.fetchall()
+
+# Sorter på beregnet kolonne — nøkkelen er en lambda
+sortert = sorted(
+    ordrelinjer,
+    key=lambda rad: rad[2] * rad[3],  # antall * pris
+    reverse=True,
+)
+
+print("Topp 3 ordrelinjer etter beløp:")
+for linje_id, prodnr, antall, pris in sortert[:3]:
+    print(f"  Linje {linje_id}: prod {prodnr} — {antall} stk x {pris} = {antall * pris} kr")
+`,
+    hints: [
+      "lambda rad: rad[2] * rad[3] — indeksene matcher SELECT-rekkefølgen",
+      "reverse=True for synkende; reverse=False (default) for stigende",
+      "sortert[:3] er Python slicing — første 3 elementer",
+    ],
+  },
+  {
+    id: "py-prosess-format",
+    topic: "Python data-prosessering",
+    title: "Formatér rader som lesbar tekst",
+    description:
+      "Hent alle kunder fra kunde_p og bygg en formatert tekstlinje per kunde. Håndter NULL-epost pent med 'or'-uttrykk: f\"{epost or '(ingen)'}\".",
+    setup: DB_SETUP_PROSESS,
+    starter: `import mysql.connector
+
+db = mysql.connector.connect(database="prosess")
+cursor = db.cursor()
+
+cursor.execute("SELECT navn, epost, registrert FROM kunde_p")
+kunder = cursor.fetchall()
+
+for navn, epost, registrert in kunder:
+    linje = f"{navn} ({epost or '(ingen e-post)'}) — registrert {registrert}"
+    print(linje)
+`,
+    hints: [
+      "epost or '(ingen e-post)' bruker at None er falsy → fallback-strengen brukes",
+      "f-strings ({...}) er mye lettere enn '+' for å bygge strenger",
+      "I SQL ville du brukt COALESCE(epost, '(ingen e-post)')",
+    ],
+  },
+  {
+    id: "py-prosess-merge",
+    topic: "Python data-prosessering",
+    title: "Slå sammen to spørringer i Python (alternativ til JOIN)",
+    description:
+      "Kjør én SELECT mot ordrelinje og én mot betaling. Bygg så en dict {ordrenr: belop} og merge i Python — viser hvordan JOIN-logikk kan gjøres med dict-lookup.",
+    setup: DB_SETUP_PROSESS,
+    starter: `import mysql.connector
+
+db = mysql.connector.connect(database="prosess")
+cursor = db.cursor()
+
+# Spørring 1: ordrelinjer
+cursor.execute("SELECT id, prodnr, antall, pris FROM ordrelinje")
+ordrelinjer = cursor.fetchall()
+
+# Spørring 2: betalinger — bygg dict for raskt oppslag
+cursor.execute("SELECT ordrenr, belop FROM betaling")
+betaling_per_ordre = {ordrenr: belop for ordrenr, belop in cursor.fetchall()}
+
+# Merge i Python — bruk .get for å håndtere ordrer uten betaling
+print("Ordrelinje | beregnet | betalt")
+for linje_id, prodnr, antall, pris in ordrelinjer:
+    beregnet = antall * pris
+    betalt = betaling_per_ordre.get(linje_id, "(ingen betaling)")
+    print(f"  {linje_id:>2} (prod {prodnr}) | {beregnet:>5} | {betalt}")
+`,
+    hints: [
+      "dict-comprehension {k: v for k, v in ...} gir O(1) oppslag",
+      ".get(noekkel, default) returnerer default hvis nøkkelen mangler — som LEFT JOIN",
+      "I SQL: SELECT ... FROM ordrelinje LEFT JOIN betaling ON ... — men noen ganger er Python-merge enklere å lese",
+    ],
+  },
+  {
+    id: "py-prosess-statistikk",
+    topic: "Python data-prosessering",
+    title: "Statistikk per produkt i Python (mean, min, max)",
+    description:
+      "Hent alle ordrelinjer, grupper antall solgt per produkt, og regn ut snitt, min og maks pris per produkt. Bruk statistics-modulen for snittet.",
+    setup: DB_SETUP_PROSESS,
+    starter: `import mysql.connector
+import statistics
+
+db = mysql.connector.connect(database="prosess")
+cursor = db.cursor()
+
+cursor.execute("SELECT prodnr, antall, pris FROM ordrelinje")
+ordrelinjer = cursor.fetchall()
+
+# Bygg dict {prodnr: [pris1, pris2, ...]}
+priser_per_produkt = {}
+for prodnr, antall, pris in ordrelinjer:
+    priser_per_produkt.setdefault(prodnr, []).append(pris)
+
+print("Prodnr | antall linjer | min | maks | snitt")
+for prodnr, priser in sorted(priser_per_produkt.items()):
+    snitt = statistics.mean(priser)
+    print(f"  {prodnr:>2}   | {len(priser):>2}            | {min(priser):>5} | {max(priser):>5} | {snitt:.1f}")
+`,
+    hints: [
+      "statistics.mean(liste) er innebygd — slipper å dele sum/len selv",
+      "min(liste) og max(liste) virker direkte på en liste tall",
+      "setdefault(noekkel, []).append(...) er et vanlig group-by-mønster",
     ],
   },
 ];
