@@ -1,4 +1,4 @@
-import { Placeholder } from "@/components/stack/Placeholder";
+import { TcpSocketsPage } from "@/components/stack/tcp-sockets/TcpSocketsPage";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -7,8 +7,8 @@ export const content: TrinnContent = {
   title: "TCP & sockets (kort)",
   group: "eksamen",
   order: 2,
-  status: "stub",
+  status: "ready",
   shortDescription: "Hvor request-en kommer fra: en socket leverer bytes mellom to maskiner.",
   prerequisites: [],
-  Component: () => <Placeholder title="TCP & sockets (kort)" group="eksamen" />,
+  Component: TcpSocketsPage,
 };
