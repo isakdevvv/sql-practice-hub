@@ -1,4 +1,4 @@
-import { Placeholder } from "@/components/stack/Placeholder";
+import { HttpAnatomiPage } from "@/components/stack/http-anatomi/HttpAnatomiPage";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -7,8 +7,8 @@ export const content: TrinnContent = {
   title: "HTTP-anatomi",
   group: "eksamen",
   order: 7,
-  status: "stub",
+  status: "ready",
   shortDescription: "Hva er en HTTP-melding? Headers, body, statuskoder, cookies.",
-  prerequisites: [],
-  Component: () => <Placeholder title="HTTP-anatomi" group="eksamen" />,
+  prerequisites: [{ slug: "bytes-encoding", title: "Bytes & encoding" }],
+  Component: HttpAnatomiPage,
 };
