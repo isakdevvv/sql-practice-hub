@@ -1596,4 +1596,297 @@ print("Etter POST:", client.get("/api/users").get_json())
       "to_dict()-metoden er en vanlig pattern; større prosjekter bruker biblioteket marshmallow eller pydantic for serialisering",
     ],
   },
+
+  // ============ FLASK-UTVIDELSER ============
+  // Disse oppgavene dekker pakkene i en typisk Flask-prosjekt-requirements.txt:
+  //
+  //   Flask-Login==0.6.3        — proff login-håndtering (LoginManager, current_user, @login_required)
+  //   Flask-WTF==1.2.2          — Form-klasser med automatisk CSRF — bytter ut den manuelle CSRF-koden
+  //   WTForms==3.2.1            — felt-typer + validatorer (DataRequired, Length, Email, NumberRange)
+  //   email_validator==2.3.0    — brukes av WTForms sin Email()-validator; også standalone
+  //   python-dotenv==1.2.2      — leser .env-filer inn i os.environ (brukes for SECRET_KEY, DATABASE_URL osv.)
+  //
+  // Disse erstatter hjemmelagde varianter andre steder i pensum:
+  //   py-flask-csrf  → py-ext-flask-wtf-csrf  (manuell token vs Flask-WTF)
+  //   py-flask-login → py-ext-flask-login     (custom @login_required vs Flask-Login)
+  {
+    id: "py-ext-dotenv",
+    topic: "Flask-utvidelser",
+    title: "python-dotenv: les konfigurasjon fra .env",
+    description:
+      "I produksjon hardkoder du ALDRI SECRET_KEY, DATABASE_URL eller API-nøkler i koden. Standard-mønsteret er en .env-fil i prosjektroten som python-dotenv leser inn i os.environ ved oppstart. I Pyodide har vi ingen ekte fil, men load_dotenv() kan også lese fra en stream — patternene er ellers identiske.",
+    requires: ["python-dotenv"],
+    starter: `import os
+from io import StringIO
+from dotenv import load_dotenv
+
+# I en ekte app: en .env-fil i prosjektroten:
+#   DATABASE_URL=mysql://localhost/exam
+#   SECRET_KEY=hemmelig-nokkel-generert-en-gang
+#   DEBUG=True
+#
+# I Pyodide simulerer vi den med en StringIO:
+env_innhold = """
+DATABASE_URL=mysql://localhost/exam
+SECRET_KEY=hemmelig-nokkel-generert-en-gang
+DEBUG=True
+"""
+
+load_dotenv(stream=StringIO(env_innhold))
+
+# Nå er verdiene tilgjengelig i os.environ:
+print("DATABASE_URL:", os.environ.get("DATABASE_URL"))
+print("SECRET_KEY:", os.environ.get("SECRET_KEY"))
+print("DEBUG:", os.environ.get("DEBUG"))
+
+# Standard Flask-config-mønster — fra Mega-Tutorial:
+class Config:
+    SECRET_KEY = os.environ.get("SECRET_KEY") or "fallback-skal-aldri-brukes"
+    SQLALCHEMY_DATABASE_URI = os.environ.get("DATABASE_URL") or "sqlite:///app.db"
+    DEBUG = os.environ.get("DEBUG", "False") == "True"
+
+print(f"\\nFlask-config:")
+print(f"  SECRET_KEY: {Config.SECRET_KEY[:12]}…")
+print(f"  DATABASE_URI: {Config.SQLALCHEMY_DATABASE_URI}")
+print(f"  DEBUG: {Config.DEBUG} ({type(Config.DEBUG).__name__})")
+`,
+    hints: [
+      "or-fallback-mønsteret: os.environ.get(...) or 'default' — None er falsy, så fallbacken brukes hvis variabelen mangler",
+      ".env-filen LIGGER ALDRI i git — legg den i .gitignore. Sjekk inn .env.example med dummy-verdier istedenfor",
+      "DEBUG=True i .env er en STRING, ikke en bool — derfor konverteres med == 'True'",
+      "I produksjon settes disse via plattformen (Heroku-config, systemd EnvironmentFile, Docker secrets) — .env er for utvikling",
+    ],
+  },
+  {
+    id: "py-ext-wtforms-validate",
+    topic: "Flask-utvidelser",
+    title: "WTForms: definér en form-klasse med validatorer",
+    description:
+      "WTForms gjør at du beskriver et skjema som en Python-klasse, og lar biblioteket sjekke at innsendt data oppfyller reglene (lengde, type, obligatorisk osv.). Standalone — uten Flask — kan en Form-instans valideres mot et dict.",
+    requires: ["wtforms"],
+    starter: `from wtforms import Form, StringField, PasswordField, IntegerField
+from wtforms.validators import DataRequired, Length, NumberRange
+
+class RegistrerForm(Form):
+    brukernavn = StringField("Brukernavn", validators=[
+        DataRequired(message="Brukernavn er påkrevd"),
+        Length(min=3, max=20, message="Brukernavn må være 3–20 tegn"),
+    ])
+    passord = PasswordField("Passord", validators=[
+        DataRequired(),
+        Length(min=8, message="Passord må være minst 8 tegn"),
+    ])
+    alder = IntegerField("Alder", validators=[
+        NumberRange(min=18, max=120, message="Alder må være 18–120"),
+    ])
+
+# Test 1: ugyldig — for kort passord, for ung
+data = {"brukernavn": "ola", "passord": "kort", "alder": 15}
+form = RegistrerForm(data=data)
+print("Gyldig?", form.validate())
+print("Feil:", form.errors)
+
+print()
+# Test 2: gyldig
+data = {"brukernavn": "ola_nordmann", "passord": "supersecret", "alder": 25}
+form = RegistrerForm(data=data)
+print("Gyldig?", form.validate())
+print("Brukernavn:", form.brukernavn.data)
+print("Alder:", form.alder.data)
+
+print()
+# Test 3: alle feil samtidig
+data = {"brukernavn": "", "passord": "", "alder": 999}
+form = RegistrerForm(data=data)
+form.validate()
+for felt, feil in form.errors.items():
+    print(f"  {felt}: {', '.join(feil)}")
+`,
+    hints: [
+      "Validatorene er KLASSE-INSTANSER (DataRequired(), ikke DataRequired) — det er derfor du kan gi message=...",
+      "form.validate() returnerer True/False og fyller form.errors",
+      "DataRequired sjekker både at feltet er sendt OG at verdien ikke er falsy ('', None, 0)",
+      "I Flask-WTF arver klassen FlaskForm istedenfor Form — da fanges request.form automatisk og CSRF aktiveres",
+    ],
+  },
+  {
+    id: "py-ext-flask-wtf-csrf",
+    topic: "Flask-utvidelser",
+    title: "Flask-WTF: form-klasse med automatisk CSRF",
+    description:
+      "Flask-WTF kombinerer WTForms med Flask + automatisk CSRF-beskyttelse. Sammenlign med py-flask-csrf: der måtte vi generere og sjekke tokenet manuelt — her er det innebygd. Vi skrur av CSRF i test-klienten via WTF_CSRF_ENABLED=False så vi slipper å hente token i hver test; i produksjon står den på.",
+    requires: ["flask", "flask-wtf"],
+    starter: `from flask import Flask
+from flask_wtf import FlaskForm
+from wtforms import StringField, PasswordField
+from wtforms.validators import DataRequired, Length
+
+app = Flask(__name__)
+app.config["SECRET_KEY"] = "test-key"
+# I PRODUKSJON: la denne være True (default). Her skrur vi av for at
+# test_client skal slippe å hente token først.
+app.config["WTF_CSRF_ENABLED"] = False
+
+class LoginForm(FlaskForm):
+    brukernavn = StringField("Brukernavn", validators=[DataRequired(), Length(min=3)])
+    passord = PasswordField("Passord", validators=[DataRequired(), Length(min=8)])
+
+@app.route("/login", methods=["POST"])
+def login():
+    form = LoginForm()  # Plukker request.form automatisk
+    if form.validate_on_submit():
+        return f"Innlogget: {form.brukernavn.data}", 200
+    return f"Valideringsfeil: {form.errors}", 400
+
+client = app.test_client()
+
+# Ugyldig — passord for kort:
+r = client.post("/login", data={"brukernavn": "ola", "passord": "kort"})
+print("Ugyldig:", r.status_code, "→", r.data.decode())
+
+# Gyldig:
+r = client.post("/login", data={"brukernavn": "ola", "passord": "supersecret"})
+print("Gyldig:", r.status_code, "→", r.data.decode())
+`,
+    hints: [
+      "validate_on_submit() = is_submitted() AND validate() — den korte versjonen i hver POST-handler",
+      "FlaskForm() trenger ingen argument — den henter request.form automatisk fra Flask sin context",
+      "I produksjon: WTF_CSRF_ENABLED=True (default). Da må skjemaet inneholde {{ form.csrf_token }} i Jinja-template",
+      "Sammenlign med py-flask-csrf — der var token-håndteringen manuell. Flask-WTF gjør det usynlig.",
+    ],
+  },
+  {
+    id: "py-ext-email-validator",
+    topic: "Flask-utvidelser",
+    title: "email_validator: valider e-postadresser",
+    description:
+      "email_validator er pakka som WTForms sin Email()-validator bruker under panseret. Sjekker både syntaks (RFC-konform) og kan slå opp DNS for å se om domenet eksisterer. Vi skrur av DNS-sjekken her (check_deliverability=False) — det krever nettverk og er treigt.",
+    requires: ["email-validator"],
+    starter: `from email_validator import validate_email, EmailNotValidError
+
+kandidater = [
+    "ola@test.no",
+    "kari@test",                  # mangler TLD
+    "@test.no",                   # mangler local part
+    "OLA.NORDMANN@example.com",   # gyldig — blir normalisert
+    "ola..nordmann@test.no",      # dobbelt punktum — ugyldig
+    "ola+filter@test.no",         # plus-syntaks — gyldig (vanlig hos Gmail)
+]
+
+for kandidat in kandidater:
+    try:
+        info = validate_email(kandidat, check_deliverability=False)
+        print(f"OK     | {kandidat!r:35} → normalisert: {info.normalized}")
+    except EmailNotValidError as e:
+        print(f"AVVIST | {kandidat!r:35} → {e}")
+
+print()
+# Hvordan WTForms bruker det internt:
+from wtforms import Form, StringField
+from wtforms.validators import Email
+
+class KontaktForm(Form):
+    epost = StringField(validators=[Email(check_deliverability=False)])
+
+form = KontaktForm(data={"epost": "ola@test"})
+print("WTForms Email() — ugyldig:", form.validate(), form.errors)
+
+form = KontaktForm(data={"epost": "ola@test.no"})
+print("WTForms Email() — gyldig:", form.validate(), form.epost.data)
+`,
+    hints: [
+      "info.normalized normaliserer store/små bokstaver, fjerner unødige tegn — bruk denne formen i DB-en",
+      "check_deliverability=False slår av DNS-oppslag. I produksjon kan du la den stå på, men da blokkerer den i et par hundre ms per validering.",
+      "WTForms sin Email()-validator videresender til denne pakka — å installere email_validator er en betingelse for at Email() funker",
+      "Aldri stol BARE på syntaks-validering — bekreft alltid via en e-post med engangskode hvis adressen brukes til pålogging",
+    ],
+  },
+  {
+    id: "py-ext-flask-login",
+    topic: "Flask-utvidelser",
+    title: "Flask-Login: login_user, current_user, @login_required",
+    description:
+      "Sammenlign med py-flask-login: der hadde vi en hjemmesnekret @login_required-dekoratør og rotet med session['user_id'] selv. Flask-Login gir LoginManager + UserMixin + @login_required ut av boksen. current_user er tilgjengelig i ALLE views og templater — du slipper å plukke fra session manuelt.",
+    requires: ["flask", "flask-login"],
+    starter: `from flask import Flask, request
+from flask_login import (
+    LoginManager, UserMixin,
+    login_user, logout_user, login_required, current_user,
+)
+
+app = Flask(__name__)
+app.config["SECRET_KEY"] = "test-key"
+
+login_manager = LoginManager(app)
+login_manager.login_view = "login"  # Hvor uautentiserte sendes via redirect
+
+# User-klassen må arve UserMixin — det gir is_authenticated, is_active, get_id() osv. gratis.
+class Bruker(UserMixin):
+    def __init__(self, id, navn, passord):
+        self.id = id
+        self.navn = navn
+        self.passord = passord
+
+# Stand-in for en ekte DB:
+brukere = {
+    1: Bruker(1, "ola", "supersecret"),
+    2: Bruker(2, "kari", "passord1234"),
+}
+
+# Flask-Login spør oss: gi meg User-objektet for denne id-en
+@login_manager.user_loader
+def load_user(user_id):
+    return brukere.get(int(user_id))
+
+@app.route("/login", methods=["POST"])
+def login():
+    navn = request.form.get("brukernavn")
+    passord = request.form.get("passord")
+    funn = next((u for u in brukere.values() if u.navn == navn and u.passord == passord), None)
+    if funn:
+        login_user(funn)  # Setter session — du trenger ikke ha med session selv
+        return f"Innlogget: {funn.navn}", 200
+    return "Feil passord", 401
+
+@app.route("/profil")
+@login_required
+def profil():
+    # current_user er det innloggede User-objektet — automatisk tilgjengelig
+    return f"Hei, {current_user.navn} (id={current_user.id})"
+
+@app.route("/logout")
+@login_required
+def logout():
+    navn = current_user.navn
+    logout_user()
+    return f"Logget ut {navn}"
+
+client = app.test_client()
+# 1) Uten login → redirect til login_view
+r = client.get("/profil")
+print("Uten login:", r.status_code, "Location:", r.headers.get("Location"))
+
+# 2) Login
+r = client.post("/login", data={"brukernavn": "ola", "passord": "supersecret"})
+print("Login:", r.status_code, r.data.decode())
+
+# 3) Med login: profil-sida virker
+r = client.get("/profil")
+print("Profil:", r.status_code, r.data.decode())
+
+# 4) Logout
+r = client.get("/logout")
+print("Logout:", r.status_code, r.data.decode())
+
+# 5) Etter logout: profil krever login igjen
+r = client.get("/profil")
+print("Etter logout:", r.status_code)
+`,
+    hints: [
+      "UserMixin gir gratis-implementasjoner av is_authenticated, is_active, is_anonymous, get_id() — du slipper å skrive dem",
+      "login_user(user) setter cookie + session. logout_user() fjerner. Du rører aldri session selv.",
+      "current_user fungerer i alle views OG i Jinja-templates: {% if current_user.is_authenticated %} ...",
+      "Sammenlign med py-flask-login: der hadde vi 12+ linjer kode for å bygge @login_required selv — her er det én import",
+    ],
+  },
 ];
