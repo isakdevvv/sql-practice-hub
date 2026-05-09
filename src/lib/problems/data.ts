@@ -1385,6 +1385,161 @@ export const PROBLEMS: Problem[] = [
       "Dette er mønsteret /prosjekt-checkouten bygger på, oversatt til ren SQL. Hele kjøpet — ordre, linjer, lager — må enten lagres samlet eller ikke i det hele tatt. Sentralt på eksamen, og direkte broa over til Python-koden i nettbutikk-prosjektet.",
     estimated_time_min: 5,
   },
+  // ============= SQL-FUNKSJONER (p75-p80) =============
+  {
+    id: "p75",
+    title: "Case-insensitive søk med LOWER",
+    level: 1,
+    difficulty: 1,
+    topics: ["UPPER", "LOWER", "STRING", "WHERE"],
+    goal: "Bruk LOWER (eller UPPER) til å gjøre tekstsammenligning ufølsom for store/små bokstaver.",
+    problem:
+      "Finn produkter der navnet er 'phone' — uavhengig av om dataene er lagret som 'Phone', 'PHONE' eller 'phone'. Returner id og name. Bruk LOWER på kolonnen så søket treffer uansett skrivemåte.",
+    starter_sql:
+      "SELECT id, name\nFROM products\nWHERE LOWER(<Column>) = <Value>;",
+    solution:
+      "SELECT id, name FROM products WHERE LOWER(name) = 'phone';",
+    alt_solutions: [
+      "SELECT id, name FROM products WHERE UPPER(name) = 'PHONE';",
+      "SELECT id, name FROM products WHERE LOWER(name) = LOWER('Phone');",
+    ],
+    validation: { ignore_order: true, ignore_column_names: true },
+    hints: [
+      "LOWER(name) gjør verdien til småbokstaver før sammenligningen",
+      "Da må du også skrive sammenligningsverdien med småbokstaver: 'phone'",
+      "UPPER fungerer like bra — bare hold begge sider i samme kasus",
+    ],
+    explanation:
+      "Tekstsammenligning i SQL er som regel kasussensitiv: 'Phone' = 'phone' er FALSE. Ved å kjøre LOWER (eller UPPER) på begge sider sikrer du at brukerens søk treffer uansett hvordan dataene er lagret. Dette er et hverdagsmønster i søkefelt og innloggingsskjemaer.",
+    estimated_time_min: 2,
+  },
+  {
+    id: "p76",
+    title: "SUBSTR og LENGTH — del opp tekst",
+    level: 1,
+    difficulty: 2,
+    topics: ["SUBSTR", "LENGTH", "STRING"],
+    goal: "Hent ut en del av en streng med SUBSTR, og mål lengden med LENGTH.",
+    problem:
+      "For hvert produkt: returner navnet, en tre-bokstavers forkortelse (de første 3 tegnene av name), og hvor langt navnet er. Kall kolonnene `name`, `forkortelse` og `lengde`. Sortér etter id.",
+    starter_sql:
+      "SELECT name,\n       SUBSTR(<Column>, <Value>, <Value>) AS <Alias>,\n       LENGTH(<Column>) AS <Alias>\nFROM products\nORDER BY id;",
+    solution:
+      "SELECT name, SUBSTR(name, 1, 3) AS forkortelse, LENGTH(name) AS lengde FROM products ORDER BY id;",
+    validation: { ignore_order: true, ignore_column_names: true },
+    hints: [
+      "SUBSTR(streng, start, antall) — start teller fra 1, ikke 0",
+      "LENGTH returnerer antall tegn i strengen",
+      "Du kan ha flere uttrykk i samme SELECT, hver med sin egen AS",
+    ],
+    explanation:
+      "SUBSTR og LENGTH er grunnleggende strengfunksjoner. SUBSTR henter ut en del av teksten — nyttig for å plukke ut postnumre, områdekoder eller forkortelser. LENGTH brukes til å validere felter (f.eks. 'telefonnummer må være 8 tegn') eller sortere etter ord-lengde.",
+    estimated_time_min: 3,
+  },
+  {
+    id: "p77",
+    title: "CASE — kategoriser pris",
+    level: 2,
+    difficulty: 2,
+    topics: ["CASE", "WHEN", "THEN", "ELSE"],
+    goal: "Bruk CASE i SELECT for å lage en avledet kolonne basert på betingelser.",
+    problem:
+      "For hvert produkt: returner name, price og en prisklasse. 'billig' når prisen er under 50, 'mellom' når prisen er under 200, ellers 'dyr'. Kall kolonnen `prisklasse`. Sortér etter id.",
+    starter_sql:
+      "SELECT name, price,\n       CASE\n         WHEN <Condition> THEN <Value>\n         WHEN <Condition> THEN <Value>\n         ELSE <Value>\n       END AS <Alias>\nFROM products\nORDER BY id;",
+    solution:
+      "SELECT name, price, CASE WHEN price < 50 THEN 'billig' WHEN price < 200 THEN 'mellom' ELSE 'dyr' END AS prisklasse FROM products ORDER BY id;",
+    alt_solutions: [
+      "SELECT name, price, CASE WHEN price < 50 THEN 'billig' WHEN price >= 50 AND price < 200 THEN 'mellom' ELSE 'dyr' END AS prisklasse FROM products ORDER BY id;",
+    ],
+    validation: { ignore_order: true, ignore_column_names: true },
+    hints: [
+      "CASE evalueres ovenfra og ned — første WHEN som matcher vinner",
+      "Derfor trenger du ikke skrive 'price >= 50 AND price < 200' i andre WHEN — alt under 50 ble allerede fanget",
+      "ELSE er fallback når ingen WHEN matcher",
+    ],
+    explanation:
+      "CASE er SQL sin if/else-konstruksjon. Den lar deg lage avledede kolonner basert på data — uten å lage en ny tabell eller behandle resultatet i Python etterpå. Rekkefølgen på WHEN-klausulene er viktig: SQL tar første treff og hopper ut.",
+    estimated_time_min: 4,
+  },
+  {
+    id: "p78",
+    title: "COALESCE — erstatt NULL med fallback",
+    level: 1,
+    difficulty: 2,
+    topics: ["COALESCE", "NULL", "IFNULL"],
+    goal: "Bruk COALESCE for å bytte NULL-verdier med en standardverdi.",
+    problem:
+      "Returner name og email for alle brukere — men hvis email er NULL, vis '(ingen)' i stedet. Kall kolonnen `email`. Sortér etter id.",
+    starter_sql:
+      "SELECT name,\n       COALESCE(<Column>, <Value>) AS <Alias>\nFROM users\nORDER BY id;",
+    solution:
+      "SELECT name, COALESCE(email, '(ingen)') AS email FROM users ORDER BY id;",
+    alt_solutions: [
+      "SELECT name, IFNULL(email, '(ingen)') AS email FROM users ORDER BY id;",
+    ],
+    validation: { ignore_order: true, ignore_column_names: true },
+    hints: [
+      "COALESCE(x, y) returnerer x hvis x ikke er NULL, ellers y",
+      "Den tåler flere argumenter: COALESCE(a, b, c) — første ikke-NULL vinner",
+      "IFNULL(x, y) gir samme resultat med kun to argumenter",
+    ],
+    explanation:
+      "NULL betyr 'ukjent' og smitter gjennom uttrykk — NULL || 'tekst' blir NULL, ikke 'tekst'. COALESCE lar deg si 'gi meg verdien, eller en fallback hvis den mangler', slik at brukergrensesnittet får noe lesbart i stedet for blanke felter.",
+    estimated_time_min: 3,
+  },
+  {
+    id: "p79",
+    title: "strftime — grupper ordre per måned",
+    level: 3,
+    difficulty: 3,
+    topics: ["STRFTIME", "DATE", "GROUP BY", "AGGREGATE"],
+    goal: "Bruk strftime til å trekke ut år+måned fra en dato, og gruppér på det.",
+    problem:
+      "Tell hvor mange ordre som ble lagt hver måned. Returner månedsstrengen på formen 'YYYY-MM' og antall ordre. Kall kolonnene `maaned` og `antall`. Sortér stigende på maaned.",
+    starter_sql:
+      "SELECT strftime(<Pattern>, <Column>) AS <Alias>,\n       COUNT(*) AS <Alias>\nFROM orders\nGROUP BY <Expression>\nORDER BY <Expression>;",
+    solution:
+      "SELECT strftime('%Y-%m', created_at) AS maaned, COUNT(*) AS antall FROM orders GROUP BY maaned ORDER BY maaned;",
+    alt_solutions: [
+      "SELECT strftime('%Y-%m', created_at) AS maaned, COUNT(*) AS antall FROM orders GROUP BY strftime('%Y-%m', created_at) ORDER BY strftime('%Y-%m', created_at);",
+    ],
+    validation: { ignore_order: true, ignore_column_names: true },
+    hints: [
+      "'%Y-%m' gir år og måned — '%Y' bare år, '%m' bare måned",
+      "Du kan gruppere på alias-navnet (maaned) i SQLite — eller gjenta uttrykket i GROUP BY",
+      "ORDER BY maaned sorterer alfabetisk på 'YYYY-MM' — som tilfeldigvis blir kronologisk",
+    ],
+    explanation:
+      "Datoer lagres ofte som hele tidsstempler, men rapporter trenger gjerne grovere oppløsning — år, måned eller ukedag. strftime gjør om datoen til en tekststreng etter mønsteret du angir, slik at GROUP BY kan samle radene riktig.",
+    estimated_time_min: 4,
+  },
+  {
+    id: "p80",
+    title: "ROUND og ABS — pris med rabatt",
+    level: 2,
+    difficulty: 2,
+    topics: ["ROUND", "ABS", "MATH"],
+    goal: "Bruk ROUND for å avrunde tall, og ABS for å få absoluttverdi.",
+    problem:
+      "For hvert produkt: returner name, price, prisen etter 15% rabatt avrundet til nærmeste hele krone, og hvor langt prisen er fra 100 (alltid positivt tall). Kall de avledede kolonnene `pris_etter_rabatt` og `diff_fra_100`. Sortér etter id.",
+    starter_sql:
+      "SELECT name, price,\n       ROUND(<Expression>, <Value>) AS <Alias>,\n       ABS(<Expression>) AS <Alias>\nFROM products\nORDER BY id;",
+    solution:
+      "SELECT name, price, ROUND(price * 0.85, 0) AS pris_etter_rabatt, ABS(price - 100) AS diff_fra_100 FROM products ORDER BY id;",
+    alt_solutions: [
+      "SELECT name, price, ROUND(price * 0.85) AS pris_etter_rabatt, ABS(price - 100) AS diff_fra_100 FROM products ORDER BY id;",
+    ],
+    validation: { ignore_order: true, ignore_column_names: true },
+    hints: [
+      "ROUND(tall, antall_desimaler) — andre argument 0 gir hele tall",
+      "price * 0.85 er prisen etter 15% rabatt (du beholder 85%)",
+      "ABS gjør negative tall positive — nyttig når du ikke bryr deg om retning på avviket",
+    ],
+    explanation:
+      "ROUND og ABS er små men løsbare verktøy: ROUND fjerner desimalstøy i rapporter (ingen vil se '1019.9999'), og ABS lar deg måle hvor langt en verdi er unna et mål uten å måtte sjekke fortegnet selv. Begge er trivielle å bruke — men sparer mye if/else i applikasjonskoden.",
+    estimated_time_min: 3,
+  },
   // ============= UNIVERSITY DATASET =============
   {
     id: "u1",
