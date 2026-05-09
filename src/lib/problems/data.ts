@@ -970,6 +970,210 @@ export const PROBLEMS: Problem[] = [
       "SELECT-lista er ikke bare 'hvilke kolonner skal med'. Den kan også: regne ut nye verdier per rad (uttrykk), legge til konstanter, og navngi resultat-kolonnene (AS). Dette er forskjellen mellom hva som finnes i tabellen og hva brukeren ser.",
     estimated_time_min: 3,
   },
+  // ============= DML-ARC (p59-p66) — INSERT / UPDATE / DELETE =============
+  // Samme datasett (e-commerce). Hver oppgave bruker mode: "ddl" slik at
+  // motoren kjører brukerens INSERT/UPDATE/DELETE og deretter et verify_sql
+  // som viser hva som ble endret. SELECT-resultatet av verify_sql er det
+  // som sammenlignes med fasiten — så brukeren ser og kan stole på utfallet.
+  {
+    id: "p59",
+    title: "INSERT — registrer én ny bruker",
+    level: 5,
+    difficulty: 1,
+    topics: ["INSERT", "DML"],
+    mode: "ddl",
+    goal: "Skriv din første INSERT — alle kolonner, posisjonell rekkefølge.",
+    problem:
+      "Legg til en ny bruker i users-tabellen: id = 100, name = 'Mia', email = 'mia@test.com', created_at = '2024-09-01'. Bruk den korte INSERT-formen uten å oppgi kolonnenavn.",
+    starter_sql: "INSERT INTO users\nVALUES (<Value>, <Value>, <Value>, <Value>);",
+    solution: "INSERT INTO users VALUES (100, 'Mia', 'mia@test.com', '2024-09-01');",
+    verify_sql: "SELECT id, name, email, created_at FROM users WHERE id = 100;",
+    validation: { ignore_order: true, ignore_column_names: true },
+    hints: [
+      "INSERT INTO tabell VALUES (...) — uten kolonneliste må verdiene komme i samme rekkefølge som tabellen",
+      "Strenger og datoer omsluttes med apostrofer: 'Mia'",
+      "Tall står uten apostrofer: 100",
+    ],
+    explanation:
+      "INSERT-VALUES-formen er den korteste, men også den skjøreste — endrer skjemaet kolonnerekkefølgen, blir alle gamle INSERTs feil. I produksjon brukes nesten alltid den lengre formen med kolonnenavn (se neste oppgave).",
+    estimated_time_min: 2,
+  },
+  {
+    id: "p60",
+    title: "INSERT med kolonnenavn — utelat valgfri kolonne",
+    level: 5,
+    difficulty: 2,
+    topics: ["INSERT", "DML", "NULL"],
+    mode: "ddl",
+    goal: "Spesifiser kolonner — utelatte kolonner blir NULL eller får DEFAULT.",
+    problem:
+      "Legg til en ny bruker (id = 101, name = 'Noah') uten å oppgi epost eller dato. Bruk den lange INSERT-formen som lister kolonnenavnene eksplisitt — slik at de utelatte feltene blir NULL.",
+    starter_sql:
+      "INSERT INTO users (<Columns>)\nVALUES (<Values>);",
+    solution: "INSERT INTO users (id, name) VALUES (101, 'Noah');",
+    verify_sql:
+      "SELECT id, name, email, created_at FROM users WHERE id = 101;",
+    validation: { ignore_order: true, ignore_column_names: true },
+    hints: [
+      "INSERT INTO users (id, name) VALUES (...)",
+      "Når kolonner utelates blir de NULL — så lenge de er nullable",
+      "Kolonner med UNIQUE-constraint (som email her) godtar én NULL",
+    ],
+    explanation:
+      "Den lange INSERT-formen er tryggere: du kan utelate kolonner som er nullable eller har DEFAULT, og SQL-en bryter ikke om noen legger til en ny kolonne i tabellen senere.",
+    estimated_time_min: 3,
+  },
+  {
+    id: "p61",
+    title: "INSERT flere rader i én setning",
+    level: 5,
+    difficulty: 2,
+    topics: ["INSERT", "DML"],
+    mode: "ddl",
+    goal: "Sett inn flere rader i én INSERT — billigere enn flere separate.",
+    problem:
+      "Legg til tre nye produkter i én INSERT-setning: (id=20, navn='Webcam', kategori='Electronics', pris=350, lager=12), (id=21, navn='Stol', kategori='Furniture', pris=900, lager=4), (id=22, navn='Pute', kategori='Furniture', pris=180, lager=25).",
+    starter_sql:
+      "INSERT INTO products\nVALUES\n  (<Row 1>),\n  (<Row 2>),\n  (<Row 3>);",
+    solution:
+      "INSERT INTO products VALUES (20, 'Webcam', 'Electronics', 350, 12), (21, 'Stol', 'Furniture', 900, 4), (22, 'Pute', 'Furniture', 180, 25);",
+    verify_sql:
+      "SELECT id, name, category, price, stock FROM products WHERE id IN (20, 21, 22) ORDER BY id;",
+    validation: { ignore_order: true, ignore_column_names: true },
+    hints: [
+      "VALUES (...), (...), (...) — komma mellom rad-tuplene, semikolon til slutt",
+      "Hver tuppel må ha samme antall verdier som kolonner",
+    ],
+    explanation:
+      "Multi-row INSERT er ÉN transaksjon — enten lykkes alle tre eller ingen. Dette er både raskere og tryggere enn tre separate INSERTs.",
+    estimated_time_min: 3,
+  },
+  {
+    id: "p62",
+    title: "INSERT … SELECT — bygg på eksisterende data",
+    level: 5,
+    difficulty: 3,
+    topics: ["INSERT", "SELECT", "DML"],
+    mode: "ddl",
+    pre_sql:
+      "CREATE TABLE elektronikk_backup (id INTEGER PRIMARY KEY, name TEXT, price NUMERIC);",
+    goal: "Kombinér INSERT med SELECT for å kopiere rader fra én tabell.",
+    problem:
+      "Tabellen elektronikk_backup er allerede laget for deg (kolonner: id, name, price). Kopiér ALLE produkter med category = 'Electronics' inn i den. Bruk INSERT INTO … SELECT.",
+    starter_sql:
+      "INSERT INTO elektronikk_backup (<Columns>)\nSELECT <Columns>\nFROM products\nWHERE <Condition>;",
+    solution:
+      "INSERT INTO elektronikk_backup (id, name, price) SELECT id, name, price FROM products WHERE category = 'Electronics';",
+    verify_sql: "SELECT id, name, price FROM elektronikk_backup ORDER BY id;",
+    validation: { ignore_order: true, ignore_column_names: true },
+    hints: [
+      "INSERT INTO tabell (kolonner) SELECT ... — ingen VALUES-nøkkelord",
+      "SELECT-lista må matche kolonnelista i antall og rekkefølge",
+      "WHERE category = 'Electronics' filtrerer hva som blir kopiert",
+    ],
+    explanation:
+      "INSERT…SELECT er måten å lage backup-tabeller, fylle nye tabeller fra gamle, eller materialisere et resultat. Filteret i WHERE styrer hva som kopieres — uten WHERE kopieres alt.",
+    estimated_time_min: 4,
+  },
+  {
+    id: "p63",
+    title: "UPDATE — endre én kolonne",
+    level: 5,
+    difficulty: 2,
+    topics: ["UPDATE", "DML"],
+    mode: "ddl",
+    goal: "Skriv en UPDATE — og glem ALDRI WHERE.",
+    problem:
+      "Sett ned prisen på Laptop (id = 1) fra 1200 til 999. Bruk UPDATE med WHERE-filter slik at kun den ene raden endres.",
+    starter_sql:
+      "UPDATE products\nSET <Column> = <Value>\nWHERE <Condition>;",
+    solution: "UPDATE products SET price = 999 WHERE id = 1;",
+    verify_sql: "SELECT id, name, price FROM products WHERE id = 1;",
+    validation: { ignore_order: true, ignore_column_names: true },
+    hints: [
+      "UPDATE tabell SET kolonne = nyverdi WHERE betingelse",
+      "WHERE id = 1 — bruker primærnøkkelen, treffer akkurat én rad",
+      "Glemmer du WHERE oppdateres ALLE produkter — klassisk eksamenfelle",
+    ],
+    explanation:
+      "WHERE i UPDATE er ikke valgfri i praksis — uten den endres hele tabellen. Test alltid filteret med en SELECT først: 'SELECT * FROM products WHERE id = 1' bør gi nøyaktig de radene du ønsker å endre.",
+    estimated_time_min: 2,
+  },
+  {
+    id: "p64",
+    title: "UPDATE flere kolonner + uttrykk",
+    level: 5,
+    difficulty: 3,
+    topics: ["UPDATE", "DML", "EXPRESSION"],
+    mode: "ddl",
+    goal: "Sett flere kolonner i én UPDATE, og bruk uttrykk for relative endringer.",
+    problem:
+      "Møbler (category = 'Furniture') skal få en prisøkning på 10 % og lager-økning på +5 enheter — i samme UPDATE. Bruk uttrykk i SET, ikke faste tall.",
+    starter_sql:
+      "UPDATE products\nSET\n  price = <Expression>,\n  stock = <Expression>\nWHERE <Condition>;",
+    solution:
+      "UPDATE products SET price = price * 1.1, stock = stock + 5 WHERE category = 'Furniture';",
+    verify_sql:
+      "SELECT id, name, price, stock FROM products WHERE category = 'Furniture' ORDER BY id;",
+    validation: { ignore_order: true, ignore_column_names: true },
+    hints: [
+      "SET kolonne1 = uttrykk, kolonne2 = uttrykk — komma mellom",
+      "price = price * 1.1 leser den GAMLE prisen og lagrer den NYE",
+      "Alle som matcher WHERE får samme operasjon — perfekt for masse-oppdateringer",
+    ],
+    explanation:
+      "SET-uttrykk leser eksisterende kolonneverdier på radens nivå. Det betyr 'price = price * 1.1' fungerer rad-for-rad og produserer riktig ny pris uansett hva startverdien var.",
+    estimated_time_min: 4,
+  },
+  {
+    id: "p65",
+    title: "DELETE — fjern spesifikk rad",
+    level: 5,
+    difficulty: 2,
+    topics: ["DELETE", "DML"],
+    mode: "ddl",
+    goal: "Skriv en DELETE — og lær å verifisere før du kjører.",
+    problem:
+      "Brukeren med id = 12 (Leo) har aldri lagt inn en ordre og skal slettes. Skriv en DELETE som fjerner kun den raden.",
+    starter_sql: "DELETE FROM users\nWHERE <Condition>;",
+    solution: "DELETE FROM users WHERE id = 12;",
+    verify_sql: "SELECT id, name FROM users WHERE id = 12;",
+    validation: { ignore_order: true, ignore_column_names: true },
+    hints: [
+      "DELETE FROM tabell WHERE betingelse",
+      "Verifiser ALLTID med 'SELECT * FROM users WHERE id = 12' før DELETE",
+      "Verify-spørringen returnerer 0 rader når slettingen er vellykket",
+    ],
+    explanation:
+      "DELETE uten WHERE tømmer hele tabellen — like farlig som UPDATE uten WHERE. I MySQL kan du sette safe_updates ON som ekstra brems. Vurder også soft-delete (en deleted_at-kolonne) for å beholde historikk.",
+    estimated_time_min: 2,
+  },
+  {
+    id: "p66",
+    title: "DELETE med subquery — slett basert på en annen tabell",
+    level: 5,
+    difficulty: 4,
+    topics: ["DELETE", "DML", "subquery"],
+    mode: "ddl",
+    goal: "Bruk en subquery i WHERE for å slette rader basert på en annen tabell.",
+    problem:
+      "Slett alle ordrelinjer som tilhører ordrer med status = 'cancelled'. Bruk en subquery på orders inne i WHERE — du skal IKKE røre selve orders-tabellen.",
+    starter_sql:
+      "DELETE FROM order_items\nWHERE order_id IN (\n  SELECT <Column> FROM orders WHERE <Condition>\n);",
+    solution:
+      "DELETE FROM order_items WHERE order_id IN (SELECT id FROM orders WHERE status = 'cancelled');",
+    verify_sql:
+      "SELECT order_id, COUNT(*) AS lines_left FROM order_items WHERE order_id IN (SELECT id FROM orders WHERE status = 'cancelled') GROUP BY order_id;",
+    validation: { ignore_order: true, ignore_column_names: true },
+    hints: [
+      "WHERE order_id IN (SELECT id FROM orders WHERE status = 'cancelled')",
+      "Subquery returnerer en liste — IN sjekker medlemskap",
+      "Alternativ: DELETE … FROM …  USING-syntaks finnes i Postgres/MySQL men ikke alle dialekter",
+    ],
+    explanation:
+      "Subquery-DELETE er trygg og leselig: indre SELECT identifiserer hva som skal slettes, ytre DELETE utfører. Test alltid ved å bytte 'DELETE' for 'SELECT * FROM order_items' med samme WHERE — du ser eksakt hva som blir slettet før du gjør det.",
+    estimated_time_min: 5,
+  },
   // ============= UNIVERSITY DATASET =============
   {
     id: "u1",
