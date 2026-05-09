@@ -1,4 +1,4 @@
-import { Placeholder } from "@/components/stack/Placeholder";
+import { ErMappingPage } from "@/components/stack/er-mapping/ErMappingPage";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -7,8 +7,8 @@ export const content: TrinnContent = {
   title: "ER → DDL mapping",
   group: "eksamen",
   order: 4,
-  status: "stub",
+  status: "ready",
   shortDescription: "Fra krakefot-diagram til CREATE TABLE: 1:1, 1:N, M:N, svake entiteter.",
   prerequisites: [],
-  Component: () => <Placeholder title="ER → DDL mapping" group="eksamen" />,
+  Component: ErMappingPage,
 };
