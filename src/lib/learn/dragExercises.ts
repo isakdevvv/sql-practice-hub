@@ -734,6 +734,178 @@ __5__ endfor __6__
       "Mønsteret heter Post-Redirect-Get: POST med data → 302 redirect → GET av ny side. Det forhindrer at Refresh sender skjemaet på nytt. login_user() er den eneste linjen som faktisk «logger inn» — alt etter det sjekker bare session-cookien.",
   },
 
+  // ============ HTTP-REQUEST-ANATOMI ============
+  // Bygges fra "se hva en request er" → "lag den selv" → senere: "send og
+  // prosessér i Python". Rene drag-oppgaver — ingen ekte server.
+  {
+    id: "d-fill-http-get-anatomy",
+    kind: "fill",
+    title: "Anatomi: GET-request",
+    prompt:
+      "Fyll inn delene som mangler i en GET-request. Dette er det browseren faktisk sender til serveren.",
+    topic: "HTTP",
+    template:
+      "__1__ /api/kunder HTTP/1.1\n__2__: api.butikk.no\n__3__: application/json\n__4__: SQLSandbox/1.0",
+    blanks: ["GET", "Host", "Accept", "User-Agent"],
+    options: [
+      "GET",
+      "POST",
+      "PUT",
+      "DELETE",
+      "Host",
+      "From",
+      "Accept",
+      "Content-Type",
+      "User-Agent",
+      "Authorization",
+    ],
+    explanation:
+      "GET-requester har metoden først, så stien, så HTTP-versjonen — alt på samme linje. Headere kommer rett etter, én per linje, alltid på formen 'Navn: verdi'. GET-requester har vanligvis INGEN body.",
+  },
+  {
+    id: "d-fill-http-post-json",
+    kind: "fill",
+    title: "Anatomi: POST med JSON-body",
+    prompt:
+      "Bygg opp en POST-request som sender JSON-data. Pass på hvilken header som skiller seg fra GET.",
+    topic: "HTTP",
+    template:
+      "__1__ /api/kunder HTTP/1.1\nHost: api.butikk.no\n__2__: application/json\n__3__: 38\n\n{\"navn\": \"Ola\", \"epost\": \"ola@test.no\"}",
+    blanks: ["POST", "Content-Type", "Content-Length"],
+    options: [
+      "POST",
+      "GET",
+      "PUT",
+      "Content-Type",
+      "Content-Length",
+      "Accept",
+      "Host",
+      "Authorization",
+    ],
+    explanation:
+      "POST-bodyen står ETTER én tom linje. Content-Type forteller serveren hvordan bodyen skal tolkes (her: JSON). Content-Length er antall bytes i bodyen — browseren regner ut dette selv.",
+  },
+  {
+    id: "d-fill-http-auth-bearer",
+    kind: "fill",
+    title: "Autentisert request — Bearer-token",
+    prompt:
+      "API-endepunkter som krever innlogging må ta imot et token. Det sendes i Authorization-headeren.",
+    topic: "HTTP",
+    template:
+      "GET /api/min-side HTTP/1.1\nHost: api.butikk.no\n__1__: __2__ eyJhbGciOiJIUzI1NiJ9.abc.xyz\nAccept: application/json",
+    blanks: ["Authorization", "Bearer"],
+    options: [
+      "Authorization",
+      "Auth",
+      "Token",
+      "Bearer",
+      "Basic",
+      "Cookie",
+      "X-Token",
+    ],
+    explanation:
+      "Authorization-headeren har to deler: et 'scheme' (Bearer for tokens, Basic for brukernavn:passord) og selve verdien. Bearer er standard for OAuth/JWT — uten den vet ikke serveren hvordan tokenet skal tolkes.",
+  },
+  {
+    id: "d-fill-http-csrf",
+    kind: "fill",
+    title: "CSRF-beskyttet POST",
+    prompt:
+      "Når en form POSTer endringer må den bevise at requesten kom fra ditt eget skjema. Hvilken header brukes?",
+    topic: "HTTP",
+    template:
+      "POST /kurv/legg-til HTTP/1.1\nHost: butikk.no\nContent-Type: application/json\nCookie: session=__1__\n__2__: __3__\n\n{\"prodnr\": 1, \"antall\": 2}",
+    blanks: ["abc123", "X-CSRF-Token", "f4d8e7a2"],
+    options: [
+      "abc123",
+      "f4d8e7a2",
+      "X-CSRF-Token",
+      "X-CSRF",
+      "X-XSRF-Token",
+      "Authorization",
+      "Cookie",
+    ],
+    explanation:
+      "CSRF-tokenet sendes i en custom header (typisk X-CSRF-Token). Cookien er det som binder requesten til en bestemt session. Tokenet er det som beviser at den ondsinnede siden NIKE.com ikke kan POSTe i ditt navn — den har ikke tilgang til ditt CSRF-token.",
+  },
+  {
+    id: "d-fill-http-response",
+    kind: "fill",
+    title: "Anatomi: HTTP-respons",
+    prompt:
+      "Slik ser det serveren sender TILBAKE ut. Status-linjen først, så headere, så bodyen.",
+    topic: "HTTP",
+    template:
+      "HTTP/1.1 __1__ __2__\n__3__: application/json\n__4__: 52\n\n[{\"id\":1,\"navn\":\"Ola Nordmann\"}]",
+    blanks: ["200", "OK", "Content-Type", "Content-Length"],
+    options: [
+      "200",
+      "201",
+      "OK",
+      "Created",
+      "Content-Type",
+      "Content-Length",
+      "Status",
+      "Length",
+      "Body",
+    ],
+    explanation:
+      "Statuskoden (200) og fritekst-frase ('OK') henger sammen. Statuskoden er det maskinen leser, frase-tekst er for mennesker. Server sender Content-Type så klienten vet hvordan bodyen tolkes.",
+  },
+  {
+    id: "d-match-http-methods",
+    kind: "match",
+    title: "HTTP-metode → bruksområde",
+    prompt: "Match hver HTTP-metode til hva den standardmessig brukes til (REST-konvensjon).",
+    topic: "HTTP",
+    pairs: [
+      { left: "GET", right: "Hent data — idempotent, ingen sideeffekt" },
+      { left: "POST", right: "Lag ny ressurs — sender body" },
+      { left: "PUT", right: "Erstatt hele ressursen — idempotent" },
+      { left: "PATCH", right: "Endre noen felter — partiell oppdatering" },
+      { left: "DELETE", right: "Fjern ressursen — idempotent" },
+      { left: "OPTIONS", right: "Spør hvilke metoder som er tillatt — CORS-preflight" },
+    ],
+  },
+  {
+    id: "d-match-http-headers",
+    kind: "match",
+    title: "Vanlige HTTP-headere → formål",
+    prompt: "Match hver header til hva den brukes til.",
+    topic: "HTTP",
+    pairs: [
+      { left: "Authorization", right: "Bevis for at brukeren er innlogget (Bearer-token / Basic auth)" },
+      { left: "Content-Type", right: "Hvilket format har bodyen (JSON / form / HTML)" },
+      { left: "Accept", right: "Hvilket format ønsker klienten i responsen" },
+      { left: "Cookie", right: "Sender session-id tilbake til serveren ved hver request" },
+      { left: "X-CSRF-Token", right: "Beskyttelse mot Cross-Site Request Forgery" },
+      { left: "User-Agent", right: "Identifikasjon av klienten (browser, app, bot)" },
+    ],
+  },
+  {
+    id: "d-order-http-lifecycle",
+    kind: "order",
+    title: "HTTP-livssyklusen — fra knappetrykk til ferdig side",
+    prompt:
+      "Dra stegene som skjer fra brukeren klikker en lenke til siden er ferdig vist. Inkluderer både nettverk- og applikasjonslag.",
+    topic: "HTTP",
+    items: [
+      "Bruker klikker en lenke i browseren",
+      "Browser slår opp domenenavn via DNS",
+      "TCP-handshake mellom browser og server",
+      "TLS-handshake (kryptering forhandles)",
+      "Browser sender HTTP-request over TCP-koblingen",
+      "Server matcher URL-en mot en route i Flask",
+      "Route-funksjonen kjører — eventuelt SQL mot databasen",
+      "Server bygger HTTP-respons og sender tilbake",
+      "Browser parser HTML, henter CSS/JS",
+      "Browser bygger DOM og rendrer siden",
+    ],
+    explanation:
+      "Det er minst 10 steg fra klikk til ferdig side — hvert kan gå galt. DNS kan være tregt, TLS kan feile, server kan time ut, DB kan svare 500. Dev-tools sin Network-fane viser alle disse stegene målt i millisekunder for hver request.",
+  },
+
   // ============ NORMALISERING ============
   {
     id: "d-match-norm-anomalier",
