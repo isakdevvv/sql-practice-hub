@@ -202,16 +202,11 @@ function PythonPage() {
                     <Badge variant="outline" className="text-[10px] uppercase tracking-wider">
                       {exercise.topic}
                     </Badge>
-                    {exercise.requires?.includes("flask") && (
-                      <Badge variant="outline" className="text-[10px] border-warning/50 text-warning">
-                        krever flask
+                    {exercise.requires?.map((pkg) => (
+                      <Badge key={pkg} variant="outline" className="text-[10px] border-warning/50 text-warning">
+                        krever {pkg}
                       </Badge>
-                    )}
-                    {exercise.requires?.includes("sqlalchemy") && (
-                      <Badge variant="outline" className="text-[10px] border-warning/50 text-warning">
-                        krever sqlalchemy
-                      </Badge>
-                    )}
+                    ))}
                     {exercise.setup && (
                       <Badge variant="outline" className="text-[10px] border-success/50 text-success">
                         seedet DB
