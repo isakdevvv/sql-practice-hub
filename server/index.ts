@@ -60,14 +60,16 @@ interface QueryResult {
 
 function execQuery(db: Database, sql: string): QueryResult {
   const stmt = db.query(sql);
-  const rows = stmt.all() as Record<string, unknown>[];
-  if (rows.length === 0) {
-    const columnNames = (stmt as unknown as { columnNames?: string[] }).columnNames ?? [];
-    return { columns: columnNames, rows: [] };
-  }
-  const columns = Object.keys(rows[0]);
-  const values = rows.map((r) => columns.map((c) => r[c] ?? null));
-  return { columns, rows: values };
+  // Use raw column names + value arrays — `stmt.all()` materializes rows as
+  // objects, which silently drops duplicate columns (e.g. `SELECT a.id, b.id`
+  // or `SELECT *` across joins). values() preserves order and duplicates.
+  const stmtRaw = stmt as unknown as {
+    columnNames?: string[];
+    values: () => unknown[][];
+  };
+  const columns = stmtRaw.columnNames ?? [];
+  const rows = stmtRaw.values();
+  return { columns, rows };
 }
 
 /** Run user's SQL (which may be CREATE/INSERT/UPDATE/DELETE — multi-statement allowed),
