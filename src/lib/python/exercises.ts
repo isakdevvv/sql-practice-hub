@@ -209,6 +209,27 @@ print(kunde)
       "(kundenr,) — kommaet er viktig for at det skal være en tuple",
       "Bytt til (1) eller (3) for å se andre kunder",
     ],
+    docs: [
+      {
+        title: "Parameter-binding (mysql.connector)",
+        url: "https://dev.mysql.com/doc/connector-python/en/connector-python-api-mysqlcursor-execute.html",
+        note: "Bruk %s i SQL-en, send verdiene som tuple. Connectoren escaper for deg.",
+        snippet: `cursor.execute(
+    "SELECT navn FROM kunde WHERE kundenr = %s",
+    (kundenr,),
+)`,
+      },
+      {
+        title: "fetchone() vs fetchall()",
+        url: "https://dev.mysql.com/doc/connector-python/en/connector-python-api-mysqlcursor-fetchone.html",
+        note: "fetchone() returnerer én rad (tuple) eller None. fetchall() returnerer alle som liste.",
+      },
+      {
+        title: "Hvorfor parameterbinding hindrer SQL injection (OWASP)",
+        url: "https://owasp.org/www-community/attacks/SQL_Injection",
+        note: "Strengkonkatenering blander kode og data. Placeholders holder dem atskilt.",
+      },
+    ],
   },
   {
     id: "py-db-insert",
@@ -232,6 +253,24 @@ cursor.execute("SELECT COUNT(*) FROM kunde")
 print("Antall kunder:", cursor.fetchone()[0])
 `,
     hints: ["Antall skal bli 4 etter INSERT + commit"],
+    docs: [
+      {
+        title: "INSERT INTO (SQL syntax)",
+        url: "https://dev.mysql.com/doc/refman/8.0/en/insert.html",
+        snippet: `INSERT INTO kunde (kundenr, navn, epost)
+VALUES (%s, %s, %s)`,
+      },
+      {
+        title: "db.commit() og transaksjoner",
+        url: "https://dev.mysql.com/doc/connector-python/en/connector-python-api-mysqlconnection-commit.html",
+        note: "Endringer (INSERT/UPDATE/DELETE) kjører i en transaksjon. Uten commit ruller alt tilbake når tilkoblingen lukkes.",
+      },
+      {
+        title: "cursor.lastrowid — id-en til den nye raden",
+        url: "https://dev.mysql.com/doc/connector-python/en/connector-python-api-mysqlcursor-lastrowid.html",
+        note: "Hvis kundenr var auto-inkrement kunne du hentet ID-en med cursor.lastrowid etter INSERT.",
+      },
+    ],
   },
   {
     id: "py-db-injection-bad",
@@ -258,6 +297,23 @@ print("Lekket:", cursor.fetchall())
     hints: [
       "OR 1=1 gjør WHERE alltid sant → alle rader returneres",
       "Fiks ved å bruke %s-placeholder og tuple",
+    ],
+    docs: [
+      {
+        title: "OWASP — SQL Injection",
+        url: "https://owasp.org/www-community/attacks/SQL_Injection",
+        note: "Klassisk angrep: brukerinput tolkes som SQL-kode. Forklarer både `' OR 1=1 --` og varianter som DROP TABLE.",
+      },
+      {
+        title: "OWASP Cheat Sheet — Query Parameterization",
+        url: "https://cheatsheetseries.owasp.org/cheatsheets/SQL_Injection_Prevention_Cheat_Sheet.html",
+        note: "Eneste robuste forsvaret: parameterized queries / prepared statements. Aldri konkateneer brukerinput inn i SQL.",
+        snippet: `# Trygt:
+cursor.execute(
+    "SELECT navn FROM kunde WHERE navn = %s",
+    (brukerinput,),
+)`,
+      },
     ],
   },
 
@@ -332,6 +388,16 @@ print("Ikke-tall:", client.get("/kunde/abc").status_code)
     hints: [
       "<int:kundenr> tvinger Flask til å konvertere til int — bokstaver gir 404",
     ],
+    docs: [
+      {
+        title: "Variable rules — URL converters",
+        url: "https://flask.palletsprojects.com/en/stable/quickstart/#variable-rules",
+        note: "<int:x>, <string:x>, <uuid:x>, <float:x>, <path:x> — Flask validerer og konverterer for deg.",
+        snippet: `@app.route("/kunde/<int:kundenr>")
+def kunde(kundenr):
+    return f"Kunde nr. {kundenr}"`,
+      },
+    ],
   },
   {
     id: "py-flask-jinja",
@@ -367,6 +433,23 @@ print(client.get("/kunder").data.decode())
       "{{ }} er for verdier, {% %} er for kontroll-strukturer",
       "Jinja autoescaper output — beskytter mot XSS",
     ],
+    docs: [
+      {
+        title: "render_template_string()",
+        url: "https://flask.palletsprojects.com/en/stable/api/#flask.render_template_string",
+        note: "I ekte kode bruker du render_template('foo.html', ...) som leser fra templates/-mappa. _string er for små eksempler.",
+      },
+      {
+        title: "Jinja2 — Template Designer Documentation",
+        url: "https://jinja.palletsprojects.com/en/stable/templates/",
+        note: "Full referanse: variabler, kontroll, filtre, makroer, arv ({% extends %} / {% block %}).",
+      },
+      {
+        title: "Auto-escaping (Jinja)",
+        url: "https://jinja.palletsprojects.com/en/stable/templates/#html-escaping",
+        note: "Jinja escaper {{ var }} som default — `<script>` blir tekst, ikke kode. Stopper XSS.",
+      },
+    ],
   },
   {
     id: "py-flask-form-post",
@@ -393,6 +476,23 @@ print(client.post("/login", data={"brukernavn": "ola"}).data.decode())
     hints: [
       "request.form er dict-aktig — bruk .get for default-verdi",
       "methods=['GET','POST'] kreves for å akseptere POST",
+    ],
+    docs: [
+      {
+        title: "request.form / request.method",
+        url: "https://flask.palletsprojects.com/en/stable/api/#flask.Request.form",
+        note: "request.form for body-parametre fra <form>. request.args for query-string. request.json for JSON-body.",
+        snippet: `@app.route("/login", methods=["GET", "POST"])
+def login():
+    if request.method == "POST":
+        navn = request.form.get("brukernavn", "")
+        ...`,
+      },
+      {
+        title: "HTTP-metoder i Flask",
+        url: "https://flask.palletsprojects.com/en/stable/quickstart/#http-methods",
+        note: "Default er bare GET. methods=['POST'] eller flere for å akseptere andre verb.",
+      },
     ],
   },
 
@@ -425,6 +525,20 @@ client = app.test_client()
 print(client.get("/kunder").data.decode())
 `,
     hints: ["fetchall() returnerer liste av tupler — pakk ut med (n, e)"],
+    docs: [
+      {
+        title: "Application Factory og DB-kobling per request",
+        url: "https://flask.palletsprojects.com/en/stable/tutorial/database/",
+        note: "I produksjon vil du holde DB-tilkoblingen i flask.g per request. Her bruker vi en enkel get_db() for å vise prinsippet.",
+      },
+      {
+        title: "Tuple-unpacking i Python",
+        url: "https://docs.python.org/3/tutorial/datastructures.html#tuples-and-sequences",
+        note: "fetchall() returnerer en liste av tupler. (n, e) bryter ut hver kolonne i et lokalt navn.",
+        snippet: `for n, e in cursor.fetchall():
+    print(f"{n} <{e}>")`,
+      },
+    ],
   },
 
   // ============ JSON API ============
@@ -456,6 +570,20 @@ print("Content-Type:", resp.content_type)
 print("JSON:", resp.get_json())
 `,
     hints: ["jsonify setter Content-Type=application/json automatisk"],
+    docs: [
+      {
+        title: "flask.jsonify",
+        url: "https://flask.palletsprojects.com/en/stable/api/#flask.json.jsonify",
+        note: "Serialiserer dict/liste til JSON og setter Content-Type: application/json.",
+        snippet: `data = [{"kundenr": k, "navn": n} for k, n in rows]
+return jsonify(data)`,
+      },
+      {
+        title: "REST API best practices",
+        url: "https://restfulapi.net/json-rest-api-guidelines/",
+        note: "Returnér alltid JSON med riktig Content-Type. /api/-prefiks skiller datalag fra HTML-sider.",
+      },
+    ],
   },
 
   // ============ HTTP STATUSKODER ============
@@ -489,6 +617,20 @@ print("Finnes ikke:", client.get("/kunde/999").status_code)
     hints: [
       "abort(404) heaver Werkzeug-exception som Flask konverterer til HTTP 404",
       "fetchone() returnerer None hvis ingen rad matcher",
+    ],
+    docs: [
+      {
+        title: "flask.abort",
+        url: "https://flask.palletsprojects.com/en/stable/api/#flask.abort",
+        note: "Stop request-en med en HTTP-feilkode. Mer idiomatisk enn `return ..., 404`.",
+        snippet: `if rad is None:
+    abort(404)`,
+      },
+      {
+        title: "HTTP statuskoder (MDN)",
+        url: "https://developer.mozilla.org/en-US/docs/Web/HTTP/Status",
+        note: "200 OK · 201 Created · 204 No Content · 400 Bad Request · 401 Unauthorized · 404 Not Found · 500 Server Error.",
+      },
     ],
   },
 
@@ -525,6 +667,21 @@ print(client.get("/hvem").data.decode())
     hints: [
       "SECRET_KEY trengs — Flask signerer session-cookien med den",
       "test_client() holder cookies mellom requester automatisk",
+    ],
+    docs: [
+      {
+        title: "flask.session",
+        url: "https://flask.palletsprojects.com/en/stable/api/#flask.session",
+        note: "Per-bruker storage som lagres i en signert cookie hos klienten. Lett, men tåler ikke store mengder data.",
+        snippet: `session["bruker"] = navn
+# senere:
+navn = session.get("bruker", "(ingen)")`,
+      },
+      {
+        title: "SECRET_KEY — hvorfor den må settes",
+        url: "https://flask.palletsprojects.com/en/stable/config/#SECRET_KEY",
+        note: "Flask signerer session-cookien med SECRET_KEY. Hemmelighold den (env-variabel i prod). Endring tilbakekaller alle sessioner.",
+      },
     ],
   },
 
@@ -749,6 +906,25 @@ print("Riktig kari:       ", client.post("/login", data={"brukernavn": "kari", "
       "I en ekte registrerings-route: navn = request.form['brukernavn']; hash = generate_password_hash(request.form['passord']); INSERT INTO bruker ...",
       "Sammen med Flask-Login: erstatt `return f\"Innlogget...\"` med login_user(bruker) (se py-ext-flask-login).",
     ],
+    docs: [
+      {
+        title: "functools.wraps og decorators",
+        url: "https://docs.python.org/3/library/functools.html#functools.wraps",
+        note: "@wraps(view) bevarer funksjonsnavn og docstring når en decorator wrapper en annen funksjon.",
+      },
+      {
+        title: "redirect() og url_for()",
+        url: "https://flask.palletsprojects.com/en/stable/quickstart/#redirects-and-errors",
+        note: "redirect() sender 302 til en annen sti. url_for('endpoint_name') beregner sti basert på funksjonsnavn — aldri hardkod URLer.",
+        snippet: `if "user_id" not in session:
+    return redirect(url_for("login"))`,
+      },
+      {
+        title: "Hash passord — werkzeug.security",
+        url: "https://werkzeug.palletsprojects.com/en/stable/utils/#werkzeug.security.generate_password_hash",
+        note: "I produksjon: lagre `generate_password_hash(passord)`. Sjekk login med `check_password_hash(stored, input)`. ALDRI lagre klartekst-passord.",
+      },
+    ],
   },
 
   // ============ CSRF ============
@@ -803,6 +979,25 @@ print("4. Feil token:", client.post("/lagre", data={"navn": "Ola", "csrf": "fake
       "Forventet: 2 → 403, 3 → 200, 4 → 403",
       "I ekte kode bruker man Flask-WTF som genererer + verifiserer token automatisk",
     ],
+    docs: [
+      {
+        title: "OWASP — Cross-Site Request Forgery (CSRF)",
+        url: "https://owasp.org/www-community/attacks/csrf",
+        note: "Angriperens nettside får brukerens nettleser til å sende en POST mot ditt domene. Token-mønsteret er forsvaret.",
+      },
+      {
+        title: "secrets.token_hex",
+        url: "https://docs.python.org/3/library/secrets.html#secrets.token_hex",
+        note: "Kryptografisk trygg tilfeldig hex-streng. Bruk denne, ikke random.choice().",
+        snippet: `import secrets
+token = secrets.token_hex(16)`,
+      },
+      {
+        title: "Flask-WTF (anbefalt i ekte prosjekter)",
+        url: "https://flask-wtf.readthedocs.io/en/stable/csrf.html",
+        note: "Genererer + verifiserer CSRF-tokens automatisk via en utvidelse — slipper å skrive `secrets`-koden selv.",
+      },
+    ],
   },
 
   // ============ TOKEN-AUTH (API) ============
@@ -849,6 +1044,24 @@ print("3.", r.status_code, r.get_json())
     hints: [
       "Forventet: 1 og 2 → 401, 3 → 200 + liste med kunder",
       "I produksjon: bruk JWT eller OAuth, ikke en hardkodet token",
+    ],
+    docs: [
+      {
+        title: "Bearer Authentication (RFC 6750)",
+        url: "https://datatracker.ietf.org/doc/html/rfc6750",
+        note: "Standardiseringen: `Authorization: Bearer <token>` på hver request.",
+        snippet: `headers={"Authorization": f"Bearer {API_TOKEN}"}`,
+      },
+      {
+        title: "request.headers.get",
+        url: "https://flask.palletsprojects.com/en/stable/api/#flask.Request.headers",
+        note: "Les HTTP-headere fra request. Returnerer tom streng (default) hvis ikke satt.",
+      },
+      {
+        title: "PyJWT — for ekte JWT-tokens",
+        url: "https://pyjwt.readthedocs.io/en/stable/",
+        note: "Når hardkodet token ikke holder lenger: signerte JWT med utløpstid og brukerinfo.",
+      },
     ],
   },
 
@@ -908,6 +1121,23 @@ print("DELETE 999:", client.delete("/kunder/999").status_code)
       "201 Created etter POST, 204 No Content etter DELETE, 404 hvis ressursen ikke finnes",
       "request.get_json() leser JSON-bodyen",
     ],
+    docs: [
+      {
+        title: "REST resource conventions",
+        url: "https://restfulapi.net/resource-naming/",
+        note: "Substantiv i flertall (`/kunder`), HTTP-verb sier hva som skal skje. ID-en i path: `/kunder/<id>`.",
+      },
+      {
+        title: "request.get_json()",
+        url: "https://flask.palletsprojects.com/en/stable/api/#flask.Request.get_json",
+        note: "Parser request-body som JSON. Returnerer dict/list. Bruk silent=True for å unngå exception ved ugyldig JSON.",
+      },
+      {
+        title: "cursor.rowcount",
+        url: "https://dev.mysql.com/doc/connector-python/en/connector-python-api-mysqlcursor-rowcount.html",
+        note: "Antall rader påvirket av siste statement. 0 etter DELETE = ressursen fantes ikke → 404.",
+      },
+    ],
   },
 
   // ============ PYTHON DATA-PROSESSERING ============
@@ -938,6 +1168,19 @@ print(f"Total omsetning: {total} kr")
       "Du kunne også brukt sum(antall*pris for antall, pris in ordrelinjer)",
       "Sjekk at totalen blir 38900 — samme som SUM(antall*pris) ville gitt",
     ],
+    docs: [
+      {
+        title: "sum() med generator-uttrykk",
+        url: "https://docs.python.org/3/library/functions.html#sum",
+        note: "Slipper for-løkken for noe så enkelt som å summere.",
+        snippet: `total = sum(antall * pris for antall, pris in ordrelinjer)`,
+      },
+      {
+        title: "for-løkke + tuple-unpacking",
+        url: "https://docs.python.org/3/tutorial/controlflow.html#for-statements",
+        note: "for-syntaks kan pakke ut hver tuple direkte i navngitte variabler.",
+      },
+    ],
   },
   {
     id: "py-prosess-group",
@@ -967,6 +1210,23 @@ for kategori, navnliste in per_kategori.items():
       "per_kategori.setdefault(kategori, []).append(navn) gjør samme i én linje",
       "from collections import defaultdict gir en enda renere variant",
       "I SQL ville dette vært GROUP_CONCAT(navn) GROUP BY kategori",
+    ],
+    docs: [
+      {
+        title: "dict.setdefault",
+        url: "https://docs.python.org/3/library/stdtypes.html#dict.setdefault",
+        note: "Returnerer eksisterende verdi eller setter default. Idiomatic for group-by:",
+        snippet: `per_kategori.setdefault(kategori, []).append(navn)`,
+      },
+      {
+        title: "collections.defaultdict",
+        url: "https://docs.python.org/3/library/collections.html#collections.defaultdict",
+        note: "Renere alternativ — autoinitialiserer manglende nøkler med en default factory.",
+        snippet: `from collections import defaultdict
+per_kategori = defaultdict(list)
+for navn, kategori in produkter:
+    per_kategori[kategori].append(navn)`,
+      },
     ],
   },
   {
@@ -1000,6 +1260,19 @@ for linje_id, prodnr, antall, pris in sortert[:3]:
       "reverse=True for synkende; reverse=False (default) for stigende",
       "sortert[:3] er Python slicing — første 3 elementer",
     ],
+    docs: [
+      {
+        title: "sorted() med key=",
+        url: "https://docs.python.org/3/library/functions.html#sorted",
+        note: "Returnerer en NY sortert liste. .sort() sorterer in-place. key=lambda lar deg sortere på beregnet verdi.",
+        snippet: `sortert = sorted(rader, key=lambda r: r[2] * r[3], reverse=True)`,
+      },
+      {
+        title: "Slicing — liste[start:stopp:steg]",
+        url: "https://docs.python.org/3/tutorial/introduction.html#lists",
+        note: "[:3] første tre, [-3:] siste tre, [::2] annenhver.",
+      },
+    ],
   },
   {
     id: "py-prosess-format",
@@ -1024,6 +1297,19 @@ for navn, epost, registrert in kunder:
       "epost or '(ingen e-post)' bruker at None er falsy → fallback-strengen brukes",
       "f-strings ({...}) er mye lettere enn '+' for å bygge strenger",
       "I SQL ville du brukt COALESCE(epost, '(ingen e-post)')",
+    ],
+    docs: [
+      {
+        title: "f-strings (PEP 498)",
+        url: "https://docs.python.org/3/reference/lexical_analysis.html#f-strings",
+        note: "f\"{uttrykk:format}\" — innebygd interpolation. Mye lettere enn .format() eller %-syntaks.",
+        snippet: `f"{navn:<20} | {pris:>8.2f} kr"  # venstrejustert navn, høyrejustert pris`,
+      },
+      {
+        title: "Truthiness — None, '', 0, [] er alle falsy",
+        url: "https://docs.python.org/3/library/stdtypes.html#truth-value-testing",
+        note: "`epost or '(ingen)'` returnerer fallback-en hvis epost er None/''/0.",
+      },
     ],
   },
   {
@@ -1058,6 +1344,19 @@ for linje_id, prodnr, antall, pris in ordrelinjer:
       ".get(noekkel, default) returnerer default hvis nøkkelen mangler — som LEFT JOIN",
       "I SQL: SELECT ... FROM ordrelinje LEFT JOIN betaling ON ... — men noen ganger er Python-merge enklere å lese",
     ],
+    docs: [
+      {
+        title: "Dict comprehensions",
+        url: "https://docs.python.org/3/tutorial/datastructures.html#dictionaries",
+        note: "{key: value for ... in ...} — bygg en dict i én linje fra en sekvens.",
+        snippet: `{ordrenr: belop for ordrenr, belop in cursor.fetchall()}`,
+      },
+      {
+        title: "dict.get(key, default)",
+        url: "https://docs.python.org/3/library/stdtypes.html#dict.get",
+        note: "Returnerer verdien eller default — som LEFT JOIN i SQL: ingen match → default i stedet for KeyError.",
+      },
+    ],
   },
   {
     id: "py-prosess-statistikk",
@@ -1089,6 +1388,22 @@ for prodnr, priser in sorted(priser_per_produkt.items()):
       "statistics.mean(liste) er innebygd — slipper å dele sum/len selv",
       "min(liste) og max(liste) virker direkte på en liste tall",
       "setdefault(noekkel, []).append(...) er et vanlig group-by-mønster",
+    ],
+    docs: [
+      {
+        title: "statistics-modulen",
+        url: "https://docs.python.org/3/library/statistics.html",
+        note: "mean, median, stdev, mode — innebygd, ingen pip-install. For tunge analyser: pandas/numpy.",
+        snippet: `import statistics
+statistics.mean([1, 2, 3])      # 2
+statistics.median([1, 2, 3])    # 2
+statistics.stdev([1, 2, 3, 4])  # 1.29...`,
+      },
+      {
+        title: "min() og max() — built-ins",
+        url: "https://docs.python.org/3/library/functions.html#min",
+        note: "Tar en sekvens eller flere argumenter. Med key= sorterer du på beregnet verdi.",
+      },
     ],
   },
 
@@ -1123,6 +1438,20 @@ for produkt in produkter[:3]:
       "respons.get_json() — gir Python-liste/dict (None hvis ikke JSON)",
       "produkter[:3] henter de tre første elementene",
     ],
+    docs: [
+      {
+        title: "Flask Response.get_json()",
+        url: "https://flask.palletsprojects.com/en/stable/api/#flask.Response.get_json",
+        note: "Parser body som JSON. Returnerer None hvis Content-Type ikke er JSON.",
+      },
+      {
+        title: "test_client — sende GET",
+        url: "https://flask.palletsprojects.com/en/stable/testing/#sending-requests-with-the-test-client",
+        snippet: `client = app.test_client()
+resp = client.get("/api/produkter")
+data = resp.get_json()  # Python-liste/dict`,
+      },
+    ],
   },
   {
     id: "py-api-filter-response",
@@ -1152,6 +1481,19 @@ for produkt in billig_elektronikk:
       "[x for x in liste if vilkår] — list comprehension med filter",
       "liste.sort(key=lambda p: p['pris']) — sorterer in-place",
       "Bruk operatoren and for å kombinere to vilkår",
+    ],
+    docs: [
+      {
+        title: "List comprehensions",
+        url: "https://docs.python.org/3/tutorial/datastructures.html#list-comprehensions",
+        note: "[uttrykk for x in iterable if vilkår] — kompakt filtrering + transformasjon i én linje.",
+        snippet: `[p for p in produkter if p["kategori"] == "Elektronikk" and p["pris"] < 10000]`,
+      },
+      {
+        title: "Boolske operatorer",
+        url: "https://docs.python.org/3/library/stdtypes.html#boolean-operations-and-or-not",
+        note: "and (begge må være sant), or (én må være sann), not (inverter).",
+      },
     ],
   },
   {
@@ -1186,6 +1528,18 @@ elif respons.status_code == 201:
       "client.post(url, json=dict) — Flask serialiserer automatisk og setter Content-Type",
       "respons.status_code er heltall — sammenlign med == 401",
       "Server returnerer feilkroppen som JSON, så .get_json() virker",
+    ],
+    docs: [
+      {
+        title: "401 Unauthorized vs 403 Forbidden (MDN)",
+        url: "https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401",
+        note: "401 = vi vet ikke hvem du er (mangler/ugyldig auth). 403 = vi vet hvem du er, men du har ikke lov.",
+      },
+      {
+        title: "test_client.post(json=...)",
+        url: "https://flask.palletsprojects.com/en/stable/testing/#sending-requests-with-the-test-client",
+        note: "json= setter Content-Type: application/json automatisk og serialiserer dict-en.",
+      },
     ],
   },
   {
@@ -1223,6 +1577,18 @@ print("Hentet etter opprettelse:", nytt_produkt)
       "Bearer demo-token-abc123 er det demo-appen forventer (se /api-konsoll)",
       "Etter opprettelse: GET /api/produkter/100 skal nå returnere 200, ikke 404",
     ],
+    docs: [
+      {
+        title: "Authorization-header (RFC 6750 Bearer)",
+        url: "https://datatracker.ietf.org/doc/html/rfc6750#section-2.1",
+        snippet: `headers={"Authorization": "Bearer demo-token-abc123"}`,
+      },
+      {
+        title: "201 Created — riktig statuskode etter POST som lager noe",
+        url: "https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/201",
+        note: "Ikke 200 — 201 signaliserer at noe nytt ble lagret.",
+      },
+    ],
   },
   {
     id: "py-api-login-flow",
@@ -1253,6 +1619,18 @@ print("Etter login:", etter_login.status_code, etter_login.get_json())
       "Samme test_client-instans = samme cookie-jar — som én browser-tab",
       "Set-Cookie i responsen håndteres automatisk; ingen manuell parsing",
       "Lager du en NY test_client() etter login, mister du cookien",
+    ],
+    docs: [
+      {
+        title: "Cookies og Set-Cookie (MDN)",
+        url: "https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies",
+        note: "Server setter Set-Cookie i respons. Klient sender Cookie tilbake på neste request — sånn opprettholdes session.",
+      },
+      {
+        title: "test_client og cookie-persistens",
+        url: "https://flask.palletsprojects.com/en/stable/testing/#sending-requests-with-the-test-client",
+        note: "Samme test_client-instans deler cookies på tvers av kall — som én og samme nettleser-fane.",
+      },
     ],
   },
   {
@@ -1290,6 +1668,18 @@ print("Med token:", med_token.status_code, med_token.get_json())
       "X-CSRF-Token er konvensjonen — andre rammeverk bruker X-XSRF-Token",
       "Forskjellen mellom Authorization og X-CSRF-Token: auth = hvem du ER, csrf = at requesten faktisk kom fra ditt skjema",
     ],
+    docs: [
+      {
+        title: "OWASP — CSRF Prevention Cheat Sheet",
+        url: "https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html",
+        note: "Synchronizer Token-mønsteret: server gir tokenet, klient ekkoer det tilbake i header eller skjult skjemafelt.",
+      },
+      {
+        title: "X-CSRF-Token vs Authorization",
+        url: "https://owasp.org/www-community/attacks/csrf",
+        note: "Authorization svarer på 'hvem er du?'. X-CSRF-Token svarer på 'kom requesten fra ditt eget skjema?'. To forskjellige forsvar — bruk begge.",
+      },
+    ],
   },
   {
     id: "py-api-aggregate-response",
@@ -1322,6 +1712,18 @@ print(f"\\nTotalt på lager: {sum(verdi_per_kategori.values())} kr")
       "dict.get(noekkel, 0) gir 0 som default når kategorien ikke er sett før",
       "sorted(items, key=lambda p: -p[1]) — minus foran for synkende",
       "sum(dict.values()) summerer alle verdiene i dict-en",
+    ],
+    docs: [
+      {
+        title: "dict.items() / dict.values()",
+        url: "https://docs.python.org/3/library/stdtypes.html#dict.items",
+        note: ".items() gir (key, value)-par, .values() bare verdiene. Kombiner med sum/sorted/comprehensions.",
+      },
+      {
+        title: "Pandas — når datasettet vokser",
+        url: "https://pandas.pydata.org/docs/user_guide/groupby.html",
+        note: "For større aggregeringer: pandas DataFrame.groupby('kategori').sum() er ofte raskere og lettere å lese.",
+      },
     ],
   },
 
@@ -1376,6 +1778,24 @@ print("Indekser på user:", [ix["column_names"] for ix in inspector.get_indexes(
       "Optional[str] = kolonnen kan være NULL; uten Optional krever SQLAlchemy en verdi",
       "sa.inspect() er nyttig for å se hva CREATE TABLE faktisk genererte",
     ],
+    docs: [
+      {
+        title: "SQLAlchemy 2.x — Declarative Mapping (Mapped/mapped_column)",
+        url: "https://docs.sqlalchemy.org/en/20/orm/quickstart.html#declare-models",
+        note: "Den nye type-hint-baserte måten å definere modeller. Mapped[int] erstatter Column(Integer).",
+      },
+      {
+        title: "Flask Mega-Tutorial — Database",
+        url: "https://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-iv-database",
+        note: "Boken denne arc-en bygger på. Forklarer User-modellen + migrasjons-workflowen i kontekst.",
+      },
+      {
+        title: "create_engine + Base.metadata.create_all",
+        url: "https://docs.sqlalchemy.org/en/20/tutorial/metadata.html#emitting-ddl-to-the-database",
+        snippet: `engine = sa.create_engine("sqlite:///:memory:")
+Base.metadata.create_all(engine)`,
+      },
+    ],
   },
   {
     id: "py-sqla-2-add-query",
@@ -1427,6 +1847,19 @@ with so.Session(engine) as session:
       "Etter commit får objektet sin id automatisk (auto-increment)",
       "session.scalars(query) returnerer instanser (User-objekter); session.execute(query) returnerer Row-objekter",
       "I Flask-SQLAlchemy er dette db.session.add() / db.session.commit() — samme API",
+    ],
+    docs: [
+      {
+        title: "Session basics — add, commit, rollback",
+        url: "https://docs.sqlalchemy.org/en/20/orm/session_basics.html",
+        note: "Unit-of-work-mønsteret: samle endringer i sessionen, commit i én transaksjon.",
+      },
+      {
+        title: "session.scalars() vs execute()",
+        url: "https://docs.sqlalchemy.org/en/20/orm/queryguide/select.html#selecting-orm-entities",
+        note: ".scalars() pakker ut Row → entitet. Bruk denne når du vil ha modellinstanser tilbake.",
+        snippet: `users = session.scalars(sa.select(User)).all()`,
+      },
     ],
   },
   {
@@ -1483,6 +1916,24 @@ with so.Session(engine) as session:
       "User.username.like('o%') — % er wildcard, akkurat som SQL LIKE",
       ".first() returnerer første treff eller None; .one() krever nøyaktig ett treff (exception ellers)",
       "I Mega-Tutorial Part IV brukes nøyaktig dette mønsteret i shell-en",
+    ],
+    docs: [
+      {
+        title: "select() med where()",
+        url: "https://docs.sqlalchemy.org/en/20/tutorial/data_select.html#the-where-clause",
+        snippet: `q = sa.select(User).where(User.username == "ola")
+user = session.scalars(q).first()`,
+      },
+      {
+        title: "Column operators — like, in_, is_, ==",
+        url: "https://docs.sqlalchemy.org/en/20/core/operators.html",
+        note: "User.id == 1 → SQL '='. User.username.like('o%') → SQL LIKE. User.id.in_([1,2,3]) → IN.",
+      },
+      {
+        title: "session.get() — primærnøkkel-oppslag",
+        url: "https://docs.sqlalchemy.org/en/20/orm/queryguide/select.html#selecting-by-primary-key-with-session-get",
+        note: "Raskere enn select+where for PK. Returnerer None ved ikke-funnet.",
+      },
     ],
   },
   {
@@ -1544,6 +1995,18 @@ with so.Session(engine) as session:
       "I Flask-SQLAlchemy: db.paginate(query, page=2, per_page=2) — samme greie pakket inn",
       "Husk at uten ORDER BY er rekkefølgen udefinert — derfor ALLTID order_by før limit",
     ],
+    docs: [
+      {
+        title: "ORDER BY, LIMIT, OFFSET",
+        url: "https://docs.sqlalchemy.org/en/20/tutorial/data_select.html#the-order-by-clause",
+        snippet: `sa.select(User).order_by(User.username.asc()).limit(10).offset(20)`,
+      },
+      {
+        title: "Flask-SQLAlchemy paginate()",
+        url: "https://flask-sqlalchemy.palletsprojects.com/en/stable/pagination/",
+        note: "Pen wrapper over limit+offset med metadata (next/prev/total).",
+      },
+    ],
   },
   {
     id: "py-sqla-5-foreign-key",
@@ -1601,6 +2064,23 @@ for fk in inspector.get_foreign_keys("post"):
       "default=lambda: datetime.now(timezone.utc) — lambdaen kjører ved INSERT, så hver rad får sin egen timestamp (default=datetime.now(timezone.utc) ville frosset tiden ved import)",
       "list[\"Post\"] med streng for forward-ref — klassisk Python-typing-mønster når klassen er definert lengre ned",
       "I Mega-Tutorial brukes WriteOnlyMapped istedenfor list — mer skalerbart for store relasjoner. list er enklere for små eksempler.",
+    ],
+    docs: [
+      {
+        title: "ForeignKey + relationship()",
+        url: "https://docs.sqlalchemy.org/en/20/orm/relationship_api.html#sqlalchemy.orm.relationship",
+        snippet: `class Post(Base):
+    user_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey("user.id"))
+    author: so.Mapped["User"] = so.relationship(back_populates="posts")
+
+class User(Base):
+    posts: so.Mapped[list["Post"]] = so.relationship(back_populates="author")`,
+      },
+      {
+        title: "back_populates — to-veis relasjon",
+        url: "https://docs.sqlalchemy.org/en/20/orm/backref.html",
+        note: "Gjør at endringer på en side speiles på den andre. user.posts.append(p) setter også p.author = user automatisk.",
+      },
     ],
   },
   {
@@ -1665,6 +2145,20 @@ with so.Session(engine) as session:
       "I bakgrunnen kjører SQLAlchemy en SELECT mot post WHERE user_id = ola.id — du ser bare attributtet",
       "Pass på N+1-fellen: en for-løkke som aksesserer p.author kan trigge én SELECT per post. Bruk selectinload() for eager-loading hvis du har mange rader.",
     ],
+    docs: [
+      {
+        title: "Relationship loading techniques",
+        url: "https://docs.sqlalchemy.org/en/20/orm/queryguide/relationships.html",
+        note: "selectinload, joinedload, lazy='select' — kontroller hvordan relasjoner hentes for å unngå N+1.",
+        snippet: `q = sa.select(User).options(so.selectinload(User.posts))
+# Én SELECT for users, én for ALLE posts samlet`,
+      },
+      {
+        title: "Lazy loading vs eager loading",
+        url: "https://docs.sqlalchemy.org/en/20/orm/queryguide/relationships.html#lazy-loading",
+        note: "Default lazy: SELECT skjer når attributtet aksesseres. Eager: SELECT kjøres på forhånd. N+1-problemet løses med eager.",
+      },
+    ],
   },
   {
     id: "py-sqla-7-update-delete-rollback",
@@ -1725,6 +2219,24 @@ with so.Session(engine) as session:
       "rollback() fungerer bare på endringer som IKKE er commit-et enda — committed data er borte for godt",
       "session.refresh(obj) tvinger en ny SELECT etter rollback så Python-objektet matcher DB",
       "I produksjon: pakk endringer i try/except og rollback ved feil — så atomicity holder selv ved exceptions",
+    ],
+    docs: [
+      {
+        title: "Transaksjoner og rollback",
+        url: "https://docs.sqlalchemy.org/en/20/orm/session_transaction.html",
+        note: "session.commit() commiter, session.rollback() ruller tilbake. Bruk try/except/rollback for atomic-mønsteret.",
+        snippet: `try:
+    user.username = "ny"
+    session.commit()
+except Exception:
+    session.rollback()
+    raise`,
+      },
+      {
+        title: "session.delete() og cascade",
+        url: "https://docs.sqlalchemy.org/en/20/orm/cascades.html",
+        note: "session.delete(obj) markerer for sletting. cascade='all, delete-orphan' rydder også opp i relaterte rader.",
+      },
     ],
   },
   {
@@ -1801,6 +2313,18 @@ print("Etter POST:", client.get("/api/users").get_json())
       "I Flask-SQLAlchemy bytter du sessionmaker med db.session — den er bundet til app-konteksten og ryddes opp etter hver request automatisk",
       "to_dict()-metoden er en vanlig pattern; større prosjekter bruker biblioteket marshmallow eller pydantic for serialisering",
     ],
+    docs: [
+      {
+        title: "Flask-SQLAlchemy",
+        url: "https://flask-sqlalchemy.palletsprojects.com/en/stable/quickstart/",
+        note: "Wrapper rundt SQLAlchemy som binder session til app-konteksten. db.session brukes per request, lukkes automatisk.",
+      },
+      {
+        title: "Marshmallow / Pydantic for serialisering",
+        url: "https://marshmallow.readthedocs.io/en/stable/",
+        note: "Når to_dict() ikke holder lenger: schemaer som validerer input + serialiserer output (samme jobb som Pydantic gjør i FastAPI).",
+      },
+    ],
   },
 
   // ============ FLASK-UTVIDELSER ============
@@ -1862,6 +2386,21 @@ print(f"  DEBUG: {Config.DEBUG} ({type(Config.DEBUG).__name__})")
       "DEBUG=True i .env er en STRING, ikke en bool — derfor konverteres med == 'True'",
       "I produksjon settes disse via plattformen (Heroku-config, systemd EnvironmentFile, Docker secrets) — .env er for utvikling",
     ],
+    docs: [
+      {
+        title: "python-dotenv",
+        url: "https://github.com/theskumar/python-dotenv#readme",
+        note: "load_dotenv() leser .env-fila og kopierer innholdet inn i os.environ. Kall den én gang i toppen av appen.",
+        snippet: `from dotenv import load_dotenv
+load_dotenv()
+secret = os.environ.get("SECRET_KEY")`,
+      },
+      {
+        title: "12-factor app: Config",
+        url: "https://12factor.net/config",
+        note: "Industristandard: hold all konfig i miljøvariabler, aldri i koden. Samme kode kjører i utvikling og produksjon.",
+      },
+    ],
   },
   {
     id: "py-ext-wtforms-validate",
@@ -1914,6 +2453,20 @@ for felt, feil in form.errors.items():
       "DataRequired sjekker både at feltet er sendt OG at verdien ikke er falsy ('', None, 0)",
       "I Flask-WTF arver klassen FlaskForm istedenfor Form — da fanges request.form automatisk og CSRF aktiveres",
     ],
+    docs: [
+      {
+        title: "WTForms — Fields & Validators",
+        url: "https://wtforms.readthedocs.io/en/stable/fields/",
+        note: "StringField, IntegerField, BooleanField osv. Validatorer: DataRequired, Length, Email, NumberRange, EqualTo.",
+      },
+      {
+        title: "WTForms — bygge en Form-klasse",
+        url: "https://wtforms.readthedocs.io/en/stable/forms/",
+        snippet: `class RegistrerForm(Form):
+    brukernavn = StringField("Brukernavn", validators=[DataRequired(), Length(min=3, max=20)])
+    alder = IntegerField("Alder", validators=[NumberRange(min=18, max=120)])`,
+      },
+    ],
   },
   {
     id: "py-ext-flask-wtf-csrf",
@@ -1960,6 +2513,20 @@ print("Gyldig:", r.status_code, "→", r.data.decode())
       "I produksjon: WTF_CSRF_ENABLED=True (default). Da må skjemaet inneholde {{ form.csrf_token }} i Jinja-template",
       "Sammenlign med py-flask-csrf — der var token-håndteringen manuell. Flask-WTF gjør det usynlig.",
     ],
+    docs: [
+      {
+        title: "Flask-WTF — CSRF Protection",
+        url: "https://flask-wtf.readthedocs.io/en/stable/csrf.html",
+        note: "FlaskForm gir automatisk csrf_token-felt + sjekk. Aktiveres med CSRFProtect(app) for skjemaer som ikke arver FlaskForm.",
+      },
+      {
+        title: "validate_on_submit()",
+        url: "https://flask-wtf.readthedocs.io/en/stable/quickstart/#creating-forms",
+        snippet: `if form.validate_on_submit():
+    # request.method == 'POST' AND form.validate() returnerte True
+    save(form.data)`,
+      },
+    ],
   },
   {
     id: "py-ext-email-validator",
@@ -2005,6 +2572,23 @@ print("WTForms Email() — gyldig:", form.validate(), form.epost.data)
       "check_deliverability=False slår av DNS-oppslag. I produksjon kan du la den stå på, men da blokkerer den i et par hundre ms per validering.",
       "WTForms sin Email()-validator videresender til denne pakka — å installere email_validator er en betingelse for at Email() funker",
       "Aldri stol BARE på syntaks-validering — bekreft alltid via en e-post med engangskode hvis adressen brukes til pålogging",
+    ],
+    docs: [
+      {
+        title: "email-validator (PyPI)",
+        url: "https://github.com/JoshData/python-email-validator#readme",
+        note: "validate_email(addr) returnerer info-objekt med normalisert form. Kaster EmailNotValidError ved ugyldig syntaks.",
+        snippet: `try:
+    info = validate_email(addr, check_deliverability=False)
+    normalized = info.normalized
+except EmailNotValidError as e:
+    print(str(e))`,
+      },
+      {
+        title: "Hvorfor regex IKKE er nok for e-post",
+        url: "https://datatracker.ietf.org/doc/html/rfc5322",
+        note: "Den fulle RFC 5322-grammatikken er for kompleks for trygg regex. Bruk biblioteket.",
+      },
     ],
   },
   {
@@ -2094,6 +2678,23 @@ print("Etter logout:", r.status_code)
       "current_user fungerer i alle views OG i Jinja-templates: {% if current_user.is_authenticated %} ...",
       "Sammenlign med py-flask-login: der hadde vi 12+ linjer kode for å bygge @login_required selv — her er det én import",
       "Passordene 'supersecret' / 'passord1234' er KLARTEKST her av pedagogiske grunner. I produksjon: generate_password_hash ved registrering, check_password_hash i login_user-flyten — se py-pwd-3-secure-login.",
+    ],
+    docs: [
+      {
+        title: "Flask-Login — Configuration",
+        url: "https://flask-login.readthedocs.io/en/latest/#configuring-your-application",
+        note: "LoginManager(app), @login_manager.user_loader, og UserMixin. De tre delene som må være på plass.",
+        snippet: `login_manager = LoginManager(app)
+
+@login_manager.user_loader
+def load_user(user_id):
+    return USERS.get(int(user_id))`,
+      },
+      {
+        title: "@login_required, current_user, login_user/logout_user",
+        url: "https://flask-login.readthedocs.io/en/latest/#login-example",
+        note: "current_user er en proxy som peker på innlogget bruker (eller AnonymousUserMixin). Tilgjengelig i ALLE views og templates.",
+      },
     ],
   },
 ];
