@@ -1120,6 +1120,165 @@ export const FLASHCARDS: FlashCard[] = [
     answer:
       "To transaksjoner venter på låser hverandre holder. DBMS oppdager sirkelen og ruller tilbake én av transaksjonene (offer). Unngås ved å ta låser i konsistent rekkefølge.",
   },
+
+  // ============= UTVIDET DEKNING (HTTP / sikkerhet / deploy) =============
+  {
+    id: "c-http-idempotens",
+    category: "http",
+    topic: "HTTP-metoder",
+    question: "Hvilke HTTP-metoder er idempotente, og hva betyr det?",
+    answer:
+      "Idempotent betyr at samme request kan sendes flere ganger uten ny effekt. GET, PUT og DELETE er idempotente; POST og PATCH er det ikke. To identiske PUT-er gir samme tilstand, mens to POST-er typisk lager to ressurser.",
+  },
+  {
+    id: "c-http-4xx-5xx",
+    category: "http",
+    topic: "Statuskoder",
+    question: "Forskjellen på 4xx og 5xx — hvem har skylden?",
+    answer:
+      "4xx = klientfeil: requesten er feil (404 Not Found, 401 Unauthorized, 400 Bad Request). 5xx = serverfeil: serveren klarer ikke håndtere en gyldig request (500 Internal Server Error, 503 Service Unavailable). Logg 5xx aggressivt — de er vanligvis bug i koden din.",
+  },
+  {
+    id: "c-http-rest-rpc",
+    category: "http",
+    topic: "Arkitektur",
+    question: "REST vs RPC — hva er hovedforskjellen i én setning?",
+    answer:
+      "REST sentrerer rundt ressurser med standard HTTP-verb (GET /users/1), mens RPC sentrerer rundt funksjonskall (POST /getUser med { id: 1 }). REST utnytter HTTP-semantikken; RPC tunneler kall over HTTP.",
+  },
+  {
+    id: "c-http-cache-etag",
+    category: "http",
+    topic: "Caching",
+    question: "Hva gjør Cache-Control og ETag?",
+    answer:
+      "Cache-Control bestemmer hvor lenge og hvor (browser, CDN) en respons kan caches (f.eks. max-age=3600). ETag er en versjons-hash på ressursen — klienten sender den i If-None-Match, og serveren svarer 304 Not Modified hvis innholdet er uendret. Sparer båndbredde.",
+    code: "Cache-Control: public, max-age=3600\nETag: \"v3-abc123\"",
+  },
+
+  {
+    id: "c-sec-jwt-storage",
+    category: "sikkerhet",
+    topic: "JWT",
+    question: "Hvor bør en JWT lagres på klientsiden?",
+    answer:
+      "I en HttpOnly + Secure + SameSite cookie — JavaScript kan ikke lese den, så XSS kan ikke stjele tokenet. localStorage er enklere, men hvilket som helst injisert script kan lese det. Ulempen med cookies er CSRF, som må håndteres separat (SameSite=Lax/Strict eller CSRF-token).",
+  },
+  {
+    id: "c-sec-csrf-vs-xss",
+    category: "sikkerhet",
+    topic: "Web-angrep",
+    question: "Forskjellen på CSRF og XSS?",
+    answer:
+      "XSS = angriper kjører eget JS i ditt domene (stjeler data, gjør hva som helst som brukeren). CSRF = angriperens side får nettleseren din til å sende en autentisert request til en annen side du er logget på. XSS bryter siden; CSRF utnytter at du er logget inn et annet sted.",
+  },
+  {
+    id: "c-sec-bcrypt",
+    category: "sikkerhet",
+    topic: "Passord",
+    question: "Hvorfor bcrypt og ikke sha256 for passord?",
+    answer:
+      "bcrypt er bevisst treg og inkluderer salt — det gjør brute-force og rainbow tables upraktisk. sha256 er designet for å være rask, så en GPU kan teste milliarder av kandidater per sekund. Bruk bcrypt, argon2 eller scrypt — aldri rå sha/md5.",
+    code: "from werkzeug.security import generate_password_hash\nhash = generate_password_hash(pw)  # bruker pbkdf2/scrypt",
+  },
+  {
+    id: "c-sec-sop-cors",
+    category: "sikkerhet",
+    topic: "Same-Origin",
+    question: "Hva er Same-Origin Policy, og hva er CORS sin rolle?",
+    answer:
+      "Same-Origin Policy forbyr JS på ett origin (protokoll+host+port) fra å lese responsen fra et annet. CORS er serverens måte å eksplisitt åpne for det — via Access-Control-Allow-Origin-headeren. Uten CORS kan ikke browser-JS på app.no lese fra api.no.",
+  },
+  {
+    id: "c-sec-sqli-prepared",
+    category: "sikkerhet",
+    topic: "SQL Injection",
+    question: "Hva er SQL injection, og hvordan stopper prepared statements det?",
+    answer:
+      "SQL injection = brukerinput limes inn i en SQL-streng og endrer spørringen (f.eks. ' OR 1=1 --). Prepared statements sender SQL og parametre separat til DB-en — parametre tolkes alltid som data, aldri som SQL. Bruk ? eller %s, aldri f-string/konkat.",
+    code: "# Trygt:\ncur.execute(\"SELECT * FROM bruker WHERE epost=?\", (epost,))\n# UTRYGT:\ncur.execute(f\"SELECT * FROM bruker WHERE epost='{epost}'\")",
+  },
+
+  {
+    id: "c-deploy-venv",
+    category: "praktisk",
+    topic: "Virtual environment",
+    question: "Hva er en virtual environment, og hvorfor trengs den?",
+    answer:
+      "En isolert Python-installasjon per prosjekt — egne avhengigheter uten å forurense systemets Python. Forhindrer at Flask 2 i prosjekt A kolliderer med Flask 3 i prosjekt B. Aktiver med source venv/bin/activate (eller .\\venv\\Scripts\\activate på Windows).",
+    code: "python -m venv venv\nsource venv/bin/activate\npip install flask",
+  },
+  {
+    id: "c-deploy-requirements",
+    category: "praktisk",
+    topic: "Avhengigheter",
+    question: "Hva er requirements.txt, og hvordan lages den?",
+    answer:
+      "En liste over Python-pakker prosjektet trenger, med versjoner. Genereres med pip freeze > requirements.txt og installeres med pip install -r requirements.txt. Sørger for at andre (og prod-serveren) får nøyaktig samme versjoner som du brukte.",
+    code: "Flask==3.0.0\nWerkzeug==3.0.1\ngunicorn==21.2.0",
+  },
+  {
+    id: "c-deploy-dockerfile",
+    category: "praktisk",
+    topic: "Docker",
+    question: "Hva er en Dockerfile, og hvordan ser den minimalt ut for Flask?",
+    answer:
+      "En oppskrift på et container-image: hvilket OS, hvilke filer, hvilke kommandoer. Bygges med docker build og kjøres med docker run. Gir samme miljø lokalt og i prod.",
+    code: "FROM python:3.12-slim\nWORKDIR /app\nCOPY requirements.txt .\nRUN pip install -r requirements.txt\nCOPY . .\nCMD [\"gunicorn\", \"-b\", \"0.0.0.0:8000\", \"app:app\"]",
+  },
+  {
+    id: "c-deploy-wsgi",
+    category: "praktisk",
+    topic: "WSGI",
+    question: "Hva er WSGI, og hvorfor brukes Gunicorn i prod?",
+    answer:
+      "WSGI (Web Server Gateway Interface) er Python-standarden for hvordan webservere snakker med web-rammeverk. Flasks innebygde server er kun for utvikling — én tråd, ingen sikkerhet. Gunicorn/uWSGI/uvicorn håndterer mange requester parallelt, restarter krasjede workere og er prod-klare.",
+  },
+  {
+    id: "c-deploy-env-git",
+    category: "praktisk",
+    topic: "Hemmeligheter",
+    question: "Hvorfor skal .env aldri committes til git?",
+    answer:
+      "Den inneholder hemmeligheter — DB-passord, API-nøkler, SECRET_KEY. Når noe er pushet til GitHub, må du anta det er lekket for alltid (også etter force-push, fordi forks og caches finnes). Legg .env i .gitignore og del verdier via en hemmelighetstjeneste eller .env.example uten verdier.",
+  },
+
+  {
+    id: "c-py-name-main",
+    category: "praktisk",
+    topic: "Python-idiom",
+    question: "Hva gjør `if __name__ == \"__main__\":`?",
+    answer:
+      "Blokken kjøres KUN når fila kjøres direkte (python app.py), ikke når den importeres. Lar deg ha kjørbar kode + gjenbrukbare funksjoner i samme fil uten at importer trigger serveren.",
+    code: "if __name__ == \"__main__\":\n    app.run(debug=True)",
+  },
+  {
+    id: "c-py-decorator",
+    category: "flask",
+    topic: "Decorators",
+    question: "Hvordan fungerer @app.route under panseret?",
+    answer:
+      "En decorator er en funksjon som tar en annen funksjon og returnerer en innpakket versjon. @app.route(\"/x\") registrerer funksjonen i Flask sin URL-tabell og returnerer den uendret. Sukker for: index = app.route(\"/x\")(index).",
+    code: "@app.route(\"/hei\")\ndef hei():\n    return \"hei\"\n# tilsvarer: app.route(\"/hei\")(hei)",
+  },
+  {
+    id: "c-py-with",
+    category: "praktisk",
+    topic: "Context manager",
+    question: "Hva sikrer en `with`-blokk?",
+    answer:
+      "At opprydding (lukke fil, gi tilbake DB-tilkobling, releasse lås) skjer automatisk når blokken forlates — også ved exception. Objektet må implementere __enter__ og __exit__. Det er det idiomatiske mønsteret for ressurser i Python.",
+    code: "with open(\"f.txt\") as f:\n    data = f.read()\n# fila lukkes garantert her",
+  },
+  {
+    id: "c-py-fstring",
+    category: "praktisk",
+    topic: "Strenger",
+    question: "f-string vs .format() — hva er anbefalt?",
+    answer:
+      "f-strings (Python 3.6+) er kortest og raskest, og er det idiomatiske valget i moderne kode. .format() er fortsatt OK for templating der strengen lages før verdiene er kjent. ALDRI bruk f-string i SQL-queries — bruk parameter-binding.",
+    code: "navn = \"Ada\"\nf\"Hei {navn}\"        # anbefalt\n\"Hei {}\".format(navn)  # eldre stil",
+  },
 ];
 
 export const CARD_CATEGORIES: { id: FlashCard["category"]; label: string }[] = [
