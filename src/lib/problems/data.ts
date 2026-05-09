@@ -1615,6 +1615,229 @@ export const PROBLEMS: Problem[] = [
       "Hver indeks må oppdateres ved hver INSERT, UPDATE og DELETE som påvirker kolonnen — det er vedlikeholdskostnaden. På en write-tung tabell kan en lite brukt indeks faktisk gjøre systemet tregere totalt sett. DROP INDEX er derfor like viktig som CREATE INDEX: man bygger indekser basert på faktiske spørringsmønstre, og rydder vekk dem som ikke betaler seg.",
     estimated_time_min: 2,
   },
+  // ============= ADVANCED-ARC (p84-p92) — subquery, EXISTS, window functions =============
+  {
+    id: "p84",
+    title: "Produkter dyrere enn snittprisen",
+    level: 4,
+    difficulty: 2,
+    topics: ["SUBQUERY", "SCALAR SUBQUERY", "WHERE", "AVG"],
+    goal: "Bruk en skalar subquery i WHERE for å sammenligne hver rad mot et aggregat over hele tabellen.",
+    problem:
+      "Returner navn og pris for alle produkter som koster mer enn gjennomsnittsprisen i hele products-tabellen. Du kan ikke skrive snittet som et tall — bruk en subquery i WHERE som regner det ut for deg.",
+    starter_sql:
+      "SELECT <Columns>\nFROM products\nWHERE pris > (SELECT <Expression> FROM <TableName>);",
+    solution:
+      "SELECT name, price FROM products WHERE price > (SELECT AVG(price) FROM products);",
+    validation: { ignore_order: true, ignore_column_names: true },
+    hints: [
+      "En subquery i parentes kan returnere én verdi som du sammenligner med >",
+      "AVG(price) gir gjennomsnittet — kjør den uten WHERE for å se tallet",
+      "Den indre spørringen kjøres én gang og settes inn der parentesen står",
+    ],
+    explanation:
+      "En skalar subquery returnerer nøyaktig én rad og én kolonne, og kan derfor brukes på samme sted som en konstant. Det løser problemet med å sammenligne hver rad mot en verdi som først må regnes ut fra dataene selv — uten å måtte hardkode tallet eller kjøre to spørringer i applikasjonskoden.",
+    estimated_time_min: 4,
+  },
+  {
+    id: "p85",
+    title: "Kunder med fullførte ordrer (IN-subquery)",
+    level: 4,
+    difficulty: 2,
+    topics: ["SUBQUERY", "IN", "WHERE"],
+    goal: "Bruk IN med en subquery for å filtrere på medlemskap i et resultat fra en annen tabell.",
+    problem:
+      "Returner id og navn for alle brukere som har minst én ordre med status 'completed'. Bruk IN med en subquery mot orders-tabellen — ikke JOIN.",
+    starter_sql:
+      "SELECT id, name\nFROM users\nWHERE id IN (SELECT <Column> FROM <TableName> WHERE <Condition>);",
+    solution:
+      "SELECT id, name FROM users WHERE id IN (SELECT user_id FROM orders WHERE status = 'completed');",
+    alt_solutions: [
+      "SELECT DISTINCT u.id, u.name FROM users u JOIN orders o ON o.user_id = u.id WHERE o.status = 'completed';",
+    ],
+    validation: { ignore_order: true, ignore_column_names: true },
+    hints: [
+      "Subqueryen returnerer en liste med user_id-verdier — én per fullført ordre",
+      "IN sjekker om users.id finnes i den listen",
+      "Du trenger ikke DISTINCT — IN gir uansett hver bruker bare én gang",
+    ],
+    explanation:
+      "IN med en subquery er en lesbar måte å spørre 'hvilke rader i A har en match i B?' uten å bekymre seg for duplikater (slik en JOIN ville produsert hvis B har flere treff per A-rad). Det er ofte det første verktøyet å nå etter når kravet er 'X som har minst én Y'.",
+    estimated_time_min: 4,
+  },
+  {
+    id: "p86",
+    title: "NOT IN-fellen med NULL",
+    level: 4,
+    difficulty: 4,
+    topics: ["SUBQUERY", "NOT IN", "NULL", "NOT EXISTS"],
+    goal: "Forstå hvorfor NOT IN feiler når subqueryen kan returnere NULL — og bruk NOT EXISTS som trygg erstatning.",
+    problem:
+      "Vi vil finne brukere som ikke har noen ordre i orders-tabellen. Den naive løsningen er WHERE id NOT IN (SELECT user_id FROM orders) — men hvis user_id-kolonnen i subqueryen kan inneholde NULL, returnerer hele NOT IN-uttrykket null rader uansett. Skriv en trygg variant som bruker NOT EXISTS i stedet, så NULL-er ikke ødelegger resultatet. Returner id og name.",
+    starter_sql:
+      "SELECT id, name\nFROM users u\nWHERE NOT EXISTS (\n  SELECT 1 FROM <TableName> o WHERE <Condition>\n);",
+    solution:
+      "SELECT id, name FROM users u WHERE NOT EXISTS (SELECT 1 FROM orders o WHERE o.user_id = u.id);",
+    alt_solutions: [
+      "SELECT u.id, u.name FROM users u LEFT JOIN orders o ON o.user_id = u.id WHERE o.id IS NULL;",
+    ],
+    validation: { ignore_order: true, ignore_column_names: true },
+    hints: [
+      "NOT IN (... NULL ...) blir til NOT (x = NULL) som er UNKNOWN — og UNKNOWN filtreres bort",
+      "NOT EXISTS sjekker bare om underspørringen gir minst én rad — den bryr seg ikke om NULL",
+      "Den korrelerte referansen u.id i underspørringen er det som gjør at den kjøres per bruker",
+    ],
+    explanation:
+      "Dette er en av de mest kjente fellene i SQL: så snart kolonnen i en NOT IN-subquery KAN inneholde NULL, blir hele uttrykket utrygt — én eneste NULL er nok til at NOT IN returnerer null rader, fordi 'x NOT IN (1, 2, NULL)' evalueres som UNKNOWN, ikke TRUE. NOT EXISTS bruker derimot eksistens-semantikk og er upåvirket av NULL. Som regel: bruk NOT EXISTS (eller LEFT JOIN ... IS NULL) for anti-join, og reserver NOT IN for tilfeller hvor du er helt sikker på at kolonnen er NOT NULL.",
+    estimated_time_min: 6,
+  },
+  {
+    id: "p87",
+    title: "EXISTS — har brukeren minst én ordre?",
+    level: 4,
+    difficulty: 3,
+    topics: ["SUBQUERY", "EXISTS", "CORRELATED SUBQUERY"],
+    goal: "Bruk EXISTS med en korrelert subquery for å sjekke eksistens av relaterte rader.",
+    problem:
+      "Returner id og navn for alle brukere som har minst én ordre. Bruk EXISTS med en korrelert subquery mot orders — ikke IN, ikke JOIN.",
+    starter_sql:
+      "SELECT id, name\nFROM users u\nWHERE EXISTS (\n  SELECT 1 FROM <TableName> o WHERE <Condition>\n);",
+    solution:
+      "SELECT id, name FROM users u WHERE EXISTS (SELECT 1 FROM orders o WHERE o.user_id = u.id);",
+    alt_solutions: [
+      "SELECT id, name FROM users WHERE id IN (SELECT user_id FROM orders);",
+    ],
+    validation: { ignore_order: true, ignore_column_names: true },
+    hints: [
+      "EXISTS bryr seg ikke om hva subqueryen returnerer — bare om den returnerer minst én rad. Derfor er SELECT 1 vanlig",
+      "Den korrelerte referansen o.user_id = u.id binder underspørringen til den ytre raden",
+      "Subqueryen kjøres logisk én gang per ytre rad, men optimizeren stopper så snart første treff er funnet",
+    ],
+    explanation:
+      "EXISTS er bygget for nettopp dette spørsmålet: 'finnes det minst én relatert rad?'. I motsetning til IN er den trygg mot NULL, og den semi-join-aktige semantikken gjør at databasen kan stoppe så snart første treff er funnet — ofte raskere enn både IN og JOIN+DISTINCT på store datasett.",
+    estimated_time_min: 4,
+  },
+  {
+    id: "p88",
+    title: "NOT EXISTS — anti-join uten LEFT JOIN",
+    level: 4,
+    difficulty: 3,
+    topics: ["SUBQUERY", "NOT EXISTS", "ANTI-JOIN", "CORRELATED SUBQUERY"],
+    goal: "Bruk NOT EXISTS som alternativ til LEFT JOIN + IS NULL for anti-join.",
+    problem:
+      "Returner id og navn for alle brukere som ALDRI har lagt inn en ordre. I oppgave p18 løste vi dette med LEFT JOIN + IS NULL — denne gangen skal du bruke NOT EXISTS med en korrelert subquery mot orders.",
+    starter_sql:
+      "SELECT id, name\nFROM users u\nWHERE NOT EXISTS (\n  SELECT 1 FROM <TableName> o WHERE <Condition>\n);",
+    solution:
+      "SELECT id, name FROM users u WHERE NOT EXISTS (SELECT 1 FROM orders o WHERE o.user_id = u.id);",
+    alt_solutions: [
+      "SELECT u.id, u.name FROM users u LEFT JOIN orders o ON o.user_id = u.id WHERE o.id IS NULL;",
+    ],
+    validation: { ignore_order: true, ignore_column_names: true },
+    hints: [
+      "NOT EXISTS er det motsatte av EXISTS — sant når underspørringen er tom",
+      "Korrelasjonen o.user_id = u.id gjør at sjekken gjøres per bruker",
+      "Sammenlign med p18: LEFT JOIN ... WHERE o.id IS NULL gir samme resultat",
+    ],
+    explanation:
+      "LEFT JOIN + IS NULL og NOT EXISTS gir samme svar, men uttrykker hensikten ulikt. NOT EXISTS sier rett ut 'det finnes ikke en match' — koden er lettere å lese og er trygg mot NULL. LEFT JOIN-varianten er ofte raskere på enkelte motorer fordi den kan utnytte hash-joins, men på moderne SQLite/Postgres er forskjellen liten. Lær begge og velg den som leser best i konteksten.",
+    estimated_time_min: 4,
+  },
+  {
+    id: "p89",
+    title: "Korrelert subquery — antall ordrer per bruker",
+    level: 4,
+    difficulty: 3,
+    topics: ["SUBQUERY", "CORRELATED SUBQUERY", "COUNT", "SELECT-LIST"],
+    goal: "Bruk en korrelert subquery i SELECT-listen for å regne ut en verdi per ytre rad.",
+    problem:
+      "For hver bruker, returner navn og antall ordrer brukeren har lagt inn. Bruk en korrelert subquery i SELECT-listen — IKKE GROUP BY eller JOIN. Kall kolonnen antall.",
+    starter_sql:
+      "SELECT u.name,\n  (SELECT <Expression> FROM <TableName> o WHERE <Condition>) AS antall\nFROM users u;",
+    solution:
+      "SELECT u.name, (SELECT COUNT(*) FROM orders o WHERE o.user_id = u.id) AS antall FROM users u;",
+    alt_solutions: [
+      "SELECT u.name, COUNT(o.id) AS antall FROM users u LEFT JOIN orders o ON o.user_id = u.id GROUP BY u.id, u.name;",
+    ],
+    validation: { ignore_order: true, ignore_column_names: true },
+    hints: [
+      "Subqueryen i SELECT-listen kjøres én gang per ytre rad — derfor 'korrelert'",
+      "COUNT(*) i en tom subquery returnerer 0, ikke NULL — så brukere uten ordrer får antall = 0",
+      "u.id refererer til ytre rad fra inni subqueryen",
+    ],
+    explanation:
+      "En korrelert subquery refererer til en kolonne fra den ytre spørringen, og kjøres logisk på nytt for hver ytre rad. Det gir en 'per-rad-beregning' som er enkel å lese: hver brukers tall hentes ut isolert. Ulempen er ytelse på store tabeller — ofte vil GROUP BY eller window-funksjoner være raskere — men for å forstå hva som faktisk skjer per rad er korrelert subquery det klareste verktøyet.",
+    estimated_time_min: 5,
+  },
+  {
+    id: "p90",
+    title: "ROW_NUMBER() — ranger ordrer per kunde",
+    level: 5,
+    difficulty: 3,
+    topics: ["WINDOW FUNCTION", "ROW_NUMBER", "PARTITION BY", "OVER"],
+    goal: "Bruk ROW_NUMBER() OVER (PARTITION BY ... ORDER BY ...) for å nummerere rader innen hver gruppe.",
+    problem:
+      "For hver ordre, returner id, user_id, created_at og en kolonne rn som er ordrens rekkefølge for den brukeren — sortert kronologisk på created_at. Brukerens tidligste ordre får rn = 1, neste får rn = 2, osv. Bruk ROW_NUMBER() med en OVER-klausul.",
+    starter_sql:
+      "SELECT id, user_id, created_at,\n  ROW_NUMBER() OVER (PARTITION BY <Column> ORDER BY <Column>) AS rn\nFROM <TableName>;",
+    solution:
+      "SELECT id, user_id, created_at, ROW_NUMBER() OVER (PARTITION BY user_id ORDER BY created_at) AS rn FROM orders;",
+    validation: { ignore_order: true, ignore_column_names: true },
+    hints: [
+      "PARTITION BY deler radene inn i grupper — én gruppe per user_id her",
+      "ORDER BY inni OVER bestemmer rekkefølgen rn telles i — uavhengig av yttre ORDER BY",
+      "ROW_NUMBER() gir alltid unike heltall 1, 2, 3 ... innen hver partisjon",
+    ],
+    explanation:
+      "Window-funksjoner som ROW_NUMBER lar deg legge til rangering eller andre per-gruppe-beregninger uten å kollapse radene slik GROUP BY gjør — du beholder hver original rad og får et nytt felt på siden. PARTITION BY definerer 'gruppen' funksjonen jobber innenfor, og ORDER BY inni OVER bestemmer rekkefølgen. Klassisk bruk: 'finn nyeste ordre per kunde' (filtrer på rn = 1) eller 'topp 3 produkter per kategori'.",
+    estimated_time_min: 5,
+  },
+  {
+    id: "p91",
+    title: "RANK vs DENSE_RANK — hva skjer ved likhet?",
+    level: 5,
+    difficulty: 3,
+    topics: ["WINDOW FUNCTION", "RANK", "DENSE_RANK", "OVER"],
+    goal: "Forstå forskjellen mellom RANK og DENSE_RANK når flere rader har samme verdi.",
+    problem:
+      "Returner produktets navn, pris, en kolonne rnk fra RANK() OVER (ORDER BY price DESC), og en kolonne drnk fra DENSE_RANK() OVER (ORDER BY price DESC). Når flere produkter har samme pris får de samme rangering — men RANK hopper over neste tall (1, 2, 2, 4), mens DENSE_RANK gir tette tall (1, 2, 2, 3). Sammenlign de to kolonnene.",
+    starter_sql:
+      "SELECT name, price,\n  RANK() OVER (ORDER BY <Column> DESC) AS rnk,\n  DENSE_RANK() OVER (ORDER BY <Column> DESC) AS drnk\nFROM products;",
+    solution:
+      "SELECT name, price, RANK() OVER (ORDER BY price DESC) AS rnk, DENSE_RANK() OVER (ORDER BY price DESC) AS drnk FROM products;",
+    validation: { ignore_order: true, ignore_column_names: true },
+    hints: [
+      "Headphones og Chair har begge pris 150 — se hva de får i hver kolonne",
+      "Etter to like rader med RANK = 2, hopper neste til RANK = 4. DENSE_RANK fortsetter på 3",
+      "Begge er deterministiske: samme verdi → samme rangering",
+    ],
+    explanation:
+      "Forskjellen mellom RANK og DENSE_RANK virker liten, men er praktisk viktig: RANK svarer på 'hvilken plass kommer denne raden på i en konkurranse?' (to delte andreplasser → ingen tredjeplass), mens DENSE_RANK svarer på 'hvor mange forskjellige nivåer ligger over denne raden?' (alltid sammenhengende tall). Bruk RANK når du tenker konkurranseplassering, DENSE_RANK når du tenker kategorisering eller 'topp-N distinkte verdier'.",
+    estimated_time_min: 4,
+  },
+  {
+    id: "p92",
+    title: "LAG — sammenlign hver ordre med forrige",
+    level: 5,
+    difficulty: 4,
+    topics: ["WINDOW FUNCTION", "LAG", "PARTITION BY", "OVER"],
+    goal: "Bruk LAG() til å hente verdien fra forrige rad og regne ut differansen mellom denne og forrige.",
+    problem:
+      "For hver ordre, returner id, created_at, en kolonne total (sum av quantity * price fra order_items for den ordren), og en kolonne diff_fra_forrige som er differansen mellom denne ordrens total og forrige ordres total — sortert kronologisk på created_at over alle ordrer (ikke partisjonert per bruker). Den aller første ordren i kronologisk rekkefølge har ingen forrige rad og skal ha NULL i diff_fra_forrige.",
+    starter_sql:
+      "WITH ordre_totaler AS (\n  SELECT o.id, o.created_at, SUM(oi.quantity * oi.price) AS total\n  FROM orders o JOIN order_items oi ON oi.order_id = o.id\n  GROUP BY o.id, o.created_at\n)\nSELECT id, created_at, total,\n  total - LAG(<Column>) OVER (ORDER BY <Column>) AS diff_fra_forrige\nFROM ordre_totaler;",
+    solution:
+      "WITH ordre_totaler AS (SELECT o.id, o.created_at, SUM(oi.quantity * oi.price) AS total FROM orders o JOIN order_items oi ON oi.order_id = o.id GROUP BY o.id, o.created_at) SELECT id, created_at, total, total - LAG(total) OVER (ORDER BY created_at) AS diff_fra_forrige FROM ordre_totaler;",
+    validation: { ignore_order: true, ignore_column_names: true },
+    hints: [
+      "LAG(total) OVER (ORDER BY created_at) gir total fra raden rett før i den sorterte rekkefølgen",
+      "Første rad har ingen forgjenger — LAG returnerer NULL der, og NULL - tall blir NULL",
+      "Bruk en CTE (WITH) for å regne ut total per ordre først — så blir window-funksjonen lettere å lese",
+    ],
+    explanation:
+      "LAG og søsteren LEAD lar deg sammenligne en rad med forrige eller neste rad i en sortert serie — uten en self-join. Det er det rette verktøyet for tidsserieanalyse: differanse mellom påfølgende målinger, finne hopp eller fall, regne ut prosentvis endring. Resultatets første rad har naturlig nok ingen forgjenger; LAG returnerer NULL i det tilfellet, som propagerer riktig gjennom aritmetikken.",
+    estimated_time_min: 7,
+  },
   // ============= UNIVERSITY DATASET =============
   {
     id: "u1",
