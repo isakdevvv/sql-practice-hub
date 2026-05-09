@@ -163,6 +163,27 @@ for r in rows:
       "fetchall() returnerer en liste av tupler.",
       "I oppgaven trenger du ikke ekte host/user — connectoren bruker en in-memory SQLite under panseret.",
     ],
+    docs: [
+      {
+        title: "mysql.connector.connect()",
+        url: "https://dev.mysql.com/doc/connector-python/en/connector-python-api-mysql-connector-connect.html",
+        note: "Standard kobling — host, user, password, database er de fire vanligste.",
+        snippet: `db = mysql.connector.connect(
+    host="localhost",
+    user="root",
+    password="hemmelig",
+    database="exam",
+)`,
+      },
+      {
+        title: "cursor.execute() og fetchall()",
+        url: "https://dev.mysql.com/doc/connector-python/en/connector-python-api-mysqlcursor-execute.html",
+        note: "Kjør spørring → hent alle rader som liste av tupler.",
+        snippet: `cursor = db.cursor()
+cursor.execute("SELECT * FROM kunde")
+rows = cursor.fetchall()`,
+      },
+    ],
   },
   {
     id: "py-db-prepared",
@@ -263,6 +284,28 @@ print("Status:", resp.status_code)
 print("Body:", resp.data.decode())
 `,
     hints: ["Status skal bli 200", "Body skal bli 'Hei!'"],
+    docs: [
+      {
+        title: "Flask quickstart — A Minimal Application",
+        url: "https://flask.palletsprojects.com/en/stable/quickstart/#a-minimal-application",
+        note: "Flask(__name__) + @app.route(\"/\") + funksjon som returnerer responsen.",
+        snippet: `from flask import Flask
+app = Flask(__name__)
+
+@app.route("/")
+def home():
+    return "Hei!"`,
+      },
+      {
+        title: "Flask test_client()",
+        url: "https://flask.palletsprojects.com/en/stable/testing/#sending-requests-with-the-test-client",
+        note: "Send forespørsler uten å starte en ekte server.",
+        snippet: `client = app.test_client()
+resp = client.get("/")
+resp.status_code   # 200
+resp.data          # bytes — bruk .decode()`,
+      },
+    ],
   },
   {
     id: "py-flask-url-param",

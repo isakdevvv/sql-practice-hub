@@ -1,3 +1,5 @@
+import type { DocRef } from "@/lib/docs";
+
 export interface PyExercise {
   id: string;
   topic: string;
@@ -14,6 +16,8 @@ export interface PyExercise {
   /** Setup code run BEFORE user code — gives the exercise a starting world.
    *  Used e.g. to seed an in-memory sqlite DB. Does NOT show in the editor. */
   setup?: string;
+  /** Documentation links + snippets shown next to the prompt. */
+  docs?: DocRef[];
 }
 
 /** A single step in the cumulative "Bygg en nettbutikk"-prosjekt. */
@@ -34,6 +38,8 @@ export interface ProjectStep {
   hints?: string[];
   /** Pyodide packages required (e.g. ["flask"]). */
   requires?: string[];
+  /** Documentation links + snippets shown next to the task. */
+  docs?: DocRef[];
 }
 
 

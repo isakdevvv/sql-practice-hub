@@ -5,10 +5,12 @@
 //   - Right (main):   live SVG diagram + generated CREATE TABLE SQL beneath.
 //
 // The whole model lives in one useState; svgLayout.ts and sqlGen.ts are
-// pure derivations of it. No persistence — refresh = back to demo.
+// pure derivations of it. The user's progress per exercise is persisted to
+// localStorage (see lib/er-tegner/progress.ts) so refresh keeps their work
+// and chained exercises (seedFrom) inherit the previous one's state.
 
 import { createFileRoute } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { SiteHeader } from "@/components/SiteHeader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -31,11 +33,18 @@ import {
   GraduationCap,
   ChevronLeft,
   ChevronRight,
+  RefreshCw,
 } from "lucide-react";
+import { DocsPanel } from "@/components/DocsPanel";
 import { EntityForm } from "@/components/er-tegner/EntityForm";
 import { ErCanvas } from "@/components/er-tegner/ErCanvas";
 import { generateSql } from "@/lib/er-tegner/sqlGen";
 import { ER_EXERCISES, type ErExercise } from "@/lib/er-tegner/exercises";
+import {
+  clearExerciseModel,
+  loadExerciseModel,
+  saveExerciseModel,
+} from "@/lib/er-tegner/progress";
 import type {
   CfEnd,
   Entity,
@@ -148,12 +157,42 @@ function ErTegnerPage() {
     [activeExercise, sql, targetSql],
   );
 
+  /** Resolve the starting model for a given exercise, in this priority:
+   *  1. The user's own saved progress for this exercise.
+   *  2. The user's saved progress for the exercise's `seedFrom` (so e2 starts
+   *     with whatever the user drew in e1).
+   *  3. A blank canvas. */
+  function resolveStartModel(exId: string): ErModel {
+    const own = loadExerciseModel(exId);
+    if (own) return own;
+    const ex = ER_EXERCISES.find((e) => e.id === exId);
+    if (ex?.seedFrom) {
+      const seed = loadExerciseModel(ex.seedFrom);
+      if (seed) return seed;
+    }
+    return { entities: [], relationships: [] };
+  }
+
   function pickExercise(exId: string) {
     setActiveExerciseId(exId);
     setShowHints(false);
-    // Start with a blank model so the user builds it themselves.
-    setModel({ entities: [], relationships: [] });
+    setModel(resolveStartModel(exId));
   }
+
+  /** Wipe this exercise's saved progress and reset to its seed (which may
+   *  itself come from the previous exercise's saved state). */
+  function resetCurrentExercise() {
+    if (!activeExerciseId) return;
+    clearExerciseModel(activeExerciseId);
+    setModel(resolveStartModel(activeExerciseId));
+  }
+
+  // Persist the current model to localStorage whenever it changes — only
+  // while an exercise is active (free-play mode doesn't get saved).
+  useEffect(() => {
+    if (!activeExerciseId) return;
+    saveExerciseModel(activeExerciseId, model);
+  }, [activeExerciseId, model]);
 
   function goExerciseDelta(delta: number) {
     if (!ER_EXERCISES.length) return;
@@ -355,6 +394,10 @@ function ErTegnerPage() {
                     <Eye className="h-3.5 w-3.5 mr-1" />
                     Last fasit
                   </Button>
+                  <Button size="sm" variant="outline" onClick={resetCurrentExercise}>
+                    <RefreshCw className="h-3.5 w-3.5 mr-1" />
+                    Start på nytt
+                  </Button>
                 </div>
                 {showHints && (
                   <ul className="text-xs text-foreground/85 space-y-1 pt-1 list-disc pl-5">
@@ -362,6 +405,9 @@ function ErTegnerPage() {
                       <li key={i}>{h}</li>
                     ))}
                   </ul>
+                )}
+                {activeExercise.docs && activeExercise.docs.length > 0 && (
+                  <DocsPanel docs={activeExercise.docs} compact />
                 )}
                 {matchInfo && (
                   <div

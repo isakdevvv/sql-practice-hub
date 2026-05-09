@@ -7,6 +7,7 @@ import { PythonEditor } from "@/components/python/PythonEditor";
 import { VariableInspector } from "@/components/python/VariableInspector";
 import { PY_EXERCISES } from "@/lib/python/exercises";
 import { runScript, runScriptStepwise } from "@/lib/python/runner";
+import { DocsPanel } from "@/components/DocsPanel";
 import { getPyodide, isPyodideReady, onPyodideProgress } from "@/lib/python/pyodideLoader";
 import type { PyRunResult, PyStep } from "@/lib/python/types";
 import { cn } from "@/lib/utils";
@@ -246,6 +247,12 @@ function PythonPage() {
                       <span className="font-mono">{h}</span>
                     </div>
                   ))}
+                </div>
+              )}
+
+              {exercise.docs && exercise.docs.length > 0 && (
+                <div className="mb-3">
+                  <DocsPanel docs={exercise.docs} />
                 </div>
               )}
 
