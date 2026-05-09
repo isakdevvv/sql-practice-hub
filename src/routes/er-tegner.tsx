@@ -20,16 +20,43 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Plus, RotateCcw, Trash2, Copy, Check } from "lucide-react";
+import {
+  Plus,
+  RotateCcw,
+  Trash2,
+  Copy,
+  Check,
+  Lightbulb,
+  Eye,
+  GraduationCap,
+} from "lucide-react";
 import { EntityForm } from "@/components/er-tegner/EntityForm";
 import { ErCanvas } from "@/components/er-tegner/ErCanvas";
 import { generateSql } from "@/lib/er-tegner/sqlGen";
+import { ER_EXERCISES, type ErExercise } from "@/lib/er-tegner/exercises";
 import type {
   CfEnd,
   Entity,
   ErModel,
   ErRelationship,
 } from "@/lib/er-tegner/types";
+import { cn } from "@/lib/utils";
+
+/** Normalize SQL for comparison: trim each line, drop blank lines and comments. */
+function normalizeSql(sql: string): string[] {
+  return sql
+    .split("\n")
+    .map((line) => line.trim())
+    .filter((line) => line.length > 0 && !line.startsWith("--"));
+}
+
+/** How many target lines have an exact match in user — out of all target lines. */
+function compareSql(user: string, target: string): { matched: number; total: number } {
+  const userLines = new Set(normalizeSql(user));
+  const targetLines = normalizeSql(target);
+  const matched = targetLines.filter((line) => userLines.has(line)).length;
+  return { matched, total: targetLines.length };
+}
 
 export const Route = createFileRoute("/er-tegner")({
   head: () => ({
@@ -99,8 +126,37 @@ const CF_ENDS: { value: CfEnd; label: string; meaning: string }[] = [
 function ErTegnerPage() {
   const [model, setModel] = useState<ErModel>(() => demoModel());
   const [copied, setCopied] = useState(false);
+  const [activeExerciseId, setActiveExerciseId] = useState<string | null>(null);
+  const [showHints, setShowHints] = useState(false);
 
   const sql = useMemo(() => generateSql(model), [model]);
+
+  const activeExercise = useMemo<ErExercise | null>(
+    () => ER_EXERCISES.find((e) => e.id === activeExerciseId) ?? null,
+    [activeExerciseId],
+  );
+
+  const targetSql = useMemo(
+    () => (activeExercise ? generateSql(activeExercise.target) : ""),
+    [activeExercise],
+  );
+
+  const matchInfo = useMemo(
+    () => (activeExercise ? compareSql(sql, targetSql) : null),
+    [activeExercise, sql, targetSql],
+  );
+
+  function pickExercise(exId: string) {
+    setActiveExerciseId(exId);
+    setShowHints(false);
+    // Start with a blank model so the user builds it themselves.
+    setModel({ entities: [], relationships: [] });
+  }
+
+  function loadFasit() {
+    if (!activeExercise) return;
+    setModel(activeExercise.target);
+  }
 
   function setEntity(updated: Entity) {
     setModel((m) => ({
@@ -209,8 +265,102 @@ function ErTegnerPage() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-[380px_1fr] gap-5">
-          {/* Sidebar: forms */}
+          {/* Sidebar: exercises + forms */}
           <aside className="space-y-5 lg:max-h-[calc(100vh-180px)] lg:overflow-y-auto lg:pr-2">
+            <section className="space-y-2">
+              <div className="flex items-center justify-between">
+                <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground flex items-center gap-1.5">
+                  <GraduationCap className="h-4 w-4" />
+                  Oppgaver
+                </h2>
+                {activeExercise && (
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => setActiveExerciseId(null)}
+                    className="text-[10px] h-6"
+                  >
+                    Lukk oppgave
+                  </Button>
+                )}
+              </div>
+              <div className="space-y-1">
+                {ER_EXERCISES.map((ex) => (
+                  <button
+                    key={ex.id}
+                    onClick={() => pickExercise(ex.id)}
+                    className={cn(
+                      "w-full text-left rounded-md px-3 py-2 text-xs transition-colors",
+                      ex.id === activeExerciseId
+                        ? "bg-accent text-foreground"
+                        : "text-muted-foreground hover:bg-accent/50 hover:text-foreground",
+                    )}
+                  >
+                    <div className="font-medium truncate">{ex.title}</div>
+                    <div className="mt-0.5 text-[10px] text-muted-foreground/80">
+                      Nivå {ex.level}
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </section>
+
+            {activeExercise && (
+              <section className="rounded-lg border border-brand/40 bg-brand/5 p-3 space-y-2.5">
+                <div>
+                  <div className="text-[10px] uppercase tracking-wider text-brand mb-1">
+                    Aktiv oppgave
+                  </div>
+                  <h3 className="text-sm font-semibold">{activeExercise.title}</h3>
+                </div>
+                <p className="text-xs text-foreground/90 leading-relaxed">
+                  {activeExercise.description}
+                </p>
+                <div className="text-[11px] text-muted-foreground italic leading-relaxed">
+                  <strong className="not-italic text-foreground/80">Mål:</strong>{" "}
+                  {activeExercise.goal}
+                </div>
+                <div className="flex flex-wrap gap-1.5 pt-1">
+                  <Button size="sm" variant="outline" onClick={() => setShowHints((s) => !s)}>
+                    <Lightbulb className="h-3.5 w-3.5 mr-1" />
+                    {showHints ? "Skjul hint" : "Hint"}
+                  </Button>
+                  <Button size="sm" variant="outline" onClick={loadFasit}>
+                    <Eye className="h-3.5 w-3.5 mr-1" />
+                    Last fasit
+                  </Button>
+                </div>
+                {showHints && (
+                  <ul className="text-xs text-foreground/85 space-y-1 pt-1 list-disc pl-5">
+                    {activeExercise.hints.map((h, i) => (
+                      <li key={i}>{h}</li>
+                    ))}
+                  </ul>
+                )}
+                {matchInfo && (
+                  <div
+                    className={cn(
+                      "rounded-md px-3 py-2 text-xs font-medium flex items-center justify-between",
+                      matchInfo.matched === matchInfo.total && matchInfo.total > 0
+                        ? "bg-success/15 text-success border border-success/40"
+                        : "bg-muted/40 text-muted-foreground border border-border",
+                    )}
+                  >
+                    <span>
+                      {matchInfo.matched === matchInfo.total && matchInfo.total > 0
+                        ? "✓ Riktig — din SQL matcher fasit"
+                        : `${matchInfo.matched} av ${matchInfo.total} fasit-linjer matcher`}
+                    </span>
+                    {matchInfo.total > 0 && (
+                      <span>
+                        {Math.round((matchInfo.matched / matchInfo.total) * 100)}%
+                      </span>
+                    )}
+                  </div>
+                )}
+              </section>
+            )}
+
             <section className="space-y-3">
               <div className="flex items-center justify-between">
                 <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
@@ -282,24 +432,60 @@ function ErTegnerPage() {
               <ErCanvas model={model} />
             </section>
 
-            <section>
-              <div className="flex items-center justify-between mb-2">
-                <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
-                  Generert SQL
-                </h2>
-                <Button size="sm" variant="ghost" onClick={copySql} disabled={!sql}>
-                  {copied ? (
-                    <Check className="h-3.5 w-3.5 mr-1" />
-                  ) : (
-                    <Copy className="h-3.5 w-3.5 mr-1" />
-                  )}
-                  {copied ? "Kopiert" : "Kopier"}
-                </Button>
-              </div>
-              <pre className="rounded-lg border border-border bg-card p-4 text-xs font-mono leading-relaxed overflow-x-auto whitespace-pre">
-                {sql || "-- Tom modell — legg til entiteter for å se SQL"}
-              </pre>
-            </section>
+            {activeExercise ? (
+              <section className="grid grid-cols-1 xl:grid-cols-2 gap-4">
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+                      Din SQL
+                    </h2>
+                    <Button size="sm" variant="ghost" onClick={copySql} disabled={!sql}>
+                      {copied ? (
+                        <Check className="h-3.5 w-3.5 mr-1" />
+                      ) : (
+                        <Copy className="h-3.5 w-3.5 mr-1" />
+                      )}
+                      {copied ? "Kopiert" : "Kopier"}
+                    </Button>
+                  </div>
+                  <pre className="rounded-lg border border-border bg-card p-4 text-xs font-mono leading-relaxed overflow-x-auto whitespace-pre min-h-[120px]">
+                    {sql || "-- Tom modell — start å legge til entiteter"}
+                  </pre>
+                </div>
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+                      Fasit-SQL
+                    </h2>
+                    <span className="text-[10px] text-muted-foreground">
+                      bygg modellen så denne matcher
+                    </span>
+                  </div>
+                  <pre className="rounded-lg border border-success/30 bg-success/5 p-4 text-xs font-mono leading-relaxed overflow-x-auto whitespace-pre min-h-[120px]">
+                    {targetSql}
+                  </pre>
+                </div>
+              </section>
+            ) : (
+              <section>
+                <div className="flex items-center justify-between mb-2">
+                  <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+                    Generert SQL
+                  </h2>
+                  <Button size="sm" variant="ghost" onClick={copySql} disabled={!sql}>
+                    {copied ? (
+                      <Check className="h-3.5 w-3.5 mr-1" />
+                    ) : (
+                      <Copy className="h-3.5 w-3.5 mr-1" />
+                    )}
+                    {copied ? "Kopiert" : "Kopier"}
+                  </Button>
+                </div>
+                <pre className="rounded-lg border border-border bg-card p-4 text-xs font-mono leading-relaxed overflow-x-auto whitespace-pre">
+                  {sql || "-- Tom modell — legg til entiteter for å se SQL"}
+                </pre>
+              </section>
+            )}
           </div>
         </div>
       </main>
