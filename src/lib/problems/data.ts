@@ -1540,6 +1540,81 @@ export const PROBLEMS: Problem[] = [
       "ROUND og ABS er små men løsbare verktøy: ROUND fjerner desimalstøy i rapporter (ingen vil se '1019.9999'), og ABS lar deg måle hvor langt en verdi er unna et mål uten å måtte sjekke fortegnet selv. Begge er trivielle å bruke — men sparer mye if/else i applikasjonskoden.",
     estimated_time_min: 3,
   },
+  // ============= INDEX & EXPLAIN (p81-p83) =============
+  {
+    id: "p81",
+    title: "CREATE INDEX — fart opp WHERE-spørringer",
+    level: 5,
+    difficulty: 2,
+    topics: ["INDEX", "DDL", "PERFORMANCE"],
+    mode: "ddl",
+    goal: "Lag en indeks på en ikke-PK kolonne slik at WHERE-filtre slipper å scanne hele tabellen.",
+    problem:
+      "products-tabellen filtreres ofte på category (f.eks. WHERE category = 'Electronics'). Uten en indeks må databasen scanne hver eneste rad. Lag en indeks som heter idx_products_category på kolonnen category i tabellen products. Bruk CREATE INDEX-syntaksen.",
+    starter_sql:
+      "CREATE INDEX <IndexName>\n  ON <TableName>(<Column>);",
+    solution: "CREATE INDEX idx_products_category ON products(category);",
+    verify_sql:
+      "SELECT name, tbl_name FROM sqlite_master WHERE type='index' AND name = 'idx_products_category';",
+    validation: { ignore_order: true, ignore_column_names: true },
+    hints: [
+      "Syntaksen er CREATE INDEX <navn> ON <tabell>(<kolonne>);",
+      "Navngi indeksen beskrivende — idx_<tabell>_<kolonne> er en vanlig konvensjon",
+      "sqlite_master er en intern tabell som lister alle objekter i databasen — der dukker indeksen opp etter at du har laget den",
+    ],
+    explanation:
+      "En indeks er en sortert datastruktur (typisk B-tre) som lar databasen finne rader på en kolonne uten å lese hele tabellen. Det gjør WHERE, JOIN og ORDER BY på den kolonnen mye raskere — men koster diskplass og må vedlikeholdes ved hver INSERT/UPDATE/DELETE. Derfor lager man indekser på kolonner som faktisk filtreres ofte, ikke på alle.",
+    estimated_time_min: 2,
+  },
+  {
+    id: "p82",
+    title: "EXPLAIN QUERY PLAN — les hva optimizeren gjør",
+    level: 5,
+    difficulty: 3,
+    topics: ["EXPLAIN", "INDEX", "PERFORMANCE"],
+    pre_sql: "CREATE INDEX idx_products_category ON products(category);",
+    goal: "Bruk EXPLAIN QUERY PLAN for å se om en spørring bruker indeks (SEARCH) eller scanner hele tabellen (SCAN).",
+    problem:
+      "EXPLAIN QUERY PLAN foran en SELECT viser hvordan SQLite planlegger å utføre den — som rader du kan lese. En indeks idx_products_category er allerede laget for deg. Skriv EXPLAIN QUERY PLAN foran en SELECT * FROM products WHERE category = 'Electronics' for å se planen. Du skal se 'SEARCH ... USING INDEX idx_products_category' i resultatet — det betyr at indeksen blir brukt.",
+    starter_sql:
+      "EXPLAIN QUERY PLAN\nSELECT * FROM <TableName>\nWHERE <Column> = <Value>;",
+    solution:
+      "EXPLAIN QUERY PLAN SELECT * FROM products WHERE category = 'Electronics';",
+    validation: { ignore_order: true, ignore_column_names: true },
+    hints: [
+      "EXPLAIN QUERY PLAN er bare et prefix foran en vanlig SELECT — selve SELECT-en kjøres ikke",
+      "Resultatet er én eller flere rader som beskriver planen — se etter ordene SCAN (full tabell) eller SEARCH USING INDEX (rask oppslag)",
+      "Hadde indeksen ikke eksistert, ville samme spørring vist 'SCAN products' i stedet",
+    ],
+    explanation:
+      "EXPLAIN QUERY PLAN er det viktigste verktøyet for å forstå om indeksene dine faktisk brukes. SCAN betyr at databasen leser hver rad i tabellen — greit på 100 rader, katastrofalt på 100 millioner. SEARCH ... USING INDEX betyr at den hopper rett til riktig sted via B-treet. Når du legger til en indeks bør du alltid kjøre EXPLAIN QUERY PLAN etterpå for å bekrefte at planen faktisk endret seg.",
+    estimated_time_min: 3,
+  },
+  {
+    id: "p83",
+    title: "DROP INDEX — fjern en indeks som ikke lønner seg",
+    level: 5,
+    difficulty: 2,
+    topics: ["INDEX", "DDL", "PERFORMANCE"],
+    mode: "ddl",
+    pre_sql: "CREATE INDEX idx_products_category ON products(category);",
+    goal: "Fjern en indeks med DROP INDEX når den koster mer enn den gir.",
+    problem:
+      "Indeksen idx_products_category er allerede laget på products(category). Anta at vi har målt og funnet ut at den knapt brukes, men gjør INSERT/UPDATE tregere. Fjern den med DROP INDEX. Etterpå skal indeksen ikke lenger finnes i sqlite_master.",
+    starter_sql: "DROP INDEX <IndexName>;",
+    solution: "DROP INDEX idx_products_category;",
+    verify_sql:
+      "SELECT name, tbl_name FROM sqlite_master WHERE type='index' AND name = 'idx_products_category';",
+    validation: { ignore_order: true, ignore_column_names: true },
+    hints: [
+      "Syntaks: DROP INDEX <indeksnavn>; — du nevner ikke tabellen",
+      "Etter DROP INDEX skal verify-spørringen returnere null rader",
+      "DROP INDEX rører ikke selve dataene i tabellen — bare oppslagsstrukturen blir slettet",
+    ],
+    explanation:
+      "Hver indeks må oppdateres ved hver INSERT, UPDATE og DELETE som påvirker kolonnen — det er vedlikeholdskostnaden. På en write-tung tabell kan en lite brukt indeks faktisk gjøre systemet tregere totalt sett. DROP INDEX er derfor like viktig som CREATE INDEX: man bygger indekser basert på faktiske spørringsmønstre, og rydder vekk dem som ikke betaler seg.",
+    estimated_time_min: 2,
+  },
   // ============= UNIVERSITY DATASET =============
   {
     id: "u1",
