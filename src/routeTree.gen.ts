@@ -19,6 +19,7 @@ import { Route as ExamRouteImport } from './routes/exam'
 import { Route as DragRouteImport } from './routes/drag'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as CardsRouteImport } from './routes/cards'
+import { Route as ErTegnerRouteImport } from './routes/er-tegner'
 import { Route as IndexRouteImport } from './routes/index'
 
 const PythonRoute = PythonRouteImport.update({
@@ -71,6 +72,11 @@ const CardsRoute = CardsRouteImport.update({
   path: '/cards',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ErTegnerRoute = ErTegnerRouteImport.update({
+  id: '/er-tegner',
+  path: '/er-tegner',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -82,6 +88,7 @@ export interface FileRoutesByFullPath {
   '/cards': typeof CardsRoute
   '/dashboard': typeof DashboardRoute
   '/drag': typeof DragRoute
+  '/er-tegner': typeof ErTegnerRoute
   '/exam': typeof ExamRoute
   '/joins': typeof JoinsRoute
   '/konsoll': typeof KonsollRoute
@@ -95,6 +102,7 @@ export interface FileRoutesByTo {
   '/cards': typeof CardsRoute
   '/dashboard': typeof DashboardRoute
   '/drag': typeof DragRoute
+  '/er-tegner': typeof ErTegnerRoute
   '/exam': typeof ExamRoute
   '/joins': typeof JoinsRoute
   '/konsoll': typeof KonsollRoute
@@ -109,6 +117,7 @@ export interface FileRoutesById {
   '/cards': typeof CardsRoute
   '/dashboard': typeof DashboardRoute
   '/drag': typeof DragRoute
+  '/er-tegner': typeof ErTegnerRoute
   '/exam': typeof ExamRoute
   '/joins': typeof JoinsRoute
   '/konsoll': typeof KonsollRoute
@@ -124,6 +133,7 @@ export interface FileRouteTypes {
     | '/cards'
     | '/dashboard'
     | '/drag'
+    | '/er-tegner'
     | '/exam'
     | '/joins'
     | '/konsoll'
@@ -137,6 +147,7 @@ export interface FileRouteTypes {
     | '/cards'
     | '/dashboard'
     | '/drag'
+    | '/er-tegner'
     | '/exam'
     | '/joins'
     | '/konsoll'
@@ -150,6 +161,7 @@ export interface FileRouteTypes {
     | '/cards'
     | '/dashboard'
     | '/drag'
+    | '/er-tegner'
     | '/exam'
     | '/joins'
     | '/konsoll'
@@ -164,6 +176,7 @@ export interface RootRouteChildren {
   CardsRoute: typeof CardsRoute
   DashboardRoute: typeof DashboardRoute
   DragRoute: typeof DragRoute
+  ErTegnerRoute: typeof ErTegnerRoute
   ExamRoute: typeof ExamRoute
   JoinsRoute: typeof JoinsRoute
   KonsollRoute: typeof KonsollRoute
@@ -245,6 +258,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CardsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/er-tegner': {
+      id: '/er-tegner'
+      path: '/er-tegner'
+      fullPath: '/er-tegner'
+      preLoaderRoute: typeof ErTegnerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -260,6 +280,7 @@ const rootRouteChildren: RootRouteChildren = {
   CardsRoute: CardsRoute,
   DashboardRoute: DashboardRoute,
   DragRoute: DragRoute,
+  ErTegnerRoute: ErTegnerRoute,
   ExamRoute: ExamRoute,
   JoinsRoute: JoinsRoute,
   KonsollRoute: KonsollRoute,

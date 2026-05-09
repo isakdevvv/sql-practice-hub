@@ -33,6 +33,13 @@ export function SiteHeader() {
             Joins
           </Link>
           <Link
+            to="/er-tegner"
+            className="rounded-md px-3 py-1.5 text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
+            activeProps={{ className: "rounded-md px-3 py-1.5 text-foreground bg-accent" }}
+          >
+            ER
+          </Link>
+          <Link
             to="/python"
             className="rounded-md px-3 py-1.5 text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
             activeProps={{ className: "rounded-md px-3 py-1.5 text-foreground bg-accent" }}
