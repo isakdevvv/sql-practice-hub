@@ -29,6 +29,8 @@ import {
   Lightbulb,
   Eye,
   GraduationCap,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import { EntityForm } from "@/components/er-tegner/EntityForm";
 import { ErCanvas } from "@/components/er-tegner/ErCanvas";
@@ -151,6 +153,17 @@ function ErTegnerPage() {
     setShowHints(false);
     // Start with a blank model so the user builds it themselves.
     setModel({ entities: [], relationships: [] });
+  }
+
+  function goExerciseDelta(delta: number) {
+    if (!ER_EXERCISES.length) return;
+    const currentIdx = activeExerciseId
+      ? ER_EXERCISES.findIndex((e) => e.id === activeExerciseId)
+      : -1;
+    // If no exercise active, "Neste" picks the first; "Forrige" picks the last.
+    const baseIdx = currentIdx === -1 ? (delta > 0 ? -1 : 0) : currentIdx;
+    const nextIdx = (baseIdx + delta + ER_EXERCISES.length) % ER_EXERCISES.length;
+    pickExercise(ER_EXERCISES[nextIdx].id);
   }
 
   function loadFasit() {
@@ -302,6 +315,19 @@ function ErTegnerPage() {
                     </div>
                   </button>
                 ))}
+              </div>
+              <div className="flex items-center justify-between text-[11px] text-muted-foreground pt-1">
+                <Button size="sm" variant="ghost" onClick={() => goExerciseDelta(-1)}>
+                  <ChevronLeft className="h-3.5 w-3.5 mr-1" /> Forrige
+                </Button>
+                <span>
+                  {activeExerciseId
+                    ? `${ER_EXERCISES.findIndex((e) => e.id === activeExerciseId) + 1} av ${ER_EXERCISES.length}`
+                    : `${ER_EXERCISES.length} oppgaver`}
+                </span>
+                <Button size="sm" variant="ghost" onClick={() => goExerciseDelta(1)}>
+                  Neste <ChevronRight className="h-3.5 w-3.5 ml-1" />
+                </Button>
               </div>
             </section>
 

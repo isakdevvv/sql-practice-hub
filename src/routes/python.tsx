@@ -16,6 +16,7 @@ import {
   RotateCcw,
   Lightbulb,
   Loader2,
+  ChevronLeft,
   ChevronRight,
 } from "lucide-react";
 
@@ -39,6 +40,13 @@ function PythonPage() {
     () => PY_EXERCISES.find((e) => e.id === activeId) ?? PY_EXERCISES[0],
     [activeId],
   );
+  const exerciseIdx = PY_EXERCISES.findIndex((e) => e.id === exercise.id);
+
+  function goExercise(delta: number) {
+    if (!PY_EXERCISES.length) return;
+    const next = (exerciseIdx + delta + PY_EXERCISES.length) % PY_EXERCISES.length;
+    setActiveId(PY_EXERCISES[next].id);
+  }
 
   const [code, setCode] = useState(exercise.starter);
   const [stdout, setStdout] = useState("");
@@ -356,6 +364,18 @@ function PythonPage() {
                 </div>
               </div>
             )}
+
+            <div className="flex items-center justify-between text-xs text-muted-foreground">
+              <Button size="sm" variant="ghost" onClick={() => goExercise(-1)}>
+                <ChevronLeft className="h-3.5 w-3.5 mr-1" /> Forrige
+              </Button>
+              <span>
+                {exerciseIdx + 1} av {PY_EXERCISES.length}
+              </span>
+              <Button size="sm" variant="ghost" onClick={() => goExercise(1)}>
+                Neste <ChevronRight className="h-3.5 w-3.5 ml-1" />
+              </Button>
+            </div>
           </div>
         </div>
       </main>
