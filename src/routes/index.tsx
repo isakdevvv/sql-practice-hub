@@ -60,10 +60,10 @@ function LandingPage() {
             </p>
             <div className="mt-8 flex items-center justify-center gap-3">
               <Button asChild size="lg">
-                <Link to="/practice">Start practicing →</Link>
+                <Link to="/kurs">Start fra nivå 0 →</Link>
               </Button>
               <Button asChild size="lg" variant="outline">
-                <Link to="/exam">Try exam mode</Link>
+                <Link to="/practice">Bla i alle oppgaver</Link>
               </Button>
             </div>
             <div className="mt-12 grid grid-cols-3 gap-6 max-w-md mx-auto text-left">
