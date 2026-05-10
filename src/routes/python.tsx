@@ -19,6 +19,7 @@ import {
   Loader2,
   ChevronLeft,
   ChevronRight,
+  BookOpen,
 } from "lucide-react";
 
 export const Route = createFileRoute("/python")({
@@ -63,6 +64,8 @@ function PythonPage() {
   const [steps, setSteps] = useState<PyStep[] | null>(null);
   const [stepIdx, setStepIdx] = useState(0);
   const [showHints, setShowHints] = useState(false);
+  const [showSolution, setShowSolution] = useState(false);
+  const [solutionCopied, setSolutionCopied] = useState(false);
 
   // Reset state when switching exercise
   useEffect(() => {
@@ -72,7 +75,21 @@ function PythonPage() {
     setSteps(null);
     setStepIdx(0);
     setShowHints(false);
+    setShowSolution(false);
   }, [exercise.id]);
+
+  function copySolution() {
+    if (!exercise.solution) return;
+    if (typeof navigator === "undefined" || !navigator.clipboard) return;
+    navigator.clipboard.writeText(exercise.solution).then(() => {
+      setSolutionCopied(true);
+      setTimeout(() => setSolutionCopied(false), 1500);
+    });
+  }
+  function loadSolutionIntoEditor() {
+    if (!exercise.solution) return;
+    setCode(exercise.solution);
+  }
 
   // Subscribe to Pyodide progress messages
   useEffect(() => {
@@ -227,16 +244,28 @@ function PythonPage() {
                     {exercise.description}
                   </p>
                 </div>
-                {exercise.hints && exercise.hints.length > 0 && (
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setShowHints((s) => !s)}
-                  >
-                    <Lightbulb className="h-3.5 w-3.5 mr-1.5" />
-                    {showHints ? "Skjul hint" : "Vis hint"}
-                  </Button>
-                )}
+                <div className="flex flex-col gap-1.5 shrink-0">
+                  {exercise.hints && exercise.hints.length > 0 && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setShowHints((s) => !s)}
+                    >
+                      <Lightbulb className="h-3.5 w-3.5 mr-1.5" />
+                      {showHints ? "Skjul hint" : "Vis hint"}
+                    </Button>
+                  )}
+                  {exercise.solution && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setShowSolution((s) => !s)}
+                    >
+                      <BookOpen className="h-3.5 w-3.5 mr-1.5" />
+                      {showSolution ? "Skjul løsning" : "Vis løsning"}
+                    </Button>
+                  )}
+                </div>
               </div>
 
               {showHints && exercise.hints && (
@@ -247,6 +276,37 @@ function PythonPage() {
                       <span className="font-mono">{h}</span>
                     </div>
                   ))}
+                </div>
+              )}
+
+              {showSolution && exercise.solution && (
+                <div className="rounded-md border border-brand/30 bg-brand/5 p-3 mb-3 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] uppercase tracking-wider font-semibold text-brand">
+                      Fasit
+                    </span>
+                    <div className="flex gap-1.5">
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="h-6 text-[11px]"
+                        onClick={copySolution}
+                      >
+                        {solutionCopied ? "Kopiert!" : "Kopiér"}
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="h-6 text-[11px]"
+                        onClick={loadSolutionIntoEditor}
+                      >
+                        Last inn i editor
+                      </Button>
+                    </div>
+                  </div>
+                  <pre className="text-xs font-mono leading-relaxed text-foreground/90 overflow-auto max-h-[260px]">
+                    {exercise.solution}
+                  </pre>
                 </div>
               )}
 
