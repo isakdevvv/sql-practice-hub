@@ -68,12 +68,13 @@ export const MemoryHierarchy: FC = () => (
 
 // ============= JOIN VENN DIAGRAMS =============
 // Universally recognized way to teach JOINs: which parts of two overlapping
-// circles are returned.
-export const JoinVenn: FC<{ kind: "INNER" | "LEFT" | "RIGHT" | "FULL" | "CROSS" }> = ({ kind }) => {
+// circles are returned. CROSS er IKKE inkludert — kartesisk produkt er ikke
+// en mengdeoperasjon og passer ikke i Venn-modellen.
+export const JoinVenn: FC<{ kind: "INNER" | "LEFT" | "RIGHT" | "FULL" }> = ({ kind }) => {
   // Each diagram highlights a different part. Use opacity to mark filled.
-  const filledLeft = kind === "LEFT" || kind === "FULL" || kind === "CROSS";
-  const filledRight = kind === "RIGHT" || kind === "FULL" || kind === "CROSS";
-  const filledIntersect = kind !== "CROSS"; // CROSS is the whole product, not intersect-style
+  const filledLeft = kind === "LEFT" || kind === "FULL";
+  const filledRight = kind === "RIGHT" || kind === "FULL";
+  const filledIntersect = true;
   return (
     <figure className="my-3">
       <svg viewBox="0 0 220 120" className="w-full max-w-xs mx-auto text-foreground">
@@ -148,26 +149,27 @@ export const CssBoxModel: FC = () => (
 export const BTreeIndex: FC = () => (
   <figure className="my-4">
     <svg viewBox="0 0 380 200" className="w-full max-w-md mx-auto text-foreground">
-      {/* Root node */}
+      {/* Root node — 2 separator-nøkler (30, 60) gir 3 barn:
+          <30, 30..59, ≥60. Det er den kanoniske B-tre-fanouten:
+          N nøkler = N+1 barn-pekere. */}
       <rect x="140" y="10" width="100" height="32" rx="3" fill="hsl(var(--brand) / 0.2)" stroke={STROKE} strokeWidth="1.5" />
-      <line x1="173" y1="10" x2="173" y2="42" stroke={STROKE} strokeWidth="1" />
-      <line x1="207" y1="10" x2="207" y2="42" stroke={STROKE} strokeWidth="1" />
-      <text x="156" y="30" textAnchor="middle" className="text-[10px] fill-current font-mono">30</text>
-      <text x="190" y="30" textAnchor="middle" className="text-[10px] fill-current font-mono">60</text>
-      <text x="223" y="30" textAnchor="middle" className="text-[10px] fill-current font-mono">90</text>
+      <line x1="180" y1="10" x2="180" y2="42" stroke={STROKE} strokeWidth="1" />
+      <line x1="210" y1="10" x2="210" y2="42" stroke={STROKE} strokeWidth="1" />
+      <text x="160" y="30" textAnchor="middle" className="text-[10px] fill-current font-mono">30</text>
+      <text x="195" y="30" textAnchor="middle" className="text-[10px] fill-current font-mono">60</text>
 
-      {/* Edges down to leaves */}
-      <line x1="156" y1="42" x2="60" y2="80" stroke={STROKE} strokeWidth="1" />
-      <line x1="190" y1="42" x2="190" y2="80" stroke={STROKE} strokeWidth="1" />
-      <line x1="223" y1="42" x2="320" y2="80" stroke={STROKE} strokeWidth="1" />
+      {/* Tre kanter ned til 3 blader */}
+      <line x1="160" y1="42" x2="60" y2="80" stroke={STROKE} strokeWidth="1" />
+      <line x1="195" y1="42" x2="190" y2="80" stroke={STROKE} strokeWidth="1" />
+      <line x1="230" y1="42" x2="320" y2="80" stroke={STROKE} strokeWidth="1" />
 
-      {/* Leaf 1 */}
+      {/* Leaf 1: nøkler < 30 */}
       <rect x="10" y="80" width="100" height="32" rx="3" fill="hsl(var(--success) / 0.18)" stroke={STROKE} strokeWidth="1.5" />
       <text x="60" y="100" textAnchor="middle" className="text-[10px] fill-current font-mono">5 · 18 · 27</text>
-      {/* Leaf 2 */}
+      {/* Leaf 2: 30 ≤ nøkler < 60 */}
       <rect x="140" y="80" width="100" height="32" rx="3" fill="hsl(var(--success) / 0.18)" stroke={STROKE} strokeWidth="1.5" />
       <text x="190" y="100" textAnchor="middle" className="text-[10px] fill-current font-mono">35 · 47 · 58</text>
-      {/* Leaf 3 */}
+      {/* Leaf 3: nøkler ≥ 60 */}
       <rect x="270" y="80" width="100" height="32" rx="3" fill="hsl(var(--success) / 0.18)" stroke={STROKE} strokeWidth="1.5" />
       <text x="320" y="100" textAnchor="middle" className="text-[10px] fill-current font-mono">62 · 75 · 88</text>
 
@@ -308,6 +310,7 @@ export const SqlEvalOrder: FC = () => {
     { id: "GROUP BY", note: "lager grupper" },
     { id: "HAVING", note: "filtrerer grupper" },
     { id: "SELECT", note: "velger kolonner" },
+    { id: "DISTINCT", note: "fjerner duplikater" },
     { id: "ORDER BY", note: "sorterer" },
     { id: "LIMIT", note: "kutter" },
   ];
@@ -676,16 +679,19 @@ export const RelationshipKinds: FC = () => (
         </div>
       </div>
       <div className="rounded border border-border p-3">
-        <div className="text-center font-semibold mb-2">M : N</div>
-        <div className="flex items-center justify-center gap-1 font-mono text-[10px]">
+        <div className="text-center font-semibold mb-2">M : N (med koblingstabell)</div>
+        <div className="flex items-center justify-center gap-1 font-mono text-[10px] flex-wrap">
           <span className="rounded bg-brand/15 px-2 py-0.5">Student</span>
-          <span>&gt;—</span>
-          <span className="rounded bg-success/20 px-1 py-0.5">SK</span>
+          <span>—|</span>
           <span>—&lt;</span>
+          <span className="rounded bg-success/20 px-1 py-0.5">SK</span>
+          <span>&gt;—</span>
+          <span>|—</span>
           <span className="rounded bg-brand/15 px-2 py-0.5">Kurs</span>
         </div>
         <div className="text-[10px] text-muted-foreground mt-2 text-center">
-          løses med koblingstabell (SK)
+          M:N brytes opp i to 1:M mot junction-tabellen — hver SK-rad har
+          nøyaktig én Student og én Kurs.
         </div>
       </div>
     </div>
