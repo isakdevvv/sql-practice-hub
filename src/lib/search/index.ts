@@ -56,7 +56,7 @@ const STATIC_PAGES: SearchEntry[] = [
   { id: "page-konsoll", title: "API-konsoll", kind: "Side", description: "Test API-endepunkter.", href: "/konsoll", keywords: "api konsoll endpoint http" },
   { id: "page-exam", title: "Exam", kind: "Side", description: "Tidsbasert eksamenstrening.", href: "/exam", keywords: "exam eksamen prøve" },
   { id: "page-dashboard", title: "Dashboard", kind: "Side", description: "Fremgangsoversikt og XP.", href: "/dashboard", keywords: "dashboard fremgang xp progress" },
-  { id: "page-cards", title: "Kort", kind: "Side", description: "Flashcards for repetisjon.", href: "/cards", keywords: "flashcards kort repetisjon" },
+  { id: "page-cards", title: "Quiz", kind: "Side", description: "Multiple-choice quiz med 4 svaralternativer per spørsmål.", href: "/cards", keywords: "quiz flashcards kort repetisjon multiple choice svar alternativer" },
   { id: "page-drag", title: "Drag", kind: "Side", description: "Drag-and-drop-oppgaver.", href: "/drag", keywords: "drag drop interactive" },
 ];
 
