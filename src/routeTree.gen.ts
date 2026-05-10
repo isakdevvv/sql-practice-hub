@@ -13,12 +13,15 @@ import { Route as StackRouteImport } from './routes/stack'
 import { Route as PythonRouteImport } from './routes/python'
 import { Route as ProsjektRouteImport } from './routes/prosjekt'
 import { Route as PracticeRouteImport } from './routes/practice'
+import { Route as OvRouteImport } from './routes/ov'
 import { Route as LearnRouteImport } from './routes/learn'
+import { Route as LarRouteImport } from './routes/lar'
 import { Route as KursRouteImport } from './routes/kurs'
 import { Route as KonsollRouteImport } from './routes/konsoll'
 import { Route as JoinsRouteImport } from './routes/joins'
 import { Route as ExamRouteImport } from './routes/exam'
 import { Route as ErTegnerRouteImport } from './routes/er-tegner'
+import { Route as EksamenRouteImport } from './routes/eksamen'
 import { Route as DragRouteImport } from './routes/drag'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as CardsRouteImport } from './routes/cards'
@@ -46,9 +49,19 @@ const PracticeRoute = PracticeRouteImport.update({
   path: '/practice',
   getParentRoute: () => rootRouteImport,
 } as any)
+const OvRoute = OvRouteImport.update({
+  id: '/ov',
+  path: '/ov',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LearnRoute = LearnRouteImport.update({
   id: '/learn',
   path: '/learn',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LarRoute = LarRouteImport.update({
+  id: '/lar',
+  path: '/lar',
   getParentRoute: () => rootRouteImport,
 } as any)
 const KursRoute = KursRouteImport.update({
@@ -74,6 +87,11 @@ const ExamRoute = ExamRouteImport.update({
 const ErTegnerRoute = ErTegnerRouteImport.update({
   id: '/er-tegner',
   path: '/er-tegner',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EksamenRoute = EksamenRouteImport.update({
+  id: '/eksamen',
+  path: '/eksamen',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DragRoute = DragRouteImport.update({
@@ -112,12 +130,15 @@ export interface FileRoutesByFullPath {
   '/cards': typeof CardsRoute
   '/dashboard': typeof DashboardRoute
   '/drag': typeof DragRoute
+  '/eksamen': typeof EksamenRoute
   '/er-tegner': typeof ErTegnerRoute
   '/exam': typeof ExamRoute
   '/joins': typeof JoinsRoute
   '/konsoll': typeof KonsollRoute
   '/kurs': typeof KursRoute
+  '/lar': typeof LarRoute
   '/learn': typeof LearnRoute
+  '/ov': typeof OvRoute
   '/practice': typeof PracticeRoute
   '/prosjekt': typeof ProsjektRoute
   '/python': typeof PythonRoute
@@ -130,12 +151,15 @@ export interface FileRoutesByTo {
   '/cards': typeof CardsRoute
   '/dashboard': typeof DashboardRoute
   '/drag': typeof DragRoute
+  '/eksamen': typeof EksamenRoute
   '/er-tegner': typeof ErTegnerRoute
   '/exam': typeof ExamRoute
   '/joins': typeof JoinsRoute
   '/konsoll': typeof KonsollRoute
   '/kurs': typeof KursRoute
+  '/lar': typeof LarRoute
   '/learn': typeof LearnRoute
+  '/ov': typeof OvRoute
   '/practice': typeof PracticeRoute
   '/prosjekt': typeof ProsjektRoute
   '/python': typeof PythonRoute
@@ -148,12 +172,15 @@ export interface FileRoutesById {
   '/cards': typeof CardsRoute
   '/dashboard': typeof DashboardRoute
   '/drag': typeof DragRoute
+  '/eksamen': typeof EksamenRoute
   '/er-tegner': typeof ErTegnerRoute
   '/exam': typeof ExamRoute
   '/joins': typeof JoinsRoute
   '/konsoll': typeof KonsollRoute
   '/kurs': typeof KursRoute
+  '/lar': typeof LarRoute
   '/learn': typeof LearnRoute
+  '/ov': typeof OvRoute
   '/practice': typeof PracticeRoute
   '/prosjekt': typeof ProsjektRoute
   '/python': typeof PythonRoute
@@ -168,12 +195,15 @@ export interface FileRouteTypes {
     | '/cards'
     | '/dashboard'
     | '/drag'
+    | '/eksamen'
     | '/er-tegner'
     | '/exam'
     | '/joins'
     | '/konsoll'
     | '/kurs'
+    | '/lar'
     | '/learn'
+    | '/ov'
     | '/practice'
     | '/prosjekt'
     | '/python'
@@ -186,12 +216,15 @@ export interface FileRouteTypes {
     | '/cards'
     | '/dashboard'
     | '/drag'
+    | '/eksamen'
     | '/er-tegner'
     | '/exam'
     | '/joins'
     | '/konsoll'
     | '/kurs'
+    | '/lar'
     | '/learn'
+    | '/ov'
     | '/practice'
     | '/prosjekt'
     | '/python'
@@ -203,12 +236,15 @@ export interface FileRouteTypes {
     | '/cards'
     | '/dashboard'
     | '/drag'
+    | '/eksamen'
     | '/er-tegner'
     | '/exam'
     | '/joins'
     | '/konsoll'
     | '/kurs'
+    | '/lar'
     | '/learn'
+    | '/ov'
     | '/practice'
     | '/prosjekt'
     | '/python'
@@ -222,12 +258,15 @@ export interface RootRouteChildren {
   CardsRoute: typeof CardsRoute
   DashboardRoute: typeof DashboardRoute
   DragRoute: typeof DragRoute
+  EksamenRoute: typeof EksamenRoute
   ErTegnerRoute: typeof ErTegnerRoute
   ExamRoute: typeof ExamRoute
   JoinsRoute: typeof JoinsRoute
   KonsollRoute: typeof KonsollRoute
   KursRoute: typeof KursRoute
+  LarRoute: typeof LarRoute
   LearnRoute: typeof LearnRoute
+  OvRoute: typeof OvRoute
   PracticeRoute: typeof PracticeRoute
   ProsjektRoute: typeof ProsjektRoute
   PythonRoute: typeof PythonRoute
@@ -264,11 +303,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PracticeRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/ov': {
+      id: '/ov'
+      path: '/ov'
+      fullPath: '/ov'
+      preLoaderRoute: typeof OvRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/learn': {
       id: '/learn'
       path: '/learn'
       fullPath: '/learn'
       preLoaderRoute: typeof LearnRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/lar': {
+      id: '/lar'
+      path: '/lar'
+      fullPath: '/lar'
+      preLoaderRoute: typeof LarRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/kurs': {
@@ -304,6 +357,13 @@ declare module '@tanstack/react-router' {
       path: '/er-tegner'
       fullPath: '/er-tegner'
       preLoaderRoute: typeof ErTegnerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/eksamen': {
+      id: '/eksamen'
+      path: '/eksamen'
+      fullPath: '/eksamen'
+      preLoaderRoute: typeof EksamenRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/drag': {
@@ -368,12 +428,15 @@ const rootRouteChildren: RootRouteChildren = {
   CardsRoute: CardsRoute,
   DashboardRoute: DashboardRoute,
   DragRoute: DragRoute,
+  EksamenRoute: EksamenRoute,
   ErTegnerRoute: ErTegnerRoute,
   ExamRoute: ExamRoute,
   JoinsRoute: JoinsRoute,
   KonsollRoute: KonsollRoute,
   KursRoute: KursRoute,
+  LarRoute: LarRoute,
   LearnRoute: LearnRoute,
+  OvRoute: OvRoute,
   PracticeRoute: PracticeRoute,
   ProsjektRoute: ProsjektRoute,
   PythonRoute: PythonRoute,

@@ -45,6 +45,9 @@ const HUSKELAPP_SECTIONS: Array<{ id: string; title: string; keywords: string }>
 ];
 
 const STATIC_PAGES: SearchEntry[] = [
+  { id: "page-lar", title: "Lær (hub)", kind: "Side", description: "Hub: kurs, konsepter og hele stacken.", href: "/lar", keywords: "lar laer hub teori learn pensum" },
+  { id: "page-ov", title: "Øv (hub)", kind: "Side", description: "Hub: SQL, Python, JOIN, ER, quiz, drag.", href: "/ov", keywords: "ov ove hub trening practice exercise" },
+  { id: "page-eksamen-hub", title: "Eksamen (hub)", kind: "Side", description: "Hub: tidstrening, prosjekt og eksamen-trinn.", href: "/eksamen", keywords: "eksamen hub innspurt prove" },
   { id: "page-kurs", title: "Kurs", kind: "Side", description: "Stegvis SQL-læring i 6 nivåer.", href: "/kurs", keywords: "stegvis nivå levels" },
   { id: "page-stack", title: "Stack", kind: "Side", description: "Fra bytes til Flask — eksamensforberedelse og hele stacken.", href: "/stack", keywords: "stack bytes flask sockets http" },
   { id: "page-practice", title: "Practice", kind: "Side", description: "Bla i alle SQL-oppgavene.", href: "/practice", keywords: "oppgaver problems" },
