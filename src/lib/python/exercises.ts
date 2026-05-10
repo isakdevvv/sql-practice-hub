@@ -422,6 +422,23 @@ cursor.execute(
     requires: ["flask"],
     starter: `from flask import Flask
 
+# === OPPGAVE ===
+# • Status skal bli 200
+# • Body skal bli 'Hei!'
+
+app = Flask(__name__)
+
+@app.route("/")
+def home():
+    # TODO: Skriv koden her — se beskrivelsen og hintene.
+    pass
+
+# Test routen:
+
+# Test-koden under er fjernet. Skriv din egen test eller kjør Vis løsning
+# for å se hvordan den ferdig versjonen tester routene.`,
+    solution: `from flask import Flask
+
 app = Flask(__name__)
 
 @app.route("/")
@@ -467,6 +484,21 @@ resp.data          # bytes — bruk .decode()`,
     requires: ["flask"],
     starter: `from flask import Flask
 
+# === OPPGAVE ===
+# • <int:kundenr> tvinger Flask til å konvertere til int — bokstaver gir 404
+
+app = Flask(__name__)
+
+@app.route("/kunde/<int:kundenr>")
+def kunde(kundenr):
+    # TODO: Skriv koden her — se beskrivelsen og hintene.
+    pass
+
+
+# Test-koden under er fjernet. Skriv din egen test eller kjør Vis løsning
+# for å se hvordan den ferdig versjonen tester routene.`,
+    solution: `from flask import Flask
+
 app = Flask(__name__)
 
 @app.route("/kunde/<int:kundenr>")
@@ -502,6 +534,30 @@ def kunde(kundenr):
       "Send en liste med kunder til en Jinja-template og rendrer den. Bruk render_template_string for å teste uten templates/-mappe.",
     requires: ["flask"],
     starter: `from flask import Flask, render_template_string
+
+# === OPPGAVE ===
+# • {{ }} er for verdier, {% %} er for kontroll-strukturer
+# • Jinja autoescaper output — beskytter mot XSS
+
+app = Flask(__name__)
+
+TEMPLATE = """
+<ul>
+{% for k in kunder %}
+  <li>{{ k.navn }} ({{ k.epost }})</li>
+{% endfor %}
+</ul>
+""".strip()
+
+@app.route("/kunder")
+def liste():
+    # TODO: Skriv koden her — se beskrivelsen og hintene.
+    pass
+
+
+# Test-koden under er fjernet. Skriv din egen test eller kjør Vis løsning
+# for å se hvordan den ferdig versjonen tester routene.`,
+    solution: `from flask import Flask, render_template_string
 
 app = Flask(__name__)
 
@@ -555,6 +611,21 @@ print(client.get("/kunder").data.decode())
     requires: ["flask"],
     starter: `from flask import Flask, request
 
+# === OPPGAVE ===
+# • request.form er dict-aktig — bruk .get for default-verdi
+
+app = Flask(__name__)
+
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    # TODO: Skriv koden her — se beskrivelsen og hintene.
+    pass
+
+
+# Test-koden under er fjernet. Skriv din egen test eller kjør Vis løsning
+# for å se hvordan den ferdig versjonen tester routene.`,
+    solution: `from flask import Flask, request
+
 app = Flask(__name__)
 
 @app.route("/login", methods=["GET", "POST"])
@@ -603,6 +674,26 @@ def login():
     starter: `from flask import Flask
 import mysql.connector
 
+# === OPPGAVE ===
+# • fetchall() returnerer liste av tupler — pakk ut med (n, e)
+
+app = Flask(__name__)
+
+def get_db():
+    # TODO: Skriv koden her — se beskrivelsen og hintene.
+    pass
+
+@app.route("/kunder")
+def liste():
+    # TODO: Skriv koden her — se beskrivelsen og hintene.
+    pass
+
+
+# Test-koden under er fjernet. Skriv din egen test eller kjør Vis løsning
+# for å se hvordan den ferdig versjonen tester routene.`,
+    solution: `from flask import Flask
+import mysql.connector
+
 app = Flask(__name__)
 
 def get_db():
@@ -646,6 +737,22 @@ print(client.get("/kunder").data.decode())
     requires: ["flask"],
     setup: DB_SETUP,
     starter: `from flask import Flask, jsonify
+import mysql.connector
+
+# === OPPGAVE ===
+# • jsonify setter Content-Type=application/json automatisk
+
+app = Flask(__name__)
+
+@app.route("/api/kunder")
+def api_kunder():
+    # TODO: Skriv koden her — se beskrivelsen og hintene.
+    pass
+
+
+# Test-koden under er fjernet. Skriv din egen test eller kjør Vis løsning
+# for å se hvordan den ferdig versjonen tester routene.`,
+    solution: `from flask import Flask, jsonify
 import mysql.connector
 
 app = Flask(__name__)
@@ -693,6 +800,23 @@ return jsonify(data)`,
     starter: `from flask import Flask, abort
 import mysql.connector
 
+# === OPPGAVE ===
+# • abort(404) heaver Werkzeug-exception som Flask konverterer til HTTP 404
+# • fetchone() returnerer None hvis ingen rad matcher
+
+app = Flask(__name__)
+
+@app.route("/kunde/<int:kundenr>")
+def vis_kunde(kundenr):
+    # TODO: Skriv koden her — se beskrivelsen og hintene.
+    pass
+
+
+# Test-koden under er fjernet. Skriv din egen test eller kjør Vis løsning
+# for å se hvordan den ferdig versjonen tester routene.`,
+    solution: `from flask import Flask, abort
+import mysql.connector
+
 app = Flask(__name__)
 
 @app.route("/kunde/<int:kundenr>")
@@ -738,6 +862,28 @@ print("Finnes ikke:", client.get("/kunde/999").status_code)
       "Sett en verdi i session, og les den i en annen route. Test at samme klient ser sin egen session via cookies.",
     requires: ["flask"],
     starter: `from flask import Flask, session
+
+# === OPPGAVE ===
+# • SECRET_KEY trengs — Flask signerer session-cookien med den
+# • test_client() holder cookies mellom requester automatisk
+
+app = Flask(__name__)
+app.config["SECRET_KEY"] = "ikke-bruk-dette-i-produksjon"
+
+@app.route("/sett/<navn>")
+def sett(navn):
+    # TODO: Skriv koden her — se beskrivelsen og hintene.
+    pass
+
+@app.route("/hvem")
+def hvem():
+    # TODO: Skriv koden her — se beskrivelsen og hintene.
+    pass
+
+
+# Test-koden under er fjernet. Skriv din egen test eller kjør Vis løsning
+# for å se hvordan den ferdig versjonen tester routene.`,
+    solution: `from flask import Flask, session
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "ikke-bruk-dette-i-produksjon"
@@ -793,6 +939,31 @@ navn = session.get("bruker", "(ingen)")`,
     starter: `from flask import Flask, session
 from functools import wraps
 
+# === OPPGAVE ===
+# • @wraps(view) bevarer navnet på view-funksjonen — viktig så Flask ikke kræsjer ved doble route-navn
+
+app = Flask(__name__)
+app.config["SECRET_KEY"] = "test"
+
+# Bygg decoratoren her. Hint: bruk @wraps, sjekk session["user_id"],
+# returnér ("Ikke innlogget", 401) hvis den mangler.
+def login_required(view):
+    # TODO: Skriv koden her — se beskrivelsen og hintene.
+    pass
+
+@app.route("/skjult")
+@login_required
+def skjult():
+    # TODO: Skriv koden her — se beskrivelsen og hintene.
+    pass
+
+# Test:
+
+# Test-koden under er fjernet. Skriv din egen test eller kjør Vis løsning
+# for å se hvordan den ferdig versjonen tester routene.`,
+    solution: `from flask import Flask, session
+from functools import wraps
+
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "test"
 
@@ -844,6 +1015,25 @@ print("Med session:", client.get("/skjult").data.decode())  # "Hemmelig innhold!
     starter: `from flask import Flask, session, request
 import mysql.connector
 
+# === OPPGAVE ===
+# • Etter en post-login: hent ut session med client.session_transaction() — den skal inneholde 'user_id'
+# • ADVARSEL: passordene her er KLARTEKST (anti-pattern). Se py-pwd-1/2/3 for riktig variant med werkzeug-hash.
+
+app = Flask(__name__)
+app.config["SECRET_KEY"] = "test"
+
+@app.route("/login", methods=["POST"])
+def login():
+    # TODO: Skriv koden her — se beskrivelsen og hintene.
+    pass
+
+# Test:
+
+# Test-koden under er fjernet. Skriv din egen test eller kjør Vis løsning
+# for å se hvordan den ferdig versjonen tester routene.`,
+    solution: `from flask import Flask, session, request
+import mysql.connector
+
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "test"
 
@@ -887,6 +1077,39 @@ with client.session_transaction() as s:
     requires: ["flask"],
     setup: DB_SETUP,
     starter: `from flask import Flask, session, request, redirect, url_for
+from functools import wraps
+import mysql.connector
+
+# === OPPGAVE ===
+# • Fordi vi bruker redirect i decoratoren får /dashboard 302 i stedet for 401 når man ikke er innlogget
+# • url_for('login') beregner '/login' fra navnet på funksjonen — aldri hardkod URLer i redirect
+
+app = Flask(__name__)
+app.config["SECRET_KEY"] = "test"
+
+# Fra steg 1 — decoratoren. Vi har byttet 401 til redirect så uautoriserte
+# blir sendt til login-skjemaet i stedet for å se en feilmelding.
+def login_required(view):
+    # TODO: Skriv koden her — se beskrivelsen og hintene.
+    pass
+
+# Fra steg 2 — login-routen.
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    # TODO: Skriv koden her — se beskrivelsen og hintene.
+    pass
+
+# Nytt i dette steget — legg til /dashboard som krever innlogging:
+@app.route("/dashboard")
+@login_required
+def dashboard():
+    # TODO: Skriv koden her — se beskrivelsen og hintene.
+    pass
+
+
+# Test-koden under er fjernet. Skriv din egen test eller kjør Vis løsning
+# for å se hvordan den ferdig versjonen tester routene.`,
+    solution: `from flask import Flask, session, request, redirect, url_for
 from functools import wraps
 import mysql.connector
 
@@ -946,6 +1169,36 @@ print("Dashboard uten login →", client.get("/dashboard").status_code)  # 302 r
     requires: ["flask"],
     setup: DB_SETUP,
     starter: `from flask import Flask, session, request, redirect, url_for
+from functools import wraps
+import mysql.connector
+
+# === OPPGAVE ===
+# • Status 1 skal være 302 (redirect), 2 skal være 401
+# • Step 4 fungerer fordi test_client beholder session-cookien fra step 3
+# • ADVARSEL: passordene i seed-data er KLARTEKST. Se py-pwd-3a/b/c for hvordan dette skal gjøres riktig (werkzeug.security + check_password_hash).
+
+app = Flask(__name__)
+app.config["SECRET_KEY"] = "test"
+
+def login_required(view):
+    # TODO: Skriv koden her — se beskrivelsen og hintene.
+    pass
+
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    # TODO: Skriv koden her — se beskrivelsen og hintene.
+    pass
+
+@app.route("/dashboard")
+@login_required
+def dashboard():
+    # TODO: Skriv koden her — se beskrivelsen og hintene.
+    pass
+
+
+# Test-koden under er fjernet. Skriv din egen test eller kjør Vis løsning
+# for å se hvordan den ferdig versjonen tester routene.`,
+    solution: `from flask import Flask, session, request, redirect, url_for
 from functools import wraps
 import mysql.connector
 
@@ -1034,6 +1287,32 @@ print("  - Ved login: hash det innsendte passordet og sammenlign hashes.")
 print()
 print("Se neste oppgave (py-pwd-2) for hvordan i praksis.")
 `,
+    solution: `import mysql.connector
+
+db = mysql.connector.connect(database="exam")
+cur = db.cursor()
+
+cur.execute("SELECT kundenr, navn, passord FROM kunde")
+print("PASSORD-DUMP fra kunde-tabellen:")
+print()
+for kundenr, navn, passord in cur.fetchall():
+    print(f"  kundenr={kundenr:>2}  navn={navn!r:20}  passord={passord!r}")
+
+print()
+print("=" * 60)
+print("Problemet:")
+print("  - ALLE passord er lest av oss på et øyeblikk.")
+print("  - Brukere bruker ofte samme passord på Gmail, banken, jobb.")
+print("    → ett DB-tap = kompromittering av flere systemer.")
+print("  - Selv DU som utvikler skal ikke kunne se passordene til brukerne.")
+print()
+print("Løsningen:")
+print("  - Lagre BARE en kryptografisk hash av passordet.")
+print("  - Hashen er enveis — ingen kan regne tilbake til passordet.")
+print("  - Ved login: hash det innsendte passordet og sammenlign hashes.")
+print()
+print("Se neste oppgave (py-pwd-2) for hvordan i praksis.")
+`,
     hints: [
       "kunde-tabellen brukes av flere oppgaver. Vi rør den ikke her — neste oppgave bygger en NY tabell med riktig hash.",
       "I produksjon: du skal heller ikke kunne SELECT passord_hash FROM ... uten god grunn. Logg slike spørringer.",
@@ -1048,6 +1327,39 @@ print("Se neste oppgave (py-pwd-2) for hvordan i praksis.")
       "Werkzeug (følger automatisk med Flask) har innebygd støtte for trygg hashing. Lær: hashen ser annerledes ut hver gang (tilfeldig salt), og check_password_hash er den ENESTE riktige måten å sammenligne på — aldri ==.",
     requires: ["werkzeug"],
     starter: `from werkzeug.security import generate_password_hash, check_password_hash
+
+passord = "supersecret"
+
+# Generer hash:
+hash1 = generate_password_hash(passord)
+print("Hash 1:", hash1)
+
+# Generer ÉN GANG TIL — samme passord, ny hash:
+hash2 = generate_password_hash(passord)
+print("Hash 2:", hash2)
+print()
+print("Like?", hash1 == hash2)
+print("→ NEI! Salt er tilfeldig — to kjøringer av samme passord gir to hashes.")
+print("→ Dette stopper rainbow-table-angrep: en pre-beregnet tabell av hashes")
+print("  hjelper ikke når salt er ukjent for hver bruker.")
+print()
+
+# Verifisering — Werkzeug pakker algoritme + iterasjoner + salt + digest
+# i ÉN streng. check_password_hash henter ut salt og kjører riktig algoritme:
+print("Riktig passord:    ", check_password_hash(hash1, "supersecret"))
+print("Feil passord:      ", check_password_hash(hash1, "feil"))
+print("Riktig mot hash2:  ", check_password_hash(hash2, "supersecret"))
+print()
+
+# Format-inspeksjon:
+algoritme, _, _ = hash1.split("$", 2)
+print(f"Algoritme:         {algoritme}")
+print(f"Total lengde:      {len(hash1)} tegn")
+print()
+print("Hashen inneholder alt nødvendig for verifisering, men er praktisk")
+print("umulig å reverse uten å gjette passordet.")
+`,
+    solution: `from werkzeug.security import generate_password_hash, check_password_hash
 
 passord = "supersecret"
 
@@ -1128,6 +1440,39 @@ ola_hash = cur.fetchone()[0]
 print("ola riktig:", check_password_hash(ola_hash, "supersecret"))
 print("ola feil:  ", check_password_hash(ola_hash, "tull"))
 `,
+    solution: `from werkzeug.security import generate_password_hash, check_password_hash
+import mysql.connector
+
+db = mysql.connector.connect(database="auth_demo")
+cur = db.cursor()
+cur.execute("DROP TABLE IF EXISTS bruker")
+cur.execute("""
+CREATE TABLE bruker (
+    id INTEGER PRIMARY KEY,
+    brukernavn TEXT NOT NULL UNIQUE,
+    passord_hash TEXT NOT NULL
+)
+""")
+cur.executemany(
+    "INSERT INTO bruker (id, brukernavn, passord_hash) VALUES (%s, %s, %s)",
+    [
+        (1, "ola",  generate_password_hash("supersecret")),
+        (2, "kari", generate_password_hash("passord1234")),
+    ],
+)
+db.commit()
+
+# Sjekk at hashen er ekte — den skal IKKE være lik klartekst-passordet
+cur.execute("SELECT brukernavn, passord_hash FROM bruker")
+for navn, hash_ in cur.fetchall():
+    print(f"{navn:5}  hash={hash_[:30]}...  passord-lik-hash? {hash_ == 'supersecret'}")
+
+# Bekreft at check_password_hash kjenner igjen riktig passord:
+cur.execute("SELECT passord_hash FROM bruker WHERE brukernavn = 'ola'")
+ola_hash = cur.fetchone()[0]
+print("ola riktig:", check_password_hash(ola_hash, "supersecret"))
+print("ola feil:  ", check_password_hash(ola_hash, "tull"))
+`,
     hints: [
       "generate_password_hash legger til en tilfeldig salt — to like passord får forskjellig hash",
       "I en ekte registrerings-route ville hash genereres ved oppstart av brukerens valgte passord, ikke i seed-data",
@@ -1149,6 +1494,47 @@ print("ola feil:  ", check_password_hash(ola_hash, "tull"))
       "Bygg en /login som slår opp brukernavn UTEN å sammenligne passordet i SQL — hashen sjekkes i Python med check_password_hash. Tabellen er allerede satt opp for deg.",
     requires: ["flask"],
     starter: `from flask import Flask, request
+from werkzeug.security import generate_password_hash, check_password_hash
+import mysql.connector
+
+# Tabellen er bygget for deg (samme som steg 1):
+# === OPPGAVE ===
+# • Sammenlign med py-flask-login-2: der står 'WHERE navn=%s AND passord=%s' direkte i SQL — det krever klartekst
+# • Her er passordet aldri i SQL-en. Hashen ligger i DB, sammenligning skjer i Python
+
+db = mysql.connector.connect(database="auth_demo")
+cur = db.cursor()
+cur.execute("DROP TABLE IF EXISTS bruker")
+cur.execute("CREATE TABLE bruker (id INTEGER PRIMARY KEY, brukernavn TEXT UNIQUE, passord_hash TEXT)")
+cur.executemany(
+    "INSERT INTO bruker (id, brukernavn, passord_hash) VALUES (%s, %s, %s)",
+    [(1, "ola", generate_password_hash("supersecret"))],
+)
+db.commit()
+
+app = Flask(__name__)
+
+@app.route("/login", methods=["POST"])
+def login():
+    # TODO: Skriv koden her — se beskrivelsen og hintene.
+    pass
+
+    db = mysql.connector.connect(database="auth_demo")
+    cur = db.cursor()
+    # MERK: SELECT-en henter ut HASHEN — den sammenligner ikke passord i SQL.
+    cur.execute("SELECT id, passord_hash FROM bruker WHERE brukernavn = %s", (navn,))
+    rad = cur.fetchone()
+    if rad is None:
+        return "Feil brukernavn eller passord", 401
+    user_id, lagret_hash = rad
+    if not check_password_hash(lagret_hash, passord):
+        return "Feil brukernavn eller passord", 401
+    return f"Innlogget som id={user_id}", 200
+
+
+# Test-koden under er fjernet. Skriv din egen test eller kjør Vis løsning
+# for å se hvordan den ferdig versjonen tester routene.`,
+    solution: `from flask import Flask, request
 from werkzeug.security import generate_password_hash, check_password_hash
 import mysql.connector
 
@@ -1200,6 +1586,54 @@ print("Feil:  ", client.post("/login", data={"brukernavn":"ola","passord":"tull"
       "Steg 2 ga forskjellig timing for 'ukjent bruker' og 'feil passord'. Nå returneres en identisk feilmelding for begge — så en angriper ikke kan finne ut om en konto eksisterer ved å prøve random brukernavn.",
     requires: ["flask"],
     starter: `from flask import Flask, request
+from werkzeug.security import generate_password_hash, check_password_hash
+import mysql.connector
+
+# === OPPGAVE ===
+# • Sammenlign med py-flask-login (klartekst + direkte SQL): begge anti-mønstrene rettes her
+# • Identisk feilmelding for 'ukjent bruker' og 'feil passord' — angripere skal ikke kunne enumerate eksisterende brukernavn
+
+db = mysql.connector.connect(database="auth_demo")
+cur = db.cursor()
+cur.execute("DROP TABLE IF EXISTS bruker")
+cur.execute("CREATE TABLE bruker (id INTEGER PRIMARY KEY, brukernavn TEXT UNIQUE, passord_hash TEXT)")
+cur.executemany(
+    "INSERT INTO bruker (id, brukernavn, passord_hash) VALUES (%s, %s, %s)",
+    [
+        (1, "ola",  generate_password_hash("supersecret")),
+        (2, "kari", generate_password_hash("passord1234")),
+    ],
+)
+db.commit()
+
+app = Flask(__name__)
+
+@app.route("/login", methods=["POST"])
+def login():
+    # TODO: Skriv koden her — se beskrivelsen og hintene.
+    pass
+
+    db = mysql.connector.connect(database="auth_demo")
+    cur = db.cursor()
+    cur.execute("SELECT id, passord_hash FROM bruker WHERE brukernavn = %s", (navn,))
+    rad = cur.fetchone()
+
+    # Konstant feilmelding — angriperen kan ikke skille på status/respons
+    # om brukernavnet finnes (forsvar mot username-enumeration):
+    feilmelding = ("Feil brukernavn eller passord", 401)
+
+    if rad is None:
+        return feilmelding
+    user_id, lagret_hash = rad
+    if not check_password_hash(lagret_hash, passord):
+        return feilmelding
+
+    return f"Innlogget som id={user_id}", 200
+
+
+# Test-koden under er fjernet. Skriv din egen test eller kjør Vis løsning
+# for å se hvordan den ferdig versjonen tester routene.`,
+    solution: `from flask import Flask, request
 from werkzeug.security import generate_password_hash, check_password_hash
 import mysql.connector
 
@@ -1278,6 +1712,29 @@ print("Riktig kari:       ", client.post("/login", data={"brukernavn": "kari", "
     starter: `from flask import Flask, session
 import secrets
 
+# === OPPGAVE ===
+# • secrets.token_hex(16) gir 32 hex-tegn — kryptografisk tilfeldig
+# • session er signert med SECRET_KEY så klienten ikke kan endre tokenen utenfra
+
+app = Flask(__name__)
+app.config["SECRET_KEY"] = "test"
+
+def get_csrf_token():
+    # TODO: Skriv koden her — se beskrivelsen og hintene.
+    pass
+
+@app.route("/skjema")
+def skjema():
+    # TODO: Skriv koden her — se beskrivelsen og hintene.
+    pass
+
+# Test:
+
+# Test-koden under er fjernet. Skriv din egen test eller kjør Vis løsning
+# for å se hvordan den ferdig versjonen tester routene.`,
+    solution: `from flask import Flask, session
+import secrets
+
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "test"
 
@@ -1325,6 +1782,36 @@ print("Generert token:", token, "(lengde:", len(token), ")")
     starter: `from flask import Flask, session, request
 import secrets
 
+# === OPPGAVE ===
+# • session.get('csrf', '') gir tom streng hvis det ikke finnes — så 'submitted == expected' alltid feiler når brukeren ikke har vært via /skjema
+# • I ekte kode bruker man hmac.compare_digest for å unngå timing-angrep ved sammenligning
+
+app = Flask(__name__)
+app.config["SECRET_KEY"] = "test"
+
+# Fra steg 1:
+def get_csrf_token():
+    # TODO: Skriv koden her — se beskrivelsen og hintene.
+    pass
+
+@app.route("/skjema")
+def skjema():
+    # TODO: Skriv koden her — se beskrivelsen og hintene.
+    pass
+
+# Nytt i dette steget — verifisering:
+@app.route("/lagre", methods=["POST"])
+def lagre():
+    # TODO: Skriv koden her — se beskrivelsen og hintene.
+    pass
+
+# Test riktig token-flyt:
+
+# Test-koden under er fjernet. Skriv din egen test eller kjør Vis løsning
+# for å se hvordan den ferdig versjonen tester routene.`,
+    solution: `from flask import Flask, session, request
+import secrets
+
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "test"
 
@@ -1369,6 +1856,33 @@ print("Med riktig token:", client.post("/lagre", data={"navn":"Ola","csrf":token
       "Samme app som steg 2, men med en full test-rekke som dekker (1) skjema-lasting, (2) POST uten token, (3) POST med riktig token, (4) POST med fake token. Bekreft at avvisningen er konsekvent.",
     requires: ["flask"],
     starter: `from flask import Flask, session, request
+import secrets
+
+# === OPPGAVE ===
+# • Forventet: 2 → 403, 3 → 200, 4 → 403
+# • I ekte kode bruker man Flask-WTF som genererer + verifiserer token automatisk
+
+app = Flask(__name__)
+app.config["SECRET_KEY"] = "test"
+
+def get_csrf_token():
+    # TODO: Skriv koden her — se beskrivelsen og hintene.
+    pass
+
+@app.route("/skjema")
+def skjema():
+    # TODO: Skriv koden her — se beskrivelsen og hintene.
+    pass
+
+@app.route("/lagre", methods=["POST"])
+def lagre():
+    # TODO: Skriv koden her — se beskrivelsen og hintene.
+    pass
+
+
+# Test-koden under er fjernet. Skriv din egen test eller kjør Vis løsning
+# for å se hvordan den ferdig versjonen tester routene.`,
+    solution: `from flask import Flask, session, request
 import secrets
 
 app = Flask(__name__)
@@ -1438,6 +1952,28 @@ print("4. Feil token:", client.post("/lagre", data={"navn": "Ola", "csrf": "fake
     starter: `from flask import Flask, request, jsonify
 import mysql.connector
 
+# === OPPGAVE ===
+# • Forventet: 1 og 2 → 401, 3 → 200 + liste med kunder
+# • I produksjon: bruk JWT eller OAuth, ikke en hardkodet token
+
+app = Flask(__name__)
+API_TOKEN = "hemmelig-token-123"
+
+def auth_ok():
+    # TODO: Skriv koden her — se beskrivelsen og hintene.
+    pass
+
+@app.route("/api/kunder")
+def api_kunder():
+    # TODO: Skriv koden her — se beskrivelsen og hintene.
+    pass
+
+
+# Test-koden under er fjernet. Skriv din egen test eller kjør Vis løsning
+# for å se hvordan den ferdig versjonen tester routene.`,
+    solution: `from flask import Flask, request, jsonify
+import mysql.connector
+
 app = Flask(__name__)
 API_TOKEN = "hemmelig-token-123"
 
@@ -1504,6 +2040,27 @@ print("3.", r.status_code, r.get_json())
     starter: `from flask import Flask, jsonify
 import mysql.connector
 
+# === OPPGAVE ===
+# • jsonify() setter Content-Type til application/json automatisk og serialiserer dict/list
+# • List comprehension over fetchall() konverterer rader til dict — godt mønster for små JSON-svar
+
+app = Flask(__name__)
+
+def db():
+    # TODO: Skriv koden her — se beskrivelsen og hintene.
+    pass
+
+@app.route("/kunder", methods=["GET"])
+def liste():
+    # TODO: Skriv koden her — se beskrivelsen og hintene.
+    pass
+
+
+# Test-koden under er fjernet. Skriv din egen test eller kjør Vis løsning
+# for å se hvordan den ferdig versjonen tester routene.`,
+    solution: `from flask import Flask, jsonify
+import mysql.connector
+
 app = Flask(__name__)
 
 def db():
@@ -1542,6 +2099,35 @@ print("Body:  ", r.get_json())
     requires: ["flask"],
     setup: DB_SETUP,
     starter: `from flask import Flask, request, jsonify
+import mysql.connector
+
+# === OPPGAVE ===
+# • request.get_json() parser JSON-bodyen til dict
+# • 201 Created er konvensjonen for 'ny ressurs opprettet' — ikke 200
+# • d.commit() er nødvendig — uten den skjer INSERT bare i transaksjonen og blir ikke synlig for senere kall
+
+app = Flask(__name__)
+
+def db():
+    # TODO: Skriv koden her — se beskrivelsen og hintene.
+    pass
+
+# Fra steg 1:
+@app.route("/kunder", methods=["GET"])
+def liste():
+    # TODO: Skriv koden her — se beskrivelsen og hintene.
+    pass
+
+# Nytt i dette steget:
+@app.route("/kunder", methods=["POST"])
+def opprett():
+    # TODO: Skriv koden her — se beskrivelsen og hintene.
+    pass
+
+
+# Test-koden under er fjernet. Skriv din egen test eller kjør Vis løsning
+# for å se hvordan den ferdig versjonen tester routene.`,
+    solution: `from flask import Flask, request, jsonify
 import mysql.connector
 
 app = Flask(__name__)
@@ -1597,6 +2183,38 @@ print("Etter:  ", client.get("/kunder").get_json())
     requires: ["flask"],
     setup: DB_SETUP,
     starter: `from flask import Flask, request, jsonify, abort
+import mysql.connector
+
+# === OPPGAVE ===
+# • 201 Created etter POST, 204 No Content etter DELETE, 404 hvis ressursen ikke finnes
+# • abort(404) hopper rett ut av view-funksjonen og returnerer Flasks default 404-respons
+
+app = Flask(__name__)
+
+def db():
+    # TODO: Skriv koden her — se beskrivelsen og hintene.
+    pass
+
+@app.route("/kunder", methods=["GET"])
+def liste():
+    # TODO: Skriv koden her — se beskrivelsen og hintene.
+    pass
+
+@app.route("/kunder", methods=["POST"])
+def opprett():
+    # TODO: Skriv koden her — se beskrivelsen og hintene.
+    pass
+
+# Nytt i dette steget — DELETE med 404-håndtering:
+@app.route("/kunder/<int:kundenr>", methods=["DELETE"])
+def slett(kundenr):
+    # TODO: Skriv koden her — se beskrivelsen og hintene.
+    pass
+
+
+# Test-koden under er fjernet. Skriv din egen test eller kjør Vis løsning
+# for å se hvordan den ferdig versjonen tester routene.`,
+    solution: `from flask import Flask, request, jsonify, abort
 import mysql.connector
 
 app = Flask(__name__)
@@ -1681,6 +2299,21 @@ for antall, pris in ordrelinjer:
 print(f"Antall ordrelinjer: {len(ordrelinjer)}")
 print(f"Total omsetning: {total} kr")
 `,
+    solution: `import mysql.connector
+
+db = mysql.connector.connect(database="prosess")
+cursor = db.cursor()
+
+cursor.execute("SELECT antall, pris FROM ordrelinje")
+ordrelinjer = cursor.fetchall()
+
+total = 0
+for antall, pris in ordrelinjer:
+    total += antall * pris
+
+print(f"Antall ordrelinjer: {len(ordrelinjer)}")
+print(f"Total omsetning: {total} kr")
+`,
     hints: [
       "fetchall() gir liste av tupler — pakk ut med (antall, pris)",
       "Du kunne også brukt sum(antall*pris for antall, pris in ordrelinjer)",
@@ -1708,6 +2341,23 @@ print(f"Total omsetning: {total} kr")
       "Hent alle produkter, og bygg en dict {kategori: [navn, ...]} i Python. Bruk dict.setdefault eller en if-sjekk for å lage tomme lister automatisk.",
     setup: DB_SETUP_PROSESS,
     starter: `import mysql.connector
+
+db = mysql.connector.connect(database="prosess")
+cursor = db.cursor()
+
+cursor.execute("SELECT navn, kategori FROM produkt")
+produkter = cursor.fetchall()
+
+per_kategori = {}
+for navn, kategori in produkter:
+    if kategori not in per_kategori:
+        per_kategori[kategori] = []
+    per_kategori[kategori].append(navn)
+
+for kategori, navnliste in per_kategori.items():
+    print(f"{kategori}: {navnliste}")
+`,
+    solution: `import mysql.connector
 
 db = mysql.connector.connect(database="prosess")
 cursor = db.cursor()
@@ -1773,6 +2423,25 @@ print("Topp 3 ordrelinjer etter beløp:")
 for linje_id, prodnr, antall, pris in sortert[:3]:
     print(f"  Linje {linje_id}: prod {prodnr} — {antall} stk x {pris} = {antall * pris} kr")
 `,
+    solution: `import mysql.connector
+
+db = mysql.connector.connect(database="prosess")
+cursor = db.cursor()
+
+cursor.execute("SELECT id, prodnr, antall, pris FROM ordrelinje")
+ordrelinjer = cursor.fetchall()
+
+# Sorter på beregnet kolonne — nøkkelen er en lambda
+sortert = sorted(
+    ordrelinjer,
+    key=lambda rad: rad[2] * rad[3],  # antall * pris
+    reverse=True,
+)
+
+print("Topp 3 ordrelinjer etter beløp:")
+for linje_id, prodnr, antall, pris in sortert[:3]:
+    print(f"  Linje {linje_id}: prod {prodnr} — {antall} stk x {pris} = {antall * pris} kr")
+`,
     hints: [
       "lambda rad: rad[2] * rad[3] — indeksene matcher SELECT-rekkefølgen",
       "reverse=True for synkende; reverse=False (default) for stigende",
@@ -1800,6 +2469,18 @@ for linje_id, prodnr, antall, pris in sortert[:3]:
       "Hent alle kunder fra kunde_p og bygg en formatert tekstlinje per kunde. Håndter NULL-epost pent med 'or'-uttrykk: f\"{epost or '(ingen)'}\".",
     setup: DB_SETUP_PROSESS,
     starter: `import mysql.connector
+
+db = mysql.connector.connect(database="prosess")
+cursor = db.cursor()
+
+cursor.execute("SELECT navn, epost, registrert FROM kunde_p")
+kunder = cursor.fetchall()
+
+for navn, epost, registrert in kunder:
+    linje = f"{navn} ({epost or '(ingen e-post)'}) — registrert {registrert}"
+    print(linje)
+`,
+    solution: `import mysql.connector
 
 db = mysql.connector.connect(database="prosess")
 cursor = db.cursor()
@@ -1857,6 +2538,26 @@ for linje_id, prodnr, antall, pris in ordrelinjer:
     betalt = betaling_per_ordre.get(linje_id, "(ingen betaling)")
     print(f"  {linje_id:>2} (prod {prodnr}) | {beregnet:>5} | {betalt}")
 `,
+    solution: `import mysql.connector
+
+db = mysql.connector.connect(database="prosess")
+cursor = db.cursor()
+
+# Spørring 1: ordrelinjer
+cursor.execute("SELECT id, prodnr, antall, pris FROM ordrelinje")
+ordrelinjer = cursor.fetchall()
+
+# Spørring 2: betalinger — bygg dict for raskt oppslag
+cursor.execute("SELECT ordrenr, belop FROM betaling")
+betaling_per_ordre = {ordrenr: belop for ordrenr, belop in cursor.fetchall()}
+
+# Merge i Python — bruk .get for å håndtere ordrer uten betaling
+print("Ordrelinje | beregnet | betalt")
+for linje_id, prodnr, antall, pris in ordrelinjer:
+    beregnet = antall * pris
+    betalt = betaling_per_ordre.get(linje_id, "(ingen betaling)")
+    print(f"  {linje_id:>2} (prod {prodnr}) | {beregnet:>5} | {betalt}")
+`,
     hints: [
       "dict-comprehension {k: v for k, v in ...} gir O(1) oppslag",
       ".get(noekkel, default) returnerer default hvis nøkkelen mangler — som LEFT JOIN",
@@ -1884,6 +2585,25 @@ for linje_id, prodnr, antall, pris in ordrelinjer:
       "Hent alle ordrelinjer, grupper antall solgt per produkt, og regn ut snitt, min og maks pris per produkt. Bruk statistics-modulen for snittet.",
     setup: DB_SETUP_PROSESS,
     starter: `import mysql.connector
+import statistics
+
+db = mysql.connector.connect(database="prosess")
+cursor = db.cursor()
+
+cursor.execute("SELECT prodnr, antall, pris FROM ordrelinje")
+ordrelinjer = cursor.fetchall()
+
+# Bygg dict {prodnr: [pris1, pris2, ...]}
+priser_per_produkt = {}
+for prodnr, antall, pris in ordrelinjer:
+    priser_per_produkt.setdefault(prodnr, []).append(pris)
+
+print("Prodnr | antall linjer | min | maks | snitt")
+for prodnr, priser in sorted(priser_per_produkt.items()):
+    snitt = statistics.mean(priser)
+    print(f"  {prodnr:>2}   | {len(priser):>2}            | {min(priser):>5} | {max(priser):>5} | {snitt:.1f}")
+`,
+    solution: `import mysql.connector
 import statistics
 
 db = mysql.connector.connect(database="prosess")
@@ -1951,6 +2671,20 @@ print("De tre første:")
 for produkt in produkter[:3]:
     print(f"  - {produkt['navn']} ({produkt['kategori']}, {produkt['pris']} kr)")
 `,
+    solution: `client = app.test_client()
+respons = client.get("/api/produkter")
+
+print("Status:", respons.status_code)
+print("Content-Type:", respons.content_type)
+
+# .get_json() parser JSON-bodyen til en Python-liste/dict.
+produkter = respons.get_json()
+print("Antall produkter:", len(produkter))
+
+print("De tre første:")
+for produkt in produkter[:3]:
+    print(f"  - {produkt['navn']} ({produkt['kategori']}, {produkt['pris']} kr)")
+`,
     hints: [
       "respons.status_code — heltallet, f.eks. 200",
       "respons.get_json() — gir Python-liste/dict (None hvis ikke JSON)",
@@ -1995,6 +2729,22 @@ print(f"Funnet {len(billig_elektronikk)} produkter:")
 for produkt in billig_elektronikk:
     print(f"  {produkt['navn']:>10} — {produkt['pris']} kr")
 `,
+    solution: `client = app.test_client()
+produkter = client.get("/api/produkter").get_json()
+
+# Filtrer i Python — list comprehension med flere vilkår
+billig_elektronikk = [
+    p for p in produkter
+    if p["kategori"] == "Elektronikk" and p["pris"] < 10000
+]
+
+# Sortér på pris stigende
+billig_elektronikk.sort(key=lambda p: p["pris"])
+
+print(f"Funnet {len(billig_elektronikk)} produkter:")
+for produkt in billig_elektronikk:
+    print(f"  {produkt['navn']:>10} — {produkt['pris']} kr")
+`,
     hints: [
       "[x for x in liste if vilkår] — list comprehension med filter",
       "liste.sort(key=lambda p: p['pris']) — sorterer in-place",
@@ -2023,6 +2773,26 @@ for produkt in billig_elektronikk:
     requires: ["flask"],
     setup: DEMO_APP_PYTHON,
     starter: `client = app.test_client()
+
+ny_data = {
+    "id": 99,
+    "navn": "Pirat-T-skjorte",
+    "kategori": "Klaer",
+    "pris": 199,
+    "lager": 5,
+}
+
+respons = client.post("/api/produkter", json=ny_data)
+
+print("Status:", respons.status_code)
+print("Body:", respons.get_json())
+
+if respons.status_code == 401:
+    print("Forventet — endepunktet krever Authorization-header.")
+elif respons.status_code == 201:
+    print("Uventet suksess — burde vi ha lagt på en token?")
+`,
+    solution: `client = app.test_client()
 
 ny_data = {
     "id": 99,
@@ -2090,6 +2860,28 @@ print("Opprettet:", opprett.status_code, opprett.get_json())
 nytt_produkt = client.get("/api/produkter/100").get_json()
 print("Hentet etter opprettelse:", nytt_produkt)
 `,
+    solution: `client = app.test_client()
+
+ny_data = {
+    "id": 100,
+    "navn": "Lykt",
+    "kategori": "Elektronikk",
+    "pris": 450,
+    "lager": 20,
+}
+
+# Authorization-header sendes via headers-dict
+opprett = client.post(
+    "/api/produkter",
+    json=ny_data,
+    headers={"Authorization": "Bearer demo-token-abc123"},
+)
+print("Opprettet:", opprett.status_code, opprett.get_json())
+
+# Sjekk at produktet finnes nå
+nytt_produkt = client.get("/api/produkter/100").get_json()
+print("Hentet etter opprettelse:", nytt_produkt)
+`,
     hints: [
       "headers={...} — dict med header-navn som nøkler",
       "Bearer demo-token-abc123 er det demo-appen forventer (se /api-konsoll)",
@@ -2133,6 +2925,23 @@ print("Login:", login.status_code, login.get_json())
 etter_login = client.get("/api/min-side")
 print("Etter login:", etter_login.status_code, etter_login.get_json())
 `,
+    solution: `client = app.test_client()
+
+# 1) Først UTEN login — skal gi 401
+foer_login = client.get("/api/min-side")
+print("Uten login:", foer_login.status_code, foer_login.get_json())
+
+# 2) Logg inn — server setter Set-Cookie i responsen, klienten husker den
+login = client.post(
+    "/api/login",
+    json={"brukernavn": "ola", "passord": "hemmelig"},
+)
+print("Login:", login.status_code, login.get_json())
+
+# 3) Nytt kall til /api/min-side — cookien er med, så server kjenner oss
+etter_login = client.get("/api/min-side")
+print("Etter login:", etter_login.status_code, etter_login.get_json())
+`,
     hints: [
       "Samme test_client-instans = samme cookie-jar — som én browser-tab",
       "Set-Cookie i responsen håndteres automatisk; ingen manuell parsing",
@@ -2160,6 +2969,28 @@ print("Etter login:", etter_login.status_code, etter_login.get_json())
     requires: ["flask"],
     setup: DEMO_APP_PYTHON,
     starter: `client = app.test_client()
+
+# 1) Forsøk POST UTEN token — skal gi 403
+uten_token = client.post(
+    "/api/notat",
+    json={"notat": "Husk å handle"},
+)
+print("Uten token:", uten_token.status_code, uten_token.get_json())
+
+# 2) Hent token (server lagrer det også i session — koblingen skjer via cookie)
+csrf_respons = client.get("/api/csrf").get_json()
+token = csrf_respons["token"]
+print("Token mottatt:", token)
+
+# 3) POST med token i header — skal gi 200
+med_token = client.post(
+    "/api/notat",
+    json={"notat": "Husk å handle"},
+    headers={"X-CSRF-Token": token},
+)
+print("Med token:", med_token.status_code, med_token.get_json())
+`,
+    solution: `client = app.test_client()
 
 # 1) Forsøk POST UTEN token — skal gi 403
 uten_token = client.post(
@@ -2226,6 +3057,25 @@ for kategori, verdi in sortert:
 
 print(f"\\nTotalt på lager: {sum(verdi_per_kategori.values())} kr")
 `,
+    solution: `client = app.test_client()
+produkter = client.get("/api/produkter").get_json()
+
+# Bygg {kategori: total_verdi}
+verdi_per_kategori = {}
+for produkt in produkter:
+    kategori = produkt["kategori"]
+    delsum = produkt["pris"] * produkt["lager"]
+    verdi_per_kategori[kategori] = verdi_per_kategori.get(kategori, 0) + delsum
+
+# Sortér kategorier på total verdi synkende
+sortert = sorted(verdi_per_kategori.items(), key=lambda p: -p[1])
+
+print("Total lagerverdi per kategori:")
+for kategori, verdi in sortert:
+    print(f"  {kategori:>12}: {verdi:>8} kr")
+
+print(f"\\nTotalt på lager: {sum(verdi_per_kategori.values())} kr")
+`,
     hints: [
       "dict.get(noekkel, 0) gir 0 som default når kategorien ikke er sett før",
       "sorted(items, key=lambda p: -p[1]) — minus foran for synkende",
@@ -2260,6 +3110,39 @@ print(f"\\nTotalt på lager: {sum(verdi_per_kategori.values())} kr")
       "I Mega-Tutorial Part IV defineres User-modellen med Mapped-typehints (SQLAlchemy 2.x). Skriv en User-modell, lag tabellen med Base.metadata.create_all(), og verifisér schemaet med sa.inspect(engine). I en ekte Flask-app ville du kjørt `flask db init` + `flask db migrate -m \"users table\"` + `flask db upgrade` — her i nettleseren bruker vi create_all() siden CLI-en ikke er tilgjengelig.",
     requires: ["sqlalchemy"],
     starter: `import sqlalchemy as sa
+import sqlalchemy.orm as so
+from typing import Optional
+
+# Base-klassen alle modeller arver fra. I Flask-SQLAlchemy brukes db.Model;
+# her bruker vi DeclarativeBase direkte — samme greie under panseret.
+# === OPPGAVE ===
+# • primary_key=True gjør id auto-increment i SQLite
+# • unique=True + index=True er to forskjellige ting — unique er en constraint, index gjør oppslag raskere
+
+class Base(so.DeclarativeBase):
+    # TODO: Skriv koden her — se beskrivelsen og hintene.
+    pass
+
+class User(Base):
+    # TODO: Skriv koden her — se beskrivelsen og hintene.
+    pass
+
+    def __repr__(self):
+        # TODO: Skriv koden her — se beskrivelsen og hintene.
+        pass
+
+# In-memory SQLite — Mega-Tutorial bruker fil (sqlite:///app.db),
+# vi holder alt i RAM så hver kjøring starter blank.
+engine = sa.create_engine("sqlite:///:memory:")
+Base.metadata.create_all(engine)
+
+# Verifisér schemaet:
+inspector = sa.inspect(engine)
+print("Tabeller:", inspector.get_table_names())
+print("user-kolonner:", [c["name"] for c in inspector.get_columns("user")])
+print("Indekser på user:", [ix["column_names"] for ix in inspector.get_indexes("user")])
+`,
+    solution: `import sqlalchemy as sa
 import sqlalchemy.orm as so
 from typing import Optional
 
@@ -2325,6 +3208,50 @@ Base.metadata.create_all(engine)`,
     starter: `import sqlalchemy as sa
 import sqlalchemy.orm as so
 
+# === OPPGAVE ===
+# • session.add() planlegger INSERT — commit() utfører den
+# • Etter commit får objektet sin id automatisk (auto-increment)
+# • session.scalars(query) returnerer instanser (User-objekter); session.execute(query) returnerer Row-objekter
+# • I Flask-SQLAlchemy er dette db.session.add() / db.session.commit() — samme API
+
+class Base(so.DeclarativeBase):
+    # TODO: Skriv koden her — se beskrivelsen og hintene.
+    pass
+
+class User(Base):
+    # TODO: Skriv koden her — se beskrivelsen og hintene.
+    pass
+
+    def __repr__(self):
+        # TODO: Skriv koden her — se beskrivelsen og hintene.
+        pass
+
+engine = sa.create_engine("sqlite:///:memory:")
+Base.metadata.create_all(engine)
+
+with so.Session(engine) as session:
+    # 1) Lag instanser i Python (ingen INSERT enda):
+    u1 = User(username="ola", email="ola@test.no")
+    u2 = User(username="kari", email="kari@test.no")
+
+    # 2) Legg dem til sesjonen — fortsatt ingen INSERT, bare merket som nye:
+    session.add(u1)
+    session.add(u2)
+
+    # 3) commit() er det som faktisk skriver til databasen:
+    session.commit()
+    print("Etter commit fikk u1 id =", u1.id)
+
+    # 4) Hent alle — sa.select() bygger SELECT, session.scalars() returnerer instanser:
+    query = sa.select(User)
+    users = session.scalars(query).all()
+    print("Antall brukere:", len(users))
+    for u in users:
+        print(" ", u)
+`,
+    solution: `import sqlalchemy as sa
+import sqlalchemy.orm as so
+
 class Base(so.DeclarativeBase):
     pass
 
@@ -2388,6 +3315,54 @@ with so.Session(engine) as session:
       "To måter å hente én rad: session.get(Model, pk) er det raskeste oppslaget på primærnøkkel. For andre kriterier brukes sa.select(...).where(...) med .first() eller .all(). LIKE-filter med kolonne.like('mønster%').",
     requires: ["sqlalchemy"],
     starter: `import sqlalchemy as sa
+import sqlalchemy.orm as so
+
+# === OPPGAVE ===
+# • session.get returnerer None (ikke exception) hvis raden ikke finnes — tilsvarer Flask sin db.get_or_404()-pattern
+# • User.username.like('o%') — % er wildcard, akkurat som SQL LIKE
+# • .first() returnerer første treff eller None; .one() krever nøyaktig ett treff (exception ellers)
+# • I Mega-Tutorial Part IV brukes nøyaktig dette mønsteret i shell-en
+
+class Base(so.DeclarativeBase):
+    # TODO: Skriv koden her — se beskrivelsen og hintene.
+    pass
+
+class User(Base):
+    # TODO: Skriv koden her — se beskrivelsen og hintene.
+    pass
+
+    def __repr__(self):
+        # TODO: Skriv koden her — se beskrivelsen og hintene.
+        pass
+
+engine = sa.create_engine("sqlite:///:memory:")
+Base.metadata.create_all(engine)
+
+with so.Session(engine) as session:
+    session.add_all([
+        User(username="ola", email="ola@test.no"),
+        User(username="kari", email="kari@test.no"),
+        User(username="ole", email="ole@test.no"),
+        User(username="ola_andre", email="o2@test.no"),
+    ])
+    session.commit()
+
+    # 1) get() — primærnøkkeloppslag, O(1) i indekset tabell:
+    u = session.get(User, 2)
+    print("Bruker 2:", u)
+
+    # 2) where med likhet:
+    q = sa.select(User).where(User.username == "kari")
+    print("kari:", session.scalars(q).first())
+
+    # 3) where + LIKE:
+    q = sa.select(User).where(User.username.like("ola%"))
+    print("Begynner med ola:", session.scalars(q).all())
+
+    # 4) Ikke-eksisterende — get returnerer None:
+    print("Ikke-eksisterende:", session.get(User, 999))
+`,
+    solution: `import sqlalchemy as sa
 import sqlalchemy.orm as so
 
 class Base(so.DeclarativeBase):
@@ -2464,6 +3439,59 @@ user = session.scalars(q).first()`,
     starter: `import sqlalchemy as sa
 import sqlalchemy.orm as so
 
+# === OPPGAVE ===
+# • order_by(...).limit(n).offset(m) er klassisk paginering — limit + offset
+# • I Flask-SQLAlchemy: db.paginate(query, page=2, per_page=2) — samme greie pakket inn
+# • Husk at uten ORDER BY er rekkefølgen udefinert — derfor ALLTID order_by før limit
+
+class Base(so.DeclarativeBase):
+    # TODO: Skriv koden her — se beskrivelsen og hintene.
+    pass
+
+class User(Base):
+    # TODO: Skriv koden her — se beskrivelsen og hintene.
+    pass
+
+    def __repr__(self):
+        # TODO: Skriv koden her — se beskrivelsen og hintene.
+        pass
+
+engine = sa.create_engine("sqlite:///:memory:")
+Base.metadata.create_all(engine)
+
+with so.Session(engine) as session:
+    session.add_all([
+        User(username="ola"),
+        User(username="kari"),
+        User(username="bjørn"),
+        User(username="åse"),
+        User(username="lars"),
+    ])
+    session.commit()
+
+    # Synkende:
+    q = sa.select(User).order_by(User.username.desc())
+    print("Synkende alfabetisk:")
+    for u in session.scalars(q):
+        print(" ", u)
+
+    print("---")
+    # Stigende, topp 2:
+    q = sa.select(User).order_by(User.username.asc()).limit(2)
+    print("Topp 2 stigende:")
+    for u in session.scalars(q):
+        print(" ", u)
+
+    print("---")
+    # Side 2 (offset 2, limit 2):
+    q = sa.select(User).order_by(User.username.asc()).offset(2).limit(2)
+    print("Side 2 (offset=2, limit=2):")
+    for u in session.scalars(q):
+        print(" ", u)
+`,
+    solution: `import sqlalchemy as sa
+import sqlalchemy.orm as so
+
 class Base(so.DeclarativeBase):
     pass
 
@@ -2534,6 +3562,49 @@ with so.Session(engine) as session:
       "Mega-Tutorial Part IV legger til Post-modellen med user_id-fremmednøkkel og bidirekkjonal relasjon (back_populates). Bygg samme schema her: User har posts, Post har author. Inspect viser at FK-en er på plass.",
     requires: ["sqlalchemy"],
     starter: `import sqlalchemy as sa
+import sqlalchemy.orm as so
+from datetime import datetime, timezone
+
+# === OPPGAVE ===
+# • back_populates på BEGGE sider — knytter author ↔ posts sammen, så endringer på en side speiles automatisk
+# • default=lambda: datetime.now(timezone.utc) — lambdaen kjører ved INSERT, så hver rad får sin egen timestamp (default=datetime.now(timezone.utc) ville frosset tiden ved import)
+
+class Base(so.DeclarativeBase):
+    # TODO: Skriv koden her — se beskrivelsen og hintene.
+    pass
+
+class User(Base):
+    # TODO: Skriv koden her — se beskrivelsen og hintene.
+    pass
+
+    # Forward-ref med streng — Post er ikke definert enda:
+    posts: so.Mapped[list["Post"]] = so.relationship(back_populates="author")
+
+    def __repr__(self):
+        # TODO: Skriv koden her — se beskrivelsen og hintene.
+        pass
+
+class Post(Base):
+    # TODO: Skriv koden her — se beskrivelsen og hintene.
+    pass
+
+    author: so.Mapped[User] = so.relationship(back_populates="posts")
+
+    def __repr__(self):
+        # TODO: Skriv koden her — se beskrivelsen og hintene.
+        pass
+
+engine = sa.create_engine("sqlite:///:memory:")
+Base.metadata.create_all(engine)
+
+inspector = sa.inspect(engine)
+print("Tabeller:", inspector.get_table_names())
+print("post-kolonner:", [c["name"] for c in inspector.get_columns("post")])
+print("post FK:")
+for fk in inspector.get_foreign_keys("post"):
+    print(" ", fk["constrained_columns"], "→", fk["referred_table"], fk["referred_columns"])
+`,
+    solution: `import sqlalchemy as sa
 import sqlalchemy.orm as so
 from datetime import datetime, timezone
 
@@ -2613,6 +3684,48 @@ import sqlalchemy.orm as so
 from datetime import datetime, timezone
 
 class Base(so.DeclarativeBase):
+    # TODO: Skriv koden her — se beskrivelsen og hintene.
+    pass
+
+class User(Base):
+    # TODO: Skriv koden her — se beskrivelsen og hintene.
+    pass
+
+class Post(Base):
+    # TODO: Skriv koden her — se beskrivelsen og hintene.
+    pass
+
+engine = sa.create_engine("sqlite:///:memory:")
+Base.metadata.create_all(engine)
+
+with so.Session(engine) as session:
+    ola = User(username="ola")
+    kari = User(username="kari")
+    session.add_all([ola, kari])
+
+    # Vi setter author= direkte — SQLAlchemy fyller user_id automatisk:
+    session.add_all([
+        Post(body="Hei verden!", author=ola),
+        Post(body="Andre innlegg", author=ola),
+        Post(body="Karis bidrag", author=kari),
+    ])
+    session.commit()
+
+    # Naviger fra Post → User (mange-til-én):
+    print("Alle innlegg med forfatter:")
+    for p in session.scalars(sa.select(Post)):
+        print(f"  '{p.body}' — av {p.author.username}")
+
+    # Naviger fra User → Post (én-til-mange):
+    print("\\nOlas innlegg:")
+    for p in ola.posts:
+        print(f"  - {p.body}")
+`,
+    solution: `import sqlalchemy as sa
+import sqlalchemy.orm as so
+from datetime import datetime, timezone
+
+class Base(so.DeclarativeBase):
     pass
 
 class User(Base):
@@ -2686,6 +3799,59 @@ with so.Session(engine) as session:
       "ORM-en gjør UPDATE og DELETE til vanlige Python-operasjoner: endre attributtet og commit; eller session.delete(obj) og commit. Hvis noe går galt før commit, kall session.rollback() — alle ulagrede endringer forsvinner. Dette er samme ACID-garantier som Mega-Tutorial nevner i avsnittet om sessions.",
     requires: ["sqlalchemy"],
     starter: `import sqlalchemy as sa
+import sqlalchemy.orm as so
+
+# === OPPGAVE ===
+# • Du skriver aldri UPDATE/DELETE selv — endre attributtet eller kall session.delete(), commit gjør jobben
+# • rollback() fungerer bare på endringer som IKKE er commit-et enda — committed data er borte for godt
+# • session.refresh(obj) tvinger en ny SELECT etter rollback så Python-objektet matcher DB
+# • I produksjon: pakk endringer i try/except og rollback ved feil — så atomicity holder selv ved exceptions
+
+class Base(so.DeclarativeBase):
+    # TODO: Skriv koden her — se beskrivelsen og hintene.
+    pass
+
+class User(Base):
+    # TODO: Skriv koden her — se beskrivelsen og hintene.
+    pass
+
+    def __repr__(self):
+        # TODO: Skriv koden her — se beskrivelsen og hintene.
+        pass
+
+engine = sa.create_engine("sqlite:///:memory:")
+Base.metadata.create_all(engine)
+
+with so.Session(engine) as session:
+    session.add_all([
+        User(username="ola", email="ola@test.no"),
+        User(username="kari", email="kari@test.no"),
+        User(username="per", email="per@test.no"),
+    ])
+    session.commit()
+
+    # 1) UPDATE — bare endre attributt og commit, ingen UPDATE-statement:
+    u = session.get(User, 1)
+    u.email = "ola.nordmann@firma.no"
+    session.commit()
+    print("Etter oppdatering:", session.get(User, 1))
+
+    # 2) DELETE — session.delete + commit:
+    kari = session.get(User, 2)
+    session.delete(kari)
+    session.commit()
+    print("Etter slett, alle:", session.scalars(sa.select(User)).all())
+
+    # 3) ROLLBACK — endring blir IKKE skrevet:
+    per = session.get(User, 3)
+    per.username = "FEIL_NAVN"
+    print("Før rollback (in-memory state):", per.username)
+    session.rollback()
+    # Rollback laster objektet på nytt fra DB:
+    session.refresh(per)
+    print("Etter rollback:", per.username)
+`,
+    solution: `import sqlalchemy as sa
 import sqlalchemy.orm as so
 
 class Base(so.DeclarativeBase):
@@ -2765,6 +3931,60 @@ except Exception:
       "Den endelige sammenkoblingen: en Flask-route som bruker SQLAlchemy istedenfor rå mysql.connector. Sammenlign med py-flask-json-api-oppgaven (samme funksjonalitet, men cursor.execute → session.scalars). I en ekte app ville Flask-SQLAlchemy gitt deg db.session bundet til app-konteksten; her bruker vi sessionmaker direkte for enkelhets skyld.",
     requires: ["sqlalchemy", "flask"],
     starter: `from flask import Flask, jsonify, abort, request
+import sqlalchemy as sa
+import sqlalchemy.orm as so
+
+# === OPPGAVE ===
+# • with SessionLocal() as s: gir auto-close — ingen lekkende DB-tilkoblinger
+# • Sammenlign med py-flask-json-api: identisk respons, men null SQL-strenger i Python-koden
+# • I Flask-SQLAlchemy bytter du sessionmaker med db.session — den er bundet til app-konteksten og ryddes opp etter hver request automatisk
+# • to_dict()-metoden er en vanlig pattern; større prosjekter bruker biblioteket marshmallow eller pydantic for serialisering
+
+class Base(so.DeclarativeBase):
+    # TODO: Skriv koden her — se beskrivelsen og hintene.
+    pass
+
+class User(Base):
+    # TODO: Skriv koden her — se beskrivelsen og hintene.
+    pass
+
+    def to_dict(self):
+        # TODO: Skriv koden her — se beskrivelsen og hintene.
+        pass
+
+engine = sa.create_engine("sqlite:///:memory:")
+Base.metadata.create_all(engine)
+SessionLocal = so.sessionmaker(engine)
+
+# Seed-data:
+with SessionLocal() as s:
+    s.add_all([
+        User(username="ola", email="ola@test.no"),
+        User(username="kari", email="kari@test.no"),
+    ])
+    s.commit()
+
+app = Flask(__name__)
+
+@app.route("/api/users", methods=["GET"])
+def liste():
+    # TODO: Skriv koden her — se beskrivelsen og hintene.
+    pass
+
+@app.route("/api/users/<int:user_id>", methods=["GET"])
+def detalj(user_id):
+    # TODO: Skriv koden her — se beskrivelsen og hintene.
+    pass
+
+@app.route("/api/users", methods=["POST"])
+def opprett():
+    # TODO: Skriv koden her — se beskrivelsen og hintene.
+    pass
+
+
+# Test-koden under er fjernet. Skriv din egen test eller kjør Vis løsning
+# for å se hvordan den ferdig versjonen tester routene.`,
+    solution: `from flask import Flask, jsonify, abort, request
 import sqlalchemy as sa
 import sqlalchemy.orm as so
 
@@ -2889,6 +4109,39 @@ print("DEBUG:", os.environ.get("DEBUG"))
 
 # Standard Flask-config-mønster — fra Mega-Tutorial:
 class Config:
+    # TODO: Skriv koden her — se beskrivelsen og hintene.
+    pass
+
+print(f"\\nFlask-config:")
+print(f"  SECRET_KEY: {Config.SECRET_KEY[:12]}…")
+print(f"  DATABASE_URI: {Config.SQLALCHEMY_DATABASE_URI}")
+print(f"  DEBUG: {Config.DEBUG} ({type(Config.DEBUG).__name__})")
+`,
+    solution: `import os
+from io import StringIO
+from dotenv import load_dotenv
+
+# I en ekte app: en .env-fil i prosjektroten:
+#   DATABASE_URL=mysql://localhost/exam
+#   SECRET_KEY=hemmelig-nokkel-generert-en-gang
+#   DEBUG=True
+#
+# I Pyodide simulerer vi den med en StringIO:
+env_innhold = """
+DATABASE_URL=mysql://localhost/exam
+SECRET_KEY=hemmelig-nokkel-generert-en-gang
+DEBUG=True
+"""
+
+load_dotenv(stream=StringIO(env_innhold))
+
+# Nå er verdiene tilgjengelig i os.environ:
+print("DATABASE_URL:", os.environ.get("DATABASE_URL"))
+print("SECRET_KEY:", os.environ.get("SECRET_KEY"))
+print("DEBUG:", os.environ.get("DEBUG"))
+
+# Standard Flask-config-mønster — fra Mega-Tutorial:
+class Config:
     SECRET_KEY = os.environ.get("SECRET_KEY") or "fallback-skal-aldri-brukes"
     SQLALCHEMY_DATABASE_URI = os.environ.get("DATABASE_URL") or "sqlite:///app.db"
     DEBUG = os.environ.get("DEBUG", "False") == "True"
@@ -2928,6 +4181,35 @@ secret = os.environ.get("SECRET_KEY")`,
       "WTForms gjør at du beskriver et skjema som en Python-klasse, og lar biblioteket sjekke at innsendt data oppfyller reglene (lengde, type, obligatorisk osv.). Standalone — uten Flask — kan en Form-instans valideres mot et dict.",
     requires: ["wtforms"],
     starter: `from wtforms import Form, StringField, PasswordField, IntegerField
+from wtforms.validators import DataRequired, Length, NumberRange
+
+class RegistrerForm(Form):
+    # TODO: Skriv koden her — se beskrivelsen og hintene.
+    pass
+
+# Test 1: ugyldig — for kort passord, for ung
+data = {"brukernavn": "ola", "passord": "kort", "alder": 15}
+form = RegistrerForm(data=data)
+print("Gyldig?", form.validate())
+print("Feil:", form.errors)
+
+print()
+# Test 2: gyldig
+data = {"brukernavn": "ola_nordmann", "passord": "supersecret", "alder": 25}
+form = RegistrerForm(data=data)
+print("Gyldig?", form.validate())
+print("Brukernavn:", form.brukernavn.data)
+print("Alder:", form.alder.data)
+
+print()
+# Test 3: alle feil samtidig
+data = {"brukernavn": "", "passord": "", "alder": 999}
+form = RegistrerForm(data=data)
+form.validate()
+for felt, feil in form.errors.items():
+    print(f"  {felt}: {', '.join(feil)}")
+`,
+    solution: `from wtforms import Form, StringField, PasswordField, IntegerField
 from wtforms.validators import DataRequired, Length, NumberRange
 
 class RegistrerForm(Form):
@@ -2994,6 +4276,35 @@ for felt, feil in form.errors.items():
       "Flask-WTF kombinerer WTForms med Flask + automatisk CSRF-beskyttelse. Sammenlign med py-flask-csrf: der måtte vi generere og sjekke tokenet manuelt — her er det innebygd. Vi skrur av CSRF i test-klienten via WTF_CSRF_ENABLED=False så vi slipper å hente token i hver test; i produksjon står den på.",
     requires: ["flask", "flask-wtf"],
     starter: `from flask import Flask
+from flask_wtf import FlaskForm
+from wtforms import StringField, PasswordField
+from wtforms.validators import DataRequired, Length
+
+# === OPPGAVE ===
+# • validate_on_submit() = is_submitted() AND validate() — den korte versjonen i hver POST-handler
+# • FlaskForm() trenger ingen argument — den henter request.form automatisk fra Flask sin context
+# • I produksjon: WTF_CSRF_ENABLED=True (default). Da må skjemaet inneholde {{ form.csrf_token }} i Jinja-template
+# • Sammenlign med py-flask-csrf — der var token-håndteringen manuell. Flask-WTF gjør det usynlig.
+
+app = Flask(__name__)
+app.config["SECRET_KEY"] = "test-key"
+# I PRODUKSJON: la denne være True (default). Her skrur vi av for at
+# test_client skal slippe å hente token først.
+app.config["WTF_CSRF_ENABLED"] = False
+
+class LoginForm(FlaskForm):
+    # TODO: Skriv koden her — se beskrivelsen og hintene.
+    pass
+
+@app.route("/login", methods=["POST"])
+def login():
+    # TODO: Skriv koden her — se beskrivelsen og hintene.
+    pass
+
+
+# Test-koden under er fjernet. Skriv din egen test eller kjør Vis løsning
+# for å se hvordan den ferdig versjonen tester routene.`,
+    solution: `from flask import Flask
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField
 from wtforms.validators import DataRequired, Length
@@ -3077,6 +4388,39 @@ from wtforms import Form, StringField
 from wtforms.validators import Email
 
 class KontaktForm(Form):
+    # TODO: Skriv koden her — se beskrivelsen og hintene.
+    pass
+
+form = KontaktForm(data={"epost": "ola@test"})
+print("WTForms Email() — ugyldig:", form.validate(), form.errors)
+
+form = KontaktForm(data={"epost": "ola@test.no"})
+print("WTForms Email() — gyldig:", form.validate(), form.epost.data)
+`,
+    solution: `from email_validator import validate_email, EmailNotValidError
+
+kandidater = [
+    "ola@test.no",
+    "kari@test",                  # mangler TLD
+    "@test.no",                   # mangler local part
+    "OLA.NORDMANN@example.com",   # gyldig — blir normalisert
+    "ola..nordmann@test.no",      # dobbelt punktum — ugyldig
+    "ola+filter@test.no",         # plus-syntaks — gyldig (vanlig hos Gmail)
+]
+
+for kandidat in kandidater:
+    try:
+        info = validate_email(kandidat, check_deliverability=False)
+        print(f"OK     | {kandidat!r:35} → normalisert: {info.normalized}")
+    except EmailNotValidError as e:
+        print(f"AVVIST | {kandidat!r:35} → {e}")
+
+print()
+# Hvordan WTForms bruker det internt:
+from wtforms import Form, StringField
+from wtforms.validators import Email
+
+class KontaktForm(Form):
     epost = StringField(validators=[Email(check_deliverability=False)])
 
 form = KontaktForm(data={"epost": "ola@test"})
@@ -3117,6 +4461,62 @@ except EmailNotValidError as e:
       "Sammenlign med py-flask-login: der hadde vi en hjemmesnekret @login_required-dekoratør og rotet med session['user_id'] selv. Flask-Login gir LoginManager + UserMixin + @login_required ut av boksen. current_user er tilgjengelig i ALLE views og templater — du slipper å plukke fra session manuelt.",
     requires: ["flask", "flask-login"],
     starter: `from flask import Flask, request
+from flask_login import (
+# === OPPGAVE ===
+# • UserMixin gir gratis-implementasjoner av is_authenticated, is_active, is_anonymous, get_id() — du slipper å skrive dem
+# • login_user(user) setter cookie + session. logout_user() fjerner. Du rører aldri session selv.
+# • current_user fungerer i alle views OG i Jinja-templates: {% if current_user.is_authenticated %} ...
+# • Sammenlign med py-flask-login: der hadde vi 12+ linjer kode for å bygge @login_required selv — her er det én import
+# • Passordene 'supersecret' / 'passord1234' er KLARTEKST her av pedagogiske grunner. I produksjon: generate_password_hash ved registrering, check_password_hash i login_user-flyten — se py-pwd-3-secure-login.
+
+    LoginManager, UserMixin,
+    login_user, logout_user, login_required, current_user,
+)
+
+app = Flask(__name__)
+app.config["SECRET_KEY"] = "test-key"
+
+login_manager = LoginManager(app)
+login_manager.login_view = "login"  # Hvor uautentiserte sendes via redirect
+
+# User-klassen må arve UserMixin — det gir is_authenticated, is_active, get_id() osv. gratis.
+class Bruker(UserMixin):
+    # TODO: Skriv koden her — se beskrivelsen og hintene.
+    pass
+
+# Stand-in for en ekte DB:
+brukere = {
+    1: Bruker(1, "ola", "supersecret"),
+    2: Bruker(2, "kari", "passord1234"),
+}
+
+# Flask-Login spør oss: gi meg User-objektet for denne id-en
+@login_manager.user_loader
+def load_user(user_id):
+    # TODO: Skriv koden her — se beskrivelsen og hintene.
+    pass
+
+@app.route("/login", methods=["POST"])
+def login():
+    # TODO: Skriv koden her — se beskrivelsen og hintene.
+    pass
+
+@app.route("/profil")
+@login_required
+def profil():
+    # TODO: Skriv koden her — se beskrivelsen og hintene.
+    pass
+
+@app.route("/logout")
+@login_required
+def logout():
+    # TODO: Skriv koden her — se beskrivelsen og hintene.
+    pass
+
+
+# Test-koden under er fjernet. Skriv din egen test eller kjør Vis løsning
+# for å se hvordan den ferdig versjonen tester routene.`,
+    solution: `from flask import Flask, request
 from flask_login import (
     LoginManager, UserMixin,
     login_user, logout_user, login_required, current_user,
@@ -3240,6 +4640,53 @@ def load_user(user_id):
 # med ulik config. Module-level imports trigger Flask-oppstart.
 
 # === APPLICATION FACTORY-MØNSTERET ===
+# === OPPGAVE ===
+# • I et ekte prosjekt: create_app() ligger i app/__init__.py og kalles fra wsgi.py / run.py / conftest.py
+# • config_class-parameter er vanligere enn dict — class Config / class TestConfig(Config) gir typed config med arv
+# • Du kan ikke lenger bruke 'from app import app' i blueprints — bruk 'from flask import current_app' istedenfor når du er INNE i en request
+# • Mega-Tutorial Part XV viser nøyaktig denne refaktoreringen fra global app til create_app
+
+def create_app(config: dict):
+    # TODO: Skriv koden her — se beskrivelsen og hintene.
+    pass
+
+    @app.route("/info")
+    def info():
+        # TODO: Skriv koden her — se beskrivelsen og hintene.
+        pass
+
+    return app
+
+
+# Lag to UAVHENGIGE app-instanser med ulik config:
+prod_app = create_app({
+    "SECRET_KEY": "prod-key-aldri-i-git",
+})
+test_app = create_app({
+    "SECRET_KEY": "test-key",
+    "TESTING": True,
+})
+
+print("Prod-app: ", prod_app.test_client().get("/info").data.decode())
+print("Test-app: ", test_app.test_client().get("/info").data.decode())
+print()
+print("Hvorfor verdt det:")
+print("  • Tester kan opprette egen app med TESTING=True og separat in-memory DB")
+print("  • Module-level 'from app import db' trigger ikke Flask-oppstart")
+print("  • All config + extension-binding samlet ett sted (create_app)")
+print("  • Du kan kjøre flere instanser i samme prosess (sjeldent, men mulig)")
+`,
+    solution: `from flask import Flask
+
+# === DET NAIVE MØNSTERET (slik alle Flask-øvelsene har gjort hittil) ===
+# app = Flask(__name__)
+# app.config["SECRET_KEY"] = "test"
+# @app.route("/") ...
+#
+# Problem: ÉN app per Python-prosess. Tester får ingen egen instans
+# med ulik config. Module-level imports trigger Flask-oppstart.
+
+# === APPLICATION FACTORY-MØNSTERET ===
 def create_app(config: dict):
     """Bygg og returner en ny Flask-app-instans. Hele appen lever inne her."""
     app = Flask(__name__)
@@ -3285,6 +4732,61 @@ print("  • Du kan kjøre flere instanser i samme prosess (sjeldent, men mulig)
       "Når en Flask-app vokser blir én routes.py uleselig. Blueprint er Flask sin måte å gruppere routes (og senere views, error handlers, og statiske filer) i selvstendige moduler. Vi simulerer to 'filer' her — auth-bp og main-bp — og registrerer begge i create_app.",
     requires: ["flask"],
     starter: `from flask import Flask, Blueprint, url_for
+
+# === ville vært i app/auth/__init__.py ===
+# Auth-relaterte routes: /auth/login, /auth/logout, /auth/registrer
+# === OPPGAVE ===
+# • Inne i en blueprint: bruk url_for('auth.login') ikke url_for('login') — Flask trenger blueprint-navnet som scope
+# • Inne i SAMME blueprint kan du droppe prefiks: url_for('.login') = url_for('auth.login') hvis du allerede er i auth_bp
+# • Blueprints kan ha egne templates/-mapper (template_folder='templates') og statiske filer — full modulær separasjon
+# • Du kan registrere samme blueprint flere ganger med ulik url_prefix — sjelden brukt, men nyttig for f.eks. /api/v1 vs /api/v2
+
+auth_bp = Blueprint("auth", __name__)
+
+@auth_bp.route("/login")
+def login():
+    # TODO: Skriv koden her — se beskrivelsen og hintene.
+    pass
+
+@auth_bp.route("/logout")
+def logout():
+    # TODO: Skriv koden her — se beskrivelsen og hintene.
+    pass
+
+
+# === ville vært i app/main/__init__.py ===
+# Hovedroute-grupper: forsiden og profil
+main_bp = Blueprint("main", __name__)
+
+@main_bp.route("/")
+def index():
+    # TODO: Skriv koden her — se beskrivelsen og hintene.
+    pass
+
+@main_bp.route("/profil")
+def profil():
+    # TODO: Skriv koden her — se beskrivelsen og hintene.
+    pass
+
+
+# === ville vært i app/__init__.py — create_app() ===
+def create_app():
+    # TODO: Skriv koden her — se beskrivelsen og hintene.
+    pass
+
+    # url_prefix gir auth-routes prefiks /auth/...
+    app.register_blueprint(auth_bp, url_prefix="/auth")
+    # main_bp får ingen prefix — den eier rot-pathene
+    app.register_blueprint(main_bp)
+
+    return app
+
+
+app = create_app()
+
+# Test-koden under er fjernet. Skriv din egen test eller kjør Vis løsning
+# for å se hvordan den ferdig versjonen tester routene.`,
+    solution: `from flask import Flask, Blueprint, url_for
 
 # === ville vært i app/auth/__init__.py ===
 # Auth-relaterte routes: /auth/login, /auth/logout, /auth/registrer
@@ -3355,6 +4857,86 @@ with app.test_request_context():
       "Det siste arkitektur-prinsippet som binder alt sammen: opprett extensions UTEN app på modul-nivå (db = SQLAlchemy(), login_manager = LoginManager()), og knytt dem til appen via init_app() inne i create_app(). Dette er HVORFOR factory-mønsteret eksisterer — det lar blueprints importere extensions uten sirkulære imports.",
     requires: ["flask", "flask-login"],
     starter: `from flask import Flask, Blueprint, request
+from flask_login import (
+# === OPPGAVE ===
+# • Hvorfor late binding? Blueprint i app/auth/routes.py har \\"from app.extensions import login_manager\\" øverst — det funker fordi instansen finnes UTEN app, og init_app() knytter den senere.
+# • Samme mønster gjelder Flask-SQLAlchemy: db = SQLAlchemy() i extensions.py, db.init_app(app) i create_app. models.py importerer 'db' direkte.
+# • test_app.login_manager peker på SAMME instans som app.login_manager — extensionet er én, appene er to. user_loader registreres bare én gang.
+# • I ekte prosjekt: extensions.py samler ALLE: db, login_manager, mail, csrf, migrate, ... én linje per. Hver create_app kaller init_app på alle.
+
+    LoginManager, UserMixin,
+    login_user, logout_user, login_required, current_user,
+)
+
+# === ville vært i app/extensions.py ===
+# Lag manager-instansen UTEN app — bindes senere via init_app()
+login_manager = LoginManager()
+login_manager.login_view = "auth.login"
+
+
+# === ville vært i app/models.py ===
+class Bruker(UserMixin):
+    # TODO: Skriv koden her — se beskrivelsen og hintene.
+    pass
+
+# In-memory bruker-DB (her av enkelhets grunn — i ekte app: SQLAlchemy)
+brukere = {1: Bruker(1, "ola"), 2: Bruker(2, "kari")}
+
+# user_loader registreres på extension-instansen — IKKE på app-en.
+# Dette er nøyaktig hvorfor late-binding er nødvendig: brukere må kunne
+# importere login_manager før appen finnes.
+@login_manager.user_loader
+def load_user(uid):
+    # TODO: Skriv koden her — se beskrivelsen og hintene.
+    pass
+
+
+# === ville vært i app/auth/__init__.py ===
+auth_bp = Blueprint("auth", __name__)
+
+@auth_bp.route("/login", methods=["POST"])
+def login():
+    # TODO: Skriv koden her — se beskrivelsen og hintene.
+    pass
+
+@auth_bp.route("/logout")
+@login_required
+def logout():
+    # TODO: Skriv koden her — se beskrivelsen og hintene.
+    pass
+
+
+# === ville vært i app/main/__init__.py ===
+main_bp = Blueprint("main", __name__)
+
+@main_bp.route("/profil")
+@login_required
+def profil():
+    # TODO: Skriv koden her — se beskrivelsen og hintene.
+    pass
+
+
+# === ville vært i app/__init__.py — selve create_app() ===
+def create_app(config):
+    # TODO: Skriv koden her — se beskrivelsen og hintene.
+    pass
+
+    # 1) Bind extensions til DENNE appen
+    login_manager.init_app(app)
+
+    # 2) Registrer blueprints
+    app.register_blueprint(auth_bp, url_prefix="/auth")
+    app.register_blueprint(main_bp)
+
+    return app
+
+
+# === ville vært i wsgi.py / conftest.py ===
+app = create_app({"SECRET_KEY": "test-key"})
+
+# Test-koden under er fjernet. Skriv din egen test eller kjør Vis løsning
+# for å se hvordan den ferdig versjonen tester routene.`,
+    solution: `from flask import Flask, Blueprint, request
 from flask_login import (
     LoginManager, UserMixin,
     login_user, logout_user, login_required, current_user,
