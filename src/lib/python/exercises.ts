@@ -686,12 +686,168 @@ navn = session.get("bruker", "(ingen)")`,
   },
 
   // ============ LOGIN ============
+  // ---- Login-kjeden er splittet i 4 progressive steg slik at studenten
+  // bygger én bit av gangen (decorator → POST/login → beskyttet rute → full test).
   {
-    id: "py-flask-login",
+    id: "py-flask-login-1-decorator",
     topic: "Login & sessions",
-    title: "Login-flyt med session og @login_required-stil",
+    title: "Login 1/4: Bygg login_required-decoratoren",
     description:
-      "Implementer minimal login: POST /login setter session, GET /dashboard krever innlogging — ellers redirect til /login.",
+      "Aller første bit: lag en decorator som returnerer 401 hvis 'user_id' ikke ligger i session. Vi tester den mot en falsk view — ingen DB ennå.",
+    requires: ["flask"],
+    starter: `from flask import Flask, session
+from functools import wraps
+
+app = Flask(__name__)
+app.config["SECRET_KEY"] = "test"
+
+# Bygg decoratoren her. Hint: bruk @wraps, sjekk session["user_id"],
+# returnér ("Ikke innlogget", 401) hvis den mangler.
+def login_required(view):
+    @wraps(view)
+    def wrapper(*args, **kwargs):
+        if "user_id" not in session:
+            return "Ikke innlogget", 401
+        return view(*args, **kwargs)
+    return wrapper
+
+@app.route("/skjult")
+@login_required
+def skjult():
+    return "Hemmelig innhold!"
+
+# Test:
+client = app.test_client()
+print("Uten login:", client.get("/skjult").status_code)  # forventet 401
+
+# Snikinnstilling av session for å bekrefte at decoratoren slipper deg gjennom:
+with client.session_transaction() as s:
+    s["user_id"] = 42
+print("Med session:", client.get("/skjult").data.decode())  # "Hemmelig innhold!"
+`,
+    hints: [
+      "@wraps(view) bevarer navnet på view-funksjonen — viktig så Flask ikke kræsjer ved doble route-navn",
+      "session er en dict-aktig — sjekk med 'in', sett med session['nøkkel'] = verdi",
+    ],
+    docs: [
+      {
+        title: "functools.wraps",
+        url: "https://docs.python.org/3/library/functools.html#functools.wraps",
+        note: "Bevar __name__ og docstring når en decorator wrapper en annen funksjon.",
+      },
+    ],
+  },
+
+  {
+    id: "py-flask-login-2-post-login",
+    topic: "Login & sessions",
+    title: "Login 2/4: POST /login som setter session",
+    description:
+      "Bygg login-routen alene. Den skal slå opp brukeren i kunde-tabellen og lagre kundenr i session ved riktig passord. Du trenger ikke decoratoren ennå.",
+    requires: ["flask"],
+    setup: DB_SETUP,
+    starter: `from flask import Flask, session, request
+import mysql.connector
+
+app = Flask(__name__)
+app.config["SECRET_KEY"] = "test"
+
+@app.route("/login", methods=["POST"])
+def login():
+    navn = request.form["brukernavn"]
+    passord = request.form["passord"]
+    db = mysql.connector.connect(database="exam")
+    cur = db.cursor()
+    cur.execute(
+        "SELECT kundenr FROM kunde WHERE navn = %s AND passord = %s",
+        (navn, passord),
+    )
+    rad = cur.fetchone()
+    if rad:
+        session["user_id"] = rad[0]
+        return f"Logget inn som {navn}"
+    return "Feil passord", 401
+
+# Test:
+client = app.test_client()
+print("Feil passord:", client.post("/login", data={"brukernavn":"Ola Nordmann","passord":"tull"}).status_code)
+print("Riktig:      ", client.post("/login", data={"brukernavn":"Ola Nordmann","passord":"hash_av_hemmelig"}).data.decode())
+
+# Bekreft at session ble satt:
+with client.session_transaction() as s:
+    print("Session etter login:", dict(s))
+`,
+    hints: [
+      "Etter en post-login: hent ut session med client.session_transaction() — den skal inneholde 'user_id'",
+      "ADVARSEL: passordene her er KLARTEKST (anti-pattern). Se py-pwd-1/2/3 for riktig variant med werkzeug-hash.",
+    ],
+  },
+
+  {
+    id: "py-flask-login-3-combine",
+    topic: "Login & sessions",
+    title: "Login 3/4: Beskytt /dashboard med decoratoren",
+    description:
+      "Sett sammen steg 1 (decoratoren) og steg 2 (login). Legg til en /dashboard som bruker @login_required og leser session['user_id'].",
+    requires: ["flask"],
+    setup: DB_SETUP,
+    starter: `from flask import Flask, session, request, redirect, url_for
+from functools import wraps
+import mysql.connector
+
+app = Flask(__name__)
+app.config["SECRET_KEY"] = "test"
+
+# Fra steg 1 — decoratoren. Vi har byttet 401 til redirect så uautoriserte
+# blir sendt til login-skjemaet i stedet for å se en feilmelding.
+def login_required(view):
+    @wraps(view)
+    def wrapper(*args, **kwargs):
+        if "user_id" not in session:
+            return redirect(url_for("login"))
+        return view(*args, **kwargs)
+    return wrapper
+
+# Fra steg 2 — login-routen.
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    if request.method == "POST":
+        navn = request.form["brukernavn"]
+        passord = request.form["passord"]
+        db = mysql.connector.connect(database="exam")
+        cur = db.cursor()
+        cur.execute(
+            "SELECT kundenr FROM kunde WHERE navn = %s AND passord = %s",
+            (navn, passord),
+        )
+        rad = cur.fetchone()
+        if rad:
+            session["user_id"] = rad[0]
+            return f"Logget inn som {navn}"
+        return "Feil passord", 401
+    return "<form>...login-skjema...</form>"
+
+# Nytt i dette steget — legg til /dashboard som krever innlogging:
+@app.route("/dashboard")
+@login_required
+def dashboard():
+    return f"Velkommen, kunde {session['user_id']}"
+
+client = app.test_client()
+print("Dashboard uten login →", client.get("/dashboard").status_code)  # 302 redirect
+`,
+    hints: [
+      "Fordi vi bruker redirect i decoratoren får /dashboard 302 i stedet for 401 når man ikke er innlogget",
+      "url_for('login') beregner '/login' fra navnet på funksjonen — aldri hardkod URLer i redirect",
+    ],
+  },
+
+  {
+    id: "py-flask-login-4-full-test",
+    topic: "Login & sessions",
+    title: "Login 4/4: Test hele login-flyten ende-til-ende",
+    description:
+      "Samme app som steg 3, men nå med en full test-rekke som viser at uten-login → redirect, feil passord → 401, riktig passord → session beholdes og /dashboard svarer.",
     requires: ["flask"],
     setup: DB_SETUP,
     starter: `from flask import Flask, session, request, redirect, url_for
@@ -741,7 +897,7 @@ print("4. Etter login:", client.get("/dashboard").data.decode())
     hints: [
       "Status 1 skal være 302 (redirect), 2 skal være 401",
       "Step 4 fungerer fordi test_client beholder session-cookien fra step 3",
-      "ADVARSEL: passordene i seed-data er KLARTEKST, og SELECT-en sammenligner direkte i SQL. Det er et anti-pattern. Se py-pwd-1 / py-pwd-2 / py-pwd-3 for hvordan dette skal gjøres riktig (werkzeug.security + check_password_hash).",
+      "ADVARSEL: passordene i seed-data er KLARTEKST. Se py-pwd-3a/b/c for hvordan dette skal gjøres riktig (werkzeug.security + check_password_hash).",
     ],
   },
 
@@ -837,19 +993,16 @@ print("umulig å reverse uten å gjette passordet.")
     ],
   },
   {
-    id: "py-pwd-3-secure-login",
+    // ---- Sikker login-flyt splittet i 3 steg: tabell+hash → verify → full flyt
+    id: "py-pwd-3a-build-table",
     topic: "Passord-sikkerhet",
-    title: "Sikker login-flyt: hash ved registrering, sjekk ved login",
+    title: "Sikker login 1/3: Bygg bruker-tabell med hash-passord",
     description:
-      "Bygg en bruker-tabell der passord_hash er reell hash, og en /login-route som bruker check_password_hash. Sammenlign med py-flask-login (som bruker klartekst og direkte SQL-sammenligning) — det er DENNE versjonen som hører hjemme i produksjon.",
+      "Lag en bruker-tabell og sett inn to brukere der passordene er hashet med generate_password_hash. Ingen Flask ennå — bare se at hash funker.",
     requires: ["flask"],
-    starter: `from flask import Flask, request
-from werkzeug.security import generate_password_hash, check_password_hash
+    starter: `from werkzeug.security import generate_password_hash, check_password_hash
 import mysql.connector
 
-# 1) Bygg en NY bruker-tabell — uavhengig av kunde-tabellen fra DB_SETUP.
-#    Dette simulerer en registrerings-flyt der hashen genereres når brukeren
-#    velger passord (her: ved oppstart for enkelhets skyld).
 db = mysql.connector.connect(database="auth_demo")
 cur = db.cursor()
 cur.execute("DROP TABLE IF EXISTS bruker")
@@ -869,6 +1022,52 @@ cur.executemany(
 )
 db.commit()
 
+# Sjekk at hashen er ekte — den skal IKKE være lik klartekst-passordet
+cur.execute("SELECT brukernavn, passord_hash FROM bruker")
+for navn, hash_ in cur.fetchall():
+    print(f"{navn:5}  hash={hash_[:30]}...  passord-lik-hash? {hash_ == 'supersecret'}")
+
+# Bekreft at check_password_hash kjenner igjen riktig passord:
+cur.execute("SELECT passord_hash FROM bruker WHERE brukernavn = 'ola'")
+ola_hash = cur.fetchone()[0]
+print("ola riktig:", check_password_hash(ola_hash, "supersecret"))
+print("ola feil:  ", check_password_hash(ola_hash, "tull"))
+`,
+    hints: [
+      "generate_password_hash legger til en tilfeldig salt — to like passord får forskjellig hash",
+      "I en ekte registrerings-route ville hash genereres ved oppstart av brukerens valgte passord, ikke i seed-data",
+    ],
+    docs: [
+      {
+        title: "werkzeug.security",
+        url: "https://werkzeug.palletsprojects.com/en/stable/utils/#werkzeug.security.generate_password_hash",
+        note: "generate_password_hash + check_password_hash er Werkzeugs standardverktøy for sikker passord-hashing (med salt).",
+      },
+    ],
+  },
+
+  {
+    id: "py-pwd-3b-verify-login",
+    topic: "Passord-sikkerhet",
+    title: "Sikker login 2/3: Login-route som bruker check_password_hash",
+    description:
+      "Bygg en /login som slår opp brukernavn UTEN å sammenligne passordet i SQL — hashen sjekkes i Python med check_password_hash. Tabellen er allerede satt opp for deg.",
+    requires: ["flask"],
+    starter: `from flask import Flask, request
+from werkzeug.security import generate_password_hash, check_password_hash
+import mysql.connector
+
+# Tabellen er bygget for deg (samme som steg 1):
+db = mysql.connector.connect(database="auth_demo")
+cur = db.cursor()
+cur.execute("DROP TABLE IF EXISTS bruker")
+cur.execute("CREATE TABLE bruker (id INTEGER PRIMARY KEY, brukernavn TEXT UNIQUE, passord_hash TEXT)")
+cur.executemany(
+    "INSERT INTO bruker (id, brukernavn, passord_hash) VALUES (%s, %s, %s)",
+    [(1, "ola", generate_password_hash("supersecret"))],
+)
+db.commit()
+
 app = Flask(__name__)
 
 @app.route("/login", methods=["POST"])
@@ -878,12 +1077,64 @@ def login():
 
     db = mysql.connector.connect(database="auth_demo")
     cur = db.cursor()
-    # Slå opp bruker UTEN passord-test i SQL — sammenligner hash i Python:
+    # MERK: SELECT-en henter ut HASHEN — den sammenligner ikke passord i SQL.
+    cur.execute("SELECT id, passord_hash FROM bruker WHERE brukernavn = %s", (navn,))
+    rad = cur.fetchone()
+    if rad is None:
+        return "Feil brukernavn eller passord", 401
+    user_id, lagret_hash = rad
+    if not check_password_hash(lagret_hash, passord):
+        return "Feil brukernavn eller passord", 401
+    return f"Innlogget som id={user_id}", 200
+
+client = app.test_client()
+print("Riktig:", client.post("/login", data={"brukernavn":"ola","passord":"supersecret"}).status_code)
+print("Feil:  ", client.post("/login", data={"brukernavn":"ola","passord":"tull"}).status_code)
+`,
+    hints: [
+      "Sammenlign med py-flask-login-2: der står 'WHERE navn=%s AND passord=%s' direkte i SQL — det krever klartekst",
+      "Her er passordet aldri i SQL-en. Hashen ligger i DB, sammenligning skjer i Python",
+    ],
+  },
+
+  {
+    id: "py-pwd-3c-secure-flow",
+    topic: "Passord-sikkerhet",
+    title: "Sikker login 3/3: Full flyt med username-enumeration-forsvar",
+    description:
+      "Steg 2 ga forskjellig timing for 'ukjent bruker' og 'feil passord'. Nå returneres en identisk feilmelding for begge — så en angriper ikke kan finne ut om en konto eksisterer ved å prøve random brukernavn.",
+    requires: ["flask"],
+    starter: `from flask import Flask, request
+from werkzeug.security import generate_password_hash, check_password_hash
+import mysql.connector
+
+db = mysql.connector.connect(database="auth_demo")
+cur = db.cursor()
+cur.execute("DROP TABLE IF EXISTS bruker")
+cur.execute("CREATE TABLE bruker (id INTEGER PRIMARY KEY, brukernavn TEXT UNIQUE, passord_hash TEXT)")
+cur.executemany(
+    "INSERT INTO bruker (id, brukernavn, passord_hash) VALUES (%s, %s, %s)",
+    [
+        (1, "ola",  generate_password_hash("supersecret")),
+        (2, "kari", generate_password_hash("passord1234")),
+    ],
+)
+db.commit()
+
+app = Flask(__name__)
+
+@app.route("/login", methods=["POST"])
+def login():
+    navn    = request.form.get("brukernavn", "")
+    passord = request.form.get("passord", "")
+
+    db = mysql.connector.connect(database="auth_demo")
+    cur = db.cursor()
     cur.execute("SELECT id, passord_hash FROM bruker WHERE brukernavn = %s", (navn,))
     rad = cur.fetchone()
 
-    # Konstant respons-tekst — ikke avslør om brukernavnet finnes
-    # (forsvar mot username-enumeration):
+    # Konstant feilmelding — angriperen kan ikke skille på status/respons
+    # om brukernavnet finnes (forsvar mot username-enumeration):
     feilmelding = ("Feil brukernavn eller passord", 401)
 
     if rad is None:
@@ -901,39 +1152,126 @@ print("Ukjent bruker:     ", client.post("/login", data={"brukernavn": "tull", "
 print("Riktig kari:       ", client.post("/login", data={"brukernavn": "kari", "passord": "passord1234"}).status_code)
 `,
     hints: [
-      "Sammenlign med py-flask-login: der står 'WHERE navn=%s AND passord=%s' direkte i SQL, og passordene er klartekst. Begge feil rettes her.",
-      "Identisk feilmelding for 'ukjent bruker' og 'feil passord' — angripere skal ikke kunne enumerate eksisterende brukernavn ved å se på status/respons.",
-      "I en ekte registrerings-route: navn = request.form['brukernavn']; hash = generate_password_hash(request.form['passord']); INSERT INTO bruker ...",
-      "Sammen med Flask-Login: erstatt `return f\"Innlogget...\"` med login_user(bruker) (se py-ext-flask-login).",
+      "Sammenlign med py-flask-login (klartekst + direkte SQL): begge anti-mønstrene rettes her",
+      "Identisk feilmelding for 'ukjent bruker' og 'feil passord' — angripere skal ikke kunne enumerate eksisterende brukernavn",
+      "I en ekte registrerings-route: hash = generate_password_hash(request.form['passord']); INSERT INTO bruker ...",
+      "Sammen med Flask-Login: erstatt `return f\"Innlogget...\"` med login_user(bruker) (se py-ext-flask-login)",
     ],
     docs: [
-      {
-        title: "functools.wraps og decorators",
-        url: "https://docs.python.org/3/library/functools.html#functools.wraps",
-        note: "@wraps(view) bevarer funksjonsnavn og docstring når en decorator wrapper en annen funksjon.",
-      },
-      {
-        title: "redirect() og url_for()",
-        url: "https://flask.palletsprojects.com/en/stable/quickstart/#redirects-and-errors",
-        note: "redirect() sender 302 til en annen sti. url_for('endpoint_name') beregner sti basert på funksjonsnavn — aldri hardkod URLer.",
-        snippet: `if "user_id" not in session:
-    return redirect(url_for("login"))`,
-      },
       {
         title: "Hash passord — werkzeug.security",
         url: "https://werkzeug.palletsprojects.com/en/stable/utils/#werkzeug.security.generate_password_hash",
         note: "I produksjon: lagre `generate_password_hash(passord)`. Sjekk login med `check_password_hash(stored, input)`. ALDRI lagre klartekst-passord.",
       },
+      {
+        title: "OWASP — Authentication Cheat Sheet",
+        url: "https://cheatsheetseries.owasp.org/cheatsheets/Authentication_Cheat_Sheet.html",
+        note: "Beskriver bl.a. username-enumeration-forsvar — identisk respons og responstid for alle login-feil.",
+      },
     ],
   },
 
   // ============ CSRF ============
+  // Splittet i 3 steg: token-generering → verifisering → full angreps-test
   {
-    id: "py-flask-csrf",
+    id: "py-flask-csrf-1-token",
     topic: "CSRF",
-    title: "CSRF-token — godta bare requester med riktig token",
+    title: "CSRF 1/3: Generer og embed token i skjema",
     description:
-      "Implementer manuell CSRF-beskyttelse med session-token. POST uten token avvises, POST med token aksepteres.",
+      "Lag en hjelper get_csrf_token() som lagrer en tilfeldig token i session, og en /skjema-route som plasserer den i et <input hidden>. Vi lagrer ingenting og verifiserer ingenting ennå.",
+    requires: ["flask"],
+    starter: `from flask import Flask, session
+import secrets
+
+app = Flask(__name__)
+app.config["SECRET_KEY"] = "test"
+
+def get_csrf_token():
+    # Hvis session ikke har en token, lag en ny og lagre den
+    if "csrf" not in session:
+        session["csrf"] = secrets.token_hex(16)
+    return session["csrf"]
+
+@app.route("/skjema")
+def skjema():
+    token = get_csrf_token()
+    return f'<form method="POST" action="/lagre"><input type="hidden" name="csrf" value="{token}">...</form>'
+
+# Test:
+client = app.test_client()
+html = client.get("/skjema").data.decode()
+print("HTML inneholder hidden input:", 'name="csrf"' in html)
+
+# Hent ut tokenen — vi bruker den i steg 2
+import re
+token = re.search(r'value="([a-f0-9]+)"', html).group(1)
+print("Generert token:", token, "(lengde:", len(token), ")")
+`,
+    hints: [
+      "secrets.token_hex(16) gir 32 hex-tegn — kryptografisk tilfeldig",
+      "session er signert med SECRET_KEY så klienten ikke kan endre tokenen utenfra",
+    ],
+    docs: [
+      {
+        title: "secrets.token_hex",
+        url: "https://docs.python.org/3/library/secrets.html#secrets.token_hex",
+        note: "Kryptografisk trygg tilfeldig hex-streng. Bruk denne, ikke random.choice().",
+      },
+    ],
+  },
+
+  {
+    id: "py-flask-csrf-2-verify",
+    topic: "CSRF",
+    title: "CSRF 2/3: Verifiser token på POST",
+    description:
+      "Bygg /lagre-routen som sammenligner submitted token mot session['csrf']. Hvis de ikke matcher → 403. Skjema-routen fra steg 1 er gjenbrukt.",
+    requires: ["flask"],
+    starter: `from flask import Flask, session, request
+import secrets
+
+app = Flask(__name__)
+app.config["SECRET_KEY"] = "test"
+
+# Fra steg 1:
+def get_csrf_token():
+    if "csrf" not in session:
+        session["csrf"] = secrets.token_hex(16)
+    return session["csrf"]
+
+@app.route("/skjema")
+def skjema():
+    token = get_csrf_token()
+    return f'<form method="POST" action="/lagre"><input type="hidden" name="csrf" value="{token}">...</form>'
+
+# Nytt i dette steget — verifisering:
+@app.route("/lagre", methods=["POST"])
+def lagre():
+    submitted = request.form.get("csrf", "")
+    expected = session.get("csrf", "")
+    if not expected or submitted != expected:
+        return "CSRF-feil — avvist", 403
+    return "Lagret", 200
+
+# Test riktig token-flyt:
+client = app.test_client()
+html = client.get("/skjema").data.decode()
+import re
+token = re.search(r'value="([a-f0-9]+)"', html).group(1)
+print("Med riktig token:", client.post("/lagre", data={"navn":"Ola","csrf":token}).status_code)
+`,
+    hints: [
+      "session.get('csrf', '') gir tom streng hvis det ikke finnes — så 'submitted == expected' alltid feiler når brukeren ikke har vært via /skjema",
+      "I ekte kode bruker man hmac.compare_digest for å unngå timing-angrep ved sammenligning",
+    ],
+  },
+
+  {
+    id: "py-flask-csrf-3-attack-test",
+    topic: "CSRF",
+    title: "CSRF 3/3: Test alle angreps-scenarier",
+    description:
+      "Samme app som steg 2, men med en full test-rekke som dekker (1) skjema-lasting, (2) POST uten token, (3) POST med riktig token, (4) POST med fake token. Bekreft at avvisningen er konsekvent.",
     requires: ["flask"],
     starter: `from flask import Flask, session, request
 import secrets
@@ -984,13 +1322,6 @@ print("4. Feil token:", client.post("/lagre", data={"navn": "Ola", "csrf": "fake
         title: "OWASP — Cross-Site Request Forgery (CSRF)",
         url: "https://owasp.org/www-community/attacks/csrf",
         note: "Angriperens nettside får brukerens nettleser til å sende en POST mot ditt domene. Token-mønsteret er forsvaret.",
-      },
-      {
-        title: "secrets.token_hex",
-        url: "https://docs.python.org/3/library/secrets.html#secrets.token_hex",
-        note: "Kryptografisk trygg tilfeldig hex-streng. Bruk denne, ikke random.choice().",
-        snippet: `import secrets
-token = secrets.token_hex(16)`,
       },
       {
         title: "Flask-WTF (anbefalt i ekte prosjekter)",
@@ -1066,12 +1397,108 @@ print("3.", r.status_code, r.get_json())
   },
 
   // ============ HTTP / API verbs ============
+  // Splittet i 3 steg: GET → POST (Created) → DELETE med 404
   {
-    id: "py-flask-rest",
+    id: "py-flask-rest-1-get",
     topic: "REST / API",
-    title: "REST-endepunkt: GET, POST, DELETE for kunder",
+    title: "REST 1/3: GET /kunder — list ressurser",
     description:
-      "Lag tre routes som dekker hovedoperasjonene mot kunde-tabellen. Test alle tre.",
+      "Bygg det enkleste REST-endepunktet: GET /kunder som returnerer alle kunder som JSON-array. Vi legger til POST og DELETE i de neste stegene.",
+    requires: ["flask"],
+    setup: DB_SETUP,
+    starter: `from flask import Flask, jsonify
+import mysql.connector
+
+app = Flask(__name__)
+
+def db():
+    return mysql.connector.connect(database="exam")
+
+@app.route("/kunder", methods=["GET"])
+def liste():
+    cur = db().cursor()
+    cur.execute("SELECT kundenr, navn FROM kunde")
+    return jsonify([{"kundenr": k, "navn": n} for k, n in cur.fetchall()])
+
+client = app.test_client()
+r = client.get("/kunder")
+print("Status:", r.status_code)
+print("Body:  ", r.get_json())
+`,
+    hints: [
+      "jsonify() setter Content-Type til application/json automatisk og serialiserer dict/list",
+      "List comprehension over fetchall() konverterer rader til dict — godt mønster for små JSON-svar",
+    ],
+    docs: [
+      {
+        title: "flask.jsonify",
+        url: "https://flask.palletsprojects.com/en/stable/api/#flask.json.jsonify",
+        note: "Konverterer dict/list til JSON-respons med riktig Content-Type.",
+      },
+    ],
+  },
+
+  {
+    id: "py-flask-rest-2-post",
+    topic: "REST / API",
+    title: "REST 2/3: POST /kunder — opprett ny ressurs",
+    description:
+      "Legg til POST-routen. Den skal lese JSON-body, INSERT i DB, committe, og returnere 201 Created med id-en til den nye ressursen.",
+    requires: ["flask"],
+    setup: DB_SETUP,
+    starter: `from flask import Flask, request, jsonify
+import mysql.connector
+
+app = Flask(__name__)
+
+def db():
+    return mysql.connector.connect(database="exam")
+
+# Fra steg 1:
+@app.route("/kunder", methods=["GET"])
+def liste():
+    cur = db().cursor()
+    cur.execute("SELECT kundenr, navn FROM kunde")
+    return jsonify([{"kundenr": k, "navn": n} for k, n in cur.fetchall()])
+
+# Nytt i dette steget:
+@app.route("/kunder", methods=["POST"])
+def opprett():
+    data = request.get_json()
+    d = db()
+    cur = d.cursor()
+    cur.execute(
+        "INSERT INTO kunde (kundenr, navn) VALUES (%s, %s)",
+        (data["kundenr"], data["navn"]),
+    )
+    d.commit()
+    return jsonify({"opprettet": data["kundenr"]}), 201
+
+client = app.test_client()
+print("Før:    ", client.get("/kunder").get_json())
+print("POST:   ", client.post("/kunder", json={"kundenr": 99, "navn": "Ny Kunde"}).status_code)
+print("Etter:  ", client.get("/kunder").get_json())
+`,
+    hints: [
+      "request.get_json() parser JSON-bodyen til dict",
+      "201 Created er konvensjonen for 'ny ressurs opprettet' — ikke 200",
+      "d.commit() er nødvendig — uten den skjer INSERT bare i transaksjonen og blir ikke synlig for senere kall",
+    ],
+    docs: [
+      {
+        title: "request.get_json()",
+        url: "https://flask.palletsprojects.com/en/stable/api/#flask.Request.get_json",
+        note: "Parser request-body som JSON. Returnerer dict/list. Bruk silent=True for å unngå exception ved ugyldig JSON.",
+      },
+    ],
+  },
+
+  {
+    id: "py-flask-rest-3-delete-404",
+    topic: "REST / API",
+    title: "REST 3/3: DELETE /kunder/<id> — med 404 når ressursen mangler",
+    description:
+      "Legg til DELETE som sletter på id og returnerer 204 No Content. Hvis cursor.rowcount er 0 → 404 (kundene fantes ikke). Sett sammen alt for full GET/POST/DELETE-test.",
     requires: ["flask"],
     setup: DB_SETUP,
     starter: `from flask import Flask, request, jsonify, abort
@@ -1100,6 +1527,7 @@ def opprett():
     d.commit()
     return jsonify({"opprettet": data["kundenr"]}), 201
 
+# Nytt i dette steget — DELETE med 404-håndtering:
 @app.route("/kunder/<int:kundenr>", methods=["DELETE"])
 def slett(kundenr):
     d = db()
@@ -1119,18 +1547,13 @@ print("DELETE 999:", client.delete("/kunder/999").status_code)
 `,
     hints: [
       "201 Created etter POST, 204 No Content etter DELETE, 404 hvis ressursen ikke finnes",
-      "request.get_json() leser JSON-bodyen",
+      "abort(404) hopper rett ut av view-funksjonen og returnerer Flasks default 404-respons",
     ],
     docs: [
       {
         title: "REST resource conventions",
         url: "https://restfulapi.net/resource-naming/",
         note: "Substantiv i flertall (`/kunder`), HTTP-verb sier hva som skal skje. ID-en i path: `/kunder/<id>`.",
-      },
-      {
-        title: "request.get_json()",
-        url: "https://flask.palletsprojects.com/en/stable/api/#flask.Request.get_json",
-        note: "Parser request-body som JSON. Returnerer dict/list. Bruk silent=True for å unngå exception ved ugyldig JSON.",
       },
       {
         title: "cursor.rowcount",
