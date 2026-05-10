@@ -7,6 +7,7 @@ import { PythonEditor } from "@/components/python/PythonEditor";
 import { VariableInspector } from "@/components/python/VariableInspector";
 import { PY_EXERCISES } from "@/lib/python/exercises";
 import { runScript, runScriptStepwise } from "@/lib/python/runner";
+import { loadPyProgress, markPySolved, resetPyProgress, type PyProgress } from "@/lib/python/pyProgress";
 import { DocsPanel } from "@/components/DocsPanel";
 import { getPyodide, isPyodideReady, onPyodideProgress } from "@/lib/python/pyodideLoader";
 import type { PyRunResult, PyStep } from "@/lib/python/types";
@@ -20,6 +21,8 @@ import {
   ChevronLeft,
   ChevronRight,
   BookOpen,
+  Check,
+  Trophy,
 } from "lucide-react";
 
 export const Route = createFileRoute("/python")({
@@ -67,6 +70,10 @@ function PythonPage() {
   const [showSolution, setShowSolution] = useState(false);
   const [solutionCopied, setSolutionCopied] = useState(false);
 
+  // Progress (XP + solved-set), persistert i localStorage.
+  const [progress, setProgress] = useState<PyProgress>(() => loadPyProgress());
+  const [xpToast, setXpToast] = useState<{ xp: number; total: number } | null>(null);
+
   // Reset state when switching exercise
   useEffect(() => {
     setCode(exercise.starter);
@@ -77,6 +84,20 @@ function PythonPage() {
     setShowHints(false);
     setShowSolution(false);
   }, [exercise.id]);
+
+  function markCurrentSolved() {
+    const { progress: next, xpEarned } = markPySolved(exercise.id);
+    setProgress(next);
+    if (xpEarned > 0) {
+      setXpToast({ xp: xpEarned, total: next.xp });
+      setTimeout(() => setXpToast(null), 3500);
+    }
+  }
+  function resetAllProgress() {
+    if (typeof window !== "undefined" && !window.confirm("Nullstille all Python-progresjon?"))
+      return;
+    setProgress(resetPyProgress());
+  }
 
   function copySolution() {
     if (!exercise.solution) return;
@@ -121,7 +142,15 @@ function PythonPage() {
         setup: exercise.setup,
       });
       setStdout(result.stdout);
-      if (!result.ok) setError(result.error ?? "Ukjent feil");
+      if (!result.ok) {
+        setError(result.error ?? "Ukjent feil");
+      } else {
+        // Kjørte uten feil → marker som "godkjent" og gi XP. Vi bruker
+        // suksessfull execution som proxy for "studenten har løst oppgaven";
+        // det er ikke perfekt validering, men match-mot-fasit krever per-oppgave
+        // expected output som ikke er definert. "Godkjent" = "kjørte rent".
+        markCurrentSolved();
+      }
     } finally {
       setBusy(false);
     }
@@ -176,6 +205,15 @@ function PythonPage() {
   return (
     <div className="min-h-screen bg-background">
       <SiteHeader />
+      {xpToast && (
+        <div className="fixed top-20 left-1/2 -translate-x-1/2 z-50 rounded-lg border border-success bg-card shadow-lg px-4 py-3 flex items-center gap-2.5 animate-in fade-in slide-in-from-top-2">
+          <Trophy className="h-4 w-4 text-warning" />
+          <div>
+            <div className="font-semibold text-success text-sm">+{xpToast.xp} XP — Godkjent!</div>
+            <div className="text-[10px] text-muted-foreground">Total: {xpToast.total} XP</div>
+          </div>
+        </div>
+      )}
       <main className="container mx-auto px-4 py-6 max-w-7xl">
         <div className="mb-5">
           <h1 className="text-2xl font-bold tracking-tight">Python — Flask, MySQL & sikkerhet</h1>
@@ -197,26 +235,68 @@ function PythonPage() {
         <div className="grid lg:grid-cols-[260px_1fr] gap-4">
           {/* Sidebar: exercise list */}
           <aside className="space-y-1">
-            <div className="text-xs uppercase tracking-wider text-muted-foreground mb-2">
-              Oppgaver ({PY_EXERCISES.length})
+            <div className="flex items-center justify-between mb-2">
+              <div className="text-xs uppercase tracking-wider text-muted-foreground">
+                Oppgaver ({Object.keys(progress.solved).length}/{PY_EXERCISES.length})
+              </div>
+              {progress.xp > 0 && (
+                <button
+                  onClick={resetAllProgress}
+                  title="Nullstill all progresjon"
+                  className="text-muted-foreground hover:text-foreground text-[10px]"
+                >
+                  Nullstill
+                </button>
+              )}
             </div>
-            {PY_EXERCISES.map((e) => (
-              <button
-                key={e.id}
-                onClick={() => setActiveId(e.id)}
-                className={cn(
-                  "w-full text-left rounded-md px-3 py-2 text-sm transition-colors",
-                  e.id === exercise.id
-                    ? "bg-accent text-foreground"
-                    : "text-muted-foreground hover:bg-accent/50 hover:text-foreground",
-                )}
-              >
-                <div className="font-medium truncate">{e.title}</div>
-                <div className="mt-0.5 text-[10px] text-muted-foreground truncate">
-                  {e.topic}
-                </div>
-              </button>
-            ))}
+            {progress.xp > 0 && (
+              <div className="mb-3 flex items-center gap-1.5 text-[11px] text-warning">
+                <Trophy className="h-3 w-3" />
+                <span className="font-mono tabular-nums">{progress.xp} XP</span>
+              </div>
+            )}
+            <div
+              className="h-1 w-full rounded-full bg-muted overflow-hidden mb-3"
+              aria-label="Progresjon"
+            >
+              <div
+                className="h-full bg-success transition-all"
+                style={{
+                  width: `${(Object.keys(progress.solved).length / PY_EXERCISES.length) * 100}%`,
+                }}
+              />
+            </div>
+            {PY_EXERCISES.map((e) => {
+              const isSolved = !!progress.solved[e.id];
+              const isActive = e.id === exercise.id;
+              return (
+                <button
+                  key={e.id}
+                  onClick={() => setActiveId(e.id)}
+                  className={cn(
+                    "w-full text-left rounded-md px-3 py-2 text-sm transition-colors",
+                    isActive
+                      ? "bg-accent text-foreground"
+                      : "text-muted-foreground hover:bg-accent/50 hover:text-foreground",
+                  )}
+                >
+                  <div className="flex items-center gap-2">
+                    <div className="font-medium truncate flex-1">{e.title}</div>
+                    {isSolved && (
+                      <span
+                        className="flex h-4 w-4 shrink-0 items-center justify-center rounded-sm border border-success bg-success text-success-foreground"
+                        title="Godkjent"
+                      >
+                        <Check className="h-3 w-3" />
+                      </span>
+                    )}
+                  </div>
+                  <div className="mt-0.5 text-[10px] text-muted-foreground truncate">
+                    {e.topic}
+                  </div>
+                </button>
+              );
+            })}
           </aside>
 
           {/* Main panel */}
