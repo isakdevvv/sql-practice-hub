@@ -13,6 +13,7 @@ import {
   type CardProgress,
 } from "@/lib/learn/cardProgress";
 import type { CardCategory, FlashCard } from "@/lib/learn/types";
+import { VISUALS } from "@/components/learn/visuals/Visuals";
 import { cn } from "@/lib/utils";
 import { Check, X, ArrowRight, Trophy, RefreshCw, Shuffle } from "lucide-react";
 
@@ -246,6 +247,18 @@ function QuizPage() {
             <h2 className="text-lg sm:text-xl font-semibold leading-relaxed">
               {question.card.question}
             </h2>
+
+            {/* Vis tilhørende diagram (B-tree, JOIN-Venn, krågefot, …) når
+                kortet har et `visual`-felt. Hjelper studenten å visualisere
+                konseptet før de svarer. */}
+            {question.card.visual && VISUALS[question.card.visual] && (() => {
+              const Visual = VISUALS[question.card.visual]!;
+              return (
+                <div className="mt-4 rounded-lg border border-border bg-background/40 p-3">
+                  <Visual />
+                </div>
+              );
+            })()}
 
             <div className="mt-5 grid gap-2">
               {question.options.map((opt, i) => {
