@@ -8,6 +8,36 @@ cd /d "%~dp0"
 if "%API_PORT%"=="" set API_PORT=3001
 if "%WEB_PORT%"=="" set WEB_PORT=5173
 
+REM Auto-oppdatering: hent siste versjon fra GitHub for start.
+REM Sett SKIP_UPDATE=1 for a hoppe over.
+if "%SKIP_UPDATE%"=="1" goto skip_update
+where git >nul 2>nul
+if errorlevel 1 goto skip_update
+if not exist ".git" goto skip_update
+
+echo.
+echo ==^> Sjekker etter oppdateringer
+git diff --quiet HEAD >nul 2>nul
+if errorlevel 1 (
+  echo   ! Du har lokale endringer - hopper over auto-oppdatering.
+  goto skip_update
+)
+git fetch --quiet origin >nul 2>nul
+if errorlevel 1 (
+  echo   ! Ingen nettverk - bruker eksisterende versjon.
+  goto skip_update
+)
+for /f %%a in ('git rev-parse @ 2^>nul') do set LOCAL_SHA=%%a
+for /f %%a in ('git rev-parse @{u} 2^>nul') do set REMOTE_SHA=%%a
+if "%LOCAL_SHA%"=="%REMOTE_SHA%" (
+  echo   Allerede oppdatert.
+) else (
+  echo   Ny versjon tilgjengelig - oppdaterer...
+  git pull --ff-only --quiet
+  if errorlevel 1 echo   ! Kunne ikke fast-forwarde. Kjor "git pull" manuelt.
+)
+:skip_update
+
 echo.
 echo ==^> Sjekker Bun
 where bun >nul 2>nul

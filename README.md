@@ -29,6 +29,7 @@ start.cmd
 ```
 
 Skriptet:
+- **henter siste versjon fra GitHub** (`git pull`) hvis du allerede har klonet,
 - installerer [Bun](https://bun.sh) hvis det mangler,
 - henter alle avhengigheter (`bun install`),
 - starter API-serveren (port `3001`) **og** webserveren (port `5173`) samtidig.
@@ -37,6 +38,25 @@ Når du ser `Local: http://localhost:5173/` i terminalen, åpne den URL-en i net
 
 Stopp med `Ctrl + C`.
 
+### 3. Få oppdateringer
+
+Du trenger ikke gjøre noe spesielt — **bare kjør `./start.sh` (eller `start.cmd`) hver gang.**
+Skriptet ser etter ny versjon på GitHub og oppdaterer automatisk før appen starter.
+Ingen endringer for deg = ingen oppdatering.
+
+Vil du hoppe over auto-oppdatering (f.eks. uten nett):
+
+```bash
+SKIP_UPDATE=1 ./start.sh        # macOS/Linux
+set SKIP_UPDATE=1 && start.cmd  # Windows
+```
+
+Eller manuelt:
+
+```bash
+git pull
+```
+
 ---
 
 ### Manuell installasjon (uten skript)
@@ -44,6 +64,7 @@ Stopp med `Ctrl + C`.
 Krever [Bun](https://bun.sh) ≥ 1.0.
 
 ```bash
+git pull            # hent siste versjon
 bun install
 bun run dev
 ```
