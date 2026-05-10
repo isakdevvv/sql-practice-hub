@@ -1,32 +1,16 @@
-import { Link, useNavigate } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Search } from "lucide-react";
-import { PROBLEMS } from "@/lib/problems/data";
+import { searchEntries, type SearchEntry, type SearchKind } from "@/lib/search";
 
-interface NavSuggestion {
-  kind: "page" | "topic" | "problem";
-  label: string;
-  sub?: string;
-  to: string;
-  search?: Record<string, string>;
-}
-
-// Statisk liste over hovedsidene — gir hurtignavigasjon ("hjem", "exam", "dashboard"...).
-const PAGES: { label: string; to: string; aliases?: string[] }[] = [
-  { label: "Hjem", to: "/", aliases: ["start", "home"] },
+const PAGES: { label: string; to: string }[] = [
   { label: "Kurs", to: "/kurs" },
   { label: "Stack", to: "/stack" },
-  { label: "Practice", to: "/practice", aliases: ["oppgaver", "øving"] },
-  { label: "Lær", to: "/learn", aliases: ["learn"] },
+  { label: "Practice", to: "/practice" },
+  { label: "Lær", to: "/learn" },
   { label: "Joins", to: "/joins" },
-  { label: "ER-tegner", to: "/er-tegner", aliases: ["er", "diagram"] },
+  { label: "ER-tegner", to: "/er-tegner" },
   { label: "Python", to: "/python" },
-  { label: "Prosjekt", to: "/prosjekt" },
-  { label: "API-konsoll", to: "/konsoll", aliases: ["api", "konsoll"] },
-  { label: "Exam", to: "/exam", aliases: ["eksamen"] },
-  { label: "Dashboard", to: "/dashboard" },
-  { label: "Cards", to: "/cards", aliases: ["flashcards"] },
-  { label: "Drag", to: "/drag", aliases: ["dra"] },
 ];
 
 export function SiteHeader() {
@@ -43,7 +27,7 @@ export function SiteHeader() {
         <GlobalSearch />
 
         <nav className="hidden xl:flex items-center gap-1 text-sm shrink-0">
-          {PAGES.slice(1, 8).map((p) => (
+          {PAGES.map((p) => (
             <Link
               key={p.to}
               to={p.to}
@@ -73,68 +57,72 @@ export function SiteHeader() {
   );
 }
 
+const KIND_BADGE: Record<SearchKind, { label: string; cls: string }> = {
+  "Stack — eksamen": { label: "Eksamen", cls: "border-brand/40 bg-brand/10 text-brand" },
+  Stack: { label: "Stack", cls: "border-border bg-muted/40 text-muted-foreground" },
+  Huskelapp: {
+    label: "Huskelapp",
+    cls: "border-amber-500/40 bg-amber-500/10 text-amber-600 dark:text-amber-400",
+  },
+  "Kurs-nivå": { label: "Kurs", cls: "border-success/40 bg-success/10 text-success" },
+  "SQL-oppgave": {
+    label: "SQL",
+    cls: "border-blue-500/40 bg-blue-500/10 text-blue-600 dark:text-blue-400",
+  },
+  "Python-oppgave": {
+    label: "Py",
+    cls: "border-violet-500/40 bg-violet-500/10 text-violet-600 dark:text-violet-400",
+  },
+  Side: { label: "Side", cls: "border-border bg-muted/40 text-muted-foreground" },
+};
+
+const KIND_ORDER: SearchKind[] = [
+  "Stack — eksamen",
+  "Stack",
+  "Huskelapp",
+  "Kurs-nivå",
+  "SQL-oppgave",
+  "Python-oppgave",
+  "Side",
+];
+
+const PER_KIND_CAP = 5;
+
+function groupAndCap(results: SearchEntry[]): SearchEntry[] {
+  const counts = new Map<SearchKind, number>();
+  const out: SearchEntry[] = [];
+  // First pass: respect score order but cap per kind so 320 SQL-oppgaver
+  // don't crowd out a single Huskelapp hit.
+  for (const r of results) {
+    const n = counts.get(r.kind) ?? 0;
+    if (n >= PER_KIND_CAP) continue;
+    counts.set(r.kind, n + 1);
+    out.push(r);
+  }
+  // Then re-order by KIND_ORDER while preserving in-kind order.
+  out.sort((a, b) => KIND_ORDER.indexOf(a.kind) - KIND_ORDER.indexOf(b.kind));
+  return out;
+}
+
 function GlobalSearch() {
-  const navigate = useNavigate();
   const [query, setQuery] = useState("");
   const [open, setOpen] = useState(false);
   const [activeIdx, setActiveIdx] = useState(0);
   const wrapRef = useRef<HTMLDivElement | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
 
-  // Topic-frekvens — likt prinsipp som på landingssiden, men cachet her.
-  const allTopics = useMemo(() => {
-    const counts = new Map<string, number>();
-    for (const p of PROBLEMS) for (const t of p.topics) counts.set(t, (counts.get(t) ?? 0) + 1);
-    return Array.from(counts.entries()).sort((a, b) => b[1] - a[1]);
-  }, []);
-
-  const suggestions = useMemo<NavSuggestion[]>(() => {
-    const q = query.trim().toLowerCase();
+  const suggestions = useMemo<SearchEntry[]>(() => {
+    const q = query.trim();
     if (!q) return [];
-    const out: NavSuggestion[] = [];
+    return groupAndCap(searchEntries(q, 80));
+  }, [query]);
 
-    // Sider
-    for (const p of PAGES) {
-      const hay = [p.label, ...(p.aliases ?? [])].join(" ").toLowerCase();
-      if (hay.includes(q)) out.push({ kind: "page", label: p.label, to: p.to });
-      if (out.length >= 4) break;
-    }
-
-    // Temaer
-    const topicMatches = allTopics.filter(([t]) => t.toLowerCase().includes(q)).slice(0, 4);
-    for (const [t, n] of topicMatches) {
-      out.push({
-        kind: "topic",
-        label: t,
-        sub: `${n} oppgaver`,
-        to: "/practice",
-        search: { topic: t },
-      });
-    }
-
-    // Oppgaver
-    const probMatches = PROBLEMS.filter((p) =>
-      `${p.title} ${p.problem} ${p.topics.join(" ")}`.toLowerCase().includes(q),
-    ).slice(0, 6);
-    for (const p of probMatches) {
-      out.push({
-        kind: "problem",
-        label: p.title,
-        sub: `L${p.level} · ${p.topics.slice(0, 2).join(", ")}`,
-        to: "/practice",
-        search: { id: p.id },
-      });
-    }
-
-    return out;
-  }, [query, allTopics]);
-
-  // Hold activeIdx i bounds når listen endres.
+  // Keep activeIdx in bounds.
   useEffect(() => {
     if (activeIdx >= suggestions.length) setActiveIdx(0);
   }, [suggestions.length, activeIdx]);
 
-  // Lukk ved klikk utenfor.
+  // Close on outside click.
   useEffect(() => {
     function onDoc(e: MouseEvent) {
       if (!wrapRef.current?.contains(e.target as Node)) setOpen(false);
@@ -143,7 +131,7 @@ function GlobalSearch() {
     return () => window.removeEventListener("mousedown", onDoc);
   }, []);
 
-  // Global hurtigtast: "/" eller Cmd/Ctrl+K fokuserer søk fra hvor som helst.
+  // Global shortcut: "/" or Cmd/Ctrl+K focuses the search.
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
       const tag = (document.activeElement?.tagName ?? "").toUpperCase();
@@ -164,11 +152,14 @@ function GlobalSearch() {
     return () => window.removeEventListener("keydown", onKey);
   }, []);
 
-  function go(s: NavSuggestion) {
-    navigate({ to: s.to, search: s.search ?? {} });
+  function go(s: SearchEntry) {
     setOpen(false);
     setQuery("");
     inputRef.current?.blur();
+    // window.location handles hashes (#anchor) and query strings cleanly,
+    // and works for both internal SPA routes (rerendered on navigate) and
+    // hash-jumps inside a page like /stack/huskelapp#joins.
+    window.location.href = s.href;
   }
 
   function submit() {
@@ -177,12 +168,26 @@ function GlobalSearch() {
     if (suggestions.length > 0) {
       go(suggestions[Math.min(activeIdx, suggestions.length - 1)]);
     } else {
-      navigate({ to: "/practice", search: { q } });
-      setOpen(false);
-      setQuery("");
-      inputRef.current?.blur();
+      // Fallback: hand the query to /practice search.
+      window.location.href = `/practice?q=${encodeURIComponent(q)}`;
     }
   }
+
+  // Build groups for header rendering inside the dropdown.
+  const groups = useMemo(() => {
+    const byKind = new Map<SearchKind, SearchEntry[]>();
+    for (const s of suggestions) {
+      if (!byKind.has(s.kind)) byKind.set(s.kind, []);
+      byKind.get(s.kind)!.push(s);
+    }
+    return KIND_ORDER.filter((k) => byKind.has(k)).map((k) => ({
+      kind: k,
+      items: byKind.get(k)!,
+    }));
+  }, [suggestions]);
+
+  // Flat index for keyboard navigation across groups.
+  const flatItems = suggestions;
 
   return (
     <div ref={wrapRef} className="relative flex-1 min-w-0 max-w-xl">
@@ -205,14 +210,14 @@ function GlobalSearch() {
             inputRef.current?.blur();
           } else if (e.key === "ArrowDown") {
             e.preventDefault();
-            setActiveIdx((i) => Math.min(i + 1, Math.max(0, suggestions.length - 1)));
+            setActiveIdx((i) => Math.min(i + 1, Math.max(0, flatItems.length - 1)));
             setOpen(true);
           } else if (e.key === "ArrowUp") {
             e.preventDefault();
             setActiveIdx((i) => Math.max(0, i - 1));
           }
         }}
-        placeholder="Søk side, tema eller oppgave…  ( /  eller  ⌘K )"
+        placeholder="Søk på alt — http, JOIN, NULL, transistor, opg9…  ( /  eller  ⌘K )"
         aria-label="Globalt søk"
         className="h-9 w-full rounded-md border border-border bg-card pl-8 pr-12 text-xs focus:outline-none focus:ring-2 focus:ring-brand/40 focus:border-brand/60"
       />
@@ -221,42 +226,54 @@ function GlobalSearch() {
       </kbd>
 
       {open && query.trim() && (
-        <div className="absolute left-0 right-0 top-[calc(100%+4px)] rounded-lg border border-border bg-popover shadow-lg overflow-hidden z-50 max-h-[60vh] overflow-y-auto">
-          {suggestions.length === 0 ? (
+        <div className="absolute left-0 right-0 top-[calc(100%+4px)] rounded-lg border border-border bg-popover shadow-lg overflow-hidden z-50 max-h-[70vh] overflow-y-auto">
+          {flatItems.length === 0 ? (
             <div className="px-3 py-3 text-xs text-muted-foreground">
-              Ingen treff. Trykk Enter for å søke i alle oppgaver.
+              Ingen treff på «{query}». Trykk Enter for å søke videre i oppgaver.
             </div>
           ) : (
-            <ul role="listbox" aria-label="Søkeforslag" className="py-1">
-              {suggestions.map((s, i) => {
-                const active = i === activeIdx;
-                return (
-                  <li key={`${s.kind}-${s.to}-${s.label}-${i}`}>
-                    <button
-                      type="button"
-                      role="option"
-                      aria-selected={active}
-                      onMouseEnter={() => setActiveIdx(i)}
-                      onMouseDown={(e) => {
-                        e.preventDefault();
-                        go(s);
-                      }}
-                      className={`w-full flex items-center gap-2 px-3 py-1.5 text-left text-xs ${
-                        active ? "bg-accent text-foreground" : "text-foreground/90"
-                      }`}
-                    >
-                      <KindBadge kind={s.kind} />
-                      <span className="flex-1 truncate">{s.label}</span>
-                      {s.sub && (
-                        <span className="text-[10px] text-muted-foreground truncate max-w-[160px]">
-                          {s.sub}
-                        </span>
-                      )}
-                    </button>
-                  </li>
-                );
-              })}
-            </ul>
+            <div className="py-1">
+              {groups.map((g) => (
+                <div key={g.kind}>
+                  <div className="px-3 pt-2 pb-1 text-[10px] uppercase tracking-wider font-semibold text-muted-foreground">
+                    {g.kind}
+                  </div>
+                  <ul role="listbox" aria-label={g.kind}>
+                    {g.items.map((s) => {
+                      const flatIdx = flatItems.indexOf(s);
+                      const active = flatIdx === activeIdx;
+                      return (
+                        <li key={s.id}>
+                          <button
+                            type="button"
+                            role="option"
+                            aria-selected={active}
+                            onMouseEnter={() => setActiveIdx(flatIdx)}
+                            onMouseDown={(e) => {
+                              e.preventDefault();
+                              go(s);
+                            }}
+                            className={`w-full flex items-start gap-2 px-3 py-1.5 text-left text-xs ${
+                              active ? "bg-accent text-foreground" : "text-foreground/90"
+                            }`}
+                          >
+                            <KindBadge kind={s.kind} />
+                            <div className="flex-1 min-w-0">
+                              <div className="truncate font-medium">{s.title}</div>
+                              {s.description && (
+                                <div className="truncate text-[10px] text-muted-foreground mt-0.5">
+                                  {s.description}
+                                </div>
+                              )}
+                            </div>
+                          </button>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </div>
+              ))}
+            </div>
           )}
         </div>
       )}
@@ -264,16 +281,11 @@ function GlobalSearch() {
   );
 }
 
-function KindBadge({ kind }: { kind: NavSuggestion["kind"] }) {
-  const map = {
-    page: { label: "Side", cls: "border-brand/40 bg-brand/10 text-brand" },
-    topic: { label: "Tema", cls: "border-warning/40 bg-warning/10 text-warning" },
-    problem: { label: "Oppg", cls: "border-success/40 bg-success/10 text-success" },
-  } as const;
-  const m = map[kind];
+function KindBadge({ kind }: { kind: SearchKind }) {
+  const m = KIND_BADGE[kind];
   return (
     <span
-      className={`shrink-0 rounded border px-1.5 py-0.5 text-[9px] font-mono uppercase tracking-wider ${m.cls}`}
+      className={`shrink-0 rounded border px-1.5 py-0.5 text-[9px] font-mono uppercase tracking-wider ${m.cls} mt-0.5`}
     >
       {m.label}
     </span>
