@@ -140,10 +140,31 @@ export const PY_EXERCISES: PyExercise[] = [
     topic: "MySQL connector",
     title: "Koble til databasen og hent alle kunder",
     description:
-      "Bruk mysql.connector for å koble til databasen 'exam', lag en cursor, og hent alle kunder. Skriv ut hver rad.",
+      "Skriv koden selv, linje for linje:\n" +
+      "1. Koble til database 'exam' med mysql.connector.connect(...) — host/user/password er gitt.\n" +
+      "2. Lag en cursor med db.cursor().\n" +
+      "3. Kjør SELECT * FROM kunde med cursor.execute(...).\n" +
+      "4. Hent alle rader med cursor.fetchall() og lagre i en variabel.\n" +
+      "5. Skriv ut hver rad med en for-løkke.",
     requires: [],
     setup: DB_SETUP,
     starter: `import mysql.connector
+
+# 1. Koble til databasen 'exam' (host, user, password, database):
+db = ...
+
+# 2. Lag en cursor:
+cursor = ...
+
+# 3. Kjør spørringen "SELECT * FROM kunde":
+
+
+# 4. Hent alle rader med fetchall():
+rows = ...
+
+# 5. Skriv ut hver rad i en for-løkke:
+`,
+    solution: `import mysql.connector
 
 db = mysql.connector.connect(
     host="localhost",
@@ -190,9 +211,31 @@ rows = cursor.fetchall()`,
     topic: "MySQL connector",
     title: "Trygg SELECT med parameter (prepared statement)",
     description:
-      "Hent én kunde basert på kundenr. Bruk %s-placeholder og send verdien som tuple — IKKE strengkonkatenering. Det beskytter mot SQL Injection.",
+      "Hent én kunde basert på kundenr — uten å konkatenere brukerinput inn i SQL.\n" +
+      "1. Koble til 'exam' og lag en cursor.\n" +
+      "2. Skriv en SELECT som henter navn og epost WHERE kundenr = %s — merk %s, ikke f-string!\n" +
+      "3. Send kundenr-verdien som en tuple (kundenr,) — kommaet er viktig.\n" +
+      "4. Bruk fetchone() (én rad) i stedet for fetchall().\n" +
+      "5. Skriv ut resultatet.",
     setup: DB_SETUP,
     starter: `import mysql.connector
+
+db = mysql.connector.connect(database="exam")
+cursor = ...
+
+kundenr = 2
+
+# Skriv en SELECT med %s-placeholder og send kundenr som tuple:
+cursor.execute(
+    ...,
+    ...,
+)
+
+# Hent én rad:
+kunde = ...
+print(kunde)
+`,
+    solution: `import mysql.connector
 
 db = mysql.connector.connect(database="exam")
 cursor = db.cursor()
@@ -236,9 +279,32 @@ print(kunde)
     topic: "MySQL connector",
     title: "INSERT en ny kunde og lagre",
     description:
-      "Sett inn en ny kunde med kundenr=4, og glem ikke db.commit() — uten commit lagres ikke endringen permanent.",
+      "Sett inn ny kunde og lagre permanent.\n" +
+      "1. Koble til 'exam' og lag cursor.\n" +
+      "2. Bygg INSERT-statement med 3 parametre (%s, %s, %s).\n" +
+      "3. Send tuple (4, 'Lise Berg', 'lise@test.no') som verdier.\n" +
+      "4. ⚠️ Kall db.commit() — ellers ruller transaksjonen tilbake.\n" +
+      "5. Bekreft ved å SELECT COUNT(*) og skrive ut.",
     setup: DB_SETUP,
     starter: `import mysql.connector
+
+db = mysql.connector.connect(database="exam")
+cursor = db.cursor()
+
+# 2-3. INSERT INTO kunde (kundenr, navn, epost) VALUES (%s, %s, %s):
+cursor.execute(
+    ...,
+    ...,
+)
+
+# 4. Husk db.commit() — uten dette blir endringen rullet tilbake:
+
+
+# 5. Verifiser med SELECT COUNT(*):
+cursor.execute("SELECT COUNT(*) FROM kunde")
+print("Antall kunder:", ...)
+`,
+    solution: `import mysql.connector
 
 db = mysql.connector.connect(database="exam")
 cursor = db.cursor()
@@ -277,26 +343,55 @@ VALUES (%s, %s, %s)`,
     topic: "MySQL connector",
     title: "SQL Injection — se hvor galt det går uten prepared statement",
     description:
-      "Den FARLIGE måten: brukerinput konkateneres rett inn i SQL. Kjør koden og se at en angriper kan dumpe ALLE kunder ved å sende ' OR 1=1 -- som input.",
+      "To deler:\n" +
+      "DEL A (gitt): Kjør den FARLIGE koden som konkatenerer brukerinput inn i SQL-en med +. Se at ' OR 1=1 -- gjør WHERE alltid sant og dumper ALLE kunder.\n" +
+      "DEL B (skriv selv): Skriv samme spørring TRYGT med %s-placeholder og tuple. Da returneres ingen rader, fordi 'feil' input blir matchet som en tekst-streng.",
     setup: DB_SETUP,
     starter: `import mysql.connector
 
 db = mysql.connector.connect(database="exam")
 cursor = db.cursor()
 
-# DETTE ER DEN FARLIGE MÅTEN — IKKE GJØR SLIK I EKTE KODE
+# === DEL A: DEN FARLIGE MÅTEN (gitt — bare kjør og se resultatet) ===
 ondsinnet_input = "' OR 1=1 --"
 sql = "SELECT navn FROM kunde WHERE navn = '" + ondsinnet_input + "'"
 print("SQL som kjøres:", sql)
 cursor.execute(sql)
 print("Lekket:", cursor.fetchall())
 
-# DEN TRYGGE MÅTEN — fyll inn:
-# cursor.execute("SELECT navn FROM kunde WHERE navn = ___", (___,))
+# === DEL B: DEN TRYGGE MÅTEN (skriv selv) ===
+# Bruk %s-placeholder og send ondsinnet_input som tuple. Resultatet skal være en
+# tom liste — fordi inputen blir behandlet som en streng, ikke som SQL-kode.
+print("Trygg variant:")
+cursor.execute(
+    ...,
+    ...,
+)
+print("Resultat:", cursor.fetchall())
+`,
+    solution: `import mysql.connector
+
+db = mysql.connector.connect(database="exam")
+cursor = db.cursor()
+
+# DEL A — farlig
+ondsinnet_input = "' OR 1=1 --"
+sql = "SELECT navn FROM kunde WHERE navn = '" + ondsinnet_input + "'"
+print("SQL som kjøres:", sql)
+cursor.execute(sql)
+print("Lekket:", cursor.fetchall())
+
+# DEL B — trygt
+print("Trygg variant:")
+cursor.execute(
+    "SELECT navn FROM kunde WHERE navn = %s",
+    (ondsinnet_input,),
+)
+print("Resultat:", cursor.fetchall())
 `,
     hints: [
       "OR 1=1 gjør WHERE alltid sant → alle rader returneres",
-      "Fiks ved å bruke %s-placeholder og tuple",
+      "Fiks ved å bruke %s-placeholder og tuple — connectoren escaper inputen for deg",
     ],
     docs: [
       {
