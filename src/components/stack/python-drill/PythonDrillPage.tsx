@@ -62,10 +62,11 @@ export function PythonDrillPage() {
             Python eksamens-drill
           </h1>
           <p className="mt-3 text-muted-foreground leading-relaxed">
-            Ti oppgaver av samme type som dukker opp på eksamen: filtrere lister med dictionaries,
-            bygge nye dict-er, parse strenger og logger, sortere og gruppere data. Skriv koden,
-            trykk «Kjør &amp; sjekk», så sammenlignes utdata med fasit. Hint og full løsning er
-            tilgjengelig for hver oppgave hvis du står fast.
+            Oppgaver av samme type som dukker opp på eksamen — alle knyttet til database/web-mønstre:
+            filtrere og gruppere records, joine lister på fremmednøkkel, parse query strings og logger,
+            indeksere etter ID, paginere, validere request-payloads. Skriv koden, trykk «Kjør &amp; sjekk»,
+            så sammenlignes utdata med fasit. Hint og full løsning er tilgjengelig for hver oppgave hvis
+            du står fast.
           </p>
           <div className="mt-6 rounded-md border border-border bg-card p-4">
             <div className="flex items-center justify-between text-sm mb-2">
