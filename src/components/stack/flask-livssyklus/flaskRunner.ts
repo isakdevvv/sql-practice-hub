@@ -31,6 +31,12 @@ export async function ensureFlask(): Promise<void> {
   flaskInstalling = (async () => {
     const py = await getPyodide();
     await py.runPythonAsync(`
+# Pyodide is missing _multiprocessing (a C extension). werkzeug.test only
+# touches it via threading.RLock in Client._cookies. Stub it before any Flask
+# import lands so subsequent imports don't blow up.
+import sys, types
+if "_multiprocessing" not in sys.modules:
+    sys.modules["_multiprocessing"] = types.ModuleType("_multiprocessing")
 import micropip
 await micropip.install("flask")
 `);
@@ -49,16 +55,20 @@ export async function mountApp(code: string): Promise<MountResult> {
     const py = await getPyodide();
     py.globals.set("__flask_user_code__", code);
     await py.runPythonAsync(`
-# Fresh namespace each mount so old routes don't linger.
-__flask_ns__ = {"__name__": "__main__"}
+# Fresh namespace each mount so old routes don't linger. We DELIBERATELY
+# don't set __name__ = "__main__" — the demo app ends in
+#     if __name__ == "__main__": app.run(debug=True)
+# which would block forever in Pyodide. Using "__embedded__" lets
+# Flask(__name__) still resolve a root path, but skips the run-block.
+__flask_ns__ = {"__name__": "__embedded__"}
 exec(__flask_user_code__, __flask_ns__)
 if "app" not in __flask_ns__:
     raise RuntimeError("Fant ingen 'app' i koden. Sørg for at du oppretter app = Flask(__name__).")
 __flask_app__ = __flask_ns__["app"]
 
-from werkzeug.test import Client
-from werkzeug.wrappers import Response as _BaseResponse
-__flask_client__ = Client(__flask_app__, _BaseResponse)
+# app.test_client() wraps werkzeug.test.Client and persists cookies across
+# calls on the same instance — exactly what we want for session demos.
+__flask_client__ = __flask_app__.test_client()
 `);
     return { ok: true };
   } catch (err) {
@@ -72,9 +82,7 @@ export async function resetClient(): Promise<void> {
   const py = await getPyodide();
   await py.runPythonAsync(`
 if "__flask_app__" in globals():
-    from werkzeug.test import Client
-    from werkzeug.wrappers import Response as _BaseResponse
-    __flask_client__ = Client(__flask_app__, _BaseResponse)
+    __flask_client__ = __flask_app__.test_client()
 `);
 }
 

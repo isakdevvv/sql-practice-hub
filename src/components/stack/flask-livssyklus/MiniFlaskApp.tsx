@@ -12,13 +12,15 @@ import {
 } from "./flaskRunner";
 
 const APP_CODE = `from flask import Flask, request, render_template_string, redirect, url_for, session
-from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
 app.secret_key = "bytt-meg-i-produksjon"
 
+# NB: Klartekst-passord her fordi Pyodides hashlib er stripped.
+# I en ekte app: from werkzeug.security import generate_password_hash,
+# check_password_hash — se seksjon 8 ovenfor for hvorfor.
 USERS = {
-    "ola@ex.no": {"id": 1, "pw": generate_password_hash("hunter2")},
+    "ola@ex.no": {"id": 1, "pw": "hunter2"},
 }
 
 LOGIN_HTML = """
@@ -35,7 +37,7 @@ def login():
         email = request.form["email"]
         password = request.form["password"]
         user = USERS.get(email)
-        if user and check_password_hash(user["pw"], password):
+        if user and user["pw"] == password:
             session["user_id"] = user["id"]
             return redirect(url_for("konto"))
         return "Feil e-post eller passord", 401
