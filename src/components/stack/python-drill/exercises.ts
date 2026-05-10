@@ -1,6 +1,7 @@
 // Eksamens-drill: Python-oppgaver. Hver oppgave har starter-kode, fasit og
 // forventet stdout. Solutions er testet for å produsere expectedOutput eksakt
-// (etter trim av trailing whitespace).
+// (etter trim av trailing whitespace). Alle oppgaver er knyttet til typiske
+// database/web-mønstre: filtrering, gruppering, joining, parsing, validering.
 
 export interface Exercise {
   id: string;
@@ -98,47 +99,8 @@ print(tilgjengelig)
 `,
   },
   {
-    id: "matrise-odde",
-    title: "3. Odde tall fra en matrise",
-    description:
-      "Du får en 2D-liste (matrise). Lag en flat liste `odde_tall` som inneholder bare oddetallene — i samme rekkefølge som de står i matrisen.",
-    starterCode: `matrise = [
-    [1, 2, 3, 4],
-    [5, 6, 7, 8],
-    [9, 10, 11, 12],
-]
-
-odde_tall = []
-
-# Skriv koden din her
-
-
-print(odde_tall)
-`,
-    expectedOutput: "[1, 3, 5, 7, 9, 11]",
-    hints: [
-      "Du trenger to nøstede for-løkker: én for radene, én for tallene i hver rad.",
-      "Et tall er oddetall hvis `tall % 2 != 0`.",
-    ],
-    solution: `matrise = [
-    [1, 2, 3, 4],
-    [5, 6, 7, 8],
-    [9, 10, 11, 12],
-]
-
-odde_tall = []
-
-for rad in matrise:
-    for tall in rad:
-        if tall % 2 != 0:
-            odde_tall.append(tall)
-
-print(odde_tall)
-`,
-  },
-  {
     id: "logger-feil-ip",
-    title: "4. Unike feil-IP-er fra logg",
+    title: "3. Unike feil-IP-er fra logg",
     description:
       "Gitt en liste med loggmeldinger på formatet `\"NIVÅ IP melding\"`. Finn alle unike IP-er som har minst én ERROR-melding. Behold rekkefølgen IP-en først dukker opp i.",
     starterCode: `logger = [
@@ -185,6 +147,36 @@ for log in logger:
 
 for ip in feil_ip:
     print(ip)
+`,
+  },
+  {
+    id: "parse-query-string",
+    title: "4. Parse HTTP query string",
+    description:
+      "Du får en query string fra en URL (f.eks. `?navn=ola&alder=34&by=Oslo`, men uten `?`). Parse den til en dictionary `params`. Verdiene kan være strenger.",
+    starterCode: `qs = "navn=ola&alder=34&by=Oslo"
+
+params = {}
+
+# Skriv koden din her
+
+
+print(params)
+`,
+    expectedOutput: "{'navn': 'ola', 'alder': '34', 'by': 'Oslo'}",
+    hints: [
+      "Først `qs.split(\"&\")` gir deg en liste med par-strenger som `\"navn=ola\"`.",
+      "For hvert par: `par.split(\"=\")` gir deg `[nøkkel, verdi]` som du kan pakke ut: `nokkel, verdi = par.split(\"=\")`.",
+    ],
+    solution: `qs = "navn=ola&alder=34&by=Oslo"
+
+params = {}
+
+for par in qs.split("&"):
+    nokkel, verdi = par.split("=")
+    params[nokkel] = verdi
+
+print(params)
 `,
   },
   {
@@ -278,8 +270,110 @@ print(snitt)
 `,
   },
   {
+    id: "having-filter",
+    title: "7. HAVING-filter på snittpris",
+    description:
+      "Beregn snittpris per kategori (som forrige oppgave), men returner BARE kategoriene som har snittpris over `terskel`. Tilsvarer SQLs `HAVING AVG(pris) > terskel`.",
+    starterCode: `produkter = [
+    {"navn": "Tastatur", "kategori": "tilbehør", "pris": 800},
+    {"navn": "Mus", "kategori": "tilbehør", "pris": 400},
+    {"navn": "Skjerm", "kategori": "skjerm", "pris": 5000},
+    {"navn": "Curved", "kategori": "skjerm", "pris": 7000},
+    {"navn": "Laptop", "kategori": "pc", "pris": 12000},
+    {"navn": "Stasjonær", "kategori": "pc", "pris": 9000},
+]
+terskel = 1000
+
+dyre = {}
+
+# Skriv koden din her
+
+
+print(dyre)
+`,
+    expectedOutput: "{'skjerm': 6000.0, 'pc': 10500.0}",
+    hints: [
+      "Først: bygg snittpris per kategori akkurat som i oppgave 6.",
+      "Deretter: iterer over snittene og legg bare til de som er > terskel i `dyre`.",
+    ],
+    solution: `produkter = [
+    {"navn": "Tastatur", "kategori": "tilbehør", "pris": 800},
+    {"navn": "Mus", "kategori": "tilbehør", "pris": 400},
+    {"navn": "Skjerm", "kategori": "skjerm", "pris": 5000},
+    {"navn": "Curved", "kategori": "skjerm", "pris": 7000},
+    {"navn": "Laptop", "kategori": "pc", "pris": 12000},
+    {"navn": "Stasjonær", "kategori": "pc", "pris": 9000},
+]
+terskel = 1000
+
+sum_per = {}
+antall_per = {}
+for p in produkter:
+    k = p["kategori"]
+    sum_per[k] = sum_per.get(k, 0) + p["pris"]
+    antall_per[k] = antall_per.get(k, 0) + 1
+
+dyre = {}
+for k in sum_per:
+    snittpris = sum_per[k] / antall_per[k]
+    if snittpris > terskel:
+        dyre[k] = snittpris
+
+print(dyre)
+`,
+  },
+  {
+    id: "group-by-multi",
+    title: "8. GROUP BY på flere felt",
+    description:
+      "Beregn snittlønn per kombinasjon av (avdeling, stilling). Bruk en tuple `(avdeling, stilling)` som dict-nøkkel. Tilsvarer SQLs `GROUP BY avdeling, stilling`.",
+    starterCode: `ansatte = [
+    {"avdeling": "IT", "stilling": "junior", "lønn": 500000},
+    {"avdeling": "IT", "stilling": "senior", "lønn": 800000},
+    {"avdeling": "IT", "stilling": "junior", "lønn": 550000},
+    {"avdeling": "HR", "stilling": "junior", "lønn": 450000},
+    {"avdeling": "HR", "stilling": "senior", "lønn": 700000},
+    {"avdeling": "IT", "stilling": "senior", "lønn": 900000},
+]
+
+snitt = {}
+
+# Skriv koden din her
+
+
+print(snitt)
+`,
+    expectedOutput:
+      "{('IT', 'junior'): 525000.0, ('IT', 'senior'): 850000.0, ('HR', 'junior'): 450000.0, ('HR', 'senior'): 700000.0}",
+    hints: [
+      "Bruk `nokkel = (a[\"avdeling\"], a[\"stilling\"])` — tuples kan brukes som dict-nøkkel.",
+      "Akkurat som vanlig group-by: bygg sum og antall per nøkkel, del på slutten.",
+    ],
+    solution: `ansatte = [
+    {"avdeling": "IT", "stilling": "junior", "lønn": 500000},
+    {"avdeling": "IT", "stilling": "senior", "lønn": 800000},
+    {"avdeling": "IT", "stilling": "junior", "lønn": 550000},
+    {"avdeling": "HR", "stilling": "junior", "lønn": 450000},
+    {"avdeling": "HR", "stilling": "senior", "lønn": 700000},
+    {"avdeling": "IT", "stilling": "senior", "lønn": 900000},
+]
+
+sum_per = {}
+antall_per = {}
+
+for a in ansatte:
+    nokkel = (a["avdeling"], a["stilling"])
+    sum_per[nokkel] = sum_per.get(nokkel, 0) + a["lønn"]
+    antall_per[nokkel] = antall_per.get(nokkel, 0) + 1
+
+snitt = {n: sum_per[n] / antall_per[n] for n in sum_per}
+
+print(snitt)
+`,
+  },
+  {
     id: "top-3-dyreste",
-    title: "7. Topp-3 dyreste produkter",
+    title: "9. Topp-3 dyreste produkter",
     description:
       "Sorter produktene synkende på pris og hent navnet på de tre dyreste. Resultatet skal være en liste `topp3` med produktnavn.",
     starterCode: `produkter = [
@@ -322,7 +416,7 @@ print(topp3)
   },
   {
     id: "parse-csv-strenger",
-    title: "8. Parse CSV-strenger til dict-er",
+    title: "10. Parse CSV-strenger til dict-er",
     description:
       "Du får en liste med strenger på formatet `\"navn,alder,by\"`. Konverter dem til en liste med dictionaries der `alder` er et heltall (int).",
     starterCode: `linjer = [
@@ -364,41 +458,326 @@ print(personer)
 `,
   },
   {
-    id: "grupper-anagrammer",
-    title: "9. Grupper anagrammer",
+    id: "sql-result-to-dicts",
+    title: "11. SQL-resultat (rader + kolonner) til list of dicts",
     description:
-      "Gitt en liste med ord. Grupper ord som er anagrammer av hverandre (samme bokstaver, ulik rekkefølge). Resultatet skal være en dictionary der nøkkelen er en sortert bokstav-streng og verdien er listen med ord.",
-    starterCode: `ord_liste = ["are", "era", "ear", "tea", "eat", "ate", "kake"]
+      "Når du henter data fra en database via en cursor får du ofte en liste med tupler (rader) og en separat liste med kolonnenavn. Konverter dette til en liste med dictionaries.",
+    starterCode: `kolonner = ["id", "navn", "by"]
+rader = [
+    (1, "Ola", "Oslo"),
+    (2, "Kari", "Bergen"),
+    (3, "Per", "Trondheim"),
+]
 
-grupper = {}
+records = []
 
 # Skriv koden din her
 
 
-print(grupper)
+print(records)
 `,
     expectedOutput:
-      "{'aer': ['are', 'era', 'ear'], 'aet': ['tea', 'eat', 'ate'], 'aekk': ['kake']}",
+      "[{'id': 1, 'navn': 'Ola', 'by': 'Oslo'}, {'id': 2, 'navn': 'Kari', 'by': 'Bergen'}, {'id': 3, 'navn': 'Per', 'by': 'Trondheim'}]",
     hints: [
-      "Bruk `\"\".join(sorted(ord))` som nøkkel — to anagrammer får samme sortert nøkkel.",
-      "Sjekk om nøkkelen finnes i `grupper`. Hvis ikke: legg til en tom liste først.",
+      "`zip(kolonner, rad)` parer kolonnenavn med verdier fra én rad.",
+      "`dict(zip(...))` lager en dictionary direkte fra par-iteratoren.",
     ],
-    solution: `ord_liste = ["are", "era", "ear", "tea", "eat", "ate", "kake"]
+    solution: `kolonner = ["id", "navn", "by"]
+rader = [
+    (1, "Ola", "Oslo"),
+    (2, "Kari", "Bergen"),
+    (3, "Per", "Trondheim"),
+]
 
-grupper = {}
+records = [dict(zip(kolonner, rad)) for rad in rader]
 
-for ord_ in ord_liste:
-    nokkel = "".join(sorted(ord_))
-    if nokkel not in grupper:
-        grupper[nokkel] = []
-    grupper[nokkel].append(ord_)
+print(records)
+`,
+  },
+  {
+    id: "index-by-id",
+    title: "12. Indekser records etter ID",
+    description:
+      "Konverter en liste med records til en dictionary der nøkkelen er `id`-feltet og verdien er hele record-en. Dette gir O(1)-oppslag, og er forutsetningen for å gjøre joins i minnet.",
+    starterCode: `produkter = [
+    {"id": "A101", "navn": "Tastatur", "pris": 899},
+    {"id": "B205", "navn": "Skjerm", "pris": 4990},
+    {"id": "C310", "navn": "Mus", "pris": 449},
+]
 
-print(grupper)
+indeks = {}
+
+# Skriv koden din her
+
+
+print(indeks)
+`,
+    expectedOutput:
+      "{'A101': {'id': 'A101', 'navn': 'Tastatur', 'pris': 899}, 'B205': {'id': 'B205', 'navn': 'Skjerm', 'pris': 4990}, 'C310': {'id': 'C310', 'navn': 'Mus', 'pris': 449}}",
+    hints: [
+      "En dict comprehension klarer dette på én linje: `{p[\"id\"]: p for p in produkter}`.",
+      "Merk at verdien er hele dict-en `p`, ikke bare ett felt.",
+    ],
+    solution: `produkter = [
+    {"id": "A101", "navn": "Tastatur", "pris": 899},
+    {"id": "B205", "navn": "Skjerm", "pris": 4990},
+    {"id": "C310", "navn": "Mus", "pris": 449},
+]
+
+indeks = {p["id"]: p for p in produkter}
+
+print(indeks)
+`,
+  },
+  {
+    id: "join-lister",
+    title: "13. JOIN av to lister på fremmednøkkel",
+    description:
+      "Gitt `kunder` (med `id` og `navn`) og `bestillinger` (med `kunde_id` og `belop`): beregn total kjøpsbeløp per kundenavn. Tilsvarer en INNER JOIN + SUM/GROUP BY.",
+    starterCode: `kunder = [
+    {"id": 1, "navn": "Ola"},
+    {"id": 2, "navn": "Kari"},
+    {"id": 3, "navn": "Per"},
+]
+bestillinger = [
+    {"kunde_id": 1, "belop": 250},
+    {"kunde_id": 2, "belop": 1200},
+    {"kunde_id": 1, "belop": 90},
+    {"kunde_id": 3, "belop": 540},
+    {"kunde_id": 2, "belop": 75},
+    {"kunde_id": 1, "belop": 320},
+]
+
+total_per_navn = {}
+
+# Skriv koden din her
+
+
+print(total_per_navn)
+`,
+    expectedOutput: "{'Ola': 660, 'Kari': 1275, 'Per': 540}",
+    hints: [
+      "Bygg først en indeks `id_til_navn = {k[\"id\"]: k[\"navn\"] for k in kunder}`.",
+      "Iterer så bestillinger, slå opp navnet via indeksen, og akkumuler `belop` med `.get(navn, 0)`.",
+    ],
+    solution: `kunder = [
+    {"id": 1, "navn": "Ola"},
+    {"id": 2, "navn": "Kari"},
+    {"id": 3, "navn": "Per"},
+]
+bestillinger = [
+    {"kunde_id": 1, "belop": 250},
+    {"kunde_id": 2, "belop": 1200},
+    {"kunde_id": 1, "belop": 90},
+    {"kunde_id": 3, "belop": 540},
+    {"kunde_id": 2, "belop": 75},
+    {"kunde_id": 1, "belop": 320},
+]
+
+id_til_navn = {k["id"]: k["navn"] for k in kunder}
+
+total_per_navn = {}
+for b in bestillinger:
+    navn = id_til_navn[b["kunde_id"]]
+    total_per_navn[navn] = total_per_navn.get(navn, 0) + b["belop"]
+
+print(total_per_navn)
+`,
+  },
+  {
+    id: "nested-json",
+    title: "14. Bygg nested JSON fra flat liste",
+    description:
+      "API-er returnerer ofte data nested per forelder. Gitt en flat liste med ordrer (med `kunde`, `ordre_id`, `belop`), bygg en dictionary der nøkkel er kunde og verdi er liste over ordrene (uten `kunde`-feltet).",
+    starterCode: `rader = [
+    {"kunde": "Ola", "ordre_id": 101, "belop": 250},
+    {"kunde": "Kari", "ordre_id": 102, "belop": 1200},
+    {"kunde": "Ola", "ordre_id": 103, "belop": 90},
+    {"kunde": "Per", "ordre_id": 104, "belop": 540},
+    {"kunde": "Kari", "ordre_id": 105, "belop": 75},
+]
+
+ordrer_per_kunde = {}
+
+# Skriv koden din her
+
+
+print(ordrer_per_kunde)
+`,
+    expectedOutput:
+      "{'Ola': [{'ordre_id': 101, 'belop': 250}, {'ordre_id': 103, 'belop': 90}], 'Kari': [{'ordre_id': 102, 'belop': 1200}, {'ordre_id': 105, 'belop': 75}], 'Per': [{'ordre_id': 104, 'belop': 540}]}",
+    hints: [
+      "For hver rad: opprett en tom liste under `ordrer_per_kunde[kunde]` hvis den ikke finnes ennå.",
+      "Legg så til en NY dict med kun `ordre_id` og `belop` (ikke `kunde`).",
+    ],
+    solution: `rader = [
+    {"kunde": "Ola", "ordre_id": 101, "belop": 250},
+    {"kunde": "Kari", "ordre_id": 102, "belop": 1200},
+    {"kunde": "Ola", "ordre_id": 103, "belop": 90},
+    {"kunde": "Per", "ordre_id": 104, "belop": 540},
+    {"kunde": "Kari", "ordre_id": 105, "belop": 75},
+]
+
+ordrer_per_kunde = {}
+
+for r in rader:
+    k = r["kunde"]
+    if k not in ordrer_per_kunde:
+        ordrer_per_kunde[k] = []
+    ordrer_per_kunde[k].append({"ordre_id": r["ordre_id"], "belop": r["belop"]})
+
+print(ordrer_per_kunde)
+`,
+  },
+  {
+    id: "valider-payload",
+    title: "15. Valider request-payloads",
+    description:
+      "I et web-API må du sjekke at innkommende JSON inneholder alle påkrevde felt. Gitt en liste med `required`-felt og en liste med payloads: returner en liste der hvert element er listen over manglende felt for tilhørende payload (tom liste betyr OK).",
+    starterCode: `required = ["navn", "epost", "alder"]
+payloads = [
+    {"navn": "Ola", "epost": "ola@x.no", "alder": 34},
+    {"navn": "Kari", "alder": 28},
+    {"epost": "per@x.no"},
+]
+
+manglende = []
+
+# Skriv koden din her
+
+
+print(manglende)
+`,
+    expectedOutput: "[[], ['epost'], ['navn', 'alder']]",
+    hints: [
+      "For hver payload: lag en liste over `f` i `required` der `f not in payload`.",
+      "List comprehension: `[f for f in required if f not in p]` gir akkurat det.",
+    ],
+    solution: `required = ["navn", "epost", "alder"]
+payloads = [
+    {"navn": "Ola", "epost": "ola@x.no", "alder": 34},
+    {"navn": "Kari", "alder": 28},
+    {"epost": "per@x.no"},
+]
+
+manglende = []
+
+for p in payloads:
+    mangler = [f for f in required if f not in p]
+    manglende.append(mangler)
+
+print(manglende)
+`,
+  },
+  {
+    id: "paginering",
+    title: "16. Paginering av resultatsett",
+    description:
+      "En API-endepunkt returnerer maks `side_storrelse` records per side. Gitt en full liste, returner kun records for side nummer `side` (1-indeksert). Tilsvarer SQLs `LIMIT side_storrelse OFFSET (side-1)*side_storrelse`.",
+    starterCode: `artikler = [
+    {"id": 1, "tittel": "Intro"},
+    {"id": 2, "tittel": "SQL basics"},
+    {"id": 3, "tittel": "JOINs"},
+    {"id": 4, "tittel": "GROUP BY"},
+    {"id": 5, "tittel": "Subqueries"},
+    {"id": 6, "tittel": "Indexes"},
+    {"id": 7, "tittel": "Tuning"},
+]
+side = 2
+side_storrelse = 3
+
+resultat = []
+
+# Skriv koden din her
+
+
+print(resultat)
+`,
+    expectedOutput:
+      "[{'id': 4, 'tittel': 'GROUP BY'}, {'id': 5, 'tittel': 'Subqueries'}, {'id': 6, 'tittel': 'Indexes'}]",
+    hints: [
+      "Slicing: `liste[start:stopp]`. Start er `(side - 1) * side_storrelse`.",
+      "Stopp er `side * side_storrelse`. Python klipper automatisk hvis stopp er forbi slutten.",
+    ],
+    solution: `artikler = [
+    {"id": 1, "tittel": "Intro"},
+    {"id": 2, "tittel": "SQL basics"},
+    {"id": 3, "tittel": "JOINs"},
+    {"id": 4, "tittel": "GROUP BY"},
+    {"id": 5, "tittel": "Subqueries"},
+    {"id": 6, "tittel": "Indexes"},
+    {"id": 7, "tittel": "Tuning"},
+]
+side = 2
+side_storrelse = 3
+
+start = (side - 1) * side_storrelse
+stopp = side * side_storrelse
+resultat = artikler[start:stopp]
+
+print(resultat)
+`,
+  },
+  {
+    id: "diff-snapshots",
+    title: "17. Diff to snapshots av en tabell",
+    description:
+      "Gitt to snapshots av samme tabell (`forrige` og `ny`), finn ID-er som er nye, endret, eller slettet. Klassisk sync-mønster når du replikerer data mellom systemer.",
+    starterCode: `forrige = [
+    {"id": 1, "navn": "Ola", "lønn": 500000},
+    {"id": 2, "navn": "Kari", "lønn": 600000},
+    {"id": 3, "navn": "Per", "lønn": 550000},
+]
+ny = [
+    {"id": 2, "navn": "Kari", "lønn": 650000},
+    {"id": 3, "navn": "Per", "lønn": 550000},
+    {"id": 4, "navn": "Lise", "lønn": 700000},
+]
+
+endringer = {"nye": [], "endret": [], "slettet": []}
+
+# Skriv koden din her
+
+
+print(endringer)
+`,
+    expectedOutput: "{'nye': [4], 'endret': [2], 'slettet': [1]}",
+    hints: [
+      "Indekser begge listene etter `id` først (samme mønster som oppgave 12).",
+      "Iterer ny: hvis id ikke i forrige → `nye`. Hvis dict-ene er ulike → `endret`. Iterer forrige: hvis id ikke i ny → `slettet`.",
+    ],
+    solution: `forrige = [
+    {"id": 1, "navn": "Ola", "lønn": 500000},
+    {"id": 2, "navn": "Kari", "lønn": 600000},
+    {"id": 3, "navn": "Per", "lønn": 550000},
+]
+ny = [
+    {"id": 2, "navn": "Kari", "lønn": 650000},
+    {"id": 3, "navn": "Per", "lønn": 550000},
+    {"id": 4, "navn": "Lise", "lønn": 700000},
+]
+
+forrige_indeks = {r["id"]: r for r in forrige}
+ny_indeks = {r["id"]: r for r in ny}
+
+endringer = {"nye": [], "endret": [], "slettet": []}
+
+for r_id in ny_indeks:
+    if r_id not in forrige_indeks:
+        endringer["nye"].append(r_id)
+    elif ny_indeks[r_id] != forrige_indeks[r_id]:
+        endringer["endret"].append(r_id)
+
+for r_id in forrige_indeks:
+    if r_id not in ny_indeks:
+        endringer["slettet"].append(r_id)
+
+print(endringer)
 `,
   },
   {
     id: "total-lagerverdi",
-    title: "10. Total verdi i lager",
+    title: "18. Total verdi i lager",
     description:
       "Beregn den samlede lagerverdien (pris × antall på lager, summert over alle produkter). Skriv ut tallet — som heltall.",
     starterCode: `produkter = [

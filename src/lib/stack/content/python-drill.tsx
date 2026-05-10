@@ -8,7 +8,7 @@ export const content: TrinnContent = {
   group: "eksamen",
   order: 6,
   status: "ready",
-  shortDescription: "Filtrer dict-lister, parse logger, dict comprehensions — eksamenstypen.",
+  shortDescription: "Database/web-mønstre i Python: filtrere, gruppere, joine, paginere, validere.",
   prerequisites: [],
   Component: PythonDrillPage,
 };
