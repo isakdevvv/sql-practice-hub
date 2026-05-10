@@ -23,6 +23,7 @@ import { Route as DragRouteImport } from './routes/drag'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as CardsRouteImport } from './routes/cards'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as StackIndexRouteImport } from './routes/stack.index'
 import { Route as StackSlugRouteImport } from './routes/stack.$slug'
 
 const StackRoute = StackRouteImport.update({
@@ -95,6 +96,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const StackIndexRoute = StackIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => StackRoute,
+} as any)
 const StackSlugRoute = StackSlugRouteImport.update({
   id: '/$slug',
   path: '/$slug',
@@ -117,6 +123,7 @@ export interface FileRoutesByFullPath {
   '/python': typeof PythonRoute
   '/stack': typeof StackRouteWithChildren
   '/stack/$slug': typeof StackSlugRoute
+  '/stack/': typeof StackIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -132,8 +139,8 @@ export interface FileRoutesByTo {
   '/practice': typeof PracticeRoute
   '/prosjekt': typeof ProsjektRoute
   '/python': typeof PythonRoute
-  '/stack': typeof StackRouteWithChildren
   '/stack/$slug': typeof StackSlugRoute
+  '/stack': typeof StackIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -152,6 +159,7 @@ export interface FileRoutesById {
   '/python': typeof PythonRoute
   '/stack': typeof StackRouteWithChildren
   '/stack/$slug': typeof StackSlugRoute
+  '/stack/': typeof StackIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -171,6 +179,7 @@ export interface FileRouteTypes {
     | '/python'
     | '/stack'
     | '/stack/$slug'
+    | '/stack/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -186,8 +195,8 @@ export interface FileRouteTypes {
     | '/practice'
     | '/prosjekt'
     | '/python'
-    | '/stack'
     | '/stack/$slug'
+    | '/stack'
   id:
     | '__root__'
     | '/'
@@ -205,6 +214,7 @@ export interface FileRouteTypes {
     | '/python'
     | '/stack'
     | '/stack/$slug'
+    | '/stack/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -324,6 +334,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/stack/': {
+      id: '/stack/'
+      path: '/'
+      fullPath: '/stack/'
+      preLoaderRoute: typeof StackIndexRouteImport
+      parentRoute: typeof StackRoute
+    }
     '/stack/$slug': {
       id: '/stack/$slug'
       path: '/$slug'
@@ -336,10 +353,12 @@ declare module '@tanstack/react-router' {
 
 interface StackRouteChildren {
   StackSlugRoute: typeof StackSlugRoute
+  StackIndexRoute: typeof StackIndexRoute
 }
 
 const StackRouteChildren: StackRouteChildren = {
   StackSlugRoute: StackSlugRoute,
+  StackIndexRoute: StackIndexRoute,
 }
 
 const StackRouteWithChildren = StackRoute._addFileChildren(StackRouteChildren)
