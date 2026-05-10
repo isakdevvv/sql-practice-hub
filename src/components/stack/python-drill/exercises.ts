@@ -1,7 +1,8 @@
 // Eksamens-drill: Python-oppgaver. Hver oppgave har starter-kode, fasit og
 // forventet stdout. Solutions er testet for å produsere expectedOutput eksakt
 // (etter trim av trailing whitespace). Alle oppgaver er knyttet til typiske
-// database/web-mønstre: filtrering, gruppering, joining, parsing, validering.
+// database/web-mønstre: filtrering, gruppering, joining, parsing, validering,
+// cursor-håndtering og parameterbinding.
 
 export interface Exercise {
   id: string;
@@ -180,8 +181,40 @@ print(params)
 `,
   },
   {
+    id: "trygg-int-parse",
+    title: "5. Trygg int-konvertering med try/except",
+    description:
+      "Du får en liste med rotete strenger fra et API eller en CSV-fil. Konverter alle som er gyldige heltall til int, og hopp stille over resten (`abc`, tom streng, desimaltall, osv.). Bruk `try`/`except`.",
+    starterCode: `verdier = ["12", "34", "abc", "56", "", "78", "9.5", "100"]
+
+gyldige = []
+
+# Skriv koden din her
+
+
+print(gyldige)
+`,
+    expectedOutput: "[12, 34, 56, 78, 100]",
+    hints: [
+      "`int(\"abc\")` kaster `ValueError`. Det er den du må fange.",
+      "Inni løkken: `try: gyldige.append(int(v))` — `except ValueError: pass` for å hoppe over.",
+    ],
+    solution: `verdier = ["12", "34", "abc", "56", "", "78", "9.5", "100"]
+
+gyldige = []
+
+for v in verdier:
+    try:
+        gyldige.append(int(v))
+    except ValueError:
+        pass
+
+print(gyldige)
+`,
+  },
+  {
     id: "bestillinger-per-kunde",
-    title: "5. Tell bestillinger per kunde",
+    title: "6. Tell bestillinger per kunde",
     description:
       "Gitt en liste over bestillinger. Lag en dictionary `antall` der nøkkel er kundenavn og verdi er antall bestillinger den kunden har gjort.",
     starterCode: `bestillinger = [
@@ -225,7 +258,7 @@ print(antall)
   },
   {
     id: "snitt-per-kategori",
-    title: "6. Snittpris per kategori",
+    title: "7. Snittpris per kategori",
     description:
       "Beregn gjennomsnittsprisen per kategori. Resultatet skal være en dictionary `snitt` der nøkkel er kategori og verdi er snittprisen som flyttall (uten avrunding).",
     starterCode: `produkter = [
@@ -271,7 +304,7 @@ print(snitt)
   },
   {
     id: "having-filter",
-    title: "7. HAVING-filter på snittpris",
+    title: "8. HAVING-filter på snittpris",
     description:
       "Beregn snittpris per kategori (som forrige oppgave), men returner BARE kategoriene som har snittpris over `terskel`. Tilsvarer SQLs `HAVING AVG(pris) > terskel`.",
     starterCode: `produkter = [
@@ -293,7 +326,7 @@ print(dyre)
 `,
     expectedOutput: "{'skjerm': 6000.0, 'pc': 10500.0}",
     hints: [
-      "Først: bygg snittpris per kategori akkurat som i oppgave 6.",
+      "Først: bygg snittpris per kategori akkurat som i forrige oppgave.",
       "Deretter: iterer over snittene og legg bare til de som er > terskel i `dyre`.",
     ],
     solution: `produkter = [
@@ -324,7 +357,7 @@ print(dyre)
   },
   {
     id: "group-by-multi",
-    title: "8. GROUP BY på flere felt",
+    title: "9. GROUP BY på flere felt",
     description:
       "Beregn snittlønn per kombinasjon av (avdeling, stilling). Bruk en tuple `(avdeling, stilling)` som dict-nøkkel. Tilsvarer SQLs `GROUP BY avdeling, stilling`.",
     starterCode: `ansatte = [
@@ -373,7 +406,7 @@ print(snitt)
   },
   {
     id: "top-3-dyreste",
-    title: "9. Topp-3 dyreste produkter",
+    title: "10. Topp-3 dyreste produkter",
     description:
       "Sorter produktene synkende på pris og hent navnet på de tre dyreste. Resultatet skal være en liste `topp3` med produktnavn.",
     starterCode: `produkter = [
@@ -415,8 +448,97 @@ print(topp3)
 `,
   },
   {
+    id: "multi-key-sort",
+    title: "11. Sortér på flere nøkler",
+    description:
+      "Sortér ansatte etter `avdeling` stigende, så `lønn` synkende, så `navn` stigende. Skriv ut bare navnene i den endelige rekkefølgen.",
+    starterCode: `ansatte = [
+    {"navn": "Per", "avdeling": "HR", "lønn": 700000},
+    {"navn": "Kari", "avdeling": "IT", "lønn": 800000},
+    {"navn": "Ola", "avdeling": "IT", "lønn": 900000},
+    {"navn": "Anne", "avdeling": "HR", "lønn": 700000},
+    {"navn": "Lise", "avdeling": "IT", "lønn": 800000},
+]
+
+sortert = []
+
+# Skriv koden din her
+
+
+print([a["navn"] for a in sortert])
+`,
+    expectedOutput: "['Anne', 'Per', 'Ola', 'Kari', 'Lise']",
+    hints: [
+      "`sorted(..., key=lambda a: (a[\"avdeling\"], -a[\"lønn\"], a[\"navn\"]))` — tuple-key gir sammensatt sortering.",
+      "Negativt fortegn på `lønn` snur sortert synkende. Strenger må snus med `reverse` per nøkkel — eller bare bytt rekkefølgen i tuple.",
+    ],
+    solution: `ansatte = [
+    {"navn": "Per", "avdeling": "HR", "lønn": 700000},
+    {"navn": "Kari", "avdeling": "IT", "lønn": 800000},
+    {"navn": "Ola", "avdeling": "IT", "lønn": 900000},
+    {"navn": "Anne", "avdeling": "HR", "lønn": 700000},
+    {"navn": "Lise", "avdeling": "IT", "lønn": 800000},
+]
+
+sortert = sorted(ansatte, key=lambda a: (a["avdeling"], -a["lønn"], a["navn"]))
+
+print([a["navn"] for a in sortert])
+`,
+  },
+  {
+    id: "gruppere-per-maned",
+    title: "12. Gruppér hendelser per måned",
+    description:
+      "Du får en liste med hendelser med ISO-datoer (`YYYY-MM-DD`). Tell antall hendelser per måned, med nøkkel på formatet `\"YYYY-MM\"`. Bruk `datetime`-modulen.",
+    starterCode: `from datetime import datetime
+
+hendelser = [
+    {"dato": "2026-01-15", "type": "kjøp"},
+    {"dato": "2026-01-22", "type": "retur"},
+    {"dato": "2026-02-03", "type": "kjøp"},
+    {"dato": "2026-02-18", "type": "kjøp"},
+    {"dato": "2026-03-05", "type": "retur"},
+    {"dato": "2026-03-20", "type": "kjøp"},
+    {"dato": "2026-03-29", "type": "kjøp"},
+]
+
+antall_per_maned = {}
+
+# Skriv koden din her
+
+
+print(antall_per_maned)
+`,
+    expectedOutput: "{'2026-01': 2, '2026-02': 2, '2026-03': 3}",
+    hints: [
+      "`datetime.fromisoformat(\"2026-01-15\")` parser ISO-datoen til et datetime-objekt.",
+      "`d.strftime(\"%Y-%m\")` gir deg streng-nøkkel som `\"2026-01\"`. Tell deretter med `.get(nokkel, 0) + 1`.",
+    ],
+    solution: `from datetime import datetime
+
+hendelser = [
+    {"dato": "2026-01-15", "type": "kjøp"},
+    {"dato": "2026-01-22", "type": "retur"},
+    {"dato": "2026-02-03", "type": "kjøp"},
+    {"dato": "2026-02-18", "type": "kjøp"},
+    {"dato": "2026-03-05", "type": "retur"},
+    {"dato": "2026-03-20", "type": "kjøp"},
+    {"dato": "2026-03-29", "type": "kjøp"},
+]
+
+antall_per_maned = {}
+
+for h in hendelser:
+    d = datetime.fromisoformat(h["dato"])
+    nokkel = d.strftime("%Y-%m")
+    antall_per_maned[nokkel] = antall_per_maned.get(nokkel, 0) + 1
+
+print(antall_per_maned)
+`,
+  },
+  {
     id: "parse-csv-strenger",
-    title: "10. Parse CSV-strenger til dict-er",
+    title: "13. Parse CSV-strenger til dict-er",
     description:
       "Du får en liste med strenger på formatet `\"navn,alder,by\"`. Konverter dem til en liste med dictionaries der `alder` er et heltall (int).",
     starterCode: `linjer = [
@@ -458,8 +580,66 @@ print(personer)
 `,
   },
   {
+    id: "merge-konfig",
+    title: "14. Slå sammen standard- og bruker-konfig",
+    description:
+      "Du har en `standard`-konfig og en `bruker`-konfig. Bygg `konfig` der bruker-verdier overstyrer standard-verdier, og nye nøkler i bruker beholdes. Standard-rekkefølgen skal komme først i resultatet.",
+    starterCode: `standard = {"theme": "light", "språk": "no", "varsler": True}
+bruker = {"theme": "dark", "skrift": 14}
+
+konfig = {}
+
+# Skriv koden din her
+
+
+print(konfig)
+`,
+    expectedOutput:
+      "{'theme': 'dark', 'språk': 'no', 'varsler': True, 'skrift': 14}",
+    hints: [
+      "`{**standard, **bruker}` slår sammen to dicts. Senere keys overstyrer tidligere.",
+      "Eller: kopier standard først (`konfig = dict(standard)`), så `konfig.update(bruker)`.",
+    ],
+    solution: `standard = {"theme": "light", "språk": "no", "varsler": True}
+bruker = {"theme": "dark", "skrift": 14}
+
+konfig = {**standard, **bruker}
+
+print(konfig)
+`,
+  },
+  {
+    id: "ikke-betalt-brukere",
+    title: "15. Brukere som ikke har betalt (NOT IN-mønster)",
+    description:
+      "Gitt `aktive_brukere` og `betalte_brukere`: finn aktive brukere som IKKE har betalt. Behold opprinnelig rekkefølge fra `aktive_brukere`. Tilsvarer SQLs `WHERE bruker NOT IN (SELECT ...)`.",
+    starterCode: `aktive_brukere = ["ola", "kari", "per", "lise", "anne", "trygve"]
+betalte_brukere = ["kari", "lise", "ola"]
+
+ikke_betalt = []
+
+# Skriv koden din her
+
+
+print(ikke_betalt)
+`,
+    expectedOutput: "['per', 'anne', 'trygve']",
+    hints: [
+      "List comprehension: `[u for u in aktive_brukere if u not in betalte_brukere]`.",
+      "For store lister: konverter `betalte_brukere` til `set(...)` først — `not in` blir O(1) i stedet for O(n).",
+    ],
+    solution: `aktive_brukere = ["ola", "kari", "per", "lise", "anne", "trygve"]
+betalte_brukere = ["kari", "lise", "ola"]
+
+betalte_set = set(betalte_brukere)
+ikke_betalt = [u for u in aktive_brukere if u not in betalte_set]
+
+print(ikke_betalt)
+`,
+  },
+  {
     id: "sql-result-to-dicts",
-    title: "11. SQL-resultat (rader + kolonner) til list of dicts",
+    title: "16. SQL-resultat (rader + kolonner) til list of dicts",
     description:
       "Når du henter data fra en database via en cursor får du ofte en liste med tupler (rader) og en separat liste med kolonnenavn. Konverter dette til en liste med dictionaries.",
     starterCode: `kolonner = ["id", "navn", "by"]
@@ -495,8 +675,89 @@ print(records)
 `,
   },
   {
+    id: "null-i-fetchall",
+    title: "17. Filtrer ut NULL fra cursor.fetchall()",
+    description:
+      "MySQL og PostgreSQL returnerer `NULL`-verdier som Python-`None` i tuple-radene fra `cursor.fetchall()`. Filtrer ut rader der epost-feltet (3. kolonne) er `None`, og konverter resten til list of dicts.",
+    starterCode: `# Resultat fra: SELECT id, navn, epost FROM brukere
+rader = [
+    (1, "Ola", "ola@x.no"),
+    (2, "Kari", None),
+    (3, "Per", "per@x.no"),
+    (4, "Lise", None),
+    (5, "Anne", "anne@x.no"),
+]
+
+med_epost = []
+
+# Skriv koden din her
+
+
+print(med_epost)
+`,
+    expectedOutput:
+      "[{'id': 1, 'navn': 'Ola', 'epost': 'ola@x.no'}, {'id': 3, 'navn': 'Per', 'epost': 'per@x.no'}, {'id': 5, 'navn': 'Anne', 'epost': 'anne@x.no'}]",
+    hints: [
+      "Sjekk med `is not None` (ikke `!= None` — det er en pep-8-no-no).",
+      "For hver rad som passerer filteret: bygg en dict manuelt med `{\"id\": rad[0], \"navn\": rad[1], \"epost\": rad[2]}`.",
+    ],
+    solution: `rader = [
+    (1, "Ola", "ola@x.no"),
+    (2, "Kari", None),
+    (3, "Per", "per@x.no"),
+    (4, "Lise", None),
+    (5, "Anne", "anne@x.no"),
+]
+
+med_epost = []
+
+for rad in rader:
+    if rad[2] is not None:
+        med_epost.append({"id": rad[0], "navn": rad[1], "epost": rad[2]})
+
+print(med_epost)
+`,
+  },
+  {
+    id: "where-params",
+    title: "18. Bygg WHERE-klausul + parameter-tuple",
+    description:
+      "Du skal bygge en parameterized SQL-query dynamisk fra et filter-dict. Lag WHERE-klausulen med `%s`-placeholders (én per filter, limt sammen med ` AND `) OG en tuple med verdiene i samme rekkefølge. Aldri f-string verdiene inn i SQL-en — det er prepared-statement-mønsteret som hindrer SQL injection.",
+    starterCode: `filter_dict = {"avdeling": "IT", "min_lønn": 600000, "by": "Oslo"}
+
+fragmenter = []
+verdier = []
+
+# Skriv koden din her
+
+
+where_klausul = " AND ".join(fragmenter)
+print(where_klausul)
+print(tuple(verdier))
+`,
+    expectedOutput:
+      "avdeling = %s AND min_lønn = %s AND by = %s\n('IT', 600000, 'Oslo')",
+    hints: [
+      "Iterer `filter_dict.items()` og bygg `f\"{k} = %s\"` per nøkkel.",
+      "Legg verdien i `verdier`-listen i samme iterasjon, så holder rekkefølgen seg.",
+    ],
+    solution: `filter_dict = {"avdeling": "IT", "min_lønn": 600000, "by": "Oslo"}
+
+fragmenter = []
+verdier = []
+
+for k, v in filter_dict.items():
+    fragmenter.append(f"{k} = %s")
+    verdier.append(v)
+
+where_klausul = " AND ".join(fragmenter)
+print(where_klausul)
+print(tuple(verdier))
+`,
+  },
+  {
     id: "index-by-id",
-    title: "12. Indekser records etter ID",
+    title: "19. Indekser records etter ID",
     description:
       "Konverter en liste med records til en dictionary der nøkkelen er `id`-feltet og verdien er hele record-en. Dette gir O(1)-oppslag, og er forutsetningen for å gjøre joins i minnet.",
     starterCode: `produkter = [
@@ -531,7 +792,7 @@ print(indeks)
   },
   {
     id: "join-lister",
-    title: "13. JOIN av to lister på fremmednøkkel",
+    title: "20. JOIN av to lister på fremmednøkkel",
     description:
       "Gitt `kunder` (med `id` og `navn`) og `bestillinger` (med `kunde_id` og `belop`): beregn total kjøpsbeløp per kundenavn. Tilsvarer en INNER JOIN + SUM/GROUP BY.",
     starterCode: `kunder = [
@@ -586,7 +847,7 @@ print(total_per_navn)
   },
   {
     id: "nested-json",
-    title: "14. Bygg nested JSON fra flat liste",
+    title: "21. Bygg nested JSON fra flat liste",
     description:
       "API-er returnerer ofte data nested per forelder. Gitt en flat liste med ordrer (med `kunde`, `ordre_id`, `belop`), bygg en dictionary der nøkkel er kunde og verdi er liste over ordrene (uten `kunde`-feltet).",
     starterCode: `rader = [
@@ -631,7 +892,7 @@ print(ordrer_per_kunde)
   },
   {
     id: "valider-payload",
-    title: "15. Valider request-payloads",
+    title: "22. Valider request-payloads",
     description:
       "I et web-API må du sjekke at innkommende JSON inneholder alle påkrevde felt. Gitt en liste med `required`-felt og en liste med payloads: returner en liste der hvert element er listen over manglende felt for tilhørende payload (tom liste betyr OK).",
     starterCode: `required = ["navn", "epost", "alder"]
@@ -671,7 +932,7 @@ print(manglende)
   },
   {
     id: "paginering",
-    title: "16. Paginering av resultatsett",
+    title: "23. Paginering av resultatsett",
     description:
       "En API-endepunkt returnerer maks `side_storrelse` records per side. Gitt en full liste, returner kun records for side nummer `side` (1-indeksert). Tilsvarer SQLs `LIMIT side_storrelse OFFSET (side-1)*side_storrelse`.",
     starterCode: `artikler = [
@@ -720,7 +981,7 @@ print(resultat)
   },
   {
     id: "diff-snapshots",
-    title: "17. Diff to snapshots av en tabell",
+    title: "24. Diff to snapshots av en tabell",
     description:
       "Gitt to snapshots av samme tabell (`forrige` og `ny`), finn ID-er som er nye, endret, eller slettet. Klassisk sync-mønster når du replikerer data mellom systemer.",
     starterCode: `forrige = [
@@ -743,7 +1004,7 @@ print(endringer)
 `,
     expectedOutput: "{'nye': [4], 'endret': [2], 'slettet': [1]}",
     hints: [
-      "Indekser begge listene etter `id` først (samme mønster som oppgave 12).",
+      "Indekser begge listene etter `id` først (samme mønster som oppgave 19).",
       "Iterer ny: hvis id ikke i forrige → `nye`. Hvis dict-ene er ulike → `endret`. Iterer forrige: hvis id ikke i ny → `slettet`.",
     ],
     solution: `forrige = [
@@ -777,7 +1038,7 @@ print(endringer)
   },
   {
     id: "total-lagerverdi",
-    title: "18. Total verdi i lager",
+    title: "25. Total verdi i lager",
     description:
       "Beregn den samlede lagerverdien (pris × antall på lager, summert over alle produkter). Skriv ut tallet — som heltall.",
     starterCode: `produkter = [
