@@ -25,7 +25,7 @@ const PAGES: { label: string; to: string; aliases?: string[] }[] = [
   { label: "API-konsoll", to: "/konsoll", aliases: ["api", "konsoll"] },
   { label: "Exam", to: "/exam", aliases: ["eksamen"] },
   { label: "Dashboard", to: "/dashboard" },
-  { label: "Cards", to: "/cards", aliases: ["flashcards"] },
+  { label: "Quiz", to: "/cards", aliases: ["quiz", "flashcards", "kort", "repetisjon"] },
   { label: "Drag", to: "/drag", aliases: ["dra"] },
 ];
 
