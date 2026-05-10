@@ -33,6 +33,7 @@ import {
   loadProgress,
   type Progress,
 } from "@/lib/progress/storage";
+import { useAppMode, setAppMode } from "@/lib/appMode";
 import {
   Check,
   X,
@@ -51,6 +52,8 @@ interface PracticeSearch {
   level?: Level;
   dataset?: DatasetId;
   id?: string;
+  q?: string;
+  topic?: string;
 }
 
 export const Route = createFileRoute("/practice")({
@@ -62,6 +65,8 @@ export const Route = createFileRoute("/practice")({
     }
     if (typeof search.dataset === "string") out.dataset = search.dataset as DatasetId;
     if (typeof search.id === "string") out.id = search.id;
+    if (typeof search.q === "string") out.q = search.q;
+    if (typeof search.topic === "string") out.topic = search.topic;
     return out;
   },
   head: () => ({
@@ -132,13 +137,14 @@ function difficultyLabel(d: number): { text: string; cls: string } {
 
 function PracticeWorkbench() {
   const urlSearch = Route.useSearch();
+  const appMode = useAppMode();
   const [progress, setProgress] = useState<Progress | null>(null);
   const [hideDone, setHideDone] = useState(false);
   const [levelFilter, setLevelFilter] = useState<Level | "all">(
     urlSearch.level !== undefined ? urlSearch.level : "all",
   );
-  const [topicFilter, setTopicFilter] = useState<string>("all");
-  const [search, setSearch] = useState("");
+  const [topicFilter, setTopicFilter] = useState<string>(urlSearch.topic ?? "all");
+  const [search, setSearch] = useState(urlSearch.q ?? "");
   const [datasetId, setDatasetId] = useState<DatasetId>(urlSearch.dataset ?? "ecommerce");
   const [activeId, setActiveId] = useState<string>(() => {
     if (urlSearch.id) {
@@ -262,6 +268,18 @@ function PracticeWorkbench() {
   return (
     <div className="h-[100dvh] bg-background flex flex-col overflow-hidden">
       <SiteHeader />
+      {appMode === "eksamen" && (
+        <div className="shrink-0 border-b border-warning/40 bg-warning/15 px-4 py-1.5 text-[12px] font-medium text-warning-foreground/90 flex items-center gap-2 justify-center">
+          <span className="inline-block h-2 w-2 rounded-full bg-warning" />
+          Eksamen-modus aktiv — fasit er pre-fylt i editoren for hver oppgave.
+          <button
+            onClick={() => setAppMode("ovning")}
+            className="underline underline-offset-2 hover:text-foreground"
+          >
+            Bytt til Øving
+          </button>
+        </div>
+      )}
 
       <div className="flex-1 flex flex-col lg:flex-row min-h-0 overflow-hidden">
         {/* LEFT: problem list */}
@@ -436,6 +454,7 @@ function ProblemWorkspace({
   onNext: () => void;
   position?: { current: number; total: number };
 }) {
+  const appMode = useAppMode();
   const [sql, setSql] = useState<string>(problem.starter_sql);
   const [result, setResult] = useState<QueryResult | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -453,6 +472,15 @@ function ProblemWorkspace({
   const [draftHydrated, setDraftHydrated] = useState(false);
 
   useEffect(() => {
+    if (appMode === "eksamen") {
+      // I eksamen-modus pre-fyller vi editor med fasit, slik at studenten
+      // kan slå opp svaret direkte uten å løse selv.
+      const pretty = prettifyStarter(problem.solution);
+      setSql(pretty);
+      setSavedSnapshot(pretty);
+      setDraftHydrated(true);
+      return;
+    }
     const drafts = loadDrafts();
     const draft = drafts[problem.id];
     if (draft != null && draft !== problem.starter_sql) {
@@ -464,7 +492,7 @@ function ProblemWorkspace({
       setSavedSnapshot(pretty);
     }
     setDraftHydrated(true);
-  }, [problem.id, problem.starter_sql]);
+  }, [problem.id, problem.starter_sql, problem.solution, appMode]);
   const startRef = useRef<number>(Date.now());
   const isDirty = sql !== savedSnapshot;
 
@@ -476,11 +504,13 @@ function ProblemWorkspace({
     });
   }
 
-  // Persist draft (skip until we've hydrated from localStorage to avoid clobbering)
+  // Persist draft (skip until we've hydrated from localStorage to avoid clobbering;
+  // in eksamen-modus skipper vi helt for ikke å overskrive øvings-utkast med fasit).
   useEffect(() => {
     if (!draftHydrated) return;
+    if (appMode === "eksamen") return;
     saveDraft(problem.id, sql);
-  }, [problem.id, sql, draftHydrated]);
+  }, [problem.id, sql, draftHydrated, appMode]);
 
   const datasetId = (problem.dataset ?? "ecommerce") as DatasetId;
   const runOpts = {
@@ -591,7 +621,8 @@ function ProblemWorkspace({
   }
 
   function resetEditor() {
-    setSql(prettifyStarter(problem.starter_sql));
+    const base = appMode === "eksamen" ? problem.solution : problem.starter_sql;
+    setSql(prettifyStarter(base));
     setResult(null);
     setError(null);
     setVerdict(null);

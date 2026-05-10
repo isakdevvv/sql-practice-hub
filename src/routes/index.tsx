@@ -1,7 +1,11 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useMemo, useState } from "react";
 import { SiteHeader } from "@/components/SiteHeader";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { PROBLEMS } from "@/lib/problems/data";
+import { useAppMode, setAppMode, type AppMode } from "@/lib/appMode";
+import { Search, GraduationCap, Dumbbell, ArrowRight, Sparkles } from "lucide-react";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -24,11 +28,49 @@ export const Route = createFileRoute("/")({
 });
 
 function LandingPage() {
+  const navigate = useNavigate();
+  const appMode = useAppMode();
+  const [query, setQuery] = useState("");
+
   const totals = {
     problems: PROBLEMS.length,
     levels: 6,
     topics: new Set(PROBLEMS.flatMap((p) => p.topics)).size,
   };
+
+  // Topp-temaer rangert etter antall oppgaver — det studenten typisk leter etter på eksamen.
+  const topTopics = useMemo(() => {
+    const counts = new Map<string, number>();
+    for (const p of PROBLEMS) {
+      for (const t of p.topics) counts.set(t, (counts.get(t) ?? 0) + 1);
+    }
+    return Array.from(counts.entries())
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 14);
+  }, []);
+
+  // Live-forslag mens man skriver — hjelper studenten å finne riktig oppgave/tema fort.
+  const suggestions = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (!q) return { probs: [], topics: [] };
+    const probs = PROBLEMS.filter((p) =>
+      `${p.title} ${p.problem} ${p.topics.join(" ")}`.toLowerCase().includes(q),
+    ).slice(0, 6);
+    const topics = topTopics
+      .map(([t]) => t)
+      .filter((t) => t.toLowerCase().includes(q))
+      .slice(0, 4);
+    return { probs, topics };
+  }, [query, topTopics]);
+
+  function submitSearch() {
+    const q = query.trim();
+    navigate({ to: "/practice", search: q ? { q } : {} });
+  }
+
+  function chooseMode(mode: AppMode) {
+    setAppMode(mode);
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -43,7 +85,7 @@ function LandingPage() {
                 "radial-gradient(60% 60% at 50% 0%, color-mix(in oklab, var(--brand) 35%, transparent), transparent)",
             }}
           />
-          <div className="container mx-auto px-4 py-20 md:py-28 text-center max-w-3xl">
+          <div className="container mx-auto px-4 py-16 md:py-20 text-center max-w-3xl">
             <div className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-3 py-1 text-xs text-muted-foreground mb-6">
               <span className="h-1.5 w-1.5 rounded-full bg-success" />
               Runs entirely in your browser — no signup
@@ -55,10 +97,145 @@ function LandingPage() {
               </span>
             </h1>
             <p className="mt-6 text-lg text-muted-foreground">
-              Write real queries against a realistic e-commerce database. Get instant feedback,
-              progressive hints, and track your progress across {totals.problems} problems.
+              Skriv ekte spørringer mot et realistisk skjema. {totals.problems} oppgaver,{" "}
+              {totals.topics} temaer — velg modus og søk deg fram.
             </p>
-            <div className="mt-8 flex items-center justify-center gap-3">
+
+            {/* Modus-velger */}
+            <div className="mt-8 mx-auto max-w-xl">
+              <div className="text-[11px] uppercase tracking-wider text-muted-foreground font-semibold mb-2">
+                Velg modus
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <ModeCard
+                  active={appMode === "ovning"}
+                  onClick={() => chooseMode("ovning")}
+                  icon={<Dumbbell className="h-5 w-5" />}
+                  title="Øving"
+                  body="Løs oppgavene selv med hint, fasit og diff."
+                  accent="brand"
+                />
+                <ModeCard
+                  active={appMode === "eksamen"}
+                  onClick={() => chooseMode("eksamen")}
+                  icon={<GraduationCap className="h-5 w-5" />}
+                  title="Eksamen"
+                  body="Fasit pre-fylles i editoren — finn fort og lever."
+                  accent="warning"
+                />
+              </div>
+              {appMode === "eksamen" && (
+                <p className="mt-3 text-xs text-warning flex items-center justify-center gap-1.5">
+                  <Sparkles className="h-3.5 w-3.5" />
+                  Eksamen-modus: åpne en oppgave i Practice — fasiten ligger klar i SQL-editoren.
+                </p>
+              )}
+            </div>
+
+            {/* Søk */}
+            <div className="mt-8 mx-auto max-w-xl text-left">
+              <label
+                htmlFor="home-search"
+                className="text-[11px] uppercase tracking-wider text-muted-foreground font-semibold"
+              >
+                Søk etter tema eller oppgave
+              </label>
+              <div className="relative mt-2">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+                <Input
+                  id="home-search"
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") submitSearch();
+                  }}
+                  placeholder="f.eks. JOIN, GROUP BY, vindusfunksjon, bilsalg…"
+                  className="h-11 pl-9 pr-24 text-sm"
+                />
+                <Button
+                  size="sm"
+                  onClick={submitSearch}
+                  className="absolute right-1.5 top-1/2 -translate-y-1/2 h-8"
+                >
+                  Søk <ArrowRight className="h-3.5 w-3.5 ml-1" />
+                </Button>
+              </div>
+
+              {query.trim() && suggestions && (
+                <div className="mt-2 rounded-lg border border-border bg-card overflow-hidden text-sm">
+                  {suggestions.topics.length > 0 && (
+                    <div className="border-b border-border px-3 py-2">
+                      <div className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1.5">
+                        Temaer
+                      </div>
+                      <div className="flex flex-wrap gap-1.5">
+                        {suggestions.topics.map((t) => (
+                          <Link
+                            key={t}
+                            to="/practice"
+                            search={{ topic: t }}
+                            className="rounded-full border border-brand/40 bg-brand/10 px-2.5 py-0.5 text-xs hover:bg-brand/20"
+                          >
+                            {t}
+                          </Link>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  {suggestions.probs.length > 0 ? (
+                    <ul className="divide-y divide-border">
+                      {suggestions.probs.map((p) => (
+                        <li key={p.id}>
+                          <Link
+                            to="/practice"
+                            search={{ id: p.id }}
+                            className="flex items-center gap-2 px-3 py-2 hover:bg-accent/40"
+                          >
+                            <span className="text-[10px] rounded border border-border bg-muted px-1.5 py-0.5 text-muted-foreground">
+                              L{p.level}
+                            </span>
+                            <span className="flex-1 truncate">{p.title}</span>
+                            <span className="text-[11px] text-muted-foreground truncate max-w-[140px]">
+                              {p.topics.slice(0, 2).join(", ")}
+                            </span>
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    suggestions.topics.length === 0 && (
+                      <div className="px-3 py-3 text-xs text-muted-foreground">
+                        Ingen treff. Prøv et annet søkeord.
+                      </div>
+                    )
+                  )}
+                </div>
+              )}
+
+              {/* Tema-chips for rask navigering */}
+              {!query.trim() && (
+                <div className="mt-4">
+                  <div className="text-[10px] uppercase tracking-wider text-muted-foreground mb-2">
+                    Vanlige eksamenstemaer
+                  </div>
+                  <div className="flex flex-wrap gap-1.5">
+                    {topTopics.map(([t, n]) => (
+                      <Link
+                        key={t}
+                        to="/practice"
+                        search={{ topic: t }}
+                        className="rounded-full border border-border bg-card px-2.5 py-0.5 text-xs text-foreground/90 hover:border-brand/60 hover:bg-brand/10"
+                        title={`${n} oppgaver`}
+                      >
+                        {t} <span className="text-muted-foreground">({n})</span>
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div className="mt-10 flex items-center justify-center gap-3">
               <Button asChild size="lg">
                 <Link to="/kurs">Start fra nivå 0 →</Link>
               </Button>
@@ -105,7 +282,7 @@ function LandingPage() {
             />
             <Feature
               title="Exam mode"
-              body="Timed, mixed-difficulty sessions to pressure-test your skills before an interview."
+              body="Skru på Eksamen-modus så ligger fasiten klar i editoren for hver oppgave — perfekt som oppslagsverk."
             />
           </div>
         </section>
@@ -130,6 +307,62 @@ function LandingPage() {
         </div>
       </footer>
     </div>
+  );
+}
+
+function ModeCard({
+  active,
+  onClick,
+  icon,
+  title,
+  body,
+  accent,
+}: {
+  active: boolean;
+  onClick: () => void;
+  icon: React.ReactNode;
+  title: string;
+  body: string;
+  accent: "brand" | "warning";
+}) {
+  const activeRing =
+    accent === "warning"
+      ? "border-warning ring-2 ring-warning/40 bg-warning/10"
+      : "border-brand ring-2 ring-brand/40 bg-brand/10";
+  const idleHover =
+    accent === "warning" ? "hover:border-warning/60" : "hover:border-brand/60";
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-pressed={active}
+      className={`group rounded-xl border p-4 text-left transition-all ${
+        active ? activeRing : `border-border bg-card ${idleHover}`
+      }`}
+    >
+      <div className="flex items-center gap-2">
+        <span
+          className={`flex h-8 w-8 items-center justify-center rounded-md ${
+            accent === "warning"
+              ? "bg-warning/20 text-warning"
+              : "bg-brand/20 text-brand"
+          }`}
+        >
+          {icon}
+        </span>
+        <span className="font-semibold">{title}</span>
+        {active && (
+          <span
+            className={`ml-auto text-[10px] font-bold uppercase tracking-wider ${
+              accent === "warning" ? "text-warning" : "text-brand"
+            }`}
+          >
+            Aktiv
+          </span>
+        )}
+      </div>
+      <p className="mt-2 text-xs text-muted-foreground leading-relaxed">{body}</p>
+    </button>
   );
 }
 
