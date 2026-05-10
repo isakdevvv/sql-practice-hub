@@ -1,4 +1,7 @@
-# SQL Sandbox
+# SQL Sandbox — DTE-2509-1 26V Databaser og webapplikasjoner 1
+
+> Studentlaget øvingsverktøy for faget **DTE-2509-1 26V — Databaser og webapplikasjoner 1**.
+> Ikke et offisielt kursmateriale, men ment som forberedelse til eksamen.
 
 En SQL-praksis-app som kjører i nettleseren — ekte SQLite (WebAssembly), realistiske datasett, oppgaver med hint og fasit, søk overalt, og en **Eksamen-modus** som pre-fyller fasit i editoren.
 
