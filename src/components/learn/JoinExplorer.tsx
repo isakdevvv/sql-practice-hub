@@ -254,32 +254,46 @@ export function JoinExplorer({
             </button>
           );
         })}
-        <div className="ml-auto flex items-center gap-2">
-          {committed === null ? (
-            <Button
-              size="sm"
-              onClick={() => setCommitted(selected)}
-              className="bg-brand text-brand-foreground hover:bg-brand/90"
-            >
-              Bekreft svar: {selected} JOIN
-            </Button>
-          ) : correct ? (
-            onAdvance && hasNext ? (
-              <Button
-                size="sm"
-                autoFocus
-                onClick={onAdvance}
-                className="bg-success text-success-foreground hover:bg-success/90"
-              >
-                Neste oppgave <ArrowRight className="h-3.5 w-3.5 ml-1.5" />
-              </Button>
-            ) : null
-          ) : (
-            <Button size="sm" variant="outline" onClick={tryAgain}>
+      </div>
+
+      {/* Hovedhandling — én prominent knapp som bytter rolle:
+          Submit (Bekreft) → Neste oppgave (når riktig) → Prøv igjen (når feil). */}
+      <div className="flex items-center justify-end gap-2 pt-1">
+        {committed === null ? (
+          <Button
+            size="lg"
+            onClick={() => setCommitted(selected)}
+            className="bg-brand text-brand-foreground hover:bg-brand/90 min-w-[220px]"
+          >
+            Bekreft svar: {selected} JOIN
+          </Button>
+        ) : correct ? (
+          <Button
+            size="lg"
+            autoFocus
+            onClick={onAdvance ?? (() => {})}
+            disabled={!onAdvance || !hasNext}
+            className="bg-success text-success-foreground hover:bg-success/90 min-w-[220px]"
+          >
+            Neste oppgave <ArrowRight className="h-4 w-4 ml-2" />
+          </Button>
+        ) : (
+          <>
+            <Button size="lg" variant="outline" onClick={tryAgain} className="min-w-[140px]">
               Prøv igjen
             </Button>
-          )}
-        </div>
+            {onAdvance && hasNext && (
+              <Button
+                size="lg"
+                onClick={onAdvance}
+                variant="ghost"
+                className="text-muted-foreground hover:text-foreground"
+              >
+                Hopp over <ArrowRight className="h-4 w-4 ml-2" />
+              </Button>
+            )}
+          </>
+        )}
       </div>
 
       {committed !== null && (
