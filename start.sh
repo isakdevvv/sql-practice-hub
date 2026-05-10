@@ -10,6 +10,34 @@ WEB_PORT="${WEB_PORT:-5173}"
 
 bold() { printf "\033[1m%s\033[0m\n" "$*"; }
 info() { printf "  → %s\n" "$*"; }
+warn() { printf "\033[33m  ! %s\033[0m\n" "$*"; }
+
+# Auto-oppdatering: hent siste versjon fra GitHub før start.
+# Hopper over hvis git mangler, hvis det ikke er et git-repo, eller hvis
+# brukeren har lokale endringer (vi vil ikke skygge over noens jobb).
+if [[ "${SKIP_UPDATE:-}" != "1" ]] && command -v git >/dev/null 2>&1 && [[ -d .git ]]; then
+  bold "==> Sjekker etter oppdateringer"
+  if ! git diff --quiet HEAD 2>/dev/null || [[ -n "$(git status --porcelain --untracked-files=no 2>/dev/null)" ]]; then
+    warn "Du har lokale endringer — hopper over auto-oppdatering."
+  else
+    if git fetch --quiet origin 2>/dev/null; then
+      LOCAL=$(git rev-parse @ 2>/dev/null || echo "")
+      REMOTE=$(git rev-parse @{u} 2>/dev/null || echo "")
+      if [[ -n "$REMOTE" && "$LOCAL" != "$REMOTE" ]]; then
+        info "Ny versjon tilgjengelig — oppdaterer…"
+        if git pull --ff-only --quiet 2>/dev/null; then
+          info "Oppdatert til $(git rev-parse --short HEAD)"
+        else
+          warn "Kunne ikke fast-forwarde. Kjør 'git pull' manuelt for å løse."
+        fi
+      else
+        info "Allerede oppdatert ($(git rev-parse --short HEAD))."
+      fi
+    else
+      warn "Ingen nettverk — bruker eksisterende versjon."
+    fi
+  fi
+fi
 
 bold "==> Sjekker Bun"
 if ! command -v bun >/dev/null 2>&1; then
