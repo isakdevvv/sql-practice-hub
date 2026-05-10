@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "concurrently -n server,web -c blue,magenta \"bun run server\" \"vite dev\"",
+    "dev:mobile": "bash scripts/dev-mobile.sh",
     "dev:web": "vite dev",
     "server": "bun --watch server/index.ts",
     "build": "vite build",
