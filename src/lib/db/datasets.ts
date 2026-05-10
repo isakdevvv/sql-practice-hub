@@ -397,7 +397,7 @@ const REISE_SEED = `
 INSERT INTO Kunde VALUES
 (1,'Ola','Nordmann','40000001'),
 (2,'Kari','Hansen','40000002'),
-(3,'Per','Olsen','40000003'),
+(3,'Per','Solberg','40000003'),
 (4,'Anna','Berg','40000004'),
 (5,'Liu','Wang','40000005'),
 (6,'Maria','Gonzalez','40000006');
@@ -514,7 +514,7 @@ const RENHOLD_SEED = `
 INSERT INTO Kunde VALUES
 (1,'Liu','Wang','56789012'),
 (2,'Ola','Lie','12345678'),
-(3,'Kari','Olsen','23456789'),
+(3,'Kari','Lien','23456789'),
 (4,'Peder','Aas','34567890'),
 (5,'Maria','Gonzalez','45678901');
 

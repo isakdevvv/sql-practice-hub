@@ -4850,7 +4850,7 @@ INSERT INTO Medlem (MNr, Navn) VALUES (1, 'Ola Hansen');`,
   Brukernavn TEXT NOT NULL UNIQUE,
   Epost TEXT UNIQUE
 );
-INSERT INTO Bruker VALUES (1,'isak','isak@example.com');
+INSERT INTO Bruker VALUES (1,'ola','ola@example.com');
 INSERT INTO Bruker VALUES (2,'kari','kari@example.com');`,
     verify_sql: "SELECT * FROM Bruker ORDER BY BrukerNr;",
     validation: { ignore_order: false, ignore_column_names: true },
