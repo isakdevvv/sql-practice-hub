@@ -22,10 +22,15 @@ export const TRINN: TrinnContent[] = [
   trinn1, trinn2, trinn3, trinn4, trinn5, trinn6, trinn7, trinn8, trinn9, trinn10,
 ];
 
+// Bare ferdige trinn er offentlig synlige — stubs (`status: "stub"`)
+// skal ikke vises noen steder, og direkte URL-tilgang skal 404e.
 export function getTrinnBySlug(slug: string): TrinnContent | undefined {
-  return TRINN.find((t) => t.slug === slug);
+  const t = TRINN.find((tr) => tr.slug === slug);
+  return t && t.status === "ready" ? t : undefined;
 }
 
 export function getTrinnByGroup(group: "eksamen" | "stack"): TrinnContent[] {
-  return TRINN.filter((t) => t.group === group).sort((a, b) => a.order - b.order);
+  return TRINN.filter((t) => t.group === group && t.status === "ready").sort(
+    (a, b) => a.order - b.order,
+  );
 }

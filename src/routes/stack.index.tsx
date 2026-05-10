@@ -26,58 +26,51 @@ function StackLandingPage() {
       <SiteHeader />
       <main className="container mx-auto px-4 py-12 max-w-4xl">
         <div className="mb-10">
-          <div className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-3 py-1 text-xs text-muted-foreground mb-4">
-            <span className="h-1.5 w-1.5 rounded-full bg-brand" />
-            Ny seksjon — under utvikling
-          </div>
           <h1 className="text-4xl font-bold tracking-tight">
             Stack — fra{" "}
             <span className="bg-gradient-to-r from-brand to-success bg-clip-text text-transparent">
-              transistor til Flask
+              bytes til Flask
             </span>
           </h1>
           <p className="mt-4 text-muted-foreground max-w-2xl">
-            To spor: først det du må kunne til <strong className="text-foreground">eksamen</strong>{" "}
-            (bytes, sockets, ER-mapping, Flask-livssyklus). Deretter — etter eksamen — hele stacken
-            fra transistor og NAND-porter, opp gjennom CPU, C, Python og Flask.
+            Det du må kunne til <strong className="text-foreground">eksamen</strong>: bytes,
+            sockets, HTTP-anatomi, ER-mapping og Flask-livssyklus.
           </p>
         </div>
 
-        <section className="mb-12">
-          <div className="flex items-baseline justify-between mb-4">
-            <h2 className="text-2xl font-bold tracking-tight">Eksamensforberedelse</h2>
-            <span className="text-xs text-muted-foreground tabular-nums">
-              {eksamen.length} trinn
-            </span>
-          </div>
-          <p className="text-sm text-muted-foreground mb-5">
-            Det du trenger akkurat nå. Bygges først.
-          </p>
-          <div className="grid sm:grid-cols-2 gap-3">
-            {eksamen.map((t) => (
-              <TrinnCard key={t.id} trinn={t} prominent />
-            ))}
-          </div>
-        </section>
+        {eksamen.length > 0 && (
+          <section className="mb-12">
+            <div className="flex items-baseline justify-between mb-4">
+              <h2 className="text-2xl font-bold tracking-tight">Eksamensforberedelse</h2>
+              <span className="text-xs text-muted-foreground tabular-nums">
+                {eksamen.length} trinn
+              </span>
+            </div>
+            <div className="grid sm:grid-cols-2 gap-3">
+              {eksamen.map((t) => (
+                <TrinnCard key={t.id} trinn={t} prominent />
+              ))}
+            </div>
+          </section>
+        )}
 
-        <section>
-          <div className="flex items-baseline justify-between mb-4">
-            <h2 className="text-2xl font-bold tracking-tight">
-              Hele stacken — fra hardware til web
-            </h2>
-            <span className="text-xs text-muted-foreground tabular-nums">
-              {stack.length} trinn
-            </span>
-          </div>
-          <p className="text-sm text-muted-foreground mb-5">
-            Den dypere reisen — kommer etter eksamen.
-          </p>
-          <div className="grid sm:grid-cols-2 gap-3">
-            {stack.map((t) => (
-              <TrinnCard key={t.id} trinn={t} />
-            ))}
-          </div>
-        </section>
+        {stack.length > 0 && (
+          <section>
+            <div className="flex items-baseline justify-between mb-4">
+              <h2 className="text-2xl font-bold tracking-tight">
+                Hele stacken — fra hardware til web
+              </h2>
+              <span className="text-xs text-muted-foreground tabular-nums">
+                {stack.length} trinn
+              </span>
+            </div>
+            <div className="grid sm:grid-cols-2 gap-3">
+              {stack.map((t) => (
+                <TrinnCard key={t.id} trinn={t} />
+              ))}
+            </div>
+          </section>
+        )}
       </main>
     </div>
   );

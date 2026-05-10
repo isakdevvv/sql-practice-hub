@@ -10,17 +10,20 @@ import { Search, GraduationCap, Dumbbell, ArrowRight, Sparkles } from "lucide-re
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "SQL Sandbox — Master SQL with 50 hands-on problems" },
+      { title: "SQL Sandbox — DTE-2509-1 Databaser og webapplikasjoner 1" },
       {
         name: "description",
         content:
-          "Practice SQL in your browser with a realistic e-commerce dataset, instant feedback, and progress tracking. 50 problems across 6 levels.",
+          "Øvingsverktøy for DTE-2509-1 26V Databaser og webapplikasjoner 1. SQL-oppgaver med ekte SQLite i nettleseren, hint, fasit, eksamen-modus og globalt søk.",
       },
-      { property: "og:title", content: "SQL Sandbox — Master SQL with 50 hands-on problems" },
+      {
+        property: "og:title",
+        content: "SQL Sandbox — DTE-2509-1 Databaser og webapplikasjoner 1",
+      },
       {
         property: "og:description",
         content:
-          "Browser-based SQL practice with sandboxed SQLite, result-based grading, hints, and XP tracking.",
+          "Studentlaget øvingsverktøy for DTE-2509-1 26V — over 300 SQL-oppgaver, eksamen-modus og søk overalt.",
       },
     ],
   }),
@@ -86,18 +89,23 @@ function LandingPage() {
             }}
           />
           <div className="container mx-auto px-4 py-16 md:py-20 text-center max-w-3xl">
-            <div className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-3 py-1 text-xs text-muted-foreground mb-6">
+            <div className="inline-flex items-center gap-2 rounded-full border border-brand/40 bg-brand/10 px-3 py-1 text-xs font-semibold text-brand mb-3">
+              DTE-2509-1 · 26V · Databaser og webapplikasjoner 1
+            </div>
+            <div className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-3 py-1 text-xs text-muted-foreground mb-6 ml-2">
               <span className="h-1.5 w-1.5 rounded-full bg-success" />
-              Runs entirely in your browser — no signup
+              Kjører lokalt i nettleseren — ingen innlogging
             </div>
             <h1 className="text-4xl md:text-6xl font-bold tracking-tight">
-              Master SQL with{" "}
+              Øv på SQL med{" "}
               <span className="bg-gradient-to-r from-brand to-success bg-clip-text text-transparent">
-                hands-on practice
+                ekte spørringer
               </span>
             </h1>
             <p className="mt-6 text-lg text-muted-foreground">
-              Skriv ekte spørringer mot et realistisk skjema. {totals.problems} oppgaver,{" "}
+              Studentlaget øvingsverktøy for{" "}
+              <strong className="text-foreground">DTE-2509-1 Databaser og webapplikasjoner 1</strong>.{" "}
+              Skriv ekte spørringer mot et realistisk skjema — {totals.problems} oppgaver,{" "}
               {totals.topics} temaer — velg modus og søk deg fram.
             </p>
 
