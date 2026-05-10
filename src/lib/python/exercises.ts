@@ -79,7 +79,7 @@ cur.executemany(
     [
         (1, "Ola Nordmann", "ola@test.no", "2025-01-15"),
         (2, "Kari Hansen", None, "2025-02-03"),
-        (3, "Per Olsen", "per@test.no", "2025-03-20"),
+        (3, "Per Solberg", "per@test.no", "2025-03-20"),
         (4, "Lise Berg", None, "2025-04-08"),
     ],
 )
@@ -123,7 +123,7 @@ cur.executemany(
     [
         (1, "Ola Nordmann", "ola@test.no", "hash_av_hemmelig"),
         (2, "Kari Hansen", "kari@test.no", "hash_av_passord"),
-        (3, "Per Olsen", "per@test.no", "hash_av_p"),
+        (3, "Per Solberg", "per@test.no", "hash_av_p"),
     ],
 )
 cur.executemany(
