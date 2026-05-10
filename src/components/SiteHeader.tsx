@@ -3,14 +3,14 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Search } from "lucide-react";
 import { searchEntries, type SearchEntry, type SearchKind } from "@/lib/search";
 
-const PAGES: { label: string; to: string }[] = [
-  { label: "Kurs", to: "/kurs" },
-  { label: "Stack", to: "/stack" },
-  { label: "Practice", to: "/practice" },
-  { label: "Lær", to: "/learn" },
-  { label: "Joins", to: "/joins" },
-  { label: "ER-tegner", to: "/er-tegner" },
-  { label: "Python", to: "/python" },
+// 4 hubs replace the previous 13-link nav. Each hub-landingsside lister
+// alle de eksisterende rutene som hører hjemme der — URL-ene er beholdt,
+// så ingen lenker brytes; bare top-navigasjonen er forenklet.
+const HUBS: { label: string; to: string }[] = [
+  { label: "Lær", to: "/lar" },
+  { label: "Øv", to: "/ov" },
+  { label: "Eksamen", to: "/eksamen" },
+  { label: "Du", to: "/dashboard" },
 ];
 
 export function SiteHeader() {
@@ -26,8 +26,8 @@ export function SiteHeader() {
 
         <GlobalSearch />
 
-        <nav className="hidden xl:flex items-center gap-1 text-sm shrink-0">
-          {PAGES.map((p) => (
+        <nav className="hidden md:flex items-center gap-1 text-sm shrink-0">
+          {HUBS.map((p) => (
             <Link
               key={p.to}
               to={p.to}
@@ -37,20 +37,6 @@ export function SiteHeader() {
               {p.label}
             </Link>
           ))}
-          <Link
-            to="/exam"
-            className="rounded-md px-2.5 py-1.5 text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
-            activeProps={{ className: "rounded-md px-2.5 py-1.5 text-foreground bg-accent" }}
-          >
-            Exam
-          </Link>
-          <Link
-            to="/dashboard"
-            className="rounded-md px-2.5 py-1.5 text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
-            activeProps={{ className: "rounded-md px-2.5 py-1.5 text-foreground bg-accent" }}
-          >
-            Dashboard
-          </Link>
         </nav>
       </div>
     </header>
