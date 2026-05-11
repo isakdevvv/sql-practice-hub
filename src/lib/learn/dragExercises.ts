@@ -10424,4 +10424,639 @@ __5__ endfor __6__
       },
     ],
   },
+
+  // ============ DTE-2802 — C# ============
+  {
+    id: "d-match-csharp-types",
+    kind: "match",
+    title: "C# primitive typer",
+    prompt: "Match C#-typen til riktig beskrivelse.",
+    topic: "C#",
+    pairs: [
+      { left: "int", right: "32-bit signert heltall" },
+      { left: "long", right: "64-bit signert heltall" },
+      { left: "double", right: "64-bit flytetall — IKKE for penger" },
+      { left: "decimal", right: "Høy-presisjons desimaltall — for penger" },
+      { left: "bool", right: "true eller false" },
+      { left: "string", right: "Sekvens av tegn (referansetype)" },
+      { left: "char", right: "Ett enkelt Unicode-tegn (16 bit)" },
+    ],
+  },
+  {
+    id: "d-quiz-csharp-var",
+    kind: "quiz",
+    title: "var vs eksplisitt type",
+    prompt: "Velg det som stemmer om var i C#.",
+    topic: "C#",
+    question: "Hva betyr var i C#?",
+    options: [
+      {
+        text: "Type-inferens ved kompilering — variabelen er fortsatt statisk typet",
+        correct: true,
+        rationale:
+          "var lar kompilatoren utlede typen fra høyresida. var x = 1; gir x: int. Du kan IKKE senere skrive x = \"hei\";",
+      },
+      {
+        text: "Dynamisk typing som i Python — typen kan endres",
+        correct: false,
+        rationale:
+          "C# har en separat dynamic-type for det. var er ren type-inferens.",
+      },
+      {
+        text: "Object-type som boxes alle verdier",
+        correct: false,
+        rationale: "Ingen boxing. var er rent kompiler-trikset — IL-en er identisk.",
+      },
+      {
+        text: "Bare lov i Lambdas",
+        correct: false,
+        rationale: "var fungerer for lokale variabler overalt der typen kan utledes.",
+      },
+    ],
+  },
+  {
+    id: "d-match-csharp-properties",
+    kind: "match",
+    title: "C# properties — varianter",
+    prompt: "Match property-syntaksen til hva den gjør.",
+    topic: "C#",
+    pairs: [
+      { left: "public int X { get; set; }", right: "Auto-property, lesbar og skrivbar" },
+      { left: "public int X { get; init; }", right: "Auto-property, settes bare ved object init" },
+      { left: "public int X { get; private set; }", right: "Lesbar utenfra, settbar bare innenfor klassen" },
+      { left: "public int X => _x + 1;", right: "Computed, expression-bodied — read-only" },
+      { left: "public int X { get; }", right: "Auto-property uten setter — må settes i konstruktør" },
+    ],
+  },
+  {
+    id: "d-fill-csharp-linq-where",
+    kind: "fill",
+    title: "LINQ — voksne, sortert",
+    prompt: "Fyll inn LINQ-kjeden som henter voksne personer sortert på navn.",
+    topic: "LINQ",
+    template:
+      "var voksne = personer\n    .__1__(p => p.Alder >= 18)\n    .__2__(p => p.Navn)\n    .__3__(p => p.Navn)\n    .ToList();",
+    blanks: ["Where", "OrderBy", "Select"],
+    options: ["Where", "OrderBy", "Select", "GroupBy", "Filter", "Map", "Sort", "Find"],
+    explanation:
+      "Where filtrerer, OrderBy sorterer, Select projeserer ut én verdi per element. Filter/Map er JS-navn, ikke C#.",
+  },
+  {
+    id: "d-fill-csharp-async",
+    kind: "fill",
+    title: "async / await — controller-action",
+    prompt: "Fyll inn async-mønsteret for en GET-action.",
+    topic: "C#",
+    template:
+      "public __1__ Task<IActionResult> Get(int id)\n{\n    var b = __2__ _db.Books.FindAsync(id);\n    return b == null ? NotFound() : Ok(b);\n}",
+    blanks: ["async", "await"],
+    options: ["async", "await", "Task", "return", "void", "static"],
+    explanation:
+      "async i signaturen tillater await inne i metoden. await venter på Task<T> uten å blokkere tråden.",
+  },
+  {
+    id: "d-quiz-csharp-nrt",
+    kind: "quiz",
+    title: "Nullable reference types — ? og !",
+    prompt: "Velg det som stemmer om NRT-syntaks.",
+    topic: "C#",
+    question: "Hva er forskjellen på string? og string!.Length?",
+    options: [
+      {
+        text: "string? = type som kan være null. !.Length = null-forgiving — du lover kompilatoren at den ikke er null",
+        correct: true,
+        rationale:
+          "? på typen markerer at null er gyldig. ! på en bruk-side overstyrer kompilatorens advarsel, men kaster fortsatt NRE i runtime hvis verdien faktisk er null.",
+      },
+      {
+        text: "string? = obligatorisk, !.Length = optional",
+        correct: false,
+        rationale: "Motsatt. ? = kan være null (valgfri).",
+      },
+      {
+        text: "string? gjør at NullReferenceException ikke kan kastes",
+        correct: false,
+        rationale:
+          "NRT er bare kompilatorsjekker — NRE kan fortsatt kastes i runtime. Kompilatoren advarer deg.",
+      },
+      {
+        text: "! konverterer null til tom streng",
+        correct: false,
+        rationale: "Nei. ! suppresser bare kompilatorens null-warning på det uttrykket.",
+      },
+    ],
+  },
+  {
+    id: "d-quiz-csharp-record-class",
+    kind: "quiz",
+    title: "record vs class",
+    prompt: "Velg riktig forskjell.",
+    topic: "C#",
+    question: "Hva skiller record fra class i C# 9+?",
+    options: [
+      {
+        text: "record har verdi-likhet på alle properties; class sammenligner på referanse",
+        correct: true,
+        rationale:
+          "To records med samme verdier i alle properties er == lik. To classes med samme verdier er == ulike (med mindre du overrider Equals).",
+      },
+      {
+        text: "record er en value type (struct)",
+        correct: false,
+        rationale: "record er en referansetype, akkurat som class. Det finnes record struct for struct.",
+      },
+      {
+        text: "record kan ikke ha metoder",
+        correct: false,
+        rationale: "record kan ha metoder, konstruktører, og alt class kan. Forskjellen er likhets-semantikk og 'with'-uttrykk.",
+      },
+      {
+        text: "record kjører raskere fordi den ikke har konstruktør",
+        correct: false,
+        rationale: "Records HAR konstruktør — bare ofte autogenerert fra positional syntax.",
+      },
+    ],
+  },
+  {
+    id: "d-match-csharp-async-keywords",
+    kind: "match",
+    title: "async-relaterte typer/nøkkelord",
+    prompt: "Match til riktig betydning.",
+    topic: "C#",
+    pairs: [
+      { left: "Task", right: "Async-operasjon uten resultatverdi" },
+      { left: "Task<T>", right: "Async-operasjon som returnerer T" },
+      { left: "await", right: "Vent på Task uten å blokkere tråden" },
+      { left: "async", right: "Markerer metode som inneholder await" },
+      { left: "Task.WhenAll", right: "Vent på flere Tasks samtidig" },
+    ],
+  },
+
+  // ============ DTE-2802 — ASP.NET MVC ============
+  {
+    id: "d-order-mvc-request-flow",
+    kind: "order",
+    title: "MVC request-flyt",
+    prompt: "Sortér stegene fra request til respons.",
+    topic: "ASP.NET MVC",
+    items: [
+      "Browser sender HTTP-request",
+      "Routing-middleware matcher URL mot mønster {controller}/{action}/{id?}",
+      "Controller-klasse instansieres med DI (services injiseres)",
+      "Action-metoden kjører — henter/manipulerer model",
+      "Action returnerer View(model) eller RedirectToAction(...)",
+      "Razor-engine rendrer .cshtml-fil til HTML med modellen",
+      "HTML-respons sendes til browser",
+    ],
+    explanation:
+      "Routing først, så instansiering med DI, så action, så view-rendering. PRG-mønsteret betyr at POST ofte avslutter med RedirectToAction i stedet for return View().",
+  },
+  {
+    id: "d-fill-mvc-route-pattern",
+    kind: "fill",
+    title: "MVC default route-mønster",
+    prompt: "Fyll inn det vanlige default-route-mønsteret.",
+    topic: "ASP.NET MVC",
+    template:
+      "app.MapControllerRoute(\n    name: \"default\",\n    pattern: \"{__1__=Home}/{__2__=Index}/{__3__?}\");",
+    blanks: ["controller", "action", "id"],
+    options: ["controller", "action", "id", "view", "method", "page", "name"],
+    explanation:
+      "{controller=Home} = standardverdi Home hvis ikke oppgitt. {id?} = ? betyr valgfritt. /Books/Details/5 mappes da til BooksController.Details(5).",
+  },
+  {
+    id: "d-match-mvc-validation-attrs",
+    kind: "match",
+    title: "Validation-attributter",
+    prompt: "Match attributtet til hva det validerer.",
+    topic: "ASP.NET MVC",
+    pairs: [
+      { left: "[Required]", right: "Feltet kan ikke være null eller tom" },
+      { left: "[StringLength(50)]", right: "Maks 50 tegn" },
+      { left: "[Range(1, 100)]", right: "Tall mellom 1 og 100" },
+      { left: "[EmailAddress]", right: "Må være gyldig e-postadresse" },
+      { left: "[RegularExpression(\"...\")]", right: "Må matche regex-mønsteret" },
+      { left: "[Compare(\"Passord\")]", right: "Verdi må være lik annet felt" },
+    ],
+  },
+  {
+    id: "d-quiz-mvc-tempdata",
+    kind: "quiz",
+    title: "TempData vs ViewData vs ViewBag",
+    prompt: "Velg riktig.",
+    topic: "ASP.NET MVC",
+    question:
+      "Du lagrer en bok, redirecter til Index og vil vise «Bok lagret!». Hvilken brukes?",
+    options: [
+      {
+        text: "TempData — fordi den lever over en redirect (én neste request)",
+        correct: true,
+        rationale:
+          "TempData er designet for flash-meldinger. ViewData/ViewBag dør ved redirect siden de bare lever én request.",
+      },
+      {
+        text: "ViewData — fordi den er sterkest typet",
+        correct: false,
+        rationale: "ViewData er Dictionary<string, object> — ikke sterkt typet, og dør ved redirect.",
+      },
+      {
+        text: "ViewBag — fordi den er dynamic",
+        correct: false,
+        rationale: "ViewBag er bare dynamic wrapper rundt ViewData. Samme levetid.",
+      },
+      {
+        text: "Session — fordi den er global",
+        correct: false,
+        rationale:
+          "Session kunne fungert, men er overkill og lever altfor lenge. TempData er rett verktøy.",
+      },
+    ],
+  },
+  {
+    id: "d-fill-mvc-razor",
+    kind: "fill",
+    title: "Razor — loop med model",
+    prompt: "Fyll inn Razor-syntaks for å vise en liste.",
+    topic: "ASP.NET MVC",
+    template:
+      "__1__ IEnumerable<Book>\n\n<ul>\n@__2__ (var b in Model)\n{\n    <li>__3__ b.Tittel</li>\n}\n</ul>",
+    blanks: ["@model", "foreach", "@"],
+    options: ["@model", "foreach", "@", "@foreach", "@for", "model", "Model"],
+    explanation:
+      "@model deklarerer Model-typen. @foreach (eller bare 'foreach' inni @{}-blokk) gir C#-loop. @-prefiks bytter fra HTML til C#-uttrykk.",
+  },
+  {
+    id: "d-quiz-mvc-antiforgery",
+    kind: "quiz",
+    title: "AntiForgeryToken",
+    prompt: "Velg riktig.",
+    topic: "ASP.NET MVC",
+    question: "Hvorfor brukes [ValidateAntiForgeryToken] på POST-actioner?",
+    options: [
+      {
+        text: "Beskyttelse mot CSRF — angriper på annet domene kan ikke forfalske POST-requests",
+        correct: true,
+        rationale:
+          "Token sendes med form og må matche cookien. Angriper-domenet kan ikke lese cookien (same-origin), så POST avvises.",
+      },
+      {
+        text: "Beskyttelse mot SQL injection",
+        correct: false,
+        rationale: "SQL injection unngås med parameterisering, ikke anti-forgery tokens.",
+      },
+      {
+        text: "Beskyttelse mot XSS",
+        correct: false,
+        rationale: "XSS-beskyttelse er Razor sin automatiske HTML-encoding.",
+      },
+      {
+        text: "Krypterer data i transit",
+        correct: false,
+        rationale: "Det er HTTPS sin jobb. Anti-forgery handler om request-opphav.",
+      },
+    ],
+  },
+
+  // ============ DTE-2802 — Web API ============
+  {
+    id: "d-match-webapi-verbs",
+    kind: "match",
+    title: "HTTP-verb til attributt",
+    prompt: "Match handlingen til riktig HTTP-attributt.",
+    topic: "ASP.NET Web API",
+    pairs: [
+      { left: "Hente liste eller én ressurs", right: "[HttpGet]" },
+      { left: "Opprette ny ressurs", right: "[HttpPost]" },
+      { left: "Erstatte hele ressursen", right: "[HttpPut]" },
+      { left: "Slette ressursen", right: "[HttpDelete]" },
+      { left: "Endre noen felter på ressursen", right: "[HttpPatch]" },
+    ],
+  },
+  {
+    id: "d-quiz-webapi-201",
+    kind: "quiz",
+    title: "POST som lykkes — hvilken status?",
+    prompt: "Velg riktig action result.",
+    topic: "ASP.NET Web API",
+    question:
+      "En POST /api/users opprettet en ny bruker. Hvilken metode bør du returnere?",
+    options: [
+      {
+        text: "CreatedAtAction(nameof(Get), new { id = u.Id }, u) — 201 Created med Location-header",
+        correct: true,
+        rationale:
+          "201 Created er semantisk riktig for POST som lager ressurs. Location-headeren peker på den nye ressursen så klienten kan slå den opp.",
+      },
+      {
+        text: "Ok(u) — 200 OK",
+        correct: false,
+        rationale: "200 OK fungerer teknisk, men 201 Created er mer presist for «ny ressurs ble laget».",
+      },
+      {
+        text: "NoContent() — 204",
+        correct: false,
+        rationale: "204 brukes ved suksess UTEN body. POST returnerer typisk den nye ressursen.",
+      },
+      {
+        text: "Accepted() — 202",
+        correct: false,
+        rationale: "202 betyr «mottatt for prosessering», ikke «ferdig opprettet». Brukes ved asynkrone jobber.",
+      },
+    ],
+  },
+  {
+    id: "d-match-webapi-results",
+    kind: "match",
+    title: "ActionResult-metoder til statuskode",
+    prompt: "Match hjelpe-metode til HTTP-status den returnerer.",
+    topic: "ASP.NET Web API",
+    pairs: [
+      { left: "Ok()", right: "200 OK" },
+      { left: "CreatedAtAction(...)", right: "201 Created" },
+      { left: "NoContent()", right: "204 No Content" },
+      { left: "BadRequest()", right: "400 Bad Request" },
+      { left: "Unauthorized()", right: "401 Unauthorized" },
+      { left: "NotFound()", right: "404 Not Found" },
+      { left: "Conflict()", right: "409 Conflict" },
+    ],
+  },
+  {
+    id: "d-match-webapi-binding",
+    kind: "match",
+    title: "Model binding — kilder",
+    prompt: "Match parameter-attributtet til hvor data hentes fra.",
+    topic: "ASP.NET Web API",
+    pairs: [
+      { left: "[FromRoute]", right: "Verdi tatt fra URL-segment ({id})" },
+      { left: "[FromQuery]", right: "Verdi tatt fra query string (?q=...)" },
+      { left: "[FromBody]", right: "JSON i request-body" },
+      { left: "[FromHeader]", right: "HTTP-header (f.eks. X-Api-Key)" },
+      { left: "[FromForm]", right: "multipart/form-data — typisk fil-upload" },
+    ],
+  },
+  {
+    id: "d-quiz-webapi-cors-order",
+    kind: "quiz",
+    title: "CORS — middleware-rekkefølge",
+    prompt: "Hvor i pipelinen plasseres UseCors?",
+    topic: "ASP.NET Web API",
+    question:
+      "Hvor i Program.cs må app.UseCors(\"policy\") komme for at CORS-headerne skal funke?",
+    options: [
+      {
+        text: "Før UseAuthorization og MapControllers — slik at preflight ikke blir blokkert av auth",
+        correct: true,
+        rationale:
+          "Preflight (OPTIONS) blir 401 hvis Authorization kjører først. CORS legger på headerne FØR auth-sjekken slipper browseren videre.",
+      },
+      {
+        text: "Helt sist — etter MapControllers",
+        correct: false,
+        rationale:
+          "Middleware etter MapControllers kjører ikke — pipelinen er allerede ferdig. CORS-header må legges på FØR responsen sendes.",
+      },
+      {
+        text: "Rekkefølgen er irrelevant",
+        correct: false,
+        rationale: "Rekkefølgen er kritisk — det er hele poenget med en pipeline.",
+      },
+      {
+        text: "Den må kalles inne i hver controller-action",
+        correct: false,
+        rationale: "UseCors er middleware på app-nivå. Du kan i tillegg legge [EnableCors] på enkelt-actioner.",
+      },
+    ],
+  },
+  {
+    id: "d-fill-webapi-attribute-routing",
+    kind: "fill",
+    title: "Attribute routing — controller + action",
+    prompt: "Fyll inn attributtene for et CRUD-endepunkt.",
+    topic: "ASP.NET Web API",
+    template:
+      "[__1__]\n[Route(\"api/[__2__]\")]\npublic class UsersController : ControllerBase\n{\n    [__3__(\"{id:int}\")]\n    public IActionResult Get(int id) { ... }\n}",
+    blanks: ["ApiController", "controller", "HttpGet"],
+    options: ["ApiController", "controller", "HttpGet", "HttpPost", "Route", "FromRoute", "action"],
+    explanation:
+      "[ApiController] aktiverer automatisk validering. [controller] erstattes med klassenavnet uten 'Controller'-suffiks (Users). [HttpGet(\"{id:int}\")] matcher GET /api/users/42.",
+  },
+
+  // ============ DTE-2802 — EF Core ============
+  {
+    id: "d-fill-efcore-dbcontext",
+    kind: "fill",
+    title: "DbContext med DbSet",
+    prompt: "Fyll inn DbContext-skjelettet.",
+    topic: "EF Core",
+    template:
+      "public class AppDb : __1__\n{\n    public AppDb(DbContextOptions<AppDb> opts) : base(opts) { }\n\n    public __2__<Book> Books => Set<Book>();\n    public __2__<Forfatter> Forfattere => Set<Forfatter>();\n}",
+    blanks: ["DbContext", "DbSet"],
+    options: ["DbContext", "DbSet", "DataContext", "TableSet", "Table", "Entity", "Db"],
+    explanation:
+      "Arv fra DbContext, eksponer hver tabell som DbSet<T>. EF Core utleder tabellnavnet (vanligvis klassenavnet eller pluralisert).",
+  },
+  {
+    id: "d-order-efcore-migrations",
+    kind: "order",
+    title: "EF Core migrations — første kjøring",
+    prompt: "Sortér stegene for å lage og kjøre første migrasjon.",
+    topic: "EF Core",
+    items: [
+      "Installer EF CLI: dotnet tool install --global dotnet-ef",
+      "Definer entity-klasser + DbContext + DbSet-properties",
+      "Registrer DbContext i Program.cs med AddDbContext + UseSqlServer",
+      "Kjør dotnet ef migrations add InitialCreate — genererer migrasjons-fil",
+      "Kjør dotnet ef database update — applier migrasjonen på DB",
+    ],
+    explanation:
+      "Modellen først, så Program.cs-registrering så CLI vet hvilken context, så migrate-add, så database update. Migrasjons-fila kan inspiseres før du kjører den.",
+  },
+  {
+    id: "d-quiz-efcore-linq-to-sql",
+    kind: "quiz",
+    title: "LINQ til SQL — når går det galt?",
+    prompt: "Velg det mest sannsynlige problemet.",
+    topic: "EF Core",
+    code: `var b = await _db.Books.ToListAsync();
+var f = b.Where(x => x.Tittel.StartsWith(\"A\")).ToList();`,
+    language: "javascript",
+    question: "Hva er problemet med denne koden?",
+    options: [
+      {
+        text: "Henter HELE Books-tabellen til minnet før filtreringen — bør filtrere i SQL",
+        correct: true,
+        rationale:
+          "Første ToListAsync materialiserer alt. Where som kommer etter kjører i minnet. Skriv heller: _db.Books.Where(...).ToListAsync() så blir det WHERE i SQL.",
+      },
+      {
+        text: "Where støttes ikke etter ToListAsync",
+        correct: false,
+        rationale: "Where fungerer fint på List<T>. Problemet er ytelse, ikke kompiler-feil.",
+      },
+      {
+        text: "Bør bruke Find i stedet for Where",
+        correct: false,
+        rationale: "Find tar bare primary key og returnerer én entitet. Ikke aktuelt her.",
+      },
+      {
+        text: "Manglende await",
+        correct: false,
+        rationale: "Awaiten er der på første linjen. Andre linjen jobber på List<Book> som ikke trenger await.",
+      },
+    ],
+  },
+  {
+    id: "d-match-efcore-relations",
+    kind: "match",
+    title: "EF Core relasjoner — fluent API",
+    prompt: "Match relasjonsmønsteret til riktig konfigurasjon.",
+    topic: "EF Core",
+    pairs: [
+      { left: "HasOne + WithMany", right: "Én-til-mange: én forfatter har mange bøker" },
+      { left: "HasMany + WithMany", right: "Mange-til-mange: bøker har mange tags, tags har mange bøker" },
+      { left: "HasOne + WithOne", right: "Én-til-én: bruker har én profil" },
+      { left: "HasForeignKey", right: "Spesifiser hvilken kolonne som er FK" },
+      { left: "OnDelete(Cascade)", right: "Slett barn når foreldre slettes" },
+    ],
+  },
+  {
+    id: "d-quiz-efcore-tracking",
+    kind: "quiz",
+    title: "AsNoTracking — når?",
+    prompt: "Velg riktig bruk.",
+    topic: "EF Core",
+    question: "Når gir AsNoTracking() mening?",
+    options: [
+      {
+        text: "Read-only queries der du ikke skal mutere og lagre entitetene — sparer minne og CPU",
+        correct: true,
+        rationale:
+          "Uten tracking dropper EF Core change detection og identity resolution. 20-40% raskere på store result-sett, og mindre minnebruk.",
+      },
+      {
+        text: "Når du vil lagre endringer — sørger for at de blir lagret",
+        correct: false,
+        rationale:
+          "Motsatt! AsNoTracking betyr at endringer IKKE blir oppdaget av SaveChanges. Du må re-attache entiteten manuelt for å lagre.",
+      },
+      {
+        text: "For å unngå deadlocks i transaksjoner",
+        correct: false,
+        rationale: "Tracking har ingenting med isolasjonsnivå eller låsing å gjøre.",
+      },
+      {
+        text: "Når du jobber med many-to-many relasjoner",
+        correct: false,
+        rationale: "Tracking er ortogonalt til relasjonstype. Det handler om read vs write.",
+      },
+    ],
+  },
+  {
+    id: "d-fill-efcore-include",
+    kind: "fill",
+    title: "Eager loading med Include",
+    prompt: "Fyll inn for å laste bøker med forfatter på én spørring.",
+    topic: "EF Core",
+    template:
+      "var bokerMedForfatter = await _db.Books\n    .__1__(b => b.Forfatter)\n    .AsNoTracking()\n    .__2__();",
+    blanks: ["Include", "ToListAsync"],
+    options: ["Include", "ToListAsync", "Join", "Load", "Where", "Select", "All"],
+    explanation:
+      "Include forteller EF Core å JOIN-e med Forfatter i samme SQL. Uten Include måtte du gjøre en ekstra query per bok (N+1).",
+  },
+
+  // ============ DTE-2802 — Blazor ============
+  {
+    id: "d-quiz-blazor-server-vs-wasm",
+    kind: "quiz",
+    title: "Blazor Server vs WebAssembly",
+    prompt: "Velg riktig sammenligning.",
+    topic: "Blazor",
+    question:
+      "Hva er hoved­forskjellen på Blazor Server og Blazor WebAssembly?",
+    options: [
+      {
+        text: "Server: C# kjører på server, UI-diffs over SignalR. WASM: .NET-runtime lastes ned, C# kjører i browser",
+        correct: true,
+        rationale:
+          "Server-modellen krever stabil forbindelse, gir rask oppstart, har direkte server-tilgang. WASM-modellen tar litt tid å laste men kan fungere offline og er mer SPA-aktig.",
+      },
+      {
+        text: "Server kjører JavaScript, WASM kjører C#",
+        correct: false,
+        rationale: "Begge kjører C#. Server gjør det på server, WASM gjør det i browseren via dotnet.wasm.",
+      },
+      {
+        text: "WASM er kun for desktop, Server er for web",
+        correct: false,
+        rationale: "Begge er web-teknologier. WASM kjører i nettleseren via WebAssembly.",
+      },
+      {
+        text: "Server bruker REST, WASM bruker GraphQL",
+        correct: false,
+        rationale: "Server bruker SignalR (WebSocket) for UI-diffs. WASM kan bruke hva som helst for API-kall.",
+      },
+    ],
+  },
+  {
+    id: "d-match-blazor-anatomy",
+    kind: "match",
+    title: "Blazor-komponent anatomi",
+    prompt: "Match Blazor-direktivet til hva det gjør.",
+    topic: "Blazor",
+    pairs: [
+      { left: "@page \"/counter\"", right: "Gjør komponenten til en rute" },
+      { left: "@code { ... }", right: "C#-kode for komponenten (state, metoder)" },
+      { left: "[Parameter]", right: "Property som mottar verdi fra forelder-komponent" },
+      { left: "@onclick=\"...\"", right: "Bind klikk-event til C#-metode" },
+      { left: "@bind", right: "Two-way databinding mellom input og C#-variabel" },
+      { left: "@inject", right: "Injiser en service fra DI-containeren" },
+    ],
+  },
+  {
+    id: "d-fill-blazor-counter",
+    kind: "fill",
+    title: "Blazor — telleren",
+    prompt: "Fyll inn den klassiske Counter-komponenten.",
+    topic: "Blazor",
+    template:
+      "@__1__ \"/counter\"\n\n<h1>Teller: @count</h1>\n<button @__2__=\"Inc\">+</button>\n\n@__3__ {\n    private int count = 0;\n    private void Inc() => count++;\n}",
+    blanks: ["page", "onclick", "code"],
+    options: ["page", "onclick", "code", "route", "onchange", "bind", "inject", "if"],
+    explanation:
+      "@page deklarerer ruten. @onclick binder klikk-event til metoden. @code inneholder C#-tilstand og logikk.",
+  },
+  {
+    id: "d-quiz-blazor-editform",
+    kind: "quiz",
+    title: "EditForm — hva gir validering?",
+    prompt: "Velg riktig.",
+    topic: "Blazor",
+    question:
+      "Hva må stå inne i en <EditForm> for at validation-attributter på modellen (som [Required]) skal trigge?",
+    options: [
+      {
+        text: "<DataAnnotationsValidator /> som setter opp DataAnnotations-validator basert på modellens attributter",
+        correct: true,
+        rationale:
+          "Uten DataAnnotationsValidator vil EditForm bare gjøre struktur-validering — attributtene blir ignorert. Den må stå inni EditForm.",
+      },
+      {
+        text: "En egen [Validate]-attribute på EditForm-elementet",
+        correct: false,
+        rationale: "Det finnes ikke. Du trenger DataAnnotationsValidator-komponenten inni EditForm.",
+      },
+      {
+        text: "ValidationMessage er nok i seg selv",
+        correct: false,
+        rationale: "ValidationMessage VISER feilmeldinger, men trigger ikke validering. Du må også ha DataAnnotationsValidator.",
+      },
+      {
+        text: "Det kjører automatisk uten ekstra komponenter",
+        correct: false,
+        rationale:
+          "Blazor må eksplisitt fortelles hvilken validation-mekanisme som brukes. DataAnnotationsValidator kobler attributtene inn.",
+      },
+    ],
+  },
 ];
