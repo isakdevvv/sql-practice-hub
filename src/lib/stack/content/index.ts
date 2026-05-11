@@ -12,6 +12,12 @@ import { content as bigO } from "./big-o";
 import { content as rekursjon } from "./rekursjon";
 import { content as sortering } from "./sortering";
 import { content as lenkedeStrukturer } from "./lenkede-strukturer";
+import { content as dte2507 } from "./dte-2507";
+import { content as osiTcpip } from "./osi-tcpip";
+import { content as transportlag } from "./transportlag";
+import { content as kryptografi } from "./kryptografi";
+import { content as tls } from "./tls";
+import { content as nettverkssikkerhet } from "./nettverkssikkerhet";
 import { content as flaskLivssyklus } from "./flask-livssyklus";
 import { content as pythonDrill } from "./python-drill";
 import { content as httpAnatomi } from "./http-anatomi";
@@ -31,6 +37,7 @@ export const TRINN: TrinnContent[] = [
   bytesEncoding, tcpSockets, huskelapp, erMapping, normalisering, htmlJinja, sikkerhet,
   subqueries, nokler,
   algoritmer, bigO, rekursjon, sortering, lenkedeStrukturer,
+  dte2507, osiTcpip, transportlag, kryptografi, tls, nettverkssikkerhet,
   flaskLivssyklus, pythonDrill, httpAnatomi,
   trinn1, trinn2, trinn3, trinn4, trinn5, trinn6, trinn7, trinn8, trinn9, trinn10,
 ];
