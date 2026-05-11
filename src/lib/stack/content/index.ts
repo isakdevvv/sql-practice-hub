@@ -81,6 +81,10 @@ import { content as apiRetrofit } from "./api-retrofit";
 import { content as mysqlVsSqlite } from "./mysql-vs-sqlite";
 import { content as mvcMonster } from "./mvc-monster";
 import { content as laereplan } from "./laereplan";
+import { content as javascriptGrunnlag } from "./javascript-grunnlag";
+import { content as typescript } from "./typescript";
+import { content as reactGrunnlag } from "./react-grunnlag";
+import { content as cssModerne } from "./css-moderne";
 import type { TrinnContent } from "../types";
 
 export const TRINN: TrinnContent[] = [
@@ -100,6 +104,7 @@ export const TRINN: TrinnContent[] = [
   dte2603, kotlinGrunnlag, androidGrunnlag, mvvmArkitektur, korutiner, roomRecycler, apiRetrofit,
   mvcMonster,
   laereplan,
+  javascriptGrunnlag, typescript, reactGrunnlag, cssModerne,
 ];
 
 import { curriculumIndexOf } from "../curriculum";

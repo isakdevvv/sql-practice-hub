@@ -83,7 +83,7 @@ export const SUBJECTS: readonly Subject[] = [
   {
     id: "web",
     label: "Webutvikling (Flask/HTTP)",
-    short: "Flask, Jinja, HTTP, sikkerhet, sesjoner, JWT",
+    short: "Flask, Jinja, HTTP, sikkerhet, sesjoner, JWT, JS/TS/React/CSS",
     topics: [
       "Flask",
       "Flask routing",
@@ -99,6 +99,10 @@ export const SUBJECTS: readonly Subject[] = [
       "CORS",
       "Sikkerhet",
       "Hashing",
+      "JavaScript",
+      "TypeScript",
+      "React",
+      "CSS moderne",
     ],
   },
   {
