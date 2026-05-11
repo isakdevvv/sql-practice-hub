@@ -10,7 +10,8 @@ export type SubjectId =
   | "datakomm"
   | "database"
   | "web"
-  | "verktoy";
+  | "verktoy"
+  | "ml-ai";
 
 export interface Subject {
   id: SubjectId;
@@ -100,6 +101,23 @@ export const SUBJECTS: readonly Subject[] = [
     label: "Verktøy & praksis",
     short: "Git, backup, deployment, generell praksis",
     topics: ["Git", "Backup", "Praktisk", "Verktøy"],
+  },
+  {
+    id: "ml-ai",
+    label: "ML & AI (DTE-2602/2501)",
+    short:
+      "Maskinlæring, supervised/unsupervised, evaluering, nevrale nett, søk og CSP",
+    topics: [
+      "ML-grunnlag",
+      "Supervised learning",
+      "Unsupervised learning",
+      "Nevrale nett",
+      "Modellevaluering",
+      "Søk (AI)",
+      "CSP",
+      "Logisk resonnering",
+      "Bayes",
+    ],
   },
 ] as const;
 

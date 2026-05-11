@@ -1,0 +1,164 @@
+import { Link } from "@tanstack/react-router";
+import { ArrowRight, Brain, GitBranch, TrendingUp, Layers, Activity } from "lucide-react";
+import { StackPageShell } from "@/components/stack/StackPageShell";
+
+type Course = {
+  slug: string;
+  title: string;
+  shortDescription: string;
+  Icon: typeof Brain;
+  status: "ready" | "coming-soon";
+};
+
+const COURSES: Course[] = [
+  {
+    slug: "ml-grunnlag",
+    title: "ML-grunnlag — felles for hele kurset",
+    shortDescription:
+      "Data, features, train/val/test, overfitting vs underfitting, bias-variance, evaluering. Rammeverket alle de andre temaene bruker.",
+    Icon: GitBranch,
+    status: "ready",
+  },
+  {
+    slug: "supervised-learning",
+    title: "Supervised learning",
+    shortDescription:
+      "Regresjon (lineær, logistisk), klassifikasjon (kNN, decision tree, SVM), regulering, hyperparametere.",
+    Icon: TrendingUp,
+    status: "ready",
+  },
+  {
+    slug: "unsupervised-learning",
+    title: "Unsupervised learning",
+    shortDescription:
+      "Klustering (k-means, hierarchical), dimensjons-reduksjon (PCA), anomalydeteksjon.",
+    Icon: Layers,
+    status: "ready",
+  },
+  {
+    slug: "nn-intro",
+    title: "Innføring i nevrale nett",
+    shortDescription:
+      "Perceptron, aktiveringsfunksjoner, gradient descent, backpropagation — intuisjon.",
+    Icon: Activity,
+    status: "ready",
+  },
+  {
+    slug: "ml-etikk",
+    title: "Etikk og praktisk ML",
+    shortDescription:
+      "Bias i data, fairness, tolkning, reproducerbarhet, prosjekt-arbeidsflyt.",
+    Icon: Brain,
+    status: "coming-soon",
+  },
+];
+
+export function Dte2602Hub() {
+  return (
+    <StackPageShell title="DTE-2602 Introduksjon maskinlæring og AI" group="eksamen">
+      <div className="container mx-auto px-4 py-12 max-w-4xl">
+        <div className="mb-10">
+          <div className="text-xs uppercase tracking-wider text-brand font-semibold mb-2">
+            DTE-2602 · 10 stp · Teknisk spesialisering
+          </div>
+          <h1 className="text-4xl font-bold tracking-tight">
+            Introduksjon maskinlæring og AI
+          </h1>
+          <p className="mt-3 text-muted-foreground max-w-2xl">
+            Mini-kurs som dekker UiT-pensum: hvordan ML faktisk fungerer fra rådata til
+            evaluert modell. Hver del har teori, drag-oppgaver og kjørbar kode i
+            nettleseren via Pyodide.
+          </p>
+        </div>
+
+        <section className="mb-10">
+          <h2 className="text-xl font-semibold mb-3">ML-pipeline — én side</h2>
+          <p className="text-sm text-muted-foreground mb-4">
+            Alle ML-prosjekter følger samme grunnflyt. Lær stegene utenat — så blir
+            algoritme-valg den ENE delen som varierer.
+          </p>
+          <div className="overflow-hidden rounded-lg border border-border">
+            <table className="w-full text-sm">
+              <thead className="bg-muted/50">
+                <tr>
+                  <th className="text-left font-semibold px-4 py-2 w-32">Steg</th>
+                  <th className="text-left font-semibold px-4 py-2">Hva du gjør</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr className="border-t border-border"><td className="px-4 py-3 font-mono text-brand">1. Data</td><td className="px-4 py-3 text-muted-foreground">Samle inn, rens, håndter NaN/outliers</td></tr>
+                <tr className="border-t border-border"><td className="px-4 py-3 font-mono text-brand">2. Features</td><td className="px-4 py-3 text-muted-foreground">Velg/skap kolonner som bærer signal. Skalér.</td></tr>
+                <tr className="border-t border-border"><td className="px-4 py-3 font-mono text-brand">3. Split</td><td className="px-4 py-3 text-muted-foreground">Train / val / test — train_test_split(stratify=y)</td></tr>
+                <tr className="border-t border-border"><td className="px-4 py-3 font-mono text-brand">4. Model</td><td className="px-4 py-3 text-muted-foreground">Velg algoritme. Tren på TRAIN-set.</td></tr>
+                <tr className="border-t border-border"><td className="px-4 py-3 font-mono text-brand">5. Tune</td><td className="px-4 py-3 text-muted-foreground">Velg hyperparametere på VAL-set (eller cross-val)</td></tr>
+                <tr className="border-t border-border"><td className="px-4 py-3 font-mono text-brand">6. Eval</td><td className="px-4 py-3 text-muted-foreground">Mål på TEST-set: accuracy/precision/recall/RMSE</td></tr>
+                <tr className="border-t border-border"><td className="px-4 py-3 font-mono text-brand">7. Deploy</td><td className="px-4 py-3 text-muted-foreground">Lagre modell, integrer i app, overvåk drift</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p className="mt-3 text-xs text-muted-foreground">
+            <strong>Viktigste regel:</strong> rør ALDRI TEST-settet før helt på slutten.
+            Bruker du det til hyperparameter-tuning, har du «lekket» informasjon og
+            modellen din vil prestere dårligere i produksjon.
+          </p>
+        </section>
+
+        <section className="mb-10">
+          <h2 className="text-xl font-semibold mb-3">Mini-kurs</h2>
+          <div className="grid sm:grid-cols-2 gap-3">
+            {COURSES.map((c) => {
+              const isReady = c.status === "ready";
+              const Icon = c.Icon;
+              if (!isReady) {
+                return (
+                  <div key={c.slug} className="rounded-xl border border-border bg-card/30 p-5 opacity-60">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Icon className="h-4 w-4 text-muted-foreground" />
+                      <h3 className="font-semibold text-foreground leading-tight">{c.title}</h3>
+                    </div>
+                    <p className="text-sm text-muted-foreground leading-relaxed">{c.shortDescription}</p>
+                  </div>
+                );
+              }
+              return (
+                <Link
+                  key={c.slug}
+                  to="/stack/$slug"
+                  params={{ slug: c.slug }}
+                  className="group rounded-xl border border-border bg-card hover:border-brand/40 p-5 transition-colors block"
+                >
+                  <div className="flex items-center gap-2 mb-2">
+                    <Icon className="h-4 w-4 text-brand" />
+                    <h3 className="font-semibold text-foreground leading-tight">{c.title}</h3>
+                  </div>
+                  <p className="text-sm text-muted-foreground leading-relaxed">{c.shortDescription}</p>
+                  <div className="mt-3 flex items-center text-xs text-muted-foreground group-hover:text-foreground transition-colors">
+                    Åpne
+                    <ArrowRight className="h-3.5 w-3.5 ml-1 group-hover:translate-x-0.5 transition-transform" />
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+        </section>
+
+        <div className="mt-10 rounded-xl border border-border bg-card p-5 text-sm">
+          <h2 className="font-semibold mb-2">Hvor passer dette inn?</h2>
+          <ul className="space-y-1.5 text-muted-foreground list-disc pl-5">
+            <li>
+              <strong className="text-foreground">Drag-oppgaver:</strong> filter på «ML & AI» i{" "}
+              <Link to="/drag" className="text-brand hover:underline">/drag</Link>.
+            </li>
+            <li>
+              <strong className="text-foreground">Praktisk kode:</strong> kjør sklearn-modeller direkte i browser på{" "}
+              <Link to="/python" className="text-brand hover:underline">/python</Link>.
+            </li>
+            <li>
+              <strong className="text-foreground">DTE-2501 AI Methods:</strong> kommer i neste runde — søk, CSP, logikk, Bayes.
+            </li>
+          </ul>
+        </div>
+      </div>
+    </StackPageShell>
+  );
+}
