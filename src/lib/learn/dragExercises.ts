@@ -1936,7 +1936,7 @@ __5__ endfor __6__
 
   // ============= HTTP-METODER (kap. 7) =============
   {
-    id: "d-match-http-methods",
+    id: "d-match-http-methods-rest",
     kind: "match",
     title: "HTTP-metoder — bruksområde",
     prompt: "Match hver HTTP-metode til vanlig bruk i et REST-API.",
@@ -3331,7 +3331,7 @@ __5__ endfor __6__
       "DNS → TCP → TLS → HTTP er fire separate trinn FØR ditt request engang når Flask. Hver legger til litt latency — derfor er HTTP/2 og HTTP/3 designet for å redusere oppstartstiden.",
   },
   {
-    id: "d-match-http-methods",
+    id: "d-match-http-methods-semantic",
     kind: "match",
     title: "HTTP-metoder og deres formål",
     prompt: "Match metoden til riktig semantikk.",
