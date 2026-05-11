@@ -48,6 +48,13 @@ import { content as trinn7 } from "./trinn-7-bytes-dyp";
 import { content as trinn8 } from "./trinn-8-python-er-c";
 import { content as trinn9 } from "./trinn-9-syscalls-dyp";
 import { content as trinn10 } from "./trinn-10-flask-dyp";
+import { content as dte2603 } from "./dte-2603";
+import { content as kotlinGrunnlag } from "./kotlin-grunnlag";
+import { content as androidGrunnlag } from "./android-grunnlag";
+import { content as mvvmArkitektur } from "./mvvm-arkitektur";
+import { content as korutiner } from "./korutiner";
+import { content as roomRecycler } from "./room-recycler";
+import { content as apiRetrofit } from "./api-retrofit";
 import type { TrinnContent } from "../types";
 
 export const TRINN: TrinnContent[] = [
@@ -60,6 +67,7 @@ export const TRINN: TrinnContent[] = [
   flaskLivssyklus, pythonDrill, httpAnatomi,
   dte2505, osGrunnlag, linuxBruk, shellScripting, brukereRettigheter, virtualisering,
   trinn1, trinn2, trinn3, trinn4, trinn5, trinn6, trinn7, trinn8, trinn9, trinn10,
+  dte2603, kotlinGrunnlag, androidGrunnlag, mvvmArkitektur, korutiner, roomRecycler, apiRetrofit,
 ];
 
 // Bare ferdige trinn er offentlig synlige — stubs (`status: "stub"`)

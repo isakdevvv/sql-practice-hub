@@ -12,7 +12,8 @@ export type SubjectId =
   | "web"
   | "verktoy"
   | "ml-ai"
-  | "os";
+  | "os"
+  | "mobil";
 
 export interface Subject {
   id: SubjectId;
@@ -132,6 +133,20 @@ export const SUBJECTS: readonly Subject[] = [
       "Logisk resonnering",
       "Planlegging",
       "Bayes",
+    ],
+  },
+  {
+    id: "mobil",
+    label: "Mobil (DTE-2603)",
+    short: "Kotlin, Android, MVVM, korutiner, Room, Retrofit",
+    topics: [
+      "Kotlin",
+      "Android livssyklus",
+      "MVVM",
+      "Korutiner",
+      "Room",
+      "RecyclerView",
+      "Retrofit",
     ],
   },
 ] as const;
