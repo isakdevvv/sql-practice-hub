@@ -41,6 +41,27 @@ function LarHub() {
           </p>
         </div>
 
+        {/* Topp-CTA: hele læreplanen */}
+        <Link
+          to="/stack/$slug"
+          params={{ slug: "laereplan" }}
+          className="block mb-6 rounded-xl border-2 border-brand/40 bg-gradient-to-br from-brand/5 to-success/5 hover:border-brand transition-colors p-5"
+        >
+          <div className="flex items-start justify-between gap-3 flex-wrap mb-2">
+            <h2 className="text-xl font-bold text-foreground">
+              Læreplan — fra transistor til deploy
+            </h2>
+            <span className="text-[10px] uppercase tracking-wider font-semibold px-1.5 py-0.5 rounded bg-brand text-brand-foreground">
+              start her
+            </span>
+          </div>
+          <p className="text-sm text-muted-foreground leading-relaxed">
+            Hele plattformen organisert i faser, basert på hvordan MIT 6.*, Stanford CS,
+            CMU 15.* og ETH bygger opp en CS-bachelor. Spor fremgangen din per fase, se
+            anbefalt neste-steg, og forstå hvorfor hver del kommer der den gjør.
+          </p>
+        </Link>
+
         <div className="grid sm:grid-cols-2 gap-3">
           <HubCard
             href="/kurs"
