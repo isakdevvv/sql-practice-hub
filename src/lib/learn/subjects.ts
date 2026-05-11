@@ -11,7 +11,8 @@ export type SubjectId =
   | "database"
   | "web"
   | "verktoy"
-  | "ml-ai";
+  | "ml-ai"
+  | "os";
 
 export interface Subject {
   id: SubjectId;
@@ -101,6 +102,19 @@ export const SUBJECTS: readonly Subject[] = [
     label: "Verktøy & praksis",
     short: "Git, backup, deployment, generell praksis",
     topics: ["Git", "Backup", "Praktisk", "Verktøy"],
+  },
+  {
+    id: "os",
+    label: "OS & Linux (DTE-2505)",
+    short:
+      "Operativsystem-grunnlag, Linux i bruk, shell scripting, brukere/rettigheter, virtualisering",
+    topics: [
+      "OS-grunnlag",
+      "Linux",
+      "Shell scripting",
+      "Brukere & rettigheter",
+      "Virtualisering",
+    ],
   },
   {
     id: "ml-ai",

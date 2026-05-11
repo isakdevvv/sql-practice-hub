@@ -26,6 +26,12 @@ import { content as nnIntro } from "./nn-intro";
 import { content as flaskLivssyklus } from "./flask-livssyklus";
 import { content as pythonDrill } from "./python-drill";
 import { content as httpAnatomi } from "./http-anatomi";
+import { content as dte2505 } from "./dte-2505";
+import { content as osGrunnlag } from "./os-grunnlag";
+import { content as linuxBruk } from "./linux-bruk";
+import { content as shellScripting } from "./shell-scripting";
+import { content as brukereRettigheter } from "./brukere-rettigheter";
+import { content as virtualisering } from "./virtualisering";
 import { content as trinn1 } from "./trinn-1-transistor";
 import { content as trinn2 } from "./trinn-2-nand-porter";
 import { content as trinn3 } from "./trinn-3-adders";
@@ -45,6 +51,7 @@ export const TRINN: TrinnContent[] = [
   dte2507, osiTcpip, transportlag, kryptografi, tls, nettverkssikkerhet,
   dte2602, mlGrunnlag, supervisedLearning, unsupervisedLearning, nnIntro,
   flaskLivssyklus, pythonDrill, httpAnatomi,
+  dte2505, osGrunnlag, linuxBruk, shellScripting, brukereRettigheter, virtualisering,
   trinn1, trinn2, trinn3, trinn4, trinn5, trinn6, trinn7, trinn8, trinn9, trinn10,
 ];
 
