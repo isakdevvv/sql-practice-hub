@@ -14,8 +14,32 @@ import {
   resetDragProgress,
   type DragProgress,
 } from "@/lib/learn/dragProgress";
+import {
+  SUBJECTS,
+  countBySubject,
+  exerciseInSubject,
+  type SubjectId,
+} from "@/lib/learn/subjects";
 import { cn } from "@/lib/utils";
 import { ChevronLeft, ChevronRight, Check, Trophy } from "lucide-react";
+
+type SubjectFilter = "all" | SubjectId;
+
+const SUBJECT_STORAGE_KEY = "drag-subject-filter-v1";
+
+function loadSubjectFilter(): SubjectFilter {
+  if (typeof window === "undefined") return "all";
+  const v = window.localStorage.getItem(SUBJECT_STORAGE_KEY);
+  if (!v) return "all";
+  if (v === "all") return "all";
+  if (SUBJECTS.some((s) => s.id === v)) return v as SubjectId;
+  return "all";
+}
+
+function saveSubjectFilter(v: SubjectFilter) {
+  if (typeof window === "undefined") return;
+  window.localStorage.setItem(SUBJECT_STORAGE_KEY, v);
+}
 
 export const Route = createFileRoute("/drag")({
   head: () => ({
@@ -44,7 +68,18 @@ type KindFilter = "all" | "match" | "order" | "fill" | "crowsfoot" | "quiz";
 function DragPage() {
   const [activeId, setActiveId] = useState(DRAG_EXERCISES[0]?.id ?? "");
   const [kindFilter, setKindFilter] = useState<KindFilter>("all");
+  const [subjectFilter, setSubjectFilterState] = useState<SubjectFilter>("all");
   const [progress, setProgress] = useState<DragProgress>(() => loadDragProgress());
+
+  // Hydrate subject filter from localStorage on mount (avoids SSR mismatch).
+  useEffect(() => {
+    setSubjectFilterState(loadSubjectFilter());
+  }, []);
+
+  function setSubjectFilter(v: SubjectFilter) {
+    setSubjectFilterState(v);
+    saveSubjectFilter(v);
+  }
 
   // Re-read progress from localStorage when the user switches exercise or
   // explicitly when a child component reports a solve via onSolved.
@@ -66,15 +101,29 @@ function DragPage() {
     setProgress(resetDragProgress());
   }
 
-  const solvedCount = Object.keys(progress.solved).length;
-  const total = DRAG_EXERCISES.length;
+  const subjectCounts = useMemo(() => countBySubject(DRAG_EXERCISES), []);
+
+  // Exercises after subject filter — used for both kind-counts and the final list.
+  const inSubject = useMemo(
+    () =>
+      subjectFilter === "all"
+        ? DRAG_EXERCISES
+        : DRAG_EXERCISES.filter((e) => exerciseInSubject(e, subjectFilter)),
+    [subjectFilter],
+  );
+
+  const solvedCount = useMemo(
+    () => inSubject.filter((e) => progress.solved[e.id]).length,
+    [inSubject, progress.solved],
+  );
+  const total = inSubject.length;
 
   const filtered = useMemo(
     () =>
       kindFilter === "all"
-        ? DRAG_EXERCISES
-        : DRAG_EXERCISES.filter((e) => e.kind === kindFilter),
-    [kindFilter],
+        ? inSubject
+        : inSubject.filter((e) => e.kind === kindFilter),
+    [inSubject, kindFilter],
   );
 
   // If active exercise no longer matches filter, snap to first
@@ -129,23 +178,69 @@ function DragPage() {
           </div>
         </div>
 
-        <div className="flex flex-wrap gap-2 mb-5">
-          {(["all", "match", "order", "fill", "crowsfoot", "quiz"] as const).map((k) => (
+        <div className="mb-4">
+          <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold mb-1.5">
+            Fag
+          </div>
+          <div className="flex flex-wrap gap-2">
             <button
-              key={k}
-              onClick={() => setKindFilter(k)}
+              onClick={() => setSubjectFilter("all")}
               className={cn(
-                "rounded-full border px-3 py-1 text-xs transition-colors",
-                kindFilter === k
+                "rounded-md border px-3 py-1.5 text-xs transition-colors",
+                subjectFilter === "all"
                   ? "border-brand bg-brand/10 text-brand"
                   : "border-border text-muted-foreground hover:bg-accent",
               )}
+              title="Vis alle fag samtidig"
             >
-              {k === "all" ? "Alle" : KIND_LABEL[k]} (
-              {k === "all" ? DRAG_EXERCISES.length : DRAG_EXERCISES.filter((e) => e.kind === k).length}
-              )
+              Alle fag ({DRAG_EXERCISES.length})
             </button>
-          ))}
+            {SUBJECTS.map((s) => {
+              const count = subjectCounts[s.id] ?? 0;
+              if (count === 0) return null;
+              return (
+                <button
+                  key={s.id}
+                  onClick={() => setSubjectFilter(s.id)}
+                  className={cn(
+                    "rounded-md border px-3 py-1.5 text-xs transition-colors",
+                    subjectFilter === s.id
+                      ? "border-brand bg-brand/10 text-brand"
+                      : "border-border text-muted-foreground hover:bg-accent",
+                  )}
+                  title={s.short}
+                >
+                  {s.label} ({count})
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        <div className="flex flex-wrap gap-2 mb-5">
+          <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold mr-1 self-center">
+            Type
+          </div>
+          {(["all", "match", "order", "fill", "crowsfoot", "quiz"] as const).map((k) => {
+            const count =
+              k === "all" ? inSubject.length : inSubject.filter((e) => e.kind === k).length;
+            return (
+              <button
+                key={k}
+                onClick={() => setKindFilter(k)}
+                disabled={count === 0}
+                className={cn(
+                  "rounded-full border px-3 py-1 text-xs transition-colors",
+                  kindFilter === k
+                    ? "border-brand bg-brand/10 text-brand"
+                    : "border-border text-muted-foreground hover:bg-accent",
+                  count === 0 && "opacity-40 cursor-not-allowed",
+                )}
+              >
+                {k === "all" ? "Alle" : KIND_LABEL[k]} ({count})
+              </button>
+            );
+          })}
         </div>
 
         <div className="grid md:grid-cols-[240px_1fr] gap-6">
