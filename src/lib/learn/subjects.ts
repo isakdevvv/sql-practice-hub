@@ -15,7 +15,8 @@ export type SubjectId =
   | "os"
   | "webapps2"
   | "systemutvikling"
-  | "api-prosjekt";
+  | "api-prosjekt"
+  | "mobil";
 
 export interface Subject {
   id: SubjectId;
@@ -165,6 +166,20 @@ export const SUBJECTS: readonly Subject[] = [
       "API-kontrakt",
       "API-testing",
       "API-deploy",
+    ],
+  },
+  {
+    id: "mobil",
+    label: "Mobil (DTE-2603)",
+    short: "Kotlin, Android, MVVM, korutiner, Room, Retrofit",
+    topics: [
+      "Kotlin",
+      "Android livssyklus",
+      "MVVM",
+      "Korutiner",
+      "Room",
+      "RecyclerView",
+      "Retrofit",
     ],
   },
 ] as const;

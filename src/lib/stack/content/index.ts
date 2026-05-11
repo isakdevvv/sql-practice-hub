@@ -71,6 +71,13 @@ import { content as apiArkitektur } from "./api-arkitektur";
 import { content as apiKontrakt } from "./api-kontrakt";
 import { content as apiTesting } from "./api-testing";
 import { content as apiDeploy } from "./api-deploy";
+import { content as dte2603 } from "./dte-2603";
+import { content as kotlinGrunnlag } from "./kotlin-grunnlag";
+import { content as androidGrunnlag } from "./android-grunnlag";
+import { content as mvvmArkitektur } from "./mvvm-arkitektur";
+import { content as korutiner } from "./korutiner";
+import { content as roomRecycler } from "./room-recycler";
+import { content as apiRetrofit } from "./api-retrofit";
 import type { TrinnContent } from "../types";
 
 export const TRINN: TrinnContent[] = [
@@ -87,6 +94,7 @@ export const TRINN: TrinnContent[] = [
   dte2502, backpropDyp, cnn, regularisering, optimering, pytorchTf,
   dte2604, suMetodikker, brukerhistorier, uml, suProsjektPraksis,
   apiProsjekt, apiPlanlegging, apiArkitektur, apiKontrakt, apiTesting, apiDeploy,
+  dte2603, kotlinGrunnlag, androidGrunnlag, mvvmArkitektur, korutiner, roomRecycler, apiRetrofit,
 ];
 
 // Bare ferdige trinn er offentlig synlige — stubs (`status: "stub"`)
