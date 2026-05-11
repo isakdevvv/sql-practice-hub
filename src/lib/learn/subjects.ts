@@ -12,7 +12,9 @@ export type SubjectId =
   | "web"
   | "verktoy"
   | "ml-ai"
-  | "os";
+  | "os"
+  | "systemutvikling"
+  | "api-prosjekt";
 
 export interface Subject {
   id: SubjectId;
@@ -132,6 +134,25 @@ export const SUBJECTS: readonly Subject[] = [
       "Logisk resonnering",
       "Planlegging",
       "Bayes",
+    ],
+  },
+  {
+    id: "systemutvikling",
+    label: "Systemutvikling (DTE-2604)",
+    short: "Smidig, Scrum, brukerhistorier, UML, prosjekt-praksis",
+    topics: ["Smidig", "Scrum", "Brukerhistorier", "UML", "Estimering", "Code review"],
+  },
+  {
+    id: "api-prosjekt",
+    label: "API-prosjekt fra A til Å",
+    short:
+      "Planlegging, arkitektur, testing, CI/CD, deploy, dokumentasjon",
+    topics: [
+      "API-planlegging",
+      "API-arkitektur",
+      "API-kontrakt",
+      "API-testing",
+      "API-deploy",
     ],
   },
 ] as const;

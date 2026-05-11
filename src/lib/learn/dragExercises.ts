@@ -10424,4 +10424,905 @@ __5__ endfor __6__
       },
     ],
   },
+
+  // ============================================================
+  // DTE-2604 SYSTEMUTVIKLING (20 exercises)
+  // ============================================================
+
+  // ---- Smidig / Scrum (7) ----
+  {
+    id: "d-match-scrum-events",
+    kind: "match",
+    title: "Scrum-events — formål",
+    prompt: "Match hver Scrum-event til hovedformålet.",
+    topic: "Scrum",
+    pairs: [
+      { left: "Sprint Planning", right: "Bestemme hva som skal leveres denne sprinten og hvordan" },
+      { left: "Daily Scrum", right: "Teamet koordinerer arbeidet for de neste 24 timene" },
+      { left: "Sprint Review", right: "Demonstrere inkrementet for stakeholders og samle feedback" },
+      { left: "Retrospective", right: "Reflektere over prosessen og velge forbedringer" },
+      { left: "Sprint", right: "Selve tidsboksen — 1-4 uker hvor arbeidet utføres" },
+    ],
+    explanation:
+      "Hvert event har ETT formål. Daily Scrum er IKKE statusrapport til SM — det er teamets eget koordineringsmøte.",
+  },
+  {
+    id: "d-match-scrum-roller",
+    kind: "match",
+    title: "Scrum-roller — ansvar",
+    prompt: "Match hver rolle til kjerneansvaret.",
+    topic: "Scrum",
+    pairs: [
+      { left: "Product Owner", right: "Maksimerer verdi — eier og prioriterer produktbackloggen" },
+      { left: "Scrum Master", right: "Coacher prosessen, fjerner hindringer for teamet" },
+      { left: "Utviklingsteam", right: "Selvstyrt gruppe som leverer inkrementet hver sprint" },
+      { left: "Stakeholder", right: "Bruker/kunde/forretning som gir input og mottar demo" },
+    ],
+    explanation:
+      "Scrum Master er IKKE prosjektleder. PO eier prioritering, teamet eier HVORDAN.",
+  },
+  {
+    id: "d-quiz-sprint-vs-kanban",
+    kind: "quiz",
+    title: "Sprint vs Kanban — hvilket når?",
+    prompt: "Velg riktig.",
+    topic: "Smidig",
+    question:
+      "Et drift-team får inn supportsaker kontinuerlig — mange varianter, varierende størrelse. Hvilken arbeidsform passer best?",
+    options: [
+      {
+        text: "Kanban — flyt-basert med WIP-limits, ingen tidsboks",
+        correct: true,
+        rationale:
+          "Kanban håndterer kontinuerlig innstrømming uten å måtte sprint-planlegge. WIP-limits gir likevel begrensning og synlighet.",
+      },
+      {
+        text: "Scrum med 2-ukers sprinter og fast sprint-mål",
+        correct: false,
+        rationale:
+          "Scrum er låst i sprinten — endringer mid-sprint bryter mønsteret. Dårlig fit for kontinuerlig variert innkomming.",
+      },
+      {
+        text: "Fossefall — definer alle saker først",
+        correct: false,
+        rationale: "Krever stabile, kjente krav. Drift har det stikk motsatte.",
+      },
+      {
+        text: "Ingen prosess — bare jobb",
+        correct: false,
+        rationale: "Uten WIP-limits eller prioritering blir det kaos. Kanban gir nettopp lette regler for denne situasjonen.",
+      },
+    ],
+  },
+  {
+    id: "d-quiz-kanban-wip",
+    kind: "quiz",
+    title: "Kanban — hva gjør WIP-limits?",
+    prompt: "Velg riktig.",
+    topic: "Smidig",
+    question:
+      "Et Kanban-team setter WIP=3 på «I arbeid»-kolonnen. Hva er hovedformålet?",
+    options: [
+      {
+        text: "Tvinge teamet til å ferdigstille før de starter noe nytt — redusere lead time",
+        correct: true,
+        rationale:
+          "WIP-limits hindrer multitasking. Flere ting halvferdig samtidig = lengre total leveringstid. Begrens parallellt, øk gjennomstrømming.",
+      },
+      {
+        text: "Begrense antall utviklere i teamet til 3",
+        correct: false,
+        rationale: "WIP gjelder ARBEID, ikke folk. Et team på 5 kan ha WIP=3.",
+      },
+      {
+        text: "Tillate maks 3 bugs i produksjon samtidig",
+        correct: false,
+        rationale: "WIP er på Kanban-tavlen, ikke på prod-feil.",
+      },
+      {
+        text: "Maks 3 sprinter per kvartal",
+        correct: false,
+        rationale: "Kanban har ikke sprinter — det er flyt.",
+      },
+    ],
+  },
+  {
+    id: "d-match-xp-praksiser",
+    kind: "match",
+    title: "XP-praksiser",
+    prompt: "Match hver XP-praksis til hva den innebærer.",
+    topic: "Smidig",
+    pairs: [
+      { left: "TDD", right: "Skriv test først, så minimal kode som passerer, så refaktorer" },
+      { left: "Pair programming", right: "To utviklere, én tastatur — kontinuerlig review" },
+      { left: "Continuous integration", right: "Merge til main flere ganger daglig med automatiske tester" },
+      { left: "Refactoring", right: "Forbedre kodestruktur uten å endre atferd" },
+      { left: "Collective ownership", right: "Alle kan endre all kode — ingen «det er Petters modul»" },
+    ],
+  },
+  {
+    id: "d-order-tdd-sykl",
+    kind: "order",
+    title: "TDD-syklusen i riktig rekkefølge",
+    prompt: "Dra stegene i Red-Green-Refactor i riktig rekkefølge.",
+    topic: "Smidig",
+    items: [
+      "Skriv en test for funksjonalitet som ikke finnes",
+      "Kjør testen — den feiler (RED)",
+      "Skriv minimal kode som får testen til å passere",
+      "Kjør testen — den passerer (GREEN)",
+      "Rydd opp i koden uten å bryte testen (REFACTOR)",
+      "Kjør testen igjen — fortsatt grønn",
+    ],
+    explanation:
+      "Red sikrer at testen faktisk tester noe. Green er den minimale veien dit. Refactor gir kvaliteten — uten testen kunne du ikke vite at du brøt noe.",
+  },
+  {
+    id: "d-fill-fibonacci-points",
+    kind: "fill",
+    title: "Story points — Fibonacci-skalaen",
+    prompt: "Dra inn riktige tall fra modifisert Fibonacci-skalaen.",
+    topic: "Estimering",
+    template:
+      "Skalaen: 1, 2, __1__, __2__, __3__, __4__, 21\nTriviell endring: __5__ SP\nVanlig dag: __6__ SP\nMÅ splittes: __7__ SP",
+    blanks: ["3", "5", "8", "13", "1", "5", "21"],
+    options: ["1", "2", "3", "5", "8", "13", "21", "100", "0"],
+    explanation:
+      "Modifisert Fibonacci: avstandene øker eksponentielt fordi usikkerheten gjør det. 21+ er for stort til å estimere — splitt!",
+  },
+
+  // ---- Brukerhistorier (5) ----
+  {
+    id: "d-fill-brukerhistorie-format",
+    kind: "fill",
+    title: "Brukerhistorie — som-vil-for-å-formatet",
+    prompt: "Fyll inn slot-ene i en brukerhistorie.",
+    topic: "Brukerhistorier",
+    template:
+      "Som __1__\nvil jeg __2__\nfor å __3__.",
+    blanks: ["<rolle>", "<handling>", "<verdi/mål>"],
+    options: ["<rolle>", "<handling>", "<verdi/mål>", "<teknologi>", "<sprint>", "<estimat>", "<dato>"],
+    explanation:
+      "Trekant: rolle (HVEM), handling (HVA), verdi (HVORFOR). «For å»-delen sikrer at vi bygger noe verdifullt — ikke bare en teknisk feature.",
+  },
+  {
+    id: "d-fill-invest",
+    kind: "fill",
+    title: "INVEST-kriteriene",
+    prompt: "Fyll inn hva hver bokstav står for.",
+    topic: "Brukerhistorier",
+    template:
+      "I = __1__ (kan leveres uavhengig)\nN = __2__ (detaljer åpne for samtale)\nV = __3__ (gir verdi)\nE = __4__ (lar seg estimere)\nS = __5__ (passer i én sprint)\nT = __6__ (har målbare AC)",
+    blanks: ["Independent", "Negotiable", "Valuable", "Estimable", "Small", "Testable"],
+    options: [
+      "Independent", "Negotiable", "Valuable", "Estimable", "Small", "Testable",
+      "Important", "Necessary", "Verbose", "Engaging", "Strict", "Tangible",
+    ],
+  },
+  {
+    id: "d-match-ac-gherkin",
+    kind: "match",
+    title: "Akseptansekriterier (Gherkin)",
+    prompt: "Match hvert Gherkin-nøkkelord til hva det gjør.",
+    topic: "Brukerhistorier",
+    pairs: [
+      { left: "Given", right: "Beskriver utgangstilstanden før hendelsen" },
+      { left: "When", right: "Beskriver hendelsen eller handlingen som testes" },
+      { left: "Then", right: "Beskriver forventet resultat etter hendelsen" },
+      { left: "And", right: "Legger til ekstra betingelser i samme blokk" },
+    ],
+    explanation:
+      "Gherkin: GIVEN setter scenen, WHEN er triggeren, THEN er forventningen. Lesbart for ikke-tekniske interessenter.",
+  },
+  {
+    id: "d-order-story-splitting",
+    kind: "order",
+    title: "Splitting av historie — i CRUD-rekkefølge",
+    prompt:
+      "Du har en stor «Administrer brukere»-historie. Splitt i CRUD og dra i naturlig leveringsrekkefølge.",
+    topic: "Brukerhistorier",
+    items: [
+      "Opprett bruker (POST /brukere)",
+      "List brukere (GET /brukere)",
+      "Vis bruker (GET /brukere/{id})",
+      "Oppdater bruker (PATCH /brukere/{id})",
+      "Slett bruker (DELETE /brukere/{id})",
+    ],
+    explanation:
+      "Lever én ende-til-ende verdistripe først (opprett+vis), så funksjonalitet for å se flere (list), så endring (update), så slett. Hver bit gir verdi alene.",
+  },
+  {
+    id: "d-quiz-godt-vs-darlig-historie",
+    kind: "quiz",
+    title: "Hva er en god brukerhistorie?",
+    prompt: "Velg den BESTE brukerhistorien.",
+    topic: "Brukerhistorier",
+    question:
+      "Hvilken av disse oppfyller INVEST best?",
+    options: [
+      {
+        text: "Som butikkeier vil jeg se totalsalg per produkt forrige måned for å bestemme hvilke produkter jeg kjøper inn mer av",
+        correct: true,
+        rationale:
+          "Tydelig rolle, konkret handling, verdi forklart. Liten nok til én sprint, testbar (man kan se rapporten).",
+      },
+      {
+        text: "Implementere salgsrapport-modul",
+        correct: false,
+        rationale: "Teknisk task. Ingen rolle, ingen verdi.",
+      },
+      {
+        text: "Som bruker vil jeg ha alt jeg trenger for å gjøre alt jeg vil",
+        correct: false,
+        rationale: "For stor og vag. Bryter Small og Testable.",
+      },
+      {
+        text: "Refaktorere bestillingstabellen i databasen",
+        correct: false,
+        rationale: "Teknisk gjeld, ikke brukerverdi. Tas separat.",
+      },
+    ],
+  },
+
+  // ---- UML (4) ----
+  {
+    id: "d-match-uml-diagram-formaal",
+    kind: "match",
+    title: "UML-diagram til formål",
+    prompt: "Match hver UML-diagramtype til hva den brukes til.",
+    topic: "UML",
+    pairs: [
+      { left: "Use case-diagram", right: "Vise hvilke aktører som kan gjøre hvilke ting i systemet" },
+      { left: "Klassediagram", right: "Vise OO-strukturen — klasser, attributter, relasjoner" },
+      { left: "Sekvensdiagram", right: "Vise meldingsutveksling mellom objekter over tid i ett scenario" },
+      { left: "Aktivitetsdiagram", right: "Vise en prosess-flyt med beslutninger og parallellitet" },
+    ],
+  },
+  {
+    id: "d-match-uml-relasjoner",
+    kind: "match",
+    title: "Klassediagram — relasjonssymboler",
+    prompt: "Match hvert relasjonssymbol til hva det betyr.",
+    topic: "UML",
+    pairs: [
+      { left: "Vanlig strek", right: "Assosiasjon — generell sammenheng" },
+      { left: "◇── (hvit diamant)", right: "Aggregering — «består av», svak (delen kan leve uten helheten)" },
+      { left: "◆── (svart diamant)", right: "Komposisjon — sterk «består av» (delen dør med helheten)" },
+      { left: "──▷ (åpen trekant)", right: "Generalisering / arv — «er en»" },
+      { left: "─ ─ ▷ (stiplet)", right: "Avhengighet — bruker, men eier ikke" },
+    ],
+  },
+  {
+    id: "d-quiz-uml-multiplisitet",
+    kind: "quiz",
+    title: "Klassediagram — multiplisitet",
+    prompt: "Velg riktig.",
+    topic: "UML",
+    question:
+      "Du tegner Kunde 1 ────── 0..* Bestilling. Hva betyr det?",
+    options: [
+      {
+        text: "En kunde har null, én eller flere bestillinger, og en bestilling tilhører nøyaktig én kunde",
+        correct: true,
+        rationale:
+          "1 (tett ved Kunde) sier «én kunde per bestilling». 0..* (tett ved Bestilling) sier «en kunde kan ha 0, 1 eller flere».",
+      },
+      {
+        text: "En kunde har nøyaktig én bestilling",
+        correct: false,
+        rationale: "0..* betyr null, én eller flere — ikke nøyaktig én.",
+      },
+      {
+        text: "En bestilling kan ha mange kunder",
+        correct: false,
+        rationale: "Multiplisitet leses motsatt vei — 1 ved Kunde betyr 1 kunde per bestilling.",
+      },
+      {
+        text: "Forholdet er valgfritt for begge sider",
+        correct: false,
+        rationale: "1 er obligatorisk — en bestilling MÅ ha en kunde.",
+      },
+    ],
+  },
+  {
+    id: "d-quiz-include-vs-extend",
+    kind: "quiz",
+    title: "Use case — include vs extend",
+    prompt: "Velg riktig.",
+    topic: "UML",
+    question:
+      "«Sjekk ut» KREVER alltid «Betal», mens «Bruk rabattkode» kan AV OG TIL utvide «Sjekk ut». Hvordan tegner du?",
+    options: [
+      {
+        text: "Sjekk ut «include» Betal; Bruk rabattkode «extend» Sjekk ut",
+        correct: true,
+        rationale:
+          "include = alltid inkludert. extend = utvider under betingelser. Begge tegnes med stiplet pil + stereotype.",
+      },
+      {
+        text: "Sjekk ut «extend» Betal; Bruk rabattkode «include» Sjekk ut",
+        correct: false,
+        rationale: "Motsatt — Betal er alltid med (include), rabattkode er valgfri (extend).",
+      },
+      {
+        text: "Begge brukes med generalisering (arv)",
+        correct: false,
+        rationale: "Generalisering er for «er-en»-forhold mellom aktører eller use cases — ikke include/extend.",
+      },
+      {
+        text: "Ingen pil — bare plassér ovaler nær hverandre",
+        correct: false,
+        rationale: "Uten pil og stereotype er forholdet ikke spesifisert. UML krever notasjon.",
+      },
+    ],
+  },
+
+  // ---- Code review / Git (4) ----
+  {
+    id: "d-order-pr-flow",
+    kind: "order",
+    title: "Feature-branch + PR-flow",
+    prompt: "Dra stegene i en typisk feature-branch arbeidsflyt i riktig rekkefølge.",
+    topic: "Code review",
+    items: [
+      "git checkout main && git pull origin main",
+      "git checkout -b feat/passord-reset",
+      "Skriv kode, git commit -m \"...\"",
+      "git push -u origin feat/passord-reset",
+      "Åpne Pull Request mot main",
+      "Adressér review-kommentarer med nye commits",
+      "CI-pipeline blir grønn, PR godkjennes",
+      "Squash & merge til main, slett feature-branchen",
+    ],
+    explanation:
+      "Alltid pull main først så du brancher fra siste versjon. Aldri push direkte til main — PR fanger bugs før de når production.",
+  },
+  {
+    id: "d-quiz-merge-konflikt",
+    kind: "quiz",
+    title: "Merge-konflikt — hva gjør du?",
+    prompt: "Velg riktig.",
+    topic: "Code review",
+    question:
+      "Du kjører `git pull origin main` på feature-branchen og får merge-konflikt i `app.py`. Hva er riktig neste steg?",
+    options: [
+      {
+        text: "Åpne app.py, finn <<<<<<< HEAD-blokkene, velg/kombinér riktig kode, fjern markørene, git add og commit",
+        correct: true,
+        rationale:
+          "Du må manuelt bestemme hvordan motstridende endringer forenes. Git kan ikke gjette intensjonen. Etter resolve: git add + git commit fullfører merge.",
+      },
+      {
+        text: "Kjør `git push --force` for å overskrive remote",
+        correct: false,
+        rationale: "Det ødelegger andres arbeid på remote. Force push til delte brancher er en kardinalsynd.",
+      },
+      {
+        text: "Slette app.py og pull på nytt",
+        correct: false,
+        rationale: "Du mister alle dine endringer. Konflikten kommer tilbake uansett.",
+      },
+      {
+        text: "Kjøre `git reset --hard origin/main`",
+        correct: false,
+        rationale: "Forkaster alt det du har jobbet med. Ikke det du vil.",
+      },
+    ],
+  },
+  {
+    id: "d-match-git-kommandoer",
+    kind: "match",
+    title: "Git-kommandoer",
+    prompt: "Match hver git-kommando til hva den gjør.",
+    topic: "Code review",
+    pairs: [
+      { left: "git checkout -b feat/x", right: "Lag ny branch fra HEAD og bytt til den" },
+      { left: "git rebase main", right: "Flytt commits-ene dine oppå siste main-versjon" },
+      { left: "git merge feat/x", right: "Sammenstill branch inn i nåværende branch" },
+      { left: "git push -u origin feat/x", right: "Push branch til remote og sett opp tracking" },
+      { left: "git revert <sha>", right: "Lag ny commit som reverserer en tidligere commit" },
+      { left: "git stash", right: "Lagre uferdige endringer midlertidig vekk" },
+    ],
+  },
+  {
+    id: "d-quiz-pr-review",
+    kind: "quiz",
+    title: "Hva ser man etter i en code review?",
+    prompt: "Du reviewer en PR med ny endpoint. Hvilket spørsmål er MINST relevant?",
+    topic: "Code review",
+    question:
+      "Velg det LEAST viktige spørsmålet å stille som reviewer.",
+    options: [
+      {
+        text: "Bruker utvikleren samme code style-konvensjoner som resten av teamet (tabs vs spaces)?",
+        correct: true,
+        rationale:
+          "Code style bør være automatisert (linter/formatter, pre-commit hook). Mennesker skal ikke bruke review-tid på det.",
+      },
+      {
+        text: "Er det tester som dekker happy path og minst én feilsituasjon?",
+        correct: false,
+        rationale: "Veldig viktig — endring uten tester går tilbake.",
+      },
+      {
+        text: "Håndterer endpointet auth riktig — kan obotuserede komme inn?",
+        correct: false,
+        rationale: "Sikkerhet er en av de viktigste tingene i review.",
+      },
+      {
+        text: "Er forretningslogikken plassert i service-laget, ikke i controller?",
+        correct: false,
+        rationale: "Lagdeling påvirker langtids-vedlikehold — viktig å fange tidlig.",
+      },
+    ],
+  },
+
+  // ============================================================
+  // API-PROSJEKT (20 exercises)
+  // ============================================================
+
+  // ---- Arkitektur (5) ----
+  {
+    id: "d-match-api-lag",
+    kind: "match",
+    title: "API-lag — ansvar",
+    prompt: "Match hvert lag til hva det skal gjøre.",
+    topic: "API-arkitektur",
+    pairs: [
+      { left: "Controller", right: "Parse HTTP-request, validér input, returner statuskode + JSON" },
+      { left: "Service", right: "Forretningslogikk — koordinere use cases, kaste domain-feil" },
+      { left: "Repository", right: "Snakke med databasen — SQL eller ORM-kall, returnere entities" },
+      { left: "DTO", right: "Form for data inn/ut av APIet — uavhengig av DB-skjema" },
+      { left: "Entity", right: "ORM-representasjon av en DB-rad" },
+    ],
+  },
+  {
+    id: "d-quiz-dto-vs-entity",
+    kind: "quiz",
+    title: "DTO vs entity — hvorfor skille?",
+    prompt: "Velg HOVEDÅRSAKEN.",
+    topic: "API-arkitektur",
+    question:
+      "Hvorfor bør APIet returnere DTO-er og ikke entity-objekter direkte?",
+    options: [
+      {
+        text: "Endringer i DB-skjema skal ikke bryte API-kontrakten, og sensitive felt (password_hash) skal ikke lekke ut",
+        correct: true,
+        rationale:
+          "Entity er formet etter tabellen. DTO er formet etter hva APIet eksponerer. Skiller du dem kan du endre DB uten å bryte klienter, og du serialiserer bare det som er sikkert.",
+      },
+      {
+        text: "ORM-er kan ikke serialiseres til JSON",
+        correct: false,
+        rationale: "De fleste kan — det er ikke problemet. Problemet er HVA de inneholder.",
+      },
+      {
+        text: "DTO er raskere enn entity",
+        correct: false,
+        rationale: "Marginalt og ikke poenget. Skillet handler om kobling og sikkerhet.",
+      },
+      {
+        text: "REST-spec forbyr å returnere ORM-objekter",
+        correct: false,
+        rationale: "REST har ingen sånn regel. Dette er en design-konvensjon, ikke en standard.",
+      },
+    ],
+  },
+  {
+    id: "d-quiz-di-formaal",
+    kind: "quiz",
+    title: "Dependency Injection — hovedformål",
+    prompt: "Velg riktig.",
+    topic: "API-arkitektur",
+    question:
+      "Hva er hovedfordelen med dependency injection i en service-klasse?",
+    options: [
+      {
+        text: "Avhengigheter er eksplisitt og kan byttes ut i tester (FakeRepo i stedet for PostgresRepo)",
+        correct: true,
+        rationale:
+          "DI gjør at servicen kan testes isolert med fake-implementasjoner. Konstruksjons-injection gjør avhengighetene synlige i signaturen.",
+      },
+      {
+        text: "Koden kjører raskere",
+        correct: false,
+        rationale: "DI har en bitteliten overhead, ikke en speed-up.",
+      },
+      {
+        text: "Færre filer i prosjektet",
+        correct: false,
+        rationale: "Tvert imot — typisk litt flere (interfaces/protocols).",
+      },
+      {
+        text: "Database-kall caches automatisk",
+        correct: false,
+        rationale: "Caching er en separat sak. DI handler om kobling og testbarhet.",
+      },
+    ],
+  },
+  {
+    id: "d-fill-di-konstruktor",
+    kind: "fill",
+    title: "Constructor injection i Python",
+    prompt: "Fyll inn slik at service tar et repo som dependency.",
+    topic: "API-arkitektur",
+    template:
+      "class BestillingService:\n    def __init__(self, repo: __1__):\n        self.repo = __2__\n\n    def opprett(self, data):\n        return self.repo.__3__(data)\n\n# I prod:\nservice = BestillingService(repo=__4__())\n# I test:\nservice = BestillingService(repo=__5__())",
+    blanks: ["BestillingRepo", "repo", "save", "PostgresBestillingRepo", "FakeBestillingRepo"],
+    options: [
+      "BestillingRepo", "PostgresBestillingRepo", "FakeBestillingRepo",
+      "repo", "self", "save", "find", "delete",
+    ],
+    language: "python",
+    explanation:
+      "Service avhenger av INTERFACE/protocol (BestillingRepo). Konkret implementasjon sendes inn — i prod den ekte, i test en fake.",
+  },
+  {
+    id: "d-quiz-dep-retning",
+    kind: "quiz",
+    title: "Clean Architecture — dep-retning",
+    prompt: "Velg riktig.",
+    topic: "API-arkitektur",
+    question:
+      "I Clean Architecture: hvilken retning peker avhengighetene?",
+    options: [
+      {
+        text: "Innover — adapters/infrastructure avhenger av use cases, som avhenger av entities",
+        correct: true,
+        rationale:
+          "Pilene peker mot domenet. Entities aner ingenting om HTTP eller DB. Det lar domenet testes uten infrastruktur.",
+      },
+      {
+        text: "Utover — entities kjenner alle lagene over",
+        correct: false,
+        rationale: "Da ville domenet vært koblet til infrastruktur — motsatt av målet.",
+      },
+      {
+        text: "Sidelengs — alle lag kjenner alle",
+        correct: false,
+        rationale: "Det gir tett kobling overalt. Ikke arkitektur.",
+      },
+      {
+        text: "Tilfeldig — det spiller ingen rolle",
+        correct: false,
+        rationale: "Det spiller absolutt rolle. Avhengighets-retning er hele poenget med lagdeling.",
+      },
+    ],
+  },
+
+  // ---- Kontrakt (5) ----
+  {
+    id: "d-fill-openapi-minimal",
+    kind: "fill",
+    title: "OpenAPI 3.0 — minimal struktur",
+    prompt: "Dra inn riktige nøkkelord i OpenAPI-spec.",
+    topic: "API-kontrakt",
+    template:
+      "__1__: 3.0.3\n__2__:\n  title: Bestilling API\n  version: 1.0.0\n__3__:\n  /bestillinger/{id}:\n    __4__:\n      __5__:\n        \"200\":\n          description: OK",
+    blanks: ["openapi", "info", "paths", "get", "responses"],
+    options: ["openapi", "swagger", "info", "metadata", "paths", "routes", "get", "GET", "post", "responses", "returns"],
+    explanation:
+      "Topp-nivå i OpenAPI 3: openapi (versjon), info (metadata), paths (endpoints). Hver path har metoder med responses.",
+  },
+  {
+    id: "d-match-statuskoder-api",
+    kind: "match",
+    title: "Statuskoder i API-respons",
+    prompt: "Match scenario til riktig statuskode.",
+    topic: "API-kontrakt",
+    pairs: [
+      { left: "POST opprettet ny bestilling", right: "201 Created" },
+      { left: "DELETE av eksisterende ressurs lykkes uten body", right: "204 No Content" },
+      { left: "Klient sender ugyldig JSON", right: "400 Bad Request" },
+      { left: "Ingen auth-token i header", right: "401 Unauthorized" },
+      { left: "Forsøk å slette annens ressurs", right: "403 Forbidden" },
+      { left: "Forretningsregel brutt (gyldig JSON, men kan ikke utføres)", right: "422 Unprocessable Entity" },
+      { left: "For mange kall i kort tid", right: "429 Too Many Requests" },
+    ],
+  },
+  {
+    id: "d-quiz-idempotens-metoder",
+    kind: "quiz",
+    title: "Idempotens — hvilke HTTP-metoder?",
+    prompt: "Velg det som er KORREKT om idempotens.",
+    topic: "API-kontrakt",
+    question:
+      "Hvilken HTTP-metode er IKKE idempotent som default?",
+    options: [
+      {
+        text: "POST",
+        correct: true,
+        rationale:
+          "To identiske POST-er skaper typisk to ressurser. Idempotency-Key brukes for å gjøre POST trygt for retry.",
+      },
+      {
+        text: "GET",
+        correct: false,
+        rationale: "GET er les-bare og idempotent. Mange kall = samme svar, ingen sideeffekt.",
+      },
+      {
+        text: "PUT",
+        correct: false,
+        rationale: "PUT er «sett til denne verdien» — kjør N ganger, samme tilstand.",
+      },
+      {
+        text: "DELETE",
+        correct: false,
+        rationale: "DELETE er idempotent på tilstanden. (Etter første: ressurs er borte, andre kall gir 404, men tilstand er den samme.)",
+      },
+    ],
+  },
+  {
+    id: "d-quiz-versjonering-valg",
+    kind: "quiz",
+    title: "API-versjonering — URL vs header",
+    prompt: "Velg riktig.",
+    topic: "API-kontrakt",
+    question:
+      "En kollega vil legge til et nytt optional felt i response til /produkter/{id}. Trenger dere ny API-versjon?",
+    options: [
+      {
+        text: "Nei — å legge til et nytt optional felt er backward-compatible",
+        correct: true,
+        rationale:
+          "Klienter som ignorerer ukjente felt fortsetter å fungere. Versjon-bump trengs bare ved breaking changes (fjern/rename felt, type-endring, statuskode-endring).",
+      },
+      {
+        text: "Ja, alltid ny minor-versjon ved enhver responsendring",
+        correct: false,
+        rationale: "Versjoner er for BREAKING endringer. Backward-compatible tilføyelser krever ikke ny versjon.",
+      },
+      {
+        text: "Ja, men kun hvis det er JSON",
+        correct: false,
+        rationale: "Format spiller ingen rolle — det er om endringen bryter eksisterende klienter som teller.",
+      },
+      {
+        text: "Nei, du kan bare endre eksisterende felt",
+        correct: false,
+        rationale: "Å ENDRE eksisterende felt er nettopp det som er breaking.",
+      },
+    ],
+  },
+  {
+    id: "d-fill-problem-detail",
+    kind: "fill",
+    title: "RFC 7807 problem-detail",
+    prompt: "Fyll inn standardfeltene i problem-detail JSON.",
+    topic: "API-kontrakt",
+    template:
+      "{\n  \"__1__\": \"https://api.example.com/errors/insufficient-stock\",\n  \"__2__\": \"Ikke nok på lager\",\n  \"__3__\": 422,\n  \"__4__\": \"Produkt 1234 har 2 igjen, du ba om 5\",\n  \"__5__\": \"/bestillinger/9876\"\n}",
+    blanks: ["type", "title", "status", "detail", "instance"],
+    options: ["type", "title", "status", "detail", "instance", "code", "message", "error", "http", "uri"],
+    explanation:
+      "RFC 7807 definerer 5 standardfelt: type (URI til feiltype-doc), title (kort), status (HTTP-kode), detail (denne forekomsten), instance (URI for ressursen).",
+  },
+
+  // ---- Testing (5) ----
+  {
+    id: "d-match-test-pyramide",
+    kind: "match",
+    title: "Test-pyramiden — type til nivå",
+    prompt: "Match testtype til hvor den hører i pyramiden.",
+    topic: "API-testing",
+    pairs: [
+      { left: "Unit-test", right: "Nederst — én funksjon isolert, mockede dependencies, millisekund-skalert" },
+      { left: "Integration-test", right: "Midten — flere komponenter sammen, ofte med ekte DB" },
+      { left: "Contract-test", right: "Mot kontrakten (OpenAPI/Pact) — verifiserer at API matcher spec" },
+      { left: "E2E-test", right: "Toppen — hele systemet, ekte komponenter, få i antall" },
+    ],
+    explanation:
+      "Pyramide: mye unit (raskt, billig), færre integration, enda færre E2E (treg, flaky). Motsatt = «is-kjegle».",
+  },
+  {
+    id: "d-quiz-fixture-vs-mock",
+    kind: "quiz",
+    title: "Fixture vs mock — hva er forskjellen?",
+    prompt: "Velg riktig.",
+    topic: "API-testing",
+    question:
+      "En testfixture som setter opp ren testdatabase. Er det en fixture eller en mock?",
+    options: [
+      {
+        text: "Fixture — den klargjør en KJENT tilstand som testen kan bruke",
+        correct: true,
+        rationale:
+          "Fixture = forberedt utgangstilstand (data, oppsett). Mock = falsk objekt som verifiserer at riktige kall ble gjort.",
+      },
+      {
+        text: "Mock — den simulerer DB-kall",
+        correct: false,
+        rationale: "Det er en ekte DB i fixturen, ikke en falsk en. Da er det fixture, ikke mock.",
+      },
+      {
+        text: "Stub — den returnerer hardkodede verdier",
+        correct: false,
+        rationale: "Stubs returnerer kanaliserte svar — en setup-fixture klargjør ekte tilstand.",
+      },
+      {
+        text: "Spy — den registrerer kall",
+        correct: false,
+        rationale: "Spy logger kall for verifikasjon. Database-oppsett er ikke kall-registrering.",
+      },
+    ],
+  },
+  {
+    id: "d-quiz-integration-vs-e2e",
+    kind: "quiz",
+    title: "Integration vs E2E — når hva?",
+    prompt: "Velg riktig.",
+    topic: "API-testing",
+    question:
+      "Du tester at controller + service + repository fungerer sammen, men du mocker betalingsleverandøren. Hva slags test er det?",
+    options: [
+      {
+        text: "Integration-test — flere lag testes sammen, men ikke alle eksterne tjenester",
+        correct: true,
+        rationale:
+          "Integration tester samspill mellom 2+ komponenter, ofte med ekte DB men mockede tredjeparter. E2E ville brukt sandkasse for betalingen også.",
+      },
+      {
+        text: "E2E-test — den dekker hele stack",
+        correct: false,
+        rationale: "E2E krever ekte eksterne tjenester (eller sandkasse). Mocked tredjepart = integration.",
+      },
+      {
+        text: "Unit-test — den tester én funksjon",
+        correct: false,
+        rationale: "Unit isolerer ÉN funksjon med alle dependencies mocket. Du testet flere lag sammen.",
+      },
+      {
+        text: "Contract-test — den tester API-spec",
+        correct: false,
+        rationale: "Contract verifiserer mot OpenAPI/Pact. Det er ikke det du gjør her.",
+      },
+    ],
+  },
+  {
+    id: "d-match-test-doubles",
+    kind: "match",
+    title: "Test doubles — hvilket er hvilket?",
+    prompt: "Match test-double-typen til beskrivelse.",
+    topic: "API-testing",
+    pairs: [
+      { left: "Dummy", right: "Verdi som sendes inn men aldri brukes — fyller en parameter" },
+      { left: "Stub", right: "Returnerer hardkodede svar når den blir kalt" },
+      { left: "Spy", right: "Som stub, men registrerer kall for senere verifikasjon" },
+      { left: "Mock", right: "Som spy, men har forventninger pre-programmert (failer hvis kall mangler)" },
+      { left: "Fake", right: "Forenklet, men FUNGERENDE implementasjon (eks in-memory DB)" },
+    ],
+  },
+  {
+    id: "d-order-tdd-feature",
+    kind: "order",
+    title: "TDD ved nytt endpoint",
+    prompt: "Du skal legge til POST /bestillinger med TDD. Dra stegene i riktig rekkefølge.",
+    topic: "API-testing",
+    items: [
+      "Skriv integration-test som POSTer JSON og forventer 201",
+      "Kjør test — feiler (endpoint finnes ikke ennå)",
+      "Lag minimal controller + service + repo som returnerer 201",
+      "Kjør test — passerer",
+      "Skriv test for 422 ved ugyldige data — feiler",
+      "Legg til validering — testen passerer",
+      "Refaktor: trekk ut DTO, rydd opp",
+      "Kjør alle tester — fortsatt grønne",
+    ],
+    explanation:
+      "Hver runde: rød test, grønn implementasjon, refaktorering. Du legger til én atferd om gangen.",
+  },
+
+  // ---- Deploy (5) ----
+  {
+    id: "d-fill-dockerfile",
+    kind: "fill",
+    title: "Dockerfile — minimal Python-API",
+    prompt: "Dra inn de riktige Docker-direktivene.",
+    topic: "API-deploy",
+    template:
+      "__1__ python:3.12-slim\n__2__ /app\n__3__ requirements.txt .\n__4__ pip install -r requirements.txt\n__5__ ./src ./src\n__6__ 8000\n__7__ [\"uvicorn\", \"src.main:app\", \"--host\", \"0.0.0.0\"]",
+    blanks: ["FROM", "WORKDIR", "COPY", "RUN", "COPY", "EXPOSE", "CMD"],
+    options: ["FROM", "WORKDIR", "COPY", "ADD", "RUN", "EXEC", "EXPOSE", "PORT", "CMD", "ENTRYPOINT", "ENV"],
+    explanation:
+      "FROM (base), WORKDIR (cwd), COPY+RUN (install deps), COPY (src), EXPOSE (doc), CMD (start). RUN kjører ved BUILD, CMD ved start.",
+  },
+  {
+    id: "d-quiz-secrets-i-repo",
+    kind: "quiz",
+    title: "Secrets — hvor IKKE skal de bo?",
+    prompt: "Velg riktig.",
+    topic: "API-deploy",
+    question:
+      "Hvor skal IKKE database-passordet til prod-DB ligge?",
+    options: [
+      {
+        text: "I et `.env`-fil som er commitet til git-repo",
+        correct: true,
+        rationale:
+          "Når noe er commitet, ligger det i git-historien for alltid — selv om du sletter senere. Bruk environment variables fra secrets-vault i stedet.",
+      },
+      {
+        text: "I HashiCorp Vault",
+        correct: false,
+        rationale: "Vault er nettopp laget for dette formålet.",
+      },
+      {
+        text: "Som GitHub Actions Secret (kun lest av pipeline)",
+        correct: false,
+        rationale: "GitHub Actions Secrets injiseres trygt i CI uten å havne i loggen.",
+      },
+      {
+        text: "Som environment variable som injiseres av plattformen i prod",
+        correct: false,
+        rationale: "Standard Twelve-Factor-mønster — config i environment.",
+      },
+    ],
+  },
+  {
+    id: "d-order-cicd-pipeline",
+    kind: "order",
+    title: "CI/CD-pipeline — rekkefølge",
+    prompt: "Dra stegene i en typisk CI/CD-pipeline i riktig rekkefølge.",
+    topic: "API-deploy",
+    items: [
+      "Utvikler pusher commit til feature-branch",
+      "CI: checkout kode",
+      "CI: lint (ruff/eslint)",
+      "CI: type-check (mypy/tsc)",
+      "CI: unit + integration tests",
+      "CI: build Docker-image, push til registry",
+      "CD: deploy til staging",
+      "CD: smoke-tests mot staging",
+      "CD: manuell godkjenning eller auto-promotion til prod",
+      "CD: deploy til prod (canary eller blue-green)",
+    ],
+    explanation:
+      "Tidlig feiltrinn = kort syklus. Lint og type-check er sub-sekund. Tests er sub-minutt. Build og deploy er minutter. Stop på første feil.",
+  },
+  {
+    id: "d-quiz-blue-green-vs-canary",
+    kind: "quiz",
+    title: "Blue-green vs canary deploy",
+    prompt: "Velg riktig.",
+    topic: "API-deploy",
+    question:
+      "Du vil rulle ut ny versjon med MINIMUM risiko, og overvåke metrikker på 5% av trafikken først. Hvilken strategi?",
+    options: [
+      {
+        text: "Canary — rute 5% av trafikken til v2, øk gradvis hvis metrics ser bra ut",
+        correct: true,
+        rationale:
+          "Canary er progressiv: starter lite, øker over tid. Blast radius er begrenset til canary-prosent hvis bug.",
+      },
+      {
+        text: "Blue-green — bytt all trafikk på en gang",
+        correct: false,
+        rationale: "Blue-green flytter 100% i ett klikk. Rask rollback, men ikke gradvis eksponering.",
+      },
+      {
+        text: "Stoppe v1 først, deretter starte v2",
+        correct: false,
+        rationale: "Downtime + ingen mulighet for sammenligning eller rollback.",
+      },
+      {
+        text: "Rolling update med Kubernetes (default-strategy)",
+        correct: false,
+        rationale: "Rolling bytter pods én for én, men styres ikke prosentvis på trafikken. Canary gir finere kontroll.",
+      },
+    ],
+  },
+  {
+    id: "d-match-observability",
+    kind: "match",
+    title: "Observability — tre pillarer",
+    prompt: "Match hver pillar til hva den brukes til.",
+    topic: "API-deploy",
+    pairs: [
+      { left: "Logs", right: "Hendelseslinjer over tid — «hva skjedde for denne brukeren akkurat nå?»" },
+      { left: "Metrics", right: "Aggregerte tall over tid — «hvor mye, hvor ofte, p95?»" },
+      { left: "Traces", right: "Et request gjennom flere services — «hvor brukes tiden?»" },
+      { left: "Healthcheck", right: "Endpoint orkestratoren bruker til å sjekke om appen lever" },
+      { left: "Runbook", right: "Sjekkliste for hvordan respondere på en gitt alarm" },
+    ],
+  },
 ];

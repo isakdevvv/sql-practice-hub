@@ -48,6 +48,17 @@ import { content as trinn7 } from "./trinn-7-bytes-dyp";
 import { content as trinn8 } from "./trinn-8-python-er-c";
 import { content as trinn9 } from "./trinn-9-syscalls-dyp";
 import { content as trinn10 } from "./trinn-10-flask-dyp";
+import { content as dte2604 } from "./dte-2604";
+import { content as suMetodikker } from "./su-metodikker";
+import { content as brukerhistorier } from "./brukerhistorier";
+import { content as uml } from "./uml";
+import { content as suProsjektPraksis } from "./su-prosjekt-praksis";
+import { content as apiProsjekt } from "./api-prosjekt";
+import { content as apiPlanlegging } from "./api-planlegging";
+import { content as apiArkitektur } from "./api-arkitektur";
+import { content as apiKontrakt } from "./api-kontrakt";
+import { content as apiTesting } from "./api-testing";
+import { content as apiDeploy } from "./api-deploy";
 import type { TrinnContent } from "../types";
 
 export const TRINN: TrinnContent[] = [
@@ -60,6 +71,8 @@ export const TRINN: TrinnContent[] = [
   flaskLivssyklus, pythonDrill, httpAnatomi,
   dte2505, osGrunnlag, linuxBruk, shellScripting, brukereRettigheter, virtualisering,
   trinn1, trinn2, trinn3, trinn4, trinn5, trinn6, trinn7, trinn8, trinn9, trinn10,
+  dte2604, suMetodikker, brukerhistorier, uml, suProsjektPraksis,
+  apiProsjekt, apiPlanlegging, apiArkitektur, apiKontrakt, apiTesting, apiDeploy,
 ];
 
 // Bare ferdige trinn er offentlig synlige — stubs (`status: "stub"`)
