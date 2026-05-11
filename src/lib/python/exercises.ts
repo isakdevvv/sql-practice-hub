@@ -1083,6 +1083,121 @@ def login():
       },
     ],
   },
+  {
+    id: "py-flask-file-storage",
+    topic: "Flask + forms",
+    title: "Fil-basert persistens — \"fattigmanns-DB\"",
+    description:
+      "Repoets averageCalculator i Flask_Basics viser hvordan man kan lagre data MELLOM request-er uten database — bare ved å skrive til en .txt-fil. Det er pedagogisk steg-mellom: god nok for ett-bruker apps, dårlig for alt annet. Bygg POST-routen som tar imot et tall, legger det til numbers.txt, og viser snittet av alle lagrede tall.\n\n1. Skriv writeToFile(num, filename) som åpner filen i \"a\" (append) og skriver tallet + nylinje.\n2. Skriv fromFileToLst(filename) som leser filen og returnerer liste av ints. Håndter at filen ikke finnes.\n3. Skriv findAverage(lst) som returnerer snittet (eller 0 hvis lista er tom).\n4. POST-routen \"/\" legger til tallet og rendrer en respons som viser snittet.",
+    requires: ["flask"],
+    starter: `# === OPPGAVE: Fattigmanns-persistens med fil ===
+#
+# Mønsteret repoets averageCalculator bruker:
+#   POST /  → writeToFile(num) → recompute average → render
+#
+# Pyodide gir deg en in-memory filsystem — open()/read()/write() bare virker.
+
+from flask import Flask, request
+
+app = Flask(__name__)
+SAVEFILE = "numbers.txt"
+
+
+def writeToFile(num, filename):
+    # TODO: åpne i append-modus, skriv str(num) + "\\n"
+    pass
+
+
+def fromFileToLst(filename):
+    # TODO: returner liste av ints. Bruk try/except for FileNotFoundError.
+    pass
+
+
+def findAverage(lst):
+    # TODO: returner sum(lst)/len(lst) eller 0 hvis tom liste
+    pass
+
+
+@app.route("/", methods=["GET", "POST"])
+def home():
+    if request.method == "POST":
+        num = int(request.form["tall"])
+        writeToFile(num, SAVEFILE)
+
+    tall = fromFileToLst(SAVEFILE)
+    return f"Snitt av {len(tall)} tall: {findAverage(tall):.2f}"
+
+
+# Test (kjør tre POSTs og verifiser snittet):
+client = app.test_client()
+print(client.post("/", data={"tall": "10"}).data.decode())
+print(client.post("/", data={"tall": "20"}).data.decode())
+print(client.post("/", data={"tall": "30"}).data.decode())
+`,
+    solution: `from flask import Flask, request
+
+app = Flask(__name__)
+SAVEFILE = "numbers.txt"
+
+
+def writeToFile(num, filename):
+    with open(filename, "a") as f:
+        f.write(f"{num}\\n")
+
+
+def fromFileToLst(filename):
+    try:
+        with open(filename, "r") as f:
+            return [int(line.strip()) for line in f if line.strip()]
+    except FileNotFoundError:
+        return []
+
+
+def findAverage(lst):
+    if not lst:
+        return 0
+    return sum(lst) / len(lst)
+
+
+@app.route("/", methods=["GET", "POST"])
+def home():
+    if request.method == "POST":
+        num = int(request.form["tall"])
+        writeToFile(num, SAVEFILE)
+
+    tall = fromFileToLst(SAVEFILE)
+    return f"Snitt av {len(tall)} tall: {findAverage(tall):.2f}"
+
+
+client = app.test_client()
+print(client.post("/", data={"tall": "10"}).data.decode())
+print(client.post("/", data={"tall": "20"}).data.decode())
+print(client.post("/", data={"tall": "30"}).data.decode())
+`,
+    hints: [
+      "open(filename, \"a\") åpner i append-modus — skriver til slutten uten å overskrive.",
+      "Bruk \\n etter hvert tall så lesingen kan splitte på linjer senere.",
+      "try/except FileNotFoundError — første gang før noe er skrevet finnes ikke filen.",
+      "int(line.strip()) — strip fjerner \\n og whitespace; int() konverterer.",
+    ],
+    docs: [
+      {
+        title: "Hvorfor lære fil-persistens før databaser?",
+        url: "https://github.com/reo303halo/DTE-2509-26V/blob/main/Flask_Basics/averageCalculator/app.py",
+        note: "Kurset bruker dette i Modul 2 (averageCalculator) som bro mellom \"variabler glemmer alt\" og \"databasen krever oppsett\". Det viser hvorfor en ekte DB er bedre: flere brukere kan ikke skrive til samme fil uten korrupsjon, det finnes ingen spørringer, ingen typer, ingen transaksjoner.",
+      },
+      {
+        title: "Python open() i append-modus",
+        url: "https://docs.python.org/3/library/functions.html#open",
+        note: "\"a\" = append (lager filen hvis den ikke finnes). \"r\" = read (krever at filen finnes). \"w\" = write (overskriver helt).",
+      },
+      {
+        title: "Når går du over til ekte DB?",
+        url: "https://flask.palletsprojects.com/en/stable/tutorial/database/",
+        note: "Med én bruker og <1MB data fungerer .txt. Idet du har samtidig skriving, struktur (rader/kolonner), søk, eller behov for transaksjoner — bytt til SQLite eller MySQL.",
+      },
+    ],
+  },
 
   // ============ FLASK + DB ============
   {
