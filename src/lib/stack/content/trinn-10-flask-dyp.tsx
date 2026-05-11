@@ -1,4 +1,4 @@
-import { Placeholder } from "@/components/stack/Placeholder";
+import { Trinn10FlaskDypPage } from "@/components/stack/trinn-10-flask-dyp/Trinn10FlaskDypPage";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -7,8 +7,8 @@ export const content: TrinnContent = {
   title: "10. Flask under panseret",
   group: "stack",
   order: 10,
-  status: "stub",
+  status: "ready",
   shortDescription: "WSGI, app.run() sin socket-loop, hvordan request blir til response.",
   prerequisites: [],
-  Component: () => <Placeholder title="10. Flask under panseret" group="stack" />,
+  Component: Trinn10FlaskDypPage,
 };

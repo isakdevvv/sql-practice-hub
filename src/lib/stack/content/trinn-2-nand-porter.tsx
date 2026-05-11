@@ -1,4 +1,4 @@
-import { Placeholder } from "@/components/stack/Placeholder";
+import { Trinn2NandPorterPage } from "@/components/stack/trinn-2-nand-porter/Trinn2NandPorterPage";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -7,8 +7,8 @@ export const content: TrinnContent = {
   title: "2. NAND og logiske porter",
   group: "stack",
   order: 2,
-  status: "stub",
+  status: "ready",
   shortDescription: "Bygg AND/OR/NOT/XOR fra bare NAND-porter.",
   prerequisites: [],
-  Component: () => <Placeholder title="2. NAND og logiske porter" group="stack" />,
+  Component: Trinn2NandPorterPage,
 };

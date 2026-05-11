@@ -1,4 +1,4 @@
-import { Placeholder } from "@/components/stack/Placeholder";
+import { Trinn9SyscallsDypPage } from "@/components/stack/trinn-9-syscalls-dyp/Trinn9SyscallsDypPage";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -7,8 +7,8 @@ export const content: TrinnContent = {
   title: "9. Syscalls & sockets (dypere)",
   group: "stack",
   order: 9,
-  status: "stub",
+  status: "ready",
   shortDescription: "User space ↔ kernel ↔ NIC. Hver send() er flere lag av bytekopiering.",
   prerequisites: [],
-  Component: () => <Placeholder title="9. Syscalls & sockets (dypere)" group="stack" />,
+  Component: Trinn9SyscallsDypPage,
 };

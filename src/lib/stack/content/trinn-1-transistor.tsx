@@ -1,4 +1,4 @@
-import { Placeholder } from "@/components/stack/Placeholder";
+import { Trinn1TransistorPage } from "@/components/stack/trinn-1-transistor/Trinn1TransistorPage";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -7,8 +7,8 @@ export const content: TrinnContent = {
   title: "1. Transistoren som bryter",
   group: "stack",
   order: 1,
-  status: "stub",
+  status: "ready",
   shortDescription: "MOSFET som bryter styrt av spenning. Selve byggesteinen.",
   prerequisites: [],
-  Component: () => <Placeholder title="1. Transistoren som bryter" group="stack" />,
+  Component: Trinn1TransistorPage,
 };

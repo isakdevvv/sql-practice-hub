@@ -1,4 +1,4 @@
-import { Placeholder } from "@/components/stack/Placeholder";
+import { Trinn8PythonErCPage } from "@/components/stack/trinn-8-python-er-c/Trinn8PythonErCPage";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -7,8 +7,8 @@ export const content: TrinnContent = {
   title: "8. Python er C under panseret",
   group: "stack",
   order: 8,
-  status: "stub",
+  status: "ready",
   shortDescription: "CPython er et C-program. PyLongObject. b\"...\" vs \"...\" på alvor.",
   prerequisites: [],
-  Component: () => <Placeholder title="8. Python er C under panseret" group="stack" />,
+  Component: Trinn8PythonErCPage,
 };

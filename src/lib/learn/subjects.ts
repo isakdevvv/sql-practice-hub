@@ -16,7 +16,8 @@ export type SubjectId =
   | "webapps2"
   | "systemutvikling"
   | "api-prosjekt"
-  | "mobil";
+  | "mobil"
+  | "hardware";
 
 export interface Subject {
   id: SubjectId;
@@ -180,6 +181,22 @@ export const SUBJECTS: readonly Subject[] = [
       "Room",
       "RecyclerView",
       "Retrofit",
+    ],
+  },
+  {
+    id: "hardware",
+    label: "Hardware-stakken (Phase 1)",
+    short: "Transistor → CPU → assembly → C → Python — alt fra bunnen",
+    topics: [
+      "Transistor",
+      "Logiske porter",
+      "CPU-arkitektur",
+      "Assembly",
+      "C-minne",
+      "Bytes-representasjon",
+      "CPython",
+      "Syscalls",
+      "WSGI",
     ],
   },
 ] as const;

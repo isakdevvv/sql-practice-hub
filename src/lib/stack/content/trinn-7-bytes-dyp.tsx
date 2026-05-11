@@ -1,4 +1,4 @@
-import { Placeholder } from "@/components/stack/Placeholder";
+import { Trinn7BytesDypPage } from "@/components/stack/trinn-7-bytes-dyp/Trinn7BytesDypPage";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -7,8 +7,8 @@ export const content: TrinnContent = {
   title: "7. Bytes & str — dypere",
   group: "stack",
   order: 7,
-  status: "stub",
+  status: "ready",
   shortDescription: "Endianness, multi-byte encodings, og hvordan bytes blir til tall.",
   prerequisites: [],
-  Component: () => <Placeholder title="7. Bytes & str — dypere" group="stack" />,
+  Component: Trinn7BytesDypPage,
 };

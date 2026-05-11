@@ -1,4 +1,4 @@
-import { Placeholder } from "@/components/stack/Placeholder";
+import { Trinn3AddersPage } from "@/components/stack/trinn-3-adders/Trinn3AddersPage";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -7,8 +7,8 @@ export const content: TrinnContent = {
   title: "3. Adders & flip-flops",
   group: "stack",
   order: 3,
-  status: "stub",
+  status: "ready",
   shortDescription: "Half-adder, full-adder, og hvordan én bit lagres i en flip-flop.",
   prerequisites: [],
-  Component: () => <Placeholder title="3. Adders & flip-flops" group="stack" />,
+  Component: Trinn3AddersPage,
 };
