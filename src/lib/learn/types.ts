@@ -40,6 +40,8 @@ export interface MatchExercise {
   topic: string;
   /** Each pair: left stays put, right gets shuffled and dragged onto left. */
   pairs: { left: string; right: string }[];
+  /** Optional explanation shown after the user checks the answer. */
+  explanation?: string;
 }
 
 export interface OrderExercise {

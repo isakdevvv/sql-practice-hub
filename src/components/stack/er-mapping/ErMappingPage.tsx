@@ -8,6 +8,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { KrakefotSymbols } from "./KrakefotSymbols";
+import { RelasjonLesing } from "./RelasjonLesing";
 import { CardinalityCard } from "./CardinalityCard";
 import { MappingRulesTable } from "./MappingRulesTable";
 import { ErDrill } from "./ErDrill";
@@ -52,6 +53,9 @@ export function ErMappingPage() {
 
         {/* 1. Krakefot-symboler */}
         <KrakefotSymbols />
+
+        {/* 1b. Hvordan lese et forhold */}
+        <RelasjonLesing />
 
         {/* 2. Tre kardinaliteter */}
         <section className="mb-10">

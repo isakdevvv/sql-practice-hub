@@ -154,6 +154,12 @@ export function DragMatch({ exercise }: { exercise: MatchExercise }) {
           </Button>
         )}
       </div>
+
+      {checked && exercise.explanation && (
+        <div className="mt-3 rounded-lg border border-border bg-muted/40 p-3 text-sm text-muted-foreground">
+          <strong className="text-foreground">Forklaring:</strong> {exercise.explanation}
+        </div>
+      )}
     </div>
   );
 }

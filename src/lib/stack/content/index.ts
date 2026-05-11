@@ -2,6 +2,7 @@ import { content as bytesEncoding } from "./bytes-encoding";
 import { content as tcpSockets } from "./tcp-sockets";
 import { content as huskelapp } from "./huskelapp";
 import { content as erMapping } from "./er-mapping";
+import { content as normalisering } from "./normalisering";
 import { content as flaskLivssyklus } from "./flask-livssyklus";
 import { content as pythonDrill } from "./python-drill";
 import { content as httpAnatomi } from "./http-anatomi";
@@ -18,7 +19,7 @@ import { content as trinn10 } from "./trinn-10-flask-dyp";
 import type { TrinnContent } from "../types";
 
 export const TRINN: TrinnContent[] = [
-  bytesEncoding, tcpSockets, huskelapp, erMapping, flaskLivssyklus, pythonDrill, httpAnatomi,
+  bytesEncoding, tcpSockets, huskelapp, erMapping, normalisering, flaskLivssyklus, pythonDrill, httpAnatomi,
   trinn1, trinn2, trinn3, trinn4, trinn5, trinn6, trinn7, trinn8, trinn9, trinn10,
 ];
 
