@@ -5411,4 +5411,764 @@ __5__ endfor __6__
     explanation:
       "Klassisk stack-bruk: push opener, ved closer pop og sjekk om matchet. Returner True hvis stacken er tom på slutten.",
   },
+
+  // ============= OSI / TCP-IP =============
+
+  {
+    id: "d-match-osi-protokoller",
+    kind: "match",
+    title: "Protokoll → riktig lag",
+    prompt: "Plasser hver protokoll på riktig TCP/IP-lag.",
+    topic: "OSI/TCP-IP",
+    pairs: [
+      { left: "HTTP, SMTP, DNS, SSH", right: "Lag 5 — Application" },
+      { left: "TCP, UDP", right: "Lag 4 — Transport" },
+      { left: "IP, ICMP, OSPF", right: "Lag 3 — Network" },
+      { left: "Ethernet, WiFi, ARP", right: "Lag 2 — Link" },
+      { left: "Kobber, fiber, radio", right: "Lag 1 — Physical" },
+    ],
+    explanation:
+      "Eksamen tester denne nesten alltid. ARP er teknisk lag 2/3 — den oversetter IP til MAC.",
+  },
+  {
+    id: "d-order-encapsulation",
+    kind: "order",
+    title: "Encapsulation — sortér rekkefølge",
+    prompt: "HTTP-request går ned-gjennom hos avsender. Sortér stegene.",
+    topic: "OSI/TCP-IP",
+    items: [
+      "Applikasjon: HTTP-request lages (GET /side HTTP/1.1)",
+      "Transport: TCP legger på header med src/dst-port",
+      "Network: IP legger på header med src/dst-IP",
+      "Link: Ethernet legger på header med src/dst-MAC",
+      "Physical: bits sendes som spenning/lys/radio",
+    ],
+    explanation:
+      "Mottakeren reverserer rekkefølgen — først lag 2, så 3, så 4, så app.",
+  },
+  {
+    id: "d-match-port-protokoll",
+    kind: "match",
+    title: "Port-nummer → protokoll",
+    prompt: "Match well-known portene til riktig protokoll.",
+    topic: "OSI/TCP-IP",
+    pairs: [
+      { left: "80", right: "HTTP" },
+      { left: "443", right: "HTTPS" },
+      { left: "22", right: "SSH" },
+      { left: "53", right: "DNS" },
+      { left: "25", right: "SMTP" },
+      { left: "21", right: "FTP" },
+      { left: "3306", right: "MySQL" },
+      { left: "5432", right: "PostgreSQL" },
+    ],
+  },
+  {
+    id: "d-quiz-osi-vs-tcpip",
+    kind: "quiz",
+    title: "OSI vs TCP/IP — hovedforskjell",
+    prompt: "Velg riktig.",
+    topic: "OSI/TCP-IP",
+    question: "Hva er hovedforskjellen mellom OSI-modellen og TCP/IP-modellen?",
+    options: [
+      {
+        text: "OSI har 7 lag (teoretisk), TCP/IP har 5 lag (praktisk). Application/Presentation/Session slås sammen.",
+        correct: true,
+        rationale: "OSI er en mer detaljert teoretisk modell; TCP/IP er det Internett faktisk bruker.",
+      },
+      {
+        text: "OSI er for trådløst, TCP/IP er for kablet",
+        correct: false,
+        rationale: "Begge modellene dekker alle medier.",
+      },
+      {
+        text: "TCP/IP er nyere og erstattet OSI",
+        correct: false,
+        rationale: "TCP/IP er faktisk ELDRE (1970-tallet) enn OSI (1984). Men TCP/IP «vant» i praksis.",
+      },
+      {
+        text: "OSI bruker bare TCP, TCP/IP bruker bare IP",
+        correct: false,
+        rationale: "Tull — begge modeller er protokoll-agnostiske rammeverk.",
+      },
+    ],
+  },
+  {
+    id: "d-quiz-arp-lag",
+    kind: "quiz",
+    title: "Hvor bor ARP?",
+    prompt: "Velg riktig.",
+    topic: "OSI/TCP-IP",
+    question: "ARP (Address Resolution Protocol) brukes for å oversette IP-adresser til MAC-adresser. Hvilket lag tilhører den?",
+    options: [
+      {
+        text: "Den ligger på grensen mellom lag 2 og 3 — oversetter mellom dem",
+        correct: true,
+        rationale: "ARP bro-bygger mellom Network (IP) og Link (MAC). Klassisk eksamen-tørrnøtt.",
+      },
+      {
+        text: "Lag 5 — Applikasjon",
+        correct: false,
+        rationale: "Ingen applikasjon snakker ARP direkte — det er nettverk-stakken.",
+      },
+      {
+        text: "Lag 4 — Transport",
+        correct: false,
+        rationale: "Transport snakker porter, ikke MAC.",
+      },
+      {
+        text: "Lag 1 — Fysisk",
+        correct: false,
+        rationale: "Fysisk er signaler, ikke logikk.",
+      },
+    ],
+  },
+  {
+    id: "d-fill-ip-subnet",
+    kind: "fill",
+    title: "Fyll inn IP-subnetting",
+    prompt: "IP-en 192.168.1.42 i nettet /24 — fyll inn riktige verdier.",
+    topic: "OSI/TCP-IP",
+    template:
+      "IP-adresse:    192.168.1.42\nSubnet-maske:  255.255.255.__1__\nNetwork:       __2__\nBroadcast:     192.168.1.__3__\nAntall adresser i nettet: __4__",
+    blanks: ["0", "192.168.1.0", "255", "256"],
+    options: ["0", "1", "255", "256", "128", "192.168.1.0", "192.168.0.0", "10.0.0.0"],
+    explanation:
+      "/24 = 24 bit prefix = 8 bit til host = 2⁸ = 256 adresser (inkl. network og broadcast).",
+  },
+  {
+    id: "d-match-spesielle-ip",
+    kind: "match",
+    title: "Spesielle IP-adresser",
+    prompt: "Match hver IP til hva den betyr.",
+    topic: "OSI/TCP-IP",
+    pairs: [
+      { left: "127.0.0.1", right: "Loopback — deg selv" },
+      { left: "10.0.0.0/8", right: "Privat klasse A (RFC 1918)" },
+      { left: "172.16.0.0/12", right: "Privat klasse B" },
+      { left: "192.168.0.0/16", right: "Privat klasse C — hjemmenett" },
+      { left: "0.0.0.0", right: "«Alle grensesnitt» eller ukjent kilde" },
+      { left: "255.255.255.255", right: "Limited broadcast — samme nett" },
+    ],
+  },
+
+  // ============= TRANSPORTLAG =============
+
+  {
+    id: "d-match-tcp-vs-udp",
+    kind: "match",
+    title: "TCP vs UDP — egenskaper",
+    prompt: "Match hver egenskap til riktig protokoll.",
+    topic: "Transportlag",
+    pairs: [
+      { left: "Pålitelig levering med retransmisjon", right: "TCP" },
+      { left: "Forbindelsesløs — bare send", right: "UDP" },
+      { left: "Krever 3-veis håndtrykk før data", right: "TCP" },
+      { left: "8 byte header, lav overhead", right: "UDP" },
+      { left: "Flow control og congestion control", right: "TCP" },
+      { left: "Rekkefølge ikke garantert", right: "UDP" },
+      { left: "Brukes av HTTP, SSH, SMTP", right: "TCP" },
+      { left: "Brukes av DNS, VoIP, spill", right: "UDP" },
+    ],
+  },
+  {
+    id: "d-order-tcp-handshake",
+    kind: "order",
+    title: "TCP 3-veis håndtrykk",
+    prompt: "Sortér meldingene i klient-server-utvekslingen.",
+    topic: "Transportlag",
+    items: [
+      "Klient → Server: SYN, seq=x",
+      "Server → Klient: SYN+ACK, seq=y, ack=x+1",
+      "Klient → Server: ACK, ack=y+1",
+      "Forbindelsen er nå åpen — data kan flyte",
+    ],
+    explanation:
+      "SYN-ACK sparer en runde — server bekrefter klientens SYN OG sender sin egen i samme melding.",
+  },
+  {
+    id: "d-order-tcp-close",
+    kind: "order",
+    title: "TCP 4-veis avskjed",
+    prompt: "Sortér meldingene for å lukke forbindelsen.",
+    topic: "Transportlag",
+    items: [
+      "Klient sender FIN — «ferdig å sende»",
+      "Server sender ACK",
+      "Server fortsetter å sende resterende data",
+      "Server sender FIN når den også er ferdig",
+      "Klient sender ACK",
+      "Klient venter i TIME_WAIT (2×MSL) før full lukking",
+    ],
+    explanation:
+      "Hver retning lukkes uavhengig. TIME_WAIT hindrer at gamle pakker forveksles med nye forbindelser.",
+  },
+  {
+    id: "d-quiz-tcp-flow-vs-congestion",
+    kind: "quiz",
+    title: "Flow control vs congestion control",
+    prompt: "Velg riktig forskjell.",
+    topic: "Transportlag",
+    question: "Hva er forskjellen mellom flow control og congestion control i TCP?",
+    options: [
+      {
+        text: "Flow control beskytter MOTTAKEREN; congestion control beskytter NETTVERKET",
+        correct: true,
+        rationale: "rwnd er fra mottakeren («jeg har ikke plass»); cwnd er TCP-avsenderens estimat av nettverket («pakker forsvinner»).",
+      },
+      {
+        text: "Flow control er for TCP, congestion control er for UDP",
+        correct: false,
+        rationale: "UDP har ingen av delene — det er hele poenget.",
+      },
+      {
+        text: "Begge handler om å begrense hastighet — bare ulike navn",
+        correct: false,
+        rationale: "De løser to ulike problemer.",
+      },
+      {
+        text: "Congestion control krever ekstra header-felt",
+        correct: false,
+        rationale: "Begge fungerer med standard TCP-header.",
+      },
+    ],
+    explanation:
+      "Faktisk send-hastighet er min(rwnd, cwnd) — begge må gi grønt lys.",
+  },
+  {
+    id: "d-quiz-tcp-fast-retransmit",
+    kind: "quiz",
+    title: "TCP fast retransmit — trigger",
+    prompt: "Velg riktig.",
+    topic: "Transportlag",
+    question: "Hva trigger TCP fast retransmit?",
+    options: [
+      {
+        text: "Tre duplikate ACK-er i rad",
+        correct: true,
+        rationale: "Tre dupl. ACK-er signaliserer at mottaker har mottatt påfølgende segmenter men venter på et tapt — retransmitter umiddelbart uten å vente på timeout.",
+      },
+      {
+        text: "Timeout på en pakke",
+        correct: false,
+        rationale: "Det er REGULAR retransmit. Fast retransmit er raskere — uten å vente.",
+      },
+      {
+        text: "En enkelt duplikat ACK",
+        correct: false,
+        rationale: "Én duplikat kan være forbigående reordering. Tre regnes som tap.",
+      },
+      {
+        text: "RST-flagg fra mottaker",
+        correct: false,
+        rationale: "RST er forbindelsesnullstilling, ikke retransmit-trigger.",
+      },
+    ],
+  },
+  {
+    id: "d-quiz-tcp-vs-udp-velg",
+    kind: "quiz",
+    title: "TCP eller UDP for use-case",
+    prompt: "Velg det best passende.",
+    topic: "Transportlag",
+    question: "Du designer et live video-conference-system. Hvilken transport-protokoll velger du for selve video-strømmen?",
+    options: [
+      {
+        text: "UDP — heller dropp en frame enn å pause hele samtalen",
+        correct: true,
+        rationale: "Sanntid: en frame som kommer 1 sekund forsinket er verdiløs uansett. TCP-retransmisjon ville stoppet strømmen.",
+      },
+      {
+        text: "TCP — vi vil ikke miste en eneste frame",
+        correct: false,
+        rationale: "Real-time video er ikke pålitelig-først. Et tapt frame er bedre enn en frosset skjerm.",
+      },
+      {
+        text: "Begge — TCP for video, UDP for lyd",
+        correct: false,
+        rationale: "Begge skal være UDP — eller QUIC/SRT som bygger på UDP.",
+      },
+      {
+        text: "FTP",
+        correct: false,
+        rationale: "FTP er en applikasjonsprotokoll for filer, ikke streaming.",
+      },
+    ],
+    explanation: "Generelt for sanntid: UDP. For data som MÅ være helt riktig: TCP.",
+  },
+  {
+    id: "d-fill-tcp-segment",
+    kind: "fill",
+    title: "Fyll inn TCP-segment-feltene",
+    prompt: "TCP-headeren har 6 viktige felter du må kunne.",
+    topic: "Transportlag",
+    template:
+      "TCP-header inneholder:\n  source __1__:        avsender-prosess\n  destination __1__:   mottaker-prosess\n  __2__ number:        rekkefølge-nummer for bytene\n  __3__ number:        bekrefter mottatt opp til\n  flags:               SYN, __4__, FIN, RST, PSH, URG\n  window size:         hvor mye __5__ kan ta imot",
+    blanks: ["port", "sequence", "ack", "ACK", "mottaker"],
+    options: ["port", "address", "sequence", "byte", "ack", "ACK", "SYN", "FIN", "mottaker", "avsender"],
+    explanation:
+      "Disse 6 + window-felt-et er kjernen i hva TCP gjør forskjellig fra UDP.",
+  },
+
+  // ============= KRYPTOGRAFI =============
+
+  {
+    id: "d-match-cia-trekanten",
+    kind: "match",
+    title: "CIA-trekanten — match garanti til trussel",
+    prompt: "Hver krypto-garanti svarer til en konkret trussel.",
+    topic: "Kryptografi",
+    pairs: [
+      { left: "Konfidensialitet", right: "Beskytter mot avlytting — kryptering" },
+      { left: "Integritet", right: "Beskytter mot endring — hash + MAC" },
+      { left: "Autentisitet", right: "Beskytter mot impersonation — signatur/sertifikat" },
+    ],
+  },
+  {
+    id: "d-quiz-symm-vs-asymm",
+    kind: "quiz",
+    title: "Symmetrisk eller asymmetrisk?",
+    prompt: "Velg det best dekkende svaret.",
+    topic: "Kryptografi",
+    question: "Hva er hovedforskjellen mellom symmetrisk og asymmetrisk kryptering?",
+    options: [
+      {
+        text: "Symmetrisk bruker SAMME nøkkel begge veier; asymmetrisk har en public + en private",
+        correct: true,
+        rationale: "Det er hele forskjellen. Symmetrisk er raskere men krever sikker nøkkel-utveksling. Asymmetrisk løser nettopp det problemet.",
+      },
+      {
+        text: "Symmetrisk er sikrere",
+        correct: false,
+        rationale: "Begge er sikre når riktig brukt. Forskjellen er hvordan nøkkelen er strukturert.",
+      },
+      {
+        text: "Asymmetrisk brukes bare for hash",
+        correct: false,
+        rationale: "Hash er en helt tredje kategori — enveis.",
+      },
+      {
+        text: "Symmetrisk fungerer ikke over internett",
+        correct: false,
+        rationale: "Den fungerer fint — etter at man har avtalt nøkkelen. Det er DEN delen som er hard.",
+      },
+    ],
+  },
+  {
+    id: "d-quiz-hash-vs-encrypt",
+    kind: "quiz",
+    title: "Hash eller kryptering?",
+    prompt: "Velg riktig løsning.",
+    topic: "Kryptografi",
+    question: "Du skal lagre passord i en database. Skal du KRYPTERE eller HASHE dem?",
+    options: [
+      {
+        text: "Hash — med slow hash (bcrypt, Argon2), enveis så de aldri kan reverseres",
+        correct: true,
+        rationale: "Passord trenger ikke å kunne reverseres — du sammenligner hash. Slow hash gjør brute-force dyrt.",
+      },
+      {
+        text: "Kryptere med AES",
+        correct: false,
+        rationale: "Kryptering er reversibelt — hvis nøkkelen lekker, lekker alle passord. Hash er enveis.",
+      },
+      {
+        text: "Lagre i klartekst",
+        correct: false,
+        rationale: "Aldri. Lekkasje = alle passord eksponert.",
+      },
+      {
+        text: "SHA-256",
+        correct: false,
+        rationale: "Bedre enn klartekst, men SHA-256 er for raskt for passord. GPU-er tester milliarder per sekund.",
+      },
+    ],
+  },
+  {
+    id: "d-order-digital-signatur",
+    kind: "order",
+    title: "Digital signatur — sortér flyt",
+    prompt: "Alice signerer et dokument. Sortér stegene fra signering til verifisering.",
+    topic: "Kryptografi",
+    items: [
+      "Alice beregner hash av dokumentet (SHA-256)",
+      "Alice krypterer hashen med sin PRIVATE nøkkel → signatur",
+      "Alice publiserer (dokument, signatur) sammen",
+      "Bob beregner sin egen hash av dokumentet",
+      "Bob dekrypterer signaturen med Alice sin PUBLIC nøkkel",
+      "Bob sammenligner: matcher → ekte signatur",
+    ],
+    explanation:
+      "Signering = privat nøkkel. Verifisering = public nøkkel. Motsatt av kryptering hvor public krypterer og private dekrypterer.",
+  },
+  {
+    id: "d-match-krypto-algoritmer",
+    kind: "match",
+    title: "Krypto-algoritme → kategori",
+    prompt: "Plasser algoritmen i riktig kategori.",
+    topic: "Kryptografi",
+    pairs: [
+      { left: "AES-256", right: "Symmetrisk kryptering" },
+      { left: "ChaCha20", right: "Symmetrisk kryptering" },
+      { left: "RSA-2048", right: "Asymmetrisk kryptering" },
+      { left: "ECC (Curve25519)", right: "Asymmetrisk kryptering" },
+      { left: "SHA-256, SHA-3", right: "Hash-funksjon" },
+      { left: "HMAC-SHA256", right: "MAC (integritet med nøkkel)" },
+      { left: "bcrypt, Argon2", right: "Passord-hash (slow)" },
+    ],
+  },
+  {
+    id: "d-quiz-pki-stol",
+    kind: "quiz",
+    title: "PKI — hvorfor stoler nettleseren på et sertifikat?",
+    prompt: "Velg den primære grunnen.",
+    topic: "Kryptografi",
+    question: "Du går til https://nettbank.no. Hvorfor godtar nettleseren sertifikatet?",
+    options: [
+      {
+        text: "En CA som nettleseren stoler på har signert sertifikatet, og signatur+domene+dato sjekkes ut",
+        correct: true,
+        rationale: "Trust-chain: nettleserens trust store → CA → ev. mellom-CA → server-sertifikat. Hvert ledd må verifiseres.",
+      },
+      {
+        text: "Serveren har et offentlig kjent fingeravtrykk",
+        correct: false,
+        rationale: "Ingen sentral fingeravtrykk-database. Det er CA-signaturer som er roten av tillit.",
+      },
+      {
+        text: "Sertifikatet er kryptert med AES",
+        correct: false,
+        rationale: "Sertifikatet er en signert public key — ikke kryptert.",
+      },
+      {
+        text: "DNS bekrefter at sertifikatet er ekte",
+        correct: false,
+        rationale: "DNS oversetter navn til IP. Det er PKI som bekrefter identitet.",
+      },
+    ],
+  },
+  {
+    id: "d-quiz-md5-sha1-status",
+    kind: "quiz",
+    title: "MD5 og SHA-1 — hvorfor ikke bruke dem?",
+    prompt: "Velg det riktige svaret.",
+    topic: "Kryptografi",
+    question: "Hvorfor brukes ikke MD5 og SHA-1 lenger i nye systemer?",
+    options: [
+      {
+        text: "Kollisjoner er funnet — to ulike inputs kan gi samme hash",
+        correct: true,
+        rationale: "Begge har dokumenterte kollisjons-angrep. Det bryter collision-resistance og gjør dem ubrukelige for signaturer/sertifikater.",
+      },
+      {
+        text: "De er for trege",
+        correct: false,
+        rationale: "Faktisk for RASKE for passord, men det er ikke hovedgrunnen til å droppe dem.",
+      },
+      {
+        text: "Output er for lite",
+        correct: false,
+        rationale: "MD5 er 128 bit, SHA-1 er 160 bit — det er kollisjons-angrep som er problemet, ikke output-størrelse alene.",
+      },
+      {
+        text: "Begge er patenterte",
+        correct: false,
+        rationale: "Begge er åpne standarder.",
+      },
+    ],
+  },
+
+  // ============= TLS =============
+
+  {
+    id: "d-order-tls-handshake",
+    kind: "order",
+    title: "TLS 1.3 håndtrykk — sortér stegene",
+    prompt: "Sortér meldinger i TLS 1.3-håndtrykket.",
+    topic: "TLS",
+    items: [
+      "Klient → Server: ClientHello (versjoner, ciphers, SNI, klient-random, key share)",
+      "Server → Klient: ServerHello (valgt versjon/cipher, server-random, server key share)",
+      "Server → Klient: Certificate + CertificateVerify (signert med private key)",
+      "Begge sider utleder samme symmetriske session-nøkkel via ECDHE",
+      "Begge sider sender Finished kryptert med session-nøkkel",
+      "Applikasjonsdata flyter — kryptert med symmetrisk nøkkel",
+    ],
+    explanation:
+      "TLS 1.3 gjør hele dette på 1 RTT — mye raskere enn TLS 1.2 sine 2 RTT.",
+  },
+  {
+    id: "d-quiz-tls-13-vs-12",
+    kind: "quiz",
+    title: "TLS 1.3 vs 1.2 — viktigste endring",
+    prompt: "Velg den mest dekkende.",
+    topic: "TLS",
+    question: "Hva er den viktigste sikkerhetsendringen fra TLS 1.2 til 1.3?",
+    options: [
+      {
+        text: "Perfect Forward Secrecy er PÅKREVD, og utdaterte ciphers er fjernet",
+        correct: true,
+        rationale: "TLS 1.2 lot deg konfigurere PFS bort. TLS 1.3 gjør det obligatorisk + fjerner alt utrygt (RSA static, SHA-1, RC4, etc.).",
+      },
+      {
+        text: "TLS 1.3 bruker bare RSA",
+        correct: false,
+        rationale: "Tvert imot — TLS 1.3 fjernet RSA-static og krever ECDHE.",
+      },
+      {
+        text: "TLS 1.3 er ikke kompatibel med TLS 1.2",
+        correct: false,
+        rationale: "Servere kan tilby begge, klienter velger den nyeste den støtter.",
+      },
+      {
+        text: "TLS 1.3 har ingen håndtrykk-fase",
+        correct: false,
+        rationale: "Den HAR håndtrykk — bare raskere (1 RTT).",
+      },
+    ],
+  },
+  {
+    id: "d-match-tls-meldinger",
+    kind: "match",
+    title: "TLS-melding → formål",
+    prompt: "Match hver melding til hva den faktisk gjør.",
+    topic: "TLS",
+    pairs: [
+      { left: "ClientHello", right: "Klient sier hvilke versjoner/ciphers den støtter + sitt random-tall" },
+      { left: "ServerHello", right: "Server velger versjon + cipher, sender sitt random" },
+      { left: "Certificate", right: "Server sender sitt X.509-sertifikat" },
+      { left: "CertificateVerify", right: "Server signerer håndtrykket med sin private key" },
+      { left: "Finished", right: "Bekrefter at session-nøklene matcher og håndtrykket var integritetsbeskyttet" },
+    ],
+  },
+  {
+    id: "d-quiz-tls-pfs",
+    kind: "quiz",
+    title: "Perfect Forward Secrecy — hvorfor?",
+    prompt: "Velg det best dekkende svaret.",
+    topic: "TLS",
+    question: "Hva er fordelen med Perfect Forward Secrecy (PFS)?",
+    options: [
+      {
+        text: "Selv om serverens private nøkkel lekker SENERE, kan ikke gamle session-er dekrypteres",
+        correct: true,
+        rationale: "Hver session bruker en ephemeral DH-nøkkel som forkastes etterpå. Den private RSA/EC-nøkkelen brukes BARE til signering, ikke nøkkel-utveksling.",
+      },
+      {
+        text: "PFS gjør TLS-håndtrykket raskere",
+        correct: false,
+        rationale: "Det legger faktisk litt på — du må regne ut ECDHE per session.",
+      },
+      {
+        text: "PFS hindrer MITM-angrep",
+        correct: false,
+        rationale: "PFS handler om beskyttelse av PRE-RECORD trafikk hvis nøkkel lekker fremover. MITM er en annen kategori.",
+      },
+      {
+        text: "PFS krever ingen sertifikater",
+        correct: false,
+        rationale: "Sertifikater trengs fortsatt for autentisitet.",
+      },
+    ],
+  },
+  {
+    id: "d-quiz-tls-sertifikat-validering",
+    kind: "quiz",
+    title: "Sertifikatvalidering — hva sjekkes?",
+    prompt: "Flere riktige svar.",
+    topic: "TLS",
+    multi: true,
+    question: "Når nettleseren validerer et TLS-sertifikat, hva sjekker den?",
+    options: [
+      { text: "Signaturen verifiserer mot CA-ens public key", correct: true, rationale: "Roten av PKI-tillit." },
+      { text: "Sertifikatkjeden går opp til en trusted root", correct: true, rationale: "Hele kjeden må være intakt." },
+      { text: "Dato er gyldig (ikke utløpt, ikke fra fremtiden)", correct: true, rationale: "Utløpte sertifikater avvises." },
+      { text: "CN/SAN matcher domenenavnet", correct: true, rationale: "Hindrer at et gyldig sertifikat for fake.com presenteres for nettbank.no." },
+      { text: "Sertifikatet er ikke tilbakekalt (CRL/OCSP)", correct: true, rationale: "Sjekker mot revocation lists." },
+      { text: "Sertifikatet bruker SHA-256", correct: false, rationale: "Anbefalt, men ikke et HARD krav — kan være andre moderne hash." },
+    ],
+  },
+
+  // ============= NETTVERKSSIKKERHET =============
+
+  {
+    id: "d-match-angrep-forsvar",
+    kind: "match",
+    title: "Angrep → riktig forsvar",
+    prompt: "Match hver klassisk nettverksangrep til sitt primære forsvar.",
+    topic: "Nettverkssikkerhet",
+    pairs: [
+      { left: "ARP spoofing / MITM på LAN", right: "Static ARP, DAI på switch, TLS for end-to-end" },
+      { left: "DNS-spoofing", right: "DNSSEC + DoH/DoT, HSTS" },
+      { left: "TCP SYN flood", right: "SYN cookies, rate limiting på brannmur" },
+      { left: "DDoS", right: "CDN/anti-DDoS-tjeneste (Cloudflare), kapasitet" },
+      { left: "Port scanning", right: "Default deny brannmur, fail2ban, port knocking" },
+      { left: "Sniffing på åpent WiFi", right: "Alltid HTTPS, VPN, WPA3 på AP" },
+    ],
+  },
+  {
+    id: "d-quiz-stateful-vs-stateless",
+    kind: "quiz",
+    title: "Stateful vs stateless brannmur",
+    prompt: "Velg hovedforskjellen.",
+    topic: "Nettverkssikkerhet",
+    question: "Hva er hovedforskjellen mellom en stateful og stateless brannmur?",
+    options: [
+      {
+        text: "Stateful holder oversikt over åpne forbindelser; stateless sjekker hver pakke isolert",
+        correct: true,
+        rationale: "Stateful kan automatisk tillate retur-trafikk; stateless må ha eksplisitte regler for begge retninger.",
+      },
+      {
+        text: "Stateful er for TCP, stateless er for UDP",
+        correct: false,
+        rationale: "Begge støtter begge — stateful holder også UDP-«flow»-state.",
+      },
+      {
+        text: "Stateless er sikrere",
+        correct: false,
+        rationale: "Stateful gir mer presis kontroll. Stateless er enklere men krever bredere åpninger.",
+      },
+      {
+        text: "Stateless kan ikke kjøre på Linux",
+        correct: false,
+        rationale: "iptables kan kjøre i begge moduser.",
+      },
+    ],
+  },
+  {
+    id: "d-quiz-ids-vs-ips",
+    kind: "quiz",
+    title: "IDS vs IPS",
+    prompt: "Velg forskjellen.",
+    topic: "Nettverkssikkerhet",
+    question: "Hva er forskjellen mellom IDS og IPS?",
+    options: [
+      {
+        text: "IDS er PASSIV (varsler), IPS er AKTIV (dropper)",
+        correct: true,
+        rationale: "IDS plasseres på SPAN-port og kan ikke stoppe trafikk. IPS er in-line og dropper.",
+      },
+      {
+        text: "IDS er for store nett, IPS for små",
+        correct: false,
+        rationale: "Ingen sammenheng med skala.",
+      },
+      {
+        text: "IDS bruker AI, IPS bruker regler",
+        correct: false,
+        rationale: "Begge kan bruke begge teknikker.",
+      },
+      {
+        text: "IDS er gratis, IPS er kommersielt",
+        correct: false,
+        rationale: "Begge finnes som åpen kildekode (Snort/Suricata).",
+      },
+    ],
+  },
+  {
+    id: "d-quiz-default-deny",
+    kind: "quiz",
+    title: "Default deny — hvorfor?",
+    prompt: "Velg det best dekkende svaret.",
+    topic: "Nettverkssikkerhet",
+    question: "Hvorfor er «default deny» (blokker alt, åpne kun det du trenger) standard for brannmurer?",
+    options: [
+      {
+        text: "Du vet hva du EKSPONERER. Default allow betyr at glemte tjenester står åpne",
+        correct: true,
+        rationale: "Eksplisitt allowlist er forsvarlig. Default allow inviterer feil — én tjeneste glemt eller en port åpnet av en utvikler «midlertidig».",
+      },
+      {
+        text: "Default deny er raskere",
+        correct: false,
+        rationale: "Performance er nesten lik. Sikkerhet er hovedgrunnen.",
+      },
+      {
+        text: "Default allow er bare for hjemmenett",
+        correct: false,
+        rationale: "Default deny anbefales overalt, også hjemmenett.",
+      },
+      {
+        text: "Default deny krever mindre logging",
+        correct: false,
+        rationale: "Du logger fortsatt drop-pakker.",
+      },
+    ],
+  },
+  {
+    id: "d-fill-iptables",
+    kind: "fill",
+    title: "Fyll inn iptables-regler",
+    prompt: "Konfigurer en typisk web-server-brannmur.",
+    topic: "Nettverkssikkerhet",
+    language: "sql",
+    template:
+      "# Tillat etablerte forbindelser\niptables -A INPUT -m state --state __1__,RELATED -j ACCEPT\n\n# Tillat SSH fra admin-nettet\niptables -A INPUT -p tcp -s 10.0.0.0/24 --dport __2__ -j ACCEPT\n\n# Tillat HTTPS fra alle\niptables -A INPUT -p tcp --dport __3__ -j ACCEPT\n\n# Default __4__ — alt annet droppes\niptables -P INPUT __5__",
+    blanks: ["ESTABLISHED", "22", "443", "deny", "DROP"],
+    options: ["ESTABLISHED", "NEW", "RELATED", "22", "80", "443", "8080", "deny", "allow", "DROP", "ACCEPT", "REJECT"],
+    explanation:
+      "Først tillat etablerte (så retur-trafikk fungerer), så spesifikke tillatelser, så default DROP. Default DROP MÅ være siste — ellers trumfes den.",
+  },
+  {
+    id: "d-quiz-nat-protection",
+    kind: "quiz",
+    title: "Beskytter NAT?",
+    prompt: "Velg det mest presise svaret.",
+    topic: "Nettverkssikkerhet",
+    question: "Folk sier ofte at NAT «beskytter» et hjemmenett. Stemmer dette?",
+    options: [
+      {
+        text: "Som BIVIRKNING — utenfra kan ikke noen koble seg inn uten en etablert NAT-mapping. Men NAT er ikke designet som brannmur.",
+        correct: true,
+        rationale: "Korrekt. NAT skjuler interne IP-er og hindrer uoppfordret innkommende. Men du må fortsatt ha brannmur for å konfigurere policy.",
+      },
+      {
+        text: "Ja — NAT er en fullverdig brannmur",
+        correct: false,
+        rationale: "Det er en bivirkning. Eksplisitt brannmur trengs.",
+      },
+      {
+        text: "Nei — NAT gir ingen sikkerhetsfordeler",
+        correct: false,
+        rationale: "Det gir BIVIRKNING-beskyttelse. Ikke designet for det, men effekten finnes.",
+      },
+      {
+        text: "Bare IPv6 NAT beskytter",
+        correct: false,
+        rationale: "IPv6 trenger vanligvis ikke NAT — det er IPv4 som har det.",
+      },
+    ],
+  },
+  {
+    id: "d-match-web-server-sjekkliste",
+    kind: "match",
+    title: "Web-server-sjekkliste — match tiltak til hva det hindrer",
+    prompt: "Hver konfigurasjon beskytter mot en konkret klasse angrep.",
+    topic: "Nettverkssikkerhet",
+    pairs: [
+      { left: "HSTS-header", right: "Hindrer downgrade fra HTTPS til HTTP" },
+      { left: "Bare TLS 1.2/1.3, fjern eldre", right: "Hindrer POODLE, BEAST, og andre angrep på gamle versjoner" },
+      { left: "fail2ban på SSH", right: "Hindrer brute-force på passord" },
+      { left: "Rate limiting på login", right: "Hindrer credential stuffing" },
+      { left: "CSP-header", right: "Reduserer XSS-skade" },
+      { left: "Bare port 443 åpen utenfra", right: "Reduserer angrepsoverflate" },
+    ],
+  },
+  {
+    id: "d-order-defense-in-depth",
+    kind: "order",
+    title: "Forsvarsdyp — sortér lagene",
+    prompt: "Sortér lagene fra ute (Internett) til inne (database) i en typisk web-app.",
+    topic: "Nettverkssikkerhet",
+    items: [
+      "DDoS-mitigation / CDN (Cloudflare)",
+      "WAF — Web Application Firewall",
+      "Load balancer + TLS-terminering",
+      "Brannmur (stateful) — kun port 443 åpen",
+      "Applikasjons-servere",
+      "Intern brannmur — kun DB-port fra app-server",
+      "Database (privat nett, ikke eksponert)",
+    ],
+  },
 ];
