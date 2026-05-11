@@ -1933,6 +1933,25 @@ __5__ endfor __6__
     explanation:
       "init lager .git-mappen, add staser endringer, commit lagrer dem lokalt, remote add kobler til GitHub-repoet, push -u sender dem opp og setter upstream slik at senere `git push` alene fungerer.",
   },
+  {
+    id: "d-order-git-branch-flow",
+    kind: "order",
+    title: "Branch-flyt: jobbe på en feature og merge tilbake",
+    prompt:
+      "Sett kommandoene i riktig rekkefølge for å lage en feature-branch, gjøre endringer, og merge tilbake til main.",
+    topic: "Git",
+    items: [
+      "git checkout -b feat/min-feature",
+      "# rediger filer ...",
+      "git add .",
+      "git commit -m \"min feature\"",
+      "git checkout main",
+      "git merge feat/min-feature",
+      "git push",
+    ],
+    explanation:
+      "checkout -b lager OG bytter til den nye branchen. Du jobber der, committer, så bytter du tilbake til main og fletter inn branchen. Push helt til slutt. Kurset følger nøyaktig denne flyten i git.md.",
+  },
 
   // ============= HTTP-METODER (kap. 7) =============
   {
