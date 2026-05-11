@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { DragMatch } from "@/components/learn/DragMatch";
 import { DragOrder } from "@/components/learn/DragOrder";
 import { DragFill } from "@/components/learn/DragFill";
+import { DragQuiz } from "@/components/learn/DragQuiz";
 import { CrowsFoot } from "@/components/learn/CrowsFoot";
 import { DRAG_EXERCISES } from "@/lib/learn/dragExercises";
 import { cn } from "@/lib/utils";
@@ -25,14 +26,15 @@ export const Route = createFileRoute("/drag")({
   component: DragPage,
 });
 
-const KIND_LABEL: Record<"match" | "order" | "fill" | "crowsfoot", string> = {
+const KIND_LABEL: Record<"match" | "order" | "fill" | "crowsfoot" | "quiz", string> = {
   match: "Koble",
   order: "Sortér",
   fill: "Fyll inn",
   crowsfoot: "Kråkefot",
+  quiz: "Quiz",
 };
 
-type KindFilter = "all" | "match" | "order" | "fill" | "crowsfoot";
+type KindFilter = "all" | "match" | "order" | "fill" | "crowsfoot" | "quiz";
 
 function DragPage() {
   const [activeId, setActiveId] = useState(DRAG_EXERCISES[0]?.id ?? "");
@@ -66,13 +68,14 @@ function DragPage() {
         <div className="mb-6">
           <h1 className="text-2xl font-bold tracking-tight">Drag-oppgaver</h1>
           <p className="text-sm text-muted-foreground mt-1">
-            Tre typer: koble par, sortér rekkefølge, og fyll inn manglende nøkkelord. Hold
-            musen over et element og dra til riktig plass.
+            Fem typer: koble par, sortér rekkefølge, fyll inn manglende nøkkelord, plasser
+            kråkefot-symboler, og svar flervalgs-quiz. Hold musen over et element og dra
+            til riktig plass.
           </p>
         </div>
 
         <div className="flex flex-wrap gap-2 mb-5">
-          {(["all", "match", "order", "fill", "crowsfoot"] as const).map((k) => (
+          {(["all", "match", "order", "fill", "crowsfoot", "quiz"] as const).map((k) => (
             <button
               key={k}
               onClick={() => setKindFilter(k)}
@@ -140,6 +143,7 @@ function DragPage() {
                 {exercise.kind === "crowsfoot" && (
                   <CrowsFoot key={exercise.id} exercise={exercise} />
                 )}
+                {exercise.kind === "quiz" && <DragQuiz key={exercise.id} exercise={exercise} />}
               </div>
             ) : (
               <div className="rounded-xl border border-border bg-card p-8 text-center text-muted-foreground">

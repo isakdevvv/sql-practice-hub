@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/accordion";
 import { KrakefotSymbols } from "./KrakefotSymbols";
 import { RelasjonLesing } from "./RelasjonLesing";
+import { SterkSvakRelasjon } from "./SterkSvakRelasjon";
 import { CardinalityCard } from "./CardinalityCard";
 import { MappingRulesTable } from "./MappingRulesTable";
 import { ErDrill } from "./ErDrill";
@@ -56,6 +57,9 @@ export function ErMappingPage() {
 
         {/* 1b. Hvordan lese et forhold */}
         <RelasjonLesing />
+
+        {/* 1c. Sterke vs. svake forhold */}
+        <SterkSvakRelasjon />
 
         {/* 2. Tre kardinaliteter */}
         <section className="mb-10">

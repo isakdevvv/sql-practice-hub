@@ -2498,4 +2498,1132 @@ __5__ endfor __6__
     explanation:
       "Flere relasjoner mellom samme entitetspar er vanlig — modelleres som adskilte relasjoner med hvert sitt sett kardinaliteter. Her: avsendt-av (1:N) og mottatt-av (1:N) er to ulike FK-er i MELDING: avsenderId og mottakerId, begge → Bruker(id).",
   },
+
+  // ============= STERKE vs SVAKE RELASJONER (heltrukken vs stiplet) =============
+  // I klassisk ER-notasjon vises identifiserende relasjon (svak entitet) med
+  // dobbel linje rundt entiteten, dobbel diamant rundt relasjonen, og stiplet
+  // understrek på den partielle nøkkelen. I kråkefot brukes ofte stiplet linje
+  // for ikke-identifiserende relasjon, heltrukket for identifiserende.
+
+  {
+    id: "d-match-strong-weak",
+    kind: "match",
+    title: "Sterk vs. svak entitet — kjenn igjen",
+    prompt:
+      "Koble hver setning til riktig type. Forskjellen avgjør om PK kan stå alene eller må inkludere eier-FK.",
+    topic: "ER-modell",
+    pairs: [
+      {
+        left: "KUNDE — kan eksistere uten andre tabeller",
+        right: "Sterk entitet (heltrukken enkelt linje rundt rektangelet)",
+      },
+      {
+        left: "ORDRELINJE — kan ikke eksistere uten en ORDRE",
+        right: "Svak entitet (dobbel linje rundt rektangelet)",
+      },
+      {
+        left: "PASIENT — har eget pasientnr som identifiserer entydig",
+        right: "Sterk entitet — PK er ikke avhengig av andre",
+      },
+      {
+        left: "AVHENGIG (familiemedlem) — kun ID innenfor én ansatt",
+        right: "Svak entitet — PK = (ansattNr, avh-løpenr)",
+      },
+    ],
+    explanation:
+      "Tommelfingerregelen: kan tabellen ha en rad uten å peke på noen annen? → sterk. Trenger den eier-FK-en som DEL av PK for å være unik? → svak.",
+  },
+  {
+    id: "d-match-relasjon-linjetyper",
+    kind: "match",
+    title: "Linjetyper — heltrukken vs. stiplet",
+    prompt:
+      "I ER-diagrammer skiller man identifiserende (svak) og ikke-identifiserende (vanlig) relasjon. Match.",
+    topic: "ER-modell",
+    pairs: [
+      {
+        left: "Heltrukken linje (identifiserende)",
+        right: "Eier-FK INNGÅR i barnets primærnøkkel — barnet er svak entitet",
+      },
+      {
+        left: "Stiplet linje (ikke-identifiserende)",
+        right: "Eier-FK er bare en vanlig FK — barnet har egen, uavhengig PK",
+      },
+      {
+        left: "Dobbelt rektangel",
+        right: "Markerer at entiteten er svak — total deltakelse mot eier",
+      },
+      {
+        left: "Dobbel diamant",
+        right: "Markerer en identifiserende relasjon (klassisk Chen-notasjon)",
+      },
+      {
+        left: "Stiplet understrek på attributt",
+        right: "Partiell nøkkel — bare unik innenfor én eier",
+      },
+    ],
+    explanation:
+      "Mange verktøy bruker bare heltrukken/stiplet linje uten dobbel-symboler. Da er det LINJEN som forteller om relasjonen er identifiserende (heltrukken) eller ikke (stiplet).",
+  },
+  {
+    id: "d-quiz-strong-weak-ordrelinje",
+    kind: "quiz",
+    title: "Hva slags entitet er ORDRELINJE?",
+    prompt: "Velg det best dekkende svaret.",
+    topic: "ER-modell",
+    question:
+      "ORDRELINJE har følgende PK: (ordreNr, linjeNr) der ordreNr er FK til ORDRE og linjeNr bare er unikt INNENFOR én ordre. Hva slags entitet er ORDRELINJE?",
+    options: [
+      {
+        text: "Svak entitet med identifiserende relasjon til ORDRE",
+        correct: true,
+        rationale:
+          "Identifiserende fordi ordreNr (eier-FK) er DEL av PK. Svak fordi linjeNr alene ikke er unik på tvers av ordrer.",
+      },
+      {
+        text: "Sterk entitet — den har jo en sammensatt primærnøkkel",
+        correct: false,
+        rationale:
+          "Sammensatt PK gjør deg ikke automatisk sterk. Sterk = kan identifiseres uten eier-FK.",
+      },
+      {
+        text: "M:N-koblingstabell",
+        correct: false,
+        rationale:
+          "En koblingstabell har FK-er til to forskjellige tabeller, ikke bare én. ORDRELINJE peker bare til ORDRE (og evt. PRODUKT — men selve eierskapet er ORDRE).",
+      },
+      {
+        text: "Bare en vanlig 1:N-relasjon — ingenting svakt der",
+        correct: false,
+        rationale:
+          "Den ER 1:N med ORDRE, men selve entiteten klassifiseres som svak fordi den ikke kan eksistere uten den.",
+      },
+    ],
+    explanation:
+      "Svak entitet → tegnes med dobbel ramme / heltrukken linje. PK = (eier-FK, partiell nøkkel). FK skal som regel ha ON DELETE CASCADE: sletter du ordren, forsvinner linjene.",
+  },
+  {
+    id: "d-quiz-identifying-vs-not",
+    kind: "quiz",
+    title: "Identifiserende eller ikke?",
+    prompt: "Velg riktig diagnose for hvert scenario.",
+    topic: "ER-modell",
+    question:
+      "Tabellen Garantibevis(serieNr, kjøpsdato, fk_bestilling). serieNr er unik på tvers av hele systemet. fk_bestilling peker på en Bestilling. Hva slags relasjon er det fra Garantibevis til Bestilling?",
+    options: [
+      {
+        text: "Ikke-identifiserende (stiplet linje) — Garantibevis er sterk",
+        correct: true,
+        rationale:
+          "Garantibevis har egen unik PK (serieNr) og kan identifiseres uten å vite hvilken bestilling den hører til. fk_bestilling er bare en vanlig FK.",
+      },
+      {
+        text: "Identifiserende (heltrukken linje) — Garantibevis er svak",
+        correct: false,
+        rationale:
+          "Ville krevd at fk_bestilling var DEL av PK. Her er PK serieNr alene.",
+      },
+      {
+        text: "M:N-relasjon",
+        correct: false,
+        rationale: "Et garantibevis tilhører én bestilling. 1:N, ikke M:N.",
+      },
+    ],
+    explanation:
+      "Spørsmålet å stille: er eier-FK DEL av barnets PK? Ja → identifiserende/svak. Nei → ikke-identifiserende/sterk. Stiplet vs. heltrukken linje viser akkurat dette.",
+  },
+
+  // ============= HTML — semantiske elementer & dokumentstruktur =============
+  {
+    id: "d-fill-html-skeleton",
+    kind: "fill",
+    title: "HTML-skjelett — minste gyldige dokument",
+    prompt: "Fyll inn de manglende delene av en HTML-fil. Dette er hodet ALLE filer starter med.",
+    topic: "HTML",
+    language: "html",
+    template:
+      "<!DOCTYPE __1__>\n<html lang=\"no\">\n  <__2__>\n    <meta charset=\"UTF-8\" />\n    <__3__>Min side</__3__>\n  </__2__>\n  <__4__>\n    <h1>Hei verden</h1>\n  </__4__>\n</html>",
+    blanks: ["html", "head", "title", "body"],
+    options: ["html", "head", "header", "title", "body", "main", "section", "h1"],
+    explanation:
+      "<!DOCTYPE html> forteller nettleseren at det er HTML5. <head> har metadata (vises ikke), <body> har innholdet (vises). <title> styrer fanenavnet og vises i søkeresultater.",
+  },
+  {
+    id: "d-fill-html-semantic",
+    kind: "fill",
+    title: "Semantiske elementer — sideoppsett",
+    prompt:
+      "Bytt ut de generiske <div>-ene med semantiske tags. Skjermlesere og søkemotorer bruker disse for å forstå strukturen.",
+    topic: "HTML",
+    language: "html",
+    template:
+      "<body>\n  <__1__>\n    <h1>Bloggen min</h1>\n    <__2__>\n      <a href=\"/\">Hjem</a>\n      <a href=\"/om\">Om</a>\n    </__2__>\n  </__1__>\n\n  <__3__>\n    <__4__>\n      <h2>Innlegg om HTML</h2>\n      <p>Det er nyttig.</p>\n    </__4__>\n  </__3__>\n\n  <__5__>\n    <p>© 2026</p>\n  </__5__>\n</body>",
+    blanks: ["header", "nav", "main", "article", "footer"],
+    options: [
+      "header",
+      "nav",
+      "main",
+      "article",
+      "section",
+      "aside",
+      "footer",
+      "div",
+      "span",
+    ],
+    explanation:
+      "header (toppinfo), nav (lenkemeny), main (hovedinnhold — én per side), article (selvstendig innholdsbit som kan stå alene), section (tematisk del), footer (bunninfo). Disse er bare semantikk — visuelt er de tomme blokk-elementer som <div>.",
+  },
+  {
+    id: "d-fill-html-section-article",
+    kind: "fill",
+    title: "section vs. article — riktig nesting",
+    prompt:
+      "Et innlegg har flere seksjoner: tittel, brødtekst, kommentarer. Plasser elementene.",
+    topic: "HTML",
+    language: "html",
+    template:
+      "<main>\n  <__1__>\n    <header>\n      <h2>Tittel</h2>\n      <p>Av Per</p>\n    </header>\n    <__2__ aria-labelledby=\"brod\">\n      <h3 id=\"brod\">Brødtekst</h3>\n      <p>Innhold ...</p>\n    </__2__>\n    <__2__ aria-labelledby=\"komm\">\n      <h3 id=\"komm\">Kommentarer</h3>\n      <ol>\n        <li>Fin tekst!</li>\n      </ol>\n    </__2__>\n  </__1__>\n</main>",
+    blanks: ["article", "section"],
+    options: ["article", "section", "aside", "main", "header", "div"],
+    explanation:
+      "<article> = noe som kan stå alene (et innlegg, en kommentar, en produktkort). <section> = en tematisk gruppe innenfor noe annet. Tommelregel: kan du ta dette ut og publisere det andre steder uten kontekst? → article. Hvis ikke → section.",
+  },
+  {
+    id: "d-fill-html-list",
+    kind: "fill",
+    title: "Ordnet vs. uordnet liste",
+    prompt: "Lag en uordnet liste (kulepunkter) over favorittfargene dine.",
+    topic: "HTML",
+    language: "html",
+    template:
+      "<__1__>\n  <__2__>Rød</__2__>\n  <__2__>Blå</__2__>\n  <__2__>Grønn</__2__>\n</__1__>",
+    blanks: ["ul", "li"],
+    options: ["ul", "ol", "li", "dl", "dt", "dd"],
+    explanation:
+      "<ul> = uordnet (kuler). <ol> = ordnet (1, 2, 3). <li> er listepunkter inni begge. <dl>/<dt>/<dd> er definisjonslister (begrep + forklaring), brukes sjeldnere.",
+  },
+  {
+    id: "d-fill-html-link-css",
+    kind: "fill",
+    title: "Knytt en CSS-fil til HTML",
+    prompt: "Legg til en stilark-lenke i head-en. Stilarket heter style.css.",
+    topic: "HTML",
+    language: "html",
+    template:
+      "<head>\n  <meta charset=\"UTF-8\" />\n  <title>Min side</title>\n  <__1__ rel=\"__2__\" __3__=\"/static/style.css\" />\n</head>",
+    blanks: ["link", "stylesheet", "href"],
+    options: ["link", "script", "rel", "stylesheet", "src", "href", "style", "type"],
+    explanation:
+      "<link rel=\"stylesheet\" href=\"...\" /> kobler en ekstern CSS-fil. rel=\"stylesheet\" forteller browseren TYPEN — uten det blir filen ignorert. href er stien (relativ eller absolutt). I Flask: href=\"{{ url_for('static', filename='style.css') }}\".",
+  },
+  {
+    id: "d-fill-html-form",
+    kind: "fill",
+    title: "Skjema med label og POST",
+    prompt:
+      "Lag et innloggingsskjema. label skal kobles til input via for/id. Skjemaet skal sende POST til /login.",
+    topic: "HTML",
+    language: "html",
+    template:
+      "<form action=\"/login\" __1__=\"POST\">\n  <__2__ __3__=\"u\">Brukernavn:</__2__>\n  <__4__ type=\"text\" __5__=\"u\" name=\"username\" />\n\n  <__2__ __3__=\"p\">Passord:</__2__>\n  <__4__ type=\"password\" __5__=\"p\" name=\"password\" />\n\n  <button type=\"submit\">Logg inn</button>\n</form>",
+    blanks: ["method", "label", "for", "input", "id"],
+    options: ["method", "action", "label", "for", "input", "id", "name", "type"],
+    explanation:
+      "method=POST sender data i body, ikke i URL (passord skal aldri ende opp i historikk eller logger). label[for] = input[id] gir tilgjengelighet: klikker du på label, fokuseres input-feltet. Bruk type=\"password\" så tegnene maskeres.",
+  },
+  {
+    id: "d-fill-html-img",
+    kind: "fill",
+    title: "Bilde med alt-tekst",
+    prompt:
+      "Sett inn et bilde av en katt. alt-teksten beskriver bildet for skjermlesere og hvis bildet feiler.",
+    topic: "HTML",
+    language: "html",
+    template:
+      "<__1__ __2__=\"/static/katt.jpg\" __3__=\"En oransje katt som sover i sola\" />",
+    blanks: ["img", "src", "alt"],
+    options: ["img", "image", "picture", "src", "href", "alt", "title", "name"],
+    explanation:
+      "alt-attributtet er PÅKREVD. Beskriv bildet kort — eller bruk alt=\"\" hvis bildet er rent dekorativt så skjermlesere hopper over det. Bilder uten alt er en av de mest vanlige tilgjengelighetsfeilene.",
+  },
+  {
+    id: "d-fill-html-table",
+    kind: "fill",
+    title: "Tabell med header-rad",
+    prompt: "Bruk <thead>/<tbody> for å skille header fra data. Det gir bedre stiling og semantikk.",
+    topic: "HTML",
+    language: "html",
+    template:
+      "<table>\n  <__1__>\n    <__2__>\n      <__3__>Navn</__3__>\n      <__3__>Alder</__3__>\n    </__2__>\n  </__1__>\n  <__4__>\n    <__2__>\n      <__5__>Per</__5__>\n      <__5__>30</__5__>\n    </__2__>\n  </__4__>\n</table>",
+    blanks: ["thead", "tr", "th", "tbody", "td"],
+    options: ["thead", "tbody", "tfoot", "tr", "th", "td", "table", "col"],
+    explanation:
+      "<th> = header-celle (fet, sentrert som default, leses som «kolonneoverskrift» av skjermlesere). <td> = data-celle. <thead>/<tbody> hjelper også med å feste header når brukeren scroller en lang tabell.",
+  },
+  {
+    id: "d-order-html-heading",
+    kind: "order",
+    title: "Heading-hierarkiet",
+    prompt: "Sortér overskriftene fra topp til bunn slik de bør stå på en typisk bloggside.",
+    topic: "HTML",
+    items: [
+      "<h1> — én per side, beskriver hele sidens innhold",
+      "<h2> — hoved-seksjoner (Innlegg, Om meg, Kontakt)",
+      "<h3> — under-seksjoner innenfor h2 (Tittel på et innlegg)",
+      "<h4> — sjeldnere brukt (under-deler av h3)",
+      "<h5> og <h6> — kun ved svært dyp struktur",
+    ],
+    explanation:
+      "Hopp ALDRI over nivåer (h1 → h3 er feil). Skjermlesere bruker overskriftshierarkiet til navigasjon — et brutt hierarki gjør siden uleselig for brukere som ikke ser den.",
+  },
+
+  // ============= CSS — kobling og selektorer =============
+  {
+    id: "d-fill-css-basic",
+    kind: "fill",
+    title: "CSS — class- og id-selektor",
+    prompt:
+      "Skriv tre regler: én for alle <p>, én for klassen .alert, og én for id-en #header.",
+    topic: "CSS",
+    language: "html",
+    template:
+      "__1__ {\n  color: black;\n}\n\n__2__alert {\n  background: yellow;\n  border: 1px solid red;\n}\n\n__3__header {\n  font-size: 24px;\n}",
+    blanks: ["p", ".", "#"],
+    options: ["p", "P", ".", "#", "*", ":", "@"],
+    explanation:
+      "Tag-selektor: bare navnet (p, div, h1). Class-selektor: prikk (.alert). ID-selektor: skigard (#header). ID-er skal være unike på siden — class kan brukes mange ganger.",
+  },
+  {
+    id: "d-fill-css-flexbox",
+    kind: "fill",
+    title: "Flexbox — sentrer på linje",
+    prompt:
+      "Sentrer barna både horisontalt og vertikalt med flexbox. Antar at .boks har en høyde.",
+    topic: "CSS",
+    language: "html",
+    template:
+      ".boks {\n  __1__: flex;\n  __2__: center;        /* horisontal */\n  __3__: center;        /* vertikal */\n  height: 200px;\n}",
+    blanks: ["display", "justify-content", "align-items"],
+    options: [
+      "display",
+      "flex",
+      "justify-content",
+      "align-items",
+      "align-content",
+      "flex-direction",
+      "center",
+      "row",
+    ],
+    explanation:
+      "display: flex aktiverer flexbox. justify-content styrer aksen flex går langs (horisontal i default row). align-items styrer den vinkelrette aksen (vertikal i row). For å sentrere = center på begge.",
+  },
+  {
+    id: "d-fill-css-box-model",
+    kind: "fill",
+    title: "Box model — padding, border, margin",
+    prompt: "Gi knappen 12px luft INNI (mellom innhold og kant), 1px svart kant, og 16px luft UTENFOR.",
+    topic: "CSS",
+    language: "html",
+    template:
+      "button {\n  __1__: 12px;\n  __2__: 1px solid black;\n  __3__: 16px;\n}",
+    blanks: ["padding", "border", "margin"],
+    options: ["padding", "border", "margin", "outline", "spacing", "gap"],
+    explanation:
+      "Box model lag-for-lag innenfra og ut: content → padding → border → margin. padding er INNI rammen (samme bakgrunnsfarge), margin er UTENFOR (transparent — pusher andre elementer vekk).",
+  },
+  {
+    id: "d-fill-css-import",
+    kind: "fill",
+    title: "CSS @import vs <link>",
+    prompt:
+      "Importer reset.css fra en annen CSS-fil. Skal stå ØVERST i fila før alt annet.",
+    topic: "CSS",
+    language: "html",
+    template: "__1__ url(\"reset.css\");\n\nbody {\n  margin: 0;\n}",
+    blanks: ["@import"],
+    options: ["@import", "@include", "@use", "import", "link", "require"],
+    explanation:
+      "@import inni CSS, men anbefales mot — det blokkerer parallell nedlasting. Foretrukket: bruk flere <link rel=\"stylesheet\"> i HTML-headeren. @import er likevel viktig å kjenne igjen.",
+  },
+
+  // ============= JINJA / FLASK-MALER =============
+  {
+    id: "d-fill-jinja-extends",
+    kind: "fill",
+    title: "Jinja — extends base-mal",
+    prompt:
+      "Lag en barn-mal som arver fra base.html og fyller inn tittel og innhold-blokkene.",
+    topic: "Jinja",
+    language: "html",
+    example: `{# base.html #}
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>{% block title %}Standard tittel{% endblock %}</title>
+  </head>
+  <body>
+    <main>
+      {% block content %}{% endblock %}
+    </main>
+  </body>
+</html>`,
+    template:
+      "{% __1__ \"base.html\" %}\n\n{% __2__ title %}Kundeliste{% __3__ %}\n\n{% __2__ content %}\n  <h1>Alle kunder</h1>\n  <p>...</p>\n{% __3__ %}",
+    blanks: ["extends", "block", "endblock"],
+    options: ["extends", "block", "endblock", "include", "import", "from", "for", "endfor"],
+    explanation:
+      "{% extends %} må være ALLER ØVERST i barn-malen (før all annen tekst). Hver {% block %} i basen kan overskrives — det som ikke overskrives, beholder default-innholdet fra base.html.",
+  },
+  {
+    id: "d-fill-jinja-include",
+    kind: "fill",
+    title: "Jinja — include partial",
+    prompt:
+      "Trekk ut headeren til en delfil _header.html og inkluder den i basemalen.",
+    topic: "Jinja",
+    language: "html",
+    template:
+      "{# I base.html #}\n<body>\n  {% __1__ \"_header.html\" %}\n\n  <main>\n    {% block content %}{% endblock %}\n  </main>\n</body>",
+    blanks: ["include"],
+    options: ["include", "extends", "import", "block", "use", "render"],
+    explanation:
+      "{% include %} kopierer innholdet av en annen mal inn på dette stedet. Brukes for biter som går igjen (header, footer, navigasjons-menyer). Forskjellen fra {% extends %}: include er enkel kopiering, extends er arv.",
+  },
+  {
+    id: "d-fill-jinja-import",
+    kind: "fill",
+    title: "Jinja — import macro",
+    prompt:
+      "Lag en gjenbrukbar macro for å vise en knapp. Importer den i en annen mal.",
+    topic: "Jinja",
+    language: "html",
+    example: `{# macros.html #}
+{% macro knapp(tekst, type='button') %}
+  <button type="{{ type }}" class="btn">{{ tekst }}</button>
+{% endmacro %}`,
+    template:
+      "{# i en annen mal #}\n{% __1__ \"macros.html\" as m %}\n\n<form>\n  ...\n  {{ m.__2__(\"Lagre\", type=\"submit\") }}\n</form>",
+    blanks: ["import", "knapp"],
+    options: ["import", "include", "extends", "from", "knapp", "macro", "render"],
+    explanation:
+      "{% import 'fil.html' as alias %} laster ALLE macroer fra fila inn under et navnerom. Bruk så `alias.macroNavn(...)`. Alternativt: {% from 'fil.html' import knapp %} importerer bare én macro direkte.",
+  },
+  {
+    id: "d-fill-jinja-for",
+    kind: "fill",
+    title: "Jinja — for-løkke over liste",
+    prompt:
+      "Vis hver kunde fra view-en som <li>. Hvis lista er tom skal det stå «Ingen kunder».",
+    topic: "Jinja",
+    language: "html",
+    template:
+      "<ul>\n  {% __1__ kunde in kunder %}\n    <li>{{ __2__.navn }}</li>\n  {% __3__ %}\n    <li>Ingen kunder</li>\n  {% __4__ %}\n</ul>",
+    blanks: ["for", "kunde", "else", "endfor"],
+    options: ["for", "in", "endfor", "kunde", "kunder", "else", "if", "endif"],
+    explanation:
+      "Jinja har en innebygd {% else %} for tom liste — den kjøres bare hvis iterablen var tom. Det er ofte renere enn å sjekke `{% if kunder %}` separat.",
+  },
+  {
+    id: "d-fill-jinja-if",
+    kind: "fill",
+    title: "Jinja — if/elif/else",
+    prompt:
+      "Vis ulik melding basert på bruker.rolle. Tre tilfeller: admin, vanlig bruker, og ellers.",
+    topic: "Jinja",
+    language: "html",
+    template:
+      "{% __1__ bruker.rolle == \"admin\" %}\n  <p>Hei, admin!</p>\n{% __2__ bruker.rolle == \"bruker\" %}\n  <p>Velkommen.</p>\n{% __3__ %}\n  <p>Ukjent rolle.</p>\n{% __4__ %}",
+    blanks: ["if", "elif", "else", "endif"],
+    options: ["if", "elif", "else", "endif", "elseif", "case", "switch", "endcase"],
+    explanation:
+      "Jinja-syntaksen for kontrollflyt: alle blokker MÅ avsluttes (endif, endfor, endblock). Glemmer du endif, får du ofte en svært forvirrende feilmelding lengre nede i malen.",
+  },
+  {
+    id: "d-fill-jinja-url_for",
+    kind: "fill",
+    title: "Jinja — url_for og static-filer",
+    prompt:
+      "Lag en lenke til kunder-siden og link inn en CSS-fil fra static-mappa. Bruk url_for istedenfor harkodede stier.",
+    topic: "Jinja",
+    language: "html",
+    template:
+      "<head>\n  <link rel=\"stylesheet\" href=\"{{ __1__('static', __2__='style.css') }}\" />\n</head>\n<body>\n  <a href=\"{{ __1__('__3__') }}\">Til kunder</a>\n</body>",
+    blanks: ["url_for", "filename", "kunder"],
+    options: ["url_for", "url", "link", "path", "filename", "file", "kunder", "static", "name"],
+    explanation:
+      "url_for genererer URL-en for en route ut fra view-funksjonens NAVN — så hvis URL-en endres, slipper du å oppdatere alle malene. For statiske filer: url_for('static', filename='...').",
+  },
+  {
+    id: "d-fill-jinja-escape",
+    kind: "fill",
+    title: "Jinja — escape og |safe (sikkerhet)",
+    prompt:
+      "Brukerinput skal ALLTID escapes (default). Men i denne admin-malen vil vi vise rå HTML — bruk safe-filteret.",
+    topic: "Jinja",
+    language: "html",
+    template:
+      "{# Default: escapes automatisk #}\n<p>Tittel: {{ tittel }}</p>\n\n{# Eksplisitt: rå HTML, kun for VERIFISERT-trygg innhold #}\n<div>{{ rapport_html | __1__ }}</div>\n\n{# Eksplisitt escape om autoescape er av: #}\n<p>{{ bruker_input | __2__ }}</p>",
+    blanks: ["safe", "e"],
+    options: ["safe", "e", "escape", "raw", "html", "unsafe"],
+    explanation:
+      "Jinja autoescaper alt mellom {{ ... }} i .html-filer. |safe slår av escaping for det ene uttrykket — bruk KUN på innhold du selv har generert. |e (eller |escape) er motsatt. Bruker du |safe på user input, har du laget en XSS-sårbarhet.",
+  },
+  {
+    id: "d-order-jinja-render-flow",
+    kind: "order",
+    title: "Render-flyt: fra Python til HTML",
+    prompt:
+      "En route returnerer render_template. Sett stegene i riktig rekkefølge fra request til ferdig HTML.",
+    topic: "Jinja",
+    items: [
+      "View-funksjonen kaller render_template(\"kunder.html\", kunder=rows)",
+      "Jinja2 finner kunder.html i templates/-mappa",
+      "Jinja2 ser {% extends \"base.html\" %} og henter base-malen",
+      "Jinja2 erstatter {% block content %} i base med innholdet fra kunder.html",
+      "Jinja2 evaluerer {{ kunde.navn }} og {% for %}-løkker mot variablene den fikk",
+      "Resultatet er en HTML-streng som sendes som body i HTTP-responsen",
+    ],
+    explanation:
+      "render_template returnerer en STRING — Flask pakker den så i et Response-objekt med Content-Type: text/html. Hele templating-jobben skjer på serversiden FØR noen byte sendes til browseren.",
+  },
+
+  // ============= SQL — MANGE JOINs (fyll inn) =============
+  {
+    id: "d-fill-sql-3way-join",
+    kind: "fill",
+    title: "Tre-veis JOIN — kunder + utleier + biler",
+    prompt:
+      "Finn navnet på kunden og merket på bilen for hver utleie. Tre tabeller: kunde, utleie, bil.",
+    topic: "JOIN",
+    language: "sql",
+    template:
+      "SELECT k.navn, b.merke\nFROM kunde k\n__1__ utleie u __2__ k.kundenr = u.kundenr\n__1__ bil b __2__ u.bilnr = b.bilnr;",
+    blanks: ["INNER JOIN", "ON", "INNER JOIN", "ON"],
+    options: ["INNER JOIN", "LEFT JOIN", "ON", "WHERE", "=", "AND", "FROM"],
+    explanation:
+      "Kjede JOIN-er sekvensielt: hver ny JOIN bygger på resultatet fra forrige. Velg alias for hver tabell (k, u, b) — det gjør lange spørringer lesbare.",
+  },
+  {
+    id: "d-fill-sql-4way-aggregate",
+    kind: "fill",
+    title: "Fire-veis JOIN med GROUP BY",
+    prompt:
+      "Finn TOTAL-sum av ordrelinjer per kunde — krever JOIN gjennom kunde → ordre → ordrelinje → produkt.",
+    topic: "JOIN",
+    language: "sql",
+    template:
+      "SELECT k.navn, __1__(ol.antall * p.pris) AS total\nFROM kunde k\nINNER JOIN ordre o ON k.kundenr = o.kundenr\nINNER JOIN ordrelinje ol __2__ o.ordrenr = ol.ordrenr\nINNER JOIN produkt p __2__ ol.prodnr = p.prodnr\n__3__ k.kundenr, k.navn\n__4__ total __5__;",
+    blanks: ["SUM", "ON", "GROUP BY", "ORDER BY", "DESC"],
+    options: ["SUM", "COUNT", "AVG", "ON", "WHERE", "GROUP BY", "HAVING", "ORDER BY", "DESC", "ASC"],
+    explanation:
+      "Når du joiner 4 tabeller og aggregerer: GROUP BY må inneholde ALLE ikke-aggregerte kolonner i SELECT. Her grupperer vi på k.kundenr (PK) — k.navn må også med selv om den er funksjonelt avhengig.",
+  },
+  {
+    id: "d-fill-sql-left-join-missing",
+    kind: "fill",
+    title: "LEFT JOIN — finn kunder UTEN ordre",
+    prompt:
+      "Finn kunder som aldri har lagt inn en ordre. LEFT JOIN + IS NULL-trikset.",
+    topic: "JOIN",
+    language: "sql",
+    template:
+      "SELECT k.navn\nFROM kunde k\n__1__ JOIN ordre o ON k.kundenr = o.kundenr\nWHERE o.ordrenr __2__ __3__;",
+    blanks: ["LEFT", "IS", "NULL"],
+    options: ["LEFT", "RIGHT", "INNER", "IS", "=", "!=", "NULL", "EMPTY"],
+    explanation:
+      "LEFT JOIN beholder ALLE kunder, men setter o-kolonnene til NULL der det ikke er match. WHERE o.ordrenr IS NULL plukker ut nettopp de som ikke matchet. Klassisk «anti-join»-mønster.",
+  },
+  {
+    id: "d-fill-sql-join-having",
+    kind: "fill",
+    title: "JOIN + GROUP BY + HAVING — toppkunder",
+    prompt:
+      "Finn kunder med flere enn 3 ordre. Først joiner vi, så grupperer vi, så filtrerer vi med HAVING.",
+    topic: "JOIN",
+    language: "sql",
+    template:
+      "SELECT k.navn, __1__(o.ordrenr) AS antall_ordre\nFROM kunde k\nINNER JOIN ordre o __2__ k.kundenr = o.kundenr\n__3__ k.kundenr, k.navn\n__4__ COUNT(o.ordrenr) > 3\n__5__ antall_ordre DESC;",
+    blanks: ["COUNT", "ON", "GROUP BY", "HAVING", "ORDER BY"],
+    options: ["COUNT", "SUM", "AVG", "ON", "WHERE", "GROUP BY", "HAVING", "ORDER BY", "AS", "DESC"],
+    explanation:
+      "WHERE filtrerer RADER før gruppering. HAVING filtrerer GRUPPER etter. COUNT(*) og aggregater kan bare brukes i HAVING — ikke i WHERE. Husk: GROUP BY, HAVING, ORDER BY — i denne rekkefølgen.",
+  },
+  {
+    id: "d-fill-sql-self-join",
+    kind: "fill",
+    title: "SELF JOIN — ansatt og leder",
+    prompt:
+      "Hver rad i Ansatt har en lederNr som peker på en annen rad i Ansatt. Finn par av (ansatt-navn, leder-navn).",
+    topic: "JOIN",
+    language: "sql",
+    template:
+      "SELECT a.navn AS ansatt, l.navn AS leder\nFROM ansatt a\n__1__ ansatt l __2__ a.lederNr = l.ansattNr;",
+    blanks: ["LEFT JOIN", "ON"],
+    options: ["INNER JOIN", "LEFT JOIN", "RIGHT JOIN", "ON", "WHERE", "AS", "="],
+    explanation:
+      "Self-join = en tabell joinet med seg selv. KREVER alias på begge sider (a og l), ellers kan ikke SQL skille hvilken som er hvilken. LEFT JOIN her fanger også med toppsjefen som ikke har leder (lederNr IS NULL).",
+  },
+  {
+    id: "d-fill-sql-mn-traverse",
+    kind: "fill",
+    title: "M:N-traversering — studenter på fag",
+    prompt:
+      "Tre tabeller: student, fag, og koblingstabellen tar(sid, fkode). Finn fag-titlene for student med sid=42.",
+    topic: "JOIN",
+    language: "sql",
+    template:
+      "SELECT f.tittel\nFROM student s\nINNER JOIN tar t __1__ s.sid = t.sid\nINNER JOIN fag f __1__ t.fkode = f.fkode\n__2__ s.sid = 42;",
+    blanks: ["ON", "WHERE"],
+    options: ["ON", "WHERE", "AND", "USING", "=", "HAVING", "GROUP BY"],
+    explanation:
+      "For å traversere en M:N-relasjon må du gjennom KOBLINGSTABELLEN: student → tar → fag. Tre JOIN-er — det er normalt. Filtrer på s.sid (PK i student) for å begrense til én konkret student.",
+  },
+  {
+    id: "d-fill-sql-left-vs-inner",
+    kind: "fill",
+    title: "LEFT JOIN beholder ulike sider",
+    prompt:
+      "Vi vil ha ALLE produkter, også de som aldri er solgt. Antall solgte vises som 0 (ikke NULL) via COALESCE.",
+    topic: "JOIN",
+    language: "sql",
+    template:
+      "SELECT p.prodnavn,\n       __1__(SUM(ol.antall), 0) AS solgt\nFROM produkt p\n__2__ JOIN ordrelinje ol ON p.prodnr = ol.prodnr\n__3__ p.prodnr, p.prodnavn\n__4__ solgt __5__;",
+    blanks: ["COALESCE", "LEFT", "GROUP BY", "ORDER BY", "DESC"],
+    options: [
+      "COALESCE",
+      "IFNULL",
+      "NVL",
+      "LEFT",
+      "INNER",
+      "RIGHT",
+      "GROUP BY",
+      "ORDER BY",
+      "DESC",
+      "ASC",
+    ],
+    explanation:
+      "INNER JOIN ville fjernet produkter uten ordrelinjer. LEFT JOIN beholder dem og fyller på NULL. COALESCE(x, 0) erstatter NULL med 0 så summen blir tall, ikke NULL.",
+  },
+  {
+    id: "d-fill-sql-three-where",
+    kind: "fill",
+    title: "JOIN med flere filtre",
+    prompt:
+      "Finn alle utleier i 2025 av biler i kategori «SUV» — krever JOIN mellom utleie, bil, og kategori.",
+    topic: "JOIN",
+    language: "sql",
+    template:
+      "SELECT u.utleienr, b.merke, k.navn AS kategori\nFROM utleie u\nINNER JOIN bil b ON u.bilnr __1__ b.bilnr\nINNER JOIN kategori k __2__ b.kategoriNr = k.kategoriNr\nWHERE u.utleieDato __3__ '2025-01-01' AND u.utleieDato < '2026-01-01'\n  __4__ k.navn = 'SUV';",
+    blanks: ["=", "ON", ">=", "AND"],
+    options: ["=", "==", "ON", "WHERE", ">=", "<=", "AND", "OR", "BETWEEN"],
+    explanation:
+      "Flere WHERE-betingelser bindes med AND/OR. For å filtrere på et år bruker man typisk to halvåpne grenser (>= jan 1, < jan 1 neste år) — det fungerer også på DATETIME uten å bekymre seg om time-deler.",
+  },
+
+  // ============= HTTP — STATUSKODER (alle de viktige) =============
+  {
+    id: "d-match-http-status-full",
+    kind: "match",
+    title: "HTTP-statuskoder — alle de viktige",
+    prompt:
+      "Match hver statuskode til riktig betydning. Lær deg minst disse — de er sentrale på eksamen.",
+    topic: "HTTP",
+    pairs: [
+      { left: "200 OK", right: "Suksess — ressurs returnert" },
+      { left: "201 Created", right: "Ny ressurs opprettet (typisk etter POST)" },
+      { left: "204 No Content", right: "Suksess, men ingen body — typisk etter DELETE" },
+      { left: "301 Moved Permanently", right: "Permanent redirect — oppdater bokmerker" },
+      { left: "302 Found", right: "Midlertidig redirect — Flask sin redirect() returnerer denne" },
+      { left: "304 Not Modified", right: "Cache er fortsatt gyldig — bruk lokal kopi" },
+      { left: "400 Bad Request", right: "Klienten sendte feil syntaks/data" },
+      { left: "401 Unauthorized", right: "Ikke autentisert — logg inn først" },
+      { left: "403 Forbidden", right: "Innlogget, men har ikke tilgang" },
+      { left: "404 Not Found", right: "Ressursen finnes ikke" },
+      { left: "405 Method Not Allowed", right: "Routen finnes, men ikke for denne metoden (eks. POST mot GET-only)" },
+      { left: "409 Conflict", right: "Ressurs-konflikt — typisk duplikat eller versjons-mismatch" },
+      { left: "500 Internal Server Error", right: "Uventet feil i backend — bugg" },
+      { left: "501 Not Implemented", right: "Serveren støtter ikke metoden i det hele tatt" },
+      { left: "503 Service Unavailable", right: "Server overlastet eller under vedlikehold" },
+    ],
+    explanation:
+      "Familiene: 1xx info, 2xx suksess, 3xx redirect, 4xx KLIENTfeil, 5xx SERVERfeil. Hvis du er i tvil om 4xx vs 5xx — spør: er det klientens skyld eller serverens? Det avgjør hvilken klasse.",
+  },
+  {
+    id: "d-match-http-scenario",
+    kind: "match",
+    title: "Scenario → riktig statuskode",
+    prompt:
+      "For hvert scenario, hvilken statuskode skal serveren returnere?",
+    topic: "HTTP",
+    pairs: [
+      { left: "Bruker prøver å se en side som ikke finnes", right: "404 Not Found" },
+      { left: "API mottar JSON med manglende påkrevd felt", right: "400 Bad Request" },
+      { left: "POST oppretter ny kunde, ID returneres i Location-header", right: "201 Created" },
+      { left: "Logget inn bruker prøver å åpne admin-panelet uten admin-rolle", right: "403 Forbidden" },
+      { left: "Cookie/session er utløpt", right: "401 Unauthorized" },
+      { left: "Databasen er nede pga. vedlikehold", right: "503 Service Unavailable" },
+      { left: "Backend kaster en uhåndtert exception", right: "500 Internal Server Error" },
+      { left: "Bruker prøver å DELETE en route som bare støtter GET", right: "405 Method Not Allowed" },
+      { left: "Skjema sender unik epost som allerede finnes", right: "409 Conflict" },
+      { left: "Browseren har siden i cache, server sjekker ETag", right: "304 Not Modified" },
+    ],
+    explanation:
+      "401 vs 403 er den vanligste fellen: 401 = «jeg vet ikke hvem du er» (ikke autentisert), 403 = «jeg vet hvem du er, men du får ikke». Husk: AuthentiCation før AuthoriZation.",
+  },
+  {
+    id: "d-quiz-http-401-vs-403",
+    kind: "quiz",
+    title: "401 vs 403 — hvilken er riktig?",
+    prompt: "Velg riktig statuskode.",
+    topic: "HTTP",
+    question:
+      "En bruker logger inn som vanlig bruker. De prøver å åpne /admin. Backend sjekker rollen og oppdager at brukeren IKKE er admin. Hvilken statuskode bør svaret være?",
+    options: [
+      {
+        text: "403 Forbidden",
+        correct: true,
+        rationale: "Brukeren er autentisert (vi vet hvem de er), men har ikke nødvendig tilgang. Det er definisjonen av 403.",
+      },
+      {
+        text: "401 Unauthorized",
+        correct: false,
+        rationale: "401 betyr «ikke logget inn / ugyldig credentials». Her er brukeren logget inn — det er bare rolle som mangler.",
+      },
+      {
+        text: "404 Not Found",
+        correct: false,
+        rationale: "Routen finnes — vi har bare ikke tilgang. Noen apper bruker 404 her for å skjule eksistensen, men det er en bevisst sikkerhets-strategi, ikke standard-svaret.",
+      },
+      {
+        text: "500 Internal Server Error",
+        correct: false,
+        rationale: "5xx er for når SERVEREN feiler. Her oppfører serveren seg helt riktig.",
+      },
+    ],
+    explanation:
+      "Tommelfingerregel: 401 = «vi vet ikke hvem du er» → server sender WWW-Authenticate-header. 403 = «vi vet hvem du er, men nei» → ingen mengde retry hjelper uten ny rolle.",
+  },
+  {
+    id: "d-quiz-http-201-vs-200",
+    kind: "quiz",
+    title: "Når skal man returnere 201?",
+    prompt: "Velg det best dekkende svaret.",
+    topic: "HTTP",
+    question:
+      "En POST-endpoint mottar JSON og lagrer en ny kunde i databasen. Hva er den mest korrekte responsen?",
+    options: [
+      {
+        text: "201 Created med Location-header som peker på den nye ressursen",
+        correct: true,
+        rationale:
+          "201 forteller eksplisitt at noe er opprettet. Location-headeren peker på URL-en til den nye kunden (f.eks. /kunder/123).",
+      },
+      {
+        text: "200 OK — det er jo vellykket",
+        correct: false,
+        rationale:
+          "Fungerer, men 201 er mer spesifikk og standard for «noe ble opprettet». 200 burde reserveres for GET/PUT-suksess uten ny ressurs.",
+      },
+      {
+        text: "204 No Content",
+        correct: false,
+        rationale:
+          "204 er for suksess UTEN body — typisk DELETE. Etter create vil vi som regel returnere kunden eller en ID i body.",
+      },
+      {
+        text: "302 Found",
+        correct: false,
+        rationale:
+          "302 er en redirect — brukes etter Post-Redirect-Get i form-baserte apper, men ikke for API-svar.",
+      },
+    ],
+    explanation:
+      "201 + Location: standard for REST. Post-Redirect-Get-mønsteret i HTML-baserte apper bruker 302/303 for å unngå dobbel innsending ved Refresh — det er en annen kontekst.",
+  },
+  {
+    id: "d-quiz-http-501-vs-500",
+    kind: "quiz",
+    title: "Hva betyr 501 Not Implemented?",
+    prompt: "Velg det riktige svaret.",
+    topic: "HTTP",
+    question:
+      "Klienten sender en PATCH-request til en server som bare støtter GET og POST på den routen. Riktig svar?",
+    options: [
+      {
+        text: "405 Method Not Allowed — routen finnes, men ikke PATCH for den",
+        correct: true,
+        rationale:
+          "405 er det riktige svaret når en route eksisterer men ikke støtter den metoden. Responsen bør inneholde Allow-header med listen av tillatte metoder.",
+      },
+      {
+        text: "501 Not Implemented — serveren støtter ikke PATCH i det hele tatt",
+        correct: false,
+        rationale:
+          "501 brukes når SERVEREN ikke kjenner metoden i det hele tatt (sjelden). Hvis serveren støtter PATCH andre steder men ikke her, er 405 riktig.",
+      },
+      {
+        text: "400 Bad Request",
+        correct: false,
+        rationale:
+          "400 er for ugyldig syntaks. PATCH er en gyldig HTTP-metode, problemet er at den ikke er tillatt her.",
+      },
+      {
+        text: "500 Internal Server Error",
+        correct: false,
+        rationale: "5xx er for uventede feil. Dette er en kjent og forventet situasjon.",
+      },
+    ],
+    explanation:
+      "501 er sjelden i moderne webrammeverk fordi de fleste støtter alle HTTP-metoder. Du møter 501 oftest i proxy/gateway-scenarier eller eldre servere.",
+  },
+  {
+    id: "d-quiz-http-304-cache",
+    kind: "quiz",
+    title: "304 Not Modified — når brukes den?",
+    prompt: "Velg riktig forklaring.",
+    topic: "HTTP",
+    question:
+      "Browseren har en CSS-fil i cache. Den sender en request med If-None-Match-header. Serveren sammenligner ETag-en og finner at filen ikke er endret. Hva returnerer serveren?",
+    options: [
+      {
+        text: "304 Not Modified — uten body. Browseren bruker sin cachede versjon.",
+        correct: true,
+        rationale:
+          "Dette er hele poenget med 304: sparer bandwidth ved å si «ikke endret, bruk det du har». Body skal være tom.",
+      },
+      {
+        text: "200 OK med hele filen på nytt",
+        correct: false,
+        rationale: "Det ville beseiret hele cache-mekanismen — du sparer ingenting.",
+      },
+      {
+        text: "301 Moved Permanently",
+        correct: false,
+        rationale: "301 er en redirect, ikke en cache-respons.",
+      },
+      {
+        text: "204 No Content",
+        correct: false,
+        rationale: "204 betyr «suksess uten body» (etter DELETE/PUT). 304 er det riktige for cache-validering.",
+      },
+    ],
+    explanation:
+      "304-responser har ingen body og er små. De er kjernen i HTTP cache-validering sammen med ETag og Last-Modified-headere.",
+  },
+  {
+    id: "d-order-http-request",
+    kind: "order",
+    title: "HTTP-request livssyklus",
+    prompt:
+      "Sett stegene i riktig rekkefølge fra brukerens klikk til ferdig vist side.",
+    topic: "HTTP",
+    items: [
+      "Bruker klikker på en lenke i nettleseren",
+      "Browseren slår opp DNS for vertsnavnet",
+      "TCP-håndtrykk (SYN, SYN-ACK, ACK) opprettes med serveren",
+      "TLS-håndtrykk (hvis HTTPS) etablerer kryptert kanal",
+      "Browseren sender HTTP-request: GET /side HTTP/1.1 + headere",
+      "Serveren matcher URL mot en route og kjører view-funksjonen",
+      "View returnerer HTML, server sender HTTP-response: 200 OK + headere + body",
+      "Browseren parser HTML, henter linkede CSS/JS/bilder, og renderer siden",
+    ],
+    explanation:
+      "DNS → TCP → TLS → HTTP er fire separate trinn FØR ditt request engang når Flask. Hver legger til litt latency — derfor er HTTP/2 og HTTP/3 designet for å redusere oppstartstiden.",
+  },
+  {
+    id: "d-match-http-methods",
+    kind: "match",
+    title: "HTTP-metoder og deres formål",
+    prompt: "Match metoden til riktig semantikk.",
+    topic: "HTTP",
+    pairs: [
+      { left: "GET", right: "Hent ressurs — idempotent, ingen sideeffekter" },
+      { left: "POST", right: "Opprett ressurs eller utfør handling med sideeffekter" },
+      { left: "PUT", right: "Erstatt en ressurs fullstendig — idempotent" },
+      { left: "PATCH", right: "Delvis oppdatering av en ressurs" },
+      { left: "DELETE", right: "Slett ressurs — idempotent" },
+      { left: "HEAD", right: "Som GET, men bare headere — sjekk om ressurs finnes" },
+      { left: "OPTIONS", right: "Spør serveren hvilke metoder som er tillatt (CORS preflight)" },
+    ],
+    explanation:
+      "Idempotent = trygt å kjøre flere ganger (samme resultat). GET, PUT, DELETE skal være idempotente. POST er IKKE idempotent — to POST = to nye ressurser. Refresh på POST-side er derfor farlig (derav Post-Redirect-Get).",
+  },
+  {
+    id: "d-fill-flask-status",
+    kind: "fill",
+    title: "Returner egen statuskode i Flask",
+    prompt:
+      "Returner en 201-respons med Location-header etter at en ny kunde er opprettet.",
+    topic: "Flask",
+    language: "python",
+    template:
+      "from flask import Flask, request, __1__, url_for\n\n@app.route(\"/kunder\", methods=[\"POST\"])\ndef opprett_kunde():\n    navn = request.form[\"navn\"]\n    nr = db_insert(navn)\n    response = __1__(\"\", __2__=__3__)\n    response.headers[\"Location\"] = url_for(\"vis_kunde\", nr=nr)\n    return response",
+    blanks: ["make_response", "status", "201"],
+    options: ["make_response", "Response", "redirect", "status", "code", "201", "200", "302"],
+    explanation:
+      "make_response gir et Response-objekt du kan endre. Alternativt: return \"\", 201, {\"Location\": ...} — Flask aksepterer (body, status, headers)-tuple direkte fra view-funksjonen.",
+  },
+
+  // ============= SIKKERHET — MULTIPLE CHOICE =============
+  {
+    id: "d-quiz-sql-injection",
+    kind: "quiz",
+    title: "SQL Injection — hva er feil?",
+    prompt: "Velg det BESTE forsvaret.",
+    topic: "Sikkerhet",
+    question: "Koden under er sårbar. Hva er den korrekte fiksen?",
+    code: "username = request.form[\"username\"]\ncursor.execute(\"SELECT * FROM bruker WHERE navn = '\" + username + \"'\")",
+    language: "python",
+    options: [
+      {
+        text: "Bruk parameterisert spørring: cursor.execute(\"SELECT * FROM bruker WHERE navn = %s\", (username,))",
+        correct: true,
+        rationale:
+          "Parameterized queries lar DB-driveren håndtere escaping. Selve SQL-koden parses FØR username settes inn, så ingen brukerinput kan endre strukturen.",
+      },
+      {
+        text: "Filtrer bort apostrofer fra username før du legger den inn",
+        correct: false,
+        rationale:
+          "Blacklist-tilnærming. Glemmer du ett tegn (--, %, ;), er du fortsatt sårbar. Det er en kontinuerlig kamp og du taper alltid.",
+      },
+      {
+        text: "Sett brukernavnet i en variabel før konkatenering",
+        correct: false,
+        rationale: "Endrer ingenting — strengen blir den samme. Bruk parameterized queries.",
+      },
+      {
+        text: "Bytt til en NoSQL-database",
+        correct: false,
+        rationale:
+          "NoSQL har sine egne injeksjons-sårbarheter (f.eks. MongoDB operator injection). Problemet er konkatenering, ikke valg av database.",
+      },
+    ],
+    explanation:
+      "Den eneste pålitelige løsningen er parameterized queries (også kalt prepared statements). De fleste DB-drivere støtter det — bare ALDRI lim strenger inn i SQL.",
+  },
+  {
+    id: "d-quiz-xss",
+    kind: "quiz",
+    title: "XSS — hvilken kode er sårbar?",
+    prompt: "Velg det sårbare kodemønsteret.",
+    topic: "Sikkerhet",
+    question:
+      "Hvilken av disse Jinja-malene er sårbar for cross-site scripting (XSS) hvis kommentar.tekst kan inneholde brukerinput?",
+    options: [
+      {
+        text: "{{ kommentar.tekst | safe }}",
+        correct: true,
+        rationale:
+          "|safe slår av autoescape. Hvis tekst inneholder <script>...</script>, vil det kjøres i andre brukeres nettlesere. Klassisk reflected/stored XSS.",
+      },
+      {
+        text: "{{ kommentar.tekst }}",
+        correct: false,
+        rationale: "Default i Jinja: autoescape escaper <, >, & osv. til entiteter. Trygt.",
+      },
+      {
+        text: "{{ kommentar.tekst | e }}",
+        correct: false,
+        rationale: "|e er det samme som default escape — eksplisitt eskaping.",
+      },
+      {
+        text: "{{ kommentar.tekst | escape }}",
+        correct: false,
+        rationale: "Identisk med |e og default. Helt trygt.",
+      },
+    ],
+    explanation:
+      "Regelen: |safe bare på innhold du selv har generert/sanitisert. Aldri på brukerinput. Hvis du må vise rik tekst fra brukere, bruk en allowlist-sanitizer som bleach FØRST, deretter |safe.",
+  },
+  {
+    id: "d-quiz-csrf",
+    kind: "quiz",
+    title: "CSRF — hva beskytter mot det?",
+    prompt: "Velg den primære forsvarsmekanismen.",
+    topic: "Sikkerhet",
+    question:
+      "En innlogget bruker besøker et ondsinnet nettsted som har et skjult <form action=\"https://bank.no/overfor\" method=\"POST\">. Browseren sender med cookies automatisk. Hva er DEN viktigste beskyttelsen?",
+    options: [
+      {
+        text: "CSRF-token: skjult, unik verdi i hvert skjema som serveren validerer",
+        correct: true,
+        rationale:
+          "Tokenet legges i hvert skjema og i session. Det ondsinnede nettstedet kan ikke lese cookien (Same-Origin Policy) og kan derfor ikke gjette tokenet.",
+      },
+      {
+        text: "HTTPS i seg selv",
+        correct: false,
+        rationale:
+          "HTTPS krypterer transporten, men hjelper ikke mot CSRF — request-en er fortsatt gyldig.",
+      },
+      {
+        text: "Hashe brukerens passord med bcrypt",
+        correct: false,
+        rationale:
+          "Hashing beskytter mot lekkasje av passord, ikke CSRF. Passordet trengs ikke for CSRF-angrep — cookie-en sendes automatisk.",
+      },
+      {
+        text: "Vise et CAPTCHA på alle sider",
+        correct: false,
+        rationale:
+          "Reduserer risiko, men CSRF-token er den standardiserte og praktiske løsningen. CAPTCHA på alle sider ville være forferdelig UX.",
+      },
+    ],
+    explanation:
+      "Flask-WTF gir CSRF-token gratis i skjemaer ({{ form.hidden_tag() }}). SameSite=Lax/Strict på session-cookien er en ekstra og enklere beskyttelse moderne browsere støtter.",
+  },
+  {
+    id: "d-quiz-password-storage",
+    kind: "quiz",
+    title: "Passord-lagring — riktig fremgangsmåte",
+    prompt: "Velg den korrekte og sikre metoden.",
+    topic: "Sikkerhet",
+    question: "Hvordan SKAL passord lagres i databasen?",
+    options: [
+      {
+        text: "Hash + salt med bcrypt, scrypt eller Argon2 (slow hashing)",
+        correct: true,
+        rationale:
+          "Slow hashing gjør brute-force dyrt — selv om hele DB-en lekker, koster det årevis å knekke ett passord. Salt unngår rainbow tables.",
+      },
+      {
+        text: "SHA-256 av passordet",
+        correct: false,
+        rationale:
+          "SHA-256 er FOR raskt — en GPU prøver milliarder per sekund. Bruk slow hashing istedenfor.",
+      },
+      {
+        text: "AES-kryptert med en server-nøkkel",
+        correct: false,
+        rationale:
+          "Kryptering er reversibelt — har du nøkkelen får du klartekst. Passord skal være ENVEIS hashet, aldri krypterte.",
+      },
+      {
+        text: "Klartekst — men bare i en intern DB",
+        correct: false,
+        rationale:
+          "Aldri klartekst. Hver eneste lekkasje vi ser i nyhetene har lagret passord på dårlig vis.",
+      },
+    ],
+    explanation:
+      "I Flask: werkzeug.security.generate_password_hash() bruker pbkdf2:sha256 by default — godt nok. For nye prosjekter: bcrypt/argon2 er state of the art. Sjekk innlogging med check_password_hash().",
+  },
+  {
+    id: "d-quiz-sql-injection-spot",
+    kind: "quiz",
+    title: "Hvilke linjer er trygge?",
+    prompt: "Flere riktige svar mulig.",
+    topic: "Sikkerhet",
+    multi: true,
+    question:
+      "Marker ALLE linjer som er TRYGGE mot SQL injection. Antar at navn kommer fra request.form.",
+    options: [
+      {
+        text: "cursor.execute(\"SELECT * FROM bruker WHERE navn = %s\", (navn,))",
+        correct: true,
+        rationale: "Parameterized query. %s i mysql.connector er en bind-parameter, ikke en streng-format.",
+      },
+      {
+        text: "cursor.execute(f\"SELECT * FROM bruker WHERE navn = '{navn}'\")",
+        correct: false,
+        rationale: "f-string konkatenerer brukerinput direkte. Klassisk SQL injection.",
+      },
+      {
+        text: "cursor.execute(\"SELECT * FROM bruker WHERE navn = '%s'\" % navn)",
+        correct: false,
+        rationale:
+          "% er Python string formatting — ikke en bind-parameter. Like sårbart som +-konkatenering.",
+      },
+      {
+        text: "cursor.execute(\"SELECT * FROM bruker WHERE id = %s\", (int(id),))",
+        correct: true,
+        rationale:
+          "Parameterized og int() validerer typen før det går til DB. Dobbelt trygt.",
+      },
+      {
+        text: "cursor.execute(\"SELECT * FROM \" + tabellnavn + \" WHERE id = %s\", (id,))",
+        correct: false,
+        rationale:
+          "Tabellnavn kan IKKE være parameter i de fleste DB-drivere. Hvis tabellnavn kommer fra request, må du whitelist-validere det manuelt mot en kjent liste.",
+      },
+    ],
+    explanation:
+      "Regelen: alle brukerverdier skal inn som parametere (%s i mysql, ? i sqlite). Hvis du må variere strukturen (tabellnavn, kolonner) — bygg fra en hardkodet allowlist, aldri direkte fra input.",
+  },
+  {
+    id: "d-quiz-cookie-flags",
+    kind: "quiz",
+    title: "Sikre cookies — hvilke flagg?",
+    prompt: "Flere riktige svar.",
+    topic: "Sikkerhet",
+    multi: true,
+    question:
+      "Hvilke cookie-flagg SKAL settes på en session-cookie i en produksjons-app?",
+    options: [
+      {
+        text: "Secure — cookien sendes bare over HTTPS",
+        correct: true,
+        rationale: "Uten Secure kan cookien lekke over HTTP og fanges opp på et åpent WiFi.",
+      },
+      {
+        text: "HttpOnly — JavaScript kan ikke lese cookien",
+        correct: true,
+        rationale:
+          "Beskytter mot at en XSS-sårbarhet kan stjele session. Selv om XSS finnes, kan angriperen ikke hente cookien.",
+      },
+      {
+        text: "SameSite=Lax (eller Strict) — CSRF-beskyttelse",
+        correct: true,
+        rationale:
+          "SameSite hindrer at cookien sendes med cross-site requests fra andre nettsteder — sterk CSRF-beskyttelse i moderne browsere.",
+      },
+      {
+        text: "Path=/ — cookien gjelder for hele sitet",
+        correct: false,
+        rationale: "Path er ikke en sikkerhetsmekanisme, bare scope. Default-verdien er fin.",
+      },
+      {
+        text: "Max-Age=999999999 — cookien varer for alltid",
+        correct: false,
+        rationale: "Lange sesjoner ØKER risikoen. Kort gyldighet + refresh er bedre.",
+      },
+    ],
+    explanation:
+      "I Flask: app.config['SESSION_COOKIE_SECURE'] = True, SESSION_COOKIE_HTTPONLY = True (default), SESSION_COOKIE_SAMESITE = 'Lax'. Tre linjer som høyner sikkerheten dramatisk.",
+  },
+  {
+    id: "d-quiz-mass-assignment",
+    kind: "quiz",
+    title: "Mass-assignment-sårbarhet",
+    prompt: "Velg det BESTE forsvaret.",
+    topic: "Sikkerhet",
+    question:
+      "En route oppdaterer brukerprofil ved å iterere request.form: `for key, value in request.form.items(): setattr(user, key, value)`. Hva er hovedfaren?",
+    options: [
+      {
+        text: "Brukeren kan sende inn felter de ikke skulle hatt tilgang til (f.eks. is_admin=true)",
+        correct: true,
+        rationale:
+          "Klassisk mass-assignment: brukeren kan trigge oppdatering av felter form-en aldri viste — inkludert rolle-felt eller andre privilegier.",
+      },
+      {
+        text: "Det blir tregt",
+        correct: false,
+        rationale: "Det er ikke en sikkerhets-bekymring her.",
+      },
+      {
+        text: "request.form er kun lesbar",
+        correct: false,
+        rationale: "Ikke teknisk relevant for sårbarheten.",
+      },
+      {
+        text: "Det kan lage SQL injection",
+        correct: false,
+        rationale: "SQL injection er en annen vektor — her er problemet hvilke FELTER som settes.",
+      },
+    ],
+    explanation:
+      "Løsning: bruk en eksplisitt allowlist — hent BARE de feltene route-en faktisk tillater. Eks: navn = request.form.get(\"navn\"); user.navn = navn. Aldri loop blindt over input.",
+  },
 ];
