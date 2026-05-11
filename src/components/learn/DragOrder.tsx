@@ -18,7 +18,13 @@ function shuffle<T>(arr: T[]): T[] {
   return out;
 }
 
-export function DragOrder({ exercise }: { exercise: OrderExercise }) {
+export function DragOrder({
+  exercise,
+  onSolved,
+}: {
+  exercise: OrderExercise;
+  onSolved?: () => void;
+}) {
   const [items, setItems] = useState<string[]>(() => shuffle(exercise.items));
   const [dragIdx, setDragIdx] = useState<number | null>(null);
   const [overIdx, setOverIdx] = useState<number | null>(null);
@@ -63,8 +69,11 @@ export function DragOrder({ exercise }: { exercise: OrderExercise }) {
   const allCorrect = checked && items.every((_, i) => correctIndex(i));
 
   useEffect(() => {
-    if (allCorrect) markDragSolved(exercise.id);
-  }, [allCorrect, exercise.id]);
+    if (allCorrect) {
+      markDragSolved(exercise.id);
+      onSolved?.();
+    }
+  }, [allCorrect, exercise.id, onSolved]);
 
   return (
     <div className="space-y-4">

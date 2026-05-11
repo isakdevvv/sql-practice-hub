@@ -43,7 +43,13 @@ const SLOT_META: Record<
   },
 };
 
-export function CrowsFoot({ exercise }: { exercise: CrowsFootExercise }) {
+export function CrowsFoot({
+  exercise,
+  onSolved,
+}: {
+  exercise: CrowsFootExercise;
+  onSolved?: () => void;
+}) {
   const [placed, setPlaced] = useState<Partial<Record<SlotKey, SlotValue>>>({});
   const [dragVal, setDragVal] = useState<{ value: SlotValue; kind: "min" | "max" } | null>(
     null,
@@ -66,8 +72,11 @@ export function CrowsFoot({ exercise }: { exercise: CrowsFootExercise }) {
   const allCorrect = correctCount === 4;
 
   useEffect(() => {
-    if (checked && allCorrect) markDragSolved(exercise.id);
-  }, [checked, allCorrect, exercise.id]);
+    if (checked && allCorrect) {
+      markDragSolved(exercise.id);
+      onSolved?.();
+    }
+  }, [checked, allCorrect, exercise.id, onSolved]);
 
   function onDrop(slot: SlotKey) {
     if (!dragVal) return;
