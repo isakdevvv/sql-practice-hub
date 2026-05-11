@@ -87,6 +87,9 @@ import { content as mathFoundations } from "./math-foundations";
 import { content as diskretMatte } from "./diskret-matte";
 import { content as sannsynlighet } from "./sannsynlighet";
 import { content as linaerAlgebra } from "./linaer-algebra";
+import { content as gitDyp } from "./git-dyp";
+import { content as docker } from "./docker";
+import { content as linuxCliAdvanced } from "./linux-cli-advanced";
 import { content as laereplan } from "./laereplan";
 import { content as funksjonellProgrammering } from "./funksjonell-programmering";
 import { content as typesystemer } from "./typesystemer";
@@ -114,6 +117,7 @@ export const TRINN: TrinnContent[] = [
   dte2603, kotlinGrunnlag, androidGrunnlag, mvvmArkitektur, korutiner, roomRecycler, apiRetrofit,
   mvcMonster,
   mathFoundations, diskretMatte, sannsynlighet, linaerAlgebra,
+  gitDyp, docker, linuxCliAdvanced,
   laereplan,
   funksjonellProgrammering, typesystemer,
   javascriptGrunnlag, typescript, reactGrunnlag, cssModerne,

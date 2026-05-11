@@ -19,7 +19,8 @@ export type SubjectId =
   | "api-prosjekt"
   | "mobil"
   | "fp-typer"
-  | "drill-cross";
+  | "drill-cross"
+  | "devops";
 
 export interface Subject {
   id: SubjectId;
@@ -234,6 +235,12 @@ export const SUBJECTS: readonly Subject[] = [
     label: "Cross-phase eksamens-drill",
     short: "Oppgaver som tester forståelse på tvers av emner",
     topics: ["Cross-phase drill"],
+  },
+  {
+    id: "devops",
+    label: "DevOps & verktøy (Phase 11.5)",
+    short: "Git-dyp, Docker, Linux-CLI advanced",
+    topics: ["Git-dyp", "Docker", "Linux-CLI advanced", "sed/awk/jq", "Containere"],
   },
 ] as const;
 
