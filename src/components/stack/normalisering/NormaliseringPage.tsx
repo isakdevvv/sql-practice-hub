@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { ArrowRight, Lightbulb, AlertTriangle } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
+import { NormaliseringSteps } from "./NormaliseringSteps";
 
 const STEPS = [
   { title: "Hvorfor normalisere?", anchor: "hvorfor" },
@@ -10,6 +11,7 @@ const STEPS = [
   { title: "1NF — atomiske verdier", anchor: "del-1nf" },
   { title: "2NF — partielle avhengigheter", anchor: "del-2nf" },
   { title: "3NF — transitive avhengigheter", anchor: "del-3nf" },
+  { title: "Visuelt — hver overgang stegvis", anchor: "visuelt" },
   { title: "Sluttskjema — alle tabellene", anchor: "sluttskjema" },
   { title: "BCNF — når 3NF ikke holder", anchor: "bcnf" },
   { title: "Sjekkliste — normaliser stegvis", anchor: "sjekkliste" },
@@ -255,6 +257,9 @@ OrdreLinje(ordreNr, prodNr, antall)
             </p>
           </div>
         </section>
+
+        {/* Visuelt — stegvis tabelltransformasjon */}
+        <NormaliseringSteps />
 
         {/* Sluttskjema */}
         <section id="sluttskjema" className="mb-10">
