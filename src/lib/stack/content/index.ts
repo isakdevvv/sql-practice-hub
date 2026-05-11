@@ -18,6 +18,11 @@ import { content as transportlag } from "./transportlag";
 import { content as kryptografi } from "./kryptografi";
 import { content as tls } from "./tls";
 import { content as nettverkssikkerhet } from "./nettverkssikkerhet";
+import { content as dte2602 } from "./dte-2602";
+import { content as mlGrunnlag } from "./ml-grunnlag";
+import { content as supervisedLearning } from "./supervised-learning";
+import { content as unsupervisedLearning } from "./unsupervised-learning";
+import { content as nnIntro } from "./nn-intro";
 import { content as flaskLivssyklus } from "./flask-livssyklus";
 import { content as pythonDrill } from "./python-drill";
 import { content as httpAnatomi } from "./http-anatomi";
@@ -38,6 +43,7 @@ export const TRINN: TrinnContent[] = [
   subqueries, nokler,
   algoritmer, bigO, rekursjon, sortering, lenkedeStrukturer,
   dte2507, osiTcpip, transportlag, kryptografi, tls, nettverkssikkerhet,
+  dte2602, mlGrunnlag, supervisedLearning, unsupervisedLearning, nnIntro,
   flaskLivssyklus, pythonDrill, httpAnatomi,
   trinn1, trinn2, trinn3, trinn4, trinn5, trinn6, trinn7, trinn8, trinn9, trinn10,
 ];

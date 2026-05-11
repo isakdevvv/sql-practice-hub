@@ -8423,4 +8423,742 @@ __5__ endfor __6__
     explanation:
       "float('inf') er Python-konvensjon for «ikke nådd ennå». heapq er en MIN-heap — vi henter alltid minste foreløpige avstand først.",
   },
+
+  // ============= ML-GRUNNLAG =============
+
+  {
+    id: "d-order-ml-pipeline",
+    kind: "order",
+    title: "ML-pipeline — sortér stegene",
+    prompt: "Sortér de syv stegene i et typisk ML-prosjekt fra start til slutt.",
+    topic: "ML-grunnlag",
+    items: [
+      "1. Samle inn og rens data, håndter NaN og outliers",
+      "2. Feature engineering — velg og skalér kolonner",
+      "3. Split i train / val / test",
+      "4. Velg modell og tren på TRAIN-set",
+      "5. Tune hyperparametere på VAL-set (eller cross-val)",
+      "6. Evaluer på TEST-set — én gang, helt på slutten",
+      "7. Deploy og overvåk modellen i produksjon",
+    ],
+    explanation:
+      "Aller viktigst: TEST-settet skal ALDRI brukes til tuning. Det er den siste prøven — ikke pugg fasiten.",
+  },
+  {
+    id: "d-match-ml-paradigmer",
+    kind: "match",
+    title: "Match paradigme til scenario",
+    prompt: "Hvilken type ML er hver av disse?",
+    topic: "ML-grunnlag",
+    pairs: [
+      { left: "Predikere boligpris fra størrelse, beliggenhet", right: "Supervised — regresjon" },
+      { left: "Filtrere spam-eposter", right: "Supervised — klassifikasjon" },
+      { left: "Gruppere kunder etter kjøpsmønster", right: "Unsupervised — klustering" },
+      { left: "Redusere 100 features til 2D for plott", right: "Unsupervised — PCA" },
+      { left: "Robot som lærer å gå via belønning", right: "Reinforcement learning" },
+      { left: "Identifisere mistenkelig nettverkstrafikk uten merket data", right: "Unsupervised — anomalideteksjon" },
+    ],
+  },
+  {
+    id: "d-quiz-ml-overfitting",
+    kind: "quiz",
+    title: "Overfitting — gjenkjenn symptomet",
+    prompt: "Velg det best dekkende svaret.",
+    topic: "ML-grunnlag",
+    question:
+      "Du trener en decision tree med ubegrenset dybde. Train-accuracy: 99%. Test-accuracy: 65%. Hva har skjedd?",
+    options: [
+      {
+        text: "Overfitting — modellen har memorert treningsdata inkl. støy",
+        correct: true,
+        rationale: "Stort gap mellom train og test = klassisk overfit. Fiks: regularisering, max_depth, mer data.",
+      },
+      {
+        text: "Underfitting — modellen er for enkel",
+        correct: false,
+        rationale: "Underfitting gir LAV train-accuracy også. Her er train-accuracy høy.",
+      },
+      {
+        text: "Modellen er perfekt — 99% er flott",
+        correct: false,
+        rationale: "Train-accuracy alene er meningsløs. Det er TEST-accuracy som teller.",
+      },
+      {
+        text: "Test-settet er feil",
+        correct: false,
+        rationale: "Mulig, men 34 prosentpoeng gap er sterk indikator på overfit.",
+      },
+    ],
+  },
+  {
+    id: "d-quiz-ml-underfitting",
+    kind: "quiz",
+    title: "Underfitting — gjenkjenn symptomet",
+    prompt: "Velg riktig.",
+    topic: "ML-grunnlag",
+    question:
+      "Lineær regresjon på sterkt ikke-lineær data. Train RMSE: 8.5, Test RMSE: 8.7. Hva er problemet?",
+    options: [
+      {
+        text: "Underfitting — modellen er for enkel for mønsteret",
+        correct: true,
+        rationale: "Likt høyt error på BÅDE train og test = modellen kan ikke fange mønsteret engang i treningsdata.",
+      },
+      {
+        text: "Overfitting",
+        correct: false,
+        rationale: "Overfitting har LAV train-error og HØY test-error. Her er begge høye.",
+      },
+      {
+        text: "Bra balanse — train ≈ test",
+        correct: false,
+        rationale: "Train ≈ test er bra hvis BEGGE er lave. Begge høye = modellen er ikke flink nok.",
+      },
+      {
+        text: "For mye regularisering",
+        correct: false,
+        rationale: "Mulig delårsak, men ikke hovedproblemet med lineær på ikke-lineær data.",
+      },
+    ],
+  },
+  {
+    id: "d-match-ml-metrikker",
+    kind: "match",
+    title: "Riktig metrikk for problemet",
+    prompt: "Match scenario til den viktigste metrikken.",
+    topic: "Modellevaluering",
+    pairs: [
+      { left: "Boligpris-prediksjon (regresjon)", right: "RMSE eller MAE" },
+      { left: "Spam-detektor — vil ikke kalle legit mail spam", right: "Precision (lav FP)" },
+      { left: "Kreft-screening — vil ikke MISSE en syk pasient", right: "Recall (lav FN)" },
+      { left: "Balansert klassifikasjon, like FP/FN-kostnader", right: "Accuracy" },
+      { left: "Ranking-system uavhengig av threshold", right: "ROC-AUC" },
+      { left: "Sterkt ubalanserte klasser (99/1)", right: "F1 eller PR-AUC, IKKE accuracy" },
+    ],
+  },
+  {
+    id: "d-quiz-ml-data-leakage",
+    kind: "quiz",
+    title: "Data leakage — finn feilen",
+    prompt: "Velg det feilaktige steget.",
+    topic: "ML-grunnlag",
+    question: "I hvilken av disse rekkefølgene har du data leakage?",
+    code: "scaler = StandardScaler()\nX_scaled = scaler.fit_transform(X)\nX_tr, X_te, y_tr, y_te = train_test_split(X_scaled, y)",
+    language: "python",
+    options: [
+      {
+        text: "Du skalerer FØR splitting — scaleren ser TEST-data og «lekker» informasjon",
+        correct: true,
+        rationale: "Riktig flyt: split først, fit_transform(X_train) på treningssettet, transform(X_test) etterpå.",
+      },
+      {
+        text: "Du må alltid skalere FØR split",
+        correct: false,
+        rationale: "Akkurat motsatt — split først.",
+      },
+      {
+        text: "Ingenting feil",
+        correct: false,
+        rationale: "Det ER en feil — subtil men reell. Test-statistikker har påvirket scaleren.",
+      },
+      {
+        text: "train_test_split krever ulik X-størrelse",
+        correct: false,
+        rationale: "Den fungerer fint på en gitt X.",
+      },
+    ],
+    explanation:
+      "Bruk sklearn Pipeline — den håndterer fit/transform-rekkefølgen riktig automatisk.",
+  },
+  {
+    id: "d-fill-train-test-split",
+    kind: "fill",
+    title: "Fyll inn train/test-split",
+    prompt: "Split data 80/20, sett random seed, stratifisér for klassebalanse.",
+    topic: "ML-grunnlag",
+    template:
+      "from sklearn.model_selection import __1__\n\nX_train, X_test, y_train, y_test = __1__(\n    X, y,\n    __2__=0.2,\n    __3__=42,\n    __4__=y          # behold klassefordeling\n)",
+    blanks: ["train_test_split", "test_size", "random_state", "stratify"],
+    options: ["train_test_split", "split", "test_size", "test_ratio", "random_state", "seed", "stratify", "balance"],
+    language: "python",
+    explanation:
+      "stratify=y er avgjørende for ubalanserte klassifikasjons-datasett. random_state gjør resultatene reproduserbare.",
+  },
+  {
+    id: "d-quiz-bias-variance",
+    kind: "quiz",
+    title: "Bias-variance — tolk diagnose",
+    prompt: "Velg det riktige tiltaket.",
+    topic: "ML-grunnlag",
+    question: "Modellen din har høy bias (underfit). Hvilket tiltak hjelper?",
+    options: [
+      {
+        text: "Mer komplekst modell eller flere features",
+        correct: true,
+        rationale: "Høy bias = for enkel modell. Øk kapasitet — flere features, dypere tre, mer parametere.",
+      },
+      {
+        text: "Mer treningsdata",
+        correct: false,
+        rationale: "Mer data hjelper mot VARIANCE (overfit), ikke bias.",
+      },
+      {
+        text: "Mer regularisering",
+        correct: false,
+        rationale: "Det FORVERRER bias. Mindre regularisering kan hjelpe.",
+      },
+      {
+        text: "Skalér featuresene",
+        correct: false,
+        rationale: "Skalering er god praksis men løser ikke bias.",
+      },
+    ],
+  },
+
+  // ============= SUPERVISED LEARNING =============
+
+  {
+    id: "d-match-supervised-algos",
+    kind: "match",
+    title: "Supervised algoritme → egenskap",
+    prompt: "Match hver algoritme til sin distinktive egenskap.",
+    topic: "Supervised learning",
+    pairs: [
+      { left: "Lineær regresjon", right: "Tolkbar, antar lineær sammenheng, trenger skalering" },
+      { left: "Logistisk regresjon", right: "Binær klassifikator med sigmoid, gir sannsynlighet" },
+      { left: "kNN", right: "Ingen trening — bare data. Trenger skalerte features." },
+      { left: "Decision tree", right: "Tolkbar, takler blandet datatype, overfitter lett" },
+      { left: "Random Forest", right: "Mange trær på subsets — robust default-valg" },
+      { left: "Gradient Boosting", right: "Sekvensielle trær korrigerer feil — vinner Kaggle" },
+      { left: "SVM", right: "Maksimerer margin, kernel-triks for ikke-lineær" },
+    ],
+  },
+  {
+    id: "d-quiz-knn-k-velg",
+    kind: "quiz",
+    title: "kNN — velge k",
+    prompt: "Velg riktig effekt.",
+    topic: "Supervised learning",
+    question: "Du øker k i kNN fra 3 til 50. Hva skjer?",
+    options: [
+      {
+        text: "Modellen blir glattere — mindre variance, mer bias",
+        correct: true,
+        rationale: "Større k = gjennomsnitt over flere naboer = beslutningen blir mindre påvirket av enkeltpunkter. Bias øker, variance synker.",
+      },
+      {
+        text: "Modellen overfitter mer",
+        correct: false,
+        rationale: "Motsatt — liten k overfitter (én neste-nabo).",
+      },
+      {
+        text: "Ingen effekt — k er bare en stil-parameter",
+        correct: false,
+        rationale: "k har stor effekt på generalisering.",
+      },
+      {
+        text: "Treningen blir tregere",
+        correct: false,
+        rationale: "kNN har ingen trening. PREDIKSJON blir litt tregere fordi man finner flere naboer.",
+      },
+    ],
+  },
+  {
+    id: "d-quiz-tree-max-depth",
+    kind: "quiz",
+    title: "Decision tree — max_depth",
+    prompt: "Velg det mest dekkende.",
+    topic: "Supervised learning",
+    question: "Hvorfor settes max_depth ofte til 5-10 i et decision tree?",
+    options: [
+      {
+        text: "For å hindre overfitting — uten grense memorerer treet treningsdata fullt ut",
+        correct: true,
+        rationale: "Et tre med ubegrenset dybde lager én blad-node per treningssample → 100% train accuracy, dårlig generalisering.",
+      },
+      {
+        text: "Det går raskere å trene",
+        correct: false,
+        rationale: "Trenings-hastigheten er sekundær. Generalisering er hovedgrunnen.",
+      },
+      {
+        text: "Sklearn krever max_depth",
+        correct: false,
+        rationale: "Det er VALGFRITT. Default er None (ubegrenset).",
+      },
+      {
+        text: "Større max_depth gir alltid bedre resultat",
+        correct: false,
+        rationale: "Det er motsatt — dypere overfitter.",
+      },
+    ],
+  },
+  {
+    id: "d-fill-sklearn-knn",
+    kind: "fill",
+    title: "Fyll inn kNN-bruk",
+    prompt: "Tren en kNN-klassifikator med k=5 på skalert data.",
+    topic: "Supervised learning",
+    template:
+      "from sklearn.preprocessing import __1__\nfrom sklearn.neighbors import __2__\n\nscaler = __1__()\nX_train_s = scaler.__3__(X_train)\nX_test_s  = scaler.__4__(X_test)        # IKKE fit_transform!\n\nmodel = __2__(n_neighbors=__5__)\nmodel.fit(X_train_s, y_train)\npreds = model.predict(X_test_s)",
+    blanks: ["StandardScaler", "KNeighborsClassifier", "fit_transform", "transform", "5"],
+    options: ["StandardScaler", "MinMaxScaler", "KNeighborsClassifier", "KNN", "fit_transform", "transform", "fit", "3", "5", "10"],
+    language: "python",
+    explanation:
+      "Den klassiske data-leakage-fellen: scaler skal FITTES KUN på train, så transformere test. fit_transform begge ganger lekker test-statistikk.",
+  },
+  {
+    id: "d-fill-sklearn-rf",
+    kind: "fill",
+    title: "Fyll inn Random Forest",
+    prompt: "Tren en Random Forest-klassifikator med 100 trær.",
+    topic: "Supervised learning",
+    template:
+      "from sklearn.ensemble import __1__\nfrom sklearn.metrics import accuracy_score\n\nmodel = __1__(\n    __2__=100,\n    max_depth=10,\n    __3__=42)\n\nmodel.fit(X_train, y_train)\npreds = model.predict(X_test)\nprint(accuracy_score(y_test, preds))",
+    blanks: ["RandomForestClassifier", "n_estimators", "random_state"],
+    options: ["RandomForestClassifier", "RandomForest", "DecisionTree", "n_estimators", "n_trees", "random_state", "seed"],
+    language: "python",
+    explanation:
+      "Random Forest takler u-skalerte features og er en god default. n_estimators=100 er typisk; flere gir litt bedre og tregere.",
+  },
+  {
+    id: "d-match-regr-vs-klass",
+    kind: "match",
+    title: "Regresjon eller klassifikasjon?",
+    prompt: "Match problemet til riktig type.",
+    topic: "Supervised learning",
+    pairs: [
+      { left: "Predikere boligpris (NOK)", right: "Regresjon" },
+      { left: "Sjekke om mail er spam", right: "Klassifikasjon (binær)" },
+      { left: "Predikere sangsjanger", right: "Klassifikasjon (multi-klasse)" },
+      { left: "Predikere temperatur i morgen", right: "Regresjon" },
+      { left: "Anbefale produkter (stjerne 1-5)", right: "Regresjon eller ordinal klassifikasjon" },
+      { left: "Diagnose ja/nei kreft", right: "Klassifikasjon (binær)" },
+    ],
+  },
+  {
+    id: "d-quiz-regularization",
+    kind: "quiz",
+    title: "Regularisering — hva gjør den?",
+    prompt: "Velg det mest dekkende.",
+    topic: "Supervised learning",
+    question: "Du legger til L2-regularisering (Ridge) på lineær regresjon. Hva skjer?",
+    options: [
+      {
+        text: "Vektene skvises mot null — modellen blir enklere og overfitter mindre",
+        correct: true,
+        rationale: "L2 legger til λ·||w||² i loss. Optimalisering vil unngå store vekter → mindre kompleksitet, mindre overfit.",
+      },
+      {
+        text: "Modellen blir mer fleksibel",
+        correct: false,
+        rationale: "Motsatt — regularisering BEGRENSER fleksibilitet.",
+      },
+      {
+        text: "Training-loss blir lavere",
+        correct: false,
+        rationale: "Training-loss blir HØYERE (regularisering er en straff). Men test-loss blir bedre.",
+      },
+      {
+        text: "Modellen kan ikke lenger lære lineære funksjoner",
+        correct: false,
+        rationale: "Den lærer fortsatt lineære — bare med mindre vekter.",
+      },
+    ],
+    explanation: "Lasso (L1) gjør samme, men kan sette vekter helt til 0 → feature selection.",
+  },
+  {
+    id: "d-quiz-ensemble-rf-vs-gb",
+    kind: "quiz",
+    title: "Random Forest vs Gradient Boosting",
+    prompt: "Velg den viktigste forskjellen.",
+    topic: "Supervised learning",
+    question: "Hva er hovedforskjellen mellom Random Forest og Gradient Boosting?",
+    options: [
+      {
+        text: "RF trener trær PARALLELLT på subsets; GB trener trær SEKVENSIELT der hvert korrigerer forrige",
+        correct: true,
+        rationale: "Det er hele forskjellen. RF er bagging (parallell, gjennomsnitt); GB er boosting (sekvensiell, residualer).",
+      },
+      {
+        text: "RF er for klassifikasjon, GB for regresjon",
+        correct: false,
+        rationale: "Begge kan brukes til begge.",
+      },
+      {
+        text: "GB er alltid bedre",
+        correct: false,
+        rationale: "GB er ofte bedre på tabulær data, men RF er mer robust mot dårlige hyperparametere.",
+      },
+      {
+        text: "RF er deterministisk, GB er stokastisk",
+        correct: false,
+        rationale: "Begge bruker randomness (subsets, bagging).",
+      },
+    ],
+  },
+
+  // ============= UNSUPERVISED LEARNING =============
+
+  {
+    id: "d-match-unsupervised-algos",
+    kind: "match",
+    title: "Unsupervised algoritme → bruk",
+    prompt: "Match algoritmen til typisk bruksområde.",
+    topic: "Unsupervised learning",
+    pairs: [
+      { left: "k-means", right: "Klustering når du forhåndsbestemmer antall grupper" },
+      { left: "Hierarchical clustering", right: "Klustering uten å forhåndsbestemme k, gir dendrogram" },
+      { left: "PCA", right: "Dim-reduksjon for visualisering eller speed-up" },
+      { left: "Isolation Forest", right: "Anomalideteksjon — finn de utypiske" },
+      { left: "DBSCAN", right: "Klustering basert på tetthet — håndterer irregulære former" },
+      { left: "t-SNE / UMAP", right: "Ikke-lineær dim-reduksjon for visualisering" },
+    ],
+  },
+  {
+    id: "d-quiz-kmeans-scale",
+    kind: "quiz",
+    title: "k-means — hvorfor skalere?",
+    prompt: "Velg riktig grunn.",
+    topic: "Unsupervised learning",
+    question: "Hvorfor MÅ du skalere features før k-means?",
+    options: [
+      {
+        text: "k-means bruker euclidean avstand — features med stor variasjon dominerer ellers",
+        correct: true,
+        rationale: "Hvis én feature går 0-1000 og en annen 0-1, vil førstnevnte dominere avstandsberegningen helt og slett.",
+      },
+      {
+        text: "k-means krever positive verdier",
+        correct: false,
+        rationale: "k-means takler både positive og negative.",
+      },
+      {
+        text: "Skalering gjør k-means raskere",
+        correct: false,
+        rationale: "Skalering endrer ikke kjørehastighet — kun KVALITETEN av klusterene.",
+      },
+      {
+        text: "sklearn krever det",
+        correct: false,
+        rationale: "Den krever det ikke teknisk, men resultatet blir dårlig uten.",
+      },
+    ],
+  },
+  {
+    id: "d-order-kmeans-algo",
+    kind: "order",
+    title: "k-means algoritmen — sortér stegene",
+    prompt: "Sortér iterasjonene av k-means.",
+    topic: "Unsupervised learning",
+    items: [
+      "Plassér k senter-punkter tilfeldig",
+      "Beregn avstand fra hvert datapunkt til hvert senter",
+      "Tilordne hvert datapunkt til NÆRMESTE senter",
+      "Oppdater hvert senter til gjennomsnittet av sine tilordnede punkter",
+      "Sjekk: har sentrene flyttet seg? Hvis ja, gjenta",
+      "Hvis nei (konvergert), returner cluster-labels og sentre",
+    ],
+  },
+  {
+    id: "d-quiz-elbow-method",
+    kind: "quiz",
+    title: "Elbow-metoden — hva er den til?",
+    prompt: "Velg det riktige formålet.",
+    topic: "Unsupervised learning",
+    question: "Du plotter SSE (sum of squared errors) for k=1 til k=10 i k-means. Hva ser du etter?",
+    options: [
+      {
+        text: "«Albuen» — punktet der SSE slutter å falle dramatisk. Dette indikerer det optimale antallet klustere.",
+        correct: true,
+        rationale: "Før albuen: hvert ekstra cluster forklarer mye. Etter: marginal gevinst. Albuen er sweet spot.",
+      },
+      {
+        text: "Punktet hvor SSE er lavest — alltid det høyeste k-et",
+        correct: false,
+        rationale: "Det er trivielt — SSE går mot 0 når k = n. Men da har vi ett cluster per punkt — ubrukelig.",
+      },
+      {
+        text: "Punktet hvor accuracy er høyest",
+        correct: false,
+        rationale: "Unsupervised har ingen accuracy. SSE er evaluasjonen.",
+      },
+      {
+        text: "Hvor mange features det er",
+        correct: false,
+        rationale: "Antall features er X.shape[1], ikke fra elbow.",
+      },
+    ],
+  },
+  {
+    id: "d-fill-sklearn-kmeans",
+    kind: "fill",
+    title: "Fyll inn k-means",
+    prompt: "Tren k-means med 3 klustere og hent ut labels.",
+    topic: "Unsupervised learning",
+    template:
+      "from sklearn.cluster import __1__\nfrom sklearn.preprocessing import StandardScaler\n\nX_scaled = StandardScaler().__2__(X)\n\nkm = __1__(__3__=3, random_state=42, n_init=10)\nkm.fit(X_scaled)\n\nlabels = km.__4__\ncenters = km.__5__",
+    blanks: ["KMeans", "fit_transform", "n_clusters", "labels_", "cluster_centers_"],
+    options: ["KMeans", "KCluster", "kmeans", "fit_transform", "fit", "transform", "n_clusters", "k", "labels_", "predictions_", "cluster_centers_", "centroids_"],
+    language: "python",
+    explanation:
+      "n_init=10 kjører algoritmen 10 ganger med ulike random init og beholder beste — anbefalt fordi k-means kan henge seg på lokale minima.",
+  },
+  {
+    id: "d-quiz-pca-forklart-varians",
+    kind: "quiz",
+    title: "PCA — explained_variance_ratio",
+    prompt: "Velg riktig tolkning.",
+    topic: "Unsupervised learning",
+    question:
+      "PCA.explained_variance_ratio_ = [0.55, 0.28, 0.12, 0.05]. Hva betyr det?",
+    options: [
+      {
+        text: "PC1 forklarer 55% av variansen, PC2 28%, totalt fanger 4 komponenter 100%",
+        correct: true,
+        rationale: "Sum er 1.0 og lista har 4 elementer = 4 komponenter brukt. Behold ofte nok komponenter til å forklare 90-95% av variansen.",
+      },
+      {
+        text: "Modellen har 55% accuracy",
+        correct: false,
+        rationale: "PCA har ingen accuracy — det er ikke en prediksjonsmodell.",
+      },
+      {
+        text: "De første to komponentene er nok",
+        correct: false,
+        rationale: "PC1+PC2 = 83%. Om det er nok avhenger av tap-toleranse.",
+      },
+      {
+        text: "Datasettet har 55 features",
+        correct: false,
+        rationale: "Antall features finner du i X.shape[1], ikke i variance ratio.",
+      },
+    ],
+  },
+  {
+    id: "d-match-dim-reduction",
+    kind: "match",
+    title: "Dim-reduksjon — velg riktig teknikk",
+    prompt: "For hvert behov, hvilken teknikk passer best?",
+    topic: "Unsupervised learning",
+    pairs: [
+      { left: "Behold lineær struktur, raskt", right: "PCA" },
+      { left: "Visualiser klustere i 2D (ikke-lineær)", right: "t-SNE eller UMAP" },
+      { left: "Beholde global struktur + raskere enn t-SNE", right: "UMAP" },
+      { left: "Komprimere bilder eller signaler", right: "PCA" },
+      { left: "Feature selection (ikke -reduksjon)", right: "L1-regularisering (Lasso)" },
+    ],
+  },
+
+  // ============= NEVRALE NETT =============
+
+  {
+    id: "d-match-aktivering",
+    kind: "match",
+    title: "Aktiveringsfunksjon → bruksområde",
+    prompt: "Match hver funksjon til der den passer.",
+    topic: "Nevrale nett",
+    pairs: [
+      { left: "ReLU", right: "Default for skjulte lag — rask, fungerer" },
+      { left: "Sigmoid", right: "Binær klassifikasjon — siste lag (output ∈ 0,1)" },
+      { left: "Softmax", right: "Multi-klasse klassifikasjon — siste lag (sum = 1)" },
+      { left: "Tanh", right: "Skjulte lag i RNN — sentrert rundt 0" },
+      { left: "Linear (ingen)", right: "Regresjon — siste lag uten activation" },
+    ],
+  },
+  {
+    id: "d-quiz-perceptron-xor",
+    kind: "quiz",
+    title: "Perceptron — kan den lære XOR?",
+    prompt: "Velg riktig.",
+    topic: "Nevrale nett",
+    question: "Kan en enkel perceptron lære XOR-funksjonen (1, 1 → 0; 1, 0 → 1; etc.)?",
+    options: [
+      {
+        text: "Nei — XOR er ikke lineært separerbar, krever et skjult lag",
+        correct: true,
+        rationale: "Klassisk Minsky-Papert-resultat fra 1969 som stoppet NN-forskning i 17 år. Med ETT skjult lag kan en NN lære XOR.",
+      },
+      {
+        text: "Ja, med riktige vekter",
+        correct: false,
+        rationale: "Det finnes ingen vekter som løser XOR med én perceptron. Lineær separabilitet er kjernen.",
+      },
+      {
+        text: "Bare hvis du bruker sigmoid",
+        correct: false,
+        rationale: "Aktiveringsfunksjon endrer ikke lineær separabilitet for én lag.",
+      },
+      {
+        text: "Bare med Adam-optimizer",
+        correct: false,
+        rationale: "Optimizer endrer hvordan vi finner vekter, ikke om de eksisterer.",
+      },
+    ],
+  },
+  {
+    id: "d-quiz-loss-velg",
+    kind: "quiz",
+    title: "Velg riktig loss-funksjon",
+    prompt: "Hva bruker du for binær klassifikasjon?",
+    topic: "Nevrale nett",
+    question: "Du bygger en NN for å klassifisere mail som spam/ikke spam. Hvilken loss-funksjon?",
+    options: [
+      {
+        text: "Binary cross-entropy (med sigmoid output)",
+        correct: true,
+        rationale: "BCE er standard for binær klassifikasjon. Sigmoid output gir P(spam=1), BCE måler avvik fra true label.",
+      },
+      {
+        text: "MSE (Mean Squared Error)",
+        correct: false,
+        rationale: "MSE er for regresjon. Fungerer dårlig for klassifikasjon — gir treigere konvergens og dårligere gradient-flyt.",
+      },
+      {
+        text: "Categorical cross-entropy",
+        correct: false,
+        rationale: "Det er for MULTI-klasse. Binær er enklere — BCE.",
+      },
+      {
+        text: "Hinge loss",
+        correct: false,
+        rationale: "Hinge loss er for SVM, ikke standard for NN.",
+      },
+    ],
+  },
+  {
+    id: "d-order-nn-trening",
+    kind: "order",
+    title: "Trening av nevralt nett — sortér stegene",
+    prompt: "Sortér én iterasjon (epoch) av NN-trening.",
+    topic: "Nevrale nett",
+    items: [
+      "1. Forward pass: kjør input gjennom nettet, regn ut ŷ",
+      "2. Beregn loss L(ŷ, y)",
+      "3. Backward pass: regn gradient ∂L/∂w for hver vekt",
+      "4. Optimizer oppdaterer: w = w - lr · ∂L/∂w",
+      "5. Gjenta for neste batch",
+      "6. Når alle batches er kjørt: én EPOCH er fullført",
+    ],
+    explanation:
+      "Hver epoch er ÉN runde gjennom hele datasettet. Typisk trener man i 10-100 epochs med early stopping på val-loss.",
+  },
+  {
+    id: "d-fill-nn-pytorch",
+    kind: "fill",
+    title: "Fyll inn PyTorch NN-skjelett",
+    prompt: "Bygg en enkel klassifikasjons-NN.",
+    topic: "Nevrale nett",
+    template:
+      "import torch.nn as nn\n\nclass NN(nn.Module):\n    def __init__(self):\n        super().__init__()\n        self.fc1 = nn.__1__(10, 64)    # 10 input, 64 skjult\n        self.fc2 = nn.__1__(64, 2)     # 64 → 2 klasser\n        self.relu = nn.__2__()\n\n    def forward(self, x):\n        x = self.relu(self.__3__(x))\n        return self.__4__(x)\n\nloss_fn = nn.__5__()      # cross-entropy for multi-klasse",
+    blanks: ["Linear", "ReLU", "fc1", "fc2", "CrossEntropyLoss"],
+    options: ["Linear", "Dense", "ReLU", "Sigmoid", "Tanh", "fc1", "fc2", "layer1", "CrossEntropyLoss", "BCELoss", "MSELoss"],
+    language: "python",
+    explanation:
+      "nn.Linear er fully-connected layer. CrossEntropyLoss i PyTorch inkluderer softmax — du legger IKKE softmax i siste lag.",
+  },
+  {
+    id: "d-quiz-vanishing-gradient",
+    kind: "quiz",
+    title: "Vanishing gradient — symptom og fiks",
+    prompt: "Velg riktig.",
+    topic: "Nevrale nett",
+    question: "Et dypt nett med sigmoid aktivering i alle lag konvergerer veldig sakte. Hva er problemet?",
+    options: [
+      {
+        text: "Vanishing gradient — sigmoid-gradient er liten, og produktet av små gradienter forsvinner i dype nett",
+        correct: true,
+        rationale: "Sigmoid har max-gradient 0.25. I 10-lags nett blir gradient 0.25^10 ≈ 10^-6 — usynlig. Bytt til ReLU.",
+      },
+      {
+        text: "For mye data",
+        correct: false,
+        rationale: "Mer data hjelper vanligvis — ikke et problem.",
+      },
+      {
+        text: "Modellen overfitter",
+        correct: false,
+        rationale: "Overfit gir høy train-acc og lav test-acc, ikke treg konvergens.",
+      },
+      {
+        text: "Adam-optimizer er ikke kompatibel med sigmoid",
+        correct: false,
+        rationale: "Adam fungerer fint med alle aktiveringer.",
+      },
+    ],
+  },
+  {
+    id: "d-quiz-learning-rate",
+    kind: "quiz",
+    title: "Learning rate — for høyt vs for lavt",
+    prompt: "Velg det riktige symptomet.",
+    topic: "Nevrale nett",
+    question: "Du trener en NN. Loss vokser opp og ned vilt og divergerer til NaN. Hva er sannsynlig årsak?",
+    options: [
+      {
+        text: "Learning rate er FOR HØYT — stegene over loss-landskapet blir for store",
+        correct: true,
+        rationale: "Klassisk divergens-symptom. Reduser lr (typisk fra 1e-3 til 1e-4) eller bruk gradient clipping.",
+      },
+      {
+        text: "Learning rate er for lavt",
+        correct: false,
+        rationale: "For lavt lr gir TREG konvergens, ikke divergens.",
+      },
+      {
+        text: "For lite data",
+        correct: false,
+        rationale: "Lite data gir overfit, ikke divergens.",
+      },
+      {
+        text: "For mange epochs",
+        correct: false,
+        rationale: "Det gir overfit (lav train-loss, høy val-loss) — ikke NaN.",
+      },
+    ],
+  },
+  {
+    id: "d-match-nn-hyperparametere",
+    kind: "match",
+    title: "Hyperparameter → effekt",
+    prompt: "Match hver hyperparameter til hva som skjer hvis den er FOR HØY.",
+    topic: "Nevrale nett",
+    pairs: [
+      { left: "learning_rate for høyt", right: "Loss divergerer, NaN" },
+      { left: "epochs for mange", right: "Overfitting — val-loss begynner å stige" },
+      { left: "hidden layers for dypt", right: "Vanishing gradient, tregere konvergens, mer overfit" },
+      { left: "batch_size for stort", right: "Mer minne, jevnere gradient men færre updates" },
+      { left: "dropout for høyt", right: "Underfitting — nettet slår av for mye" },
+    ],
+  },
+  {
+    id: "d-quiz-softmax-vs-sigmoid",
+    kind: "quiz",
+    title: "Softmax eller sigmoid på output?",
+    prompt: "Velg riktig.",
+    topic: "Nevrale nett",
+    question: "Du klassifiserer bilder til 10 kategorier. Hvilken aktivering på siste lag?",
+    options: [
+      {
+        text: "Softmax — gir sannsynlighet per klasse, sum = 1",
+        correct: true,
+        rationale: "Softmax fordeler sannsynligheten mellom klassene. Multi-klasse standard.",
+      },
+      {
+        text: "Sigmoid på hver klasse",
+        correct: false,
+        rationale: "Sigmoid er for BINÆR eller multi-LABEL (ikke multi-klasse). En bilde kan ikke være både 'hund' og 'katt' samtidig.",
+      },
+      {
+        text: "ReLU",
+        correct: false,
+        rationale: "ReLU er for skjulte lag. På output gir det rå tall, ikke sannsynlighet.",
+      },
+      {
+        text: "Linear",
+        correct: false,
+        rationale: "Linear er for regresjon. Klassifikasjon trenger sannsynlighet.",
+      },
+    ],
+  },
 ];
