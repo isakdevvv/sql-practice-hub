@@ -88,6 +88,8 @@ import { content as diskretMatte } from "./diskret-matte";
 import { content as sannsynlighet } from "./sannsynlighet";
 import { content as linaerAlgebra } from "./linaer-algebra";
 import { content as laereplan } from "./laereplan";
+import { content as funksjonellProgrammering } from "./funksjonell-programmering";
+import { content as typesystemer } from "./typesystemer";
 import type { TrinnContent } from "../types";
 
 export const TRINN: TrinnContent[] = [
@@ -109,6 +111,7 @@ export const TRINN: TrinnContent[] = [
   mvcMonster,
   mathFoundations, diskretMatte, sannsynlighet, linaerAlgebra,
   laereplan,
+  funksjonellProgrammering, typesystemer,
 ];
 
 import { curriculumIndexOf } from "../curriculum";

@@ -15195,4 +15195,455 @@ for k in kunder:
     ],
     explanation: "Vanlig view = SELECT kjøres hver gang. Materialized view = resultat lagret på disk, må REFRESHes. Velg materialized hvis: dyrt aggregat + leses ofte + tåler utdaterte tall.",
   },
+  // ============ FUNKSJONELL PROGRAMMERING + TYPESYSTEMER (Phase 2.5) ============
+
+  // ---- Funksjonell programmering ----
+  {
+    id: "d-fp-pure-quiz",
+    kind: "quiz",
+    title: "Pure vs impure",
+    prompt: "Hvilken av funksjonene under er pure?",
+    topic: "Pure functions",
+    question: "En pure function er deterministisk OG har ingen side-effekter. Hvilken kvalifiserer?",
+    code: `def a(x, y): return x + y
+
+def b(xs):
+    xs.append(1)
+    return xs
+
+def c(name):
+    print(f"Hei {name}")
+    return name
+
+import random
+def d():
+    return random.randint(1, 10)`,
+    language: "python",
+    options: [
+      { text: "a — tar to tall, returnerer summen", correct: true, rationale: "Deterministisk (samme input gir samme output) og ingen side-effekt. Definisjonen oppfylt." },
+      { text: "b — appender til lista", correct: false, rationale: "Muterer argumentet xs — det er en side-effekt på caller sin data." },
+      { text: "c — printer og returnerer navn", correct: false, rationale: "print() er I/O, en side-effekt mot stdout. Ikke pure." },
+      { text: "d — returnerer tilfeldig tall", correct: false, rationale: "Ikke deterministisk: samme input (ingen input) gir forskjellig output hver gang." },
+    ],
+    explanation: "Pure krever BÅDE deterministisk OG ingen side-effekter. Hvis én av delene mangler er den impure.",
+  },
+  {
+    id: "d-fp-match-mfr",
+    kind: "match",
+    title: "map / filter / reduce — hva gjør hva?",
+    prompt: "Match hver høyere-ordens funksjon til sin signatur og rolle.",
+    topic: "Higher-order funksjoner",
+    pairs: [
+      { left: "map(fn, xs)", right: "Transformer hvert element. Returnerer NY liste med samme lengde." },
+      { left: "filter(pred, xs)", right: "Behold elementene der predikat er True. Lengde mindre eller lik original." },
+      { left: "reduce(fn, xs, init)", right: "Kollaps lista til ÉN verdi via akkumulator-funksjon." },
+      { left: "list comprehension [f(x) for x in xs]", right: "Pythonic alternativ til map (og filter med if-clause)." },
+      { left: "sorted(xs, key=fn)", right: "Sortér ved å bruke fn på hvert element for sammenligning." },
+    ],
+    explanation: "Pipeline-mønster: filter, deretter map, deretter reduce dekker mesteparten av list-prosessering. Lær å SE disse, så slutter du å skrive manuelle loops uten grunn.",
+  },
+  {
+    id: "d-fp-side-effect-quiz",
+    kind: "quiz",
+    title: "Identifiser side-effekten",
+    prompt: "Hvilken linje gjør funksjonen impure?",
+    topic: "Pure functions",
+    question: "Funksjonen skal beregne totalpris med moms. Én linje ødelegger pureness — hvilken?",
+    code: `def total_med_moms(varer: list[float]) -> float:
+    print("Beregner...")            # A
+    total = 0.0
+    for v in varer:
+        total += v
+    total *= 1.25
+    return total`,
+    language: "python",
+    options: [
+      { text: "A: print(\"Beregner...\")", correct: true, rationale: "print er I/O mot stdout — en observerbar effekt utenfor funksjonen. Det er nettopp definisjonen av side-effekt." },
+      { text: "total = 0.0 — global state", correct: false, rationale: "total er en lokal variabel, ikke global. Lokale variabler er ikke side-effekter." },
+      { text: "for-loopen", correct: false, rationale: "Iterasjon er bare beregning. Lov i pure functions så lenge ingenting eksternt endres." },
+      { text: "total *= 1.25 muterer total", correct: false, rationale: "Mutering av LOKAL variabel er ufarlig. Bare mutasjon utenfor funksjonen er en side-effekt." },
+    ],
+    explanation: "Fjern print, og funksjonen blir pure. Logging passer i hjørne-funksjoner, ikke i ren beregning. Skill orkestrering fra beregning.",
+  },
+  {
+    id: "d-fp-recursion-vs-loop",
+    kind: "quiz",
+    title: "Når velger du rekursjon over loop?",
+    prompt: "Hvilket problem passer best for rekursjon?",
+    topic: "Funksjonell programmering",
+    question: "Tenk på «problemet ser likt ut på en mindre versjon av seg selv». Hvor passer rekursjon naturligst?",
+    options: [
+      { text: "Iterere over en liste tall og summere", correct: false, rationale: "Flat iterasjon: for-loop er enklere og raskere i Python (rekursjon har call-overhead)." },
+      { text: "Traversere et JSON-tre med vilkårlig dybde", correct: true, rationale: "Trær har samme struktur i hver gren — pek rekursjons-definisjon: base case (blad) og reduksjon (rekursér på barn)." },
+      { text: "Lese linjer fra en fil", correct: false, rationale: "Linje-for-linje er klassisk loop / generator. Rekursjon her ville bare gjort koden vanskeligere." },
+      { text: "Beregne snittet av en liste", correct: false, rationale: "sum og len — ingen rekursjon trengs." },
+    ],
+    explanation: "Rekursjon er gull for trær, grafer, divide-and-conquer (mergesort), og «samme problem på mindre input». For flat iterasjon vinner loops (særlig i Python pga RecursionError ved dyp rekursjon).",
+  },
+  {
+    id: "d-fp-fill-curry",
+    kind: "fill",
+    title: "Curry/partial — fyll inn",
+    prompt: "Fullfør curried multiplikasjon i TypeScript.",
+    topic: "Higher-order funksjoner",
+    template: `const gang = (faktor: __1__) => (__2__: number) => __3__ * __4__;
+const dobble = gang(__5__);
+dobble(7);   // 14`,
+    language: "python",
+    blanks: ["number", "x", "faktor", "x", "2"],
+    options: ["number", "x", "faktor", "x", "2", "string", "any", "y", "7"],
+    example: `# Python — partial gjør samme jobb
+from functools import partial
+def gang(faktor, x): return faktor * x
+dobble = partial(gang, 2)   # fyller "faktor", venter på "x"
+dobble(7)   # 14`,
+    explanation: "Currying gjør en N-arg funksjon om til en kjede av 1-arg funksjoner. Hvert ledd 'lukker over' den verdien du allerede fylte. partial er det generaliserte mønsteret.",
+  },
+  {
+    id: "d-fp-immutability-quiz",
+    kind: "quiz",
+    title: "Hvorfor immutability i React state?",
+    prompt: "Hvorfor MÅ du lage ny array i React, ikke pushe til den eksisterende?",
+    topic: "Immutability",
+    question: "setItems(prev => prev.push(x)) gir bugs. Hvorfor?",
+    options: [
+      { text: "React sammenligner state med === (referanselikhet). Mutasjon beholder samme referanse, så React ser ingen endring og rendrer ikke på nytt.", correct: true, rationale: "Akkurat. setState forventer en NY referanse for å trigge re-render. Mutasjon in-place bryter dette." },
+      { text: ".push() er deprecated i moderne JavaScript", correct: false, rationale: "Nei, .push fungerer fint — problemet er ikke metoden, men at den muterer." },
+      { text: "Arrays kan ikke holde React-elementer", correct: false, rationale: "Arrays kan holde alt — det er ikke poenget her." },
+      { text: "setItems forventer en streng, ikke array", correct: false, rationale: "setItems forventer typen state ble initialisert med — vanligvis array hvis vi snakker om lister." },
+    ],
+    explanation: "Skriv setItems(prev => [...prev, x]) for ny array. Samme prinsipp: setUser(prev => ({...prev, navn: 'Ada'})). Eller bruk immer for mutasjons-syntaks som lager nye objekter bak kulissene.",
+  },
+  {
+    id: "d-fp-maybe-usecase",
+    kind: "quiz",
+    title: "Når er Maybe/Option på sin plass?",
+    prompt: "Hvilket scenario rettferdiggjør en Maybe-type fremfor null/None?",
+    topic: "Funksjonell programmering",
+    question: "Du jobber med Python kode der mange funksjoner kan returnere None. Når er Maybe[T] en oppgradering?",
+    options: [
+      { text: "Når flere lookup-er chaines og hver kan feile (db, deretter profil, deretter epost)", correct: true, rationale: "Maybe.map() lar deg kjede uten å sjekke None for hvert ledd. Hele kjeden blir Nothing hvis NOE er None." },
+      { text: "Når du alltid returnerer en verdi", correct: false, rationale: "Maybe er for FRAVÆR av verdi. Hvis du alltid har en verdi, trenger du ikke Maybe." },
+      { text: "Når funksjonen kan KASTE et unntak", correct: false, rationale: "Det er bruksområdet for Result/Either, ikke Maybe. Maybe betyr 'finnes eller finnes ikke', Result betyr 'suksess eller feilinfo'." },
+      { text: "Når koden skal være kortere", correct: false, rationale: "Maybe-kode er ofte LENGRE enn ?. eller None-sjekk i mainstream-språk. Verdien er trygghet, ikke korthet." },
+    ],
+    explanation: "Maybe/Option erstatter null med en eksplisitt boks som tvinger frem håndtering. Bruk når du har KJEDING (?.) eller når null-bugs gjør vondt. For enkle tilfeller er optional chaining nok.",
+  },
+  {
+    id: "d-fp-order-pipeline",
+    kind: "order",
+    title: "Rekkefølge i funksjonell pipeline",
+    prompt: "Sortér stegene for å beregne 'total moms-inntekt fra voksne kunder'.",
+    topic: "Higher-order funksjoner",
+    items: [
+      "Start med liste av brukere",
+      "filter(u => u.alder >= 18)  — kun voksne",
+      "map(u => u.kjop * 0.25)     — moms per bruker",
+      "reduce((acc, x) => acc + x, 0)  — totalsum",
+      "Returner total",
+    ],
+    explanation: "Klassisk filter, deretter map, deretter reduce-pipeline. Hver operasjon tar en liste og gir noe annet ut (liste eller verdi). Du leser fra venstre til høyre som en datastrøm.",
+  },
+  {
+    id: "d-fp-match-where",
+    kind: "match",
+    title: "Funksjonelle mønstre i hverdagskode",
+    prompt: "Match hvert funksjonelle konsept til hvor du allerede møter det.",
+    topic: "Funksjonell programmering",
+    pairs: [
+      { left: "Pure function", right: "React-komponent som kun rendrer fra props (uten state)" },
+      { left: "Immutability", right: "Redux state — alltid ny kopi via spread eller immer" },
+      { left: "Higher-order function", right: "Array.map / .filter / .reduce" },
+      { left: "Partial application", right: "onClick={() => handle(id)} i React — binder id" },
+      { left: "Lazy evaluation", right: "Python generator / SQLAlchemy query — utføres ved iterasjon" },
+      { left: "Monad", right: "JavaScript Promise.then-kjeder" },
+    ],
+    explanation: "Funksjonell programmering er ikke et separat språk — det er et sett mønstre du bruker hver dag, ofte uten å vite ordene. Når du lærer navnene, ser du dem overalt.",
+  },
+  {
+    id: "d-fp-fill-reduce",
+    kind: "fill",
+    title: "reduce — beregn summen",
+    prompt: "Fyll inn for å summere en liste med reduce.",
+    topic: "Higher-order funksjoner",
+    template: `from functools import __1__
+
+priser = [100, 200, 300]
+total = __2__(lambda __3__, p: acc + __4__, priser, __5__)
+# total == 600`,
+    language: "python",
+    blanks: ["reduce", "reduce", "acc", "p", "0"],
+    options: ["reduce", "reduce", "acc", "p", "0", "filter", "map", "x", "1", "sum"],
+    explanation: "reduce(fn, iterable, initial) anvender fn(akkumulator, neste-element) gjentatte ganger. Initial-verdien er starten på akkumulatoren. For sum er initial = 0; for produkt er initial = 1.",
+  },
+  {
+    id: "d-fp-quiz-referential",
+    kind: "quiz",
+    title: "Referential transparency",
+    prompt: "Hvilket av disse kallene kan trygt erstattes med return-verdien?",
+    topic: "Pure functions",
+    question: "Referential transparency: kallet kan byttes ut med resultatet uten å endre programmets oppførsel.",
+    options: [
+      { text: "Math.max(3, 7) tilsvarer 7", correct: true, rationale: "Math.max er pure — bytt det ut med 7, programmet oppfører seg identisk." },
+      { text: "Date.now()", correct: false, rationale: "Date.now() returnerer forskjellig hvert millisekund — kan IKKE byttes ut med en fast verdi." },
+      { text: "fetch('/api/users')", correct: false, rationale: "I/O — nettverkskall. Side-effekt. Ikke referential transparent." },
+      { text: "console.log('hei')", correct: false, rationale: "Side-effekt på stdout. Kan ikke byttes ut med undefined uten å fjerne loggingen." },
+    ],
+    explanation: "Referential transparency er litt strengere enn 'deterministisk' — også inkluderer mangel på side-effekter. Pure functions er per definisjon referensielt transparente.",
+  },
+  {
+    id: "d-fp-quiz-hof-decorator",
+    kind: "quiz",
+    title: "Python decorator ER en higher-order function",
+    prompt: "Hvorfor er en decorator higher-order?",
+    topic: "Higher-order funksjoner",
+    question: "@cache over en funksjon — hva gjør det egentlig?",
+    code: `from functools import cache
+
+@cache
+def fib(n: int) -> int:
+    if n < 2: return n
+    return fib(n-1) + fib(n-2)`,
+    language: "python",
+    options: [
+      { text: "cache er en funksjon som tar fib (en funksjon!) og returnerer en NY funksjon — definisjonen av higher-order.", correct: true, rationale: "Akkurat. @cache er bare syntactic sugar for fib = cache(fib). cache er HOF: funksjon-inn, funksjon-ut." },
+      { text: "Decorators har ingenting med funksjonell programmering å gjøre", correct: false, rationale: "Tvert imot — de er det reneste eksempelet på higher-order i Python." },
+      { text: "@cache modifiserer fib in-place uten å lage ny funksjon", correct: false, rationale: "Nei — cache returnerer en NY (wrappet) funksjon som tar plassen til den gamle." },
+      { text: "Decorators bryter pureness fordi de muterer", correct: false, rationale: "De binder bare navnet 'fib' på nytt — ikke mer mutasjon enn vanlig variabel-tilordning." },
+    ],
+    explanation: "Decorators er konsentrert funksjonell programmering i Python: HOF som transformerer funksjoner. Vanlige eksempler: @cache, @property, @staticmethod, @app.route(...) i Flask.",
+  },
+  {
+    id: "d-fp-order-lazy",
+    kind: "order",
+    title: "Lazy generator-pipeline — hvor mye blir kjørt?",
+    prompt: "Sortér i utførelses-rekkefølge for kun de første 3 verdiene i en uendelig stream.",
+    topic: "Funksjonell programmering",
+    items: [
+      "heltall() — generator, ingenting kjøres ennå",
+      "filter(p => p > 100, heltall()) — bygger ny lazy generator",
+      "map(p => p * 2, ...) — bygger ny lazy generator",
+      "islice(..., 3) — sier 'jeg vil ha 3 elementer'",
+      "list(...) — driver pipelinen til 3 elementer er produsert",
+    ],
+    explanation: "Lazy evaluation kjører bare så mye som trengs. Uten islice og list ville map/filter aldri produsert noen verdi — de bare beskriver beregningen. Det er DRIVING (list/for/next) som faktisk ber om verdier.",
+  },
+
+  // ---- Typesystemer ----
+  {
+    id: "d-typer-static-dynamic",
+    kind: "match",
+    title: "Static vs dynamic — match språk",
+    prompt: "Plasser hvert språk i riktig kategori.",
+    topic: "Typesystemer",
+    pairs: [
+      { left: "TypeScript", right: "Static — typer sjekkes ved kompilering" },
+      { left: "Java", right: "Static + nominal — typer er like fordi de heter likt" },
+      { left: "Python (uten mypy)", right: "Dynamic — typer sjekkes ved kjøring (eller aldri)" },
+      { left: "Python + mypy", right: "Hybrid — static analyse, men runtime er fortsatt dynamic" },
+      { left: "JavaScript", right: "Dynamic + weak — implicit type coercion ('5' + 1 blir '51')" },
+      { left: "Rust", right: "Static + strong + nominal — kompiler-tid alt" },
+    ],
+    explanation: "Static vs dynamic handler om NÅR typer sjekkes. Weak vs strong handler om hvor villig språket er til å konvertere. Structural vs nominal handler om typer er like på struktur eller navn. Aksene er UAVHENGIGE.",
+  },
+  {
+    id: "d-typer-fill-generic-ts",
+    kind: "fill",
+    title: "Generic-funksjon i TypeScript",
+    prompt: "Skriv en generisk identitets-funksjon.",
+    topic: "Generics",
+    template: `function identity<__1__>(x: __2__): __3__ {
+  return __4__;
+}
+
+const a: number = identity<number>(__5__);
+const b: string = identity("hei");   // T utledes automatisk`,
+    language: "python",
+    blanks: ["T", "T", "T", "x", "42"],
+    options: ["T", "T", "T", "x", "42", "any", "unknown", "Object", "y", "hei"],
+    explanation: "Type-parameteren T introduseres i <T>, brukes i signatur, og returneres. Hver kall får T utledet fra argumentet. Generics bevarer typen — uten <T> ville return-type degenerert til any.",
+  },
+  {
+    id: "d-typer-fill-generic-python",
+    kind: "fill",
+    title: "Generic-funksjon i Python (TypeVar)",
+    prompt: "Skriv en generisk 'siste element'-funksjon.",
+    topic: "Generics",
+    template: `from typing import __1__
+
+T = __2__("T")
+
+def siste(xs: list[__3__]) -> __4__:
+    return xs[__5__]`,
+    language: "python",
+    blanks: ["TypeVar", "TypeVar", "T", "T", "-1"],
+    options: ["TypeVar", "TypeVar", "T", "T", "-1", "Generic", "Any", "object", "0", "1"],
+    explanation: "TypeVar('T') definerer parameteren. Bruk den i signaturen og returtypen. Python 3.12+ har ny syntaks: def siste[T](xs: list[T]) -> T. xs[-1] gir siste element.",
+  },
+  {
+    id: "d-typer-variance-quiz",
+    kind: "quiz",
+    title: "Hva er covariant?",
+    prompt: "Velg riktig regel for covariance.",
+    topic: "Variance",
+    question: "Hvis Hund er en undertype av Dyr, og List[T] er covariant i T — hva betyr det?",
+    options: [
+      { text: "List[Hund] er en undertype av List[Dyr]", correct: true, rationale: "Akkurat — co betyr 'samme vei'. Subtype-relasjonen på elementene overføres til containeren." },
+      { text: "List[Dyr] er en undertype av List[Hund]", correct: false, rationale: "Det er CONTRAvariance (motsatt vei)." },
+      { text: "List[Hund] og List[Dyr] er like", correct: false, rationale: "Det ville være INVARIANCE." },
+      { text: "Det er aldri trygt å tillate covariance", correct: false, rationale: "Covariance er trygt for READ-ONLY beholdere — du kan lese en Hund som Dyr uten problem." },
+    ],
+    explanation: "Covariance er trygt når du bare LESER. Tenk Sequence[T] eller readonly T[] i TS. Når du både leser og skriver må T være invariant (vanlig mutable List[T]).",
+  },
+  {
+    id: "d-typer-variance-contra",
+    kind: "quiz",
+    title: "Contravariance i funksjons-argumenter",
+    prompt: "Når kan en handler brukes der en spesifikk handler er forventet?",
+    topic: "Variance",
+    question: "Callable[[Dyr], None] er en undertype av Callable[[Hund], None]. Hvorfor?",
+    options: [
+      { text: "En funksjon som tar ALLE Dyr aksepterer åpenbart også Hund — så den dekker bredere bruksområde", correct: true, rationale: "Akkurat. Funksjons-argumenter er contravariant: bredere input-type betyr 'mer kapabel' funksjon. Liskov-prinsippet i praksis." },
+      { text: "Fordi Hund og Dyr er identiske", correct: false, rationale: "Det ville være invariance, ikke contravariance." },
+      { text: "Fordi Callable alltid er covariant", correct: false, rationale: "Callable er covariant i RETURN-type, contravariant i ARGUMENT-type." },
+      { text: "Det er ikke gyldig i noe typesystem", correct: false, rationale: "Det er gyldig i alle moderne typesystemer (Java forsøkte å unngå det og fikk ArrayStoreException-bugs som straff)." },
+    ],
+    explanation: "Tommelregel: parametre er contravariant, return-typer er covariant. Mutable beholdere er invariant. Hvis du roter med disse, kompilerer koden men krasjer i runtime.",
+  },
+  {
+    id: "d-typer-sum-usecase",
+    kind: "quiz",
+    title: "Når sum types vinner over null + status-streng",
+    prompt: "Du modellerer 'kan være laster, ferdig med data, eller feilet'. Hva er beste valg?",
+    topic: "Sum types",
+    question: "En komponent-state har tre tilstander. Hvilken type-modell gjør ugyldige tilstander urepresenterbare?",
+    code: `// Alternativ A
+type State = {
+  loading: boolean;
+  data: Data | null;
+  error: string | null;
+};
+
+// Alternativ B
+type State =
+  | { kind: "loading" }
+  | { kind: "ok"; data: Data }
+  | { kind: "err"; error: string };`,
+    language: "javascript",
+    options: [
+      { text: "B — diskriminert union: kompileren tvinger deg til å håndtere alle tre, og 'loading=true && data!=null' kan ikke oppstå", correct: true, rationale: "Sum types eliminerer ugyldige kombinasjoner. A tillater { loading: true, data: full, error: full } som er meningsløst — B gjør det umulig." },
+      { text: "A — fleksibel, alle felt tilgjengelig overalt", correct: false, rationale: "Fleksibilitet til å lage ugyldige kombinasjoner er IKKE en fordel. Det er en feilfangst som venter." },
+      { text: "B — men bare hvis du er superflink", correct: false, rationale: "Sum types er enklere å bruke fordi compileren guider deg via exhaustiveness." },
+      { text: "Begge er like", correct: false, rationale: "De er IKKE like. A har 2x3x2 = 12 mulige verdier (mange ugyldige). B har eksakt 3." },
+    ],
+    explanation: "Sum types (discriminated unions) er gull for state-modellering. 'Make illegal states unrepresentable' — Yaron Minsky. Rust og Haskell forutsetter denne stilen; TS og Python 3.10+ støtter den fullt.",
+  },
+  {
+    id: "d-typer-match-narrowing",
+    kind: "match",
+    title: "Type narrowing — match mekanismer",
+    prompt: "Hvilken sjekk smal-ner typen i hvilket språk?",
+    topic: "Typesystemer",
+    pairs: [
+      { left: "typeof x === 'string'", right: "TypeScript — smal-ner til string-grenen" },
+      { left: "x instanceof Hund", right: "TS/Python — smal-ner til Hund (kun klasser)" },
+      { left: "if r.kind === 'ok'", right: "TS — smal-ner i discriminated union via diskriminanten" },
+      { left: "isinstance(x, str)", right: "Python — smal-ner i mypy/pyright" },
+      { left: "if x is None: return", right: "Begge — fjerner None fra typen videre i koden" },
+      { left: "match value: case Ok(v)", right: "Python 3.10+ structural pattern matching" },
+    ],
+    explanation: "Narrowing lar compileren bevise at en bredere type (str eller int eller None) faktisk er smalere i en spesifikk gren. Resultatet: du slipper casting og du får autocomplete riktig.",
+  },
+  {
+    id: "d-typer-quiz-type-vs-value",
+    kind: "quiz",
+    title: "Type vs Value — forvirring i TypeScript",
+    prompt: "Hva er forskjellen på typeof i type-posisjon vs value-posisjon?",
+    topic: "Typesystemer",
+    question: "Disse to bruksene av 'typeof' i TypeScript ser like ut, men gjør forskjellige ting.",
+    code: `// Bruk 1
+if (typeof x === "string") { ... }
+
+// Bruk 2
+type X = typeof foo;`,
+    language: "javascript",
+    options: [
+      { text: "Bruk 1 er JavaScript sin runtime typeof-operator (returnerer streng). Bruk 2 er TS sin compile-time type-operator som henter typen til en verdi.", correct: true, rationale: "Akkurat. Bruk 1 eksisterer i JS som ren JavaScript. Bruk 2 finnes BARE i TS sin type-verden — eksisterer ikke ved runtime." },
+      { text: "Begge er TypeScript-konstruksjoner", correct: false, rationale: "Bruk 1 er ren JS — kjører i alle nettlesere uten compilering." },
+      { text: "Begge gir samme resultat", correct: false, rationale: "Helt forskjellige verdener: én er en streng ved runtime, den andre er en type ved compile-tid." },
+      { text: "TypeScript har bare typeof i type-posisjon", correct: false, rationale: "TS arvet typeof-runtime fra JS og LA TIL typeof-type i tillegg. Konteksten avgjør hvilken som brukes." },
+    ],
+    explanation: "TS lever i to verdener: type-verdenen (forsvinner ved kompilering) og value-verdenen (kjører i JS). Mange operatorer har 'tvilling' i begge — typeof, keyof, etc. Bli vant til å se HVOR du er.",
+  },
+  {
+    id: "d-typer-fill-discrim-union",
+    kind: "fill",
+    title: "Diskriminert union i TypeScript",
+    prompt: "Skriv Result-typen.",
+    topic: "Sum types",
+    template: `type Result<T, E> =
+  | { __1__: "ok"; value: __2__ }
+  | { kind: "__3__"; error: __4__ };
+
+function vis<T, E>(r: __5__<T, E>): string {
+  if (r.kind === "ok") return String(r.value);
+  return String(r.error);
+}`,
+    language: "python",
+    blanks: ["kind", "T", "err", "E", "Result"],
+    options: ["kind", "T", "err", "E", "Result", "type", "ok", "value", "string", "any"],
+    explanation: "Discriminated union: hvert ledd har et 'discriminator'-felt (her: kind) med en LITERAL-type. Compileren bruker det til narrowing. Result<T, E> er den klassiske 'suksess eller feil' sum-typen fra Rust og Haskell.",
+  },
+  {
+    id: "d-typer-quiz-structural",
+    kind: "quiz",
+    title: "Structural typing — TypeScript-overraskelse",
+    prompt: "Hvorfor kompilerer dette i TypeScript?",
+    topic: "Typesystemer",
+    question: "Begge interfaces har samme struktur men forskjellig navn. Hvorfor er tilordningen lovlig?",
+    code: `interface Punkt { x: number; y: number; }
+interface Vektor { x: number; y: number; }
+
+const p: Punkt = { x: 1, y: 2 };
+const v: Vektor = p;     // TS sier OK`,
+    language: "javascript",
+    options: [
+      { text: "TypeScript er STRUCTURAL — typer er like hvis struktur er lik, uavhengig av navn", correct: true, rationale: "Klassisk structural typing. TS bryr seg om 'former', ikke om 'merkelapper'. Det er motsatt av Java og C#." },
+      { text: "TypeScript er NOMINAL — det skulle ikke gått", correct: false, rationale: "Tvert imot — TS er kanskje den mest kjente structural-implementasjonen i mainstream." },
+      { text: "Det er en bug i TypeScript", correct: false, rationale: "Det er en DESIGN-beslutning. Structural typing gir mer fleksibilitet, mindre boilerplate." },
+      { text: "Bare fordi feltene heter x og y (reserverte ord)", correct: false, rationale: "x og y er ikke reserverte. Det ville gått med a og b også." },
+    ],
+    explanation: "Structural typing matcher 'ducks' — hvis det ser ut som et Punkt og kvakker som et Punkt, er det et Punkt. Brand types / NewType lar deg LEGGE TIL nominal-aktig oppførsel der du trenger det.",
+  },
+  {
+    id: "d-typer-phantom-quiz",
+    kind: "quiz",
+    title: "Hvorfor brand types?",
+    prompt: "Hva LØSER NewType('UserId', int) i Python?",
+    topic: "Typesystemer",
+    question: "Du har UserId og OrderId — begge er int på runtime. Hvorfor bry seg med NewType?",
+    options: [
+      { text: "Type-systemet skiller dem, så hent_bruker(order_id) gir mypy-feil", correct: true, rationale: "Akkurat. NewType er en compile-time-sjekk — runtime er det fortsatt en int, men typesystemet hindrer at du blander ID-er fra forskjellige tabeller." },
+      { text: "Det gjør koden raskere", correct: false, rationale: "NewType har null runtime-overhead, men gir heller ingen hastighetsgevinst — bare type-trygghet." },
+      { text: "Det konverterer automatisk mellom ID-typer", correct: false, rationale: "Nei, det FORHINDRER konvertering — du må eksplisitt kalle UserId(x) for å lage en." },
+      { text: "Det er en placebo, gir ingen reell effekt", correct: false, rationale: "Det fanger faktiske bugs ved mypy. F.eks. send_email(order_id) blir tatt før prod." },
+    ],
+    explanation: "Phantom/brand types skiller typer som har SAMME representasjon. Veldig nyttig for ID-er, måleenheter (Meters vs Feet), og 'sanitisert' vs 'usanitisert' bruker-input.",
+  },
+  {
+    id: "d-typer-product-sum-match",
+    kind: "match",
+    title: "Product vs Sum types",
+    prompt: "Match hver datamodell til om den er product eller sum.",
+    topic: "Sum types",
+    pairs: [
+      { left: "interface Punkt { x: number; y: number }", right: "Product — x OG y må fylles. |verdier| = |x| × |y|." },
+      { left: "type Form = Sirkel | Firkant | Rektangel", right: "Sum — Form er ETT av tilfellene. |verdier| = |Sirkel| + |Firkant| + |Rektangel|." },
+      { left: "tuple[int, str]", right: "Product — int og str sammen, posisjon teller." },
+      { left: "Optional[User] / User | None", right: "Sum — User eller None, ett av to." },
+      { left: "dataclass med 3 felt", right: "Product — alle tre felt finnes alltid." },
+      { left: "Enum med 4 varianter (uten data)", right: "Sum med kun unit-tilfeller — degenerert sum-type." },
+    ],
+    explanation: "Algebraic data types består av products (kombiner) og sums (velg ett av). Hver datamodell er en kombinasjon. 'Make illegal states unrepresentable' = bruk sum types for å fjerne ugyldige kombinasjoner.",
+  },
 ];

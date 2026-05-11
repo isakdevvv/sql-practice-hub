@@ -17,7 +17,8 @@ export type SubjectId =
   | "webapps2"
   | "systemutvikling"
   | "api-prosjekt"
-  | "mobil";
+  | "mobil"
+  | "fp-typer";
 
 export interface Subject {
   id: SubjectId;
@@ -206,6 +207,21 @@ export const SUBJECTS: readonly Subject[] = [
       "Room",
       "RecyclerView",
       "Retrofit",
+    ],
+  },
+  {
+    id: "fp-typer",
+    label: "Funksjonell prog + typer (Phase 2.5)",
+    short: "Pure functions, immutability, sum types, generics, variance",
+    topics: [
+      "Funksjonell programmering",
+      "Pure functions",
+      "Higher-order funksjoner",
+      "Immutability",
+      "Typesystemer",
+      "Generics",
+      "Sum types",
+      "Variance",
     ],
   },
 ] as const;
