@@ -16,7 +16,8 @@ export type SubjectId =
   | "webapps2"
   | "systemutvikling"
   | "api-prosjekt"
-  | "mobil";
+  | "mobil"
+  | "drill-cross";
 
 export interface Subject {
   id: SubjectId;
@@ -181,6 +182,12 @@ export const SUBJECTS: readonly Subject[] = [
       "RecyclerView",
       "Retrofit",
     ],
+  },
+  {
+    id: "drill-cross",
+    label: "Cross-phase eksamens-drill",
+    short: "Oppgaver som tester forståelse på tvers av emner",
+    topics: ["Cross-phase drill"],
   },
 ] as const;
 
