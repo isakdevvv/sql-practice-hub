@@ -7,6 +7,11 @@ import { content as htmlJinja } from "./html-jinja";
 import { content as sikkerhet } from "./sikkerhet";
 import { content as subqueries } from "./subqueries";
 import { content as nokler } from "./nokler";
+import { content as algoritmer } from "./algoritmer";
+import { content as bigO } from "./big-o";
+import { content as rekursjon } from "./rekursjon";
+import { content as sortering } from "./sortering";
+import { content as lenkedeStrukturer } from "./lenkede-strukturer";
 import { content as flaskLivssyklus } from "./flask-livssyklus";
 import { content as pythonDrill } from "./python-drill";
 import { content as httpAnatomi } from "./http-anatomi";
@@ -25,6 +30,7 @@ import type { TrinnContent } from "../types";
 export const TRINN: TrinnContent[] = [
   bytesEncoding, tcpSockets, huskelapp, erMapping, normalisering, htmlJinja, sikkerhet,
   subqueries, nokler,
+  algoritmer, bigO, rekursjon, sortering, lenkedeStrukturer,
   flaskLivssyklus, pythonDrill, httpAnatomi,
   trinn1, trinn2, trinn3, trinn4, trinn5, trinn6, trinn7, trinn8, trinn9, trinn10,
 ];
