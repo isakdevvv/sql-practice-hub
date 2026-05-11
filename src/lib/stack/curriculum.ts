@@ -24,6 +24,15 @@ export interface CurriculumPhase {
 
 export const PHASES: readonly CurriculumPhase[] = [
   {
+    num: 0,
+    id: "math",
+    title: "Math foundations",
+    why:
+      "Prerekvisitt for ML og algoritmer. Diskret matte for CS, sannsynlighet for ML, linær algebra for nevrale nett og PCA.",
+    analog: "MIT 6.042 · Stanford CS 109 · Khan Academy LinAlg",
+    slugs: ["math-foundations", "diskret-matte", "sannsynlighet", "linaer-algebra"],
+  },
+  {
     num: 1,
     id: "hardware",
     title: "Hvordan datamaskinen faktisk fungerer",

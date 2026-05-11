@@ -80,6 +80,10 @@ import { content as roomRecycler } from "./room-recycler";
 import { content as apiRetrofit } from "./api-retrofit";
 import { content as mysqlVsSqlite } from "./mysql-vs-sqlite";
 import { content as mvcMonster } from "./mvc-monster";
+import { content as mathFoundations } from "./math-foundations";
+import { content as diskretMatte } from "./diskret-matte";
+import { content as sannsynlighet } from "./sannsynlighet";
+import { content as linaerAlgebra } from "./linaer-algebra";
 import { content as laereplan } from "./laereplan";
 import type { TrinnContent } from "../types";
 
@@ -99,6 +103,7 @@ export const TRINN: TrinnContent[] = [
   apiProsjekt, apiPlanlegging, apiArkitektur, apiKontrakt, apiTesting, apiDeploy,
   dte2603, kotlinGrunnlag, androidGrunnlag, mvvmArkitektur, korutiner, roomRecycler, apiRetrofit,
   mvcMonster,
+  mathFoundations, diskretMatte, sannsynlighet, linaerAlgebra,
   laereplan,
 ];
 

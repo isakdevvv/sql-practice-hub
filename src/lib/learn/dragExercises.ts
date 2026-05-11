@@ -13466,4 +13466,1003 @@ var f = b.Where(x => x.Tittel.StartsWith(\"A\")).ToList();`,
     ],
     explanation: "Et godt mønster: pakke svaret i en sealed class Resultat (Ok/Feil), og fange HttpException + IOException + JsonDataException separat i Repository.",
   },
+
+  // ============ MATH FOUNDATIONS — DISKRET MATTE ============
+  {
+    id: "d-matte-truth-table",
+    kind: "match",
+    title: "Sannhetstabell — match utsagn til verdi",
+    prompt: "p = T, q = F. Match hvert sammensatt utsagn til riktig sannhetsverdi.",
+    topic: "Logikk (matte)",
+    pairs: [
+      { left: "p ∧ q", right: "F (begge må være sanne — q er usant)" },
+      { left: "p ∨ q", right: "T (minst én er sann — p er sann)" },
+      { left: "¬p", right: "F (negasjonen av en sann verdi)" },
+      { left: "p → q", right: "F (sant premiss men usann konklusjon)" },
+      { left: "q → p", right: "T (usant premiss gir alltid sann implikasjon)" },
+      { left: "p ↔ q", right: "F (p og q har ulike verdier)" },
+    ],
+    explanation:
+      "Implikasjon p → q er kun usann når p er sann og q er usann. Det er den eneste 'feilen' i en implikasjon.",
+  },
+  {
+    id: "d-matte-de-morgan",
+    kind: "match",
+    title: "De Morgans lover — match ekvivalente uttrykk",
+    prompt: "Match hvert uttrykk på venstre side med sin De Morgan-ekvivalent.",
+    topic: "Logikk (matte)",
+    pairs: [
+      { left: "¬(p ∧ q)", right: "¬p ∨ ¬q" },
+      { left: "¬(p ∨ q)", right: "¬p ∧ ¬q" },
+      { left: "¬(¬p ∧ ¬q)", right: "p ∨ q" },
+      { left: "¬(¬p ∨ ¬q)", right: "p ∧ q" },
+    ],
+    explanation:
+      "De Morgans lover sier at negasjon distribuerer over ∧ og ∨, men 'snur' operatoren. Brukes konstant i SQL-WHERE og kodelogikk.",
+  },
+  {
+    id: "d-matte-set-ops",
+    kind: "fill",
+    title: "Mengde-operasjoner — fyll inn",
+    prompt: "Med A = {1, 2, 3, 4} og B = {3, 4, 5, 6}, fyll inn riktig resultat.",
+    topic: "Mengder",
+    template: `A ∪ B = __1__
+A ∩ B = __2__
+A \\ B = __3__
+B \\ A = __4__
+|A ∩ B| = __5__`,
+    blanks: ["{1,2,3,4,5,6}", "{3,4}", "{1,2}", "{5,6}", "2"],
+    options: ["{1,2,3,4,5,6}", "{3,4}", "{1,2}", "{5,6}", "2", "4", "{}", "{1,2,5,6}"],
+    explanation:
+      "Union = alt i begge. Snitt = bare det som er i begge. Differanse A\\B = i A men ikke B. |X| = antall elementer.",
+  },
+  {
+    id: "d-matte-set-quiz",
+    kind: "quiz",
+    title: "Mengde-kardinalitet",
+    prompt: "Inkludering–ekskludering",
+    topic: "Mengder",
+    question:
+      "I en klasse på 30 elever liker 18 matte, 15 fysikk, og 8 begge. Hvor mange liker minst ett av fagene?",
+    options: [
+      {
+        text: "25",
+        correct: true,
+        rationale: "|A ∪ B| = |A| + |B| - |A ∩ B| = 18 + 15 - 8 = 25.",
+      },
+      {
+        text: "33",
+        correct: false,
+        rationale: "Du har telt overlappet to ganger. Vi må trekke fra |A ∩ B|.",
+      },
+      {
+        text: "30",
+        correct: false,
+        rationale: "Total i klassen er 30, men noen kan like ingen av fagene.",
+      },
+      {
+        text: "23",
+        correct: false,
+        rationale: "Du har trukket fra for mye. Riktig formel: |A| + |B| - |A ∩ B|.",
+      },
+    ],
+    explanation:
+      "Inkludering–ekskludering: når du teller union av to mengder, må du trekke fra snittet én gang fordi det ble talt to ganger.",
+  },
+  {
+    id: "d-matte-function-types",
+    kind: "match",
+    title: "Funksjons-typer",
+    prompt: "Match hver funksjon til riktig type.",
+    topic: "Diskret matte",
+    pairs: [
+      { left: "f(x) = 2x + 1 fra ℝ til ℝ", right: "Bijektiv (har invers x → (x-1)/2)" },
+      { left: "f(x) = x² fra ℝ til ℝ", right: "Verken injektiv eller surjektiv" },
+      { left: "f(x) = x² fra ℕ til ℕ", right: "Injektiv men ikke surjektiv" },
+      { left: "f(x) = ⌊x⌋ fra ℝ til ℤ", right: "Surjektiv men ikke injektiv" },
+    ],
+    explanation:
+      "Injektiv: ulike input → ulike output (ingen kollisjoner). Surjektiv: hele kodomenet treffes. Bijektiv: begge deler.",
+  },
+  {
+    id: "d-matte-n-choose-k",
+    kind: "quiz",
+    title: "n choose k — beregning",
+    prompt: "Kombinatorikk",
+    topic: "Kombinatorikk",
+    question: "Hvor mange måter kan du velge en komité på 3 personer fra en gruppe på 7?",
+    options: [
+      {
+        text: "35",
+        correct: true,
+        rationale: "C(7,3) = 7! / (3!·4!) = (7·6·5)/(3·2·1) = 210/6 = 35.",
+      },
+      {
+        text: "210",
+        correct: false,
+        rationale: "Det er P(7,3) — permutasjon med rekkefølge. En komité har ikke rekkefølge.",
+      },
+      {
+        text: "21",
+        correct: false,
+        rationale: "C(7,2) = 21. Du valgte 2, ikke 3.",
+      },
+      {
+        text: "343",
+        correct: false,
+        rationale: "Det er 7³ — tre uavhengige valg fra 7. Men du kan ikke velge samme person flere ganger.",
+      },
+    ],
+    explanation:
+      "C(n,k) = n!/(k!(n-k)!). Rekkefølge teller ikke i en komité, så vi deler bort k! omarrangeringer av samme gruppe.",
+  },
+  {
+    id: "d-matte-permutation",
+    kind: "quiz",
+    title: "Permutasjon vs kombinasjon",
+    prompt: "Hva er forskjellen i praksis?",
+    topic: "Kombinatorikk",
+    question:
+      "10 løpere konkurrerer. Hvor mange forskjellige rekkefølger kan topp-3 (gull, sølv, bronse) bestå av?",
+    options: [
+      {
+        text: "720",
+        correct: true,
+        rationale: "P(10,3) = 10!/7! = 10·9·8 = 720. Rekkefølgen betyr noe (gull ≠ sølv).",
+      },
+      {
+        text: "120",
+        correct: false,
+        rationale: "C(10,3) = 120 — det er antall måter å velge 3 uten rekkefølge.",
+      },
+      {
+        text: "1000",
+        correct: false,
+        rationale: "10³ = 1000 forutsetter at samme løper kan vinne alle tre medaljer.",
+      },
+      {
+        text: "30",
+        correct: false,
+        rationale: "10·3 er ikke en standard kombinatorisk formel.",
+      },
+    ],
+    explanation:
+      "Permutasjon P(n,k) når rekkefølgen teller. Kombinasjon C(n,k) når den ikke gjør det. Medalje-rekkefølge teller, så permutasjon.",
+  },
+  {
+    id: "d-matte-pascal",
+    kind: "fill",
+    title: "Pascals trekant",
+    prompt: "Fyll inn manglende verdier. Hver verdi er sum av de to over.",
+    topic: "Kombinatorikk",
+    template: `Rad 0:        1
+Rad 1:       1 1
+Rad 2:      1 __1__ 1
+Rad 3:     1 __2__ __3__ 1
+Rad 4:    1 __4__ 6 __5__ 1`,
+    blanks: ["2", "3", "3", "4", "4"],
+    options: ["2", "3", "4", "5", "6", "1"],
+    explanation:
+      "Pascals trekant: C(n,k) = C(n-1,k-1) + C(n-1,k). Brukes i binomial-utvikling og sannsynlighet.",
+  },
+  {
+    id: "d-matte-induction-order",
+    kind: "order",
+    title: "Induksjonsbevis — stegene i riktig rekkefølge",
+    prompt:
+      "Du skal vise at Σᵢ₌₁ⁿ i = n(n+1)/2 ved induksjon. Sortér stegene i riktig rekkefølge.",
+    topic: "Induksjon",
+    items: [
+      "Basis: vis at formelen holder for n = 1 (venstre = 1, høyre = 1·2/2 = 1)",
+      "Anta som induksjonshypotese at formelen holder for n = k",
+      "Skriv om Σᵢ₌₁ᵏ⁺¹ i som Σᵢ₌₁ᵏ i + (k+1)",
+      "Bruk induksjonshypotesen til å erstatte Σᵢ₌₁ᵏ i med k(k+1)/2",
+      "Forenkle k(k+1)/2 + (k+1) til (k+1)(k+2)/2",
+      "Konkludér: formelen gjelder for alle n ≥ 1",
+    ],
+    explanation:
+      "Klassisk induksjonsstruktur: basis → hypotese → manipulasjon → bruk av hypotesen → forenkling → konklusjon.",
+  },
+  {
+    id: "d-matte-induction-quiz",
+    kind: "quiz",
+    title: "Induksjons-felle",
+    prompt: "Hva er feil med dette beviset?",
+    topic: "Induksjon",
+    question:
+      "Påstand: «Alle hester har samme farge.» Bevis ved induksjon på antall hester n: basis (n=1) opplagt. Steg: i en gruppe på n+1 hester, fjern én — de andre har samme farge per hypotese. Sett tilbake, fjern en annen — også samme. Konklusjon: alle har samme farge. Hva er feil?",
+    options: [
+      {
+        text: "Induksjonssteget feiler ved n = 1 → n = 2: ingen overlapp mellom de to delgruppene",
+        correct: true,
+        rationale:
+          "Argumentet krever at det er en hest som er i BEGGE delgrupper for å koble fargene. Det fungerer for n ≥ 3, men ikke for steget fra n=1 til n=2.",
+      },
+      {
+        text: "Basistilfellet er feil — én hest har ikke noen farge",
+        correct: false,
+        rationale: "Basistilfellet er korrekt — én hest har én bestemt farge.",
+      },
+      {
+        text: "Beviset er korrekt — hester har faktisk samme farge",
+        correct: false,
+        rationale: "Empirisk åpenbart usant. Det MÅ være en feil i argumentet.",
+      },
+      {
+        text: "Induksjon kan ikke brukes på hester",
+        correct: false,
+        rationale: "Induksjon brukes på utsagn om naturlige tall, og det er n-en her.",
+      },
+    ],
+    explanation:
+      "Klassisk eksempel (Pólya, 1954): et induksjonssteg må gjelde for HVERT n, ikke bare 'for store nok n'. Når n = 1, har de to delgruppene (etter fjerning) bare én hest hver og deler ingen hest.",
+  },
+  {
+    id: "d-matte-graph-terms",
+    kind: "match",
+    title: "Graf-vokabular",
+    prompt: "Match grafteoretisk begrep til riktig definisjon.",
+    topic: "Diskret matte",
+    pairs: [
+      { left: "Node (vertex)", right: "Et element i V — punktet en kant kan starte/ende i" },
+      { left: "Kant (edge)", right: "Et par {u, v} som forbinder to noder" },
+      { left: "Grad", right: "Antall kanter på en gitt node" },
+      { left: "Syklus", right: "Sti som starter og slutter i samme node" },
+      { left: "Tre", right: "Sammenhengende graf uten sykler (|E| = |V| - 1)" },
+      { left: "Sammenhengende", right: "Sti finnes mellom alle nodepar" },
+    ],
+    explanation:
+      "Trær er den enkleste sammenhengende strukturen. Hvis grafen er sammenhengende OG har sykler, kan du fjerne kanter til du står igjen med et spanning tree.",
+  },
+  {
+    id: "d-matte-graph-quiz",
+    kind: "quiz",
+    title: "Tre eller graf med syklus?",
+    prompt: "Diskriminer mellom tre og generell graf.",
+    topic: "Diskret matte",
+    question: "En graf G har 6 noder og 5 kanter, og er sammenhengende. Hva kan vi konkludere?",
+    options: [
+      {
+        text: "G er garantert et tre",
+        correct: true,
+        rationale: "Sammenhengende graf med |V| noder har minst |V|-1 kanter. Hvis akkurat |V|-1, er det et tre (ingen sykler).",
+      },
+      {
+        text: "G har minst én syklus",
+        correct: false,
+        rationale: "Tvert imot — med eksakt |V|-1 kanter er det ingen sykler.",
+      },
+      {
+        text: "G er ikke sammenhengende",
+        correct: false,
+        rationale: "Vi er fortalt at den er sammenhengende.",
+      },
+      {
+        text: "Vi vet for lite til å avgjøre",
+        correct: false,
+        rationale: "Faktisk: |E| = |V|-1 og sammenhengende ⇔ tre. Det er en streng karakterisering.",
+      },
+    ],
+    explanation:
+      "Tre = sammenhengende graf uten sykler. Ekvivalent: sammenhengende med eksakt |V|-1 kanter. Hvert ekstra kant lager én syklus.",
+  },
+  {
+    id: "d-matte-mod-calc",
+    kind: "fill",
+    title: "Modulær aritmetikk — regneeksempler",
+    prompt: "Fyll inn riktig resultat.",
+    topic: "Diskret matte",
+    template: `17 mod 5  = __1__
+23 mod 7  = __2__
+(8 + 9) mod 6  = __3__
+(7 · 4) mod 5  = __4__
+-3 mod 5  = __5__`,
+    blanks: ["2", "2", "5", "3", "2"],
+    options: ["0", "1", "2", "3", "4", "5", "6", "7"],
+    explanation:
+      "a mod n er resten ved heltallsdivisjon. For negative: legg til n til du får en ikke-negativ rest. -3 mod 5 = -3 + 5 = 2.",
+  },
+  {
+    id: "d-matte-mod-hash",
+    kind: "quiz",
+    title: "Modulær aritmetikk — hash-bruk",
+    prompt: "Praktisk bruk: hashing",
+    topic: "Diskret matte",
+    question:
+      "En hash-tabell har 10 buckets. Vi setter inn nøkler med hash-verdier 23, 47, 56, 73, 80. I hvilke bøtter havner de?",
+    options: [
+      {
+        text: "3, 7, 6, 3, 0",
+        correct: true,
+        rationale: "23 mod 10 = 3, 47 mod 10 = 7, 56 mod 10 = 6, 73 mod 10 = 3, 80 mod 10 = 0. Merk kollisjonen 23 og 73 i bøtte 3.",
+      },
+      {
+        text: "2, 4, 5, 7, 8",
+        correct: false,
+        rationale: "Det ser ut som du delte med 10 og rundet ned. Hash-indeksering bruker REST (mod), ikke kvotient.",
+      },
+      {
+        text: "3, 7, 6, 3, 10",
+        correct: false,
+        rationale: "80 mod 10 = 0, ikke 10. Mod-resultater er alltid mellom 0 og n-1.",
+      },
+      {
+        text: "23, 47, 56, 73, 80",
+        correct: false,
+        rationale: "Da måtte tabellen vært uendelig stor. Hele poenget er å mappe til et lite, fast intervall.",
+      },
+    ],
+    explanation:
+      "hash_index(key) = hash(key) mod n. Når to ulike nøkler får samme rest, kalles det en kollisjon — løses med chaining eller open addressing.",
+  },
+  {
+    id: "d-matte-mod-congruence",
+    kind: "quiz",
+    title: "Kongruens (mod)",
+    prompt: "Hvilke utsagn stemmer?",
+    topic: "Diskret matte",
+    question: "Hvilket av disse utsagnene er sant?",
+    options: [
+      {
+        text: "17 ≡ 32 (mod 5)",
+        correct: true,
+        rationale: "17 mod 5 = 2 og 32 mod 5 = 2. Begge gir samme rest, altså kongruente mod 5.",
+      },
+      {
+        text: "100 ≡ 7 (mod 9)",
+        correct: false,
+        rationale: "100 mod 9 = 1 (siden 9·11 = 99). 7 mod 9 = 7. Ulike rester.",
+      },
+      {
+        text: "-1 ≡ 4 (mod 6)",
+        correct: false,
+        rationale: "-1 + 6 = 5, så -1 ≡ 5 (mod 6), ikke 4.",
+      },
+      {
+        text: "Kongruens mod n er en relasjon, ikke en likning",
+        correct: false,
+        rationale: "Det er en sann faktasetning, men spørsmålet handlet om tallekvivalenser.",
+      },
+    ],
+    explanation:
+      "a ≡ b (mod n) ⇔ n deler (a-b) ⇔ a og b gir samme rest mod n. Helt sentralt i kryptografi (RSA, Diffie-Hellman).",
+  },
+
+  // ============ MATH FOUNDATIONS — SANNSYNLIGHET ============
+  {
+    id: "d-prob-axioms",
+    kind: "quiz",
+    title: "Sannsynlighets-aksiomer",
+    prompt: "Hvilke utsagn er korrekte?",
+    topic: "Sannsynlighet",
+    question: "Hvilket av følgende kan IKKE være en gyldig sannsynlighet?",
+    options: [
+      {
+        text: "P(A) = -0.1",
+        correct: true,
+        rationale: "Negativ sannsynlighet bryter aksiom 1: 0 ≤ P(A) ≤ 1.",
+      },
+      {
+        text: "P(A) = 0",
+        correct: false,
+        rationale: "Lovlig — sannsynligheten for en umulig hendelse.",
+      },
+      {
+        text: "P(A) = 1",
+        correct: false,
+        rationale: "Lovlig — sannsynligheten for en sikker hendelse.",
+      },
+      {
+        text: "P(A) = 1/3",
+        correct: false,
+        rationale: "Helt vanlig sannsynlighet, mellom 0 og 1.",
+      },
+    ],
+    explanation:
+      "Kolmogorov-aksiomene: (1) 0 ≤ P(A) ≤ 1, (2) P(Ω) = 1, (3) P(A ∪ B) = P(A) + P(B) hvis A ∩ B = ∅.",
+  },
+  {
+    id: "d-prob-bayes-fill",
+    kind: "fill",
+    title: "Bayes' teorem — fyll inn formelen",
+    prompt: "Fyll inn de manglende delene av Bayes' formel.",
+    topic: "Sannsynlighet",
+    template: `P(A | B) = ( __1__ · __2__ ) / __3__
+
+Der:
+  P(A | B) er __4__
+  P(B | A) er __5__
+  P(A) er __6__`,
+    blanks: ["P(B|A)", "P(A)", "P(B)", "posterior", "likelihood", "prior"],
+    options: ["P(B|A)", "P(A)", "P(B)", "P(A|B)", "posterior", "likelihood", "prior", "evidence"],
+    explanation:
+      "Bayes' teorem: P(A|B) = P(B|A)·P(A) / P(B). 'Posterior = likelihood · prior / evidence'. Hjørnesteinen i Bayesiansk inferens.",
+  },
+  {
+    id: "d-prob-bayes-test",
+    kind: "quiz",
+    title: "Bayes — medisinsk test",
+    prompt: "Klassisk Bayes-eksempel",
+    topic: "Sannsynlighet",
+    question:
+      "Sykdom S har P(S) = 0.01. Test er 99% sensitiv (P(T+|S) = 0.99) og 95% spesifikk (P(T-|¬S) = 0.95). Du tester positivt. Omtrent hva er P(S|T+)?",
+    options: [
+      {
+        text: "Cirka 17%",
+        correct: true,
+        rationale: "P(T+) = 0.99·0.01 + 0.05·0.99 ≈ 0.0594. P(S|T+) = 0.0099/0.0594 ≈ 0.167.",
+      },
+      {
+        text: "Cirka 99%",
+        correct: false,
+        rationale: "Vanlig feil: 'testen er 99% nøyaktig, så sannsynligheten er 99%'. Bayes viser hvorfor det er feil med lav prevalens.",
+      },
+      {
+        text: "Cirka 50%",
+        correct: false,
+        rationale: "Bayes gir ikke 50% — det ville kreve veldig spesifikke verdier på prior og likelihood.",
+      },
+      {
+        text: "Cirka 1%",
+        correct: false,
+        rationale: "Det er den prevalente sannsynligheten — uten testen. Testen flytter den oppover, men ikke til 99%.",
+      },
+    ],
+    explanation:
+      "Hovedinnsikten: når en sykdom er sjelden, vil selv en god test gi mange falske positive. Brukes overalt i ML, screening og A/B-test.",
+  },
+  {
+    id: "d-prob-conditional",
+    kind: "quiz",
+    title: "Betinget sannsynlighet",
+    prompt: "Definisjons-bruk",
+    topic: "Sannsynlighet",
+    question:
+      "I en bag har vi 3 røde og 7 blå kuler. Vi trekker to UTEN tilbakelegging. Hva er P(begge røde)?",
+    options: [
+      {
+        text: "1/15",
+        correct: true,
+        rationale: "P(rød først) = 3/10. P(rød andre | rød først) = 2/9. P(begge røde) = 3/10 · 2/9 = 6/90 = 1/15.",
+      },
+      {
+        text: "9/100",
+        correct: false,
+        rationale: "Det er P(begge røde) MED tilbakelegging: 3/10 · 3/10 = 9/100.",
+      },
+      {
+        text: "3/10",
+        correct: false,
+        rationale: "Det er bare P(rød ved første trekning).",
+      },
+      {
+        text: "6/100",
+        correct: false,
+        rationale: "Du har glemt å redusere nevneren til 9 etter første trekning.",
+      },
+    ],
+    explanation:
+      "Uten tilbakelegging: andre trekning er betinget av den første. P(A ∩ B) = P(A) · P(B|A).",
+  },
+  {
+    id: "d-prob-distributions",
+    kind: "match",
+    title: "Fordelinger — match til scenario",
+    prompt: "Match scenario til riktig sannsynlighetsfordeling.",
+    topic: "Sannsynlighet",
+    pairs: [
+      { left: "Antall klikk av 1000 visninger", right: "Binomial(1000, p)" },
+      { left: "Antall e-poster i innboksen per time", right: "Poisson(λ)" },
+      { left: "Resultatet av ett enkelt myntkast", right: "Bernoulli(0.5)" },
+      { left: "Høyden til en tilfeldig voksen", right: "Normal(μ, σ²)" },
+      { left: "Antall feil per 1000 kodelinjer", right: "Poisson(λ)" },
+      { left: "Et terningkast: kommer 6?", right: "Bernoulli(1/6)" },
+    ],
+    explanation:
+      "Bernoulli = ett ja/nei. Binomial = n uavhengige Bernoullier. Poisson = tellinger per fast intervall. Normal = kontinuerlige målinger.",
+  },
+  {
+    id: "d-prob-expectation",
+    kind: "quiz",
+    title: "Forventning — terning",
+    prompt: "Beregn E[X]",
+    topic: "Sannsynlighet",
+    question:
+      "X er gevinst i et spill: du betaler 10 kr, ruller en terning, og får terningens verdi i kr som premie. Hva er forventet netto-gevinst E[X]?",
+    options: [
+      {
+        text: "-6.5 kr",
+        correct: true,
+        rationale: "Forventet premie: (1+2+3+4+5+6)/6 = 3.5. Trekk innsats: 3.5 - 10 = -6.5.",
+      },
+      {
+        text: "-3.5 kr",
+        correct: false,
+        rationale: "Du har glemt at du betaler 10 kr per spill. Netto = premie - innsats.",
+      },
+      {
+        text: "3.5 kr",
+        correct: false,
+        rationale: "Det er forventet PREMIE, ikke netto gevinst.",
+      },
+      {
+        text: "0 kr",
+        correct: false,
+        rationale: "Spillet er ikke fair: forventet utbetaling er mindre enn innsatsen.",
+      },
+    ],
+    explanation:
+      "E[aX + b] = aE[X] + b. For å vite om spillet er lønnsomt, regn alltid netto-gevinst.",
+  },
+  {
+    id: "d-prob-variance",
+    kind: "fill",
+    title: "Varians og standardavvik",
+    prompt: "X har E[X] = 5 og E[X²] = 29. Fyll inn.",
+    topic: "Sannsynlighet",
+    template: `Var(X) = E[X²] - E[X]² = __1__ - __2__ = __3__
+σ = √Var(X) = __4__`,
+    blanks: ["29", "25", "4", "2"],
+    options: ["29", "25", "5", "4", "3", "2", "1"],
+    explanation:
+      "Var(X) = E[X²] - (E[X])² er den vanligste formelen. Standardavvik σ = √Var(X) har samme enhet som X.",
+  },
+  {
+    id: "d-prob-normal-empirical",
+    kind: "quiz",
+    title: "Normalfordeling — 68/95/99.7-regelen",
+    prompt: "Empirisk regel",
+    topic: "Sannsynlighet",
+    question:
+      "IQ-skår er omtrent Normal(μ=100, σ=15). Omtrent hvor stor andel av befolkningen har IQ mellom 70 og 130?",
+    options: [
+      {
+        text: "Cirka 95%",
+        correct: true,
+        rationale: "70 og 130 er ±2σ fra gjennomsnittet (100 ± 2·15). Empirisk regel: ~95% ligger innenfor ±2σ.",
+      },
+      {
+        text: "Cirka 68%",
+        correct: false,
+        rationale: "68% ligger innen ±1σ, altså 85 til 115. Bredere intervall trengs.",
+      },
+      {
+        text: "Cirka 99.7%",
+        correct: false,
+        rationale: "99.7% ligger innen ±3σ, altså 55 til 145.",
+      },
+      {
+        text: "Cirka 50%",
+        correct: false,
+        rationale: "Det ville være ±0.67σ, mye smalere intervall.",
+      },
+    ],
+    explanation:
+      "68/95/99.7-regelen er den enkleste måten å resonere om normalfordelinger uten å slå opp i tabell.",
+  },
+  {
+    id: "d-prob-clt",
+    kind: "quiz",
+    title: "Sentralgrenseteoremet",
+    prompt: "Hva sier CLT?",
+    topic: "Sannsynlighet",
+    question:
+      "Du trekker 100 verdier fra en MYE skjev fordeling (Poisson(2)) og tar gjennomsnittet X̄. Hva er omtrent fordelingen til X̄?",
+    options: [
+      {
+        text: "Tilnærmet Normal(2, 2/100)",
+        correct: true,
+        rationale: "CLT: X̄ ≈ Normal(μ, σ²/n) for stor n. For Poisson(2): μ = σ² = 2. Så X̄ ≈ Normal(2, 0.02).",
+      },
+      {
+        text: "Tilnærmet Poisson",
+        correct: false,
+        rationale: "Selve Xᵢ er Poisson, men gjennomsnittet av mange uavhengige Poisson er IKKE Poisson.",
+      },
+      {
+        text: "Eksakt Normal(2, 2)",
+        correct: false,
+        rationale: "Variansen reduseres med n: σ²/n = 2/100, ikke 2.",
+      },
+      {
+        text: "Uniform fordeling",
+        correct: false,
+        rationale: "CLT gir normal, ikke uniform.",
+      },
+    ],
+    explanation:
+      "CLT er hvorfor normalfordelingen er overalt — gjennomsnittet av mange uavhengige ting nærmer seg normal, UANSETT underliggende fordeling.",
+  },
+  {
+    id: "d-prob-pvalue",
+    kind: "quiz",
+    title: "P-verdi — riktig tolkning",
+    prompt: "Hva betyr p < 0.05?",
+    topic: "Sannsynlighet",
+    question: "En A/B-test gir p = 0.03. Hvilken tolkning er KORREKT?",
+    options: [
+      {
+        text: "Hvis nullhypotesen er sann, er sannsynligheten for å se data minst så ekstrem som vår, ~3%",
+        correct: true,
+        rationale: "Det er den presise definisjonen av p-verdi.",
+      },
+      {
+        text: "Sannsynligheten for at nullhypotesen er sann er 3%",
+        correct: false,
+        rationale: "Vanligste tolkningsfeil! P(data | H₀) ≠ P(H₀ | data). Det krever Bayes.",
+      },
+      {
+        text: "Variant B er 3% bedre enn variant A",
+        correct: false,
+        rationale: "P-verdi sier ingenting om størrelsen på effekten — bare om den er statistisk signifikant.",
+      },
+      {
+        text: "Det er 97% sannsynlig at vi har et ekte funn",
+        correct: false,
+        rationale: "Også feil. P-verdi er ikke en sannsynlighet for hypotesen.",
+      },
+    ],
+    explanation:
+      "P-verdi er sannsynligheten for dataen GITT nullhypotesen. Det er hovedfellen i statistikk — beholdes også av forskere som burde vite bedre.",
+  },
+  {
+    id: "d-prob-hypothesis-order",
+    kind: "order",
+    title: "Hypotesetest — stegene i riktig rekkefølge",
+    prompt: "Sortér stegene i en hypotesetest.",
+    topic: "Sannsynlighet",
+    items: [
+      "Formuler H₀ (nullhypotese) og H₁ (alternativ)",
+      "Velg signifikansnivå α (typisk 0.05)",
+      "Samle inn data fra utvalget",
+      "Beregn teststatistikk fra dataen",
+      "Beregn p-verdi for teststatistikken",
+      "Sammenlign p-verdi med α og konkludér",
+    ],
+    explanation:
+      "Standard prosedyre. Husk: forhåndsbestem α — ikke juster det etter du har sett dataen, da gir testen meningsløse resultater.",
+  },
+  {
+    id: "d-prob-type-errors",
+    kind: "match",
+    title: "Type I vs Type II feil",
+    prompt: "Match feilmodus til scenarioet.",
+    topic: "Sannsynlighet",
+    pairs: [
+      { left: "Forkaster H₀ når H₀ er sann", right: "Type I (falsk positiv, sannsynlighet α)" },
+      { left: "Beholder H₀ når H₁ er sann", right: "Type II (falsk negativ, sannsynlighet β)" },
+      { left: "Sjansen for å oppdage en ekte effekt", right: "Power = 1 - β" },
+      { left: "Sier 'B er bedre' når A og B er like", right: "Type I" },
+      { left: "Sier 'ingen forskjell' når B faktisk er bedre", right: "Type II" },
+    ],
+    explanation:
+      "Type I = falsk alarm. Type II = bommer på et ekte funn. Power = 1 - β: jo større utvalg, jo høyere power.",
+  },
+
+  // ============ MATH FOUNDATIONS — LINÆR ALGEBRA ============
+  {
+    id: "d-linalg-vector-add",
+    kind: "fill",
+    title: "Vektor-addisjon",
+    prompt: "v = (3, -1, 4), w = (2, 5, -3). Beregn.",
+    topic: "Linær algebra",
+    template: `v + w  = ( __1__ , __2__ , __3__ )
+2·v    = ( __4__ , __5__ , __6__ )
+v - w  = ( __7__ , __8__ , __9__ )`,
+    blanks: ["5", "4", "1", "6", "-2", "8", "1", "-6", "7"],
+    options: ["5", "4", "1", "6", "-2", "8", "-6", "7", "0", "3", "-1"],
+    explanation:
+      "Vektor-aritmetikk er komponentvis. Addisjon: legg sammen koordinatene. Skalar-mult: gang alle koordinatene med skalaren.",
+  },
+  {
+    id: "d-linalg-norm",
+    kind: "quiz",
+    title: "Lengden av en vektor",
+    prompt: "Norm i ℝ³",
+    topic: "Vektorer",
+    question: "Hva er ||v|| for v = (2, 3, 6)?",
+    options: [
+      {
+        text: "7",
+        correct: true,
+        rationale: "||v|| = √(4 + 9 + 36) = √49 = 7.",
+      },
+      {
+        text: "11",
+        correct: false,
+        rationale: "11 er summen 2+3+6 — ikke normen. Norm bruker kvadratsum-rot.",
+      },
+      {
+        text: "√41",
+        correct: false,
+        rationale: "Du har glemt en komponent. 4+9+36 = 49, ikke 41.",
+      },
+      {
+        text: "49",
+        correct: false,
+        rationale: "49 er ||v||² (uten kvadratrot).",
+      },
+    ],
+    explanation:
+      "||v|| = √(v₁² + v₂² + ... + vₙ²). Pythagoras generalisert til n dimensjoner.",
+  },
+  {
+    id: "d-linalg-dot-product",
+    kind: "fill",
+    title: "Indreprodukt (dot product)",
+    prompt: "v = (3, 2), w = (1, 4). Fyll inn.",
+    topic: "Vektorer",
+    template: `v · w = 3·__1__ + 2·__2__ = __3__
+
+Cosinus av vinkelen mellom:
+cos(θ) = (v · w) / (||v||·||w||)
+       = __4__ / (√13 · √17)`,
+    blanks: ["1", "4", "11", "11"],
+    options: ["1", "4", "11", "7", "12", "5"],
+    explanation:
+      "Indreprodukt = sum av komponentvise produkter. Geometrisk: v·w = ||v||·||w||·cos θ. Brukes i kosinus-likhet i ML/NLP.",
+  },
+  {
+    id: "d-linalg-orthogonal",
+    kind: "quiz",
+    title: "Ortogonale vektorer",
+    prompt: "Når er to vektorer vinkelrette?",
+    topic: "Vektorer",
+    question: "Hvilke to vektorer er ortogonale?",
+    options: [
+      {
+        text: "(1, 2, 3) og (2, -1, 0) → 1·2 + 2·(-1) + 3·0 = 0 ✓",
+        correct: true,
+        rationale: "Indreproduktet er 0, så vektorene står vinkelrett på hverandre.",
+      },
+      {
+        text: "(1, 1) og (1, 1)",
+        correct: false,
+        rationale: "Indreprodukt = 2, ikke 0. Disse peker i SAMME retning.",
+      },
+      {
+        text: "(1, 0) og (0.5, 0.5)",
+        correct: false,
+        rationale: "Indreprodukt = 0.5. Spiss vinkel mellom dem.",
+      },
+      {
+        text: "(2, 3) og (-3, -2)",
+        correct: false,
+        rationale: "Indreprodukt = -6 + -6 = -12. Stump vinkel.",
+      },
+    ],
+    explanation:
+      "v ⊥ w ⇔ v·w = 0. Brukes for å sjekke uavhengighet, projeksjoner, og hele Gram-Schmidt-prosessen.",
+  },
+  {
+    id: "d-linalg-matmul",
+    kind: "quiz",
+    title: "Matrise-multiplikasjon",
+    prompt: "Beregn AB",
+    topic: "Matriser",
+    code: `A = ⎡ 1  2 ⎤   B = ⎡ 5  6 ⎤
+    ⎣ 3  4 ⎦       ⎣ 7  8 ⎦`,
+    question: "Hva er AB?",
+    options: [
+      {
+        text: "⎡19 22⎤ / ⎣43 50⎦",
+        correct: true,
+        rationale: "(AB)₁₁ = 1·5+2·7 = 19. (AB)₁₂ = 1·6+2·8 = 22. (AB)₂₁ = 3·5+4·7 = 43. (AB)₂₂ = 3·6+4·8 = 50.",
+      },
+      {
+        text: "⎡5 12⎤ / ⎣21 32⎦",
+        correct: false,
+        rationale: "Det er Hadamard-produkt (komponentvis), ikke matrise-mult.",
+      },
+      {
+        text: "⎡23 34⎤ / ⎣31 46⎦",
+        correct: false,
+        rationale: "Det er BA, ikke AB. Husk: matrise-mult er ikke kommutativ.",
+      },
+      {
+        text: "⎡6 8⎤ / ⎣10 12⎦",
+        correct: false,
+        rationale: "Det er A + B (addisjon), ikke multiplikasjon.",
+      },
+    ],
+    explanation:
+      "(AB)ᵢⱼ = sum over rad i av A og kolonne j av B. AB ≠ BA generelt — sjekk rekkefølge!",
+  },
+  {
+    id: "d-linalg-matmul-dims",
+    kind: "quiz",
+    title: "Matrise-dimensjoner",
+    prompt: "Når kan man multiplisere?",
+    topic: "Matriser",
+    question:
+      "A er 3×4 (3 rader, 4 kolonner). B er 4×2. Hvilken dimensjon har AB, og er BA mulig?",
+    options: [
+      {
+        text: "AB er 3×2. BA er ikke definert.",
+        correct: true,
+        rationale: "Indre dimensjoner må matche: A.cols = B.rows = 4. AB-dim = A.rows × B.cols = 3×2. BA krever B.cols (2) = A.rows (3), som ikke stemmer.",
+      },
+      {
+        text: "AB er 4×4. BA er 4×4.",
+        correct: false,
+        rationale: "Du har antatt at A og B var kvadratiske. AB er 3×2.",
+      },
+      {
+        text: "AB er 2×3. BA er 3×2.",
+        correct: false,
+        rationale: "AB tar A.rows × B.cols, ikke omvendt.",
+      },
+      {
+        text: "AB og BA er begge mulig og lik.",
+        correct: false,
+        rationale: "Selv om AB er definert, er BA ikke det. Og selv når begge er definert, er AB sjelden lik BA.",
+      },
+    ],
+    explanation:
+      "Husk regelen: (m×k)·(k×n) = (m×n). Indre dimensjoner annulerer hverandre, ytre forblir.",
+  },
+  {
+    id: "d-linalg-identity-inverse",
+    kind: "match",
+    title: "Identitet vs invers",
+    prompt: "Match begrepene.",
+    topic: "Matriser",
+    pairs: [
+      { left: "Identitetsmatrise I", right: "A·I = I·A = A — 'gjør ingenting'" },
+      { left: "Invers A⁻¹", right: "A·A⁻¹ = I — 'angre transformasjonen til A'" },
+      { left: "Singulær matrise", right: "Determinant = 0, har ikke invers" },
+      { left: "Determinant det(A)", right: "Skalar som måler om A er invertibel (≠ 0)" },
+      { left: "Transponering Aᵀ", right: "Speil over diagonalen: (Aᵀ)ᵢⱼ = Aⱼᵢ" },
+    ],
+    explanation:
+      "I er den multiplikative identiteten for matriser. A⁻¹ finnes kun hvis det(A) ≠ 0. Singulære matriser kollapser dimensjon.",
+  },
+  {
+    id: "d-linalg-ax-b",
+    kind: "quiz",
+    title: "Likningssystem Ax = b",
+    prompt: "Antall løsninger",
+    topic: "Matriser",
+    question:
+      "Systemet x + y = 3 og 2x + 2y = 6. Hva er antall løsninger?",
+    options: [
+      {
+        text: "Uendelig mange — linjene er identiske",
+        correct: true,
+        rationale: "Andre likning er bare 2 ganger den første. Begge representerer samme linje, så hvert punkt på linjen er en løsning.",
+      },
+      {
+        text: "Nøyaktig én løsning",
+        correct: false,
+        rationale: "To ulike linjer som krysser gir én løsning. Disse er samme linje.",
+      },
+      {
+        text: "Ingen løsninger",
+        correct: false,
+        rationale: "Ingen løsninger ville vært to parallelle linjer som IKKE er identiske, f.eks. x+y=3 og 2x+2y=10.",
+      },
+      {
+        text: "To løsninger",
+        correct: false,
+        rationale: "Lineære systemer har 0, 1 eller uendelig mange løsninger — aldri akkurat to.",
+      },
+    ],
+    explanation:
+      "Tre utfall: én løsning (linjene krysser), uendelig mange (samme linje), ingen (parallelle distinkte). Rangbetingelser avgjør hvilket.",
+  },
+  {
+    id: "d-linalg-gauss-order",
+    kind: "order",
+    title: "Gauss-eliminasjon — riktig rekkefølge",
+    prompt: "Sortér stegene i Gauss-eliminasjon for å løse Ax = b.",
+    topic: "Matriser",
+    items: [
+      "Skriv likningssystemet som utvidet matrise [A | b]",
+      "Bruk radoperasjoner for å lage 0 under den første pivoten",
+      "Gå videre til neste kolonne og lag 0 under den nye pivoten",
+      "Fortsett til matrisen er på trekantform (echelon)",
+      "Tilbakesetting: løs siste likning, og sett inn oppover",
+      "Sjekk resultatet ved å sette x inn i originale likninger",
+    ],
+    explanation:
+      "Gauss-eliminasjon = systematisk reduksjon til trekantform. Tilbakesetting (back-substitution) løser deretter ovenfra og ned.",
+  },
+  {
+    id: "d-linalg-transformations",
+    kind: "match",
+    title: "Lineære transformasjoner — geometrisk",
+    prompt: "Match matrise til geometrisk effekt.",
+    topic: "Linær algebra",
+    pairs: [
+      { left: "⎡ s 0 ⎤ / ⎣ 0 s ⎦", right: "Uniform skalering med faktor s" },
+      { left: "⎡ 1 0 ⎤ / ⎣ 0 -1 ⎦", right: "Refleksjon over x-aksen" },
+      { left: "⎡ cos θ  -sin θ ⎤ / ⎣ sin θ   cos θ ⎦", right: "Rotasjon med vinkel θ" },
+      { left: "⎡ 1 0 ⎤ / ⎣ 0 0 ⎦", right: "Projeksjon på x-aksen (kollapser y)" },
+      { left: "⎡ 1 0 ⎤ / ⎣ 0 1 ⎦", right: "Identitet — gjør ingenting" },
+      { left: "⎡ 2 0 ⎤ / ⎣ 0 1 ⎦", right: "Strekker bare i x-retning (anisotropisk)" },
+    ],
+    explanation:
+      "Hver lineær transformasjon ER en matrise. Kolonnene viser hvor basisvektorene e₁ og e₂ blir sendt etter transformasjonen.",
+  },
+  {
+    id: "d-linalg-eigenvector-intuition",
+    kind: "quiz",
+    title: "Egenvektorer — intuisjon",
+    prompt: "Hva karakteriserer en egenvektor?",
+    topic: "Eigenvektorer",
+    question: "Hvilken setning beskriver best en egenvektor v til en matrise A?",
+    options: [
+      {
+        text: "Når A virker på v, peker resultatet i samme retning som v (kan være krympet eller strukket eller flippet)",
+        correct: true,
+        rationale: "Definisjon: A·v = λ·v. Retning bevart, lengde skalert med λ. Negativ λ flipper retningen.",
+      },
+      {
+        text: "En egenvektor har lengde 1",
+        correct: false,
+        rationale: "Egenvektorer normaliseres ofte til lengde 1, men det er ikke definisjonen.",
+      },
+      {
+        text: "Når A virker på v, blir resultatet alltid nullvektoren",
+        correct: false,
+        rationale: "Det ville bety λ = 0, altså spesielt singulær matrise. Vanligvis λ ≠ 0.",
+      },
+      {
+        text: "En egenvektor finnes bare for inverterbare matriser",
+        correct: false,
+        rationale: "Singulære matriser har egenvektorer også — den ene egenverdien er da 0.",
+      },
+    ],
+    explanation:
+      "Egenvektorer er de SPESIELLE vektorene som matrisen bare strekker eller krymper. Brukes til å analysere stabile retninger i et system.",
+  },
+  {
+    id: "d-linalg-eigen-pca",
+    kind: "quiz",
+    title: "Egenvektorer i PCA",
+    prompt: "Hvorfor bruker PCA egenvektorer?",
+    topic: "Eigenvektorer",
+    question: "I PCA finner vi egenvektorer av kovariansmatrisen. Hva representerer hovedkomponentene (principal components)?",
+    options: [
+      {
+        text: "Retningene i feature-rommet med mest varians",
+        correct: true,
+        rationale: "Egenvektorene til kovariansmatrisen peker langs hovedaksene av data-skyen. Egenverdien måler varians langs hver akse.",
+      },
+      {
+        text: "Retningene med MINST varians",
+        correct: false,
+        rationale: "Tvert imot — vi sorterer etter STØRST egenverdi og beholder topp-k.",
+      },
+      {
+        text: "De originale features",
+        correct: false,
+        rationale: "Nei — hovedkomponentene er nye, lineære kombinasjoner av originale features.",
+      },
+      {
+        text: "Tilfeldige vektorer",
+        correct: false,
+        rationale: "Helt deterministisk: gitt en datamatrise er hovedkomponentene entydige (opp til tegn).",
+      },
+    ],
+    explanation:
+      "PCA bygger på en geometrisk innsikt: data-skyens 'hovedakser' er egenvektorer av kovariansmatrisen. Stor egenverdi → mye varians i den retningen.",
+  },
+  {
+    id: "d-linalg-basis-dim",
+    kind: "match",
+    title: "Basis, dimensjon, rang",
+    prompt: "Match begrep til riktig definisjon.",
+    topic: "Linær algebra",
+    pairs: [
+      { left: "Lineær uavhengighet", right: "Ingen vektor kan skrives som lineær kombinasjon av de andre" },
+      { left: "Spenn", right: "Mengden av alle lineære kombinasjoner — det 'rommet' de fyller" },
+      { left: "Basis", right: "Lineært uavhengig mengde som spenner hele rommet" },
+      { left: "Dimensjon", right: "Antall vektorer i (en hvilken som helst) basis" },
+      { left: "Rang av matrise", right: "Antall lineært uavhengige rader (= kolonner)" },
+      { left: "Singulær matrise", right: "Kvadratisk matrise med rang < n (mangler invers)" },
+    ],
+    explanation:
+      "Disse begrepene danner det algebraiske fundamentet for nær sagt all linær-algebra-teori, fra Ax=b til SVD og maskinlæring.",
+  },
 ];

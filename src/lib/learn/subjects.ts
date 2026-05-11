@@ -5,6 +5,7 @@ import type { DragExercise } from "./types";
 // Exercises whose topic isn't claimed end up under "annet".
 
 export type SubjectId =
+  | "matte"
   | "python"
   | "algoritmer"
   | "datakomm"
@@ -29,6 +30,25 @@ export interface Subject {
 }
 
 export const SUBJECTS: readonly Subject[] = [
+  {
+    id: "matte",
+    label: "Math foundations (Phase 0)",
+    short: "Diskret matte, sannsynlighet, linær algebra",
+    topics: [
+      "Diskret matte",
+      "Logikk (matte)",
+      "Mengder",
+      "Kombinatorikk",
+      "Induksjon",
+      "Sannsynlighet",
+      "Bayes (matte)",
+      "Statistikk",
+      "Linær algebra",
+      "Vektorer",
+      "Matriser",
+      "Eigenvektorer",
+    ],
+  },
   {
     id: "python",
     label: "Python (Liang)",
