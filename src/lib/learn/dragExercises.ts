@@ -6888,4 +6888,1539 @@ __5__ endfor __6__
     explanation:
       "Triks: kvadrer for å spare en sqrt-kalkulasjon. Strengt innenfor: bruk `<`. Inkludert kanten: bruk `<=`.",
   },
+
+  // ============= PYTHON KAP. 4 — Matematiske funksjoner, strenger, objekter =============
+
+  {
+    id: "d-py4-match-math-fns",
+    kind: "match",
+    title: "math-modulen — funksjoner",
+    prompt: "Match funksjon til hva den gjør.",
+    topic: "Python kap. 4",
+    pairs: [
+      { left: "math.sqrt(x)", right: "Kvadratrot av x" },
+      { left: "math.ceil(x)", right: "Runder OPPOVER til nærmeste heltall" },
+      { left: "math.floor(x)", right: "Runder NEDOVER til nærmeste heltall" },
+      { left: "math.log(x)", right: "Naturlig logaritme (base e)" },
+      { left: "math.log10(x)", right: "Logaritme base 10" },
+      { left: "math.pi", right: "Konstanten π ≈ 3.14159…" },
+      { left: "abs(x)", right: "Absoluttverdi (innebygd, IKKE i math)" },
+    ],
+    explanation:
+      "Huskeregel: `abs()` og `round()` er innebygde — alt annet matematisk må du `import math`. NumPy har egne versjoner som er raskere på arrays.",
+  },
+  {
+    id: "d-py4-quiz-str-immut",
+    kind: "quiz",
+    title: "Strenger er uforanderlige",
+    prompt: "Velg riktig output.",
+    topic: "Python kap. 4",
+    question: "Hva skjer?",
+    code: "s = \"hei\"\ns[0] = \"H\"\nprint(s)",
+    language: "python",
+    options: [
+      { text: "TypeError — 'str' object does not support item assignment", correct: true, rationale: "Strenger er IMMUTABLE i Python. Du må lage en ny: `s = \"H\" + s[1:]`." },
+      { text: "Hei", correct: false, rationale: "Det ville fungert i C eller hvis strenger var lister. Men i Python er strenger uforanderlige." },
+      { text: "hei", correct: false, rationale: "Tilordningen krasjer før noe printes." },
+      { text: "H", correct: false, rationale: "Ingen mutasjon skjer — feilen kommer før print." },
+    ],
+    explanation:
+      "Bygg ny string: `s = \"H\" + s[1:]`. Eller bruk `s.replace(s[0], \"H\", 1)`. Lister er muterbare, strenger ikke.",
+  },
+  {
+    id: "d-py4-match-str-methods",
+    kind: "match",
+    title: "String-metoder",
+    prompt: "Match metode til resultat (alle returnerer NY string — original endres ikke).",
+    topic: "Python kap. 4",
+    pairs: [
+      { left: "\"  Hei  \".strip()", right: "\"Hei\" — fjerner whitespace i begge ender" },
+      { left: "\"hei\".upper()", right: "\"HEI\"" },
+      { left: "\"hei verden\".split()", right: "[\"hei\", \"verden\"] — splitter på whitespace" },
+      { left: "\",\".join([\"a\",\"b\",\"c\"])", right: "\"a,b,c\"" },
+      { left: "\"hallo\".replace(\"a\", \"e\")", right: "\"hello\"" },
+      { left: "\"abc\".find(\"b\")", right: "1 — indeks til første treff, -1 hvis ikke funnet" },
+      { left: "len(\"hei\")", right: "3" },
+    ],
+    explanation:
+      "Alle string-metoder returnerer ny string siden strenger er immutable. Klassisk feil: `s.upper()` uten å tilordne — original endres ikke.",
+  },
+  {
+    id: "d-py4-quiz-fstring",
+    kind: "quiz",
+    title: "f-strings — formattering",
+    prompt: "Velg riktig output.",
+    topic: "Python kap. 4",
+    question: "Hva printer dette?",
+    code: "navn = \"Ola\"\nalder = 25\nprint(f\"{navn} er {alder} år\")",
+    language: "python",
+    options: [
+      { text: "Ola er 25 år", correct: true, rationale: "f-string: variabler i `{}` settes inn direkte. Krever Python 3.6+." },
+      { text: "{navn} er {alder} år", correct: false, rationale: "Det ville vært output uten `f`-prefiks: `\"{navn} er {alder} år\"`." },
+      { text: "Ola er Ola år", correct: false, rationale: "Hver `{}` viser sin egen variabel — ikke samme." },
+      { text: "SyntaxError", correct: false, rationale: "f-strings er gyldig Python 3.6+." },
+    ],
+    explanation:
+      "Tre måter å formatere på: `f\"{x}\"` (best), `\"{}\".format(x)`, `\"%s\" % x`. f-string er raskest og mest leselig.",
+  },
+  {
+    id: "d-py4-fill-fstring-decimal",
+    kind: "fill",
+    title: "f-string med desimaler",
+    prompt: "Vis pris med to desimaler.",
+    topic: "Python kap. 4",
+    template: "pris = 1/3\nprint(f\"Pris: {pris__1__}\")",
+    blanks: [":.2f"],
+    options: [":.2f", ":.2", ":2f", "%.2f", "round(2)", ":,.2"],
+    language: "python",
+    explanation:
+      "Format-spec etter kolon: `:.2f` = 2 desimaler. `:,.2f` legger til tusenseparator. `:>10` høyrejusterer i 10 bredde.",
+  },
+  {
+    id: "d-py4-quiz-ord-chr",
+    kind: "quiz",
+    title: "ord() og chr() — tegnkoder",
+    prompt: "Velg riktig output.",
+    topic: "Python kap. 4",
+    question: "Hva er `ord(\"A\")` og `chr(65)`?",
+    code: "print(ord(\"A\"), chr(65))",
+    language: "python",
+    options: [
+      { text: "65 A", correct: true, rationale: "ord() returnerer Unicode-kodepunktet. chr() går motsatt vei. \"A\" har kode 65." },
+      { text: "97 a", correct: false, rationale: "97 er 'a' (liten). Store og små bokstaver har ulike koder — 32 fra hverandre." },
+      { text: "1 A", correct: false, rationale: "ord() er ikke posisjon i alfabetet." },
+      { text: "A 65", correct: false, rationale: "Rekkefølgen er motsatt." },
+    ],
+    explanation:
+      "ASCII: 'A'=65, 'a'=97, '0'=48. For å skifte til store: `chr(ord(c) - 32)` — eller bare `c.upper()`.",
+  },
+  {
+    id: "d-py4-quiz-in-operator",
+    kind: "quiz",
+    title: "in-operator på strenger",
+    prompt: "Velg riktig output.",
+    topic: "Python kap. 4",
+    question: "Hva returnerer `\"py\" in \"Python\"`?",
+    code: "print(\"py\" in \"Python\")",
+    language: "python",
+    options: [
+      { text: "False — `in` er case-sensitiv", correct: true, rationale: "P er stort, p er lite. Bruk `.lower()` på begge for case-insensitiv test." },
+      { text: "True", correct: false, rationale: "Python skiller mellom store og små bokstaver i string-sammenligning." },
+      { text: "0", correct: false, rationale: "`in` returnerer bool, ikke indeks. For indeks: `.find()`." },
+      { text: "2", correct: false, rationale: "Det ville vært `\"py\".find(\"py\")` på en match. Men her er det ingen match." },
+    ],
+    explanation:
+      "Case-insensitiv: `\"py\".lower() in \"Python\".lower()`. Alternativ: regex med `re.IGNORECASE`-flagg.",
+  },
+  {
+    id: "d-py4-fill-str-concat",
+    kind: "fill",
+    title: "String-konkatenering",
+    prompt: "Bygg én string fra tre deler.",
+    topic: "Python kap. 4",
+    template:
+      "fornavn = \"Ola\"\netternavn = \"Nordmann\"\nfullt_navn = fornavn __1__ \" \" __1__ etternavn\nprint(fullt_navn)  # Ola Nordmann",
+    blanks: ["+"],
+    options: ["+", ",", "*", ".", "&", "and"],
+    language: "python",
+    explanation:
+      "`+` for streng-konkatenering. `,` i print legger automatisk inn mellomrom. f-string er ofte bedre: f\"{fornavn} {etternavn}\".",
+  },
+
+  // ============= PYTHON KAP. 5 — Løkker (while, for, range) =============
+
+  {
+    id: "d-py5-quiz-range-args",
+    kind: "quiz",
+    title: "range() med tre argumenter",
+    prompt: "Velg riktig output.",
+    topic: "Python kap. 5",
+    question: "Hva blir resultatet?",
+    code: "print(list(range(1, 10, 2)))",
+    language: "python",
+    options: [
+      { text: "[1, 3, 5, 7, 9]", correct: true, rationale: "range(start, stop, step): starter på 1, stopper FØR 10, hopper 2 om gangen. STOP er eksklusivt." },
+      { text: "[1, 3, 5, 7, 9, 10]", correct: false, rationale: "stop er IKKE inkludert. range(1, 10) gir 1..9, aldri 10." },
+      { text: "[2, 4, 6, 8]", correct: false, rationale: "Det ville vært range(2, 10, 2)." },
+      { text: "[1, 2, 3, 4, 5, 6, 7, 8, 9]", correct: false, rationale: "Det er steg 1, ikke 2." },
+    ],
+    explanation:
+      "range(stop), range(start, stop), range(start, stop, step). STOP er ALLTID eksklusivt — som array-slicing. Negativt steg går baklengs.",
+  },
+  {
+    id: "d-py5-fill-sum-loop",
+    kind: "fill",
+    title: "Akkumuler en sum",
+    prompt: "Fyll inn slik at vi summerer tallene 1..100.",
+    topic: "Python kap. 5",
+    template:
+      "total = __1__\nfor i in range(1, 101):\n    total __2__ i\nprint(total)  # 5050",
+    blanks: ["0", "+="],
+    options: ["0", "1", "-1", "+=", "=", "+", "i", "total"],
+    language: "python",
+    explanation:
+      "Klassisk akkumulator-mønster: initialiser før løkken, oppdater inni. range(1, 101) inkluderer 1..100 (101 eksklusiv).",
+  },
+  {
+    id: "d-py5-quiz-while-input",
+    kind: "quiz",
+    title: "Sentinel-løkke",
+    prompt: "Velg riktig sentinel-mønster.",
+    topic: "Python kap. 5",
+    question: "Hvordan les tall til brukeren skriver 0?",
+    code: "x = int(input(\"Tall? \"))\nwhile __MANGLER__:\n    print(x ** 2)\n    x = int(input(\"Tall? \"))",
+    language: "python",
+    options: [
+      { text: "x != 0", correct: true, rationale: "Klassisk sentinel: les én gang før løkken (priming read), så test før hver iterasjon." },
+      { text: "x == 0", correct: false, rationale: "Da kjører løkken bare hvis x ER 0 — motsatt av det vi vil." },
+      { text: "True", correct: false, rationale: "Det ville være uendelig løkke uten break." },
+      { text: "x > 0", correct: false, rationale: "Da stopper løkken også for negative tall, ikke bare 0." },
+    ],
+    explanation:
+      "Priming read = les én gang før while-vilkåret. Alternativ: `while True:` med `if x == 0: break` inni. Stilspørsmål.",
+  },
+  {
+    id: "d-py5-quiz-nested-loops",
+    kind: "quiz",
+    title: "Nestede løkker — antall print",
+    prompt: "Velg riktig antall.",
+    topic: "Python kap. 5",
+    question: "Hvor mange ganger printer denne koden «*»?",
+    code: "for i in range(3):\n    for j in range(4):\n        print(\"*\", end=\"\")",
+    language: "python",
+    options: [
+      { text: "12", correct: true, rationale: "Ytre kjører 3 ganger, indre 4 ganger per ytre. Totalt 3×4 = 12." },
+      { text: "7", correct: false, rationale: "Nestede løkker MULTIPLISERER, ikke summerer. Sekvens-løkker summerer." },
+      { text: "3", correct: false, rationale: "Det er bare ytre løkke." },
+      { text: "4", correct: false, rationale: "Det er bare indre løkke." },
+    ],
+    explanation:
+      "Nestet = multiplikasjon (Big-O O(n×m)). Sekvens = addisjon (O(n+m)). Vanlig kilde til kvadratisk kompleksitet.",
+  },
+  {
+    id: "d-py5-quiz-break-vs-continue",
+    kind: "quiz",
+    title: "break vs continue",
+    prompt: "Velg riktig output.",
+    topic: "Python kap. 5",
+    question: "Hva printer denne koden?",
+    code: "for i in range(5):\n    if i == 2:\n        continue\n    if i == 4:\n        break\n    print(i)",
+    language: "python",
+    options: [
+      { text: "0 1 3", correct: true, rationale: "i=0,1 printes. i=2 hopper over (continue). i=3 printes. i=4 stopper løkken (break). 4 printes IKKE." },
+      { text: "0 1 2 3", correct: false, rationale: "i=2 hopper over med continue — ikke printet." },
+      { text: "0 1 3 4", correct: false, rationale: "break på i=4 skjer FØR print(4). 4 printes ikke." },
+      { text: "0 1 2 3 4", correct: false, rationale: "Glemmer at continue og break gjør noe." },
+    ],
+    explanation:
+      "`continue` = hopp til neste iterasjon. `break` = ut av løkka. `pass` = gjør ingenting (placeholder, ikke kontrollflyt).",
+  },
+  {
+    id: "d-py5-quiz-for-else",
+    kind: "quiz",
+    title: "for-else — sjelden, men viktig",
+    prompt: "Velg riktig output.",
+    topic: "Python kap. 5",
+    question: "Hva printer dette?",
+    code: "for i in range(5):\n    if i == 10:\n        break\nelse:\n    print(\"ikke funnet\")\nprint(\"ferdig\")",
+    language: "python",
+    options: [
+      { text: "ikke funnet\\nferdig", correct: true, rationale: "for-else: else kjører bare når løkken IKKE ble brutt med break. Her ble den aldri brutt → else kjører." },
+      { text: "ferdig", correct: false, rationale: "for-else er ikke det samme som if-else. else hører til for-løkka." },
+      { text: "Bare 'ferdig'", correct: false, rationale: "else kjører siden ingen break ble truffet." },
+      { text: "SyntaxError", correct: false, rationale: "for-else er gyldig Python — uvanlig, men gyldig." },
+    ],
+    explanation:
+      "Praktisk bruk: søke etter noe i en løkke. break når funnet, else når ikke. «if it ran to completion» — uvanlig kontrollflyt.",
+  },
+  {
+    id: "d-py5-fill-multiplication-table",
+    kind: "fill",
+    title: "Gangetabell",
+    prompt: "Fyll inn for å skrive ut 5-gangen.",
+    topic: "Python kap. 5",
+    template:
+      "for i in __1__(1, __2__):\n    print(f\"5 × {i} = {5 __3__ i}\")",
+    blanks: ["range", "11", "*"],
+    options: ["range", "list", "iter", "10", "11", "12", "*", "+", "x", "·"],
+    language: "python",
+    explanation:
+      "range(1, 11) gir 1..10. Husk: STOP er eksklusivt, så for å inkludere 10 må du skrive 11.",
+  },
+  {
+    id: "d-py5-quiz-iterate-string",
+    kind: "quiz",
+    title: "Iterere over en string",
+    prompt: "Velg riktig output.",
+    topic: "Python kap. 5",
+    question: "Hva printer denne løkken?",
+    code: "for c in \"abc\":\n    print(c, end=\" \")",
+    language: "python",
+    options: [
+      { text: "a b c", correct: true, rationale: "Strenger er iterable — for-løkka går gjennom hvert tegn." },
+      { text: "abc", correct: false, rationale: "Du printer hvert tegn for seg med mellomrom — ikke hele strengen på én linje." },
+      { text: "0 1 2", correct: false, rationale: "Det er indekser. For å få indeks + tegn: `for i, c in enumerate(s)`." },
+      { text: "TypeError", correct: false, rationale: "Strings er iterable i Python." },
+    ],
+    explanation:
+      "Alt iterable kan brukes med for: lister, strenger, sets, dicts, range-objekter. Bruk `enumerate()` hvis du trenger indeks også.",
+  },
+  {
+    id: "d-py5-quiz-floating-pitfall",
+    kind: "quiz",
+    title: "Float-felle i while",
+    prompt: "Hvorfor er denne løkken farlig?",
+    topic: "Python kap. 5",
+    question: "Hva er problemet?",
+    code: "x = 0.1\nwhile x != 1.0:\n    x += 0.1\n    print(x)",
+    language: "python",
+    options: [
+      { text: "x treffer aldri nøyaktig 1.0 pga. flytetallsavrunding — uendelig løkke", correct: true, rationale: "0.1 + 0.1 + ... = 0.9999999... pga. binær representasjon. Bruk `abs(x - 1.0) < 1e-9` eller heltall i stedet." },
+      { text: "x må deklareres som float", correct: false, rationale: "x er allerede float (0.1)." },
+      { text: "Krasjer med TypeError", correct: false, rationale: "Ingen typefeil — det er en logisk fastlås." },
+      { text: "Printer 1.0 ti ganger", correct: false, rationale: "Den når aldri nøyaktig 1.0 — printer i det uendelige." },
+    ],
+    explanation:
+      "Regel: aldri test float-likhet med `==`. Bruk tolerance: `abs(a-b) < epsilon`, eller bruk integer arithmetic og divider på slutten.",
+  },
+
+  // ============= PYTHON KAP. 6 — Funksjoner =============
+
+  {
+    id: "d-py6-fill-def",
+    kind: "fill",
+    title: "Definer en funksjon",
+    prompt: "Fyll inn for en funksjon som returnerer kvadratet.",
+    topic: "Python kap. 6",
+    template: "__1__ kvadrat(x)__2__\n    __3__ x * x\n\nprint(kvadrat(4))  # 16",
+    blanks: ["def", ":", "return"],
+    options: ["def", "function", "fn", ":", ";", "return", "yield", "print", "="],
+    language: "python",
+    explanation:
+      "Syntaks: `def navn(parametre):` etterfulgt av innrykket blokk. `return` sender verdien tilbake. Uten return: returnerer None.",
+  },
+  {
+    id: "d-py6-quiz-default-arg",
+    kind: "quiz",
+    title: "Standardverdier på parametre",
+    prompt: "Velg riktig output.",
+    topic: "Python kap. 6",
+    question: "Hva printer dette?",
+    code: "def hilsen(navn, frase=\"Hei\"):\n    return f\"{frase}, {navn}!\"\n\nprint(hilsen(\"Ola\"))\nprint(hilsen(\"Kari\", \"Hallo\"))",
+    language: "python",
+    options: [
+      { text: "Hei, Ola!\\nHallo, Kari!", correct: true, rationale: "Første kall bruker default 'Hei'. Andre overskriver med 'Hallo'." },
+      { text: "Hei, Ola!\\nHei, Kari!", correct: false, rationale: "Andre kall sender ekspressivt 'Hallo' — det overskriver default." },
+      { text: "Hallo, Ola!\\nHallo, Kari!", correct: false, rationale: "Første kall sender ikke 'Hallo' — bare 'Ola'." },
+      { text: "TypeError", correct: false, rationale: "Parametre med default er valgfrie — første kall er gyldig." },
+    ],
+    explanation:
+      "Default-verdier evalueres ÉN GANG ved def-tidspunkt. Mutable defaults (`def f(x=[])`) er klassisk felle — bruk None.",
+  },
+  {
+    id: "d-py6-quiz-mutable-default",
+    kind: "quiz",
+    title: "Mutable default — fellen",
+    prompt: "Velg riktig output.",
+    topic: "Python kap. 6",
+    question: "Hva printer dette?",
+    code: "def legg_til(x, ls=[]):\n    ls.append(x)\n    return ls\n\nprint(legg_til(1))\nprint(legg_til(2))",
+    language: "python",
+    options: [
+      { text: "[1]\\n[1, 2]", correct: true, rationale: "Default-listen lages ÉN gang og deles mellom alle kall! Hvert kall legger til samme liste." },
+      { text: "[1]\\n[2]", correct: false, rationale: "Det ville fungert med `ls=None; if ls is None: ls = []`. Default er en delt liste." },
+      { text: "[1]\\n[1]", correct: false, rationale: "Andre kall får ny x=2, men samme liste." },
+      { text: "TypeError", correct: false, rationale: "Gyldig kode — men med subtil bug." },
+    ],
+    explanation:
+      "Klassisk felle. Fiks: `def legg_til(x, ls=None): ls = ls or []`. Default-verdier evalueres bare én gang — du deler samme objekt mellom alle kall.",
+  },
+  {
+    id: "d-py6-quiz-keyword-args",
+    kind: "quiz",
+    title: "Keyword arguments",
+    prompt: "Velg riktig output.",
+    topic: "Python kap. 6",
+    question: "Hva returnerer dette?",
+    code: "def rekt(bredde, høyde):\n    return bredde * høyde\n\nprint(rekt(høyde=3, bredde=5))",
+    language: "python",
+    options: [
+      { text: "15", correct: true, rationale: "Keyword-args lar deg sende i hvilken som helst rekkefølge — argumentnavn binder verdiene riktig." },
+      { text: "TypeError — feil rekkefølge", correct: false, rationale: "Rekkefølgen spiller ingen rolle når du bruker keyword-args." },
+      { text: "8", correct: false, rationale: "Det er 5 + 3, ikke 5 × 3." },
+      { text: "53", correct: false, rationale: "Konkatenering ville krevd strings, ikke ints." },
+    ],
+    explanation:
+      "Tip: bruk keyword-args ved kall for å gjøre koden selvforklarende. `rekt(bredde=5, høyde=3)` er klarere enn `rekt(5, 3)`.",
+  },
+  {
+    id: "d-py6-quiz-scope-local",
+    kind: "quiz",
+    title: "Lokal vs global scope",
+    prompt: "Velg riktig output.",
+    topic: "Python kap. 6",
+    question: "Hva printer dette?",
+    code: "x = 10\n\ndef endre():\n    x = 20\n    print(x)\n\nendre()\nprint(x)",
+    language: "python",
+    options: [
+      { text: "20\\n10", correct: true, rationale: "Inni endre() lages en NY lokal x. Den globale x er uberørt — den er fortsatt 10 etter at funksjonen er ferdig." },
+      { text: "20\\n20", correct: false, rationale: "Det ville krevd `global x` inni funksjonen." },
+      { text: "10\\n10", correct: false, rationale: "Funksjonen printer sin egen lokale x = 20." },
+      { text: "UnboundLocalError", correct: false, rationale: "Vi tilordner x FØR vi leser den inni funksjonen — det er gyldig." },
+    ],
+    explanation:
+      "LEGB-regelen: Local → Enclosing → Global → Built-in. For å MODIFISERE en global, bruk `global x`. Bare lesing krever ikke deklarasjon.",
+  },
+  {
+    id: "d-py6-quiz-args-kwargs",
+    kind: "quiz",
+    title: "*args og **kwargs",
+    prompt: "Velg riktig output.",
+    topic: "Python kap. 6",
+    question: "Hva printer dette?",
+    code: "def f(*args, **kwargs):\n    print(args, kwargs)\n\nf(1, 2, navn=\"Ola\")",
+    language: "python",
+    options: [
+      { text: "(1, 2) {'navn': 'Ola'}", correct: true, rationale: "*args samler posisjonelle argumenter som tuple. **kwargs samler keyword-args som dict." },
+      { text: "[1, 2] ['navn': 'Ola']", correct: false, rationale: "*args er TUPLE (ikke list). **kwargs er DICT med {} syntaks." },
+      { text: "(1, 2, 'Ola') {}", correct: false, rationale: "navn=\"Ola\" er keyword-arg → går til **kwargs, ikke *args." },
+      { text: "TypeError", correct: false, rationale: "Helt gyldig syntaks." },
+    ],
+    explanation:
+      "Navnene er konvensjon — det er `*` og `**` som har betydning. Pakk opp ved kall: `f(*lst)` eller `f(**dct)`.",
+  },
+  {
+    id: "d-py6-fill-lambda",
+    kind: "fill",
+    title: "Lambda — anonym funksjon",
+    prompt: "Skriv lambda som dobler verdien.",
+    topic: "Python kap. 6",
+    template: "dobbel = __1__ x: x * 2\nprint(dobbel(5))  # 10",
+    blanks: ["lambda"],
+    options: ["lambda", "def", "fn", "=>", "function", "anon"],
+    language: "python",
+    explanation:
+      "Lambda er kun ETT uttrykk — ingen statements. Brukes typisk som callback: `sorted(lst, key=lambda x: x[1])`. For komplekse funksjoner: bruk `def`.",
+  },
+  {
+    id: "d-py6-quiz-pass-by-reference",
+    kind: "quiz",
+    title: "Mutabel argument — modifiseres i funksjonen?",
+    prompt: "Velg riktig output.",
+    topic: "Python kap. 6",
+    question: "Hva printer dette?",
+    code: "def legg_til(ls):\n    ls.append(99)\n\ntall = [1, 2, 3]\nlegg_til(tall)\nprint(tall)",
+    language: "python",
+    options: [
+      { text: "[1, 2, 3, 99]", correct: true, rationale: "Lister sendes som referanse. `.append()` MUTERER originalen — endringen er synlig utenfor." },
+      { text: "[1, 2, 3]", correct: false, rationale: "Det ville krevd at lister var pass-by-value (kopiert)." },
+      { text: "[99]", correct: false, rationale: "append legger til, erstatter ikke." },
+      { text: "[1, 2, 3, [99]]", correct: false, rationale: "append legger til 99 selv, ikke en liste med 99." },
+    ],
+    explanation:
+      "Python: pass-by-object-reference. Ints/strings er immutable så funksjonen kan ikke endre dem. Lister/dicts er mutable — endres in-place.",
+  },
+  {
+    id: "d-py6-fill-recursive",
+    kind: "fill",
+    title: "Rekursiv funksjon — faktorial",
+    prompt: "Fyll inn for n!.",
+    topic: "Python kap. 6",
+    template:
+      "def fak(n):\n    if n <= __1__:\n        return __2__\n    return n * fak(n __3__ 1)\n\nprint(fak(5))  # 120",
+    blanks: ["1", "1", "-"],
+    options: ["0", "1", "n", "-", "+", "*", "/"],
+    language: "python",
+    explanation:
+      "Hver rekursiv funksjon trenger: (1) base case som stopper, (2) rekursivt steg som nærmer seg base. Glem base = uendelig rekursjon → RecursionError.",
+  },
+  {
+    id: "d-py6-match-builtins",
+    kind: "match",
+    title: "Innebygde funksjoner",
+    prompt: "Match funksjon til oppgave.",
+    topic: "Python kap. 6",
+    pairs: [
+      { left: "len(x)", right: "Antall elementer (liste, string, dict, set, …)" },
+      { left: "sum(iterable)", right: "Summen av alle tallene" },
+      { left: "max(iterable)", right: "Største verdi" },
+      { left: "min(iterable)", right: "Minste verdi" },
+      { left: "sorted(iterable)", right: "Returnerer NY sortert liste" },
+      { left: "type(x)", right: "Returnerer objektets type (class)" },
+      { left: "isinstance(x, t)", right: "True hvis x er av type t (eller subklasse)" },
+    ],
+    explanation:
+      "`sorted()` returnerer NY liste — `list.sort()` muterer in-place. Lær forskjellen — relevant for funksjonell stil.",
+  },
+
+  // ============= PYTHON KAP. 7 — Lister =============
+
+  {
+    id: "d-py7-match-list-methods",
+    kind: "match",
+    title: "Liste-metoder",
+    prompt: "Match metode til effekt.",
+    topic: "Python kap. 7",
+    pairs: [
+      { left: "lst.append(x)", right: "Legg til på slutten (in-place, O(1) amortisert)" },
+      { left: "lst.insert(i, x)", right: "Sett inn på indeks i (in-place, O(n) — flytter resten)" },
+      { left: "lst.remove(x)", right: "Fjern FØRSTE forekomst av x (O(n))" },
+      { left: "lst.pop()", right: "Fjern OG returner siste element (O(1))" },
+      { left: "lst.pop(0)", right: "Fjern OG returner FØRSTE element (O(n) — bruk deque)" },
+      { left: "lst.sort()", right: "Sortér in-place — returnerer None" },
+      { left: "sorted(lst)", right: "Returnerer NY sortert liste — original urørt" },
+    ],
+    explanation:
+      "Klassisk feil: `lst = lst.sort()` setter lst til None! `.sort()` returnerer None og muterer in-place.",
+  },
+  {
+    id: "d-py7-quiz-slice",
+    kind: "quiz",
+    title: "List slicing",
+    prompt: "Velg riktig output.",
+    topic: "Python kap. 7",
+    question: "Hva er `lst[1:4]`?",
+    code: "lst = [10, 20, 30, 40, 50]\nprint(lst[1:4])",
+    language: "python",
+    options: [
+      { text: "[20, 30, 40]", correct: true, rationale: "Slice [a:b] = indeks a..b-1. Start inklusiv, slutt eksklusiv. Indeks 1,2,3 → 20,30,40." },
+      { text: "[10, 20, 30]", correct: false, rationale: "Start er indeks 1 (= 20), ikke 0." },
+      { text: "[20, 30, 40, 50]", correct: false, rationale: "Slutt er eksklusiv — indeks 4 (=50) ekskluderes." },
+      { text: "[20, 30]", correct: false, rationale: "Slice inkluderer indeks 1, 2, 3 — totalt 3 elementer." },
+    ],
+    explanation:
+      "Triks: tenk på indekser som «mellomrom». [a:b] tar elementene mellom posisjon a og b. Lengde alltid = b - a (når innenfor).",
+  },
+  {
+    id: "d-py7-quiz-slice-step",
+    kind: "quiz",
+    title: "Slice med negativt steg",
+    prompt: "Velg riktig output.",
+    topic: "Python kap. 7",
+    question: "Hva er `lst[::-1]`?",
+    code: "lst = [1, 2, 3, 4, 5]\nprint(lst[::-1])",
+    language: "python",
+    options: [
+      { text: "[5, 4, 3, 2, 1]", correct: true, rationale: "Slicing-syntaks [start:stop:step]. Negativt steg går baklengs — `[::-1]` reverserer hele lista." },
+      { text: "[1, 2, 3, 4, 5]", correct: false, rationale: "Det er originalen — ikke reversert." },
+      { text: "[-1, -2, -3, -4, -5]", correct: false, rationale: "Slice endrer ikke tallene." },
+      { text: "[]", correct: false, rationale: "Slicing med [::-1] gir hele lista i revers — ikke tom." },
+    ],
+    explanation:
+      "Idiomatisk: `lst[::-1]` for revers, `s[::-1]` reverser string. Alternativ: `reversed(lst)` (returnerer iterator).",
+  },
+  {
+    id: "d-py7-quiz-list-copy",
+    kind: "quiz",
+    title: "Kopier vs referanse",
+    prompt: "Velg riktig output.",
+    topic: "Python kap. 7",
+    question: "Hva printer dette?",
+    code: "a = [1, 2, 3]\nb = a\nb.append(4)\nprint(a)",
+    language: "python",
+    options: [
+      { text: "[1, 2, 3, 4]", correct: true, rationale: "`b = a` kopierer IKKE — bare lager nytt navn til samme liste. Mutering via b synes via a." },
+      { text: "[1, 2, 3]", correct: false, rationale: "Det ville krevd `b = a.copy()` eller `b = a[:]` eller `b = list(a)`." },
+      { text: "[4]", correct: false, rationale: "append legger til, erstatter ikke." },
+      { text: "TypeError", correct: false, rationale: "Helt gyldig kode — bare ikke det du tror." },
+    ],
+    explanation:
+      "For å lage en KOPI: `b = a.copy()` eller `b = a[:]` eller `b = list(a)`. For dypere kopi (med nestede lister): `import copy; b = copy.deepcopy(a)`.",
+  },
+  {
+    id: "d-py7-fill-comprehension",
+    kind: "fill",
+    title: "List comprehension",
+    prompt: "Lag liste med kvadratene av 0..9.",
+    topic: "Python kap. 7",
+    template: "kvadrater = [x __1__ 2 for x __2__ range(10)]\nprint(kvadrater)  # [0, 1, 4, 9, 16, 25, 36, 49, 64, 81]",
+    blanks: ["**", "in"],
+    options: ["**", "*", "^", "in", "of", "from", "where"],
+    language: "python",
+    explanation:
+      "Syntaks: `[uttrykk for var in iterable]`. Tillegg av filter: `[x for x in lst if x > 0]`. Generelt raskere enn for-løkke med append.",
+  },
+  {
+    id: "d-py7-fill-comprehension-filter",
+    kind: "fill",
+    title: "Comprehension med filter",
+    prompt: "Plukk ut partall fra en liste.",
+    topic: "Python kap. 7",
+    template: "tall = [1, 2, 3, 4, 5, 6]\npartall = [x for x in tall __1__ x __2__ 2 == 0]\nprint(partall)  # [2, 4, 6]",
+    blanks: ["if", "%"],
+    options: ["if", "where", "filter", "%", "/", "//", "**"],
+    language: "python",
+    explanation:
+      "if-leddet kommer SIST. Hvis du vil ha if-else, må else komme FØR for: `[x if x > 0 else 0 for x in lst]`.",
+  },
+  {
+    id: "d-py7-quiz-in-list",
+    kind: "quiz",
+    title: "in på liste — Big-O",
+    prompt: "Velg riktig kompleksitet.",
+    topic: "Python kap. 7",
+    question: "Hva er Big-O for `x in stor_liste`?",
+    options: [
+      { text: "O(n) — må skanne lista lineært", correct: true, rationale: "Lister har ingen hash-struktur — Python må sjekke hvert element til den finner x eller når slutten." },
+      { text: "O(1)", correct: false, rationale: "Det ville krevd en hashtabell (set/dict). Lister er ordnet sekvens." },
+      { text: "O(log n)", correct: false, rationale: "Lister er ikke automatisk sorterte — binærsøk krever sortert input." },
+      { text: "O(n²)", correct: false, rationale: "En enkelt `in`-test er bare ett pass gjennom lista." },
+    ],
+    explanation:
+      "Hvis du gjør gjentatte medlemskaps-tester: konverter til set først (`s = set(lst)`). Det reduserer fra O(n²) til O(n) ved n tester.",
+  },
+  {
+    id: "d-py7-quiz-sort-key",
+    kind: "quiz",
+    title: "Sortér med key",
+    prompt: "Velg riktig output.",
+    topic: "Python kap. 7",
+    question: "Hva printer dette?",
+    code: "ord = [\"banan\", \"å\", \"epler\"]\nord.sort(key=len)\nprint(ord)",
+    language: "python",
+    options: [
+      { text: "['å', 'epler', 'banan']", correct: true, rationale: "key=len sorterer etter lengde, ikke alfabetisk. å=1, epler=5, banan=5. Stabil sortering beholder rekkefølge ved like nøkler." },
+      { text: "['banan', 'epler', 'å']", correct: false, rationale: "Det er omvendt — bruk reverse=True." },
+      { text: "['banan', 'å', 'epler']", correct: false, rationale: "Det er originalen, usortert." },
+      { text: "['å', 'banan', 'epler']", correct: false, rationale: "epler og banan har samme lengde — stabil sortering beholder original rekkefølge." },
+    ],
+    explanation:
+      "`key=func` brukes på hvert element før sammenligning. Vanlige eksempler: `key=str.lower`, `key=lambda x: x[1]`, `key=len`.",
+  },
+  {
+    id: "d-py7-fill-enumerate",
+    kind: "fill",
+    title: "enumerate — indeks + verdi",
+    prompt: "Print indeks og element side om side.",
+    topic: "Python kap. 7",
+    template:
+      "frukt = [\"eple\", \"banan\", \"kiwi\"]\nfor __1__, navn in __2__(frukt):\n    print(i, navn)",
+    blanks: ["i", "enumerate"],
+    options: ["i", "x", "frukt", "len", "range", "enumerate", "zip", "iter"],
+    language: "python",
+    explanation:
+      "`enumerate(it)` returnerer (indeks, verdi) for hvert element. Pythonsk måte å unngå manuell indeks. Default start=0, kan overstyres: `enumerate(lst, start=1)`.",
+  },
+
+  // ============= PYTHON KAP. 8 — Multidimensjonale lister =============
+
+  {
+    id: "d-py8-fill-2d-create",
+    kind: "fill",
+    title: "Lag en 2D-liste (rader × kolonner)",
+    prompt: "Lag en 3×4 matrise fylt med nuller.",
+    topic: "Python kap. 8",
+    template:
+      "matrise = [[0 __1__ __2__ in range(4)] __1__ __3__ in range(3)]\nprint(matrise)",
+    blanks: ["for", "j", "i"],
+    options: ["for", "in", "i", "j", "x", "_", "range"],
+    language: "python",
+    explanation:
+      "FELLE: `[[0]*4] * 3` lager 3 referanser til SAMME indre liste — endrer du én, endres alle! Bruk nested comprehension som her.",
+  },
+  {
+    id: "d-py8-quiz-shared-ref-trap",
+    kind: "quiz",
+    title: "Den klassiske 2D-fellen",
+    prompt: "Velg riktig output.",
+    topic: "Python kap. 8",
+    question: "Hva printer dette?",
+    code: "m = [[0] * 3] * 3\nm[0][0] = 9\nprint(m)",
+    language: "python",
+    options: [
+      { text: "[[9, 0, 0], [9, 0, 0], [9, 0, 0]]", correct: true, rationale: "`* 3` lager 3 REFERANSER til samme indre liste. Endrer du én rad, endres alle." },
+      { text: "[[9, 0, 0], [0, 0, 0], [0, 0, 0]]", correct: false, rationale: "Det ville krevd at hver rad var sin egen liste — bruk comprehension." },
+      { text: "[9, 0, 0]", correct: false, rationale: "m er en 3×3-matrise, ikke en flat liste." },
+      { text: "TypeError", correct: false, rationale: "Gyldig kode — bare med subtil bug." },
+    ],
+    explanation:
+      "FIX: `m = [[0]*3 for _ in range(3)]`. Comprehension lager NY indre liste hver gang. `*` på en liste med mutables er nesten alltid feil.",
+  },
+  {
+    id: "d-py8-fill-iterate-2d",
+    kind: "fill",
+    title: "Itererer over alle celler",
+    prompt: "Print alle elementer i en 2D-liste.",
+    topic: "Python kap. 8",
+    template:
+      "m = [[1, 2, 3], [4, 5, 6]]\nfor __1__ in m:\n    for __2__ in __1__:\n        print(verdi, end=\" \")",
+    blanks: ["rad", "verdi"],
+    options: ["rad", "verdi", "i", "j", "x", "m", "row"],
+    language: "python",
+    explanation:
+      "Vær konsistent: ytre løkke = rad, indre = celle i rad. For (indeks_rad, indeks_kol): `for i, rad in enumerate(m): for j, v in enumerate(rad):`.",
+  },
+  {
+    id: "d-py8-quiz-transpose",
+    kind: "quiz",
+    title: "Matrise-transponering",
+    prompt: "Velg riktig uttrykk.",
+    topic: "Python kap. 8",
+    question: "Hvordan transponere matrise m (rader↔kolonner) med list comprehension?",
+    options: [
+      { text: "[[m[i][j] for i in range(len(m))] for j in range(len(m[0]))]", correct: true, rationale: "Bytt om i og j. Ytre løkke over j (gamle kolonner = nye rader), indre over i." },
+      { text: "[[m[j][i] for i in range(len(m))] for j in range(len(m[0]))]", correct: false, rationale: "Indeksene er feil — m[j][i] med j som rad og i som kol gir originalen, ikke transponert." },
+      { text: "list(zip(*m))", correct: false, rationale: "Det FUNGERER også (returnerer tuples), men spørsmålet er om comprehension-formen." },
+      { text: "m[::-1]", correct: false, rationale: "Det reverserer rad-rekkefølgen, ikke transponerer." },
+    ],
+    explanation:
+      "Idiomatisk alternativ: `list(zip(*m))` (returnerer tuples). For NumPy: `np.transpose(m)` eller `m.T`.",
+  },
+  {
+    id: "d-py8-quiz-row-vs-col",
+    kind: "quiz",
+    title: "rader vs kolonner",
+    prompt: "Velg riktig svar.",
+    topic: "Python kap. 8",
+    question: "Hvis `m = [[1, 2, 3], [4, 5, 6]]`, hva er `m[1][2]`?",
+    code: "m = [[1, 2, 3], [4, 5, 6]]\nprint(m[1][2])",
+    language: "python",
+    options: [
+      { text: "6", correct: true, rationale: "m[1] er andre rad: [4, 5, 6]. m[1][2] er tredje element der: 6." },
+      { text: "3", correct: false, rationale: "Det ville vært m[0][2]." },
+      { text: "5", correct: false, rationale: "Det er m[1][1]." },
+      { text: "IndexError", correct: false, rationale: "Indeksene er innenfor rekkevidde." },
+    ],
+    explanation:
+      "Konvensjon: `m[rad][kol]`. Rad først, kolonne etterpå. Antall rader = `len(m)`, antall kolonner = `len(m[0])`.",
+  },
+  {
+    id: "d-py8-fill-row-sum",
+    kind: "fill",
+    title: "Sum av hver rad",
+    prompt: "Returner en liste med summen per rad.",
+    topic: "Python kap. 8",
+    template:
+      "m = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]\nrad_summer = [__1__(rad) __2__ rad in m]\nprint(rad_summer)  # [6, 15, 24]",
+    blanks: ["sum", "for"],
+    options: ["sum", "len", "max", "min", "for", "in", "if"],
+    language: "python",
+    explanation:
+      "Comprehension over ytre liste, applisér `sum()` på hver indre. For kolonne-sum: `[sum(rad[i] for rad in m) for i in range(len(m[0]))]`.",
+  },
+
+  // ============= PYTHON KAP. 9 — Objekter og klasser =============
+
+  {
+    id: "d-py9-fill-class-init",
+    kind: "fill",
+    title: "Klasse med __init__",
+    prompt: "Fyll inn for en Punkt-klasse.",
+    topic: "Python kap. 9",
+    template:
+      "class Punkt:\n    def __init__(__1__, x, y):\n        __1__.x = x\n        __1__.y = y\n\np = Punkt(3, 4)\nprint(p.x, p.y)  # 3 4",
+    blanks: ["self"],
+    options: ["self", "this", "cls", "obj", "klasse", "x"],
+    language: "python",
+    explanation:
+      "`self` er konvensjonen for første parameter — IKKE et reservert ord. Python sender automatisk objektet inn som første arg.",
+  },
+  {
+    id: "d-py9-quiz-self-explicit",
+    kind: "quiz",
+    title: "Hvorfor 'self' eksplisitt?",
+    prompt: "Velg riktig svar.",
+    topic: "Python kap. 9",
+    question: "Hvorfor må Python-metoder ta `self` som første parameter?",
+    options: [
+      { text: "For å gi metoden tilgang til instansen sine attributter", correct: true, rationale: "Uten self vet ikke metoden HVILKEN instans den jobber på. `p.metode()` blir egentlig `Klasse.metode(p)`." },
+      { text: "Det er et reservert nøkkelord", correct: false, rationale: "Konvensjon, ikke reservert. Du KAN kalle den `this` — men ikke gjør det." },
+      { text: "Det er gammel kode-stil — moderne Python trenger det ikke", correct: false, rationale: "Det er fortsatt standard i Python 3." },
+      { text: "Bare for __init__, ikke andre metoder", correct: false, rationale: "ALLE instans-metoder må ta self som første parameter." },
+    ],
+    explanation:
+      "«Explicit is better than implicit» — Python-design. Andre språk skjuler det (Java/C++ har implicit `this`).",
+  },
+  {
+    id: "d-py9-fill-method",
+    kind: "fill",
+    title: "Instansmetode",
+    prompt: "Legg til en metode som beregner avstand fra origo.",
+    topic: "Python kap. 9",
+    template:
+      "import math\n\nclass Punkt:\n    def __init__(self, x, y):\n        self.x = x\n        self.y = y\n    \n    def avstand_fra_origo(__1__):\n        return math.sqrt(__1__.x ** 2 + __1__.y ** 2)\n\np = Punkt(3, 4)\nprint(p.avstand_fra_origo())  # 5.0",
+    blanks: ["self"],
+    options: ["self", "this", "cls", "p", "x"],
+    language: "python",
+    explanation:
+      "Alle instansmetoder må ta self som første parameter. Kalles som `p.avstand_fra_origo()` — Python sender p inn som self.",
+  },
+  {
+    id: "d-py9-quiz-class-vs-instance-attr",
+    kind: "quiz",
+    title: "Klassevariabel vs instansvariabel",
+    prompt: "Velg riktig output.",
+    topic: "Python kap. 9",
+    question: "Hva printer dette?",
+    code: "class Bil:\n    antall_hjul = 4\n    def __init__(self, merke):\n        self.merke = merke\n\na = Bil(\"Volvo\")\nb = Bil(\"Toyota\")\nprint(a.antall_hjul, b.antall_hjul)",
+    language: "python",
+    options: [
+      { text: "4 4", correct: true, rationale: "`antall_hjul` er en klassevariabel — delt mellom ALLE instanser. `merke` er instansvariabel (forskjellig per objekt)." },
+      { text: "Volvo Toyota", correct: false, rationale: "Det ville vært `a.merke, b.merke`." },
+      { text: "AttributeError", correct: false, rationale: "Klassevariabler er tilgjengelige via instans." },
+      { text: "None None", correct: false, rationale: "Klassevariabler har faktiske verdier." },
+    ],
+    explanation:
+      "Klassevariabel = definert i klasse-blokken, delt av alle. Instans = `self.x = ...` i __init__, unik per objekt. Klassisk feil: mutable klassevariabel (`liste = []`) deles utilsiktet.",
+  },
+  {
+    id: "d-py9-quiz-str-method",
+    kind: "quiz",
+    title: "__str__ — printbar representasjon",
+    prompt: "Velg riktig output.",
+    topic: "Python kap. 9",
+    question: "Hva printer dette?",
+    code: "class Punkt:\n    def __init__(self, x, y):\n        self.x = x\n        self.y = y\n    def __str__(self):\n        return f\"({self.x}, {self.y})\"\n\nprint(Punkt(3, 4))",
+    language: "python",
+    options: [
+      { text: "(3, 4)", correct: true, rationale: "`print(obj)` kaller `__str__()` automatisk. Uten den får du noe som `<__main__.Punkt object at 0x...>`." },
+      { text: "<Punkt object at 0x...>", correct: false, rationale: "Det er default uten __str__. Her er den definert." },
+      { text: "Punkt(3, 4)", correct: false, rationale: "Det er hva __repr__ typisk gir — for utviklere." },
+      { text: "3 4", correct: false, rationale: "Ikke matchet f-string." },
+    ],
+    explanation:
+      "Dunder-metoder: __str__ for brukervennlig, __repr__ for utvikler (debug), __eq__ for ==, __len__ for len(), __add__ for +.",
+  },
+  {
+    id: "d-py9-match-encapsulation",
+    kind: "match",
+    title: "Innkapsling — navnekonvensjoner",
+    prompt: "Match prefiks til betydning.",
+    topic: "Python kap. 9",
+    pairs: [
+      { left: "self.navn", right: "Offentlig — ment til ekstern bruk" },
+      { left: "self._navn", right: "Internt — konvensjon for «private», men teknisk tilgjengelig" },
+      { left: "self.__navn", right: "Name mangling — Python bytter til _Klasse__navn for å hindre overskriving" },
+      { left: "self.__navn__", right: "Dunder — reservert for Pythons eget bruk (magic methods)" },
+    ],
+    explanation:
+      "Python har INGEN ekte private. _x er æressak («ikke rør»). __x er name-mangled (ikke ekte privat). __x__ er reservert.",
+  },
+  {
+    id: "d-py9-quiz-equality",
+    kind: "quiz",
+    title: "Likhet på objekter",
+    prompt: "Velg riktig output.",
+    topic: "Python kap. 9",
+    question: "Hva printer dette (uten __eq__ implementert)?",
+    code: "class P:\n    def __init__(self, x):\n        self.x = x\n\nprint(P(5) == P(5))",
+    language: "python",
+    options: [
+      { text: "False — uten __eq__ sammenligner Python objekt-identitet (samme adresse)", correct: true, rationale: "To nyopprettede objekter har forskjellig minneadresse, så de er IKKE «samme» selv om de har samme attributter." },
+      { text: "True — Python sammenligner attributter automatisk", correct: false, rationale: "Du må definere __eq__ for det. Klassisk forventnings-vs-virkelighet-felle." },
+      { text: "TypeError", correct: false, rationale: "== er alltid lov på objekter — bare default-implementasjonen er identitet." },
+      { text: "None", correct: false, rationale: "== returnerer alltid bool." },
+    ],
+    explanation:
+      "For å sammenligne på innhold: implementer `__eq__(self, other)` som returnerer `self.x == other.x`. Husk `__hash__` hvis objektet skal i set/dict.",
+  },
+  {
+    id: "d-py9-fill-property",
+    kind: "fill",
+    title: "@property — getter",
+    prompt: "Fyll inn for et beregnet attributt.",
+    topic: "Python kap. 9",
+    template:
+      "class Sirkel:\n    def __init__(self, r):\n        self.r = r\n    \n    @__1__\n    def areal(__2__):\n        return 3.14 * __2__.r ** 2\n\nc = Sirkel(2)\nprint(c.areal)  # 12.56 — kalles UTEN ()",
+    blanks: ["property", "self"],
+    options: ["property", "staticmethod", "classmethod", "self", "this", "cls"],
+    language: "python",
+    explanation:
+      "@property lar deg lese metoden som om det var et attributt — uten paranteser. Nyttig for beregnede verdier. Kombiner med @ x.setter for skriving.",
+  },
+
+  // ============= PYTHON KAP. 12 — Arv og polymorfisme =============
+
+  {
+    id: "d-py12-fill-inheritance",
+    kind: "fill",
+    title: "Arv — utvid en klasse",
+    prompt: "La Hund arve fra Dyr.",
+    topic: "Python kap. 12",
+    template:
+      "class Dyr:\n    def __init__(self, navn):\n        self.navn = navn\n    def lyd(self):\n        return \"...\"\n\nclass Hund__1__:\n    def lyd(__2__):\n        return \"voff\"\n\nh = Hund(\"Rex\")\nprint(h.navn, h.lyd())  # Rex voff",
+    blanks: ["(Dyr)", "self"],
+    options: ["(Dyr)", "(Dyr.__init__)", "extends Dyr", ": Dyr", "self", "this", "cls"],
+    language: "python",
+    explanation:
+      "Syntaks: `class Sub(Super):`. Sub arver alle metoder og attributter. Overriding: bare definer på nytt i sub.",
+  },
+  {
+    id: "d-py12-quiz-super",
+    kind: "quiz",
+    title: "super() — kall superklassens __init__",
+    prompt: "Velg riktig output.",
+    topic: "Python kap. 12",
+    question: "Hva printer dette?",
+    code: "class Dyr:\n    def __init__(self, navn):\n        self.navn = navn\n\nclass Hund(Dyr):\n    def __init__(self, navn, rase):\n        super().__init__(navn)\n        self.rase = rase\n\nh = Hund(\"Rex\", \"Labrador\")\nprint(h.navn, h.rase)",
+    language: "python",
+    options: [
+      { text: "Rex Labrador", correct: true, rationale: "super().__init__(navn) kjører Dyr.__init__ som setter self.navn. Så setter Hund.__init__ self.rase." },
+      { text: "None Labrador", correct: false, rationale: "super().__init__ KJØRER faktisk — det er ikke en no-op." },
+      { text: "AttributeError", correct: false, rationale: "Begge attributter blir riktig satt." },
+      { text: "Rex Rex", correct: false, rationale: "rase settes til \"Labrador\", ikke navn." },
+    ],
+    explanation:
+      "Alltid kall super().__init__() i subklasse-init hvis superklasse har viktige init-handlinger. Ellers ender du opp uten basis-attributter.",
+  },
+  {
+    id: "d-py12-quiz-isinstance",
+    kind: "quiz",
+    title: "isinstance vs type",
+    prompt: "Velg riktig output.",
+    topic: "Python kap. 12",
+    question: "Hva printer dette?",
+    code: "class A: pass\nclass B(A): pass\n\nb = B()\nprint(isinstance(b, A), type(b) == A)",
+    language: "python",
+    options: [
+      { text: "True False", correct: true, rationale: "isinstance() tar arv i betraktning — b ER en A (via B). type() == sjekker eksakt type — b er B, ikke A." },
+      { text: "True True", correct: false, rationale: "type() er strikt — vurderer ikke arv." },
+      { text: "False False", correct: false, rationale: "isinstance regner med arv: B er subklasse av A." },
+      { text: "False True", correct: false, rationale: "Motsatt — isinstance er den «smarte», type er den strenge." },
+    ],
+    explanation:
+      "Bruk `isinstance(x, T)` for polymorfisme-vennlig typesjekk. `type(x) == T` er sjelden riktig — bryter arv.",
+  },
+  {
+    id: "d-py12-quiz-polymorphism",
+    kind: "quiz",
+    title: "Polymorfisme",
+    prompt: "Velg riktig output.",
+    topic: "Python kap. 12",
+    question: "Hva printer denne løkken?",
+    code: "class Dyr:\n    def lyd(self):\n        return \"...\"\n\nclass Hund(Dyr):\n    def lyd(self):\n        return \"voff\"\n\nclass Katt(Dyr):\n    def lyd(self):\n        return \"mjau\"\n\nfor d in [Hund(), Katt(), Dyr()]:\n    print(d.lyd(), end=\" \")",
+    language: "python",
+    options: [
+      { text: "voff mjau ...", correct: true, rationale: "Hver instans bruker SIN egen lyd()-metode. Hund overrider, Katt overrider, Dyr beholder default. Polymorfisme i praksis." },
+      { text: "... ... ...", correct: false, rationale: "Det ville krevd at alle brukte basisklassens lyd(). Override betyr at sub erstatter." },
+      { text: "voff voff voff", correct: false, rationale: "Hver klasse har sin egen metode." },
+      { text: "TypeError", correct: false, rationale: "Helt gyldig — det er hele poenget med polymorfisme." },
+    ],
+    explanation:
+      "Polymorfisme: samme grensesnitt (`d.lyd()`), ulik implementasjon. Klient-koden bryr seg ikke om eksakt type — bare at metoden finnes.",
+  },
+  {
+    id: "d-py12-match-dunder",
+    kind: "match",
+    title: "Magic methods (dunder)",
+    prompt: "Match dunder til hva den styrer.",
+    topic: "Python kap. 12",
+    pairs: [
+      { left: "__init__", right: "Konstruktør — kalles når objekt opprettes" },
+      { left: "__str__", right: "Brukervennlig string — kalles av print() og str()" },
+      { left: "__repr__", right: "Utvikler-string — kalles i REPL og av repr()" },
+      { left: "__eq__", right: "Bestemmer hva == returnerer" },
+      { left: "__len__", right: "Bestemmer hva len() returnerer" },
+      { left: "__add__", right: "Bestemmer hva + gjør" },
+      { left: "__getitem__", right: "Bestemmer hva obj[k] gjør (indeksering)" },
+    ],
+    explanation:
+      "Dunder = «double underscore». Lar deg gi egne klasser samme syntaks som innebygde typer — Pythons versjon av operator overloading.",
+  },
+  {
+    id: "d-py12-quiz-override-call-super",
+    kind: "quiz",
+    title: "Override som utvider basis",
+    prompt: "Velg riktig output.",
+    topic: "Python kap. 12",
+    question: "Hva printer dette?",
+    code: "class A:\n    def hilsen(self):\n        return \"Hei fra A\"\n\nclass B(A):\n    def hilsen(self):\n        return super().hilsen() + \" og B\"\n\nprint(B().hilsen())",
+    language: "python",
+    options: [
+      { text: "Hei fra A og B", correct: true, rationale: "super().hilsen() kaller A sin versjon, så legger B til sitt eget tillegg. Klassisk «utvid, ikke erstatt»-mønster." },
+      { text: "Hei fra A", correct: false, rationale: "B har sin egen hilsen()." },
+      { text: "Hei fra B", correct: false, rationale: "Sjekk linje for linje — B bygger på A sin output." },
+      { text: "RecursionError", correct: false, rationale: "super() peker oppover til A, ikke tilbake til B." },
+    ],
+    explanation:
+      "Common pattern: subklasse vil ofte UTVIDE (ikke bytte ut) basis. Kalle super().metode() henter forelderens versjon.",
+  },
+
+  // ============= PYTHON KAP. 13 — Filer og exception handling =============
+
+  {
+    id: "d-py13-fill-read-file",
+    kind: "fill",
+    title: "Les fil med 'with'",
+    prompt: "Les hele filen som én streng.",
+    topic: "Python kap. 13",
+    template:
+      "__1__ open(\"data.txt\", \"__2__\") __3__ f:\n    innhold = f.read()\nprint(innhold)",
+    blanks: ["with", "r", "as"],
+    options: ["with", "open", "using", "r", "w", "rb", "as", "into", "to"],
+    language: "python",
+    explanation:
+      "`with` lukker filen automatisk — selv ved exception. Modus: 'r' lese, 'w' skrive (overskriver), 'a' append, 'rb' binær.",
+  },
+  {
+    id: "d-py13-match-file-modes",
+    kind: "match",
+    title: "Filmoder",
+    prompt: "Match modus til atferd.",
+    topic: "Python kap. 13",
+    pairs: [
+      { left: "\"r\"", right: "Les (default) — feiler hvis filen ikke finnes" },
+      { left: "\"w\"", right: "Skriv — OVERSKRIVER hvis filen finnes, lager hvis ikke" },
+      { left: "\"a\"", right: "Append — legg til på slutten, behold eksisterende" },
+      { left: "\"x\"", right: "Eksklusiv create — feiler hvis filen allerede finnes" },
+      { left: "\"rb\"", right: "Binær lesing — for bilder, pdf, andre ikke-tekst" },
+      { left: "\"r+\"", right: "Lese OG skrive — fil må eksistere" },
+    ],
+    explanation:
+      "Vanlig felle: åpne med \"w\" når du ville hatt \"a\" — wipes out hele innholdet. Sjekk modus før test-kjøring.",
+  },
+  {
+    id: "d-py13-fill-try-except",
+    kind: "fill",
+    title: "try/except — fang feil",
+    prompt: "Fyll inn for å håndtere divisjon med null.",
+    topic: "Python kap. 13",
+    template:
+      "__1__:\n    x = int(input(\"Tall? \"))\n    print(10 / x)\n__2__ ZeroDivisionError:\n    print(\"Kan ikke dele på null\")\n__2__ ValueError:\n    print(\"Skriv et tall, ikke tekst\")",
+    blanks: ["try", "except"],
+    options: ["try", "except", "catch", "throw", "raise", "finally"],
+    language: "python",
+    explanation:
+      "Mønster: try fanger, except matcher én eksepsjon-type. Spesifikke unntak FØR generelle. `except:` uten type fanger ALT (inkl. KeyboardInterrupt) — unngå.",
+  },
+  {
+    id: "d-py13-match-error-types",
+    kind: "match",
+    title: "Vanlige Python-unntak",
+    prompt: "Match unntak til typisk årsak.",
+    topic: "Python kap. 13",
+    pairs: [
+      { left: "ZeroDivisionError", right: "x / 0" },
+      { left: "ValueError", right: "int(\"abc\") — gyldig type, ugyldig verdi" },
+      { left: "TypeError", right: "\"a\" + 1 — feil type" },
+      { left: "IndexError", right: "lst[100] når len(lst) = 5" },
+      { left: "KeyError", right: "dct[\"finnes_ikke\"]" },
+      { left: "FileNotFoundError", right: "open(\"finnes_ikke.txt\")" },
+      { left: "AttributeError", right: "obj.metode_som_ikke_finnes()" },
+    ],
+    explanation:
+      "Fang spesifikke unntak — ikke `except:`. Hvis du må fange alt: `except Exception as e:` (utelater KeyboardInterrupt, SystemExit).",
+  },
+  {
+    id: "d-py13-quiz-try-finally",
+    kind: "quiz",
+    title: "try/finally — kjører finally alltid?",
+    prompt: "Velg riktig output.",
+    topic: "Python kap. 13",
+    question: "Hva printer dette?",
+    code: "try:\n    print(\"A\")\n    raise ValueError(\"oops\")\n    print(\"B\")\nexcept ValueError:\n    print(\"C\")\nfinally:\n    print(\"D\")",
+    language: "python",
+    options: [
+      { text: "A C D", correct: true, rationale: "A printes, raise hopper til except → C, finally kjører UANSETT → D. B printes aldri." },
+      { text: "A B C D", correct: false, rationale: "B printes ikke — raise hopper over." },
+      { text: "A D", correct: false, rationale: "except matcher ValueError → C printes også." },
+      { text: "C D", correct: false, rationale: "A printes før raise." },
+    ],
+    explanation:
+      "finally kjører ALLTID — uansett om try ble ferdig, raised, eller returnerte. Brukes til opprydding (lukke fil, frigjøre lås). `with` er ofte bedre.",
+  },
+  {
+    id: "d-py13-fill-raise",
+    kind: "fill",
+    title: "raise — kast eget unntak",
+    prompt: "Kast ValueError hvis input er negativ.",
+    topic: "Python kap. 13",
+    template:
+      "def kvadrat_av_positiv(x):\n    if x < 0:\n        __1__ ValueError(\"x må være ikke-negativ\")\n    return x ** 0.5\n\nprint(kvadrat_av_positiv(-4))",
+    blanks: ["raise"],
+    options: ["raise", "throw", "return", "yield", "error", "panic"],
+    language: "python",
+    explanation:
+      "`raise <Exception>(<melding>)`. Velg riktig exception-klasse: ValueError for ugyldig verdi, TypeError for feil type, custom for domenefeil.",
+  },
+  {
+    id: "d-py13-fill-custom-exception",
+    kind: "fill",
+    title: "Egen exception-klasse",
+    prompt: "Lag en exception for en bankkonto.",
+    topic: "Python kap. 13",
+    template:
+      "class IkkeNokSaldo(__1__):\n    pass\n\nclass Konto:\n    def __init__(self, saldo):\n        self.saldo = saldo\n    def ta_ut(self, belop):\n        if belop > self.saldo:\n            __2__ IkkeNokSaldo(f\"Mangler {belop - self.saldo}\")\n        self.saldo -= belop",
+    blanks: ["Exception", "raise"],
+    options: ["Exception", "Error", "BaseException", "raise", "throw", "return"],
+    language: "python",
+    explanation:
+      "Arv fra Exception (ikke BaseException — den fanger KeyboardInterrupt og lignende). Custom exceptions gir domene-spesifikk feilhåndtering.",
+  },
+
+  // ============= PYTHON KAP. 14 — Tuples, sets, dictionaries =============
+
+  {
+    id: "d-py14-quiz-tuple-immut",
+    kind: "quiz",
+    title: "Tupler er uforanderlige",
+    prompt: "Velg riktig output.",
+    topic: "Python kap. 14",
+    question: "Hva skjer?",
+    code: "t = (1, 2, 3)\nt[0] = 99\nprint(t)",
+    language: "python",
+    options: [
+      { text: "TypeError — tuples er immutable", correct: true, rationale: "Tupler kan IKKE endres etter opprettelse. Bruk liste hvis du trenger mutering." },
+      { text: "(99, 2, 3)", correct: false, rationale: "Tupler er ikke som lister — du kan ikke skrive til indeks." },
+      { text: "(1, 2, 3)", correct: false, rationale: "Tilordningen krasjer FØR print, så vi ser TypeError ikke print." },
+      { text: "[99, 2, 3]", correct: false, rationale: "Det ville vært liste-syntaks. t er tuple — uansett." },
+    ],
+    explanation:
+      "Tupler = uforanderlige sekvenser. Brukes som dict-keys (hashbare), return av flere verdier, faste records. Liste når du trenger mutering.",
+  },
+  {
+    id: "d-py14-match-set-ops",
+    kind: "match",
+    title: "Mengde-operasjoner (sets)",
+    prompt: "Match operator til mengdeoperasjon.",
+    topic: "Python kap. 14",
+    pairs: [
+      { left: "a | b", right: "Union — elementer i a eller b (eller begge)" },
+      { left: "a & b", right: "Snitt — elementer som er i BÅDE a og b" },
+      { left: "a - b", right: "Differanse — i a men IKKE i b" },
+      { left: "a ^ b", right: "Symmetrisk differanse — i a eller b, men ikke begge" },
+      { left: "a <= b", right: "Delmengde — er alle elementer i a også i b?" },
+      { left: "x in a", right: "Medlemskap — er x i a? (O(1) snitt)" },
+    ],
+    explanation:
+      "Sets bruker hash → medlemskap er O(1) snitt. Praktisk for å fjerne duplikater: `set(lst)`. Setter er UORDNET — bruk list hvis rekkefølgen betyr noe.",
+  },
+  {
+    id: "d-py14-quiz-dict-access",
+    kind: "quiz",
+    title: "Dict — tilgang og default",
+    prompt: "Velg riktig output.",
+    topic: "Python kap. 14",
+    question: "Hva skjer ved oppslag på en nøkkel som ikke finnes?",
+    code: "d = {\"a\": 1, \"b\": 2}\nprint(d[\"c\"])",
+    language: "python",
+    options: [
+      { text: "KeyError — nøkkelen finnes ikke", correct: true, rationale: "Direkte indeks-tilgang krasjer ved manglende nøkkel. Bruk `.get(\"c\", default)` for å unngå." },
+      { text: "None", correct: false, rationale: "`d.get(\"c\")` gir None. `d[\"c\"]` krasjer." },
+      { text: "0", correct: false, rationale: "Ingen automatisk default. Hvis du vil ha det: `defaultdict(int)`." },
+      { text: "False", correct: false, rationale: "Ikke et bool — ingen tilbakefallsverdi." },
+    ],
+    explanation:
+      "Tre alternativer: (1) `d[\"c\"]` — krasjer, (2) `d.get(\"c\")` → None, (3) `d.get(\"c\", 0)` → 0. Velg ut fra om manglende nøkkel er en feil eller forventet.",
+  },
+  {
+    id: "d-py14-fill-dict-comp",
+    kind: "fill",
+    title: "Dict comprehension",
+    prompt: "Lag dict {0:0, 1:1, 2:4, 3:9, ...} for 0..9.",
+    topic: "Python kap. 14",
+    template: "kvadrater = {x: x __1__ 2 __2__ x in range(10)}\nprint(kvadrater[5])  # 25",
+    blanks: ["**", "for"],
+    options: ["**", "*", "^", "for", "in", "if"],
+    language: "python",
+    explanation:
+      "Dict comprehension: `{key_uttrykk: value_uttrykk for var in iterable}`. Sett comprehension: bare `{x for x ...}` (uten kolon).",
+  },
+  {
+    id: "d-py14-quiz-dict-iter",
+    kind: "quiz",
+    title: "Itererer over en dict",
+    prompt: "Velg riktig output.",
+    topic: "Python kap. 14",
+    question: "Hva printer dette?",
+    code: "d = {\"a\": 1, \"b\": 2}\nfor k in d:\n    print(k, end=\" \")",
+    language: "python",
+    options: [
+      { text: "a b", correct: true, rationale: "Iterere over dict gir NØKLENE som default. Bruk `.items()` for (nøkkel, verdi)-par." },
+      { text: "1 2", correct: false, rationale: "Det ville krevd `.values()`." },
+      { text: "('a', 1) ('b', 2)", correct: false, rationale: "Det krever `.items()`." },
+      { text: "a 1 b 2", correct: false, rationale: "Default iter gir bare nøkler, ikke verdier også." },
+    ],
+    explanation:
+      "Tre måter: `for k in d` (nøkler), `for v in d.values()`, `for k, v in d.items()`. Bruk den siste når du trenger begge.",
+  },
+  {
+    id: "d-py14-fill-counter",
+    kind: "fill",
+    title: "Tellemønster med dict",
+    prompt: "Tell forekomst av hvert tegn.",
+    topic: "Python kap. 14",
+    template:
+      "telling = {}\nfor c in \"banana\":\n    telling[c] = telling.__1__(c, __2__) + 1\nprint(telling)  # {'b': 1, 'a': 3, 'n': 2}",
+    blanks: ["get", "0"],
+    options: ["get", "find", "pop", "0", "1", "None"],
+    language: "python",
+    explanation:
+      "`.get(k, 0)` returnerer 0 hvis nøkkelen mangler — perfekt for inkrementering. Alternativ: `from collections import Counter; Counter(\"banana\")`.",
+  },
+  {
+    id: "d-py14-quiz-tuple-unpack",
+    kind: "quiz",
+    title: "Tuple-unpacking",
+    prompt: "Velg riktig output.",
+    topic: "Python kap. 14",
+    question: "Hva printer dette?",
+    code: "def min_max(lst):\n    return min(lst), max(lst)\n\nmn, mx = min_max([3, 1, 4, 1, 5, 9])\nprint(mn, mx)",
+    language: "python",
+    options: [
+      { text: "1 9", correct: true, rationale: "Funksjonen returnerer tuple (1, 9). Tuple-unpacking deler ut i to variabler." },
+      { text: "(1, 9)", correct: false, rationale: "Det ville vært om vi printet hele resultatet — men vi printer separate variabler." },
+      { text: "TypeError", correct: false, rationale: "Helt gyldig Python — vanlig mønster for «returner flere verdier»." },
+      { text: "[1, 9]", correct: false, rationale: "Det er liste-syntaks — funksjonen returnerer tuple." },
+    ],
+    explanation:
+      "Tuple-unpacking er hvordan «flere returverdier» fungerer i Python. Egentlig én tuple, deretter unpacking. Også for swap: `a, b = b, a`.",
+  },
+
+  // ============= PYTHON KAP. 19 — Binære søketrær (BST) =============
+
+  {
+    id: "d-py19-quiz-bst-property",
+    kind: "quiz",
+    title: "BST-invarianten",
+    prompt: "Velg riktig regel.",
+    topic: "Python kap. 19",
+    question: "Hva er BST-invarianten for en node n?",
+    options: [
+      { text: "Alle nøkler i venstre undertre < n.key, og alle nøkler i høyre undertre > n.key", correct: true, rationale: "Klassisk BST-regel. Gjelder REKURSIVT — ikke bare for direkte barn." },
+      { text: "Venstre barn < n.key < høyre barn (bare direkte barn teller)", correct: false, rationale: "Det er BST som tre med dyp 2. Hele undertreet må respektere regelen rekursivt." },
+      { text: "Alle nivåer har samme antall noder", correct: false, rationale: "Det er en komplett binær tre, ikke BST. BST kan være ubalansert." },
+      { text: "Roten er minste verdi", correct: false, rationale: "Minste verdi finnes lengst til VENSTRE (følg .left ned). Roten er bare … roten." },
+    ],
+    explanation:
+      "In-order traversering av BST gir sortert rekkefølge — det er BSTs «hovedtriks». Brukes ofte til å verifisere at et tre faktisk er en BST.",
+  },
+  {
+    id: "d-py19-fill-bst-search",
+    kind: "fill",
+    title: "BST-søk (rekursiv)",
+    prompt: "Fyll inn for å søke etter target.",
+    topic: "Python kap. 19",
+    template:
+      "def søk(node, mål):\n    if node is None:\n        return False\n    if mål == node.key:\n        return True\n    if mål < node.key:\n        return søk(node.__1__, mål)\n    return søk(node.__2__, mål)",
+    blanks: ["left", "right"],
+    options: ["left", "right", "parent", "next", "child"],
+    language: "python",
+    explanation:
+      "Hvert sprang halverer (ideelt) søkeområdet → O(log n) for balansert BST. Ubalansert BST kan degenerere til O(n) (kjede).",
+  },
+  {
+    id: "d-py19-match-traversal",
+    kind: "match",
+    title: "Tre-traverseringer",
+    prompt: "Match traversering til rekkefølge.",
+    topic: "Python kap. 19",
+    pairs: [
+      { left: "In-order (LNR)", right: "Venstre, node, høyre — gir SORTERT rekkefølge i BST" },
+      { left: "Pre-order (NLR)", right: "Node, venstre, høyre — egnet for å lage kopi av treet" },
+      { left: "Post-order (LRN)", right: "Venstre, høyre, node — egnet for å slette treet" },
+      { left: "Level-order / BFS", right: "Nivå for nivå (bredde først) — krever kø, ikke rekursjon" },
+    ],
+    explanation:
+      "DFS-variantene (in/pre/post) bruker rekursjon eller stack. BFS bruker kø. Velg ut fra problem: trenger du sortert? in-order. Hele nivåer? BFS.",
+  },
+  {
+    id: "d-py19-quiz-traversal-output",
+    kind: "quiz",
+    title: "In-order av lite BST",
+    prompt: "Velg riktig output.",
+    topic: "Python kap. 19",
+    question: "Gitt et BST hvor 5 er rot, 3 er venstre barn, 7 er høyre barn, 1 er venstre barn av 3. Hva er in-order?",
+    options: [
+      { text: "1 3 5 7", correct: true, rationale: "In-order: V-N-H rekursivt. Ned til 1 (lengst v), så 3, så 5 (rot), så 7. Resultat = sortert." },
+      { text: "5 3 1 7", correct: false, rationale: "Det er pre-order (N-V-H)." },
+      { text: "1 3 7 5", correct: false, rationale: "Det er post-order (V-H-N): 1, 3, 7, 5." },
+      { text: "5 3 7 1", correct: false, rationale: "Det ville vært level-order (BFS): 5, så 3,7, så 1." },
+    ],
+    explanation:
+      "Memo: in-order = sortert. Hvis et BST ikke gir sortert i in-order → ikke et gyldig BST.",
+  },
+  {
+    id: "d-py19-order-bst-insert-steps",
+    kind: "order",
+    title: "Sortér BST-insert-stegene",
+    prompt: "Sett stegene i riktig rekkefølge for å sette inn en ny nøkkel.",
+    topic: "Python kap. 19",
+    items: [
+      "Hvis treet er tomt: sett ny node som rot, ferdig",
+      "Start på roten",
+      "Sammenlign ny nøkkel med current.key",
+      "Hvis mindre: gå venstre (eller plasser her hvis venstre = None)",
+      "Hvis større: gå høyre (eller plasser her hvis høyre = None)",
+      "Hvis lik: enten ignorer eller behandle dupliserings-policy",
+    ],
+    explanation:
+      "Standard BST-insert er O(høyde). Ubalansert: O(n). Balansert (AVL/red-black/treap): O(log n) garantert.",
+  },
+
+  // ============= PYTHON KAP. 21 — Hashing =============
+
+  {
+    id: "d-py21-quiz-hash-purpose",
+    kind: "quiz",
+    title: "Hva er en hash-funksjon?",
+    prompt: "Velg riktig svar.",
+    topic: "Python kap. 21",
+    question: "Hva er primær-egenskapen til en hash-funksjon brukt i hash-tabeller?",
+    options: [
+      { text: "Avbilder en nøkkel til en heltall-indeks, deterministisk og raskt", correct: true, rationale: "Brukes til å finne riktig «bucket». Samme input → samme output. Bør spre uniformt for å unngå klustering." },
+      { text: "Krypterer nøkkelen så den ikke kan reverseres", correct: false, rationale: "Det er KRYPTOGRAFISK hashing (SHA-256). Hash-tabell-hashing er IKKE krypto-sikker." },
+      { text: "Sorterer nøkler alfabetisk", correct: false, rationale: "Sortering har ingenting med hashing å gjøre." },
+      { text: "Komprimerer data for lagring", correct: false, rationale: "Hash er en indeks, ikke en komprimering." },
+    ],
+    explanation:
+      "Krav: deterministisk, rask, uniform distribusjon. Python hash() er en NON-KRYPTOGRAFISK hash som randomiseres mellom kjøringer (`PYTHONHASHSEED`).",
+  },
+  {
+    id: "d-py21-quiz-collision",
+    kind: "quiz",
+    title: "Hva er en hash-kollisjon?",
+    prompt: "Velg riktig svar.",
+    topic: "Python kap. 21",
+    question: "Hva betyr «kollisjon» i en hash-tabell?",
+    options: [
+      { text: "To FORSKJELLIGE nøkler hasher til SAMME bucket", correct: true, rationale: "Uunngåelig hvis vi har flere mulige nøkler enn buckets. Må håndteres med chaining eller open addressing." },
+      { text: "To programmer som leser samme fil", correct: false, rationale: "Det er race condition / lock contention — ikke hashing." },
+      { text: "En nøkkel som ikke finnes", correct: false, rationale: "Det er en miss, ikke kollisjon." },
+      { text: "Hash-tabellen er full", correct: false, rationale: "Det er «overflow» — kan utløse rehashing, men er ikke kollisjon." },
+    ],
+    explanation:
+      "Pigeonhole-prinsippet: hvis vi mapper uendelig mange nøkler til endelig mange buckets, MÅ vi få kollisjoner. Spørsmålet er bare HVOR ofte og hvordan vi håndterer det.",
+  },
+  {
+    id: "d-py21-match-collision-handling",
+    kind: "match",
+    title: "Kollisjons-håndtering",
+    prompt: "Match strategi til mekanisme.",
+    topic: "Python kap. 21",
+    pairs: [
+      { left: "Separate chaining", right: "Hver bucket inneholder en liste — kollisjoner appendes til lista" },
+      { left: "Linear probing", right: "Ved kollisjon: prøv bucket i+1, i+2, … til en tom finnes" },
+      { left: "Quadratic probing", right: "Ved kollisjon: prøv bucket i+1², i+2², i+3², … (reduserer klustering)" },
+      { left: "Double hashing", right: "Ved kollisjon: bruk en ANNEN hash-funksjon for å bestemme steg" },
+    ],
+    explanation:
+      "Chaining brukes av Python dict/set. Open addressing (probing) brukes av Java HashMap (lenger). Trade-off: probing er cache-vennlig, chaining håndterer høy load-faktor bedre.",
+  },
+  {
+    id: "d-py21-quiz-load-factor",
+    kind: "quiz",
+    title: "Load-faktor",
+    prompt: "Velg riktig definisjon.",
+    topic: "Python kap. 21",
+    question: "Hva er load-faktoren α i en hash-tabell?",
+    options: [
+      { text: "antall elementer / antall buckets", correct: true, rationale: "Måler hvor «full» tabellen er. Python rehasher når α > ~2/3 (open addressing). Stor α → flere kollisjoner." },
+      { text: "Maksimum kjededybde i en bucket", correct: false, rationale: "Det er kollisjons-statistikk, ikke load-faktoren." },
+      { text: "Antall hash-funksjoner brukt", correct: false, rationale: "Vanligvis bare én primær hash." },
+      { text: "Tid det tar å rehashe", correct: false, rationale: "Det er en KONSEKVENS, ikke definisjonen." },
+    ],
+    explanation:
+      "Når α blir for høy: rehash (dobl buckets, beregn alle hash på nytt). O(n) operasjon, men sjelden — amortisert O(1) per insert.",
+  },
+  {
+    id: "d-py21-quiz-hashable",
+    kind: "quiz",
+    title: "Hva er hashbart i Python?",
+    prompt: "Velg riktig svar.",
+    topic: "Python kap. 21",
+    question: "Hvilket av disse kan IKKE brukes som dict-key?",
+    options: [
+      { text: "list", correct: true, rationale: "Lister er MUTABLE — hash kunne endret seg mens objektet er i tabellen. Python forbyr det." },
+      { text: "tuple", correct: false, rationale: "Immutable — hashbar (forutsatt at INNHOLDET også er hashbart)." },
+      { text: "str", correct: false, rationale: "Immutable — hashbar." },
+      { text: "int", correct: false, rationale: "Immutable — hashbar. hash(n) = n for små heltall." },
+    ],
+    explanation:
+      "Regel: mutable objekter er IKKE hashbare (lister, sets, dicts). Immutable er hashbare (ints, floats, strs, tuples-med-immutable-innhold, frozensets).",
+  },
+
+  // ============= PYTHON KAP. 22 — Grafer og applikasjoner (BFS/DFS) =============
+
+  {
+    id: "d-py22-match-graph-rep",
+    kind: "match",
+    title: "Graf-representasjoner",
+    prompt: "Match representasjon til egenskap.",
+    topic: "Python kap. 22",
+    pairs: [
+      { left: "Naboliste (dict of lists)", right: "Plass O(V+E) — bra for sparse grafer (få kanter)" },
+      { left: "Nabomatrise (2D-array)", right: "Plass O(V²) — bra for dense grafer, O(1) kant-oppslag" },
+      { left: "Kant-liste (liste av (u,v)-par)", right: "Plass O(E) — kompakt, men dyrt å finne naboer" },
+    ],
+    explanation:
+      "Praktisk: 99% av tilfellene → naboliste. Bytt til matrise bare hvis E ≈ V² eller du gjør massive «finnes kanten u→v?»-spørringer.",
+  },
+  {
+    id: "d-py22-quiz-bfs-property",
+    kind: "quiz",
+    title: "Hva garanterer BFS?",
+    prompt: "Velg riktig egenskap.",
+    topic: "Python kap. 22",
+    question: "Hva er hovedgarantien til BFS i en uvektet graf?",
+    options: [
+      { text: "Finner korteste vei (færrest kanter) fra start til alle andre noder", correct: true, rationale: "BFS besøker noder nivå for nivå. Første gang du når en node er via færrest mulig kanter." },
+      { text: "Finner korteste vei i en VEKTET graf", correct: false, rationale: "Det krever Dijkstra. BFS ignorerer kantvekter — kun «antall hopp»." },
+      { text: "Sorterer noder etter ID", correct: false, rationale: "BFS er ikke sortering." },
+      { text: "Finner alle sykluser", correct: false, rationale: "BFS finner én vei. Syklusdeteksjon er en separat applikasjon." },
+    ],
+    explanation:
+      "Datastruktur for BFS: KØ (FIFO). For DFS: STACK (eller rekursjon). Bytte av datastruktur er den eneste forskjellen.",
+  },
+  {
+    id: "d-py22-order-bfs-steps",
+    kind: "order",
+    title: "Sortér BFS-stegene",
+    prompt: "Sett stegene i riktig rekkefølge.",
+    topic: "Python kap. 22",
+    items: [
+      "Putt startnoden i køen og marker som besøkt",
+      "Hent neste node fra køen",
+      "For hver nabo av denne noden …",
+      "… hvis ikke besøkt: marker som besøkt og legg i køen",
+      "Når køen er tom: ferdig",
+    ],
+    explanation:
+      "Nøkkel: marker «besøkt» NÅR DU LEGGER I KØEN, ikke når du tar ut. Ellers kan samme node havne i køen flere ganger.",
+  },
+  {
+    id: "d-py22-fill-bfs",
+    kind: "fill",
+    title: "BFS — fyll inn",
+    prompt: "Fyll inn datastrukturen og operasjonen.",
+    topic: "Python kap. 22",
+    template:
+      "from collections import __1__\n\ndef bfs(graf, start):\n    besøkt = {start}\n    kø = __1__([start])\n    while kø:\n        v = kø.__2__()\n        for u in graf[v]:\n            if u not in besøkt:\n                besøkt.add(u)\n                kø.append(u)\n    return besøkt",
+    blanks: ["deque", "popleft"],
+    options: ["deque", "list", "queue", "stack", "popleft", "pop", "append", "remove"],
+    language: "python",
+    explanation:
+      "BFS = FIFO = popleft(). DFS = LIFO = pop() (eller rekursjon). Bruker deque fordi list.pop(0) er O(n). For DFS er list helt fint.",
+  },
+  {
+    id: "d-py22-quiz-dfs-recursive",
+    kind: "quiz",
+    title: "Rekursiv DFS",
+    prompt: "Velg riktig output for traverserings-rekkefølgen.",
+    topic: "Python kap. 22",
+    question: "Gitt graf {A:[B,C], B:[D], C:[], D:[]} og start på A, hvilken DFS-rekkefølge er mulig?",
+    code: "def dfs(g, v, besøkt=None):\n    if besøkt is None: besøkt = []\n    besøkt.append(v)\n    for n in g[v]:\n        if n not in besøkt:\n            dfs(g, n, besøkt)\n    return besøkt",
+    language: "python",
+    options: [
+      { text: "A B D C", correct: true, rationale: "A → B (første nabo) → D (B sin nabo) → tilbake → C (A sin neste nabo)." },
+      { text: "A C B D", correct: false, rationale: "Først nabo til A er B (rekkefølge i adj-liste matters)." },
+      { text: "A B C D", correct: false, rationale: "Det er BFS-aktig. DFS går dypt FØR bredt." },
+      { text: "D B C A", correct: false, rationale: "Det er post-order — den koden bruker pre-order." },
+    ],
+    explanation:
+      "DFS-rekkefølgen avhenger av (1) hvor du starter, (2) rekkefølgen i naboliste, (3) pre/post-order. Vanlig feil: glemme «not in besøkt» → uendelig rekursjon ved sykluser.",
+  },
+  {
+    id: "d-py22-quiz-cycle-detection",
+    kind: "quiz",
+    title: "Syklusdeteksjon i urettet graf",
+    prompt: "Velg riktig hint.",
+    topic: "Python kap. 22",
+    question: "Hvordan oppdage en syklus i en URETTET graf med DFS?",
+    options: [
+      { text: "Hvis vi støter på en besøkt node som IKKE er forelder i DFS-treet, er det syklus", correct: true, rationale: "I urettet graf: hver kant går «tilbake til forelder» — det er normalt. Bare ikke-forelder-tilbakekanter indikerer syklus." },
+      { text: "Bare tell antall kanter > V-1", correct: false, rationale: "Det fungerer for KOBLET graf, ikke generelt. En frakoblet graf kan ha få kanter men likevel ha syklus." },
+      { text: "BFS finner sykluser, DFS gjør det ikke", correct: false, rationale: "Begge kan finne sykluser. Standard er DFS." },
+      { text: "Hvis to noder har samme grad", correct: false, rationale: "Grad har ikke noe direkte med sykluser å gjøre." },
+    ],
+    explanation:
+      "Rettet graf: bruk DFS med tre tilstander (white/gray/black). Tilbake-kant til en gray-node = syklus. Topologisk sort krever ingen sykluser (DAG).",
+  },
+
+  // ============= PYTHON KAP. 23 — Vektede grafer (Dijkstra, MST) =============
+
+  {
+    id: "d-py23-quiz-dijkstra-purpose",
+    kind: "quiz",
+    title: "Hva løser Dijkstra?",
+    prompt: "Velg riktig svar.",
+    topic: "Python kap. 23",
+    question: "Hva er Dijkstras algoritme designet for?",
+    options: [
+      { text: "Single-source shortest path i vektet graf med IKKE-NEGATIVE vekter", correct: true, rationale: "Korteste vei fra ÉN startnode til alle andre. Krasjer hvis vekter er negative — bruk Bellman-Ford da." },
+      { text: "Minste utspennende tre (MST)", correct: false, rationale: "Det er Prim eller Kruskal." },
+      { text: "All-pairs shortest path", correct: false, rationale: "Det er Floyd-Warshall (O(V³))." },
+      { text: "Sortere noder topologisk", correct: false, rationale: "Det er topologisk sort med DFS eller Kahn's algoritme." },
+    ],
+    explanation:
+      "Datastruktur: min-heap (priority queue) ↔ heapq i Python. Tidskompleksitet: O((V+E) log V) med binær heap.",
+  },
+  {
+    id: "d-py23-order-dijkstra-steps",
+    kind: "order",
+    title: "Sortér Dijkstra-stegene",
+    prompt: "Sett stegene i riktig rekkefølge.",
+    topic: "Python kap. 23",
+    items: [
+      "Initialiser dist[start] = 0, dist[alle andre] = ∞",
+      "Legg (0, start) i en min-heap",
+      "Hent (d, u) med minst d fra heapen",
+      "Hvis d > dist[u]: hopp over (utdatert entry)",
+      "Ellers: for hver kant (u, v, w), prøv å «relaxe» — dist[v] = min(dist[v], d + w)",
+      "Hvis vi forbedret dist[v]: push (dist[v], v) i heapen",
+      "Når heapen er tom: dist inneholder alle korteste avstander",
+    ],
+    explanation:
+      "Hvorfor lazy delete (steg 4): heapq støtter ikke decrease-key. Vi pusher ny entry og ignorerer gamle. Vanlig Python-trick.",
+  },
+  {
+    id: "d-py23-quiz-dijkstra-negative",
+    kind: "quiz",
+    title: "Dijkstra og negative vekter",
+    prompt: "Velg riktig svar.",
+    topic: "Python kap. 23",
+    question: "Hvorfor fungerer ikke Dijkstra med negative kantvekter?",
+    options: [
+      { text: "Dijkstra antar at en gang en node er ferdigbehandlet, finner vi ingen kortere vei — negative kanter bryter dette", correct: true, rationale: "Dijkstra er grådig. Negative kanter kan oppdage en kortere vei SENERE — den grådige antagelsen bryter sammen." },
+      { text: "Heap-strukturen kan ikke holde negative tall", correct: false, rationale: "Heap håndterer negative tall fint." },
+      { text: "Negative vekter er ikke gyldige i grafer", correct: false, rationale: "De er helt gyldige — bare ikke for Dijkstra." },
+      { text: "Algoritmen kan komme i uendelig løkke", correct: false, rationale: "Dijkstra terminerer. Den får bare feil svar med negative vekter." },
+    ],
+    explanation:
+      "Bellman-Ford håndterer negative vekter (V-1 iterasjoner). Negativ syklus = ingen korteste vei (kan reduseres uendelig). Bellman-Ford kan detektere dette.",
+  },
+  {
+    id: "d-py23-match-mst",
+    kind: "match",
+    title: "MST-algoritmer",
+    prompt: "Match algoritme til strategi.",
+    topic: "Python kap. 23",
+    pairs: [
+      { left: "Prim", right: "Vokser ett tre — på hvert steg, legg til den letteste kanten ut fra treet" },
+      { left: "Kruskal", right: "Sortér alle kanter, legg til lette kanter som ikke lager syklus (union-find)" },
+      { left: "Boruvka", right: "Hver komponent finner sin letteste utgående kant samtidig" },
+    ],
+    explanation:
+      "Prim er bra for dense grafer (matrise + O(V²)). Kruskal er bra for sparse (sort kanter + union-find: O(E log E)). Begge gir SAMME MST (eller én av flere hvis vekter er like).",
+  },
+  {
+    id: "d-py23-quiz-mst-property",
+    kind: "quiz",
+    title: "MST-egenskaper",
+    prompt: "Velg riktig påstand.",
+    topic: "Python kap. 23",
+    question: "Hvor mange kanter har et MST for en koblet graf med V noder?",
+    options: [
+      { text: "Nøyaktig V-1", correct: true, rationale: "Tre med V noder har V-1 kanter — definisjon. Færre = ikke koblet. Flere = syklus." },
+      { text: "V", correct: false, rationale: "Det ville lagt til en syklus." },
+      { text: "E", correct: false, rationale: "Det er hele grafen, ikke MST." },
+      { text: "V × log(V)", correct: false, rationale: "Det er kjøretiden for noen algoritmer, ikke antall kanter." },
+    ],
+    explanation:
+      "Sjekkliste for «er X et tre på V noder?»: (1) V-1 kanter, (2) koblet, (3) ingen sykluser. Bare to av tre nok — den tredje følger automatisk.",
+  },
+  {
+    id: "d-py23-fill-dijkstra-heap",
+    kind: "fill",
+    title: "Dijkstra — initialisering",
+    prompt: "Fyll inn for første del av Dijkstra.",
+    topic: "Python kap. 23",
+    template:
+      "import heapq\n\ndef dijkstra(graf, start):\n    dist = {n: __1__ for n in graf}\n    dist[start] = __2__\n    heap = [(__2__, start)]\n    while heap:\n        d, u = heapq.__3__(heap)\n        if d > dist[u]:\n            continue\n        # ... relax ...",
+    blanks: ["float('inf')", "0", "heappop"],
+    options: ["float('inf')", "None", "0", "-1", "heappop", "heappush", "pop", "append"],
+    language: "python",
+    explanation:
+      "float('inf') er Python-konvensjon for «ikke nådd ennå». heapq er en MIN-heap — vi henter alltid minste foreløpige avstand først.",
+  },
 ];
