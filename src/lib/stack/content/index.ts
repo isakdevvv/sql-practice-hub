@@ -80,6 +80,7 @@ import { content as roomRecycler } from "./room-recycler";
 import { content as apiRetrofit } from "./api-retrofit";
 import { content as mysqlVsSqlite } from "./mysql-vs-sqlite";
 import { content as mvcMonster } from "./mvc-monster";
+import { content as laereplan } from "./laereplan";
 import type { TrinnContent } from "../types";
 
 export const TRINN: TrinnContent[] = [
@@ -98,7 +99,10 @@ export const TRINN: TrinnContent[] = [
   apiProsjekt, apiPlanlegging, apiArkitektur, apiKontrakt, apiTesting, apiDeploy,
   dte2603, kotlinGrunnlag, androidGrunnlag, mvvmArkitektur, korutiner, roomRecycler, apiRetrofit,
   mvcMonster,
+  laereplan,
 ];
+
+import { curriculumIndexOf } from "../curriculum";
 
 // Bare ferdige trinn er offentlig synlige — stubs (`status: "stub"`)
 // skal ikke vises noen steder, og direkte URL-tilgang skal 404e.
@@ -109,6 +113,13 @@ export function getTrinnBySlug(slug: string): TrinnContent | undefined {
 
 export function getTrinnByGroup(group: "eksamen" | "stack"): TrinnContent[] {
   return TRINN.filter((t) => t.group === group && t.status === "ready").sort(
-    (a, b) => a.order - b.order,
+    (a, b) => {
+      // Primary: canonical curriculum order (first-principles progression)
+      const ai = curriculumIndexOf(a.slug);
+      const bi = curriculumIndexOf(b.slug);
+      if (ai !== bi) return ai - bi;
+      // Fallback: each trinn's manual order field
+      return a.order - b.order;
+    },
   );
 }
