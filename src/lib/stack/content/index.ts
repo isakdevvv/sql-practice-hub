@@ -81,6 +81,10 @@ import { content as apiRetrofit } from "./api-retrofit";
 import { content as mysqlVsSqlite } from "./mysql-vs-sqlite";
 import { content as mvcMonster } from "./mvc-monster";
 import { content as laereplan } from "./laereplan";
+import { content as traer } from "./traer";
+import { content as graferDypere } from "./grafer-dypere";
+import { content as hashingDypere } from "./hashing-dypere";
+import { content as dynamicProgramming } from "./dynamic-programming";
 import type { TrinnContent } from "../types";
 
 export const TRINN: TrinnContent[] = [
@@ -100,6 +104,7 @@ export const TRINN: TrinnContent[] = [
   dte2603, kotlinGrunnlag, androidGrunnlag, mvvmArkitektur, korutiner, roomRecycler, apiRetrofit,
   mvcMonster,
   laereplan,
+  traer, graferDypere, hashingDypere, dynamicProgramming,
 ];
 
 import { curriculumIndexOf } from "../curriculum";
