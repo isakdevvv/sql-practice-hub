@@ -46,12 +46,16 @@ function DragPage() {
   const [kindFilter, setKindFilter] = useState<KindFilter>("all");
   const [progress, setProgress] = useState<DragProgress>(() => loadDragProgress());
 
-  // Re-read progress from localStorage when the user switches exercise — the
-  // child components write to localStorage when solved, but don't notify us.
-  // Refreshing on exercise change is good enough for the badge to stay in sync.
+  // Re-read progress from localStorage when the user switches exercise or
+  // explicitly when a child component reports a solve via onSolved.
   useEffect(() => {
     setProgress(loadDragProgress());
   }, [activeId]);
+
+  const refreshProgress = useMemo(
+    () => () => setProgress(loadDragProgress()),
+    [],
+  );
 
   function resetAll() {
     if (
@@ -196,13 +200,41 @@ function DragPage() {
                   <h2 className="font-semibold tracking-tight">{exercise.title}</h2>
                   <p className="text-sm text-muted-foreground mt-1">{exercise.prompt}</p>
                 </div>
-                {exercise.kind === "match" && <DragMatch key={exercise.id} exercise={exercise} />}
-                {exercise.kind === "order" && <DragOrder key={exercise.id} exercise={exercise} />}
-                {exercise.kind === "fill" && <DragFill key={exercise.id} exercise={exercise} />}
-                {exercise.kind === "crowsfoot" && (
-                  <CrowsFoot key={exercise.id} exercise={exercise} />
+                {exercise.kind === "match" && (
+                  <DragMatch
+                    key={exercise.id}
+                    exercise={exercise}
+                    onSolved={refreshProgress}
+                  />
                 )}
-                {exercise.kind === "quiz" && <DragQuiz key={exercise.id} exercise={exercise} />}
+                {exercise.kind === "order" && (
+                  <DragOrder
+                    key={exercise.id}
+                    exercise={exercise}
+                    onSolved={refreshProgress}
+                  />
+                )}
+                {exercise.kind === "fill" && (
+                  <DragFill
+                    key={exercise.id}
+                    exercise={exercise}
+                    onSolved={refreshProgress}
+                  />
+                )}
+                {exercise.kind === "crowsfoot" && (
+                  <CrowsFoot
+                    key={exercise.id}
+                    exercise={exercise}
+                    onSolved={refreshProgress}
+                  />
+                )}
+                {exercise.kind === "quiz" && (
+                  <DragQuiz
+                    key={exercise.id}
+                    exercise={exercise}
+                    onSolved={refreshProgress}
+                  />
+                )}
               </div>
             ) : (
               <div className="rounded-xl border border-border bg-card p-8 text-center text-muted-foreground">
