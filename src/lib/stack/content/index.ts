@@ -54,6 +54,12 @@ import { content as aspnetMvc } from "./aspnet-mvc";
 import { content as aspnetWebapi } from "./aspnet-webapi";
 import { content as efCore } from "./ef-core";
 import { content as blazor } from "./blazor";
+import { content as dte2502 } from "./dte-2502";
+import { content as backpropDyp } from "./backprop-dyp";
+import { content as cnn } from "./cnn";
+import { content as regularisering } from "./regularisering";
+import { content as optimering } from "./optimering";
+import { content as pytorchTf } from "./pytorch-tf";
 import type { TrinnContent } from "../types";
 
 export const TRINN: TrinnContent[] = [
@@ -67,6 +73,7 @@ export const TRINN: TrinnContent[] = [
   dte2505, osGrunnlag, linuxBruk, shellScripting, brukereRettigheter, virtualisering,
   trinn1, trinn2, trinn3, trinn4, trinn5, trinn6, trinn7, trinn8, trinn9, trinn10,
   dte2802, csharpGrunnlag, aspnetMvc, aspnetWebapi, efCore, blazor,
+  dte2502, backpropDyp, cnn, regularisering, optimering, pytorchTf,
 ];
 
 // Bare ferdige trinn er offentlig synlige — stubs (`status: "stub"`)

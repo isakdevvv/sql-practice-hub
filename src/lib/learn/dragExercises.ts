@@ -10672,6 +10672,84 @@ __5__ endfor __6__
       },
     ],
   },
+
+  // ============================================================
+  // DTE-2502 — Backpropagation (dyp)
+  // ============================================================
+  {
+    id: "d-fill-bp-chain-rule",
+    kind: "fill",
+    title: "Kjerne-regelen for ett-lags nett",
+    prompt: "Fyll inn de manglende leddene i kjerne-regelen for ∂L/∂w.",
+    topic: "Backpropagation",
+    template:
+      "z = w·x + b\ny = σ(z)\nL = (y − t)²\n\n∂L/∂w  =  __1__  ·  __2__  ·  __3__\n         (∂L/∂y)    (∂y/∂z)    (∂z/∂w)",
+    blanks: ["2(y − t)", "σ(z)(1 − σ(z))", "x"],
+    options: [
+      "2(y − t)",
+      "σ(z)(1 − σ(z))",
+      "x",
+      "1",
+      "w",
+      "(y − t)²",
+      "ReLU'(z)",
+    ],
+    explanation:
+      "Hvert ledd er den lokale deriverte: ∂L/∂y for MSE = 2(y−t); ∂y/∂z for sigmoid = σ(z)(1−σ(z)); ∂z/∂w = x. Hele backprop er denne kjedingen, lag for lag.",
+  },
+  {
+    id: "d-order-bp-compgraph",
+    kind: "order",
+    title: "Backward pass — rekkefølge i beregningsgrafen",
+    prompt:
+      "Sett operasjonene i den rekkefølgen autograd kjører dem under .backward().",
+    topic: "Backpropagation",
+    items: [
+      "Forward pass har fullført — L er beregnet",
+      "Start fra ∂L/∂L = 1 i output-noden",
+      "Multiplisér innkommende gradient med node-ens lokale deriverte",
+      "Send produktet bakover langs hver inngangs-kant",
+      "Gjenta i topologisk omvendt orden helt til input-nodene",
+      "Hver lærbar tensor sin .grad-attributt er nå fylt",
+    ],
+    explanation:
+      "Backward pass er en topologisk traversering i motsatt rekkefølge av forward. Hver node ganger inn sin lokale deriverte og fordeler ut til naboene mot input.",
+  },
+  {
+    id: "d-quiz-bp-vanishing-symptom",
+    kind: "quiz",
+    title: "Symptomer på vanishing gradient",
+    prompt: "Velg den mest typiske observasjonen.",
+    topic: "Backpropagation",
+    question:
+      "Du trener et 10-lags MLP med sigmoid-aktiveringer. Train-loss faller raskt de første epokene, men flater så ut. Du skriver ut gradient-normer per lag og ser at de tidligste lagene har ||grad|| ~ 1e-8 mens de siste har ~ 1e-1. Hva er problemet?",
+    options: [
+      {
+        text: "Vanishing gradient — sigmoid-derivat ≤ 0.25, multiplisert gjennom 10 lag krymper gradienten eksponensielt",
+        correct: true,
+        rationale:
+          "Klassisk symptom. Tidlige lag mottar nesten ingen gradient og kan ikke lære. Fixes: bytt til ReLU, bruk He-init, legg på batch norm eller skip-connections.",
+      },
+      {
+        text: "Exploding gradient — modellen er ustabil",
+        correct: false,
+        rationale:
+          "Da ville du sett NaN-loss eller voksende gradient-normer, ikke krympende.",
+      },
+      {
+        text: "Underfit — modellen er for liten",
+        correct: false,
+        rationale:
+          "Modellen er stor nok (10 lag). Problemet er at gradienten ikke når frem til de tidlige lagene, ikke kapasiteten.",
+      },
+      {
+        text: "For høy learning rate",
+        correct: false,
+        rationale:
+          "Det ville gitt divergens eller NaN. Her synker loss, bare for sakte.",
+      },
+    ],
+  },
   {
     id: "d-fill-mvc-razor",
     kind: "fill",
@@ -10765,6 +10843,138 @@ __5__ endfor __6__
     ],
   },
   {
+    id: "d-match-bp-weight-init",
+    kind: "match",
+    title: "Vekt-init til aktivering",
+    prompt: "Match initialiserings-strategi med aktiveringsfunksjonen den passer best for.",
+    topic: "Backpropagation",
+    pairs: [
+      { left: "He / Kaiming (Var = 2/n_in)", right: "ReLU og varianter" },
+      { left: "Xavier / Glorot (Var = 1/n_in)", right: "Sigmoid og tanh" },
+      { left: "Null-init", right: "Bias (men ALDRI vekter)" },
+      { left: "N(0, 1) — stor random", right: "Nesten alltid feil — eksploderer i dype nett" },
+    ],
+    explanation:
+      "Begge init-strategiene holder variansen av aktiveringer omtrent konstant mellom lag. He kompenserer for at ReLU dreper halve nevroner; Xavier antar symmetriske aktiveringer.",
+  },
+  {
+    id: "d-quiz-bp-grad-clip",
+    kind: "quiz",
+    title: "Gradient clipping — når bruker du det?",
+    prompt: "Velg det riktigste tilfellet.",
+    topic: "Backpropagation",
+    question:
+      "Du trener en RNN på lange sekvenser. Loss går fint i 50 batches, og så plutselig blir den NaN. Hva er den vanligste fiksen?",
+    options: [
+      {
+        text: "Gradient clipping (clip_grad_norm_) med max_norm rundt 1.0",
+        correct: true,
+        rationale:
+          "Exploding gradient er klassisk i RNN-er pga. de mange multiplikasjonene i back-prop-through-time. Clipping kapper normen før step() og forhindrer NaN.",
+      },
+      {
+        text: "Bytt fra Adam til SGD",
+        correct: false,
+        rationale:
+          "Optimizer-bytte hjelper sjelden mot exploding gradient. Problemet er i selve gradient-utregningen, ikke i hvordan vi bruker den.",
+      },
+      {
+        text: "Senk batch_size til 1",
+        correct: false,
+        rationale:
+          "Batch-størrelse påvirker støy, ikke eksplodering. Mindre batch øker faktisk variansen.",
+      },
+      {
+        text: "Skru av dropout",
+        correct: false,
+        rationale:
+          "Dropout er regulariserende — den årsaker ikke NaN i seg selv.",
+      },
+    ],
+  },
+  {
+    id: "d-fill-bp-he-init",
+    kind: "fill",
+    title: "He-init — variance-formel",
+    prompt: "Fyll inn variansen for He-init og hvilken aktivering den hører til.",
+    topic: "Backpropagation",
+    template:
+      "He-init brukes når aktiveringen er __1__.\nVar(W) = __2__ / n_in\n# der n_in = antall inputs til laget",
+    blanks: ["ReLU", "2"],
+    options: ["ReLU", "sigmoid", "tanh", "softmax", "2", "1", "1/2", "n_out"],
+    explanation:
+      "He / Kaiming: Var(W) = 2/n_in. Faktoren 2 kompenserer for at ReLU i snitt dreper halvparten av aktiveringene, så variansen av outputs holdes konstant.",
+  },
+  {
+    id: "d-match-bp-gradient-flow",
+    kind: "match",
+    title: "Gradient-problemer og fixes",
+    prompt: "Match problem med vanligste mottiltak.",
+    topic: "Backpropagation",
+    pairs: [
+      { left: "Vanishing gradient med sigmoid-nett", right: "Bytt til ReLU + He-init" },
+      { left: "Exploding gradient i RNN", right: "Gradient clipping (norm)" },
+      { left: "Tidlige lag lærer ikke i veldig dypt CNN", right: "Skip-connections (ResNet)" },
+      { left: "Trening blir NaN etter mange epoker", right: "Sjekk for inf/NaN i input + senk lr" },
+      { left: "Internal covariate shift", right: "Batch normalization" },
+    ],
+    explanation:
+      "Dette er de fem klassiske gradient-flyt-problemene i dyp læring. Hver har en standard-fix; ofte kombinerer du flere samtidig.",
+  },
+
+  // ============================================================
+  // DTE-2502 — CNN
+  // ============================================================
+  {
+    id: "d-fill-cnn-output-size",
+    kind: "fill",
+    title: "Output-størrelse for conv-lag",
+    prompt:
+      "Fyll inn formelen for output-bredden W' for et conv-lag med kernel k, padding p, stride s.",
+    topic: "CNN",
+    template:
+      "W' = ⌊ (W + 2·__1__ − __2__) / __3__ ⌋ + __4__\n# W=32, k=3, p=1, s=1 →  W' = 32  (\"same\" padding)\n# W=32, k=3, p=0, s=2 →  W' = 15",
+    blanks: ["p", "k", "s", "1"],
+    options: ["p", "k", "s", "1", "2", "0", "W", "n"],
+    explanation:
+      "Standard CNN-output-formel: ⌊(W + 2p − k)/s⌋ + 1. Husk pluss-én — den representerer at vinduet starter på posisjon 0.",
+  },
+  {
+    id: "d-quiz-cnn-conv-math",
+    kind: "quiz",
+    title: "Konvolusjon — utregning",
+    prompt: "Regn ut én utgangs-piksel.",
+    topic: "CNN",
+    question:
+      "Gitt input-vindu  [[1,1,1],[0,1,1],[0,0,1]]  og filter  [[1,0,0],[0,1,0],[0,0,1]] (3×3 diagonal-detektor) — hva blir output-pikselen (element-vis multiplikasjon og sum)?",
+    options: [
+      {
+        text: "3",
+        correct: true,
+        rationale:
+          "1·1 + 1·0 + 1·0 + 0·0 + 1·1 + 1·0 + 0·0 + 0·0 + 1·1 = 1 + 1 + 1 = 3. Konvolusjon = element-vis multiplikasjon, så sum.",
+      },
+      {
+        text: "5",
+        correct: false,
+        rationale:
+          "Det blir summen hvis du IGNORERER filteret. Konvolusjon ganger med filterets verdier først.",
+      },
+      {
+        text: "9",
+        correct: false,
+        rationale:
+          "Det er antall posisjoner i vinduet. Ikke det vi spør om.",
+      },
+      {
+        text: "1",
+        correct: false,
+        rationale:
+          "Det er bare én av de tre matchende posisjonene. Du må summere alle.",
+      },
+    ],
+  },
+  {
     id: "d-match-webapi-results",
     kind: "match",
     title: "ActionResult-metoder til statuskode",
@@ -10824,6 +11034,69 @@ __5__ endfor __6__
         text: "Den må kalles inne i hver controller-action",
         correct: false,
         rationale: "UseCors er middleware på app-nivå. Du kan i tillegg legge [EnableCors] på enkelt-actioner.",
+      },
+    ],
+  },
+  {
+    id: "d-fill-cnn-stride-padding",
+    kind: "fill",
+    title: "Stride, padding og \"same\"-konvolusjon",
+    prompt: "Fyll inn padding og stride for å bevare input-størrelse.",
+    topic: "CNN",
+    template:
+      "For å beholde W' = W (\"same\" padding) med k=3:\n  padding = __1__\n  stride  = __2__\n\nFor å halvere W' (downsampling) med k=3:\n  padding = __3__\n  stride  = __4__",
+    blanks: ["1", "1", "1", "2"],
+    options: ["0", "1", "2", "3", "k", "k/2"],
+    explanation:
+      "\"Same\" padding for k=3 er p = (k−1)/2 = 1. For halvering er typisk p=1 og s=2 — den vanligste downsampling-konfigurasjonen i ResNet og lignende.",
+  },
+  {
+    id: "d-match-cnn-pooling",
+    kind: "match",
+    title: "Pooling-typer",
+    prompt: "Match pooling-operasjon med egenskap.",
+    topic: "CNN",
+    pairs: [
+      { left: "Max pooling 2×2", right: "Tar største verdi i hvert 2×2-vindu — bevarer sterkeste trekk" },
+      { left: "Average pooling", right: "Tar gjennomsnitt — glatter ut feature-mapet" },
+      { left: "Global average pooling (GAP)", right: "Reduserer H×W til 1×1 per kanal — erstatter ofte FC-head" },
+      { left: "Strided convolution", right: "Læres — pooling som lagrer informasjon via filter-vekter" },
+    ],
+    explanation:
+      "Max er default i klassisk CNN. GAP er moderne standard før klassifikasjons-head. Strided convolution kan erstatte pooling med ekstra learnable parametere.",
+  },
+  {
+    id: "d-quiz-cnn-params-conv",
+    kind: "quiz",
+    title: "Parameter-telling for conv-lag",
+    prompt: "Velg riktig antall parametere.",
+    topic: "CNN",
+    question:
+      "Conv2d(in_channels=3, out_channels=64, kernel_size=3) — hvor mange lærbare parametere?",
+    options: [
+      {
+        text: "1792",
+        correct: true,
+        rationale:
+          "Formel: (k·k·C_in + 1) · C_out = (3·3·3 + 1) · 64 = 28 · 64 = 1792. +1 er bias per output-kanal.",
+      },
+      {
+        text: "1728",
+        correct: false,
+        rationale:
+          "Det glemmer bias-vektoren. 3·3·3·64 = 1728 er bare vekter, og PyTorchs Conv2d har bias som default.",
+      },
+      {
+        text: "192",
+        correct: false,
+        rationale:
+          "Det er (3·3·1·64 + 64) — gjelder kun gråtone-input (C_in=1), ikke RGB.",
+      },
+      {
+        text: "576",
+        correct: false,
+        rationale:
+          "3·3·64 = 576, mangler både C_in-multiplikasjon og bias.",
       },
     ],
   },
@@ -11056,6 +11329,421 @@ var f = b.Where(x => x.Tittel.StartsWith(\"A\")).ToList();`,
         correct: false,
         rationale:
           "Blazor må eksplisitt fortelles hvilken validation-mekanisme som brukes. DataAnnotationsValidator kobler attributtene inn.",
+      },
+    ],
+  },
+  {
+    id: "d-quiz-cnn-fc-vs-conv",
+    kind: "quiz",
+    title: "Hvorfor færre parametere i CNN?",
+    prompt: "Velg den viktigste forklaringen.",
+    topic: "CNN",
+    question:
+      "Et conv-lag (Conv2d(3, 64, 3)) på et 32×32-bilde har 1792 parametere. En tilsvarende FC-lag fra 3072 inputs til 64 outputs har 196 672. Hva er hoved-grunnen til reduksjonen?",
+    options: [
+      {
+        text: "Vekt-deling — samme 3×3-filter brukes på alle posisjoner i bildet",
+        correct: true,
+        rationale:
+          "Hoved-prinsippet i CNN. FC har én vekt per (input-piksel, output-nevron)-par. Conv har én vekt per (filter-posisjon, kanal)-par, og filteret brukes overalt.",
+      },
+      {
+        text: "CNN bruker dropout, FC ikke",
+        correct: false,
+        rationale:
+          "Dropout endrer ikke antall parametere — bare hvordan vi trener.",
+      },
+      {
+        text: "Conv-lag har ikke bias",
+        correct: false,
+        rationale:
+          "Conv-lag har bias som default i PyTorch (én per output-kanal). Det er en liten ekstra-kostnad.",
+      },
+      {
+        text: "Filteret er mindre enn én piksel",
+        correct: false,
+        rationale:
+          "Filteret er flere piksler (3×3 her), men brukes på MANGE posisjoner med samme vekter — det er det vekt-deling betyr.",
+      },
+    ],
+  },
+  {
+    id: "d-match-cnn-arkitekturer",
+    kind: "match",
+    title: "Klassiske CNN-arkitekturer",
+    prompt: "Match arkitektur med dens definerende nyvinning.",
+    topic: "CNN",
+    pairs: [
+      { left: "LeNet-5 (1998)", right: "Første moderne CNN — håndskrevne sifre" },
+      { left: "AlexNet (2012)", right: "ReLU + dropout + GPU-trening — startet dyp-lærings-bølgen" },
+      { left: "VGG-16 (2014)", right: "Bare 3×3-filtre, men mange flere lag" },
+      { left: "GoogLeNet / Inception (2014)", right: "Parallelle filtre i samme blokk (1×1, 3×3, 5×5)" },
+      { left: "ResNet (2015)", right: "Skip-connections — y = F(x) + x — løste vanishing i dype nett" },
+      { left: "EfficientNet (2019)", right: "Koblet skalering av dybde, bredde og oppløsning" },
+    ],
+    explanation:
+      "Hver av disse er eksamenspensum. Hovedlinjen: dypere blir mulig (ResNet), så smartere (Inception/EfficientNet). Skip-connection er det enkeltgrep som har hatt mest praktisk betydning.",
+  },
+  {
+    id: "d-order-cnn-arkitektur",
+    kind: "order",
+    title: "Typisk CNN-arkitektur — rekkefølge",
+    prompt:
+      "Sett lagene i den rekkefølgen et standard klassifikasjons-CNN bruker dem (input → output).",
+    topic: "CNN",
+    items: [
+      "Input-bilde (B, C, H, W)",
+      "Conv2d (lokale filtre)",
+      "ReLU (aktivering)",
+      "MaxPool / strided conv (nedsampling)",
+      "Flere conv + pool-blokker, med økende kanaler",
+      "Flatten eller global average pool",
+      "Dense / FC-lag (klassifikasjons-head)",
+      "Softmax over klasser",
+    ],
+    explanation:
+      "Tidlige lag har høy oppløsning og få kanaler; senere lag har lav oppløsning og mange kanaler. Klassifikasjon skjer i FC-laget på toppen.",
+  },
+
+  // ============================================================
+  // DTE-2502 — Regularisering (NN)
+  // ============================================================
+  {
+    id: "d-match-reg-dropout-vs-bn",
+    kind: "match",
+    title: "Dropout vs BatchNorm — egenskaper",
+    prompt: "Match egenskap med riktig teknikk.",
+    topic: "Regularisering (NN)",
+    pairs: [
+      { left: "Setter tilfeldige nevroner til 0 i trening", right: "Dropout" },
+      { left: "Normaliserer aktiveringer til mean 0 / std 1 per batch", right: "BatchNorm" },
+      { left: "Lar deg ofte øke learning rate", right: "BatchNorm" },
+      { left: "Sjelden i conv-lag, vanlig i FC-lag", right: "Dropout" },
+      { left: "Krever skifte mellom train/eval-mode", right: "Begge" },
+    ],
+    explanation:
+      "Dropout regulariserer ved å bryte co-adaptasjon. BatchNorm regulariserer som bivirkning, men hoved-effekten er stabilisering og raskere trening.",
+  },
+  {
+    id: "d-quiz-reg-weight-decay",
+    kind: "quiz",
+    title: "Weight decay — hva gjør den?",
+    prompt: "Velg riktig.",
+    topic: "Regularisering (NN)",
+    question:
+      "Du legger til weight_decay=1e-4 i Adam-optimaliseringen. Hva er hoved-effekten på treningen?",
+    options: [
+      {
+        text: "Vektene dras mot 0 ved hver oppdatering — mindre modell-kompleksitet, mindre overfit",
+        correct: true,
+        rationale:
+          "Weight decay tilsvarer L2-regularisering: ekstra-leddet 2λw i gradient «trekker» vekter mot null. Glattere modell, bedre generalisering, færre overfitting-spikes.",
+      },
+      {
+        text: "Modellen blir helt sparse — mange vekter blir nøyaktig 0",
+        correct: false,
+        rationale:
+          "Det er L1 (Lasso). L2 (weight decay) krymper alle vekter mot 0 men gjør dem ikke eksakt null.",
+      },
+      {
+        text: "Treningen går raskere fordi gradient blir mindre",
+        correct: false,
+        rationale:
+          "Marginal effekt på hastighet. Hovedeffekten er regularisering, ikke optimerings-hastighet.",
+      },
+      {
+        text: "Det endrer batch-størrelsen automatisk",
+        correct: false,
+        rationale:
+          "Weight decay har ingenting med batch-størrelse å gjøre.",
+      },
+    ],
+  },
+  {
+    id: "d-order-reg-early-stopping",
+    kind: "order",
+    title: "Early stopping — algoritme-steg",
+    prompt: "Sett stegene i riktig rekkefølge.",
+    topic: "Regularisering (NN)",
+    items: [
+      "Tren én epoke på treningssettet",
+      "Evaluér modellen på validation-settet",
+      "Hvis val_loss er bedre enn beste sålangt: lagre vektene",
+      "Hvis val_loss IKKE forbedres: øk patience-teller",
+      "Når patience > grense: stopp trening",
+      "Restaurér de lagrede beste vektene",
+    ],
+    explanation:
+      "Klassisk early stopping. Patience er antall epoker uten forbedring vi tåler før vi gir opp. Restaurer-trinnet er viktig — vi vil ha de beste vektene, ikke de siste.",
+  },
+  {
+    id: "d-match-reg-data-aug",
+    kind: "match",
+    title: "Data augmentation — bilde-transforms",
+    prompt: "Match transform med hva den simulerer.",
+    topic: "Regularisering (NN)",
+    pairs: [
+      { left: "RandomHorizontalFlip", right: "Speiling — gjør modellen invariant mot venstre/høyre" },
+      { left: "RandomCrop med padding", right: "Translasjon — objektet kan ligge ulike steder i bildet" },
+      { left: "ColorJitter", right: "Variasjon i lys/kontrast/farge" },
+      { left: "RandomRotation(15)", right: "Små rotasjoner — modellen blir mindre følsom for vinkel" },
+      { left: "Mixup / CutMix", right: "Bland to bilder + labels — sterkere regularisering" },
+    ],
+    explanation:
+      "Augmentation bør være label-bevarende. Eksempel på når flip er FEIL: tekst/sifre — en speilet '6' er ikke en gyldig '6'.",
+  },
+  {
+    id: "d-quiz-reg-dropout-rate",
+    kind: "quiz",
+    title: "Dropout-rate — fornuftige verdier",
+    prompt: "Velg den vanligste verdien.",
+    topic: "Regularisering (NN)",
+    question:
+      "Du bygger et FC-nett og ønsker å regularisere med dropout. Hva er en typisk start-verdi for dropout-rate p?",
+    options: [
+      {
+        text: "0.2–0.5 i FC-lag, lavere (0.1–0.2) i conv-lag",
+        correct: true,
+        rationale:
+          "Standard praksis. Høyere enn 0.5 er sjelden nødvendig og kan underfit. I conv-lag er BatchNorm ofte foretrukket fremfor dropout.",
+      },
+      {
+        text: "0.9 — skru av nesten alle nevroner for sterkest regularisering",
+        correct: false,
+        rationale:
+          "For aggressivt. Modellen lærer ikke når nesten alt slås av. p > 0.5 er sjelden bedre enn p = 0.5.",
+      },
+      {
+        text: "0.01 — bare minimal støy",
+        correct: false,
+        rationale:
+          "For lite til å regularisere. Hadde knapt vært merkbar effekt.",
+      },
+      {
+        text: "Det er ingen forskjell — bruk hvilken verdi som helst",
+        correct: false,
+        rationale:
+          "Dropout-rate er en av de viktigere hyperparameterne. Tune den.",
+      },
+    ],
+  },
+  {
+    id: "d-match-reg-when-to-use",
+    kind: "match",
+    title: "Regularisering — situasjon til verktøy",
+    prompt: "Match observasjon med passende tiltak.",
+    topic: "Regularisering (NN)",
+    pairs: [
+      { left: "Train_acc høy, val_acc mye lavere", right: "Tilfør dropout / weight decay" },
+      { left: "Lite trenings-data, store input-bilder", right: "Data augmentation" },
+      { left: "Trening konvergerer veldig tregt", right: "Legg til BatchNorm" },
+      { left: "Val-loss begynner å stige etter epoke 30", right: "Early stopping" },
+    ],
+    explanation:
+      "Diagnostiser FØR du fikser. Symptomet bestemmer verktøyet. Bruk gjerne flere i kombinasjon — de er ortogonale.",
+  },
+
+  // ============================================================
+  // DTE-2502 — NN-optimering
+  // ============================================================
+  {
+    id: "d-match-opt-sgd-vs-adam",
+    kind: "match",
+    title: "SGD vs Adam — egenskaper",
+    prompt: "Match egenskap med riktig optimizer.",
+    topic: "NN-optimering",
+    pairs: [
+      { left: "Adaptiv learning rate per parameter", right: "Adam" },
+      { left: "Sparer minne — ingen ekstra moment-tilstand", right: "SGD" },
+      { left: "Robust default — krever sjelden tuning", right: "Adam" },
+      { left: "Generaliserer ofte best på store CV-datasett", right: "SGD med momentum" },
+      { left: "Bruker både første og andre moment av gradient", right: "Adam" },
+    ],
+    explanation:
+      "Adam = momentum + RMSProp + bias-korreksjon. SGD er enklere og kan generalisere bedre med riktig schedule, men trenger mer tuning.",
+  },
+  {
+    id: "d-quiz-opt-lr-too-high",
+    kind: "quiz",
+    title: "Symptom: hva betyr divergerende loss?",
+    prompt: "Velg det mest sannsynlige.",
+    topic: "NN-optimering",
+    question:
+      "Du starter trening og ser at loss går fra 2.3 til 5.0 til NaN i løpet av få iterasjoner. Hva er den mest sannsynlige årsaken?",
+    options: [
+      {
+        text: "Learning rate er for høy — vektene flyr av gårde",
+        correct: true,
+        rationale:
+          "Klassisk overshoot. Senk lr med 10× og prøv igjen. Eventuelt legg til gradient clipping som sikkerhetslinje.",
+      },
+      {
+        text: "Batch-størrelsen er for liten",
+        correct: false,
+        rationale:
+          "Liten batch gir støyete gradient, men ikke vanligvis NaN.",
+      },
+      {
+        text: "Modellen er for liten",
+        correct: false,
+        rationale:
+          "Liten modell underfit-er — gir høyt men stabilt loss, ikke NaN.",
+      },
+      {
+        text: "Du glemte å normalisere input",
+        correct: false,
+        rationale:
+          "Mulig medvirkende, men selv med uniformaliserte inputs gir ikke moderat lr NaN. Hovedmistenkt er fortsatt lr.",
+      },
+    ],
+  },
+  {
+    id: "d-fill-opt-adam-defaults",
+    kind: "fill",
+    title: "Adam — defaults",
+    prompt: "Fyll inn standardverdiene for Adam.",
+    topic: "NN-optimering",
+    template:
+      "optimizer = torch.optim.Adam(\n    model.parameters(),\n    lr = __1__,\n    betas = (__2__, __3__),\n    eps = __4__,\n)",
+    blanks: ["1e-3", "0.9", "0.999", "1e-8"],
+    options: ["1e-3", "1e-2", "0.9", "0.999", "0.5", "1e-8", "1e-4"],
+    explanation:
+      "Standard Adam-defaults i alle moderne rammeverk. β₁=0.9 er momentum-vekt, β₂=0.999 er RMSProp-vekt. ε hindrer divisjon med null.",
+  },
+  {
+    id: "d-match-opt-lr-schedules",
+    kind: "match",
+    title: "Learning rate schedules",
+    prompt: "Match schedule med profilen den lager.",
+    topic: "NN-optimering",
+    pairs: [
+      { left: "StepLR", right: "Halver lr hver N-te epoke — trinnvis nedover" },
+      { left: "CosineAnnealing", right: "Glatt cosinus-kurve fra start-lr til 0" },
+      { left: "ReduceLROnPlateau", right: "Kut lr når val-loss stagnerer — adaptivt" },
+      { left: "Warmup + cosine", right: "Liten lr ramper opp, så cosinus ned — standard for transformers" },
+      { left: "OneCycleLR", right: "Opp-ned-ned — rask konvergens, populært for CV" },
+    ],
+    explanation:
+      "Valg av schedule er nest viktigst etter selve LR-en. Cosine er en sikker default; warmup trengs for store transformers.",
+  },
+  {
+    id: "d-quiz-opt-velg-optimizer",
+    kind: "quiz",
+    title: "Hvilken optimizer for dette tilfellet?",
+    prompt: "Velg den mest naturlige standard-velgen.",
+    topic: "NN-optimering",
+    question:
+      "Du trener en transformer på en NLP-task. Hvilken optimizer-konfigurasjon er standard i moderne litteratur?",
+    options: [
+      {
+        text: "AdamW + warmup + cosine decay",
+        correct: true,
+        rationale:
+          "Standard for nesten alle transformer-treninger. AdamW separerer weight decay fra gradient-stegging. Warmup hindrer instabilitet tidlig.",
+      },
+      {
+        text: "Vanlig SGD uten momentum",
+        correct: false,
+        rationale:
+          "Sjelden brukt på transformers — konvergerer for tregt på de fleste NLP-tasks.",
+      },
+      {
+        text: "RMSProp med fast lr",
+        correct: false,
+        rationale:
+          "RMSProp er en forløper til Adam og brukes lite i moderne litteratur.",
+      },
+      {
+        text: "Adam uten weight decay og uten schedule",
+        correct: false,
+        rationale:
+          "Adam alene funker for små modeller, men store transformers krever weight decay og schedule for å nå konkurranse-dyktige tall.",
+      },
+    ],
+  },
+
+  // ============================================================
+  // DTE-2502 — PyTorch / TF
+  // ============================================================
+  {
+    id: "d-fill-pt-autograd",
+    kind: "fill",
+    title: "PyTorch autograd — minimal-eksempel",
+    prompt: "Fyll inn de manglende stegene for én gradient-utregning.",
+    topic: "PyTorch/TF",
+    template:
+      "w = torch.tensor([2.0], requires_grad=__1__)\nx = torch.tensor([3.0])\nt = torch.tensor([5.0])\n\ny    = w * x\nloss = (y - t) ** 2\n\nloss.__2__()              # autograd kjører kjerne-regelen\nprint(w.__3__)            # ∂loss/∂w",
+    blanks: ["True", "backward", "grad"],
+    options: ["True", "False", "backward", "forward", "grad", "data", "step", "zero_grad"],
+    explanation:
+      "requires_grad=True markerer tensor som lærbar. .backward() trigger backward pass. Resultatet havner i .grad-attributtet — som du må nullstille før neste iterasjon (.grad.zero_()).",
+  },
+  {
+    id: "d-order-pt-training-loop",
+    kind: "order",
+    title: "PyTorch training loop — fire steg",
+    prompt:
+      "Sett trinnene innenfor én mini-batch i riktig rekkefølge.",
+    topic: "PyTorch/TF",
+    items: [
+      "optimizer.zero_grad()  — nullstill gradienter",
+      "logits = model(X_batch)  — forward pass",
+      "loss = loss_fn(logits, y_batch)  — beregn loss",
+      "loss.backward()  — autograd kjører backward",
+      "optimizer.step()  — oppdater vekter",
+    ],
+    explanation:
+      "Husk rekkefølgen — det er den samme i 99 % av PyTorch-koder. Glemmer du zero_grad, akkumulerer gradientene fra forrige batch og treningen kaoter.",
+  },
+  {
+    id: "d-match-pt-eager-vs-graph",
+    kind: "match",
+    title: "Eager vs graph mode",
+    prompt: "Match egenskap med kjørings-modus.",
+    topic: "PyTorch/TF",
+    pairs: [
+      { left: "Define-by-run — graf bygges per forward", right: "Eager mode" },
+      { left: "Define-then-run — graf bygges først, kjøres mange ganger", right: "Graph mode" },
+      { left: "Standard i PyTorch og TF 2.x", right: "Eager mode" },
+      { left: "Lettere å debugge med print og pdb", right: "Eager mode" },
+      { left: "Typisk raskere etter kompilering, eksporterbar til ONNX/TorchScript", right: "Graph mode" },
+      { left: "Aktiveres via torch.compile() i PyTorch 2.0+", right: "Graph mode" },
+    ],
+    explanation:
+      "Eager er enklere å bruke; graph er raskere og eksporterbar. Moderne rammeverk gir deg eager som default og kompilering til graph på opt-in.",
+  },
+  {
+    id: "d-quiz-pt-zero-grad",
+    kind: "quiz",
+    title: "Hvorfor optimizer.zero_grad()?",
+    prompt: "Velg det riktigste.",
+    topic: "PyTorch/TF",
+    question:
+      "Hvis du glemmer å kalle optimizer.zero_grad() før hver loss.backward(), hva skjer?",
+    options: [
+      {
+        text: "Gradientene akkumulerer fra forrige batch — modellen lærer en blanding av flere batches og treningen blir kaotisk",
+        correct: true,
+        rationale:
+          "PyTorch sin .grad akkumulerer by design. Det er en feature for gradient accumulation, men det betyr at du eksplisitt må nullstille mellom batches. Glemmer du det, blandes batches på en uforutsigbar måte.",
+      },
+      {
+        text: "Ingenting — PyTorch nullstiller automatisk",
+        correct: false,
+        rationale:
+          "PyTorch nullstiller IKKE automatisk. Det er en kjent fallgruve for nybegynnere.",
+      },
+      {
+        text: "Du får en RuntimeError",
+        correct: false,
+        rationale:
+          "Treningen kjører fint syntaktisk, men resultatet blir feil. Det er en STILLE bug — vanskelig å oppdage.",
+      },
+      {
+        text: "Forward pass slutter å fungere",
+        correct: false,
+        rationale:
+          "Forward pass har ingenting med .grad å gjøre. Det er backward som påvirkes.",
       },
     ],
   },
