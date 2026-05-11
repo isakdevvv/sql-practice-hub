@@ -2031,4 +2031,471 @@ __5__ endfor __6__
   },
 
   // ============= ANOMALIER + ISOLATION (eksisterende d-match-anomalier finnes — droppes for å unngå duplikat) =============
+
+  // ============= NORMALISERING (utvidet — 1NF, 2NF, 3NF, BCNF) =============
+  // Skikkelige oppgaver: identifisere brudd, finne FD-er, dekomponere, og skrive
+  // riktig CREATE TABLE. Hver oppgave bygger på et konkret, navngitt skjema.
+
+  {
+    id: "d-match-norm-fd-finn",
+    kind: "match",
+    title: "Finn funksjonelle avhengigheter (FD-er)",
+    prompt:
+      "Tabellen Ansatt(ansattNr, fnavn, enavn, avdNr, avdNavn, byggNavn) — koble hver attributt til riktig determinant. «X → Y» leses «X bestemmer Y».",
+    topic: "Normalisering",
+    pairs: [
+      { left: "fnavn, enavn", right: "ansattNr → fnavn, enavn" },
+      { left: "avdNr (per ansatt)", right: "ansattNr → avdNr" },
+      { left: "avdNavn", right: "avdNr → avdNavn (transitiv)" },
+      { left: "byggNavn", right: "avdNr → byggNavn (transitiv)" },
+    ],
+    explanation:
+      "ansattNr bestemmer ALT direkte. Men avdNavn og byggNavn avhenger «via» avdNr — det er transitive avhengigheter. Det er nettopp det 3NF fjerner.",
+  },
+  {
+    id: "d-match-norm-keys",
+    kind: "match",
+    title: "Nøkkel-typer",
+    prompt: "Koble hvert begrep til riktig definisjon. Forskjellen er strikt og kommer ofte på eksamen.",
+    topic: "Normalisering",
+    pairs: [
+      {
+        left: "Superkey",
+        right: "En kombinasjon som identifiserer hver rad unikt — kan inneholde overflødige felter",
+      },
+      {
+        left: "Kandidatnøkkel",
+        right: "MINIMAL superkey — fjerner du én kolonne mister du unikheten",
+      },
+      {
+        left: "Primærnøkkel (PK)",
+        right: "Den kandidatnøkkelen vi velger som offisiell — én per tabell",
+      },
+      {
+        left: "Alternativ nøkkel",
+        right: "Kandidatnøkkel som IKKE ble valgt som PK — får UNIQUE-constraint",
+      },
+      {
+        left: "Fremmednøkkel (FK)",
+        right: "Peker på en kandidatnøkkel (oftest PK) i en annen tabell",
+      },
+    ],
+  },
+  {
+    id: "d-match-norm-level",
+    kind: "match",
+    title: "Hvilken normalform er tabellen i?",
+    prompt:
+      "Bare ÉN normalform er den høyeste hver tabell oppfyller. Match. Husk: bryter du 2NF, er du ikke i 3NF heller.",
+    topic: "Normalisering",
+    pairs: [
+      {
+        left: "Person(id, navn, hobbier='golf, sjakk')",
+        right: "Ikke i 1NF — flerverdi-felt",
+      },
+      {
+        left: "Ordrelinje(ordreNr, prodNr, antall, prodNavn) PK=(ordreNr,prodNr)",
+        right: "1NF (bryter 2NF — prodNavn er partiell)",
+      },
+      {
+        left: "Kunde(id, navn, postNr, poststed)",
+        right: "2NF (bryter 3NF — poststed avhenger transitivt via postNr)",
+      },
+      {
+        left: "Bok(isbn, tittel, forlagId) + Forlag(forlagId, navn)",
+        right: "3NF — alle ikke-nøkkelfelt avhenger direkte av PK",
+      },
+    ],
+    explanation:
+      "Normalformene er kumulative: 3NF ⊂ 2NF ⊂ 1NF. Du må alltid svare med den HØYESTE formen tabellen oppfyller — bryter den 2NF, er den i 1NF (ikke i 3NF).",
+  },
+  {
+    id: "d-match-norm-partiell-vs-trans",
+    kind: "match",
+    title: "Partiell vs. transitiv — hvilken er det?",
+    prompt:
+      "Hver avhengighet bryter enten 2NF (partiell — avhenger av DEL av PK) eller 3NF (transitiv — avhenger via et ikke-nøkkelfelt). Match.",
+    topic: "Normalisering",
+    pairs: [
+      {
+        left: "PK=(kursId, studId); kursId → kursNavn",
+        right: "Partiell (2NF brudd) — kursNavn avhenger av halve PK",
+      },
+      {
+        left: "PK=ansattNr; ansattNr → avdNr → avdNavn",
+        right: "Transitiv (3NF brudd) — avdNavn avhenger «via» avdNr",
+      },
+      {
+        left: "PK=(bilId, datoFra); bilId → modell",
+        right: "Partiell (2NF brudd) — modell avhenger bare av bilId",
+      },
+      {
+        left: "PK=isbn; isbn → forlagId → forlagAdresse",
+        right: "Transitiv (3NF brudd) — forlagAdresse avhenger via forlagId",
+      },
+      {
+        left: "PK=(ordreNr, varNr); (ordreNr, varNr) → antall",
+        right: "Verken eller — antall avhenger av HELE PK, lovlig FD",
+      },
+    ],
+    explanation:
+      "Huskeregel: partielle avhengigheter kan BARE oppstå når PK er sammensatt (flere kolonner). Har tabellen én-kolonne PK, hopper du rett til 3NF-sjekken.",
+  },
+  {
+    id: "d-order-norm-1nf-fix",
+    kind: "order",
+    title: "Splitt opp Person (1NF)",
+    prompt:
+      "Person(id, navn, telefoner='22 11 33, 99 88 77') bryter 1NF. Dra stegene for å fikse det.",
+    topic: "Normalisering",
+    items: [
+      "Identifiser bruddet: kolonnen telefoner inneholder en liste av verdier",
+      "Lag ny tabell Telefon(personId, nummer) med PK = (personId, nummer)",
+      "Fjern telefoner-kolonnen fra Person",
+      "Sett FK i Telefon: personId → Person(id), gjerne ON DELETE CASCADE",
+      "Hver eksisterende verdi i den gamle listen blir én rad i Telefon",
+    ],
+    explanation:
+      "1NF krever at hver celle er atomisk — én verdi per felt. Lister, kommaseparerte strenger og JSON-arrays bryter dette. Løsningen er ALLTID egen tabell, aldri «splitt på komma i SQL».",
+  },
+  {
+    id: "d-order-norm-full-decompose",
+    kind: "order",
+    title: "Full normalisering: Levering → 3NF",
+    prompt:
+      "Levering(leveringId, kundeNr, kundeNavn, postNr, poststed, varer='melk;brød;ost') skal opp i 3NF. Dra stegene i riktig rekkefølge.",
+    topic: "Normalisering",
+    items: [
+      "1NF: splitt varer-listen til egen tabell Leveringslinje(leveringId, vare) — PK=(leveringId, vare)",
+      "Skriv ned FD-er: leveringId → kundeNr; kundeNr → kundeNavn, postNr; postNr → poststed",
+      "2NF: PK i Levering er én kolonne — ingen partielle avhengigheter mulig, hopp over",
+      "3NF: kundeNavn og postNr avhenger via kundeNr → flytt til Kunde(kundeNr, kundeNavn, postNr)",
+      "3NF: poststed avhenger via postNr → flytt til Poststed(postNr, poststed)",
+      "Levering beholder (leveringId, kundeNr) med FK kundeNr → Kunde(kundeNr)",
+    ],
+    explanation:
+      "Når du normaliserer kjøreklart må du ofte gjennom flere brudd i ÉN tabell. Ta dem i rekkefølge 1NF → 2NF → 3NF. Ikke prøv å fikse alt på én gang — du mister oversikten.",
+  },
+  {
+    id: "d-fill-norm-1nf",
+    kind: "fill",
+    title: "Lag Telefon-tabellen (1NF)",
+    prompt:
+      "Du splitter telefoner-listen ut av Person. Fyll inn nøkkelordene som gjør tabellen 1NF-konform.",
+    topic: "Normalisering",
+    language: "sql",
+    template:
+      "CREATE TABLE Person (\n  id   INT __1__ KEY,\n  navn VARCHAR(80) NOT NULL\n);\n\nCREATE TABLE Telefon (\n  personId INT,\n  nummer   VARCHAR(20),\n  PRIMARY KEY (__2__, __3__),\n  FOREIGN KEY (personId) __4__ Person(id) ON DELETE __5__\n);",
+    blanks: ["PRIMARY", "personId", "nummer", "REFERENCES", "CASCADE"],
+    options: [
+      "PRIMARY",
+      "FOREIGN",
+      "UNIQUE",
+      "personId",
+      "nummer",
+      "navn",
+      "REFERENCES",
+      "ON",
+      "CASCADE",
+      "RESTRICT",
+      "SET",
+    ],
+    explanation:
+      "Sammensatt PK (personId, nummer) hindrer at samme telefon registreres to ganger på samme person. ON DELETE CASCADE er vanlig her — sletter du personen vil du normalt også slette telefonene.",
+  },
+  {
+    id: "d-fill-norm-2nf-ansatt-prosjekt",
+    kind: "fill",
+    title: "2NF — Ansatt på prosjekt",
+    prompt:
+      "AnsattProsjekt(ansattNr, prosjektNr, timer, ansattNavn, prosjektNavn) bryter 2NF. Splitt opp riktig.",
+    topic: "Normalisering",
+    language: "sql",
+    template:
+      "CREATE TABLE Ansatt (\n  ansattNr   INT PRIMARY KEY,\n  ansattNavn VARCHAR(80) __1__ NULL\n);\n\nCREATE TABLE Prosjekt (\n  prosjektNr   INT PRIMARY KEY,\n  prosjektNavn VARCHAR(80) NOT NULL\n);\n\nCREATE TABLE AnsattProsjekt (\n  ansattNr   INT,\n  prosjektNr INT,\n  timer      INT,\n  PRIMARY KEY (__2__, __3__),\n  __4__ KEY (ansattNr)   REFERENCES Ansatt(ansattNr),\n  __5__ KEY (prosjektNr) REFERENCES Prosjekt(prosjektNr)\n);",
+    blanks: ["NOT", "ansattNr", "prosjektNr", "FOREIGN", "FOREIGN"],
+    options: [
+      "NOT",
+      "IS",
+      "ansattNr",
+      "prosjektNr",
+      "timer",
+      "ansattNavn",
+      "FOREIGN",
+      "PRIMARY",
+      "UNIQUE",
+      "REFERENCES",
+    ],
+    explanation:
+      "Etter splittingen avhenger timer av HELE PK (ansattNr, prosjektNr) — det er den eneste FD-en som gir mening i koblings-tabellen. ansattNavn og prosjektNavn er flyttet ut til hver sin egen tabell.",
+  },
+  {
+    id: "d-fill-norm-3nf-ansatt-avd",
+    kind: "fill",
+    title: "3NF — Ansatt og avdeling",
+    prompt:
+      "Ansatt(ansattNr, navn, avdNr, avdNavn, byggNavn) bryter 3NF. avdNr → avdNavn, byggNavn er transitivt. Splitt ut Avdeling.",
+    topic: "Normalisering",
+    language: "sql",
+    template:
+      "CREATE TABLE Avdeling (\n  avdNr     INT __1__ KEY,\n  avdNavn   VARCHAR(80) NOT NULL,\n  byggNavn  VARCHAR(40)\n);\n\nCREATE TABLE Ansatt (\n  ansattNr INT PRIMARY KEY,\n  navn     VARCHAR(80) NOT NULL,\n  avdNr    INT,\n  __2__ KEY (avdNr) __3__ Avdeling(__4__)\n);",
+    blanks: ["PRIMARY", "FOREIGN", "REFERENCES", "avdNr"],
+    options: [
+      "PRIMARY",
+      "FOREIGN",
+      "UNIQUE",
+      "REFERENCES",
+      "ON",
+      "avdNr",
+      "avdNavn",
+      "byggNavn",
+      "ansattNr",
+    ],
+    explanation:
+      "Etter normaliseringen: avdNavn og byggNavn lagres ÉN gang per avdeling. Endrer du byggnavn må du nå oppdatere ett sted, ikke på hver ansatt. Det er hele poenget med 3NF.",
+  },
+  {
+    id: "d-match-norm-anomali-konkret",
+    kind: "match",
+    title: "Anomalier i praksis — hva skjer hvis…?",
+    prompt:
+      "Tabellen Kurs(kursKode, kursNavn, studId, studNavn) lagrer hver student-deltakelse som én rad. Match scenariene til riktig anomali-type.",
+    topic: "Normalisering",
+    pairs: [
+      {
+        left: "Vi vil opprette MAT100 før noen har meldt seg på",
+        right: "Innsettings-anomali — krever en student-rad for å lagre kurset",
+      },
+      {
+        left: "Kurset bytter navn fra «Diskret matematikk» til «Diskrete strukturer»",
+        right: "Oppdaterings-anomali — kursNavn må endres på MANGE rader",
+      },
+      {
+        left: "Siste student melder seg av MAT100",
+        right: "Slettings-anomali — info om kurset MAT100 forsvinner helt",
+      },
+      {
+        left: "Per (studId=42) skifter etternavn",
+        right: "Oppdaterings-anomali — studNavn må endres på alle Pers kurs",
+      },
+    ],
+    explanation:
+      "Alle tre anomali-typene rammer denne tabellen samtidig. Løsning: del i Student(studId, studNavn), Kurs(kursKode, kursNavn), og koblingstabell Pamelding(kursKode, studId).",
+  },
+  {
+    id: "d-order-norm-decompose-bcnf",
+    kind: "order",
+    title: "Når 3NF ikke holder (BCNF)",
+    prompt:
+      "Bestilling(kunde, vare, selger) der hver selger selger BARE ett spesifikt vare-merke. PK=(kunde, vare). Determinant selger → vare bryter BCNF.",
+    topic: "Normalisering",
+    items: [
+      "Finn alle FD-er: (kunde, vare) → selger;  selger → vare",
+      "Sjekk: er hver determinant en kandidatnøkkel? selger er IKKE — det bryter BCNF",
+      "Splitt ut SelgerVare(selger, vare) med PK = selger — selger-FD-en bor her",
+      "La Bestilling beholde (kunde, selger) — vare er nå avledet via SelgerVare",
+      "Legg FK selger → SelgerVare(selger). PK for Bestilling = (kunde, selger)",
+    ],
+    explanation:
+      "BCNF (Boyce-Codd) er strengere enn 3NF: ALLE determinanter må være kandidatnøkler. 3NF tillater unntak for ikke-nøkkelfelt som inngår i en annen kandidatnøkkel — BCNF tillater ingen. På eksamen er 3NF ofte godt nok, men kjenn igjen mønsteret.",
+  },
+  {
+    id: "d-fill-norm-mn-junction",
+    kind: "fill",
+    title: "M:N-koblingstabell — riktig skjema",
+    prompt:
+      "Student tar Fag M:N med relasjons-attributtet semester. Fyll inn det normaliserte skjemaet.",
+    topic: "Normalisering",
+    language: "sql",
+    template:
+      "CREATE TABLE Student (\n  sid  INT PRIMARY KEY,\n  navn VARCHAR(80)\n);\n\nCREATE TABLE Fag (\n  fkode  VARCHAR(8) PRIMARY KEY,\n  tittel VARCHAR(80)\n);\n\nCREATE TABLE Tar (\n  sid      INT,\n  fkode    VARCHAR(8),\n  __1__    VARCHAR(8),\n  __2__ KEY (sid, fkode),\n  FOREIGN KEY (sid)   __3__ Student(sid),\n  FOREIGN KEY (fkode) __4__ Fag(__5__)\n);",
+    blanks: ["semester", "PRIMARY", "REFERENCES", "REFERENCES", "fkode"],
+    options: [
+      "semester",
+      "tittel",
+      "navn",
+      "PRIMARY",
+      "FOREIGN",
+      "UNIQUE",
+      "REFERENCES",
+      "ON",
+      "fkode",
+      "sid",
+      "tar",
+    ],
+    explanation:
+      "Relasjons-attributtet semester hører hjemme i KOBLINGSTABELLEN — ikke i Student eller Fag. Det avhenger av begge sider (samme student kan ta samme fag i ulike semestre om PK utvides). Med PK=(sid, fkode) sperrer du dobbeltregistrering.",
+  },
+
+  // ============= KRÅKEFOT (utvidet — flere domener og spesialtilfeller) =============
+  // Konvensjon: symbolet nær entitet X beskriver «hvor mange X per én av den andre».
+
+  {
+    id: "d-cf-pasient-lege",
+    kind: "crowsfoot",
+    title: "PASIENT — FASTLEGE",
+    prompt: "Hver pasient har én fastlege; en lege har en pasient-liste.",
+    topic: "ER-modell",
+    scenario:
+      "Hver pasient skal ha nøyaktig én fastlege. En fastlege har én eller flere pasienter (en lege uten pasienter regnes ikke som fastlege).",
+    entityA: "PASIENT",
+    entityB: "FASTLEGE",
+    answer: { aMin: "|", aMax: "<", bMin: "|", bMax: "|" },
+    explanation:
+      "Nær PASIENT: «|<» — én fastlege har 1..N pasienter. Nær FASTLEGE: «||» — én pasient har akkurat én fastlege. FK Pasient.legeNr er NOT NULL (total deltakelse).",
+  },
+  {
+    id: "d-cf-bok-utlan",
+    kind: "crowsfoot",
+    title: "BOK — UTLÅN",
+    prompt: "Biblioteket: en bok kan lånes ut mange ganger, et utlån gjelder akkurat én bok.",
+    topic: "ER-modell",
+    scenario:
+      "En bok kan ha 0..N utlån over tid (nye bøker har ingen utlån ennå). Hvert utlån gjelder nøyaktig én bok.",
+    entityA: "BOK",
+    entityB: "UTLÅN",
+    answer: { aMin: "|", aMax: "|", bMin: "O", bMax: "<" },
+    explanation:
+      "Klassisk historisk 1:N. Et utlån eksisterer ikke uten bok (total mot BOK), men en bok finnes uavhengig av utlån. FK Utlån.bokId er NOT NULL.",
+  },
+  {
+    id: "d-cf-bok-forfatter-mn",
+    kind: "crowsfoot",
+    title: "BOK — FORFATTER (begge oblig.)",
+    prompt: "Hver bok må ha minst én forfatter, og vi tar bare med forfattere som har gitt ut noe.",
+    topic: "ER-modell",
+    scenario:
+      "Hver bok har én eller flere forfattere. Hver forfatter har skrevet minst én bok (vi inkluderer ikke navn uten utgitte bøker).",
+    entityA: "BOK",
+    entityB: "FORFATTER",
+    answer: { aMin: "|", aMax: "<", bMin: "|", bMax: "<" },
+    explanation:
+      "M:N med total deltakelse på BEGGE sider: alle fire indre symboler er «|», ytre er «<». Mappes til koblingstabell SKREVET(bokId, forfId) — og constraint at hver bok og hver forfatter må finnes minst én gang i tabellen kan kreve trigger/sjekk i applikasjonen.",
+  },
+  {
+    id: "d-cf-flight-passasjer",
+    kind: "crowsfoot",
+    title: "FLIGHT — PASSASJER",
+    prompt: "En flight kan gå tom; en passasjer kan reise mange ganger.",
+    topic: "ER-modell",
+    scenario:
+      "En flight kan ha 0..N passasjerer (helt nyopprettet rute har ingen ennå). En passasjer kan ha 0..N flighter (registreres f.eks. via bonus-program før første reise).",
+    entityA: "FLIGHT",
+    entityB: "PASSASJER",
+    answer: { aMin: "O", aMax: "<", bMin: "O", bMax: "<" },
+    explanation:
+      "M:N med valgfri deltakelse begge veier. Mappes til Booking(flightId, passasjerId, seteNr). Ingen NOT NULL-krav utover at FK-ene må peke på eksisterende rader når de først er satt.",
+  },
+  {
+    id: "d-cf-bygning-rom",
+    kind: "crowsfoot",
+    title: "BYGNING — ROM (svak entitet)",
+    prompt: "Rom finnes bare gjennom en bygning. Bygninger uten rom regnes som tomme tomter.",
+    topic: "ER-modell",
+    scenario:
+      "Hver bygning har én eller flere rom. Hvert rom tilhører nøyaktig én bygning og kan ikke eksistere uten den (svak entitet).",
+    entityA: "BYGNING",
+    entityB: "ROM",
+    answer: { aMin: "|", aMax: "|", bMin: "|", bMax: "<" },
+    explanation:
+      "Svake entiteter har alltid total deltakelse mot eier-entiteten. PK i ROM blir typisk (bygningId, romNr) — sammensatt, der bygningId er FK og NOT NULL. ON DELETE CASCADE er vanlig.",
+  },
+  {
+    id: "d-cf-bil-eier",
+    kind: "crowsfoot",
+    title: "BIL — EIER (1:1)",
+    prompt: "Akkurat én eier per bil i denne forenklede modellen.",
+    topic: "ER-modell",
+    scenario:
+      "Hver bil har nøyaktig én eier. Hver person eier 0 eller én bil (de fleste eier ingen bil i datasettet).",
+    entityA: "BIL",
+    entityB: "EIER",
+    answer: { aMin: "O", aMax: "|", bMin: "|", bMax: "|" },
+    explanation:
+      "1:1 (ytre «|» begge sider). FK på BIL-siden med UNIQUE og NOT NULL fungerer godt: Bil.eierId UNIQUE NOT NULL → Eier(id). Hvis sambeskap skal støttes, må modellen utvides til M:N.",
+  },
+  {
+    id: "d-cf-konto-eier-mn",
+    kind: "crowsfoot",
+    title: "BANKKONTO — EIER (M:N)",
+    prompt: "Sambeskap støttes. En konto må ha minst én eier; eier må eie minst én konto.",
+    topic: "ER-modell",
+    scenario:
+      "En bankkonto har én eller flere eiere (sambeskap mulig). Hver eier har minst én konto (ellers registreres ikke).",
+    entityA: "BANKKONTO",
+    entityB: "EIER",
+    answer: { aMin: "|", aMax: "<", bMin: "|", bMax: "<" },
+    explanation:
+      "Total M:N: «|<» begge veier. Koblingstabell Eierskap(kontoNr, eierId) med begge som FK. Minst-én-krav krever logikk i applikasjonen — DDL alene kan ikke kreve at hver konto har minst én rad i koblingstabellen.",
+  },
+  {
+    id: "d-cf-vare-leverandor",
+    kind: "crowsfoot",
+    title: "VARE — LEVERANDØR",
+    prompt: "Samme vare kan komme fra flere leverandører; en leverandør har et sortiment.",
+    topic: "ER-modell",
+    scenario:
+      "En vare kan leveres av 0..N leverandører (vi registrerer også varer vi ennå ikke har funnet leverandør for). En leverandør tilbyr én eller flere varer.",
+    entityA: "VARE",
+    entityB: "LEVERANDØR",
+    answer: { aMin: "|", aMax: "<", bMin: "O", bMax: "<" },
+    explanation:
+      "M:N, ulik deltakelse: vare-siden er valgfri (O), leverandør-siden er total (|). Mappes til Sortiment(vareId, levId, pris, leveringstid) — koblingstabell med relasjons-attributter.",
+  },
+  {
+    id: "d-cf-bord-reservasjon",
+    kind: "crowsfoot",
+    title: "BORD — RESERVASJON",
+    prompt: "Restaurant: et bord kan bookes mange ganger, en booking gjelder ett bord.",
+    topic: "ER-modell",
+    scenario:
+      "Et bord kan ha 0..N reservasjoner over tid. Hver reservasjon gjelder nøyaktig ett bord og kan ikke eksistere uten et bord.",
+    entityA: "BORD",
+    entityB: "RESERVASJON",
+    answer: { aMin: "|", aMax: "|", bMin: "O", bMax: "<" },
+    explanation:
+      "Klassisk 1:N: bordet eksisterer uavhengig, reservasjonen ikke. FK Reservasjon.bordNr NOT NULL. Tidsoverlapping må håndteres med constraints eller forretningslogikk (ikke bare av kardinaliteten).",
+  },
+  {
+    id: "d-cf-kategori-produkt",
+    kind: "crowsfoot",
+    title: "KATEGORI — PRODUKT",
+    prompt: "Produkter tilordnes én kategori; tomme kategorier er tillatt under oppsett.",
+    topic: "ER-modell",
+    scenario:
+      "Hvert produkt hører til nøyaktig én kategori. En kategori kan ha 0..N produkter (vi oppretter kategorier før vi fyller dem).",
+    entityA: "KATEGORI",
+    entityB: "PRODUKT",
+    answer: { aMin: "|", aMax: "|", bMin: "O", bMax: "<" },
+    explanation:
+      "1:N. FK Produkt.katId NOT NULL (total fra produkt-siden). En kategori uten produkter er gyldig — derfor «O<» nær KATEGORI sett fra produkt-perspektivet.",
+  },
+  {
+    id: "d-cf-spiller-lag-historikk",
+    kind: "crowsfoot",
+    title: "SPILLER — LAG (historisk M:N)",
+    prompt: "Spillere bytter lag over tid; tom karriere er mulig i søknadsperioden.",
+    topic: "ER-modell",
+    scenario:
+      "En spiller kan ha vært på 0..N lag over karrieren (helt nye spillere har ingen lag ennå). Et lag har minst én spiller i sin historie (ellers er det ikke en gang etablert).",
+    entityA: "SPILLER",
+    entityB: "LAG",
+    answer: { aMin: "|", aMax: "<", bMin: "O", bMax: "<" },
+    explanation:
+      "Historiske M:N krever en koblingstabell med tidsperiode: Kontrakt(spillerId, lagId, fra, til). Da kan samme spiller-lag-par forekomme flere ganger med ulike perioder — utvid PK med fra-dato.",
+  },
+  {
+    id: "d-cf-melding-bruker",
+    kind: "crowsfoot",
+    title: "MELDING — BRUKER (avsender/mottaker)",
+    prompt: "Hver melding har én avsender og én mottaker — to relasjoner til samme entitet.",
+    topic: "ER-modell",
+    scenario:
+      "Vi modellerer relasjonen «MELDING avsendt av BRUKER». Hver melding har nøyaktig én avsender. En bruker kan sende 0..N meldinger.",
+    entityA: "MELDING",
+    entityB: "BRUKER",
+    answer: { aMin: "O", aMax: "<", bMin: "|", bMax: "|" },
+    explanation:
+      "Flere relasjoner mellom samme entitetspar er vanlig — modelleres som adskilte relasjoner med hvert sitt sett kardinaliteter. Her: avsendt-av (1:N) og mottatt-av (1:N) er to ulike FK-er i MELDING: avsenderId og mottakerId, begge → Bruker(id).",
+  },
 ];
