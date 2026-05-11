@@ -48,6 +48,12 @@ import { content as trinn7 } from "./trinn-7-bytes-dyp";
 import { content as trinn8 } from "./trinn-8-python-er-c";
 import { content as trinn9 } from "./trinn-9-syscalls-dyp";
 import { content as trinn10 } from "./trinn-10-flask-dyp";
+import { content as dte2802 } from "./dte-2802";
+import { content as csharpGrunnlag } from "./csharp-grunnlag";
+import { content as aspnetMvc } from "./aspnet-mvc";
+import { content as aspnetWebapi } from "./aspnet-webapi";
+import { content as efCore } from "./ef-core";
+import { content as blazor } from "./blazor";
 import type { TrinnContent } from "../types";
 
 export const TRINN: TrinnContent[] = [
@@ -60,6 +66,7 @@ export const TRINN: TrinnContent[] = [
   flaskLivssyklus, pythonDrill, httpAnatomi,
   dte2505, osGrunnlag, linuxBruk, shellScripting, brukereRettigheter, virtualisering,
   trinn1, trinn2, trinn3, trinn4, trinn5, trinn6, trinn7, trinn8, trinn9, trinn10,
+  dte2802, csharpGrunnlag, aspnetMvc, aspnetWebapi, efCore, blazor,
 ];
 
 // Bare ferdige trinn er offentlig synlige — stubs (`status: "stub"`)

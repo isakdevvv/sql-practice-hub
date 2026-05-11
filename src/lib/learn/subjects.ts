@@ -12,7 +12,8 @@ export type SubjectId =
   | "web"
   | "verktoy"
   | "ml-ai"
-  | "os";
+  | "os"
+  | "webapps2";
 
 export interface Subject {
   id: SubjectId;
@@ -133,6 +134,12 @@ export const SUBJECTS: readonly Subject[] = [
       "Planlegging",
       "Bayes",
     ],
+  },
+  {
+    id: "webapps2",
+    label: "Web Applikasjoner 2 (DTE-2802)",
+    short: "C#, ASP.NET MVC + Web API, EF Core, Blazor",
+    topics: ["C#", "ASP.NET MVC", "ASP.NET Web API", "EF Core", "Blazor", "LINQ"],
   },
 ] as const;
 
