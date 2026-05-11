@@ -106,3 +106,90 @@ export interface PyRunResult {
   /** Set when ok=false. */
   error?: string;
 }
+
+/* ----------------------------- Visualizer model ----------------------------- */
+/* Used by runScriptVisual + <StepVisualizer> to render a Python Tutor–style    */
+/* memory diagram (frames + heap + reference arrows).                           */
+
+export type ObjId = number;
+
+export type VarRef =
+  | { kind: "primitive"; value: string | number | boolean | null }
+  | { kind: "ref"; id: ObjId };
+
+export interface HeapList {
+  id: ObjId;
+  type: "list" | "tuple" | "set";
+  items: VarRef[];
+  truncated?: number;
+  preview: string;
+}
+
+export interface HeapDictEntry {
+  key: VarRef;
+  value: VarRef;
+}
+
+export interface HeapDict {
+  id: ObjId;
+  type: "dict";
+  entries: HeapDictEntry[];
+  truncated?: number;
+  preview: string;
+}
+
+export interface HeapInstance {
+  id: ObjId;
+  type: "instance";
+  className: string;
+  attrs: Record<string, VarRef>;
+  preview: string;
+}
+
+export interface HeapFunction {
+  id: ObjId;
+  type: "function";
+  name: string;
+  signature?: string;
+  preview: string;
+}
+
+export interface HeapOpaque {
+  id: ObjId;
+  type: "opaque" | "module";
+  label: string;
+  preview: string;
+}
+
+export type HeapObject =
+  | HeapList
+  | HeapDict
+  | HeapInstance
+  | HeapFunction
+  | HeapOpaque;
+
+export interface VisualFrame {
+  name: string;
+  line: number;
+  filename: string;
+  isUser: boolean;
+  variables: Record<string, VarRef>;
+}
+
+export type VisualEvent = "line" | "call" | "return" | "exception";
+
+export interface VisualStep {
+  event: VisualEvent;
+  frames: VisualFrame[];
+  heap: Record<ObjId, HeapObject>;
+  stdout: string;
+  error?: string;
+}
+
+export interface PyVisualResult {
+  ok: boolean;
+  steps: VisualStep[];
+  stdoutFull: string;
+  truncated?: boolean;
+  error?: string;
+}

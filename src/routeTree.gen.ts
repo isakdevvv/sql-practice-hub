@@ -28,6 +28,7 @@ import { Route as CardsRouteImport } from './routes/cards'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as StackIndexRouteImport } from './routes/stack.index'
 import { Route as StackSlugRouteImport } from './routes/stack.$slug'
+import { Route as PythonVisualizerRouteImport } from './routes/python_.visualizer'
 
 const StackRoute = StackRouteImport.update({
   id: '/stack',
@@ -124,6 +125,11 @@ const StackSlugRoute = StackSlugRouteImport.update({
   path: '/$slug',
   getParentRoute: () => StackRoute,
 } as any)
+const PythonVisualizerRoute = PythonVisualizerRouteImport.update({
+  id: '/python_/visualizer',
+  path: '/python/visualizer',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -143,6 +149,7 @@ export interface FileRoutesByFullPath {
   '/prosjekt': typeof ProsjektRoute
   '/python': typeof PythonRoute
   '/stack': typeof StackRouteWithChildren
+  '/python/visualizer': typeof PythonVisualizerRoute
   '/stack/$slug': typeof StackSlugRoute
   '/stack/': typeof StackIndexRoute
 }
@@ -163,6 +170,7 @@ export interface FileRoutesByTo {
   '/practice': typeof PracticeRoute
   '/prosjekt': typeof ProsjektRoute
   '/python': typeof PythonRoute
+  '/python/visualizer': typeof PythonVisualizerRoute
   '/stack/$slug': typeof StackSlugRoute
   '/stack': typeof StackIndexRoute
 }
@@ -185,6 +193,7 @@ export interface FileRoutesById {
   '/prosjekt': typeof ProsjektRoute
   '/python': typeof PythonRoute
   '/stack': typeof StackRouteWithChildren
+  '/python_/visualizer': typeof PythonVisualizerRoute
   '/stack/$slug': typeof StackSlugRoute
   '/stack/': typeof StackIndexRoute
 }
@@ -208,6 +217,7 @@ export interface FileRouteTypes {
     | '/prosjekt'
     | '/python'
     | '/stack'
+    | '/python/visualizer'
     | '/stack/$slug'
     | '/stack/'
   fileRoutesByTo: FileRoutesByTo
@@ -228,6 +238,7 @@ export interface FileRouteTypes {
     | '/practice'
     | '/prosjekt'
     | '/python'
+    | '/python/visualizer'
     | '/stack/$slug'
     | '/stack'
   id:
@@ -249,6 +260,7 @@ export interface FileRouteTypes {
     | '/prosjekt'
     | '/python'
     | '/stack'
+    | '/python_/visualizer'
     | '/stack/$slug'
     | '/stack/'
   fileRoutesById: FileRoutesById
@@ -271,6 +283,7 @@ export interface RootRouteChildren {
   ProsjektRoute: typeof ProsjektRoute
   PythonRoute: typeof PythonRoute
   StackRoute: typeof StackRouteWithChildren
+  PythonVisualizerRoute: typeof PythonVisualizerRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -408,6 +421,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof StackSlugRouteImport
       parentRoute: typeof StackRoute
     }
+    '/python_/visualizer': {
+      id: '/python_/visualizer'
+      path: '/python/visualizer'
+      fullPath: '/python/visualizer'
+      preLoaderRoute: typeof PythonVisualizerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -441,6 +461,7 @@ const rootRouteChildren: RootRouteChildren = {
   ProsjektRoute: ProsjektRoute,
   PythonRoute: PythonRoute,
   StackRoute: StackRouteWithChildren,
+  PythonVisualizerRoute: PythonVisualizerRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

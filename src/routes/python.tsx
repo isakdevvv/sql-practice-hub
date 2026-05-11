@@ -5,13 +5,14 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { PythonEditor } from "@/components/python/PythonEditor";
 import { VariableInspector } from "@/components/python/VariableInspector";
+import { StepVisualizer } from "@/components/python/StepVisualizer";
 import { PY_EXERCISES } from "@/lib/python/exercises";
-import { runScript, runScriptStepwise } from "@/lib/python/runner";
+import { runScript, runScriptStepwise, runScriptVisual } from "@/lib/python/runner";
 import { loadPyProgress, markPySolved, resetPyProgress, type PyProgress } from "@/lib/python/pyProgress";
 import { levelOf, PY_LEVEL_NAMES, type PyLevel } from "@/lib/python/types";
 import { DocsPanel } from "@/components/DocsPanel";
 import { getPyodide, isPyodideReady, onPyodideProgress } from "@/lib/python/pyodideLoader";
-import type { PyRunResult, PyStep } from "@/lib/python/types";
+import type { PyRunResult, PyStep, VisualStep } from "@/lib/python/types";
 import { cn } from "@/lib/utils";
 import {
   Play,
@@ -24,6 +25,8 @@ import {
   BookOpen,
   Check,
   Trophy,
+  Network,
+  ExternalLink,
 } from "lucide-react";
 
 export const Route = createFileRoute("/python")({
@@ -81,6 +84,8 @@ function PythonPage() {
 
   // Stepping state
   const [steps, setSteps] = useState<PyStep[] | null>(null);
+  const [visualSteps, setVisualSteps] = useState<VisualStep[] | null>(null);
+  const [panelMode, setPanelMode] = useState<"list" | "visual">("list");
   const [stepIdx, setStepIdx] = useState(0);
   const [showHints, setShowHints] = useState(false);
   const [showSolution, setShowSolution] = useState(false);
@@ -96,6 +101,8 @@ function PythonPage() {
     setStdout("");
     setError(null);
     setSteps(null);
+    setVisualSteps(null);
+    setPanelMode("list");
     setStepIdx(0);
     setShowHints(false);
     setShowSolution(false);
@@ -150,6 +157,7 @@ function PythonPage() {
     setBusy(true);
     setError(null);
     setSteps(null);
+    setVisualSteps(null);
     setStepIdx(0);
     try {
       await ensureLoaded();
@@ -175,6 +183,8 @@ function PythonPage() {
   async function handleStep() {
     setBusy(true);
     setError(null);
+    setVisualSteps(null);
+    setPanelMode("list");
     try {
       await ensureLoaded();
       const result = await runScriptStepwise(code, {
@@ -194,15 +204,46 @@ function PythonPage() {
     }
   }
 
+  async function handleVisualize() {
+    setBusy(true);
+    setError(null);
+    setSteps(null);
+    setPanelMode("visual");
+    try {
+      await ensureLoaded();
+      const result = await runScriptVisual(code, {
+        requires: exercise.requires,
+        setup: exercise.setup,
+      });
+      setStdout(result.stdoutFull);
+      if (!result.ok) {
+        setError(result.error ?? "Ukjent feil");
+        setVisualSteps(null);
+      } else {
+        setVisualSteps(result.steps);
+        setStepIdx(0);
+      }
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  // Active step length depends on the current panel — visual or list.
+  const activeStepCount =
+    panelMode === "visual"
+      ? (visualSteps?.length ?? 0)
+      : (steps?.length ?? 0);
+
   function nextStep() {
-    if (!steps) return;
-    setStepIdx((i) => Math.min(i + 1, steps.length - 1));
+    if (activeStepCount === 0) return;
+    setStepIdx((i) => Math.min(i + 1, activeStepCount - 1));
   }
   function prevStep() {
     setStepIdx((i) => Math.max(0, i - 1));
   }
   function resetSteps() {
     setSteps(null);
+    setVisualSteps(null);
     setStepIdx(0);
   }
 
@@ -215,8 +256,31 @@ function PythonPage() {
 
   const currentStep = steps && steps[stepIdx];
   const previousStep = steps && stepIdx > 0 ? steps[stepIdx - 1] : null;
+  const currentVisualStep = visualSteps && visualSteps[stepIdx];
+
+  // Top user frame's current line — used for editor highlighting in both modes.
+  const visualLine = (() => {
+    if (panelMode !== "visual" || !currentVisualStep) return null;
+    const frames = currentVisualStep.frames.filter((f) => f.isUser);
+    if (!frames.length) return null;
+    return frames[frames.length - 1].line;
+  })();
   const highlightLine =
-    steps && currentStep && currentStep.line > 0 ? currentStep.line : null;
+    panelMode === "visual"
+      ? visualLine
+      : steps && currentStep && currentStep.line > 0
+        ? currentStep.line
+        : null;
+
+  // Build a base64-safe payload of the current editor for the standalone sandbox link.
+  const sandboxHref = useMemo(() => {
+    try {
+      const b64 = typeof window === "undefined" ? "" : window.btoa(unescape(encodeURIComponent(code)));
+      return `/python/visualizer#code=${b64}`;
+    } catch {
+      return "/python/visualizer";
+    }
+  }, [code]);
 
   return (
     <div className="min-h-screen bg-background">
@@ -478,27 +542,47 @@ function PythonPage() {
                       <StepForward className="h-3.5 w-3.5 mr-1.5" />
                       Steg gjennom
                     </Button>
+                    <Button size="sm" variant="outline" onClick={handleVisualize} disabled={busy}>
+                      <Network className="h-3.5 w-3.5 mr-1.5" />
+                      Visualiser
+                    </Button>
                     <Button size="sm" variant="ghost" onClick={resetCode}>
                       <RotateCcw className="h-3.5 w-3.5 mr-1.5" />
                       Tilbakestill
                     </Button>
+                    <a
+                      href={sandboxHref}
+                      className="inline-flex items-center text-[11px] text-muted-foreground hover:text-foreground ml-auto"
+                      title="Åpne koden i frittstående sandkasse"
+                    >
+                      Åpne i sandkasse
+                      <ExternalLink className="h-3 w-3 ml-1" />
+                    </a>
                   </div>
                 </div>
 
                 {/* Output + variables */}
                 <div className="space-y-2">
                   {/* Stepping controls */}
-                  {steps && steps.length > 0 ? (
+                  {activeStepCount > 0 ? (
                     <div className="rounded-md border border-brand/40 bg-brand/5 p-2 flex items-center justify-between gap-2 text-xs">
                       <div className="text-foreground">
-                        <strong>Steg {stepIdx + 1} av {steps.length}</strong>
-                        {currentStep && currentStep.line > 0 && (
+                        <strong>
+                          Steg {stepIdx + 1} av {activeStepCount}
+                        </strong>
+                        {panelMode === "list" && currentStep && currentStep.line > 0 && (
                           <span className="text-muted-foreground ml-2">
                             (linje {currentStep.line})
                           </span>
                         )}
-                        {currentStep && currentStep.line === -1 && (
+                        {panelMode === "list" && currentStep && currentStep.line === -1 && (
                           <span className="text-muted-foreground ml-2">(ferdig)</span>
+                        )}
+                        {panelMode === "visual" && currentVisualStep && (
+                          <span className="text-muted-foreground ml-2">
+                            ({currentVisualStep.event}
+                            {visualLine ? ` · linje ${visualLine}` : ""})
+                          </span>
                         )}
                       </div>
                       <div className="flex gap-1">
@@ -509,7 +593,7 @@ function PythonPage() {
                           size="sm"
                           variant="ghost"
                           onClick={nextStep}
-                          disabled={stepIdx >= steps.length - 1}
+                          disabled={stepIdx >= activeStepCount - 1}
                         >
                           <ChevronRight className="h-3.5 w-3.5" />
                         </Button>
@@ -520,16 +604,51 @@ function PythonPage() {
                     </div>
                   ) : null}
 
-                  {/* Variables */}
+                  {/* Panel: Variables (list mode) or Memory diagram (visual mode) */}
                   <div className="rounded-md border border-border bg-card">
-                    <div className="text-[10px] uppercase tracking-wider text-muted-foreground px-3 py-1.5 border-b border-border">
-                      Variabler
+                    <div className="flex items-center justify-between border-b border-border px-3 py-1.5">
+                      <div className="text-[10px] uppercase tracking-wider text-muted-foreground">
+                        {panelMode === "visual" ? "Minnediagram" : "Variabler"}
+                      </div>
+                      <div className="flex gap-1 text-[10px]">
+                        <button
+                          onClick={() => setPanelMode("list")}
+                          className={cn(
+                            "rounded px-1.5 py-0.5 transition-colors",
+                            panelMode === "list"
+                              ? "bg-accent text-foreground"
+                              : "text-muted-foreground hover:text-foreground",
+                          )}
+                        >
+                          Liste
+                        </button>
+                        <button
+                          onClick={() => setPanelMode("visual")}
+                          className={cn(
+                            "rounded px-1.5 py-0.5 transition-colors",
+                            panelMode === "visual"
+                              ? "bg-accent text-foreground"
+                              : "text-muted-foreground hover:text-foreground",
+                          )}
+                        >
+                          Diagram
+                        </button>
+                      </div>
                     </div>
-                    <div className="max-h-[140px] overflow-auto">
-                      <VariableInspector
-                        current={currentStep?.locals ?? null}
-                        previous={previousStep?.locals ?? null}
-                      />
+                    <div
+                      className={cn(
+                        "overflow-auto",
+                        panelMode === "visual" ? "max-h-[440px]" : "max-h-[140px]",
+                      )}
+                    >
+                      {panelMode === "visual" ? (
+                        <StepVisualizer steps={visualSteps} stepIdx={stepIdx} />
+                      ) : (
+                        <VariableInspector
+                          current={currentStep?.locals ?? null}
+                          previous={previousStep?.locals ?? null}
+                        />
+                      )}
                     </div>
                   </div>
 
