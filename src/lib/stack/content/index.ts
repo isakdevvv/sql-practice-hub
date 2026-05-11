@@ -80,6 +80,9 @@ import { content as roomRecycler } from "./room-recycler";
 import { content as apiRetrofit } from "./api-retrofit";
 import { content as mysqlVsSqlite } from "./mysql-vs-sqlite";
 import { content as mvcMonster } from "./mvc-monster";
+import { content as gitDyp } from "./git-dyp";
+import { content as docker } from "./docker";
+import { content as linuxCliAdvanced } from "./linux-cli-advanced";
 import { content as laereplan } from "./laereplan";
 import type { TrinnContent } from "../types";
 
@@ -99,6 +102,7 @@ export const TRINN: TrinnContent[] = [
   apiProsjekt, apiPlanlegging, apiArkitektur, apiKontrakt, apiTesting, apiDeploy,
   dte2603, kotlinGrunnlag, androidGrunnlag, mvvmArkitektur, korutiner, roomRecycler, apiRetrofit,
   mvcMonster,
+  gitDyp, docker, linuxCliAdvanced,
   laereplan,
 ];
 

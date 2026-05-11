@@ -16,7 +16,8 @@ export type SubjectId =
   | "webapps2"
   | "systemutvikling"
   | "api-prosjekt"
-  | "mobil";
+  | "mobil"
+  | "devops";
 
 export interface Subject {
   id: SubjectId;
@@ -181,6 +182,12 @@ export const SUBJECTS: readonly Subject[] = [
       "RecyclerView",
       "Retrofit",
     ],
+  },
+  {
+    id: "devops",
+    label: "DevOps & verktøy (Phase 11.5)",
+    short: "Git-dyp, Docker, Linux-CLI advanced",
+    topics: ["Git-dyp", "Docker", "Linux-CLI advanced", "sed/awk/jq", "Containere"],
   },
 ] as const;
 
