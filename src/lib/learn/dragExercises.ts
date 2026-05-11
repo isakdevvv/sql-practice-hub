@@ -3626,4 +3626,689 @@ __5__ endfor __6__
     explanation:
       "Løsning: bruk en eksplisitt allowlist — hent BARE de feltene route-en faktisk tillater. Eks: navn = request.form.get(\"navn\"); user.navn = navn. Aldri loop blindt over input.",
   },
+
+  // ============= UNDERSPØRRINGER (SUBQUERIES) — alle nivåer =============
+  // Nivå 1 (nybegynner): subquery i WHERE (IN, scalar)
+  // Nivå 2 (mellom): EXISTS, NOT IN/NOT EXISTS, korrelerte
+  // Nivå 3 (avansert): subquery i FROM (avledet tabell), CTE, nested
+  // Nivå 4 (ekspert): rekursiv CTE, window-funksjoner kombinert
+
+  {
+    id: "d-quiz-subquery-predict-inner",
+    kind: "quiz",
+    title: "Hva returnerer den INDRE SELECTen?",
+    prompt:
+      "Den indre SELECTen kjører først. Hva er resultatet av den, før den ytre filtreringen?",
+    topic: "Underspørringer",
+    question:
+      "Tabellen Produkt har 5 rader med pris: 50, 100, 100, 200, 300. Hva returnerer den innerste delen (SELECT AVG(pris) FROM Produkt)?",
+    code: "SELECT prodnavn\nFROM Produkt\nWHERE pris > (SELECT AVG(pris) FROM Produkt);",
+    language: "sql",
+    options: [
+      {
+        text: "Ett tall: 150 (gjennomsnittet av prisene)",
+        correct: true,
+        rationale:
+          "AVG returnerer EN skalar-verdi. Den ytre WHERE bruker så 150 som sammenligningsverdi.",
+      },
+      {
+        text: "En liste med 5 tall — én per rad",
+        correct: false,
+        rationale:
+          "AVG aggregerer alle rader til ett tall. Hadde vi droppet aggregatet hadde vi fått 5 rader, men da ville scalar-sammenligningen feilet.",
+      },
+      {
+        text: "En tabell med kolonnene navn og pris",
+        correct: false,
+        rationale:
+          "Den indre SELECTen plukker bare AVG(pris) — én kolonne, én verdi.",
+      },
+      {
+        text: "150, 150, 150, 150, 150 — én verdi per rad",
+        correct: false,
+        rationale:
+          "AVG uten GROUP BY returnerer ÉN rad, ikke en verdi per input-rad.",
+      },
+    ],
+    explanation:
+      "Les alltid innenfra og ut: innerste SELECT først, så den ytre. AVG/COUNT/SUM/MIN/MAX uten GROUP BY → skalar (ett tall). Med GROUP BY → flere rader.",
+  },
+  {
+    id: "d-quiz-subquery-in-vs-equals",
+    kind: "quiz",
+    title: "= vs IN — hvilken skal du bruke?",
+    prompt: "Subqueryen kan returnere én eller flere rader. Velg riktig operator.",
+    topic: "Underspørringer",
+    question:
+      "Du vil finne kunder i samme by som kunde nr 5. Subqueryen returnerer KÉN by-verdi (skalar). Hva er riktig?",
+    code: "SELECT navn\nFROM Kunde\nWHERE by ??? (SELECT by FROM Kunde WHERE kundenr = 5);",
+    language: "sql",
+    options: [
+      {
+        text: "= — fordi subqueryen returnerer én skalarverdi",
+        correct: true,
+        rationale:
+          "Når subqueryen er garantert å returnere én rad, fungerer = perfekt. IN ville også fungert, men = er mer presist og raskere.",
+      },
+      {
+        text: "IN — alltid trygt med subqueries",
+        correct: false,
+        rationale:
+          "Ville fungert her, men hvis subqueryen plutselig returnerer flere rader (eks. duplikater), gir = en runtime-feil. IN aksepterer 0..N verdier.",
+      },
+      {
+        text: "EXISTS — den eneste riktige med subqueries",
+        correct: false,
+        rationale:
+          "EXISTS returnerer bare TRUE/FALSE, ikke en verdi du kan sammenligne by mot. Feil syntaks her.",
+      },
+      {
+        text: "LIKE — sammenligner strenger",
+        correct: false,
+        rationale:
+          "LIKE er for mønster-matching med %, ikke for sammenligning mot subquery-resultat.",
+      },
+    ],
+    explanation:
+      "Regel: skalar (én rad, én kolonne) → =. Liste (flere rader) → IN. Sjekk om noe finnes → EXISTS. Hvis du er usikker, IN er trygt — fungerer både for 0, 1 og N rader.",
+  },
+  {
+    id: "d-fill-subquery-in",
+    kind: "fill",
+    title: "Subquery i WHERE — IN-listen",
+    prompt:
+      "Finn alle produkter som er bestilt minst én gang. Bruk IN med en subquery som returnerer alle bestilte prodNr.",
+    topic: "Underspørringer",
+    language: "sql",
+    template:
+      "SELECT prodnavn\nFROM Produkt\n__1__ prodnr __2__ (\n  __3__ DISTINCT prodnr\n  FROM Ordrelinje\n);",
+    blanks: ["WHERE", "IN", "SELECT"],
+    options: ["WHERE", "IN", "EXISTS", "ANY", "SELECT", "FROM", "JOIN", "DISTINCT"],
+    explanation:
+      "Subquery returnerer en LISTE av prodNr — IN sjekker om hver produkt-rad finnes i den listen. JOIN ville gitt samme resultat ofte, men subquery er enklere når du bare trenger «finnes / finnes ikke».",
+  },
+  {
+    id: "d-fill-subquery-not-in",
+    kind: "fill",
+    title: "NOT IN — produkter som ALDRI er solgt",
+    prompt:
+      "Finn produkter som ikke er på noen ordrelinje. Pass på NULL-fellen — bruk IS NOT NULL i subqueryen.",
+    topic: "Underspørringer",
+    language: "sql",
+    template:
+      "SELECT prodnavn\nFROM Produkt\nWHERE prodnr __1__ __2__ (\n  SELECT prodnr\n  FROM Ordrelinje\n  WHERE prodnr __3__ NULL\n);",
+    blanks: ["NOT", "IN", "IS NOT"],
+    options: ["NOT", "IN", "IS NOT", "IS", "=", "EXISTS", "ANY"],
+    explanation:
+      "NOT IN-fellen: hvis subqueryen returnerer ÉN NULL-verdi, blir HELE NOT IN UKJENT (NULL) og du får 0 rader. Filtrer NULL ut i subqueryen, eller bytt til NOT EXISTS som ikke har problemet.",
+  },
+  {
+    id: "d-fill-subquery-scalar",
+    kind: "fill",
+    title: "Skalar-subquery i SELECT",
+    prompt:
+      "Vis hvert produkt sammen med antallet ganger det er bestilt. Bruk en skalar-subquery i SELECT-listen.",
+    topic: "Underspørringer",
+    language: "sql",
+    template:
+      "SELECT p.prodnavn,\n       (__1__ __2__(*) __3__ Ordrelinje ol __4__ ol.prodnr = p.prodnr) __5__ antall\nFROM Produkt p;",
+    blanks: ["SELECT", "COUNT", "FROM", "WHERE", "AS"],
+    options: ["SELECT", "COUNT", "SUM", "FROM", "WHERE", "ON", "AS", "IN"],
+    explanation:
+      "Skalar-subquery i SELECT-listen kjøres ÉN gang per ytre rad. Korrelert via p.prodnr — refererer til den ytre tabellens kolonne. Funksjonelt likt LEFT JOIN + GROUP BY, men noen ganger lettere å lese.",
+  },
+  {
+    id: "d-fill-subquery-exists",
+    kind: "fill",
+    title: "EXISTS — kunder som har lagt inn ordre",
+    prompt:
+      "Finn kunder som har MINST én ordre. EXISTS er ofte raskere enn IN — sjekker bare om det FINNES en match.",
+    topic: "Underspørringer",
+    language: "sql",
+    template:
+      "SELECT k.navn\nFROM Kunde k\nWHERE __1__ (\n  __2__ 1\n  FROM Ordre o\n  __3__ o.kundenr = k.kundenr\n);",
+    blanks: ["EXISTS", "SELECT", "WHERE"],
+    options: ["EXISTS", "IN", "ANY", "SELECT", "FROM", "WHERE", "JOIN", "1"],
+    explanation:
+      "SELECT 1 (eller hva som helst) i EXISTS — innholdet matter ikke, bare om RADER FINNES. Korrelasjonen `o.kundenr = k.kundenr` kobler subqueryen til hver ytre kunde-rad.",
+  },
+  {
+    id: "d-fill-subquery-correlated",
+    kind: "fill",
+    title: "Korrelert subquery — kunders dyreste ordre",
+    prompt:
+      "For hver kunde, vis ordren med høyest totalsum. Korrelert subquery refererer til ytre tabells kolonne.",
+    topic: "Underspørringer",
+    language: "sql",
+    template:
+      "SELECT o.ordrenr, o.kundenr, o.total\nFROM Ordre o\nWHERE o.total = (\n  SELECT __1__(o2.total)\n  FROM Ordre o2\n  __2__ o2.kundenr __3__ o.kundenr\n);",
+    blanks: ["MAX", "WHERE", "="],
+    options: ["MAX", "MIN", "AVG", "WHERE", "ON", "=", "AND", "HAVING"],
+    explanation:
+      "Korrelert = subqueryen referer til ytre query (her o.kundenr). Subqueryen evaluerer på nytt for HVER ytre rad — kan være tregt på store datasett. Window-funksjoner (ROW_NUMBER OVER PARTITION) er ofte raskere.",
+  },
+  {
+    id: "d-fill-subquery-derived",
+    kind: "fill",
+    title: "Subquery i FROM (avledet tabell)",
+    prompt:
+      "Finn gjennomsnittsalder per kjønn — men bare for grupper med flere enn 10 personer. Gruppér først i en sub-SELECT, filtrer så.",
+    topic: "Underspørringer",
+    language: "sql",
+    template:
+      "SELECT kjonn, snittalder\nFROM (\n  SELECT kjonn, __1__(*) __2__ antall, __3__(alder) __2__ snittalder\n  FROM Person\n  __4__ kjonn\n) __5__\nWHERE antall > 10;",
+    blanks: ["COUNT", "AS", "AVG", "GROUP BY", "AS gr"],
+    options: ["COUNT", "AVG", "SUM", "AS", "AS gr", "GROUP BY", "ORDER BY", "HAVING"],
+    explanation:
+      "Avledet tabell (også: «inline view»): subquery i FROM må ha et alias (her «gr»). Brukes når du vil filtrere/joine på AGGREGERTE verdier — HAVING fungerer også, men avledede tabeller skalerer bedre når du har flere lag.",
+  },
+  {
+    id: "d-fill-subquery-cte",
+    kind: "fill",
+    title: "CTE (WITH ... AS) — lesbart alternativ",
+    prompt:
+      "Samme problem som «avledet tabell»-oppgaven over, men løst med CTE. Mye lettere å lese.",
+    topic: "Underspørringer",
+    language: "sql",
+    template:
+      "__1__ gr __2__ (\n  SELECT kjonn, COUNT(*) AS antall, AVG(alder) AS snittalder\n  FROM Person\n  GROUP BY kjonn\n)\nSELECT kjonn, snittalder\n__3__ gr\nWHERE antall > 10;",
+    blanks: ["WITH", "AS", "FROM"],
+    options: ["WITH", "AS", "FROM", "SELECT", "WHERE", "JOIN", "IN", "EXISTS"],
+    explanation:
+      "CTE = Common Table Expression. Lik avledet tabell, men navngitt øverst — gir lesbarhet og lar deg referere samme «midlertidige tabell» flere ganger. Postgres kan også gjøre rekursive CTE-er for trær.",
+  },
+  {
+    id: "d-fill-subquery-cte-multi",
+    kind: "fill",
+    title: "Flere CTE-er — toppselgerne per kategori",
+    prompt:
+      "Bruk to CTE-er: én for salg per produkt, én for max-salg per kategori. JOIN dem til slutt.",
+    topic: "Underspørringer",
+    language: "sql",
+    template:
+      "WITH salg_per_produkt __1__ (\n  SELECT p.prodnr, p.kategori, SUM(ol.antall) AS solgt\n  FROM Produkt p\n  JOIN Ordrelinje ol ON ol.prodnr = p.prodnr\n  GROUP BY p.prodnr, p.kategori\n)__2__\nmax_per_kat AS (\n  SELECT kategori, MAX(solgt) AS max_solgt\n  FROM salg_per_produkt\n  __3__ kategori\n)\nSELECT s.prodnr, s.kategori, s.solgt\nFROM salg_per_produkt s\nJOIN max_per_kat m\n  __4__ s.kategori = m.kategori __5__ s.solgt = m.max_solgt;",
+    blanks: ["AS", ",", "GROUP BY", "ON", "AND"],
+    options: ["AS", ",", "WITH", "SELECT", "GROUP BY", "HAVING", "ON", "AND", "WHERE"],
+    explanation:
+      "Flere CTE-er separeres med komma — kun ett WITH øverst. Hver CTE kan referere til foregående. Dette mønsteret («finn topp-N per gruppe») er klassisk eksamenstoff — kjenn det igjen.",
+  },
+  {
+    id: "d-quiz-subquery-vs-join",
+    kind: "quiz",
+    title: "Subquery vs JOIN — hvilken er bedre?",
+    prompt: "Velg det best dekkende svaret.",
+    topic: "Underspørringer",
+    question:
+      "Du vil finne navn på alle kunder som har minst én ordre. Du kan bruke INNER JOIN eller EXISTS-subquery. Hvilken er BEST?",
+    options: [
+      {
+        text: "EXISTS-subquery — får ikke duplikater, semantisk klarere",
+        correct: true,
+        rationale:
+          "INNER JOIN gir ÉN rad per match — så kunde med 5 ordrer kommer 5 ganger med mindre du legger til DISTINCT. EXISTS sjekker bare «finnes match?» og gir hver kunde én gang.",
+      },
+      {
+        text: "INNER JOIN — alltid raskere enn subquery",
+        correct: false,
+        rationale:
+          "Det varierer per DB-motor. Moderne optimalisatorer omformer ofte EXISTS-subqueries internt til semi-joins, så ytelsen er ofte lik.",
+      },
+      {
+        text: "De er identiske i alle henseender",
+        correct: false,
+        rationale: "Resultatet kan skille seg ved duplikater (se EXISTS-svaret).",
+      },
+      {
+        text: "Subquery er feil her — kun JOIN kan finne match",
+        correct: false,
+        rationale: "EXISTS er en helt vanlig løsning på dette problemet.",
+      },
+    ],
+    explanation:
+      "Tommelfingerregel: bruker du data fra begge tabeller i SELECT → JOIN. Vil du bare sjekke om noe finnes → EXISTS. Vil du forenkle med en liste av verdier → IN.",
+  },
+  {
+    id: "d-order-subquery-evaluation",
+    kind: "order",
+    title: "Evalueringsrekkefølge — hvordan kjøres en nøstet query?",
+    prompt:
+      "En query har subquery i WHERE. I hvilken rekkefølge evaluerer SQL motoren delene? Konseptuelt rekkefølge, ikke optimalisert.",
+    topic: "Underspørringer",
+    items: [
+      "FROM — bestem tabellen(e) og legg dem i minnet",
+      "WHERE blir evaluert — for hver rad må subquery-resultatet være kjent",
+      "Subquery: kjøres (eventuelt én gang for skalar, eller per rad for korrelert)",
+      "Resultatet fra subqueryen brukes til å filtrere ytre rader",
+      "GROUP BY — grupperer de filtrerte radene",
+      "HAVING — filtrerer gruppene",
+      "SELECT — plukker ut kolonnene som ble bedt om",
+      "ORDER BY — sorterer slutt-resultatet",
+      "LIMIT — kutter ned til N rader",
+    ],
+    explanation:
+      "Den faktiske rekkefølgen i SQL motoren matcher IKKE den syntaktiske rekkefølgen i din query. Det forklarer hvorfor du kan referere til kolonne-alias i ORDER BY (sist) men ikke i WHERE (tidlig).",
+  },
+  {
+    id: "d-fill-subquery-not-exists",
+    kind: "fill",
+    title: "NOT EXISTS — anti-join trygg mot NULL",
+    prompt:
+      "Finn produkter som ALDRI er bestilt. NOT EXISTS er sikrere enn NOT IN her.",
+    topic: "Underspørringer",
+    language: "sql",
+    template:
+      "SELECT p.prodnavn\nFROM Produkt p\nWHERE __1__ __2__ (\n  SELECT 1\n  FROM Ordrelinje ol\n  WHERE ol.prodnr __3__ p.prodnr\n);",
+    blanks: ["NOT", "EXISTS", "="],
+    options: ["NOT", "EXISTS", "IN", "ANY", "=", "IS", "AND", "WHERE"],
+    explanation:
+      "NOT EXISTS har ikke NULL-fellen som NOT IN. Den korrelerte sjekken `ol.prodnr = p.prodnr` peker tilbake på den ytre tabellen — finner ingen match → produktet er aldri bestilt.",
+  },
+  {
+    id: "d-match-subquery-typer",
+    kind: "match",
+    title: "Subquery-typer og når du bruker hver",
+    prompt: "Koble hver subquery-type til sin typiske bruk.",
+    topic: "Underspørringer",
+    pairs: [
+      {
+        left: "Skalar-subquery (én rad, én kolonne)",
+        right: "Sammenligning med = i WHERE, eller utregnet kolonne i SELECT",
+      },
+      {
+        left: "Listesubquery (mange rader, én kolonne)",
+        right: "WHERE x IN (SELECT ...) — sjekker tilhørighet",
+      },
+      {
+        left: "EXISTS-subquery",
+        right: "Sjekk om minst én match finnes — gir TRUE/FALSE",
+      },
+      {
+        left: "Korrelert subquery",
+        right: "Refererer til ytre tabells kolonne — evalueres per ytre rad",
+      },
+      {
+        left: "Avledet tabell (subquery i FROM)",
+        right: "Filtrer/joine på aggregerte verdier eller for-prosesserte data",
+      },
+      {
+        left: "CTE (WITH ... AS)",
+        right: "Navngitt midlertidig resultat — lesbart, gjenbrukbart i samme query",
+      },
+    ],
+    explanation:
+      "Disse seks dekker 99% av subquery-bruk. Når du møter en spørring du ikke forstår, klassifiser den først — det gir deg rammeverket for å lese den.",
+  },
+  {
+    id: "d-fill-subquery-having",
+    kind: "fill",
+    title: "Subquery i HAVING — over gjennomsnittet",
+    prompt:
+      "Finn kategorier hvor SNITTPRISEN er høyere enn totalsnittet på tvers av alle produkter.",
+    topic: "Underspørringer",
+    language: "sql",
+    template:
+      "SELECT kategori, AVG(pris) AS kat_snitt\nFROM Produkt\n__1__ kategori\n__2__ AVG(pris) > (\n  SELECT __3__(pris)\n  FROM Produkt\n);",
+    blanks: ["GROUP BY", "HAVING", "AVG"],
+    options: ["GROUP BY", "HAVING", "WHERE", "AVG", "SUM", "MAX", "ORDER BY"],
+    explanation:
+      "HAVING tillater aggregat-uttrykk OG kan sammenligne mot subquery. Skalar-subqueryen returnerer ett totalsnitt — hver kategorigruppe sammenlignes mot dette.",
+  },
+  {
+    id: "d-fill-subquery-nested-3",
+    kind: "fill",
+    title: "Tre nivåer nøsting (avansert)",
+    prompt:
+      "Finn kunder som har bestilt det MEST POPULÆRE produktet. Tre nivåer: ytterst kunde, mellom prodnr, innerst antall-pop.",
+    topic: "Underspørringer",
+    language: "sql",
+    template:
+      "SELECT DISTINCT k.navn\nFROM Kunde k\nINNER JOIN Ordre o ON o.kundenr = k.kundenr\nINNER JOIN Ordrelinje ol __1__ ol.ordrenr = o.ordrenr\nWHERE ol.prodnr __2__ (\n  SELECT prodnr\n  FROM Ordrelinje\n  GROUP BY prodnr\n  HAVING SUM(antall) = (\n    SELECT __3__(SUM(antall))\n    FROM Ordrelinje\n    __4__ prodnr\n  )\n);",
+    blanks: ["ON", "=", "MAX", "GROUP BY"],
+    options: ["ON", "WHERE", "=", "IN", "MAX", "SUM", "GROUP BY", "HAVING"],
+    explanation:
+      "Les innenfra og ut: innerst finner MAX av totalsalg per produkt. Mellom-laget plukker prodnr som matcher den maxen. Ytterst finner kunder som har bestilt det. Tre nivåer er øvre grense for lesbarhet — over det bør du bruke CTE.",
+  },
+
+  // ============= PRIMÆRNØKKEL / FREMMEDNØKKEL — riktig valg =============
+
+  {
+    id: "d-quiz-pk-choice-customer",
+    kind: "quiz",
+    title: "Hvilken kolonne bør være PK?",
+    prompt: "Velg det best dekkende svaret.",
+    topic: "Nøkler",
+    question:
+      "Du designer Kunde-tabellen: (id INT AUTO_INCREMENT, navn TEXT, epost TEXT UNIQUE, telefon TEXT, fnr CHAR(11) UNIQUE). Hvilken bør være PK?",
+    options: [
+      {
+        text: "id (surrogatnøkkel) — alle andre kandidatnøkler får UNIQUE",
+        correct: true,
+        rationale:
+          "Surrogatnøkkel er stabil (endrer aldri verdi), kort (INT), og lekker ikke business-info. epost og fnr er naturlige kandidatnøkler — de får UNIQUE i tillegg.",
+      },
+      {
+        text: "epost — den er jo unik per person",
+        correct: false,
+        rationale:
+          "Folk bytter epost. Hvis PK endres, må alle FK-er oppdateres — vondt. Bruk surrogat-id som PK og UNIQUE på epost.",
+      },
+      {
+        text: "fnr (fødselsnummer)",
+        correct: false,
+        rationale:
+          "Selv om det er stabilt, er det sensitivt — du sprer det da via FK til mange tabeller. Datatilsynet liker ikke det. Hold fnr i én tabell, bruk surrogat-id andre steder.",
+      },
+      {
+        text: "navn",
+        correct: false,
+        rationale:
+          "Navn er ikke unike (mange Per Hansen finnes). Ville brutt PK-kravet om unikhet.",
+      },
+    ],
+    explanation:
+      "Hovedregel: bruk surrogatnøkkel (AUTO_INCREMENT / SERIAL / UUID) for PK. Sett UNIQUE på naturlige kandidatnøkler. Da kan business-data endre seg uten å bryte relasjoner.",
+  },
+  {
+    id: "d-quiz-pk-junction",
+    kind: "quiz",
+    title: "PK i en M:N-koblingstabell",
+    prompt: "Velg det riktige PK-valget.",
+    topic: "Nøkler",
+    question:
+      "Du lager koblingstabellen Tar(sid, fkode, semester) for at studenter tar fag. Hva er PK?",
+    options: [
+      {
+        text: "Sammensatt PK = (sid, fkode)",
+        correct: true,
+        rationale:
+          "Standard for M:N: PK består av FK-ene til de to entitetene. Sperrer dobbeltregistrering (samme student kan ikke ta samme fag to ganger).",
+      },
+      {
+        text: "Ny surrogat-id (tarId INT AUTO_INCREMENT)",
+        correct: false,
+        rationale:
+          "Tillater dobbeltregistrering — to rader med samme (sid, fkode). Hvis du legger til surrogat, må du fortsatt sette UNIQUE på (sid, fkode).",
+      },
+      {
+        text: "PK = sid",
+        correct: false,
+        rationale:
+          "Da kunne hver student bare tatt ÉTT fag totalt. Ikke det vi vil.",
+      },
+      {
+        text: "PK = (sid, fkode, semester) — inkluder semester",
+        correct: false,
+        rationale:
+          "Det åpner for samme student-fag-par på ulike semestre. RIKTIG hvis det er forretningsregelen — men da må spørsmålet eksplisitt si det. Standard er (sid, fkode).",
+      },
+    ],
+    explanation:
+      "Junction table PK = (FK_a, FK_b). semester og andre relasjons-attributter er bare kolonner. Hvis samme par MÅ kunne forekomme flere ganger, utvid PK med en diskriminator (dato, semester).",
+  },
+  {
+    id: "d-quiz-pk-weak-entity",
+    kind: "quiz",
+    title: "PK i en svak entitet",
+    prompt: "Velg det riktige PK-valget.",
+    topic: "Nøkler",
+    question:
+      "Ordrelinje(ordreNr, linjeNr, prodNr, antall). Hver ordrelinje hører til én ordre, og linjeNr er bare unikt INNENFOR den ordren. Hva er PK?",
+    options: [
+      {
+        text: "(ordreNr, linjeNr) — sammensatt med eier-FK",
+        correct: true,
+        rationale:
+          "Klassisk svak entitet: eier-FK + lokal diskriminator. ordreNr alene er ikke unik (én ordre har flere linjer), linjeNr alene er ikke unik (linje 1 finnes i mange ordre).",
+      },
+      {
+        text: "linjeNr alene",
+        correct: false,
+        rationale: "Ikke unik på tvers av ordrer — linje 1 finnes i hver ordre.",
+      },
+      {
+        text: "(linjeNr, prodNr)",
+        correct: false,
+        rationale:
+          "Tilfeldigvis unik i de fleste datasett, men logisk feil — produkt er en attributt, ikke en identifikator.",
+      },
+      {
+        text: "ordreNr alene",
+        correct: false,
+        rationale: "Ikke unik — én ordre har flere linjer.",
+      },
+    ],
+    explanation:
+      "Svak entitet → PK inkluderer eier-FK. ordreNr må også være FOREIGN KEY (referanseintegritet) — med ON DELETE CASCADE er typisk (sletter ordren, forsvinner linjene).",
+  },
+  {
+    id: "d-quiz-fk-side",
+    kind: "quiz",
+    title: "Hvor hører FK-en hjemme (1:N)?",
+    prompt: "Velg den riktige plasseringen.",
+    topic: "Nøkler",
+    question:
+      "1:N-relasjon: én KATEGORI har 0..N PRODUKTer; hvert PRODUKT hører til nøyaktig én KATEGORI. Hvor legger du FK-en?",
+    options: [
+      {
+        text: "I PRODUKT — kolonnen Produkt.kategoriNr → Kategori(kategoriNr)",
+        correct: true,
+        rationale:
+          "Huskeregel: «FK-en bor på mange-siden». Hvert produkt har én kategori, så det er én verdi — passer i én kolonne.",
+      },
+      {
+        text: "I KATEGORI — kolonnen Kategori.prodNr → Produkt(prodNr)",
+        correct: false,
+        rationale:
+          "Da kunne én kategori bare ha ETT produkt. Du må trekke flere prodNr inn i én rad — bryter 1NF og kardinaliteten.",
+      },
+      {
+        text: "I en ny koblingstabell KategoriProdukt(kategoriNr, prodNr)",
+        correct: false,
+        rationale:
+          "Koblingstabell brukes til M:N. Her er det 1:N, så det er overkill — tabellen ville hatt UNIQUE på prodNr, og du fjerner ikke noe.",
+      },
+      {
+        text: "I begge tabeller — symmetri er fint",
+        correct: false,
+        rationale:
+          "Dupliserer informasjon → bryter 3NF og inviterer inkonsistens. Aldri samme FK to steder.",
+      },
+    ],
+    explanation:
+      "1:N → FK på mange-siden, alltid. 1:1 → FK på én av sidene + UNIQUE. M:N → ingen FK direkte; bruk koblingstabell.",
+  },
+  {
+    id: "d-match-pk-types",
+    kind: "match",
+    title: "Nøkkel-typer i praksis",
+    prompt: "Match hvert begrep til riktig definisjon eller bruk.",
+    topic: "Nøkler",
+    pairs: [
+      {
+        left: "Surrogatnøkkel",
+        right: "Kunstig PK (auto_increment / SERIAL / UUID) — stabil, kort",
+      },
+      {
+        left: "Naturlig nøkkel",
+        right: "Eksisterende business-felt (epost, fnr, ISBN) — kan endre seg",
+      },
+      {
+        left: "Sammensatt nøkkel",
+        right: "PK = flere kolonner kombinert — vanlig i junction og svake entiteter",
+      },
+      {
+        left: "Alternativ nøkkel",
+        right: "Kandidatnøkkel som IKKE ble valgt som PK — får UNIQUE-constraint",
+      },
+      {
+        left: "Fremmednøkkel (FK)",
+        right: "Kolonne(r) som peker på en annen tabells PK (eller UNIQUE)",
+      },
+      {
+        left: "Selv-refererende FK",
+        right: "FK som peker tilbake på samme tabells PK — for hierarkier (leder/underordnet)",
+      },
+    ],
+  },
+  {
+    id: "d-quiz-fk-on-delete",
+    kind: "quiz",
+    title: "ON DELETE — riktig oppførsel",
+    prompt: "Velg det best dekkende svaret.",
+    topic: "Nøkler",
+    question:
+      "En kunde slettes. Du har Ordre(ordreNr, kundeNr FK). Hvilken ON DELETE-strategi er TRYGGEST i et regnskapssystem?",
+    options: [
+      {
+        text: "ON DELETE RESTRICT (eller NO ACTION) — nekt sletting hvis det finnes ordrer",
+        correct: true,
+        rationale:
+          "I et regnskapssystem skal historikken bevares — du kan ikke slette en kunde som har transaksjoner. RESTRICT tvinger deg til å bestemme bevisst hva som skal skje.",
+      },
+      {
+        text: "ON DELETE CASCADE — slett alle kundens ordrer også",
+        correct: false,
+        rationale:
+          "Du mister regnskapshistorikk. CASCADE passer for svake entiteter (ordrelinje slettes med ordre), ikke for kunde/ordre.",
+      },
+      {
+        text: "ON DELETE SET NULL — fjern kundenavn fra ordren",
+        correct: false,
+        rationale:
+          "Anonymiserer historikken, men sliter med å rapportere. Akseptabelt i noen scenarier (GDPR-sletting), men ikke standard.",
+      },
+      {
+        text: "Ingen FK — la backend håndtere det",
+        correct: false,
+        rationale:
+          "Da kan du ende opp med ordrer som peker på ikke-eksisterende kunder. Referanseintegritet skal håndheves i DB-en.",
+      },
+    ],
+    explanation:
+      "ON DELETE-strategier: RESTRICT/NO ACTION (nekt), CASCADE (slett barn), SET NULL (sett FK til NULL — FK må være nullable), SET DEFAULT (bytt til en default). Velg ut fra hva forretningen vil.",
+  },
+  {
+    id: "d-fill-fk-cascade",
+    kind: "fill",
+    title: "CREATE TABLE med riktig FK-strategi",
+    prompt:
+      "Lag Ordrelinje slik at sletting av Ordre AUTOMATISK sletter linjene. Behold referanseintegritet til Produkt — ikke tillat sletting av et produkt som har solgt linjer.",
+    topic: "Nøkler",
+    language: "sql",
+    template:
+      "CREATE TABLE Ordrelinje (\n  ordreNr  INT NOT NULL,\n  linjeNr  INT NOT NULL,\n  prodNr   INT NOT NULL,\n  antall   INT NOT NULL,\n  __1__ KEY (ordreNr, linjeNr),\n  FOREIGN KEY (ordreNr) REFERENCES Ordre(ordreNr) ON DELETE __2__,\n  FOREIGN KEY (prodNr)  REFERENCES Produkt(prodNr) ON DELETE __3__\n);",
+    blanks: ["PRIMARY", "CASCADE", "RESTRICT"],
+    options: ["PRIMARY", "FOREIGN", "UNIQUE", "CASCADE", "RESTRICT", "SET NULL", "NO ACTION", "ON"],
+    explanation:
+      "Ordrelinje er svak entitet → CASCADE mot Ordre (linjer dør med ordren). Produkt er sterk og felles for mange — RESTRICT hindrer sletting hvis det finnes salgshistorikk.",
+  },
+  {
+    id: "d-quiz-pk-natural-vs-surrogate",
+    kind: "quiz",
+    title: "Naturlig vs surrogat PK — flere tilfeller",
+    prompt: "Flere riktige svar mulig.",
+    topic: "Nøkler",
+    multi: true,
+    question:
+      "I hvilke scenarier er det FAGLIG riktig å bruke en NATURLIG nøkkel som PK (uten surrogat)?",
+    options: [
+      {
+        text: "Land(landkode CHAR(2)) — landkoder er ISO-standard og endres aldri",
+        correct: true,
+        rationale:
+          "ISO 3166-1 landkoder er stabile, korte (2 tegn) og standardiserte. Lite poeng å lage en surrogat-INT.",
+      },
+      {
+        text: "Valuta(valutakode CHAR(3)) — NOK, USD, EUR",
+        correct: true,
+        rationale: "Samme argument: ISO 4217 er stabilt og menneskelig lesbart.",
+      },
+      {
+        text: "Kunde(epost VARCHAR)",
+        correct: false,
+        rationale:
+          "Epost kan endres — hvis PK endres, må alle FK-er oppdateres. Bruk surrogat.",
+      },
+      {
+        text: "Postnummer(postnr CHAR(4)) — for Poststed-oppslag",
+        correct: true,
+        rationale:
+          "Norske postnumre er stabile, korte og en naturlig nøkkel. Vanlig praksis å bruke som PK.",
+      },
+      {
+        text: "Bruker(brukernavn) — brukervalgt streng",
+        correct: false,
+        rationale:
+          "Brukere vil endre brukernavn. Bruk surrogat-id internt.",
+      },
+    ],
+    explanation:
+      "Tommelfingerregel: naturlig PK fungerer når verdiene er KORTE, STABILE og STANDARDISERTE (helst eksterne standarder). I tvil — bruk surrogat.",
+  },
+  {
+    id: "d-order-pk-decision",
+    kind: "order",
+    title: "Beslutningstre for PK-valg",
+    prompt:
+      "Sett spørsmålene i riktig rekkefølge når du designer en ny tabells PK.",
+    topic: "Nøkler",
+    items: [
+      "Finn alle kandidatnøkler — minimale kombinasjoner som er unike",
+      "Er det en M:N-koblingstabell? → bruk sammensatt PK av FK-ene",
+      "Er det en svak entitet? → bruk (eier-FK, partiell nøkkel)",
+      "Finnes det en KORT, STABIL, STANDARDISERT naturlig nøkkel (landkode, ISBN)? → bruk den",
+      "Ellers: surrogat-PK (id INT AUTO_INCREMENT eller UUID)",
+      "Sett UNIQUE på alle naturlige kandidatnøkler som ble igjen",
+      "Vurder FK-er som peker hit — er PK-typen FK-vennlig (INT > VARCHAR)?",
+    ],
+    explanation:
+      "Beslutningstreet hindrer at du «bare velger første kolonne» som PK. Surrogat-id er default; kompositt og naturlig er bevisste unntak med konkret grunn.",
+  },
+  {
+    id: "d-match-fk-relasjon-pk",
+    kind: "match",
+    title: "Hvordan PK ser ut i 1:1, 1:N, M:N",
+    prompt:
+      "Match relasjonstype med hvordan PK og FK plasseres for å gjøre relasjonen mulig.",
+    topic: "Nøkler",
+    pairs: [
+      {
+        left: "1:1 — én PERSON har ett PASS",
+        right: "FK i Pass(personId) med UNIQUE NOT NULL — eller slå sammen til én tabell",
+      },
+      {
+        left: "1:N — én KUNDE har 0..N ORDREr",
+        right: "FK i Ordre(kundeNr) — vanlig kolonne, NOT NULL hvis total deltakelse",
+      },
+      {
+        left: "M:N — STUDENT tar mange FAG, FAG har mange STUDENTer",
+        right: "Koblingstabell Tar(sid, fkode) med sammensatt PK = (sid, fkode) og to FK-er",
+      },
+      {
+        left: "Rekursiv 1:N — ANSATT har leder som også er ANSATT",
+        right: "FK i samme tabell: Ansatt.lederNr → Ansatt.ansattNr — nullable for toppsjef",
+      },
+      {
+        left: "Svak entitet — ORDRELINJE finnes bare gjennom ORDRE",
+        right: "Sammensatt PK = (ordreNr, linjeNr) der ordreNr er FK NOT NULL med ON DELETE CASCADE",
+      },
+    ],
+    explanation:
+      "Disse fem mønstrene dekker ~95% av relasjoner i grunnkurs-databaser. Memoriser dem — på eksamen får du raskt rett DDL fra et ER-diagram hvis du gjenkjenner mønsteret.",
+  },
+  {
+    id: "d-fill-pk-junction-with-attr",
+    kind: "fill",
+    title: "M:N med relasjonsattributt — hvilken PK?",
+    prompt:
+      "STUDENT tar FAG. Vi vil tillate at samme student tar samme fag i ulike semestre. Hva blir PK i koblingstabellen?",
+    topic: "Nøkler",
+    language: "sql",
+    template:
+      "CREATE TABLE Tar (\n  sid       INT NOT NULL,\n  fkode     VARCHAR(8) NOT NULL,\n  semester  VARCHAR(8) NOT NULL,\n  karakter  CHAR(1),\n  PRIMARY KEY (__1__, __2__, __3__),\n  FOREIGN KEY (sid)   __4__ Student(sid),\n  FOREIGN KEY (fkode) __4__ Fag(fkode)\n);",
+    blanks: ["sid", "fkode", "semester", "REFERENCES"],
+    options: ["sid", "fkode", "semester", "karakter", "REFERENCES", "ON", "PRIMARY", "FOREIGN"],
+    explanation:
+      "Utvid PK med diskriminatoren (semester) så samme (sid, fkode) kan forekomme flere ganger med ulike semestre. Hadde forretningsregel vært «én registrering total», hadde PK vært bare (sid, fkode).",
+  },
 ];
