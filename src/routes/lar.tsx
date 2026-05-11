@@ -62,6 +62,12 @@ function LarHub() {
             body="Frittstående forklaringer av JOIN, GROUP BY, NULL og resten — slå opp når du står fast."
           />
           <HubCard
+            href="/python/kap"
+            title="Python — kapittel-sider"
+            badge="15 kapitler"
+            body="Korte, originale forklaringer av Python-pensum (valg, løkker, klasser, rekursjon …) med egne figurer."
+          />
+          <HubCard
             href="/stack/huskelapp"
             title="SQL-huskelapp"
             body="Alt om SELECT, JOIN, NULL, DDL — én side, søkbar. Den raskeste oppslagsboka."

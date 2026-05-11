@@ -29,6 +29,8 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as StackIndexRouteImport } from './routes/stack.index'
 import { Route as StackSlugRouteImport } from './routes/stack.$slug'
 import { Route as PythonVisualizerRouteImport } from './routes/python_.visualizer'
+import { Route as PythonKapIndexRouteImport } from './routes/python_.kap.index'
+import { Route as PythonKapNrRouteImport } from './routes/python_.kap.$nr'
 
 const StackRoute = StackRouteImport.update({
   id: '/stack',
@@ -130,6 +132,16 @@ const PythonVisualizerRoute = PythonVisualizerRouteImport.update({
   path: '/python/visualizer',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PythonKapIndexRoute = PythonKapIndexRouteImport.update({
+  id: '/python_/kap/',
+  path: '/python/kap/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PythonKapNrRoute = PythonKapNrRouteImport.update({
+  id: '/python_/kap/$nr',
+  path: '/python/kap/$nr',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -152,6 +164,8 @@ export interface FileRoutesByFullPath {
   '/python/visualizer': typeof PythonVisualizerRoute
   '/stack/$slug': typeof StackSlugRoute
   '/stack/': typeof StackIndexRoute
+  '/python/kap/$nr': typeof PythonKapNrRoute
+  '/python/kap/': typeof PythonKapIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -173,6 +187,8 @@ export interface FileRoutesByTo {
   '/python/visualizer': typeof PythonVisualizerRoute
   '/stack/$slug': typeof StackSlugRoute
   '/stack': typeof StackIndexRoute
+  '/python/kap/$nr': typeof PythonKapNrRoute
+  '/python/kap': typeof PythonKapIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -196,6 +212,8 @@ export interface FileRoutesById {
   '/python_/visualizer': typeof PythonVisualizerRoute
   '/stack/$slug': typeof StackSlugRoute
   '/stack/': typeof StackIndexRoute
+  '/python_/kap/$nr': typeof PythonKapNrRoute
+  '/python_/kap/': typeof PythonKapIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -220,6 +238,8 @@ export interface FileRouteTypes {
     | '/python/visualizer'
     | '/stack/$slug'
     | '/stack/'
+    | '/python/kap/$nr'
+    | '/python/kap/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -241,6 +261,8 @@ export interface FileRouteTypes {
     | '/python/visualizer'
     | '/stack/$slug'
     | '/stack'
+    | '/python/kap/$nr'
+    | '/python/kap'
   id:
     | '__root__'
     | '/'
@@ -263,6 +285,8 @@ export interface FileRouteTypes {
     | '/python_/visualizer'
     | '/stack/$slug'
     | '/stack/'
+    | '/python_/kap/$nr'
+    | '/python_/kap/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -284,6 +308,8 @@ export interface RootRouteChildren {
   PythonRoute: typeof PythonRoute
   StackRoute: typeof StackRouteWithChildren
   PythonVisualizerRoute: typeof PythonVisualizerRoute
+  PythonKapNrRoute: typeof PythonKapNrRoute
+  PythonKapIndexRoute: typeof PythonKapIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -428,6 +454,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PythonVisualizerRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/python_/kap/': {
+      id: '/python_/kap/'
+      path: '/python/kap'
+      fullPath: '/python/kap/'
+      preLoaderRoute: typeof PythonKapIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/python_/kap/$nr': {
+      id: '/python_/kap/$nr'
+      path: '/python/kap/$nr'
+      fullPath: '/python/kap/$nr'
+      preLoaderRoute: typeof PythonKapNrRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -462,6 +502,8 @@ const rootRouteChildren: RootRouteChildren = {
   PythonRoute: PythonRoute,
   StackRoute: StackRouteWithChildren,
   PythonVisualizerRoute: PythonVisualizerRoute,
+  PythonKapNrRoute: PythonKapNrRoute,
+  PythonKapIndexRoute: PythonKapIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
