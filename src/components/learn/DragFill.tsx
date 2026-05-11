@@ -24,7 +24,13 @@ function makeTokens(values: string[]): Token[] {
   return values.map((v, i) => ({ uid: `${v}-${i}`, value: v }));
 }
 
-export function DragFill({ exercise }: { exercise: FillExercise }) {
+export function DragFill({
+  exercise,
+  onSolved,
+}: {
+  exercise: FillExercise;
+  onSolved?: () => void;
+}) {
   // Pool of available tokens.
   const [pool, setPool] = useState<Token[]>(() => shuffle(makeTokens(exercise.options)));
   // For each blank index, the token uid placed there (or null).
@@ -97,8 +103,11 @@ export function DragFill({ exercise }: { exercise: FillExercise }) {
   const allCorrect = correctCount === exercise.blanks.length;
 
   useEffect(() => {
-    if (checked && allCorrect) markDragSolved(exercise.id);
-  }, [checked, allCorrect, exercise.id]);
+    if (checked && allCorrect) {
+      markDragSolved(exercise.id);
+      onSolved?.();
+    }
+  }, [checked, allCorrect, exercise.id, onSolved]);
 
   return (
     <div className="space-y-4">

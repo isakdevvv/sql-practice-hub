@@ -21,7 +21,13 @@ function shuffle<T>(arr: T[]): T[] {
   return out;
 }
 
-export function DragQuiz({ exercise }: { exercise: QuizExercise }) {
+export function DragQuiz({
+  exercise,
+  onSolved,
+}: {
+  exercise: QuizExercise;
+  onSolved?: () => void;
+}) {
   const isMulti = exercise.multi === true;
   const shuffled = useMemo(() => shuffle(exercise.options), [exercise.id]);
   const [selected, setSelected] = useState<Set<number>>(new Set());
@@ -55,8 +61,11 @@ export function DragQuiz({ exercise }: { exercise: QuizExercise }) {
     );
 
   useEffect(() => {
-    if (allCorrect) markDragSolved(exercise.id);
-  }, [allCorrect, exercise.id]);
+    if (allCorrect) {
+      markDragSolved(exercise.id);
+      onSolved?.();
+    }
+  }, [allCorrect, exercise.id, onSolved]);
 
   return (
     <div className="space-y-3">

@@ -18,7 +18,13 @@ function shuffle<T>(arr: T[]): T[] {
   return out;
 }
 
-export function DragMatch({ exercise }: { exercise: MatchExercise }) {
+export function DragMatch({
+  exercise,
+  onSolved,
+}: {
+  exercise: MatchExercise;
+  onSolved?: () => void;
+}) {
   // Position[i] holds the right-string currently shown in slot i (next to pairs[i].left).
   // Initialised with a shuffled order so every slot is filled from the start.
   const [position, setPosition] = useState<string[]>(() =>
@@ -46,8 +52,11 @@ export function DragMatch({ exercise }: { exercise: MatchExercise }) {
   const allCorrect = correctCount === exercise.pairs.length;
 
   useEffect(() => {
-    if (checked && allCorrect) markDragSolved(exercise.id);
-  }, [checked, allCorrect, exercise.id]);
+    if (checked && allCorrect) {
+      markDragSolved(exercise.id);
+      onSolved?.();
+    }
+  }, [checked, allCorrect, exercise.id, onSolved]);
 
   function onDrop(targetIdx: number) {
     if (dragIdx === null || dragIdx === targetIdx) {
