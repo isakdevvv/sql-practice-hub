@@ -165,6 +165,7 @@ export function SikkerhetPage() {
           courseId="sikkerhet"
           steps={[
             ...ATTACKS.map((a) => ({ title: a.navn, anchor: a.anchor })),
+            { title: "CSRF — full angreps-gjennomgang", anchor: "csrf-walkthrough" },
             { title: "Bonus: Sikre cookies", anchor: "cookies" },
             { title: "Fem prinsipper", anchor: "prinsipper" },
           ]}
@@ -205,6 +206,9 @@ export function SikkerhetPage() {
             </div>
           </section>
         ))}
+
+        {/* CSRF walkthrough side-om-side */}
+        <CsrfWalkthrough />
 
         {/* Cookies */}
         <section id="cookies" className="mb-10">
@@ -273,5 +277,144 @@ app.config["SESSION_COOKIE_SAMESITE"] = "Lax"`}</pre>
         </div>
       </div>
     </StackPageShell>
+  );
+}
+
+const UNSAFE_TRANSFER = `# Security/CSRF_Example_Unsafe/app.py — INGEN beskyttelse
+@app.route('/transfer', methods=['GET', 'POST'])
+def transfer():
+    if 'user' not in session:
+        return redirect('/login')
+
+    if request.method == 'POST':
+        sender = session['user']
+        recipient = request.form.get('to')
+        amount = int(request.form.get('amount'))
+        users[sender]['balance'] -= amount
+        return render_template('transfer.html', ...)`;
+
+const SAFE_TRANSFER = `# Security/CSRF_Example/app.py — Flask-WTF beskyttet
+from flask_wtf.csrf import CSRFProtect
+csrf = CSRFProtect(app)   # <- aktiverer for HELE app-en
+
+@app.route('/transfer', methods=['GET', 'POST'])
+def transfer():
+    form = TransferForm()
+    if form.validate_on_submit():
+        # validate_on_submit() krever et gyldig CSRF-token
+        sender = session['user']
+        users[sender]['balance'] -= form.amount.data
+        return render_template('transfer.html', form=form, ...)`;
+
+const ATTACK_HTML = `<!-- Security/attack.html — ondsinnet side -->
+<!DOCTYPE html>
+<html>
+<body onload="document.forms[0].submit()">
+  <h2>If you see this, CSRF worked.</h2>
+  <form method="POST" action="http://localhost:5000/transfer">
+    <input type="hidden" name="to"     value="attacker">
+    <input type="hidden" name="amount" value="50">
+  </form>
+</body>
+</html>`;
+
+function CsrfWalkthrough() {
+  return (
+    <section id="csrf-walkthrough" className="mb-12">
+      <div className="rounded-xl border-2 border-destructive/30 bg-destructive/5 p-5 mb-6">
+        <div className="text-xs uppercase tracking-wider text-destructive font-semibold mb-2">
+          Full CSRF-gjennomgang — slik gjør kurset det
+        </div>
+        <p className="text-sm text-foreground">
+          Kurset har tre filer som demonstrerer CSRF konkret:{" "}
+          <code>Security/CSRF_Example_Unsafe</code> (sårbar), <code>Security/CSRF_Example</code>{" "}
+          (Flask-WTF-beskyttet), og <code>Security/attack.html</code> (selve angrepet). Slik
+          ser flyten ut når du legger dem ved siden av hverandre.
+        </p>
+      </div>
+
+      <div className="space-y-5">
+        {/* Sårbar */}
+        <div>
+          <div className="flex items-center gap-2 mb-2">
+            <ShieldAlert className="h-4 w-4 text-destructive" />
+            <h3 className="font-semibold">
+              Steg 1: Sårbar transfer-route — bare session-sjekk
+            </h3>
+          </div>
+          <p className="text-sm text-muted-foreground mb-2">
+            En vanlig POST-route som krever at brukeren er innlogget (sjekk på{" "}
+            <code>session['user']</code>). Det er IKKE nok — så lenge cookien er gyldig,
+            tror server alt er OK.
+          </p>
+          <pre className="font-mono text-xs overflow-x-auto whitespace-pre rounded bg-background border border-destructive/30 p-3">
+            {UNSAFE_TRANSFER}
+          </pre>
+        </div>
+
+        {/* Attack */}
+        <div>
+          <div className="flex items-center gap-2 mb-2">
+            <ShieldAlert className="h-4 w-4 text-destructive" />
+            <h3 className="font-semibold">Steg 2: Angreps-siden — <code>attack.html</code></h3>
+          </div>
+          <p className="text-sm text-muted-foreground mb-2">
+            Angriperen lurer offeret til å besøke en ondsinnet side. Siden inneholder en
+            usynlig form som automatisk poster mot bankens transfer-route. Fordi offeret
+            allerede er innlogget i banken, sender nettleseren cookien automatisk — server
+            ser en autorisert request.
+          </p>
+          <pre className="font-mono text-xs overflow-x-auto whitespace-pre rounded bg-background border border-destructive/30 p-3">
+            {ATTACK_HTML}
+          </pre>
+          <div className="mt-3 rounded-lg border border-amber-500/30 bg-amber-500/5 p-3 text-sm">
+            <strong>Hvorfor virker dette?</strong> Nettleseren skiller ikke på <em>hvem som
+            initierte</em> requesten — bare på hvilken <em>destinasjon</em> den går mot. Når
+            destinasjonen er <code>bank.no</code>, sendes bank-cookien med, uansett om
+            requesten kom fra bankens egen side eller ondsinnet.com.
+          </div>
+        </div>
+
+        {/* Trygg */}
+        <div>
+          <div className="flex items-center gap-2 mb-2">
+            <ShieldCheck className="h-4 w-4 text-success" />
+            <h3 className="font-semibold">Steg 3: Trygg versjon — Flask-WTF CSRFProtect</h3>
+          </div>
+          <p className="text-sm text-muted-foreground mb-2">
+            Løsningen er et ekstra hemmelig <em>CSRF-token</em> som server lager per session
+            og som må følge med hver POST. Tokenet ligger i en hidden input i bankens egne
+            forms (via <code>{"{{ form.hidden_tag() }}"}</code>). Ondsinnet.com kan ikke lese
+            session-cookien (Same-Origin-Policy), og dermed ikke gjette tokenet —{" "}
+            <code>validate_on_submit()</code> avviser.
+          </p>
+          <pre className="font-mono text-xs overflow-x-auto whitespace-pre rounded bg-background border border-success/30 p-3">
+            {SAFE_TRANSFER}
+          </pre>
+          <p className="text-sm text-muted-foreground mt-3">
+            Templaten må samtidig inneholde tokenet. Med Flask-WTF gjøres dette med én linje:
+          </p>
+          <pre className="font-mono text-xs overflow-x-auto whitespace-pre rounded bg-background border border-success/30 p-3 mt-2">
+            {`<!-- transfer.html -->
+<form method="POST">
+  {{ form.hidden_tag() }}    <!-- skjult input med CSRF-token -->
+  {{ form.to.label }} {{ form.to() }}
+  {{ form.amount.label }} {{ form.amount() }}
+  <button class="btn btn-primary">Overfør</button>
+</form>`}
+          </pre>
+        </div>
+
+        {/* Sammenfatning */}
+        <div className="rounded-xl border border-border bg-card p-4 text-sm">
+          <strong>Eksamen-vinkling:</strong> det er typisk å bli spurt
+          «<em>hvorfor virker session-sjekken alene ikke som CSRF-beskyttelse?</em>». Svar
+          alltid med trekløveren: (1) cookien følger automatisk med, (2) angriperens
+          opprinnelse er ikke synlig for server, (3) bare et token som angriperen ikke kan
+          lese stopper angrepet. SameSite-cookien (se cookies nedenfor) gir også god, men
+          ikke fullstendig, beskyttelse på moderne nettlesere.
+        </div>
+      </div>
+    </section>
   );
 }

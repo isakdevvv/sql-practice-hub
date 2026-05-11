@@ -79,6 +79,7 @@ import { content as korutiner } from "./korutiner";
 import { content as roomRecycler } from "./room-recycler";
 import { content as apiRetrofit } from "./api-retrofit";
 import { content as mysqlVsSqlite } from "./mysql-vs-sqlite";
+import { content as mvcMonster } from "./mvc-monster";
 import type { TrinnContent } from "../types";
 
 export const TRINN: TrinnContent[] = [
@@ -96,6 +97,7 @@ export const TRINN: TrinnContent[] = [
   dte2604, suMetodikker, brukerhistorier, uml, suProsjektPraksis,
   apiProsjekt, apiPlanlegging, apiArkitektur, apiKontrakt, apiTesting, apiDeploy,
   dte2603, kotlinGrunnlag, androidGrunnlag, mvvmArkitektur, korutiner, roomRecycler, apiRetrofit,
+  mvcMonster,
 ];
 
 // Bare ferdige trinn er offentlig synlige — stubs (`status: "stub"`)
