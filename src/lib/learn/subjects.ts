@@ -63,8 +63,17 @@ export const SUBJECTS: readonly Subject[] = [
   {
     id: "algoritmer",
     label: "Algoritmer (DTE-2511)",
-    short: "Big-O, rekursjon, sortering, lenkede strukturer",
-    topics: ["Big-O", "Rekursjon", "Sortering", "Lenkede strukturer"],
+    short: "Big-O, rekursjon, sortering, lenkede strukturer, trær, grafer, hashing, DP",
+    topics: [
+      "Big-O",
+      "Rekursjon",
+      "Sortering",
+      "Lenkede strukturer",
+      "Trær",
+      "Grafer (algo)",
+      "Hashing",
+      "Dynamic programming",
+    ],
   },
   {
     id: "datakomm",
@@ -128,7 +137,6 @@ export const SUBJECTS: readonly Subject[] = [
       "HTML",
       "CORS",
       "Sikkerhet",
-      "Hashing",
       "JavaScript",
       "TypeScript",
       "React",

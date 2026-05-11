@@ -97,6 +97,10 @@ import { content as javascriptGrunnlag } from "./javascript-grunnlag";
 import { content as typescript } from "./typescript";
 import { content as reactGrunnlag } from "./react-grunnlag";
 import { content as cssModerne } from "./css-moderne";
+import { content as traer } from "./traer";
+import { content as graferDypere } from "./grafer-dypere";
+import { content as hashingDypere } from "./hashing-dypere";
+import { content as dynamicProgramming } from "./dynamic-programming";
 import type { TrinnContent } from "../types";
 
 export const TRINN: TrinnContent[] = [
@@ -121,6 +125,7 @@ export const TRINN: TrinnContent[] = [
   laereplan,
   funksjonellProgrammering, typesystemer,
   javascriptGrunnlag, typescript, reactGrunnlag, cssModerne,
+  traer, graferDypere, hashingDypere, dynamicProgramming,
 ];
 
 import { curriculumIndexOf } from "../curriculum";
