@@ -3,6 +3,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Check, X, RotateCcw } from "lucide-react";
 import type { CrowsFootExercise, CfMin, CfMax } from "@/lib/learn/types";
+import { markDragSolved } from "@/lib/learn/dragProgress";
 
 type SlotKey = "aMin" | "aMax" | "bMin" | "bMax";
 type SlotValue = CfMin | CfMax;
@@ -63,6 +64,10 @@ export function CrowsFoot({ exercise }: { exercise: CrowsFootExercise }) {
     return keys.reduce((n, k) => n + (placed[k] === exercise.answer[k] ? 1 : 0), 0);
   }, [placed, exercise.answer]);
   const allCorrect = correctCount === 4;
+
+  useEffect(() => {
+    if (checked && allCorrect) markDragSolved(exercise.id);
+  }, [checked, allCorrect, exercise.id]);
 
   function onDrop(slot: SlotKey) {
     if (!dragVal) return;

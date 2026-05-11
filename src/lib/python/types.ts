@@ -1,8 +1,50 @@
 import type { DocRef } from "@/lib/docs";
 
+/** 0 = grunnleggende, 5 = avansert. Like the SQL course levels.
+ *  When not set on an exercise, it's derived from the topic via PY_TOPIC_LEVEL. */
+export type PyLevel = 0 | 1 | 2 | 3 | 4 | 5;
+
+export const PY_LEVEL_NAMES: Record<PyLevel, string> = {
+  0: "Grunnleggende — MySQL & routing",
+  1: "Web-flyt — Jinja, forms, CRUD",
+  2: "API & sesjoner",
+  3: "Sikkerhet — passord & CSRF",
+  4: "API-integrasjon & data",
+  5: "Avansert — ORM & arkitektur",
+};
+
+/** Map fra topic → level. Lar oss legge til level uten å touche hver oppgave. */
+export const PY_TOPIC_LEVEL: Record<string, PyLevel> = {
+  "MySQL connector": 0,
+  "Flask routing": 0,
+  "Flask + Jinja": 1,
+  "Flask + forms": 1,
+  "Flask + MySQL": 1,
+  "JSON API": 2,
+  "HTTP-statuskoder": 2,
+  "Sessions": 2,
+  "Login & sessions": 2,
+  "Passord-sikkerhet": 3,
+  "CSRF": 3,
+  "API & tokens": 4,
+  "REST / API": 4,
+  "Python data-prosessering": 4,
+  "API-kall i Python": 4,
+  "Flask-SQLAlchemy (ORM)": 5,
+  "Flask-utvidelser": 5,
+  "App-arkitektur": 5,
+};
+
+/** Resolve a PyExercise's level — explicit field wins, else look up topic, else 0. */
+export function levelOf(ex: { level?: PyLevel; topic: string }): PyLevel {
+  return ex.level ?? PY_TOPIC_LEVEL[ex.topic] ?? 0;
+}
+
 export interface PyExercise {
   id: string;
   topic: string;
+  /** Optional override — when unset, level is derived from `topic` via PY_TOPIC_LEVEL. */
+  level?: PyLevel;
   title: string;
   description: string;
   /** Starter code shown in the editor. */

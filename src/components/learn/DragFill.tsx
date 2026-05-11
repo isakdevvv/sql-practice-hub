@@ -3,6 +3,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Check, X, RotateCcw } from "lucide-react";
 import type { FillExercise } from "@/lib/learn/types";
+import { markDragSolved } from "@/lib/learn/dragProgress";
 
 function shuffle<T>(arr: T[]): T[] {
   const out = arr.slice();
@@ -94,6 +95,10 @@ export function DragFill({ exercise }: { exercise: FillExercise }) {
 
   const allFilled = exercise.blanks.every((_, i) => placed[i]);
   const allCorrect = correctCount === exercise.blanks.length;
+
+  useEffect(() => {
+    if (checked && allCorrect) markDragSolved(exercise.id);
+  }, [checked, allCorrect, exercise.id]);
 
   return (
     <div className="space-y-4">

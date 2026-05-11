@@ -1,6 +1,20 @@
 import { Link } from "@tanstack/react-router";
 import { ArrowRight, Lightbulb, AlertTriangle } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
+import { CourseOutline } from "@/components/stack/CourseOutline";
+
+const STEPS = [
+  { title: "Hvorfor normalisere?", anchor: "hvorfor" },
+  { title: "Tre begreper du må kunne", anchor: "begreper" },
+  { title: "Utgangspunktet — én rotete tabell", anchor: "utgangspunkt" },
+  { title: "1NF — atomiske verdier", anchor: "del-1nf" },
+  { title: "2NF — partielle avhengigheter", anchor: "del-2nf" },
+  { title: "3NF — transitive avhengigheter", anchor: "del-3nf" },
+  { title: "Sluttskjema — alle tabellene", anchor: "sluttskjema" },
+  { title: "BCNF — når 3NF ikke holder", anchor: "bcnf" },
+  { title: "Sjekkliste — normaliser stegvis", anchor: "sjekkliste" },
+  { title: "Vanlige feller", anchor: "feller" },
+];
 
 // Course page covering 1NF → 2NF → 3NF (+ BCNF) with worked examples.
 // Pair with /drag for the hands-on exercises (id-prefix d-fill-norm-*,
@@ -53,8 +67,10 @@ export function NormaliseringPage() {
           </div>
         </div>
 
+        <CourseOutline courseId="normalisering" steps={STEPS} />
+
         {/* 0. Hvorfor */}
-        <section className="mb-10">
+        <section id="hvorfor" className="mb-10">
           <h2 className="text-xl font-semibold mb-3">Hvorfor normalisere?</h2>
           <p className="text-sm text-muted-foreground mb-4">
             Den korte versjonen: redundans (dobbeltlagring) gir tre konkrete feiltyper.
@@ -77,7 +93,7 @@ export function NormaliseringPage() {
         </section>
 
         {/* Begreper */}
-        <section className="mb-10">
+        <section id="begreper" className="mb-10">
           <h2 className="text-xl font-semibold mb-3">Tre begreper du må kunne</h2>
           <div className="rounded-xl border border-border bg-card p-5 space-y-3 text-sm">
             <div>
@@ -100,7 +116,7 @@ export function NormaliseringPage() {
         </section>
 
         {/* Utgangspunkt */}
-        <section className="mb-10">
+        <section id="utgangspunkt" className="mb-10">
           <h2 className="text-xl font-semibold mb-3">Utgangspunktet — én rotete tabell</h2>
           <p className="text-sm text-muted-foreground mb-4">
             Vi følger denne tabellen gjennom 1NF → 2NF → 3NF. Den bryter alle tre.
@@ -128,7 +144,7 @@ PK = (ordreNr, prodNr)`}</pre>
         </section>
 
         {/* 1NF */}
-        <section className="mb-10">
+        <section id="del-1nf" className="mb-10">
           <div className="rounded-xl border-2 border-brand/40 bg-brand/5 p-5">
             <div className="text-xs uppercase tracking-wider text-brand font-semibold mb-2">
               1. Normalform (1NF)
@@ -160,7 +176,7 @@ FOREIGN KEY (personId) → Kunde(kundeNr)
         </section>
 
         {/* 2NF */}
-        <section className="mb-10">
+        <section id="del-2nf" className="mb-10">
           <div className="rounded-xl border-2 border-brand/40 bg-brand/5 p-5">
             <div className="text-xs uppercase tracking-wider text-brand font-semibold mb-2">
               2. Normalform (2NF)
@@ -196,7 +212,7 @@ OrdreLinje(ordreNr, prodNr, antall)
         </section>
 
         {/* 3NF */}
-        <section className="mb-10">
+        <section id="del-3nf" className="mb-10">
           <div className="rounded-xl border-2 border-brand/40 bg-brand/5 p-5">
             <div className="text-xs uppercase tracking-wider text-brand font-semibold mb-2">
               3. Normalform (3NF)
@@ -241,7 +257,7 @@ OrdreLinje(ordreNr, prodNr, antall)
         </section>
 
         {/* Sluttskjema */}
-        <section className="mb-10">
+        <section id="sluttskjema" className="mb-10">
           <h2 className="text-xl font-semibold mb-3">Sluttskjema — alle tabellene</h2>
           <p className="text-sm text-muted-foreground mb-4">
             Etter 1NF + 2NF + 3NF har vi seks tabeller der hver opplysning lagres
@@ -291,7 +307,7 @@ CREATE TABLE OrdreLinje (
         </section>
 
         {/* BCNF */}
-        <section className="mb-10">
+        <section id="bcnf" className="mb-10">
           <h2 className="text-xl font-semibold mb-3">BCNF — når 3NF ikke holder</h2>
           <p className="text-sm text-muted-foreground mb-3">
             Boyce-Codd Normalform er en strengere versjon av 3NF: <strong>alle</strong>{" "}
@@ -319,7 +335,7 @@ CREATE TABLE OrdreLinje (
         </section>
 
         {/* Sjekkliste */}
-        <section className="mb-10">
+        <section id="sjekkliste" className="mb-10">
           <h2 className="text-xl font-semibold mb-3">Sjekkliste — normaliser stegvis</h2>
           <p className="text-sm text-muted-foreground mb-4">
             Bruk rekkefølgen. Hopp aldri over et trinn — du oppdager ikke 3NF-brudd hvis
@@ -349,7 +365,7 @@ CREATE TABLE OrdreLinje (
         </section>
 
         {/* Vanlige feller */}
-        <section className="mb-10">
+        <section id="feller" className="mb-10">
           <h2 className="text-xl font-semibold mb-3">Vanlige feller</h2>
           <div className="space-y-3 text-sm">
             <div className="rounded-lg border border-amber-500/30 bg-amber-500/5 p-4">

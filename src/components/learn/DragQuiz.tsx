@@ -3,6 +3,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Check, X, RotateCcw } from "lucide-react";
 import type { QuizExercise } from "@/lib/learn/types";
+import { markDragSolved } from "@/lib/learn/dragProgress";
 
 // Single- or multi-select multiple choice. The component shuffles options
 // once per exercise so the correct answer isn't always first. After submit
@@ -52,6 +53,10 @@ export function DragQuiz({ exercise }: { exercise: QuizExercise }) {
     shuffled.every(
       (o, i) => (o.correct && selected.has(i)) || (!o.correct && !selected.has(i)),
     );
+
+  useEffect(() => {
+    if (allCorrect) markDragSolved(exercise.id);
+  }, [allCorrect, exercise.id]);
 
   return (
     <div className="space-y-3">

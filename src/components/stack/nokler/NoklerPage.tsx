@@ -1,9 +1,19 @@
 import { Link } from "@tanstack/react-router";
 import { ArrowRight, Key, Link2 } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
+import { CourseOutline } from "@/components/stack/CourseOutline";
 
 // Course page on PK and FK design decisions. Pairs with /drag (topic "Nøkler")
 // for hands-on quizzes and drag-fills.
+
+const STEPS = [
+  { title: "Tre begreper", anchor: "begreper" },
+  { title: "Surrogat vs. naturlig PK", anchor: "surrogat-naturlig" },
+  { title: "Beslutningstre — hvilken PK?", anchor: "beslutningstre" },
+  { title: "PK/FK per relasjonstype", anchor: "relasjonstyper" },
+  { title: "ON DELETE-strategier", anchor: "on-delete" },
+];
+
 
 export function NoklerPage() {
   return (
@@ -24,7 +34,9 @@ export function NoklerPage() {
         </div>
 
         {/* Definisjoner */}
-        <section className="mb-10">
+        <CourseOutline courseId="nokler" steps={STEPS} />
+
+        <section id="begreper" className="mb-10">
           <h2 className="text-xl font-semibold mb-3">Tre begreper du må kunne</h2>
           <div className="grid sm:grid-cols-3 gap-3">
             <div className="rounded-xl border border-border bg-card p-4">
@@ -61,7 +73,7 @@ export function NoklerPage() {
         </section>
 
         {/* Surrogat vs naturlig */}
-        <section className="mb-10">
+        <section id="surrogat-naturlig" className="mb-10">
           <h2 className="text-xl font-semibold mb-3">Surrogat vs. naturlig PK</h2>
           <p className="text-sm text-muted-foreground mb-4">
             <strong>Surrogat-PK</strong> = kunstig id (AUTO_INCREMENT, SERIAL, UUID).{" "}
@@ -113,7 +125,7 @@ export function NoklerPage() {
         </section>
 
         {/* Beslutningstre */}
-        <section className="mb-10">
+        <section id="beslutningstre" className="mb-10">
           <h2 className="text-xl font-semibold mb-3">Beslutningstre — hvilken PK?</h2>
           <ol className="space-y-2">
             {[
@@ -138,7 +150,7 @@ export function NoklerPage() {
         </section>
 
         {/* Hver relasjonstype */}
-        <section className="mb-10">
+        <section id="relasjonstyper" className="mb-10">
           <h2 className="text-xl font-semibold mb-3">
             Hvordan PK/FK ser ut i hver relasjonstype
           </h2>
@@ -242,7 +254,7 @@ CREATE TABLE Ordre (
         </section>
 
         {/* ON DELETE / UPDATE */}
-        <section className="mb-10">
+        <section id="on-delete" className="mb-10">
           <h2 className="text-xl font-semibold mb-3">FK-strategier: ON DELETE / ON UPDATE</h2>
           <div className="overflow-hidden rounded-lg border border-border">
             <table className="w-full text-sm">

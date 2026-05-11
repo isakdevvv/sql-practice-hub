@@ -1,12 +1,14 @@
 import { Link } from "@tanstack/react-router";
 import { ArrowRight, ShieldAlert, ShieldCheck } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
+import { CourseOutline } from "@/components/stack/CourseOutline";
 
 // Security primer: SQL injection, XSS, CSRF, password storage, cookie flags.
 // Each attack has: how it works, what the sårbarheten looks like, and the fix.
 // Hands-on quizzes live in /drag with topic "Sikkerhet".
 
 type Attack = {
+  anchor: string;
   navn: string;
   hva: string;
   saarbarhet: string;
@@ -17,6 +19,7 @@ type Attack = {
 
 const ATTACKS: Attack[] = [
   {
+    anchor: "sql-injection",
     navn: "SQL Injection",
     hva: "Angriperen smugler SQL-syntaks inn i en input som limes direkte inn i en spørring. Kan dumpe hele DB, slette tabeller, eller bypasse innlogging.",
     saarbarhet: `username = request.form["username"]
@@ -33,6 +36,7 @@ cursor.execute(
     fiksLang: "python",
   },
   {
+    anchor: "xss",
     navn: "Cross-Site Scripting (XSS)",
     hva: "Angriperen lurer en bruker til å kjøre fiendtlig JavaScript i sin egen nettleser, ofte via en kommentar-tekst som rendres på en annen brukers side.",
     saarbarhet: `{# kommentar.html — SÅRBAR #}
@@ -49,6 +53,7 @@ cursor.execute(
     fiksLang: "html",
   },
   {
+    anchor: "csrf",
     navn: "Cross-Site Request Forgery (CSRF)",
     hva: "Ondsinnet nettsted sender en request til din app fra brukerens nettleser. Cookien følger automatisk med — så server tror brukeren ba om handlingen.",
     saarbarhet: `<!-- ondsinnet.com har dette skjemaet skjult: -->
@@ -70,6 +75,7 @@ cursor.execute(
     fiksLang: "html",
   },
   {
+    anchor: "passord",
     navn: "Usikker passord-lagring",
     hva: "Passord lagres i klartekst, eller med rask hash (SHA-256). Når DB lekker, kan angripere knekke passord på sekunder med GPU.",
     saarbarhet: `# Klartekst — verst tenkelige:
@@ -98,6 +104,7 @@ if check_password_hash(stored_hash, passord_input):
     fiksLang: "python",
   },
   {
+    anchor: "mass-assign",
     navn: "Mass-assignment",
     hva: "Backend setter blindt alle felter fra request.form på user-objektet. En angriper kan da sette is_admin=true ved å legge til feltet.",
     saarbarhet: `@app.route("/profil", methods=["POST"])
@@ -154,8 +161,17 @@ export function SikkerhetPage() {
           </div>
         </div>
 
+        <CourseOutline
+          courseId="sikkerhet"
+          steps={[
+            ...ATTACKS.map((a) => ({ title: a.navn, anchor: a.anchor })),
+            { title: "Bonus: Sikre cookies", anchor: "cookies" },
+            { title: "Fem prinsipper", anchor: "prinsipper" },
+          ]}
+        />
+
         {ATTACKS.map((a, i) => (
-          <section key={a.navn} className="mb-10">
+          <section key={a.navn} id={a.anchor} className="mb-10">
             <div className="flex items-center gap-2 mb-3">
               <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-destructive/10 text-destructive text-xs font-bold">
                 {i + 1}
@@ -191,7 +207,7 @@ export function SikkerhetPage() {
         ))}
 
         {/* Cookies */}
-        <section className="mb-10">
+        <section id="cookies" className="mb-10">
           <h2 className="text-xl font-semibold mb-3">Bonus: Sikre cookies</h2>
           <p className="text-sm text-muted-foreground mb-4">
             Tre flagg som hever beskyttelsen dramatisk. I Flask:
@@ -222,7 +238,7 @@ app.config["SESSION_COOKIE_SAMESITE"] = "Lax"`}</pre>
         </section>
 
         {/* Huskeregler */}
-        <section className="mb-10">
+        <section id="prinsipper" className="mb-10">
           <div className="rounded-xl border-2 border-amber-500/40 bg-amber-500/5 p-5">
             <div className="text-xs uppercase tracking-wider text-amber-700 dark:text-amber-400 font-semibold mb-2">
               Fem prinsipper du må huske
