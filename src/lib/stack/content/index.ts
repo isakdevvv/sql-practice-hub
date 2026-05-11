@@ -48,6 +48,12 @@ import { content as trinn7 } from "./trinn-7-bytes-dyp";
 import { content as trinn8 } from "./trinn-8-python-er-c";
 import { content as trinn9 } from "./trinn-9-syscalls-dyp";
 import { content as trinn10 } from "./trinn-10-flask-dyp";
+import { content as dte2502 } from "./dte-2502";
+import { content as backpropDyp } from "./backprop-dyp";
+import { content as cnn } from "./cnn";
+import { content as regularisering } from "./regularisering";
+import { content as optimering } from "./optimering";
+import { content as pytorchTf } from "./pytorch-tf";
 import type { TrinnContent } from "../types";
 
 export const TRINN: TrinnContent[] = [
@@ -60,6 +66,7 @@ export const TRINN: TrinnContent[] = [
   flaskLivssyklus, pythonDrill, httpAnatomi,
   dte2505, osGrunnlag, linuxBruk, shellScripting, brukereRettigheter, virtualisering,
   trinn1, trinn2, trinn3, trinn4, trinn5, trinn6, trinn7, trinn8, trinn9, trinn10,
+  dte2502, backpropDyp, cnn, regularisering, optimering, pytorchTf,
 ];
 
 // Bare ferdige trinn er offentlig synlige — stubs (`status: "stub"`)

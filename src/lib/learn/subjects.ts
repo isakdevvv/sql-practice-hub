@@ -118,9 +118,9 @@ export const SUBJECTS: readonly Subject[] = [
   },
   {
     id: "ml-ai",
-    label: "ML & AI (DTE-2602/2501)",
+    label: "ML & AI (DTE-2602/2501/2502)",
     short:
-      "Maskinlæring, supervised/unsupervised, evaluering, nevrale nett, søk og CSP",
+      "Maskinlæring, supervised/unsupervised, evaluering, nevrale nett, dyplæring, søk og CSP",
     topics: [
       "ML-grunnlag",
       "Supervised learning",
@@ -132,6 +132,11 @@ export const SUBJECTS: readonly Subject[] = [
       "Logisk resonnering",
       "Planlegging",
       "Bayes",
+      "Backpropagation",
+      "CNN",
+      "Regularisering (NN)",
+      "NN-optimering",
+      "PyTorch/TF",
     ],
   },
 ] as const;
