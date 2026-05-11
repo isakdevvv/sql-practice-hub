@@ -136,6 +136,115 @@ db.commit()
 export const PY_EXERCISES: PyExercise[] = [
   // ============ MYSQL CONNECTOR ============
   {
+    id: "py-db-connect-init",
+    topic: "MySQL connector",
+    title: "Primer: Koble til databasen (bare koblingen)",
+    description:
+      "Før du kan kjøre SQL fra Python må du etablere en kobling. Mønsteret er én linje: " +
+      "`db = mysql.connector.connect(host, user, password, database)`. Funksjonen returnerer et " +
+      "Connection-objekt som du senere henter cursor fra og kaller `.commit()` / `.close()` på.",
+    requires: [],
+    setup: DB_SETUP,
+    starter: `# === PRIMER: Koble til databasen ===
+#
+# Før du kan kjøre noen SQL fra Python må du etablere en kobling.
+# mysql.connector.connect(...) returnerer et Connection-objekt — kall
+# det \`db\`. Det er det objektet du senere henter cursor fra og kaller
+# .commit() / .close() på.
+#
+# Argumentene er vanligvis fire keyword-argumenter:
+#   host="localhost"
+#   user="root"
+#   password="hemmelig"
+#   database="exam"
+#
+# OPPGAVE: Lag koblingen og skriv ut \`db.database\` for å bekrefte at
+# det funket. Forventet utskrift: "Koblet til: exam".
+
+import mysql.connector
+
+# TODO: Skriv koden din her
+`,
+    solution: `import mysql.connector
+
+db = mysql.connector.connect(
+    host="localhost",
+    user="root",
+    password="hemmelig",
+    database="exam",
+)
+print("Koblet til:", db.database)
+`,
+    hints: [
+      "mysql.connector.connect(...) tar host, user, password, database — alle som keyword-argumenter.",
+      "Lagre resultatet i en variabel `db`. Det er Connection-objektet.",
+      "`db.database` returnerer navnet på databasen du er koblet til. Skriv det ut.",
+    ],
+    docs: [
+      {
+        title: "mysql.connector.connect()",
+        url: "https://dev.mysql.com/doc/connector-python/en/connector-python-api-mysql-connector-connect.html",
+        note: "Standard kobling — host, user, password, database er de fire vanligste.",
+        snippet: `db = mysql.connector.connect(
+    host="localhost",
+    user="root",
+    password="hemmelig",
+    database="exam",
+)`,
+      },
+    ],
+  },
+  {
+    id: "py-db-cursor-init",
+    topic: "MySQL connector",
+    title: "Primer: Cursor og fetch — kjør en spørring",
+    description:
+      "Connection-objektet kan ikke kjøre SQL direkte. Du må lage en cursor med `db.cursor()`. " +
+      "Cursor-en er det du sender spørringer til (`execute`) og henter resultater fra " +
+      "(`fetchone` / `fetchall`). Vi prøver mønsteret med `SELECT 1` før vi går videre med ekte tabeller.",
+    requires: [],
+    setup: DB_SETUP,
+    starter: `# === PRIMER: Cursor og fetch ===
+#
+# Connection-objektet (\`db\`) kan ikke kjøre SQL direkte. Du må først
+# lage en cursor med db.cursor(). Cursor-en er det du:
+#   - sender spørringer til:   cursor.execute("SELECT ...")
+#   - henter resultatene fra:  cursor.fetchone()  -> én tuple
+#                              cursor.fetchall() -> liste av tupler
+#
+# OPPGAVE: Lag en cursor, kjør "SELECT 1", hent én rad med fetchone(),
+# og skriv ut resultatet. Forventet: (1,) — en tuple med ett tall.
+
+import mysql.connector
+db = mysql.connector.connect(database="exam")
+
+# TODO: Skriv koden din her
+`,
+    solution: `import mysql.connector
+db = mysql.connector.connect(database="exam")
+
+cursor = db.cursor()
+cursor.execute("SELECT 1")
+rad = cursor.fetchone()
+print(rad)
+`,
+    hints: [
+      "db.cursor() returnerer en ny cursor — lagre den i en variabel.",
+      "cursor.execute(\"SELECT 1\") kjører spørringen, men returnerer ingenting du kan bruke direkte.",
+      "cursor.fetchone() returnerer én rad som tuple. SELECT 1 gir tuple-en (1,) — med komma fordi det er en tuple, ikke et tall.",
+    ],
+    docs: [
+      {
+        title: "cursor.execute() og fetchone()",
+        url: "https://dev.mysql.com/doc/connector-python/en/connector-python-api-mysqlcursor-execute.html",
+        note: "Kjør spørring → hent én rad eller alle rader.",
+        snippet: `cursor = db.cursor()
+cursor.execute("SELECT 1")
+rad = cursor.fetchone()    # (1,)`,
+      },
+    ],
+  },
+  {
     id: "py-db-connect",
     topic: "MySQL connector",
     title: "Koble til databasen og hent alle kunder",
@@ -413,6 +522,177 @@ cursor.execute(
   },
 
   // ============ FLASK ROUTING ============
+  {
+    id: "py-flask-app-init",
+    topic: "Flask routing",
+    title: "Primer: Lag en Flask-app",
+    description:
+      "En Flask-app er objektet som holder alle routes, konfig og kjørestatus. Du må alltid lage én " +
+      "før du kan koble routes til den. Mønsteret er to linjer: importer `Flask`-klassen, og lag en " +
+      "instans med `Flask(__name__)`. Argumentet `__name__` er en innebygd variabel som inneholder " +
+      "navnet på modulen som kjører.",
+    requires: ["flask"],
+    starter: `# === PRIMER: Lag en Flask-app ===
+#
+# En Flask-app er objektet som holder alle routes, konfig og
+# kjørestatus. Du må alltid lage én før du kan koble routes til den.
+#
+# Mønsteret er to linjer:
+#   1) Importer Flask-klassen fra flask-modulen.
+#   2) Lag en app med Flask(...). Argumentet er navnet på modulen
+#      som kjører — Python har en innebygd variabel som inneholder
+#      det (dunder-navn, to underscores på hver side).
+#
+# OPPGAVE: Importer Flask, lag en \`app\`, og skriv ut \`app.name\`.
+# Forventet utskrift: "__main__" (det Python kaller hovedmodulen).
+
+# TODO: Skriv koden din her
+`,
+    solution: `from flask import Flask
+
+app = Flask(__name__)
+print(app.name)
+`,
+    hints: [
+      "`from flask import Flask` henter inn klassen.",
+      "Den innebygde variabelen som inneholder modulnavnet heter `__name__` — to underscores på hver side.",
+      "`app = Flask(__name__)` lager app-objektet. Deretter `print(app.name)`.",
+    ],
+    docs: [
+      {
+        title: "Flask quickstart — A Minimal Application",
+        url: "https://flask.palletsprojects.com/en/stable/quickstart/#a-minimal-application",
+        note: "Flask(__name__) er steget før du legger til routes.",
+        snippet: `from flask import Flask
+app = Flask(__name__)`,
+      },
+    ],
+  },
+  {
+    id: "py-flask-route-init",
+    topic: "Flask routing",
+    title: "Primer: Knytt en route til app-en",
+    description:
+      "En route kobler en URL-sti til en Python-funksjon. Det gjøres med decoratoren " +
+      "`@app.route(\"/sti\")` over en vanlig funksjon som returnerer det HTTP-responsen skal være — " +
+      "vanligvis en streng. Vi tester den ikke ennå, vi bare definerer den og bekrefter at Flask " +
+      "registrerte routen.",
+    requires: ["flask"],
+    starter: `# === PRIMER: Knytt en route ===
+#
+# En route forteller Flask: "når noen sender en HTTP-request til denne
+# stien, kjør denne funksjonen og send det den returnerer som response".
+#
+# Mønsteret:
+#   @app.route("/sti")
+#   def navn_på_funksjonen():
+#       return "Det som skal sendes tilbake"
+#
+# Decoratoren går RIGHT OVER funksjonen — ingen tom linje mellom dem.
+# Funksjonsnavnet kan være hva som helst; Flask bryr seg om stien.
+#
+# OPPGAVE: Lag en route på "/" som returnerer "Hei fra Flask!".
+# Vi tester den ikke ennå (det kommer i neste primer) — bare definer
+# den. Skriv ut \`app.url_map\` til slutt for å se at Flask registrerte
+# routen.
+
+from flask import Flask
+
+app = Flask(__name__)
+
+# TODO: Skriv koden din her
+
+
+print(app.url_map)
+`,
+    solution: `from flask import Flask
+
+app = Flask(__name__)
+
+@app.route("/")
+def hjem():
+    return "Hei fra Flask!"
+
+print(app.url_map)
+`,
+    hints: [
+      "Sett decoratoren `@app.route(\"/\")` på linja rett over def-en.",
+      "Funksjonen skal returnere en streng. Flask gjør den om til HTTP-response automatisk.",
+      "`app.url_map` viser alle registrerte routes — du skal se din egen sti i utskriften.",
+    ],
+    docs: [
+      {
+        title: "Flask quickstart — Routing",
+        url: "https://flask.palletsprojects.com/en/stable/quickstart/#routing",
+        note: "@app.route binder en sti til en funksjon.",
+        snippet: `@app.route("/")
+def home():
+    return "Hello"`,
+      },
+    ],
+  },
+  {
+    id: "py-flask-test-client-init",
+    topic: "Flask routing",
+    title: "Primer: app.test_client() — test uten server",
+    description:
+      "I produksjon starter Flask en webserver. I sandkasse-miljøet vårt (og i tester) bruker vi " +
+      "`app.test_client()` som sender HTTP-requests internt uten nettverk. Mønsteret er: " +
+      "`client = app.test_client()` → `resp = client.get(\"/\")` → `resp.status_code` og `resp.data.decode()`.",
+    requires: ["flask"],
+    starter: `# === PRIMER: app.test_client() ===
+#
+# I ekte drift kjører du \`app.run()\` og Flask starter en webserver.
+# Det funker ikke i en sandkasse — så vi bruker testklienten i stedet:
+#
+#   client = app.test_client()
+#   resp = client.get("/")          # sender GET /
+#   resp.status_code                 # 200, 404, ...
+#   resp.data.decode()               # responsen som streng
+#
+# OPPGAVE: Send en GET til "/" på app-en under, og skriv ut både status
+# og body. Forventet: Status 200, Body "Test!".
+
+from flask import Flask
+
+app = Flask(__name__)
+
+@app.route("/")
+def hjem():
+    return "Test!"
+
+# TODO: Skriv koden din her
+`,
+    solution: `from flask import Flask
+
+app = Flask(__name__)
+
+@app.route("/")
+def hjem():
+    return "Test!"
+
+client = app.test_client()
+resp = client.get("/")
+print("Status:", resp.status_code)
+print("Body:", resp.data.decode())
+`,
+    hints: [
+      "`client = app.test_client()` — lagre klienten i en variabel.",
+      "`client.get(\"/\")` returnerer et response-objekt med `.status_code` og `.data`.",
+      "`.data` er bytes — kall `.decode()` for å få en lesbar streng.",
+    ],
+    docs: [
+      {
+        title: "Flask test_client()",
+        url: "https://flask.palletsprojects.com/en/stable/testing/#sending-requests-with-the-test-client",
+        note: "Send forespørsler uten å starte en ekte server.",
+        snippet: `client = app.test_client()
+resp = client.get("/")
+resp.status_code   # 200
+resp.data.decode() # "Test!"`,
+      },
+    ],
+  },
   {
     id: "py-flask-hello",
     topic: "Flask routing",
@@ -855,6 +1135,138 @@ print("Finnes ikke:", client.get("/kunde/999").status_code)
 
   // ============ SESSIONS ============
   {
+    id: "py-flask-secret-key-init",
+    topic: "Flask + Session",
+    title: "Primer: Sett SECRET_KEY",
+    description:
+      "Flask lagrer session-data hos brukeren (i en cookie), men signerer cookie-en med en hemmelig " +
+      "nøkkel på server-en. Uten nøkkelen kaster Flask en `RuntimeError` så fort du leser eller " +
+      "skriver session. Sett `app.secret_key` til en streng — i produksjon skal den være lang og " +
+      "tilfeldig, i oppgaver/test holder en hardkodet streng.",
+    requires: ["flask"],
+    starter: `# === PRIMER: SECRET_KEY ===
+#
+# Flask lagrer session-data hos brukeren (i en cookie), men signerer
+# cookie-en med en hemmelig nøkkel på server-siden. Uten den nøkkelen
+# kaster Flask en RuntimeError så fort du leser eller skriver session.
+#
+# Den settes som et vanlig attribute på app-objektet:
+#   app.secret_key = "..."
+#
+# I ekte produksjon: bruk \`secrets.token_hex(32)\` og lagre i en
+# miljøvariabel — aldri commit den. I oppgaver/test kan en hardkodet
+# streng være OK.
+#
+# OPPGAVE: Sett app.secret_key til en streng. Skriv ut
+# \`app.config["SECRET_KEY"]\` for å bekrefte at den ble lagret —
+# det er to navn på samme felt.
+
+from flask import Flask
+
+app = Flask(__name__)
+
+# TODO: Skriv koden din her
+
+
+print("Secret key er satt:", app.config["SECRET_KEY"] is not None)
+`,
+    solution: `from flask import Flask
+
+app = Flask(__name__)
+app.secret_key = "ikke-bruk-denne-i-produksjon"
+
+print("Secret key er satt:", app.config["SECRET_KEY"] is not None)
+`,
+    hints: [
+      "Det er bare ett attribute: `app.secret_key = \"...\"`.",
+      "`app.config[\"SECRET_KEY\"]` returnerer samme verdi — det er to navn på samme felt.",
+      "I produksjon skal nøkkelen være tilfeldig: `secrets.token_hex(32)`.",
+    ],
+    docs: [
+      {
+        title: "SECRET_KEY — hvorfor den må settes",
+        url: "https://flask.palletsprojects.com/en/stable/config/#SECRET_KEY",
+        note: "Uten SECRET_KEY får du RuntimeError første gang du leser session.",
+        snippet: `app.secret_key = "tilfeldig-streng"`,
+      },
+    ],
+  },
+  {
+    id: "py-flask-session-init",
+    topic: "Flask + Session",
+    title: "Primer: Skriv og les session",
+    description:
+      "`flask.session` ser ut som en dict, men er knyttet til brukeren via en signert cookie. Det du " +
+      "skriver i én request er tilgjengelig i neste request fra samme bruker. Test-klienten beholder " +
+      "cookies mellom kallene, så du kan demonstrere session-flow i én oppgave.",
+    requires: ["flask"],
+    starter: `# === PRIMER: Bruk session ===
+#
+# \`flask.session\` ser ut som en vanlig dict, men er knyttet til
+# brukeren via en signert cookie. Det du skriver til session i én
+# request er tilgjengelig i neste request fra samme bruker.
+#
+# Mønsteret:
+#   from flask import session
+#   session["nokkel"] = "verdi"        # vanligvis i POST /login
+#   session.get("nokkel")               # i en GET som leser
+#
+# OPPGAVE: Lag to routes:
+#   POST /set-navn   — setter session["navn"] = "Ola", returnerer "OK"
+#   GET  /hent-navn  — returnerer "Hei, " + session.get("navn", "ukjent")
+#
+# Test-klienten beholder cookies mellom kallene under, så GET-en skal
+# kunne lese det POST-en skrev.
+
+from flask import Flask, session
+
+app = Flask(__name__)
+app.secret_key = "test-key"
+
+# TODO: Lag de to routene her
+
+
+client = app.test_client()
+client.post("/set-navn")
+resp = client.get("/hent-navn")
+print(resp.data.decode())
+`,
+    solution: `from flask import Flask, session
+
+app = Flask(__name__)
+app.secret_key = "test-key"
+
+@app.route("/set-navn", methods=["POST"])
+def set_navn():
+    session["navn"] = "Ola"
+    return "OK"
+
+@app.route("/hent-navn")
+def hent_navn():
+    return "Hei, " + session.get("navn", "ukjent")
+
+client = app.test_client()
+client.post("/set-navn")
+resp = client.get("/hent-navn")
+print(resp.data.decode())
+`,
+    hints: [
+      "Importer `session` fra flask i tillegg til Flask.",
+      "POST-route: `@app.route(\"/set-navn\", methods=[\"POST\"])`. GET er standard.",
+      "Skriv med `session[\"navn\"] = \"Ola\"`. Les med `session.get(\"navn\", \"ukjent\")` — andre argument er default hvis nøkkelen mangler.",
+    ],
+    docs: [
+      {
+        title: "flask.session",
+        url: "https://flask.palletsprojects.com/en/stable/api/#flask.session",
+        note: "Dict-aktig objekt som persisterer mellom requests via signert cookie.",
+        snippet: `from flask import session
+session["bruker"] = "Ola"
+session.get("bruker")`,
+      },
+    ],
+  },
+  {
     id: "py-flask-session",
     topic: "Sessions",
     title: "Session — lagre data mellom requester",
@@ -929,6 +1341,86 @@ navn = session.get("bruker", "(ingen)")`,
   // ============ LOGIN ============
   // ---- Login-kjeden er splittet i 4 progressive steg slik at studenten
   // bygger én bit av gangen (decorator → POST/login → beskyttet rute → full test).
+  {
+    id: "py-functools-wraps-init",
+    topic: "Decorators",
+    title: "Primer: @wraps — bevar funksjonsnavnet",
+    description:
+      "Når du skriver en decorator (som `@login_required`), pakker den den indre funksjonen inn i en " +
+      "wrapper. Uten `@wraps` mister den opprinnelige funksjonens `__name__` og du får Flask-feilen " +
+      "\"View function mapping is overwriting an existing endpoint function\" hvis to routes ender " +
+      "opp med samme navn. `@wraps(f)` fra `functools` kopierer over `__name__` og dokumentasjon.",
+    requires: [],
+    starter: `# === PRIMER: @wraps ===
+#
+# En decorator er en funksjon som returnerer en NY funksjon (wrapperen).
+# Problemet er at wrapperen får sitt eget navn — den opprinnelige
+# funksjonens __name__ forsvinner. Flask bruker __name__ til å
+# registrere routes, og krasjer med:
+#   "View function mapping is overwriting an existing endpoint function"
+# hvis to routes ender opp med samme __name__.
+#
+# \`@wraps(f)\` fra functools fikser dette — den kopierer __name__, doc
+# og andre attributter fra original-funksjonen til wrapperen.
+#
+# Mønsteret:
+#   def min_decorator(f):
+#       @wraps(f)
+#       def wrapper(*args, **kwargs):
+#           # før-logikk
+#           return f(*args, **kwargs)
+#       return wrapper
+#
+# OPPGAVE: Lag en decorator \`loud\` som printer "Kjører!" før funksjonen
+# kalles. Bruk @wraps slik at original-navnet bevares. Skriv ut
+# \`hilse.__name__\` etter at hilse er decorated — den skal fortsatt
+# være "hilse", ikke "wrapper".
+
+from functools import wraps
+
+def loud(f):
+    # TODO: Bygg wrapperen her, og bruk @wraps
+    pass
+
+@loud
+def hilse():
+    print("Hei!")
+
+hilse()
+print("Navn:", hilse.__name__)
+`,
+    solution: `from functools import wraps
+
+def loud(f):
+    @wraps(f)
+    def wrapper(*args, **kwargs):
+        print("Kjører!")
+        return f(*args, **kwargs)
+    return wrapper
+
+@loud
+def hilse():
+    print("Hei!")
+
+hilse()
+print("Navn:", hilse.__name__)
+`,
+    hints: [
+      "Wrapperen er en indre funksjon som tar `*args, **kwargs` og kaller `f(*args, **kwargs)`.",
+      "Sett `@wraps(f)` på linja rett over `def wrapper(...)`.",
+      "Husk å returnere wrapperen fra `loud(f)` — ellers blir hilse None.",
+    ],
+    docs: [
+      {
+        title: "functools.wraps",
+        url: "https://docs.python.org/3/library/functools.html#functools.wraps",
+        note: "Kopierer __name__, __doc__, __module__ osv. fra original-funksjonen til wrapperen.",
+        snippet: `@wraps(f)
+def wrapper(*args, **kwargs):
+    return f(*args, **kwargs)`,
+      },
+    ],
+  },
   {
     id: "py-flask-login-1-decorator",
     topic: "Login & sessions",
@@ -1320,6 +1812,59 @@ print("Se neste oppgave (py-pwd-2) for hvordan i praksis.")
     ],
   },
   {
+    id: "py-pwd-hash-init",
+    topic: "Passordhashing",
+    title: "Primer: Hash et passord med werkzeug",
+    description:
+      "Aldri lagre passord i klartekst i databasen. Hvis databasen lekker er alle brukerkontoer " +
+      "kompromittert. `werkzeug.security.generate_password_hash(passord)` lager en hash med " +
+      "innebygd salt — så samme passord gir ULIK hash hver gang. Det er saltet i action.",
+    requires: ["werkzeug"],
+    starter: `# === PRIMER: Hash et passord ===
+#
+# Du skal ALDRI lagre passord som ren tekst i databasen. Hvis databasen
+# lekker, er alle brukerkontoer kompromittert.
+#
+# werkzeug.security gir oss to funksjoner:
+#   generate_password_hash("hemmelig")    -> lager hash + salt
+#   check_password_hash(hash, "hemmelig") -> verifiserer (True/False)
+#
+# generate_password_hash returnerer en streng med algoritme + salt +
+# selve hashen. Den ser anderledes ut hver gang — det er saltet som
+# gjør den unik per kall. Du kan ikke "reversere" hashen.
+#
+# OPPGAVE: Hash strengen "passord123" to ganger og skriv ut begge.
+# Skriv også ut om de er like — det skal være False, fordi saltet er
+# forskjellig hver gang.
+
+from werkzeug.security import generate_password_hash
+
+# TODO: Skriv koden din her
+`,
+    solution: `from werkzeug.security import generate_password_hash
+
+hash1 = generate_password_hash("passord123")
+hash2 = generate_password_hash("passord123")
+print(hash1)
+print(hash2)
+print("Like?", hash1 == hash2)
+`,
+    hints: [
+      "`generate_password_hash(strengen)` returnerer hashen som streng — kall den to ganger med samme passord.",
+      "Lagre begge i variabler, og skriv ut begge.",
+      "Sammenlign med `==`. Resultatet skal være False — det er saltet som gjør hashene unike.",
+    ],
+    docs: [
+      {
+        title: "werkzeug.security — generate_password_hash",
+        url: "https://werkzeug.palletsprojects.com/en/stable/utils/#werkzeug.security.generate_password_hash",
+        note: "Lager hash med tilfeldig salt. Bruk `check_password_hash` for å verifisere senere.",
+        snippet: `from werkzeug.security import generate_password_hash
+hash = generate_password_hash("passord123")`,
+      },
+    ],
+  },
+  {
     id: "py-pwd-2-werkzeug-hash",
     topic: "Passord-sikkerhet",
     title: "werkzeug.security: generate_password_hash + check_password_hash",
@@ -1702,6 +2247,57 @@ print("Riktig kari:       ", client.post("/login", data={"brukernavn": "kari", "
 
   // ============ CSRF ============
   // Splittet i 3 steg: token-generering → verifisering → full angreps-test
+  {
+    id: "py-csrf-token-init",
+    topic: "CSRF",
+    title: "Primer: Generer en CSRF-token",
+    description:
+      "CSRF-tokens er kryptografisk tilfeldige strenger som server-en genererer for hvert skjema. " +
+      "Token-en må være tilfeldig — IKKE `random.choice` eller `uuid` — bruk `secrets`-modulen. " +
+      "`secrets.token_hex(16)` lager en streng med 32 hex-tegn (én byte = to hex-tegn).",
+    requires: [],
+    starter: `# === PRIMER: Generer en CSRF-token ===
+#
+# CSRF-angrep skjer når et ondsinnet nettsted lokker brukeren din til å
+# sende en POST til ditt API mens de er logget inn. Forsvaret er en
+# token som:
+#   1) genereres på server, lagres i session,
+#   2) embeddes i hvert skjema som <input type="hidden">,
+#   3) sjekkes mot session-token-en ved POST.
+#
+# Token-en må være kryptografisk tilfeldig — IKKE \`random.choice\`,
+# IKKE \`uuid\` — bruk \`secrets\`-modulen.
+#
+# Vanlige funksjoner:
+#   secrets.token_hex(16)      -> 32 hex-tegn  (16 bytes * 2)
+#   secrets.token_urlsafe(16)  -> base64url, kortere men ikke hex
+#
+# OPPGAVE: Importer secrets, generer en token med 16 bytes, og skriv
+# ut tokenen + lengden. Lengden skal bli 32 (én byte = to hex-tegn).
+
+# TODO: Skriv koden din her
+`,
+    solution: `import secrets
+
+token = secrets.token_hex(16)
+print("Token:", token)
+print("Lengde:", len(token))
+`,
+    hints: [
+      "`import secrets` — det er en standard-modul som følger med Python, ingen pip nødvendig.",
+      "`secrets.token_hex(16)` — argumentet er antall BYTES, ikke antall tegn.",
+      "Hver byte blir 2 hex-tegn, så 16 bytes blir 32 tegn. Bruk `len(token)` for å sjekke.",
+    ],
+    docs: [
+      {
+        title: "secrets.token_hex",
+        url: "https://docs.python.org/3/library/secrets.html#secrets.token_hex",
+        note: "Kryptografisk sikker tilfeldig hex-streng — riktig valg for tokens, ikke `random`.",
+        snippet: `import secrets
+token = secrets.token_hex(16)   # 32 hex-tegn`,
+      },
+    ],
+  },
   {
     id: "py-flask-csrf-1-token",
     topic: "CSRF",
