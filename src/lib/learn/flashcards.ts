@@ -1537,6 +1537,32 @@ export const FLASHCARDS: FlashCard[] = [
       "<ul> = unordered list (kuler). <ol> = ordered list (1, 2, 3). Begge inneholder <li>-elementer. Bruk <ul> for navigasjon og <ol> der rekkefølgen betyr noe (oppskrifter, steg).",
   },
   {
+    id: "c-bootstrap",
+    category: "flask",
+    topic: "Bootstrap",
+    question: "Hva er Bootstrap, og hvordan kobler du det på?",
+    answer:
+      "Et ferdig CSS- og JS-bibliotek som gir responsive stiler via klasser. Kurset bruker det via CDN: én <link> til CSS i <head> og én <script> til JS før </body>. Etter det trenger du bare å legge klasser på HTML-elementer.",
+    code: '<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">\n<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>',
+  },
+  {
+    id: "c-bootstrap-container",
+    category: "flask",
+    topic: "Bootstrap",
+    question: "Hva gjør klassen `container` i Bootstrap?",
+    answer:
+      "Wrap-elementet din får sentrert posisjon og responsiv maks-bredde — smal på mobil, bredere på desktop. Brukes typisk på en <div> som omslutter hovedinnholdet. Variant: `container-fluid` for full bredde alltid.",
+  },
+  {
+    id: "c-bootstrap-btn",
+    category: "flask",
+    topic: "Bootstrap",
+    question: "Hvordan lager du en blå knapp i Bootstrap?",
+    answer:
+      "Legg klassene `btn btn-primary` på et <button>- eller <a>-element. Andre varianter: `btn-secondary` (grå), `btn-danger` (rød), `btn-success` (grønn), `btn-outline-primary` (kun ramme).",
+    code: '<button class="btn btn-primary">Send</button>',
+  },
+  {
     id: "c-html-form-method",
     category: "flask",
     topic: "HTML",
