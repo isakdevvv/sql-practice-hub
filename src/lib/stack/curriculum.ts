@@ -64,7 +64,20 @@ export const PHASES: readonly CurriculumPhase[] = [
       "rekursjon",
       "sortering",
       "lenkede-strukturer",
+      "traer",
+      "grafer-dypere",
+      "hashing-dypere",
+      "dynamic-programming",
     ],
+  },
+  {
+    num: 2.5,
+    id: "fp-typer",
+    title: "Funksjonell programmering & typer",
+    why:
+      "Før du skalerer kode, lær prinsipper som gjør den robust: pure functions, immutability, sum types, generics. Disse er grunnlaget for moderne språk og bibliotek.",
+    analog: "MIT 6.821 · Stanford CS 242 · CMU 15-150",
+    slugs: ["funksjonell-programmering", "typesystemer"],
   },
   {
     num: 3,
@@ -129,6 +142,10 @@ export const PHASES: readonly CurriculumPhase[] = [
     slugs: [
       "http-anatomi",
       "html-jinja",
+      "css-moderne",
+      "javascript-grunnlag",
+      "typescript",
+      "react-grunnlag",
       "sikkerhet",
       "mvc-monster",
       "flask-livssyklus",
@@ -212,6 +229,15 @@ export const PHASES: readonly CurriculumPhase[] = [
       "api-testing",
       "api-deploy",
     ],
+  },
+  {
+    num: 11.5,
+    id: "devops",
+    title: "DevOps & verktøy",
+    why:
+      "Git-dyp, Docker, og avansert Linux-CLI er fundamentet for moderne deploy- og samarbeids-flyt. Disse verktøyene brukes i ALLE jobber.",
+    analog: "Industri-fokusert — sjelden eget kurs på universitet",
+    slugs: ["git-dyp", "docker", "linux-cli-advanced"],
   },
   {
     num: 12,

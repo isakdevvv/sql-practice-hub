@@ -52,6 +52,20 @@ export interface PhaseProgress {
  *  most closely matches its topic. Since topic names aren't slug names, we
  *  use a static mapping below. */
 const PHASE_TOPICS: Record<string, readonly string[]> = {
+  math: [
+    "Diskret matte",
+    "Logikk (matte)",
+    "Mengder",
+    "Kombinatorikk",
+    "Induksjon",
+    "Sannsynlighet",
+    "Bayes (matte)",
+    "Statistikk",
+    "Linær algebra",
+    "Vektorer",
+    "Matriser",
+    "Eigenvektorer",
+  ],
   hardware: [
     "Transistor",
     "Logiske porter",
@@ -72,6 +86,16 @@ const PHASE_TOPICS: Record<string, readonly string[]> = {
     "Grafer (algo)",
     "Hashing",
     "Dynamic programming",
+  ],
+  "fp-typer": [
+    "Funksjonell programmering",
+    "Pure functions",
+    "Higher-order funksjoner",
+    "Immutability",
+    "Typesystemer",
+    "Generics",
+    "Sum types",
+    "Variance",
   ],
   os: [
     "OS-grunnlag",
@@ -185,6 +209,13 @@ const PHASE_TOPICS: Record<string, readonly string[]> = {
     "EF Core",
     "Blazor",
     "LINQ",
+  ],
+  devops: [
+    "Git-dyp",
+    "Docker",
+    "Linux-CLI advanced",
+    "sed/awk/jq",
+    "Containere",
   ],
   drill: ["Cross-phase drill"],
 };
