@@ -8,6 +8,7 @@ import { VariableInspector } from "@/components/python/VariableInspector";
 import { PY_EXERCISES } from "@/lib/python/exercises";
 import { runScript, runScriptStepwise } from "@/lib/python/runner";
 import { loadPyProgress, markPySolved, resetPyProgress, type PyProgress } from "@/lib/python/pyProgress";
+import { levelOf, PY_LEVEL_NAMES, type PyLevel } from "@/lib/python/types";
 import { DocsPanel } from "@/components/DocsPanel";
 import { getPyodide, isPyodideReady, onPyodideProgress } from "@/lib/python/pyodideLoader";
 import type { PyRunResult, PyStep } from "@/lib/python/types";
@@ -41,16 +42,31 @@ export const Route = createFileRoute("/python")({
 
 function PythonPage() {
   const [activeId, setActiveId] = useState(PY_EXERCISES[0]?.id ?? "");
-  const exercise = useMemo(
-    () => PY_EXERCISES.find((e) => e.id === activeId) ?? PY_EXERCISES[0],
-    [activeId],
+  // Level filter: "all" means show everything; a number filters by PY_TOPIC_LEVEL.
+  const [levelFilter, setLevelFilter] = useState<"all" | PyLevel>("all");
+
+  const filteredExercises = useMemo(
+    () =>
+      levelFilter === "all"
+        ? PY_EXERCISES
+        : PY_EXERCISES.filter((e) => levelOf(e) === levelFilter),
+    [levelFilter],
   );
-  const exerciseIdx = PY_EXERCISES.findIndex((e) => e.id === exercise.id);
+
+  const exercise = useMemo(
+    () =>
+      filteredExercises.find((e) => e.id === activeId) ??
+      filteredExercises[0] ??
+      PY_EXERCISES[0],
+    [activeId, filteredExercises],
+  );
+  const exerciseIdx = filteredExercises.findIndex((e) => e.id === exercise.id);
 
   function goExercise(delta: number) {
-    if (!PY_EXERCISES.length) return;
-    const next = (exerciseIdx + delta + PY_EXERCISES.length) % PY_EXERCISES.length;
-    setActiveId(PY_EXERCISES[next].id);
+    if (!filteredExercises.length) return;
+    const next =
+      (exerciseIdx + delta + filteredExercises.length) % filteredExercises.length;
+    setActiveId(filteredExercises[next].id);
   }
 
   const [code, setCode] = useState(exercise.starter);
@@ -232,6 +248,45 @@ function PythonPage() {
           </div>
         )}
 
+        {/* Level filter pills — like /kurs but for Python */}
+        <div className="mb-4 flex flex-wrap gap-2 items-center">
+          <span className="text-xs uppercase tracking-wider text-muted-foreground mr-1">
+            Nivå:
+          </span>
+          <button
+            onClick={() => setLevelFilter("all")}
+            className={cn(
+              "rounded-full border px-3 py-1 text-xs transition-colors",
+              levelFilter === "all"
+                ? "border-brand bg-brand/10 text-brand"
+                : "border-border text-muted-foreground hover:bg-accent",
+            )}
+          >
+            Alle ({PY_EXERCISES.length})
+          </button>
+          {([0, 1, 2, 3, 4, 5] as const).map((lvl) => {
+            const count = PY_EXERCISES.filter((e) => levelOf(e) === lvl).length;
+            const solved = PY_EXERCISES.filter(
+              (e) => levelOf(e) === lvl && progress.solved[e.id],
+            ).length;
+            return (
+              <button
+                key={lvl}
+                onClick={() => setLevelFilter(lvl)}
+                title={PY_LEVEL_NAMES[lvl]}
+                className={cn(
+                  "rounded-full border px-3 py-1 text-xs transition-colors",
+                  levelFilter === lvl
+                    ? "border-brand bg-brand/10 text-brand"
+                    : "border-border text-muted-foreground hover:bg-accent",
+                )}
+              >
+                {lvl}: {PY_LEVEL_NAMES[lvl].split(" — ")[0]} ({solved}/{count})
+              </button>
+            );
+          })}
+        </div>
+
         <div className="grid lg:grid-cols-[260px_1fr] gap-4">
           {/* Sidebar: exercise list */}
           <aside className="space-y-1">
@@ -266,7 +321,7 @@ function PythonPage() {
                 }}
               />
             </div>
-            {PY_EXERCISES.map((e) => {
+            {filteredExercises.map((e) => {
               const isSolved = !!progress.solved[e.id];
               const isActive = e.id === exercise.id;
               return (
@@ -292,7 +347,7 @@ function PythonPage() {
                     )}
                   </div>
                   <div className="mt-0.5 text-[10px] text-muted-foreground truncate">
-                    {e.topic}
+                    Nivå {levelOf(e)} · {e.topic}
                   </div>
                 </button>
               );
@@ -517,7 +572,7 @@ function PythonPage() {
                 <ChevronLeft className="h-3.5 w-3.5 mr-1" /> Forrige
               </Button>
               <span>
-                {exerciseIdx + 1} av {PY_EXERCISES.length}
+                {exerciseIdx + 1} av {filteredExercises.length}
               </span>
               <Button size="sm" variant="ghost" onClick={() => goExercise(1)}>
                 Neste <ChevronRight className="h-3.5 w-3.5 ml-1" />

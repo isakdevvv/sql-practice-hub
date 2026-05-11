@@ -3,6 +3,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Check, X, RotateCcw, GripVertical } from "lucide-react";
 import type { MatchExercise } from "@/lib/learn/types";
+import { markDragSolved } from "@/lib/learn/dragProgress";
 
 function shuffle<T>(arr: T[]): T[] {
   const out = arr.slice();
@@ -43,6 +44,10 @@ export function DragMatch({ exercise }: { exercise: MatchExercise }) {
   }, [position, exercise]);
 
   const allCorrect = correctCount === exercise.pairs.length;
+
+  useEffect(() => {
+    if (checked && allCorrect) markDragSolved(exercise.id);
+  }, [checked, allCorrect, exercise.id]);
 
   function onDrop(targetIdx: number) {
     if (dragIdx === null || dragIdx === targetIdx) {

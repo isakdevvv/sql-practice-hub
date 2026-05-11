@@ -3,6 +3,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Check, RotateCcw, GripVertical } from "lucide-react";
 import type { OrderExercise } from "@/lib/learn/types";
+import { markDragSolved } from "@/lib/learn/dragProgress";
 
 function shuffle<T>(arr: T[]): T[] {
   const out = arr.slice();
@@ -60,6 +61,10 @@ export function DragOrder({ exercise }: { exercise: OrderExercise }) {
 
   const correctIndex = (i: number) => items[i] === exercise.items[i];
   const allCorrect = checked && items.every((_, i) => correctIndex(i));
+
+  useEffect(() => {
+    if (allCorrect) markDragSolved(exercise.id);
+  }, [allCorrect, exercise.id]);
 
   return (
     <div className="space-y-4">

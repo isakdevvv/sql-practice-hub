@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { ArrowRight, Lightbulb } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
+import { CourseOutline } from "@/components/stack/CourseOutline";
 
 // Course page on subqueries / nested SELECTs at multiple levels.
 // Hands-on lives in /drag under topic "Underspørringer".
@@ -105,6 +106,14 @@ JOIN maks m ON s.kategori = m.kategori AND s.solgt = m.m;
   },
 ];
 
+const STEPS = [
+  { title: "Lese-regel: innenfra og ut", anchor: "lese-regel" },
+  { title: "Åtte nivåer — fra enkelt til ekspert", anchor: "nivaer" },
+  { title: "Vanlige feller", anchor: "feller" },
+  { title: "Subquery eller JOIN", anchor: "vs-join" },
+];
+
+
 export function SubqueriesPage() {
   return (
     <StackPageShell title="Underspørringer — fra nybegynner til ekspert" group="eksamen">
@@ -136,7 +145,9 @@ export function SubqueriesPage() {
         </div>
 
         {/* Hovedregel */}
-        <section className="mb-10">
+        <CourseOutline courseId="subqueries" steps={STEPS} />
+
+        <section id="lese-regel" className="mb-10">
           <div className="rounded-xl border-2 border-brand/40 bg-brand/5 p-5">
             <div className="text-xs uppercase tracking-wider text-brand font-semibold mb-2">
               Lese-regel
@@ -150,7 +161,7 @@ export function SubqueriesPage() {
         </section>
 
         {/* Åtte nivåer */}
-        <section className="mb-10">
+        <section id="nivaer" className="mb-10">
           <h2 className="text-xl font-semibold mb-3">Åtte nivåer — fra enkelt til ekspert</h2>
           <div className="space-y-4">
             {NIVAER.map((n) => (
@@ -171,7 +182,7 @@ export function SubqueriesPage() {
         </section>
 
         {/* Vanlige feller */}
-        <section className="mb-10">
+        <section id="feller" className="mb-10">
           <h2 className="text-xl font-semibold mb-3">Vanlige feller</h2>
           <div className="space-y-3 text-sm">
             <div className="rounded-lg border border-amber-500/30 bg-amber-500/5 p-4">
@@ -197,7 +208,7 @@ export function SubqueriesPage() {
         </section>
 
         {/* Subquery vs JOIN */}
-        <section className="mb-10">
+        <section id="vs-join" className="mb-10">
           <h2 className="text-xl font-semibold mb-3">Subquery eller JOIN — hvilken?</h2>
           <div className="overflow-hidden rounded-lg border border-border">
             <table className="w-full text-sm">

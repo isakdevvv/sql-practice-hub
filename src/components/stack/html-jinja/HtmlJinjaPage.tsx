@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { ArrowRight, Lightbulb } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
+import { CourseOutline } from "@/components/stack/CourseOutline";
 
 // Course page covering HTML structure, semantic elements, CSS basics and Jinja.
 // Hands-on drills live in /drag (HTML, CSS, Jinja topics).
@@ -51,6 +52,17 @@ const JINJA_DIRECTIVES: { syntax: string; what: string }[] = [
   },
 ];
 
+const STEPS = [
+  { title: "HTML-skjelettet", anchor: "skjelett" },
+  { title: "Semantiske elementer", anchor: "semantiske" },
+  { title: "Lister — ul, ol, li", anchor: "lister" },
+  { title: "Skjema", anchor: "skjema" },
+  { title: "CSS — kobling og selektorer", anchor: "css" },
+  { title: "Jinja — mal-arv", anchor: "jinja" },
+  { title: "Sikkerhet i Jinja", anchor: "sikkerhet" },
+];
+
+
 export function HtmlJinjaPage() {
   return (
     <StackPageShell title="HTML, CSS og Jinja" group="eksamen">
@@ -80,7 +92,9 @@ export function HtmlJinjaPage() {
         </div>
 
         {/* 1. HTML-skjelett */}
-        <section className="mb-10">
+        <CourseOutline courseId="html-jinja" steps={STEPS} />
+
+        <section id="skjelett" className="mb-10">
           <h2 className="text-xl font-semibold mb-3">1. HTML-skjelettet</h2>
           <p className="text-sm text-muted-foreground mb-4">
             Hver HTML-fil starter med samme oppsett. Lær det utenat — det kommer ofte
@@ -109,7 +123,7 @@ export function HtmlJinjaPage() {
         </section>
 
         {/* 2. Semantiske elementer */}
-        <section className="mb-10">
+        <section id="semantiske" className="mb-10">
           <h2 className="text-xl font-semibold mb-3">2. Semantiske elementer</h2>
           <p className="text-sm text-muted-foreground mb-4">
             Bruk semantiske tags istedenfor <code>&lt;div&gt;</code> overalt. De gjør
@@ -158,7 +172,7 @@ export function HtmlJinjaPage() {
         </section>
 
         {/* 3. Lister */}
-        <section className="mb-10">
+        <section id="lister" className="mb-10">
           <h2 className="text-xl font-semibold mb-3">3. Lister — ul, ol, li</h2>
           <div className="grid sm:grid-cols-2 gap-4">
             <div className="rounded-xl border border-border bg-card p-5">
@@ -189,7 +203,7 @@ export function HtmlJinjaPage() {
         </section>
 
         {/* 4. Skjema */}
-        <section className="mb-10">
+        <section id="skjema" className="mb-10">
           <h2 className="text-xl font-semibold mb-3">4. Skjema — input, label, button</h2>
           <p className="text-sm text-muted-foreground mb-4">
             label kobles til input via <code>for=id</code>. Det er BÅDE tilgjengelighet
@@ -223,7 +237,7 @@ export function HtmlJinjaPage() {
         </section>
 
         {/* 5. CSS-kobling */}
-        <section className="mb-10">
+        <section id="css" className="mb-10">
           <h2 className="text-xl font-semibold mb-3">5. CSS — kobling og grunnselektorer</h2>
           <div className="rounded-xl border border-border bg-card p-5 mb-4">
             <div className="text-xs uppercase tracking-wider text-muted-foreground mb-2">
@@ -262,7 +276,7 @@ nav a { text-decoration: none; }`}</pre>
         </section>
 
         {/* 6. Jinja */}
-        <section className="mb-10">
+        <section id="jinja" className="mb-10">
           <h2 className="text-xl font-semibold mb-3">6. Jinja — mal-arv og kontrollflyt</h2>
           <p className="text-sm text-muted-foreground mb-4">
             Jinja kjører på serversiden i Flask. Den genererer HTML basert på data fra
@@ -327,7 +341,7 @@ nav a { text-decoration: none; }`}</pre>
         </section>
 
         {/* 7. Sikkerhet */}
-        <section className="mb-10">
+        <section id="sikkerhet" className="mb-10">
           <div className="rounded-xl border-2 border-amber-500/40 bg-amber-500/5 p-5">
             <div className="text-xs uppercase tracking-wider text-amber-700 dark:text-amber-400 font-semibold mb-2">
               Viktig — sikkerhet i Jinja
