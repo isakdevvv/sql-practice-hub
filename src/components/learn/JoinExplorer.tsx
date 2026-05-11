@@ -45,8 +45,11 @@ export function JoinExplorer({
 }) {
   const types = exercise.joinTypes ?? ALL_JOIN_TYPES;
 
-  // The hidden answer the user is trying to identify. Random per mount.
-  const [target, setTarget] = useState<JoinType>(() => pickRandom(types));
+  // The hidden answer the user is trying to identify. When the exercise locks
+  // `correctType`, use it; otherwise pick randomly from the available types.
+  const [target, setTarget] = useState<JoinType>(
+    () => exercise.correctType ?? pickRandom(types),
+  );
   // What the user is currently previewing/considering.
   const [selected, setSelected] = useState<JoinType>(types[0]);
   // The user's locked-in answer (null until they click Bekreft).
@@ -136,7 +139,8 @@ export function JoinExplorer({
   }, [types, target, exercise, targetResult]);
 
   function tryAgain() {
-    setTarget(pickRandom(types, target));
+    // When the exercise locks correctType, keep it; otherwise reshuffle.
+    if (!exercise.correctType) setTarget(pickRandom(types, target));
     setCommitted(null);
     setSelected(types[0]);
   }

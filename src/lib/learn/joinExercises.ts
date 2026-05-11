@@ -296,6 +296,7 @@ export const JOIN_EXERCISES: JoinExercise[] = [
     topic: "CROSS JOIN",
     difficulty: 1,
     joinTypes: ["INNER", "LEFT", "RIGHT", "FULL", "CROSS"],
+    correctType: "CROSS",
     left: {
       name: "tshirt",
       columns: ["modellnr", "navn"],

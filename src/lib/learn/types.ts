@@ -175,5 +175,9 @@ export interface JoinExercise {
   /** Optional set of join types this exercise is most instructive for.
    *  Defaults to all four [INNER, LEFT, RIGHT, FULL]. */
   joinTypes?: JoinType[];
+  /** Optional: lock the hidden target to a specific JOIN type. When unset, the
+   *  target is picked randomly from `joinTypes`. Use this when the scenario
+   *  itself implies a specific answer (e.g. "alle kombinasjoner" → CROSS). */
+  correctType?: JoinType;
   explanation: string;
 }
