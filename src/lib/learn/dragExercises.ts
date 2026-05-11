@@ -16975,4 +16975,960 @@ function User({ id }) {
     explanation:
       "Cross-phase: ML ↔ Datakvalitet ↔ Domene­forståelse. Andrew Ng kaller det «data-centric AI»: 80% av tida bør gå til å rense og forstå dataen, ikke å tune hyperparametre. Klassisk eksempel: en bilde­klassifiserer som lærer å gjenkjenne KAMERA-merket fordi alle hund-bilder var tatt med samme kamera.",
   },
+  // ============================================================
+  // MODERNE WEB — JavaScript, TypeScript, React, CSS moderne
+  // (~40 oppgaver — agent F)
+  // ============================================================
+
+  // ---------------- JavaScript (~10) ----------------
+  {
+    id: "d-js-varletconst-match",
+    kind: "match",
+    title: "var, let og const — hvilken bruker du når?",
+    prompt: "Match nøkkelord med rett situasjon.",
+    topic: "JavaScript",
+    pairs: [
+      { left: "const", right: "Standardvalg — verdien skal ikke rebindes" },
+      { left: "let", right: "Verdien skal endres senere (teller, loop-variabel)" },
+      { left: "var", right: "Legacy — funksjons-scoped, hoistes som undefined. Unngå i ny kode" },
+    ],
+    explanation:
+      "Tommelfingerregel: prøv const først, bytt til let bare hvis du trenger å rebinde. Bruk aldri var i ny kode — let/const har strammere blokk-scope og oppfører seg som du forventer.",
+  },
+  {
+    id: "d-js-hoisting-quiz",
+    kind: "quiz",
+    title: "Hoisting — hva printes?",
+    prompt: "Velg riktig output.",
+    topic: "JavaScript",
+    question: "Hva blir output av denne koden?",
+    code: "console.log(a);\nconsole.log(b);\nvar a = 1;\nlet b = 2;",
+    language: "javascript",
+    options: [
+      {
+        text: "undefined, deretter ReferenceError",
+        correct: true,
+        rationale:
+          "var-deklarasjonen hoistes og verdien er undefined inntil tilordning. let hoistes også, men ligger i 'temporal dead zone' og kaster ReferenceError ved aksess før deklarasjonen.",
+      },
+      {
+        text: "1, deretter 2",
+        correct: false,
+        rationale: "Verdiene er ikke tilordnet på de linjene — hoisting flytter bare deklarasjonen, ikke tilordningen.",
+      },
+      {
+        text: "ReferenceError på begge",
+        correct: false,
+        rationale: "var er hoisted som undefined, ikke en feil. Bare let/const er i TDZ.",
+      },
+      {
+        text: "undefined, undefined",
+        correct: false,
+        rationale: "let/const er i TDZ — aksess før deklarasjon er en harde feil, ikke undefined.",
+      },
+    ],
+    explanation:
+      "Hoisting-praksis: erklær alltid før bruk. Da slipper du å bry deg om forskjellen mellom var (silent undefined) og let/const (TDZ-feil).",
+  },
+  {
+    id: "d-js-this-binding-match",
+    kind: "match",
+    title: "this — fire bindings-regler",
+    prompt: "Match kall-mønsteret med hvor this peker.",
+    topic: "JavaScript",
+    pairs: [
+      { left: "new Foo()", right: "this = nytt, tomt objekt (new-binding)" },
+      { left: "fn.call({x:1})", right: "this = objektet du sendte inn (eksplisitt binding)" },
+      { left: "obj.metode()", right: "this = obj (implisitt binding via prikken)" },
+      { left: "fn()  (standalone)", right: "this = undefined i strict, ellers global object (default)" },
+      { left: "() => this.x", right: "this fra omgivelsen der funksjonen ble DEFINERT (arrow har ingen egen)" },
+    ],
+    explanation:
+      "Prioritet: new > eksplisitt (call/apply/bind) > implisitt (obj.metode) > default. Arrow-funksjoner følger ingen av reglene — de bruker lexical this fra opprettelses-konteksten.",
+  },
+  {
+    id: "d-js-this-detached-quiz",
+    kind: "quiz",
+    title: "this mister kontekst",
+    prompt: "Hva printes?",
+    topic: "JavaScript",
+    question: "Hva er output?",
+    code: "const bruker = {\n  navn: 'Ada',\n  hils() { return 'Hei ' + this.navn; },\n};\nconst f = bruker.hils;\nconsole.log(f());",
+    language: "javascript",
+    options: [
+      {
+        text: "'Hei undefined' (eller TypeError i strict mode)",
+        correct: true,
+        rationale:
+          "Når du henter ut metoden og kaller den standalone, mister du implisitt binding. this er da default — undefined i strict, global object ellers (hvor navn ikke finnes).",
+      },
+      {
+        text: "'Hei Ada'",
+        correct: false,
+        rationale: "Funksjonen ble revet løs fra objektet. Bruk bruker.hils.bind(bruker) eller () => bruker.hils() for å beholde this.",
+      },
+      {
+        text: "ReferenceError: navn is not defined",
+        correct: false,
+        rationale: "this.navn er ikke det samme som navn — det tilgangen this.navn på et undefined/global object.",
+      },
+      {
+        text: "'Hei null'",
+        correct: false,
+        rationale: "this er aldri null som default — det er undefined (strict) eller globalThis.",
+      },
+    ],
+    explanation:
+      "Klassisk feile ved callbacks: setTimeout(obj.metode, 100) ringer metoden uten objekt. Bruk obj.metode.bind(obj) eller en arrow-wrapper.",
+  },
+  {
+    id: "d-js-eq-vs-eqeq-match",
+    kind: "match",
+    title: "== vs === resultater",
+    prompt: "Match uttrykket med hva det returnerer.",
+    topic: "JavaScript",
+    pairs: [
+      { left: "0 == '0'", right: "true (== gjør type-coercion: string → number)" },
+      { left: "0 === '0'", right: "false (=== krever samme type)" },
+      { left: "null == undefined", right: "true (eneste like null-aktige med ==)" },
+      { left: "null === undefined", right: "false (=== forskjellige typer)" },
+      { left: "NaN === NaN", right: "false (NaN er aldri lik noe, inkludert seg selv)" },
+    ],
+    explanation:
+      "Bruk alltid === / !==. Eneste vanlige unntak: x == null sjekker både null og undefined på én linje. For NaN-sjekk: Number.isNaN(x).",
+  },
+  {
+    id: "d-js-falsy-quiz",
+    kind: "quiz",
+    title: "Falsy-verdier",
+    prompt: "Hvilke av disse er IKKE falsy?",
+    topic: "JavaScript",
+    question: "Hvilket sett består BARE av falsy verdier?",
+    options: [
+      {
+        text: "0, '', null, undefined, NaN, false",
+        correct: true,
+        rationale: "Disse seks (+ 0n og -0) er de eneste falsy verdiene i JavaScript. Alt annet er truthy.",
+      },
+      {
+        text: "0, '', [], {}, null, false",
+        correct: false,
+        rationale: "[] og {} er TRUTHY — selv om de er 'tomme'. Klassisk feile: if (liste) { ... } sjekker alltid sant for en tom array. Sjekk liste.length isteden.",
+      },
+      {
+        text: "0, '0', null, undefined, false",
+        correct: false,
+        rationale: "'0' er en ikke-tom streng → truthy. Bare den tomme strengen '' er falsy.",
+      },
+      {
+        text: "false, null, undefined, '', -1",
+        correct: false,
+        rationale: "-1 er truthy. Bare 0 (og -0, 0n) er falsy blant tallene.",
+      },
+    ],
+    explanation:
+      "Falsy-listen er kort og fast — lær den utenat. Spesielt overraskende: [] er truthy, '0' er truthy, men 0 er falsy.",
+  },
+  {
+    id: "d-js-promise-fill",
+    kind: "fill",
+    title: "async/await med try/catch",
+    prompt: "Fyll inn nøkkelordene for en typisk fetch med feilhåndtering.",
+    topic: "JavaScript",
+    template:
+      "__1__ function hentBruker(id) {\n  __2__ {\n    const res = __3__ fetch('/api/users/' + id);\n    if (!res.ok) __4__ new Error('Status ' + res.status);\n    const data = __3__ res.json();\n    return data;\n  } __5__ (err) {\n    console.error(err);\n    return null;\n  }\n}",
+    blanks: ["async", "try", "await", "throw", "catch"],
+    options: ["async", "await", "try", "catch", "throw", "return", "function", "Promise"],
+    language: "html",
+    explanation:
+      "Hver await pauser funksjonen til Promise-en resolver. Hvis den rejecter, kastes verdien som en exception — fanges av nærmeste try/catch. async-funksjoner returnerer alltid en Promise.",
+  },
+  {
+    id: "d-js-eventloop-order",
+    kind: "order",
+    title: "Event loop — utskrifts-rekkefølge",
+    prompt:
+      "Disse linjene står i denne rekkefølgen i koden. Ordne i den rekkefølgen de FAKTISK skrives ut.",
+    topic: "JavaScript",
+    items: [
+      "console.log('A')  (synkront)",
+      "console.log('B')  (synkront)",
+      "Promise.resolve().then(() => console.log('C'))  — microtask",
+      "setTimeout(() => console.log('D'), 0)  — task",
+    ],
+    explanation:
+      "Synkron kode (A, B) kjører først, helt ut. Så tømmes microtask-køen (C). Deretter første task fra task-køen (D). Microtasks har ALLTID prioritet over tasks.",
+  },
+  {
+    id: "d-js-closure-output-quiz",
+    kind: "quiz",
+    title: "Closure i loop — var vs let",
+    prompt: "Hva blir output?",
+    topic: "JavaScript",
+    question: "Hva printer denne koden?",
+    code: "for (var i = 0; i < 3; i++) {\n  setTimeout(() => console.log(i), 0);\n}",
+    language: "javascript",
+    options: [
+      {
+        text: "3, 3, 3",
+        correct: true,
+        rationale:
+          "var er funksjons-scoped — alle tre setTimeout-callbacks deler SAMME i. Når de kjører (etter loopen er ferdig), er i = 3.",
+      },
+      {
+        text: "0, 1, 2",
+        correct: false,
+        rationale: "Det er det du får med let — let lager en ny binding per iterasjon. Med var deler alle samme variabel.",
+      },
+      {
+        text: "0, 0, 0",
+        correct: false,
+        rationale: "Hvis det var det, ville closuren fanget verdien ved opprettelse — den fanger referansen, ikke verdien.",
+      },
+      {
+        text: "undefined, undefined, undefined",
+        correct: false,
+        rationale: "i er fortsatt definert etter loopen (var er funksjons-scoped, ikke blokk-scoped).",
+      },
+    ],
+    explanation:
+      "Bytt var → let, så får du 0, 1, 2. let lager en ny binding hver iterasjon. Dette er hoveddrivkraften bak å droppe var i ny kode.",
+  },
+  {
+    id: "d-js-types-match",
+    kind: "match",
+    title: "typeof-resultater",
+    prompt: "Match uttrykket med hva typeof returnerer.",
+    topic: "JavaScript",
+    pairs: [
+      { left: "typeof 'hei'", right: "'string'" },
+      { left: "typeof 42", right: "'number'" },
+      { left: "typeof undefined", right: "'undefined'" },
+      { left: "typeof null", right: "'object' (historisk bug — kan ikke fikses)" },
+      { left: "typeof []", right: "'object' (bruk Array.isArray() isteden)" },
+      { left: "typeof function(){}", right: "'function'" },
+    ],
+    explanation:
+      "typeof null === 'object' er den mest beryktede JS-bug-en — den har ligget der siden 1995 og kan ikke fjernes uten å bryte hele weben. Bruk x === null for null-sjekk.",
+  },
+
+  // ---------------- TypeScript (~10) ----------------
+  {
+    id: "d-ts-type-vs-interface-quiz",
+    kind: "quiz",
+    title: "type vs interface",
+    prompt: "Hvilket utsagn stemmer?",
+    topic: "TypeScript",
+    question: "Hva er en KORREKT forskjell mellom type og interface?",
+    options: [
+      {
+        text: "interface kan declaration-merges (re-erklæres og slås sammen); type kan ikke",
+        correct: true,
+        rationale:
+          "To interface-erklæringer med samme navn slås automatisk sammen. To type-erklæringer med samme navn gir kompileringsfeil. Ellers er de like nok for de fleste use cases.",
+      },
+      {
+        text: "type kan ikke beskrive objekter — bare unions og primitives",
+        correct: false,
+        rationale: "type kan godt beskrive objekter (type Bruker = { id: number; navn: string }). Den er mer fleksibel enn interface.",
+      },
+      {
+        text: "interface gir bedre runtime-feil enn type",
+        correct: false,
+        rationale: "Begge fjernes fullstendig ved kompilering — verken type eller interface eksisterer i runtime.",
+      },
+      {
+        text: "type bruker arv med 'extends', interface bruker '&'",
+        correct: false,
+        rationale: "Det er motsatt: interface bruker extends, type bruker & (intersection).",
+      },
+    ],
+    explanation:
+      "Praktisk regel: bruk interface for offentlige objekt-kontrakter (kan utvides senere), type for unions/intersections/aliaser. Begge er nesten alltid utskiftbare for vanlige objekter.",
+  },
+  {
+    id: "d-ts-generics-fill",
+    kind: "fill",
+    title: "Generisk identitets-funksjon",
+    prompt: "Fyll inn type-variabelen som bevarer input-typen i returen.",
+    topic: "TypeScript",
+    template:
+      "function forste__1__(liste: __2__[]): __2__ | undefined {\n  return liste[0];\n}\n\nconst tall: number | undefined = forste([1, 2, 3]);\nconst tekst: string | undefined = forste(['a', 'b']);",
+    blanks: ["<T>", "T"],
+    options: ["<T>", "T", "<any>", "any", "<U>", "<T extends number>", "<T, U>"],
+    language: "html",
+    explanation:
+      "T er en type-variabel. Den fanger typen som kommer inn (number eller string) og brukes som returtype. Uten generic ville vi måtte returnere any og miste informasjonen.",
+  },
+  {
+    id: "d-ts-utility-types-match",
+    kind: "match",
+    title: "Utility types — match med hva de gjør",
+    prompt: "Match utility-typen med transformasjonen den utfører.",
+    topic: "TypeScript",
+    pairs: [
+      { left: "Partial<T>", right: "Gjør alle felt valgfrie (?:)" },
+      { left: "Required<T>", right: "Gjør alle felt påkrevd" },
+      { left: "Readonly<T>", right: "Gjør alle felt readonly" },
+      { left: "Pick<T, K>", right: "Plukker ut bare feltene K fra T" },
+      { left: "Omit<T, K>", right: "Tar alt fra T BORTSETT FRA K" },
+      { left: "Record<K, V>", right: "Objekt-type med K-nøkler og V-verdier" },
+      { left: "ReturnType<F>", right: "Hva en funksjon returnerer" },
+      { left: "Awaited<P>", right: "Verdien inne i en Promise" },
+    ],
+    explanation:
+      "Disse er innebygd i TS — ikke behov for å importere. Vanligste mønster: Omit<Bruker, 'id'> for 'opprett bruker'-payload, Partial<Bruker> for 'oppdater bruker'-payload.",
+  },
+  {
+    id: "d-ts-narrowing-quiz",
+    kind: "quiz",
+    title: "Narrowing med typeof",
+    prompt: "Hva er typen til x i if-blokken?",
+    topic: "TypeScript",
+    question: "Gitt funksjonen under — hva er typen til x INNE i if-blokken?",
+    code: "function f(x: string | number) {\n  if (typeof x === 'string') {\n    /* x er hva? */\n  }\n}",
+    language: "javascript",
+    options: [
+      {
+        text: "string",
+        correct: true,
+        rationale:
+          "TypeScript følger flyt-kontrollen. Etter typeof-sjekken i if-grenen vet TS at x ER en string, og fjerner number fra union-typen.",
+      },
+      {
+        text: "string | number",
+        correct: false,
+        rationale: "Det er typen UTENFOR if. Inne i if har TS narrowed den.",
+      },
+      {
+        text: "any",
+        correct: false,
+        rationale: "TS mister aldri typen til any uten at du eksplisitt sier det.",
+      },
+      {
+        text: "unknown",
+        correct: false,
+        rationale: "unknown brukes når du IKKE vet hvilken type det er. Etter typeof-sjekken vet vi det helt sikkert.",
+      },
+    ],
+    explanation:
+      "Narrowing fungerer med typeof (primitives), instanceof (klasser), 'in' (eiendomssjekk), og egne type guards (funksjoner med 'x is T'-returtype). Bruk det aggressivt — TS følger med.",
+  },
+  {
+    id: "d-ts-union-vs-intersection-match",
+    kind: "match",
+    title: "Union vs intersection",
+    prompt: "Match symbolet med betydningen.",
+    topic: "TypeScript",
+    pairs: [
+      { left: "A | B", right: "Union — verdien er ENTEN A eller B (et av to)" },
+      { left: "A & B", right: "Intersection — verdien er BÅDE A og B samtidig (begge)" },
+      { left: "type T = string | number", right: "T er en streng ELLER et tall" },
+      { left: "type T = Bok & Tidsskrift", right: "T har ALLE felt fra Bok pluss alle fra Tidsskrift" },
+    ],
+    explanation:
+      "Vanlig forveksling: 'jeg vil ha både streng og tall' er ikke string & number — det er typen never (en verdi kan ikke være begge). Bruk | for 'enten/eller', & for 'kombiner objekt-typer'.",
+  },
+  {
+    id: "d-ts-readonly-quiz",
+    kind: "quiz",
+    title: "readonly i TypeScript",
+    prompt: "Hvilken setning er KORREKT om readonly?",
+    topic: "TypeScript",
+    question: "Hva betyr readonly?",
+    options: [
+      {
+        text: "Compile-time sjekk — TS klager hvis du tilordner. Men det er ikke håndhevet i runtime.",
+        correct: true,
+        rationale:
+          "readonly fjernes ved kompilering, akkurat som alle TS-typer. Det er en utviklings-tids-sikkerhet, ikke en runtime-frysing. Bruk Object.freeze() for runtime-immutabilitet.",
+      },
+      {
+        text: "Verdien er fryst i runtime — kan ikke endres",
+        correct: false,
+        rationale: "Det er Object.freeze(). readonly er bare en compile-time-merkelapp.",
+      },
+      {
+        text: "Synonym med const",
+        correct: false,
+        rationale: "const er rebinding av variabler. readonly er for objekt-felter. De løser ulike problemer.",
+      },
+      {
+        text: "Endrer hvordan JS kjører koden",
+        correct: false,
+        rationale: "TS-typer påvirker IKKE generert JavaScript. De fjernes i transpileringen.",
+      },
+    ],
+    explanation:
+      "Mantra: 'TS-typer eksisterer ikke i runtime'. Alt typesjekking, generics, narrowing, readonly skjer ved kompilering og blir borte i .js-filen.",
+  },
+  {
+    id: "d-ts-strict-null-fill",
+    kind: "fill",
+    title: "Håndtere null med optional chaining",
+    prompt:
+      "Med strictNullChecks må du håndtere null/undefined eksplisitt. Fyll inn de manglende operatorene.",
+    topic: "TypeScript",
+    template:
+      "function lengde(s: string | null): number {\n  return s__1__.length __2__ 0;\n}",
+    blanks: ["?.", "??"],
+    options: ["?.", "??", "||", ".", "!", "&&", "!.", "?:"],
+    language: "html",
+    explanation:
+      "?. (optional chaining): hvis s er null, returner undefined uten å kaste. ?? (nullish coalescing): default-verdi når venstre er null/undefined (men IKKE 0 eller ''). || ville defaulte også på 0 — feil for tall.",
+  },
+  {
+    id: "d-ts-any-vs-unknown-match",
+    kind: "match",
+    title: "any vs unknown",
+    prompt: "Match typen med oppførselen.",
+    topic: "TypeScript",
+    pairs: [
+      { left: "any", right: "Slår av typesjekking — kan kalle hva som helst på den, mister all hjelp" },
+      { left: "unknown", right: "Type-safe motpart — MÅ narrowes før bruk" },
+      { left: "Returnerer fra JSON.parse", right: "any (typen er offisielt any)" },
+      { left: "Anbefalt for ukjent eksternt input", right: "unknown — tvinger deg til å validere før bruk" },
+    ],
+    explanation:
+      "any er som å slå av TS for den variabelen — bug-magnet. unknown er løsningen: du må gjøre en typeof/instanceof/guard-sjekk før du kan bruke verdien.",
+  },
+  {
+    id: "d-ts-discriminated-union-fill",
+    kind: "fill",
+    title: "Discriminated union",
+    prompt: "Fyll inn 'kind'-feltene som lar TS narrowe automatisk i switch.",
+    topic: "TypeScript",
+    template:
+      "type Resultat =\n  | { kind: __1__; verdi: number }\n  | { kind: __2__; melding: string };\n\nfunction vis(r: Resultat) {\n  switch (r.kind) {\n    case __1__:  return 'Tall: ' + r.verdi;\n    case __2__: return 'Feil: ' + r.melding;\n  }\n}",
+    blanks: ["'ok'", "'feil'"],
+    options: ["'ok'", "'feil'", "ok", "feil", "true", "false", "null", "string"],
+    language: "html",
+    explanation:
+      "En discriminated union har et felles 'tag'-felt (her: kind). TS bruker tagverdien til å vite hvilke felter som finnes i hver gren av switch. Brukes mye for tilstands-modellering i Redux/React.",
+  },
+  {
+    id: "d-ts-generics-constraint-quiz",
+    kind: "quiz",
+    title: "Generics med constraint",
+    prompt: "Hva betyr <T extends ...> i en generic?",
+    topic: "TypeScript",
+    question:
+      "Hva betyr signaturen function lengde<T extends { length: number }>(x: T): number?",
+    options: [
+      {
+        text: "T må være en type som HAR en length-egenskap (string, array, etc.). Andre typer gir kompileringsfeil.",
+        correct: true,
+        rationale:
+          "extends i generics er en CONSTRAINT, ikke arv. Det betyr 'T må være tildelbar til {length: number}'. lengde(42) ville feile fordi number ikke har .length.",
+      },
+      {
+        text: "T arver fra en klasse",
+        correct: false,
+        rationale: "Det er extends i klasse-syntaks. I generics betyr extends 'må være tildelbar til'.",
+      },
+      {
+        text: "T blir automatisk number",
+        correct: false,
+        rationale: "T er fortsatt en type-variabel. Constrainten sier bare hva den MÅ kunne være.",
+      },
+      {
+        text: "Funksjonen returnerer T",
+        correct: false,
+        rationale: "Returtypen er eksplisitt number. T er bare på input.",
+      },
+    ],
+    explanation:
+      "Constraint lar deg jobbe med felles egenskaper uten å gi opp T-informasjonen. Typisk: <T extends { id: string }> for funksjoner som virker på 'alt med id'.",
+  },
+
+  // ---------------- React (~12) ----------------
+  {
+    id: "d-react-hooks-rules-quiz",
+    kind: "quiz",
+    title: "Hooks-reglene",
+    prompt: "Hvilken er en GYLDIG bruk av hooks?",
+    topic: "React",
+    question: "Hvilken bruk av useState er KORREKT?",
+    code: "function A() {\n  if (x) {\n    const [n, setN] = useState(0);  // a\n  }\n}\n\nfunction B() {\n  const [n, setN] = useState(0);    // b\n  return <p>{n}</p>;\n}\n\nfunction C() {\n  for (let i = 0; i < 3; i++) {\n    const [n] = useState(i);        // c\n  }\n}\n\nfunction handleClick() {\n  const [n] = useState(0);          // d\n}",
+    language: "javascript",
+    options: [
+      {
+        text: "Bare B — hooks må kalles på toppen av en komponent, alltid i samme rekkefølge",
+        correct: true,
+        rationale:
+          "Hooks-rules: 1) Bare på toppnivå (ikke i if/for/etter return). 2) Bare fra React-funksjoner (komponent eller custom hook). React holder rede på hooks ved RING-fOLGE — endrer du rekkefølgen, kollapser hele state-mappingen.",
+      },
+      {
+        text: "A og B",
+        correct: false,
+        rationale: "A bruker useState i en if — hvis x endrer seg mellom renders, ødelegges hook-rekkefølgen.",
+      },
+      {
+        text: "B og C",
+        correct: false,
+        rationale: "C kaller useState i loop. Hvis loop-lengden endrer seg, ødelegges hook-rekkefølgen.",
+      },
+      {
+        text: "Alle fire",
+        correct: false,
+        rationale: "D er i en vanlig funksjon (ikke React-komponent). hooks fungerer bare i komponenter eller custom hooks (navn som starter med 'use').",
+      },
+    ],
+    explanation:
+      "ESLint-pluginet eslint-plugin-react-hooks fanger 99 % av disse feilene. Skru på 'react-hooks/rules-of-hooks' og 'react-hooks/exhaustive-deps'.",
+  },
+  {
+    id: "d-react-useeffect-cleanup-fill",
+    kind: "fill",
+    title: "useEffect med cleanup",
+    prompt:
+      "Fyll inn de manglende delene for en effect som lytter på vindusresize.",
+    topic: "React",
+    template:
+      "useEffect(__1__ => {\n  const handler = () => setBredde(window.innerWidth);\n  window.addEventListener('resize', handler);\n  return __1__ => __2__('resize', handler);\n}, __3__);",
+    blanks: ["()", "window.removeEventListener", "[]"],
+    options: ["()", "[]", "[setBredde]", "window.removeEventListener", "window.addEventListener", "null", "true"],
+    language: "html",
+    explanation:
+      "Hver effect som åpner noe (lytter, timer, abonnement) MÅ rydde opp i return-funksjonen. Glemt cleanup = memory leak og 'state update on unmounted component'-advarsler. Tom dependency-array [] = kjør én gang på mount.",
+  },
+  {
+    id: "d-react-controlled-form-fill",
+    kind: "fill",
+    title: "Controlled input",
+    prompt: "Fyll inn props for en controlled input.",
+    topic: "React",
+    template:
+      "const [navn, setNavn] = useState('');\n\nreturn (\n  <input\n    __1__={navn}\n    __2__={e => setNavn(e.__3__.value)}\n  />\n);",
+    blanks: ["value", "onChange", "target"],
+    options: ["value", "defaultValue", "onChange", "onInput", "target", "currentTarget", "checked", "ref"],
+    language: "html",
+    explanation:
+      "Controlled: React eier verdien via state. value setter inputens vises-verdi, onChange synker tilbake. Uten begge får du enten frozen input eller uncontrolled input (warning).",
+  },
+  {
+    id: "d-react-stale-closure-quiz",
+    kind: "quiz",
+    title: "Stale closure i useEffect",
+    prompt: "Hva er problemet med denne koden?",
+    topic: "React",
+    question: "Hvorfor teller dette IKKE riktig?",
+    code: "function Teller() {\n  const [n, setN] = useState(0);\n  useEffect(() => {\n    const id = setInterval(() => {\n      setN(n + 1);\n    }, 1000);\n    return () => clearInterval(id);\n  }, []);\n}",
+    language: "javascript",
+    options: [
+      {
+        text: "Effekten fanger n=0 ved mount, og setInterval-callbacken bruker den verdien for evig. Resultatet: n går fra 0 til 1 og stopper.",
+        correct: true,
+        rationale:
+          "Tom dependency-array betyr at effekten kjører én gang. Closuren rundt setInterval-callbacken har en snapshot av n=0. Hver tick setter n til 0+1 = 1.",
+      },
+      {
+        text: "setInterval er upålitelig — bruk setTimeout i loop",
+        correct: false,
+        rationale: "setInterval er fin her. Problemet er closuren, ikke timer-mekanismen.",
+      },
+      {
+        text: "useState mister verdien etter første render",
+        correct: false,
+        rationale: "useState beholder verdien helt fint. Problemet er at closuren i effekten ikke leser ny verdi.",
+      },
+      {
+        text: "Cleanup mangler",
+        correct: false,
+        rationale: "Cleanup er der (clearInterval). Det er fortsatt en stale closure-bug.",
+      },
+    ],
+    explanation:
+      "Fiks 1: setN(prev => prev + 1) — funksjons-formen leser alltid siste state. Fiks 2: legg n i dependency-array (men da settes ny interval per tick — sjelden ønsket). Fiks 3: bruk useRef til å holde siste verdi.",
+  },
+  {
+    id: "d-react-usememo-vs-usecallback-match",
+    kind: "match",
+    title: "useMemo vs useCallback",
+    prompt: "Match hooken med hva den cacher.",
+    topic: "React",
+    pairs: [
+      { left: "useMemo(() => ..., deps)", right: "Cacher RESULTATET av funksjonen (en verdi)" },
+      { left: "useCallback(fn, deps)", right: "Cacher selve FUNKSJONEN (referansen)" },
+      { left: "useRef(initial)", right: "Mutabel boks som overlever renders — ikke trigger re-render" },
+      { left: "useMemo(() => fn, deps)", right: "Tilsvarer useCallback(fn, deps)" },
+    ],
+    explanation:
+      "Mental modell: useMemo cacher verdier, useCallback cacher funksjoner. useCallback er bare sukker for useMemo med en funksjons-verdi. Bruk dem bare når du har MÅLT at noe er tregt, eller når funksjonen sendes som prop til en React.memo-barn.",
+  },
+  {
+    id: "d-react-prop-drilling-quiz",
+    kind: "quiz",
+    title: "Prop drilling vs context",
+    prompt: "Når bør du nå til Context API?",
+    topic: "React",
+    question: "Du har en bruker-verdi som trengs i 5 komponenter, 3 nivåer dypt. Hva er best?",
+    options: [
+      {
+        text: "Context API — løfter bruker til Provider, alle barn kan useContext",
+        correct: true,
+        rationale:
+          "Context er laget for nettopp dette: dele verdier som mange komponenter trenger uten å sende props gjennom hvert nivå. Klassisk bruk: tema, innlogget bruker, språk, feature flags.",
+      },
+      {
+        text: "Sende bruker som prop gjennom hvert nivå",
+        correct: false,
+        rationale: "Det er prop drilling — fungerer, men gjør mellom-komponenter avhengige av props de ikke selv bruker. Vanskeligere å refaktorere.",
+      },
+      {
+        text: "Lagre bruker globalt på window-objektet",
+        correct: false,
+        rationale: "Global state utenfor React triggrer ikke re-renders. Et helt anti-pattern.",
+      },
+      {
+        text: "Bruke localStorage og useEffect i hver komponent",
+        correct: false,
+        rationale: "Mye duplisering og out-of-sync-fare. Context løser problemet riktig.",
+      },
+    ],
+    explanation:
+      "Context er for VERDIER som leses mange steder, men ikke endres ofte. For mye state og hyppige oppdateringer, vurder en dedikert store (Zustand, Redux, Jotai). Husk: Context-Provider trigger re-render av ALLE consumere når verdien endres.",
+  },
+  {
+    id: "d-react-key-prop-quiz",
+    kind: "quiz",
+    title: "key i lister",
+    prompt: "Hva er problemet med å bruke array-index som key?",
+    topic: "React",
+    question: "Når kan key={index} gi feil oppførsel?",
+    options: [
+      {
+        text: "Når listen kan filtreres, omsorteres eller få nye elementer satt inn i midten",
+        correct: true,
+        rationale:
+          "key er hvordan React holder rede på hvilken liste-komponent som er hvilken på tvers av renders. Med index som key, og en sletting i midten, gjenbruker React feil instans — input-state, focus, animasjoner blandes.",
+      },
+      {
+        text: "Alltid — index som key er aldri lovlig",
+        correct: false,
+        rationale: "For STATISKE lister som aldri endres, er index helt OK. Det er ved mutasjon at det blir trøbbel.",
+      },
+      {
+        text: "Bare når listen er over 1000 elementer",
+        correct: false,
+        rationale: "Antall spiller ingen rolle. Problemet er om listen kan endres.",
+      },
+      {
+        text: "Bare i development mode",
+        correct: false,
+        rationale: "Problemet er det samme i prod. Du får ikke en feilmelding, bare overraskende oppførsel.",
+      },
+    ],
+    explanation:
+      "Regel: bruk en STABIL identitet fra dataene — typisk row.id. Hvis dataene ikke har en id, generer en (crypto.randomUUID()) ved opprettelse og lagre med.",
+  },
+  {
+    id: "d-react-state-mutation-quiz",
+    kind: "quiz",
+    title: "Mutere state",
+    prompt: "Hvilken oppdatering virker?",
+    topic: "React",
+    question: "Vi har const [liste, setListe] = useState([1, 2, 3]). Hvilken kode legger til 4 og re-renderer?",
+    options: [
+      {
+        text: "setListe([...liste, 4])",
+        correct: true,
+        rationale:
+          "Spread-operator lager en NY array. React sammenligner med Object.is — ny referanse = re-render. Den gamle arrayet er ikke mutert.",
+      },
+      {
+        text: "liste.push(4); setListe(liste);",
+        correct: false,
+        rationale: "Du muterte arrayet — så setter du samme referanse. React ser ingen endring og rendrer ikke på nytt.",
+      },
+      {
+        text: "setListe(liste.push(4))",
+        correct: false,
+        rationale: "push() returnerer den nye lengden (4), så liste blir tallet 4 — ikke en array. Krasj senere.",
+      },
+      {
+        text: "liste[3] = 4",
+        correct: false,
+        rationale: "Muterer arrayet og bruker ikke setteren i det hele tatt — React vet ingenting.",
+      },
+    ],
+    explanation:
+      "React forventer immutable updates. Nytt array/objekt hver gang. Spread (...) for arrays/objects, eller en hjelper som immer for dypt nestede strukturer.",
+  },
+  {
+    id: "d-react-useeffect-deps-quiz",
+    kind: "quiz",
+    title: "useEffect dependency-array",
+    prompt: "Hva betyr de forskjellige formene?",
+    topic: "React",
+    question: "Hva er forskjellen mellom de tre useEffect-kallene?",
+    code: "// A:\nuseEffect(() => { /*...*/ });\n\n// B:\nuseEffect(() => { /*...*/ }, []);\n\n// C:\nuseEffect(() => { /*...*/ }, [id, navn]);",
+    language: "javascript",
+    options: [
+      {
+        text: "A: hver render. B: én gang på mount. C: når id eller navn endres.",
+        correct: true,
+        rationale:
+          "Ingen array = kjør etter HVER render. Tom array = bare på mount (og cleanup på unmount). Array med deps = kjør når en av dem endres (Object.is-sammenligning).",
+      },
+      {
+        text: "A og B er identiske; C kjører ofte",
+        correct: false,
+        rationale: "A og B er ulike — A kjører hver render, B bare én gang.",
+      },
+      {
+        text: "Alle tre er identiske; dependency-array er bare dokumentasjon",
+        correct: false,
+        rationale: "Dependency-array styrer NÅR effekten kjører. Den er essensielt for korrekthet.",
+      },
+      {
+        text: "C kjører kun hvis BÅDE id OG navn endres samtidig",
+        correct: false,
+        rationale: "Det holder at én av dem endres. React sjekker hver enkelt.",
+      },
+    ],
+    explanation:
+      "Regel: ALT som brukes inni effekten og kan endres, SKAL stå i dependency-array. ESLint-pluginet 'react-hooks/exhaustive-deps' tvinger dette.",
+  },
+  {
+    id: "d-react-useref-vs-usestate-match",
+    kind: "match",
+    title: "useRef vs useState",
+    prompt: "Match brukstilfellet med riktig hook.",
+    topic: "React",
+    pairs: [
+      { left: "Tilgang til <input>-DOM-elementet for å fokusere", right: "useRef" },
+      { left: "En teller som vises i UI-et", right: "useState" },
+      { left: "Lagre intervallid for clearInterval", right: "useRef" },
+      { left: "Et inputfelts verdi i et controlled form", right: "useState" },
+      { left: "Holde forrige verdi mellom renders uten å trigge ny render", right: "useRef" },
+    ],
+    explanation:
+      "Regel: useState når endringen skal vises i UI-et (trigger re-render). useRef når du trenger en mutabel verdi som overlever renders men IKKE skal trigge re-render.",
+  },
+  {
+    id: "d-react-component-lifecycle-order",
+    kind: "order",
+    title: "Render-rekkefølge ved mount",
+    prompt: "Ordne hendelsene i en komponents første render.",
+    topic: "React",
+    items: [
+      "Komponent-funksjonen kalles (returner JSX)",
+      "React beregner virtual DOM-treet",
+      "React commiter til DOM-en (innholdet vises)",
+      "useEffect kjøres (etter at DOM er oppdatert)",
+    ],
+    explanation:
+      "Hoved-poeng: useEffect kjører ETTER at DOM er klar. Det er derfor du kan trygt aksessere refs i useEffect, men ikke under render. useLayoutEffect kjører synkront før paint, men forsinker visning — bruk sjelden.",
+  },
+  {
+    id: "d-react-infinite-loop-quiz",
+    kind: "quiz",
+    title: "Hvorfor uendelig løkke?",
+    prompt: "Hva forårsaker problemet?",
+    topic: "React",
+    question: "Hva er feil med denne useEffect?",
+    code: "const [data, setData] = useState([]);\n\nuseEffect(() => {\n  setData([...data, nyttElement]);\n}, [data]);",
+    language: "javascript",
+    options: [
+      {
+        text: "setData lager ny array → data-referansen endres → effekten trigger → setData kjøres igjen → ...",
+        correct: true,
+        rationale:
+          "Klassisk infinite loop. React sammenligner referanser, ikke innhold. Hver setData gir ny array-referanse, som teller som endring i dep-array, som re-fyrer effekten.",
+      },
+      {
+        text: "setData kan ikke kalles inni useEffect",
+        correct: false,
+        rationale: "Den kan helt fint kalles der — men ikke på en måte som trigger effekten selv.",
+      },
+      {
+        text: "Spread-operator er forbudt i React",
+        correct: false,
+        rationale: "Spread brukes hele tida i React. Problemet er at vi spreader inn i en effekt som lytter på arrayet vi endrer.",
+      },
+      {
+        text: "data må erklæres med useRef isteden",
+        correct: false,
+        rationale: "Det er feil verktøy. Løsningen er enten å fjerne data fra deps (hvis du bare vil kjøre én gang), eller å gjøre setData betinget.",
+      },
+    ],
+    explanation:
+      "Fiks: ta data ut av deps om du bare vil kjøre en gang (men da må du forklare ESLint hvorfor). Bedre: bruk funksjons-form setData(prev => [...prev, nytt]) og hold tomt dep-array.",
+  },
+
+  // ---------------- CSS moderne (~8) ----------------
+  {
+    id: "d-css-flex-properties-match",
+    kind: "match",
+    title: "Flexbox-properties",
+    prompt: "Match property med hva den styrer.",
+    topic: "CSS moderne",
+    pairs: [
+      { left: "justify-content", right: "Plassering langs HOVEDAKSEN (typisk horisontalt)" },
+      { left: "align-items", right: "Plassering langs KRYSSAKSEN (typisk vertikalt)" },
+      { left: "gap", right: "Avstand mellom flex-barn — moderne erstatning for margin-hacks" },
+      { left: "flex-grow", right: "Hvor mye barnet vokser hvis det er ledig plass" },
+      { left: "flex-shrink", right: "Hvor mye barnet kan krympe hvis det mangler plass" },
+      { left: "flex-basis", right: "Utgangs-størrelse FØR grow/shrink" },
+      { left: "flex-wrap", right: "Tillater linjebryting når barna ikke får plass på én linje" },
+    ],
+    explanation:
+      "Hovedakse-retning settes av flex-direction (default: row). Skifter du til column, blir justify-content vertikalt og align-items horisontalt. Mental modell: hoved = der barna kommer ETTER hverandre.",
+  },
+  {
+    id: "d-css-grid-template-fill",
+    kind: "fill",
+    title: "Responsivt grid uten media queries",
+    prompt: "Fyll inn for et grid som tilpasser seg viewport-bredden.",
+    topic: "CSS moderne",
+    template:
+      ".kort-rad {\n  display: __1__;\n  grid-template-columns: __2__(auto-fit, __3__(250px, 1fr));\n  gap: 16px;\n}",
+    blanks: ["grid", "repeat", "minmax"],
+    options: ["grid", "flex", "repeat", "minmax", "auto-fit", "auto-fill", "1fr", "200px"],
+    language: "html",
+    explanation:
+      "auto-fit kombinert med minmax(250px, 1fr) gir mange kort per rad på brede skjermer, færre på smale — uten en eneste media query. minmax sier 'minst 250px, ellers fyll'. auto-fit kollapser tomme kolonner.",
+  },
+  {
+    id: "d-css-mobile-first-quiz",
+    kind: "quiz",
+    title: "Mobile-first — hvorfor?",
+    prompt: "Hva er fordelen?",
+    topic: "CSS moderne",
+    question: "Hva er hovedfordelen med mobile-first CSS over desktop-first?",
+    options: [
+      {
+        text: "Base-stilene er enklest (mobil har færrest valg), og media queries LEGGER TIL kompleksitet for større skjermer",
+        correct: true,
+        rationale:
+          "Mobile-first: base = mobil, @media (min-width: ...) legger til. Desktop-first ville måtte si 'unngå dette på små skjermer' (max-width-queries) — psykologisk mer komplisert og lettere å glemme.",
+      },
+      {
+        text: "Det er den eneste måten å lage responsive sider på",
+        correct: false,
+        rationale: "Desktop-first virker også — men er ofte vanskeligere å vedlikeholde.",
+      },
+      {
+        text: "Det er raskere i nettleseren",
+        correct: false,
+        rationale: "Begge tilnærminger gir samme runtime-ytelse. Forskjellen er utvikler-ergonomi.",
+      },
+      {
+        text: "Krever ikke viewport-meta",
+        correct: false,
+        rationale: "Begge trenger <meta name='viewport' ...>. Uten den zoomer mobil ut til 980px 'desktop'-bredde uansett.",
+      },
+    ],
+    explanation:
+      "Praktisk: skriv all CSS for mobil først, deretter en @media (min-width: 640px) for nettbrett, og @media (min-width: 1024px) for desktop. Skal du støtte print eller mørk modus, er det ytterligere media queries.",
+  },
+  {
+    id: "d-css-custom-property-fill",
+    kind: "fill",
+    title: "CSS custom properties",
+    prompt: "Fyll inn syntaksen for å definere og bruke en CSS-variabel.",
+    topic: "CSS moderne",
+    template:
+      ":root {\n  __1__primary: #2563eb;\n  __1__radius: 8px;\n}\n\n.knapp {\n  background: __2__(__1__primary);\n  border-radius: __2__(__1__radius, 4px);\n}",
+    blanks: ["--", "var"],
+    options: ["--", "$", "@", "var", "let", "calc", "env", "use"],
+    language: "html",
+    explanation:
+      "Definer med dobbelt-bindestrek: --navn. Bruk med var(--navn) eller var(--navn, default). Variablene arves nedover DOM-treet og leves i runtime — kan endres fra JS eller media queries (dark mode).",
+  },
+  {
+    id: "d-css-focus-style-quiz",
+    kind: "quiz",
+    title: "Focus-style — :focus eller :focus-visible?",
+    prompt: "Hvilken er best praksis?",
+    topic: "CSS moderne",
+    question: "Du vil ha en synlig outline KUN ved tastatur-navigasjon, ikke ved mus-klikk. Hva bruker du?",
+    options: [
+      {
+        text: ":focus-visible — vises bare ved 'keyboard-like' fokus",
+        correct: true,
+        rationale:
+          "Nettleseren bruker en heuristikk: tastatur-tab gir :focus-visible, mus-klikk gjør ikke. Designet ditt forblir rent ved klikking, men er fullt synlig for tastatur-brukere (a11y-krav).",
+      },
+      {
+        text: ":focus — fjern outline med outline: none ved mus-klikk via JS",
+        correct: false,
+        rationale: "Det er hva folk gjorde før :focus-visible kom. Komplisert og fragilt. Nå har vi en native løsning.",
+      },
+      {
+        text: "outline: none — bare fjern den helt",
+        correct: false,
+        rationale: "ANTI-PATTERN. Da har tastatur-brukere ingen visuell tilbakemelding. WCAG-brudd.",
+      },
+      {
+        text: ":hover — dekker det meste",
+        correct: false,
+        rationale: ":hover gjelder mus-pek, ikke fokus. To helt forskjellige tilstander.",
+      },
+    ],
+    explanation:
+      "Mønster: button:focus-visible { outline: 2px solid blue; outline-offset: 2px; }. Aldri outline: none uten en synlig erstatning — det er en WCAG-feil.",
+  },
+  {
+    id: "d-css-box-sizing-quiz",
+    kind: "quiz",
+    title: "box-sizing: border-box",
+    prompt: "Hvorfor er border-box standard i moderne CSS?",
+    topic: "CSS moderne",
+    question: "Hva endrer box-sizing: border-box?",
+    options: [
+      {
+        text: "Width inkluderer padding og border. Total bredde er forutsigbar — den du skrev.",
+        correct: true,
+        rationale:
+          "Default (content-box): width = bare innholdet, padding/border legges på toppen. border-box: width = total ytre bredde inkludert padding og border. Mye enklere å resonnere om layout.",
+      },
+      {
+        text: "Skrur av margin collapsing",
+        correct: false,
+        rationale: "Margin collapsing styres ikke av box-sizing. Det skjer mellom vertikale søsken og foreldre med visse vilkår.",
+      },
+      {
+        text: "Skjuler border",
+        correct: false,
+        rationale: "Det endrer bare beregningen, ikke utseendet.",
+      },
+      {
+        text: "Lager elementet inline-block",
+        correct: false,
+        rationale: "Display-modus er en annen property. box-sizing endrer bare hvordan width/height tolkes.",
+      },
+    ],
+    explanation:
+      "Standard reset: *, *::before, *::after { box-sizing: border-box; }. Nesten alle moderne stilark starter med dette. Tailwind, Bootstrap og normalize.css gjør det automatisk.",
+  },
+  {
+    id: "d-css-dark-mode-fill",
+    kind: "fill",
+    title: "Dark mode med custom properties",
+    prompt: "Fyll inn media query og verdiene for dark mode.",
+    topic: "CSS moderne",
+    template:
+      ":root {\n  --bg: white;\n  --text: black;\n}\n\n@media (__1__: __2__) {\n  :root {\n    --bg: __3__;\n    --text: white;\n  }\n}",
+    blanks: ["prefers-color-scheme", "dark", "black"],
+    options: ["prefers-color-scheme", "color-scheme", "dark", "light", "black", "white", "auto", "min-width"],
+    language: "html",
+    explanation:
+      "prefers-color-scheme leser OS-innstillingen. Sammen med CSS-variabler skriver du fargene én gang og endrer to verdier for hele temaet. Vil du la brukeren overstyre, legg til en class .dark på <html> som setter de samme variablene.",
+  },
+  {
+    id: "d-css-grid-area-fill",
+    kind: "fill",
+    title: "Grid layout med template-areas",
+    prompt: "Fyll inn riktig property-navn og bruk av grid-area.",
+    topic: "CSS moderne",
+    template:
+      ".layout {\n  display: grid;\n  __1__:\n    'header header'\n    'sidebar main'\n    'footer footer';\n}\nheader { __2__: header; }\nnav    { __2__: sidebar; }",
+    blanks: ["grid-template-areas", "grid-area"],
+    options: ["grid-template-areas", "grid-template", "grid-area", "grid-column", "grid-row", "areas", "template"],
+    language: "html",
+    explanation:
+      "grid-template-areas tegner layouten visuelt med strenger. grid-area på barna refererer til navnet. Mye lettere å lese enn grid-column-start/-end-skjønnsmessighet.",
+  },
 ];

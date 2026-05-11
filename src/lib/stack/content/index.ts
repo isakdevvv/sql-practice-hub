@@ -90,6 +90,10 @@ import { content as linaerAlgebra } from "./linaer-algebra";
 import { content as laereplan } from "./laereplan";
 import { content as funksjonellProgrammering } from "./funksjonell-programmering";
 import { content as typesystemer } from "./typesystemer";
+import { content as javascriptGrunnlag } from "./javascript-grunnlag";
+import { content as typescript } from "./typescript";
+import { content as reactGrunnlag } from "./react-grunnlag";
+import { content as cssModerne } from "./css-moderne";
 import type { TrinnContent } from "../types";
 
 export const TRINN: TrinnContent[] = [
@@ -112,6 +116,7 @@ export const TRINN: TrinnContent[] = [
   mathFoundations, diskretMatte, sannsynlighet, linaerAlgebra,
   laereplan,
   funksjonellProgrammering, typesystemer,
+  javascriptGrunnlag, typescript, reactGrunnlag, cssModerne,
 ];
 
 import { curriculumIndexOf } from "../curriculum";
