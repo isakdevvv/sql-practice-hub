@@ -13466,4 +13466,735 @@ var f = b.Where(x => x.Tittel.StartsWith(\"A\")).ToList();`,
     ],
     explanation: "Et godt mønster: pakke svaret i en sealed class Resultat (Ok/Feil), og fange HttpException + IOException + JsonDataException separat i Repository.",
   },
+
+  // ============ TRANSAKSJONER / ACID (12) ============
+  {
+    id: "d-match-acid-bokstaver",
+    kind: "match",
+    title: "ACID-bokstaver til egenskap",
+    prompt: "Match hver ACID-bokstav til hva den garanterer.",
+    topic: "ACID",
+    pairs: [
+      { left: "A — Atomicity", right: "Alle setninger lykkes, eller ingen — krasj rulles tilbake" },
+      { left: "C — Consistency", right: "Constraints (PK, FK, CHECK) holdes før og etter transaksjonen" },
+      { left: "I — Isolation", right: "Samtidige transaksjoner forstyrrer ikke hverandre" },
+      { left: "D — Durability", right: "Etter COMMIT er endringene varige — overlever krasj" },
+    ],
+    explanation: "Lær bokstavene én og én — eksamen spør ofte 'hvilken ACID-bokstav handler om X?'.",
+  },
+  {
+    id: "d-match-isolation-problem",
+    kind: "match",
+    title: "Isolation-problem til scenario",
+    prompt: "Match hvert lese-problem til scenariet som beskriver det.",
+    topic: "Isolation levels",
+    pairs: [
+      {
+        left: "Dirty read",
+        right: "T2 leser en saldo T1 har endret men ikke commit-et; T1 ruller tilbake",
+      },
+      {
+        left: "Non-repeatable read",
+        right: "T1 leser saldo=100, T2 committer endring, T1 leser samme rad og får 200",
+      },
+      {
+        left: "Phantom read",
+        right: "T1 teller rader med WHERE; T2 INSERTer en match; T1 teller på nytt og får én til",
+      },
+      {
+        left: "Lost update",
+        right: "T1 og T2 leser samme rad, regner ut nytt tall, T2 skriver over T1",
+      },
+    ],
+    explanation: "Phantom = ny rad dukket opp. Non-repeatable = samme rad fikk ny verdi. Lost update løses med FOR UPDATE eller optimistisk locking.",
+  },
+  {
+    id: "d-quiz-isolation-default",
+    kind: "quiz",
+    title: "Default isolation level",
+    prompt: "Hva er default-nivået i Postgres og MySQL?",
+    topic: "Isolation levels",
+    question: "Hvilke isolation levels er default i Postgres respektive MySQL/InnoDB?",
+    options: [
+      {
+        text: "Postgres: READ COMMITTED — MySQL: REPEATABLE READ",
+        correct: true,
+        rationale: "Dette er de faktiske default-verdiene. Postgres prioriterer enkelthet og lar deg skifte opp; MySQL er strengere ut av boksen.",
+      },
+      {
+        text: "Begge bruker SERIALIZABLE som default",
+        correct: false,
+        rationale: "SERIALIZABLE er treig og kaster serialization-feil — ingen relasjonsdatabase bruker det som default.",
+      },
+      {
+        text: "Begge bruker READ UNCOMMITTED",
+        correct: false,
+        rationale: "READ UNCOMMITTED tillater dirty reads — det er for usikkert som default.",
+      },
+      {
+        text: "Postgres: REPEATABLE READ — MySQL: READ COMMITTED",
+        correct: false,
+        rationale: "Det er reversert. Postgres er READ COMMITTED som default.",
+      },
+    ],
+    explanation: "Postgres = READ COMMITTED. MySQL/InnoDB = REPEATABLE READ. Vit forskjellen før du flytter kode mellom dem.",
+  },
+  {
+    id: "d-order-transaction-bank",
+    kind: "order",
+    title: "BEGIN/COMMIT-sekvens",
+    prompt: "Sett en sikker bankoverføring i riktig rekkefølge.",
+    topic: "Transaksjoner (DB)",
+    items: [
+      "BEGIN;",
+      "UPDATE Konto SET saldo = saldo - 1000 WHERE id = 1;",
+      "UPDATE Konto SET saldo = saldo + 1000 WHERE id = 2;",
+      "INSERT INTO Transaksjonslogg (fra, til, belop) VALUES (1, 2, 1000);",
+      "COMMIT;",
+    ],
+    explanation: "BEGIN åpner. Du gjør alle endringene som hører til den logiske operasjonen. COMMIT helt til slutt gjør alt varig samtidig. Hvis noe feiler underveis: ROLLBACK i stedet.",
+  },
+  {
+    id: "d-fill-savepoint",
+    kind: "fill",
+    title: "Savepoint — delvis rollback",
+    prompt: "Fyll inn for å rulle bare deler av transaksjonen tilbake.",
+    topic: "Transaksjoner (DB)",
+    template: `BEGIN;
+INSERT INTO Ordre (kundenr, total) VALUES (5, 0);
+
+__1__ linjer_start;
+
+INSERT INTO Ordrelinje (ordrenr, prodnr, antall) VALUES (LAST_INSERT_ID(), 99, 1);
+-- prodnr 99 finnes ikke → FK-feil
+
+__2__ TO SAVEPOINT linjer_start;
+
+UPDATE Ordre SET status='kansellert' WHERE ordrenr = LAST_INSERT_ID();
+__3__;`,
+    blanks: ["SAVEPOINT", "ROLLBACK", "COMMIT"],
+    options: ["SAVEPOINT", "ROLLBACK", "COMMIT", "BEGIN", "RELEASE", "START"],
+    language: "sql",
+    explanation: "SAVEPOINT setter et navngitt sjekkpunkt. ROLLBACK TO SAVEPOINT ruller bare det som skjedde etter sjekkpunktet — selve transaksjonen er fortsatt åpen. Til slutt COMMIT gjør resten varig.",
+  },
+  {
+    id: "d-quiz-pessimistic-vs-optimistic",
+    kind: "quiz",
+    title: "Pessimistisk vs optimistisk locking",
+    prompt: "Velg riktig strategi.",
+    topic: "Transaksjoner (DB)",
+    question: "Hvilken strategi passer best for et tellervalg på et populært konsert (mange klienter, lite plass)?",
+    options: [
+      {
+        text: "Pessimistisk — SELECT ... FOR UPDATE på setet før reservasjon",
+        correct: true,
+        rationale: "Høy konflikt-rate → optimistisk vil gi mange retries og frustrerte brukere. Lås setet eksplisitt.",
+      },
+      {
+        text: "Optimistisk — versjonskolonne og retry",
+        correct: false,
+        rationale: "Med mange samtidige bestillinger på samme sete får du mange feil og brukere ser 'noen kom deg i forkjøpet' gang etter gang.",
+      },
+      {
+        text: "Ingen locking — bare INSERT raskt",
+        correct: false,
+        rationale: "Du ville solgt samme sete flere ganger.",
+      },
+      {
+        text: "READ UNCOMMITTED — minimal overhead",
+        correct: false,
+        rationale: "Isolation level adresserer lesing, ikke samtidig skriving av samme rad.",
+      },
+    ],
+    explanation: "Tommelfingerregel: høy konflikt-rate → pessimistisk. Lav → optimistisk. Sete-bestilling er klassisk høy konflikt.",
+  },
+  {
+    id: "d-fill-optimistic-lock",
+    kind: "fill",
+    title: "Optimistisk locking med versjon",
+    prompt: "Fyll inn versjonssjekken som hindrer lost update.",
+    topic: "Transaksjoner (DB)",
+    template: `-- Vi leste: saldo=100, versjon=7
+UPDATE Konto
+SET    saldo = 90,
+       versjon = versjon __1__ 1
+WHERE  id = 1
+  AND  __2__ = __3__;
+-- 0 rader rammet → noen kom oss i forkjøpet → retry`,
+    blanks: ["+", "versjon", "7"],
+    options: ["+", "-", "*", "versjon", "saldo", "7", "1", "id"],
+    language: "sql",
+    explanation: "Optimistisk locking: WHERE versjon = <den vi leste>. Hvis noen har endret raden i mellomtiden, har versjon økt → 0 rader rammet → vi vet vi mistet kappløpet og kan prøve på nytt.",
+  },
+  {
+    id: "d-quiz-deadlock-cause",
+    kind: "quiz",
+    title: "Deadlock — hva skjedde?",
+    prompt: "Identifiser hva som forårsaker deadlocken.",
+    topic: "Transaksjoner (DB)",
+    code: `-- T1:                                T2:
+-- BEGIN;                             BEGIN;
+-- UPDATE Konto WHERE id=1;           UPDATE Konto WHERE id=2;
+-- UPDATE Konto WHERE id=2;           UPDATE Konto WHERE id=1;`,
+    language: "sql",
+    question: "Hva er årsaken til deadlocken?",
+    options: [
+      {
+        text: "T1 og T2 låser radene i motsatt rekkefølge — hver venter på den andre",
+        correct: true,
+        rationale: "Klassisk deadlock-mønster. Fixen er å alltid låse i samme rekkefølge (f.eks. stigende id).",
+      },
+      {
+        text: "Det er for mange UPDATEs i én transaksjon",
+        correct: false,
+        rationale: "Antall setninger er ikke problemet — rekkefølgen er.",
+      },
+      {
+        text: "Manglende COMMIT",
+        correct: false,
+        rationale: "Begge transaksjoner mangler COMMIT, men det er fordi de er i deadlock, ikke årsaken.",
+      },
+      {
+        text: "Isolation level er for høyt",
+        correct: false,
+        rationale: "Deadlocks oppstår på alle nivåer — det handler om rekkefølge på låsing, ikke om hva som leses.",
+      },
+    ],
+    explanation: "Forebygging: lås alltid i samme deterministiske rekkefølge (typisk stigende primærnøkkel). DB-en oppdager syklus i wait-for-grafen og dreper én av transaksjonene som offer.",
+  },
+  {
+    id: "d-quiz-durability-storm",
+    kind: "quiz",
+    title: "Durability og strømbrudd",
+    prompt: "Hva garanterer at COMMIT-et overlever krasj?",
+    topic: "ACID",
+    question: "Etter en vellykket COMMIT går strømmen. Hva sikrer at endringene er der etter restart?",
+    options: [
+      {
+        text: "Write-ahead log (WAL) fsyncet til disk før COMMIT returnerte",
+        correct: true,
+        rationale: "WAL er sekvensiell og rask å skrive. Når den er flushet, kan recovery rekonstruere endringene selv om datasidene ennå ikke er skrevet.",
+      },
+      {
+        text: "Data ligger automatisk i RAM",
+        correct: false,
+        rationale: "RAM mister innhold ved strømbrudd. Det er nettopp derfor durability krever disk-skriving.",
+      },
+      {
+        text: "COMMIT venter ikke på disk — bare melder klienten",
+        correct: false,
+        rationale: "Det ville brutt D-en i ACID. Forsinket COMMIT gir høyere ytelse men taper varighet.",
+      },
+      {
+        text: "Andre transaksjoner kopierer dataene",
+        correct: false,
+        rationale: "Replikering kan styrke durability, men selve garantien ligger i WAL + fsync.",
+      },
+    ],
+    explanation: "WAL = write-ahead log. Endringer logges sekvensielt før de oppdaterer datasidene. fsync tvinger OS til å faktisk skrive til fysisk medium — uten fsync ligger blokkene i OS-cache og kan tapes.",
+  },
+  {
+    id: "d-match-isolation-levels-prevents",
+    kind: "match",
+    title: "Isolation level → hva det forhindrer",
+    prompt: "Match hvert nivå til det høyeste lese-problemet det forhindrer.",
+    topic: "Isolation levels",
+    pairs: [
+      { left: "READ UNCOMMITTED", right: "Ingen — tillater dirty read" },
+      { left: "READ COMMITTED", right: "Forhindrer dirty read; tillater non-repeatable og phantom" },
+      { left: "REPEATABLE READ", right: "Forhindrer også non-repeatable; tillater phantom (i SQL-standard)" },
+      { left: "SERIALIZABLE", right: "Forhindrer alt — som om transaksjonene kjørte etter hverandre" },
+    ],
+    explanation: "Strengere nivå = tetter flere hull, men koster mer ytelse (flere låser eller versjoner). SERIALIZABLE kan kaste serialization-feil — klienten må retry.",
+  },
+  {
+    id: "d-order-acid-letters",
+    kind: "order",
+    title: "ACID — riktig rekkefølge",
+    prompt: "Sett ACID-egenskapene i bokstavrekkefølge.",
+    topic: "ACID",
+    items: [
+      "Atomicity — alt eller ingenting",
+      "Consistency — gyldig før og etter",
+      "Isolation — som om du var alene",
+      "Durability — overlever krasj",
+    ],
+    explanation: "A-C-I-D. Et godt huskemiddel er sekvensen 'alt eller ingenting → fortsatt gyldig → uten naboer → for evig'.",
+  },
+  {
+    id: "d-quiz-rollback-effect",
+    kind: "quiz",
+    title: "ROLLBACK — hva skjer?",
+    prompt: "Hva er effekten av ROLLBACK?",
+    topic: "Transaksjoner (DB)",
+    question: "Du har kjørt to UPDATE-er og en INSERT etter BEGIN, så får du en feil og kaller ROLLBACK. Hva skjer?",
+    options: [
+      {
+        text: "Alle tre setningene angres. Låser frigjøres. DB i samme tilstand som før BEGIN.",
+        correct: true,
+        rationale: "ROLLBACK kaster ALT siden transaksjonen startet, og rydder opp i låser.",
+      },
+      {
+        text: "Bare den siste setningen angres",
+        correct: false,
+        rationale: "Det ville krevd SAVEPOINT + ROLLBACK TO SAVEPOINT — vanlig ROLLBACK kaster alt.",
+      },
+      {
+        text: "ROLLBACK gjelder ikke commit-ede endringer fra TIDLIGERE transaksjoner",
+        correct: true,
+        rationale: "Korrekt — ROLLBACK påvirker bare den åpne transaksjonen. Tidligere COMMIT-er er varige.",
+      },
+      {
+        text: "Hele databasen tilbakestilles til kveldens backup",
+        correct: false,
+        rationale: "Det er point-in-time recovery — en helt annen mekanisme.",
+      },
+    ],
+    multi: true,
+    explanation: "ROLLBACK ruller bare den åpne transaksjonen tilbake. For å rulle bare deler tilbake må du ha satt en SAVEPOINT.",
+  },
+
+  // ============ INDEKSER (10) ============
+  {
+    id: "d-quiz-btree-vs-hash",
+    kind: "quiz",
+    title: "B-tree eller hash?",
+    prompt: "Velg riktig indekstype.",
+    topic: "Indekser (DB)",
+    question: "Du har en kolonne 'epost' som typisk filtreres med = og noen ganger ORDER BY. Hvilken indekstype passer best?",
+    options: [
+      {
+        text: "B-tree — håndterer både likhet og sortering",
+        correct: true,
+        rationale: "B-tree er default fordi den dekker likhet, range OG sortering. Hash bare = .",
+      },
+      {
+        text: "Hash — raskere på likhet",
+        correct: false,
+        rationale: "Hash er litt raskere på rene likhetsspørringer, men kan IKKE brukes for ORDER BY eller range. Du mister sorteringen.",
+      },
+      {
+        text: "Ingen — bare gjør seq scan",
+        correct: false,
+        rationale: "På epost (typisk høy selektivitet) er indeks et solid valg.",
+      },
+      {
+        text: "Bitmap — alltid raskest",
+        correct: false,
+        rationale: "Bitmap er en SCAN-type optimisten velger automatisk, ikke en indekstype du oppretter direkte i en relasjons-DB.",
+      },
+    ],
+    explanation: "Tommelfingerregel: bruk B-tree default. Hash bare når du VET du aldri trenger range eller sortering — og da bare på DB-er som støtter det (Postgres, ikke MySQL/InnoDB).",
+  },
+  {
+    id: "d-match-indeks-ikke-brukt",
+    kind: "match",
+    title: "Når indeksen IKKE brukes",
+    prompt: "Match SQL-mønsteret til årsaken den dropper indeksen.",
+    topic: "Indekser (DB)",
+    pairs: [
+      {
+        left: "WHERE LOWER(epost) = 'a@b.no'",
+        right: "Funksjon på kolonnen — indeksen er bygget på rådata, ikke funksjonsresultat",
+      },
+      {
+        left: "WHERE navn LIKE '%hansen'",
+        right: "Wildcard helt foran — DB-en vet ikke første tegn, kan ikke navigere ned i treet",
+      },
+      {
+        left: "WHERE saldo + 100 > 1000",
+        right: "Aritmetikk på kolonnen — DB-en kan ikke regne baklengs gjennom indeksen",
+      },
+      {
+        left: "WHERE kontonr = 12345 (men kolonnen er VARCHAR)",
+        right: "Implisitt typekonvertering — kaster funksjonelt CAST på kolonnen",
+      },
+    ],
+    explanation: "Felles tema: hver gang DB-en må regne på kolonnen for å sammenligne, er indeksens sortering ubrukelig. Hold WHERE-siden av sammenligningen 'naken' og kolonnen 'naken'.",
+  },
+  {
+    id: "d-fill-composite-order",
+    kind: "fill",
+    title: "Composite-indeks — rekkefølge",
+    prompt: "Hvilken kolonne MÅ stå først i indeksen?",
+    topic: "Indekser (DB)",
+    template: `-- Spørringen vi vil støtte:
+-- SELECT * FROM Ordre WHERE kundenr = 5 AND dato > '2026-01-01';
+
+CREATE INDEX idx_ordre_kdato
+  ON Ordre (__1__, __2__);`,
+    blanks: ["kundenr", "dato"],
+    options: ["kundenr", "dato", "ordrenr", "total"],
+    language: "sql",
+    explanation: "Composite-indekser brukes kun fra venstre. Spørringen har likhet på kundenr og range på dato — sett likhets-kolonnen først. Med (kundenr, dato) finner DB-en alle Kunde-5-rader sortert på dato på ett oppslag.",
+  },
+  {
+    id: "d-quiz-covering-index",
+    kind: "quiz",
+    title: "Covering index — hva er gevinsten?",
+    prompt: "Hvorfor lage en covering index?",
+    topic: "Indekser (DB)",
+    code: `CREATE INDEX idx_kn_full
+  ON Ordre (kundenr, dato, total);
+
+SELECT kundenr, dato, total
+FROM Ordre WHERE kundenr = 5;`,
+    language: "sql",
+    question: "Hva er fordelen med å inkludere dato og total i indeksen?",
+    options: [
+      {
+        text: "DB-en kan svare uten å åpne selve tabellen — Index Only Scan",
+        correct: true,
+        rationale: "Når alle kolonnene spørringen trenger ligger i indeksen, slipper DB-en det ekstra tabell-oppslaget. Synlig i EXPLAIN som 'Index Only Scan'.",
+      },
+      {
+        text: "Spørringen blir mer lesbar",
+        correct: false,
+        rationale: "Lesbarhet styres av spørrings-koden, ikke av indeksen.",
+      },
+      {
+        text: "INSERT blir raskere",
+        correct: false,
+        rationale: "Tvert imot — flere kolonner i indeksen gjør INSERT tregere. Det er trade-offen.",
+      },
+      {
+        text: "DB-en kan skip ANALYZE",
+        correct: false,
+        rationale: "Statistikker er uavhengig av indekser.",
+      },
+    ],
+    explanation: "Postgres: CREATE INDEX ... INCLUDE (kolonner) lar deg ta med kolonner uten å sortere på dem. Trade-off: indeksen blir større, INSERT tregere.",
+  },
+  {
+    id: "d-quiz-many-indexes-tradeoff",
+    kind: "quiz",
+    title: "Hvorfor ikke indeksere ALT?",
+    prompt: "Hva koster en ekstra indeks?",
+    topic: "Indekser (DB)",
+    question: "Du legger til indeks nummer åtte på en stor tabell. Hva er hovedulempen?",
+    options: [
+      {
+        text: "Hver INSERT/UPDATE/DELETE må oppdatere åtte indeksstrukturer — write-cost øker",
+        correct: true,
+        rationale: "Hver indeks må holdes synkron med tabellen. Mange indekser = treig skriving + mer diskplass.",
+      },
+      {
+        text: "Optimisten blir forvirret og velger seq scan",
+        correct: false,
+        rationale: "Optimisten håndterer mange alternativer fint — den velger den billigste planen.",
+      },
+      {
+        text: "READ-spørringer blir også tregere",
+        correct: false,
+        rationale: "Lesing blir generelt raskere med riktige indekser — det er skriving som lider.",
+      },
+      {
+        text: "Du må oppgradere DB-versjonen",
+        correct: false,
+        rationale: "Antall indekser har ingenting med versjonering å gjøre.",
+      },
+    ],
+    explanation: "Mantra: indekser er ikke gratis. Hver INSERT må oppdatere alle relevante indekser, hver UPDATE på en indeksert kolonne også. På write-heavy tabeller koster åtte indekser cirka 8x på INSERT.",
+  },
+  {
+    id: "d-quiz-when-no-index",
+    kind: "quiz",
+    title: "Når DROPPE indeks?",
+    prompt: "Når lønner det seg å fjerne en eksisterende indeks?",
+    topic: "Indekser (DB)",
+    question: "Hvilken situasjon er en god kandidat for å droppe en indeks?",
+    options: [
+      {
+        text: "Lav-kardinalitet-kolonne (typisk kjonn) med få distinkte verdier",
+        correct: true,
+        rationale: "Hvis bare M/K finnes, treffer en spørring på kjønn 50% av tabellen — seq scan er ofte raskere enn å hoppe via indeks.",
+      },
+      {
+        text: "Kolonnen brukes i hyppige WHERE-filter",
+        correct: false,
+        rationale: "Da skal du beholde indeksen.",
+      },
+      {
+        text: "Kolonnen er primærnøkkel",
+        correct: false,
+        rationale: "Primærnøkkel-indeksen er nødvendig for FK-validering og rad-oppslag.",
+      },
+      {
+        text: "Tabellen blir lite skrevet til",
+        correct: false,
+        rationale: "Hvis tabellen knapt skrives, koster indeksen lite — ingen grunn til å droppe.",
+      },
+    ],
+    explanation: "Lav selektivitet (få distinkte verdier) gjør indeksen dårligere enn seq scan. Andre kandidater: indekser som faktisk aldri brukes (sjekk pg_stat_user_indexes i Postgres).",
+  },
+  {
+    id: "d-match-explain-rows-scan",
+    kind: "match",
+    title: "EXPLAIN scan-typer",
+    prompt: "Match scan-typen til situasjonen optimisten velger den.",
+    topic: "Indekser (DB)",
+    pairs: [
+      { left: "Seq Scan", right: "Liten tabell eller spørring som henter de fleste rader" },
+      { left: "Index Scan", right: "Få matchende rader (høy selektivitet) + indeks finnes" },
+      { left: "Index Only Scan", right: "Covering index — alle ønskede kolonner ligger i indeksen" },
+      { left: "Bitmap Index Scan", right: "Middels selektivitet — bygger bitmap, leser blokker sortert" },
+    ],
+    explanation: "Optimisten velger basert på kost-estimat. Du ser navnet direkte i EXPLAIN-output — det er din viktigste diagnose.",
+  },
+  {
+    id: "d-fill-create-index",
+    kind: "fill",
+    title: "Lag en unik indeks",
+    prompt: "Sett opp en unik indeks på epost for raske oppslag og duplikatssperring.",
+    topic: "Indekser (DB)",
+    template: `CREATE __1__ __2__ idx_bruker_epost
+  ON Bruker (__3__);`,
+    blanks: ["UNIQUE", "INDEX", "epost"],
+    options: ["UNIQUE", "PRIMARY", "INDEX", "TABLE", "epost", "navn", "id"],
+    language: "sql",
+    explanation: "CREATE UNIQUE INDEX gir både rask oppslag OG duplikatsperring i én operasjon. Indeksen brukes automatisk når WHERE matcher mønster.",
+  },
+  {
+    id: "d-quiz-leftmost-prefix",
+    kind: "quiz",
+    title: "Venstreprefix på composite",
+    prompt: "Kan denne spørringen bruke indeksen?",
+    topic: "Indekser (DB)",
+    code: `CREATE INDEX idx ON Ordre (kundenr, dato, status);
+
+-- Kandidater:
+-- A: WHERE dato = '2026-05-12'
+-- B: WHERE kundenr = 5
+-- C: WHERE kundenr = 5 AND status = 'aktiv'
+-- D: WHERE kundenr = 5 AND dato = '2026-05-12' AND status = 'aktiv'`,
+    language: "sql",
+    question: "Hvilke av spørringene kan utnytte indeksen idx (kundenr, dato, status)?",
+    options: [
+      {
+        text: "B og D — begge starter med kundenr (det venstre prefikset)",
+        correct: true,
+        rationale: "B bruker første kolonne. D bruker alle tre i riktig rekkefølge. C kan bare bruke 'kundenr'-delen (hopper over 'dato').",
+      },
+      {
+        text: "Bare D — alle tre må matche",
+        correct: false,
+        rationale: "Indeksen kan brukes selv om du bare matcher de første kolonnene.",
+      },
+      {
+        text: "Bare A — dato er det viktigste",
+        correct: false,
+        rationale: "Dato er andre kolonne. Indeksen kan IKKE brukes uten kundenr i WHERE.",
+      },
+      {
+        text: "Ingen — indeksen er kun for ORDER BY",
+        correct: false,
+        rationale: "Indekser brukes både til WHERE og ORDER BY.",
+      },
+    ],
+    explanation: "Composite-regelen: indeksen utnyttes bare fra venstre. (kundenr, dato, status) støtter WHERE på kundenr; kundenr+dato; kundenr+dato+status. Hopper du over en kolonne, må DB-en kompensere.",
+  },
+  {
+    id: "d-order-explain-investigation",
+    kind: "order",
+    title: "Diagnose-rekkefølge: treg spørring",
+    prompt: "Sett stegene i en typisk diagnose i riktig rekkefølge.",
+    topic: "Indekser (DB)",
+    items: [
+      "EXPLAIN ANALYZE <spørringen> — se faktisk plan og tider",
+      "Sjekk om Seq Scan brukes der Index Scan var forventet",
+      "Verifiser at indeksen finnes på riktig kolonne (og rekkefølge)",
+      "Se etter funksjoner/typekonvertering på WHERE-kolonnen som dreper indeksen",
+      "Kjør ANALYZE for å oppdatere statistikker hvis estimatet er langt fra faktisk",
+    ],
+    explanation: "Klassisk feilsøking: start fra EXPLAIN, ikke fra antakelser. Det vanligste problemet er funksjon på kolonnen eller stale statistikker — ikke fravær av indeks.",
+  },
+
+  // ============ QUERY-OPTIMISERING (8) ============
+  {
+    id: "d-order-explain-stages",
+    kind: "order",
+    title: "EXPLAIN-fasene i rekkefølge",
+    prompt: "Sett tre fasene SQL-motoren går gjennom.",
+    topic: "Query-optimisering",
+    items: [
+      "Parse — tekst → syntaks-tre, sjekk grammatikk",
+      "Optimize — vurder ekvivalente planer, estimer cost, velg billigste",
+      "Execute — kjør planen, returner rader",
+    ],
+    explanation: "Parse oppdager skrivefeil. Optimize bestemmer HVORDAN. Execute returnerer data. Optimisten bruker statistikker (ANALYZE) for å estimere kost.",
+  },
+  {
+    id: "d-match-join-algorithm",
+    kind: "match",
+    title: "Join-algoritme til scenario",
+    prompt: "Match join-typen til når optimisten velger den.",
+    topic: "Query-optimisering",
+    pairs: [
+      {
+        left: "Nested Loop",
+        right: "Liten ytre tabell + indeks på indre tabells join-kolonne",
+      },
+      {
+        left: "Hash Join",
+        right: "Begge sider middels-store, ekv-join (=), ingen passende indeks",
+      },
+      {
+        left: "Merge Join",
+        right: "Begge sider allerede sortert på join-kolonnen (via indeks)",
+      },
+      {
+        left: "Cross Join",
+        right: "Ingen join-betingelse — kartesisk produkt av alle radkombinasjoner",
+      },
+    ],
+    explanation: "Optimisten velger algoritmen — du ser navnet direkte i EXPLAIN. Nested Loop er bra på små tabeller; Hash på middels; Merge på sorterte og store.",
+  },
+  {
+    id: "d-quiz-n-plus-1",
+    kind: "quiz",
+    title: "N+1 — hva er fixen?",
+    prompt: "App-koden gjør N+1 spørringer. Velg riktig fix.",
+    topic: "Query-optimisering",
+    code: `# Django-eksempel
+kunder = Kunde.objects.all()              # 1 spørring
+for k in kunder:
+    print(k.navn, k.ordre_set.count())    # N spørringer`,
+    language: "python",
+    question: "Hva er den vanligste fixen for N+1?",
+    options: [
+      {
+        text: "Eager loading — hent relatert data i samme spørring (JOIN, prefetch_related)",
+        correct: true,
+        rationale: "Sett alt i én spørring så DB-en bare jobber én gang i stedet for 101 ganger.",
+      },
+      {
+        text: "Cache hvert oppslag i Redis",
+        correct: false,
+        rationale: "Cache hjelper repeterte forespørsler, men løser ikke selve N+1-mønsteret i samme request.",
+      },
+      {
+        text: "Legg til indeks på FK-kolonnen",
+        correct: false,
+        rationale: "Indeks gjør hvert oppslag raskere, men du har fortsatt N+1 forespørsler over nettverket.",
+      },
+      {
+        text: "Bytt DB-system",
+        correct: false,
+        rationale: "Mønsteret er det samme på alle DB-er — det er klientkoden som må endres.",
+      },
+    ],
+    explanation: "Symptomet er ikke synlig i EXPLAIN på én av spørringene — hver er rask. Det er antall spørringer som er problemet. Sjekk DB-logg eller bruk Django Debug Toolbar / SQLAlchemy event-listeners.",
+  },
+  {
+    id: "d-quiz-select-star",
+    kind: "quiz",
+    title: "SELECT * — hvorfor unngå?",
+    prompt: "Velg den dårligste konsekvensen.",
+    topic: "Query-optimisering",
+    question: "Hva er det MEST kritiske problemet med SELECT * i produksjonskode?",
+    options: [
+      {
+        text: "Hindrer Index Only Scan, fordi indeksen sjelden dekker alle kolonner",
+        correct: true,
+        rationale: "Et covering index gir Index Only Scan kun hvis du ber om kolonner som faktisk er i indeksen. SELECT * tvinger tabell-oppslag.",
+      },
+      {
+        text: "Det er ulovlig i ANSI SQL",
+        correct: false,
+        rationale: "SELECT * er fullt lovlig syntaks — bare ofte uklokt i prod.",
+      },
+      {
+        text: "Det returnerer alltid feil resultat",
+        correct: false,
+        rationale: "Resultatet er korrekt — bare bredere enn nødvendig.",
+      },
+      {
+        text: "DB-en stopper å bruke indekser helt",
+        correct: false,
+        rationale: "Indeks-bruk på WHERE-side er upåvirket. Det er Index Only Scan som ryker.",
+      },
+    ],
+    explanation: "Andre problemer med SELECT *: nettverk-trafikk, sårbart når noen legger til en TEXT/BLOB-kolonne, gjør JOIN-resultater forvirrende. Spesifiser alltid kolonner i prod-kode.",
+  },
+  {
+    id: "d-quiz-analyze-role",
+    kind: "quiz",
+    title: "ANALYZE — hva gjør den?",
+    prompt: "Hvilken rolle spiller ANALYZE i optimisten?",
+    topic: "EXPLAIN",
+    question: "Hva oppdaterer kommandoen ANALYZE?",
+    options: [
+      {
+        text: "Statistikker (rad-tall, distinkte verdier, histogram) — optimistens grunnlag for kost-estimat",
+        correct: true,
+        rationale: "Uten ferske statistikker velger optimisten feil plan — den tror tabellen er 10 rader når den er 100 000.",
+      },
+      {
+        text: "Skriver alle endringer fra WAL til datasidene",
+        correct: false,
+        rationale: "Det er CHECKPOINT-en sin jobb.",
+      },
+      {
+        text: "Bygger om indeksene fra bunnen",
+        correct: false,
+        rationale: "Det er REINDEX. ANALYZE rør ikke indeksstrukturen.",
+      },
+      {
+        text: "Komprimerer tabell-data",
+        correct: false,
+        rationale: "Komprimering er en lagrings-mekanisme, uavhengig av ANALYZE.",
+      },
+    ],
+    explanation: "Klassisk symptom på utdaterte statistikker: EXPLAIN-estimat 'rows=10' men ANALYZE viser 'actual rows=8400'. Da har optimisten valgt feil plan basert på løgnaktige tall.",
+  },
+  {
+    id: "d-fill-explain-read",
+    kind: "fill",
+    title: "Tolking av EXPLAIN-output",
+    prompt: "Fyll inn hva nøkkeltallene betyr.",
+    topic: "EXPLAIN",
+    template: `-- EXPLAIN ANALYZE viser:
+-- Hash Join  (cost=10.50..120.00 __1__=1000 width=20)
+--             (actual time=0.31..1.82 __2__=987 __3__=1)
+
+-- cost = estimert kostnad (startup..total)
+-- __1__ = ANTALL rader optimisten tror den får
+-- __2__ = FAKTISK antall rader (kun fra ANALYZE-versjonen)
+-- __3__ = hvor mange ganger denne noden kjørte`,
+    blanks: ["rows", "rows", "loops"],
+    options: ["rows", "loops", "cost", "time", "width"],
+    language: "sql",
+    explanation: "Stort avvik mellom estimat-rows og actual rows = stale statistikk → kjør ANALYZE. Høy loops-verdi på en indre node = klassisk Nested Loop som kan være OK eller indikere N+1-mønster avhengig av tall.",
+  },
+  {
+    id: "d-quiz-materialized-view",
+    kind: "quiz",
+    title: "Materialized view — når?",
+    prompt: "Når lønner en materialized view seg?",
+    topic: "Query-optimisering",
+    question: "Hvilket scenario passer best for en materialized view?",
+    options: [
+      {
+        text: "Dyrt aggregat som spørres hyppig, og dataene tåler å være litt utdaterte",
+        correct: true,
+        rationale: "Klassisk eksempel: dashboard som viser 'omsetning per måned' tusen ganger per dag. Beregn én gang per time, server raskt resten av tiden.",
+      },
+      {
+        text: "Spørring som må returnere alltid 100% ferske data",
+        correct: false,
+        rationale: "Materialized view er cachet — dataene er fra siste REFRESH. Bruk vanlig view hvis du trenger live-data.",
+      },
+      {
+        text: "Spørring som kun kjøres én gang",
+        correct: false,
+        rationale: "Ingen vits i å bygge en materialized struktur du ikke gjenbruker.",
+      },
+      {
+        text: "INSERT som må gå fortere",
+        correct: false,
+        rationale: "Materialized view kan faktisk gjøre INSERT TREGERE (avhengig av REFRESH-strategi). Den optimaliserer lesing, ikke skriving.",
+      },
+    ],
+    explanation: "Vanlig view = SELECT kjøres hver gang. Materialized view = resultat lagret på disk, må REFRESHes. Velg materialized hvis: dyrt aggregat + leses ofte + tåler utdaterte tall.",
+  },
 ];

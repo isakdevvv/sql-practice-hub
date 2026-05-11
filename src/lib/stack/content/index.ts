@@ -7,6 +7,9 @@ import { content as htmlJinja } from "./html-jinja";
 import { content as sikkerhet } from "./sikkerhet";
 import { content as subqueries } from "./subqueries";
 import { content as nokler } from "./nokler";
+import { content as transaksjoner } from "./transaksjoner";
+import { content as indekser } from "./indekser";
+import { content as queryOptimisering } from "./query-optimisering";
 import { content as algoritmer } from "./algoritmer";
 import { content as bigO } from "./big-o";
 import { content as rekursjon } from "./rekursjon";
@@ -86,6 +89,7 @@ import type { TrinnContent } from "../types";
 export const TRINN: TrinnContent[] = [
   bytesEncoding, tcpSockets, huskelapp, erMapping, normalisering, htmlJinja, sikkerhet,
   subqueries, nokler, mysqlVsSqlite,
+  transaksjoner, indekser, queryOptimisering,
   algoritmer, bigO, rekursjon, sortering, lenkedeStrukturer,
   dte2507, osiTcpip, transportlag, kryptografi, tls, nettverkssikkerhet,
   dte2602, mlGrunnlag, supervisedLearning, unsupervisedLearning, nnIntro,
