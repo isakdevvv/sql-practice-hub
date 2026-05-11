@@ -15646,4 +15646,1333 @@ const v: Vektor = p;     // TS sier OK`,
     ],
     explanation: "Algebraic data types består av products (kombiner) og sums (velg ett av). Hver datamodell er en kombinasjon. 'Make illegal states unrepresentable' = bruk sum types for å fjerne ugyldige kombinasjoner.",
   },
+  // ============================================================
+  // CROSS-PHASE EKSAMENS-DRILL — oppgaver som tester forståelse
+  // på tvers av emner. Hver oppgave kobler minst to fag sammen.
+  // ============================================================
+
+  // ---------- 1. Kompleksitets-quiz på kode-snippets (5) ----------
+  {
+    id: "d-cross-bigo-pyset",
+    kind: "quiz",
+    title: "Kompleksitet: medlemskap i Python set vs list",
+    prompt: "Velg riktig kompleksitet for koden under.",
+    topic: "Cross-phase drill",
+    question:
+      "Funksjonen `finn_duplikater` itererer gjennom n elementer og sjekker medlemskap i `seen`. Hva er forventet tids­kompleksitet, og hvorfor avhenger svaret av at `seen` er et set?",
+    code: `def finn_duplikater(xs):
+    seen = set()
+    for x in xs:
+        if x in seen:
+            return True
+        seen.add(x)
+    return False`,
+    language: "python",
+    options: [
+      {
+        text: "O(n) — `x in seen` er O(1) gjennomsnitt fordi set er hash-basert (CPython bruker open addressing)",
+        correct: true,
+        rationale:
+          "Sett er implementert som hashtabell. `in`-operatoren går via __hash__ + likhetssjekk, O(1) amortisert. Hadde `seen` vært en list, ble `x in seen` lineær (O(n)) og hele funksjonen O(n²).",
+      },
+      {
+        text: "O(n²) — løkken er n, og `in`-operatoren er alltid O(n)",
+        correct: false,
+        rationale:
+          "Det stemmer for `list`, ikke for `set`. Python sin `in` er ikke en universal operator — kompleksiteten avhenger av datatypens implementasjon.",
+      },
+      {
+        text: "O(n log n) — set bruker BST internt",
+        correct: false,
+        rationale:
+          "CPythons set er en hashtabell, ikke et tre. (Det er C++ std::set som er rød-svart tre — ulike språk, ulike valg.)",
+      },
+      {
+        text: "O(1) — Python er optimalisert",
+        correct: false,
+        rationale:
+          "Vi går gjennom n elementer minst én gang. Total kompleksitet kan aldri bli mindre enn O(n) for å lese inputet.",
+      },
+    ],
+    explanation:
+      "Cross-phase: koblingen Hardware/CPython-implementasjon ↔ Algoritmer/Big-O. Datatypens implementasjon avgjør hvilken Big-O `in` har. Dette er grunnen til at idiomet «build a set for fast membership» er så vanlig.",
+  },
+  {
+    id: "d-cross-bigo-join-index",
+    kind: "quiz",
+    title: "Kompleksitet: SQL JOIN med og uten indeks",
+    prompt: "Velg riktig Big-O for hver variant.",
+    topic: "Cross-phase drill",
+    question:
+      "Du joiner kunde (n rader) med ordre (m rader) på kunde.id = ordre.kunde_id. Hva er forventet kompleksitet (a) UTEN indeks på ordre.kunde_id, og (b) MED B-tree-indeks på ordre.kunde_id?",
+    code: `SELECT k.navn, o.belop
+FROM kunde k
+JOIN ordre o ON k.id = o.kunde_id;`,
+    language: "sql",
+    options: [
+      {
+        text: "Uten indeks: O(n · m) (nested loop). Med indeks: O((n + m) · log m) (index nested loop / B-tree-oppslag per rad).",
+        correct: true,
+        rationale:
+          "Uten indeks må planleggeren scanne hele ordre for hver kunde — n × m. Med B-tree-indeks er hvert oppslag log m, gjentatt n ganger. Hash join kan også bli valgt: O(n + m), men da må hashen passe i minnet.",
+      },
+      {
+        text: "Uten indeks: O(n + m). Med indeks: O(1).",
+        correct: false,
+        rationale:
+          "Verken er riktig. Du må alltid lese resultatraden, så ingenting er O(1). Og uten indeks blir det nested loop, ikke lineær merge.",
+      },
+      {
+        text: "Begge er O(n · m) — JOIN er alltid kvadratisk.",
+        correct: false,
+        rationale:
+          "Hele poenget med indeksen er å unngå det kvadratiske. Det er derfor produksjon­s-DB-er praktisk talt alltid har indeks på FK.",
+      },
+      {
+        text: "Med indeks blir det O(log(n · m))",
+        correct: false,
+        rationale:
+          "Du må fortsatt besøke hver av de n radene i kunde. Indeksen sparer søketid PER rad, ikke antall rader.",
+      },
+    ],
+    explanation:
+      "Cross-phase: DB/indeks ↔ Big-O. EXPLAIN-planen viser om planleggeren valgte nested loop, hash join eller merge join. Indekser endrer kompleksiteten, ikke bare konstant­faktoren.",
+  },
+  {
+    id: "d-cross-bigo-knn",
+    kind: "quiz",
+    title: "Kompleksitet: kNN-prediksjon på n samples",
+    prompt: "Velg riktig kompleksitet for en naiv kNN-implementasjon.",
+    topic: "Cross-phase drill",
+    question:
+      "kNN trener på n samples med d features hver. Hva er kompleksiteten av (a) trening og (b) ÉN prediksjon i den naive varianten (uten KD-tree / ball tree)?",
+    options: [
+      {
+        text: "Trening: O(1) (lagrer bare data). Prediksjon: O(n · d) for å beregne avstand til hvert treningspunkt.",
+        correct: true,
+        rationale:
+          "kNN er en «lazy learner» — ingen modell bygges. All jobben skjer ved prediksjon: for hvert av de n treningspunktene må man regne d-dimensjonal avstand. Derfor skalerer kNN dårlig til store n.",
+      },
+      {
+        text: "Trening: O(n · d). Prediksjon: O(k).",
+        correct: false,
+        rationale:
+          "Forveksles med beslutningstrær. kNN bygger ingenting under trening, og prediksjon må røre alle treningspunkter (uten spatial index).",
+      },
+      {
+        text: "Trening: O(n²). Prediksjon: O(log n).",
+        correct: false,
+        rationale:
+          "Du tenker kanskje på en KD-tree-variant — men spørsmålet er om den NAIVE versjonen. KD-tree gir O(n log n) trening og ~O(log n) prediksjon, men bare for lav d.",
+      },
+      {
+        text: "Trening: O(n · d). Prediksjon: O(d).",
+        correct: false,
+        rationale:
+          "Prediksjon må sammenligne mot alle n treningspunkter, ellers vet vi ikke hvilke som er nærmest. O(d) ville krevd et magisk oppslag.",
+      },
+    ],
+    explanation:
+      "Cross-phase: ML ↔ Big-O. Konsekvens: kNN egner seg ikke til real-time systemer med store datasett. Treningsfasen er gratis, men prediksjon koster O(n·d) per forespørsel.",
+  },
+  {
+    id: "d-cross-bigo-bfs",
+    kind: "quiz",
+    title: "Kompleksitet: BFS på graf",
+    prompt: "Velg riktig kompleksitet for BFS, og forklar hvorfor det er V + E (ikke V · E).",
+    topic: "Cross-phase drill",
+    question:
+      "Bredde-først søk (BFS) på en graf med V noder og E kanter, representert som adjacency list. Hva er kompleksiteten?",
+    code: `from collections import deque
+
+def bfs(graph, start):
+    visited = {start}
+    queue = deque([start])
+    while queue:
+        node = queue.popleft()
+        for naboe in graph[node]:
+            if naboe not in visited:
+                visited.add(naboe)
+                queue.append(naboe)
+    return visited`,
+    language: "python",
+    options: [
+      {
+        text: "O(V + E) — hver node besøkes én gang (V), og hver kant utforskes én gang (E). `visited` er set → O(1) lookup.",
+        correct: true,
+        rationale:
+          "Klassisk amortisert analyse: ytre løkke kjører V ganger totalt, indre løkke summerer til 2E (hver kant ses fra begge ender i en uretta graf). `visited` MÅ være set/hashtabell for at sjekken skal være O(1) — ellers blir det O(V² + V·E).",
+      },
+      {
+        text: "O(V · E) — to nestede løkker",
+        correct: false,
+        rationale:
+          "Den indre løkken iterer ikke E ganger for HVER node. Den iterer over nodens naboer. Summert over alle noder blir det 2E totalt (handshaking).",
+      },
+      {
+        text: "O(V²) — uavhengig av E",
+        correct: false,
+        rationale:
+          "Riktig kun hvis grafen er representert som adjacency MATRIX (V × V). Med adjacency list er det V + E.",
+      },
+      {
+        text: "O(log V) — BFS bruker en queue",
+        correct: false,
+        rationale:
+          "En queue er ikke heap. Push/pop er O(1). Og uansett må vi besøke alle V noder — kan ikke bli mindre enn V.",
+      },
+    ],
+    explanation:
+      "Cross-phase: Algoritmer ↔ Datastrukturer. BFS sin V+E avhenger av at adjacency er liste OG at `visited` er hash-set. Begge valg er strukturvalg, ikke algoritme­valg. Endre datastrukturen → endre kompleksiteten.",
+  },
+  {
+    id: "d-cross-bigo-strconcat",
+    kind: "quiz",
+    title: "Kompleksitet: string-konkatenering i Python-loop",
+    prompt: "Hva er kompleksiteten av løkken, og hvorfor?",
+    topic: "Cross-phase drill",
+    question:
+      "Du bygger en lang streng med + i en løkke. Hva er kompleksiteten, og hva er den idiomatiske fiksen?",
+    code: `s = ""
+for ord in ord_liste:   # n ord
+    s = s + ord         # ny streng allokeres hver gang
+return s`,
+    language: "python",
+    options: [
+      {
+        text: "O(n²) fordi strenger er immutable — hver `s + ord` allokerer ny minnebuffer av lengde |s|+|ord| og kopierer alt. Idiomatisk fiks: `''.join(ord_liste)` som er O(n).",
+        correct: true,
+        rationale:
+          "Immutable + naiv loop = kvadratisk vekst (Schlemiel the Painter's algorithm). `''.join()` allokerer EN buffer i riktig total­størrelse og kopierer hvert ord én gang. CPython har en optimalisering for `s += x` når s har refcount=1, men ikke generelt — stol ikke på den.",
+      },
+      {
+        text: "O(n) — Python optimaliserer dette automatisk",
+        correct: false,
+        rationale:
+          "Det finnes en spesifikk CPython-optimalisering for `s += x` med refcount=1 som kan unngå kopiering, men den er ikke garantert (krever bytecode-mønster, og virker ikke i PyPy/Jython). Best å aldri stole på den.",
+      },
+      {
+        text: "O(n log n) — sortering",
+        correct: false,
+        rationale:
+          "Det er ingen sortering her. Kostnaden kommer av minneallokering og kopiering, ikke sammenligning.",
+      },
+      {
+        text: "O(1) — bare en peker som flyttes",
+        correct: false,
+        rationale:
+          "Strenger i Python er ikke mutable byte-buffer du kan vokse. Hver konkatenering = ny allokering = full kopi.",
+      },
+    ],
+    explanation:
+      "Cross-phase: Python-semantikk (immutability) ↔ Hardware (minneallokering). Samme mønster gjelder lister i mange språk: `arr + [x]` allokerer ny array. Bruk `append`/`join`/StringBuilder avhengig av språk.",
+  },
+
+  // ---------- 2. Quiz om koblinger mellom emner (5) ----------
+  {
+    id: "d-cross-conn-tls-protocol",
+    kind: "quiz",
+    title: "Hvilket transportlag bærer TLS?",
+    prompt: "Velg riktig — koble OSI til kryptografi.",
+    topic: "Cross-phase drill",
+    question:
+      "TLS gir konfidensialitet, integritet og autentisering. Hvilket transportprotokoll-lag bygger TLS oppå, og hvorfor ikke det andre?",
+    options: [
+      {
+        text: "TLS kjører over TCP — TLS krever pålitelig, ordnet byte-strøm fordi krypto-state (sekvensnumre, MAC-er) ville feile ved tapte/omstokkete pakker.",
+        correct: true,
+        rationale:
+          "TLS-record-laget antar at byte-strømmen kommer i rekkefølge og ingen pakker mistes. UDP gir ingen av disse garantiene. (Det finnes DTLS for UDP — datagram-TLS — men da må krypto-protokollen tilpasses.)",
+      },
+      {
+        text: "TLS kjører over UDP fordi det er raskere",
+        correct: false,
+        rationale:
+          "UDP er raskere, men gir verken pålitelighet eller rekkefølge. TLS' sekvensnummerering for å hindre replay/reordering trenger TCP. (QUIC løser dette ved å bake TLS inn i transportprotokollen selv, over UDP.)",
+      },
+      {
+        text: "TLS kjører direkte på IP-laget",
+        correct: false,
+        rationale:
+          "Det ville vært et lag-3-VPN (som IPsec). TLS er et lag-5/6-(sesjon/presentasjon)-protokoll over transport. Det er forskjellen på «sikker forbindelse» og «sikker tunnel».",
+      },
+      {
+        text: "TLS kjører på applikasjonslaget — det er ikke et separat lag",
+        correct: false,
+        rationale:
+          "Forvirring: TLS sitter MELLOM transport og applikasjon. HTTPS = HTTP-over-TLS-over-TCP. TLS er ikke applikasjon, det er felles infrastruktur for alle protokoller som vil ha kryptering (HTTPS, SMTPS, IMAPS, ...).",
+      },
+    ],
+    explanation:
+      "Cross-phase: Nettverk/OSI ↔ Sikkerhet/TLS. Lagene har ulike garantier — TLS gjør antagelser om transportlaget, og det er derfor man kunne lage QUIC (TLS bakt inn i en ny transport over UDP).",
+  },
+  {
+    id: "d-cross-conn-gil-os",
+    kind: "quiz",
+    title: "Hva er OS-konseptet bak Python sin GIL?",
+    prompt: "Hva er den underliggende OS-mekanismen GIL bygger på?",
+    topic: "Cross-phase drill",
+    question:
+      "CPython sin Global Interpreter Lock (GIL) sørger for at bare én tråd kjører bytecode om gangen. Hva er det underliggende OS-konseptet GIL er en instans av?",
+    options: [
+      {
+        text: "Mutex / lås — GIL er ganske enkelt en mutex som hver tråd må holde for å eksekvere bytecode. Tråder bytter ved I/O eller etter intervaller.",
+        correct: true,
+        rationale:
+          "GIL er teknisk en mutex (eller semafor med count=1). Det er ikke noe magisk. Den eksisterer fordi CPythons reference counting ikke er trådsikker uten lås, og «én global lås» var den enkleste løsningen i 1991.",
+      },
+      {
+        text: "Spinlock — den polles aktivt",
+        correct: false,
+        rationale:
+          "Faktisk er GIL implementert med en blanding av condition variables og atomic ops, men konseptuelt er det en sleeping mutex (gir CPU mens den venter), ikke en spinlock som brenner CPU.",
+      },
+      {
+        text: "Semafor med flere tillatelser",
+        correct: false,
+        rationale:
+          "Hvis det var en counting semafor med n>1, ville flere tråder kunne kjøre samtidig — som er nettopp det GIL hindrer. Det er en binær semafor (= mutex).",
+      },
+      {
+        text: "Round-robin scheduler",
+        correct: false,
+        rationale:
+          "OS-en gjør round-robin scheduling, men GIL er ikke en scheduler. Selv om alle CPython-tråder er klar til å kjøre, slipper bare den som har GIL til.",
+      },
+    ],
+    explanation:
+      "Cross-phase: Python-internals ↔ OS-konsepter. Når du forstår at GIL bare er en mutex, ser du også løsningen: multiprocessing (separate prosesser = separate GIL-er), eller native C-extensions som slipper GIL under tunge beregninger (NumPy gjør dette).",
+  },
+  {
+    id: "d-cross-conn-promise-tcp",
+    kind: "quiz",
+    title: "Promise og TCP-tilkobling: hva har de til felles?",
+    prompt: "Velg den beste analogien.",
+    topic: "Cross-phase drill",
+    question:
+      "En JavaScript Promise og en TCP-tilkobling er begge «asynkrone tilstands­maskiner». Hvilket par av tilstander viser den dypeste likheten?",
+    options: [
+      {
+        text: "Begge har tre hovedtilstander: «pending/SYN_SENT», «fulfilled/ESTABLISHED», «rejected/CLOSED/RST». Begge går EN VEI gjennom statene — fra pending kan du aldri returnere.",
+        correct: true,
+        rationale:
+          "Begge er énveis state machines: én gang fulfilled/rejected er det permanent. TCP har riktignok flere mellomtilstander (FIN_WAIT, TIME_WAIT) men kjernen er den samme. Dette er grunnen til at Promise-chains «kan ikke angres».",
+      },
+      {
+        text: "Begge er tråder",
+        correct: false,
+        rationale:
+          "Verken Promises eller TCP-tilkoblinger er tråder. Promise er en verdi som «vil komme» — implementeres typisk via event loop. TCP er en protokoll — implementeres i kernel, ikke som tråder i applikasjonen.",
+      },
+      {
+        text: "Begge har en buffer som kan overfylles",
+        correct: false,
+        rationale:
+          "TCP har ja (sliding window). Promise nei — den holder bare ÉN verdi (resolved). Streams er nærmere TCP-bufferen.",
+      },
+      {
+        text: "Begge bruker polling",
+        correct: false,
+        rationale:
+          "Promises bruker callbacks via event loop, ikke polling. TCP bruker push fra kernel, ikke polling (med mindre du eksplisitt kaller `recv` i loop).",
+      },
+    ],
+    explanation:
+      "Cross-phase: Web/async ↔ Nettverk/TCP. Begge er énveis state machines med initiering, suksess og feil. Når du ser et nytt asynkront API, spør deg: hva er de mulige tilstandene, og hvilke overganger er lovlige? Det er samme spørsmål du stiller om en nettverksprotokoll.",
+  },
+  {
+    id: "d-cross-conn-jwt-cookies",
+    kind: "quiz",
+    title: "JWT vs sesjons-cookies: en avveining",
+    prompt: "Hvor er den viktigste forskjellen?",
+    topic: "Cross-phase drill",
+    question:
+      "Hva er den primære arkitektoniske forskjellen mellom JSON Web Tokens (JWT) og server-side sesjons-cookies, og hvilken konsekvens har det?",
+    options: [
+      {
+        text: "JWT er stateless (alle data ligger i tokenet, kryptografisk signert) — serveren trenger ikke lagre sesjon. Pris: du kan ikke umiddelbart invalidere et JWT som er stjålet (må vente til exp eller bruke blacklist).",
+        correct: true,
+        rationale:
+          "Dette er kjerne-trade-off-en. Stateless = horisontalt skalerbart uten delt cache, men logout/invalidering blir vanskeligere. Sesjons-cookies = mutbar state på server, lett å invalidere (slett raden), men krever delt session-store på tvers av servere.",
+      },
+      {
+        text: "JWT er kryptert; cookies er ikke",
+        correct: false,
+        rationale:
+          "JWT er som regel SIGNERT (HS256/RS256), ikke kryptert. Innholdet er base64-enkodet og leselig av alle som har tokenet. Vil du ha kryptering, må du bruke JWE (sjelden i praksis). Cookies derimot kan godt være httpOnly+secure og inneholde fullt kryptert sesjons-ID.",
+      },
+      {
+        text: "JWT lagres i localStorage; cookies i RAM",
+        correct: false,
+        rationale:
+          "Implementasjons­detalj og typisk feilvalg: JWT i localStorage er sårbart for XSS. Sikrere å lagre JWT i en httpOnly cookie — som da blander begge mekanismer. Lagrings­plass er ikke kjerne­forskjellen.",
+      },
+      {
+        text: "JWT er raskere fordi det er kortere",
+        correct: false,
+        rationale:
+          "JWT er ofte LENGRE enn en sesjons-ID (som er ~16-32 bytes). JWT bærer hele payloaden + signaturen, kan bli 500+ bytes. Stateless-fordelen er ikke størrelse, det er at server ikke trenger oppslag.",
+      },
+    ],
+    explanation:
+      "Cross-phase: Sikkerhet ↔ Arkitektur. JWT vs sesjon er et stateless-vs-stateful-valg, og som alle slike: stateless skalerer bedre, men gir opp evnen til umiddelbar tilbake­kalling. Mange systemer kombinerer (kort-levd JWT + refresh token).",
+  },
+  {
+    id: "d-cross-conn-dijkstra",
+    kind: "quiz",
+    title: "Hvorfor bruker Dijkstra prioritets-kø?",
+    prompt: "Velg den beste forklaringen.",
+    topic: "Cross-phase drill",
+    question:
+      "Dijkstras algoritme for korteste vei bruker typisk en min-heap (prioritets-kø). Hvorfor er det essensielt for kompleksiteten, og hva ville skjedd hvis vi brukte en vanlig kø (FIFO)?",
+    options: [
+      {
+        text: "Min-heap gir O((V + E) log V) fordi vi alltid plukker noden med minst foreløpig avstand. Med FIFO ville vi besøkt noder i feil rekkefølge og kunne måttet revisitere — det blir BFS, som kun gir korteste vei i UVEKTEDE grafer.",
+        correct: true,
+        rationale:
+          "Dijkstras kjerneinvariant: noden vi plukker NÅ har sin endelige korteste avstand. Det er bare sant hvis vi plukker den med minst foreløpig avstand. FIFO gir bare rad-vis traversering (BFS), som ignorerer kantvekter.",
+      },
+      {
+        text: "Det er bare en optimalisering — Dijkstra fungerer like bra med vanlig kø",
+        correct: false,
+        rationale:
+          "Algoritmen ville da være feil for grafer med ulike kantvekter, ikke bare tregere. En kant på 1 fulgt av kant på 100 må prioriteres lavere enn én kant på 50.",
+      },
+      {
+        text: "Heap er nødvendig for å lagre visited-settet",
+        correct: false,
+        rationale:
+          "Visited er typisk et set (hashtabell), ikke heap. Heap brukes for å velge neste node å besøke, ikke for medlemskap.",
+      },
+      {
+        text: "Fordi negative vekter må behandles spesielt",
+        correct: false,
+        rationale:
+          "Dijkstra TILLATER IKKE negative kanter — heapet hjelper ikke der. For negative vekter trenger du Bellman-Ford (O(V·E)).",
+      },
+    ],
+    explanation:
+      "Cross-phase: Algoritmer ↔ Datastrukturer. Dijkstra er BFS pluss en heap. Datastrukturen STYRER hvilke problemer algoritmen kan løse. Min-heap = vektede grafer. Vanlig kø = uvektede grafer (BFS). Stack = DFS.",
+  },
+
+  // ---------- 3. «Hvilken feiler»-quiz: identifiser laget (5) ----------
+  {
+    id: "d-cross-err-segfault",
+    kind: "quiz",
+    title: "Segmentation fault — hvor i stakken?",
+    prompt: "Hvor oppstår feilen, og hvem rapporterer den?",
+    topic: "Cross-phase drill",
+    question:
+      "Programmet ditt krasjer med «Segmentation fault (core dumped)». Hvor i stakken oppsto problemet, og hvilken komponent rapporterte det?",
+    options: [
+      {
+        text: "Hardware (MMU) oppdaget at prosessen leste/skrev en virtuell adresse uten gyldig page-mapping eller med feil tillatelser. CPU kastet en page fault → OS-kjernen oversatte til SIGSEGV → prosessen ble drept.",
+        correct: true,
+        rationale:
+          "SegFault er en hardware-trap (page fault) som OS gjør om til signalet SIGSEGV. Standard handler er å terminere prosessen. Vanlig årsak: dereferere null/dangling pointer, lese forbi array-grense i C, stack overflow.",
+      },
+      {
+        text: "Compileren oppdaget en typefeil",
+        correct: false,
+        rationale:
+          "SegFault er en RUNTIME-feil. Compileren er ferdig. Type­systemer kan unngå mange segfaults statisk (Rust/Java), men selve segfaulten skjer alltid i drift.",
+      },
+      {
+        text: "OS-en gikk tom for RAM",
+        correct: false,
+        rationale:
+          "Tom for RAM gir OOM-killer (SIGKILL etter «Out of memory») eller `MemoryError` (Python) / `bad_alloc` (C++). SegFault handler om ugyldig adresse, ikke for lite minne.",
+      },
+      {
+        text: "Nettverkstilkoblingen brøt sammen",
+        correct: false,
+        rationale:
+          "Nettverksfeil gir ECONNRESET/ECONNREFUSED, ikke SIGSEGV. Helt feil lag.",
+      },
+    ],
+    explanation:
+      "Cross-phase: C ↔ OS ↔ Hardware. Verktøy: kjør i gdb og se backtrace. Eller bruk Valgrind/AddressSanitizer for å fange UB før prod. I trygge språk (Rust, Java, Python) er segfault sjelden — du ser i stedet `NullPointerException`/`panic`, som er språkets måte å fange samme klasse av feil før de når MMU-en.",
+  },
+  {
+    id: "d-cross-err-recursion",
+    kind: "quiz",
+    title: "RecursionError — hvor og hvorfor?",
+    prompt: "Hva er den faktiske ressursen som tar slutt?",
+    topic: "Cross-phase drill",
+    question:
+      "Python kaster `RecursionError: maximum recursion depth exceeded`. Hvilken ressurs gikk tom, og hvor er denne grensen satt?",
+    options: [
+      {
+        text: "Call stack — hvert funksjonskall pusher en frame på stakken. Python har en SOFT-grense (typisk 1000, justerbar via `sys.setrecursionlimit`) som beskytter mot C-stack-overflow før OS-en gjør det med SIGSEGV.",
+        correct: true,
+        rationale:
+          "CPythons RecursionError er en kunstig sjekk SOM beskytter den underliggende C-stakken. Hver Python-frame koster ~512 bytes C-stack. Hvis du øker setrecursionlimit for høyt, segfaulter du fordi C-stakken (typisk 8MB) tar slutt før Python sin teller.",
+      },
+      {
+        text: "Heap — Python går tom for objektminne",
+        correct: false,
+        rationale:
+          "Det er en `MemoryError`. RecursionError er separat. De henger sammen — hver frame har lokale variabler på heapen — men begrensningen er stakkens dybde, ikke heap-størrelse.",
+      },
+      {
+        text: "GIL er holdt for lenge",
+        correct: false,
+        rationale:
+          "GIL er en mutex, ikke en ressurs som tar slutt. Den slippes/tas hele tiden under rekursjon.",
+      },
+      {
+        text: "Filsystemet er fullt",
+        correct: false,
+        rationale:
+          "Helt feil lag — filsystem har ingenting med rekursjon å gjøre.",
+      },
+    ],
+    explanation:
+      "Cross-phase: Python ↔ OS/stack. Fiks: gjør funksjonen iterativ, eller bruk en eksplisitt stack-datastruktur. Tail-call-optimering finnes ikke i CPython (med vilje — Guido vil ha ekte stack-traces).",
+  },
+  {
+    id: "d-cross-err-deadlock",
+    kind: "quiz",
+    title: "Deadlock detected — i hvilken komponent?",
+    prompt: "Hvor logges denne, og hva er årsaksmønsteret?",
+    topic: "Cross-phase drill",
+    question:
+      "MySQL/InnoDB logger «Deadlock detected; transaction will be rolled back». I hvilken komponent skjer dette, og hva er det klassiske mønsteret?",
+    options: [
+      {
+        text: "DB-en sin lock manager oppdaget en sykel i lock-wait-grafen. Klassisk mønster: tx-A tar lås på rad 1 og ber om rad 2; tx-B tar lås på rad 2 og ber om rad 1. InnoDB ruller tilbake den «billigste» transaksjonen.",
+        correct: true,
+        rationale:
+          "DB-en bygger en venter-graf (hvem venter på hvem) og kjører sykel-detektering periodisk. Klienten må håndtere feilen (typisk: retry transaksjonen). Forebyggelse: ta låser i fast rekkefølge (alltid lavest-ID først).",
+      },
+      {
+        text: "OS-en sin scheduler — to tråder venter på hverandre",
+        correct: false,
+        rationale:
+          "OS-deadlocks (på mutex/futex) finnes, men OS-en ROLLER IKKE BACK. Den vil bare henge for alltid eller bli drept eksternt. Det er DB-en sin spesielle lock manager som har sykel-deteksjon innebygget.",
+      },
+      {
+        text: "Connection pool er tom",
+        correct: false,
+        rationale:
+          "Tom pool gir vanligvis timeout («unable to acquire connection»), ikke deadlock. Selv om effekten på brukeren kan ligne, er mekanismen helt annerledes.",
+      },
+      {
+        text: "Nettverkspakker mistes",
+        correct: false,
+        rationale:
+          "Feil lag. Nettverksfeil under transaksjon gir tilkoblings-feil, ikke deadlock-rollback.",
+      },
+    ],
+    explanation:
+      "Cross-phase: DB/transaksjoner ↔ Concurrency. Deadlock er ikke en bug i DB-en — det er en RIKTIG respons på umulig situasjon. Applikasjonen MÅ ha retry-logikk. PostgreSQL har samme mekanisme («deadlock detected»).",
+  },
+  {
+    id: "d-cross-err-econnrefused",
+    kind: "quiz",
+    title: "ECONNREFUSED — hvor i stakken?",
+    prompt: "Hva betyr koden faktisk?",
+    topic: "Cross-phase drill",
+    question:
+      "Klienten din får `ECONNREFUSED` på `connect()`. Hva har faktisk skjedd på nettverkslaget?",
+    options: [
+      {
+        text: "TCP SYN nådde server-IP-en, men ingen prosess lyttet på den porten. Server-OS-en svarte med TCP RST. Forskjellig fra timeout (host nåddes ikke) og DNS-feil (navn løste ikke).",
+        correct: true,
+        rationale:
+          "Hosten finnes og svarer — men det er ingen «boks» som lytter på porten. OS-en sender RST automatisk. Vanlig årsak: serveren har ikke startet, eller bindet til feil interface (127.0.0.1 vs 0.0.0.0). Brannmur som DROPPER gir derimot timeout, ikke RST.",
+      },
+      {
+        text: "DNS-oppslag feilet",
+        correct: false,
+        rationale:
+          "Det gir EAI_NONAME / «getaddrinfo failed» / NXDOMAIN — helt eget feilbilde. ECONNREFUSED kommer ETTER at IP-en er funnet og connect() prøves.",
+      },
+      {
+        text: "Sertifikatet er ugyldig",
+        correct: false,
+        rationale:
+          "Det er TLS-feil og skjer mye senere i håndtrykket — etter at TCP-en allerede er etablert. Sertifikatfeil gir ulike feilmeldinger avhengig av biblioteket (CertificateError / SSLError).",
+      },
+      {
+        text: "Klienten har ingen internett-tilgang",
+        correct: false,
+        rationale:
+          "Det ville typisk gitt ENETUNREACH («Network unreachable») eller timeout, ikke et eksplisitt avslag fra hosten.",
+      },
+    ],
+    explanation:
+      "Cross-phase: Nettverk/TCP ↔ Feilsøking. ECONNREFUSED = «hosten lever, porten gjør ikke det.» Verktøy: `ss -tlnp` på serveren for å se hvilke porter som lyttes på. `nc -zv host port` fra klienten for å verifisere før applikasjonen prøver.",
+  },
+  {
+    id: "d-cross-err-eacces",
+    kind: "quiz",
+    title: "EACCES — hvor sjekkes dette?",
+    prompt: "Hvem returnerer feilen og hvorfor?",
+    topic: "Cross-phase drill",
+    question:
+      "Du får `EACCES: permission denied` når Flask-appen prøver å skrive til `/var/log/app.log`. Hva er kjeden av sjekker som førte til feilen?",
+    options: [
+      {
+        text: "Kjerne-VFS sjekker (1) prosessens UID/GID mot fil-eier/gruppe og (2) mode-bits (rwx) — eller utvidet ACL/SELinux. Mest sannsynlig: app-en kjører som ikke-root-bruker, og /var/log eies av root med mode 755 (skrive-tilgang kun for root).",
+        correct: true,
+        rationale:
+          "DAC-modellen i Unix: hver fil har owner/group/mode. VFS sjekker disse på hvert systemkall (open/write). For å fikse: kjør som riktig bruker, eller chown/chmod logfilen, eller skriv til en mappe app-brukeren eier (anbefalt).",
+      },
+      {
+        text: "Brannmuren blokkerte skriving",
+        correct: false,
+        rationale:
+          "Brannmurer styrer nettverkstrafikk, ikke filtilgang. EACCES er en FS-feil.",
+      },
+      {
+        text: "Disken er full",
+        correct: false,
+        rationale:
+          "Tom disk gir ENOSPC («No space left on device»), ikke EACCES. To forskjellige feilkoder, to forskjellige problemer.",
+      },
+      {
+        text: "Python kjørte uten sudo",
+        correct: false,
+        rationale:
+          "I prod skal du IKKE kjøre app som root — det ville gjort EACCES forsvinne, men åpner stor angrepsflate. Riktig løsning: gi app-brukeren rett til relevante stier (chown/setfacl), ikke å heve app-en.",
+      },
+    ],
+    explanation:
+      "Cross-phase: OS/rettigheter ↔ Sikkerhet. Prinsipp: minst privilegium. Web-apper kjører som dedikert systemkonto (www-data, gunicorn-user) med kun de stiene de trenger. Gjør du dem til root, bryter ÉN exploit hele systemet.",
+  },
+
+  // ---------- 4. «Hvilket verktøy»-match (5) ----------
+  {
+    id: "d-cross-tool-debug",
+    kind: "match",
+    title: "Verktøy til situasjon: feilsøking på tvers av lag",
+    prompt: "Dra hvert verktøy til typen problem det er bygget for.",
+    topic: "Cross-phase drill",
+    pairs: [
+      {
+        left: "Wireshark",
+        right: "Inspisere pakker på nettverkslaget — TLS-handshake, TCP-retransmits, hvilken IP du faktisk snakker med",
+      },
+      {
+        left: "EXPLAIN / EXPLAIN ANALYZE",
+        right: "Forstå databasens query-plan: bruker den indeksen? full table scan? hvilken join-strategi?",
+      },
+      {
+        left: "gdb",
+        right: "Steppe gjennom kompilert C/C++ etter krasj — inspisere registre, minne, stack-frames",
+      },
+      {
+        left: "top / htop",
+        right: "Sanntid: hvilken prosess spiser CPU/RAM akkurat nå",
+      },
+      {
+        left: "strace",
+        right: "Hvilke systemkall gjør prosessen mot kjernen — fanger open/read/connect uten å gjenkompilere",
+      },
+      {
+        left: "git bisect",
+        right: "Binærsøk i commit-historikken etter commiten som introduserte en bug",
+      },
+    ],
+    explanation:
+      "Hvert verktøy er bundet til ett lag. Når du har en bug, første spørsmål: «hvilket lag?». Bruker du Wireshark når svaret ligger i databasen, eller EXPLAIN på en nettverksfeil, blir det null fremgang.",
+  },
+  {
+    id: "d-cross-tool-web",
+    kind: "match",
+    title: "Verktøy: web-frontend og API-er",
+    prompt: "Dra hvert verktøy til oppgaven det løser.",
+    topic: "Cross-phase drill",
+    pairs: [
+      {
+        left: "Postman / curl",
+        right: "Sende HTTP-requests manuelt — teste API-endepunkter uten å skrive frontend",
+      },
+      {
+        left: "Chrome DevTools (Network)",
+        right: "Se HTTP-requests fra siden, response-headers, hvor lang tid hver fil tok",
+      },
+      {
+        left: "Chrome DevTools (Elements)",
+        right: "Inspisere DOM-en og endre HTML/CSS live for å eksperimentere",
+      },
+      {
+        left: "Chrome DevTools (Console)",
+        right: "Se JavaScript-feil og kjøre uttrykk mot siden mens den er live",
+      },
+      {
+        left: "Lighthouse",
+        right: "Automatisk audit: performance-score, tilgjengelighet, SEO, best practices",
+      },
+    ],
+    explanation:
+      "Tre faner i Chrome DevTools = tre forskjellige fag (network/HTTP, DOM/HTML+CSS, JavaScript/runtime). Lighthouse aggregerer alle disse i én rapport. Postman/curl er det du bruker FØR frontend finnes — for å sjekke at API-et selv er korrekt.",
+  },
+  {
+    id: "d-cross-tool-perf",
+    kind: "match",
+    title: "Verktøy: ytelse på ulike lag",
+    prompt: "Dra hvert profilering­sverktøy til riktig lag.",
+    topic: "Cross-phase drill",
+    pairs: [
+      {
+        left: "perf / py-spy",
+        right: "CPU-profilering: hvilke funksjoner spiser flest sykler",
+      },
+      {
+        left: "Valgrind --tool=memcheck",
+        right: "Finne minnelekkasjer og bruk-etter-fri i C/C++",
+      },
+      {
+        left: "iotop",
+        right: "Hvilken prosess gjør mest disk-I/O akkurat nå",
+      },
+      {
+        left: "tcpdump",
+        right: "Capture nettverkspakker på kommandolinjen for senere analyse",
+      },
+      {
+        left: "pg_stat_statements",
+        right: "Hvilke SQL-queries er tregest aggregert over tid i PostgreSQL",
+      },
+    ],
+    explanation:
+      "Ytelse er aldri «én ting». CPU, minne, disk, nett og DB krever hver sitt verktøy. Når noe er tregt: mål FØR du gjetter. py-spy + iotop + EXPLAIN ANALYZE forteller deg hvor flaskehalsen faktisk er.",
+  },
+  {
+    id: "d-cross-tool-build",
+    kind: "match",
+    title: "Verktøy: utvikling og deploy",
+    prompt: "Dra hvert verktøy til sin rolle i pipeline.",
+    topic: "Cross-phase drill",
+    pairs: [
+      {
+        left: "git",
+        right: "Versjons­kontroll for kildekoden",
+      },
+      {
+        left: "GitHub Actions / CI",
+        right: "Kjør tester automatisk på hver push, og bygg deploy-artefakter",
+      },
+      {
+        left: "Docker",
+        right: "Pakke applikasjon + avhengigheter i et image som kjører likt overalt",
+      },
+      {
+        left: "nginx",
+        right: "Reverse proxy foran app-serveren — TLS-terminering, statiske filer, last­balansering",
+      },
+      {
+        left: "systemd",
+        right: "Starte/restarte tjenester automatisk på Linux-server",
+      },
+    ],
+    explanation:
+      "Pipeline-tankesett: koden lever i git, CI bygger og tester den, Docker pakker resultatet, nginx mottar trafikk og videresender til app-en, systemd holder app-en i live. Hvert verktøy gjør ÉN ting godt — det er Unix-filosofien.",
+  },
+  {
+    id: "d-cross-tool-security",
+    kind: "match",
+    title: "Verktøy: sikkerhet og recon",
+    prompt: "Dra hvert verktøy til sitt formål.",
+    topic: "Cross-phase drill",
+    pairs: [
+      {
+        left: "nmap",
+        right: "Skanne hvilke porter som er åpne på en host — recon på nettverk",
+      },
+      {
+        left: "openssl s_client",
+        right: "Inspisere sertifikat­kjede og TLS-handshake på en server",
+      },
+      {
+        left: "OWASP ZAP / Burp Suite",
+        right: "Proxy mellom nettleser og server for å inspisere/modifisere HTTP-requests",
+      },
+      {
+        left: "hashcat",
+        right: "Knekke passord-hasher offline med GPU",
+      },
+      {
+        left: "ssh-keygen",
+        right: "Generere nøkkelpar (RSA/Ed25519) for passordløs SSH-autentisering",
+      },
+    ],
+    explanation:
+      "Sikkerhet er recon (nmap) + inspeksjon (openssl, Burp) + offensive (hashcat). Vet du ikke hvilke porter som er åpne, vet du ikke angrepsflaten. Forsvar starter med å vite hva du har.",
+  },
+
+  // ---------- 5. «Hvor bor data»-order (5) ----------
+  {
+    id: "d-cross-data-get-kunder",
+    kind: "order",
+    title: "Datas vei: GET /kunder fra browser til respons",
+    prompt:
+      "Dra stegene i den rekkefølgen dataene faktisk passerer dem. Start fra at brukeren har klikket en lenke.",
+    topic: "Cross-phase drill",
+    items: [
+      "Browser bygger HTTP-request i JS heap",
+      "DNS-oppslag løser hostname til IP-adresse",
+      "TCP-handshake (SYN, SYN-ACK, ACK) etablerer forbindelse",
+      "TLS-handshake (ClientHello, sertifikat, nøkkel­utveksling)",
+      "HTTP-request serialiseres til bytes i klient-NIC sin send-buffer",
+      "Pakker går over kabel/wifi til router → ISP → server-NIC",
+      "Server-OS leverer bytes til Flask-prosessens socket-buffer",
+      "Flask matcher route og kaller view-funksjonen",
+      "View kjører SQL: cursor.execute(\"SELECT * FROM kunde\")",
+      "DB-engine leser blokker fra disk (eller buffer pool) inn i RAM",
+      "Rader serialiseres tilbake til JSON",
+      "Flask returnerer Response → bytes ut på socket → over nettet → render i browser",
+    ],
+    explanation:
+      "Cross-phase: Nettverk + OS + DB + Web. Data passerer minst 4 separate minneområder (browser-heap, klient-OS-buffer, server-OS-buffer, DB-buffer-pool) og 3 protokoll­lag (HTTP, TLS, TCP) før det vises. Hvert hopp er et potensielt feilpunkt — og hvert hopp er et potensielt avlytting­spunkt før TLS.",
+  },
+  {
+    id: "d-cross-data-submit-form",
+    kind: "order",
+    title: "Datas vei: bruker klikker «Send» på et skjema",
+    prompt: "Dra stegene fra DOM-event til lagring i DB.",
+    topic: "Cross-phase drill",
+    items: [
+      "Bruker klikker submit-knappen i nettleseren",
+      "DOM avfyrer 'submit'-event på <form>",
+      "JS event-handler (eller default) lager FormData fra felter",
+      "Browser bygger HTTP POST med body=URL-encoded form",
+      "Cookie-header (sesjon) legges automatisk til av browseren",
+      "TCP/TLS sender body til server",
+      "Server (Flask) parser body og leser request.form['epost']",
+      "View validerer input (CSRF-token, regex, lengde)",
+      "cursor.execute med PARAMETERISERT SQL kjøres mot DB",
+      "InnoDB skriver til redo-log (WAL) først, så til data-pages",
+      "COMMIT — kontrakt om at endring overlever krasj",
+      "View returnerer 302 redirect → browser laster takkeside",
+    ],
+    explanation:
+      "Cross-phase: Web + Sikkerhet + DB + OS. CSRF-tokenet matters (sikkerhet). Parameterisert SQL matters (SQL-injection). Redo-log før data-pages matters (durability/D i ACID). Redirect-PRG-mønsteret matters (browser-historikk). Fem fag, en submit-knapp.",
+  },
+  {
+    id: "d-cross-data-memory-hierarchy",
+    kind: "order",
+    title: "Datas vei: én variabel — hvor bor den fra raskest til tregest?",
+    prompt: "Dra minne-nivåene i rekkefølge fra raskest aksess (topp) til tregest.",
+    topic: "Cross-phase drill",
+    items: [
+      "CPU-register (~0.3 ns)",
+      "L1-cache (~1 ns)",
+      "L2-cache (~4 ns)",
+      "L3-cache (~10 ns)",
+      "RAM (~100 ns)",
+      "SSD via NVMe (~100 μs)",
+      "Spinning disk (~10 ms)",
+      "Nettverk LAN (~0.5 ms)",
+      "Nettverk WAN / annet kontinent (~150 ms)",
+    ],
+    explanation:
+      "Cross-phase: Hardware ↔ ytelse alle steder. Hvert nivå er ~10-100× tregere. Derfor er cache-treff avgjørende. Derfor er nettverkskall ~1 million× tregere enn RAM, og hvorfor en SQL-query med 100 nettverks-round-trips er katastrofe selv om hvert kall er «raskt».",
+  },
+  {
+    id: "d-cross-data-python-int",
+    kind: "order",
+    title: "Datas vei: et Python-tall, fra kildekode til CPU",
+    prompt: "Dra stegene i den rekkefølgen Python tar et tall fra source til addisjon på CPU-en.",
+    topic: "Cross-phase drill",
+    items: [
+      "Source-fil parses → AST",
+      "AST kompileres til bytecode (.pyc)",
+      "PyVM interpreter henter neste opcode",
+      "Tallet er et PyLong-objekt på heapen (med refcount, type-pointer, digit-array)",
+      "Opcode LOAD_FAST henter pointer fra lokal frame",
+      "BINARY_ADD kaller PyNumber_Add → long_add i C",
+      "C-koden faller til slutt ned på CPU sin ADD-instruksjon i et register",
+    ],
+    explanation:
+      "Cross-phase: Språk-internals ↔ Hardware. Et Python-«tall» er IKKE en CPU-register-verdi — det er et fullt heap-objekt med metadata. Dette er grunnen til at numerisk Python er ~50× tregere enn C uten NumPy, som omgår PyObject-overheaden ved å lagre tall i C-arrays.",
+  },
+  {
+    id: "d-cross-data-flask-render",
+    kind: "order",
+    title: "Datas vei: render_template fra view til HTML-respons",
+    prompt: "Dra stegene i riktig rekkefølge fra at view-funksjonen kaller render_template til at HTML-en er på vei.",
+    topic: "Cross-phase drill",
+    items: [
+      "view kaller render_template('liste.html', kunder=rows)",
+      "Jinja2 sjekker template-cache for kompilert versjon",
+      "Hvis cache-miss: parser .html-filen til AST og kompilerer til Python-bytecode",
+      "Render-funksjonen kjøres med kontekst (kunder, request, session, g)",
+      "{{ kunder }} → __str__ / __html__ kalles, autoescape kjører",
+      "Resulterende string buffres",
+      "Flask wrapper string i en Response med Content-Type: text/html",
+      "WSGI-server (gunicorn) skriver response-bytes til socket",
+    ],
+    explanation:
+      "Cross-phase: Web/templates + Sikkerhet (autoescape!) + WSGI. Autoescape-steget er der XSS-beskyttelsen lever — alle variabler html-rømmes med mindre du eksplisitt sier `|safe`. Skjønner du dette stegt, skjønner du hvorfor `{{ user_input }}` er trygt, men `{{ user_input|safe }}` er farlig.",
+  },
+
+  // ---------- 6. «Forklar avveiningen»-match (5) ----------
+  {
+    id: "d-cross-tradeoff-cap",
+    kind: "match",
+    title: "Trade-off: CAP-teoremet",
+    prompt: "Dra hvert valg til DB-eksemplet som demonstrerer det.",
+    topic: "Cross-phase drill",
+    pairs: [
+      {
+        left: "CP (Consistency + Partition-toleranse) — gir opp tilgjengelighet under nettsplitt",
+        right: "MongoDB med majority writes; HBase; tradisjonelle ACID-DB-er i singel-master",
+      },
+      {
+        left: "AP (Availability + Partition-toleranse) — gir opp sterk konsistens, aksepterer eventually consistent",
+        right: "Cassandra, DynamoDB (default), Riak — alle noder svarer, men data kan være litt utdatert",
+      },
+      {
+        left: "CA (Consistency + Availability) — antar at det ikke kommer nettsplitt (ofte urealistisk i distribuerte systemer)",
+        right: "Tradisjonell singel-node SQL — ingen partisjon å snakke om så lenge det er én maskin",
+      },
+      {
+        left: "Hva CAP IKKE handler om",
+        right: "Hvor rask DB-en er, eller hvor mye den lagrer — bare oppførsel under nettsplitt",
+      },
+    ],
+    explanation:
+      "Cross-phase: DB ↔ Distribuerte systemer. CAP er ikke «velg 2 av 3» i normalsituasjon — det er «hva ofrer du NÅR det er nettsplitt». Moderne formulering (PACELC) inkluderer også «hva ofrer du når det IKKE er splitt» (Latency vs Consistency).",
+  },
+  {
+    id: "d-cross-tradeoff-latency-throughput",
+    kind: "match",
+    title: "Trade-off: latency vs throughput",
+    prompt: "Dra hvert eksempel til riktig optimaliserings­mål.",
+    topic: "Cross-phase drill",
+    pairs: [
+      {
+        left: "Optimaliser for LATENCY (én ting raskt)",
+        right: "Realtime-spill, live trading, brukerklikk-respons — én operasjon må fullføre fortest mulig",
+      },
+      {
+        left: "Optimaliser for THROUGHPUT (mange ting per sekund)",
+        right: "Batch-jobber, ETL, video-encoding farm — total mengde data per tidsenhet er det som teller",
+      },
+      {
+        left: "Eksempel: HTTP/2 multiplexing",
+        right: "Forbedrer throughput på én forbindelse (mange streams parallelt), men latency per request endrer seg lite",
+      },
+      {
+        left: "Eksempel: keep-alive",
+        right: "Forbedrer latency på etterfølgende requests (slipper TCP/TLS-handshake), og dermed indirekte throughput",
+      },
+      {
+        left: "Klassisk feiltagelse",
+        right: "Anta at lavere latency = høyere throughput. Du kan ha lav latency med lav throughput (én rask jobb) eller høy latency med høy throughput (lange pipelines som leverer mye)",
+      },
+    ],
+    explanation:
+      "Cross-phase: Nettverk ↔ Systemdesign. Disney/Netflix bryr seg om throughput (bytes-per-sekund-leveranse). Google Search bryr seg om latency (95-percentile under 100ms). Ulike valg → ulik arkitektur.",
+  },
+  {
+    id: "d-cross-tradeoff-time-space",
+    kind: "match",
+    title: "Trade-off: tid vs minne",
+    prompt: "Dra hvert mønster til riktig kategori.",
+    topic: "Cross-phase drill",
+    pairs: [
+      {
+        left: "Memoisering / cache",
+        right: "Bruker mer minne for å spare tid — lagre resultater du har regnet ut én gang",
+      },
+      {
+        left: "Indeks i database",
+        right: "Bruker disk/minne for å spare lookup-tid — kostnaden er tregere INSERTs/UPDATEs",
+      },
+      {
+        left: "Bloom filter",
+        right: "Bruker minimal plass og raske oppslag, men aksepterer falske positiver — slik bytter du presisjon for plass+tid",
+      },
+      {
+        left: "On-the-fly beregning",
+        right: "Bruker minimalt minne, men regner ting hver gang — passer når input endres ofte eller minne er dyrt",
+      },
+      {
+        left: "Komprimering av data i RAM",
+        right: "Bytter CPU-tid (dekompresjon) mot RAM-bruk — fornuftig hvis I/O er flaskehals",
+      },
+    ],
+    explanation:
+      "Cross-phase: Algoritmer ↔ Systemdesign. Hver gang du har valget «regne ut, eller huske», er du i denne trade-offen. Cache, indeks, lookup-tabell og memoisering er alle samme idé, bare på ulike lag.",
+  },
+  {
+    id: "d-cross-tradeoff-precision-recall",
+    kind: "match",
+    title: "Trade-off: precision vs recall",
+    prompt: "Dra hvert scenario til riktig prioritering.",
+    topic: "Cross-phase drill",
+    pairs: [
+      {
+        left: "Maksimer PRECISION (få falske positiver)",
+        right: "E-post-spamfilter — bedre at en spam slipper gjennom enn å arkivere en faktura som spam",
+      },
+      {
+        left: "Maksimer RECALL (få falske negativer)",
+        right: "Kreft-screening — bedre at vi kaller inn en frisk person for ekstra test enn å overse en syk",
+      },
+      {
+        left: "F1-score balanserer begge",
+        right: "Harmonisk gjennomsnitt av precision og recall — bra default når begge feiltyper koster",
+      },
+      {
+        left: "Threshold-justering",
+        right: "Senke threshold = høyere recall, lavere precision. Heve threshold = motsatt. ROC-kurven viser kompromisset",
+      },
+      {
+        left: "Klassisk feiltagelse",
+        right: "Rapportere bare accuracy på et ubalansert datasett — 99% accuracy kan bety «modellen sier alltid nei» når 99% er negative",
+      },
+    ],
+    explanation:
+      "Cross-phase: ML ↔ Domene­forståelse. Modellens KOSTNADS­FUNKSJON skal speile virkeligheten. Skjønner du domenet (medisin? markedsføring? sikkerhet?), vet du om du må vri threshold mot precision eller recall.",
+  },
+  {
+    id: "d-cross-tradeoff-coupling-cohesion",
+    kind: "match",
+    title: "Trade-off: kobling vs samhørighet",
+    prompt: "Dra hvert mønster til sin egenskap.",
+    topic: "Cross-phase drill",
+    pairs: [
+      {
+        left: "Høy samhørighet (cohesion) i en modul",
+        right: "Alt i modulen handler om SAMME ting — auth-modul har alt og bare auth-logikk",
+      },
+      {
+        left: "Lav kobling (coupling) mellom moduler",
+        right: "Auth-modulen bryr seg ikke om hvilken DB du bruker — den får et grensesnitt, ikke konkret implementasjon",
+      },
+      {
+        left: "Mønstereksempel på BÅDE høy cohesion og lav coupling",
+        right: "Repository-pattern: én klasse per aggregat, alle DB-spørringer for dén entiteten samlet, eksponert som interface",
+      },
+      {
+        left: "Anti-pattern: «God Object»",
+        right: "Én klasse som vet om alt og kalles fra alle — lav cohesion (mange ulike ansvar) og høy coupling (alle avhenger av den)",
+      },
+      {
+        left: "Hvorfor MVC fungerer",
+        right: "Hver av M, V, C har én ansvar (høy cohesion) og kommuniserer via veldefinerte grensesnitt (lav coupling)",
+      },
+    ],
+    explanation:
+      "Cross-phase: Software design ↔ Vedlikehold. Mantra: «hver modul gjør én ting; hver modul vet minst mulig om andre.» Brytes denne, blir kodebasen «en mudderball» (Big Ball of Mud) — populært i legacy-systemer.",
+  },
+
+  // ---------- 7. Fyll-inn med flere ting samtidig (5) ----------
+  {
+    id: "d-cross-fill-py-db-json",
+    kind: "fill",
+    title: "Python: DB-spørring → list comprehension → JSON",
+    prompt: "Fyll inn de manglende delene. Funksjonen leser ordrer fra DB, beregner totaler, og returnerer JSON.",
+    topic: "Cross-phase drill",
+    language: "python",
+    template: `from flask import jsonify
+import sqlite3
+
+def ordrer_total():
+    con = sqlite3.connect("butikk.db")
+    cur = con.__1__()
+    cur.execute("SELECT id, antall, pris FROM ordre")
+    rader = cur.__2__()
+    resultat = [
+        {"id": r[0], "total": r[1] * r[2]}
+        __3__ r in rader
+        if r[1] > 0
+    ]
+    con.close()
+    return __4__(resultat)`,
+    blanks: ["cursor", "fetchall", "for", "jsonify"],
+    options: ["cursor", "connection", "fetchall", "fetchone", "for", "in", "while", "jsonify", "dumps", "render", "return"],
+    explanation:
+      "Cross-phase: DB (cursor/fetchall), Python (list comp med filter), Flask (jsonify wrapper som setter Content-Type: application/json). Tre fag i seks linjer kode — typisk produksjons­view-funksjon.",
+  },
+  {
+    id: "d-cross-fill-sql-sub-join-group",
+    kind: "fill",
+    title: "SQL: subquery + JOIN + GROUP BY i én spørring",
+    prompt: "Vi vil ha hver kundes navn pluss antall ordrer over 1000 kr. Fyll inn.",
+    topic: "Cross-phase drill",
+    language: "sql",
+    template: `SELECT k.navn, COUNT(o.id) AS antall_store
+FROM kunde k
+__1__ JOIN ordre o __2__ k.id = o.kunde_id
+WHERE o.belop > (
+  __3__ AVG(belop)
+  FROM ordre
+)
+__4__ k.id, k.navn
+__5__ COUNT(o.id) >= 1;`,
+    blanks: ["LEFT", "ON", "SELECT", "GROUP BY", "HAVING"],
+    options: ["LEFT", "RIGHT", "INNER", "ON", "WHERE", "SELECT", "GROUP BY", "ORDER BY", "HAVING", "FROM"],
+    explanation:
+      "Cross-phase: subquery (AVG i WHERE), JOIN, aggregering (COUNT + GROUP BY), filter på aggregat (HAVING). Fem SQL-konstruksjoner som hver alene er triviell, men sammen avslører om du forstår evaluerings­rekkefølgen (WHERE før GROUP BY før HAVING).",
+  },
+  {
+    id: "d-cross-fill-react-useeffect",
+    kind: "fill",
+    title: "React: useEffect + fetch + state + cleanup",
+    prompt: "Fyll inn en komponent som henter data og rydder opp ved unmount.",
+    topic: "Cross-phase drill",
+    example: `// Typisk pattern for hooks som henter data
+function User({ id }) {
+  const [user, setUser] = useState(null);
+  useEffect(() => {
+    let cancelled = false;
+    fetch(\`/api/users/\${id}\`)
+      .then(r => r.json())
+      .then(data => { if (!cancelled) setUser(data); });
+    return () => { cancelled = true; };
+  }, [id]);
+  return user ? <div>{user.name}</div> : <p>Laster…</p>;
+}`,
+    template: `function Produkter() {
+  const [data, setData] = __1__(null);
+  __2__(() => {
+    let cancelled = false;
+    fetch("/api/produkter")
+      .then(r => r.__3__())
+      .then(d => { if (!cancelled) setData(d); });
+    return () => { cancelled = __4__; };
+  }, []);
+  return data ? <ul>{data.map(p => <li key={p.id}>{p.navn}</li>)}</ul> : <p>Laster…</p>;
+}`,
+    blanks: ["useState", "useEffect", "json", "true"],
+    options: ["useState", "useEffect", "useMemo", "useRef", "json", "text", "blob", "true", "false", "null"],
+    explanation:
+      "Cross-phase: React hooks + HTTP/fetch + race condition-handling. `cancelled`-mønsteret hindrer at en sen response setter state etter at komponenten er unmounted (kan ellers gi React-advarsel + memory leak). Dette er det viktigste cleanup-mønsteret du ikke ser i de fleste tutorials.",
+  },
+  {
+    id: "d-cross-fill-bash-pipe",
+    kind: "fill",
+    title: "Bash one-liner: pipe + grep + awk + sort",
+    prompt: "Fyll inn en kommando som finner topp-5 IP-adresser i en nginx-loggfil.",
+    topic: "Cross-phase drill",
+    template: `cat access.log \\
+  | __1__ "GET /api" \\
+  | __2__ '{print $1}' \\
+  | __3__ \\
+  | uniq -c \\
+  | __4__ -rn \\
+  | __5__ -5`,
+    blanks: ["grep", "awk", "sort", "sort", "head"],
+    options: ["grep", "awk", "sed", "tr", "sort", "uniq", "head", "tail", "wc"],
+    explanation:
+      "Cross-phase: Unix-filosofi (små verktøy + pipes), tekst­prosessering, statistikk. uniq krever sortert input — derfor `sort` FØR uniq. `sort -rn` på telleren etter `uniq -c` gir topp-N. Dette mønsteret (filter → kolonne → unique → topp-N) er kjernen i analyse av enhver loggfil.",
+  },
+  {
+    id: "d-cross-fill-async-trycatch",
+    kind: "fill",
+    title: "Async/await med try/catch og timeout",
+    prompt: "Fyll inn en async-funksjon som henter data med timeout og fanger feil.",
+    topic: "Cross-phase drill",
+    template: `async function hentBruker(id) {
+  const ctrl = new AbortController();
+  const t = setTimeout(() => ctrl.__1__(), 5000);
+  __2__ {
+    const r = __3__ fetch(\`/api/users/\${id}\`, { signal: ctrl.signal });
+    if (!r.ok) throw new Error(\`HTTP \${r.status}\`);
+    return __4__ r.json();
+  } __5__ (err) {
+    console.error("Feil ved henting:", err);
+    return null;
+  } finally {
+    clearTimeout(t);
+  }
+}`,
+    blanks: ["abort", "try", "await", "await", "catch"],
+    options: ["abort", "cancel", "try", "if", "await", "async", "yield", "catch", "except", "finally"],
+    explanation:
+      "Cross-phase: Promises/async + Errors + Resources/cleanup. Tre await-er bør ALLE være med — glemmer du await på r.json(), returnerer du en uventet Promise. AbortController er hvordan moderne JS kansellerer pågående HTTP-requests — det er ikke automatisk.",
+  },
+
+  // ---------- 8. Misforståelser-quiz (5) ----------
+  {
+    id: "d-cross-myth-static",
+    kind: "quiz",
+    title: "Myte: «statisk typing gjør kode raskere»",
+    prompt: "Velg den korrekte påstanden.",
+    topic: "Cross-phase drill",
+    question:
+      "En klassisk misforståelse er at statisk typing gjør koden raskere i runtime. Hva er det faktiske bildet?",
+    options: [
+      {
+        text: "Typing gir compileren MULIGHETEN til å unngå runtime-typesjekker og generere bedre maskinkode (C/Rust/Go), men koden blir ikke automatisk rask. Det viktigste bidraget er for utvikleren: færre bugs, bedre tooling, refactoring uten frykt.",
+        correct: true,
+        rationale:
+          "Statisk typing er først og fremst en designtid-fordel. Hastighets­fordelen er reell, men kommer indirekte: monomorfisering, ingen boxing, ingen virtuelle kall der det ikke trengs. JIT-kompilerte språk (V8, HotSpot) nærmer seg ofte C-hastighet UTEN statisk typing.",
+      },
+      {
+        text: "Ja, alltid raskere — derfor er Rust raskere enn Python",
+        correct: false,
+        rationale:
+          "Rust er raskere av MANGE grunner (ingen GC, ingen runtime, monomorfiserte generics, kontroll over allokering). Typing alene forklarer ikke gapet. TypeScript → JavaScript er like raskt som ren JS — typene fjernes ved kompilering.",
+      },
+      {
+        text: "Nei, typing er bare for IDE-autocompletion",
+        correct: false,
+        rationale:
+          "Den ANDRE feilen. IDE-hjelp er en bonus, men typing fanger også reelle bugs (TS-prosjekter rapporterer 15-20% færre prod-feil i studier), og lar compileren optimalisere mer aggressivt.",
+      },
+      {
+        text: "Typing gjør koden tregere fordi compileren må sjekke alt",
+        correct: false,
+        rationale:
+          "Det er BYGG-tid, ikke runtime. Slutt­binæren har færre sjekker, ikke flere. Compileren gjør jobben én gang, programmet ditt slipper å gjøre den i hver iterasjon.",
+      },
+    ],
+    explanation:
+      "Cross-phase: Språk­teori ↔ Ytelse ↔ Vedlikehold. Statisk typing er en vedlikeholds- og korrekthet­sgevinst først, ytelses­gevinst dernest. Mythenes «X er raskere fordi statisk typing» blander tilfeldig korrelasjon (de fleste statisk-typede språk er også lavnivå) med årsak.",
+  },
+  {
+    id: "d-cross-myth-threads",
+    kind: "quiz",
+    title: "Myte: «mer tråder = mer parallellitet i Python»",
+    prompt: "Velg den korrekte påstanden.",
+    topic: "Cross-phase drill",
+    question:
+      "Når gir flere tråder faktisk parallell utførelse i CPython, og når gir det det IKKE?",
+    options: [
+      {
+        text: "Flere tråder gir parallellitet for I/O-bundet arbeid (nettverk, fil, DB-venting) fordi GIL slippes under blokkering. For CPU-bundet arbeid kjører de SERIELT — bruk multiprocessing (separate prosesser).",
+        correct: true,
+        rationale:
+          "GIL holdes under Python-bytecode-eksekvering, men slippes under blokkerende systemkall. To tråder som venter på HTTP-svar kjører helt parallelt. To tråder som regner Fibonacci kjører turvis. Dette er den ene viktigste tingen å skjønne om Python-concurrency.",
+      },
+      {
+        text: "Aldri — GIL stenger ALT av parallellitet",
+        correct: false,
+        rationale:
+          "Vanlig overforenkling. GIL stenger CPU-parallellitet, men ikke I/O-parallellitet. asyncio og threads kan begge ha 1000+ samtidige socket-requests.",
+      },
+      {
+        text: "Alltid — Python har samme threads som C",
+        correct: false,
+        rationale:
+          "Python BRUKER OS-tråder (pthreads/Win32), men GIL serialiserer bytecode-eksekvering. Trådene er ekte, parallelliteten er ikke.",
+      },
+      {
+        text: "Bare på Windows",
+        correct: false,
+        rationale:
+          "GIL er plattform-uavhengig. Den er en CPython-konstruksjon, ikke en OS-konstruksjon.",
+      },
+    ],
+    explanation:
+      "Cross-phase: Python-internals ↔ OS-tråder ↔ workload-type. Tommelfingel: I/O-bundet → threading eller asyncio. CPU-bundet → multiprocessing. Numerisk arbeid → NumPy (slipper GIL i C). PEP 703 (no-GIL Python 3.13+) er pågående, men ikke standard ennå.",
+  },
+  {
+    id: "d-cross-myth-index",
+    kind: "quiz",
+    title: "Myte: «indekser gjør alle queries raskere»",
+    prompt: "Velg den korrekte påstanden.",
+    topic: "Cross-phase drill",
+    question:
+      "Når er det FEIL å legge til en indeks, selv om en SELECT blir raskere?",
+    options: [
+      {
+        text: "Indekser har skrive-kost: hver INSERT/UPDATE/DELETE må også oppdatere indeksen. På write-tunge tabeller (logger, event-stream, audit) kan ekstra indekser senke total throughput. Også: indekser tar disk-/RAM-plass og kan utkonkurrere mer nyttige sider i buffer pool.",
+        correct: true,
+        rationale:
+          "Klassisk DBA-feil: legg til indeks på alt. Hver indeks dobler IO-en for skriv-operasjoner på dén kolonnen. På en append-only logg-tabell med 100k inserts/min, kan 3 unødvendige indekser være forskjellen mellom «går fint» og «replikering henger 5 minutter bak».",
+      },
+      {
+        text: "Aldri — indekser er alltid bra",
+        correct: false,
+        rationale:
+          "Bare på lesinger, og bare hvis planleggeren VELGER å bruke den (avhenger av selektivitet — en indeks på en kolonne hvor 90% har samme verdi gir liten gevinst).",
+      },
+      {
+        text: "Bare på små tabeller",
+        correct: false,
+        rationale:
+          "Det er motsatt: på små tabeller (< noen tusen rader) lønner ofte en full table scan seg uansett — planleggeren ignorerer indeksen din. Indekser er for STORE tabeller med selektive queries.",
+      },
+      {
+        text: "Bare hvis du bruker MySQL",
+        correct: false,
+        rationale:
+          "Skrive-kost finnes i alle relasjonsdatabaser (PostgreSQL, Oracle, SQL Server, SQLite). Det er fundamentalt: en B-tree må vedlikeholdes.",
+      },
+    ],
+    explanation:
+      "Cross-phase: DB-design ↔ Workload-analyse. Spør alltid: read-heavy eller write-heavy? Hvor selektiv er kolonnen? Bruker queryen den faktisk (sjekk EXPLAIN)? Indekser er ikke gratis — de er et bytte: leseraskhet for skrive­kost+plass.",
+  },
+  {
+    id: "d-cross-myth-https",
+    kind: "quiz",
+    title: "Myte: «HTTPS gjør appen sikker»",
+    prompt: "Velg den korrekte påstanden.",
+    topic: "Cross-phase drill",
+    question:
+      "Hva BESKYTTER HTTPS mot, og hva beskytter det IKKE mot?",
+    options: [
+      {
+        text: "HTTPS beskytter TRANSPORTEN: avlytting, modifisering og man-in-the-middle MELLOM klient og server. Det beskytter IKKE mot XSS, SQL-injection, CSRF, brutte passord, dårlig auth, lekkasje på serveren eller phishing — alt det skjer FØR eller ETTER transporten.",
+        correct: true,
+        rationale:
+          "HTTPS er som å sende et brev i forseglet konvolutt. Konvolutten er trygg, men hvis du skriver passordet ditt klart på brevet og sender det til en svindler, hjelper det ikke at konvolutten var lukket. Alle store breaches de siste 10 år har vært på HTTPS-sider.",
+      },
+      {
+        text: "HTTPS gjør appen fullt sikker — det er hele poenget",
+        correct: false,
+        rationale:
+          "Et hangelås-ikon i URL-baren bevarer ingen mot SQL-injection. Det bare bekrefter at PIPEN mellom deg og serveren er kryptert.",
+      },
+      {
+        text: "HTTPS forhindrer XSS",
+        correct: false,
+        rationale:
+          "XSS er kjøring av angriperens JavaScript I nettleseren etter at HTML-en er levert. HTTPS sjekker bare transport — angrepet skjer på applikasjonslaget. Forsvar: autoescape + Content-Security-Policy + input-validering.",
+      },
+      {
+        text: "HTTPS forhindrer at serveren lekker passord",
+        correct: false,
+        rationale:
+          "Hvis appen logger passord til disk, hjelper TLS ingenting. Sikkerhet i hvile (encryption at rest, ikke logge sensitive data) er en separat sak fra sikkerhet i transit.",
+      },
+    ],
+    explanation:
+      "Cross-phase: Sikkerhet ↔ Web-arkitektur. Sikkerhet er forsvar i dybden, ikke ETT lås. TLS + autoescape + parameterisert SQL + CSRF-token + sterk hash (bcrypt/argon2) + rate-limiting + autentisering + autorisasjon. Hopp over ett, og resten teller mindre.",
+  },
+  {
+    id: "d-cross-myth-bigdata",
+    kind: "quiz",
+    title: "Myte: «mer data = bedre ML-modell»",
+    prompt: "Velg den korrekte påstanden.",
+    topic: "Cross-phase drill",
+    question:
+      "Når gjør MER data IKKE modellen bedre, og hva har større effekt?",
+    options: [
+      {
+        text: "Mer data hjelper bare hvis dataen er REPRESENTATIV og av rimelig kvalitet. Skjev/duplisert/feilmerket data forsterker bias og lærer modellen feil. Datakvalitet (rens, dedup, sammen­satte features) og bedre arkitektur slår ofte rå mengde.",
+        correct: true,
+        rationale:
+          "«Garbage in, garbage out» gjelder skarpere enn noensinne. Hvis 30% av merkene er feil, vil modellen lære feilen. Et lite, høyt-kuratert datasett kan slå et stort, støyete. Hva som FAKTISK skalerer godt med data: enkle modeller på enormt store, RENE korpus (LLM-er på web-data, men også med kraftig filtrering).",
+      },
+      {
+        text: "Mer data er alltid bedre — derfor er Big Data så viktig",
+        correct: false,
+        rationale:
+          "Bias-modeller blir VERRE med mer biased data. Hvis du dobler en skjev distribusjon, dobler du skjevheten. Big Data er nyttig når dataen er rik og uniform, ikke når den bare er stor.",
+      },
+      {
+        text: "Mer data tar mer minne, så det er alltid dårlig",
+        correct: false,
+        rationale:
+          "Forveksler hardware-begrensning med modell-egenskap. Du kan trene minibatch på enorme datasett uten å laste alt i RAM. Begrensningen er sjelden teknisk.",
+      },
+      {
+        text: "Mer data gjør bare deep learning bedre, ikke andre modeller",
+        correct: false,
+        rationale:
+          "Ikke sant — selv lineær regresjon og random forest har data-effekt opp til et punkt (lærings­kurver flater ut). Det er nyansert: ALLE modeller har et plateau, men plateauet ligger ulikt høyt for ulike modell­arkitekturer.",
+      },
+    ],
+    explanation:
+      "Cross-phase: ML ↔ Datakvalitet ↔ Domene­forståelse. Andrew Ng kaller det «data-centric AI»: 80% av tida bør gå til å rense og forstå dataen, ikke å tune hyperparametre. Klassisk eksempel: en bilde­klassifiserer som lærer å gjenkjenne KAMERA-merket fordi alle hund-bilder var tatt med samme kamera.",
+  },
 ];
