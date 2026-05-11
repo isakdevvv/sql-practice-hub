@@ -889,6 +889,66 @@ def kunde(kundenr):
     ],
   },
   {
+    id: "py-flask-multi-param",
+    topic: "Flask routing",
+    title: "Route med flere URL-parametre og typer",
+    description:
+      "Repoets Basics_Lecture/app.py viser mønsteret /greet/<name>/<int:id>. Bygg en route som tar BÅDE en streng-parameter og en int-parameter, og returnerer en hilsen som inneholder begge. Test med både gyldig input (\"/greet/Ola/42\") og input som matcher feil type (\"/greet/Ola/abc\" → 404).",
+    requires: ["flask"],
+    starter: `from flask import Flask
+
+# === OPPGAVE ===
+# Lag /greet/<name>/<int:id> som returnerer f.eks. "Hei Ola, id=42".
+# • <name> er en string (default-konverteren — alt mellom skråstreker).
+# • <int:id> tvinger int — så /greet/Ola/abc gir 404.
+#
+# Test med client.get("/greet/Ola/42") og client.get("/greet/Ola/abc").
+
+app = Flask(__name__)
+
+@app.route("/greet/<name>/<int:id>")
+def greet(name, id):
+    # TODO: Returner f"Hei {name}, id={id}"
+    pass
+
+client = app.test_client()
+# TODO: kjør to test-kall og print resultatene
+`,
+    solution: `from flask import Flask
+
+app = Flask(__name__)
+
+@app.route("/greet/<name>/<int:id>")
+def greet(name, id):
+    return f"Hei {name}, id={id}"
+
+client = app.test_client()
+print(client.get("/greet/Ola/42").data.decode())
+print("Feil type:", client.get("/greet/Ola/abc").status_code)
+`,
+    hints: [
+      "<name> uten prefiks er en string-konverter (default).",
+      "<int:id> validerer at det er et heltall. Bokstaver gir 404 før funksjonen din kjøres.",
+      "Funksjonen tar argumentene i samme rekkefølge som de står i URLen.",
+    ],
+    docs: [
+      {
+        title: "Variable rules — URL converters",
+        url: "https://flask.palletsprojects.com/en/stable/quickstart/#variable-rules",
+        note:
+          "Tilgjengelige convertere: <string:>, <int:>, <float:>, <path:>, <uuid:>. <path:> matcher skråstreker også — nyttig for filer.",
+        snippet: `@app.route("/files/<path:filename>")
+def file(filename):
+    return filename  # kan inneholde /`,
+      },
+      {
+        title: "Kurset bruker dette mønsteret",
+        url: "https://github.com/reo303halo/DTE-2509-26V/blob/main/Flask_Basics/Basics_Lecture/app.py",
+        note: "Basics_Lecture viser /greet/<name>/<int:id> som demonstrasjon av to parametre med ulik type.",
+      },
+    ],
+  },
+  {
     id: "py-flask-jinja",
     topic: "Flask + Jinja",
     title: "Render Jinja-template med data",
