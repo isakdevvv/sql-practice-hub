@@ -279,6 +279,36 @@ export const DRAG_EXERCISES: DragExercise[] = [
     options: ["TABLE", "VIEW", "INDEX", "PRIMARY", "FOREIGN", "UNIQUE", "REFERENCES", "ON", "AS"],
   },
   {
+    id: "d-fill-mysql-film",
+    kind: "fill",
+    title: "Skriv film-skjemaet slik kurset gjør det (MySQL)",
+    prompt:
+      "Repoets film.sql i DTE-2509 bruker MySQL-spesifikk DDL. Fyll inn de MySQL-spesifikke tokens som mangler.",
+    topic: "DDL",
+    template:
+      "CREATE TABLE `film` (\n  `fnr` int NOT NULL __1__,\n  `tittel` __2__(50) DEFAULT NULL,\n  `år` int DEFAULT NULL,\n  `pris` __3__(6,2) DEFAULT NULL,\n  PRIMARY KEY (`fnr`)\n) __4__=InnoDB DEFAULT __5__=utf8mb4;",
+    blanks: ["AUTO_INCREMENT", "varchar", "decimal", "ENGINE", "CHARSET"],
+    options: [
+      "AUTO_INCREMENT",
+      "AUTOINCREMENT",
+      "SERIAL",
+      "varchar",
+      "TEXT",
+      "STRING",
+      "decimal",
+      "NUMERIC",
+      "FLOAT",
+      "ENGINE",
+      "TYPE",
+      "FORMAT",
+      "CHARSET",
+      "ENCODING",
+      "COLLATE",
+    ],
+    explanation:
+      "MySQL-spesifikke ord: AUTO_INCREMENT (med understrek, ulikt SQLite sitt AUTOINCREMENT), varchar(n) med faste lengder, decimal(presisjon,skala) for pris, ENGINE=InnoDB for transaksjons- og FK-støtte, og DEFAULT CHARSET=utf8mb4 for emoji/full Unicode. Se stack-leksjonen «MySQL vs SQLite» for full mapping.",
+  },
+  {
     id: "d-fill-insert",
     kind: "fill",
     title: "INSERT en ny kunde",
@@ -1932,6 +1962,25 @@ __5__ endfor __6__
     ],
     explanation:
       "init lager .git-mappen, add staser endringer, commit lagrer dem lokalt, remote add kobler til GitHub-repoet, push -u sender dem opp og setter upstream slik at senere `git push` alene fungerer.",
+  },
+  {
+    id: "d-order-git-branch-flow",
+    kind: "order",
+    title: "Branch-flyt: jobbe på en feature og merge tilbake",
+    prompt:
+      "Sett kommandoene i riktig rekkefølge for å lage en feature-branch, gjøre endringer, og merge tilbake til main.",
+    topic: "Git",
+    items: [
+      "git checkout -b feat/min-feature",
+      "# rediger filer ...",
+      "git add .",
+      "git commit -m \"min feature\"",
+      "git checkout main",
+      "git merge feat/min-feature",
+      "git push",
+    ],
+    explanation:
+      "checkout -b lager OG bytter til den nye branchen. Du jobber der, committer, så bytter du tilbake til main og fletter inn branchen. Push helt til slutt. Kurset følger nøyaktig denne flyten i git.md.",
   },
 
   // ============= HTTP-METODER (kap. 7) =============
@@ -10842,6 +10891,108 @@ __5__ endfor __6__
       },
     ],
   },
+
+  // ============================================================
+  // DTE-2604 SYSTEMUTVIKLING (20 exercises)
+  // ============================================================
+
+  // ---- Smidig / Scrum (7) ----
+  {
+    id: "d-match-scrum-events",
+    kind: "match",
+    title: "Scrum-events — formål",
+    prompt: "Match hver Scrum-event til hovedformålet.",
+    topic: "Scrum",
+    pairs: [
+      { left: "Sprint Planning", right: "Bestemme hva som skal leveres denne sprinten og hvordan" },
+      { left: "Daily Scrum", right: "Teamet koordinerer arbeidet for de neste 24 timene" },
+      { left: "Sprint Review", right: "Demonstrere inkrementet for stakeholders og samle feedback" },
+      { left: "Retrospective", right: "Reflektere over prosessen og velge forbedringer" },
+      { left: "Sprint", right: "Selve tidsboksen — 1-4 uker hvor arbeidet utføres" },
+    ],
+    explanation:
+      "Hvert event har ETT formål. Daily Scrum er IKKE statusrapport til SM — det er teamets eget koordineringsmøte.",
+  },
+  {
+    id: "d-match-scrum-roller",
+    kind: "match",
+    title: "Scrum-roller — ansvar",
+    prompt: "Match hver rolle til kjerneansvaret.",
+    topic: "Scrum",
+    pairs: [
+      { left: "Product Owner", right: "Maksimerer verdi — eier og prioriterer produktbackloggen" },
+      { left: "Scrum Master", right: "Coacher prosessen, fjerner hindringer for teamet" },
+      { left: "Utviklingsteam", right: "Selvstyrt gruppe som leverer inkrementet hver sprint" },
+      { left: "Stakeholder", right: "Bruker/kunde/forretning som gir input og mottar demo" },
+    ],
+    explanation:
+      "Scrum Master er IKKE prosjektleder. PO eier prioritering, teamet eier HVORDAN.",
+  },
+  {
+    id: "d-quiz-sprint-vs-kanban",
+    kind: "quiz",
+    title: "Sprint vs Kanban — hvilket når?",
+    prompt: "Velg riktig.",
+    topic: "Smidig",
+    question:
+      "Et drift-team får inn supportsaker kontinuerlig — mange varianter, varierende størrelse. Hvilken arbeidsform passer best?",
+    options: [
+      {
+        text: "Kanban — flyt-basert med WIP-limits, ingen tidsboks",
+        correct: true,
+        rationale:
+          "Kanban håndterer kontinuerlig innstrømming uten å måtte sprint-planlegge. WIP-limits gir likevel begrensning og synlighet.",
+      },
+      {
+        text: "Scrum med 2-ukers sprinter og fast sprint-mål",
+        correct: false,
+        rationale:
+          "Scrum er låst i sprinten — endringer mid-sprint bryter mønsteret. Dårlig fit for kontinuerlig variert innkomming.",
+      },
+      {
+        text: "Fossefall — definer alle saker først",
+        correct: false,
+        rationale: "Krever stabile, kjente krav. Drift har det stikk motsatte.",
+      },
+      {
+        text: "Ingen prosess — bare jobb",
+        correct: false,
+        rationale: "Uten WIP-limits eller prioritering blir det kaos. Kanban gir nettopp lette regler for denne situasjonen.",
+      },
+    ],
+  },
+  {
+    id: "d-quiz-kanban-wip",
+    kind: "quiz",
+    title: "Kanban — hva gjør WIP-limits?",
+    prompt: "Velg riktig.",
+    topic: "Smidig",
+    question:
+      "Et Kanban-team setter WIP=3 på «I arbeid»-kolonnen. Hva er hovedformålet?",
+    options: [
+      {
+        text: "Tvinge teamet til å ferdigstille før de starter noe nytt — redusere lead time",
+        correct: true,
+        rationale:
+          "WIP-limits hindrer multitasking. Flere ting halvferdig samtidig = lengre total leveringstid. Begrens parallellt, øk gjennomstrømming.",
+      },
+      {
+        text: "Begrense antall utviklere i teamet til 3",
+        correct: false,
+        rationale: "WIP gjelder ARBEID, ikke folk. Et team på 5 kan ha WIP=3.",
+      },
+      {
+        text: "Tillate maks 3 bugs i produksjon samtidig",
+        correct: false,
+        rationale: "WIP er på Kanban-tavlen, ikke på prod-feil.",
+      },
+      {
+        text: "Maks 3 sprinter per kvartal",
+        correct: false,
+        rationale: "Kanban har ikke sprinter — det er flyt.",
+      },
+    ],
+  },
   {
     id: "d-match-bp-weight-init",
     kind: "match",
@@ -11178,6 +11329,90 @@ var f = b.Where(x => x.Tittel.StartsWith(\"A\")).ToList();`,
       },
     ],
   },
+
+  // ============================================================
+  // DTE-2603 — MOBIL (Kotlin / Android)
+  // ============================================================
+
+  // ---------- Kotlin grunnlag ----------
+  {
+    id: "d-kotlin-val-var",
+    kind: "quiz",
+    title: "val vs var i Kotlin",
+    prompt: "Hva er forskjellen på val og var?",
+    topic: "Kotlin",
+    question: "Du skriver `val x = 5`. Hva skjer hvis du senere prøver `x = 6`?",
+    options: [
+      {
+        text: "Kompileringsfeil — val kan ikke reassignes",
+        correct: true,
+        rationale: "val er en immutable referanse, som final i Java eller const i moderne JS. Reassign er ikke lov.",
+      },
+      {
+        text: "x blir 6, men det gir advarsel",
+        correct: false,
+        rationale: "Nei — det er en HARD kompileringsfeil, ikke bare advarsel.",
+      },
+      {
+        text: "x blir 6, ingen problem",
+        correct: false,
+        rationale: "Det ville gjelde var, ikke val. val er låst.",
+      },
+      {
+        text: "Det går bra fordi 5 og 6 har samme type",
+        correct: false,
+        rationale: "Typesjekken er greit, men val-restriksjonen handler om reassign, ikke type.",
+      },
+    ],
+    explanation: "val (value) = immutable referanse. var (variable) = mutable. Regel: bruk val som default, bytt til var bare om du faktisk MÅ reassigne.",
+  },
+  {
+    id: "d-kotlin-null-safety-match",
+    kind: "match",
+    title: "Null-safety operatorer i Kotlin",
+    prompt: "Match hver Kotlin-operator til hva den gjør.",
+    topic: "Kotlin",
+    pairs: [
+      { left: "?.", right: "Safe call — returner null hvis venstre er null" },
+      { left: "?:", right: "Elvis — bruk høyresida hvis venstre er null" },
+      { left: "!!", right: "Anta ikke-null — kast NPE hvis null" },
+      { left: "String?", right: "Type som KAN være null" },
+      { left: "let { }", right: "Kjør blokk bare hvis ikke null (med ?.)" },
+    ],
+    explanation: "?. og ?: er trygge — bruk dem alltid. !! er en lukt; det betyr at du har et hull i designet.",
+  },
+  {
+    id: "d-kotlin-elvis-quiz",
+    kind: "quiz",
+    title: "Elvis-operatoren",
+    prompt: "Hva returnerer dette?",
+    topic: "Kotlin",
+    question: "`val navn: String? = null; val visning = navn?.uppercase() ?: \"UKJENT\"`",
+    code: "val navn: String? = null\nval visning = navn?.uppercase() ?: \"UKJENT\"",
+    language: "javascript",
+    options: [
+      {
+        text: "\"UKJENT\"",
+        correct: true,
+        rationale: "navn er null → navn?.uppercase() blir null → Elvis (?:) tar default \"UKJENT\".",
+      },
+      {
+        text: "null",
+        correct: false,
+        rationale: "Elvis (?:) hindrer null-resultat — den faller tilbake til høyresida.",
+      },
+      {
+        text: "\"\" (tom streng)",
+        correct: false,
+        rationale: "Ingen kode setter til tom streng. Default er \"UKJENT\".",
+      },
+      {
+        text: "Krasj med NullPointerException",
+        correct: false,
+        rationale: "Det ville skjedd med !!. Safe call ?. krasjer ikke.",
+      },
+    ],
+  },
   {
     id: "d-match-efcore-relations",
     kind: "match",
@@ -11329,6 +11564,817 @@ var f = b.Where(x => x.Tittel.StartsWith(\"A\")).ToList();`,
         correct: false,
         rationale:
           "Blazor må eksplisitt fortelles hvilken validation-mekanisme som brukes. DataAnnotationsValidator kobler attributtene inn.",
+      },
+    ],
+  },
+  {
+    id: "d-match-xp-praksiser",
+    kind: "match",
+    title: "XP-praksiser",
+    prompt: "Match hver XP-praksis til hva den innebærer.",
+    topic: "Smidig",
+    pairs: [
+      { left: "TDD", right: "Skriv test først, så minimal kode som passerer, så refaktorer" },
+      { left: "Pair programming", right: "To utviklere, én tastatur — kontinuerlig review" },
+      { left: "Continuous integration", right: "Merge til main flere ganger daglig med automatiske tester" },
+      { left: "Refactoring", right: "Forbedre kodestruktur uten å endre atferd" },
+      { left: "Collective ownership", right: "Alle kan endre all kode — ingen «det er Petters modul»" },
+    ],
+  },
+  {
+    id: "d-order-tdd-sykl",
+    kind: "order",
+    title: "TDD-syklusen i riktig rekkefølge",
+    prompt: "Dra stegene i Red-Green-Refactor i riktig rekkefølge.",
+    topic: "Smidig",
+    items: [
+      "Skriv en test for funksjonalitet som ikke finnes",
+      "Kjør testen — den feiler (RED)",
+      "Skriv minimal kode som får testen til å passere",
+      "Kjør testen — den passerer (GREEN)",
+      "Rydd opp i koden uten å bryte testen (REFACTOR)",
+      "Kjør testen igjen — fortsatt grønn",
+    ],
+    explanation:
+      "Red sikrer at testen faktisk tester noe. Green er den minimale veien dit. Refactor gir kvaliteten — uten testen kunne du ikke vite at du brøt noe.",
+  },
+  {
+    id: "d-fill-fibonacci-points",
+    kind: "fill",
+    title: "Story points — Fibonacci-skalaen",
+    prompt: "Dra inn riktige tall fra modifisert Fibonacci-skalaen.",
+    topic: "Estimering",
+    template:
+      "Skalaen: 1, 2, __1__, __2__, __3__, __4__, 21\nTriviell endring: __5__ SP\nVanlig dag: __6__ SP\nMÅ splittes: __7__ SP",
+    blanks: ["3", "5", "8", "13", "1", "5", "21"],
+    options: ["1", "2", "3", "5", "8", "13", "21", "100", "0"],
+    explanation:
+      "Modifisert Fibonacci: avstandene øker eksponentielt fordi usikkerheten gjør det. 21+ er for stort til å estimere — splitt!",
+  },
+
+  // ---- Brukerhistorier (5) ----
+  {
+    id: "d-fill-brukerhistorie-format",
+    kind: "fill",
+    title: "Brukerhistorie — som-vil-for-å-formatet",
+    prompt: "Fyll inn slot-ene i en brukerhistorie.",
+    topic: "Brukerhistorier",
+    template:
+      "Som __1__\nvil jeg __2__\nfor å __3__.",
+    blanks: ["<rolle>", "<handling>", "<verdi/mål>"],
+    options: ["<rolle>", "<handling>", "<verdi/mål>", "<teknologi>", "<sprint>", "<estimat>", "<dato>"],
+    explanation:
+      "Trekant: rolle (HVEM), handling (HVA), verdi (HVORFOR). «For å»-delen sikrer at vi bygger noe verdifullt — ikke bare en teknisk feature.",
+  },
+  {
+    id: "d-fill-invest",
+    kind: "fill",
+    title: "INVEST-kriteriene",
+    prompt: "Fyll inn hva hver bokstav står for.",
+    topic: "Brukerhistorier",
+    template:
+      "I = __1__ (kan leveres uavhengig)\nN = __2__ (detaljer åpne for samtale)\nV = __3__ (gir verdi)\nE = __4__ (lar seg estimere)\nS = __5__ (passer i én sprint)\nT = __6__ (har målbare AC)",
+    blanks: ["Independent", "Negotiable", "Valuable", "Estimable", "Small", "Testable"],
+    options: [
+      "Independent", "Negotiable", "Valuable", "Estimable", "Small", "Testable",
+      "Important", "Necessary", "Verbose", "Engaging", "Strict", "Tangible",
+    ],
+  },
+  {
+    id: "d-match-ac-gherkin",
+    kind: "match",
+    title: "Akseptansekriterier (Gherkin)",
+    prompt: "Match hvert Gherkin-nøkkelord til hva det gjør.",
+    topic: "Brukerhistorier",
+    pairs: [
+      { left: "Given", right: "Beskriver utgangstilstanden før hendelsen" },
+      { left: "When", right: "Beskriver hendelsen eller handlingen som testes" },
+      { left: "Then", right: "Beskriver forventet resultat etter hendelsen" },
+      { left: "And", right: "Legger til ekstra betingelser i samme blokk" },
+    ],
+    explanation:
+      "Gherkin: GIVEN setter scenen, WHEN er triggeren, THEN er forventningen. Lesbart for ikke-tekniske interessenter.",
+  },
+  {
+    id: "d-order-story-splitting",
+    kind: "order",
+    title: "Splitting av historie — i CRUD-rekkefølge",
+    prompt:
+      "Du har en stor «Administrer brukere»-historie. Splitt i CRUD og dra i naturlig leveringsrekkefølge.",
+    topic: "Brukerhistorier",
+    items: [
+      "Opprett bruker (POST /brukere)",
+      "List brukere (GET /brukere)",
+      "Vis bruker (GET /brukere/{id})",
+      "Oppdater bruker (PATCH /brukere/{id})",
+      "Slett bruker (DELETE /brukere/{id})",
+    ],
+    explanation:
+      "Lever én ende-til-ende verdistripe først (opprett+vis), så funksjonalitet for å se flere (list), så endring (update), så slett. Hver bit gir verdi alene.",
+  },
+  {
+    id: "d-quiz-godt-vs-darlig-historie",
+    kind: "quiz",
+    title: "Hva er en god brukerhistorie?",
+    prompt: "Velg den BESTE brukerhistorien.",
+    topic: "Brukerhistorier",
+    question:
+      "Hvilken av disse oppfyller INVEST best?",
+    options: [
+      {
+        text: "Som butikkeier vil jeg se totalsalg per produkt forrige måned for å bestemme hvilke produkter jeg kjøper inn mer av",
+        correct: true,
+        rationale:
+          "Tydelig rolle, konkret handling, verdi forklart. Liten nok til én sprint, testbar (man kan se rapporten).",
+      },
+      {
+        text: "Implementere salgsrapport-modul",
+        correct: false,
+        rationale: "Teknisk task. Ingen rolle, ingen verdi.",
+      },
+      {
+        text: "Som bruker vil jeg ha alt jeg trenger for å gjøre alt jeg vil",
+        correct: false,
+        rationale: "For stor og vag. Bryter Small og Testable.",
+      },
+      {
+        text: "Refaktorere bestillingstabellen i databasen",
+        correct: false,
+        rationale: "Teknisk gjeld, ikke brukerverdi. Tas separat.",
+      },
+    ],
+  },
+  {
+    id: "d-kotlin-data-class-fill",
+    kind: "fill",
+    title: "Data class i Kotlin",
+    prompt: "Fyll inn riktige nøkkelord for å definere en data class.",
+    topic: "Kotlin",
+    template: "__1__ __2__ Bruker(__3__ id: Long, __3__ navn: String)",
+    blanks: ["data", "class", "val"],
+    options: ["data", "class", "val", "var", "object", "fun", "interface"],
+    explanation: "data class gir gratis equals/hashCode/toString/copy. Felt med val er immutable — typisk for DTOer og UI-state.",
+  },
+  {
+    id: "d-kotlin-scope-funcs",
+    kind: "match",
+    title: "Scope-funksjoner",
+    prompt: "Match hver scope-funksjon til typisk bruk.",
+    topic: "Kotlin",
+    pairs: [
+      { left: "let", right: "Null-safe transformasjon med ?.let { }" },
+      { left: "apply", right: "Konfigurere et nytt objekt, returnerer objektet" },
+      { left: "also", right: "Side-effekt (logge, debug) midt i en kjede" },
+      { left: "run", right: "Kjøre blokk på objekt og returnere resultat" },
+      { left: "with", right: "Kall mange medlemmer på samme objekt" },
+    ],
+    explanation: "Skiller seg i to ting: hva objektet kalles (it eller this) og hva blokken returnerer (objektet eller resultatet).",
+  },
+  {
+    id: "d-kotlin-bang-bang",
+    kind: "quiz",
+    title: "Når bør du bruke !!?",
+    prompt: "Velg det mest korrekte rådet.",
+    topic: "Kotlin",
+    question: "I hvilken situasjon er !! akseptabelt?",
+    options: [
+      {
+        text: "Nesten aldri — bruk ?. og ?: i 99% av tilfellene",
+        correct: true,
+        rationale: "!! sier 'jeg lover at den ikke er null' og krasjer hvis du tar feil. Det er nesten alltid bedre med safe call.",
+      },
+      {
+        text: "Hver gang du vil unngå Elvis-operatoren",
+        correct: false,
+        rationale: "Det er motsatt — Elvis er trygt, !! er krasj-mekanismen.",
+      },
+      {
+        text: "Når du vil at koden skal være kortere",
+        correct: false,
+        rationale: "Kortere kode som krasjer er ikke en gevinst.",
+      },
+      {
+        text: "På alle nullable-typer for å forenkle",
+        correct: false,
+        rationale: "Da bruker du ikke null-safety i det hele tatt. Hele poenget med Kotlins type-system er å unngå NPE.",
+      },
+    ],
+    explanation: "!! er en compile-time-bypass av null-safety. Hvis du må bruke det, er det ofte et tegn på at typen burde vært ikke-nullable fra starten.",
+  },
+  {
+    id: "d-kotlin-lambda-fill",
+    kind: "fill",
+    title: "Lambda-syntaks",
+    prompt: "Fyll inn slik at hver tall dobles.",
+    topic: "Kotlin",
+    template: "listOf(1, 2, 3).__1__ { __2__ * 2 }",
+    blanks: ["map", "it"],
+    options: ["map", "filter", "forEach", "it", "this", "x", "reduce"],
+    explanation: "map transformerer hvert element. 'it' er det implisitte navnet på lambdaens parameter når den har bare én.",
+  },
+  {
+    id: "d-kotlin-collections",
+    kind: "match",
+    title: "Collection-funksjoner",
+    prompt: "Match hver funksjon til hva den gjør.",
+    topic: "Kotlin",
+    pairs: [
+      { left: "map", right: "Transformer hvert element til noe annet" },
+      { left: "filter", right: "Behold elementer som passer et predikat" },
+      { left: "forEach", right: "Kjør en side-effekt for hvert element" },
+      { left: "reduce", right: "Slå alle elementer sammen til ett resultat" },
+      { left: "groupBy", right: "Lag en Map fra nøkkel til liste av elementer" },
+    ],
+    explanation: "Disse er de samme som i moderne JavaScript-arrays. Kjeding er vanlig: filter { } .map { } .take(10).",
+  },
+
+  // ---------- Android-grunnlag ----------
+  {
+    id: "d-android-activity-lifecycle",
+    kind: "order",
+    title: "Activity-livssyklus",
+    prompt: "Sorter livssyklus-callbacks i riktig rekkefølge fra opprettelse til ødeleggelse.",
+    topic: "Android livssyklus",
+    items: ["onCreate()", "onStart()", "onResume()", "onPause()", "onStop()", "onDestroy()"],
+    explanation: "Pugg denne — den kommer på prøven. onCreate kjøres én gang per instans; onResume gjør activity interaktiv; onPause er første tegn på at noe stjeler fokus.",
+  },
+  {
+    id: "d-android-on-create-purpose",
+    kind: "quiz",
+    title: "Hva gjør du i onCreate?",
+    prompt: "Velg den BESTE beskrivelsen.",
+    topic: "Android livssyklus",
+    question: "Hva er det riktige stedet å initialisere ViewModel og view binding?",
+    options: [
+      {
+        text: "onCreate — kjører én gang per Activity-instans og er rett før UI vises",
+        correct: true,
+        rationale: "onCreate er garantert kalt før onStart/onResume og kjøres bare én gang per instans.",
+      },
+      {
+        text: "onResume — fordi activity er i forgrunnen",
+        correct: false,
+        rationale: "onResume kjøres HVER gang activity blir interaktiv (også etter å ha returnert fra dialog). Init blir gjort for ofte.",
+      },
+      {
+        text: "onStart — fordi det er der activity blir synlig",
+        correct: false,
+        rationale: "Også kalt for ofte. onStart kalles igjen etter onStop.",
+      },
+      {
+        text: "Det spiller ingen rolle hvor",
+        correct: false,
+        rationale: "Det gjør det veldig — feil callback gir gjentatt init eller null-pointer.",
+      },
+    ],
+  },
+  {
+    id: "d-android-rotation-quiz",
+    kind: "quiz",
+    title: "Hva skjer ved rotasjon?",
+    prompt: "Hvilken callback-sekvens utløses?",
+    topic: "Android livssyklus",
+    question: "Brukeren roterer telefonen mens Activity er på skjermen. Hva skjer som default?",
+    options: [
+      {
+        text: "Activity ødelegges (onPause→onStop→onDestroy) og opprettes på nytt (onCreate→onStart→onResume)",
+        correct: true,
+        rationale: "Konfigurasjonsendring ⇒ full rekreasjon by default. Derfor brukes ViewModel + onSaveInstanceState for å beholde state.",
+      },
+      {
+        text: "Bare onConfigurationChanged kalles, Activity beholdes",
+        correct: false,
+        rationale: "Det krever at du eksplisitt overstyrer i manifestet — ikke default.",
+      },
+      {
+        text: "Ingenting skjer, layouten justeres automatisk",
+        correct: false,
+        rationale: "Activity-instansen ødelegges faktisk. Det ER hele grunnen til at ViewModel finnes.",
+      },
+      {
+        text: "Bare onPause kalles, så onResume etterpå",
+        correct: false,
+        rationale: "Hadde det vært så enkelt, hadde vi ikke trengt ViewModel.",
+      },
+    ],
+    explanation: "Rotasjon er en KONFIGURASJONSENDRING. Default-oppførselen er full rekreasjon — derfor må state som skal overleve enten ligge i ViewModel eller i Bundle via onSaveInstanceState.",
+  },
+  {
+    id: "d-android-activity-vs-fragment",
+    kind: "quiz",
+    title: "Activity vs Fragment",
+    prompt: "Når bruker du fragment?",
+    topic: "Android livssyklus",
+    question: "Hva er hovedforskjellen på Activity og Fragment?",
+    options: [
+      {
+        text: "Activity er en skjerm, Fragment er en gjenbrukbar UI-del som lever inni en Activity",
+        correct: true,
+        rationale: "Fragmenter brukes for å dele skjermen i deler som kan brukes på nytt på tvers av skjermstørrelser.",
+      },
+      {
+        text: "Activity er for UI, Fragment er for bakgrunnsjobber",
+        correct: false,
+        rationale: "Begge er for UI. Bakgrunn håndteres av Service eller WorkManager.",
+      },
+      {
+        text: "Fragment er for navigasjon, Activity for visning",
+        correct: false,
+        rationale: "Nei — Activity er en full skjerm, Fragment er en del. Navigasjon er en separat ting (Navigation Component).",
+      },
+      {
+        text: "Fragment kjører raskere fordi det er enklere",
+        correct: false,
+        rationale: "Fragmenter er FAKTISK mer komplekse pga to livssykluser (instans + view).",
+      },
+    ],
+  },
+  {
+    id: "d-android-fragment-onDestroyView",
+    kind: "quiz",
+    title: "Hvorfor onDestroyView?",
+    prompt: "Hva er forskjellen på onDestroyView og onDestroy i Fragment?",
+    topic: "Android livssyklus",
+    question: "Du må nullstille _binding = null. Hvor?",
+    options: [
+      {
+        text: "I onDestroyView — viewet ødelegges, men fragment-instansen kan leve videre",
+        correct: true,
+        rationale: "Fragment kan beholde instansen mens viewet ødelegges (f.eks. ved nav back-stack). _binding peker på view-treet som ikke lenger finnes.",
+      },
+      {
+        text: "I onDestroy — det er der alt ryddes opp",
+        correct: false,
+        rationale: "onDestroy er på fragment-instansen. Viewet er ALLEREDE ødelagt da, og _binding er for sent å nullstille.",
+      },
+      {
+        text: "I onPause — så snart vi mister fokus",
+        correct: false,
+        rationale: "Viewet er fortsatt levende ved onPause. Du sletter for tidlig.",
+      },
+      {
+        text: "Det er aldri nødvendig — view binding rydder seg selv",
+        correct: false,
+        rationale: "Faktisk feil — view binding lekker hvis du holder referansen lenger enn viewet lever.",
+      },
+    ],
+    explanation: "Fragment har to livssykluser: fragment-instansen (onCreate→onDestroy) og view-treet (onCreateView→onDestroyView). _binding hører til view-treet.",
+  },
+  {
+    id: "d-android-saved-instance-state",
+    kind: "quiz",
+    title: "savedInstanceState",
+    prompt: "Hva brukes Bundle savedInstanceState til?",
+    topic: "Android livssyklus",
+    question: "Når får du savedInstanceState ulik null i onCreate?",
+    options: [
+      {
+        text: "Når Activity blir gjenopprettet etter rotasjon eller prosess-død",
+        correct: true,
+        rationale: "Det er hele poenget — bundles overlever rekonstruksjon hvis du legger noe i onSaveInstanceState.",
+      },
+      {
+        text: "Alltid — første gang appen starter også",
+        correct: false,
+        rationale: "Første gang er den null. Først ved rekreasjon får du data.",
+      },
+      {
+        text: "Aldri — bundle brukes bare av Intent",
+        correct: false,
+        rationale: "Det er en annen bundle (intent extras). savedInstanceState er livssyklus-greie.",
+      },
+      {
+        text: "Bare ved språkbytte, ikke rotasjon",
+        correct: false,
+        rationale: "Begge er konfigurasjonsendringer — samme mekanisme.",
+      },
+    ],
+  },
+
+  // ---------- MVVM ----------
+  {
+    id: "d-mvvm-roles",
+    kind: "match",
+    title: "MVVM-rollene",
+    prompt: "Match hver komponent til ansvaret sitt.",
+    topic: "MVVM",
+    pairs: [
+      { left: "Model", right: "Rene data-klasser som representerer domenet" },
+      { left: "View", right: "Tegner UI og observerer state (Activity/Fragment/Compose)" },
+      { left: "ViewModel", right: "Holder UI-state, overlever rotasjon, kjører forretningslogikk" },
+      { left: "Repository", right: "Eneste sannhetskilde — slår sammen lokal DB og nettverk" },
+    ],
+    explanation: "View → ViewModel → Repository → data-kilder. Pilen peker bare nedover. ViewModel vet ikke at View finnes.",
+  },
+  {
+    id: "d-mvvm-livedata-vs-stateflow",
+    kind: "quiz",
+    title: "LiveData vs StateFlow",
+    prompt: "Hva er den viktigste forskjellen?",
+    topic: "MVVM",
+    question: "Hvorfor anbefales StateFlow over LiveData i ny Android-kode?",
+    options: [
+      {
+        text: "StateFlow er en del av kotlinx.coroutines og er multiplattform — fleksibel og integrerer rent med suspend-funksjoner",
+        correct: true,
+        rationale: "StateFlow er språk-nivå Kotlin, ikke Android-spesifikt. Den lever fint i KMP-prosjekter og er bedre integrert med Flow-pipeline.",
+      },
+      {
+        text: "StateFlow er livssyklus-bevisst by default",
+        correct: false,
+        rationale: "Det er omvendt — LiveData er livssyklus-bevisst by default. For StateFlow må du bruke repeatOnLifecycle.",
+      },
+      {
+        text: "LiveData er deprecated",
+        correct: false,
+        rationale: "LiveData er ikke deprecated, bare anbefalt mindre for ny kode. Mye eksisterende Android-kode bruker det fortsatt.",
+      },
+      {
+        text: "StateFlow trenger ikke en initial verdi",
+        correct: false,
+        rationale: "Faktisk omvendt — StateFlow MÅ ha en initial verdi (det er forskjellen fra SharedFlow).",
+      },
+    ],
+  },
+  {
+    id: "d-mvvm-mvc-quiz",
+    kind: "quiz",
+    title: "Hvorfor ikke MVC på Android?",
+    prompt: "Hva er hovedproblemet med naiv MVC på Android?",
+    topic: "MVVM",
+    question: "Hvorfor anbefales ikke MVC for moderne Android-apper?",
+    options: [
+      {
+        text: "Activity ender opp som både Controller og View — gir tett kobling, vanskelig testing, og store klasser",
+        correct: true,
+        rationale: "Klassisk symptom: 2000-linjers Activity som gjør alt. MVVM løser det ved å eksponere state utad.",
+      },
+      {
+        text: "MVC er teknisk umulig på Android",
+        correct: false,
+        rationale: "Det er fullt teknisk mulig — bare ikke anbefalt pga vedlikeholdsproblemer.",
+      },
+      {
+        text: "Android-systemet kræsjer hvis du bruker MVC",
+        correct: false,
+        rationale: "Systemet bryr seg ikke om arkitektur — det handler om kode-kvalitet.",
+      },
+      {
+        text: "MVC krever Java, ikke Kotlin",
+        correct: false,
+        rationale: "MVC er mønster-agnostisk språk-messig.",
+      },
+    ],
+  },
+  {
+    id: "d-mvvm-mutable-private",
+    kind: "quiz",
+    title: "Hvorfor _navn med understrek?",
+    prompt: "Hvorfor er konvensjonen private _state + public state?",
+    topic: "MVVM",
+    question: "I en ViewModel ser du `private val _ui = MutableStateFlow(...); val ui: StateFlow<...> = _ui.asStateFlow()`. Hvorfor?",
+    options: [
+      {
+        text: "View skal bare LESE state, ikke skrive — eksponert utad er den derfor immutable",
+        correct: true,
+        rationale: "Inkapsling. View bytter state via metodekall på VM, ikke ved å sette verdien direkte.",
+      },
+      {
+        text: "Det er bare en stilkonvensjon uten praktisk effekt",
+        correct: false,
+        rationale: "Det har klar praktisk effekt: View kan ikke kalle _ui.value = ... fordi typen utad ikke har den metoden.",
+      },
+      {
+        text: "Kotlin krever det syntaktisk",
+        correct: false,
+        rationale: "Nei — Kotlin krever det ikke. Det er konvensjon, men en GOD en.",
+      },
+      {
+        text: "Det er for å skille produksjon fra test",
+        correct: false,
+        rationale: "Tester bruker ofte samme public API. Skillet er View-vs-VM, ikke prod-vs-test.",
+      },
+    ],
+  },
+  {
+    id: "d-mvvm-vm-context-leak",
+    kind: "quiz",
+    title: "ViewModel og Context",
+    prompt: "Hva er feil her?",
+    topic: "MVVM",
+    question: "Hvorfor er det FARLIG å holde en Activity-referanse i en ViewModel?",
+    options: [
+      {
+        text: "ViewModel overlever Activity-død — beholder du Activity-referansen, lekker du minne",
+        correct: true,
+        rationale: "VM overlever rotasjon. En død Activity som peker tilbake fra VM kan ikke samles inn av GC.",
+      },
+      {
+        text: "Activity og ViewModel kan ikke kompileres sammen",
+        correct: false,
+        rationale: "Det er fullt mulig å gjøre — det er bare en lekkasje, ikke kompileringsfeil.",
+      },
+      {
+        text: "Det er ikke farlig, men anbefales mot stilmessig",
+        correct: false,
+        rationale: "Det ER faktisk farlig — minnelekkasje er en konkret bug.",
+      },
+      {
+        text: "Bare hvis du bruker Java, ikke Kotlin",
+        correct: false,
+        rationale: "Språk-uavhengig. Lekken kommer fra livssyklus-mismatch.",
+      },
+    ],
+    explanation: "Trenger du Application-context, bruk AndroidViewModel. Trenger du Activity, send Activity-data inn som verdier — ikke selve Activity-referansen.",
+  },
+
+  // ---------- Korutiner ----------
+  {
+    id: "d-coroutines-suspend-vs-blocking",
+    kind: "quiz",
+    title: "suspend vs blocking",
+    prompt: "Hva er forskjellen på suspend-funksjon og blocking-kall?",
+    topic: "Korutiner",
+    question: "Hvilket utsagn er korrekt?",
+    options: [
+      {
+        text: "suspend kan pause uten å blokkere tråden — Thread.sleep blokkerer hele tråden",
+        correct: true,
+        rationale: "Det er hele poenget. delay() vs Thread.sleep() — første frigir tråden, andre stjeler den.",
+      },
+      {
+        text: "suspend kjører alltid på en ny tråd",
+        correct: false,
+        rationale: "Nei — suspend kan kjøre på samme tråd som kallet (det er Dispatcher som bestemmer).",
+      },
+      {
+        text: "blocking-kall er raskere fordi de ikke pauses",
+        correct: false,
+        rationale: "Blokkering binder tråd-ressurser. Med tusenvis av blokkerende kall går du tom for tråder.",
+      },
+      {
+        text: "suspend og blocking gjør det samme — bare ulike navn",
+        correct: false,
+        rationale: "Vidt forskjellig oppførsel: suspend frigir tråd, blocking holder den.",
+      },
+    ],
+  },
+  {
+    id: "d-coroutines-dispatchers",
+    kind: "match",
+    title: "Dispatchers — hvilken tråd?",
+    prompt: "Match hver Dispatcher til typisk bruksområde.",
+    topic: "Korutiner",
+    pairs: [
+      { left: "Dispatchers.Main", right: "UI-oppdateringer — eneste tråden som kan tegne" },
+      { left: "Dispatchers.IO", right: "Nettverk, disk, DB — IO-operasjoner som blokkerer" },
+      { left: "Dispatchers.Default", right: "CPU-tung jobb (sortering, parsing, bilde-prosessering)" },
+      { left: "Dispatchers.Unconfined", right: "Avansert — kjør på hvilken som helst tilgjengelig tråd" },
+    ],
+    explanation: "viewModelScope og lifecycleScope bruker Main by default. Bytt midlertidig med withContext(Dispatchers.IO) { ... } når du må gjøre nettverk.",
+  },
+  {
+    id: "d-coroutines-launch-vs-async",
+    kind: "quiz",
+    title: "launch vs async",
+    prompt: "Når bruker du hva?",
+    topic: "Korutiner",
+    question: "Du må hente bruker fra to forskjellige endpoints parallelt og kombinere svarene. Hva bruker du?",
+    options: [
+      {
+        text: "async for begge, så await på begge — kjører parallelt og returnerer verdier",
+        correct: true,
+        rationale: "async returnerer Deferred<T>. Du starter begge, så awaiter — totaltid ≈ max(a, b) i stedet for a+b.",
+      },
+      {
+        text: "launch for begge — launch er raskere",
+        correct: false,
+        rationale: "launch returnerer Job (ikke verdi). Du har ingen måte å hente svarene tilbake.",
+      },
+      {
+        text: "launch sekvensielt — først én, så andre",
+        correct: false,
+        rationale: "Da kjører de etter hverandre og total tiden blir a+b. Du mister parallelle-gevinsten.",
+      },
+      {
+        text: "runBlocking { } for å vente på begge",
+        correct: false,
+        rationale: "runBlocking blokkerer hele tråden — utløser anti-pattern på Android.",
+      },
+    ],
+  },
+  {
+    id: "d-coroutines-scope-quiz",
+    kind: "quiz",
+    title: "Velg riktig scope",
+    prompt: "Hvilken scope skal jobben kjøre i?",
+    topic: "Korutiner",
+    question: "Du laster brukerdata når ViewModel opprettes. Hvilken scope?",
+    options: [
+      {
+        text: "viewModelScope — den kanselleres automatisk ved onCleared()",
+        correct: true,
+        rationale: "VM-eget scope. Hvis brukeren navigerer bort før ferdig, blir lastingen kansellert — ingen lekkasje.",
+      },
+      {
+        text: "GlobalScope — den lever lenge",
+        correct: false,
+        rationale: "GlobalScope er en anti-pattern på Android — ingen kansellering ved livssyklus-slutt = lekkasjer.",
+      },
+      {
+        text: "lifecycleScope — knyttet til Activity",
+        correct: false,
+        rationale: "lifecycleScope er knyttet til UI, ikke VM. Hvis VM kan brukes på tvers av fragments, mister du dataen ved rotasjon.",
+      },
+      {
+        text: "runBlocking — for å være sikker",
+        correct: false,
+        rationale: "Blokker UI-tråden. Aldri på Android.",
+      },
+    ],
+  },
+  {
+    id: "d-coroutines-structured",
+    kind: "quiz",
+    title: "Structured concurrency",
+    prompt: "Hva betyr det?",
+    topic: "Korutiner",
+    question: "Hvilken regel beskriver structured concurrency best?",
+    options: [
+      {
+        text: "En parent-korutine venter på alle barna sine, og kanselleres parent så kanselleres barna",
+        correct: true,
+        rationale: "Det er kjernen. Det betyr du ikke kan lekke kjørende korutiner — de er knyttet til en parent.",
+      },
+      {
+        text: "Alle korutiner må eksplisitt nullstilles av programmereren",
+        correct: false,
+        rationale: "Tvert imot — strukturen håndterer det automatisk gjennom scope-hierarkiet.",
+      },
+      {
+        text: "Korutiner må kjøre i numerisk rekkefølge",
+        correct: false,
+        rationale: "Ingenting med rekkefølge å gjøre. Det handler om livstid og kansellering.",
+      },
+      {
+        text: "Bare én korutine kan kjøre om gangen",
+        correct: false,
+        rationale: "Det er det MOTSATTE — du kan ha tusenvis samtidig, men de er strukturert i et tre.",
+      },
+    ],
+    explanation: "Structured concurrency er hvorfor du nesten aldri trenger GlobalScope. Bruker du viewModelScope og lifecycleScope, blir kanselleringer gratis.",
+  },
+
+  // ---------- Room / RecyclerView ----------
+  {
+    id: "d-room-annotations",
+    kind: "match",
+    title: "Room-annotasjoner",
+    prompt: "Match hver annotasjon til hva den markerer.",
+    topic: "Room",
+    pairs: [
+      { left: "@Entity", right: "En tabell — Kotlin-klasse mapper til kolonner" },
+      { left: "@Dao", right: "Interface med @Query/@Insert/@Update/@Delete-metoder" },
+      { left: "@Database", right: "Abstract klasse som knytter entiteter og DAOer sammen" },
+      { left: "@PrimaryKey", right: "Markerer feltet som primærnøkkel i tabellen" },
+      { left: "@Query", right: "SQL-spørring som validerers ved kompilering" },
+    ],
+    explanation: "Room er ORM-laget oppå SQLite. Kompilatoren sjekker at @Query-en din matcher @Entity-skjemaet — kan ikke skrive feil SQL.",
+  },
+  {
+    id: "d-recycler-pattern-order",
+    kind: "order",
+    title: "RecyclerView-flyten",
+    prompt: "Sorter stegene som skjer når RecyclerView tegner og scroller.",
+    topic: "RecyclerView",
+    items: [
+      "Adapter.onCreateViewHolder() oppretter et nytt ViewHolder-objekt med view",
+      "Adapter.onBindViewHolder() fyller ViewHolder med data for en posisjon",
+      "Brukeren scroller — synlige rader endrer seg",
+      "Et ViewHolder forsvinner ut av syne og legges i recycle-poolen",
+      "Adapter.onBindViewHolder() kalles på det resirkulerte ViewHolderet med ny data",
+    ],
+    explanation: "Bare et lite antall ViewHoldere lever i minnet (de synlige + reserver). Når en blir gjenbrukt, kalles onBindViewHolder med ny data — INGEN nye view-objekter opprettes.",
+  },
+  {
+    id: "d-diffutil-quiz",
+    kind: "quiz",
+    title: "DiffUtil og stabil ID",
+    prompt: "Hva er konsekvensen av feil areItemsTheSame?",
+    topic: "RecyclerView",
+    question: "Du implementerer areItemsTheSame som `a == b` (full equals). Hva skjer?",
+    options: [
+      {
+        text: "DiffUtil tror enhver endring i innhold er en ny rad — full rebuild og blink",
+        correct: true,
+        rationale: "Du sammenlignet hele objektet i stedet for ID. Endrer du ett felt, tolkes det som sletting+innsetting. Ingen smidig animasjon.",
+      },
+      {
+        text: "Lista vises ikke i det hele tatt",
+        correct: false,
+        rationale: "Lista vises — bare med dårlig animasjon og høyere CPU-bruk.",
+      },
+      {
+        text: "Appen krasjer med ConcurrentModificationException",
+        correct: false,
+        rationale: "Ingen exception — bare ytelses-/UX-problem.",
+      },
+      {
+        text: "Det gir glattest mulig animasjon — det er anbefalt",
+        correct: false,
+        rationale: "Motsatt — du mister DiffUtil sin verdi. Bruk stabil ID i areItemsTheSame.",
+      },
+    ],
+    explanation: "areItemsTheSame skal svare 'er dette samme rad?' (sammenlign på ID). areContentsTheSame skal svare 'er innholdet identisk?' (sammenlign på equals).",
+  },
+  {
+    id: "d-room-suspend-vs-flow",
+    kind: "quiz",
+    title: "Room — suspend eller Flow?",
+    prompt: "Når bruker du hva?",
+    topic: "Room",
+    question: "Du har en liste i UI-en som skal oppdateres LIVE når underliggende data endrer seg. Hva returnerer DAO-en?",
+    options: [
+      {
+        text: "Flow<List<Entity>> — sender ny liste automatisk når noen INSERT/UPDATE skjer i tabellen",
+        correct: true,
+        rationale: "Room observerer tabellen og emitter ny verdi via Flow. UI ber bare om første emit én gang og lytter videre.",
+      },
+      {
+        text: "suspend fun List<Entity> — kall fra UI hvert 5. sekund",
+        correct: false,
+        rationale: "Polling er sløsing. Flow er hele poenget med Room-integrasjonen.",
+      },
+      {
+        text: "List<Entity> (uten suspend) — Room håndterer tråden",
+        correct: false,
+        rationale: "Det er KOMPILERINGSFEIL — Room krever suspend eller Flow på main-blokkerende kall.",
+      },
+      {
+        text: "LiveData<List<Entity>> — det er det eneste alternativet",
+        correct: false,
+        rationale: "Room støtter alle tre (suspend, Flow, LiveData). Flow er anbefalt for ny kode.",
+      },
+    ],
+  },
+
+  // ---- UML (4) ----
+  {
+    id: "d-match-uml-diagram-formaal",
+    kind: "match",
+    title: "UML-diagram til formål",
+    prompt: "Match hver UML-diagramtype til hva den brukes til.",
+    topic: "UML",
+    pairs: [
+      { left: "Use case-diagram", right: "Vise hvilke aktører som kan gjøre hvilke ting i systemet" },
+      { left: "Klassediagram", right: "Vise OO-strukturen — klasser, attributter, relasjoner" },
+      { left: "Sekvensdiagram", right: "Vise meldingsutveksling mellom objekter over tid i ett scenario" },
+      { left: "Aktivitetsdiagram", right: "Vise en prosess-flyt med beslutninger og parallellitet" },
+    ],
+  },
+  {
+    id: "d-match-uml-relasjoner",
+    kind: "match",
+    title: "Klassediagram — relasjonssymboler",
+    prompt: "Match hvert relasjonssymbol til hva det betyr.",
+    topic: "UML",
+    pairs: [
+      { left: "Vanlig strek", right: "Assosiasjon — generell sammenheng" },
+      { left: "◇── (hvit diamant)", right: "Aggregering — «består av», svak (delen kan leve uten helheten)" },
+      { left: "◆── (svart diamant)", right: "Komposisjon — sterk «består av» (delen dør med helheten)" },
+      { left: "──▷ (åpen trekant)", right: "Generalisering / arv — «er en»" },
+      { left: "─ ─ ▷ (stiplet)", right: "Avhengighet — bruker, men eier ikke" },
+    ],
+  },
+  {
+    id: "d-quiz-uml-multiplisitet",
+    kind: "quiz",
+    title: "Klassediagram — multiplisitet",
+    prompt: "Velg riktig.",
+    topic: "UML",
+    question:
+      "Du tegner Kunde 1 ────── 0..* Bestilling. Hva betyr det?",
+    options: [
+      {
+        text: "En kunde har null, én eller flere bestillinger, og en bestilling tilhører nøyaktig én kunde",
+        correct: true,
+        rationale:
+          "1 (tett ved Kunde) sier «én kunde per bestilling». 0..* (tett ved Bestilling) sier «en kunde kan ha 0, 1 eller flere».",
+      },
+      {
+        text: "En kunde har nøyaktig én bestilling",
+        correct: false,
+        rationale: "0..* betyr null, én eller flere — ikke nøyaktig én.",
+      },
+      {
+        text: "En bestilling kan ha mange kunder",
+        correct: false,
+        rationale: "Multiplisitet leses motsatt vei — 1 ved Kunde betyr 1 kunde per bestilling.",
+      },
+      {
+        text: "Forholdet er valgfritt for begge sider",
+        correct: false,
+        rationale: "1 er obligatorisk — en bestilling MÅ ha en kunde.",
       },
     ],
   },
@@ -11598,6 +12644,91 @@ var f = b.Where(x => x.Tittel.StartsWith(\"A\")).ToList();`,
     ],
   },
   {
+    id: "d-quiz-include-vs-extend",
+    kind: "quiz",
+    title: "Use case — include vs extend",
+    prompt: "Velg riktig.",
+    topic: "UML",
+    question:
+      "«Sjekk ut» KREVER alltid «Betal», mens «Bruk rabattkode» kan AV OG TIL utvide «Sjekk ut». Hvordan tegner du?",
+    options: [
+      {
+        text: "Sjekk ut «include» Betal; Bruk rabattkode «extend» Sjekk ut",
+        correct: true,
+        rationale:
+          "include = alltid inkludert. extend = utvider under betingelser. Begge tegnes med stiplet pil + stereotype.",
+      },
+      {
+        text: "Sjekk ut «extend» Betal; Bruk rabattkode «include» Sjekk ut",
+        correct: false,
+        rationale: "Motsatt — Betal er alltid med (include), rabattkode er valgfri (extend).",
+      },
+      {
+        text: "Begge brukes med generalisering (arv)",
+        correct: false,
+        rationale: "Generalisering er for «er-en»-forhold mellom aktører eller use cases — ikke include/extend.",
+      },
+      {
+        text: "Ingen pil — bare plassér ovaler nær hverandre",
+        correct: false,
+        rationale: "Uten pil og stereotype er forholdet ikke spesifisert. UML krever notasjon.",
+      },
+    ],
+  },
+
+  // ---- Code review / Git (4) ----
+  {
+    id: "d-order-pr-flow",
+    kind: "order",
+    title: "Feature-branch + PR-flow",
+    prompt: "Dra stegene i en typisk feature-branch arbeidsflyt i riktig rekkefølge.",
+    topic: "Code review",
+    items: [
+      "git checkout main && git pull origin main",
+      "git checkout -b feat/passord-reset",
+      "Skriv kode, git commit -m \"...\"",
+      "git push -u origin feat/passord-reset",
+      "Åpne Pull Request mot main",
+      "Adressér review-kommentarer med nye commits",
+      "CI-pipeline blir grønn, PR godkjennes",
+      "Squash & merge til main, slett feature-branchen",
+    ],
+    explanation:
+      "Alltid pull main først så du brancher fra siste versjon. Aldri push direkte til main — PR fanger bugs før de når production.",
+  },
+  {
+    id: "d-quiz-merge-konflikt",
+    kind: "quiz",
+    title: "Merge-konflikt — hva gjør du?",
+    prompt: "Velg riktig.",
+    topic: "Code review",
+    question:
+      "Du kjører `git pull origin main` på feature-branchen og får merge-konflikt i `app.py`. Hva er riktig neste steg?",
+    options: [
+      {
+        text: "Åpne app.py, finn <<<<<<< HEAD-blokkene, velg/kombinér riktig kode, fjern markørene, git add og commit",
+        correct: true,
+        rationale:
+          "Du må manuelt bestemme hvordan motstridende endringer forenes. Git kan ikke gjette intensjonen. Etter resolve: git add + git commit fullfører merge.",
+      },
+      {
+        text: "Kjør `git push --force` for å overskrive remote",
+        correct: false,
+        rationale: "Det ødelegger andres arbeid på remote. Force push til delte brancher er en kardinalsynd.",
+      },
+      {
+        text: "Slette app.py og pull på nytt",
+        correct: false,
+        rationale: "Du mister alle dine endringer. Konflikten kommer tilbake uansett.",
+      },
+      {
+        text: "Kjøre `git reset --hard origin/main`",
+        correct: false,
+        rationale: "Forkaster alt det du har jobbet med. Ikke det du vil.",
+      },
+    ],
+  },
+  {
     id: "d-fill-opt-adam-defaults",
     kind: "fill",
     title: "Adam — defaults",
@@ -11658,6 +12789,96 @@ var f = b.Where(x => x.Tittel.StartsWith(\"A\")).ToList();`,
         correct: false,
         rationale:
           "Adam alene funker for små modeller, men store transformers krever weight decay og schedule for å nå konkurranse-dyktige tall.",
+      },
+    ],
+  },
+
+  // ---------- Retrofit ----------
+  {
+    id: "d-retrofit-interface-fill",
+    kind: "fill",
+    title: "Retrofit-interface med suspend",
+    prompt: "Fyll inn riktige annotasjoner.",
+    topic: "Retrofit",
+    template: "@__1__(\"brukere/{id}\")\n__2__ fun hent(@__3__(\"id\") id: Long): BrukerDto",
+    blanks: ["GET", "suspend", "Path"],
+    options: ["GET", "POST", "PUT", "suspend", "fun", "Path", "Query", "Body"],
+    explanation: "@GET med curly braces i URLen for parametre, @Path for å fylle dem inn, suspend så vi kan kalle fra korutine.",
+  },
+  {
+    id: "d-retrofit-suspend-why",
+    kind: "quiz",
+    title: "Hvorfor suspend i Retrofit-interface?",
+    prompt: "Hva betyr suspend på en Retrofit-metode?",
+    topic: "Retrofit",
+    question: "Hvorfor markerer vi Retrofit-metoder med suspend?",
+    options: [
+      {
+        text: "Retrofit kjører nettverkskallet i bakgrunnen og leverer resultatet tilbake — uten Call-objektet og callbacks",
+        correct: true,
+        rationale: "Med suspend integreres Retrofit rent med korutiner. Du skriver kode som ser sekvensiell ut, men nettverkskallet skjer på en bakgrunns-dispatcher.",
+      },
+      {
+        text: "suspend gjør at HTTP-kallet skjer på main-tråden",
+        correct: false,
+        rationale: "Det er motsatt — uten suspend (eller Call) ville Retrofit nektet å kjøre på main.",
+      },
+      {
+        text: "Det er bare en stilkonvensjon",
+        correct: false,
+        rationale: "Det er funksjonell forskjell — uten suspend må du bruke Call<T> med callbacks.",
+      },
+      {
+        text: "Retrofit krever det av alle metoder",
+        correct: false,
+        rationale: "Du kan også returnere Call<T> for callback-stil — men suspend er moderne anbefaling.",
+      },
+    ],
+  },
+  {
+    id: "d-match-git-kommandoer",
+    kind: "match",
+    title: "Git-kommandoer",
+    prompt: "Match hver git-kommando til hva den gjør.",
+    topic: "Code review",
+    pairs: [
+      { left: "git checkout -b feat/x", right: "Lag ny branch fra HEAD og bytt til den" },
+      { left: "git rebase main", right: "Flytt commits-ene dine oppå siste main-versjon" },
+      { left: "git merge feat/x", right: "Sammenstill branch inn i nåværende branch" },
+      { left: "git push -u origin feat/x", right: "Push branch til remote og sett opp tracking" },
+      { left: "git revert <sha>", right: "Lag ny commit som reverserer en tidligere commit" },
+      { left: "git stash", right: "Lagre uferdige endringer midlertidig vekk" },
+    ],
+  },
+  {
+    id: "d-quiz-pr-review",
+    kind: "quiz",
+    title: "Hva ser man etter i en code review?",
+    prompt: "Du reviewer en PR med ny endpoint. Hvilket spørsmål er MINST relevant?",
+    topic: "Code review",
+    question:
+      "Velg det LEAST viktige spørsmålet å stille som reviewer.",
+    options: [
+      {
+        text: "Bruker utvikleren samme code style-konvensjoner som resten av teamet (tabs vs spaces)?",
+        correct: true,
+        rationale:
+          "Code style bør være automatisert (linter/formatter, pre-commit hook). Mennesker skal ikke bruke review-tid på det.",
+      },
+      {
+        text: "Er det tester som dekker happy path og minst én feilsituasjon?",
+        correct: false,
+        rationale: "Veldig viktig — endring uten tester går tilbake.",
+      },
+      {
+        text: "Håndterer endpointet auth riktig — kan obotuserede komme inn?",
+        correct: false,
+        rationale: "Sikkerhet er en av de viktigste tingene i review.",
+      },
+      {
+        text: "Er forretningslogikken plassert i service-laget, ikke i controller?",
+        correct: false,
+        rationale: "Lagdeling påvirker langtids-vedlikehold — viktig å fange tidlig.",
       },
     ],
   },
@@ -11746,5 +12967,503 @@ var f = b.Where(x => x.Tittel.StartsWith(\"A\")).ToList();`,
           "Forward pass har ingenting med .grad å gjøre. Det er backward som påvirkes.",
       },
     ],
+  },
+  // API-PROSJEKT (20 exercises)
+  // ============================================================
+
+  // ---- Arkitektur (5) ----
+  {
+    id: "d-match-api-lag",
+    kind: "match",
+    title: "API-lag — ansvar",
+    prompt: "Match hvert lag til hva det skal gjøre.",
+    topic: "API-arkitektur",
+    pairs: [
+      { left: "Controller", right: "Parse HTTP-request, validér input, returner statuskode + JSON" },
+      { left: "Service", right: "Forretningslogikk — koordinere use cases, kaste domain-feil" },
+      { left: "Repository", right: "Snakke med databasen — SQL eller ORM-kall, returnere entities" },
+      { left: "DTO", right: "Form for data inn/ut av APIet — uavhengig av DB-skjema" },
+      { left: "Entity", right: "ORM-representasjon av en DB-rad" },
+    ],
+  },
+  {
+    id: "d-quiz-dto-vs-entity",
+    kind: "quiz",
+    title: "DTO vs entity — hvorfor skille?",
+    prompt: "Velg HOVEDÅRSAKEN.",
+    topic: "API-arkitektur",
+    question:
+      "Hvorfor bør APIet returnere DTO-er og ikke entity-objekter direkte?",
+    options: [
+      {
+        text: "Endringer i DB-skjema skal ikke bryte API-kontrakten, og sensitive felt (password_hash) skal ikke lekke ut",
+        correct: true,
+        rationale:
+          "Entity er formet etter tabellen. DTO er formet etter hva APIet eksponerer. Skiller du dem kan du endre DB uten å bryte klienter, og du serialiserer bare det som er sikkert.",
+      },
+      {
+        text: "ORM-er kan ikke serialiseres til JSON",
+        correct: false,
+        rationale: "De fleste kan — det er ikke problemet. Problemet er HVA de inneholder.",
+      },
+      {
+        text: "DTO er raskere enn entity",
+        correct: false,
+        rationale: "Marginalt og ikke poenget. Skillet handler om kobling og sikkerhet.",
+      },
+      {
+        text: "REST-spec forbyr å returnere ORM-objekter",
+        correct: false,
+        rationale: "REST har ingen sånn regel. Dette er en design-konvensjon, ikke en standard.",
+      },
+    ],
+  },
+  {
+    id: "d-quiz-di-formaal",
+    kind: "quiz",
+    title: "Dependency Injection — hovedformål",
+    prompt: "Velg riktig.",
+    topic: "API-arkitektur",
+    question:
+      "Hva er hovedfordelen med dependency injection i en service-klasse?",
+    options: [
+      {
+        text: "Avhengigheter er eksplisitt og kan byttes ut i tester (FakeRepo i stedet for PostgresRepo)",
+        correct: true,
+        rationale:
+          "DI gjør at servicen kan testes isolert med fake-implementasjoner. Konstruksjons-injection gjør avhengighetene synlige i signaturen.",
+      },
+      {
+        text: "Koden kjører raskere",
+        correct: false,
+        rationale: "DI har en bitteliten overhead, ikke en speed-up.",
+      },
+      {
+        text: "Færre filer i prosjektet",
+        correct: false,
+        rationale: "Tvert imot — typisk litt flere (interfaces/protocols).",
+      },
+      {
+        text: "Database-kall caches automatisk",
+        correct: false,
+        rationale: "Caching er en separat sak. DI handler om kobling og testbarhet.",
+      },
+    ],
+  },
+  {
+    id: "d-fill-di-konstruktor",
+    kind: "fill",
+    title: "Constructor injection i Python",
+    prompt: "Fyll inn slik at service tar et repo som dependency.",
+    topic: "API-arkitektur",
+    template:
+      "class BestillingService:\n    def __init__(self, repo: __1__):\n        self.repo = __2__\n\n    def opprett(self, data):\n        return self.repo.__3__(data)\n\n# I prod:\nservice = BestillingService(repo=__4__())\n# I test:\nservice = BestillingService(repo=__5__())",
+    blanks: ["BestillingRepo", "repo", "save", "PostgresBestillingRepo", "FakeBestillingRepo"],
+    options: [
+      "BestillingRepo", "PostgresBestillingRepo", "FakeBestillingRepo",
+      "repo", "self", "save", "find", "delete",
+    ],
+    language: "python",
+    explanation:
+      "Service avhenger av INTERFACE/protocol (BestillingRepo). Konkret implementasjon sendes inn — i prod den ekte, i test en fake.",
+  },
+  {
+    id: "d-quiz-dep-retning",
+    kind: "quiz",
+    title: "Clean Architecture — dep-retning",
+    prompt: "Velg riktig.",
+    topic: "API-arkitektur",
+    question:
+      "I Clean Architecture: hvilken retning peker avhengighetene?",
+    options: [
+      {
+        text: "Innover — adapters/infrastructure avhenger av use cases, som avhenger av entities",
+        correct: true,
+        rationale:
+          "Pilene peker mot domenet. Entities aner ingenting om HTTP eller DB. Det lar domenet testes uten infrastruktur.",
+      },
+      {
+        text: "Utover — entities kjenner alle lagene over",
+        correct: false,
+        rationale: "Da ville domenet vært koblet til infrastruktur — motsatt av målet.",
+      },
+      {
+        text: "Sidelengs — alle lag kjenner alle",
+        correct: false,
+        rationale: "Det gir tett kobling overalt. Ikke arkitektur.",
+      },
+      {
+        text: "Tilfeldig — det spiller ingen rolle",
+        correct: false,
+        rationale: "Det spiller absolutt rolle. Avhengighets-retning er hele poenget med lagdeling.",
+      },
+    ],
+  },
+
+  // ---- Kontrakt (5) ----
+  {
+    id: "d-fill-openapi-minimal",
+    kind: "fill",
+    title: "OpenAPI 3.0 — minimal struktur",
+    prompt: "Dra inn riktige nøkkelord i OpenAPI-spec.",
+    topic: "API-kontrakt",
+    template:
+      "__1__: 3.0.3\n__2__:\n  title: Bestilling API\n  version: 1.0.0\n__3__:\n  /bestillinger/{id}:\n    __4__:\n      __5__:\n        \"200\":\n          description: OK",
+    blanks: ["openapi", "info", "paths", "get", "responses"],
+    options: ["openapi", "swagger", "info", "metadata", "paths", "routes", "get", "GET", "post", "responses", "returns"],
+    explanation:
+      "Topp-nivå i OpenAPI 3: openapi (versjon), info (metadata), paths (endpoints). Hver path har metoder med responses.",
+  },
+  {
+    id: "d-match-statuskoder-api",
+    kind: "match",
+    title: "Statuskoder i API-respons",
+    prompt: "Match scenario til riktig statuskode.",
+    topic: "API-kontrakt",
+    pairs: [
+      { left: "POST opprettet ny bestilling", right: "201 Created" },
+      { left: "DELETE av eksisterende ressurs lykkes uten body", right: "204 No Content" },
+      { left: "Klient sender ugyldig JSON", right: "400 Bad Request" },
+      { left: "Ingen auth-token i header", right: "401 Unauthorized" },
+      { left: "Forsøk å slette annens ressurs", right: "403 Forbidden" },
+      { left: "Forretningsregel brutt (gyldig JSON, men kan ikke utføres)", right: "422 Unprocessable Entity" },
+      { left: "For mange kall i kort tid", right: "429 Too Many Requests" },
+    ],
+  },
+  {
+    id: "d-quiz-idempotens-metoder",
+    kind: "quiz",
+    title: "Idempotens — hvilke HTTP-metoder?",
+    prompt: "Velg det som er KORREKT om idempotens.",
+    topic: "API-kontrakt",
+    question:
+      "Hvilken HTTP-metode er IKKE idempotent som default?",
+    options: [
+      {
+        text: "POST",
+        correct: true,
+        rationale:
+          "To identiske POST-er skaper typisk to ressurser. Idempotency-Key brukes for å gjøre POST trygt for retry.",
+      },
+      {
+        text: "GET",
+        correct: false,
+        rationale: "GET er les-bare og idempotent. Mange kall = samme svar, ingen sideeffekt.",
+      },
+      {
+        text: "PUT",
+        correct: false,
+        rationale: "PUT er «sett til denne verdien» — kjør N ganger, samme tilstand.",
+      },
+      {
+        text: "DELETE",
+        correct: false,
+        rationale: "DELETE er idempotent på tilstanden. (Etter første: ressurs er borte, andre kall gir 404, men tilstand er den samme.)",
+      },
+    ],
+  },
+  {
+    id: "d-quiz-versjonering-valg",
+    kind: "quiz",
+    title: "API-versjonering — URL vs header",
+    prompt: "Velg riktig.",
+    topic: "API-kontrakt",
+    question:
+      "En kollega vil legge til et nytt optional felt i response til /produkter/{id}. Trenger dere ny API-versjon?",
+    options: [
+      {
+        text: "Nei — å legge til et nytt optional felt er backward-compatible",
+        correct: true,
+        rationale:
+          "Klienter som ignorerer ukjente felt fortsetter å fungere. Versjon-bump trengs bare ved breaking changes (fjern/rename felt, type-endring, statuskode-endring).",
+      },
+      {
+        text: "Ja, alltid ny minor-versjon ved enhver responsendring",
+        correct: false,
+        rationale: "Versjoner er for BREAKING endringer. Backward-compatible tilføyelser krever ikke ny versjon.",
+      },
+      {
+        text: "Ja, men kun hvis det er JSON",
+        correct: false,
+        rationale: "Format spiller ingen rolle — det er om endringen bryter eksisterende klienter som teller.",
+      },
+      {
+        text: "Nei, du kan bare endre eksisterende felt",
+        correct: false,
+        rationale: "Å ENDRE eksisterende felt er nettopp det som er breaking.",
+      },
+    ],
+  },
+  {
+    id: "d-fill-problem-detail",
+    kind: "fill",
+    title: "RFC 7807 problem-detail",
+    prompt: "Fyll inn standardfeltene i problem-detail JSON.",
+    topic: "API-kontrakt",
+    template:
+      "{\n  \"__1__\": \"https://api.example.com/errors/insufficient-stock\",\n  \"__2__\": \"Ikke nok på lager\",\n  \"__3__\": 422,\n  \"__4__\": \"Produkt 1234 har 2 igjen, du ba om 5\",\n  \"__5__\": \"/bestillinger/9876\"\n}",
+    blanks: ["type", "title", "status", "detail", "instance"],
+    options: ["type", "title", "status", "detail", "instance", "code", "message", "error", "http", "uri"],
+    explanation:
+      "RFC 7807 definerer 5 standardfelt: type (URI til feiltype-doc), title (kort), status (HTTP-kode), detail (denne forekomsten), instance (URI for ressursen).",
+  },
+
+  // ---- Testing (5) ----
+  {
+    id: "d-match-test-pyramide",
+    kind: "match",
+    title: "Test-pyramiden — type til nivå",
+    prompt: "Match testtype til hvor den hører i pyramiden.",
+    topic: "API-testing",
+    pairs: [
+      { left: "Unit-test", right: "Nederst — én funksjon isolert, mockede dependencies, millisekund-skalert" },
+      { left: "Integration-test", right: "Midten — flere komponenter sammen, ofte med ekte DB" },
+      { left: "Contract-test", right: "Mot kontrakten (OpenAPI/Pact) — verifiserer at API matcher spec" },
+      { left: "E2E-test", right: "Toppen — hele systemet, ekte komponenter, få i antall" },
+    ],
+    explanation:
+      "Pyramide: mye unit (raskt, billig), færre integration, enda færre E2E (treg, flaky). Motsatt = «is-kjegle».",
+  },
+  {
+    id: "d-quiz-fixture-vs-mock",
+    kind: "quiz",
+    title: "Fixture vs mock — hva er forskjellen?",
+    prompt: "Velg riktig.",
+    topic: "API-testing",
+    question:
+      "En testfixture som setter opp ren testdatabase. Er det en fixture eller en mock?",
+    options: [
+      {
+        text: "Fixture — den klargjør en KJENT tilstand som testen kan bruke",
+        correct: true,
+        rationale:
+          "Fixture = forberedt utgangstilstand (data, oppsett). Mock = falsk objekt som verifiserer at riktige kall ble gjort.",
+      },
+      {
+        text: "Mock — den simulerer DB-kall",
+        correct: false,
+        rationale: "Det er en ekte DB i fixturen, ikke en falsk en. Da er det fixture, ikke mock.",
+      },
+      {
+        text: "Stub — den returnerer hardkodede verdier",
+        correct: false,
+        rationale: "Stubs returnerer kanaliserte svar — en setup-fixture klargjør ekte tilstand.",
+      },
+      {
+        text: "Spy — den registrerer kall",
+        correct: false,
+        rationale: "Spy logger kall for verifikasjon. Database-oppsett er ikke kall-registrering.",
+      },
+    ],
+  },
+  {
+    id: "d-quiz-integration-vs-e2e",
+    kind: "quiz",
+    title: "Integration vs E2E — når hva?",
+    prompt: "Velg riktig.",
+    topic: "API-testing",
+    question:
+      "Du tester at controller + service + repository fungerer sammen, men du mocker betalingsleverandøren. Hva slags test er det?",
+    options: [
+      {
+        text: "Integration-test — flere lag testes sammen, men ikke alle eksterne tjenester",
+        correct: true,
+        rationale:
+          "Integration tester samspill mellom 2+ komponenter, ofte med ekte DB men mockede tredjeparter. E2E ville brukt sandkasse for betalingen også.",
+      },
+      {
+        text: "E2E-test — den dekker hele stack",
+        correct: false,
+        rationale: "E2E krever ekte eksterne tjenester (eller sandkasse). Mocked tredjepart = integration.",
+      },
+      {
+        text: "Unit-test — den tester én funksjon",
+        correct: false,
+        rationale: "Unit isolerer ÉN funksjon med alle dependencies mocket. Du testet flere lag sammen.",
+      },
+      {
+        text: "Contract-test — den tester API-spec",
+        correct: false,
+        rationale: "Contract verifiserer mot OpenAPI/Pact. Det er ikke det du gjør her.",
+      },
+    ],
+  },
+  {
+    id: "d-match-test-doubles",
+    kind: "match",
+    title: "Test doubles — hvilket er hvilket?",
+    prompt: "Match test-double-typen til beskrivelse.",
+    topic: "API-testing",
+    pairs: [
+      { left: "Dummy", right: "Verdi som sendes inn men aldri brukes — fyller en parameter" },
+      { left: "Stub", right: "Returnerer hardkodede svar når den blir kalt" },
+      { left: "Spy", right: "Som stub, men registrerer kall for senere verifikasjon" },
+      { left: "Mock", right: "Som spy, men har forventninger pre-programmert (failer hvis kall mangler)" },
+      { left: "Fake", right: "Forenklet, men FUNGERENDE implementasjon (eks in-memory DB)" },
+    ],
+  },
+  {
+    id: "d-order-tdd-feature",
+    kind: "order",
+    title: "TDD ved nytt endpoint",
+    prompt: "Du skal legge til POST /bestillinger med TDD. Dra stegene i riktig rekkefølge.",
+    topic: "API-testing",
+    items: [
+      "Skriv integration-test som POSTer JSON og forventer 201",
+      "Kjør test — feiler (endpoint finnes ikke ennå)",
+      "Lag minimal controller + service + repo som returnerer 201",
+      "Kjør test — passerer",
+      "Skriv test for 422 ved ugyldige data — feiler",
+      "Legg til validering — testen passerer",
+      "Refaktor: trekk ut DTO, rydd opp",
+      "Kjør alle tester — fortsatt grønne",
+    ],
+    explanation:
+      "Hver runde: rød test, grønn implementasjon, refaktorering. Du legger til én atferd om gangen.",
+  },
+
+  // ---- Deploy (5) ----
+  {
+    id: "d-fill-dockerfile",
+    kind: "fill",
+    title: "Dockerfile — minimal Python-API",
+    prompt: "Dra inn de riktige Docker-direktivene.",
+    topic: "API-deploy",
+    template:
+      "__1__ python:3.12-slim\n__2__ /app\n__3__ requirements.txt .\n__4__ pip install -r requirements.txt\n__5__ ./src ./src\n__6__ 8000\n__7__ [\"uvicorn\", \"src.main:app\", \"--host\", \"0.0.0.0\"]",
+    blanks: ["FROM", "WORKDIR", "COPY", "RUN", "COPY", "EXPOSE", "CMD"],
+    options: ["FROM", "WORKDIR", "COPY", "ADD", "RUN", "EXEC", "EXPOSE", "PORT", "CMD", "ENTRYPOINT", "ENV"],
+    explanation:
+      "FROM (base), WORKDIR (cwd), COPY+RUN (install deps), COPY (src), EXPOSE (doc), CMD (start). RUN kjører ved BUILD, CMD ved start.",
+  },
+  {
+    id: "d-quiz-secrets-i-repo",
+    kind: "quiz",
+    title: "Secrets — hvor IKKE skal de bo?",
+    prompt: "Velg riktig.",
+    topic: "API-deploy",
+    question:
+      "Hvor skal IKKE database-passordet til prod-DB ligge?",
+    options: [
+      {
+        text: "I et `.env`-fil som er commitet til git-repo",
+        correct: true,
+        rationale:
+          "Når noe er commitet, ligger det i git-historien for alltid — selv om du sletter senere. Bruk environment variables fra secrets-vault i stedet.",
+      },
+      {
+        text: "I HashiCorp Vault",
+        correct: false,
+        rationale: "Vault er nettopp laget for dette formålet.",
+      },
+      {
+        text: "Som GitHub Actions Secret (kun lest av pipeline)",
+        correct: false,
+        rationale: "GitHub Actions Secrets injiseres trygt i CI uten å havne i loggen.",
+      },
+      {
+        text: "Som environment variable som injiseres av plattformen i prod",
+        correct: false,
+        rationale: "Standard Twelve-Factor-mønster — config i environment.",
+      },
+    ],
+  },
+  {
+    id: "d-order-cicd-pipeline",
+    kind: "order",
+    title: "CI/CD-pipeline — rekkefølge",
+    prompt: "Dra stegene i en typisk CI/CD-pipeline i riktig rekkefølge.",
+    topic: "API-deploy",
+    items: [
+      "Utvikler pusher commit til feature-branch",
+      "CI: checkout kode",
+      "CI: lint (ruff/eslint)",
+      "CI: type-check (mypy/tsc)",
+      "CI: unit + integration tests",
+      "CI: build Docker-image, push til registry",
+      "CD: deploy til staging",
+      "CD: smoke-tests mot staging",
+      "CD: manuell godkjenning eller auto-promotion til prod",
+      "CD: deploy til prod (canary eller blue-green)",
+    ],
+    explanation:
+      "Tidlig feiltrinn = kort syklus. Lint og type-check er sub-sekund. Tests er sub-minutt. Build og deploy er minutter. Stop på første feil.",
+  },
+  {
+    id: "d-quiz-blue-green-vs-canary",
+    kind: "quiz",
+    title: "Blue-green vs canary deploy",
+    prompt: "Velg riktig.",
+    topic: "API-deploy",
+    question:
+      "Du vil rulle ut ny versjon med MINIMUM risiko, og overvåke metrikker på 5% av trafikken først. Hvilken strategi?",
+    options: [
+      {
+        text: "Canary — rute 5% av trafikken til v2, øk gradvis hvis metrics ser bra ut",
+        correct: true,
+        rationale:
+          "Canary er progressiv: starter lite, øker over tid. Blast radius er begrenset til canary-prosent hvis bug.",
+      },
+      {
+        text: "Blue-green — bytt all trafikk på en gang",
+        correct: false,
+        rationale: "Blue-green flytter 100% i ett klikk. Rask rollback, men ikke gradvis eksponering.",
+      },
+      {
+        text: "Stoppe v1 først, deretter starte v2",
+        correct: false,
+        rationale: "Downtime + ingen mulighet for sammenligning eller rollback.",
+      },
+      {
+        text: "Rolling update med Kubernetes (default-strategy)",
+        correct: false,
+        rationale: "Rolling bytter pods én for én, men styres ikke prosentvis på trafikken. Canary gir finere kontroll.",
+      },
+    ],
+  },
+  {
+    id: "d-match-observability",
+    kind: "match",
+    title: "Observability — tre pillarer",
+    prompt: "Match hver pillar til hva den brukes til.",
+    topic: "API-deploy",
+    pairs: [
+      { left: "Logs", right: "Hendelseslinjer over tid — «hva skjedde for denne brukeren akkurat nå?»" },
+      { left: "Metrics", right: "Aggregerte tall over tid — «hvor mye, hvor ofte, p95?»" },
+      { left: "Traces", right: "Et request gjennom flere services — «hvor brukes tiden?»" },
+      { left: "Healthcheck", right: "Endpoint orkestratoren bruker til å sjekke om appen lever" },
+      { left: "Runbook", right: "Sjekkliste for hvordan respondere på en gitt alarm" },
+    ],
+  },
+  {
+    id: "d-retrofit-error-handling",
+    kind: "quiz",
+    title: "Retrofit feilhåndtering",
+    prompt: "Hvilke unntak må du fange?",
+    topic: "Retrofit",
+    question: "Hva kaster Retrofit ved en 500-feil fra serveren?",
+    options: [
+      {
+        text: "HttpException — fanges separat fra IOException (nettverksfeil)",
+        correct: true,
+        rationale: "Retrofit skiller HTTP-feil (HttpException) fra transport-feil (IOException). Du må håndtere begge, og typisk JsonDataException for parsing-feil.",
+      },
+      {
+        text: "IOException — alt blir samme type",
+        correct: false,
+        rationale: "Det er to forskjellige problemer: 'serveren svarte med 500' vs 'jeg når ikke serveren'. Du vil vise ulike meldinger.",
+      },
+      {
+        text: "Ingen — Retrofit returnerer null ved feil",
+        correct: false,
+        rationale: "Retrofit kaster unntak (eller returnerer Response<T> hvis du bruker den signaturen). Aldri stille null.",
+      },
+      {
+        text: "RuntimeException som krasjer appen",
+        correct: false,
+        rationale: "HttpException er en spesifikk RuntimeException som du KAN og BØR fange.",
+      },
+    ],
+    explanation: "Et godt mønster: pakke svaret i en sealed class Resultat (Ok/Feil), og fange HttpException + IOException + JsonDataException separat i Repository.",
   },
 ];

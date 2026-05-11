@@ -59,6 +59,7 @@ const STEPS = [
   { title: "Skjema", anchor: "skjema" },
   { title: "CSS — kobling og selektorer", anchor: "css" },
   { title: "Jinja — mal-arv", anchor: "jinja" },
+  { title: "Bootstrap — raskt utseende", anchor: "bootstrap" },
   { title: "Sikkerhet i Jinja", anchor: "sikkerhet" },
 ];
 
@@ -337,6 +338,80 @@ nav a { text-decoration: none; }`}</pre>
     {% endfor %}
   </ul>
 {% endblock %}`}</pre>
+          </div>
+        </section>
+
+        {/* 6.5 Bootstrap */}
+        <section id="bootstrap" className="mb-10">
+          <h2 className="text-xl font-semibold mb-3">Bootstrap — raskt utseende uten egen CSS</h2>
+          <p className="text-sm text-muted-foreground mb-3">
+            Kurset bruker <strong>Bootstrap</strong> for å gi sidene et brukbart standardutseende
+            uten at du må skrive masse CSS selv. Mønsteret er to linjer i{" "}
+            <code>base.html</code>:
+          </p>
+          <pre className="font-mono text-xs overflow-x-auto whitespace-pre rounded bg-background border border-border p-3 mb-3">
+            {`<!-- I <head>: -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<!-- Før </body>: -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>`}
+          </pre>
+          <p className="text-sm text-muted-foreground mb-3">
+            Etter at CSS-en er koblet på, gir Bootstrap deg ferdige klasser du legger direkte
+            på HTML-elementer:
+          </p>
+          <div className="overflow-hidden rounded-lg border border-border mb-3">
+            <table className="w-full text-sm">
+              <thead className="bg-muted/50">
+                <tr>
+                  <th className="text-left font-semibold px-4 py-2 w-1/3">Klasse</th>
+                  <th className="text-left font-semibold px-4 py-2">Hva den gjør</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-3 font-mono text-xs">container</td>
+                  <td className="px-4 py-3 text-muted-foreground">
+                    Sentrert wrapper med responsive max-bredder. Legges på en{" "}
+                    <code>&lt;div&gt;</code> rundt hovedinnholdet.
+                  </td>
+                </tr>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-3 font-mono text-xs">btn btn-primary</td>
+                  <td className="px-4 py-3 text-muted-foreground">
+                    Lager en blå knapp. Andre varianter: <code>btn-secondary</code>,{" "}
+                    <code>btn-danger</code>, <code>btn-success</code>.
+                  </td>
+                </tr>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-3 font-mono text-xs">form-control</td>
+                  <td className="px-4 py-3 text-muted-foreground">
+                    Stiler <code>&lt;input&gt;</code> / <code>&lt;textarea&gt;</code> /{" "}
+                    <code>&lt;select&gt;</code> som et skjema-felt med ramme og padding.
+                  </td>
+                </tr>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-3 font-mono text-xs">navbar navbar-expand-lg</td>
+                  <td className="px-4 py-3 text-muted-foreground">
+                    Lager en responsiv menylinje øverst. Kollapses til burger-meny på mobil.
+                  </td>
+                </tr>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-3 font-mono text-xs">card</td>
+                  <td className="px-4 py-3 text-muted-foreground">
+                    Boks med ramme og skygge. Bruk sammen med{" "}
+                    <code>card-body</code>, <code>card-title</code>.
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div className="rounded-lg border border-brand/30 bg-brand/5 p-4 text-sm">
+            <strong>Når trenger du Bootstrap?</strong> Aldri strengt tatt. Men på eksamen er
+            det forventet at du kan kjenne igjen klasser som <code>container</code> og{" "}
+            <code>btn btn-primary</code>, fordi kurset bruker dem i alle eksempel-prosjekter.
+            For din egen sluttkode kan du bare bruke Tailwind eller skrive egen CSS — det er
+            ikke krav om Bootstrap.
           </div>
         </section>
 

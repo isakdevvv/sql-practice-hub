@@ -520,6 +520,88 @@ cursor.execute(
       },
     ],
   },
+  {
+    id: "py-db-context-manager",
+    topic: "MySQL connector",
+    title: "Egen DataBase-klasse med `with`-mønster (__enter__/__exit__)",
+    description:
+      "Kurset DTE-2509 bruker `with DataBase() as db:` overalt — i Movies/database.py, MovieApp_WTForms, og hele User-Management-modulen. Bygg din egen DataBase-klasse med `__enter__` og `__exit__` slik at tilkoblingen åpnes automatisk og lukkes/committes garantert — selv om koden i blokken krasjer.\n\n1. Definér klassen DataBase med __init__ som lager mysql.connector.connect(...).\n2. __enter__ skal lage en cursor og returnere self.\n3. __exit__ skal kalle db.commit(), så cursor.close(), så db.close().\n4. Bruk klassen med `with DataBase() as db:` og kjør en SELECT.",
+    requires: [],
+    setup: DB_SETUP,
+    starter: `# === \`with DataBase() as db:\`-mønsteret ===
+#
+# Kurset DTE-2509 bruker dette mønsteret i ALLE DB-eksempler. Hvorfor?
+#   1. Lukkingen er garantert — selv om koden krasjer halvveis.
+#   2. Commit skjer automatisk på vei ut.
+#   3. Mindre kode i routes/views.
+#
+# OPPGAVE: Bygg din egen DataBase-klasse med __init__/__enter__/__exit__,
+# og bruk den med 'with' til å hente kunder.
+
+import mysql.connector
+
+class DataBase:
+    def __init__(self):
+        # TODO: Lag self.connection = mysql.connector.connect(database="exam")
+        ...
+
+    def __enter__(self):
+        # TODO: Lag self.cursor = self.connection.cursor() og return self
+        ...
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        # TODO: commit, cursor.close, connection.close
+        ...
+
+# Bruk klassen:
+with DataBase() as db:
+    db.cursor.execute("SELECT navn FROM kunde ORDER BY kundenr")
+    for (navn,) in db.cursor.fetchall():
+        print(navn)
+`,
+    solution: `import mysql.connector
+
+class DataBase:
+    def __init__(self):
+        self.connection = mysql.connector.connect(database="exam")
+
+    def __enter__(self):
+        self.cursor = self.connection.cursor()
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.connection.commit()
+        self.cursor.close()
+        self.connection.close()
+
+with DataBase() as db:
+    db.cursor.execute("SELECT navn FROM kunde ORDER BY kundenr")
+    for (navn,) in db.cursor.fetchall():
+        print(navn)
+`,
+    hints: [
+      "__enter__ er metoden som kjører når Python ser `with ... as x:`. Det den returnerer blir x.",
+      "__exit__ kjører ALLTID når blokken slutter — også på exception. Argumentene exc_type/exc_val/exc_tb er None hvis ingen feil.",
+      "Kall db.commit() i __exit__ slik kurset gjør. Hvis du heller vil rulle tilbake ved exception kan du sjekke `if exc_type:`.",
+    ],
+    docs: [
+      {
+        title: "Python `with` og context managers",
+        url: "https://docs.python.org/3/reference/datamodel.html#context-managers",
+        note: "__enter__ og __exit__ er protokollen som lar deg skrive `with klassen() as x:`.",
+        snippet: `class DataBase:
+    def __enter__(self):
+        return self
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.cleanup()`,
+      },
+      {
+        title: "Kurset bruker dette mønsteret",
+        url: "https://github.com/reo303halo/DTE-2509-26V/blob/main/Flask_DB/Movies/database.py",
+        note: "Repoets Movies/database.py viser eksakt det samme mønsteret med __enter__/__exit__ for MySQL-tilkoblingen.",
+      },
+    ],
+  },
 
   // ============ FLASK ROUTING ============
   {
@@ -803,6 +885,66 @@ print("Ikke-tall:", client.get("/kunde/abc").status_code)
         snippet: `@app.route("/kunde/<int:kundenr>")
 def kunde(kundenr):
     return f"Kunde nr. {kundenr}"`,
+      },
+    ],
+  },
+  {
+    id: "py-flask-multi-param",
+    topic: "Flask routing",
+    title: "Route med flere URL-parametre og typer",
+    description:
+      "Repoets Basics_Lecture/app.py viser mønsteret /greet/<name>/<int:id>. Bygg en route som tar BÅDE en streng-parameter og en int-parameter, og returnerer en hilsen som inneholder begge. Test med både gyldig input (\"/greet/Ola/42\") og input som matcher feil type (\"/greet/Ola/abc\" → 404).",
+    requires: ["flask"],
+    starter: `from flask import Flask
+
+# === OPPGAVE ===
+# Lag /greet/<name>/<int:id> som returnerer f.eks. "Hei Ola, id=42".
+# • <name> er en string (default-konverteren — alt mellom skråstreker).
+# • <int:id> tvinger int — så /greet/Ola/abc gir 404.
+#
+# Test med client.get("/greet/Ola/42") og client.get("/greet/Ola/abc").
+
+app = Flask(__name__)
+
+@app.route("/greet/<name>/<int:id>")
+def greet(name, id):
+    # TODO: Returner f"Hei {name}, id={id}"
+    pass
+
+client = app.test_client()
+# TODO: kjør to test-kall og print resultatene
+`,
+    solution: `from flask import Flask
+
+app = Flask(__name__)
+
+@app.route("/greet/<name>/<int:id>")
+def greet(name, id):
+    return f"Hei {name}, id={id}"
+
+client = app.test_client()
+print(client.get("/greet/Ola/42").data.decode())
+print("Feil type:", client.get("/greet/Ola/abc").status_code)
+`,
+    hints: [
+      "<name> uten prefiks er en string-konverter (default).",
+      "<int:id> validerer at det er et heltall. Bokstaver gir 404 før funksjonen din kjøres.",
+      "Funksjonen tar argumentene i samme rekkefølge som de står i URLen.",
+    ],
+    docs: [
+      {
+        title: "Variable rules — URL converters",
+        url: "https://flask.palletsprojects.com/en/stable/quickstart/#variable-rules",
+        note:
+          "Tilgjengelige convertere: <string:>, <int:>, <float:>, <path:>, <uuid:>. <path:> matcher skråstreker også — nyttig for filer.",
+        snippet: `@app.route("/files/<path:filename>")
+def file(filename):
+    return filename  # kan inneholde /`,
+      },
+      {
+        title: "Kurset bruker dette mønsteret",
+        url: "https://github.com/reo303halo/DTE-2509-26V/blob/main/Flask_Basics/Basics_Lecture/app.py",
+        note: "Basics_Lecture viser /greet/<name>/<int:id> som demonstrasjon av to parametre med ulik type.",
       },
     ],
   },

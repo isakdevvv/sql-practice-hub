@@ -486,6 +486,23 @@ export const FLASHCARDS: FlashCard[] = [
     answer:
       "Endringene er bare i transaksjonsbufferet til serveren stoppes. Uten commit() lagres de ikke permanent — neste oppstart har dem ikke.",
   },
+  {
+    id: "c-with-database",
+    category: "flask",
+    topic: "Database",
+    question: "Hvorfor brukes `with DataBase() as db:` i kurset?",
+    answer:
+      "Det er Pythons context-manager-mønster. __enter__ åpner cursor og returnerer self; __exit__ kjører ALLTID når blokken slutter (også på exception) og gjør commit + close. Du slipper å skrive try/finally for hånd, og garanterer at koblingen lukkes.",
+    code: "with DataBase() as db:\n    db.cursor.execute(\"SELECT ...\")\n    rows = db.cursor.fetchall()\n# her er commit + close allerede kjørt",
+  },
+  {
+    id: "c-context-exit-exception",
+    category: "flask",
+    topic: "Database",
+    question: "Hva skjer i __exit__ hvis en exception kastes inni `with`-blokken?",
+    answer:
+      "__exit__ kjøres uansett — det er hele poenget. Argumentene exc_type/exc_val/exc_tb forteller hvilken feil som skjedde (None hvis ingen). Returnerer __exit__ True, undertrykkes feilen; returnerer den None/False (vanlig) propageres feilen videre. Kurset committer alltid — du kan velge å rulle tilbake ved exception.",
+  },
 
   // ============= HTTP =============
   {
@@ -559,6 +576,47 @@ export const FLASHCARDS: FlashCard[] = [
     topic: "Statuskoder",
     question: "Hva betyr statuskode 500?",
     answer: "Internal Server Error — feil i serverkode. Sjekk Flask-loggen for stacktrace.",
+  },
+  {
+    id: "c-2xx-klasse",
+    category: "http",
+    topic: "Statuskode-klasser",
+    question: "Hva betyr 2xx-klassen?",
+    answer:
+      "Successful — requesten ble forstått, akseptert og behandlet. Typiske medlemmer: 200 OK, 201 Created, 204 No Content. Server sier «alt gikk bra, her er svaret».",
+  },
+  {
+    id: "c-3xx-klasse",
+    category: "http",
+    topic: "Statuskode-klasser",
+    question: "Hva betyr 3xx-klassen?",
+    answer:
+      "Redirection — klienten må gjøre noe mer (typisk følge en ny URL). Typiske medlemmer: 301 Moved Permanently, 302 Found, 304 Not Modified. Etter en redirect følger nettleseren Location-headeren automatisk.",
+  },
+  {
+    id: "c-4xx-klasse",
+    category: "http",
+    topic: "Statuskode-klasser",
+    question: "Hva betyr 4xx-klassen?",
+    answer:
+      "Client error — feilen ligger hos klienten/brukeren. Typiske medlemmer: 400 Bad Request, 401 Unauthorized, 403 Forbidden, 404 Not Found, 405 Method Not Allowed. Server klandrer ikke seg selv.",
+  },
+  {
+    id: "c-5xx-klasse",
+    category: "http",
+    topic: "Statuskode-klasser",
+    question: "Hva betyr 5xx-klassen?",
+    answer:
+      "Server error — server klarte ikke å oppfylle en ellers gyldig request. Typiske medlemmer: 500 Internal Server Error, 502 Bad Gateway, 503 Service Unavailable. På 500 må du som utvikler fikse koden.",
+  },
+  {
+    id: "c-post-suksess-status",
+    category: "http",
+    topic: "Statuskode-klasser",
+    question:
+      "Hvilken statuskode er normal etter en vellykket POST som lager noe nytt?",
+    answer:
+      "201 Created — ny ressurs er opprettet. Server kan også svare med en Location-header som peker på den nye ressursen. (200 OK er også OK hvis du ikke spesifikt opprettet noe.)",
   },
   {
     id: "c-api",
@@ -1499,6 +1557,30 @@ export const FLASHCARDS: FlashCard[] = [
     answer:
       "Git er versjonskontrollverktøyet — kjører lokalt på maskinen din, sporer endringer, lager commits og branches. GitHub er en nettjeneste som hoster Git-repoer, gjør samarbeid mulig, og har issues, pull requests og CI på toppen.",
   },
+  {
+    id: "c-git-merge-vs-rebase",
+    category: "praktisk",
+    topic: "Git",
+    question: "Forskjell på `git merge` og `git rebase`?",
+    answer:
+      "merge lager en ny merge-commit som kobler to historier sammen — du beholder all opprinnelig commit-historikk. rebase tar dine commits og «flytter» dem oppå målbranchen — historikken blir lineær, men shasum-ene endres. På delte branches: bruk merge. På din egen private branch før push: rebase går bra for å rydde.",
+  },
+  {
+    id: "c-git-head",
+    category: "praktisk",
+    topic: "Git",
+    question: "Hva er HEAD i Git?",
+    answer:
+      "En peker til den committen du står på akkurat nå. Vanligvis peker den til den siste committen på en branch (`HEAD -> main`). Etter `git checkout <commit-sha>` kan du være i «detached HEAD» — du er på en commit uten branch og bør lage en branch hvis du skal jobbe der.",
+  },
+  {
+    id: "c-git-pull-rebase",
+    category: "praktisk",
+    topic: "Git",
+    question: "Hva gjør `git pull --rebase`?",
+    answer:
+      "Henter nye commits fra remote og rebaser dine lokale commits oppå dem — i stedet for å lage en merge-commit. Resultatet er lineær historikk uten støy fra merge-commits. Tryggest når du er alene på en branch. Lærerens git.md i kurset nevner `git config pull.rebase false` som motsatt valg (default-merge).",
+  },
 
   // ============= HTML (kap. 5) =============
   {
@@ -1535,6 +1617,32 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Forskjell på <ul>, <ol> og <li>?",
     answer:
       "<ul> = unordered list (kuler). <ol> = ordered list (1, 2, 3). Begge inneholder <li>-elementer. Bruk <ul> for navigasjon og <ol> der rekkefølgen betyr noe (oppskrifter, steg).",
+  },
+  {
+    id: "c-bootstrap",
+    category: "flask",
+    topic: "Bootstrap",
+    question: "Hva er Bootstrap, og hvordan kobler du det på?",
+    answer:
+      "Et ferdig CSS- og JS-bibliotek som gir responsive stiler via klasser. Kurset bruker det via CDN: én <link> til CSS i <head> og én <script> til JS før </body>. Etter det trenger du bare å legge klasser på HTML-elementer.",
+    code: '<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">\n<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>',
+  },
+  {
+    id: "c-bootstrap-container",
+    category: "flask",
+    topic: "Bootstrap",
+    question: "Hva gjør klassen `container` i Bootstrap?",
+    answer:
+      "Wrap-elementet din får sentrert posisjon og responsiv maks-bredde — smal på mobil, bredere på desktop. Brukes typisk på en <div> som omslutter hovedinnholdet. Variant: `container-fluid` for full bredde alltid.",
+  },
+  {
+    id: "c-bootstrap-btn",
+    category: "flask",
+    topic: "Bootstrap",
+    question: "Hvordan lager du en blå knapp i Bootstrap?",
+    answer:
+      "Legg klassene `btn btn-primary` på et <button>- eller <a>-element. Andre varianter: `btn-secondary` (grå), `btn-danger` (rød), `btn-success` (grønn), `btn-outline-primary` (kun ramme).",
+    code: '<button class="btn btn-primary">Send</button>',
   },
   {
     id: "c-html-form-method",

@@ -13,7 +13,10 @@ export type SubjectId =
   | "verktoy"
   | "ml-ai"
   | "os"
-  | "webapps2";
+  | "webapps2"
+  | "systemutvikling"
+  | "api-prosjekt"
+  | "mobil";
 
 export interface Subject {
   id: SubjectId;
@@ -145,6 +148,39 @@ export const SUBJECTS: readonly Subject[] = [
     label: "Web Applikasjoner 2 (DTE-2802)",
     short: "C#, ASP.NET MVC + Web API, EF Core, Blazor",
     topics: ["C#", "ASP.NET MVC", "ASP.NET Web API", "EF Core", "Blazor", "LINQ"],
+  },
+  {
+    id: "systemutvikling",
+    label: "Systemutvikling (DTE-2604)",
+    short: "Smidig, Scrum, brukerhistorier, UML, prosjekt-praksis",
+    topics: ["Smidig", "Scrum", "Brukerhistorier", "UML", "Estimering", "Code review"],
+  },
+  {
+    id: "api-prosjekt",
+    label: "API-prosjekt fra A til Å",
+    short:
+      "Planlegging, arkitektur, testing, CI/CD, deploy, dokumentasjon",
+    topics: [
+      "API-planlegging",
+      "API-arkitektur",
+      "API-kontrakt",
+      "API-testing",
+      "API-deploy",
+    ],
+  },
+  {
+    id: "mobil",
+    label: "Mobil (DTE-2603)",
+    short: "Kotlin, Android, MVVM, korutiner, Room, Retrofit",
+    topics: [
+      "Kotlin",
+      "Android livssyklus",
+      "MVVM",
+      "Korutiner",
+      "Room",
+      "RecyclerView",
+      "Retrofit",
+    ],
   },
 ] as const;
 
