@@ -4311,4 +4311,1104 @@ __5__ endfor __6__
     explanation:
       "Utvid PK med diskriminatoren (semester) så samme (sid, fkode) kan forekomme flere ganger med ulike semestre. Hadde forretningsregel vært «én registrering total», hadde PK vært bare (sid, fkode).",
   },
+
+  // ============= BIG-O — kompleksitetsanalyse =============
+
+  {
+    id: "d-match-bigo-class-to-eks",
+    kind: "match",
+    title: "Big-O — klasse til eksempel",
+    prompt: "Koble hver Big-O-klasse til et typisk eksempel fra pensum.",
+    topic: "Big-O",
+    pairs: [
+      { left: "O(1)", right: "Dict-get / array-oppslag / stack push" },
+      { left: "O(log n)", right: "Binærsøk i sortert liste" },
+      { left: "O(n)", right: "Skann en liste og finn max" },
+      { left: "O(n log n)", right: "Mergesort, heapsort" },
+      { left: "O(n²)", right: "Bubble sort, nested løkke over samme liste" },
+      { left: "O(2ⁿ)", right: "Naiv rekursiv Fibonacci" },
+      { left: "O(n!)", right: "Generer alle permutasjoner" },
+    ],
+    explanation:
+      "Memoriser disse syv. Når du møter ukjent kode: identifiser mønsteret (én løkke? nestet? halverer?) og match mot lista.",
+  },
+  {
+    id: "d-order-bigo-vekst",
+    kind: "order",
+    title: "Sortér vekstrater fra langsomst-voksende til raskest-voksende",
+    prompt: "Sortér klassene fra MINST arbeid (best for store n) til MEST arbeid.",
+    topic: "Big-O",
+    items: [
+      "O(1) — konstant",
+      "O(log n) — logaritmisk",
+      "O(n) — lineær",
+      "O(n log n) — lineærlogaritmisk",
+      "O(n²) — kvadratisk",
+      "O(2ⁿ) — eksponentiell",
+      "O(n!) — faktoriell",
+    ],
+    explanation:
+      "Husk: log < lineær < lineærlog < kvadratisk < eksponentiell < faktoriell. For n = 1000: log n ≈ 10, n = 1000, n log n ≈ 10000, n² = 1 million, 2ⁿ er astronomisk.",
+  },
+  {
+    id: "d-quiz-bigo-single-loop",
+    kind: "quiz",
+    title: "Big-O — enkel løkke",
+    prompt: "Velg riktig kompleksitet.",
+    topic: "Big-O",
+    question: "Hva er Big-O for denne funksjonen?",
+    code: "def sum_list(lst):\n    total = 0\n    for x in lst:\n        total += x\n    return total",
+    language: "python",
+    options: [
+      { text: "O(n)", correct: true, rationale: "Én løkke gjennom listen — direkte proporsjonal med n." },
+      { text: "O(1)", correct: false, rationale: "Tiden vokser med n — ikke konstant." },
+      { text: "O(n²)", correct: false, rationale: "Bare ÉN løkke, ingen nesting." },
+      { text: "O(log n)", correct: false, rationale: "Vi halverer ikke noe — vi går gjennom alt." },
+    ],
+    explanation: "Tommelfingerregel: enkel for-løkke over n elementer = O(n).",
+  },
+  {
+    id: "d-quiz-bigo-nested-loop",
+    kind: "quiz",
+    title: "Big-O — nestet løkke",
+    prompt: "Velg riktig kompleksitet.",
+    topic: "Big-O",
+    question: "Hva er Big-O for denne funksjonen?",
+    code: "def has_duplicate(lst):\n    for i in range(len(lst)):\n        for j in range(i + 1, len(lst)):\n            if lst[i] == lst[j]:\n                return True\n    return False",
+    language: "python",
+    options: [
+      { text: "O(n²)", correct: true, rationale: "Indre løkke kjører n + (n-1) + ... + 1 ≈ n²/2 ganger. Dropper konstanten → O(n²)." },
+      { text: "O(n)", correct: false, rationale: "To nestede løkker — ikke lineær." },
+      { text: "O(n log n)", correct: false, rationale: "Ingen halvering her." },
+      { text: "O(1)", correct: false, rationale: "Tiden vokser med n²." },
+    ],
+    explanation:
+      "Alternativ med O(n) snitt: `return len(lst) != len(set(lst))`. Set-lookup er O(1) i snitt — sjekk hele lista én gang.",
+  },
+  {
+    id: "d-quiz-bigo-binary-search",
+    kind: "quiz",
+    title: "Big-O — halvering",
+    prompt: "Velg riktig kompleksitet.",
+    topic: "Big-O",
+    question: "Hva er Big-O for denne funksjonen?",
+    code: "def find(sorted_lst, mål):\n    lo, hi = 0, len(sorted_lst) - 1\n    while lo <= hi:\n        mid = (lo + hi) // 2\n        if sorted_lst[mid] == mål: return mid\n        elif sorted_lst[mid] < mål: lo = mid + 1\n        else: hi = mid - 1\n    return -1",
+    language: "python",
+    options: [
+      { text: "O(log n)", correct: true, rationale: "Hver iterasjon halverer søkeområdet. n → n/2 → n/4 → ... → 1 tar log n steg." },
+      { text: "O(n)", correct: false, rationale: "Vi går IKKE gjennom alle elementene." },
+      { text: "O(n log n)", correct: false, rationale: "Bare én løkke som halverer — ikke n iterasjoner." },
+      { text: "O(1)", correct: false, rationale: "Tiden vokser (sakte) med n." },
+    ],
+    explanation: "Binærsøk — krever sortert input. Halvering → log₂(n) = O(log n).",
+  },
+  {
+    id: "d-quiz-bigo-fib-naiv",
+    kind: "quiz",
+    title: "Big-O — naiv rekursiv Fibonacci",
+    prompt: "Velg riktig kompleksitet.",
+    topic: "Big-O",
+    question: "Hva er Big-O for denne funksjonen?",
+    code: "def fib(n):\n    if n < 2: return n\n    return fib(n-1) + fib(n-2)",
+    language: "python",
+    options: [
+      { text: "O(2ⁿ)", correct: true, rationale: "Hvert kall splittes i to nye. Tre-strukturen vokser eksponentielt." },
+      { text: "O(n)", correct: false, rationale: "Ville krevd memoization — denne regner samme delproblem mange ganger." },
+      { text: "O(n²)", correct: false, rationale: "Eksponentiell vekst er mye verre enn kvadratisk." },
+      { text: "O(log n)", correct: false, rationale: "Ingen halvering — heller dobling." },
+    ],
+    explanation:
+      "Fiks: `@lru_cache` på funksjonen gjør den O(n). Eller bygg iterativt med to variabler i en løkke.",
+  },
+  {
+    id: "d-quiz-bigo-two-sequences",
+    kind: "quiz",
+    title: "Big-O — to løkker etter hverandre",
+    prompt: "Velg riktig kompleksitet.",
+    topic: "Big-O",
+    question: "Hva er Big-O for denne funksjonen?",
+    code: "def analyser(lst):\n    s = 0\n    for x in lst:\n        s += x\n    biggest = lst[0]\n    for x in lst:\n        if x > biggest:\n            biggest = x\n    return s, biggest",
+    language: "python",
+    options: [
+      { text: "O(n)", correct: true, rationale: "Sekvens = addisjon: O(n) + O(n) = O(2n) = O(n). Konstanter slipes bort." },
+      { text: "O(n²)", correct: false, rationale: "Løkkene er IKKE nestet — de står etter hverandre." },
+      { text: "O(2n)", correct: false, rationale: "Riktig telling, men Big-O dropper konstanten — skrives O(n)." },
+      { text: "O(log n)", correct: false, rationale: "Vi går gjennom hele lista to ganger — ikke logaritmisk." },
+    ],
+    explanation:
+      "Klassisk feil: «to løkker = O(n²)». Nei — nesting gir multiplikasjon, sekvens gir addisjon.",
+  },
+  {
+    id: "d-fill-bigo-analyse",
+    kind: "fill",
+    title: "Fyll inn Big-O-klassene",
+    prompt: "Sett inn riktig Big-O for hver linje.",
+    topic: "Big-O",
+    template:
+      "lst[5]                        # __1__\nbinary_search(sortert, x)     # __2__\nfor x in lst: ...             # __3__\nsorted(lst)                   # __4__\nfor i in lst:\n    for j in lst:\n        ...                   # __5__",
+    blanks: ["O(1)", "O(log n)", "O(n)", "O(n log n)", "O(n²)"],
+    options: ["O(1)", "O(log n)", "O(n)", "O(n log n)", "O(n²)", "O(2ⁿ)", "O(n!)"],
+    language: "python",
+    explanation:
+      "Python sin sorted() bruker Timsort som er O(n log n). Tabell og dict-lookup er O(1) i snitt.",
+  },
+  {
+    id: "d-match-bigo-builtin",
+    kind: "match",
+    title: "Big-O for innebygde Python-operasjoner",
+    prompt: "Lett å overse — disse koster mer enn du tror. Match.",
+    topic: "Big-O",
+    pairs: [
+      { left: "lst[i] (oppslag på indeks)", right: "O(1)" },
+      { left: "lst.append(x)", right: "O(1) amortisert" },
+      { left: "lst.pop(0) (pop fra start)", right: "O(n) — flytter alle elementene" },
+      { left: "x in lst (medlemstest i liste)", right: "O(n)" },
+      { left: "x in set / x in dict", right: "O(1) snitt" },
+      { left: "lst.sort()", right: "O(n log n)" },
+      { left: "deque.popleft()", right: "O(1)" },
+      { left: "lst1 + lst2 (konkatenering)", right: "O(n + m) — lager ny liste" },
+    ],
+    explanation:
+      "Klassisk performance-feil: bruke `lst.pop(0)` i kø-mønster. Bytt til `deque.popleft()` for O(1).",
+  },
+  {
+    id: "d-quiz-bigo-string-concat",
+    kind: "quiz",
+    title: "Big-O — string-konkatenering i løkke",
+    prompt: "Velg riktig kompleksitet.",
+    topic: "Big-O",
+    question: "Hva er Big-O for denne funksjonen?",
+    code: "def joiner(lst):\n    s = \"\"\n    for ord in lst:\n        s = s + ord\n    return s",
+    language: "python",
+    options: [
+      { text: "O(n²)", correct: true, rationale: "Hver `s + ord` lager EN HELT NY STRING. Etter n iterasjoner: 1+2+3+...+n ≈ n²/2 tegn kopieres." },
+      { text: "O(n)", correct: false, rationale: "Det ville krevd at konkatenering var O(1) — det er det IKKE for immutable strings." },
+      { text: "O(log n)", correct: false, rationale: "Ingen halvering." },
+      { text: "O(1)", correct: false, rationale: "Tiden vokser med n²." },
+    ],
+    explanation:
+      "Fiks: `''.join(lst)` er O(n) — den allokerer én ny string og fyller alt på én gang. Klassisk Python-performance-tip.",
+  },
+  {
+    id: "d-quiz-bigo-set-vs-list",
+    kind: "quiz",
+    title: "Big-O — set vs list for medlemskap",
+    prompt: "Velg riktig kompleksitet for hele funksjonen.",
+    topic: "Big-O",
+    question: "Hva er Big-O for denne funksjonen?",
+    code: "def find_dups(lst):\n    seen = set()\n    dups = []\n    for x in lst:\n        if x in seen:\n            dups.append(x)\n        else:\n            seen.add(x)\n    return dups",
+    language: "python",
+    options: [
+      { text: "O(n) — én løkke, set-lookup er O(1) i snitt", correct: true, rationale: "`x in seen` er O(1) snitt fordi seen er et set (hash-tabell), ikke en liste." },
+      { text: "O(n²)", correct: false, rationale: "Ville vært riktig HVIS seen var en liste — da ville `x in seen` vært O(n)." },
+      { text: "O(n log n)", correct: false, rationale: "Ingen sortering eller halvering." },
+      { text: "O(1)", correct: false, rationale: "Vi går gjennom hele lst." },
+    ],
+    explanation:
+      "Mest impact-fulle optimalisering i Python: hvis du gjør gjentatte medlemskaps-sjekker, bruk set i stedet for list. n² → n.",
+  },
+  {
+    id: "d-order-bigo-growth-table",
+    kind: "order",
+    title: "Sortér konkrete kjøretider for n = 1000",
+    prompt: "Sortér fra raskest til tregst når n = 1000.",
+    topic: "Big-O",
+    items: [
+      "log₂(1000) ≈ 10",
+      "1000",
+      "1000 × log₂(1000) ≈ 10 000",
+      "1000² = 1 000 000",
+      "2¹⁰⁰⁰ — astronomisk",
+      "1000! — uberegnelig",
+    ],
+    explanation:
+      "Ved n = 1000: log n er 10. n² er en million. 2ⁿ og n! er ikke håndterbart.",
+  },
+  {
+    id: "d-quiz-bigo-list-vs-deque",
+    kind: "quiz",
+    title: "Hvorfor er deque raskere enn list som kø?",
+    prompt: "Velg det best dekkende svaret.",
+    topic: "Big-O",
+    question: "Du implementerer BFS og bruker en kø. Hvorfor er `collections.deque` rett valg, og ikke vanlig `list`?",
+    options: [
+      {
+        text: "deque.popleft() er O(1); list.pop(0) er O(n) fordi alle elementer må flyttes ett hakk",
+        correct: true,
+        rationale:
+          "BFS køer ofte mange elementer. Med list ville hver dequeue koste O(n) → totalt O(n²) for BFS. Med deque: O(n).",
+      },
+      {
+        text: "deque er typestrengt og hindrer feil",
+        correct: false,
+        rationale: "Ikke relevant — Python er dynamisk typet uansett.",
+      },
+      {
+        text: "deque bruker mindre minne",
+        correct: false,
+        rationale: "Faktisk litt mer minne per element. Det er HASTIGHETEN på popleft som er forskjellen.",
+      },
+      {
+        text: "list støtter ikke å fjerne første element",
+        correct: false,
+        rationale: "list.pop(0) fungerer — det er bare tregt.",
+      },
+    ],
+    explanation:
+      "Generelt: når du trenger FIFO-oppførsel, alltid deque. Når du trenger LIFO eller indeksering, list er fin.",
+  },
+  {
+    id: "d-quiz-bigo-quicksort-worst",
+    kind: "quiz",
+    title: "Quicksort — verste tilfelle",
+    prompt: "Velg riktig kompleksitet.",
+    topic: "Big-O",
+    question: "Quicksort kjøres på en allerede sortert liste, og pivoten velges alltid som FØRSTE element. Hva blir kompleksiteten?",
+    options: [
+      {
+        text: "O(n²) — partisjon er ubalansert hver runde",
+        correct: true,
+        rationale: "Med første-element som pivot på sortert input: alle andre er større, så hver rekursjon reduserer størrelsen med bare 1.",
+      },
+      {
+        text: "O(n log n) — det er jo quicksort sin garanti",
+        correct: false,
+        rationale: "n log n er forventet/snitt. Med dårlig pivot-strategi kan verste bli n².",
+      },
+      {
+        text: "O(n) — sortert input gjør sortering trivielt",
+        correct: false,
+        rationale: "Quicksort vet ikke at input er sortert — den partisjonerer uansett.",
+      },
+      {
+        text: "O(log n)", correct: false, rationale: "Aldri så raskt.",
+      },
+    ],
+    explanation:
+      "Fiks: median-of-three eller randomisert pivot. Med disse er O(n²) ekstremt usannsynlig på praktisk input.",
+  },
+  {
+    id: "d-match-bigo-strategier",
+    kind: "match",
+    title: "«Hvordan blir du raskere?» — bytt ut for hva",
+    prompt: "For hvert tregt mønster, hva er den klassiske fiksen?",
+    topic: "Big-O",
+    pairs: [
+      { left: "x in lst (gjentatt)", right: "Konverter til set først — O(1) snitt per sjekk" },
+      { left: "lst.pop(0) i løkke", right: "Bruk deque.popleft() — O(1)" },
+      { left: "s = s + ord i løkke", right: "Bygg liste først, så ''.join() — O(n)" },
+      { left: "Naiv rekursiv fib", right: "@lru_cache eller iterativ — O(n)" },
+      { left: "Sortér så finn min", right: "Bare min(lst) — O(n) i stedet for O(n log n)" },
+      { left: "Dobbel-løkke for å finne duplikater", right: "len(lst) != len(set(lst)) — O(n)" },
+    ],
+    explanation:
+      "Disse seks fiksene løser kanskje 80% av Python-performance-problemer studenter møter.",
+  },
+  {
+    id: "d-quiz-bigo-space",
+    kind: "quiz",
+    title: "Plass-kompleksitet",
+    prompt: "Velg riktig svar.",
+    topic: "Big-O",
+    question: "En rekursiv funksjon traverserer et balansert binærtre med n noder. Hvor mye PLASS bruker den på kallstacken?",
+    options: [
+      {
+        text: "O(log n) — dybden på balansert tre er log n",
+        correct: true,
+        rationale: "Hver rekursjon legger til én frame; vi gir tilbake før vi går til ny gren. Maks dybde = treet høyde = log n for balansert tre.",
+      },
+      {
+        text: "O(n) — vi besøker n noder",
+        correct: false,
+        rationale: "Tid er O(n), men PLASS er bare den maksimale dybden i kallstacken samtidig.",
+      },
+      {
+        text: "O(1) — vi lager ikke nye datastrukturer",
+        correct: false,
+        rationale: "Kallstacken teller — hvert rekursivt kall bruker plass.",
+      },
+      {
+        text: "O(n²)",
+        correct: false,
+        rationale: "Aldri så mye plass.",
+      },
+    ],
+    explanation:
+      "For UBALANSERT tre (lineær kjede) blir dybden n, og plass-kompleksiteten O(n). Balansering er det som holder den lav.",
+  },
+
+  // ============= REKURSJON =============
+
+  {
+    id: "d-match-rekursjon-deler",
+    kind: "match",
+    title: "Rekursjon — de to delene",
+    prompt: "Match hver del av en rekursiv funksjon til hva den gjør.",
+    topic: "Rekursjon",
+    pairs: [
+      { left: "Base case", right: "Det enkleste tilfellet — svaret kjent uten rekursjon" },
+      { left: "Rekursivt steg", right: "Reduser problemet og kall funksjonen på det mindre" },
+      { left: "Stack frame", right: "Lokal kontekst lagret når funksjonen kaller seg selv" },
+      { left: "RecursionError", right: "Når dybden overskrider grensen — manglende base case" },
+    ],
+  },
+  {
+    id: "d-fill-rekursjon-fakultet",
+    kind: "fill",
+    title: "Fyll inn fakultet-funksjonen",
+    prompt: "Den mest klassiske rekursjonsoppgaven. Fyll inn de manglende delene.",
+    topic: "Rekursjon",
+    template:
+      "def fakultet(n):\n    if n __1__ 1:        # base case\n        return __2__\n    return n * fakultet(__3__)   # rekursivt steg",
+    blanks: ["<=", "1", "n - 1"],
+    options: ["<=", "<", "==", ">=", "0", "1", "n", "n - 1", "n + 1"],
+    language: "python",
+    explanation:
+      "Base case dekker BÅDE n=0 og n=1 (begge skal returnere 1). Rekursivt steg må MINSKE n.",
+  },
+  {
+    id: "d-order-rekursjon-kallstack",
+    kind: "order",
+    title: "Kallstack — sortér rekkefølge av kall",
+    prompt:
+      "fakultet(3) kalles. Sortér hendelsene i den rekkefølgen de faktisk skjer i tid.",
+    topic: "Rekursjon",
+    items: [
+      "fakultet(3) kalles → frame pushes",
+      "fakultet(3) kaller fakultet(2) → frame pushes",
+      "fakultet(2) kaller fakultet(1) → frame pushes",
+      "fakultet(1) treffer base case → returnerer 1",
+      "fakultet(2) regner 2 * 1 = 2 → returnerer 2",
+      "fakultet(3) regner 3 * 2 = 6 → returnerer 6",
+    ],
+    explanation:
+      "Push-rekkefølgen er fra-toppen-ned: fakultet(3) → fakultet(2) → fakultet(1). Returer er nedenfra-opp.",
+  },
+  {
+    id: "d-fill-rekursjon-flatten",
+    kind: "fill",
+    title: "Fyll inn flatten av nestede lister",
+    prompt: "Fyll inn de manglende delene av flatten-funksjonen.",
+    topic: "Rekursjon",
+    template:
+      "def flatten(nested):\n    flat = []\n    for item in nested:\n        if __1__(item, __2__):\n            flat.__3__(flatten(item))   # rekursivt steg\n        else:\n            flat.__4__(item)            # base-handling\n    return flat",
+    blanks: ["isinstance", "list", "extend", "append"],
+    options: ["isinstance", "type", "list", "tuple", "extend", "append", "add", "insert"],
+    language: "python",
+    explanation:
+      ".extend() pakker UT en iterable og legger til hvert element. .append() ville lagt til hele lista som ett element — feil her.",
+  },
+  {
+    id: "d-quiz-rekursjon-fib-output",
+    kind: "quiz",
+    title: "Fibonacci — output prediction",
+    prompt: "Velg riktig svar.",
+    topic: "Rekursjon",
+    question: "Hva returnerer fib(6)?",
+    code: "def fib(n):\n    if n < 2: return n\n    return fib(n - 1) + fib(n - 2)",
+    language: "python",
+    options: [
+      { text: "8", correct: true, rationale: "Sekvensen er 0, 1, 1, 2, 3, 5, 8, 13. fib(6) = 8." },
+      { text: "5", correct: false, rationale: "Det er fib(5)." },
+      { text: "13", correct: false, rationale: "Det er fib(7)." },
+      { text: "6", correct: false, rationale: "Fibonacci-tallene følger ikke n direkte." },
+    ],
+    explanation: "Fibonacci-sekvens: f(0)=0, f(1)=1, så hver er sum av de to forrige.",
+  },
+  {
+    id: "d-quiz-rekursjon-base-glemt",
+    kind: "quiz",
+    title: "Hva skjer hvis du glemmer base case?",
+    prompt: "Velg det riktige svaret.",
+    topic: "Rekursjon",
+    question: "Du skriver `def f(n): return n * f(n - 1)` uten base case. Hva skjer når du kaller f(10)?",
+    options: [
+      {
+        text: "RecursionError — maximum recursion depth exceeded",
+        correct: true,
+        rationale: "Funksjonen kaller seg selv uendelig. Python kaster RecursionError ved ~1000 dybder.",
+      },
+      {
+        text: "Funksjonen returnerer 0",
+        correct: false,
+        rationale: "Den når aldri å returnere — den fortsetter å rekurrere.",
+      },
+      {
+        text: "Funksjonen returnerer fakultet av 10",
+        correct: false,
+        rationale: "Uten base case stopper rekursjonen aldri. Du får ingen verdi.",
+      },
+      {
+        text: "Funksjonen returnerer None",
+        correct: false,
+        rationale: "Ingen return blir nådd — feilen kommer først.",
+      },
+    ],
+    explanation:
+      "Skriv ALLTID base case FØRST når du designer rekursive funksjoner. Spør: «hva er det enkleste tilfellet jeg vet svaret på?»",
+  },
+  {
+    id: "d-quiz-rekursjon-naiv-fib-cost",
+    kind: "quiz",
+    title: "Hvorfor er naiv fib treg?",
+    prompt: "Velg det mest dekkende svaret.",
+    topic: "Rekursjon",
+    question: "Den naive `fib(n)` har O(2ⁿ) tid. Hva er den primære grunnen?",
+    options: [
+      {
+        text: "Samme delproblem regnes ut mange ganger",
+        correct: true,
+        rationale: "fib(5) regner fib(3) to ganger, fib(2) tre ganger, fib(1) fem ganger... eksponentiell duplisering.",
+      },
+      {
+        text: "Rekursjon i Python er treg",
+        correct: false,
+        rationale: "Det er overhead, men ikke hovedgrunnen. Iterativ fib er O(n) — selve rekursjonen er ikke problemet.",
+      },
+      {
+        text: "Python lager nye tall hver gang",
+        correct: false,
+        rationale: "Sant for arithmetic, men ikke kjernen i kompleksitetsproblemet.",
+      },
+      {
+        text: "Stacken vokser eksponentielt",
+        correct: false,
+        rationale: "Stacken er bare O(n) dyp samtidig. Det er ANTALL kall over tid som er eksponentielt.",
+      },
+    ],
+    explanation:
+      "Fiks: @lru_cache lagrer resultatene. Da regnes hvert delproblem ÉN gang → O(n).",
+  },
+  {
+    id: "d-fill-rekursjon-memo",
+    kind: "fill",
+    title: "Memoization-fiks for fib",
+    prompt: "Bruk @lru_cache for å gjøre fib O(n).",
+    topic: "Rekursjon",
+    template:
+      "from functools import __1__\n\n@__1__(maxsize=None)\ndef fib(n):\n    if n < 2:\n        return __2__\n    return fib(n - 1) + fib(n - 2)",
+    blanks: ["lru_cache", "n"],
+    options: ["lru_cache", "cache", "memoize", "decorator", "n", "1", "0"],
+    language: "python",
+    explanation:
+      "@lru_cache cacher input/output. Andre kall med samme n returnerer fra cachen. Python 3.9+: kan også bruke @cache (alias).",
+  },
+  {
+    id: "d-quiz-rekursjon-default-arg",
+    kind: "quiz",
+    title: "Default-argument-fellen",
+    prompt: "Velg det riktige problemet.",
+    topic: "Rekursjon",
+    question: "Hva er galt med denne rekursive funksjonen?",
+    code: "def append_path(node, path=[]):\n    path.append(node)\n    if node.barn:\n        for c in node.barn:\n            append_path(c, path)\n    return path",
+    language: "python",
+    options: [
+      {
+        text: "Default-lista deles mellom kall — ulike trær vil mutere SAMME lista",
+        correct: true,
+        rationale: "Python evaluerer default-argumenter ÉN gang ved funksjonsdefinisjon. `[]` er da én delt liste.",
+      },
+      {
+        text: "Mangler base case",
+        correct: false,
+        rationale: "Den HAR base case (når node.barn er tomt går for-løkka aldri).",
+      },
+      {
+        text: "Bruker for mye minne",
+        correct: false,
+        rationale: "Ikke hovedproblemet.",
+      },
+      {
+        text: "Returnerer feil type",
+        correct: false,
+        rationale: "Den returnerer en liste, som forventet.",
+      },
+    ],
+    explanation:
+      "Fiks: `def append_path(node, path=None): if path is None: path = []`. Lag NY liste hver kall — ikke gjenbruk default.",
+  },
+  {
+    id: "d-fill-rekursjon-ruler",
+    kind: "fill",
+    title: "Ruler — del-og-hersk",
+    prompt: "Tegn linjal-stikker. Fyll inn rekursjons-strukturen.",
+    topic: "Rekursjon",
+    template:
+      "def ruler(left, right, height, rul):\n    if height <= __1__:        # base case\n        return\n    mid = (left + right) // __2__\n    ruler(left, mid, height - 1, rul)    # venstre halvdel\n    rul[mid] = height                     # jobb i midten\n    ruler(mid, right, height - __3__, rul) # høyre halvdel",
+    blanks: ["0", "2", "1"],
+    options: ["0", "1", "2", "-1", "height"],
+    language: "python",
+    explanation:
+      "Klassisk del-og-hersk: rekursér venstre, jobb i midten, rekursér høyre. Samme mønster som in-order traversering av binærtre.",
+  },
+  {
+    id: "d-match-rekursjon-vs-iter",
+    kind: "match",
+    title: "Når velger du rekursjon vs iterasjon?",
+    prompt: "Match hvert scenario til riktig valg.",
+    topic: "Rekursjon",
+    pairs: [
+      { left: "Traversering av binærtre", right: "Rekursjon — naturlig selv-lik struktur" },
+      { left: "Summere tall fra 1 til n", right: "Iterasjon — enkel for-løkke holder" },
+      { left: "Flatten av nestede lister", right: "Rekursjon — vet ikke dybden på forhånd" },
+      { left: "Beregne fakultet (n > 1000)", right: "Iterasjon — rekursjon overflower stacken" },
+      { left: "Mergesort", right: "Rekursjon — del-og-hersk naturlig" },
+      { left: "Telle elementer i en liste", right: "Iterasjon eller len() — ingen grunn til rekursjon" },
+    ],
+  },
+  {
+    id: "d-quiz-rekursjon-output-flatten",
+    kind: "quiz",
+    title: "Flatten — output prediction",
+    prompt: "Velg riktig output.",
+    topic: "Rekursjon",
+    question: "Hva returnerer flatten([1, [2, [3, 4]], 5])?",
+    code: "def flatten(nested):\n    flat = []\n    for item in nested:\n        if isinstance(item, list):\n            flat.extend(flatten(item))\n        else:\n            flat.append(item)\n    return flat",
+    language: "python",
+    options: [
+      { text: "[1, 2, 3, 4, 5]", correct: true, rationale: "Rekursjonen flater ut alle nivåer." },
+      { text: "[1, 2, [3, 4], 5]", correct: false, rationale: "Det er bare ett nivå flating — funksjonen rekurrerer dypere." },
+      { text: "[[1, 2, 3, 4, 5]]", correct: false, rationale: "Resultatet skal IKKE være pakket inn." },
+      { text: "[1, [2, [3, 4]], 5]", correct: false, rationale: "Det er input — funksjonen endrer noe." },
+    ],
+  },
+
+  // ============= SORTERING =============
+
+  {
+    id: "d-match-sort-egenskaper",
+    kind: "match",
+    title: "Match sorteringsalgoritme til egenskap",
+    prompt: "Hver algoritme har en distinkt egenskap som skiller den ut.",
+    topic: "Sortering",
+    pairs: [
+      { left: "Bubble sort", right: "Største element «bobler» til høyre hver runde" },
+      { left: "Selection sort", right: "Finn minste, bytt til front, gjenta" },
+      { left: "Insertion sort", right: "Sett element på riktig plass i sortert prefix" },
+      { left: "Mergesort", right: "Del, sortér rekursivt, flett — alltid O(n log n)" },
+      { left: "Quicksort", right: "Pivot-partisjon — rask i snitt, kan bli O(n²)" },
+      { left: "Heapsort", right: "heapify så pop minste n ganger — alltid O(n log n)" },
+    ],
+  },
+  {
+    id: "d-match-sort-kompleksitet",
+    kind: "match",
+    title: "Match sorteringsalgoritme til snitt-kompleksitet",
+    prompt: "Lær disse — de er nesten alltid på eksamen.",
+    topic: "Sortering",
+    pairs: [
+      { left: "Bubble sort", right: "O(n²)" },
+      { left: "Selection sort", right: "O(n²)" },
+      { left: "Insertion sort", right: "O(n²)" },
+      { left: "Mergesort", right: "O(n log n)" },
+      { left: "Quicksort (snitt)", right: "O(n log n)" },
+      { left: "Heapsort", right: "O(n log n)" },
+      { left: "Python sin sorted() / Timsort", right: "O(n log n)" },
+    ],
+    explanation:
+      "n² er treig på store data. O(n log n) er taket for sammenligningsbasert sortering. For radix/counting sort kan du komme under, men de krever spesielle inputs.",
+  },
+  {
+    id: "d-order-mergesort-steps",
+    kind: "order",
+    title: "Mergesort — sortér stegene",
+    prompt: "Sortér stegene i mergesort fra det første som skjer til det siste.",
+    topic: "Sortering",
+    items: [
+      "Sjekk base case: hvis len(lst) <= 1, returner som er",
+      "Beregn midten: mid = len(lst) // 2",
+      "Rekursivt sortér venstre halvdel",
+      "Rekursivt sortér høyre halvdel",
+      "Flett de to sorterte halvdelene til én sortert liste",
+      "Returner det flettede resultatet",
+    ],
+    explanation:
+      "Mergesort er pure del-og-hersk: hvert kall splitter og rekurrerer, så fletter. Garantert O(n log n).",
+  },
+  {
+    id: "d-fill-mergesort-merge",
+    kind: "fill",
+    title: "Fyll inn merge-funksjonen",
+    prompt: "Merge tar to sorterte lister og fletter dem til én sortert liste.",
+    topic: "Sortering",
+    template:
+      "def merge(a, b):\n    result = []\n    i = j = 0\n    while i < __1__ and j < __2__:\n        if a[i] __3__ b[j]:\n            result.append(a[i]); i += 1\n        else:\n            result.append(b[j]); j += 1\n    result.__4__(a[i:])\n    result.__4__(b[j:])\n    return result",
+    blanks: ["len(a)", "len(b)", "<=", "extend"],
+    options: ["len(a)", "len(b)", "len(result)", "<", "<=", ">=", "extend", "append", "add"],
+    language: "python",
+    explanation:
+      "Det viktige er <= (ikke <): bevarer stabilitet — like elementer fra a kommer før like fra b.",
+  },
+  {
+    id: "d-fill-bubble-sort",
+    kind: "fill",
+    title: "Fyll inn bubble sort",
+    prompt: "Implementer bubble sort med tidlig exit.",
+    topic: "Sortering",
+    template:
+      "def bubble_sort(lst):\n    n = len(lst)\n    for i in range(n - 1):\n        byttet = False\n        for j in range(n - 1 - __1__):\n            if lst[j] __2__ lst[j + 1]:\n                lst[j], lst[j + 1] = lst[j + 1], lst[j]\n                byttet = __3__\n        if not byttet:\n            break        # allerede sortert\n    return lst",
+    blanks: ["i", ">", "True"],
+    options: ["i", "j", "n", ">", "<", ">=", "True", "False", "None"],
+    language: "python",
+    explanation:
+      "Indre løkka stopper ved n-1-i fordi de siste i elementene allerede er sortert. Tidlig exit gir O(n) beste tilfelle.",
+  },
+  {
+    id: "d-fill-insertion-sort",
+    kind: "fill",
+    title: "Fyll inn insertion sort",
+    prompt: "Implementer insertion sort som setter hvert element på rett plass.",
+    topic: "Sortering",
+    template:
+      "def insertion_sort(lst):\n    for i in range(__1__, len(lst)):\n        key = lst[i]\n        j = i - 1\n        while j >= 0 and lst[j] __2__ key:\n            lst[j + 1] = lst[j]\n            j __3__ 1\n        lst[j + 1] = __4__\n    return lst",
+    blanks: ["1", ">", "-=", "key"],
+    options: ["0", "1", "i", ">", "<", ">=", "-=", "+=", "key", "lst[i]", "lst[j]"],
+    language: "python",
+    explanation:
+      "Vi starter på i=1 fordi lst[0:1] alltid er «sortert» (én element). while-løkka skifter elementer høyre til vi finner riktig sted.",
+  },
+  {
+    id: "d-fill-quicksort",
+    kind: "fill",
+    title: "Fyll inn quicksort med list comprehensions",
+    prompt: "Implementer enkel quicksort med tre partisjoner.",
+    topic: "Sortering",
+    template:
+      "import random\n\ndef quicksort(lst):\n    if len(lst) __1__ 1:\n        return lst\n    pivot = random.choice(lst)\n    mindre  = [x for x in lst if x < __2__]\n    likt    = [x for x in lst if x == __2__]\n    storre  = [x for x in lst if x > __2__]\n    return quicksort(__3__) + likt + quicksort(__4__)",
+    blanks: ["<=", "pivot", "mindre", "storre"],
+    options: ["<=", "<", ">=", ">", "pivot", "lst", "mindre", "storre", "likt"],
+    language: "python",
+    explanation:
+      "Det er viktig å rekurrere KUN på mindre og storre — likt er allerede plassert riktig. Inkluderer du pivoten i en av rekursjonene risikerer du uendelig løkke.",
+  },
+  {
+    id: "d-quiz-sort-stable",
+    kind: "quiz",
+    title: "Stabilitet — hvilken er stabil?",
+    prompt: "Velg riktig.",
+    topic: "Sortering",
+    question:
+      "Du sorterer en liste av (navn, alder) først på alder, så på navn. Hvilken sorterings-algoritme MÅ du bruke for at den andre sorteringen ikke skal ødelegge resultatet av den første?",
+    options: [
+      {
+        text: "En STABIL algoritme — mergesort, insertion sort, eller Python sin Timsort",
+        correct: true,
+        rationale: "Stabilitet betyr at like nøkler beholder relativ rekkefølge. Avgjørende for multi-key-sortering.",
+      },
+      {
+        text: "Quicksort — den er raskest",
+        correct: false,
+        rationale: "Quicksort er IKKE stabil — like elementer kan bytte plass under partisjonering.",
+      },
+      {
+        text: "Heapsort — den er garantert O(n log n)",
+        correct: false,
+        rationale: "Heapsort er IKKE stabil — heap-strukturen kan ombytte like elementer.",
+      },
+      {
+        text: "Det spiller ingen rolle",
+        correct: false,
+        rationale: "Det spiller stor rolle — ustabil sortering ødelegger den forrige.",
+      },
+    ],
+    explanation:
+      "Stabil: mergesort, insertion, bubble, Python Timsort. Ustabil: quicksort, heapsort, selection.",
+  },
+  {
+    id: "d-quiz-sort-best-case-bubble",
+    kind: "quiz",
+    title: "Bubble sort på allerede sortert liste",
+    prompt: "Velg riktig.",
+    topic: "Sortering",
+    question: "Hva er beste-tilfelle for bubble sort MED tidlig exit (byttet-flag)?",
+    options: [
+      {
+        text: "O(n) — én gjennomgang oppdager null bytter, og funksjonen avslutter",
+        correct: true,
+        rationale: "Hvis flagget aldri settes, breaker vi etter første runde. Total: n-1 sammenligninger.",
+      },
+      {
+        text: "O(n²) — alltid",
+        correct: false,
+        rationale: "Det er sant uten tidlig exit. MED flagget kan vi avslutte ved sortert input.",
+      },
+      {
+        text: "O(log n)",
+        correct: false,
+        rationale: "Bubble sort halverer ingenting.",
+      },
+      {
+        text: "O(n log n)",
+        correct: false,
+        rationale: "Bubble sort er aldri n log n.",
+      },
+    ],
+  },
+  {
+    id: "d-quiz-sort-pivot",
+    kind: "quiz",
+    title: "Pivot-valg i quicksort",
+    prompt: "Velg den BESTE strategien.",
+    topic: "Sortering",
+    question: "Du implementerer quicksort. Hvilken pivot-strategi gir best forventet ytelse på alle slags input?",
+    options: [
+      {
+        text: "Median-of-three (median av første, midt, siste) eller randomisert pivot",
+        correct: true,
+        rationale: "Randomisert eller median-of-three gjør worst-case nesten umulig å trigge i praksis.",
+      },
+      {
+        text: "Alltid første element",
+        correct: false,
+        rationale: "Trigger O(n²) på sortert eller omvendt sortert input — VANLIG i praksis.",
+      },
+      {
+        text: "Alltid siste element",
+        correct: false,
+        rationale: "Samme problem som første element.",
+      },
+      {
+        text: "Alltid middelelementet",
+        correct: false,
+        rationale: "Bedre enn første/siste, men angriper kan fortsatt konstruere input som trigger n².",
+      },
+    ],
+    explanation:
+      "Real-world quicksort (eks. C++ sin std::sort, Java sin Arrays.sort) bruker introsort: quicksort med median-of-three, faller tilbake til heapsort ved dårlig pivot-mønster.",
+  },
+  {
+    id: "d-order-quicksort-steps",
+    kind: "order",
+    title: "Quicksort på [3, 1, 4, 1, 5, 9, 2, 6] — sortér første runde",
+    prompt: "Pivot velges som 4. Sortér stegene i hvordan partisjonen settes opp.",
+    topic: "Sortering",
+    items: [
+      "Pivot velges: pivot = 4",
+      "Bygg mindre: [3, 1, 1, 2] (alt < 4)",
+      "Bygg likt: [4] (alt == 4)",
+      "Bygg storre: [5, 9, 6] (alt > 4)",
+      "Kall quicksort([3, 1, 1, 2]) rekursivt",
+      "Kall quicksort([5, 9, 6]) rekursivt",
+      "Konkateneer: quicksort(mindre) + likt + quicksort(storre)",
+    ],
+  },
+  {
+    id: "d-quiz-sort-counting-compares",
+    kind: "quiz",
+    title: "Insertion sort — antall sammenligninger",
+    prompt: "Velg riktig svar.",
+    topic: "Sortering",
+    question: "Insertion sort kjøres på [5, 4, 3, 2, 1] (omvendt sortert). Hvor mange sammenligninger gjør den?",
+    options: [
+      {
+        text: "10 sammenligninger",
+        correct: true,
+        rationale: "i=1: 1 sammenligning. i=2: 2. i=3: 3. i=4: 4. Total: 1+2+3+4 = 10 = n(n-1)/2 for n=5.",
+      },
+      {
+        text: "4 sammenligninger",
+        correct: false,
+        rationale: "Det er antall ytre iterasjoner — hver gjør flere sammenligninger.",
+      },
+      {
+        text: "5 sammenligninger",
+        correct: false,
+        rationale: "Det er n — ikke kvadratisk.",
+      },
+      {
+        text: "25 sammenligninger",
+        correct: false,
+        rationale: "Det er n² — overdriver. Reell er n(n-1)/2.",
+      },
+    ],
+    explanation: "Insertion sort i verste tilfelle: n(n-1)/2 sammenligninger. For n=5: 10.",
+  },
+  {
+    id: "d-quiz-sort-heap-pop",
+    kind: "quiz",
+    title: "Heapsort — pop-rekkefølge",
+    prompt: "Velg riktig.",
+    topic: "Sortering",
+    question: "En min-heap inneholder [1, 3, 2, 8, 5, 9, 4]. Hvilken rekkefølge kommer heappop ut i?",
+    options: [
+      {
+        text: "1, 2, 3, 4, 5, 8, 9 — alltid stigende",
+        correct: true,
+        rationale: "En min-heap pop returnerer ALLTID det minste. Gjenta n ganger → sortert sekvens.",
+      },
+      {
+        text: "1, 3, 2, 8, 5, 9, 4 — i lagringsrekkefølge",
+        correct: false,
+        rationale: "Heap-strukturen er IKKE sortert — kun root er garantert minst.",
+      },
+      {
+        text: "9, 8, 5, 4, 3, 2, 1 — synkende",
+        correct: false,
+        rationale: "Min-heap er stigende ved pop. For synkende: max-heap eller negate verdiene.",
+      },
+      {
+        text: "Vilkårlig rekkefølge",
+        correct: false,
+        rationale: "Pop-rekkefølge er deterministisk — alltid minste først.",
+      },
+    ],
+    explanation:
+      "Heap-array kan se ut «usortert», men strukturen garanterer at root (lst[0]) er min. Etter heapify gjør hver pop strukturen om så neste min kommer til root.",
+  },
+
+  // ============= LENKEDE STRUKTURER =============
+
+  {
+    id: "d-match-struktur-bruk",
+    kind: "match",
+    title: "Datastruktur til bruksområde",
+    prompt: "Match strukturen til scenariet der den er det naturlige valget.",
+    topic: "Lenkede strukturer",
+    pairs: [
+      { left: "Stack (LIFO)", right: "Postfix-evaluator, undo-funksjon, DFS" },
+      { left: "Queue (FIFO)", right: "BFS, oppgavekø, print-spool" },
+      { left: "Deque", right: "Sliding window, undo+redo, generelt 'best av begge'" },
+      { left: "Prioritetskø (heapq)", right: "Dijkstra, Huffman, scheduling" },
+      { left: "Linked list", right: "Hyppige insert/slett midt i sekvensen" },
+      { left: "Vanlig list", right: "Indeksert oppslag, sjeldne mid-insertions" },
+    ],
+  },
+  {
+    id: "d-order-stack-postfix",
+    kind: "order",
+    title: "Postfix-evaluator — sortér stegene",
+    prompt:
+      "Uttrykket «4 5 + 3 *» evalueres. Sortér hva som skjer på stacken i rekkefølge.",
+    topic: "Lenkede strukturer",
+    items: [
+      "Les '4' → stack: [4]",
+      "Les '5' → stack: [4, 5]",
+      "Les '+' → pop 5, pop 4, push 4+5=9 → stack: [9]",
+      "Les '3' → stack: [9, 3]",
+      "Les '*' → pop 3, pop 9, push 9*3=27 → stack: [27]",
+      "Slutt → pop 27 → returner 27",
+    ],
+    explanation:
+      "I postfix-evaluator: tall pushes på stacken, operatorer popper to og pusher resultatet. Rekkefølgen er kritisk — første pop er ANDRE operand.",
+  },
+  {
+    id: "d-fill-stack-postfix",
+    kind: "fill",
+    title: "Fyll inn postfix-evaluator",
+    prompt: "Fyll inn manglende deler av evaluatoren.",
+    topic: "Lenkede strukturer",
+    template:
+      "from collections import deque\n\ndef eval_postfix(expr):\n    stack = __1__()\n    for token in expr.split():\n        if token in ('+', '-', '*', '/'):\n            b = stack.__2__()\n            a = stack.__2__()\n            if token == '+': stack.append(a + b)\n            elif token == '-': stack.append(a - b)\n            elif token == '*': stack.append(a * b)\n            elif token == '/': stack.append(a // b)\n        else:\n            stack.__3__(int(token))\n    return stack.__2__()",
+    blanks: ["deque", "pop", "append"],
+    options: ["deque", "list", "stack", "Queue", "pop", "popleft", "append", "appendleft", "push"],
+    language: "python",
+    explanation:
+      "Rekkefølgen i operator-handling er KRITISK: første pop er b (andre operand), andre pop er a (første). Test med ikke-kommutative operasjoner (5 3 -) for å verifisere.",
+  },
+  {
+    id: "d-quiz-stack-vs-queue",
+    kind: "quiz",
+    title: "Stack vs Queue — output",
+    prompt: "Velg riktig.",
+    topic: "Lenkede strukturer",
+    question: "Du legger inn 1, 2, 3 i denne rekkefølgen. Først i en stack, så i en kø. Hva tar du UT?",
+    options: [
+      {
+        text: "Stack: 3, 2, 1. Kø: 1, 2, 3.",
+        correct: true,
+        rationale: "Stack er LIFO — sist inn, først ut. Kø er FIFO — først inn, først ut.",
+      },
+      {
+        text: "Stack: 1, 2, 3. Kø: 3, 2, 1.",
+        correct: false,
+        rationale: "Du har snudd det. LIFO = Last In First Out, ikke First In First Out.",
+      },
+      {
+        text: "Begge: 1, 2, 3.",
+        correct: false,
+        rationale: "Stack reverserer rekkefølgen.",
+      },
+      {
+        text: "Begge: 3, 2, 1.",
+        correct: false,
+        rationale: "Kø bevarer rekkefølgen, så det blir 1, 2, 3.",
+      },
+    ],
+    explanation:
+      "Huskeregel: Stack = stable med tallerkener (du tar fra toppen). Kø = butikk-kø (først inn først ut).",
+  },
+  {
+    id: "d-fill-linked-add-first",
+    kind: "fill",
+    title: "Fyll inn LinkedList.add_first()",
+    prompt: "Legg et nytt element FØRST i en single-linked list.",
+    topic: "Lenkede strukturer",
+    template:
+      "def add_first(self, e):\n    new_node = Node(e)\n    new_node._next = self.__1__      # 'pek' til det som var først\n    self._head = __2__                # head peker til ny\n    self._size __3__ 1\n    if self._tail is None:               # tom liste fra før\n        self._tail = self._head",
+    blanks: ["_head", "new_node", "+="],
+    options: ["_head", "_tail", "new_node", "Node(e)", "+=", "-=", "="],
+    language: "python",
+    explanation:
+      "Rekkefølgen er kritisk: koble FØRST den nye noden til det som var head, så pek head til den nye. Motsatt rekkefølge ville mistet referansen.",
+  },
+  {
+    id: "d-quiz-linked-remove-last",
+    kind: "quiz",
+    title: "Hvorfor er remove_last() treg i single-linked list?",
+    prompt: "Velg riktig forklaring.",
+    topic: "Lenkede strukturer",
+    question:
+      "I en single-linked list med tail-peker er add_last() O(1), men remove_last() er O(n). Hvorfor?",
+    options: [
+      {
+        text: "Vi må finne NEST-siste node for å sette ny tail — og det krever traversering fra head",
+        correct: true,
+        rationale:
+          "Nodene har bare `_next`, ikke `_prev`. For å oppdatere tail må vi nå nest-siste node, og det krever å gå fra head O(n) skritt.",
+      },
+      {
+        text: "Vi må re-allokere lista",
+        correct: false,
+        rationale: "Linked lists re-allokerer ikke — det er en array-egenskap.",
+      },
+      {
+        text: "Tail-pekeren er ugyldig",
+        correct: false,
+        rationale: "Tail er gyldig — vi bare ikke kan «gå bakover» fra den.",
+      },
+      {
+        text: "Garbage collector blir treg",
+        correct: false,
+        rationale: "Ikke relevant.",
+      },
+    ],
+    explanation: "Løsning: double-linked list med `_prev`-peker. Da blir remove_last() O(1).",
+  },
+  {
+    id: "d-fill-heapq",
+    kind: "fill",
+    title: "Fyll inn heapq-bruk",
+    prompt: "Bygg prioritetskø og pop minste element.",
+    topic: "Lenkede strukturer",
+    template:
+      "import heapq\n\npq = []\nheapq.__1__(pq, (3, 'lav prioritet'))\nheapq.__1__(pq, (1, 'høyest'))\nheapq.__1__(pq, (2, 'midt'))\n\nminste = heapq.__2__(pq)   # returnerer (1, 'høyest')",
+    blanks: ["heappush", "heappop"],
+    options: ["heappush", "heappop", "heapify", "push", "pop", "append", "popleft"],
+    language: "python",
+    explanation:
+      "heapq er en MIN-heap. Bruk tuple (prioritet, payload) for å ordne på prioritet. Mindre prioritet = popper først.",
+  },
+  {
+    id: "d-quiz-heap-max",
+    kind: "quiz",
+    title: "Hvordan lage en max-heap med heapq?",
+    prompt: "Velg riktig løsning.",
+    topic: "Lenkede strukturer",
+    question: "Python sin heapq er en min-heap. Hvordan får du en MAX-heap (popper STØRSTE element først)?",
+    options: [
+      {
+        text: "Negér prioriteten: putt inn (-pri, payload), pop og negér tilbake",
+        correct: true,
+        rationale:
+          "Hvis du putter inn negative tall, blir det største (mest positive) negative det minste tallet — popper først. Negér ved bruk.",
+      },
+      {
+        text: "Bruk heapq.heappopmax()",
+        correct: false,
+        rationale: "Den finnes ikke. heapq har bare min-versjoner offisielt.",
+      },
+      {
+        text: "Reverser listen før heappop",
+        correct: false,
+        rationale: "Heap-strukturen brytes hvis du reverserer — det er ikke en sortert liste.",
+      },
+      {
+        text: "Bruk reversed() rundt heappop",
+        correct: false,
+        rationale: "reversed() endrer ikke pop-rekkefølgen.",
+      },
+    ],
+    explanation:
+      "Trikset (-pri, payload) er idiomet. Alternativ: heapq._heapify_max (intern, undokumentert) — ikke anbefalt.",
+  },
+  {
+    id: "d-order-bfs-using-queue",
+    kind: "order",
+    title: "BFS bruker kø — sortér stegene",
+    prompt: "BFS fra A på grafen A-B, A-C, B-D, C-D. Sortér rekkefølge for besøk.",
+    topic: "Lenkede strukturer",
+    items: [
+      "Initialiser queue = deque(['A']), visited = {'A'}",
+      "Pop 'A', besøk A, enqueue naboer B og C",
+      "Pop 'B' (først inn), besøk B, enqueue nabo D",
+      "Pop 'C', besøk C (D er allerede i kø)",
+      "Pop 'D', besøk D, ingen nye naboer",
+      "Kø tom — BFS ferdig. Rekkefølge: A, B, C, D",
+    ],
+    explanation:
+      "FIFO-køen sikrer at vi besøker noder i ordrekkefølge etter avstand fra start. Det er DET som gjør BFS bredde-først.",
+  },
+  {
+    id: "d-quiz-deque-perf",
+    kind: "quiz",
+    title: "deque vs list — performance",
+    prompt: "Velg det best dekkende svaret.",
+    topic: "Lenkede strukturer",
+    question: "Du har en kø som vil få millioner av enqueue/dequeue-operasjoner. Du bruker list.append() og list.pop(0). Hva er problemet?",
+    options: [
+      {
+        text: "list.pop(0) er O(n) — alle elementene må flyttes ett hakk venstre",
+        correct: true,
+        rationale:
+          "Python list er en array under panseret. Å fjerne første element kopierer alle resten. Med millioner av pop(0) blir total kostnad O(n²).",
+      },
+      {
+        text: "list er ikke trådsikker",
+        correct: false,
+        rationale: "Heller ikke deque er trådsikker. Performance er hovedproblemet.",
+      },
+      {
+        text: "list bruker mer minne",
+        correct: false,
+        rationale: "Minne er sammenlignbart. Hastighet er forskjellen.",
+      },
+      {
+        text: "list kan ikke holde store mengder data",
+        correct: false,
+        rationale: "Det kan den. Bare ikke effektivt med pop(0).",
+      },
+    ],
+    explanation: "Bytt til deque: appendleft og popleft begge O(1). Forskjellen er enorm på store n.",
+  },
+  {
+    id: "d-fill-linked-list-search",
+    kind: "fill",
+    title: "Fyll inn LinkedList.index_of()",
+    prompt: "Finn indeks til første forekomst av element. Returner -1 hvis ikke funnet.",
+    topic: "Lenkede strukturer",
+    template:
+      "def index_of(self, e):\n    current = self.__1__\n    index = 0\n    while current is not None:\n        if current.__2__ == e:\n            return __3__\n        current = current.__4__\n        index += 1\n    return __5__",
+    blanks: ["_head", "_element", "index", "_next", "-1"],
+    options: ["_head", "_tail", "_element", "_next", "_prev", "_size", "index", "-1", "0", "None"],
+    language: "python",
+    explanation: "Traverser fra head, sjekk hvert element, tell indeks. -1 er konvensjon for «ikke funnet».",
+  },
+  {
+    id: "d-quiz-stack-balance-parens",
+    kind: "quiz",
+    title: "Parantes-balanse med stack",
+    prompt: "Velg riktig output.",
+    topic: "Lenkede strukturer",
+    question: "Hva returnerer denne funksjonen for inputtet «((a+b)*[c-d])»?",
+    code: "def balanced(s):\n    stack = []\n    par = {')': '(', ']': '[', '}': '{'}\n    for c in s:\n        if c in '([{':\n            stack.append(c)\n        elif c in ')]}':\n            if not stack or stack.pop() != par[c]:\n                return False\n    return len(stack) == 0",
+    language: "python",
+    options: [
+      { text: "True", correct: true, rationale: "Alle paranteser matcher: ((..)..) og [..] er balansert." },
+      { text: "False", correct: false, rationale: "Input er gyldig balansert." },
+      { text: "None", correct: false, rationale: "Funksjonen returnerer bool, ikke None." },
+      { text: "0", correct: false, rationale: "Funksjonen returnerer bool, ikke int." },
+    ],
+    explanation:
+      "Klassisk stack-bruk: push opener, ved closer pop og sjekk om matchet. Returner True hvis stacken er tom på slutten.",
+  },
 ];
