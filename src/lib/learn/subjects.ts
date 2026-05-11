@@ -130,6 +130,7 @@ export const SUBJECTS: readonly Subject[] = [
       "Søk (AI)",
       "CSP",
       "Logisk resonnering",
+      "Planlegging",
       "Bayes",
     ],
   },
