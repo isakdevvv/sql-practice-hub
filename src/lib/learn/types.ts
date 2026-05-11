@@ -30,7 +30,12 @@ export interface FlashCard {
 
 // ---------- DRAG EXERCISES ----------
 
-export type DragExercise = MatchExercise | OrderExercise | FillExercise | CrowsFootExercise;
+export type DragExercise =
+  | MatchExercise
+  | OrderExercise
+  | FillExercise
+  | CrowsFootExercise
+  | QuizExercise;
 
 export interface MatchExercise {
   id: string;
@@ -106,6 +111,37 @@ export interface CrowsFootExercise {
     bMax: CfMax;
   };
   explanation: string;
+}
+
+// ---------- QUIZ (multiple choice) ----------
+
+export interface QuizOption {
+  /** Option text — what the user picks. */
+  text: string;
+  /** True if this option is part of the correct answer. */
+  correct: boolean;
+  /** Optional one-line rationale shown after the user submits — explains why
+   *  this option is right or wrong. Powerful for security/HTTP exercises. */
+  rationale?: string;
+}
+
+export interface QuizExercise {
+  id: string;
+  kind: "quiz";
+  title: string;
+  prompt: string;
+  topic: string;
+  /** The question itself. May span multiple lines. */
+  question: string;
+  /** Optional code block shown above the options. */
+  code?: string;
+  /** Optional language hint for the code block. */
+  language?: "python" | "html" | "sql" | "javascript" | "http";
+  options: QuizOption[];
+  /** Default false: exactly one option is correct. true allows multi-select. */
+  multi?: boolean;
+  /** Overall explanation shown after submit, regardless of which option was picked. */
+  explanation?: string;
 }
 
 // ---------- VISUAL JOIN ----------
