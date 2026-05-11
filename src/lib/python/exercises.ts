@@ -520,6 +520,88 @@ cursor.execute(
       },
     ],
   },
+  {
+    id: "py-db-context-manager",
+    topic: "MySQL connector",
+    title: "Egen DataBase-klasse med `with`-mønster (__enter__/__exit__)",
+    description:
+      "Kurset DTE-2509 bruker `with DataBase() as db:` overalt — i Movies/database.py, MovieApp_WTForms, og hele User-Management-modulen. Bygg din egen DataBase-klasse med `__enter__` og `__exit__` slik at tilkoblingen åpnes automatisk og lukkes/committes garantert — selv om koden i blokken krasjer.\n\n1. Definér klassen DataBase med __init__ som lager mysql.connector.connect(...).\n2. __enter__ skal lage en cursor og returnere self.\n3. __exit__ skal kalle db.commit(), så cursor.close(), så db.close().\n4. Bruk klassen med `with DataBase() as db:` og kjør en SELECT.",
+    requires: [],
+    setup: DB_SETUP,
+    starter: `# === \`with DataBase() as db:\`-mønsteret ===
+#
+# Kurset DTE-2509 bruker dette mønsteret i ALLE DB-eksempler. Hvorfor?
+#   1. Lukkingen er garantert — selv om koden krasjer halvveis.
+#   2. Commit skjer automatisk på vei ut.
+#   3. Mindre kode i routes/views.
+#
+# OPPGAVE: Bygg din egen DataBase-klasse med __init__/__enter__/__exit__,
+# og bruk den med 'with' til å hente kunder.
+
+import mysql.connector
+
+class DataBase:
+    def __init__(self):
+        # TODO: Lag self.connection = mysql.connector.connect(database="exam")
+        ...
+
+    def __enter__(self):
+        # TODO: Lag self.cursor = self.connection.cursor() og return self
+        ...
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        # TODO: commit, cursor.close, connection.close
+        ...
+
+# Bruk klassen:
+with DataBase() as db:
+    db.cursor.execute("SELECT navn FROM kunde ORDER BY kundenr")
+    for (navn,) in db.cursor.fetchall():
+        print(navn)
+`,
+    solution: `import mysql.connector
+
+class DataBase:
+    def __init__(self):
+        self.connection = mysql.connector.connect(database="exam")
+
+    def __enter__(self):
+        self.cursor = self.connection.cursor()
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.connection.commit()
+        self.cursor.close()
+        self.connection.close()
+
+with DataBase() as db:
+    db.cursor.execute("SELECT navn FROM kunde ORDER BY kundenr")
+    for (navn,) in db.cursor.fetchall():
+        print(navn)
+`,
+    hints: [
+      "__enter__ er metoden som kjører når Python ser `with ... as x:`. Det den returnerer blir x.",
+      "__exit__ kjører ALLTID når blokken slutter — også på exception. Argumentene exc_type/exc_val/exc_tb er None hvis ingen feil.",
+      "Kall db.commit() i __exit__ slik kurset gjør. Hvis du heller vil rulle tilbake ved exception kan du sjekke `if exc_type:`.",
+    ],
+    docs: [
+      {
+        title: "Python `with` og context managers",
+        url: "https://docs.python.org/3/reference/datamodel.html#context-managers",
+        note: "__enter__ og __exit__ er protokollen som lar deg skrive `with klassen() as x:`.",
+        snippet: `class DataBase:
+    def __enter__(self):
+        return self
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.cleanup()`,
+      },
+      {
+        title: "Kurset bruker dette mønsteret",
+        url: "https://github.com/reo303halo/DTE-2509-26V/blob/main/Flask_DB/Movies/database.py",
+        note: "Repoets Movies/database.py viser eksakt det samme mønsteret med __enter__/__exit__ for MySQL-tilkoblingen.",
+      },
+    ],
+  },
 
   // ============ FLASK ROUTING ============
   {

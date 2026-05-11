@@ -48,11 +48,12 @@ import { content as trinn7 } from "./trinn-7-bytes-dyp";
 import { content as trinn8 } from "./trinn-8-python-er-c";
 import { content as trinn9 } from "./trinn-9-syscalls-dyp";
 import { content as trinn10 } from "./trinn-10-flask-dyp";
+import { content as mysqlVsSqlite } from "./mysql-vs-sqlite";
 import type { TrinnContent } from "../types";
 
 export const TRINN: TrinnContent[] = [
   bytesEncoding, tcpSockets, huskelapp, erMapping, normalisering, htmlJinja, sikkerhet,
-  subqueries, nokler,
+  subqueries, nokler, mysqlVsSqlite,
   algoritmer, bigO, rekursjon, sortering, lenkedeStrukturer,
   dte2507, osiTcpip, transportlag, kryptografi, tls, nettverkssikkerhet,
   dte2602, mlGrunnlag, supervisedLearning, unsupervisedLearning, nnIntro,
