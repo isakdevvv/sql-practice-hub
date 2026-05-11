@@ -9161,4 +9161,726 @@ __5__ endfor __6__
       },
     ],
   },
+
+  // ============ DTE-2501: SØK (AI) ============
+  {
+    id: "d-match-sok-frontier",
+    kind: "match",
+    title: "Søkealgoritme → frontier-datastruktur",
+    prompt: "Match hver søkealgoritme til datastrukturen den bruker for frontier.",
+    topic: "Søk (AI)",
+    pairs: [
+      { left: "BFS", right: "FIFO-kø — pakker ut grunne noder først" },
+      { left: "DFS", right: "LIFO-stack — pakker ut dypeste node først" },
+      { left: "UCS (Dijkstra)", right: "Prioritetskø sortert på g(n)" },
+      { left: "Greedy best-first", right: "Prioritetskø sortert på h(n)" },
+      { left: "A*", right: "Prioritetskø sortert på f(n) = g(n) + h(n)" },
+    ],
+    explanation:
+      "Alle disse algoritmene har samme «graph search»-skjelett. Det eneste som varierer er hvordan frontier-en sorterer noder. Det er en god ting å huske: skjelett + datastruktur = algoritme.",
+  },
+  {
+    id: "d-quiz-bfs-vs-dfs",
+    kind: "quiz",
+    title: "BFS eller DFS?",
+    prompt: "Velg riktig.",
+    topic: "Søk (AI)",
+    question:
+      "Du leter etter den GRUNNESTE løsningen i et tilstandsrom hvor alle kantkostnader er like. Hvilken algoritme passer best?",
+    options: [
+      {
+        text: "BFS — fordi den utforsker nivå for nivå og finner grunneste mål først",
+        correct: true,
+        rationale:
+          "BFS pakker noder ut i den rekkefølgen de ble lagt til (FIFO), så alle noder i dybde d er utforsket før dybde d+1. Det garanterer grunneste mål med like kostnader.",
+      },
+      {
+        text: "DFS — fordi den er minne-effektiv",
+        correct: false,
+        rationale:
+          "DFS er minne-effektiv, men kan finne et dypere mål før det grunneste. Den er ikke optimal selv med like kostnader.",
+      },
+      {
+        text: "Greedy best-first",
+        correct: false,
+        rationale:
+          "Greedy bruker en heuristikk. Oppgaven sa ingenting om heuristikk, og greedy er uansett ikke optimal.",
+      },
+      {
+        text: "Alle gir samme svar",
+        correct: false,
+        rationale:
+          "Nei — BFS og UCS er optimale med like kostnader; DFS og greedy er det ikke.",
+      },
+    ],
+  },
+  {
+    id: "d-quiz-a-star-optimal",
+    kind: "quiz",
+    title: "Når er A* optimal?",
+    prompt: "Velg riktig.",
+    topic: "Søk (AI)",
+    question: "Hvilken egenskap garanterer at A* med graph search finner den optimale løsningen?",
+    options: [
+      {
+        text: "h(n) er konsistent (monotonic)",
+        correct: true,
+        rationale:
+          "Konsistens (h(n) ≤ c(n,n') + h(n')) er det sterke kravet for graph search. Det innebærer admissibility og gjør at vi ikke trenger å re-åpne lukkede noder.",
+      },
+      {
+        text: "h(n) er admissible — men det er nok bare for tree search",
+        correct: false,
+        rationale:
+          "Halvt riktig: admissibility alene gir optimal A* i TREE search, men ikke i graph search.",
+      },
+      {
+        text: "h(n) er null overalt",
+        correct: false,
+        rationale:
+          "Da reduseres A* til UCS — fortsatt optimalt, men ikke fordi heuristikken er bra.",
+      },
+      {
+        text: "h(n) er stor og presis",
+        correct: false,
+        rationale:
+          "«Stor» kan bety overestimering, og da bryter den admissibility — A* slutter å være optimal.",
+      },
+    ],
+  },
+  {
+    id: "d-match-heuristikk-problem",
+    kind: "match",
+    title: "Heuristikk → problem",
+    prompt: "Match en god heuristikk til problemet den passer på.",
+    topic: "Søk (AI)",
+    pairs: [
+      { left: "8-puzzle", right: "Sum av Manhattan-distanse fra hver brikke til sin målposisjon" },
+      { left: "Romania-kart (vei)", right: "Rettlinjet luftavstand til Bucharest" },
+      { left: "Rutenett-pathfinding (4-naboer)", right: "Manhattan-distanse til mål" },
+      { left: "Rutenett-pathfinding (8-naboer)", right: "Chebyshev- eller diagonal-distanse" },
+      { left: "Travelling Salesman", right: "Minimum spanning tree over gjenværende byer" },
+    ],
+    explanation:
+      "En god heuristikk er admissible (undervurderer aldri) og så NÆR den faktiske kosten som mulig. Manhattan dominerer «antall feilplasserte» fordi den teller minst like mye.",
+  },
+  {
+    id: "d-match-admissible-vs-konsistent",
+    kind: "match",
+    title: "Admissible vs konsistent",
+    prompt: "Match begrepet til riktig betingelse.",
+    topic: "Søk (AI)",
+    pairs: [
+      { left: "Admissible", right: "h(n) ≤ faktisk kostnad fra n til mål" },
+      { left: "Konsistent", right: "h(n) ≤ c(n, n') + h(n') for hver nabo n'" },
+      { left: "Konsistent ⇒ admissible", right: "Ja — konsistens er det sterkere kravet" },
+      { left: "Admissible ⇒ A* optimal", right: "Ja, i TREE search" },
+      { left: "Konsistent ⇒ A* optimal", right: "Ja, også i GRAPH search" },
+    ],
+    explanation:
+      "I praksis: hvis du designer en heuristikk og kan vise konsistens, har du gratis admissibility OG en garanti om at graph search-versjonen av A* fortsatt er optimal.",
+  },
+  {
+    id: "d-order-astar-bfs",
+    kind: "order",
+    title: "A*-besøksrekkefølge — Romania",
+    prompt:
+      "Vi kjører A* fra Arad mot Bucharest med h = luftavstand. Sortér de første nodene som ekspanderes (lavest f først).",
+    topic: "Søk (AI)",
+    items: [
+      "Arad        (f = 366)",
+      "Sibiu       (f = 393)",
+      "Rimnicu V.  (f = 413)",
+      "Fagaras     (f = 415)",
+      "Pitesti     (f = 417)",
+      "Bucharest   (f = 418)",
+    ],
+    explanation:
+      "f(n) = g(n) + h(n). A* pakker alltid ut den frontier-noden med lavest f først. Dette er den klassiske rekkefølgen fra Russell & Norvig (kap. 3).",
+  },
+  {
+    id: "d-fill-astar-pseudo",
+    kind: "fill",
+    title: "Fyll inn A*-pseudokoden",
+    prompt: "Dra de riktige uttrykkene inn i pseudokoden.",
+    topic: "Søk (AI)",
+    template:
+      "frontier <- priority_queue sortert på __1__\nwhile frontier ikke tom:\n  n <- frontier.pop()       # lavest f\n  if goal_test(n): return path(n)\n  for child in expand(n):\n    g(child) = g(n) + __2__\n    f(child) = __3__ + h(child)\n    frontier.add(child)",
+    blanks: ["f(n)", "cost(n, child)", "g(child)"],
+    options: ["f(n)", "h(n)", "g(n)", "cost(n, child)", "g(child)", "h(child)", "depth(n)"],
+    explanation:
+      "Husk forskjellen på g (akkumulert reell kostnad så langt) og h (estimert resterende kostnad). f = g + h er kompasset til A*.",
+  },
+  {
+    id: "d-quiz-greedy-pitfall",
+    kind: "quiz",
+    title: "Hvorfor er greedy ikke optimal?",
+    prompt: "Velg riktig.",
+    topic: "Søk (AI)",
+    question:
+      "Greedy best-first bruker bare h(n) — hvorfor er det ikke garantert å finne den optimale veien?",
+    options: [
+      {
+        text: "Den ignorerer g(n) — hvor mye det HAR kostet å komme hit",
+        correct: true,
+        rationale:
+          "Ved bare å se på h kan greedy velge en kortvarig svak omvei som ser bra ut på luftavstand, men koster mye i reelle stegkostnader.",
+      },
+      {
+        text: "Den bruker BFS-kø i stedet for prioritetskø",
+        correct: false,
+        rationale: "Nei, greedy bruker prioritetskø sortert på h(n).",
+      },
+      {
+        text: "Den er ikke complete heller",
+        correct: false,
+        rationale:
+          "Helt riktig at greedy uten cycle-check kan loope, men SPØRSMÅLET er om optimalitet — og roten der er at den ignorerer g.",
+      },
+      {
+        text: "Heuristikken er aldri admissible",
+        correct: false,
+        rationale:
+          "Admissibility har ikke noe å gjøre med det. Selv med en perfekt admissible h, kan greedy velge feil fordi den glemmer g.",
+      },
+    ],
+  },
+  {
+    id: "d-match-egenskap-algoritme",
+    kind: "match",
+    title: "Egenskap → algoritme",
+    prompt: "Match egenskapen til den ENE algoritmen den beskriver best.",
+    topic: "Søk (AI)",
+    pairs: [
+      { left: "Optimal med ulike kostnader, ingen heuristikk", right: "UCS" },
+      { left: "Optimal med admissible h, lite minne i tree search", right: "A*" },
+      { left: "Minne O(b·d), optimal med like kostnader", right: "IDS" },
+      { left: "Minne O(b·m), ikke optimal", right: "DFS" },
+      { left: "Aldri optimal — bruker bare h", right: "Greedy best-first" },
+    ],
+  },
+  {
+    id: "d-quiz-completeness",
+    kind: "quiz",
+    title: "DFS og completeness",
+    prompt: "Velg riktig.",
+    topic: "Søk (AI)",
+    question:
+      "Hvorfor sier vi at standard DFS IKKE er complete på et generelt søkeproblem?",
+    options: [
+      {
+        text: "Den kan låse seg i en uendelig gren før den finner målet",
+        correct: true,
+        rationale:
+          "Hvis tilstandsrommet er uendelig (eller har sykler uten cycle-check), kan DFS følge én gren for alltid og aldri komme tilbake til andre.",
+      },
+      {
+        text: "Den bruker for mye minne",
+        correct: false,
+        rationale:
+          "DFS bruker tvert imot LITE minne — det er én av styrkene. Completeness handler om noe annet.",
+      },
+      {
+        text: "Den krever heuristikk",
+        correct: false,
+        rationale: "DFS er en uinformert algoritme — bruker ingen heuristikk.",
+      },
+      {
+        text: "Den finner alltid målet, men kanskje sent",
+        correct: false,
+        rationale: "Det er DEFINISJONEN av complete — å si den IKKE er complete er nettopp å si at den kan misse målet.",
+      },
+    ],
+  },
+
+  // ============ DTE-2501: CSP ============
+  {
+    id: "d-match-csp-komponenter",
+    kind: "match",
+    title: "CSP — komponenter",
+    prompt: "Match hvert symbol til hva det representerer i et CSP.",
+    topic: "CSP",
+    pairs: [
+      { left: "X = {X1, ..., Xn}", right: "Variabler" },
+      { left: "D = {D1, ..., Dn}", right: "Domener — tillatte verdier per variabel" },
+      { left: "C = {C1, ..., Cm}", right: "Begrensninger mellom variabler" },
+      { left: "(scope, rel)", right: "Selve formen til en begrensning" },
+      { left: "Tildeling {Xi = vi}", right: "En partiell eller fullstendig løsning" },
+    ],
+  },
+  {
+    id: "d-match-heuristikk-csp",
+    kind: "match",
+    title: "CSP-heuristikk → strategi",
+    prompt: "Match hver heuristikk til hva den optimerer.",
+    topic: "CSP",
+    pairs: [
+      { left: "MRV (minimum remaining values)", right: "Velg variabel med MINST igjen i domenet" },
+      { left: "Degree heuristic", right: "Tiebreaker for MRV: flest constraints mot uassignede" },
+      { left: "LCV (least constraining value)", right: "Velg verdi som fjerner FÆRREST muligheter hos naboer" },
+      { left: "Forward checking", right: "Etter tildeling: fjern verdien fra naboers domener" },
+      { left: "AC-3", right: "Propager arc consistency over alle arcs til intet endres" },
+    ],
+    explanation:
+      "MRV er «fail-first» på variabel-valg; LCV er «succeed-first» på verdi-valg. Asymmetrien gir mening fordi vi vil finne ÉN løsning raskest mulig.",
+  },
+  {
+    id: "d-order-ac3-trace",
+    kind: "order",
+    title: "AC-3 — kartfarging-trace",
+    prompt:
+      "Vi har tre regioner A, B, C med D = {rød, grønn, blå}. Constraints: A != B, B != C, A != C. Hva er rekkefølgen av AC-3-steg når vi setter A = rød først?",
+    topic: "CSP",
+    items: [
+      "Sett A = {rød}",
+      "Revider arc (B, A): fjern rød fra D(B) -> D(B) = {grønn, blå}",
+      "Revider arc (C, A): fjern rød fra D(C) -> D(C) = {grønn, blå}",
+      "Revider arc (B, C): ingen endring (begge har grønn og blå)",
+      "Revider arc (C, B): ingen endring",
+      "AC-3 ferdig: alle arcs konsistente",
+    ],
+    explanation:
+      "AC-3 itererer over alle arcs og REVIDERER hvert venstre-domene. Når et domene endres, må alle arcs INN mot den variabelen testes på nytt. Her er det ingen videre propagering nødvendig.",
+  },
+  {
+    id: "d-quiz-mrv-vs-degree",
+    kind: "quiz",
+    title: "Når bruker vi degree heuristic?",
+    prompt: "Velg riktig.",
+    topic: "CSP",
+    question:
+      "I starten av en kartfarging-CSP har alle variabler domene-størrelse 3. MRV gir ingen klar vinner. Hva gjør degree-heuristikken?",
+    options: [
+      {
+        text: "Velger variabelen med flest begrensninger mot uassignede variabler",
+        correct: true,
+        rationale:
+          "Den «mest sosiale» variabelen — den med flest naboer i constraint graph — er ofte den som propagerer flest konsekvenser. Bra fail-first når MRV er tie.",
+      },
+      {
+        text: "Velger en tilfeldig variabel",
+        correct: false,
+        rationale:
+          "Det ville vært å gi opp. Degree-heuristikken bruker grafstrukturen til å bryte tie-en smart.",
+      },
+      {
+        text: "Velger den variabelen som har lavest verdi-index",
+        correct: false,
+        rationale: "Tilfeldig avhengig av variabel-navngivning — ikke en heuristikk.",
+      },
+      {
+        text: "Velger variabelen med MINST grad — for å la de viktige stå urørt",
+        correct: false,
+        rationale: "Motsatt — vi vil tildele de mest BEGRENSEDE først, ikke de friere.",
+      },
+    ],
+  },
+  {
+    id: "d-fill-backtracking",
+    kind: "fill",
+    title: "Backtracking — fyll inn skjelettet",
+    prompt: "Dra de riktige ordene inn.",
+    topic: "CSP",
+    template:
+      "function BACKTRACK(assignment, csp):\n  if assignment is complete: return __1__\n  var <- __2__(csp)\n  for value in ORDER-DOMAIN-VALUES(var, csp):\n    if value is consistent with assignment:\n      assignment[var] = value\n      inferences <- __3__(csp, var, value)\n      if inferences != failure:\n        result <- BACKTRACK(assignment, csp)\n        if result != failure: return result\n      remove value, undo inferences\n  return __4__",
+    blanks: ["assignment", "SELECT-UNASSIGNED-VARIABLE", "INFERENCE", "failure"],
+    options: [
+      "assignment",
+      "SELECT-UNASSIGNED-VARIABLE",
+      "INFERENCE",
+      "failure",
+      "success",
+      "csp.variables",
+      "MRV",
+      "value",
+    ],
+  },
+  {
+    id: "d-quiz-csp-vs-search",
+    kind: "quiz",
+    title: "Hvorfor backtracking og ikke A*?",
+    prompt: "Velg riktig.",
+    topic: "CSP",
+    question:
+      "Hvorfor bruker vi backtracking + constraint propagation på CSP i stedet for A*?",
+    options: [
+      {
+        text: "Fordi en partial assignment ikke har en naturlig kost, og målet er bare konsistens — ikke optimalitet",
+        correct: true,
+        rationale:
+          "CSP-er har ofte ingen kostnadsfunksjon. Vi vil bare finne EN lovlig tildeling. Constraint propagation er kraftigere enn heuristisk graf-søk i den settingen.",
+      },
+      {
+        text: "Fordi A* ikke kan håndtere flere variabler",
+        correct: false,
+        rationale: "A* kan håndtere det fint som tilstandsrom-søk. Det er bare lite effektivt på CSP.",
+      },
+      {
+        text: "Fordi A* er treigere asymptotisk",
+        correct: false,
+        rationale: "Det handler ikke om asymptotikk — det handler om hva slags problem vi løser.",
+      },
+      {
+        text: "Fordi backtracking ALLTID finner svar raskere",
+        correct: false,
+        rationale: "Bare i CSP-settingen. Generelt er det forskjellige verktøy for forskjellige problemer.",
+      },
+    ],
+  },
+
+  // ============ DTE-2501: LOGISK RESONNERING ============
+  {
+    id: "d-match-konnektiv",
+    kind: "match",
+    title: "Logiske konnektiv",
+    prompt: "Match hvert symbol til navn og betydning.",
+    topic: "Logisk resonnering",
+    pairs: [
+      { left: "¬P", right: "Negasjon — NOT" },
+      { left: "P ∧ Q", right: "Konjunksjon — AND" },
+      { left: "P ∨ Q", right: "Disjunksjon — OR (inklusiv)" },
+      { left: "P ⇒ Q", right: "Implikasjon — «hvis P så Q»" },
+      { left: "P ⇔ Q", right: "Biimplikasjon — sann hvis P og Q har samme verdi" },
+    ],
+  },
+  {
+    id: "d-fill-modus-ponens",
+    kind: "fill",
+    title: "Modus ponens — fyll inn",
+    prompt: "Dra de riktige formlene inn i inferensregelen.",
+    topic: "Logisk resonnering",
+    template: "Premisser:\n  __1__\n  __2__\n──────────\nKonklusjon:\n  __3__",
+    blanks: ["α ⇒ β", "α", "β"],
+    options: ["α ⇒ β", "α", "β", "¬α", "¬β", "α ∨ β", "α ∧ β"],
+    explanation:
+      "Modus ponens er kanskje den mest brukte inferensregelen. Sammenlign med modus TOLLENS: fra α ⇒ β og ¬β slutter vi ¬α. Begge er sound.",
+  },
+  {
+    id: "d-quiz-modus-tollens",
+    kind: "quiz",
+    title: "Modus tollens — gjenkjenn formen",
+    prompt: "Velg riktig.",
+    topic: "Logisk resonnering",
+    question:
+      'Vi vet: «Hvis det regner, blir gresset vått» og «Gresset er ikke vått». Hva følger?',
+    options: [
+      {
+        text: "Det regner ikke",
+        correct: true,
+        rationale:
+          "Klassisk modus tollens: fra (Regn ⇒ Vått) og ¬Vått får vi ¬Regn. Det er en sound inferens.",
+      },
+      {
+        text: "Det regner",
+        correct: false,
+        rationale:
+          "Det ville være «affirming the consequent» eller en feilbruk av modus ponens — ikke gyldig.",
+      },
+      {
+        text: "Gresset er vått fordi det regner",
+        correct: false,
+        rationale: "Premisset sier at gresset IKKE er vått. Du leser premisset feil.",
+      },
+      {
+        text: "Vi vet ikke",
+        correct: false,
+        rationale: "Vi vet faktisk — modus tollens gir oss et eksakt svar.",
+      },
+    ],
+  },
+  {
+    id: "d-match-pl-vs-fol",
+    kind: "match",
+    title: "PL vs FOL — uttrykksevne",
+    prompt: "Match utsagn til om det krever PL eller FOL.",
+    topic: "Logisk resonnering",
+    pairs: [
+      { left: "«Det regner»", right: "PL — én proposisjon" },
+      { left: "«Hvis det regner, blir det vått»", right: "PL — to proposisjoner og en implikasjon" },
+      { left: "«Alle mennesker er dødelige»", right: "FOL — kvantor over et domene" },
+      { left: "«Det finnes en bok Per har lest»", right: "FOL — eksistens-kvantor + relasjon" },
+      { left: "«Sokrates er menneske»", right: "FOL — predikat anvendt på konstant" },
+    ],
+    explanation:
+      "PL har bare proposisjoner. FOL legger til OBJEKTER, RELASJONER mellom dem, og KVANTORER (∀, ∃). Det er prisen for å håndtere store eller uendelige domener.",
+  },
+  {
+    id: "d-quiz-resolusjon",
+    kind: "quiz",
+    title: "Resolusjon — gjenkjenn steget",
+    prompt: "Velg riktig.",
+    topic: "Logisk resonnering",
+    question: "Vi har klausulene (P ∨ Q) og (¬P ∨ R). Hva følger fra resolusjon?",
+    options: [
+      {
+        text: "Q ∨ R",
+        correct: true,
+        rationale:
+          "Resolusjon: når en literal og dens negasjon opptrer i hver sin klausul, faller de bort og vi får unionen av resten. P og ¬P faller bort, igjen blir Q ∨ R.",
+      },
+      {
+        text: "P ∨ R",
+        correct: false,
+        rationale: "Nei — P og ¬P er nettopp det som forsvinner. Det er R og Q som overlever.",
+      },
+      {
+        text: "Q ∧ R",
+        correct: false,
+        rationale: "Resolusjon gir en disjunksjon (∨) av de gjenværende literalene, ikke konjunksjon.",
+      },
+      {
+        text: "P ∧ Q ∧ R",
+        correct: false,
+        rationale: "Resolusjon kombinerer to klausuler til ÉN klausul, ikke en konjunksjon av alt.",
+      },
+    ],
+  },
+  {
+    id: "d-order-resolution-cnf",
+    kind: "order",
+    title: "Konverter P ⇒ (Q ∨ R) til CNF",
+    prompt: "Sortér transformasjons-stegene fra implikasjon til CNF.",
+    topic: "Logisk resonnering",
+    items: [
+      "Start: P ⇒ (Q ∨ R)",
+      "Fjern ⇒ med α ⇒ β = ¬α ∨ β: ¬P ∨ (Q ∨ R)",
+      "Flat ut assosiative ∨: ¬P ∨ Q ∨ R",
+      "Resultat: én klausul {¬P, Q, R}",
+    ],
+    explanation:
+      "CNF (konjunktiv normalform) er en konjunksjon av disjunksjoner. Hvert ledd er en klausul. Hele KB blir et SETT av klausuler, og resolusjon kjøres på dette settet.",
+  },
+
+  // ============ DTE-2501: PLANLEGGING ============
+  {
+    id: "d-match-strips",
+    kind: "match",
+    title: "STRIPS-handling — delene",
+    prompt: "Match hver del av en STRIPS-handling til hva den betyr.",
+    topic: "Planlegging",
+    pairs: [
+      { left: "Precondition", right: "Predikater som må være sanne FØR handlingen kan kjøres" },
+      { left: "Add list", right: "Predikater som blir sanne ETTER handlingen" },
+      { left: "Delete list", right: "Predikater som blir usanne ETTER handlingen" },
+      { left: "Scope (parametere)", right: "Variablene som handlingen er parametrisert over" },
+      { left: "Anvendelse", right: "Bruk: state' = (state − delete) ∪ add" },
+    ],
+  },
+  {
+    id: "d-quiz-strips-applicable",
+    kind: "quiz",
+    title: "Når er en STRIPS-handling anvendelig?",
+    prompt: "Velg riktig.",
+    topic: "Planlegging",
+    question:
+      "Handlingen Move(x, A, B) har precondition {On(x, A), Clear(x), Clear(B)}. I nåværende tilstand vet vi: On(C, A), Clear(C), On(D, B). Er Move(C, A, B) anvendelig?",
+    options: [
+      {
+        text: "Nei — Clear(B) er ikke sann (D ligger på B)",
+        correct: true,
+        rationale:
+          "ALLE preconditions må være sanne. On(C,A) og Clear(C) holder, men Clear(B) er ikke i tilstanden — D blokkerer.",
+      },
+      {
+        text: "Ja — to av tre preconditions er oppfylt",
+        correct: false,
+        rationale: "Det holder ikke at to av tre er oppfylt — ALLE må være.",
+      },
+      {
+        text: "Ja — vi kan flytte D av B underveis",
+        correct: false,
+        rationale:
+          "Nei. STRIPS-handlinger er atomære. Du må eksplisitt kjøre Move(D, B, ...) først i planen.",
+      },
+      {
+        text: "Nei — On(D, B) motsier handlingen",
+        correct: false,
+        rationale:
+          "Ikke direkte motsigelse — det er at preconditions inkluderer Clear(B), som On(D, B) gjør usann.",
+      },
+    ],
+  },
+  {
+    id: "d-fill-strips-effect",
+    kind: "fill",
+    title: "Fyll inn Fly-handlingens effect",
+    prompt: "Dra inn de riktige predikatene.",
+    topic: "Planlegging",
+    template:
+      "Action: Fly(p, from, to)\nPrecondition: At(p, from) ∧ Plane(p) ∧ Airport(from) ∧ Airport(to)\nEffect: __1__(p, to) ∧ __2__ At(p, from)",
+    blanks: ["At", "¬"],
+    options: ["At", "¬", "Plane", "Airport", "On", "Clear", "∧", "∨"],
+    explanation:
+      "Effect-notasjonen kombinerer add og delete. Positive literals (At(p, to)) er adds, negative literals (¬At(p, from)) er deletes.",
+  },
+  {
+    id: "d-match-forward-vs-backward",
+    kind: "match",
+    title: "Forward vs backward planning",
+    prompt: "Match egenskapen til retningen den passer.",
+    topic: "Planlegging",
+    pairs: [
+      { left: "Søker fra start mot mål", right: "Forward (progression)" },
+      { left: "Søker fra mål mot start", right: "Backward (regression)" },
+      { left: "Tilstander er konkrete — alt definert", right: "Forward" },
+      { left: "Tilstander er partielle — bare mål-literals", right: "Backward" },
+      { left: "Bare RELEVANTE handlinger vurderes — typisk mindre branching", right: "Backward" },
+    ],
+    explanation:
+      "Moderne planleggere som FF og Fast Downward bruker forward-søk med kraftige heuristikker. Backward-planning er historisk viktig og enklere å forstå konseptuelt.",
+  },
+
+  // ============ DTE-2501: BAYES ============
+  {
+    id: "d-fill-bayes-formel",
+    kind: "fill",
+    title: "Bayes' teorem — fyll inn",
+    prompt: "Dra inn de riktige termene i Bayes-formelen.",
+    topic: "Bayes",
+    template: "P(H | D) = ( __1__ · __2__ ) / __3__",
+    blanks: ["P(D | H)", "P(H)", "P(D)"],
+    options: ["P(D | H)", "P(H)", "P(D)", "P(H | D)", "P(¬H)", "P(D ∧ H)"],
+    explanation:
+      "Posterior = likelihood × prior / evidens. Husk hvilken sannsynlighet som er HVA — det er den vanligste feilen.",
+  },
+  {
+    id: "d-match-bayes-begreper",
+    kind: "match",
+    title: "Bayes-vokabular",
+    prompt: "Match hvert term i Bayes-formelen til navn.",
+    topic: "Bayes",
+    pairs: [
+      { left: "P(H)", right: "Prior — det vi trodde FØR vi så data" },
+      { left: "P(H | D)", right: "Posterior — det vi tror ETTER å ha sett data" },
+      { left: "P(D | H)", right: "Likelihood — hvor sannsynlig er data hvis H er sann?" },
+      { left: "P(D)", right: "Evidens / marginal — normaliseringskonstanten" },
+      { left: "P(H | D) ∝ P(D | H) · P(H)", right: "Når vi sammenligner hypoteser kan vi ignorere P(D)" },
+    ],
+  },
+  {
+    id: "d-quiz-sykdomstest",
+    kind: "quiz",
+    title: "Sykdomstest — base-rate-fellen",
+    prompt: "Velg riktig.",
+    topic: "Bayes",
+    question:
+      "P(S) = 0.01, P(+|S) = 0.99, P(+|¬S) = 0.01. Hva er P(S | +)?",
+    options: [
+      {
+        text: "Omtrent 0.50 (50%)",
+        correct: true,
+        rationale:
+          "P(+) = 0.99·0.01 + 0.01·0.99 = 0.0198. P(S|+) = 0.99·0.01 / 0.0198 = 0.5. Sjelden prior dominerer sterk likelihood.",
+      },
+      {
+        text: "Omtrent 0.99 (99%)",
+        correct: false,
+        rationale:
+          "Det er P(+|S), ikke P(S|+). Bytte av betingelse er nettopp det Bayes korrigerer for — og base-rate-fellen vi går i.",
+      },
+      {
+        text: "Omtrent 0.01 (1%)",
+        correct: false,
+        rationale: "Det er den UBETINGEDE prior P(S). Vi har fått ny info (positiv test) — posterior må være høyere.",
+      },
+      {
+        text: "Det går ikke an å regne uten P(¬S)",
+        correct: false,
+        rationale: "P(¬S) = 1 − P(S) = 0.99 — det er implisitt gitt.",
+      },
+    ],
+  },
+  {
+    id: "d-quiz-naive-bayes-antagelse",
+    kind: "quiz",
+    title: "Naive Bayes — hva er «naivt»?",
+    prompt: "Velg riktig.",
+    topic: "Bayes",
+    question: "Hva er kjerneantagelsen i en naive Bayes-klassifikator?",
+    options: [
+      {
+        text: "Features er betinget uavhengige gitt klassen",
+        correct: true,
+        rationale:
+          "P(x1, ..., xn | C) faktoriseres som ∏ P(xi | C). Det reduserer modellstørrelsen fra eksponentiell til lineær i antall features.",
+      },
+      {
+        text: "Features er helt uavhengige av hverandre",
+        correct: false,
+        rationale:
+          "Vanlig misforståelse. Antagelsen er BETINGET uavhengighet GITT klassen — ikke ubetinget uavhengighet.",
+      },
+      {
+        text: "Alle klasser er like sannsynlige",
+        correct: false,
+        rationale:
+          "Nei — vi multipliserer med prior P(C). Klassene kan ha ulike priorer.",
+      },
+      {
+        text: "P(D) er null",
+        correct: false,
+        rationale: "Det ville gjort hele Bayes-uttrykket udefinert.",
+      },
+    ],
+  },
+  {
+    id: "d-match-uavhengighet",
+    kind: "match",
+    title: "Uavhengighet — eksempler",
+    prompt: "Match scenario til hvilken type uavhengighet det illustrerer.",
+    topic: "Bayes",
+    pairs: [
+      { left: "To uavhengige terningkast", right: "Marginal uavhengighet: P(A ∧ B) = P(A)·P(B)" },
+      { left: "Paraply ute & våte fortauer gitt at det regner", right: "Betinget uavhengig gitt regn" },
+      { left: "Spam-features (ord) gitt klasse «spam»", right: "Naive Bayes-antagelsen — betinget uavhengig gitt klasse" },
+      { left: "Høyde i cm & høyde i tommer", right: "STERKT avhengig — bryter naive-antagelsen" },
+    ],
+    explanation:
+      "Marginal uavhengighet og betinget uavhengighet er forskjellige ting. Mye Bayes-intuisjon hviler på å skille de to.",
+  },
+  {
+    id: "d-fill-naive-bayes-arg",
+    kind: "fill",
+    title: "Naive Bayes — klassifikator-uttrykk",
+    prompt: "Fyll inn argmax-uttrykket for naive Bayes-klassifikatoren.",
+    topic: "Bayes",
+    template:
+      "klasse = argmax over C av  __1__ · ∏ __2__\n# (vi kan droppe P(D) fordi den er felles for alle C)",
+    blanks: ["P(C)", "P(xi | C)"],
+    options: ["P(C)", "P(xi | C)", "P(C | xi)", "P(D)", "P(C ∧ xi)", "P(¬C)"],
+    explanation:
+      "Prior × produkt av likelihoods. P(D) er konstant over klassene, så vi dropper den under argmax.",
+  },
+  {
+    id: "d-quiz-laplace-smoothing",
+    kind: "quiz",
+    title: "Laplace smoothing — hvorfor?",
+    prompt: "Velg riktig.",
+    topic: "Bayes",
+    question:
+      "Hvorfor legger vi til 1 i tellere og |V| i nevneren når vi estimerer P(xi | C) for naive Bayes?",
+    options: [
+      {
+        text: "For å unngå null-sannsynligheter når en feature-verdi ikke er sett for klassen i trening",
+        correct: true,
+        rationale:
+          "Hvis et ord aldri er sett i klassen «spam» under trening, blir P(ord | spam) = 0 og hele produktet kollapser til 0. Laplace add-1 gir små positive sannsynligheter i stedet.",
+      },
+      {
+        text: "For å gjøre modellen tregere så den generaliserer bedre",
+        correct: false,
+        rationale: "Smoothing endrer ikke trenings-tid nevneverdig — det handler om null-håndtering.",
+      },
+      {
+        text: "For å normalisere posterior til 1",
+        correct: false,
+        rationale: "Normalisering håndteres separat. Smoothing handler om å unngå null i likelihoodene.",
+      },
+      {
+        text: "For å oppfylle Kolmogorovs aksiomer",
+        correct: false,
+        rationale: "Aksiomene oppfylles uansett. Problemet er PRAKTISK — at zero-frequency ødelegger argmax.",
+      },
+    ],
+  },
 ];
