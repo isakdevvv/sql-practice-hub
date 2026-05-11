@@ -60,6 +60,7 @@ import { content as cnn } from "./cnn";
 import { content as regularisering } from "./regularisering";
 import { content as optimering } from "./optimering";
 import { content as pytorchTf } from "./pytorch-tf";
+import { content as mvcMonster } from "./mvc-monster";
 import type { TrinnContent } from "../types";
 
 export const TRINN: TrinnContent[] = [
@@ -74,6 +75,7 @@ export const TRINN: TrinnContent[] = [
   trinn1, trinn2, trinn3, trinn4, trinn5, trinn6, trinn7, trinn8, trinn9, trinn10,
   dte2802, csharpGrunnlag, aspnetMvc, aspnetWebapi, efCore, blazor,
   dte2502, backpropDyp, cnn, regularisering, optimering, pytorchTf,
+  mvcMonster,
 ];
 
 // Bare ferdige trinn er offentlig synlige — stubs (`status: "stub"`)
