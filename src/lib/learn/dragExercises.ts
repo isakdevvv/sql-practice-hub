@@ -279,6 +279,36 @@ export const DRAG_EXERCISES: DragExercise[] = [
     options: ["TABLE", "VIEW", "INDEX", "PRIMARY", "FOREIGN", "UNIQUE", "REFERENCES", "ON", "AS"],
   },
   {
+    id: "d-fill-mysql-film",
+    kind: "fill",
+    title: "Skriv film-skjemaet slik kurset gjør det (MySQL)",
+    prompt:
+      "Repoets film.sql i DTE-2509 bruker MySQL-spesifikk DDL. Fyll inn de MySQL-spesifikke tokens som mangler.",
+    topic: "DDL",
+    template:
+      "CREATE TABLE `film` (\n  `fnr` int NOT NULL __1__,\n  `tittel` __2__(50) DEFAULT NULL,\n  `år` int DEFAULT NULL,\n  `pris` __3__(6,2) DEFAULT NULL,\n  PRIMARY KEY (`fnr`)\n) __4__=InnoDB DEFAULT __5__=utf8mb4;",
+    blanks: ["AUTO_INCREMENT", "varchar", "decimal", "ENGINE", "CHARSET"],
+    options: [
+      "AUTO_INCREMENT",
+      "AUTOINCREMENT",
+      "SERIAL",
+      "varchar",
+      "TEXT",
+      "STRING",
+      "decimal",
+      "NUMERIC",
+      "FLOAT",
+      "ENGINE",
+      "TYPE",
+      "FORMAT",
+      "CHARSET",
+      "ENCODING",
+      "COLLATE",
+    ],
+    explanation:
+      "MySQL-spesifikke ord: AUTO_INCREMENT (med understrek, ulikt SQLite sitt AUTOINCREMENT), varchar(n) med faste lengder, decimal(presisjon,skala) for pris, ENGINE=InnoDB for transaksjons- og FK-støtte, og DEFAULT CHARSET=utf8mb4 for emoji/full Unicode. Se stack-leksjonen «MySQL vs SQLite» for full mapping.",
+  },
+  {
     id: "d-fill-insert",
     kind: "fill",
     title: "INSERT en ny kunde",

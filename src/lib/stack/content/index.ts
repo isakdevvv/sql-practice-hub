@@ -78,11 +78,12 @@ import { content as mvvmArkitektur } from "./mvvm-arkitektur";
 import { content as korutiner } from "./korutiner";
 import { content as roomRecycler } from "./room-recycler";
 import { content as apiRetrofit } from "./api-retrofit";
+import { content as mysqlVsSqlite } from "./mysql-vs-sqlite";
 import type { TrinnContent } from "../types";
 
 export const TRINN: TrinnContent[] = [
   bytesEncoding, tcpSockets, huskelapp, erMapping, normalisering, htmlJinja, sikkerhet,
-  subqueries, nokler,
+  subqueries, nokler, mysqlVsSqlite,
   algoritmer, bigO, rekursjon, sortering, lenkedeStrukturer,
   dte2507, osiTcpip, transportlag, kryptografi, tls, nettverkssikkerhet,
   dte2602, mlGrunnlag, supervisedLearning, unsupervisedLearning, nnIntro,

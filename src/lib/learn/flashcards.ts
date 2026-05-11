@@ -486,6 +486,23 @@ export const FLASHCARDS: FlashCard[] = [
     answer:
       "Endringene er bare i transaksjonsbufferet til serveren stoppes. Uten commit() lagres de ikke permanent — neste oppstart har dem ikke.",
   },
+  {
+    id: "c-with-database",
+    category: "flask",
+    topic: "Database",
+    question: "Hvorfor brukes `with DataBase() as db:` i kurset?",
+    answer:
+      "Det er Pythons context-manager-mønster. __enter__ åpner cursor og returnerer self; __exit__ kjører ALLTID når blokken slutter (også på exception) og gjør commit + close. Du slipper å skrive try/finally for hånd, og garanterer at koblingen lukkes.",
+    code: "with DataBase() as db:\n    db.cursor.execute(\"SELECT ...\")\n    rows = db.cursor.fetchall()\n# her er commit + close allerede kjørt",
+  },
+  {
+    id: "c-context-exit-exception",
+    category: "flask",
+    topic: "Database",
+    question: "Hva skjer i __exit__ hvis en exception kastes inni `with`-blokken?",
+    answer:
+      "__exit__ kjøres uansett — det er hele poenget. Argumentene exc_type/exc_val/exc_tb forteller hvilken feil som skjedde (None hvis ingen). Returnerer __exit__ True, undertrykkes feilen; returnerer den None/False (vanlig) propageres feilen videre. Kurset committer alltid — du kan velge å rulle tilbake ved exception.",
+  },
 
   // ============= HTTP =============
   {
