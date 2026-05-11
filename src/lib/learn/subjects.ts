@@ -20,7 +20,8 @@ export type SubjectId =
   | "mobil"
   | "fp-typer"
   | "drill-cross"
-  | "devops";
+  | "devops"
+  | "hardware";
 
 export interface Subject {
   id: SubjectId;
@@ -241,6 +242,22 @@ export const SUBJECTS: readonly Subject[] = [
     label: "DevOps & verktøy (Phase 11.5)",
     short: "Git-dyp, Docker, Linux-CLI advanced",
     topics: ["Git-dyp", "Docker", "Linux-CLI advanced", "sed/awk/jq", "Containere"],
+  },
+  {
+    id: "hardware",
+    label: "Hardware-stakken (Phase 1)",
+    short: "Transistor → CPU → assembly → C → Python — alt fra bunnen",
+    topics: [
+      "Transistor",
+      "Logiske porter",
+      "CPU-arkitektur",
+      "Assembly",
+      "C-minne",
+      "Bytes-representasjon",
+      "CPython",
+      "Syscalls",
+      "WSGI",
+    ],
   },
 ] as const;
 

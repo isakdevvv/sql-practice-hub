@@ -1,4 +1,4 @@
-import { Placeholder } from "@/components/stack/Placeholder";
+import { Trinn4CpuPage } from "@/components/stack/trinn-4-cpu/Trinn4CpuPage";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -7,8 +7,8 @@ export const content: TrinnContent = {
   title: "4. CPU — fetch, decode, execute",
   group: "stack",
   order: 4,
-  status: "stub",
+  status: "ready",
   shortDescription: "PC, IR, ALU, registerfil. Én instruksjon, én syklus.",
   prerequisites: [],
-  Component: () => <Placeholder title="4. CPU — fetch, decode, execute" group="stack" />,
+  Component: Trinn4CpuPage,
 };

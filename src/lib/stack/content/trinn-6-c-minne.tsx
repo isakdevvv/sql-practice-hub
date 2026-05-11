@@ -1,4 +1,4 @@
-import { Placeholder } from "@/components/stack/Placeholder";
+import { Trinn6CMinnePage } from "@/components/stack/trinn-6-c-minne/Trinn6CMinnePage";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -7,8 +7,8 @@ export const content: TrinnContent = {
   title: "6. C — minne og pekere",
   group: "stack",
   order: 6,
-  status: "stub",
+  status: "ready",
   shortDescription: "Stack vs heap, hex-dumps, en char-array er bare bytes.",
   prerequisites: [],
-  Component: () => <Placeholder title="6. C — minne og pekere" group="stack" />,
+  Component: Trinn6CMinnePage,
 };
