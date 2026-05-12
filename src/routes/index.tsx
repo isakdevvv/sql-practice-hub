@@ -5,43 +5,242 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { PROBLEMS } from "@/lib/problems/data";
 import { useAppMode, setAppMode, type AppMode } from "@/lib/appMode";
-import { Search, GraduationCap, Dumbbell, ArrowRight, Sparkles } from "lucide-react";
+import {
+  Search,
+  GraduationCap,
+  Dumbbell,
+  ArrowRight,
+  Sparkles,
+  Database,
+  Network,
+  Brain,
+  TerminalSquare,
+  Smartphone,
+  Workflow,
+  Code2,
+  Cpu,
+  Globe,
+  Layers,
+  BookOpen,
+  Boxes,
+  KeyboardMusic,
+} from "lucide-react";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "SQL Sandbox — DTE-2509-1 Databaser og webapplikasjoner 1" },
+      { title: "Læringsplattform — UiT-fag og øvingsverktøy" },
       {
         name: "description",
         content:
-          "Øvingsverktøy for DTE-2509-1 26V Databaser og webapplikasjoner 1. SQL-oppgaver med ekte SQLite i nettleseren, hint, fasit, eksamen-modus og globalt søk.",
+          "Plattform for ni UiT-fag: SQL/web, AI/ML, OS, datakomm, mobil, systemutvikling. SQL-oppgaver med ekte SQLite i nettleseren, Flask-øvelser i Pyodide, og 100+ stack-leksjoner.",
       },
       {
         property: "og:title",
-        content: "SQL Sandbox — DTE-2509-1 Databaser og webapplikasjoner 1",
+        content: "Læringsplattform — UiT-fag og øvingsverktøy",
       },
       {
         property: "og:description",
         content:
-          "Studentlaget øvingsverktøy for DTE-2509-1 26V — over 300 SQL-oppgaver, eksamen-modus og søk overalt.",
+          "Ni UiT-fag i én plattform — SQL, Flask, ML, OS, mobil og mer. Øvinger som kjører lokalt i nettleseren.",
       },
     ],
   }),
   component: LandingPage,
 });
 
+type Subject = {
+  slug: string;
+  code: string;
+  navn: string;
+  blurb: string;
+  Icon: typeof Database;
+};
+
+type Sektor = {
+  navn: string;
+  beskrivelse: string;
+  accent: string;
+  subjects: Subject[];
+};
+
+const SEKTORER: Sektor[] = [
+  {
+    navn: "Databaser og web",
+    beskrivelse: "SQL, Flask, MySQL, autentisering, web-sikkerhet, og full-stack Web 2.",
+    accent: "from-blue-500/30 to-cyan-500/20",
+    subjects: [
+      {
+        slug: "dte-2509",
+        code: "DTE-2509",
+        navn: "Databaser og webapplikasjoner 1",
+        blurb:
+          "Seks moduler som dekker hele pensumet: HTML/CSS+Git, Flask Basics, Database, User Management, API/HTTP, og Web-sikkerhet.",
+        Icon: Database,
+      },
+      {
+        slug: "dte-2802",
+        code: "DTE-2802",
+        navn: "Web Applikasjoner 2",
+        blurb:
+          "Fem mini-kurs: C#, ASP.NET MVC, Web API, EF Core og Blazor.",
+        Icon: Globe,
+      },
+    ],
+  },
+  {
+    navn: "AI og maskinlæring",
+    beskrivelse: "Klassisk AI, supervised/unsupervised ML, og dyplæring.",
+    accent: "from-violet-500/30 to-fuchsia-500/20",
+    subjects: [
+      {
+        slug: "dte-2501",
+        code: "DTE-2501",
+        navn: "AI Methods and Applications",
+        blurb:
+          "Fem mini-kurs: søk, CSP, logikk, planlegging og Bayes — klassisk AI før ML tok over.",
+        Icon: Brain,
+      },
+      {
+        slug: "dte-2602",
+        code: "DTE-2602",
+        navn: "Introduksjon maskinlæring og AI",
+        blurb:
+          "Fire mini-kurs: ML-grunnlag, supervised, unsupervised, og nevrale nett.",
+        Icon: Layers,
+      },
+      {
+        slug: "dte-2502",
+        code: "DTE-2502",
+        navn: "Neural Networks",
+        blurb:
+          "Dyplæring som bygger på DTE-2602: backpropagation dypt, CNN, regularisering, optimerere, PyTorch/TF.",
+        Icon: Workflow,
+      },
+    ],
+  },
+  {
+    navn: "Systemnær og infrastruktur",
+    beskrivelse: "Operativsystemer, Linux, nettverk og sikkerhet på lavt nivå.",
+    accent: "from-emerald-500/30 to-teal-500/20",
+    subjects: [
+      {
+        slug: "dte-2505",
+        code: "DTE-2505",
+        navn: "Operativsystemer",
+        blurb:
+          "Fem mini-kurs: OS-grunnlag, Linux-bruk, shell scripting, brukere og rettigheter, virtualisering.",
+        Icon: TerminalSquare,
+      },
+      {
+        slug: "dte-2507",
+        code: "DTE-2507",
+        navn: "Datakommunikasjon og sikkerhet",
+        blurb:
+          "Fem mini-kurs: OSI/TCP-IP, transport, kryptografi, TLS og nettverkssikkerhet.",
+        Icon: Network,
+      },
+    ],
+  },
+  {
+    navn: "Mobil og prosessverktøy",
+    beskrivelse: "Android-utvikling og hvordan team faktisk leverer programvare.",
+    accent: "from-amber-500/30 to-orange-500/20",
+    subjects: [
+      {
+        slug: "dte-2603",
+        code: "DTE-2603",
+        navn: "Programmering for mobil",
+        blurb:
+          "Seks mini-kurs: Kotlin, Android-livssyklus, MVVM, korutiner, Room/RecyclerView og Retrofit.",
+        Icon: Smartphone,
+      },
+      {
+        slug: "dte-2604",
+        code: "DTE-2604",
+        navn: "Systemutvikling",
+        blurb:
+          "Fire mini-kurs: smidige metodikker, brukerhistorier, UML, og prosjekt-praksis.",
+        Icon: Boxes,
+      },
+    ],
+  },
+];
+
+type Verktoy = {
+  href: "/practice" | "/python" | "/drag" | "/cards" | "/prosjekt" | "/exam" | "/eksamen" | "/stack/$slug";
+  navn: string;
+  blurb: string;
+  Icon: typeof Database;
+  slug?: string;
+};
+
+const VERKTOY: Verktoy[] = [
+  {
+    href: "/practice",
+    navn: "SQL Practice",
+    blurb: "300+ SQL-oppgaver med ekte SQLite i nettleseren.",
+    Icon: Database,
+  },
+  {
+    href: "/python",
+    navn: "Python-øvelser",
+    blurb: "70+ Flask/MySQL/auth-oppgaver i Pyodide.",
+    Icon: Code2,
+  },
+  {
+    href: "/drag",
+    navn: "Drag-oppgaver",
+    blurb: "500+ fyll-inn, match og rekkefølge-oppgaver.",
+    Icon: KeyboardMusic,
+  },
+  {
+    href: "/cards",
+    navn: "Flashcards",
+    blurb: "200+ kort for drillbar repetisjon.",
+    Icon: BookOpen,
+  },
+  {
+    href: "/prosjekt",
+    navn: "Flask-prosjekt",
+    blurb: "Bygg en hel nettbutikk i 11 trinn.",
+    Icon: Boxes,
+  },
+  {
+    href: "/exam",
+    navn: "Eksamenstrening",
+    blurb: "10 oppgaver, 20 minutter, nedteller.",
+    Icon: GraduationCap,
+  },
+  {
+    href: "/eksamen",
+    navn: "Eksamen-hub",
+    blurb: "Samler eksamens-trinn fra alle fag.",
+    Icon: Sparkles,
+  },
+  {
+    href: "/stack/$slug",
+    slug: "laereplan",
+    navn: "Læreplan",
+    blurb: "Total oversikt over alt læringsstoff.",
+    Icon: Cpu,
+  },
+];
+
 function LandingPage() {
   const navigate = useNavigate();
   const appMode = useAppMode();
   const [query, setQuery] = useState("");
 
-  const totals = {
-    problems: PROBLEMS.length,
-    levels: 6,
-    topics: new Set(PROBLEMS.flatMap((p) => p.topics)).size,
-  };
+  const totals = useMemo(
+    () => ({
+      problems: PROBLEMS.length,
+      topics: new Set(PROBLEMS.flatMap((p) => p.topics)).size,
+      subjects: SEKTORER.reduce((n, s) => n + s.subjects.length, 0),
+    }),
+    [],
+  );
 
-  // Topp-temaer rangert etter antall oppgaver — det studenten typisk leter etter på eksamen.
   const topTopics = useMemo(() => {
     const counts = new Map<string, number>();
     for (const p of PROBLEMS) {
@@ -49,21 +248,23 @@ function LandingPage() {
     }
     return Array.from(counts.entries())
       .sort((a, b) => b[1] - a[1])
-      .slice(0, 14);
+      .slice(0, 12);
   }, []);
 
-  // Live-forslag mens man skriver — hjelper studenten å finne riktig oppgave/tema fort.
   const suggestions = useMemo(() => {
     const q = query.trim().toLowerCase();
-    if (!q) return { probs: [], topics: [] };
+    if (!q) return { probs: [], topics: [], subjects: [] };
     const probs = PROBLEMS.filter((p) =>
       `${p.title} ${p.problem} ${p.topics.join(" ")}`.toLowerCase().includes(q),
-    ).slice(0, 6);
+    ).slice(0, 5);
     const topics = topTopics
       .map(([t]) => t)
       .filter((t) => t.toLowerCase().includes(q))
       .slice(0, 4);
-    return { probs, topics };
+    const subjects = SEKTORER.flatMap((s) => s.subjects)
+      .filter((s) => `${s.code} ${s.navn} ${s.blurb}`.toLowerCase().includes(q))
+      .slice(0, 4);
+    return { probs, topics, subjects };
   }, [query, topTopics]);
 
   function submitSearch() {
@@ -88,65 +289,30 @@ function LandingPage() {
                 "radial-gradient(60% 60% at 50% 0%, color-mix(in oklab, var(--brand) 35%, transparent), transparent)",
             }}
           />
-          <div className="container mx-auto px-4 py-16 md:py-20 text-center max-w-3xl">
-            <div className="inline-flex items-center gap-2 rounded-full border border-brand/40 bg-brand/10 px-3 py-1 text-xs font-semibold text-brand mb-3">
-              DTE-2509-1 · 26V · Databaser og webapplikasjoner 1
-            </div>
-            <div className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-3 py-1 text-xs text-muted-foreground mb-6 ml-2">
+          <div className="container mx-auto px-4 py-14 md:py-16 text-center max-w-3xl">
+            <div className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-3 py-1 text-xs text-muted-foreground mb-6">
               <span className="h-1.5 w-1.5 rounded-full bg-success" />
               Kjører lokalt i nettleseren — ingen innlogging
             </div>
-            <h1 className="text-4xl md:text-6xl font-bold tracking-tight">
-              Øv på SQL med{" "}
+            <h1 className="text-4xl md:text-5xl font-bold tracking-tight">
+              Læringsplattform for{" "}
               <span className="bg-gradient-to-r from-brand to-success bg-clip-text text-transparent">
-                ekte spørringer
+                ni UiT-fag
               </span>
             </h1>
-            <p className="mt-6 text-lg text-muted-foreground">
-              Studentlaget øvingsverktøy for{" "}
-              <strong className="text-foreground">DTE-2509-1 Databaser og webapplikasjoner 1</strong>.{" "}
-              Skriv ekte spørringer mot et realistisk skjema — {totals.problems} oppgaver,{" "}
-              {totals.topics} temaer — velg modus og søk deg fram.
+            <p className="mt-5 text-lg text-muted-foreground">
+              Velg faget ditt nedenfor — eller hopp rett i et øvingsverktøy. SQL kjører i
+              SQLite-WASM, Python i Pyodide, alt i nettleseren din. {totals.problems} SQL-
+              oppgaver og {totals.topics} temaer på tvers av fagene.
             </p>
 
-            {/* Modus-velger */}
-            <div className="mt-8 mx-auto max-w-xl">
-              <div className="text-[11px] uppercase tracking-wider text-muted-foreground font-semibold mb-2">
-                Velg modus
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                <ModeCard
-                  active={appMode === "ovning"}
-                  onClick={() => chooseMode("ovning")}
-                  icon={<Dumbbell className="h-5 w-5" />}
-                  title="Øving"
-                  body="Løs oppgavene selv med hint, fasit og diff."
-                  accent="brand"
-                />
-                <ModeCard
-                  active={appMode === "eksamen"}
-                  onClick={() => chooseMode("eksamen")}
-                  icon={<GraduationCap className="h-5 w-5" />}
-                  title="Eksamen"
-                  body="Fasit pre-fylles i editoren — finn fort og lever."
-                  accent="warning"
-                />
-              </div>
-              {appMode === "eksamen" && (
-                <p className="mt-3 text-xs text-warning flex items-center justify-center gap-1.5">
-                  <Sparkles className="h-3.5 w-3.5" />
-                  Eksamen-modus: åpne en oppgave i Practice — fasiten ligger klar i SQL-editoren.
-                </p>
-              )}
-            </div>
-
             {/* Søk */}
-            <div className="mt-8 mx-auto max-w-xl text-left">
+            <div className="mt-7 mx-auto max-w-xl text-left">
               <label
                 htmlFor="home-search"
                 className="text-[11px] uppercase tracking-wider text-muted-foreground font-semibold"
               >
-                Søk etter tema eller oppgave
+                Søk etter fag, tema eller oppgave
               </label>
               <div className="relative mt-2">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
@@ -157,7 +323,7 @@ function LandingPage() {
                   onKeyDown={(e) => {
                     if (e.key === "Enter") submitSearch();
                   }}
-                  placeholder="f.eks. JOIN, GROUP BY, vindusfunksjon, bilsalg…"
+                  placeholder="f.eks. JOIN, Kotlin, CSRF, normalisering, DTE-2509…"
                   className="h-11 pl-9 pr-24 text-sm"
                 />
                 <Button
@@ -169,8 +335,27 @@ function LandingPage() {
                 </Button>
               </div>
 
-              {query.trim() && suggestions && (
+              {query.trim() && (
                 <div className="mt-2 rounded-lg border border-border bg-card overflow-hidden text-sm">
+                  {suggestions.subjects.length > 0 && (
+                    <div className="border-b border-border px-3 py-2">
+                      <div className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1.5">
+                        Fag
+                      </div>
+                      <div className="flex flex-wrap gap-1.5">
+                        {suggestions.subjects.map((s) => (
+                          <Link
+                            key={s.slug}
+                            to="/stack/$slug"
+                            params={{ slug: s.slug }}
+                            className="rounded-full border border-brand/40 bg-brand/10 px-2.5 py-0.5 text-xs hover:bg-brand/20"
+                          >
+                            {s.code} {s.navn}
+                          </Link>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                   {suggestions.topics.length > 0 && (
                     <div className="border-b border-border px-3 py-2">
                       <div className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1.5">
@@ -182,7 +367,7 @@ function LandingPage() {
                             key={t}
                             to="/practice"
                             search={{ topic: t }}
-                            className="rounded-full border border-brand/40 bg-brand/10 px-2.5 py-0.5 text-xs hover:bg-brand/20"
+                            className="rounded-full border border-border bg-background px-2.5 py-0.5 text-xs hover:border-brand/60"
                           >
                             {t}
                           </Link>
@@ -211,7 +396,8 @@ function LandingPage() {
                       ))}
                     </ul>
                   ) : (
-                    suggestions.topics.length === 0 && (
+                    suggestions.topics.length === 0 &&
+                    suggestions.subjects.length === 0 && (
                       <div className="px-3 py-3 text-xs text-muted-foreground">
                         Ingen treff. Prøv et annet søkeord.
                       </div>
@@ -219,99 +405,177 @@ function LandingPage() {
                   )}
                 </div>
               )}
+            </div>
 
-              {/* Tema-chips for rask navigering */}
-              {!query.trim() && (
-                <div className="mt-4">
-                  <div className="text-[10px] uppercase tracking-wider text-muted-foreground mb-2">
-                    Vanlige eksamenstemaer
-                  </div>
-                  <div className="flex flex-wrap gap-1.5">
-                    {topTopics.map(([t, n]) => (
-                      <Link
-                        key={t}
-                        to="/practice"
-                        search={{ topic: t }}
-                        className="rounded-full border border-border bg-card px-2.5 py-0.5 text-xs text-foreground/90 hover:border-brand/60 hover:bg-brand/10"
-                        title={`${n} oppgaver`}
-                      >
-                        {t} <span className="text-muted-foreground">({n})</span>
-                      </Link>
-                    ))}
-                  </div>
-                </div>
+            {/* Modus-velger (kompakt) */}
+            <div className="mt-6 mx-auto max-w-xl">
+              <div className="grid grid-cols-2 gap-3">
+                <ModeCard
+                  active={appMode === "ovning"}
+                  onClick={() => chooseMode("ovning")}
+                  icon={<Dumbbell className="h-4 w-4" />}
+                  title="Øving"
+                  body="Løs selv med hint, fasit og diff."
+                  accent="brand"
+                />
+                <ModeCard
+                  active={appMode === "eksamen"}
+                  onClick={() => chooseMode("eksamen")}
+                  icon={<GraduationCap className="h-4 w-4" />}
+                  title="Eksamen"
+                  body="Fasit pre-fylles i editoren."
+                  accent="warning"
+                />
+              </div>
+              {appMode === "eksamen" && (
+                <p className="mt-3 text-xs text-warning flex items-center justify-center gap-1.5">
+                  <Sparkles className="h-3.5 w-3.5" />
+                  Eksamen-modus: åpne en oppgave — fasiten ligger klar i editoren.
+                </p>
               )}
             </div>
 
-            <div className="mt-10 flex items-center justify-center gap-3">
-              <Button asChild size="lg">
-                <Link to="/kurs">Start fra nivå 0 →</Link>
-              </Button>
-              <Button asChild size="lg" variant="outline">
-                <Link to="/practice">Bla i alle oppgaver</Link>
-              </Button>
-            </div>
-            <div className="mt-12 grid grid-cols-3 gap-6 max-w-md mx-auto text-left">
-              <Stat label="Problems" value={String(totals.problems)} />
-              <Stat label="Levels" value={String(totals.levels)} />
-              <Stat label="Topics" value={String(totals.topics)} />
+            {/* Stats */}
+            <div className="mt-9 grid grid-cols-3 gap-3 max-w-md mx-auto text-left">
+              <Stat label="Fag" value={String(totals.subjects)} />
+              <Stat label="SQL-oppgaver" value={String(totals.problems)} />
+              <Stat label="Temaer" value={String(totals.topics)} />
             </div>
           </div>
         </section>
 
-        {/* Features */}
-        <section className="container mx-auto px-4 py-20 max-w-5xl">
-          <h2 className="text-3xl font-bold text-center tracking-tight">
-            Built for actually learning
-          </h2>
-          <p className="mt-3 text-center text-muted-foreground max-w-xl mx-auto">
-            Not a quiz site. A SQL workbench with feedback that teaches.
-          </p>
-          <div className="mt-12 grid md:grid-cols-3 gap-5">
-            <Feature
-              title="Real SQLite, in your browser"
-              body="Queries run on a real SQLite engine compiled to WebAssembly. No server, no signup, no rate limits."
-            />
-            <Feature
-              title="Result-based grading"
-              body="Your output is compared to the expected result set — there's never just one 'right' way to write a query."
-            />
-            <Feature
-              title="Persistent dataset"
-              body="Every problem uses the same e-commerce schema, so you build a real mental model of the data."
-            />
-            <Feature
-              title="Progressive hints"
-              body="Stuck? Reveal hints one at a time before peeking at the full solution and explanation."
-            />
-            <Feature
-              title="XP, streaks & mastery"
-              body="Earn XP per solve, build a streak, and see exactly which topics still need work."
-            />
-            <Feature
-              title="Exam mode"
-              body="Skru på Eksamen-modus så ligger fasiten klar i editoren for hver oppgave — perfekt som oppslagsverk."
-            />
+        {/* Sektor-grid */}
+        <section className="container mx-auto px-4 py-14 max-w-6xl">
+          <div className="mb-8 text-center">
+            <h2 className="text-3xl font-bold tracking-tight">Velg fag</h2>
+            <p className="mt-2 text-muted-foreground">
+              Hver kursside har modul-oversikt, mini-kurs og direkte tilgang til
+              øvingsmateriale.
+            </p>
+          </div>
+
+          <div className="space-y-10">
+            {SEKTORER.map((sektor) => (
+              <div key={sektor.navn}>
+                <div className="mb-4">
+                  <h3 className="text-lg font-semibold text-foreground">{sektor.navn}</h3>
+                  <p className="text-sm text-muted-foreground">{sektor.beskrivelse}</p>
+                </div>
+                <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                  {sektor.subjects.map((s) => {
+                    const Icon = s.Icon;
+                    return (
+                      <Link
+                        key={s.slug}
+                        to="/stack/$slug"
+                        params={{ slug: s.slug }}
+                        className="group rounded-xl border border-border bg-card hover:border-brand/40 p-5 transition-colors block relative overflow-hidden"
+                      >
+                        <div
+                          className={`absolute inset-0 -z-10 opacity-0 group-hover:opacity-100 transition-opacity bg-gradient-to-br ${sektor.accent}`}
+                        />
+                        <div className="flex items-center gap-2 mb-2">
+                          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-brand/10">
+                            <Icon className="h-4 w-4 text-brand" />
+                          </div>
+                          <span className="text-[10px] font-semibold text-brand uppercase tracking-wider">
+                            {s.code}
+                          </span>
+                        </div>
+                        <h4 className="font-semibold text-foreground leading-tight mb-2">
+                          {s.navn}
+                        </h4>
+                        <p className="text-sm text-muted-foreground leading-relaxed">
+                          {s.blurb}
+                        </p>
+                        <div className="mt-3 flex items-center text-xs text-muted-foreground group-hover:text-foreground transition-colors">
+                          Åpne kursside
+                          <ArrowRight className="h-3.5 w-3.5 ml-1 group-hover:translate-x-0.5 transition-transform" />
+                        </div>
+                      </Link>
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
           </div>
         </section>
 
-        {/* CTA */}
+        {/* Verktøy-grid */}
         <section className="border-t border-border bg-card/30">
-          <div className="container mx-auto px-4 py-16 text-center max-w-2xl">
-            <h2 className="text-2xl md:text-3xl font-semibold tracking-tight">
-              Pick a problem and write your first query.
-            </h2>
-            <div className="mt-6">
-              <Button asChild size="lg">
-                <Link to="/practice">Browse problems</Link>
-              </Button>
+          <div className="container mx-auto px-4 py-14 max-w-6xl">
+            <div className="mb-8 text-center">
+              <h2 className="text-2xl font-bold tracking-tight">Hopp rett inn i øvelse</h2>
+              <p className="mt-2 text-sm text-muted-foreground">
+                Verktøy som virker uavhengig av faget du jobber med.
+              </p>
+            </div>
+            <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-3">
+              {VERKTOY.map((v) => {
+                const Icon = v.Icon;
+                const inner = (
+                  <>
+                    <div className="flex items-center gap-2 mb-2">
+                      <Icon className="h-4 w-4 text-brand" />
+                      <h3 className="font-semibold text-foreground leading-tight text-sm">
+                        {v.navn}
+                      </h3>
+                    </div>
+                    <p className="text-xs text-muted-foreground leading-relaxed">
+                      {v.blurb}
+                    </p>
+                  </>
+                );
+                if (v.href === "/stack/$slug" && v.slug) {
+                  return (
+                    <Link
+                      key={v.navn}
+                      to="/stack/$slug"
+                      params={{ slug: v.slug }}
+                      className="group rounded-xl border border-border bg-background hover:border-brand/40 p-4 transition-colors block"
+                    >
+                      {inner}
+                    </Link>
+                  );
+                }
+                return (
+                  <Link
+                    key={v.navn}
+                    to={v.href as "/practice" | "/python" | "/drag" | "/cards" | "/prosjekt" | "/exam" | "/eksamen"}
+                    className="group rounded-xl border border-border bg-background hover:border-brand/40 p-4 transition-colors block"
+                  >
+                    {inner}
+                  </Link>
+                );
+              })}
+            </div>
+
+            {/* Vanlige eksamenstemaer */}
+            <div className="mt-10">
+              <div className="text-[10px] uppercase tracking-wider text-muted-foreground mb-2 text-center">
+                Vanligste SQL-temaer
+              </div>
+              <div className="flex flex-wrap gap-1.5 justify-center">
+                {topTopics.map(([t, n]) => (
+                  <Link
+                    key={t}
+                    to="/practice"
+                    search={{ topic: t }}
+                    className="rounded-full border border-border bg-card px-2.5 py-0.5 text-xs text-foreground/90 hover:border-brand/60 hover:bg-brand/10"
+                    title={`${n} oppgaver`}
+                  >
+                    {t} <span className="text-muted-foreground">({n})</span>
+                  </Link>
+                ))}
+              </div>
             </div>
           </div>
         </section>
       </main>
       <footer className="border-t border-border">
         <div className="container mx-auto px-4 py-6 text-xs text-muted-foreground text-center">
-          SQL Sandbox · Built with sql.js · Progress saved locally in your browser.
+          Læringsplattform · Bygget av studenter for studenter · Progress lagres lokalt i
+          nettleseren.
         </div>
       </footer>
     </div>
@@ -344,13 +608,13 @@ function ModeCard({
       type="button"
       onClick={onClick}
       aria-pressed={active}
-      className={`group rounded-xl border p-4 text-left transition-all ${
+      className={`group rounded-lg border p-3 text-left transition-all ${
         active ? activeRing : `border-border bg-card ${idleHover}`
       }`}
     >
       <div className="flex items-center gap-2">
         <span
-          className={`flex h-8 w-8 items-center justify-center rounded-md ${
+          className={`flex h-7 w-7 items-center justify-center rounded-md ${
             accent === "warning"
               ? "bg-warning/20 text-warning"
               : "bg-brand/20 text-brand"
@@ -358,7 +622,7 @@ function ModeCard({
         >
           {icon}
         </span>
-        <span className="font-semibold">{title}</span>
+        <span className="font-semibold text-sm">{title}</span>
         {active && (
           <span
             className={`ml-auto text-[10px] font-bold uppercase tracking-wider ${
@@ -369,25 +633,18 @@ function ModeCard({
           </span>
         )}
       </div>
-      <p className="mt-2 text-xs text-muted-foreground leading-relaxed">{body}</p>
+      <p className="mt-1.5 text-xs text-muted-foreground leading-relaxed">{body}</p>
     </button>
   );
 }
 
 function Stat({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-lg border border-border bg-card p-4">
-      <div className="text-2xl font-bold text-foreground">{value}</div>
-      <div className="text-xs text-muted-foreground uppercase tracking-wider mt-1">{label}</div>
-    </div>
-  );
-}
-
-function Feature({ title, body }: { title: string; body: string }) {
-  return (
-    <div className="rounded-xl border border-border bg-card p-6">
-      <h3 className="font-semibold text-foreground">{title}</h3>
-      <p className="mt-2 text-sm text-muted-foreground leading-relaxed">{body}</p>
+    <div className="rounded-lg border border-border bg-card p-3">
+      <div className="text-xl font-bold text-foreground">{value}</div>
+      <div className="text-[10px] text-muted-foreground uppercase tracking-wider mt-0.5">
+        {label}
+      </div>
     </div>
   );
 }
