@@ -103,6 +103,11 @@ import { content as hashingDypere } from "./hashing-dypere";
 import { content as dynamicProgramming } from "./dynamic-programming";
 import { content as brukerhandtering } from "./brukerhandtering";
 import { content as dte2509 } from "./dte-2509";
+import { content as tek1501 } from "./tek-1501";
+import { content as tek1Deskriptiv } from "./tek1-deskriptiv";
+import { content as tek1Sannsynlighet } from "./tek1-sannsynlighet";
+import { content as tek1Fordelinger } from "./tek1-fordelinger";
+import { content as tek1StatistiskAnalyse } from "./tek1-statistisk-analyse";
 import type { TrinnContent } from "../types";
 
 export const TRINN: TrinnContent[] = [
@@ -129,6 +134,8 @@ export const TRINN: TrinnContent[] = [
   javascriptGrunnlag, typescript, reactGrunnlag, cssModerne,
   traer, graferDypere, hashingDypere, dynamicProgramming,
   dte2509, brukerhandtering,
+  tek1501, tek1Deskriptiv, tek1Sannsynlighet, tek1Fordelinger,
+  tek1StatistiskAnalyse,
 ];
 
 import { curriculumIndexOf } from "../curriculum";
