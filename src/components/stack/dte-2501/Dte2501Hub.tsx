@@ -1,5 +1,22 @@
 import { Link } from "@tanstack/react-router";
-import { ArrowRight, Search, Network, BookOpen, ClipboardList, Sigma } from "lucide-react";
+import {
+  ArrowRight,
+  Search,
+  Network,
+  BookOpen,
+  ClipboardList,
+  Sigma,
+  Boxes,
+  TrendingUp,
+  Layers,
+  Dna,
+  MessageSquare,
+  Axis3D,
+  Sparkles,
+  GitMerge,
+  Gamepad2,
+  Infinity as InfinityIcon,
+} from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 
 type Course = {
@@ -10,7 +27,9 @@ type Course = {
   status: "ready" | "coming-soon";
 };
 
-const COURSES: Course[] = [
+// "Klassisk AI"-spor — Russell & Norvig kapitler om søk, CSP, logikk, planlegging
+// og Bayes. Verdifullt for forståelse, men ikke direkte i 2026-eksamen.
+const CLASSIC_COURSES: Course[] = [
   {
     slug: "sok-algoritmer",
     title: "Søkealgoritmer i AI",
@@ -53,6 +72,122 @@ const COURSES: Course[] = [
   },
 ];
 
+// "Moderne ML"-spor — direkte pensum for DTE-2501 2026-eksamen.
+const ML_COURSES: Course[] = [
+  {
+    slug: "dte2501-knn",
+    title: "k-Nearest Neighbors",
+    shortDescription:
+      "Lazy learning, distansemål, bias-variance, k-valg. Klassifikasjon og regresjon med k-NN.",
+    Icon: Boxes,
+    status: "ready",
+  },
+  {
+    slug: "dte2501-supervised-regresjon",
+    title: "Regresjon — lineær og polynom",
+    shortDescription:
+      "MSE, MAE, R², RMSE. Overfitting, regularisering (Ridge/Lasso), polynom-features og bias-variance.",
+    Icon: TrendingUp,
+    status: "ready",
+  },
+  {
+    slug: "dte2501-kmeans-clustering",
+    title: "k-Means clustering",
+    shortDescription:
+      "Init → assign → update → konvergens. Elbow, silhouette, og når k-Means feiler (ikke-konvekse klustre).",
+    Icon: Layers,
+    status: "ready",
+  },
+  {
+    slug: "dte2501-genetic-algorithms",
+    title: "Genetic algorithms, swarm, ACO",
+    shortDescription:
+      "Populasjon, fitness, seleksjon, crossover, mutasjon. PSO og Ant Colony Optimization.",
+    Icon: Dna,
+    status: "ready",
+  },
+  {
+    slug: "dte2501-nlp-intro",
+    title: "Natural Language Processing",
+    shortDescription:
+      "Tokenisering, bag-of-words, TF-IDF, embeddings (Word2Vec/GloVe), tekst-klassifikasjon.",
+    Icon: MessageSquare,
+    status: "ready",
+  },
+  {
+    slug: "dte2501-pca",
+    title: "Principal Component Analysis",
+    shortDescription:
+      "Dimensjonsreduksjon, kovariansmatrise, egenvektorer, forklart varians og scree plot.",
+    Icon: Axis3D,
+    status: "ready",
+  },
+  {
+    slug: "dte2501-gmm",
+    title: "Gaussian Mixture Models",
+    shortDescription:
+      "Mikstur-modeller, EM-algoritmen (E-step + M-step), soft clustering vs k-Means.",
+    Icon: Sparkles,
+    status: "ready",
+  },
+  {
+    slug: "dte2501-ensemble",
+    title: "Ensemble — bagging og boosting",
+    shortDescription:
+      "Bias-variance dekomponering, bootstrap, random forest, AdaBoost og gradient boosting.",
+    Icon: GitMerge,
+    status: "ready",
+  },
+  {
+    slug: "dte2501-reinforcement",
+    title: "Reinforcement Learning og MDP",
+    shortDescription:
+      "MDP, Bellman, Value/Policy Iteration. Known vs unknown world, Q-learning intro.",
+    Icon: Gamepad2,
+    status: "ready",
+  },
+  {
+    slug: "dte2501-dp",
+    title: "Dynamic Programming og TSP",
+    shortDescription:
+      "Memoization vs tabulation, Fibonacci, knapsack. Held-Karp DP for Travelling Salesman.",
+    Icon: InfinityIcon,
+    status: "ready",
+  },
+];
+
+function CourseCard({ c }: { c: Course }) {
+  const Icon = c.Icon;
+  if (c.status !== "ready") {
+    return (
+      <div className="rounded-xl border border-border bg-card/30 p-5 opacity-60">
+        <div className="flex items-center gap-2 mb-2">
+          <Icon className="h-4 w-4 text-muted-foreground" />
+          <h3 className="font-semibold text-foreground leading-tight">{c.title}</h3>
+        </div>
+        <p className="text-sm text-muted-foreground leading-relaxed">{c.shortDescription}</p>
+      </div>
+    );
+  }
+  return (
+    <Link
+      to="/stack/$slug"
+      params={{ slug: c.slug }}
+      className="group rounded-xl border border-border bg-card hover:border-brand/40 p-5 transition-colors block"
+    >
+      <div className="flex items-center gap-2 mb-2">
+        <Icon className="h-4 w-4 text-brand" />
+        <h3 className="font-semibold text-foreground leading-tight">{c.title}</h3>
+      </div>
+      <p className="text-sm text-muted-foreground leading-relaxed">{c.shortDescription}</p>
+      <div className="mt-3 flex items-center text-xs text-muted-foreground group-hover:text-foreground transition-colors">
+        Åpne
+        <ArrowRight className="h-3.5 w-3.5 ml-1 group-hover:translate-x-0.5 transition-transform" />
+      </div>
+    </Link>
+  );
+}
+
 export function Dte2501Hub() {
   return (
     <StackPageShell title="DTE-2501 AI Methods and Applications" group="eksamen">
@@ -65,122 +200,128 @@ export function Dte2501Hub() {
             AI Methods and Applications
           </h1>
           <p className="mt-3 text-muted-foreground max-w-2xl">
-            Mini-kurs som dekker UiT-pensumet (Russell & Norvig): søk, CSP, logikk,
-            planlegging og resonnering under usikkerhet. ML-delen av pensumet er dekket
-            separat i{" "}
-            <Link to="/stack/$slug" params={{ slug: "dte-2602" }} className="text-brand hover:underline">
-              DTE-2602
-            </Link>{" "}
-            og repeteres ikke her.
+            Faget dekker både{" "}
+            <strong className="text-foreground">klassisk symbolic AI</strong>{" "}
+            (søk, CSP, logikk, planlegging, Bayes) og{" "}
+            <strong className="text-foreground">moderne ML</strong>{" "}
+            (k-NN, k-Means, PCA, GMM, ensemble, reinforcement learning,
+            genetic algorithms, NLP, dynamic programming). Eksamen er forankret i
+            ML-sporet — det klassiske sporet gir bakgrunn og er fortsatt verdifullt
+            å lese.
           </p>
         </div>
 
         <section className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">AI-tilnærminger — cheatsheet</h2>
+          <h2 className="text-xl font-semibold mb-3">Pensum-oversikt</h2>
           <p className="text-sm text-muted-foreground mb-4">
-            Russell &amp; Norvig deler AI i grovt fire familier ut fra hva systemet
-            modellerer. Hold tabellen i hodet — den hjelper deg å plassere hver
-            algoritme i pensum.
+            Eksamenstemaene fra UiT-emnebeskrivelsen, gruppert etter type metode.
           </p>
           <div className="overflow-hidden rounded-lg border border-border">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>
-                  <th className="text-left font-semibold px-4 py-2 w-40">Tilnærming</th>
+                  <th className="text-left font-semibold px-4 py-2 w-40">Familie</th>
                   <th className="text-left font-semibold px-4 py-2">Sentral idé</th>
-                  <th className="text-left font-semibold px-4 py-2 w-48">Typiske metoder</th>
+                  <th className="text-left font-semibold px-4 py-2 w-56">Typiske metoder</th>
                 </tr>
               </thead>
               <tbody>
                 <tr className="border-t border-border">
-                  <td className="px-4 py-3 font-mono text-brand">Søk</td>
+                  <td className="px-4 py-3 font-mono text-brand">Supervised</td>
                   <td className="px-4 py-3 text-muted-foreground">
-                    Utforsk tilstandsrom og finn vei fra start til mål
+                    Lær fra (X, y)-eksempler — klassifikasjon og regresjon
                   </td>
-                  <td className="px-4 py-3 text-muted-foreground">BFS, DFS, UCS, A*</td>
+                  <td className="px-4 py-3 text-muted-foreground">k-NN, lineær, polynom</td>
                 </tr>
                 <tr className="border-t border-border">
-                  <td className="px-4 py-3 font-mono text-brand">CSP</td>
+                  <td className="px-4 py-3 font-mono text-brand">Unsupervised</td>
                   <td className="px-4 py-3 text-muted-foreground">
-                    Tildel verdier til variabler under begrensninger
+                    Lær struktur uten etiketter — klustring, generative modeller
                   </td>
-                  <td className="px-4 py-3 text-muted-foreground">Backtracking, AC-3, MRV</td>
+                  <td className="px-4 py-3 text-muted-foreground">k-Means, GMM</td>
                 </tr>
                 <tr className="border-t border-border">
-                  <td className="px-4 py-3 font-mono text-brand">Logikk</td>
+                  <td className="px-4 py-3 font-mono text-brand">Dim.-reduksjon</td>
                   <td className="px-4 py-3 text-muted-foreground">
-                    Representer kunnskap og resonner formelt
+                    Komprimer mange features til få meningsfulle akser
                   </td>
-                  <td className="px-4 py-3 text-muted-foreground">PL, FOL, resolusjon</td>
+                  <td className="px-4 py-3 text-muted-foreground">PCA</td>
                 </tr>
                 <tr className="border-t border-border">
-                  <td className="px-4 py-3 font-mono text-brand">Planlegging</td>
+                  <td className="px-4 py-3 font-mono text-brand">Ensemble</td>
                   <td className="px-4 py-3 text-muted-foreground">
-                    Komponer handlinger som tar deg fra start- til måltilstand
+                    Kombiner svake modeller til én sterk
                   </td>
-                  <td className="px-4 py-3 text-muted-foreground">STRIPS, forward/backward</td>
+                  <td className="px-4 py-3 text-muted-foreground">Bagging, boosting</td>
                 </tr>
                 <tr className="border-t border-border">
-                  <td className="px-4 py-3 font-mono text-brand">Usikkerhet</td>
+                  <td className="px-4 py-3 font-mono text-brand">NLP</td>
                   <td className="px-4 py-3 text-muted-foreground">
-                    Resonner sannsynlig når verden ikke er observerbar
+                    Få maskiner til å lese og klassifisere tekst
                   </td>
-                  <td className="px-4 py-3 text-muted-foreground">Bayes, naive Bayes</td>
+                  <td className="px-4 py-3 text-muted-foreground">TF-IDF, Word2Vec</td>
                 </tr>
                 <tr className="border-t border-border">
-                  <td className="px-4 py-3 font-mono text-brand">Læring</td>
+                  <td className="px-4 py-3 font-mono text-brand">Metaheuristikk</td>
                   <td className="px-4 py-3 text-muted-foreground">
-                    Lær mønstre fra data i stedet for å programmere reglene
+                    Søk inspirert av natur — populasjon eller sverm
                   </td>
-                  <td className="px-4 py-3 text-muted-foreground">Se DTE-2602</td>
+                  <td className="px-4 py-3 text-muted-foreground">GA, PSO, ACO</td>
+                </tr>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-3 font-mono text-brand">RL</td>
+                  <td className="px-4 py-3 text-muted-foreground">
+                    Agent lærer fra belønning i en MDP
+                  </td>
+                  <td className="px-4 py-3 text-muted-foreground">VI, PI, Q-learning</td>
+                </tr>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-3 font-mono text-brand">DP</td>
+                  <td className="px-4 py-3 text-muted-foreground">
+                    Bryt store problem i overlappende del-problemer
+                  </td>
+                  <td className="px-4 py-3 text-muted-foreground">Memo/tab, TSP (Held-Karp)</td>
+                </tr>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-3 font-mono text-brand">Klassisk AI</td>
+                  <td className="px-4 py-3 text-muted-foreground">
+                    Eksplisitt kunnskap og søk — ikke statistisk læring
+                  </td>
+                  <td className="px-4 py-3 text-muted-foreground">Søk, CSP, logikk, Bayes</td>
                 </tr>
               </tbody>
             </table>
           </div>
           <p className="mt-3 text-xs text-muted-foreground">
-            <strong>Eksamenstips:</strong> mange oppgaver tester at du klassifiserer et
-            problem riktig. «Skal vi finne en rute?» → søk. «Tilfredsstille
-            begrensninger?» → CSP. «Trekke konklusjon fra fakta?» → logikk. «Velge
-            handlinger?» → planlegging. «Usikkerhet om verden?» → Bayes.
+            <strong>Eksamenstips:</strong> mange spørsmål handler om å plassere et
+            problem i riktig familie. «Velg gruppe uten etiketter» → klustring.
+            «Predikér tall» → regresjon. «Predikér klasse» → klassifikasjon.
+            «Lær fra prøving og feiling» → RL. «Komprimer features» → PCA.
           </p>
         </section>
 
         <section className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">Mini-kurs</h2>
+          <h2 className="text-xl font-semibold mb-1">Moderne ML-spor</h2>
+          <p className="text-xs text-muted-foreground mb-4">
+            Eksamenspensumet. Bygger videre på DTE-2602.
+          </p>
           <div className="grid sm:grid-cols-2 gap-3">
-            {COURSES.map((c) => {
-              const isReady = c.status === "ready";
-              const Icon = c.Icon;
-              if (!isReady) {
-                return (
-                  <div key={c.slug} className="rounded-xl border border-border bg-card/30 p-5 opacity-60">
-                    <div className="flex items-center gap-2 mb-2">
-                      <Icon className="h-4 w-4 text-muted-foreground" />
-                      <h3 className="font-semibold text-foreground leading-tight">{c.title}</h3>
-                    </div>
-                    <p className="text-sm text-muted-foreground leading-relaxed">{c.shortDescription}</p>
-                  </div>
-                );
-              }
-              return (
-                <Link
-                  key={c.slug}
-                  to="/stack/$slug"
-                  params={{ slug: c.slug }}
-                  className="group rounded-xl border border-border bg-card hover:border-brand/40 p-5 transition-colors block"
-                >
-                  <div className="flex items-center gap-2 mb-2">
-                    <Icon className="h-4 w-4 text-brand" />
-                    <h3 className="font-semibold text-foreground leading-tight">{c.title}</h3>
-                  </div>
-                  <p className="text-sm text-muted-foreground leading-relaxed">{c.shortDescription}</p>
-                  <div className="mt-3 flex items-center text-xs text-muted-foreground group-hover:text-foreground transition-colors">
-                    Åpne
-                    <ArrowRight className="h-3.5 w-3.5 ml-1 group-hover:translate-x-0.5 transition-transform" />
-                  </div>
-                </Link>
-              );
-            })}
+            {ML_COURSES.map((c) => (
+              <CourseCard key={c.slug} c={c} />
+            ))}
+          </div>
+        </section>
+
+        <section className="mb-10">
+          <h2 className="text-xl font-semibold mb-1">Klassisk AI-spor</h2>
+          <p className="text-xs text-muted-foreground mb-4">
+            Russell &amp; Norvig-tradisjonen: symbolic AI og resonnering. Bra bakgrunn
+            for konseptuelle eksamensspørsmål om hva AI er.
+          </p>
+          <div className="grid sm:grid-cols-2 gap-3">
+            {CLASSIC_COURSES.map((c) => (
+              <CourseCard key={c.slug} c={c} />
+            ))}
           </div>
         </section>
 
@@ -188,23 +329,32 @@ export function Dte2501Hub() {
           <h2 className="font-semibold mb-2">Hvor passer dette inn?</h2>
           <ul className="space-y-1.5 text-muted-foreground list-disc pl-5">
             <li>
-              <strong className="text-foreground">Drag-oppgaver:</strong> filter på «ML &amp; AI» i{" "}
+              <strong className="text-foreground">Drag-oppgaver:</strong> filter på
+              «k-NN», «k-Means», «PCA», «Reinforcement learning» i{" "}
               <Link to="/drag" className="text-brand hover:underline">/drag</Link>{" "}
-              — søk, CSP, logikk, planlegging og Bayes.
+              for spaced-repetisjon av konseptene.
+            </li>
+            <li>
+              <strong className="text-foreground">Python-øvelser:</strong> velg topic
+              som starter med «ML —» i{" "}
+              <Link to="/python" className="text-brand hover:underline">/python</Link>{" "}
+              — k-NN på Iris, k-Means, PCA, Q-learning og knapsack-DP kjører i
+              nettleseren via Pyodide + scikit-learn.
+            </li>
+            <li>
+              <strong className="text-foreground">Forkunnskap:</strong> faget bygger
+              på{" "}
+              <Link to="/stack/$slug" params={{ slug: "dte-2602" }} className="text-brand hover:underline">
+                DTE-2602
+              </Link>{" "}
+              (intro til ML). Hvis du er rusten, gå dit først.
             </li>
             <li>
               <strong className="text-foreground">Lavnivå-grafer (BFS/DFS):</strong> se{" "}
               <Link to="/stack/$slug" params={{ slug: "algoritmer" }} className="text-brand hover:underline">
                 algoritmer-trinnet
               </Link>{" "}
-              for selve implementasjonen. Her bruker vi BFS/DFS som AI-søk.
-            </li>
-            <li>
-              <strong className="text-foreground">ML-delen av pensum:</strong> dekket av{" "}
-              <Link to="/stack/$slug" params={{ slug: "dte-2602" }} className="text-brand hover:underline">
-                DTE-2602
-              </Link>
-              .
+              for selve implementasjonen.
             </li>
           </ul>
         </div>
