@@ -21,6 +21,14 @@ import { content as transportlag } from "./transportlag";
 import { content as kryptografi } from "./kryptografi";
 import { content as tls } from "./tls";
 import { content as nettverkssikkerhet } from "./nettverkssikkerhet";
+import { content as dte2507Wireshark } from "./dte2507-wireshark-analyse";
+import { content as dte2507Socket } from "./dte2507-socket-programmering";
+import { content as dte2507Brannmur } from "./dte2507-brannmur-vlan";
+import { content as dte2507Subnetting } from "./dte2507-subnetting";
+import { content as dte2507TlsHandshake } from "./dte2507-tls-handshake";
+import { content as dte2507PaketDekoding } from "./dte2507-paket-dekoding";
+import { content as dte2507RsaMini } from "./dte2507-rsa-mini";
+import { content as dte2507Praksis } from "./dte2507-praksis";
 import { content as dte2602 } from "./dte-2602";
 import { content as mlGrunnlag } from "./ml-grunnlag";
 import { content as supervisedLearning } from "./supervised-learning";
@@ -111,6 +119,8 @@ export const TRINN: TrinnContent[] = [
   transaksjoner, indekser, queryOptimisering,
   algoritmer, bigO, rekursjon, sortering, lenkedeStrukturer,
   dte2507, osiTcpip, transportlag, kryptografi, tls, nettverkssikkerhet,
+  dte2507Wireshark, dte2507Socket, dte2507Brannmur,
+  dte2507Subnetting, dte2507TlsHandshake, dte2507PaketDekoding, dte2507RsaMini, dte2507Praksis,
   dte2602, mlGrunnlag, supervisedLearning, unsupervisedLearning, nnIntro,
   dte2501, sokAlgoritmer, csp, logiskResonnering, planlegging, bayes,
   flaskLivssyklus, pythonDrill, httpAnatomi,

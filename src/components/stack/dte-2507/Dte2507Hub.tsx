@@ -1,5 +1,20 @@
 import { Link } from "@tanstack/react-router";
-import { ArrowRight, Network, Server, Lock, Key, Shield } from "lucide-react";
+import {
+  ArrowRight,
+  Network,
+  Server,
+  Lock,
+  Key,
+  Shield,
+  ScanSearch,
+  Plug,
+  BrickWall,
+  Calculator,
+  Lock as LockIcon,
+  Binary,
+  KeyRound,
+  PackageOpen,
+} from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 
 type Course = {
@@ -49,6 +64,70 @@ const COURSES: Course[] = [
     shortDescription:
       "Stateful vs stateless brannmur, IDS vs IPS, vanlige angrep (sniffing, MITM, DDoS), forsvarsdyp.",
     Icon: Shield,
+    status: "ready",
+  },
+  {
+    slug: "dte2507-wireshark-analyse",
+    title: "Wireshark / pcap-analyse",
+    shortDescription:
+      "Les pcap-tabeller som eksamen viser dem. Filter-syntaks, HTTP/DNS/TLS-flyt frame for frame, ARP-spoofing, Wireshark vs tcpdump. Med 15+ pcap-quiz.",
+    Icon: ScanSearch,
+    status: "ready",
+  },
+  {
+    slug: "dte2507-socket-programmering",
+    title: "Socket-programmering (TCP/UDP/TLS)",
+    shortDescription:
+      "Server- og klient-skjeletter for TCP og UDP. Concurrent server (threading, asyncio). SSL/TLS-wrapping. 15+ kjorbare oppgaver via socket-shim i Pyodide.",
+    Icon: Plug,
+    status: "ready",
+  },
+  {
+    slug: "dte2507-brannmur-vlan",
+    title: "Brannmur og VLAN",
+    shortDescription:
+      "Stateless vs stateful, iptables med stateful conntrack, DMZ-topologi, VLAN-segmentering, 802.1Q, defense in depth.",
+    Icon: BrickWall,
+    status: "ready",
+  },
+  {
+    slug: "dte2507-subnetting",
+    title: "Subnetting & CIDR",
+    shortDescription:
+      "IPv4, CIDR-kalkulator med binær visning, network/broadcast/usable, VLSM, og en aktiv VLSM-trener med fri-form input.",
+    Icon: Calculator,
+    status: "ready",
+  },
+  {
+    slug: "dte2507-tls-handshake",
+    title: "TLS-handshake (dyp)",
+    shortDescription:
+      "TLS 1.2 og 1.3 klikkbar handshake: ClientHello → Cert → KeyExchange → Finished. Highlighter symmetrisk vs asymmetrisk i hvert steg.",
+    Icon: LockIcon,
+    status: "ready",
+  },
+  {
+    slug: "dte2507-paket-dekoding",
+    title: "Paket-dekoding (hex)",
+    shortDescription:
+      "Ethernet/IP/TCP/UDP-headere byte for byte. Hover over en byte → tolkning. Lær Wireshark-tankegangen uten å fyre opp Wireshark.",
+    Icon: Binary,
+    status: "ready",
+  },
+  {
+    slug: "dte2507-rsa-mini",
+    title: "RSA — mini-versjon",
+    shortDescription:
+      "Klikk gjennom p, q, n, φ, e, d med små primtall. Krypter HI tegn for tegn. Signering vs kryptering. Hybrid krypto-forklaring.",
+    Icon: KeyRound,
+    status: "ready",
+  },
+  {
+    slug: "dte2507-praksis",
+    title: "Paket-tolker (5 scenarier)",
+    shortDescription:
+      "Fem realistiske pakker: TCP SYN, SYN+ACK, UDP DNS, ARP broadcast, ICMP echo. Klikk byte-felter for forklaring og observasjoner.",
+    Icon: PackageOpen,
     status: "ready",
   },
 ];
@@ -158,6 +237,28 @@ export function Dte2507Hub() {
                 </Link>
               );
             })}
+          </div>
+        </section>
+
+        {/* Praksis-banner: Pcap-quiz */}
+        <section className="mb-10 rounded-xl border border-brand/30 bg-brand/5 p-5">
+          <div className="flex items-start gap-3">
+            <ScanSearch className="h-5 w-5 text-brand mt-0.5 shrink-0" />
+            <div className="flex-1">
+              <h2 className="font-semibold mb-1">Praksis: pcap-quiz</h2>
+              <p className="text-sm text-muted-foreground mb-3">
+                15+ pakke-scenarier i Wireshark-format med multiple-choice. Identifiser
+                handshake-rammer, status-koder, ARP-spoofing, port-skann. Samme oppgave-format
+                som DTE-2507-eksamen.
+              </p>
+              <Link
+                to="/dte2507/pcap"
+                className="inline-flex items-center gap-2 rounded-lg bg-brand text-brand-foreground px-3 py-1.5 text-sm font-medium hover:opacity-90"
+              >
+                Apne pcap-quiz
+                <ArrowRight className="h-3.5 w-3.5" />
+              </Link>
+            </div>
           </div>
         </section>
 

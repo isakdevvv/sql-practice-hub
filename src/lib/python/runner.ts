@@ -1,5 +1,6 @@
 import { getPyodide } from "./pyodideLoader";
 import { MYSQL_SHIM_SOURCE } from "./mysqlShim";
+import { SOCKET_SHIM_SOURCE } from "./socketShim";
 import type {
   PyRunResult,
   PyStep,
@@ -10,6 +11,7 @@ import type {
 
 const installedPackages = new Set<string>();
 let mysqlShimRegistered = false;
+let socketShimRegistered = false;
 
 // Pakker som Pyodide har innebygd som binær-wheel (lastes raskt via loadPackage).
 // Alt annet faller tilbake til micropip (pure-Python eller PyPI-wheels).
@@ -75,6 +77,23 @@ sys.modules["mysql.connector"] = connector_mod
   mysqlShimRegistered = true;
 }
 
+/** Make the `socket` shim available (replaces stdlib socket inside Pyodide).
+ *  Pyodide har ingen ekte sockets — vi installerer en in-process emulator slik
+ *  at studenter kan skrive ekte-utseende kode (bind/listen/accept/send/recv). */
+async function ensureSocketShim(): Promise<void> {
+  if (socketShimRegistered) return;
+  const py = await getPyodide();
+  py.globals.set("__socket_shim_source__", SOCKET_SHIM_SOURCE);
+  await py.runPythonAsync(`
+import sys, types
+socket_mod = types.ModuleType("socket")
+exec(__socket_shim_source__, socket_mod.__dict__)
+# Force replacement — stdlib socket exists in Pyodide but throws on connect.
+sys.modules["socket"] = socket_mod
+`);
+  socketShimRegistered = true;
+}
+
 interface RunOpts {
   requires?: string[];
   setup?: string;
@@ -90,6 +109,7 @@ export async function runScript(code: string, opts: RunOpts = {}): Promise<PyRun
   try {
     await ensureRequires(opts.requires);
     await ensureMysqlShim();
+    await ensureSocketShim();
     if (opts.setup) {
       py.globals.set("__setup_code__", opts.setup);
       await py.runPythonAsync(`exec(__setup_code__, {})`);
@@ -136,6 +156,7 @@ export async function runScriptStepwise(
   try {
     await ensureRequires(opts.requires);
     await ensureMysqlShim();
+    await ensureSocketShim();
     if (opts.setup) {
       py.globals.set("__setup_code__", opts.setup);
       await py.runPythonAsync(`exec(__setup_code__, {})`);
@@ -216,6 +237,7 @@ export async function runScriptVisual(
   try {
     await ensureRequires(opts.requires);
     await ensureMysqlShim();
+    await ensureSocketShim();
     if (opts.setup) {
       py.globals.set("__setup_code__", opts.setup);
       await py.runPythonAsync(`exec(__setup_code__, {})`);

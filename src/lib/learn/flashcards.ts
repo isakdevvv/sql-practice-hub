@@ -1785,6 +1785,347 @@ export const FLASHCARDS: FlashCard[] = [
       "NOT NULL betyr at kolonnen ALDRI kan være NULL — INSERT uten verdi feiler. DEFAULT setter en automatisk verdi hvis ingen oppgis. Sammen lager de robuste skjemaer der dataene ikke kan havne i en udefinert tilstand.",
     code: "Status VARCHAR(20) NOT NULL DEFAULT 'aktiv',\nOpprettet DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP",
   },
+
+  // ============= DTE-2507 — Datakomm =============
+  {
+    id: "c-dte-osi",
+    category: "begrep",
+    topic: "Datakomm",
+    question: "Hva er de fem lagene i TCP/IP-modellen, top-down?",
+    answer:
+      "Applikasjon (HTTP, DNS) → Transport (TCP, UDP) → Nettverk (IP) → Lenke (Ethernet, Wi-Fi) → Fysisk (kobber, fiber). Hver pakke gar ned-gjennom hos sender, opp-gjennom hos mottaker.",
+  },
+  {
+    id: "c-dte-tcp-vs-udp",
+    category: "begrep",
+    topic: "Datakomm",
+    question: "TCP vs UDP — en setning hver?",
+    answer:
+      "TCP: palitelig, tilkoblet, byte-strom, handshake, retransmit. UDP: best-effort, tilkoblings-los, datagrams, ingen garanti. TCP for HTTP/SSH; UDP for DNS/NTP/video.",
+  },
+  {
+    id: "c-dte-3way",
+    category: "begrep",
+    topic: "Datakomm",
+    question: "Hva er TCP 3-way handshake?",
+    answer:
+      "SYN (klient → server), SYN-ACK (server → klient), ACK (klient → server). Tre rammer for a sette opp en TCP-tilkobling og avtale start-sekvens-numre.",
+    code: "Klient: SYN  Seq=0\nServer: SYN+ACK  Seq=0 Ack=1\nKlient: ACK  Seq=1 Ack=1",
+  },
+  {
+    id: "c-dte-mac-vs-ip",
+    category: "begrep",
+    topic: "Datakomm",
+    question: "MAC-adresse vs IP-adresse?",
+    answer:
+      "MAC (48-bit) er hardware-adresse pa nettverkskortet, brukes pa lenke-laget (lag 2), unik per kort. IP (32 eller 128-bit) er programvare-adresse, kan endres, brukes for routing (lag 3). ARP mapper IP → MAC.",
+  },
+  {
+    id: "c-dte-arp",
+    category: "begrep",
+    topic: "Datakomm",
+    question: "Hva er ARP og hvorfor er det usikkert?",
+    answer:
+      "Address Resolution Protocol mapper IP til MAC pa et lokalt nett. 'Who has 10.0.0.1? Tell 10.0.0.5' (broadcast) -> reply med MAC. Usikkert fordi ingen autentisering: hvem som helst kan svare med falsk MAC og lure trafikk til seg (ARP spoofing).",
+  },
+  {
+    id: "c-dte-dns",
+    category: "begrep",
+    topic: "Datakomm",
+    question: "Hva gjor DNS og hvilken transport?",
+    answer:
+      "Mapper domene-navn til IP-adresser. Standard pa UDP port 53 (kort, idempotent). Faller til TCP for store svar eller zone transfer. DNSSEC signerer svar; DoT/DoH krypterer.",
+  },
+  {
+    id: "c-dte-mtu",
+    category: "begrep",
+    topic: "Datakomm",
+    question: "Hva er MTU?",
+    answer:
+      "Maximum Transmission Unit — storste pakke som kan sendes uten fragmentering pa et lenke-lag-segment. Ethernet vanlig 1500 bytes. Pakker storre enn MTU fragmenteres eller dropp es med ICMP 'Fragmentation needed'.",
+  },
+  {
+    id: "c-dte-ttl",
+    category: "begrep",
+    topic: "Datakomm",
+    question: "Hva er TTL i en IP-pakke?",
+    answer:
+      "Time To Live: en teller (start vanligvis 64 eller 128) som dekrementeres for hver router-hopp. Naar TTL=0 droppes pakken og en ICMP 'Time Exceeded' sendes tilbake. Hindrer evige rute-loops.",
+  },
+  {
+    id: "c-dte-nat",
+    category: "begrep",
+    topic: "Datakomm",
+    question: "Hva er NAT og hvorfor brukes det?",
+    answer:
+      "Network Address Translation: én offentlig IP deles av mange private (10/8, 192.168/16). Routeren oversetter src-IP+port til sin egen offentlige IP. Lar mange enheter dele én offentlig IP — kritisk pa IPv4 pga adresseknapphet.",
+  },
+  {
+    id: "c-dte-private-ip",
+    category: "begrep",
+    topic: "Datakomm",
+    question: "RFC 1918 private IP-rom?",
+    answer:
+      "10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16. Disse rutes ikke pa internett — brukes pa LAN bak NAT.",
+  },
+  {
+    id: "c-dte-cidr-24",
+    category: "begrep",
+    topic: "Datakomm",
+    question: "Hva betyr /24?",
+    answer:
+      "CIDR-notasjon: de forste 24 bits er nettverks-del, resterende 8 er host-del. 10.0.0.0/24 har 256 totalt adresser, 254 brukbare (en for nett-adresse, en for broadcast).",
+  },
+  {
+    id: "c-dte-icmp",
+    category: "begrep",
+    topic: "Datakomm",
+    question: "Hva er ICMP?",
+    answer:
+      "Internet Control Message Protocol — kontroll- og diagnostikk-meldinger pa nettverkslaget (lag 3). Ping bruker ICMP Echo Request/Reply. Traceroute eksploiterer TTL Exceeded-meldinger. ICMP er ikke transport — det er kontroll-meldinger.",
+  },
+
+  // ============= DTE-2507 — Sockets =============
+  {
+    id: "c-sock-server-skeleton",
+    category: "praktisk",
+    topic: "Sockets",
+    question: "TCP-server-skjelett i Python (5 kall)?",
+    answer:
+      "socket(AF_INET, SOCK_STREAM) → bind((host,port)) → listen(backlog) → conn, addr = accept() → recv/send → close. Lagre disse fem utenat.",
+    code: "srv = socket.socket(socket.AF_INET, socket.SOCK_STREAM)\nsrv.bind(('0.0.0.0', 8080))\nsrv.listen(5)\nconn, addr = srv.accept()\nconn.sendall(conn.recv(4096))\nconn.close()",
+  },
+  {
+    id: "c-sock-client-skeleton",
+    category: "praktisk",
+    topic: "Sockets",
+    question: "TCP-klient-skjelett?",
+    answer:
+      "socket() → connect((host, port)) → sendall(data) → recv(n) → close. Klient-koden er kortere fordi det ikke trenger accept-loop.",
+    code: "c = socket.socket()\nc.connect(('example.com', 80))\nc.sendall(b'GET / HTTP/1.0\\r\\n\\r\\n')\ndata = c.recv(4096)\nc.close()",
+  },
+  {
+    id: "c-sock-recv-partial",
+    category: "praktisk",
+    topic: "Sockets",
+    question: "Hvorfor returnerer recv noen ganger fa bytes?",
+    answer:
+      "TCP er en byte-strom, ikke meldings-basert. recv(n) garanterer ikke n bytes — bare opptil n. Du ma loope til du har all data, og selv definere meldings-grense (lengde-prefiks eller avgrenser).",
+  },
+  {
+    id: "c-sock-udp-vs-tcp-call",
+    category: "praktisk",
+    topic: "Sockets",
+    question: "Hvilke API-kall skiller UDP fra TCP?",
+    answer:
+      "UDP bruker sendto(data, addr) og recvfrom(n) som ogsa returnerer avsender-adresse. Ingen accept(), connect() er valgfri og setter bare default peer. TCP bruker send()/recv() pa en established tilkobling.",
+  },
+  {
+    id: "c-sock-time-wait",
+    category: "praktisk",
+    topic: "Sockets",
+    question: "Hva er TIME_WAIT og hvorfor far jeg 'Address already in use'?",
+    answer:
+      "TCP-state etter aktiv close — sokket holdes i 60-120 sek for a fange forsinkede pakker. Restart-er du serveren umiddelbart, klager OS over at adressen er i bruk. Fiks: setsockopt(SOL_SOCKET, SO_REUSEADDR, 1) for bind().",
+  },
+  {
+    id: "c-sock-shutdown",
+    category: "praktisk",
+    topic: "Sockets",
+    question: "Hva gjor shutdown(SHUT_WR)?",
+    answer:
+      "Half-close: sender FIN sa peer-en vet vi er ferdige med a skrive, men vi kan fortsatt lese. Brukes nar man vil signalisere 'jeg har sendt alt, men jeg venter pa svar fra deg'.",
+  },
+  {
+    id: "c-sock-blocking-vs-async",
+    category: "praktisk",
+    topic: "Sockets",
+    question: "Blocking I/O, threading eller asyncio — naar hvilken?",
+    answer:
+      "Blocking: én klient om gangen — enklest. Threading: noen titalls samtidige — én thread per tilkobling, men dyrere ved hundrevis pga RAM/kontekst-bytte. asyncio/select: tusenvis samtidige — én thread, event-loop. C10K-problemet drev frem asyncio og non-blocking I/O.",
+  },
+
+  // ============= DTE-2507 — TLS =============
+  {
+    id: "c-tls-three-properties",
+    category: "sikkerhet",
+    topic: "TLS",
+    question: "Hvilke tre garantier gir TLS?",
+    answer:
+      "Konfidensialitet (kryptering — sniffer ser bare stoy), integritet (ingen kan endre bytene uoppdaget), og autentisitet (klient vet det er riktig server via sertifikat). TLS skjuler IKKE hvilken server du gar til (SNI lekker) eller at du snakker.",
+  },
+  {
+    id: "c-tls-handshake-13",
+    category: "sikkerhet",
+    topic: "TLS",
+    question: "TLS 1.3-handshake — 4 hoved-meldinger?",
+    answer:
+      "1) Client Hello (SNI, ciphers, key share). 2) Server Hello + Certificate + Finished (alt etter Server Hello er kryptert). 3) Client Finished. 4) Application Data. Total: 1 RTT.",
+  },
+  {
+    id: "c-tls-12-vs-13",
+    category: "sikkerhet",
+    topic: "TLS",
+    question: "TLS 1.2 vs 1.3 — to konkrete forskjeller?",
+    answer:
+      "(1) Handshake: 2 RTT i 1.2 vs 1 RTT i 1.3. (2) Sertifikatet er klartekst i 1.2, kryptert i 1.3 (skjules etter Server Hello). 1.3 fjerner ogsa alle utdaterte ciphers — bare AEAD-suites igjen.",
+  },
+  {
+    id: "c-tls-cert-validation",
+    category: "sikkerhet",
+    topic: "TLS",
+    question: "Hva sjekkes i sertifikat-validering?",
+    answer:
+      "(1) Signatur-kjede opp til en betrodd Root CA i klientens trust store. (2) Gyldighetsdato (Not Before / Not After). (3) CN/SAN matcher server-navnet vi spurte etter. Alle tre ma passe.",
+  },
+  {
+    id: "c-tls-sni-leak",
+    category: "sikkerhet",
+    topic: "TLS",
+    question: "Hva er SNI og hvorfor lekker det?",
+    answer:
+      "Server Name Indication — domenenavnet klienten ber om, sa én IP kan hoste mange domener (virtual hosting). I TLS 1.2/1.3 gar SNI i klartekst i Client Hello — derfor kan en sniffer se HVILKEN side du gar til. ECH (Encrypted Client Hello) prover a fikse det.",
+  },
+  {
+    id: "c-tls-forward-secrecy",
+    category: "sikkerhet",
+    topic: "TLS",
+    question: "Forward secrecy — hva betyr det?",
+    answer:
+      "Selv om server-ens langtids-private-nokkel lekker i fremtiden, kan en angriper ikke dekryptere fortidens TLS-trafikk. Oppnaas ved at hver okt har en kort-tids-nokkel utledet via Diffie-Hellman (ECDHE) som kastes etterpa. TLS 1.3 krever forward secrecy.",
+  },
+  {
+    id: "c-tls-cipher-suite",
+    category: "sikkerhet",
+    topic: "TLS",
+    question: "Lese en cipher suite: TLS_AES_256_GCM_SHA384",
+    answer:
+      "AES-256 = symmetrisk kryptering. GCM = authenticated encryption (gir bade konfidensialitet og integritet i ett). SHA-384 = hash for nokkel-utledning (HKDF). Prefix TLS_ uten ECDHE/RSA er TLS 1.3-format.",
+  },
+
+  // ============= DTE-2507 — Brannmur =============
+  {
+    id: "c-fw-stateless-vs-stateful",
+    category: "sikkerhet",
+    topic: "Brannmur",
+    question: "Stateless vs stateful brannmur — kjernen?",
+    answer:
+      "Stateless sjekker hver pakke isolert (IP, port, flagg) — du ma ha eksplisitt regel for utgaaende OG inngaaende. Stateful holder en connection-tabell og slipper automatisk gjennom retur-trafikk pa eksisterende tilkoblinger. Moderne FW-er (iptables, pfSense) er stateful.",
+  },
+  {
+    id: "c-fw-drop-vs-reject",
+    category: "sikkerhet",
+    topic: "Brannmur",
+    question: "DROP vs REJECT i iptables?",
+    answer:
+      "DROP: kast pakken stille — avsenderen far timeout. Bedre mot port-skanning. REJECT: kast med ICMP 'Destination Unreachable' — hoflig men avslorer at vi finnes. Praksis: DROP pa internett-siden, REJECT internt for raskere feilmeldinger.",
+  },
+  {
+    id: "c-fw-dmz",
+    category: "sikkerhet",
+    topic: "Brannmur",
+    question: "Hva er DMZ?",
+    answer:
+      "Demilitarized Zone — en sone mellom internett og indre LAN. Eksponerte tjenester (webserver, mailserver) staar i DMZ. Brannmur slipper bare gitte porter inn til DMZ, og strengt begrenset trafikk fra DMZ til indre LAN. Et brudd pa webserver gir ikke direkte tilgang til DB.",
+  },
+  {
+    id: "c-fw-defense-in-depth",
+    category: "sikkerhet",
+    topic: "Brannmur",
+    question: "Defense in depth — i en setning?",
+    answer:
+      "Aldri stol pa ett enkelt forsvars-lag. CDN/anti-DDoS + WAF + LB + stateful FW + applikasjons-validering + host-FW + least-privilege bruker. Bryter ett — flere staar.",
+  },
+  {
+    id: "c-fw-least-priv",
+    category: "sikkerhet",
+    topic: "Brannmur",
+    question: "Least privilege — hva er det?",
+    answer:
+      "Hver komponent gis BARE de rettighetene den absolutt trenger. Webserveren kjorer ikke som root; DB-brukeren har ikke DROP TABLE; brannmur-default er DENY. Skader fra én kompromittert komponent begrenses.",
+  },
+  {
+    id: "c-fw-vlan-purpose",
+    category: "sikkerhet",
+    topic: "Brannmur",
+    question: "Hvorfor VLAN?",
+    answer:
+      "Logisk segmentering pa én fysisk switch. (1) Reduserer broadcast-domener. (2) Begrenser lateral movement etter et brudd. (3) Ulike sikkerhets-policys per gruppe. (4) Skiller gjester fra ansatte uten egen kabling. Trafikk mellom VLAN-er rutes via L3 og kan passere brannmur.",
+  },
+  {
+    id: "c-fw-access-vs-trunk",
+    category: "sikkerhet",
+    topic: "Brannmur",
+    question: "Access port vs trunk port?",
+    answer:
+      "Access (untagged): én VLAN, switchen legger pa og fjerner 802.1Q-tag automatisk. Brukes for sluttbruker-PC-er. Trunk (tagged): beholder 802.1Q-tag i framen, brer flere VLAN-er over én link. Brukes mellom switcher og til hypervisor-noder.",
+  },
+  {
+    id: "c-fw-zero-trust",
+    category: "sikkerhet",
+    topic: "Brannmur",
+    question: "Zero trust — kjernen?",
+    answer:
+      "'Never trust, always verify.' Det finnes ikke et trusted internal network — hver tilkobling autentiseres og autoriseres, gjerne mTLS mellom mikrotjenester. Bryter med klassisk 'thick perimeter, soft interior'-modell.",
+  },
+
+  // ============= DTE-2507 — Kryptografi =============
+  {
+    id: "c-crypto-sym-vs-asym",
+    category: "sikkerhet",
+    topic: "Kryptografi",
+    question: "Symmetrisk vs asymmetrisk kryptering?",
+    answer:
+      "Symmetrisk: én delt nokkel (AES, ChaCha20). Rask, men hvordan dele nokkelen sikkert? Asymmetrisk: nokkelpar — public for kryptering / verifisering, private for dekryptering / signering (RSA, ECC). Treg, men loser nokkel-deling. TLS bruker asymmetrisk for handshake, symmetrisk for application data.",
+  },
+  {
+    id: "c-crypto-hash-vs-hmac",
+    category: "sikkerhet",
+    topic: "Kryptografi",
+    question: "Hash vs HMAC?",
+    answer:
+      "Hash (SHA-256) er en envegs-funksjon: H(data) -> 256 bits. Alle kan beregne. HMAC bruker en delt nokkel i tillegg: HMAC(key, data) -> 256 bits. Bare den med nokkelen kan beregne — gir autentisering i tillegg til integritet. Beskytter mot lengde-utvidelse som naken H(key||data) er sarbar for.",
+  },
+  {
+    id: "c-crypto-signature",
+    category: "sikkerhet",
+    topic: "Kryptografi",
+    question: "Hva er en digital signatur?",
+    answer:
+      "Signer: hash meldingen, krypter hash-en med din private nokkel -> signatur. Verifiser: dekrypter signaturen med signerens offentlige nokkel -> sammenlign med egen hash av meldingen. Gir autentisitet (kun nokkel-eier kan signere) og integritet (hash matcher).",
+  },
+  {
+    id: "c-crypto-pki",
+    category: "sikkerhet",
+    topic: "Kryptografi",
+    question: "Hva er PKI?",
+    answer:
+      "Public Key Infrastructure: et hierarki av Certificate Authorities (CAs) som signerer sertifikater. Et sertifikat binder en public key til en identitet (domene-navn). Klienter har en trust store med Root CA-er; sertifikater valideres ved a folge signatur-kjeden opp dit.",
+  },
+  {
+    id: "c-crypto-aead",
+    category: "sikkerhet",
+    topic: "Kryptografi",
+    question: "Hva er AEAD?",
+    answer:
+      "Authenticated Encryption with Associated Data — gir bade konfidensialitet OG integritet i ett kall (AES-GCM, ChaCha20-Poly1305). Trygt by default: kan ikke bruke det galt og ende uten integritet-sjekk. TLS 1.3 tillater bare AEAD-cipher-suites.",
+  },
+  {
+    id: "c-crypto-secrets",
+    category: "sikkerhet",
+    topic: "Kryptografi",
+    question: "Hvorfor secrets-modulen og ikke random?",
+    answer:
+      "random er pseudoslump (predikerbar fra seed) — IKKE trygt for tokens/passord/nokler. secrets bruker OS-CSPRNG (urandom) og er kryptografisk sikker. Bruk secrets.token_hex(n), secrets.token_urlsafe(n), secrets.compare_digest(a, b).",
+  },
+  {
+    id: "c-crypto-password-storage",
+    category: "sikkerhet",
+    topic: "Kryptografi",
+    question: "Hvordan lagre passord (kort)?",
+    answer:
+      "ALDRI klartekst. ALDRI bare SHA-256 (GPU brute-forces det). Bruk en slow KDF: bcrypt, argon2, scrypt. Disse er bevisst trege (millisekunder) og bruker per-bruker salt. argon2id er anbefalt valg fra OWASP.",
+  },
 ];
 
 export const CARD_CATEGORIES: { id: FlashCard["category"]; label: string }[] = [
