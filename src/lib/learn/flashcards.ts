@@ -1785,6 +1785,258 @@ export const FLASHCARDS: FlashCard[] = [
       "NOT NULL betyr at kolonnen ALDRI kan være NULL — INSERT uten verdi feiler. DEFAULT setter en automatisk verdi hvis ingen oppgis. Sammen lager de robuste skjemaer der dataene ikke kan havne i en udefinert tilstand.",
     code: "Status VARCHAR(20) NOT NULL DEFAULT 'aktiv',\nOpprettet DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP",
   },
+
+  // ============= DTE-2602 — ML/AI (30 kort) =============
+  {
+    id: "c-dte2602-bias-varians-def",
+    category: "begrep",
+    topic: "DTE-2602",
+    question: "Hva er bias-varians-dekomposisjonen?",
+    answer:
+      "Forventet kvadratisk feil splittes i tre ledd: E[(ŷ-y)²] = Bias(ŷ)² + Var(ŷ) + σ². Bias = hvor systematisk modellen bommer. Varians = hvor ustabil modellen er på tvers av treningssett. σ² = irreduserbar støy.",
+    code: "E[(ŷ-y)²] = Bias² + Var + σ²",
+  },
+  {
+    id: "c-dte2602-overfit-symptom",
+    category: "begrep",
+    topic: "DTE-2602",
+    question: "Klassisk symptom på overfitting?",
+    answer:
+      "Stor gap mellom train- og test-feil — modellen gjør det nesten perfekt på treningsdata men dårlig på nye data. Høy varians. Fiks: regularisering, mer data, enklere modell.",
+  },
+  {
+    id: "c-dte2602-underfit-symptom",
+    category: "begrep",
+    topic: "DTE-2602",
+    question: "Klassisk symptom på underfitting?",
+    answer:
+      "Både train- og test-feil er høye og ligger nær hverandre. Høy bias. Fiks: mer fleksibel modell, flere features, mindre regularisering.",
+  },
+  {
+    id: "c-dte2602-ridge",
+    category: "begrep",
+    topic: "DTE-2602",
+    question: "Hva gjør Ridge-regulering (L2)?",
+    answer:
+      "Legger til α·Σβ² til tap-funksjonen. Skrumper alle koeffisienter mot 0 (men aldri helt). Stabiliserer løsningen ved multikollinearitet og motvirker overfitting.",
+    code: "L = MSE + α·Σ β_j²",
+  },
+  {
+    id: "c-dte2602-lasso",
+    category: "begrep",
+    topic: "DTE-2602",
+    question: "Hva gjør Lasso-regulering (L1)?",
+    answer:
+      "Legger til α·Σ|β| til tap-funksjonen. Skyver noen koeffisienter HELT til 0 — Lasso gjør automatisk feature selection. Nyttig når du har mange features og tror få er relevante.",
+    code: "L = MSE + α·Σ |β_j|",
+  },
+  {
+    id: "c-dte2602-ridge-vs-lasso",
+    category: "begrep",
+    topic: "DTE-2602",
+    question: "Når Ridge og når Lasso?",
+    answer:
+      "Ridge: korrelerte features (fordeler vekt jevnt), standardvalg. Lasso: mange features hvorav få er viktige (du vil ha sparse modell). Vet du ikke — bruk ElasticNet som blander begge.",
+  },
+  {
+    id: "c-dte2602-cv-kfold",
+    category: "begrep",
+    topic: "DTE-2602",
+    question: "Hva er k-fold cross-validation?",
+    answer:
+      "Del treningsdata i k like deler (folds). Tren k ganger: hver gang holdes én fold ut som val-set, resten trenes på. Snittet av k val-scores gir mer robust estimat enn ett enkelt val-set. k=5 eller 10 er vanlig.",
+    code: "scores = cross_val_score(model, X, y, cv=5)",
+  },
+  {
+    id: "c-dte2602-stratified",
+    category: "begrep",
+    topic: "DTE-2602",
+    question: "Hva er stratifisert split, og når trenger du det?",
+    answer:
+      "Vanlig train_test_split kan ved uflaks gi 0 % minoritetsklasse i test-settet. Stratify=y sikrer at klassebalansen blir lik i begge sett. Bruk alltid for klassifikasjon, og særlig ved ubalansert data.",
+    code: "train_test_split(X, y, stratify=y, test_size=0.2)",
+  },
+  {
+    id: "c-dte2602-metric-precision",
+    category: "begrep",
+    topic: "DTE-2602",
+    question: "Når er precision viktigere enn recall?",
+    answer:
+      "Når en false positive er dyrere enn en false negative. Eksempler: spam-filter (bedre å la noe spam slippe gjennom enn å droppe en viktig epost), kreditt-godkjenning, rekommendasjons-systemer.",
+  },
+  {
+    id: "c-dte2602-metric-recall",
+    category: "begrep",
+    topic: "DTE-2602",
+    question: "Når er recall viktigere enn precision?",
+    answer:
+      "Når en false negative er dyrere enn en false positive. Eksempler: kreft-screening, fraud-deteksjon, sikkerhets-alarmer — å miste en ekte positiv har høye kostnader.",
+  },
+  {
+    id: "c-dte2602-f1",
+    category: "begrep",
+    topic: "DTE-2602",
+    question: "Hva er F1-score, og hvorfor harmonisk snitt?",
+    answer:
+      "F1 = 2·P·R/(P+R). Harmonisk snitt straffer ekstreme verdier hardere enn aritmetisk: hvis P=1.0 og R=0.0 blir F1=0, ikke 0.5. Nyttig når du vil ha balansert presisjon og recall.",
+    code: "F1 = 2 * precision * recall / (precision + recall)",
+  },
+  {
+    id: "c-dte2602-roc-auc",
+    category: "begrep",
+    topic: "DTE-2602",
+    question: "Hva måler ROC-AUC?",
+    answer:
+      "Areal under ROC-kurven (TPR mot FPR over alle terskler). AUC=0.5 er random, 1.0 er perfekt. Måler modellens evne til å RANGERE positiver foran negativer — terskel-uavhengig.",
+  },
+  {
+    id: "c-dte2602-leak",
+    category: "begrep",
+    topic: "DTE-2602",
+    question: "Hva er datalekkasje (data leakage)?",
+    answer:
+      "Når informasjon fra test-settet sniker seg inn i trening, så test-scoren blir kunstig høy. Klassisk feil: skalere/imputere på hele X før train/test-split. Løsning: gjør all preprocessing inne i en sklearn Pipeline.",
+  },
+  {
+    id: "c-dte2602-hyperparam-vs-param",
+    category: "begrep",
+    topic: "DTE-2602",
+    question: "Forskjell på hyperparameter og parameter?",
+    answer:
+      "Parametere lærer modellen av data under .fit() (f.eks. koeffisientene β i regresjon). Hyperparametere setter DU før trening og tunes med val-set/CV (f.eks. max_depth, C, alpha, k i kNN).",
+  },
+  {
+    id: "c-dte2602-gridsearch",
+    category: "begrep",
+    topic: "DTE-2602",
+    question: "Hva gjør GridSearchCV?",
+    answer:
+      "Prøver alle kombinasjoner av hyperparametre du oppgir og kjører k-fold CV på hver. Returnerer best_estimator_, best_params_, best_score_. Refit-er modellen på hele treningsdata med beste params.",
+    code: "GridSearchCV(pipe, {'clf__C': [0.1, 1, 10]}, cv=5)",
+  },
+  {
+    id: "c-dte2602-train-val-test",
+    category: "begrep",
+    topic: "DTE-2602",
+    question: "Hvorfor tre sett (train/val/test), ikke to?",
+    answer:
+      "Train: tren modellen. Val: velg hyperparametre (eller bruk CV inni train). Test: ÉN gang helt på slutten, for å estimere ekte generalisering. Bruker du test til tuning lekker du info — modellen velges biased mot test-settet.",
+  },
+  {
+    id: "c-dte2602-pipeline",
+    category: "begrep",
+    topic: "DTE-2602",
+    question: "Hvorfor pakke preprocessing i Pipeline?",
+    answer:
+      "Tre grunner: (1) hindrer datalekkasje — fit kjøres bare på train. (2) GridSearchCV kan tune alle steg samtidig. (3) Ett objekt å lagre/deploye — joblib.dump(pipe, 'model.pkl').",
+    code: "Pipeline([('sc', StandardScaler()), ('lr', LogisticRegression())])",
+  },
+  {
+    id: "c-dte2602-rf",
+    category: "begrep",
+    topic: "DTE-2602",
+    question: "Hvorfor er Random Forest mer robust enn ett enkelt tre?",
+    answer:
+      "Bootstrap-sampling gir hver tre litt forskjellig treningsdata, og random feature subset i hver split dekorrelerer trærne. Når 100+ trær stemmer reduseres varians dramatisk — uten å øke bias merkbart.",
+  },
+  {
+    id: "c-dte2602-gini",
+    category: "begrep",
+    topic: "DTE-2602",
+    question: "Hva er Gini-impurity?",
+    answer:
+      "G = 1 - Σp_i². Mål for hvor 'urent' (blandet) en node er. G=0 = bare én klasse. G=0.5 (binær) = perfekt blandet. Treet velger split som minimerer vektet sum av Gini i barnenodene.",
+  },
+  {
+    id: "c-dte2602-class-weight",
+    category: "begrep",
+    topic: "DTE-2602",
+    question: "Hva gjør class_weight='balanced' i sklearn?",
+    answer:
+      "Justerer vekten på hver klasse omvendt proporsjonalt med frekvens. Minoritetsklassen får større innflytelse på tap-funksjonen. Førstevalget for ubalansert data — enklere enn SMOTE.",
+  },
+  {
+    id: "c-dte2602-standardscaler",
+    category: "begrep",
+    topic: "DTE-2602",
+    question: "Hva gjør StandardScaler?",
+    answer:
+      "Per kolonne: trekker fra mean og deler på std, slik at hver feature får mean=0, std=1. Krev for kNN, k-means, SVM (RBF), PCA, og for å akselerere konvergens i gradient-baserte modeller.",
+    code: "x_scaled = (x - mean) / std",
+  },
+  {
+    id: "c-dte2602-onehot",
+    category: "begrep",
+    topic: "DTE-2602",
+    question: "Når og hvordan bruke OneHotEncoder?",
+    answer:
+      "Bruk for nominelle kategoriske kolonner (ingen iboende rekkefølge, f.eks. 'by', 'farge'). Returner én kolonne per kategori med 0/1. handle_unknown='ignore' for å unngå krasj på nye kategorier i test.",
+    code: "OneHotEncoder(handle_unknown='ignore', sparse_output=False)",
+  },
+  {
+    id: "c-dte2602-learning-curve",
+    category: "begrep",
+    topic: "DTE-2602",
+    question: "Hva forteller en læringskurve deg?",
+    answer:
+      "Plot av train- og val-feil som funksjon av treningssett-størrelse. Begge høyt og nær hverandre → bias-problem (mer data hjelper ikke). Train lav + val høy med stort gap → varians-problem (mer data hjelper).",
+  },
+  {
+    id: "c-dte2602-feature-importance",
+    category: "begrep",
+    topic: "DTE-2602",
+    question: "Hvordan tolke feature_importances_ i Random Forest?",
+    answer:
+      "Verdi mellom 0 og 1 per feature, summerer til 1. Måler hvor mye splits på den featuren reduserer Gini i snitt. Biased mot features med høy kardinalitet — bruk permutation_importance for et mer pålitelig mål.",
+  },
+  {
+    id: "c-dte2602-rmse-vs-mae",
+    category: "begrep",
+    topic: "DTE-2602",
+    question: "Forskjell på RMSE og MAE?",
+    answer:
+      "RMSE = √(snitt(ŷ-y)²) — straffer store feil hardere (kvadrert). MAE = snitt(|ŷ-y|) — robust mot outliers, alle feil teller likt. Velg RMSE når store feil er ekstra ille (f.eks. prising av sjelden vare), MAE ellers.",
+  },
+  {
+    id: "c-dte2602-r2",
+    category: "begrep",
+    topic: "DTE-2602",
+    question: "Hva betyr R²?",
+    answer:
+      "Andel varians forklart av modellen. R²=1 perfekt, R²=0 like dårlig som gjennomsnittsmodell, R²<0 verre enn gjennomsnitt. Ikke tolkn det som 'prosent riktig' — det er en relativ score.",
+  },
+  {
+    id: "c-dte2602-knn-k",
+    category: "begrep",
+    topic: "DTE-2602",
+    question: "Hvordan velge k i kNN?",
+    answer:
+      "Liten k → høy varians, sensitive til støy. Stor k → høy bias, glatter for mye. Bruk CV: test k ∈ {1, 3, 5, 7, ..., 25} og velg den med best val-score. Skalér features først — kNN er avstandsbasert.",
+  },
+  {
+    id: "c-dte2602-confusion-matrix",
+    category: "begrep",
+    topic: "DTE-2602",
+    question: "Hvordan leser du sklearn sin confusion_matrix?",
+    answer:
+      "Rader = faktiske klasser, kolonner = predikerte. cm[0,0]=TN, cm[0,1]=FP, cm[1,0]=FN, cm[1,1]=TP. Diagonal = riktige, off-diagonal = feil. Visualiser med ConfusionMatrixDisplay for tydeligere bilde.",
+  },
+  {
+    id: "c-dte2602-imbalance-acc-trap",
+    category: "begrep",
+    topic: "DTE-2602",
+    question: "Hvorfor er accuracy farlig på ubalansert data?",
+    answer:
+      "Med 99 % klasse 0 får en modell som ALLTID sier 0 hele 99 % accuracy — og er ubrukelig. Bruk F1, recall, balanced_accuracy, eller AUC for å fange dette. Se også på confusion_matrix per klasse.",
+  },
+  {
+    id: "c-dte2602-pipeline-cv-leak",
+    category: "begrep",
+    topic: "DTE-2602",
+    question: "Hvorfor må preprocessing være INNI Pipeline når du bruker CV?",
+    answer:
+      "cross_val_score lager nye train/val-folds i hver iterasjon. Hvis du skalerte på hele X først, har scaler-en sett val-folden under fit — datalekkasje. Med Pipeline blir scaler fit_transform-et per fold, ærlig estimat.",
+  },
 ];
 
 export const CARD_CATEGORIES: { id: FlashCard["category"]; label: string }[] = [
