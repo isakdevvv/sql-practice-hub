@@ -1785,6 +1785,460 @@ export const FLASHCARDS: FlashCard[] = [
       "NOT NULL betyr at kolonnen ALDRI kan være NULL — INSERT uten verdi feiler. DEFAULT setter en automatisk verdi hvis ingen oppgis. Sammen lager de robuste skjemaer der dataene ikke kan havne i en udefinert tilstand.",
     code: "Status VARCHAR(20) NOT NULL DEFAULT 'aktiv',\nOpprettet DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP",
   },
+
+  // ============= DTE-2505: LINUX-GRUNNLAG =============
+  {
+    id: "c2505-fhs",
+    category: "praktisk",
+    topic: "Linux",
+    question: "Hva er FHS — Filesystem Hierarchy Standard?",
+    answer:
+      "Konvensjonen for hvor ting ligger på Linux. /etc = config, /var = variable data (logger, mail-køer), /usr = programmer og bibliotek, /home = brukere, /tmp = midlertidig, /opt = tredje-parts programvare. Standarden gjør at du finner samme filer på samme sti på tvers av distroer.",
+  },
+  {
+    id: "c2505-etc-passwd-felter",
+    category: "praktisk",
+    topic: "Linux",
+    question: "Hva er feltene i /etc/passwd?",
+    answer:
+      "Sju kolon-separerte felter: brukernavn:passord-flag:UID:GID:GECOS:hjemmekatalog:login-shell. `x` i passord-feltet betyr at hashen ligger i /etc/shadow. GECOS er fullnavn/kontaktinfo (historisk).",
+    code: "isak:x:1000:1000:Isak Olsen,,,:/home/isak:/bin/bash",
+  },
+  {
+    id: "c2505-etc-shadow",
+    category: "sikkerhet",
+    topic: "Linux",
+    question: "Hvorfor ligger passordet i /etc/shadow og ikke /etc/passwd?",
+    answer:
+      "/etc/passwd må være lesbar for alle (programmer bruker den til å mappe UID til navn). Da kan passord-hashen ikke ligge der — hvem som helst kunne kjørt offline brute-force. /etc/shadow er kun lesbar av root (rettigheter 640 root:shadow). Sjekken skjer via SUID-program `passwd` / `su`.",
+  },
+  {
+    id: "c2505-uid-gid",
+    category: "praktisk",
+    topic: "Linux",
+    question: "Hva er UID og GID?",
+    answer:
+      "Hver bruker har et heltall-UID (User ID) og hver gruppe et GID (Group ID). UID 0 = root. UID 1-999 = system-brukere (services). UID 1000+ = vanlige brukere. Kernelen jobber bare med tall — navn er bare en presentasjon (oppslag via /etc/passwd og /etc/group).",
+  },
+  {
+    id: "c2505-find-vs-locate",
+    category: "praktisk",
+    topic: "Linux",
+    question: "Forskjell på find og locate?",
+    answer:
+      "find traverserer filsystemet i sanntid — tregt for store trær, men alltid riktig. locate slår opp i en indeks (vanligvis bygget av updatedb daglig) — superraskt, men kan være utdatert. Bruk locate for «finnes det noe slikt?» og find for «alle filer som matcher disse kriteriene akkurat nå».",
+  },
+  {
+    id: "c2505-man-seksjoner",
+    category: "praktisk",
+    topic: "Linux",
+    question: "Hva betyr man-side-seksjoner som `man 5 passwd`?",
+    answer:
+      "1 = bruker-kommandoer, 2 = syscalls, 3 = bibliotek-funksjoner, 5 = filformater, 7 = misc/konvensjoner, 8 = system-admin-kommandoer. `man passwd` viser kommando-versjonen (seksjon 1). `man 5 passwd` viser filformatet for /etc/passwd.",
+  },
+
+  // ============= DTE-2505: PROSESSER =============
+  {
+    id: "c2505-prosess-vs-trad",
+    category: "praktisk",
+    topic: "Prosesser",
+    question: "Forskjell på prosess og tråd?",
+    answer:
+      "Prosess = eget adresserom, egne file descriptors, egen PID. Trådene innenfor en prosess deler adresserom og filer, men har egne stacker. Lett-vekt parallelisme = tråder. Isolasjon = prosesser. På Linux er begge representert som task_struct i kernelen, og threads har egne TIDs (lik PID for hovedtråden).",
+  },
+  {
+    id: "c2505-pid-1",
+    category: "praktisk",
+    topic: "Prosesser",
+    question: "Hvilken prosess har PID 1?",
+    answer:
+      "Init-prosessen — på moderne Linux er det systemd. Den startes av kernelen og er forelder til alle andre prosesser direkte eller indirekte. Hvis init dør, panikker kernelen. systemd håndterer også reaping av orphans.",
+  },
+  {
+    id: "c2505-fork-exec",
+    category: "praktisk",
+    topic: "Prosesser",
+    question: "Hva er fork+exec-mønsteret?",
+    answer:
+      "Slik starter Linux nye programmer. fork() lager en barn-prosess som er en kopi av forelder. Barnet kaller deretter exec() som BYTTER UT programkoden med en ny binær. Mellom fork og exec kan barnet f.eks. lukke file descriptors, sette nye rettigheter eller redirige stdin/stdout.",
+  },
+  {
+    id: "c2505-orphan-vs-zombie",
+    category: "praktisk",
+    topic: "Prosesser",
+    question: "Orphan vs zombie?",
+    answer:
+      "Orphan = barn hvis forelder har dødd. Den blir adoptert av init (systemd) og fortsetter normalt. Zombie = barn som har dødd og venter på at forelderen kaller wait() for å hente exit-koden. Zombie bruker bare en plass i prosess-tabellen — ikke RAM eller CPU. Mange zombies = forelder har bug.",
+  },
+  {
+    id: "c2505-signaler-sigterm-sigkill",
+    category: "praktisk",
+    topic: "Prosesser",
+    question: "Hvorfor SIGTERM før SIGKILL?",
+    answer:
+      "SIGTERM (15) kan fanges. Programmet får mulighet til å rydde opp: lukke åpne filer, flushe bufrede skrivinger, lagre state, slippe locker. SIGKILL (9) kan IKKE fanges — programmet dør på flekken og kan etterlate halv-skrevne filer eller stale lock-filer. Bruk SIGKILL bare når SIGTERM ikke virker etter noen sekunder.",
+  },
+  {
+    id: "c2505-ps-aux",
+    category: "praktisk",
+    topic: "Prosesser",
+    question: "Hva betyr STAT-kolonnen i `ps aux`?",
+    answer:
+      "R = running, S = sleeping (interruptible), D = uninterruptible sleep (typisk venter på disk-IO), Z = zombie, T = stopped (av SIGSTOP eller debugger). Tilleggsbokstaver: `s` = session leader, `+` = foreground, `<` = høy prioritet, `N` = lav prioritet.",
+  },
+  {
+    id: "c2505-systemd-unit",
+    category: "praktisk",
+    topic: "Prosesser",
+    question: "Hva er en systemd-unit?",
+    answer:
+      "En unit er en konfig-fil som beskriver noe systemd kan håndtere. Vanligste typer: .service (en demon), .timer (en cron-erstatning), .mount (auto-mounting), .target (en samling andre units, som multi-user.target ≈ runlevel 3). Units ligger i /etc/systemd/system/ (egne) og /lib/systemd/system/ (pakker).",
+  },
+
+  // ============= DTE-2505: RETTIGHETER =============
+  {
+    id: "c2505-rwx-octal",
+    category: "praktisk",
+    topic: "Rettigheter",
+    question: "Hvordan oversetter du rwx til oktalt?",
+    answer:
+      "r = 4, w = 2, x = 1. Sum per gruppe: rwx = 7, rw- = 6, r-x = 5, r-- = 4, --- = 0. 755 betyr 7 (rwx) for eier, 5 (r-x) for gruppe, 5 (r-x) for andre. Mental sjekk: hvert siffer er et 3-bit-tall, og 3 sifre = owner/group/other.",
+  },
+  {
+    id: "c2505-suid",
+    category: "sikkerhet",
+    topic: "Rettigheter",
+    question: "Hva er SUID og når brukes det?",
+    answer:
+      "SUID-bit (4xxx) gjør at programmet kjører som filens EIER, ikke som brukeren som starter den. Klassikeren er /usr/bin/passwd: vanlig bruker kjører den, men den må skrive til /etc/shadow som krever root. SUID på root-eide binærer er den vanligste angreps-overflaten — minimér antallet.",
+  },
+  {
+    id: "c2505-sgid-kat",
+    category: "praktisk",
+    topic: "Rettigheter",
+    question: "Hva gjør SGID på en katalog?",
+    answer:
+      "Nye filer som lages inni katalogen får KATALOGENS gruppe (ikke brukerens primær-gruppe). Mest brukt på delte arbeids-kataloger der teamet vil at alle filer skal være `developers`-gruppe uansett hvem som la dem til. Sett med `chmod 2755 katalog` eller `chmod g+s katalog`.",
+  },
+  {
+    id: "c2505-sticky",
+    category: "praktisk",
+    topic: "Rettigheter",
+    question: "Hva er sticky bit?",
+    answer:
+      "På katalog (1xxx) hindrer det at brukere sletter HVERANDRES filer, selv om katalogen er skrivbar for alle. Klassikeren er /tmp — alle kan lage filer, men ingen kan slette dine. På fil gjør sticky bit ingenting på moderne Linux.",
+  },
+  {
+    id: "c2505-umask",
+    category: "praktisk",
+    topic: "Rettigheter",
+    question: "Hva er umask og hvordan virker den?",
+    answer:
+      "umask trekkes fra DEFAULT-rettighetene når du lager nye filer/kataloger. Default for fil er 666, for katalog 777. umask 022 → ny fil 644, ny katalog 755 (vanlig). umask 077 → ny fil 600, ny katalog 700 (paranoid). Sett i ~/.bashrc eller /etc/profile.",
+  },
+  {
+    id: "c2505-acl-vs-rwx",
+    category: "sikkerhet",
+    topic: "Rettigheter",
+    question: "Når trenger du ACL i stedet for vanlig rwx?",
+    answer:
+      "Når flere brukere eller grupper trenger ULIKE rettigheter på samme fil. rwx har bare tre 'slots' (owner, group, other). ACL lar deg si 'bob: rw, alice: r, devs: rwx' uten å lage nye grupper for hver kombinasjon. Bruk `setfacl -m` og `getfacl` for å sjekke.",
+    code: "setfacl -m u:bob:rw fil\ngetfacl fil",
+  },
+  {
+    id: "c2505-ssh-key-perms",
+    category: "sikkerhet",
+    topic: "Rettigheter",
+    question: "Hvorfor må ~/.ssh/id_rsa være 600?",
+    answer:
+      "ssh nekter å bruke en privat nøkkel som er lesbar for andre. Filen må være 600 (rw-------) og katalogen ~/.ssh må være 700 (rwx------). Vanlig feil: kopiert nøklene over fra en annen maskin med scp som ga 644.",
+  },
+
+  // ============= DTE-2505: SHELL & SCRIPTING =============
+  {
+    id: "c2505-shebang",
+    category: "praktisk",
+    topic: "Shell",
+    question: "Hva er shebang og hva skal stå der?",
+    answer:
+      "Shebang er første linje i et skript: `#!` fulgt av interpreter-stien. Kernelen leser dette når den exec-er fila. `#!/bin/bash` er vanlig. `#!/usr/bin/env bash` er mer portabelt fordi env finner bash i $PATH selv om den ligger annet sted.",
+  },
+  {
+    id: "c2505-bash-strict-mode",
+    category: "praktisk",
+    topic: "Shell",
+    question: "Hva gjør `set -euo pipefail`?",
+    answer:
+      "Bash strict mode. -e = avslutt ved første feilende kommando. -u = error når en udefinert variabel brukes (fanger typos). -o pipefail = feil i en pipe propagerer (ellers er pipens exit-kode bare den siste kommandoen). Anbefales i alle robuste skript.",
+  },
+  {
+    id: "c2505-special-vars",
+    category: "praktisk",
+    topic: "Shell",
+    question: "Hva betyr $0, $1, $#, $@, $? og $$ i bash?",
+    answer:
+      "$0 = skriptets navn. $1, $2, ... = argumenter. $# = antall argumenter. $@ = alle argumenter som separate ord (quote med \"$@\"). $* = alle som én streng. $? = exit-kode fra forrige kommando. $$ = PID til selve skriptet. $! = PID til siste bakgrunns-jobb.",
+  },
+  {
+    id: "c2505-command-substitution",
+    category: "praktisk",
+    topic: "Shell",
+    question: "Hvordan fanger du output fra en kommando i en variabel?",
+    answer:
+      "Bruk $(KOMMANDO). Eksempel: `antall=$(ls -1 | wc -l)`. Den eldre syntaksen med backticks (`...`) virker også men er vanskeligere å nøste — bruk $(...) som default.",
+  },
+  {
+    id: "c2505-exit-koder",
+    category: "praktisk",
+    topic: "Shell",
+    question: "Hva betyr ulike exit-koder?",
+    answer:
+      "0 = suksess. 1 = generell feil. 2 = feil bruk (manglende argumenter). 126 = kunne ikke kjøre (permission denied). 127 = kommando ikke funnet. 128+N = drept av signal N. Eksempel: 130 = avbrutt av Ctrl+C (128+SIGINT 2). 137 = drept av SIGKILL (128+9). Du leser exit-kode med $?.",
+  },
+  {
+    id: "c2505-quoting",
+    category: "praktisk",
+    topic: "Shell",
+    question: "Når skal du bruke double quotes vs single quotes?",
+    answer:
+      "Double quotes (\"$var\") ekspanderer $variabler og $(kommandoer) — bruk når du trenger verdier. Single quotes ('$var') er bokstavelige — bruk for regex og når du vil at $ skal bety dollar-tegn. Som regel: quote variabler ALLTID i if-tester og rm-kommandoer — beskytter mot mellomrom i filnavn.",
+  },
+  {
+    id: "c2505-pipe-vs-redirect",
+    category: "praktisk",
+    topic: "Shell",
+    question: "Forskjell på pipe (|) og redirect (>)?",
+    answer:
+      "Pipe sender stdout fra én kommando som stdin til neste — KOMMANDO til KOMMANDO. Redirect sender stdout til en FIL. `ls > fil.txt` skriver til fil. `ls | grep foo` sender output videre. Du kan kombinere: `ls | grep foo > funnet.txt`.",
+  },
+  {
+    id: "c2505-heredoc",
+    category: "praktisk",
+    topic: "Shell",
+    question: "Hva er en heredoc?",
+    answer:
+      "En måte å sende fler-linje stdin inline. `cat <<EOF` leser inntil linjen 'EOF' som stdin. Brukes ofte til å lage config-filer i skript: `sudo tee /etc/foo.conf <<EOF`. Bruk `<<'EOF'` (med quotes) for å SLÅ AV variabel-ekspansjon i bodyen.",
+    code: "cat <<EOF > /etc/min-app.conf\nport=8080\nuser=$USER\nEOF",
+  },
+
+  // ============= DTE-2505: SYSTEMD =============
+  {
+    id: "c2505-systemd-vs-init",
+    category: "praktisk",
+    topic: "Systemd",
+    question: "Hva er forskjellen på systemd og SysV init?",
+    answer:
+      "SysV init brukte shell-skript i /etc/init.d/ og kjørte dem sekvensielt. Tregt. systemd håndterer tjenester som unit-filer (deklarativ syntaks), kan starte ting parallelt basert på avhengighetsgraf, har innebygget logging (journald), socket-aktivering, cgroups for ressurs-kontroll og timers (cron-erstatning).",
+  },
+  {
+    id: "c2505-systemctl-enable-vs-start",
+    category: "praktisk",
+    topic: "Systemd",
+    question: "Forskjell på `systemctl start` og `systemctl enable`?",
+    answer:
+      "start = start tjenesten NÅ, men ikke gjør noe permanent. enable = lag symlink slik at tjenesten starter ved hver boot, men ikke start den nå. `enable --now` gjør begge i ett. Vanlig fallgruve: enable uten --now, så fungerer alt fint til neste reboot — så starter den ikke.",
+  },
+  {
+    id: "c2505-journalctl-grunnlag",
+    category: "praktisk",
+    topic: "Systemd",
+    question: "Hvorfor journalctl i stedet for /var/log/-filer?",
+    answer:
+      "journald lagrer logger som strukturerte records, ikke ren tekst. Du kan filtrere på unit (-u nginx), priority (-p err), tid (--since '1 hour ago'), boot (-b) og felt (_PID=, _UID=). Vanlig tekstlogg i /var/log/ skrives fortsatt av rsyslog parallelt på de fleste systemer.",
+  },
+  {
+    id: "c2505-cron-vs-systemd-timer",
+    category: "praktisk",
+    topic: "Systemd",
+    question: "cron vs systemd-timer?",
+    answer:
+      "cron er den klassiske periodiske job-scheduler — enkel, men kjører ikke jobben hvis maskinen var av på det tidspunktet. systemd-timer kan ta igjen tapte kjøringer (Persistent=true), logger via journald, og kan trigge på andre events (boot, network). På servere kan cron være OK. På laptoper er timer bedre.",
+  },
+  {
+    id: "c2505-logrotate",
+    category: "praktisk",
+    topic: "Systemd",
+    question: "Hva gjør logrotate?",
+    answer:
+      "Forhindrer at loggfiler vokser i det uendelige. Konfig i /etc/logrotate.d/. Standard: roter daglig eller når fila når en størrelse, komprimer gamle versjoner (.gz), behold N kopier, slett resten. Kjøres via cron.daily eller systemd-timer. Test config med `logrotate -d` (dry-run).",
+  },
+
+  // ============= DTE-2505 deep-dive: 25 nye =============
+  {
+    id: "c2505d-chmod-755",
+    category: "praktisk",
+    topic: "DTE-2505",
+    question: "Hva er chmod 755 i symbolsk form?",
+    answer: "rwxr-xr-x. Eier har alle tre (rwx = 4+2+1 = 7). Gruppe og andre har read+execute (4+1 = 5). Standard for skript og kjørbare binærer.",
+  },
+  {
+    id: "c2505d-chmod-644",
+    category: "praktisk",
+    topic: "DTE-2505",
+    question: "Hva er chmod 644 i symbolsk form?",
+    answer: "rw-r--r--. Eier kan lese og skrive (6 = 4+2). Gruppe og andre kan bare lese (4). Standard for vanlige tekstfiler.",
+  },
+  {
+    id: "c2505d-chmod-600",
+    category: "sikkerhet",
+    topic: "DTE-2505",
+    question: "Hva er chmod 600 i symbolsk form, og når brukes det?",
+    answer: "rw-------. Bare eier kan lese og skrive. Standard for private nøkler (~/.ssh/id_rsa), tokens, secrets. ssh nekter å bruke en privatnøkkel som er videre enn 600.",
+  },
+  {
+    id: "c2505d-rwx-mappe",
+    category: "praktisk",
+    topic: "DTE-2505",
+    question: "Hva betyr x-biten på en KATALOG?",
+    answer: "Lov til å traversere — gå inn i, eller bruke katalogen som del av en sti. UTEN x kan du ikke gjøre `cd` eller lese filer inne i den, selv om r er satt. r uten x lar deg `ls` katalogen, men ikke åpne filene.",
+  },
+  {
+    id: "c2505d-signal-1-2-9-15",
+    category: "praktisk",
+    topic: "DTE-2505",
+    question: "Hva er signal-numrene 1, 2, 9 og 15?",
+    answer: "1 = SIGHUP (terminal lukket / reload). 2 = SIGINT (Ctrl+C). 9 = SIGKILL (kan IKKE fanges). 15 = SIGTERM (standard «vær så snill å slutte»).",
+  },
+  {
+    id: "c2505d-sighup-bruk",
+    category: "praktisk",
+    topic: "DTE-2505",
+    question: "Hvorfor sender man SIGHUP til daemoner som nginx?",
+    answer: "Konvensjon: SIGHUP betyr «re-les config-filen din uten å restarte». nginx, sshd, apache lytter på SIGHUP og laster ny config inn i minne uten å miste tilkoblinger. Brukes ofte etter at config er endret med ansible/cron.",
+  },
+  {
+    id: "c2505d-ps-stat-d",
+    category: "praktisk",
+    topic: "DTE-2505",
+    question: "Hva betyr STAT-flagg «D» og hvorfor er det viktig?",
+    answer: "Uninterruptible sleep — prosessen venter på maskinvare (typisk disk-IO). Kan IKKE drepes selv med SIGKILL. Hvis du ser mange D-prosesser: disken er overbelastet eller har feil.",
+  },
+  {
+    id: "c2505d-nice-range",
+    category: "praktisk",
+    topic: "DTE-2505",
+    question: "Hva er rekkevidden for nice-verdier, og hvem kan minske den?",
+    answer: "Niceness går fra −20 (høyest prioritet) til +19 (lavest). Vanlige brukere kan bare øke niceness — gjøre prosessen mer ettergivende. Bare root kan gi negativ niceness.",
+  },
+  {
+    id: "c2505d-jobs-ctrlz",
+    category: "praktisk",
+    topic: "DTE-2505",
+    question: "Hva gjør Ctrl+Z i terminalen?",
+    answer: "Sender SIGTSTP (20) til foreground-prosessen. Den pauses (STAT går til T) og du får prompten tilbake. Bruk `fg` for å hente den tilbake, `bg` for å la den fortsette i bakgrunnen.",
+  },
+  {
+    id: "c2505d-disown-nohup",
+    category: "praktisk",
+    topic: "DTE-2505",
+    question: "Forskjell på disown og nohup?",
+    answer: "Begge gjør at prosessen overlever logout. nohup brukes ved START: `nohup ./tj.sh &` — fortsetter selv om terminalen lukkes. disown brukes ETTER at jobben er startet: `./tj.sh &` så `disown %1` — løser jobben fra shell-tabellen.",
+  },
+  {
+    id: "c2505d-shebang-env",
+    category: "praktisk",
+    topic: "DTE-2505",
+    question: "Hvorfor `#!/usr/bin/env python3` i stedet for `#!/usr/bin/python3`?",
+    answer: "env søker etter python3 i $PATH. Mer portabelt — fungerer både på systemer der python3 ligger i /usr/bin og i /usr/local/bin (Homebrew, virtualenv, etc.). Hard-kodet path bryter når Python ligger annet sted.",
+  },
+  {
+    id: "c2505d-bash-test-vs-bracket",
+    category: "praktisk",
+    topic: "DTE-2505",
+    question: "Forskjell på `[ ... ]` og `[[ ... ]]` i bash?",
+    answer: "[ ] er POSIX-test — en separat kommando, krever quoting av variabler, ingen regex. [[ ]] er bash-built-in: ord-deling og glob skjer ikke, støtter =~ for regex og &&/|| inni. Bruk [[ ]] i bash-skript; [ ] for kompatibilitet med sh/dash.",
+  },
+  {
+    id: "c2505d-bash-arithmetic",
+    category: "praktisk",
+    topic: "DTE-2505",
+    question: "Hvordan gjør du aritmetikk i bash?",
+    answer: "$((uttrykk)) — for eksempel $((5 + 3)) eller $((i + 1)). Eller `let i=i+1`. Eller `((i++))` (bash-builtin). bash regner BARE med heltall — for desimaler trenger du bc eller awk.",
+  },
+  {
+    id: "c2505d-read-input",
+    category: "praktisk",
+    topic: "DTE-2505",
+    question: "Hvordan leser du brukerinput i bash?",
+    answer: "`read -p \"Navn: \" navn` viser prompt og lagrer i $navn. `read -s passord` skjuler input. `read -t 5 svar` har 5 sekunders timeout. `read -r linje < fil` (-r = bevar backslashes) i en while-løkke leser fil-linjer.",
+  },
+  {
+    id: "c2505d-test-file-flags",
+    category: "praktisk",
+    topic: "DTE-2505",
+    question: "Hva tester -f, -d, -e, -r, -w, -x i bash?",
+    answer: "-f = vanlig fil, -d = katalog, -e = finnes (av en eller annen type), -r = lesbar, -w = skrivbar, -x = kjørbar. Eks: `if [ -f /etc/passwd ]`. Tester rettigheter ut fra BRUKERENS perspektiv — påvirket av effektiv UID.",
+  },
+  {
+    id: "c2505d-fd-redirect",
+    category: "praktisk",
+    topic: "DTE-2505",
+    question: "Hva betyr `2>&1`?",
+    answer: "«Send fd 2 (stderr) til samme sted som fd 1 (stdout) går nå». Eks: `cmd > log 2>&1` → både stdout og stderr til log. Rekkefølgen betyr noe — `cmd 2>&1 > log` virker IKKE som forventet (2 går til terminalen, så går 1 til log).",
+  },
+  {
+    id: "c2505d-systemctl-status",
+    category: "praktisk",
+    topic: "DTE-2505",
+    question: "Hva viser `systemctl status nginx`?",
+    answer: "Om tjenesten kjører (active/inactive/failed), PID, hvor lenge den har kjørt, hvilken unit-fil den kom fra, og siste linjer fra loggen. Standard verktøy for å feilsøke en daemon.",
+  },
+  {
+    id: "c2505d-journalctl-unit",
+    category: "praktisk",
+    topic: "DTE-2505",
+    question: "Hvordan ser du loggen for kun én systemd-tjeneste?",
+    answer: "`journalctl -u nginx` viser bare nginx-logger. `-f` for follow (live), `--since '10 min ago'` for tidsfilter, `-p err` for bare error-nivå, `-b` for siste boot.",
+  },
+  {
+    id: "c2505d-apt-update-vs-upgrade",
+    category: "praktisk",
+    topic: "DTE-2505",
+    question: "Forskjell på `apt update` og `apt upgrade`?",
+    answer: "update = hent nyeste pakkeliste fra repoene (oppdaterer INDEKSEN). upgrade = installer nyere versjoner av allerede installerte pakker. Du kjører alltid update FØR upgrade.",
+  },
+  {
+    id: "c2505d-dpkg-vs-apt",
+    category: "praktisk",
+    topic: "DTE-2505",
+    question: "Forskjell på dpkg og apt?",
+    answer: "dpkg er lav-nivå pakkebehandler — installerer/fjerner én .deb-fil, vet ikke om avhengigheter. apt er høy-nivå wrapper rundt dpkg som løser avhengigheter, henter fra repoer og er den vanlige bruker-fasaden.",
+  },
+  {
+    id: "c2505d-dpkg-listfiles",
+    category: "praktisk",
+    topic: "DTE-2505",
+    question: "Hvilken kommando viser alle filer en pakke installerer?",
+    answer: "`dpkg -L pakkenavn`. Eks: `dpkg -L nginx`. Motsatt vei: `dpkg -S /path/to/fil` viser HVILKEN pakke som eier den fila.",
+  },
+  {
+    id: "c2505d-ln-soft-hard",
+    category: "praktisk",
+    topic: "DTE-2505",
+    question: "Forskjell på hard link og symbolic link?",
+    answer: "Hard link (`ln`) lager et nytt navn for samme inode — fjerner du originalen, lever lenken (begge peker til samme data). Symlink (`ln -s`) er en TEKST-peker til en sti — hvis originalen slettes, blir lenken brutt. Hard links kan ikke krysse filsystemer eller peke på kataloger.",
+  },
+  {
+    id: "c2505d-which-vs-whereis",
+    category: "praktisk",
+    topic: "DTE-2505",
+    question: "Forskjell på which, whereis og type?",
+    answer: "which = vis stien til en binær i $PATH. whereis = vis binær + man-side + kildekode. type = bash-builtin som forteller om kommandoen er alias, builtin, function eller ekstern (anbefales: avslører aliaser).",
+  },
+  {
+    id: "c2505d-environment-variabler",
+    category: "praktisk",
+    topic: "DTE-2505",
+    question: "Hva er forskjellen på lokal variabel og environment-variabel i bash?",
+    answer: "`navn=Per` er bare lokal — barn-prosesser ser den ikke. `export navn=Per` putter den i environment slik at barn (sub-shells, programmer du starter) arver den. Sjekk eksisterende environment med `env` eller `printenv`.",
+  },
+  {
+    id: "c2505d-bash-funksjon-return",
+    category: "praktisk",
+    topic: "DTE-2505",
+    question: "Hva returnerer en bash-funksjon med `return 0`?",
+    answer: "Bare en exit-kode (0-255), ikke en verdi. For å «returnere» data: skriv til stdout og fang med $(funksjon). Eks: `dato() { date +%Y-%m-%d; }`, så `i_dag=$(dato)`.",
+  },
 ];
 
 export const CARD_CATEGORIES: { id: FlashCard["category"]; label: string }[] = [
