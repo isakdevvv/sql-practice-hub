@@ -24,6 +24,7 @@ import {
   BookOpen,
   Boxes,
   KeyboardMusic,
+  Sigma,
 } from "lucide-react";
 
 export const Route = createFileRoute("/")({
@@ -33,7 +34,7 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "Plattform for ni UiT-fag: SQL/web, AI/ML, OS, datakomm, mobil, systemutvikling. SQL-oppgaver med ekte SQLite i nettleseren, Flask-øvelser i Pyodide, og 100+ stack-leksjoner.",
+          "Plattform for ti UiT-fag: SQL/web, AI/ML, OS, datakomm, mobil, systemutvikling. SQL-oppgaver med ekte SQLite i nettleseren, Flask-øvelser i Pyodide, og 100+ stack-leksjoner.",
       },
       {
         property: "og:title",
@@ -139,6 +140,21 @@ const SEKTORER: Sektor[] = [
         blurb:
           "Fem mini-kurs: OSI/TCP-IP, transport, kryptografi, TLS og nettverkssikkerhet.",
         Icon: Network,
+      },
+    ],
+  },
+  {
+    navn: "Matematikk og statistikk",
+    beskrivelse: "Matematiske grunnpilarer for ingeniør- og data-fag.",
+    accent: "from-rose-500/30 to-pink-500/20",
+    subjects: [
+      {
+        slug: "tek-1501",
+        code: "TEK-1501",
+        navn: "Sannsynlighet og statistikk for ingeniører",
+        blurb:
+          "Åtte mini-kurs: deskriptiv statistikk, sannsynlighet, kombinatorikk, diskrete + kontinuerlige fordelinger, CLT, konfidensintervall, hypotesetest og regresjon — med live-visualiseringer og scipy.stats i nettleseren.",
+        Icon: Sigma,
       },
     ],
   },
@@ -297,7 +313,7 @@ function LandingPage() {
             <h1 className="text-4xl md:text-5xl font-bold tracking-tight">
               Læringsplattform for{" "}
               <span className="bg-gradient-to-r from-brand to-success bg-clip-text text-transparent">
-                ni UiT-fag
+                ti UiT-fag
               </span>
             </h1>
             <p className="mt-5 text-lg text-muted-foreground">
