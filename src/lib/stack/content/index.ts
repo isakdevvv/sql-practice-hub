@@ -103,6 +103,15 @@ import { content as hashingDypere } from "./hashing-dypere";
 import { content as dynamicProgramming } from "./dynamic-programming";
 import { content as brukerhandtering } from "./brukerhandtering";
 import { content as dte2509 } from "./dte-2509";
+import { content as dte2602Prosjektflyt } from "./dte2602-prosjektflyt";
+import { content as dte2602Evaluering } from "./dte2602-evaluering-metoder";
+import { content as dte2602Etikk } from "./dte2602-etikk-filosofi";
+import { content as dte2602MappeMal } from "./dte2602-mappe-mal";
+import { content as dte2602EdaPandas } from "./dte2602-eda-pandas";
+import { content as dte2602PreprocessingPipeline } from "./dte2602-preprocessing-pipeline";
+import { content as dte2602TreesRf } from "./dte2602-trees-rf";
+import { content as dte2602BiasVarians } from "./dte2602-bias-varians";
+import { content as dte2602EvaluationRoc } from "./dte2602-evaluation-roc";
 import type { TrinnContent } from "../types";
 
 export const TRINN: TrinnContent[] = [
@@ -129,6 +138,9 @@ export const TRINN: TrinnContent[] = [
   javascriptGrunnlag, typescript, reactGrunnlag, cssModerne,
   traer, graferDypere, hashingDypere, dynamicProgramming,
   dte2509, brukerhandtering,
+  dte2602Prosjektflyt, dte2602Evaluering, dte2602Etikk, dte2602MappeMal,
+  dte2602EdaPandas, dte2602PreprocessingPipeline, dte2602TreesRf,
+  dte2602BiasVarians, dte2602EvaluationRoc,
 ];
 
 import { curriculumIndexOf } from "../curriculum";
