@@ -1786,6 +1786,420 @@ export const FLASHCARDS: FlashCard[] = [
     code: "Status VARCHAR(20) NOT NULL DEFAULT 'aktiv',\nOpprettet DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP",
   },
 
+  // ============= DTE-2602 — ML/AI (30 kort) =============
+  {
+    id: "c-dte2602-bias-varians-def",
+    category: "begrep",
+    topic: "DTE-2602",
+    question: "Hva er bias-varians-dekomposisjonen?",
+    answer:
+      "Forventet kvadratisk feil splittes i tre ledd: E[(ŷ-y)²] = Bias(ŷ)² + Var(ŷ) + σ². Bias = hvor systematisk modellen bommer. Varians = hvor ustabil modellen er på tvers av treningssett. σ² = irreduserbar støy.",
+    code: "E[(ŷ-y)²] = Bias² + Var + σ²",
+  },
+  {
+    id: "c-dte2602-overfit-symptom",
+    category: "begrep",
+    topic: "DTE-2602",
+    question: "Klassisk symptom på overfitting?",
+    answer:
+      "Stor gap mellom train- og test-feil — modellen gjør det nesten perfekt på treningsdata men dårlig på nye data. Høy varians. Fiks: regularisering, mer data, enklere modell.",
+  },
+  {
+    id: "c-dte2602-underfit-symptom",
+    category: "begrep",
+    topic: "DTE-2602",
+    question: "Klassisk symptom på underfitting?",
+    answer:
+      "Både train- og test-feil er høye og ligger nær hverandre. Høy bias. Fiks: mer fleksibel modell, flere features, mindre regularisering.",
+  },
+  {
+    id: "c-dte2602-ridge",
+    category: "begrep",
+    topic: "DTE-2602",
+    question: "Hva gjør Ridge-regulering (L2)?",
+    answer:
+      "Legger til α·Σβ² til tap-funksjonen. Skrumper alle koeffisienter mot 0 (men aldri helt). Stabiliserer løsningen ved multikollinearitet og motvirker overfitting.",
+    code: "L = MSE + α·Σ β_j²",
+  },
+  {
+    id: "c-dte2602-lasso",
+    category: "begrep",
+    topic: "DTE-2602",
+    question: "Hva gjør Lasso-regulering (L1)?",
+    answer:
+      "Legger til α·Σ|β| til tap-funksjonen. Skyver noen koeffisienter HELT til 0 — Lasso gjør automatisk feature selection. Nyttig når du har mange features og tror få er relevante.",
+    code: "L = MSE + α·Σ |β_j|",
+  },
+  {
+    id: "c-dte2602-ridge-vs-lasso",
+    category: "begrep",
+    topic: "DTE-2602",
+    question: "Når Ridge og når Lasso?",
+    answer:
+      "Ridge: korrelerte features (fordeler vekt jevnt), standardvalg. Lasso: mange features hvorav få er viktige (du vil ha sparse modell). Vet du ikke — bruk ElasticNet som blander begge.",
+  },
+  {
+    id: "c-dte2602-cv-kfold",
+    category: "begrep",
+    topic: "DTE-2602",
+    question: "Hva er k-fold cross-validation?",
+    answer:
+      "Del treningsdata i k like deler (folds). Tren k ganger: hver gang holdes én fold ut som val-set, resten trenes på. Snittet av k val-scores gir mer robust estimat enn ett enkelt val-set. k=5 eller 10 er vanlig.",
+    code: "scores = cross_val_score(model, X, y, cv=5)",
+  },
+  {
+    id: "c-dte2602-stratified",
+    category: "begrep",
+    topic: "DTE-2602",
+    question: "Hva er stratifisert split, og når trenger du det?",
+    answer:
+      "Vanlig train_test_split kan ved uflaks gi 0 % minoritetsklasse i test-settet. Stratify=y sikrer at klassebalansen blir lik i begge sett. Bruk alltid for klassifikasjon, og særlig ved ubalansert data.",
+    code: "train_test_split(X, y, stratify=y, test_size=0.2)",
+  },
+  {
+    id: "c-dte2602-metric-precision",
+    category: "begrep",
+    topic: "DTE-2602",
+    question: "Når er precision viktigere enn recall?",
+    answer:
+      "Når en false positive er dyrere enn en false negative. Eksempler: spam-filter (bedre å la noe spam slippe gjennom enn å droppe en viktig epost), kreditt-godkjenning, rekommendasjons-systemer.",
+  },
+  {
+    id: "c-dte2602-metric-recall",
+    category: "begrep",
+    topic: "DTE-2602",
+    question: "Når er recall viktigere enn precision?",
+    answer:
+      "Når en false negative er dyrere enn en false positive. Eksempler: kreft-screening, fraud-deteksjon, sikkerhets-alarmer — å miste en ekte positiv har høye kostnader.",
+  },
+  {
+    id: "c-dte2602-f1",
+    category: "begrep",
+    topic: "DTE-2602",
+    question: "Hva er F1-score, og hvorfor harmonisk snitt?",
+    answer:
+      "F1 = 2·P·R/(P+R). Harmonisk snitt straffer ekstreme verdier hardere enn aritmetisk: hvis P=1.0 og R=0.0 blir F1=0, ikke 0.5. Nyttig når du vil ha balansert presisjon og recall.",
+    code: "F1 = 2 * precision * recall / (precision + recall)",
+  },
+  {
+    id: "c-dte2602-roc-auc",
+    category: "begrep",
+    topic: "DTE-2602",
+    question: "Hva måler ROC-AUC?",
+    answer:
+      "Areal under ROC-kurven (TPR mot FPR over alle terskler). AUC=0.5 er random, 1.0 er perfekt. Måler modellens evne til å RANGERE positiver foran negativer — terskel-uavhengig.",
+  },
+  {
+    id: "c-dte2602-leak",
+    category: "begrep",
+    topic: "DTE-2602",
+    question: "Hva er datalekkasje (data leakage)?",
+    answer:
+      "Når informasjon fra test-settet sniker seg inn i trening, så test-scoren blir kunstig høy. Klassisk feil: skalere/imputere på hele X før train/test-split. Løsning: gjør all preprocessing inne i en sklearn Pipeline.",
+  },
+  {
+    id: "c-dte2602-hyperparam-vs-param",
+    category: "begrep",
+    topic: "DTE-2602",
+    question: "Forskjell på hyperparameter og parameter?",
+    answer:
+      "Parametere lærer modellen av data under .fit() (f.eks. koeffisientene β i regresjon). Hyperparametere setter DU før trening og tunes med val-set/CV (f.eks. max_depth, C, alpha, k i kNN).",
+  },
+  {
+    id: "c-dte2602-gridsearch",
+    category: "begrep",
+    topic: "DTE-2602",
+    question: "Hva gjør GridSearchCV?",
+    answer:
+      "Prøver alle kombinasjoner av hyperparametre du oppgir og kjører k-fold CV på hver. Returnerer best_estimator_, best_params_, best_score_. Refit-er modellen på hele treningsdata med beste params.",
+    code: "GridSearchCV(pipe, {'clf__C': [0.1, 1, 10]}, cv=5)",
+  },
+  {
+    id: "c-dte2602-train-val-test",
+    category: "begrep",
+    topic: "DTE-2602",
+    question: "Hvorfor tre sett (train/val/test), ikke to?",
+    answer:
+      "Train: tren modellen. Val: velg hyperparametre (eller bruk CV inni train). Test: ÉN gang helt på slutten, for å estimere ekte generalisering. Bruker du test til tuning lekker du info — modellen velges biased mot test-settet.",
+  },
+  {
+    id: "c-dte2602-pipeline",
+    category: "begrep",
+    topic: "DTE-2602",
+    question: "Hvorfor pakke preprocessing i Pipeline?",
+    answer:
+      "Tre grunner: (1) hindrer datalekkasje — fit kjøres bare på train. (2) GridSearchCV kan tune alle steg samtidig. (3) Ett objekt å lagre/deploye — joblib.dump(pipe, 'model.pkl').",
+    code: "Pipeline([('sc', StandardScaler()), ('lr', LogisticRegression())])",
+  },
+  {
+    id: "c-dte2602-rf",
+    category: "begrep",
+    topic: "DTE-2602",
+    question: "Hvorfor er Random Forest mer robust enn ett enkelt tre?",
+    answer:
+      "Bootstrap-sampling gir hver tre litt forskjellig treningsdata, og random feature subset i hver split dekorrelerer trærne. Når 100+ trær stemmer reduseres varians dramatisk — uten å øke bias merkbart.",
+  },
+  {
+    id: "c-dte2602-gini",
+    category: "begrep",
+    topic: "DTE-2602",
+    question: "Hva er Gini-impurity?",
+    answer:
+      "G = 1 - Σp_i². Mål for hvor 'urent' (blandet) en node er. G=0 = bare én klasse. G=0.5 (binær) = perfekt blandet. Treet velger split som minimerer vektet sum av Gini i barnenodene.",
+  },
+  {
+    id: "c-dte2602-class-weight",
+    category: "begrep",
+    topic: "DTE-2602",
+    question: "Hva gjør class_weight='balanced' i sklearn?",
+    answer:
+      "Justerer vekten på hver klasse omvendt proporsjonalt med frekvens. Minoritetsklassen får større innflytelse på tap-funksjonen. Førstevalget for ubalansert data — enklere enn SMOTE.",
+  },
+  {
+    id: "c-dte2602-standardscaler",
+    category: "begrep",
+    topic: "DTE-2602",
+    question: "Hva gjør StandardScaler?",
+    answer:
+      "Per kolonne: trekker fra mean og deler på std, slik at hver feature får mean=0, std=1. Krev for kNN, k-means, SVM (RBF), PCA, og for å akselerere konvergens i gradient-baserte modeller.",
+    code: "x_scaled = (x - mean) / std",
+  },
+  {
+    id: "c-dte2602-onehot",
+    category: "begrep",
+    topic: "DTE-2602",
+    question: "Når og hvordan bruke OneHotEncoder?",
+    answer:
+      "Bruk for nominelle kategoriske kolonner (ingen iboende rekkefølge, f.eks. 'by', 'farge'). Returner én kolonne per kategori med 0/1. handle_unknown='ignore' for å unngå krasj på nye kategorier i test.",
+    code: "OneHotEncoder(handle_unknown='ignore', sparse_output=False)",
+  },
+  {
+    id: "c-dte2602-learning-curve",
+    category: "begrep",
+    topic: "DTE-2602",
+    question: "Hva forteller en læringskurve deg?",
+    answer:
+      "Plot av train- og val-feil som funksjon av treningssett-størrelse. Begge høyt og nær hverandre → bias-problem (mer data hjelper ikke). Train lav + val høy med stort gap → varians-problem (mer data hjelper).",
+  },
+  {
+    id: "c-dte2602-feature-importance",
+    category: "begrep",
+    topic: "DTE-2602",
+    question: "Hvordan tolke feature_importances_ i Random Forest?",
+    answer:
+      "Verdi mellom 0 og 1 per feature, summerer til 1. Måler hvor mye splits på den featuren reduserer Gini i snitt. Biased mot features med høy kardinalitet — bruk permutation_importance for et mer pålitelig mål.",
+  },
+  {
+    id: "c-dte2602-rmse-vs-mae",
+    category: "begrep",
+    topic: "DTE-2602",
+    question: "Forskjell på RMSE og MAE?",
+    answer:
+      "RMSE = √(snitt(ŷ-y)²) — straffer store feil hardere (kvadrert). MAE = snitt(|ŷ-y|) — robust mot outliers, alle feil teller likt. Velg RMSE når store feil er ekstra ille (f.eks. prising av sjelden vare), MAE ellers.",
+  },
+  {
+    id: "c-dte2602-r2",
+    category: "begrep",
+    topic: "DTE-2602",
+    question: "Hva betyr R²?",
+    answer:
+      "Andel varians forklart av modellen. R²=1 perfekt, R²=0 like dårlig som gjennomsnittsmodell, R²<0 verre enn gjennomsnitt. Ikke tolkn det som 'prosent riktig' — det er en relativ score.",
+  },
+  {
+    id: "c-dte2602-knn-k",
+    category: "begrep",
+    topic: "DTE-2602",
+    question: "Hvordan velge k i kNN?",
+    answer:
+      "Liten k → høy varians, sensitive til støy. Stor k → høy bias, glatter for mye. Bruk CV: test k ∈ {1, 3, 5, 7, ..., 25} og velg den med best val-score. Skalér features først — kNN er avstandsbasert.",
+  },
+  {
+    id: "c-dte2602-confusion-matrix",
+    category: "begrep",
+    topic: "DTE-2602",
+    question: "Hvordan leser du sklearn sin confusion_matrix?",
+    answer:
+      "Rader = faktiske klasser, kolonner = predikerte. cm[0,0]=TN, cm[0,1]=FP, cm[1,0]=FN, cm[1,1]=TP. Diagonal = riktige, off-diagonal = feil. Visualiser med ConfusionMatrixDisplay for tydeligere bilde.",
+  },
+  {
+    id: "c-dte2602-imbalance-acc-trap",
+    category: "begrep",
+    topic: "DTE-2602",
+    question: "Hvorfor er accuracy farlig på ubalansert data?",
+    answer:
+      "Med 99 % klasse 0 får en modell som ALLTID sier 0 hele 99 % accuracy — og er ubrukelig. Bruk F1, recall, balanced_accuracy, eller AUC for å fange dette. Se også på confusion_matrix per klasse.",
+  },
+  {
+    id: "c-dte2602-pipeline-cv-leak",
+    category: "begrep",
+    topic: "DTE-2602",
+    question: "Hvorfor må preprocessing være INNI Pipeline når du bruker CV?",
+    answer:
+      "cross_val_score lager nye train/val-folds i hver iterasjon. Hvis du skalerte på hele X først, har scaler-en sett val-folden under fit — datalekkasje. Med Pipeline blir scaler fit_transform-et per fold, ærlig estimat.",
+  },
+
+  // ===== DTE-2602 PORTEFØLJE — AI-historie, etikk, filosofi, mappe-mal =====
+  {
+    id: "c-dte2602p-ai-fodsel",
+    category: "begrep",
+    topic: "AI-historie",
+    question: "Hva markerte AI sin fødsel som fagfelt?",
+    answer:
+      "Dartmouth-konferansen i 1956. John McCarthy myntet uttrykket «artificial intelligence». Pionerene (McCarthy, Minsky, Shannon, Rochester) samlet seg for å definere feltet.",
+  },
+  {
+    id: "c-dte2602p-ai-vintre",
+    category: "begrep",
+    topic: "AI-historie",
+    question: "Hva var AI-vintrene?",
+    answer:
+      "Perioder med lite finansiering og sviktende forventninger. Første vinter (1970-tallet) etter Minsky/Papert viste at perceptron ikke kunne lære XOR. Andre vinter (1990-tallet) — expert systems-bølgen kollapset. Dagens DL-bølge er drevet av store data + GPU + bedre optimering.",
+  },
+  {
+    id: "c-dte2602p-turing-test",
+    category: "begrep",
+    topic: "AI-historie",
+    question: "Hva er Turing-testen?",
+    answer:
+      "Foreslått av Alan Turing (1950): en maskin 'tenker' hvis en menneskelig dommer ikke kan skille den fra et menneske i en tekstbasert samtale. Operasjonell definisjon. Kritisk respons: Searles Kinarom-argument (1980) hevder at å bestå ikke betyr at maskinen 'forstår'.",
+  },
+  {
+    id: "c-dte2602p-bias-historisk",
+    category: "begrep",
+    topic: "AI-etikk",
+    question: "Konkret eksempel på historisk bias i ML?",
+    answer:
+      "Amazon CV-screening (2018) — trent på 10 år med CV-er fra mest menn. Modellen lærte å straffe ordet 'kvinne-' (f.eks. «kvinne-fotball-lag»). Amazon trakk systemet. 'Objektiv' modell videreførte historisk diskriminering.",
+  },
+  {
+    id: "c-dte2602p-bias-sampling",
+    category: "begrep",
+    topic: "AI-etikk",
+    question: "Hva viste Gender Shades-studien?",
+    answer:
+      "Joy Buolamwini (MIT, 2018) testet IBM/Microsoft/Face++ ansiktsgjenkjenning. Feilrate < 1% på lyse menn, opp til 35% på mørke kvinner. Skjeve treningsdata = skjev ytelse — klassisk sampling-bias.",
+  },
+  {
+    id: "c-dte2602p-bias-compas",
+    category: "begrep",
+    topic: "AI-etikk",
+    question: "Hva var COMPAS-skandalen?",
+    answer:
+      "COMPAS — kommersiell risiko-score for tilbakefall i USAs rettsvesen. ProPublica (2016) viste at modellen markerte svarte tiltalte som «høyrisiko» dobbelt så ofte som hvite. Rase var ikke en feature, men postnummer + anholdelses-historikk fungerte som proxies — eksempel på måle-bias.",
+  },
+  {
+    id: "c-dte2602p-bias-uk-karakter",
+    category: "begrep",
+    topic: "AI-etikk",
+    question: "Hva var UK-karakterskandalen i 2020?",
+    answer:
+      "Under pandemien ble eksamen avlyst. Algoritmen satte karakterer basert delvis på skolens historikk → elever fra 'svake' skoler ble systematisk underkarakter, uavhengig av personlig prestasjon. Eksempel på aggregerings-bias: én modell anvendt på undergrupper med ulik underliggende distribusjon.",
+  },
+  {
+    id: "c-dte2602p-gdpr-art22",
+    category: "sikkerhet",
+    topic: "AI-etikk",
+    question: "GDPR Art. 22 — hva gir det?",
+    answer:
+      "Ved automatiserte beslutninger med betydelig påvirkning (lån, ansettelse, forsikring): rett til menneskelig vurdering + rett til forklaring. Driver behovet for tolkbare modeller eller XAI-verktøy (SHAP/LIME).",
+  },
+  {
+    id: "c-dte2602p-gdpr-prinsipper",
+    category: "sikkerhet",
+    topic: "AI-etikk",
+    question: "GDPR-prinsipper relevant for ML?",
+    answer:
+      "Dataminimering (argument for feature selection), formålsbegrensning (data samlet for X kan ikke uten videre brukes for Y), lagringsbegrensning (slett etter formål), rett til forklaring (Art. 22), og rett til å bli glemt (utfordring — 'machine unlearning' er aktivt forskningsfelt).",
+  },
+  {
+    id: "c-dte2602p-xai-tolkbar",
+    category: "begrep",
+    topic: "AI-etikk",
+    question: "Inherent tolkbar vs post-hoc forklart?",
+    answer:
+      "Inherent tolkbar (white-box): du leser modellen direkte — lineær/logistisk regresjon (vektene), decision trees (grener), regelsystemer. Post-hoc: black-box + verktøy som SHAP, LIME, feature_importance, partial dependence plots. Trade-off: tolkbarhet vs maksimal nøyaktighet.",
+  },
+  {
+    id: "c-dte2602p-kinarom",
+    category: "begrep",
+    topic: "AI-etikk",
+    question: "Searles Kinarom-argument — hva sier det?",
+    answer:
+      "En person i et rom uten kinesisk-kunnskap følger en oppslagstavle og svarer korrekt på kinesiske tegn. Utenfor virker det som forståelse, men personen 'forstår' ikke. Konklusjon (Searle): symbolmanipulering ≠ forståelse. Argument mot Sterk AI. Motsvar: 'systemet svar' — det er HELE systemet som forstår.",
+  },
+  {
+    id: "c-dte2602p-svak-sterk-ai",
+    category: "begrep",
+    topic: "AI-etikk",
+    question: "Svak AI vs Sterk AI?",
+    answer:
+      "Svak AI: modell som simulerer intelligens på begrenset domene (sjakk, oversettelse, bilde-klassifisering). Det vi har i dag. Sterk AI: hypotetisk modell som FAKTISK er bevisst og har generell forståelse. Eksisterer ikke. Kinarom-argumentet er rettet mot Sterk AI.",
+  },
+  {
+    id: "c-dte2602p-eu-ai-act-pyramide",
+    category: "sikkerhet",
+    topic: "AI-etikk",
+    question: "EU AI Act-pyramiden — fire risikonivå?",
+    answer:
+      "(1) Uakseptabel — FORBUDT (social scoring, sårbar manipulasjon). (2) Høy risiko — strenge krav (kritisk infra, helse, utdanning, jobb, justis). (3) Limited risk — merking (chatbots, deepfakes). (4) Minimal risk — ingen krav (spam-filter, anbefalingssystem).",
+  },
+  {
+    id: "c-dte2602p-eu-7-prinsipper",
+    category: "sikkerhet",
+    topic: "AI-etikk",
+    question: "EUs 7 etiske prinsipper for pålitelig AI?",
+    answer:
+      "Menneskelig tilsyn, teknisk robusthet + sikkerhet, personvern + datastyring, transparens, mangfold + ikke-diskriminering, samfunns- + miljønytte, og ansvarlighet. Ligger til grunn for EU AI Act og er et nyttig rammeverk for etisk drøfting i mappe-rapporten.",
+  },
+  {
+    id: "c-dte2602p-fairness-metrikker",
+    category: "begrep",
+    topic: "AI-etikk",
+    question: "Tre fairness-metrikker — og det matematiske dilemmaet",
+    answer:
+      "Demographic parity (lik prediksjons-rate per gruppe), equalized odds (lik TPR + FPR per gruppe), predictive parity (lik precision per gruppe). Et matematisk teorem (Chouldechova 2017) viser at de tre IKKE kan tilfredsstilles samtidig hvis baseline-ratene varierer per gruppe — du må velge.",
+  },
+  {
+    id: "c-dte2602p-mappe-struktur",
+    category: "praktisk",
+    topic: "ML-prosjektflyt",
+    question: "Standard kapittel-struktur i en ML-mappe-rapport?",
+    answer:
+      "1. Sammendrag, 2. Innledning (problemstilling + suksesskriterium), 3. Data (kilde + størrelse + begrensninger), 4. EDA (3-5 figurer + tolkning), 5. Metode (algoritmer + hyperparam-søk), 6. Resultater (metrikker + confusion matrix), 7. Diskusjon (begrensninger + etikk), 8. Konklusjon, 9. Referanser.",
+  },
+  {
+    id: "c-dte2602p-mappe-kode-droftning",
+    category: "praktisk",
+    topic: "ML-prosjektflyt",
+    question: "Hvor mye kode hører til i rapporten kontra notebook?",
+    answer:
+      "Rapport (10 sider): 1-2 sider kode-snippets som ILLUSTRERER poenger — ikke hele filer. Resten er tabeller, figurer, drøfting. Notebook: 500+ linjer hvis nødvendig — der bor den kjørbare koden.",
+  },
+  {
+    id: "c-dte2602p-mappe-reproduserbarhet",
+    category: "praktisk",
+    topic: "ML-prosjektflyt",
+    question: "Tre ting som gir reproducerbarhet i en mappe-oppgave?",
+    answer:
+      "(1) random_state satt OVERALT (train_test_split, modeller, cv-objekter). (2) requirements.txt med eksakte versjoner. (3) Relative stier (pathlib) — ikke /Users/ola/data/. Test på ren venv før innlevering!",
+  },
+  {
+    id: "c-dte2602p-mappe-feller",
+    category: "praktisk",
+    topic: "ML-prosjektflyt",
+    question: "Tre vanlige sensor-feller i en ML-mappe?",
+    answer:
+      "(1) «Funker på min maskin» — ingen requirements.txt, hardkodet sti. (2) Manglende random_state — sensor får andre tall. (3) Hyperparametere oppgis ikke — rapport sier 'tuned' men nevner ikke hvilke verdier som vant.",
+  },
+  {
+    id: "c-dte2602p-llm-opphavsrett",
+    category: "begrep",
+    topic: "AI-etikk",
+    question: "Hva er LLM-er + opphavsrett-debatten?",
+    answer:
+      "Store språkmodeller (GPT, Claude) trent på enorm web-tekst, ofte uten eksplisitt samtykke. NYT saksøker OpenAI (2023). Uavklart juss: er 'trening' fair use (transformative) eller ulovlig reproduksjon? Diskusjoner om kompensasjon og lisensiering pågår — viktig case for mappe-drøfting.",
+  },
+
   // ============= TEK-1501: STATISTIKK =============
   // Deskriptiv statistikk
   {

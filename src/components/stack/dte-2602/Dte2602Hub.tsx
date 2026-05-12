@@ -1,5 +1,22 @@
 import { Link } from "@tanstack/react-router";
-import { ArrowRight, Brain, GitBranch, TrendingUp, Layers, Activity } from "lucide-react";
+import {
+  ArrowRight,
+  Brain,
+  GitBranch,
+  TrendingUp,
+  Layers,
+  Activity,
+  Workflow,
+  BarChart3,
+  Scale,
+  FileText,
+  PlayCircle,
+  Database,
+  Wrench,
+  TreePine,
+  Scaling,
+  Gauge,
+} from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 
 type Course = {
@@ -44,12 +61,76 @@ const COURSES: Course[] = [
     status: "ready",
   },
   {
-    slug: "ml-etikk",
-    title: "Etikk og praktisk ML",
+    slug: "dte2602-prosjektflyt",
+    title: "ML-prosjekt fra A til Å",
     shortDescription:
-      "Bias i data, fairness, tolkning, reproducerbarhet, prosjekt-arbeidsflyt.",
-    Icon: Brain,
-    status: "coming-soon",
+      "CRISP-DM-aktig 7-stegs flyt: forstå problem → data → EDA → features → tren → evaluér → deploy. Titanic ende-til-ende.",
+    Icon: Workflow,
+    status: "ready",
+  },
+  {
+    slug: "dte2602-evaluering-metoder",
+    title: "Evaluering og eksperiment-design",
+    shortDescription:
+      "Train/val/test, k-fold, metrikker (precision/recall/F1/ROC-AUC, RMSE/R²), grid/random search, lekkasje.",
+    Icon: BarChart3,
+    status: "ready",
+  },
+  {
+    slug: "dte2602-etikk-filosofi",
+    title: "Etikk og filosofiske grunnlagsproblemer",
+    shortDescription:
+      "AI-historie, bias-taksonomi, GDPR i ML, XAI, Kinarommet, EU AI Act, diskusjons-caser.",
+    Icon: Scale,
+    status: "ready",
+  },
+  {
+    slug: "dte2602-mappe-mal",
+    title: "Mappe-oppgave-mal",
+    shortDescription:
+      "Rapport-struktur, header-eksempler, kode-vs-drøfting, sensor-feller (reproduserbarhet, random_state).",
+    Icon: FileText,
+    status: "ready",
+  },
+  {
+    slug: "dte2602-eda-pandas",
+    title: "EDA i pandas",
+    shortDescription:
+      "df.info(), describe(), histogrammer, korrelasjonsmatrise, pairplot. Slipp inn en CSV og få auto-generert visualisering.",
+    Icon: Database,
+    status: "ready",
+  },
+  {
+    slug: "dte2602-preprocessing-pipeline",
+    title: "Preprocessing & Pipeline",
+    shortDescription:
+      "StandardScaler, OneHotEncoder, ColumnTransformer, Pipeline. Datalekkasje-knapp som demonstrerer feilen visuelt.",
+    Icon: Wrench,
+    status: "ready",
+  },
+  {
+    slug: "dte2602-trees-rf",
+    title: "Beslutningstrær & Random Forest",
+    shortDescription:
+      "Gini, max_depth, bootstrap + random features, feature importance. Bygg tre steg-for-steg interaktivt.",
+    Icon: TreePine,
+    status: "ready",
+  },
+  {
+    slug: "dte2602-bias-varians",
+    title: "Bias-varians & regularisering",
+    shortDescription:
+      "E[(ŷ-y)²]=bias²+var+støy. Ridge (L2) vs Lasso (L1). Slider for polynom-grad, Lasso-path til null-koeffisienter.",
+    Icon: Scaling,
+    status: "ready",
+  },
+  {
+    slug: "dte2602-evaluation-roc",
+    title: "Forvirringsmatrise, F1 og ROC-AUC",
+    shortDescription:
+      "TP/FP/FN/TN, precision/recall/F1, ROC med flyttbar terskel. Forvirringsmatrise oppdaterer live.",
+    Icon: Gauge,
+    status: "ready",
   },
 ];
 
@@ -139,6 +220,105 @@ export function Dte2602Hub() {
                 </Link>
               );
             })}
+          </div>
+        </section>
+
+        <section className="mb-10">
+          <h2 className="text-xl font-semibold mb-3">Kjørbare prosjekter</h2>
+          <p className="text-sm text-muted-foreground mb-4">
+            Mini-prosjekter i Pyodide (sklearn + matplotlib i nettleseren). Speilet etter
+            mappevurderings-format: hvert trinn har starter-kode, hint, fasit og en
+            sjekk-test.
+          </p>
+          <div className="grid sm:grid-cols-2 gap-3">
+            <Link
+              to="/prosjekt-ml/$slug"
+              params={{ slug: "iris-klassifisering" }}
+              className="group rounded-xl border border-border bg-card hover:border-brand/40 p-5 transition-colors block"
+            >
+              <div className="flex items-center gap-2 mb-2">
+                <PlayCircle className="h-4 w-4 text-brand" />
+                <h3 className="font-semibold text-foreground leading-tight">
+                  Iris-klassifisering (8 trinn)
+                </h3>
+              </div>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                Last data, EDA, train/test, kNN, logistisk regresjon, GridSearchCV,
+                confusion matrix.
+              </p>
+              <div className="mt-3 flex items-center text-xs text-muted-foreground group-hover:text-foreground transition-colors">
+                Åpne
+                <ArrowRight className="h-3.5 w-3.5 ml-1 group-hover:translate-x-0.5 transition-transform" />
+              </div>
+            </Link>
+            <Link
+              to="/prosjekt-ml/$slug"
+              params={{ slug: "klustering-blobs" }}
+              className="group rounded-xl border border-border bg-card hover:border-brand/40 p-5 transition-colors block"
+            >
+              <div className="flex items-center gap-2 mb-2">
+                <PlayCircle className="h-4 w-4 text-brand" />
+                <h3 className="font-semibold text-foreground leading-tight">
+                  Klustering med make_blobs (6 trinn)
+                </h3>
+              </div>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                Generer 3 klustre, k-means, elbow-metoden, sammenligne med DBSCAN.
+              </p>
+              <div className="mt-3 flex items-center text-xs text-muted-foreground group-hover:text-foreground transition-colors">
+                Åpne
+                <ArrowRight className="h-3.5 w-3.5 ml-1 group-hover:translate-x-0.5 transition-transform" />
+              </div>
+            </Link>
+          </div>
+        </section>
+
+        <section className="mb-10">
+          <h2 className="text-xl font-semibold mb-3">Porteføljespor (eksamensspeil)</h2>
+          <p className="text-sm text-muted-foreground mb-4">
+            To 5-stegs løp som speiler mappevurderingen (innlevering 16.12.2026). Hvert
+            steg har starter-kode, hint, fasit og en fasit-streng som sjekkes mot stdout.
+          </p>
+          <div className="grid sm:grid-cols-2 gap-3">
+            <Link
+              to="/portfolio-dte2602/$slug"
+              params={{ slug: "dataset-analyse" }}
+              className="group rounded-xl border border-border bg-card hover:border-brand/40 p-5 transition-colors block"
+            >
+              <div className="flex items-center gap-2 mb-2">
+                <PlayCircle className="h-4 w-4 text-brand" />
+                <h3 className="font-semibold text-foreground leading-tight">
+                  Spor A · Dataset-analyse (5 steg)
+                </h3>
+              </div>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                Last data → rens → visualiser → tolk → konkluder. Bygg en EDA-rapport
+                på wine-datasettet steg-for-steg.
+              </p>
+              <div className="mt-3 flex items-center text-xs text-muted-foreground group-hover:text-foreground transition-colors">
+                Åpne
+                <ArrowRight className="h-3.5 w-3.5 ml-1 group-hover:translate-x-0.5 transition-transform" />
+              </div>
+            </Link>
+            <Link
+              to="/portfolio-dte2602/$slug"
+              params={{ slug: "ml-pipeline" }}
+              className="group rounded-xl border border-border bg-card hover:border-brand/40 p-5 transition-colors block"
+            >
+              <div className="flex items-center gap-2 mb-2">
+                <PlayCircle className="h-4 w-4 text-brand" />
+                <h3 className="font-semibold text-foreground leading-tight">
+                  Spor B · ML-pipeline (5 steg)
+                </h3>
+              </div>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                Pipeline → split → tren → evaluer (F1 + confusion) → tune (GridSearchCV).
+              </p>
+              <div className="mt-3 flex items-center text-xs text-muted-foreground group-hover:text-foreground transition-colors">
+                Åpne
+                <ArrowRight className="h-3.5 w-3.5 ml-1 group-hover:translate-x-0.5 transition-transform" />
+              </div>
+            </Link>
           </div>
         </section>
 

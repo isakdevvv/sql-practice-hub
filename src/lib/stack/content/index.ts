@@ -104,6 +104,15 @@ import { content as hashingDypere } from "./hashing-dypere";
 import { content as dynamicProgramming } from "./dynamic-programming";
 import { content as brukerhandtering } from "./brukerhandtering";
 import { content as dte2509 } from "./dte-2509";
+import { content as dte2602Prosjektflyt } from "./dte2602-prosjektflyt";
+import { content as dte2602Evaluering } from "./dte2602-evaluering-metoder";
+import { content as dte2602Etikk } from "./dte2602-etikk-filosofi";
+import { content as dte2602MappeMal } from "./dte2602-mappe-mal";
+import { content as dte2602EdaPandas } from "./dte2602-eda-pandas";
+import { content as dte2602PreprocessingPipeline } from "./dte2602-preprocessing-pipeline";
+import { content as dte2602TreesRf } from "./dte2602-trees-rf";
+import { content as dte2602BiasVarians } from "./dte2602-bias-varians";
+import { content as dte2602EvaluationRoc } from "./dte2602-evaluation-roc";
 import { content as dte2501Knn } from "./dte2501-knn";
 import { content as dte2501Regresjon } from "./dte2501-supervised-regresjon";
 import { content as dte2501KMeans } from "./dte2501-kmeans-clustering";
@@ -152,6 +161,10 @@ export const TRINN: TrinnContent[] = [
   javascriptGrunnlag, typescript, reactGrunnlag, cssModerne,
   traer, graferDypere, hashingDypere, dynamicProgramming,
   dte2509, brukerhandtering,
+  // DTE-2602 — portfolio
+  dte2602Prosjektflyt, dte2602Evaluering, dte2602Etikk, dte2602MappeMal,
+  dte2602EdaPandas, dte2602PreprocessingPipeline, dte2602TreesRf,
+  dte2602BiasVarians, dte2602EvaluationRoc,
   // DTE-2501 — moderne ML-spor (eksamen-pensum)
   dte2501Knn, dte2501Regresjon, dte2501KMeans, dte2501Genetic, dte2501Nlp,
   dte2501Pca, dte2501Gmm, dte2501Ensemble, dte2501Reinforcement, dte2501Dp,

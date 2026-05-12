@@ -20276,6 +20276,812 @@ def put(self, key, val):
     explanation: "LCS-lengde 1 betyr én bokstav er felles i samme rekkefølge — enten 'A' eller 'B'.",
   },
 
+  // ============= DTE-2602 — ML/AI (30 oppgaver) =============
+
+  // ----- MATCH (8) -----
+  {
+    id: "d-dte2602-match-metric-problem",
+    kind: "match",
+    title: "Riktig metrikk til problemet",
+    prompt: "Dra metrikken til problemet den passer best for.",
+    topic: "DTE-2602",
+    pairs: [
+      { left: "Recall", right: "Kreft-screening (kostbart å miste en ekte syk)" },
+      { left: "Precision", right: "Spam-filter (kostbart å droppe ekte epost)" },
+      { left: "F1", right: "Ubalansert binær klassifikasjon — én tall som balanserer P/R" },
+      { left: "ROC-AUC", right: "Sammenligne klassifikatorer terskel-uavhengig" },
+      { left: "RMSE", right: "Regresjon der store feil koster ekstra mye" },
+      { left: "MAE", right: "Regresjon med outliers — robust mot ekstreme verdier" },
+    ],
+    explanation:
+      "Velg metrikk etter hva som koster mest å bomme på — ikke etter hva som er default i sklearn.",
+  },
+  {
+    id: "d-dte2602-match-scaler-data",
+    kind: "match",
+    title: "Riktig scaler til datatypen",
+    prompt: "Dra scaler-en til situasjonen den passer best for.",
+    topic: "DTE-2602",
+    pairs: [
+      { left: "StandardScaler", right: "Normal-ish fordeling, ingen ekstreme outliers" },
+      { left: "MinMaxScaler", right: "Du trenger garanterte verdier i [0, 1] (f.eks. for nevrale nett)" },
+      { left: "RobustScaler", right: "Mange outliers — bruk median og IQR" },
+      { left: "OneHotEncoder", right: "Nominell kategorisk kolonne (ingen rekkefølge)" },
+      { left: "OrdinalEncoder", right: "Kategorisk med naturlig rekkefølge (low/medium/high)" },
+    ],
+  },
+  {
+    id: "d-dte2602-match-model-task",
+    kind: "match",
+    title: "Modell til oppgave",
+    prompt: "Match algoritme til problem-type den løser.",
+    topic: "DTE-2602",
+    pairs: [
+      { left: "LogisticRegression", right: "Binær klassifikasjon med tolkbare koeffisienter" },
+      { left: "LinearRegression", right: "Predikere kontinuerlig tall fra lineære features" },
+      { left: "KMeans", right: "Klustering uten labels" },
+      { left: "DecisionTree", right: "Klassifikasjon der tolkbarhet trumfer presisjon" },
+      { left: "RandomForest", right: "Tabulær data der du vil ha sterk ut-av-boksen baseline" },
+      { left: "PCA", right: "Redusere dimensjoner for visualisering eller decorrelating features" },
+    ],
+  },
+  {
+    id: "d-dte2602-match-loss",
+    kind: "match",
+    title: "Tap-funksjon til problem",
+    prompt: "Dra tap-funksjonen til problemet.",
+    topic: "DTE-2602",
+    pairs: [
+      { left: "MSE / squared error", right: "Lineær regresjon" },
+      { left: "Log-loss / binary cross-entropy", right: "Binær klassifikasjon med sannsynligheter" },
+      { left: "Categorical cross-entropy", right: "Multiclass klassifikasjon (k>2)" },
+      { left: "Hinge loss", right: "Lineær SVM" },
+      { left: "Gini / entropi", right: "Velge split i beslutningstre" },
+    ],
+  },
+  {
+    id: "d-dte2602-match-overfit-fix",
+    kind: "match",
+    title: "Diagnose → fiks",
+    prompt: "Match symptomet til riktig tiltak.",
+    topic: "DTE-2602",
+    pairs: [
+      { left: "Stor gap train/val, lav train-feil", right: "Overfit — øk regularisering eller hent mer data" },
+      { left: "Begge høyt, lite gap", right: "Underfit — øk modell-kompleksitet" },
+      { left: "Val-feil svinger voldsomt mellom folds", right: "Liten datamengde — bruk stratified k-fold med flere folds" },
+      { left: "Test-score >> val-score", right: "Datalekkasje — sjekk fit_transform før split" },
+      { left: "99 % accuracy men null recall på klasse 1", right: "Ubalansert data — bytt til F1/AUC og class_weight" },
+    ],
+  },
+  {
+    id: "d-dte2602-match-hp-meaning",
+    kind: "match",
+    title: "Hyperparameter til betydning",
+    prompt: "Match hyperparameteret til hva det styrer.",
+    topic: "DTE-2602",
+    pairs: [
+      { left: "C (logistic / SVM)", right: "Invers regulering — stor C = svak regulering" },
+      { left: "alpha (Ridge/Lasso)", right: "Reguleringsstyrke — stor alpha = strengere straff" },
+      { left: "max_depth (tree)", right: "Hvor dypt treet får vokse — kontrollerer overfit" },
+      { left: "n_estimators (RF)", right: "Antall trær — fler er stabilere men tregere" },
+      { left: "k (kNN)", right: "Antall naboer i avstemning — liten k overfit, stor k underfit" },
+    ],
+  },
+  {
+    id: "d-dte2602-match-cv-types",
+    kind: "match",
+    title: "CV-variant til situasjon",
+    prompt: "Match cross-validation-typen til når du bruker den.",
+    topic: "DTE-2602",
+    pairs: [
+      { left: "KFold", right: "Vanlig regresjon med uavhengige observasjoner" },
+      { left: "StratifiedKFold", right: "Klassifikasjon — bevarer klassebalanse i hver fold" },
+      { left: "GroupKFold", right: "Data har grupper (pasienter, brukere) som ikke skal splittes" },
+      { left: "TimeSeriesSplit", right: "Tidsserie — train må komme før val i tid" },
+      { left: "LeaveOneOut", right: "Veldig lite datasett — én test-sample om gangen" },
+    ],
+  },
+  {
+    id: "d-dte2602-match-confusion",
+    kind: "match",
+    title: "Confusion matrix-celle til betydning",
+    prompt: "Match cellen til hva den representerer i binær klassifikasjon.",
+    topic: "DTE-2602",
+    pairs: [
+      { left: "TP", right: "Faktisk 1, predikert 1 — riktig positiv" },
+      { left: "TN", right: "Faktisk 0, predikert 0 — riktig negativ" },
+      { left: "FP", right: "Faktisk 0, predikert 1 — falsk alarm (type-I-feil)" },
+      { left: "FN", right: "Faktisk 1, predikert 0 — bommer på en ekte positiv (type-II-feil)" },
+    ],
+  },
+
+  // ----- FILL (8) -----
+  {
+    id: "d-dte2602-fill-f1",
+    kind: "fill",
+    title: "F1-beregning",
+    prompt: "Fyll inn formelen for F1-score.",
+    topic: "DTE-2602",
+    language: "python",
+    template: `precision = TP / (TP + __1__)
+recall    = TP / (TP + __2__)
+f1 = __3__ * precision * recall / (precision + recall)`,
+    blanks: ["FP", "FN", "2"],
+    options: ["FP", "FN", "TN", "2", "0.5", "1"],
+    explanation:
+      "F1 er det harmoniske snittet: 2·P·R / (P+R). Straffer ubalanse mellom P og R hardt.",
+  },
+  {
+    id: "d-dte2602-fill-cv-score",
+    kind: "fill",
+    title: "cross_val_score-snitt",
+    prompt: "Fyll inn riktig kall for 5-fold CV med F1-score.",
+    topic: "DTE-2602",
+    language: "python",
+    template: `from sklearn.model_selection import cross_val_score
+
+scores = cross_val_score(
+    estimator=pipe,
+    X=X_train, y=y_train,
+    cv=__1__,
+    scoring=__2__,
+)
+print(scores.__3__())   # snitt over folds`,
+    blanks: ["5", "\"f1\"", "mean"],
+    options: ["5", "10", "\"f1\"", "\"accuracy\"", "mean", "sum", "fit", "min"],
+  },
+  {
+    id: "d-dte2602-fill-stratify",
+    kind: "fill",
+    title: "Stratifisert split",
+    prompt: "Bevar klassebalansen i train/test.",
+    topic: "DTE-2602",
+    language: "python",
+    template: `X_train, X_test, y_train, y_test = train_test_split(
+    X, y,
+    test_size=__1__,
+    stratify=__2__,
+    random_state=__3__,
+)`,
+    blanks: ["0.2", "y", "42"],
+    options: ["0.2", "0.5", "y", "X", "42", "None", "true"],
+    explanation:
+      "stratify=y bevarer andelen av hver klasse i begge sett — kritisk ved ubalanse.",
+  },
+  {
+    id: "d-dte2602-fill-pipeline",
+    kind: "fill",
+    title: "Pipeline med scaler + modell",
+    prompt: "Bygg en pipeline som først skalerer, så trener LogisticRegression.",
+    topic: "DTE-2602",
+    language: "python",
+    template: `from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import StandardScaler
+from sklearn.linear_model import LogisticRegression
+
+pipe = Pipeline([
+    ("sc",  __1__()),
+    ("clf", __2__(max_iter=1000)),
+])
+pipe.__3__(X_train, y_train)`,
+    blanks: ["StandardScaler", "LogisticRegression", "fit"],
+    options: [
+      "StandardScaler",
+      "MinMaxScaler",
+      "LogisticRegression",
+      "LinearRegression",
+      "fit",
+      "predict",
+      "transform",
+    ],
+  },
+  {
+    id: "d-dte2602-fill-gridsearch",
+    kind: "fill",
+    title: "GridSearchCV med pipeline",
+    prompt: "Søk over to hyperparametre på samme pipeline.",
+    topic: "DTE-2602",
+    language: "python",
+    template: `from sklearn.model_selection import GridSearchCV
+
+grid = {
+    "clf__C": [0.1, 1, 10],
+    "clf____1__": ["l1", "l2"],
+}
+gs = GridSearchCV(pipe, grid, cv=__2__, scoring="__3__")
+gs.fit(X_train, y_train)
+print(gs.best_params_)`,
+    blanks: ["penalty", "5", "f1"],
+    options: ["penalty", "alpha", "5", "1", "f1", "accuracy", "mse"],
+  },
+  {
+    id: "d-dte2602-fill-ohe-ct",
+    kind: "fill",
+    title: "ColumnTransformer med scaling + OHE",
+    prompt: "Skalér numeriske, one-hot kategoriske.",
+    topic: "DTE-2602",
+    language: "python",
+    template: `from sklearn.compose import ColumnTransformer
+
+prep = ColumnTransformer([
+    ("num", StandardScaler(),       __1__),
+    ("cat", OneHotEncoder(handle_unknown="__2__"), cat_cols),
+])
+X_prep = prep.__3__(X_train)`,
+    blanks: ["num_cols", "ignore", "fit_transform"],
+    options: [
+      "num_cols",
+      "cat_cols",
+      "X_train",
+      "ignore",
+      "error",
+      "fit_transform",
+      "transform",
+      "fit",
+    ],
+  },
+  {
+    id: "d-dte2602-fill-roc",
+    kind: "fill",
+    title: "ROC-AUC med predict_proba",
+    prompt: "Hent sannsynligheter og beregn AUC.",
+    topic: "DTE-2602",
+    language: "python",
+    template: `from sklearn.metrics import roc_auc_score
+
+probs = model.__1__(X_test)[:, __2__]
+auc = roc_auc_score(y_test, __3__)
+print(auc)`,
+    blanks: ["predict_proba", "1", "probs"],
+    options: ["predict", "predict_proba", "decision_function", "0", "1", "probs", "y_test"],
+    explanation:
+      "predict_proba returnerer (n_samples, 2). Kolonne 1 = sannsynlighet for klasse 1 — den AUC måler.",
+  },
+  {
+    id: "d-dte2602-fill-rf-importance",
+    kind: "fill",
+    title: "Tegn feature importance fra RF",
+    prompt: "Sortér feature importance og plot.",
+    topic: "DTE-2602",
+    language: "python",
+    template: `import pandas as pd
+
+imp = pd.Series(
+    rf.__1__,
+    index=X.columns,
+)
+imp.__2__().plot(kind="__3__")`,
+    blanks: ["feature_importances_", "sort_values", "barh"],
+    options: [
+      "feature_importances_",
+      "coef_",
+      "sort_values",
+      "sort_index",
+      "barh",
+      "scatter",
+      "line",
+    ],
+  },
+
+  // ----- QUIZ (10) -----
+  {
+    id: "d-dte2602-quiz-leak1",
+    kind: "quiz",
+    title: "Datalekkasje-spotting #1",
+    prompt: "Hvor er feilen?",
+    topic: "DTE-2602",
+    language: "python",
+    code: `scaler = StandardScaler()
+X_scaled = scaler.fit_transform(X)
+X_tr, X_te, y_tr, y_te = train_test_split(X_scaled, y, test_size=0.2)
+LogisticRegression().fit(X_tr, y_tr).score(X_te, y_te)`,
+    question: "Denne koden lider av en klassisk feil. Hvilken?",
+    options: [
+      {
+        text: "Scaler fit-es på hele X, så test-radenes mean/std er med i skaleringsparametrene — datalekkasje.",
+        correct: true,
+        rationale: "Riktig — fit_transform skal kjøres KUN på X_train, ikke før split.",
+      },
+      {
+        text: "train_test_split mangler stratify=y",
+        correct: false,
+        rationale: "Bra praksis, men ikke selve lekkasje-feilen.",
+      },
+      {
+        text: "LogisticRegression bør ha max_iter=1000",
+        correct: false,
+        rationale: "Det kan gi ConvergenceWarning, men er ikke en lekkasje.",
+      },
+      {
+        text: "Ingen feil — koden er korrekt",
+        correct: false,
+        rationale: "Test-scoren blir kunstig høy fordi scaler-en har sett test-radene.",
+      },
+    ],
+    explanation: "Løsning: split først, putt StandardScaler i en Pipeline med modellen.",
+  },
+  {
+    id: "d-dte2602-quiz-leak2",
+    kind: "quiz",
+    title: "Datalekkasje-spotting #2",
+    prompt: "Velg riktig om SimpleImputer.",
+    topic: "DTE-2602",
+    language: "python",
+    code: `imp = SimpleImputer(strategy="median")
+X["Age"] = imp.fit_transform(X[["Age"]])
+X_tr, X_te, y_tr, y_te = train_test_split(X, y)`,
+    question: "Er dette OK?",
+    options: [
+      {
+        text: "Nei — medianen er regnet ut fra hele datasettet, inkludert test-radene som senere splittes ut. Lekkasje.",
+        correct: true,
+        rationale: "Bruk en Pipeline med SimpleImputer-en så fit kjøres bare på X_train per fold.",
+      },
+      {
+        text: "Ja — median er robust, ingen lekkasje.",
+        correct: false,
+        rationale: "Median er robust mot outliers, men problemet er at den er regnet fra TEST + TRAIN.",
+      },
+      {
+        text: "Ja, så lenge random_state er satt",
+        correct: false,
+        rationale: "random_state har ingen effekt på imputer-en eller på lekkasje-problemet.",
+      },
+    ],
+  },
+  {
+    id: "d-dte2602-quiz-when-precision",
+    kind: "quiz",
+    title: "Når bruker du precision?",
+    prompt: "Velg den situasjonen der precision er viktigst.",
+    topic: "DTE-2602",
+    question:
+      "Hvilket av disse scenariene er det viktigst med HØY PRECISION (få false positives)?",
+    options: [
+      {
+        text: "Reklame-anbefaling: vi vil ikke vise irrelevant reklame til brukere",
+        correct: true,
+        rationale: "FP = irrelevant reklame = irritert bruker. Mye verre enn å gå glipp av en treff (FN).",
+      },
+      {
+        text: "Kreft-screening — vi må ikke gå glipp av syke pasienter",
+        correct: false,
+        rationale: "Det er recall-fokus — FN er katastrofalt, FP håndteres med oppfølgings-test.",
+      },
+      {
+        text: "Branndeteksjon i bygning",
+        correct: false,
+        rationale: "Recall — bedre én falsk alarm enn én missed brann.",
+      },
+      {
+        text: "Fraud-deteksjon i bank",
+        correct: false,
+        rationale: "Typisk recall-fokus.",
+      },
+    ],
+  },
+  {
+    id: "d-dte2602-quiz-auc",
+    kind: "quiz",
+    title: "Tolke AUC",
+    prompt: "Klassifikator A har AUC=0.85, B har AUC=0.70. Hva betyr det?",
+    topic: "DTE-2602",
+    question: "Hvilket utsagn er mest presist?",
+    options: [
+      {
+        text: "A er bedre til å rangere positiver foran negativer — uansett hvilken terskel man velger.",
+        correct: true,
+        rationale: "AUC måler nettopp rangerings-kvalitet, terskel-uavhengig.",
+      },
+      {
+        text: "A klassifiserer 85 % riktig",
+        correct: false,
+        rationale: "AUC er ikke accuracy. En klassifikator med 85 % accuracy kan ha mye lavere AUC.",
+      },
+      {
+        text: "A har lavere FP enn B ved alle terskler",
+        correct: false,
+        rationale: "Det er ikke garantert — ROC-kurvene kan krysse hverandre.",
+      },
+    ],
+  },
+  {
+    id: "d-dte2602-quiz-cv-leak-pipe",
+    kind: "quiz",
+    title: "Pipeline-inn-CV-spørsmål",
+    prompt: "Velg riktig.",
+    topic: "DTE-2602",
+    question:
+      "Du kjører cross_val_score(scaler.fit_transform(X), y, cv=5). Hva er problemet?",
+    options: [
+      {
+        text: "Scaler er fit-et på hele X før CV-foldene lages — val-folden lekker inn i train.",
+        correct: true,
+        rationale: "Riktig fix: legg scaler inn i en Pipeline og pass Pipeline-en til cross_val_score.",
+      },
+      {
+        text: "5 folds er for få — bruk minst 10",
+        correct: false,
+        rationale: "Folds-antallet er ikke selve problemet.",
+      },
+      {
+        text: "fit_transform skal heter fit + transform separat",
+        correct: false,
+        rationale: "fit_transform er bare en convenience for fit() + transform().",
+      },
+    ],
+  },
+  {
+    id: "d-dte2602-quiz-imbalance",
+    kind: "quiz",
+    title: "Ubalansert klassifikasjon",
+    prompt: "Du har 95 % klasse 0, 5 % klasse 1. Modellen får 95 % accuracy.",
+    topic: "DTE-2602",
+    question: "Hva er den mest sannsynlige forklaringen og fiksen?",
+    options: [
+      {
+        text: "Modellen sier 'klasse 0' alltid — har null recall på klasse 1. Bytt til F1/AUC, og bruk class_weight='balanced' eller SMOTE.",
+        correct: true,
+      },
+      {
+        text: "Modellen er bra — 95 % accuracy er imponerende.",
+        correct: false,
+        rationale: "Baseline 'alltid 0' gir også 95 %.",
+      },
+      {
+        text: "Tren flere epochs",
+        correct: false,
+        rationale: "Mer trening løser ikke metrisk valg eller klassebalanse.",
+      },
+    ],
+  },
+  {
+    id: "d-dte2602-quiz-rf-vs-tree",
+    kind: "quiz",
+    title: "Random Forest vs ett tre",
+    prompt: "Hvorfor er en Random Forest typisk bedre enn et enkelt tre?",
+    topic: "DTE-2602",
+    question: "Velg det mest presise svaret.",
+    options: [
+      {
+        text: "Bootstrap + random feature subsetting dekorrelerer trærne — stemmegjennomsnitt reduserer varians uten å øke bias merkbart.",
+        correct: true,
+      },
+      {
+        text: "Random Forest har mer max_depth enn et enkelt tre",
+        correct: false,
+        rationale: "Ikke nødvendigvis. Hvert tre i en forest kan være ganske dypt.",
+      },
+      {
+        text: "Random Forest bruker entropi, trær bruker Gini",
+        correct: false,
+        rationale: "Begge kan bruke begge — default er gini for begge i sklearn.",
+      },
+    ],
+  },
+  {
+    id: "d-dte2602-quiz-when-pca",
+    kind: "quiz",
+    title: "Når bruke PCA?",
+    prompt: "Velg den beste begrunnelsen.",
+    topic: "DTE-2602",
+    question: "Hvilken situasjon passer PCA best for?",
+    options: [
+      {
+        text: "Du har mange korrelerte numeriske features og vil visualisere i 2D, eller decorrelating før en lineær modell.",
+        correct: true,
+      },
+      {
+        text: "Du har tabulær data og vil ha tolkbarhet",
+        correct: false,
+        rationale: "Tvert imot — PCA gjør tolkbarhet vanskeligere (komponentene er blandinger).",
+      },
+      {
+        text: "Du har mange kategoriske features",
+        correct: false,
+        rationale: "PCA forutsetter numerisk data. One-hot-kodede kategorier passer dårlig.",
+      },
+    ],
+  },
+  {
+    id: "d-dte2602-quiz-bias-vs-var-fix",
+    kind: "quiz",
+    title: "Læringskurver tolkning",
+    prompt: "Train og val-feil er begge ~0.30 og ligger nær hverandre.",
+    topic: "DTE-2602",
+    question: "Hva forteller dette deg?",
+    options: [
+      {
+        text: "Høy bias — modellen er for stiv. Mer data hjelper IKKE; bytt til mer fleksibel modell eller legg til features.",
+        correct: true,
+      },
+      {
+        text: "Høy varians — overfit. Reguler mer.",
+        correct: false,
+        rationale: "Det ville gitt stort gap mellom train og val, ikke samme høye verdi.",
+      },
+      {
+        text: "Modellen er ferdigtrent, alt er bra",
+        correct: false,
+        rationale: "0.30 er ikke spesielt bra. Det er bare ikke et gap-problem.",
+      },
+    ],
+  },
+  {
+    id: "d-dte2602-quiz-threshold",
+    kind: "quiz",
+    title: "Terskel ≠ 0.5",
+    prompt: "Du trenger høyere recall.",
+    topic: "DTE-2602",
+    question:
+      "Sklearn sin .predict() bruker default terskel 0.5 på predict_proba. Hvordan øker du recall?",
+    options: [
+      {
+        text: "Senke terskelen — flere prediksjoner får klasse 1, recall stiger (precision faller).",
+        correct: true,
+      },
+      {
+        text: "Øke terskelen",
+        correct: false,
+        rationale: "Det reduserer antall predikerte positiver, så recall faller.",
+      },
+      {
+        text: "Bytte til en annen scoring i fit()",
+        correct: false,
+        rationale: "scoring brukes i CV-tuning, ikke i predict.",
+      },
+    ],
+  },
+
+  // ----- ORDER (4) -----
+  {
+    id: "d-dte2602-order-pipeline-steps",
+    kind: "order",
+    title: "Pipeline-rekkefølge for tabulær klassifikasjon",
+    prompt: "Sortér stegene riktig for å unngå datalekkasje.",
+    topic: "DTE-2602",
+    items: [
+      "1. Last data og gjør EDA (df.info, describe, isna)",
+      "2. Skill features (X) og target (y)",
+      "3. train_test_split med stratify=y, test_size=0.2",
+      "4. Bygg ColumnTransformer for num + kategorisk preprocessing",
+      "5. Pakk ColumnTransformer + modell i Pipeline",
+      "6. GridSearchCV på Pipeline med 5-fold stratified CV på X_train",
+      "7. Refit beste modell på hele X_train",
+      "8. score / predict på X_test — ÉN gang, helt på slutten",
+    ],
+    explanation:
+      "Test-settet rør du bare i steg 8. Alt mellom 3 og 7 skjer på X_train, internt med CV.",
+  },
+  {
+    id: "d-dte2602-order-tree-build",
+    kind: "order",
+    title: "Beslutningstre — slik bygges det",
+    prompt: "Sortér stegene for hvordan ID3/CART-algoritmen bygger ett tre.",
+    topic: "DTE-2602",
+    items: [
+      "1. Start med hele datasettet i rot-noden",
+      "2. For hver feature og hver mulig terskel: beregn split-kvalitet (Gini eller info-gain)",
+      "3. Velg splitten som maks reduserer urenhet — del data i to barn",
+      "4. Repeter rekursivt for hvert barn",
+      "5. Stopp når en stopkriterie er nådd: max_depth, min_samples_leaf, eller ren node",
+      "6. Hvert blad merkes med majoritetsklassen (eller snitt for regresjon)",
+    ],
+  },
+  {
+    id: "d-dte2602-order-eda-checklist",
+    kind: "order",
+    title: "EDA-sjekkliste — hva sjekker du først?",
+    prompt: "Sortér i naturlig rekkefølge.",
+    topic: "DTE-2602",
+    items: [
+      "1. df.shape — hvor stort er datasettet",
+      "2. df.info() — dtypes og manglende verdier per kolonne",
+      "3. df.describe() — sentralmål og spredning per numerisk kolonne",
+      "4. df['target'].value_counts(normalize=True) — klassebalanse",
+      "5. df.isna().sum() + heatmap — visualisér mangler",
+      "6. Histogrammer per numerisk kolonne",
+      "7. Korrelasjonsmatrise — sterke kobler mellom features?",
+      "8. Pairplot eller scatter farget på target — visuelt separerbart?",
+    ],
+  },
+  {
+    id: "d-dte2602-order-bias-var-tradeoff",
+    kind: "order",
+    title: "Modell-kompleksitet vs feil",
+    prompt: "Sortér hva som skjer når du gradvis øker modell-kompleksitet.",
+    topic: "DTE-2602",
+    items: [
+      "1. Lavt kompleksitet: bias høy, varians lav — underfit, begge feil høye",
+      "2. Moderat kompleksitet: bias og varians balansert — minst test-feil",
+      "3. Høyt kompleksitet: bias lav, varians høy — overfit, train lav men test stiger",
+      "4. Veldig høyt kompleksitet: train nær 0, test feil eksploderer",
+    ],
+    explanation:
+      "Du vil finne det 'sweet spot' i steg 2 — der test-feil er minst. CV hjelper deg dit.",
+  },
+
+  // ============================================================
+  // DTE-2602 PORTEFØLJE — AI-etikk, historie, mappe-mal
+  // (komplementært til "DTE-2602"-blokken over)
+  // ============================================================
+  {
+    id: "d-dte2602p-match-bias-cases",
+    kind: "match",
+    title: "Match bias-case til konkret eksempel",
+    prompt: "Hvilket konkret eksempel passer hver bias-type?",
+    topic: "AI-etikk",
+    pairs: [
+      { left: "Historisk bias", right: "Amazon CV-modell straffet ordet 'kvinne-' (2018)" },
+      { left: "Sampling-bias", right: "Gender Shades: face-API bommet 35% på mørke kvinner" },
+      { left: "Måle-bias (proxy)", right: "COMPAS brukte anholdelser som proxy for kriminalitet" },
+      { left: "Aggregerings-bias", right: "UK 2020: skolens historikk straffet enkeltelever" },
+      { left: "Tilbakekoblings-bias", right: "Predictive policing forsterker over tid sin egen utvelgelse" },
+    ],
+    explanation:
+      "Sensor leter etter at du kjenner konkrete saker — ikke bare 'AI kan være skjev'.",
+  },
+  {
+    id: "d-dte2602p-order-ai-history",
+    kind: "order",
+    title: "AI-historie — riktig tidslinje",
+    prompt: "Plasser hendelsene i kronologisk rekkefølge.",
+    topic: "AI-etikk",
+    items: [
+      "1950: Turing — 'Computing Machinery and Intelligence' + Turing-testen",
+      "1956: Dartmouth-konferansen — uttrykket 'artificial intelligence' myntet",
+      "1957: Rosenblatt — Perceptron-algoritmen",
+      "1969: Minsky & Papert — Perceptron kan ikke lære XOR → første AI-vinter",
+      "1986: Rumelhart/Hinton/Williams — backpropagation populariseres",
+      "1997: Deep Blue slår Kasparov i sjakk",
+      "2012: AlexNet vinner ImageNet → CNN-/DL-revolusjon",
+      "2017: 'Attention is all you need' — Transformer-arkitekturen",
+      "2024: EU AI Act vedtatt",
+    ],
+    explanation:
+      "AI-feltet har hatt minst to vintre (1970-tall, 1990-tall) der lovende metoder stoppet opp. Dagens DL-bølge er drevet av data + GPU + bedre optimering.",
+  },
+  {
+    id: "d-dte2602p-quiz-ai-act-helse",
+    kind: "quiz",
+    title: "EU AI Act — helse-diagnostikk",
+    prompt: "Hvilket nivå?",
+    topic: "AI-etikk",
+    question:
+      "Et ML-system som assisterer leger med å diagnostisere kreft fra røntgenbilder. EU AI Act-klassifikasjon?",
+    options: [
+      {
+        text: "Høy risiko — krav om dokumentasjon, transparens, menneskelig tilsyn",
+        correct: true,
+        rationale:
+          "Helse-diagnostikk er eksplisitt på høyrisiko-listen. Modellen kan brukes, men med strenge krav: tilsyn, datakvalitet, sporbar dokumentasjon.",
+      },
+      {
+        text: "Uakseptabel risiko — forbudt",
+        correct: false,
+        rationale: "Det ville stoppe medisinsk AI. Forbudt-listen er smal (social scoring, manipulasjon).",
+      },
+      {
+        text: "Minimal risiko",
+        correct: false,
+        rationale: "Helse er aldri minimal risiko under AI Act.",
+      },
+      {
+        text: "Limited risk — bare merking",
+        correct: false,
+        rationale: "Limited handler om at brukere må vite det er AI (chatbots, deepfakes).",
+      },
+    ],
+  },
+  {
+    id: "d-dte2602p-quiz-xai-need",
+    kind: "quiz",
+    title: "Når trenger du XAI?",
+    prompt: "Velg det mest dekkende.",
+    topic: "AI-etikk",
+    question:
+      "Du bygger en modell for å vurdere lånesøknader. Hvorfor er forklarbarhet (XAI) viktig?",
+    options: [
+      {
+        text: "GDPR Art. 22 gir avviste låntakere rett til forklaring + menneskelig vurdering",
+        correct: true,
+        rationale:
+          "Automatiserte beslutninger med betydelig påvirkning krever forklaring under GDPR. Bank kan ikke si 'modellen sa nei' uten å kunne begrunne.",
+      },
+      {
+        text: "Modellen blir mer nøyaktig hvis du forstår den",
+        correct: false,
+        rationale: "Nøyaktighet og tolkbarhet er ofte en avveining, ikke det samme.",
+      },
+      {
+        text: "Det er pålagt av sklearn",
+        correct: false,
+        rationale: "Helt frivillig teknisk — det er JURIDISK og etisk krav.",
+      },
+      {
+        text: "Bare hvis modellen feiler",
+        correct: false,
+        rationale: "Forklaring må være tilgjengelig FOR BRUKEREN ved beslutningen, ikke i ettertid.",
+      },
+    ],
+  },
+  {
+    id: "d-dte2602p-match-mappe-felle",
+    kind: "match",
+    title: "Match sensor-felle til signatur",
+    prompt: "Hva er sannsynlig årsak når sensor ser dette?",
+    topic: "ML-prosjektflyt",
+    pairs: [
+      { left: "Test-accuracy = 0.99 på et 'vanskelig' problem", right: "Sannsynlig data-lekkasje (target eller scaler)" },
+      { left: "Sensor får andre tall enn rapporten viser", right: "random_state mangler — ikke reproduserbart" },
+      { left: "Rapport sier 'vi tuned hyperparametere' men oppgir ingen verdier", right: "Mangelfull dokumentasjon" },
+      { left: "5 sider Python-kode limt inn i rapporten", right: "Feil sjanger — kode hører til notebook, ikke rapport" },
+      { left: "Bare accuracy rapportert på klassifikasjon", right: "Sensor savner precision/recall/F1 + confusion matrix" },
+    ],
+  },
+  {
+    id: "d-dte2602p-order-mappe-sjekkliste",
+    kind: "order",
+    title: "Mappe-sjekkliste — riktig rekkefølge før innlevering",
+    prompt: "Plasser stegene i logisk rekkefølge.",
+    topic: "ML-prosjektflyt",
+    items: [
+      "1. Notebook kjører ende-til-ende uten feil (Restart & Run All)",
+      "2. random_state=42 er satt overalt — train_test_split, modeller, cv",
+      "3. requirements.txt eller environment.yml er inkludert",
+      "4. README forklarer hvordan kjøre koden",
+      "5. Sensor kan reprodusere alle tall i rapporten ved å kjøre koden",
+      "6. Rapport-PDF er korrekturlest og har sidetall + figurnummerering",
+      "7. Innlevering!",
+    ],
+    explanation:
+      "Reproduserbarhet er det enkleste å fikse, og det enkleste å glemme. Test på ren venv før innlevering.",
+  },
+  {
+    id: "d-dte2602p-fill-joblib",
+    kind: "fill",
+    title: "Lagre og laste en pipeline med joblib",
+    prompt: "Dra inn de manglende delene.",
+    topic: "ML-prosjektflyt",
+    template:
+      "import __1__\n# Tren pipelinen først:\npipe = Pipeline([('prep', prep), ('model', LogisticRegression())])\npipe.fit(X_train, y_train)\n# Lagre HELE pipelinen — ikke bare modellen:\n__1__.__2__(pipe, 'modell.joblib')\n# Senere — laste igjen:\nlastet = __1__.__3__('modell.joblib')\npreds = lastet.__4__(X_ny)",
+    blanks: ["joblib", "dump", "load", "predict"],
+    options: ["joblib", "pickle", "json", "dump", "save", "load", "open", "predict", "fit", "transform"],
+    language: "python",
+  },
+  {
+    id: "d-dte2602p-quiz-gdpr-art22",
+    kind: "quiz",
+    title: "GDPR Artikkel 22",
+    prompt: "Hvilken rett gir Art. 22?",
+    topic: "AI-etikk",
+    question:
+      "GDPR Art. 22 sier at en person har rett til hva, ved automatiserte beslutninger med betydelig påvirkning?",
+    options: [
+      {
+        text: "Forklaring + menneskelig vurdering",
+        correct: true,
+        rationale:
+          "Eksempel: avvist lånesøknad må kunne begrunnes og kunne klages opp til menneske.",
+      },
+      {
+        text: "Å slette sin egen data fra alle modeller",
+        correct: false,
+        rationale: "Det er rett til å bli glemt — relatert, men ikke Art. 22.",
+      },
+      {
+        text: "Gratis tilgang til kildekoden",
+        correct: false,
+        rationale: "GDPR krever ikke åpen kildekode.",
+      },
+      {
+        text: "Erstatning hvis modellen tar feil",
+        correct: false,
+        rationale: "Erstatningsregler dekkes av annet lovverk.",
+      },
+    ],
+  },
+
   // ============ TEK-1501: DESKRIPTIV STATISTIKK (10) ============
   {
     id: "d-tek1-match-sentralmaal",
