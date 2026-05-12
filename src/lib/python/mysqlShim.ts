@@ -84,9 +84,15 @@ class Cursor:
 
 
 class Connection:
-    def __init__(self, name):
+    def __init__(self, name, host=None, user=None, password=None, port=None):
         self._name = name
         self._raw = _dbs.setdefault(name, _sqlite.connect(":memory:"))
+        # Public attributter slik mysql-connector-python eksponerer dem —
+        # disse er det vanlig å bruke i undervisning og debugging.
+        self.database = name
+        self.host = host
+        self.user = user
+        self.port = port
 
     def cursor(self, dictionary=False, buffered=False):
         return Cursor(self)
@@ -102,8 +108,9 @@ class Connection:
         # the page session so repeated runs can see the data they inserted.
         pass
 
-    @property
     def is_connected(self):
+        # I ekte mysql-connector er dette en metode, ikke en property —
+        # studenter skriver db.is_connected().
         return True
 
 
@@ -117,7 +124,7 @@ class IntegrityError(Error):
 
 def connect(host=None, user=None, password=None, database=None, port=None, **kwargs):
     name = database or "default"
-    return Connection(name)
+    return Connection(name, host=host, user=user, password=password, port=port)
 
 
 def reset_database(name="default"):
