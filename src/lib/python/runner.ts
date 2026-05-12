@@ -11,19 +11,50 @@ import type {
 const installedPackages = new Set<string>();
 let mysqlShimRegistered = false;
 
-/** Ensure required Pyodide packages are micropip-installed (idempotent). */
+// Pakker som Pyodide har innebygd som binær-wheel (lastes raskt via loadPackage).
+// Alt annet faller tilbake til micropip (pure-Python eller PyPI-wheels).
+// Liste hentet fra https://pyodide.org/en/stable/usage/packages-in-pyodide.html
+const PYODIDE_BUILTIN_PACKAGES = new Set([
+  "numpy",
+  "scipy",
+  "scikit-learn",
+  "matplotlib",
+  "pandas",
+  "sympy",
+  "networkx",
+  "statsmodels",
+  "seaborn",
+  "pillow",
+  "lxml",
+  "regex",
+  "beautifulsoup4",
+  "sqlite3",
+  "micropip",
+]);
+
+/** Ensure required Pyodide packages are loaded (idempotent). */
 async function ensureRequires(requires: string[] | undefined): Promise<void> {
   if (!requires || requires.length === 0) return;
   const py = await getPyodide();
   const missing = requires.filter((p) => !installedPackages.has(p));
   if (missing.length === 0) return;
-  await py.runPythonAsync(`
+
+  // Skill mellom built-in (loadPackage = raskt) og andre (micropip).
+  const builtin = missing.filter((p) => PYODIDE_BUILTIN_PACKAGES.has(p));
+  const viaPip = missing.filter((p) => !PYODIDE_BUILTIN_PACKAGES.has(p));
+
+  if (builtin.length > 0) {
+    await py.loadPackage(builtin);
+  }
+  if (viaPip.length > 0) {
+    await py.runPythonAsync(`
 import micropip
 import asyncio
 async def _install():
-    await micropip.install(${JSON.stringify(missing)})
+    await micropip.install(${JSON.stringify(viaPip)})
 await _install()
 `);
+  }
   missing.forEach((p) => installedPackages.add(p));
 }
 

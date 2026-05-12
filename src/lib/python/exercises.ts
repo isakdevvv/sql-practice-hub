@@ -5884,4 +5884,62 @@ print("  Bruker SAMME login_manager:", test_app.login_manager is app.login_manag
       "I ekte prosjekt: extensions.py samler ALLE: db, login_manager, mail, csrf, migrate, ... én linje per. Hver create_app kaller init_app på alle.",
     ],
   },
+
+  // ============ STATISTIKK & ML — VERIFISERING AV NUMPY/SCIPY-RUNNER ============
+  {
+    id: "py-numpy-stats-smoke-test",
+    topic: "Statistikk-grunnlag",
+    title: "Smoke-test: numpy + scipy.stats lastet",
+    description:
+      "Røyk-test for numpy/scipy-runneren. Kjør et lite eksempel som beregner gjennomsnitt, standardavvik, og en p-verdi fra en t-test. Hvis dette kjører er vi klar for TEK-1501-øvelser.",
+    requires: ["numpy", "scipy"],
+    starter: `import numpy as np
+from scipy import stats
+
+# === OPPGAVE ===
+# Vi har 12 målinger av batteri-levetid fra en produsent som hevder snitt = 100 timer.
+# Sjekk om vår observerte snitt er signifikant lavere enn 100.
+
+data = np.array([95.2, 98.1, 102.4, 97.8, 96.5, 99.3, 94.7, 101.2, 97.9, 96.8, 95.5, 98.4])
+
+# TODO:
+# 1. Beregn snittet (mean) og standardavviket (std med ddof=1).
+# 2. Kjør en one-sample t-test mot 100 med stats.ttest_1samp.
+# 3. Print: snitt, std, t-statistikk, p-verdi.
+
+# Skriv koden under:
+`,
+    solution: `import numpy as np
+from scipy import stats
+
+data = np.array([95.2, 98.1, 102.4, 97.8, 96.5, 99.3, 94.7, 101.2, 97.9, 96.8, 95.5, 98.4])
+
+mean = np.mean(data)
+std = np.std(data, ddof=1)
+t_stat, p_val = stats.ttest_1samp(data, popmean=100)
+
+print(f"Snitt: {mean:.2f}")
+print(f"Std:   {std:.2f}")
+print(f"t = {t_stat:.3f}, p = {p_val:.4f}")
+`,
+    hints: [
+      "np.mean(data) gir gjennomsnittet.",
+      "np.std(data, ddof=1) gir stikkprøve-standardavvik (n-1 i nevner). ddof=0 er populasjons-std.",
+      "stats.ttest_1samp(data, popmean=100) returnerer (t_statistic, p_value).",
+      "Bruk f-strenger: f\"{mean:.2f}\" for 2 desimaler.",
+    ],
+    docs: [
+      {
+        title: "numpy — array-grunnlag",
+        url: "https://numpy.org/doc/stable/user/quickstart.html",
+        note: "np.array, np.mean, np.std, np.sum, np.var — alt det grunnleggende vi bruker i TEK-1501.",
+      },
+      {
+        title: "scipy.stats — t-test",
+        url: "https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.ttest_1samp.html",
+        snippet: `t_stat, p_val = stats.ttest_1samp(data, popmean=100)`,
+        note: "ttest_1samp tester om snittet i data er signifikant ulikt popmean. p < 0.05 → forkast H₀.",
+      },
+    ],
+  },
 ];
