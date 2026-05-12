@@ -38,6 +38,24 @@ export const PY_TOPIC_LEVEL: Record<string, PyLevel> = {
   "DTE-2602 Modeller": 3,
   "DTE-2602 Evaluering": 3,
   "DTE-2602 Algoritmer fra bunn": 4,
+  // DTE-2501 ML — kategoriene plasseres tilsvarende «data-prosessering»-nivå.
+  "ML — Supervised": 4,
+  "ML — Unsupervised": 4,
+  "ML — Dim.-reduksjon": 4,
+  "ML — Ensemble": 4,
+  "ML — NLP": 4,
+  "ML — Metaheuristikk": 4,
+  "ML — Reinforcement learning": 5,
+  "ML — Dynamic programming": 4,
+  // Granulære ML-emnenavn (også brukt i kjørbare øvelser):
+  "ML — k-NN": 4,
+  "ML — Trær": 4,
+  "ML — k-Means": 4,
+  "ML — GMM": 4,
+  "ML — PCA": 4,
+  "ML — GA": 4,
+  "ML — RL": 5,
+  "ML — DP": 4,
 };
 
 /** Resolve a PyExercise's level — explicit field wins, else look up topic, else 0. */

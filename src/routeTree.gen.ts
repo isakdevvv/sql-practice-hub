@@ -31,6 +31,7 @@ import { Route as StackSlugRouteImport } from './routes/stack.$slug'
 import { Route as PythonVisualizerRouteImport } from './routes/python_.visualizer'
 import { Route as ProsjektMlSlugRouteImport } from './routes/prosjekt-ml.$slug'
 import { Route as PortfolioDte2602SlugRouteImport } from './routes/portfolio-dte2602.$slug'
+import { Route as Dte2505ShellDrillRouteImport } from './routes/dte2505.shell-drill'
 import { Route as PythonKapIndexRouteImport } from './routes/python_.kap.index'
 import { Route as PythonKapNrRouteImport } from './routes/python_.kap.$nr'
 
@@ -144,6 +145,11 @@ const PortfolioDte2602SlugRoute = PortfolioDte2602SlugRouteImport.update({
   path: '/portfolio-dte2602/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const Dte2505ShellDrillRoute = Dte2505ShellDrillRouteImport.update({
+  id: '/dte2505/shell-drill',
+  path: '/dte2505/shell-drill',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PythonKapIndexRoute = PythonKapIndexRouteImport.update({
   id: '/python_/kap/',
   path: '/python/kap/',
@@ -173,6 +179,7 @@ export interface FileRoutesByFullPath {
   '/prosjekt': typeof ProsjektRoute
   '/python': typeof PythonRoute
   '/stack': typeof StackRouteWithChildren
+  '/dte2505/shell-drill': typeof Dte2505ShellDrillRoute
   '/portfolio-dte2602/$slug': typeof PortfolioDte2602SlugRoute
   '/prosjekt-ml/$slug': typeof ProsjektMlSlugRoute
   '/python/visualizer': typeof PythonVisualizerRoute
@@ -198,6 +205,7 @@ export interface FileRoutesByTo {
   '/practice': typeof PracticeRoute
   '/prosjekt': typeof ProsjektRoute
   '/python': typeof PythonRoute
+  '/dte2505/shell-drill': typeof Dte2505ShellDrillRoute
   '/portfolio-dte2602/$slug': typeof PortfolioDte2602SlugRoute
   '/prosjekt-ml/$slug': typeof ProsjektMlSlugRoute
   '/python/visualizer': typeof PythonVisualizerRoute
@@ -225,6 +233,7 @@ export interface FileRoutesById {
   '/prosjekt': typeof ProsjektRoute
   '/python': typeof PythonRoute
   '/stack': typeof StackRouteWithChildren
+  '/dte2505/shell-drill': typeof Dte2505ShellDrillRoute
   '/portfolio-dte2602/$slug': typeof PortfolioDte2602SlugRoute
   '/prosjekt-ml/$slug': typeof ProsjektMlSlugRoute
   '/python_/visualizer': typeof PythonVisualizerRoute
@@ -253,6 +262,7 @@ export interface FileRouteTypes {
     | '/prosjekt'
     | '/python'
     | '/stack'
+    | '/dte2505/shell-drill'
     | '/portfolio-dte2602/$slug'
     | '/prosjekt-ml/$slug'
     | '/python/visualizer'
@@ -278,6 +288,7 @@ export interface FileRouteTypes {
     | '/practice'
     | '/prosjekt'
     | '/python'
+    | '/dte2505/shell-drill'
     | '/portfolio-dte2602/$slug'
     | '/prosjekt-ml/$slug'
     | '/python/visualizer'
@@ -304,6 +315,7 @@ export interface FileRouteTypes {
     | '/prosjekt'
     | '/python'
     | '/stack'
+    | '/dte2505/shell-drill'
     | '/portfolio-dte2602/$slug'
     | '/prosjekt-ml/$slug'
     | '/python_/visualizer'
@@ -331,6 +343,7 @@ export interface RootRouteChildren {
   ProsjektRoute: typeof ProsjektRoute
   PythonRoute: typeof PythonRoute
   StackRoute: typeof StackRouteWithChildren
+  Dte2505ShellDrillRoute: typeof Dte2505ShellDrillRoute
   PortfolioDte2602SlugRoute: typeof PortfolioDte2602SlugRoute
   ProsjektMlSlugRoute: typeof ProsjektMlSlugRoute
   PythonVisualizerRoute: typeof PythonVisualizerRoute
@@ -494,6 +507,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PortfolioDte2602SlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/dte2505/shell-drill': {
+      id: '/dte2505/shell-drill'
+      path: '/dte2505/shell-drill'
+      fullPath: '/dte2505/shell-drill'
+      preLoaderRoute: typeof Dte2505ShellDrillRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/python_/kap/': {
       id: '/python_/kap/'
       path: '/python/kap'
@@ -541,6 +561,7 @@ const rootRouteChildren: RootRouteChildren = {
   ProsjektRoute: ProsjektRoute,
   PythonRoute: PythonRoute,
   StackRoute: StackRouteWithChildren,
+  Dte2505ShellDrillRoute: Dte2505ShellDrillRoute,
   PortfolioDte2602SlugRoute: PortfolioDte2602SlugRoute,
   ProsjektMlSlugRoute: ProsjektMlSlugRoute,
   PythonVisualizerRoute: PythonVisualizerRoute,
