@@ -21216,4 +21216,18 @@ ARP reply  :  10.0.0.1 ->  __2__       "I am AA:BB:CC:DD:EE:01"`,
       { text: "256 bit (som AES)", correct: false, rationale: "AES og RSA har FORSKJELLIG nøkkellengde-sikkerhet — kan ikke sammenlignes 1:1." },
     ],
   },
+  {
+    id: "d2507d-quiz-tls-record-layer",
+    kind: "quiz",
+    title: "Hva sender hva i TLS?",
+    prompt: "Velg den korrekte påstanden.",
+    topic: "DTE-2507",
+    question: "Under den initielle TLS-handshake — hvilken type krypto brukes for å transportere pre-master secret fra klient til server?",
+    options: [
+      { text: "Asymmetrisk (med serverens public key) eller via (EC)DHE", correct: true, rationale: "Klient krypterer pre-master med server-public (RSA-key-transport), eller begge regner det ut via Diffie-Hellman. Symmetriske nøkler er ikke etablert ennå." },
+      { text: "Symmetrisk med AES", correct: false, rationale: "AES-nøkler etableres FØRST etter handshake. Vi har ingen delt nøkkel ennå." },
+      { text: "Klar tekst", correct: false, rationale: "Det ville beseiret hele TLS." },
+      { text: "Med en pre-shared key (PSK)", correct: false, rationale: "PSK finnes i TLS 1.3, men kun for session resumption — ikke første handshake." },
+    ],
+  },
 ];
