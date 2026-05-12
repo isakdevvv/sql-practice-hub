@@ -2239,6 +2239,488 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Hva returnerer en bash-funksjon med `return 0`?",
     answer: "Bare en exit-kode (0-255), ikke en verdi. For å «returnere» data: skriv til stdout og fang med $(funksjon). Eks: `dato() { date +%Y-%m-%d; }`, så `i_dag=$(dato)`.",
   },
+
+  // ===================== DTE-2501 ML =====================
+  // Formler, konsept og algoritme-steg for moderne ML-pensum.
+
+  // ---------- Formler ----------
+  {
+    id: "dte2501-c-gini",
+    category: "praktisk",
+    topic: "DTE-2501 ML",
+    question: "Formel for Gini-urenhet i en node?",
+    answer:
+      "Gini(S) = 1 − Σ pᵢ², der pᵢ er andelen klasse i i S. Gini = 0 betyr noden er ren; maks ved jevn fordeling.",
+    code: "p_A = 3/5, p_B = 2/5\nGini = 1 − (3/5)² − (2/5)² = 1 − 0.36 − 0.16 = 0.48",
+  },
+  {
+    id: "dte2501-c-entropy",
+    category: "praktisk",
+    topic: "DTE-2501 ML",
+    question: "Formel for entropi (Shannon)?",
+    answer:
+      "H(S) = − Σ pᵢ · log₂(pᵢ). Måler hvor mange bits informasjon som kreves for å beskrive klassen i S. Alternativ til Gini i beslutningstrær (criterion='entropy').",
+  },
+  {
+    id: "dte2501-c-info-gain",
+    category: "praktisk",
+    topic: "DTE-2501 ML",
+    question: "Hvordan beregnes informasjonsgevinst (IG) ved en split?",
+    answer:
+      "IG = Urenhet(foreldre) − Σ (|barn_i| / |foreldre|) · Urenhet(barn_i). Vektet snitt av barn-urenhet, trukket fra foreldrenodens. Velg splitten med størst IG.",
+  },
+  {
+    id: "dte2501-c-kmeans-obj",
+    category: "praktisk",
+    topic: "DTE-2501 ML",
+    question: "Objektiv-funksjon for k-Means?",
+    answer:
+      "J = Σᵢ ‖xᵢ − μ_{c(i)}‖² — Within-Cluster Sum of Squares (WCSS / inertia). k-Means minimerer dette grådig ved skiftende assign/update-steg.",
+  },
+  {
+    id: "dte2501-c-bellman",
+    category: "praktisk",
+    topic: "DTE-2501 ML",
+    question: "Bellman-likningen for optimal value V*?",
+    answer:
+      "V*(s) = max_a Σ_s' P(s'|s,a) · [R(s,a,s') + γ V*(s')]. Verdien i s er forventet umiddelbar belønning + diskontert verdi av neste tilstand, optimalt valg av handling.",
+  },
+  {
+    id: "dte2501-c-qlearn-update",
+    category: "praktisk",
+    topic: "DTE-2501 ML",
+    question: "Q-learning-oppdateringen?",
+    answer:
+      "Q(s,a) ← Q(s,a) + α · [r + γ · max_a' Q(s',a') − Q(s,a)]. α er læringsrate, leddet i hakeparentesen er TD-feilen.",
+  },
+  {
+    id: "dte2501-c-tfidf",
+    category: "praktisk",
+    topic: "DTE-2501 ML",
+    question: "Definer TF-IDF for term t i dokument d.",
+    answer:
+      "TF-IDF(t,d) = TF(t,d) · IDF(t). TF er termfrekvens i d. IDF = ln((1+N)/(1+df(t))) + 1 i sklearn — øker for sjeldne ord. Demper vanlige ord.",
+  },
+  {
+    id: "dte2501-c-cosine",
+    category: "praktisk",
+    topic: "DTE-2501 ML",
+    question: "Formel for cosine similarity mellom vektorer x og y?",
+    answer:
+      "cos(x,y) = (x · y) / (‖x‖ · ‖y‖). Ligger i [−1,1], for TF-IDF i [0,1]. For L2-normaliserte vektorer reduseres det til x · y.",
+  },
+  {
+    id: "dte2501-c-knn-dist",
+    category: "praktisk",
+    topic: "DTE-2501 ML",
+    question: "Euklidsk vs Manhattan-avstand?",
+    answer:
+      "Euklidsk: √(Σ(xᵢ−yᵢ)²) — rett linje (Minkowski p=2). Manhattan: Σ|xᵢ−yᵢ| — bymønster (Minkowski p=1). Manhattan er mer robust mot uteliggere.",
+  },
+  {
+    id: "dte2501-c-pca-evr",
+    category: "praktisk",
+    topic: "DTE-2501 ML",
+    question: "Hva er explained variance ratio i PCA?",
+    answer:
+      "EVR_i = λ_i / Σⱼ λⱼ — andelen av total varians forklart av prinsipalkomponent i. Velg k slik at kumulert EVR ≥ 0.95.",
+  },
+  {
+    id: "dte2501-c-pso",
+    category: "praktisk",
+    topic: "DTE-2501 ML",
+    question: "PSO-oppdatering for hastighet?",
+    answer:
+      "v(t+1) = w·v(t) + c₁·r₁·(pbest − x) + c₂·r₂·(gbest − x). Tre ledd: treghet, kognitivt (egen beste), sosialt (flokkens beste).",
+  },
+  {
+    id: "dte2501-c-aco-pher",
+    category: "praktisk",
+    topic: "DTE-2501 ML",
+    question: "Feromon-oppdatering i ACO?",
+    answer:
+      "τᵢⱼ(t+1) = (1 − ρ)·τᵢⱼ(t) + Σₖ Δτᵢⱼᵏ. Første ledd er fordamping (ρ), andre er bidrag fra maur som brukte (i,j), typisk Δτ = Q/L_k for hver maur som brukte kanten.",
+  },
+  {
+    id: "dte2501-c-em-gmm-resp",
+    category: "praktisk",
+    topic: "DTE-2501 ML",
+    question: "Hva er responsibility γᵢₖ i EM for GMM?",
+    answer:
+      "γᵢₖ = πₖ·N(xᵢ|μₖ,Σₖ) / Σⱼ πⱼ·N(xᵢ|μⱼ,Σⱼ). Posterior sannsynlighet for at xᵢ tilhører komponent k — soft assignment.",
+  },
+  {
+    id: "dte2501-c-held-karp",
+    category: "praktisk",
+    topic: "DTE-2501 ML",
+    question: "Held-Karp DP-rekursjon for TSP?",
+    answer:
+      "dp[S][j] = min over i ∈ S\\{j}: dp[S\\{j}][i] + dist(i,j). Optimum: min over j: dp[full][j] + dist(j,0). Kompleksitet O(n²·2ⁿ).",
+  },
+
+  // ---------- Konsept ----------
+  {
+    id: "dte2501-c-bagging-vs-boosting",
+    category: "praktisk",
+    topic: "DTE-2501 ML",
+    question: "Bagging vs boosting — hovedforskjell?",
+    answer:
+      "Bagging trener mange modeller PARALLELT på bootstrap-sampler og reduserer variance. Boosting trener modeller SEKVENSIELT der hver retter feilene fra forrige, og reduserer bias.",
+  },
+  {
+    id: "dte2501-c-hard-vs-soft",
+    category: "praktisk",
+    topic: "DTE-2501 ML",
+    question: "Hard vs soft assignment i clustering?",
+    answer:
+      "Hard: hvert x tilhører ett cluster fullt ut (k-Means, argmin avstand). Soft: hvert x har sannsynlighetsfordeling over alle k komponenter (GMM, γᵢₖ).",
+  },
+  {
+    id: "dte2501-c-pca-vs-kmeans",
+    category: "praktisk",
+    topic: "DTE-2501 ML",
+    question: "Forskjellen på PCA og k-Means?",
+    answer:
+      "PCA komprimerer DIMENSJONER (features → færre prinsipalkomponenter). k-Means komprimerer PUNKTER (N → k cluster-senter). Begge unsupervised; ofte gjøres PCA → k-Means.",
+  },
+  {
+    id: "dte2501-c-knn-lazy",
+    category: "praktisk",
+    topic: "DTE-2501 ML",
+    question: "Hvorfor kalles k-NN lazy learning?",
+    answer:
+      "Fordi den ikke lærer en eksplisitt modell ved trening — bare lagrer datasettet. All beregning skjer ved prediksjon (sammenligning mot alle N treningseksempler).",
+  },
+  {
+    id: "dte2501-c-scale-knn",
+    category: "praktisk",
+    topic: "DTE-2501 ML",
+    question: "Hvorfor må vi skalere features før k-NN?",
+    answer:
+      "Distansemål summerer kvadrerte forskjeller. En feature med stor numerisk skala (f.eks. inntekt 10⁵) dominerer over en med liten (alder 10¹). Bruk StandardScaler eller MinMaxScaler.",
+  },
+  {
+    id: "dte2501-c-no-scale-trees",
+    category: "praktisk",
+    topic: "DTE-2501 ML",
+    question: "Hvorfor må man IKKE skalere features før beslutningstrær?",
+    answer:
+      "Treet splitter på terskelverdier (feature ≤ threshold). Skala påvirker ikke rekkefølgen på verdier, kun terskelverdien — splittingen blir lik. Skala-uavhengig.",
+  },
+  {
+    id: "dte2501-c-curse-dim",
+    category: "praktisk",
+    topic: "DTE-2501 ML",
+    question: "Hva er curse of dimensionality?",
+    answer:
+      "I høye dimensjoner blir alle datapunkter omtrent like langt unna hverandre — «nærmeste nabo» mister mening. Volum av en kule vokser eksponentielt, dataene blir sparse. Affekter k-NN, k-Means og avstandsbaserte metoder.",
+  },
+  {
+    id: "dte2501-c-elbow",
+    category: "praktisk",
+    topic: "DTE-2501 ML",
+    question: "Hva er albuemetoden for å velge k i k-Means?",
+    answer:
+      "Plot J(k) (inertia) mot k. J synker monotont, men det er ofte en «albue» der nedgangen flater ut — den k-verdien velges. Subjektivt; silhouette-score er mer kvantitativ.",
+  },
+  {
+    id: "dte2501-c-silhouette",
+    category: "praktisk",
+    topic: "DTE-2501 ML",
+    question: "Hva er silhouette-score?",
+    answer:
+      "s(i) = (b−a)/max(a,b), der a = snittavstand til eget cluster, b = snittavstand til nærmeste andre cluster. Snittet over alle punkt gir silhouette-score. > 0.5 = bra, > 0.7 = sterk struktur.",
+  },
+  {
+    id: "dte2501-c-bias-variance",
+    category: "praktisk",
+    topic: "DTE-2501 ML",
+    question: "Bias-variance dekomponering — kort.",
+    answer:
+      "E[(ŷ−y)²] = Bias² + Variance + støy. Bias = feilantakelser. Variance = ustabilitet mellom treningssett. Bagging ↓variance, boosting ↓bias.",
+  },
+  {
+    id: "dte2501-c-mdp-markov",
+    category: "praktisk",
+    topic: "DTE-2501 ML",
+    question: "Hva er Markov-egenskapen i en MDP?",
+    answer:
+      "P(s_{t+1} | s_t, a_t, s_{t−1}, …) = P(s_{t+1} | s_t, a_t). Sannsynligheten for neste tilstand avhenger bare av nåværende tilstand og handling — «memoryless future».",
+  },
+  {
+    id: "dte2501-c-gamma",
+    category: "praktisk",
+    topic: "DTE-2501 ML",
+    question: "Hva betyr diskonteringsfaktoren γ i RL?",
+    answer:
+      "Vekt for fremtidige belønninger: G = r₁ + γr₂ + γ²r₃ + … γ → 0 = bare umiddelbar belønning. γ → 1 = langsiktig. 0<γ<1 garanterer endelig sum på uendelig horisont. Typisk 0.9–0.99.",
+  },
+  {
+    id: "dte2501-c-explore-exploit",
+    category: "praktisk",
+    topic: "DTE-2501 ML",
+    question: "Eksplorering vs eksploitering — hvor ser vi det?",
+    answer:
+      "I RL: ε-greedy (gjør tilfeldig handling med ε, ellers greedy). I GA: mutasjon (utforsk) vs crossover (utnytt). I PSO: stor w utforsk, liten w utnytt.",
+  },
+  {
+    id: "dte2501-c-knn-vs-kmeans",
+    category: "praktisk",
+    topic: "DTE-2501 ML",
+    question: "k-NN vs k-Means — likhet og forskjell?",
+    answer:
+      "Begge bruker «k» og avstandsmål. k-NN er SUPERVISED (predikér klasse fra naboer). k-Means er UNSUPERVISED (finn k cluster-senter).",
+  },
+  {
+    id: "dte2501-c-ga-elitism",
+    category: "praktisk",
+    topic: "DTE-2501 ML",
+    question: "Hva er elitisme i GA?",
+    answer:
+      "De E beste individene overlever urørt til neste generasjon. Garanterer at beste-fitness aldri synker. Pris: noe redusert diversitet.",
+  },
+  {
+    id: "dte2501-c-bow-vs-emb",
+    category: "praktisk",
+    topic: "DTE-2501 ML",
+    question: "TF-IDF vs embeddings — kjernen?",
+    answer:
+      "TF-IDF: én dimensjon per ord, ortogonale (selv «bil» og «auto» blir helt ulike). Embeddings (Word2Vec, BERT): tette vektorer, semantisk like ord ligger nær hverandre.",
+  },
+  {
+    id: "dte2501-c-rf-vs-bagging",
+    category: "praktisk",
+    topic: "DTE-2501 ML",
+    question: "Hva skiller Random Forest fra ren bagging?",
+    answer:
+      "I tillegg til bootstrap-sampling av rader, sampler RF også et tilfeldig subset av features ved HVER split. Det reduserer korrelasjonen mellom trærne, gir bedre variance-reduksjon.",
+  },
+  {
+    id: "dte2501-c-pca-center",
+    category: "praktisk",
+    topic: "DTE-2501 ML",
+    question: "Hvorfor må vi mean-centre før PCA?",
+    answer:
+      "Hvis vi ikke gjør det, peker første komponent mot snittet i stedet for langs størst variansretning. PCA antar at variansen er sentrert om origo.",
+  },
+  {
+    id: "dte2501-c-off-vs-on-policy",
+    category: "praktisk",
+    topic: "DTE-2501 ML",
+    question: "Off-policy vs on-policy RL?",
+    answer:
+      "Off-policy (Q-learning): lærer optimal Q* selv om agenten følger en annen policy (ε-greedy). On-policy (SARSA): lærer policyen man faktisk følger.",
+  },
+  {
+    id: "dte2501-c-tournament",
+    category: "praktisk",
+    topic: "DTE-2501 ML",
+    question: "Tournament selection i GA?",
+    answer:
+      "Trekk k individer tilfeldig fra populasjonen, velg den med høyest fitness blant dem. k justerer seleksjonspress (k=2 = mildt, k=7 = hardt).",
+  },
+
+  // ---------- Algoritme-steg ----------
+  {
+    id: "dte2501-c-em-steps",
+    category: "praktisk",
+    topic: "DTE-2501 ML",
+    question: "EM-algoritmen — hvilke to steg gjentas?",
+    answer:
+      "E-step (Expectation): beregn responsibilities γᵢₖ gitt nåværende parametre. M-step (Maximization): re-estimer π, μ, Σ basert på γᵢₖ (vektet snitt og kovarians). Repeter til log-likelihood konvergerer.",
+  },
+  {
+    id: "dte2501-c-vi-steps",
+    category: "praktisk",
+    topic: "DTE-2501 ML",
+    question: "Value Iteration — algoritmen i 3 setninger.",
+    answer:
+      "1) Initialiser V(s)=0. 2) For hver iter: V_{k+1}(s) = max_a Σ_s' P(s'|s,a)·[R + γV_k(s')]. 3) Stopp når ‖V_{k+1}−V_k‖<ε. Hent π*(s) = argmax_a Q*.",
+  },
+  {
+    id: "dte2501-c-pi-steps",
+    category: "praktisk",
+    topic: "DTE-2501 ML",
+    question: "Policy Iteration — to faser?",
+    answer:
+      "1) Policy evaluation: beregn V^π for current π (løs Bellman som lineært system). 2) Policy improvement: π_new(s) = argmax_a Σ_s' P(s'|s,a)·[R + γV^π(s')]. Repeter til π ikke endrer seg.",
+  },
+  {
+    id: "dte2501-c-ga-loop",
+    category: "praktisk",
+    topic: "DTE-2501 ML",
+    question: "Hovedloopen i en genetisk algoritme?",
+    answer:
+      "1) Initialiser populasjon. 2) Evaluer fitness. 3) Seleksjon. 4) Crossover. 5) Mutasjon. 6) Erstatt (med elitisme). Gjenta inntil maks generasjoner eller konvergens.",
+  },
+  {
+    id: "dte2501-c-kmeans-steps",
+    category: "praktisk",
+    topic: "DTE-2501 ML",
+    question: "k-Means (Lloyd's) — algoritmen.",
+    answer:
+      "1) Init k senter (k-means++). 2) ASSIGN: hvert x til nærmeste senter. 3) UPDATE: hvert senter til snitt av sine punkter. 4) Repeter 2-3 til ingen punkt skifter cluster.",
+  },
+  {
+    id: "dte2501-c-knn-predict",
+    category: "praktisk",
+    topic: "DTE-2501 ML",
+    question: "k-NN prediksjon — stegene?",
+    answer:
+      "1) Beregn dist(x_query, xᵢ) for alle i. 2) Sorter, behold de k minste. 3) Klassifisering: majoritetsstemme. Regresjon: snitt (evt. vektet med 1/dist).",
+  },
+  {
+    id: "dte2501-c-adaboost-steps",
+    category: "praktisk",
+    topic: "DTE-2501 ML",
+    question: "AdaBoost — sentrale steg per runde?",
+    answer:
+      "1) Tren svak klassifikator på vektet data. 2) Beregn ε_m (vektet feilrate). 3) α_m = ½·ln((1−ε_m)/ε_m). 4) Oppdater eksempel-vekter (øk for misklassifiserte) og normaliser.",
+  },
+  {
+    id: "dte2501-c-gradient-boost-steps",
+    category: "praktisk",
+    topic: "DTE-2501 ML",
+    question: "Gradient Boosting — hva gjør hver iterasjon?",
+    answer:
+      "1) Beregn negativ gradient av tap = pseudoresiduals. 2) Tren et nytt tre til å predikere residualene. 3) Oppdater ŷ_m = ŷ_{m-1} + η·h_m(x). Repeter M runder.",
+  },
+  {
+    id: "dte2501-c-pca-steps",
+    category: "praktisk",
+    topic: "DTE-2501 ML",
+    question: "PCA-pipeline — fra X til Z?",
+    answer:
+      "1) Mean-centre (og evt. standardiser). 2) Beregn Σ = X̃ᵀX̃/(N−1). 3) Egenvektor-dekomp: Σv = λv. 4) Sorter λ avtagende, velg k største. 5) Z = X̃·V_k.",
+  },
+  {
+    id: "dte2501-c-aco-loop",
+    category: "praktisk",
+    topic: "DTE-2501 ML",
+    question: "ACO-loopen for TSP — stegene?",
+    answer:
+      "1) Init feromon τ. 2) Hver maur bygger tur via stokastiske valg ∝ τ^α·η^β. 3) Beregn L_k. 4) Fordamp: τ ← (1−ρ)τ. 5) Legg til Δτ = Q/L_k på besøkte kanter. Repeter.",
+  },
+  {
+    id: "dte2501-c-knn-k-choice",
+    category: "praktisk",
+    topic: "DTE-2501 ML",
+    question: "Hvordan velger man k i k-NN?",
+    answer:
+      "Kryssvalidér over k ∈ {1,3,5,…,√N}, velg den med høyest validation accuracy. Bruk oddetall for binær klassifikasjon (unngår uavgjort).",
+  },
+  {
+    id: "dte2501-c-kmeans-pp",
+    category: "praktisk",
+    topic: "DTE-2501 ML",
+    question: "k-means++ init — hvorfor og hvordan?",
+    answer:
+      "Bedre init enn random: velg μ₁ tilfeldig, så velg hvert neste senter med sannsynlighet ∝ D(x)² (avstanden til nærmeste eksisterende senter)². Spredt init → mindre risiko for lokalt min.",
+  },
+  {
+    id: "dte2501-c-roulette",
+    category: "praktisk",
+    topic: "DTE-2501 ML",
+    question: "Roulette wheel-seleksjon — hvordan?",
+    answer:
+      "p_i = f_i / Σⱼ f_j. Tegn et tilfeldig tall i [0, Σf), finn hvilket kumulative vindu det treffer. Risiko: ett dominerende individ tar over.",
+  },
+  {
+    id: "dte2501-c-one-point-x",
+    category: "praktisk",
+    topic: "DTE-2501 ML",
+    question: "One-point crossover — beskriv.",
+    answer:
+      "Velg et cut-point i kromosomet. Barn 1 = forelder A før cut + forelder B etter cut. Barn 2 = motsatt. Bevarer sammenheng på lokale gen-blokker.",
+  },
+  {
+    id: "dte2501-c-aic-bic",
+    category: "praktisk",
+    topic: "DTE-2501 ML",
+    question: "AIC og BIC — hva er forskjellen?",
+    answer:
+      "Begge straffer modellkompleksitet for å velge antall komponenter (f.eks. K i GMM). AIC = −2logL + 2p. BIC = −2logL + p·ln(N). BIC straffer parametre hardere — foretrekker enklere modeller.",
+  },
+  {
+    id: "dte2501-c-knn-vekt",
+    category: "praktisk",
+    topic: "DTE-2501 ML",
+    question: "Vektet k-NN — hva er forskjellen?",
+    answer:
+      "I stedet for én stemme per nabo, vektes stemmen med 1/avstand. Nærmere naboer teller mer. Reduserer hjørne-effekter og er typisk litt bedre enn uniform vekt.",
+  },
+  {
+    id: "dte2501-c-stop-words",
+    category: "praktisk",
+    topic: "DTE-2501 ML",
+    question: "Hva er stop-words og hvorfor fjerne dem?",
+    answer:
+      "Vanlige ord uten innholdsbetydning: «og», «er», «the», «is». Fjernes før vektorisering for å redusere støy og dimensjonalitet. Moderne embeddings beholder dem ofte.",
+  },
+  {
+    id: "dte2501-c-mut-rate",
+    category: "praktisk",
+    topic: "DTE-2501 ML",
+    question: "Hvilken mutasjonsrate p_m er typisk i GA?",
+    answer:
+      "p_m ≈ 1/L, der L er kromosomlengden. Gir i snitt én mutasjon per individ. For lavt → for liten utforskning; for høyt → random walk.",
+  },
+  {
+    id: "dte2501-c-tsp-naive",
+    category: "praktisk",
+    topic: "DTE-2501 ML",
+    question: "Hvorfor er naiv TSP O(n!) og Held-Karp O(n²·2ⁿ)?",
+    answer:
+      "Naiv: prøv alle n! permutasjoner av byer. Held-Karp: state-rom 2ⁿ subsett × n endesteder, hver transisjon O(n). 2ⁿ vokser mye langsommere enn n!.",
+  },
+  {
+    id: "dte2501-c-bow-limit",
+    category: "praktisk",
+    topic: "DTE-2501 ML",
+    question: "Hva er hovedsvakheten ved Bag-of-Words?",
+    answer:
+      "Ignorerer ordrekkefølge og syntaks. «Hund biter mann» = «Mann biter hund». Også: ingen forståelse av synonymer — hvert ord er sin egen dimensjon.",
+  },
+  {
+    id: "dte2501-c-rmse-mae",
+    category: "praktisk",
+    topic: "DTE-2501 ML",
+    question: "RMSE vs MAE for regresjon — hva er forskjellen?",
+    answer:
+      "RMSE = √mean((y−ŷ)²) straffer store feil ekstra mye (kvadratet). MAE = mean(|y−ŷ|) behandler alle feil likt. RMSE er mer følsom for outliers.",
+  },
+  {
+    id: "dte2501-c-overfit",
+    category: "praktisk",
+    topic: "DTE-2501 ML",
+    question: "Hva er overfitting — i én setning?",
+    answer:
+      "Modellen lærer treningsdataens støy istedenfor underliggende mønster — høy trenings-accuracy, lav test-accuracy. Symptom på for høy variance / for kompleks modell.",
+  },
+  {
+    id: "dte2501-c-mse-vs-r2",
+    category: "praktisk",
+    topic: "DTE-2501 ML",
+    question: "Hva forteller R²?",
+    answer:
+      "R² = 1 − SS_res/SS_tot. Andel av variansen i y forklart av modellen. R²=1 = perfekt; R²=0 = like god som å gjette snittet; R²<0 = verre enn snitt-modell.",
+  },
+  {
+    id: "dte2501-c-clustering-pipeline",
+    category: "praktisk",
+    topic: "DTE-2501 ML",
+    question: "Standard clustering-pipeline på rå data?",
+    answer:
+      "1) Skalér (StandardScaler). 2) Evt. PCA for dimensjonsreduksjon. 3) Velg k via albue/silhouette. 4) Kjør k-Means eller GMM. 5) Evaluer cluster-kvalitet og tolk semantisk.",
+  },
+  {
+    id: "dte2501-c-when-rl",
+    category: "praktisk",
+    topic: "DTE-2501 ML",
+    question: "Når bruker man RL fremfor supervised learning?",
+    answer:
+      "Når riktig handling ikke er kjent på forhånd, men man kan måle belønning over tid. Sekvensielle beslutninger, ingen labeled data, men miljø man kan interagere med. Eks: spill, robotikk.",
+  },
 ];
 
 export const CARD_CATEGORIES: { id: FlashCard["category"]; label: string }[] = [

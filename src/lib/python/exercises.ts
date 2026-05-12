@@ -1,6 +1,7 @@
 import type { PyExercise } from "./types";
 import { DEMO_APP_PYTHON } from "../api-konsoll/demoApp";
 import { DTE2505_EXERCISES } from "./exercises-dte2505";
+import { PY_EXERCISES_DTE2501 } from "./exercises-dte2501";
 
 // All exercises target DAT1000-pensum: Flask, Jinja, MySQL via prepared
 // statements, sessions, login, CSRF, JSON-API, HTTP-statuskoder.
@@ -5944,4 +5945,7 @@ print(f"t = {t_stat:.3f}, p = {p_val:.4f}")
     ],
   },
   ...DTE2505_EXERCISES,
+
+  // DTE-2501 ML-pensum — k-NN, trær, ensemble, k-Means, GMM, PCA, NLP, GA, RL, DP.
+  ...PY_EXERCISES_DTE2501,
 ];
