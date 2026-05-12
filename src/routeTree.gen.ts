@@ -29,6 +29,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as StackIndexRouteImport } from './routes/stack.index'
 import { Route as StackSlugRouteImport } from './routes/stack.$slug'
 import { Route as PythonVisualizerRouteImport } from './routes/python_.visualizer'
+import { Route as Dte2505ShellDrillRouteImport } from './routes/dte2505.shell-drill'
 import { Route as PythonKapIndexRouteImport } from './routes/python_.kap.index'
 import { Route as PythonKapNrRouteImport } from './routes/python_.kap.$nr'
 
@@ -132,6 +133,11 @@ const PythonVisualizerRoute = PythonVisualizerRouteImport.update({
   path: '/python/visualizer',
   getParentRoute: () => rootRouteImport,
 } as any)
+const Dte2505ShellDrillRoute = Dte2505ShellDrillRouteImport.update({
+  id: '/dte2505/shell-drill',
+  path: '/dte2505/shell-drill',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PythonKapIndexRoute = PythonKapIndexRouteImport.update({
   id: '/python_/kap/',
   path: '/python/kap/',
@@ -161,6 +167,7 @@ export interface FileRoutesByFullPath {
   '/prosjekt': typeof ProsjektRoute
   '/python': typeof PythonRoute
   '/stack': typeof StackRouteWithChildren
+  '/dte2505/shell-drill': typeof Dte2505ShellDrillRoute
   '/python/visualizer': typeof PythonVisualizerRoute
   '/stack/$slug': typeof StackSlugRoute
   '/stack/': typeof StackIndexRoute
@@ -184,6 +191,7 @@ export interface FileRoutesByTo {
   '/practice': typeof PracticeRoute
   '/prosjekt': typeof ProsjektRoute
   '/python': typeof PythonRoute
+  '/dte2505/shell-drill': typeof Dte2505ShellDrillRoute
   '/python/visualizer': typeof PythonVisualizerRoute
   '/stack/$slug': typeof StackSlugRoute
   '/stack': typeof StackIndexRoute
@@ -209,6 +217,7 @@ export interface FileRoutesById {
   '/prosjekt': typeof ProsjektRoute
   '/python': typeof PythonRoute
   '/stack': typeof StackRouteWithChildren
+  '/dte2505/shell-drill': typeof Dte2505ShellDrillRoute
   '/python_/visualizer': typeof PythonVisualizerRoute
   '/stack/$slug': typeof StackSlugRoute
   '/stack/': typeof StackIndexRoute
@@ -235,6 +244,7 @@ export interface FileRouteTypes {
     | '/prosjekt'
     | '/python'
     | '/stack'
+    | '/dte2505/shell-drill'
     | '/python/visualizer'
     | '/stack/$slug'
     | '/stack/'
@@ -258,6 +268,7 @@ export interface FileRouteTypes {
     | '/practice'
     | '/prosjekt'
     | '/python'
+    | '/dte2505/shell-drill'
     | '/python/visualizer'
     | '/stack/$slug'
     | '/stack'
@@ -282,6 +293,7 @@ export interface FileRouteTypes {
     | '/prosjekt'
     | '/python'
     | '/stack'
+    | '/dte2505/shell-drill'
     | '/python_/visualizer'
     | '/stack/$slug'
     | '/stack/'
@@ -307,6 +319,7 @@ export interface RootRouteChildren {
   ProsjektRoute: typeof ProsjektRoute
   PythonRoute: typeof PythonRoute
   StackRoute: typeof StackRouteWithChildren
+  Dte2505ShellDrillRoute: typeof Dte2505ShellDrillRoute
   PythonVisualizerRoute: typeof PythonVisualizerRoute
   PythonKapNrRoute: typeof PythonKapNrRoute
   PythonKapIndexRoute: typeof PythonKapIndexRoute
@@ -454,6 +467,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PythonVisualizerRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/dte2505/shell-drill': {
+      id: '/dte2505/shell-drill'
+      path: '/dte2505/shell-drill'
+      fullPath: '/dte2505/shell-drill'
+      preLoaderRoute: typeof Dte2505ShellDrillRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/python_/kap/': {
       id: '/python_/kap/'
       path: '/python/kap'
@@ -501,6 +521,7 @@ const rootRouteChildren: RootRouteChildren = {
   ProsjektRoute: ProsjektRoute,
   PythonRoute: PythonRoute,
   StackRoute: StackRouteWithChildren,
+  Dte2505ShellDrillRoute: Dte2505ShellDrillRoute,
   PythonVisualizerRoute: PythonVisualizerRoute,
   PythonKapNrRoute: PythonKapNrRoute,
   PythonKapIndexRoute: PythonKapIndexRoute,

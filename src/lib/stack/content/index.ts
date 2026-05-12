@@ -41,6 +41,7 @@ import { content as linuxBruk } from "./linux-bruk";
 import { content as shellScripting } from "./shell-scripting";
 import { content as brukereRettigheter } from "./brukere-rettigheter";
 import { content as virtualisering } from "./virtualisering";
+import { content as dte2505ObligerGuide } from "./dte2505-obliger-guide";
 import { content as trinn1 } from "./trinn-1-transistor";
 import { content as trinn2 } from "./trinn-2-nand-porter";
 import { content as trinn3 } from "./trinn-3-adders";
@@ -126,6 +127,7 @@ export const TRINN: TrinnContent[] = [
   dte2501, sokAlgoritmer, csp, logiskResonnering, planlegging, bayes,
   flaskLivssyklus, pythonDrill, httpAnatomi,
   dte2505, osGrunnlag, linuxBruk, shellScripting, brukereRettigheter, virtualisering,
+  dte2505ObligerGuide,
   trinn1, trinn2, trinn3, trinn4, trinn5, trinn6, trinn7, trinn8, trinn9, trinn10,
   dte2802, csharpGrunnlag, aspnetMvc, aspnetWebapi, efCore, blazor,
   dte2502, backpropDyp, cnn, regularisering, optimering, pytorchTf,
