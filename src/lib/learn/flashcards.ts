@@ -1785,6 +1785,417 @@ export const FLASHCARDS: FlashCard[] = [
       "NOT NULL betyr at kolonnen ALDRI kan være NULL — INSERT uten verdi feiler. DEFAULT setter en automatisk verdi hvis ingen oppgis. Sammen lager de robuste skjemaer der dataene ikke kan havne i en udefinert tilstand.",
     code: "Status VARCHAR(20) NOT NULL DEFAULT 'aktiv',\nOpprettet DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP",
   },
+
+  // ============= TEK-1501: STATISTIKK =============
+  // Deskriptiv statistikk
+  {
+    id: "c-tek1-mean",
+    category: "statistikk",
+    topic: "Deskriptiv statistikk",
+    question: "Hva er gjennomsnitt (mean)?",
+    answer:
+      "Summen av alle verdier delt på antall. Formel: x̄ = (1/n) Σ xᵢ. Bruker all informasjon men er sårbar for outliers — én ekstremverdi kan flytte mean kraftig.",
+  },
+  {
+    id: "c-tek1-median",
+    category: "statistikk",
+    topic: "Deskriptiv statistikk",
+    question: "Hva er median, og når foretrekkes den fremfor mean?",
+    answer:
+      "Median er den midtre verdien i sortert datasett (eller snittet av de to midtre hvis n er partall). Foretrekkes ved skjeve fordelinger eller når det er outliers, fordi median er robust — den påvirkes ikke av ekstreme verdier.",
+  },
+  {
+    id: "c-tek1-modus",
+    category: "statistikk",
+    topic: "Deskriptiv statistikk",
+    question: "Hva er modus, og når brukes den?",
+    answer:
+      "Verdien som forekommer oftest i datasettet. Eneste sentralmål som funker for kategoriske data (farger, merker). Kan være ikke-unik eller ikke-eksisterende i kontinuerlige data.",
+  },
+  {
+    id: "c-tek1-variance",
+    category: "statistikk",
+    topic: "Deskriptiv statistikk",
+    question: "Formel for stikkprøve-varians s²?",
+    answer:
+      "s² = (1/(n−1)) · Σ (xᵢ − x̄)². Vi deler på n−1 (ikke n) — Bessel-korreksjonen — for å få en forventningsrett estimator for σ². I numpy: np.var(x, ddof=1).",
+  },
+  {
+    id: "c-tek1-std",
+    category: "statistikk",
+    topic: "Deskriptiv statistikk",
+    question: "Hva er standardavvik, og hvorfor brukes det?",
+    answer:
+      "s = √s² — kvadratroten av varians. Foretrekkes fremfor varians fordi det har samme enhet som dataene (m, sek, kr), så det er lettere å tolke direkte.",
+  },
+  {
+    id: "c-tek1-iqr",
+    category: "statistikk",
+    topic: "Deskriptiv statistikk",
+    question: "Hva er IQR, og hva forteller det?",
+    answer:
+      "IQR (Interquartile Range) = Q3 − Q1. Spredningen i de midtre 50 % av dataene. Robust mot outliers — i motsetning til standardavvik. Grunnlaget for boksplottets boks.",
+  },
+  {
+    id: "c-tek1-quartiles",
+    category: "statistikk",
+    topic: "Deskriptiv statistikk",
+    question: "Hva er kvartiler (Q1, Q2, Q3)?",
+    answer:
+      "Verdier som deler datasettet i fire like deler. Q1 = 25-persentilen (25 % av data er ≤ Q1). Q2 = median (50 %). Q3 = 75-persentilen. Sammen med min og max danner de 5-tallsoppsummeringen som boksplott bygges på.",
+  },
+  {
+    id: "c-tek1-skewness",
+    category: "statistikk",
+    topic: "Deskriptiv statistikk",
+    question: "Hva er en skjev (skewed) fordeling?",
+    answer:
+      "En fordeling som IKKE er symmetrisk. Høyrehale-skjev (positiv): lang hale mot høyre, mean > median (eks: inntekt). Venstrehale-skjev (negativ): lang hale mot venstre, mean < median (eks: eksamen-resultater for lett oppgave).",
+  },
+  {
+    id: "c-tek1-outlier",
+    category: "statistikk",
+    topic: "Deskriptiv statistikk",
+    question: "Hvordan defineres en outlier (1.5·IQR-regelen)?",
+    answer:
+      "En observasjon er outlier hvis den er under Q1 − 1.5·IQR eller over Q3 + 1.5·IQR. Tukey-regelen — også grensen for whiskers i boksplott. Verdier utenfor markeres som punkter.",
+  },
+  {
+    id: "c-tek1-histogram-bins",
+    category: "statistikk",
+    topic: "Deskriptiv statistikk",
+    question: "Hvor mange bins bør et histogram ha?",
+    answer:
+      "Tommelfingerregel: bins ≈ √n eller Sturges' formel ⌈log₂ n + 1⌉. For få bins skjuler struktur, for mange viser bare støy. Eksperimenter — målet er å se den underliggende formen.",
+  },
+
+  // Sannsynlighet
+  {
+    id: "c-tek1-axioms",
+    category: "statistikk",
+    topic: "Sannsynlighet",
+    question: "Kolmogorovs tre sannsynlighets-aksiomer?",
+    answer:
+      "(1) 0 ≤ P(A) ≤ 1. (2) P(Ω) = 1. (3) P(A ∪ B) = P(A) + P(B) hvis A ∩ B = ∅. All sannsynlighetsteori bygger fra disse tre reglene.",
+  },
+  {
+    id: "c-tek1-complement",
+    category: "statistikk",
+    topic: "Sannsynlighet",
+    question: "Komplementregelen — formel og bruk?",
+    answer:
+      "P(Aᶜ) = 1 − P(A). Spesielt nyttig for 'minst én'-spørsmål: P(minst én feil i n forsøk) = 1 − P(ingen feil) = 1 − (1−p)ⁿ. Sparer kompliserte summer.",
+  },
+  {
+    id: "c-tek1-inklusjon",
+    category: "statistikk",
+    topic: "Sannsynlighet",
+    question: "Inklusjon-eksklusjon for P(A ∪ B)?",
+    answer:
+      "P(A ∪ B) = P(A) + P(B) − P(A ∩ B). Vi må trekke fra snittet, ellers dobbelt-teller vi overlappet. Hvis A og B er disjunkte er P(A ∩ B) = 0 og formelen forenkles.",
+  },
+  {
+    id: "c-tek1-conditional",
+    category: "statistikk",
+    topic: "Sannsynlighet",
+    question: "Definisjon av betinget sannsynlighet P(A | B)?",
+    answer:
+      "P(A | B) = P(A ∩ B) / P(B), forutsatt P(B) > 0. Tolkning: 'sannsynligheten for A, gitt at B har skjedd'. Snitt over evidence.",
+  },
+  {
+    id: "c-tek1-independence",
+    category: "statistikk",
+    topic: "Sannsynlighet",
+    question: "Når er A og B uavhengige?",
+    answer:
+      "Når P(A ∩ B) = P(A) · P(B). Ekvivalent: P(A | B) = P(A). NB: uavhengig er IKKE det samme som disjunkt — disjunkte hendelser med positiv sannsynlighet er nødvendigvis avhengige.",
+  },
+  {
+    id: "c-tek1-bayes",
+    category: "statistikk",
+    topic: "Sannsynlighet",
+    question: "Bayes' teorem?",
+    answer:
+      "P(A | B) = P(B | A) · P(A) / P(B). Snur betingingen: gitt P(B | A), kan vi finne P(A | B). Bruk for diagnostiske tester, kvalitetskontroll, oppdaterte tro etter observasjon.",
+  },
+  {
+    id: "c-tek1-total-prob",
+    category: "statistikk",
+    topic: "Sannsynlighet",
+    question: "Total sannsynlighet (med partisjon)?",
+    answer:
+      "Hvis B₁, ..., Bₙ er en partisjon av Ω: P(A) = Σᵢ P(A | Bᵢ) · P(Bᵢ). Brukes til å beregne P(B) i nevneren av Bayes-formelen — eks: P(test+) = P(test+|syk)·P(syk) + P(test+|frisk)·P(frisk).",
+  },
+  {
+    id: "c-tek1-permutation",
+    category: "statistikk",
+    topic: "Kombinatorikk",
+    question: "Permutasjon-formel P(n, k)?",
+    answer:
+      "P(n, k) = n! / (n−k)! — antall måter å velge k av n der REKKEFØLGEN teller. Eks: 8 løpere, antall ulike topp-3-rekkefølger = 8·7·6 = 336.",
+  },
+  {
+    id: "c-tek1-combination",
+    category: "statistikk",
+    topic: "Kombinatorikk",
+    question: "Kombinasjon-formel C(n, k) / 'n velg k'?",
+    answer:
+      "C(n, k) = n! / (k!(n−k)!) — antall måter å velge k av n der rekkefølgen IKKE teller. Eks: 8 personer, velg 3 til en gruppe = C(8,3) = 56.",
+  },
+  {
+    id: "c-tek1-perm-vs-comb",
+    category: "statistikk",
+    topic: "Kombinatorikk",
+    question: "Permutasjon eller kombinasjon — hvordan velge?",
+    answer:
+      "Spør: 'spiller rekkefølgen rolle?'. Hvis JA (pall, kode, rangering) → permutasjon P(n,k). Hvis NEI (komité, utvalg, lottokupong) → kombinasjon C(n,k).",
+  },
+
+  // Fordelinger
+  {
+    id: "c-tek1-rv",
+    category: "statistikk",
+    topic: "Fordelinger",
+    question: "Hva er en stokastisk variabel?",
+    answer:
+      "En funksjon X: Ω → ℝ som tilordner et tall til hvert utfall. Diskret (tellbart antall verdier) eller kontinuerlig (intervall i ℝ). Beskrives av PMF (diskret) eller PDF (kontinuerlig).",
+  },
+  {
+    id: "c-tek1-expected",
+    category: "statistikk",
+    topic: "Fordelinger",
+    question: "Forventning E[X] — formel?",
+    answer:
+      "Diskret: E[X] = Σ x · p(x). Kontinuerlig: E[X] = ∫ x · f(x) dx. Lineær: E[aX + b] = aE[X] + b, E[X + Y] = E[X] + E[Y] (alltid).",
+  },
+  {
+    id: "c-tek1-variance-rv",
+    category: "statistikk",
+    topic: "Fordelinger",
+    question: "Var(X) — formel og praktisk versjon?",
+    answer:
+      "Var(X) = E[(X − μ)²] = E[X²] − (E[X])². Praktisk: Var(aX + b) = a²·Var(X). For uavhengige X og Y: Var(X + Y) = Var(X) + Var(Y).",
+  },
+  {
+    id: "c-tek1-bernoulli",
+    category: "statistikk",
+    topic: "Fordelinger",
+    question: "Bernoulli(p) — kjernefakta?",
+    answer:
+      "Ett forsøk, to utfall: suksess (p) eller fiasko (1−p). E[X] = p, Var(X) = p(1−p). Byggesteinen for binomisk fordeling.",
+  },
+  {
+    id: "c-tek1-binomial",
+    category: "statistikk",
+    topic: "Fordelinger",
+    question: "Binomisk B(n, p) — PMF, E, Var?",
+    answer:
+      "P(X = k) = C(n,k) · pᵏ · (1−p)ⁿ⁻ᵏ. E[X] = np, Var(X) = np(1−p). Brukes for antall suksesser i n uavhengige forsøk med samme p.",
+  },
+  {
+    id: "c-tek1-hypergeom",
+    category: "statistikk",
+    topic: "Fordelinger",
+    question: "Hypergeometrisk vs. binomisk?",
+    answer:
+      "Hypergeometrisk: trekninger UTEN tilbakelegging (P endres for hvert trekk). Binomisk: trekninger MED tilbakelegging eller fra stor populasjon (P konstant). For store N er hypergeometrisk ≈ binomisk.",
+  },
+  {
+    id: "c-tek1-poisson",
+    category: "statistikk",
+    topic: "Fordelinger",
+    question: "Poisson(λ) — PMF og kjernefakta?",
+    answer:
+      "P(X = k) = e^(−λ) · λᵏ / k!. E[X] = Var(X) = λ. Brukes for antall sjeldne hendelser i fast intervall (kundeankomster, defekter per areal).",
+  },
+  {
+    id: "c-tek1-poi-approx-bin",
+    category: "statistikk",
+    topic: "Fordelinger",
+    question: "Når kan Poisson tilnærme binomisk?",
+    answer:
+      "Når n er stor (≥ 30) og p er liten (≤ 0.1), slik at np ≤ 10. Da gjelder B(n, p) ≈ Poi(np). Tilnærmingen er kraftig fordi den krever bare ett parameter (λ) i stedet for to (n, p).",
+  },
+  {
+    id: "c-tek1-uniform",
+    category: "statistikk",
+    topic: "Fordelinger",
+    question: "Uniform U(a, b) — PDF, E, Var?",
+    answer:
+      "f(x) = 1/(b−a) for a ≤ x ≤ b. E[X] = (a+b)/2, Var(X) = (b−a)²/12. Konstant tetthet over intervallet.",
+  },
+  {
+    id: "c-tek1-exp",
+    category: "statistikk",
+    topic: "Fordelinger",
+    question: "Eksponential Exp(λ) — PDF, E, Var, memoryless?",
+    answer:
+      "f(x) = λ e^(−λx) for x ≥ 0. E[X] = 1/λ, Var(X) = 1/λ². Memoryless: P(X > s+t | X > s) = P(X > t). Brukes for tid mellom Poisson-hendelser, levetid uten aldring.",
+  },
+  {
+    id: "c-tek1-normal",
+    category: "statistikk",
+    topic: "Fordelinger",
+    question: "Normal N(μ, σ²) — egenskaper?",
+    answer:
+      "Klokkeformet, symmetrisk om μ. E[X] = μ, Var(X) = σ². 68/95/99.7-regel: 68 % innen ±1σ, 95 % innen ±2σ (egentlig ±1.96σ), 99.7 % innen ±3σ. Default-modell for målestøy.",
+  },
+  {
+    id: "c-tek1-standardize",
+    category: "statistikk",
+    topic: "Fordelinger",
+    question: "Standardisering — hvordan og hvorfor?",
+    answer:
+      "Z = (X − μ)/σ ~ N(0,1) når X ~ N(μ, σ²). Hvorfor: med Z kan vi slå opp i én tabell (standardnormaltabellen) uavhengig av μ og σ. P(X ≤ x) = Φ((x−μ)/σ).",
+  },
+  {
+    id: "c-tek1-clt",
+    category: "statistikk",
+    topic: "Fordelinger",
+    question: "Sentralgrenseteoremet (CLT) — hva sier det?",
+    answer:
+      "For i.i.d. variabler med E = μ og Var = σ²: X̄ = (1/n) Σ Xᵢ ~ N(μ, σ²/n) tilnærmet for stort n (typisk n ≥ 30). Uavhengig av den underliggende fordelingens form. Grunnlaget for inferens.",
+  },
+  {
+    id: "c-tek1-chi2",
+    category: "statistikk",
+    topic: "Fordelinger",
+    question: "Kji-kvadrat χ²(k) — hva er det?",
+    answer:
+      "Sum av k uavhengige standardnormaler kvadrert: X = Z₁² + ... + Zₖ². E = k, Var = 2k. Brukes til varians-tester og kji-kvadrat-test for uavhengighet/tilpasning.",
+  },
+  {
+    id: "c-tek1-t-dist",
+    category: "statistikk",
+    topic: "Fordelinger",
+    question: "Student-t — hvorfor og når?",
+    answer:
+      "T = (X̄ − μ) / (s/√n) ~ tₙ₋₁. Brukes når σ er ukjent og må estimeres med s. Likner normalfordelingen men har tyngre haler. For n > 30 er tₙ₋₁ ≈ N(0,1).",
+  },
+
+  // Inferens
+  {
+    id: "c-tek1-estimator",
+    category: "statistikk",
+    topic: "Inferens",
+    question: "Forventningsrett (unbiased) estimator?",
+    answer:
+      "E[θ̂] = θ — estimatoren treffer parameteren I SNITT (ikke nødvendigvis i hver enkelt prøve). x̄ er unbiased for μ. s² (med n−1 i nevner) er unbiased for σ².",
+  },
+  {
+    id: "c-tek1-ci-mu-known",
+    category: "statistikk",
+    topic: "Inferens",
+    question: "95 % CI for μ når σ er kjent — formel?",
+    answer:
+      "x̄ ± 1.96 · σ/√n. Bruk z-kritisk (1.96 for 95 %). For 90 %: z = 1.645. For 99 %: z = 2.576.",
+  },
+  {
+    id: "c-tek1-ci-mu-unknown",
+    category: "statistikk",
+    topic: "Inferens",
+    question: "95 % CI for μ når σ er ukjent — formel?",
+    answer:
+      "x̄ ± t_(α/2, n−1) · s/√n. Bruk t-kritisk med n−1 frihetsgrader. For n = 12: t_0.025, 11 = 2.201.",
+  },
+  {
+    id: "c-tek1-ci-interp",
+    category: "statistikk",
+    topic: "Inferens",
+    question: "Korrekt tolkning av 95 % CI?",
+    answer:
+      "Hvis vi gjentok eksperimentet mange ganger og konstruerte CI hver gang, ville 95 % av disse intervallene inneholde det sanne μ. IKKE: 'det er 95 % sannsynlig at μ er i [a, b]' (μ er fast, ikke tilfeldig).",
+  },
+  {
+    id: "c-tek1-hypothesis",
+    category: "statistikk",
+    topic: "Inferens",
+    question: "Strukturen i en hypotesetest?",
+    answer:
+      "1) Formuler H₀ og H₁. 2) Velg α. 3) Velg teststatistikk med kjent fordeling under H₀. 4) Beregn observert verdi. 5) Sammenlign med kritisk verdi eller p-verdi. 6) Konkluder: p < α → forkast H₀.",
+  },
+  {
+    id: "c-tek1-type-i-ii",
+    category: "statistikk",
+    topic: "Inferens",
+    question: "Type I- vs. Type II-feil?",
+    answer:
+      "Type I (α): forkaste H₀ når den er sann (falsk alarm). Type II (β): beholde H₀ når den er usann (vi misser virkelig effekt). 1 − β = styrke. Trade-off: lavere α → høyere β, mer data reduserer begge.",
+  },
+  {
+    id: "c-tek1-p-value",
+    category: "statistikk",
+    topic: "Inferens",
+    question: "Hva er en p-verdi?",
+    answer:
+      "Sannsynligheten for å observere en teststatistikk minst så ekstrem som det observerte, GITT at H₀ er sann. Liten p = uvanlig under H₀ = bevis mot H₀. p < α → forkast H₀.",
+  },
+  {
+    id: "c-tek1-t-test",
+    category: "statistikk",
+    topic: "Inferens",
+    question: "One-sample t-test — teststatistikk?",
+    answer:
+      "t = (x̄ − μ₀) / (s/√n), med n−1 frihetsgrader. H₀: μ = μ₀. Tosidig: forkast hvis |t| > t_(α/2, n−1). Python: scipy.stats.ttest_1samp(data, μ₀).",
+  },
+  {
+    id: "c-tek1-two-sample",
+    category: "statistikk",
+    topic: "Inferens",
+    question: "Two-sample t-test for to grupper?",
+    answer:
+      "t = (x̄₁ − x̄₂) / √(sₚ²·(1/n₁ + 1/n₂)) med n₁+n₂−2 frihetsgrader, der sₚ² er pooled varians. Welch's t-test (ulike varianser): annen df-formel. Python: stats.ttest_ind(a, b, equal_var=False).",
+  },
+  {
+    id: "c-tek1-chi2-test",
+    category: "statistikk",
+    topic: "Inferens",
+    question: "Kji-kvadrat-test for uavhengighet?",
+    answer:
+      "χ² = Σ (O_ij − E_ij)² / E_ij, der E_ij = (rad_total · kol_total) / total. Frihetsgrader = (r−1)(c−1). Forkast H₀ hvis χ² > χ²_(α, df). Forutsetter alle E_ij ≥ 5.",
+  },
+
+  // Regresjon
+  {
+    id: "c-tek1-pearson-r",
+    category: "statistikk",
+    topic: "Regresjon",
+    question: "Pearson-korrelasjon r — formel og verdier?",
+    answer:
+      "r = Σ(xᵢ−x̄)(yᵢ−ȳ) / √(Σ(xᵢ−x̄)²·Σ(yᵢ−ȳ)²). r ∈ [−1, +1]. r = 0 → ingen LINEÆR sammenheng (men kan ha ikke-lineær). Husk: korrelasjon ≠ kausalitet.",
+  },
+  {
+    id: "c-tek1-regression-line",
+    category: "statistikk",
+    topic: "Regresjon",
+    question: "Minste kvadraters metode — koeffisienter?",
+    answer:
+      "β̂₁ = Σ(xᵢ−x̄)(yᵢ−ȳ) / Σ(xᵢ−x̄)² = r·(s_y/s_x). β̂₀ = ȳ − β̂₁·x̄. Linjen går alltid gjennom (x̄, ȳ). Minimerer Σ(yᵢ − ŷᵢ)².",
+  },
+  {
+    id: "c-tek1-r-squared",
+    category: "statistikk",
+    topic: "Regresjon",
+    question: "Hva er R², og hvordan tolkes det?",
+    answer:
+      "R² = 1 − SS_res/SS_tot ∈ [0, 1]. Andel av variasjonen i Y som forklares av modellen. I enkel lineær regresjon: R² = r². R² = 0.72 → 72 % av Y's varians forklares av X.",
+  },
+  {
+    id: "c-tek1-residual",
+    category: "statistikk",
+    topic: "Regresjon",
+    question: "Hva er residualer, og hva skal du sjekke i residual-plot?",
+    answer:
+      "Residual eᵢ = yᵢ − ŷᵢ. Plot residualer mot x: tilfeldighet = modell passer. Trakt = heteroskedastisitet (ulik varians). Krumning = ikke-lineær sammenheng — prøv polynomisk eller log-transform.",
+  },
+  {
+    id: "c-tek1-corr-causation",
+    category: "statistikk",
+    topic: "Regresjon",
+    question: "Korrelasjon vs. kausalitet?",
+    answer:
+      "Sterk korrelasjon betyr ikke at den ene forårsaker den andre. Eks: Iskremsalg og drukninger korrelerer (begge øker om sommeren), men iskrem forårsaker ikke drukning. Kausalitet krever eksperiment eller streng kausal modell.",
+  },
 ];
 
 export const CARD_CATEGORIES: { id: FlashCard["category"]; label: string }[] = [
@@ -1795,4 +2206,5 @@ export const CARD_CATEGORIES: { id: FlashCard["category"]; label: string }[] = [
   { id: "http", label: "HTTP / API" },
   { id: "sikkerhet", label: "Sikkerhet" },
   { id: "praktisk", label: "Praktisk" },
+  { id: "statistikk", label: "Statistikk" },
 ];

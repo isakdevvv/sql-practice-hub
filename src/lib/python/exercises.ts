@@ -5942,4 +5942,712 @@ print(f"t = {t_stat:.3f}, p = {p_val:.4f}")
       },
     ],
   },
+
+  // ============ TEK-1501: 15 STATISTIKK-ØVELSER ============
+  {
+    id: "py-tek1-mean-std",
+    topic: "Statistikk-grunnlag",
+    title: "TEK-1501: Beregn gjennomsnitt og standardavvik",
+    description:
+      "Klassisk eksamen-startoppgave: gitt en liste med målinger, regn ut x̄ og s. Bruk numpy. Pass på ddof=1 for stikkprøve-standardavvik.",
+    requires: ["numpy"],
+    starter: `import numpy as np
+
+# 12 målinger av batteri-levetid (timer)
+data = np.array([95.2, 98.1, 102.4, 97.8, 96.5, 99.3,
+                 94.7, 101.2, 97.9, 96.8, 95.5, 98.4])
+
+# TODO:
+# 1. Beregn gjennomsnittet (mean)
+# 2. Beregn stikkprøve-standardavviket (std med ddof=1)
+# 3. Print både med 3 desimaler
+
+# Forventet output:
+# Snitt: 97.817
+# Std:   2.317
+`,
+    solution: `import numpy as np
+
+data = np.array([95.2, 98.1, 102.4, 97.8, 96.5, 99.3,
+                 94.7, 101.2, 97.9, 96.8, 95.5, 98.4])
+
+mean = np.mean(data)
+std = np.std(data, ddof=1)
+print(f"Snitt: {mean:.3f}")
+print(f"Std:   {std:.3f}")
+`,
+    hints: [
+      "np.mean(data) gir gjennomsnittet.",
+      "np.std(data, ddof=1) gir stikkprøve-std (n−1 i nevner). ddof=0 er populasjons-std.",
+      "Bruk f-strenger: f'{mean:.3f}' gir 3 desimaler.",
+    ],
+  },
+  {
+    id: "py-tek1-five-number",
+    topic: "Statistikk-grunnlag",
+    title: "TEK-1501: 5-tallsoppsummering",
+    description:
+      "Beregn Min, Q1, Median, Q3, Max og IQR for et datasett. Bruker numpy percentile-funksjonen.",
+    requires: ["numpy"],
+    starter: `import numpy as np
+
+# Eksamensresultater (i poeng, max 100)
+scores = np.array([45, 52, 58, 61, 63, 66, 68, 70, 72, 74,
+                   75, 77, 79, 82, 85, 87, 89, 92, 95, 98])
+
+# TODO: Beregn og print
+#   Min, Q1 (25-persentilen), Median, Q3 (75-persentilen), Max
+#   IQR (Q3 − Q1)
+
+# Forventet:
+# Min: 45.0  Q1: 65.25  Median: 74.5  Q3: 84.25  Max: 98.0
+# IQR: 19.0
+`,
+    solution: `import numpy as np
+
+scores = np.array([45, 52, 58, 61, 63, 66, 68, 70, 72, 74,
+                   75, 77, 79, 82, 85, 87, 89, 92, 95, 98])
+
+q1 = np.percentile(scores, 25)
+median = np.percentile(scores, 50)
+q3 = np.percentile(scores, 75)
+iqr = q3 - q1
+
+print(f"Min: {scores.min()}  Q1: {q1}  Median: {median}  Q3: {q3}  Max: {scores.max()}")
+print(f"IQR: {iqr}")
+`,
+    hints: [
+      "np.percentile(data, 25) gir Q1.",
+      "scores.min() og scores.max() for ytterpunktene.",
+      "IQR = Q3 − Q1 — sentralt for å oppdage outliers.",
+    ],
+  },
+  {
+    id: "py-tek1-bayes",
+    topic: "Statistikk-grunnlag",
+    title: "TEK-1501: Bayes manuelt — medisinsk test",
+    description:
+      "Implementér Bayes' teorem fra grunnen av. Gitt prior P(syk), sensitivitet og spesifisitet, regn ut P(syk | positiv test).",
+    requires: [],
+    starter: `# Klassisk eksamen-eksempel
+# Sykdom forekommer hos 1% av befolkningen
+P_syk = 0.01
+
+# Test er 99% sensitiv: P(test+ | syk) = 0.99
+P_pos_gitt_syk = 0.99
+
+# Test er 95% spesifikk: P(test− | frisk) = 0.95
+#                       → P(test+ | frisk) = 0.05
+P_pos_gitt_frisk = 0.05
+
+# TODO:
+# 1. Beregn P(frisk) = 1 − P(syk)
+# 2. Beregn P(test+) med total sannsynlighet:
+#    P(test+) = P(test+|syk)·P(syk) + P(test+|frisk)·P(frisk)
+# 3. Beregn P(syk | test+) med Bayes:
+#    P(syk | test+) = P(test+|syk) · P(syk) / P(test+)
+# 4. Print svaret i prosent med 2 desimaler
+
+# Forventet: P(syk | test+) = 16.67%
+`,
+    solution: `P_syk = 0.01
+P_pos_gitt_syk = 0.99
+P_pos_gitt_frisk = 0.05
+
+P_frisk = 1 - P_syk
+P_pos = P_pos_gitt_syk * P_syk + P_pos_gitt_frisk * P_frisk
+P_syk_gitt_pos = (P_pos_gitt_syk * P_syk) / P_pos
+
+print(f"P(syk | test+) = {P_syk_gitt_pos * 100:.2f}%")
+`,
+    hints: [
+      "Total sannsynlighet: P(B) = P(B|A)·P(A) + P(B|Aᶜ)·P(Aᶜ).",
+      "Bayes: P(A | B) = P(B | A) · P(A) / P(B).",
+      "Selv ved 99 % sensitiv test blir P(syk | test+) liten når P(syk) er liten.",
+    ],
+  },
+  {
+    id: "py-tek1-combinatorics",
+    topic: "Statistikk-grunnlag",
+    title: "TEK-1501: Kombinatorikk — Lotto",
+    description:
+      "Norsk Lotto: 7 av 34 tall, uten tilbakelegging. Beregn antall mulige trekninger og sannsynlighet for 6 og 7 rette. Bruk scipy.special.comb.",
+    requires: ["scipy"],
+    starter: `from scipy.special import comb
+
+# Norsk Lotto: trekkes 7 av 34 tall uten tilbakelegging
+N = 34   # totalt antall tall
+K = 7    # vinnertall (vår kupong)
+n = 7    # tall vi velger
+
+# TODO:
+# 1. Antall mulige trekninger = C(34, 7)
+# 2. P(7 rette) = 1 / C(34, 7)
+# 3. P(6 rette) = C(7, 6) · C(27, 1) / C(34, 7)
+#    (6 av våre 7 rette × 1 av de 27 andre × delt på totalen)
+# 4. Print alle med rimelig presisjon
+
+# Forventet (omtrent):
+# Antall mulige: 5 379 616
+# P(7 rette) = 1.86e-07
+# P(6 rette) = 3.51e-05
+`,
+    solution: `from scipy.special import comb
+
+N = 34
+K = 7
+
+total = comb(N, K, exact=True)
+P_7 = 1 / total
+P_6 = comb(7, 6, exact=True) * comb(27, 1, exact=True) / total
+
+print(f"Antall mulige: {total:,}")
+print(f"P(7 rette) = {P_7:.2e}")
+print(f"P(6 rette) = {P_6:.2e}")
+`,
+    hints: [
+      "scipy.special.comb(n, k) gir C(n, k). Bruk exact=True for store n.",
+      "P(7 rette): bare 1 av total mulige er din kupong.",
+      "P(6 rette): velg 6 av dine 7 rette OG 1 av de 27 du IKKE valgte.",
+    ],
+  },
+  {
+    id: "py-tek1-binomial",
+    topic: "Statistikk-grunnlag",
+    title: "TEK-1501: Binomisk fordeling",
+    description:
+      "5 % av enhetene fra fabrikken er defekte. Vi tester 20. Beregn P(X = 2), P(X ≤ 2) og forventning + varians.",
+    requires: ["scipy"],
+    starter: `from scipy.stats import binom
+
+# Antagelser:
+n = 20      # antall testede enheter
+p = 0.05    # sannsynlighet for defekt
+
+# TODO:
+# 1. P(X = 2) — PMF
+# 2. P(X ≤ 2) — CDF
+# 3. E[X] = n·p
+# 4. Var(X) = n·p·(1−p)
+# 5. Std(X) = √Var
+
+# Forventet:
+# P(X = 2) ≈ 0.1887
+# P(X ≤ 2) ≈ 0.9245
+# E[X] = 1.0,  Var = 0.95
+`,
+    solution: `from scipy.stats import binom
+
+n = 20
+p = 0.05
+
+p_eq_2 = binom.pmf(2, n, p)
+p_leq_2 = binom.cdf(2, n, p)
+ev = n * p
+var = n * p * (1 - p)
+
+print(f"P(X = 2)  = {p_eq_2:.4f}")
+print(f"P(X ≤ 2)  = {p_leq_2:.4f}")
+print(f"E[X]      = {ev}")
+print(f"Var(X)    = {var}")
+print(f"Std       = {var**0.5:.4f}")
+`,
+    hints: [
+      "binom.pmf(k, n, p) gir P(X = k).",
+      "binom.cdf(k, n, p) gir P(X ≤ k) — kumulativ sannsynlighet.",
+      "For binomisk: E = np, Var = np(1−p).",
+    ],
+  },
+  {
+    id: "py-tek1-poisson",
+    topic: "Statistikk-grunnlag",
+    title: "TEK-1501: Poisson — kundeankomster",
+    description:
+      "I snitt ankommer 4 kunder per 15-minutters periode. Beregn P(0), P(3), P(X ≥ 5), og forventning.",
+    requires: ["scipy"],
+    starter: `from scipy.stats import poisson
+
+lam = 4  # gjennomsnittlig antall per intervall
+
+# TODO:
+# 1. P(X = 0) — ingen ankomster
+# 2. P(X = 3) — tre ankomster
+# 3. P(X ≥ 5) — minst fem (bruk 1 − cdf(4))
+# 4. E[X] og Var(X) — begge er λ
+
+# Forventet:
+# P(X = 0) ≈ 0.0183
+# P(X = 3) ≈ 0.1954
+# P(X ≥ 5) ≈ 0.3712
+`,
+    solution: `from scipy.stats import poisson
+
+lam = 4
+p_0 = poisson.pmf(0, lam)
+p_3 = poisson.pmf(3, lam)
+p_geq_5 = 1 - poisson.cdf(4, lam)
+
+print(f"P(X = 0)  = {p_0:.4f}")
+print(f"P(X = 3)  = {p_3:.4f}")
+print(f"P(X >= 5) = {p_geq_5:.4f}")
+print(f"E[X] = {lam},  Var[X] = {lam}")
+`,
+    hints: [
+      "poisson.pmf(k, mu) gir P(X = k) der mu = λ.",
+      "P(X ≥ 5) = 1 − P(X ≤ 4) = 1 − cdf(4).",
+      "Poisson: E[X] = Var(X) = λ (spesielt).",
+    ],
+  },
+  {
+    id: "py-tek1-normal",
+    topic: "Statistikk-grunnlag",
+    title: "TEK-1501: Normalfordeling — IQ-skår",
+    description:
+      "IQ er normalfordelt med μ = 100, σ = 15. Beregn P(X > 130), P(85 ≤ X ≤ 115), og 95-persentilen.",
+    requires: ["scipy"],
+    starter: `from scipy.stats import norm
+
+mu = 100
+sigma = 15
+
+# TODO:
+# 1. P(X > 130) — over 130 IQ
+# 2. P(85 ≤ X ≤ 115) — innen ett standardavvik
+# 3. 95-persentilen (verdien x slik at P(X ≤ x) = 0.95)
+
+# Forventet:
+# P(X > 130)        ≈ 0.0228 (2.3%)
+# P(85 ≤ X ≤ 115)  ≈ 0.6827 (68% — '68%-regelen')
+# 95-persentilen     ≈ 124.67
+`,
+    solution: `from scipy.stats import norm
+
+mu = 100
+sigma = 15
+
+p_over_130 = 1 - norm.cdf(130, loc=mu, scale=sigma)
+p_85_115 = norm.cdf(115, loc=mu, scale=sigma) - norm.cdf(85, loc=mu, scale=sigma)
+p95 = norm.ppf(0.95, loc=mu, scale=sigma)
+
+print(f"P(X > 130)       = {p_over_130:.4f}")
+print(f"P(85 <= X <= 115) = {p_85_115:.4f}")
+print(f"95-persentilen    = {p95:.2f}")
+`,
+    hints: [
+      "norm.cdf(x, loc=μ, scale=σ) gir P(X ≤ x). For P(X > x) bruk 1 − cdf.",
+      "P(a ≤ X ≤ b) = cdf(b) − cdf(a).",
+      "norm.ppf(p) (percent point function) er invers cdf — gir x slik at P(X ≤ x) = p.",
+    ],
+  },
+  {
+    id: "py-tek1-clt",
+    topic: "Statistikk-grunnlag",
+    title: "TEK-1501: Sentralgrenseteoremet — simulering",
+    description:
+      "Demonstrer CLT: snitt fra uniform-fordeling konvergerer mot normal. Trekk N utvalg på n = 30 fra U(0,1), beregn snitt for hvert, og verifisér at de er ca. normalfordelt.",
+    requires: ["numpy"],
+    starter: `import numpy as np
+
+# Simulering: trekk 10 000 utvalg på n = 30 fra U(0, 1)
+N = 10000
+n = 30
+
+# Teoretisk: X ~ U(0,1) har μ = 0.5, σ² = 1/12
+# CLT sier: X̄ ~ N(0.5, 1/(12·30)) tilnærmet
+
+# TODO:
+# 1. Simuler N utvalg på n verdier hver (bruk np.random.uniform)
+# 2. Beregn snittet for hvert utvalg → x̄-array av lengde N
+# 3. Beregn empirisk mean og std av de N snittene
+# 4. Sammenlign med teoretisk: 0.5 og √(1/(12·30)) ≈ 0.0527
+
+np.random.seed(42)
+# Skriv koden under:
+`,
+    solution: `import numpy as np
+
+N = 10000
+n = 30
+
+np.random.seed(42)
+samples = np.random.uniform(0, 1, size=(N, n))
+sample_means = samples.mean(axis=1)
+
+emp_mean = sample_means.mean()
+emp_std = sample_means.std(ddof=1)
+
+theor_mean = 0.5
+theor_std = (1/12 / n) ** 0.5
+
+print(f"Empirisk:  mean = {emp_mean:.4f}, std = {emp_std:.4f}")
+print(f"Teoretisk: mean = {theor_mean},   std = {theor_std:.4f}")
+print("CLT bekreftet!" if abs(emp_std - theor_std) < 0.001 else "Tjaaa, kanskje større N?")
+`,
+    hints: [
+      "np.random.uniform(0, 1, size=(N, n)) lager en N×n matrise.",
+      ".mean(axis=1) tar snittet langs hver rad (per utvalg).",
+      "CLT: X̄ ~ N(μ, σ²/n). Her: σ² = 1/12 for U(0,1), så std av X̄ = √(1/(12n)).",
+    ],
+  },
+  {
+    id: "py-tek1-ci-mean",
+    topic: "Statistikk-grunnlag",
+    title: "TEK-1501: 95% konfidensintervall for μ (σ ukjent)",
+    description:
+      "Klassisk eksamen-oppgave. Gitt 12 målinger, konstruer 95% CI for μ med t-fordelingen (siden σ er ukjent).",
+    requires: ["numpy", "scipy"],
+    starter: `import numpy as np
+from scipy import stats
+
+data = np.array([95.2, 98.1, 102.4, 97.8, 96.5, 99.3,
+                 94.7, 101.2, 97.9, 96.8, 95.5, 98.4])
+
+# σ er ukjent, så vi bruker t-fordeling med n − 1 frihetsgrader
+
+# TODO:
+# 1. Beregn x̄ og s
+# 2. Finn t-kritisk verdi: t_(0.025, n−1) — bruk stats.t.ppf
+# 3. Beregn standardfeil SE = s / √n
+# 4. CI = (x̄ − t·SE,  x̄ + t·SE)
+# 5. Print med 3 desimaler
+
+# Forventet (omtrent):
+# x̄ = 97.817, s = 2.317
+# t_krit = 2.201
+# CI = (96.345, 99.289)
+`,
+    solution: `import numpy as np
+from scipy import stats
+
+data = np.array([95.2, 98.1, 102.4, 97.8, 96.5, 99.3,
+                 94.7, 101.2, 97.9, 96.8, 95.5, 98.4])
+
+n = len(data)
+x_bar = np.mean(data)
+s = np.std(data, ddof=1)
+
+t_crit = stats.t.ppf(0.975, df=n - 1)
+se = s / np.sqrt(n)
+
+ci_low = x_bar - t_crit * se
+ci_high = x_bar + t_crit * se
+
+print(f"x̄ = {x_bar:.3f}, s = {s:.3f}")
+print(f"t-kritisk = {t_crit:.3f}")
+print(f"95% CI = ({ci_low:.3f}, {ci_high:.3f})")
+`,
+    hints: [
+      "stats.t.ppf(0.975, df=n-1) gir t_(α/2, n-1) for 95% (α=0.05, α/2=0.025).",
+      "SE = s / √n (standardfeilen).",
+      "CI = x̄ ± t_krit · SE.",
+    ],
+  },
+  {
+    id: "py-tek1-ttest-1samp",
+    topic: "Statistikk-grunnlag",
+    title: "TEK-1501: One-sample t-test",
+    description:
+      "Produsenten hevder snittlevetid = 100 timer. Test om vår observerte snittet er signifikant lavere. Bruk α = 0.05.",
+    requires: ["numpy", "scipy"],
+    starter: `import numpy as np
+from scipy import stats
+
+# 12 målinger fra vår batch
+data = np.array([95.2, 98.1, 102.4, 97.8, 96.5, 99.3,
+                 94.7, 101.2, 97.9, 96.8, 95.5, 98.4])
+
+# H0: μ = 100
+# H1: μ ≠ 100 (tosidig)
+# α = 0.05
+
+# TODO:
+# 1. Kjør stats.ttest_1samp(data, popmean=100)
+# 2. Print t-statistikk og p-verdi
+# 3. Konkludér: forkast H0 hvis p < 0.05
+# 4. Print konklusjon på norsk
+
+# Forventet:
+# t ≈ −3.262, p ≈ 0.0076
+# Konklusjon: forkast H0 — gjennomsnittet er signifikant ulikt 100
+`,
+    solution: `import numpy as np
+from scipy import stats
+
+data = np.array([95.2, 98.1, 102.4, 97.8, 96.5, 99.3,
+                 94.7, 101.2, 97.9, 96.8, 95.5, 98.4])
+
+t_stat, p_val = stats.ttest_1samp(data, popmean=100)
+alpha = 0.05
+
+print(f"t = {t_stat:.3f}, p = {p_val:.4f}")
+if p_val < alpha:
+    print(f"p < {alpha}: FORKAST H0 — snittet er signifikant ulikt 100")
+else:
+    print(f"p >= {alpha}: BEHOLD H0 — ikke nok bevis for forskjell")
+`,
+    hints: [
+      "stats.ttest_1samp(data, popmean=μ₀) returnerer (t_statistic, p_value).",
+      "Sammenlign p_value med α — typisk 0.05.",
+      "NB: Husk at 'behold H0' ikke betyr 'H0 er sann', bare 'ikke nok bevis'.",
+    ],
+  },
+  {
+    id: "py-tek1-ttest-2samp",
+    topic: "Statistikk-grunnlag",
+    title: "TEK-1501: Two-sample t-test",
+    description:
+      "Sammenlign to grupper: kontrollgruppen og behandlingsgruppen. Er det signifikant forskjell?",
+    requires: ["numpy", "scipy"],
+    starter: `import numpy as np
+from scipy import stats
+
+# Kontrollgruppen (uten behandling)
+kontroll = np.array([72, 75, 68, 71, 73, 70, 74, 69, 72, 71])
+
+# Behandlingsgruppen
+behandling = np.array([78, 82, 75, 80, 79, 77, 81, 76, 83, 78])
+
+# H0: μ_K = μ_B
+# H1: μ_K ≠ μ_B
+
+# TODO:
+# 1. Bruk stats.ttest_ind med equal_var=False (Welch's t-test, antar ulike varianser)
+# 2. Print t og p
+# 3. Konkludér med α = 0.05
+
+# Forventet: signifikant forskjell (p < 0.001)
+`,
+    solution: `import numpy as np
+from scipy import stats
+
+kontroll = np.array([72, 75, 68, 71, 73, 70, 74, 69, 72, 71])
+behandling = np.array([78, 82, 75, 80, 79, 77, 81, 76, 83, 78])
+
+t_stat, p_val = stats.ttest_ind(kontroll, behandling, equal_var=False)
+
+print(f"Kontroll:    mean={kontroll.mean():.2f}, std={kontroll.std(ddof=1):.2f}")
+print(f"Behandling:  mean={behandling.mean():.2f}, std={behandling.std(ddof=1):.2f}")
+print(f"t = {t_stat:.3f}, p = {p_val:.4f}")
+
+if p_val < 0.05:
+    print("FORKAST H0 — gruppene er signifikant forskjellige")
+else:
+    print("BEHOLD H0 — ikke nok bevis for forskjell")
+`,
+    hints: [
+      "stats.ttest_ind(a, b, equal_var=False) er Welch's t-test (anbefalt default).",
+      "equal_var=True gjør pooled-varians t-test (krever lik varians).",
+      "Med p < 0.001 er det HØY tillit til at gruppene forskjeller.",
+    ],
+  },
+  {
+    id: "py-tek1-linregress",
+    topic: "Statistikk-grunnlag",
+    title: "TEK-1501: Lineær regresjon",
+    description:
+      "Datasett: antall etasjer (x) og byggetid i måneder (y). Finn regresjonslinjen, R², og predikér tid for 8 etasjer.",
+    requires: ["numpy", "scipy"],
+    starter: `import numpy as np
+from scipy import stats
+
+# Data
+x = np.array([3, 5, 7, 9, 11])   # antall etasjer
+y = np.array([6, 9, 14, 17, 22]) # byggetid (mnd)
+
+# TODO:
+# 1. Kjør stats.linregress(x, y)
+# 2. Print slope (β1), intercept (β0), r og R² (= r²)
+# 3. Skriv regresjonslinjen som "y = a + b·x"
+# 4. Predikér byggetid for 8 etasjer
+
+# Forventet:
+# β1 ≈ 2.0, β0 ≈ −0.4, r ≈ 0.991, R² ≈ 0.983
+# Prediksjon for 8 etasjer ≈ 15.6 mnd
+`,
+    solution: `import numpy as np
+from scipy import stats
+
+x = np.array([3, 5, 7, 9, 11])
+y = np.array([6, 9, 14, 17, 22])
+
+result = stats.linregress(x, y)
+b1 = result.slope
+b0 = result.intercept
+r = result.rvalue
+r2 = r ** 2
+
+print(f"Slope β1     = {b1:.4f}")
+print(f"Intercept β0 = {b0:.4f}")
+print(f"r            = {r:.4f}")
+print(f"R²           = {r2:.4f}")
+print(f"Modell: y = {b0:.2f} + {b1:.2f}·x")
+
+# Prediksjon for x = 8
+y_pred = b0 + b1 * 8
+print(f"Prediksjon for 8 etasjer: {y_pred:.2f} mnd")
+`,
+    hints: [
+      "stats.linregress(x, y) returnerer LinregressResult med slope, intercept, rvalue, pvalue, stderr.",
+      "R² = rvalue² (i enkel lineær regresjon).",
+      "Prediksjon: ŷ = β0 + β1·x.",
+    ],
+  },
+  {
+    id: "py-tek1-pearson",
+    topic: "Statistikk-grunnlag",
+    title: "TEK-1501: Pearson-korrelasjon",
+    description:
+      "Beregn korrelasjon mellom høyde og vekt. Inkluderer p-verdi for å teste H0: r = 0.",
+    requires: ["numpy", "scipy"],
+    starter: `import numpy as np
+from scipy.stats import pearsonr
+
+# Høyde (cm) og vekt (kg) for 10 personer
+hoyde = np.array([165, 170, 175, 180, 185, 168, 172, 178, 183, 190])
+vekt =  np.array([60,  68,  72,  78,  85,  62,  70,  76,  82,  92])
+
+# TODO:
+# 1. Bruk pearsonr(hoyde, vekt) → (r, p)
+# 2. Print r, p, og tolkning av styrke:
+#    |r| >= 0.9 svært sterk, >= 0.7 sterk, >= 0.4 moderat, ellers svak
+# 3. Konkludér: signifikant ulik 0 hvis p < 0.05?
+`,
+    solution: `import numpy as np
+from scipy.stats import pearsonr
+
+hoyde = np.array([165, 170, 175, 180, 185, 168, 172, 178, 183, 190])
+vekt =  np.array([60,  68,  72,  78,  85,  62,  70,  76,  82,  92])
+
+r, p = pearsonr(hoyde, vekt)
+
+if abs(r) >= 0.9:
+    styrke = "svært sterk"
+elif abs(r) >= 0.7:
+    styrke = "sterk"
+elif abs(r) >= 0.4:
+    styrke = "moderat"
+else:
+    styrke = "svak"
+
+print(f"r = {r:.4f}  ({styrke})")
+print(f"p = {p:.4e}")
+print(f"Signifikant ulik 0: {'JA' if p < 0.05 else 'NEI'}")
+`,
+    hints: [
+      "scipy.stats.pearsonr(x, y) returnerer (r, p_value).",
+      "p-verdien tester H0: r = 0 (ingen lineær sammenheng).",
+      "Husk: korrelasjon ≠ kausalitet, selv ved sterk r.",
+    ],
+  },
+  {
+    id: "py-tek1-chi2",
+    topic: "Statistikk-grunnlag",
+    title: "TEK-1501: Kji-kvadrattest for uavhengighet",
+    description:
+      "Test om kjønn og favoritt-emne er uavhengig. Bruk en 2×3 kontingenstabell.",
+    requires: ["numpy", "scipy"],
+    starter: `import numpy as np
+from scipy.stats import chi2_contingency
+
+# Kontingenstabell:
+#               Matematikk  Norsk  Engelsk
+#   Gutt           30        20      25
+#   Jente          15        35      30
+
+observed = np.array([
+    [30, 20, 25],
+    [15, 35, 30],
+])
+
+# H0: kjønn og favoritt-emne er uavhengige
+# H1: de er avhengige
+
+# TODO:
+# 1. Bruk chi2_contingency(observed) → (chi2, p, dof, expected)
+# 2. Print alle fire
+# 3. Konkludér med α = 0.05
+
+# Forventet: chi2 ≈ 11.7, p ≈ 0.0028, dof = 2 → forkast H0
+`,
+    solution: `import numpy as np
+from scipy.stats import chi2_contingency
+
+observed = np.array([
+    [30, 20, 25],
+    [15, 35, 30],
+])
+
+chi2, p, dof, expected = chi2_contingency(observed)
+
+print(f"chi² = {chi2:.4f}")
+print(f"p    = {p:.4f}")
+print(f"dof  = {dof}")
+print(f"Forventet under H0:")
+print(expected)
+
+if p < 0.05:
+    print("FORKAST H0 — kjønn og favoritt-emne er IKKE uavhengige")
+else:
+    print("BEHOLD H0 — ingen bevis for avhengighet")
+`,
+    hints: [
+      "chi2_contingency(table) returnerer (chi², p, dof, expected_frequencies).",
+      "dof = (rader − 1) · (kolonner − 1).",
+      "Forutsetning: alle forventede frekvenser ≥ 5. Sjekk expected.",
+    ],
+  },
+  {
+    id: "py-tek1-ci-proportion",
+    topic: "Statistikk-grunnlag",
+    title: "TEK-1501: Konfidensintervall for andel p",
+    description:
+      "Av 200 spurte sa 80 'ja'. Beregn 95% CI for andelen p ved hjelp av normal-tilnærming (Wald-CI).",
+    requires: ["numpy", "scipy"],
+    starter: `import numpy as np
+from scipy.stats import norm
+
+# Observasjon
+n = 200      # antall spurte
+x = 80       # antall som sa 'ja'
+
+# TODO:
+# 1. Punktestimat p̂ = x/n
+# 2. Sjekk gyldighet: np̂ >= 5 og n(1-p̂) >= 5
+# 3. SE = √(p̂(1-p̂)/n)
+# 4. z = norm.ppf(0.975) ≈ 1.96
+# 5. CI = (p̂ − z·SE, p̂ + z·SE)
+# 6. Print som prosent med 1 desimal
+
+# Forventet:
+# p̂ = 0.400
+# CI = (33.2%, 46.8%)
+`,
+    solution: `import numpy as np
+from scipy.stats import norm
+
+n = 200
+x = 80
+
+p_hat = x / n
+print(f"p̂ = {p_hat:.3f}")
+
+# Gyldighet
+if n * p_hat >= 5 and n * (1 - p_hat) >= 5:
+    print("Gyldighet OK")
+else:
+    print("Advarsel: forutsetninger for Wald-CI er ikke oppfylt")
+
+se = np.sqrt(p_hat * (1 - p_hat) / n)
+z = norm.ppf(0.975)
+ci_low = p_hat - z * se
+ci_high = p_hat + z * se
+
+print(f"95% CI = ({ci_low * 100:.1f}%, {ci_high * 100:.1f}%)")
+`,
+    hints: [
+      "p̂ = x/n (proporsjons-estimat).",
+      "SE for andel = √(p̂(1-p̂)/n).",
+      "Wald-CI bruker z = 1.96 for 95%. Krever np̂ ≥ 5 og n(1-p̂) ≥ 5.",
+    ],
+  },
 ];
