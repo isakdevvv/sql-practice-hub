@@ -110,6 +110,7 @@ import { content as tek1Fordelinger } from "./tek1-fordelinger";
 import { content as tek1StatistiskAnalyse } from "./tek1-statistisk-analyse";
 import { content as tek1Kombinatorikk } from "./tek1-kombinatorikk";
 import { content as tek1DiskreteFordelinger } from "./tek1-diskrete-fordelinger";
+import { content as tek1KontinuerligeFordelinger } from "./tek1-kontinuerlige-fordelinger";
 import type { TrinnContent } from "../types";
 
 export const TRINN: TrinnContent[] = [
@@ -138,6 +139,7 @@ export const TRINN: TrinnContent[] = [
   dte2509, brukerhandtering,
   tek1501, tek1Deskriptiv, tek1Sannsynlighet, tek1Fordelinger,
   tek1StatistiskAnalyse, tek1Kombinatorikk, tek1DiskreteFordelinger,
+  tek1KontinuerligeFordelinger,
 ];
 
 import { curriculumIndexOf } from "../curriculum";
