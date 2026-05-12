@@ -2037,6 +2037,168 @@ export const FLASHCARDS: FlashCard[] = [
     answer:
       "cross_val_score lager nye train/val-folds i hver iterasjon. Hvis du skalerte på hele X først, har scaler-en sett val-folden under fit — datalekkasje. Med Pipeline blir scaler fit_transform-et per fold, ærlig estimat.",
   },
+
+  // ===== DTE-2602 PORTEFØLJE — AI-historie, etikk, filosofi, mappe-mal =====
+  {
+    id: "c-dte2602p-ai-fodsel",
+    category: "begrep",
+    topic: "AI-historie",
+    question: "Hva markerte AI sin fødsel som fagfelt?",
+    answer:
+      "Dartmouth-konferansen i 1956. John McCarthy myntet uttrykket «artificial intelligence». Pionerene (McCarthy, Minsky, Shannon, Rochester) samlet seg for å definere feltet.",
+  },
+  {
+    id: "c-dte2602p-ai-vintre",
+    category: "begrep",
+    topic: "AI-historie",
+    question: "Hva var AI-vintrene?",
+    answer:
+      "Perioder med lite finansiering og sviktende forventninger. Første vinter (1970-tallet) etter Minsky/Papert viste at perceptron ikke kunne lære XOR. Andre vinter (1990-tallet) — expert systems-bølgen kollapset. Dagens DL-bølge er drevet av store data + GPU + bedre optimering.",
+  },
+  {
+    id: "c-dte2602p-turing-test",
+    category: "begrep",
+    topic: "AI-historie",
+    question: "Hva er Turing-testen?",
+    answer:
+      "Foreslått av Alan Turing (1950): en maskin 'tenker' hvis en menneskelig dommer ikke kan skille den fra et menneske i en tekstbasert samtale. Operasjonell definisjon. Kritisk respons: Searles Kinarom-argument (1980) hevder at å bestå ikke betyr at maskinen 'forstår'.",
+  },
+  {
+    id: "c-dte2602p-bias-historisk",
+    category: "begrep",
+    topic: "AI-etikk",
+    question: "Konkret eksempel på historisk bias i ML?",
+    answer:
+      "Amazon CV-screening (2018) — trent på 10 år med CV-er fra mest menn. Modellen lærte å straffe ordet 'kvinne-' (f.eks. «kvinne-fotball-lag»). Amazon trakk systemet. 'Objektiv' modell videreførte historisk diskriminering.",
+  },
+  {
+    id: "c-dte2602p-bias-sampling",
+    category: "begrep",
+    topic: "AI-etikk",
+    question: "Hva viste Gender Shades-studien?",
+    answer:
+      "Joy Buolamwini (MIT, 2018) testet IBM/Microsoft/Face++ ansiktsgjenkjenning. Feilrate < 1% på lyse menn, opp til 35% på mørke kvinner. Skjeve treningsdata = skjev ytelse — klassisk sampling-bias.",
+  },
+  {
+    id: "c-dte2602p-bias-compas",
+    category: "begrep",
+    topic: "AI-etikk",
+    question: "Hva var COMPAS-skandalen?",
+    answer:
+      "COMPAS — kommersiell risiko-score for tilbakefall i USAs rettsvesen. ProPublica (2016) viste at modellen markerte svarte tiltalte som «høyrisiko» dobbelt så ofte som hvite. Rase var ikke en feature, men postnummer + anholdelses-historikk fungerte som proxies — eksempel på måle-bias.",
+  },
+  {
+    id: "c-dte2602p-bias-uk-karakter",
+    category: "begrep",
+    topic: "AI-etikk",
+    question: "Hva var UK-karakterskandalen i 2020?",
+    answer:
+      "Under pandemien ble eksamen avlyst. Algoritmen satte karakterer basert delvis på skolens historikk → elever fra 'svake' skoler ble systematisk underkarakter, uavhengig av personlig prestasjon. Eksempel på aggregerings-bias: én modell anvendt på undergrupper med ulik underliggende distribusjon.",
+  },
+  {
+    id: "c-dte2602p-gdpr-art22",
+    category: "sikkerhet",
+    topic: "AI-etikk",
+    question: "GDPR Art. 22 — hva gir det?",
+    answer:
+      "Ved automatiserte beslutninger med betydelig påvirkning (lån, ansettelse, forsikring): rett til menneskelig vurdering + rett til forklaring. Driver behovet for tolkbare modeller eller XAI-verktøy (SHAP/LIME).",
+  },
+  {
+    id: "c-dte2602p-gdpr-prinsipper",
+    category: "sikkerhet",
+    topic: "AI-etikk",
+    question: "GDPR-prinsipper relevant for ML?",
+    answer:
+      "Dataminimering (argument for feature selection), formålsbegrensning (data samlet for X kan ikke uten videre brukes for Y), lagringsbegrensning (slett etter formål), rett til forklaring (Art. 22), og rett til å bli glemt (utfordring — 'machine unlearning' er aktivt forskningsfelt).",
+  },
+  {
+    id: "c-dte2602p-xai-tolkbar",
+    category: "begrep",
+    topic: "AI-etikk",
+    question: "Inherent tolkbar vs post-hoc forklart?",
+    answer:
+      "Inherent tolkbar (white-box): du leser modellen direkte — lineær/logistisk regresjon (vektene), decision trees (grener), regelsystemer. Post-hoc: black-box + verktøy som SHAP, LIME, feature_importance, partial dependence plots. Trade-off: tolkbarhet vs maksimal nøyaktighet.",
+  },
+  {
+    id: "c-dte2602p-kinarom",
+    category: "begrep",
+    topic: "AI-etikk",
+    question: "Searles Kinarom-argument — hva sier det?",
+    answer:
+      "En person i et rom uten kinesisk-kunnskap følger en oppslagstavle og svarer korrekt på kinesiske tegn. Utenfor virker det som forståelse, men personen 'forstår' ikke. Konklusjon (Searle): symbolmanipulering ≠ forståelse. Argument mot Sterk AI. Motsvar: 'systemet svar' — det er HELE systemet som forstår.",
+  },
+  {
+    id: "c-dte2602p-svak-sterk-ai",
+    category: "begrep",
+    topic: "AI-etikk",
+    question: "Svak AI vs Sterk AI?",
+    answer:
+      "Svak AI: modell som simulerer intelligens på begrenset domene (sjakk, oversettelse, bilde-klassifisering). Det vi har i dag. Sterk AI: hypotetisk modell som FAKTISK er bevisst og har generell forståelse. Eksisterer ikke. Kinarom-argumentet er rettet mot Sterk AI.",
+  },
+  {
+    id: "c-dte2602p-eu-ai-act-pyramide",
+    category: "sikkerhet",
+    topic: "AI-etikk",
+    question: "EU AI Act-pyramiden — fire risikonivå?",
+    answer:
+      "(1) Uakseptabel — FORBUDT (social scoring, sårbar manipulasjon). (2) Høy risiko — strenge krav (kritisk infra, helse, utdanning, jobb, justis). (3) Limited risk — merking (chatbots, deepfakes). (4) Minimal risk — ingen krav (spam-filter, anbefalingssystem).",
+  },
+  {
+    id: "c-dte2602p-eu-7-prinsipper",
+    category: "sikkerhet",
+    topic: "AI-etikk",
+    question: "EUs 7 etiske prinsipper for pålitelig AI?",
+    answer:
+      "Menneskelig tilsyn, teknisk robusthet + sikkerhet, personvern + datastyring, transparens, mangfold + ikke-diskriminering, samfunns- + miljønytte, og ansvarlighet. Ligger til grunn for EU AI Act og er et nyttig rammeverk for etisk drøfting i mappe-rapporten.",
+  },
+  {
+    id: "c-dte2602p-fairness-metrikker",
+    category: "begrep",
+    topic: "AI-etikk",
+    question: "Tre fairness-metrikker — og det matematiske dilemmaet",
+    answer:
+      "Demographic parity (lik prediksjons-rate per gruppe), equalized odds (lik TPR + FPR per gruppe), predictive parity (lik precision per gruppe). Et matematisk teorem (Chouldechova 2017) viser at de tre IKKE kan tilfredsstilles samtidig hvis baseline-ratene varierer per gruppe — du må velge.",
+  },
+  {
+    id: "c-dte2602p-mappe-struktur",
+    category: "praktisk",
+    topic: "ML-prosjektflyt",
+    question: "Standard kapittel-struktur i en ML-mappe-rapport?",
+    answer:
+      "1. Sammendrag, 2. Innledning (problemstilling + suksesskriterium), 3. Data (kilde + størrelse + begrensninger), 4. EDA (3-5 figurer + tolkning), 5. Metode (algoritmer + hyperparam-søk), 6. Resultater (metrikker + confusion matrix), 7. Diskusjon (begrensninger + etikk), 8. Konklusjon, 9. Referanser.",
+  },
+  {
+    id: "c-dte2602p-mappe-kode-droftning",
+    category: "praktisk",
+    topic: "ML-prosjektflyt",
+    question: "Hvor mye kode hører til i rapporten kontra notebook?",
+    answer:
+      "Rapport (10 sider): 1-2 sider kode-snippets som ILLUSTRERER poenger — ikke hele filer. Resten er tabeller, figurer, drøfting. Notebook: 500+ linjer hvis nødvendig — der bor den kjørbare koden.",
+  },
+  {
+    id: "c-dte2602p-mappe-reproduserbarhet",
+    category: "praktisk",
+    topic: "ML-prosjektflyt",
+    question: "Tre ting som gir reproducerbarhet i en mappe-oppgave?",
+    answer:
+      "(1) random_state satt OVERALT (train_test_split, modeller, cv-objekter). (2) requirements.txt med eksakte versjoner. (3) Relative stier (pathlib) — ikke /Users/ola/data/. Test på ren venv før innlevering!",
+  },
+  {
+    id: "c-dte2602p-mappe-feller",
+    category: "praktisk",
+    topic: "ML-prosjektflyt",
+    question: "Tre vanlige sensor-feller i en ML-mappe?",
+    answer:
+      "(1) «Funker på min maskin» — ingen requirements.txt, hardkodet sti. (2) Manglende random_state — sensor får andre tall. (3) Hyperparametere oppgis ikke — rapport sier 'tuned' men nevner ikke hvilke verdier som vant.",
+  },
+  {
+    id: "c-dte2602p-llm-opphavsrett",
+    category: "begrep",
+    topic: "AI-etikk",
+    question: "Hva er LLM-er + opphavsrett-debatten?",
+    answer:
+      "Store språkmodeller (GPT, Claude) trent på enorm web-tekst, ofte uten eksplisitt samtykke. NYT saksøker OpenAI (2023). Uavklart juss: er 'trening' fair use (transformative) eller ulovlig reproduksjon? Diskusjoner om kompensasjon og lisensiering pågår — viktig case for mappe-drøfting.",
+  },
 ];
 
 export const CARD_CATEGORIES: { id: FlashCard["category"]; label: string }[] = [

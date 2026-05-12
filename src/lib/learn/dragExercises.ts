@@ -20900,4 +20900,185 @@ X_tr, X_te, y_tr, y_te = train_test_split(X, y)`,
     explanation:
       "Du vil finne det 'sweet spot' i steg 2 — der test-feil er minst. CV hjelper deg dit.",
   },
+
+  // ============================================================
+  // DTE-2602 PORTEFØLJE — AI-etikk, historie, mappe-mal
+  // (komplementært til "DTE-2602"-blokken over)
+  // ============================================================
+  {
+    id: "d-dte2602p-match-bias-cases",
+    kind: "match",
+    title: "Match bias-case til konkret eksempel",
+    prompt: "Hvilket konkret eksempel passer hver bias-type?",
+    topic: "AI-etikk",
+    pairs: [
+      { left: "Historisk bias", right: "Amazon CV-modell straffet ordet 'kvinne-' (2018)" },
+      { left: "Sampling-bias", right: "Gender Shades: face-API bommet 35% på mørke kvinner" },
+      { left: "Måle-bias (proxy)", right: "COMPAS brukte anholdelser som proxy for kriminalitet" },
+      { left: "Aggregerings-bias", right: "UK 2020: skolens historikk straffet enkeltelever" },
+      { left: "Tilbakekoblings-bias", right: "Predictive policing forsterker over tid sin egen utvelgelse" },
+    ],
+    explanation:
+      "Sensor leter etter at du kjenner konkrete saker — ikke bare 'AI kan være skjev'.",
+  },
+  {
+    id: "d-dte2602p-order-ai-history",
+    kind: "order",
+    title: "AI-historie — riktig tidslinje",
+    prompt: "Plasser hendelsene i kronologisk rekkefølge.",
+    topic: "AI-etikk",
+    items: [
+      "1950: Turing — 'Computing Machinery and Intelligence' + Turing-testen",
+      "1956: Dartmouth-konferansen — uttrykket 'artificial intelligence' myntet",
+      "1957: Rosenblatt — Perceptron-algoritmen",
+      "1969: Minsky & Papert — Perceptron kan ikke lære XOR → første AI-vinter",
+      "1986: Rumelhart/Hinton/Williams — backpropagation populariseres",
+      "1997: Deep Blue slår Kasparov i sjakk",
+      "2012: AlexNet vinner ImageNet → CNN-/DL-revolusjon",
+      "2017: 'Attention is all you need' — Transformer-arkitekturen",
+      "2024: EU AI Act vedtatt",
+    ],
+    explanation:
+      "AI-feltet har hatt minst to vintre (1970-tall, 1990-tall) der lovende metoder stoppet opp. Dagens DL-bølge er drevet av data + GPU + bedre optimering.",
+  },
+  {
+    id: "d-dte2602p-quiz-ai-act-helse",
+    kind: "quiz",
+    title: "EU AI Act — helse-diagnostikk",
+    prompt: "Hvilket nivå?",
+    topic: "AI-etikk",
+    question:
+      "Et ML-system som assisterer leger med å diagnostisere kreft fra røntgenbilder. EU AI Act-klassifikasjon?",
+    options: [
+      {
+        text: "Høy risiko — krav om dokumentasjon, transparens, menneskelig tilsyn",
+        correct: true,
+        rationale:
+          "Helse-diagnostikk er eksplisitt på høyrisiko-listen. Modellen kan brukes, men med strenge krav: tilsyn, datakvalitet, sporbar dokumentasjon.",
+      },
+      {
+        text: "Uakseptabel risiko — forbudt",
+        correct: false,
+        rationale: "Det ville stoppe medisinsk AI. Forbudt-listen er smal (social scoring, manipulasjon).",
+      },
+      {
+        text: "Minimal risiko",
+        correct: false,
+        rationale: "Helse er aldri minimal risiko under AI Act.",
+      },
+      {
+        text: "Limited risk — bare merking",
+        correct: false,
+        rationale: "Limited handler om at brukere må vite det er AI (chatbots, deepfakes).",
+      },
+    ],
+  },
+  {
+    id: "d-dte2602p-quiz-xai-need",
+    kind: "quiz",
+    title: "Når trenger du XAI?",
+    prompt: "Velg det mest dekkende.",
+    topic: "AI-etikk",
+    question:
+      "Du bygger en modell for å vurdere lånesøknader. Hvorfor er forklarbarhet (XAI) viktig?",
+    options: [
+      {
+        text: "GDPR Art. 22 gir avviste låntakere rett til forklaring + menneskelig vurdering",
+        correct: true,
+        rationale:
+          "Automatiserte beslutninger med betydelig påvirkning krever forklaring under GDPR. Bank kan ikke si 'modellen sa nei' uten å kunne begrunne.",
+      },
+      {
+        text: "Modellen blir mer nøyaktig hvis du forstår den",
+        correct: false,
+        rationale: "Nøyaktighet og tolkbarhet er ofte en avveining, ikke det samme.",
+      },
+      {
+        text: "Det er pålagt av sklearn",
+        correct: false,
+        rationale: "Helt frivillig teknisk — det er JURIDISK og etisk krav.",
+      },
+      {
+        text: "Bare hvis modellen feiler",
+        correct: false,
+        rationale: "Forklaring må være tilgjengelig FOR BRUKEREN ved beslutningen, ikke i ettertid.",
+      },
+    ],
+  },
+  {
+    id: "d-dte2602p-match-mappe-felle",
+    kind: "match",
+    title: "Match sensor-felle til signatur",
+    prompt: "Hva er sannsynlig årsak når sensor ser dette?",
+    topic: "ML-prosjektflyt",
+    pairs: [
+      { left: "Test-accuracy = 0.99 på et 'vanskelig' problem", right: "Sannsynlig data-lekkasje (target eller scaler)" },
+      { left: "Sensor får andre tall enn rapporten viser", right: "random_state mangler — ikke reproduserbart" },
+      { left: "Rapport sier 'vi tuned hyperparametere' men oppgir ingen verdier", right: "Mangelfull dokumentasjon" },
+      { left: "5 sider Python-kode limt inn i rapporten", right: "Feil sjanger — kode hører til notebook, ikke rapport" },
+      { left: "Bare accuracy rapportert på klassifikasjon", right: "Sensor savner precision/recall/F1 + confusion matrix" },
+    ],
+  },
+  {
+    id: "d-dte2602p-order-mappe-sjekkliste",
+    kind: "order",
+    title: "Mappe-sjekkliste — riktig rekkefølge før innlevering",
+    prompt: "Plasser stegene i logisk rekkefølge.",
+    topic: "ML-prosjektflyt",
+    items: [
+      "1. Notebook kjører ende-til-ende uten feil (Restart & Run All)",
+      "2. random_state=42 er satt overalt — train_test_split, modeller, cv",
+      "3. requirements.txt eller environment.yml er inkludert",
+      "4. README forklarer hvordan kjøre koden",
+      "5. Sensor kan reprodusere alle tall i rapporten ved å kjøre koden",
+      "6. Rapport-PDF er korrekturlest og har sidetall + figurnummerering",
+      "7. Innlevering!",
+    ],
+    explanation:
+      "Reproduserbarhet er det enkleste å fikse, og det enkleste å glemme. Test på ren venv før innlevering.",
+  },
+  {
+    id: "d-dte2602p-fill-joblib",
+    kind: "fill",
+    title: "Lagre og laste en pipeline med joblib",
+    prompt: "Dra inn de manglende delene.",
+    topic: "ML-prosjektflyt",
+    template:
+      "import __1__\n# Tren pipelinen først:\npipe = Pipeline([('prep', prep), ('model', LogisticRegression())])\npipe.fit(X_train, y_train)\n# Lagre HELE pipelinen — ikke bare modellen:\n__1__.__2__(pipe, 'modell.joblib')\n# Senere — laste igjen:\nlastet = __1__.__3__('modell.joblib')\npreds = lastet.__4__(X_ny)",
+    blanks: ["joblib", "dump", "load", "predict"],
+    options: ["joblib", "pickle", "json", "dump", "save", "load", "open", "predict", "fit", "transform"],
+    language: "python",
+  },
+  {
+    id: "d-dte2602p-quiz-gdpr-art22",
+    kind: "quiz",
+    title: "GDPR Artikkel 22",
+    prompt: "Hvilken rett gir Art. 22?",
+    topic: "AI-etikk",
+    question:
+      "GDPR Art. 22 sier at en person har rett til hva, ved automatiserte beslutninger med betydelig påvirkning?",
+    options: [
+      {
+        text: "Forklaring + menneskelig vurdering",
+        correct: true,
+        rationale:
+          "Eksempel: avvist lånesøknad må kunne begrunnes og kunne klages opp til menneske.",
+      },
+      {
+        text: "Å slette sin egen data fra alle modeller",
+        correct: false,
+        rationale: "Det er rett til å bli glemt — relatert, men ikke Art. 22.",
+      },
+      {
+        text: "Gratis tilgang til kildekoden",
+        correct: false,
+        rationale: "GDPR krever ikke åpen kildekode.",
+      },
+      {
+        text: "Erstatning hvis modellen tar feil",
+        correct: false,
+        rationale: "Erstatningsregler dekkes av annet lovverk.",
+      },
+    ],
+  },
 ];

@@ -1,5 +1,6 @@
 import type { PyExercise } from "./types";
 import { DEMO_APP_PYTHON } from "../api-konsoll/demoApp";
+import { PY_DTE2602_EXERCISES } from "./exercises-dte2602";
 
 // All exercises target DAT1000-pensum: Flask, Jinja, MySQL via prepared
 // statements, sessions, login, CSRF, JSON-API, HTTP-statuskoder.
@@ -133,7 +134,7 @@ cur.executemany(
 db.commit()
 `;
 
-export const PY_EXERCISES: PyExercise[] = [
+const PY_EXERCISES_BASE: PyExercise[] = [
   // ============ MYSQL CONNECTOR ============
   {
     id: "py-db-connect-init",
@@ -5942,4 +5943,9 @@ print(f"t = {t_stat:.3f}, p = {p_val:.4f}")
       },
     ],
   },
+];
+
+export const PY_EXERCISES: PyExercise[] = [
+  ...PY_EXERCISES_BASE,
+  ...PY_DTE2602_EXERCISES,
 ];

@@ -33,6 +33,11 @@ export const PY_TOPIC_LEVEL: Record<string, PyLevel> = {
   "Flask-SQLAlchemy (ORM)": 5,
   "Flask-utvidelser": 5,
   "App-arkitektur": 5,
+  "DTE-2602 EDA": 2,
+  "DTE-2602 Preprocessing": 2,
+  "DTE-2602 Modeller": 3,
+  "DTE-2602 Evaluering": 3,
+  "DTE-2602 Algoritmer fra bunn": 4,
 };
 
 /** Resolve a PyExercise's level — explicit field wins, else look up topic, else 0. */

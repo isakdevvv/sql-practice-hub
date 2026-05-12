@@ -273,6 +273,55 @@ export function Dte2602Hub() {
           </div>
         </section>
 
+        <section className="mb-10">
+          <h2 className="text-xl font-semibold mb-3">Porteføljespor (eksamensspeil)</h2>
+          <p className="text-sm text-muted-foreground mb-4">
+            To 5-stegs løp som speiler mappevurderingen (innlevering 16.12.2026). Hvert
+            steg har starter-kode, hint, fasit og en fasit-streng som sjekkes mot stdout.
+          </p>
+          <div className="grid sm:grid-cols-2 gap-3">
+            <Link
+              to="/portfolio-dte2602/$slug"
+              params={{ slug: "dataset-analyse" }}
+              className="group rounded-xl border border-border bg-card hover:border-brand/40 p-5 transition-colors block"
+            >
+              <div className="flex items-center gap-2 mb-2">
+                <PlayCircle className="h-4 w-4 text-brand" />
+                <h3 className="font-semibold text-foreground leading-tight">
+                  Spor A · Dataset-analyse (5 steg)
+                </h3>
+              </div>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                Last data → rens → visualiser → tolk → konkluder. Bygg en EDA-rapport
+                på wine-datasettet steg-for-steg.
+              </p>
+              <div className="mt-3 flex items-center text-xs text-muted-foreground group-hover:text-foreground transition-colors">
+                Åpne
+                <ArrowRight className="h-3.5 w-3.5 ml-1 group-hover:translate-x-0.5 transition-transform" />
+              </div>
+            </Link>
+            <Link
+              to="/portfolio-dte2602/$slug"
+              params={{ slug: "ml-pipeline" }}
+              className="group rounded-xl border border-border bg-card hover:border-brand/40 p-5 transition-colors block"
+            >
+              <div className="flex items-center gap-2 mb-2">
+                <PlayCircle className="h-4 w-4 text-brand" />
+                <h3 className="font-semibold text-foreground leading-tight">
+                  Spor B · ML-pipeline (5 steg)
+                </h3>
+              </div>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                Pipeline → split → tren → evaluer (F1 + confusion) → tune (GridSearchCV).
+              </p>
+              <div className="mt-3 flex items-center text-xs text-muted-foreground group-hover:text-foreground transition-colors">
+                Åpne
+                <ArrowRight className="h-3.5 w-3.5 ml-1 group-hover:translate-x-0.5 transition-transform" />
+              </div>
+            </Link>
+          </div>
+        </section>
+
         <div className="mt-10 rounded-xl border border-border bg-card p-5 text-sm">
           <h2 className="font-semibold mb-2">Hvor passer dette inn?</h2>
           <ul className="space-y-1.5 text-muted-foreground list-disc pl-5">

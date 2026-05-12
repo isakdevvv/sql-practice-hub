@@ -29,6 +29,8 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as StackIndexRouteImport } from './routes/stack.index'
 import { Route as StackSlugRouteImport } from './routes/stack.$slug'
 import { Route as PythonVisualizerRouteImport } from './routes/python_.visualizer'
+import { Route as ProsjektMlSlugRouteImport } from './routes/prosjekt-ml.$slug'
+import { Route as PortfolioDte2602SlugRouteImport } from './routes/portfolio-dte2602.$slug'
 import { Route as PythonKapIndexRouteImport } from './routes/python_.kap.index'
 import { Route as PythonKapNrRouteImport } from './routes/python_.kap.$nr'
 
@@ -132,6 +134,16 @@ const PythonVisualizerRoute = PythonVisualizerRouteImport.update({
   path: '/python/visualizer',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ProsjektMlSlugRoute = ProsjektMlSlugRouteImport.update({
+  id: '/prosjekt-ml/$slug',
+  path: '/prosjekt-ml/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PortfolioDte2602SlugRoute = PortfolioDte2602SlugRouteImport.update({
+  id: '/portfolio-dte2602/$slug',
+  path: '/portfolio-dte2602/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PythonKapIndexRoute = PythonKapIndexRouteImport.update({
   id: '/python_/kap/',
   path: '/python/kap/',
@@ -161,6 +173,8 @@ export interface FileRoutesByFullPath {
   '/prosjekt': typeof ProsjektRoute
   '/python': typeof PythonRoute
   '/stack': typeof StackRouteWithChildren
+  '/portfolio-dte2602/$slug': typeof PortfolioDte2602SlugRoute
+  '/prosjekt-ml/$slug': typeof ProsjektMlSlugRoute
   '/python/visualizer': typeof PythonVisualizerRoute
   '/stack/$slug': typeof StackSlugRoute
   '/stack/': typeof StackIndexRoute
@@ -184,6 +198,8 @@ export interface FileRoutesByTo {
   '/practice': typeof PracticeRoute
   '/prosjekt': typeof ProsjektRoute
   '/python': typeof PythonRoute
+  '/portfolio-dte2602/$slug': typeof PortfolioDte2602SlugRoute
+  '/prosjekt-ml/$slug': typeof ProsjektMlSlugRoute
   '/python/visualizer': typeof PythonVisualizerRoute
   '/stack/$slug': typeof StackSlugRoute
   '/stack': typeof StackIndexRoute
@@ -209,6 +225,8 @@ export interface FileRoutesById {
   '/prosjekt': typeof ProsjektRoute
   '/python': typeof PythonRoute
   '/stack': typeof StackRouteWithChildren
+  '/portfolio-dte2602/$slug': typeof PortfolioDte2602SlugRoute
+  '/prosjekt-ml/$slug': typeof ProsjektMlSlugRoute
   '/python_/visualizer': typeof PythonVisualizerRoute
   '/stack/$slug': typeof StackSlugRoute
   '/stack/': typeof StackIndexRoute
@@ -235,6 +253,8 @@ export interface FileRouteTypes {
     | '/prosjekt'
     | '/python'
     | '/stack'
+    | '/portfolio-dte2602/$slug'
+    | '/prosjekt-ml/$slug'
     | '/python/visualizer'
     | '/stack/$slug'
     | '/stack/'
@@ -258,6 +278,8 @@ export interface FileRouteTypes {
     | '/practice'
     | '/prosjekt'
     | '/python'
+    | '/portfolio-dte2602/$slug'
+    | '/prosjekt-ml/$slug'
     | '/python/visualizer'
     | '/stack/$slug'
     | '/stack'
@@ -282,6 +304,8 @@ export interface FileRouteTypes {
     | '/prosjekt'
     | '/python'
     | '/stack'
+    | '/portfolio-dte2602/$slug'
+    | '/prosjekt-ml/$slug'
     | '/python_/visualizer'
     | '/stack/$slug'
     | '/stack/'
@@ -307,6 +331,8 @@ export interface RootRouteChildren {
   ProsjektRoute: typeof ProsjektRoute
   PythonRoute: typeof PythonRoute
   StackRoute: typeof StackRouteWithChildren
+  PortfolioDte2602SlugRoute: typeof PortfolioDte2602SlugRoute
+  ProsjektMlSlugRoute: typeof ProsjektMlSlugRoute
   PythonVisualizerRoute: typeof PythonVisualizerRoute
   PythonKapNrRoute: typeof PythonKapNrRoute
   PythonKapIndexRoute: typeof PythonKapIndexRoute
@@ -454,6 +480,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PythonVisualizerRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/prosjekt-ml/$slug': {
+      id: '/prosjekt-ml/$slug'
+      path: '/prosjekt-ml/$slug'
+      fullPath: '/prosjekt-ml/$slug'
+      preLoaderRoute: typeof ProsjektMlSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/portfolio-dte2602/$slug': {
+      id: '/portfolio-dte2602/$slug'
+      path: '/portfolio-dte2602/$slug'
+      fullPath: '/portfolio-dte2602/$slug'
+      preLoaderRoute: typeof PortfolioDte2602SlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/python_/kap/': {
       id: '/python_/kap/'
       path: '/python/kap'
@@ -501,6 +541,8 @@ const rootRouteChildren: RootRouteChildren = {
   ProsjektRoute: ProsjektRoute,
   PythonRoute: PythonRoute,
   StackRoute: StackRouteWithChildren,
+  PortfolioDte2602SlugRoute: PortfolioDte2602SlugRoute,
+  ProsjektMlSlugRoute: ProsjektMlSlugRoute,
   PythonVisualizerRoute: PythonVisualizerRoute,
   PythonKapNrRoute: PythonKapNrRoute,
   PythonKapIndexRoute: PythonKapIndexRoute,
