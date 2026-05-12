@@ -1,5 +1,14 @@
 import { Link } from "@tanstack/react-router";
-import { ArrowRight, Terminal, FileCode, Users, Server, Cpu } from "lucide-react";
+import {
+  ArrowRight,
+  Terminal,
+  FileCode,
+  Users,
+  Server,
+  Cpu,
+  ClipboardCheck,
+  Keyboard,
+} from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 
 type Course = {
@@ -49,6 +58,14 @@ const COURSES: Course[] = [
     shortDescription:
       "VM vs container, hypervisor type 1/2, Docker-basics, snapshots og bruksområder.",
     Icon: Server,
+    status: "ready",
+  },
+  {
+    slug: "dte2505-obliger-guide",
+    title: "Oblig-guide (8 obliger)",
+    shortDescription:
+      "Tekst-guide gjennom de åtte typiske obligene: VM, Linux-grunnlag, brukere, rettigheter, prosesser, scripting, pakker, tjenester. Med sjekklister og feller.",
+    Icon: ClipboardCheck,
     status: "ready",
   },
 ];
@@ -141,6 +158,29 @@ export function Dte2505Hub() {
                 </Link>
               );
             })}
+          </div>
+        </section>
+
+        <section className="mb-10">
+          <h2 className="text-xl font-semibold mb-3">Interaktive verktøy</h2>
+          <div className="grid sm:grid-cols-2 gap-3">
+            <Link
+              to="/dte2505/shell-drill"
+              className="group rounded-xl border border-brand/40 bg-brand/5 hover:border-brand p-5 transition-colors block"
+            >
+              <div className="flex items-center gap-2 mb-2">
+                <Keyboard className="h-4 w-4 text-brand" />
+                <h3 className="font-semibold text-foreground leading-tight">Shell-drill — 30+ scenarier</h3>
+              </div>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                Skriv kommandoen som løser scenariet. find / chmod / ps / kill / systemctl /
+                tar / bash-snutter. Toleranse for flagg-rekkefølge.
+              </p>
+              <div className="mt-3 flex items-center text-xs text-brand">
+                Åpne
+                <ArrowRight className="h-3.5 w-3.5 ml-1 group-hover:translate-x-0.5 transition-transform" />
+              </div>
+            </Link>
           </div>
         </section>
 
