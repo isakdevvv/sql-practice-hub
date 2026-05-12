@@ -1,5 +1,6 @@
 import type { PyExercise } from "./types";
 import { DEMO_APP_PYTHON } from "../api-konsoll/demoApp";
+import { DTE2507_EXERCISES } from "./exercises-dte2507";
 
 // All exercises target DAT1000-pensum: Flask, Jinja, MySQL via prepared
 // statements, sessions, login, CSRF, JSON-API, HTTP-statuskoder.
@@ -6727,4 +6728,5 @@ for port in sorted(porter):
       "DNS er det klassiske UDP-eksemplet (port 53). Resten her er TCP.",
     ],
   },
+  ...DTE2507_EXERCISES,
 ];
