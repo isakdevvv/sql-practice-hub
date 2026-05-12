@@ -46,6 +46,13 @@ const DTE_2509_MODULER: ModulSpec[] = [
     slugs: ["normalisering", "er-mapping", "nokler", "subqueries", "mysql-vs-sqlite", "bytes-encoding"],
   },
   {
+    nr: "4",
+    title: "User Management",
+    blurb:
+      "Register, login, sessions, @login_required, logout — full auth-flyt med Flask-Login.",
+    slugs: ["brukerhandtering", "mvc-monster"],
+  },
+  {
     nr: "5",
     title: "API og HTTP",
     blurb: "HTTP-anatomi, statuskoder, GET/POST/PUT/DELETE, JSON-respons.",

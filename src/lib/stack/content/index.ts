@@ -101,6 +101,8 @@ import { content as traer } from "./traer";
 import { content as graferDypere } from "./grafer-dypere";
 import { content as hashingDypere } from "./hashing-dypere";
 import { content as dynamicProgramming } from "./dynamic-programming";
+import { content as brukerhandtering } from "./brukerhandtering";
+import { content as dte2509 } from "./dte-2509";
 import type { TrinnContent } from "../types";
 
 export const TRINN: TrinnContent[] = [
@@ -126,6 +128,7 @@ export const TRINN: TrinnContent[] = [
   funksjonellProgrammering, typesystemer,
   javascriptGrunnlag, typescript, reactGrunnlag, cssModerne,
   traer, graferDypere, hashingDypere, dynamicProgramming,
+  dte2509, brukerhandtering,
 ];
 
 import { curriculumIndexOf } from "../curriculum";
