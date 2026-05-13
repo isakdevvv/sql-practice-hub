@@ -21,6 +21,19 @@ import {
 } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { MlPipelineFlow } from "./MlPipelineFlow";
+import { Mermaid } from "@/components/Mermaid";
+
+const ML_PIPELINE_CHART = `graph LR
+  A[Radata] --> B[EDA]
+  B --> C[Preprocessing]
+  C --> D[Train/Test split]
+  D --> E[Fit]
+  E --> F[Predict]
+  F --> G[Evaluate]
+  E -.tuning.-> H[Hyperparam-sok]
+  H --> E
+  classDef tune fill:#fef3c7,stroke:#f59e0b,color:#92400e;
+  class H tune;`;
 
 type Practice = {
   href: string;
@@ -192,6 +205,12 @@ export function Dte2602Hub() {
             Alle ML-prosjekter følger samme grunnflyt. Lær stegene utenat — så blir
             algoritme-valg den ENE delen som varierer.
           </p>
+          <div className="rounded-xl border border-border bg-card p-5 mb-4">
+            <Mermaid
+              chart={ML_PIPELINE_CHART}
+              ariaLabel="ML-pipeline flowchart: radata gjennom EDA, preprocessing, split, fit, predict, evaluate, med tuning-loop fra fit"
+            />
+          </div>
           <div className="overflow-hidden rounded-lg border border-border">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">

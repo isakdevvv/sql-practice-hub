@@ -14,6 +14,34 @@ import { CardinalityCard } from "./CardinalityCard";
 import { MappingRulesTable } from "./MappingRulesTable";
 import { ErDrill } from "./ErDrill";
 import { DRILL_EXERCISES } from "./drillExercises";
+import { Mermaid } from "@/components/Mermaid";
+
+const BESTILLINGSSYSTEM_ER = `erDiagram
+  BRUKER ||--o{ BESTILLING : "plasserer"
+  BESTILLING ||--|{ BESTILLINGSLINJE : "inneholder"
+  PRODUKT ||--o{ BESTILLINGSLINJE : "vises i"
+  BRUKER {
+    int id PK
+    string epost
+    string navn
+  }
+  BESTILLING {
+    int id PK
+    int bruker_id FK
+    date opprettet
+    string status
+  }
+  PRODUKT {
+    int id PK
+    string navn
+    decimal pris
+  }
+  BESTILLINGSLINJE {
+    int bestilling_id PK_FK
+    int produkt_id PK_FK
+    int antall
+    decimal enhetspris
+  }`;
 
 const SJEKKLISTE: string[] = [
   "Finn entitetene (substantivene): KUNDE, ORDRE, PRODUKT…",
@@ -91,6 +119,33 @@ export function ErMappingPage() {
 
         {/* 3. Mapping-regler */}
         <MappingRulesTable />
+
+        {/* 3b. Eksempel: bestillingssystem (Mermaid ER) */}
+        <section className="mb-10">
+          <h2 className="text-xl font-semibold mb-3">
+            Eksempel: bestillingssystem
+          </h2>
+          <p className="text-sm text-muted-foreground mb-4">
+            Et lite bestillingssystem med fire entiteter:{" "}
+            <code>BRUKER</code>, <code>BESTILLING</code>,{" "}
+            <code>PRODUKT</code> og koblingstabellen{" "}
+            <code>BESTILLINGSLINJE</code>. Merk M:N-relasjonen mellom{" "}
+            <code>BESTILLING</code> og <code>PRODUKT</code> som loses ved en
+            koblingstabell med sammensatt PK. Diagrammet rendres med Mermaid
+            sin kr&aring;kefot-notasjon.
+          </p>
+          <div className="rounded-xl border border-border bg-card p-5">
+            <Mermaid
+              chart={BESTILLINGSSYSTEM_ER}
+              ariaLabel="ER-diagram for bestillingssystem"
+            />
+          </div>
+          <p className="mt-3 text-xs text-muted-foreground">
+            <code>||--o&#123;</code> = en-til-mange (krakefoten peker mot
+            mange-siden). <code>||--|&#123;</code> = en-til-mange med minst en.
+            En bestilling kan ikke eksistere uten minst en linje.
+          </p>
+        </section>
 
         {/* 4. Eksempel: M:N med koblingstabell */}
         <section className="mb-10">

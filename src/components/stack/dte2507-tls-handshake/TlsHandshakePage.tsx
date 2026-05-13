@@ -3,6 +3,19 @@ import { Lightbulb } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
 import { HandshakeDiagram } from "./HandshakeDiagram";
+import { Mermaid } from "@/components/Mermaid";
+
+const TLS12_SEQUENCE = `sequenceDiagram
+  autonumber
+  participant K as Klient
+  participant S as Server
+  K->>S: ClientHello (ciphersuites, random)
+  S->>K: ServerHello + Certificate + ServerKeyExchange
+  S->>K: ServerHelloDone
+  K->>S: ClientKeyExchange (krypter premaster med pub-key)
+  K->>S: ChangeCipherSpec + Finished (kryptert)
+  S->>K: ChangeCipherSpec + Finished (kryptert)
+  Note over K,S: Application Data (kryptert med session keys)`;
 
 const STEPS = [
   { title: "Hva må handshake-en oppnå?", anchor: "mal" },
@@ -99,6 +112,15 @@ export function TlsHandshakePage() {
           <p className="text-xs text-muted-foreground mt-3">
             Totalt 2 RTTs i 1.2 (2 fram-og-tilbake-runder) før første HTTP-byte kan sendes.
           </p>
+          <div className="mt-5 rounded-xl border border-border bg-card p-5">
+            <div className="text-xs uppercase tracking-wider text-brand font-semibold mb-3">
+              Sekvensdiagram — TLS 1.2
+            </div>
+            <Mermaid
+              chart={TLS12_SEQUENCE}
+              ariaLabel="Sekvensdiagram: TLS 1.2 handshake mellom klient og server"
+            />
+          </div>
         </section>
 
         <section id="12-vs-13" className="mb-10">
