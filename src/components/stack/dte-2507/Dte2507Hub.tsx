@@ -16,6 +16,7 @@ import {
   PackageOpen,
 } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
+import { LearningPath } from "@/components/stack/LearningPath";
 
 type Course = {
   slug: string;
@@ -148,6 +149,47 @@ export function Dte2507Hub() {
             top-down, kryptografi-grunnlag, TLS, og praktisk nettverkssikkerhet. Hver
             del har teori + drag-oppgaver.
           </p>
+        </div>
+
+        <div className="mb-10">
+          <LearningPath
+            fag="DTE-2507"
+            forbinder={["DTE-2505 (Linux-OS som kjører nettverkstacken)", "DTE-2509 (HTTP og web-sikkerhet)", "TEK-1501 (sannsynlighet for kryptering)"]}
+            layers={[
+              {
+                navn: "Basis — protokoll-stakken top-down",
+                intro:
+                  "Start på applikasjonslaget der du allerede kjenner HTTP, og jobb deg ned. Lær lag for lag hva som faktisk skjer.",
+                steps: [
+                  { slug: "osi-tcpip", title: "OSI og TCP/IP", blurb: "De to lagmodellene, hvorfor man trenger begge mentale rammer." },
+                  { slug: "transportlag", title: "Transportlaget", blurb: "TCP 3-way handshake, sequence numbers vs UDP — pålitelighet vs hastighet." },
+                  { slug: "dte2507-subnetting", title: "Subnetting (interaktiv)", blurb: "CIDR-kalkulator + binær AND-visning. VLSM-trener med 8 oppgaver." },
+                ],
+              },
+              {
+                navn: "Dypere — kryptografi og TLS",
+                intro:
+                  "Når nettverket sitter, må vi sikre trafikken. Krypto er fundamentet, TLS bygger systemet vi faktisk bruker.",
+                steps: [
+                  { slug: "kryptografi", title: "Kryptografi-grunnlag", blurb: "Symmetrisk vs asymmetrisk, hash, MAC — bygg blokkene." },
+                  { slug: "dte2507-rsa-mini", title: "RSA mini (trinnvis)", blurb: "Velg p/q → n → φ → e → d → krypter 'HI' med BigInt." },
+                  { slug: "tls", title: "TLS-handshake", blurb: "Hvordan symmetrisk + asymmetrisk kombineres for sesjonsnøkler." },
+                  { slug: "dte2507-tls-handshake", title: "TLS-handshake (klikkbar)", blurb: "Klikk gjennom hver melding, se ASYM/SYM/KDF-rollene." },
+                ],
+              },
+              {
+                navn: "Eksamen — praktisk analyse",
+                intro:
+                  "To 2-timers deleksamener krever at du både gjenkjenner pakker og forklarer angrep/forsvar. Disse leksjonene speiler eksamens-spørsmål.",
+                steps: [
+                  { slug: "dte2507-paket-dekoding", title: "Pakke-dekoding (hex)", blurb: "Klikk byte-felter i hex-dump — se hva hver byte betyr." },
+                  { slug: "dte2507-praksis", title: "5 forhåndsdefinerte pakker", blurb: "TCP SYN, SYN+ACK, UDP DNS, ARP, ICMP — analyser ekte capture-strukturer." },
+                  { slug: "nettverkssikkerhet", title: "Nettverkssikkerhet", blurb: "Trusler, brannmurer, IDS, WAF — forsvars-rammeverket." },
+                  { slug: "dte2507-wireshark-analyse", title: "Wireshark-analyse", blurb: "Pcap-tolking + filter-syntaks for raske spørsmål." },
+                ],
+              },
+            ]}
+          />
         </div>
 
         {/* Cheatsheet — protokoll-stakken */}

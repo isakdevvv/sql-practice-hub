@@ -25,6 +25,7 @@ import {
   Boxes,
   KeyboardMusic,
   Sigma,
+  CalendarDays,
 } from "lucide-react";
 
 export const Route = createFileRoute("/")({
@@ -67,6 +68,54 @@ type Sektor = {
 
 const SEKTORER: Sektor[] = [
   {
+    navn: "Mitt høstsemester 2026",
+    beskrivelse:
+      "De fem fagene du tar i høst — øverst og prioritert. Hvert fag har et læringsspor som bygger opp gradvis fra grunnleggende til eksamensnivå.",
+    accent: "from-yellow-500/40 to-amber-500/30",
+    subjects: [
+      {
+        slug: "tek-1501",
+        code: "TEK-1501",
+        navn: "Sannsynlighet og statistikk for ingeniører",
+        blurb:
+          "Statistikk-fundament: deskriptiv → sannsynlighet → fordelinger → CLT → estimering → hypotesetest → regresjon. Live PMF/PDF-visuals og scipy.stats i nettleseren. Eksamen 14.12.2026.",
+        Icon: Sigma,
+      },
+      {
+        slug: "dte-2505",
+        code: "DTE-2505",
+        navn: "Operativsystemer",
+        blurb:
+          "Linux fra bunn: filsystem → kommandoer → rettigheter → prosesser → bash-skripting. Interaktiv rwx-kalkulator, prosess-monitor og bash-pad med mock-FS. Eksamen 02.12.2026.",
+        Icon: TerminalSquare,
+      },
+      {
+        slug: "dte-2501",
+        code: "DTE-2501",
+        navn: "AI Methods and Applications",
+        blurb:
+          "Moderne ML-spor (pensum): k-NN, k-Means, GMM/EM, PCA, ensembler, GA/PSO/ACO, MDP/VI/PI, DP/TSP. Klassisk AI-spor (supplerende). Eksamen 19.10 + 07.12 + mappe 14.12.2026.",
+        Icon: Brain,
+      },
+      {
+        slug: "dte-2507",
+        code: "DTE-2507",
+        navn: "Datakommunikasjon og sikkerhet",
+        blurb:
+          "Top-down nettverk + sikkerhet: OSI/TCP-IP → HTTP/TCP/UDP → IP/subnet → krypto/PKI/TLS. Interaktiv subnett-kalkulator, TLS-handshake, hex-dump-dekoding, RSA-mini. To 2t-eksamener 30.11.2026.",
+        Icon: Network,
+      },
+      {
+        slug: "dte-2602",
+        code: "DTE-2602",
+        navn: "Introduksjon maskinlæring og AI",
+        blurb:
+          "ML-workflow: EDA → preprocessing/pipelines → trær/RF → bias-varians/regularisering → ROC/evaluering. To porteføljespor som speiler mappevurderingen. Eksamen 09.12 + mappe 16.12.2026.",
+        Icon: Layers,
+      },
+    ],
+  },
+  {
     navn: "Databaser og web",
     beskrivelse: "SQL, Flask, MySQL, autentisering, web-sikkerhet, og full-stack Web 2.",
     accent: "from-blue-500/30 to-cyan-500/20",
@@ -99,7 +148,7 @@ const SEKTORER: Sektor[] = [
         code: "DTE-2501",
         navn: "AI Methods and Applications",
         blurb:
-          "Fem mini-kurs: søk, CSP, logikk, planlegging og Bayes — klassisk AI før ML tok over.",
+          "To spor: moderne ML (k-NN, k-Means, GMM, PCA, ensembler, GA, MDP) og klassisk AI (søk, CSP, logikk, planlegging, Bayes).",
         Icon: Brain,
       },
       {
@@ -107,7 +156,7 @@ const SEKTORER: Sektor[] = [
         code: "DTE-2602",
         navn: "Introduksjon maskinlæring og AI",
         blurb:
-          "Fire mini-kurs: ML-grunnlag, supervised, unsupervised, og nevrale nett.",
+          "ML-grunnlag + workflow: EDA, preprocessing-pipelines, trær/RF, bias-varians, ROC-evaluering, og porteføljespor med kjørbare sklearn-øvelser.",
         Icon: Layers,
       },
       {
@@ -471,11 +520,27 @@ function LandingPage() {
           </div>
 
           <div className="space-y-10">
-            {SEKTORER.map((sektor) => (
-              <div key={sektor.navn}>
-                <div className="mb-4">
-                  <h3 className="text-lg font-semibold text-foreground">{sektor.navn}</h3>
-                  <p className="text-sm text-muted-foreground">{sektor.beskrivelse}</p>
+            {SEKTORER.map((sektor) => {
+              const isPriority = sektor.navn.startsWith("Mitt høstsemester");
+              return (
+              <div key={sektor.navn} className={isPriority ? "rounded-2xl border border-warning/40 bg-warning/5 p-5 md:p-6" : ""}>
+                <div className="mb-4 flex items-start gap-3">
+                  {isPriority && (
+                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-warning/15">
+                      <CalendarDays className="h-5 w-5 text-warning" />
+                    </div>
+                  )}
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <h3 className={isPriority ? "text-xl font-bold text-foreground" : "text-lg font-semibold text-foreground"}>{sektor.navn}</h3>
+                      {isPriority && (
+                        <span className="rounded-full border border-warning/50 bg-warning/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-warning">
+                          Aktuelt nå
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-sm text-muted-foreground mt-1">{sektor.beskrivelse}</p>
+                  </div>
                 </div>
                 <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
                   {sektor.subjects.map((s) => {
@@ -485,16 +550,20 @@ function LandingPage() {
                         key={s.slug}
                         to="/stack/$slug"
                         params={{ slug: s.slug }}
-                        className="group rounded-xl border border-border bg-card hover:border-brand/40 p-5 transition-colors block relative overflow-hidden"
+                        className={
+                          isPriority
+                            ? "group rounded-xl border border-warning/30 bg-card hover:border-warning/60 p-5 transition-colors block relative overflow-hidden"
+                            : "group rounded-xl border border-border bg-card hover:border-brand/40 p-5 transition-colors block relative overflow-hidden"
+                        }
                       >
                         <div
                           className={`absolute inset-0 -z-10 opacity-0 group-hover:opacity-100 transition-opacity bg-gradient-to-br ${sektor.accent}`}
                         />
                         <div className="flex items-center gap-2 mb-2">
-                          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-brand/10">
-                            <Icon className="h-4 w-4 text-brand" />
+                          <div className={isPriority ? "flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-warning/15" : "flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-brand/10"}>
+                            <Icon className={isPriority ? "h-4 w-4 text-warning" : "h-4 w-4 text-brand"} />
                           </div>
-                          <span className="text-[10px] font-semibold text-brand uppercase tracking-wider">
+                          <span className={isPriority ? "text-[10px] font-semibold text-warning uppercase tracking-wider" : "text-[10px] font-semibold text-brand uppercase tracking-wider"}>
                             {s.code}
                           </span>
                         </div>
@@ -513,7 +582,8 @@ function LandingPage() {
                   })}
                 </div>
               </div>
-            ))}
+              );
+            })}
           </div>
         </section>
 

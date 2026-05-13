@@ -14,6 +14,7 @@ import {
   Target,
 } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
+import { LearningPath } from "@/components/stack/LearningPath";
 
 type Modul = {
   nr: string;
@@ -213,6 +214,49 @@ export function Tek1501Hub() {
               ofte en lang oppgave med CI + hypotesetest + regresjon.
             </div>
           </div>
+        </div>
+
+        <div className="mb-10">
+          <LearningPath
+            fag="TEK-1501"
+            forbinder={[
+              "DTE-2501 (RL/ML bruker sannsynlighet)",
+              "DTE-2602 (evaluering, hypotesetest av modeller)",
+              "Matematikk R1/R2",
+            ]}
+            layers={[
+              {
+                navn: "Basis — beskriv dataene",
+                intro:
+                  "Lær å sammenfatte målinger med tall og bilder. Før vi modellerer noe, må vi se hva vi faktisk har.",
+                steps: [
+                  { slug: "tek1-deskriptiv", title: "Sentralmål, spredning og visualisering", blurb: "Mean, median, varians, IQR + histogram med live bin-slider." },
+                  { slug: "tek1-sannsynlighet", title: "Sannsynlighet, mengdelære, Bayes", blurb: "Venn-diagram, betinget P, og Bayes — bygg intuisjon før formler." },
+                  { slug: "tek1-kombinatorikk", title: "Kombinatorikk", blurb: "Permutasjon, kombinasjon, m/uten tilbakelegging — interaktiv trekksim." },
+                ],
+              },
+              {
+                navn: "Dypere — modeller for tilfeldighet",
+                intro:
+                  "Når dataene er forstått, putter vi dem inn i sannsynlighetsfordelinger. Slik kan vi regne ut hva som er sannsynlig før vi har sett det.",
+                steps: [
+                  { slug: "tek1-diskrete-fordelinger", title: "Binomisk, Poisson, hypergeometrisk", blurb: "Live PMF-plot — se hvordan n og p endrer formen." },
+                  { slug: "tek1-kontinuerlige-fordelinger", title: "Normal, eksp, t, χ²", blurb: "PDF med drag-bart areal — tren intuisjonen for P(a<X<b)." },
+                  { slug: "tek1-forventning-clt", title: "Forventning, varians, CLT", blurb: "Simulator for sentralgrenseteoremet med 4 ulike grunnfordelinger." },
+                ],
+              },
+              {
+                navn: "Eksamen — trekke konklusjoner",
+                intro:
+                  "Når modellen sitter, bruker vi den til å si noe vi ikke visste: hvor sikre er vi, og er forskjellen reell?",
+                steps: [
+                  { slug: "tek1-estimering-ki", title: "Konfidensintervaller", blurb: "100-utvalg-simulator viser hvorfor 95% KI ikke garanterer 95% i hvert tilfelle." },
+                  { slug: "tek1-hypotesetest-regresjon", title: "Hypotesetest + regresjon", blurb: "H₀/H₁-overlapp med skyvbar kritisk grense, drag-bar scatter med live R²." },
+                  { slug: "tek1-statistisk-analyse", title: "Komplett analyse", blurb: "Bredt sammenfattende kurs — koble alle teknikkene." },
+                ],
+              },
+            ]}
+          />
         </div>
 
         <section className="mb-12">
