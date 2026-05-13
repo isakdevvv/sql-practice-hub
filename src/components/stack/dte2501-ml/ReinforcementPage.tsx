@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Lightbulb, Gamepad2, AlertTriangle } from "lucide-react";
+import { Lightbulb, Gamepad2, AlertTriangle, ArrowLeft } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
 
@@ -429,7 +429,17 @@ umulig. Da brukes deep Q-learning (DQN) — Q er et nevralt nett.`}</pre>
             </li>
           </ul>
         </div>
-      </div>
+              <div className="mt-6">
+          <Link
+            to="/stack/$slug"
+            params={{ slug: "dte-2501" }}
+            className="text-brand hover:underline inline-flex items-center gap-1 text-sm"
+          >
+            <ArrowLeft className="h-3.5 w-3.5" />
+            Tilbake til DTE-2501-hub
+          </Link>
+        </div>
+</div>
     </StackPageShell>
   );
 }

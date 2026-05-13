@@ -8,8 +8,34 @@ import {
   Cpu,
   ClipboardCheck,
   Keyboard,
+  GitBranch,
+  Lightbulb,
 } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
+
+type Practice = {
+  href: string;
+  Icon: typeof Terminal;
+  tittel: string;
+  blurb: string;
+};
+
+const PRACTICE: Practice[] = [
+  {
+    href: "/drag",
+    Icon: GitBranch,
+    tittel: "Drag-oppgaver",
+    blurb:
+      "Filter på «OS & Linux» — chmod-octal, prosess-states, shell-scripting, sudo vs su.",
+  },
+  {
+    href: "/cards",
+    Icon: Lightbulb,
+    tittel: "Flashcards",
+    blurb:
+      "Drillbare kort over kommandoer, rettigheter, prosesser, og scheduling — repetisjon før eksamen.",
+  },
+];
 
 type Course = {
   slug: string;
@@ -162,7 +188,10 @@ export function Dte2505Hub() {
         </section>
 
         <section className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">Interaktive verktøy</h2>
+          <h2 className="text-xl font-semibold mb-1">Praktisk øvelse</h2>
+          <p className="text-xs text-muted-foreground mb-5">
+            Stack-leksjonene forklarer teorien. Her øver du selv.
+          </p>
           <div className="grid sm:grid-cols-2 gap-3">
             <Link
               to="/dte2505/shell-drill"
@@ -181,6 +210,26 @@ export function Dte2505Hub() {
                 <ArrowRight className="h-3.5 w-3.5 ml-1 group-hover:translate-x-0.5 transition-transform" />
               </div>
             </Link>
+            {PRACTICE.map((r) => {
+              const Icon = r.Icon;
+              return (
+                <Link
+                  key={r.href}
+                  to={r.href}
+                  className="group rounded-xl border border-border bg-card hover:border-brand/40 p-5 transition-colors block"
+                >
+                  <div className="flex items-center gap-2 mb-2">
+                    <Icon className="h-4 w-4 text-brand" />
+                    <h3 className="font-semibold text-foreground leading-tight">{r.tittel}</h3>
+                  </div>
+                  <p className="text-sm text-muted-foreground leading-relaxed">{r.blurb}</p>
+                  <div className="mt-3 flex items-center text-xs text-muted-foreground group-hover:text-foreground transition-colors">
+                    Åpne
+                    <ArrowRight className="h-3.5 w-3.5 ml-1 group-hover:translate-x-0.5 transition-transform" />
+                  </div>
+                </Link>
+              );
+            })}
           </div>
         </section>
 

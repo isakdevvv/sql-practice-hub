@@ -1,6 +1,30 @@
 import { Link } from "@tanstack/react-router";
-import { ArrowRight, GitBranch, Image as ImageIcon, Shield, Gauge, Wrench } from "lucide-react";
+import { ArrowRight, GitBranch, Image as ImageIcon, Shield, Gauge, Wrench, Lightbulb } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
+
+type Practice = {
+  href: string;
+  Icon: typeof GitBranch;
+  tittel: string;
+  blurb: string;
+};
+
+const PRACTICE: Practice[] = [
+  {
+    href: "/drag",
+    Icon: GitBranch,
+    tittel: "Drag-oppgaver",
+    blurb:
+      "Filter på «ML & AI» — søk på «CNN», «Backpropagation», «Regularisering (NN)», «NN-optimering», «PyTorch/TF».",
+  },
+  {
+    href: "/cards",
+    Icon: Lightbulb,
+    tittel: "Flashcards",
+    blurb:
+      "Drillbare kort over deep-learning-konsepter: backprop, CNN-arkitekturer, regularisering, optimerere, init-strategier.",
+  },
+];
 
 type Course = {
   slug: string;
@@ -225,6 +249,35 @@ Læringen for DTE-2502:
   - Det som gjorde det praktisk: GPU-er, store datasett (ImageNet),
     bedre init (He/Xavier), ReLU, dropout, batch norm, Adam.
   - Hvert av disse triksene tar vi i et eget mini-kurs.`}</pre>
+          </div>
+        </section>
+
+        <section className="mb-10">
+          <h2 className="text-xl font-semibold mb-1">Praktisk øvelse</h2>
+          <p className="text-xs text-muted-foreground mb-5">
+            Stack-leksjonene forklarer teorien. Her øver du selv.
+          </p>
+          <div className="grid sm:grid-cols-2 gap-3">
+            {PRACTICE.map((r) => {
+              const Icon = r.Icon;
+              return (
+                <Link
+                  key={r.href}
+                  to={r.href}
+                  className="group rounded-xl border border-border bg-card hover:border-brand/40 p-5 transition-colors block"
+                >
+                  <div className="flex items-center gap-2 mb-2">
+                    <Icon className="h-4 w-4 text-brand" />
+                    <h3 className="font-semibold text-foreground leading-tight">{r.tittel}</h3>
+                  </div>
+                  <p className="text-sm text-muted-foreground leading-relaxed">{r.blurb}</p>
+                  <div className="mt-3 flex items-center text-xs text-muted-foreground group-hover:text-foreground transition-colors">
+                    Åpne
+                    <ArrowRight className="h-3.5 w-3.5 ml-1 group-hover:translate-x-0.5 transition-transform" />
+                  </div>
+                </Link>
+              );
+            })}
           </div>
         </section>
 
