@@ -1,4 +1,4 @@
-import { useMemo, useState, useCallback } from "react";
+import { useMemo, useState, useCallback, useEffect } from "react";
 import {
   ReactFlow,
   Background,
@@ -116,6 +116,10 @@ const nodeTypes = { stage: StageNode };
 export function MlPipelineFlow() {
   const [selectedId, setSelectedId] = useState<string>("split");
   const [showLeakage, setShowLeakage] = useState<boolean>(false);
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const nodes = useMemo<Node<StageNodeData>[]>(() => {
     return STAGES.map((s, i) => ({
@@ -188,6 +192,11 @@ export function MlPipelineFlow() {
 
       <div className="grid md:grid-cols-[1fr_280px]">
         <div className="h-[360px] bg-background" style={{ touchAction: "none" }}>
+          {!mounted ? (
+            <div className="h-full flex items-center justify-center text-xs text-muted-foreground">
+              Laster pipeline …
+            </div>
+          ) : (
           <ReactFlow
             nodes={nodes}
             edges={edges}
@@ -209,6 +218,7 @@ export function MlPipelineFlow() {
               style={{ background: "var(--color-card)" }}
             />
           </ReactFlow>
+          )}
         </div>
 
         <aside className="border-t md:border-t-0 md:border-l border-border bg-background p-4 text-sm">

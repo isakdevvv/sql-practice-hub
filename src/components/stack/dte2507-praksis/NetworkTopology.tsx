@@ -1,4 +1,4 @@
-import { useMemo, useState, useCallback } from "react";
+import { useMemo, useState, useCallback, useEffect } from "react";
 import {
   ReactFlow,
   Background,
@@ -225,6 +225,10 @@ const POSITIONS: Record<string, { x: number; y: number }> = {
 
 export function NetworkTopology() {
   const [selectedId, setSelectedId] = useState<string>("fw");
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const nodes = useMemo<Node<DeviceNodeData>[]>(() => {
     return NODES.map((n) => ({
@@ -275,6 +279,11 @@ export function NetworkTopology() {
 
       <div className="grid md:grid-cols-[1fr_320px]">
         <div className="h-[460px] bg-background" style={{ touchAction: "none" }}>
+          {!mounted ? (
+            <div className="h-full flex items-center justify-center text-xs text-muted-foreground">
+              Laster topologi …
+            </div>
+          ) : (
           <ReactFlow
             nodes={nodes}
             edges={edges}
@@ -296,6 +305,7 @@ export function NetworkTopology() {
               style={{ background: "var(--color-card)" }}
             />
           </ReactFlow>
+          )}
         </div>
 
         <aside className="border-t md:border-t-0 md:border-l border-border bg-background p-4 text-sm flex flex-col min-h-[200px]">

@@ -1,4 +1,4 @@
-import { useMemo, useState, useCallback } from "react";
+import { useMemo, useState, useCallback, useEffect } from "react";
 import {
   ReactFlow,
   Background,
@@ -146,6 +146,10 @@ const nodeTypes = { layer: LayerNode };
 export function OsiStackFlow() {
   const [mode, setMode] = useState<Mode>("osi");
   const [selectedId, setSelectedId] = useState<string>("application");
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const visibleLayers = useMemo(() => {
     if (mode === "osi") return LAYERS;
@@ -248,6 +252,11 @@ export function OsiStackFlow() {
 
       <div className="grid md:grid-cols-[1fr_280px]">
         <div className="h-[520px] bg-background" style={{ touchAction: "none" }}>
+          {!mounted ? (
+            <div className="h-full flex items-center justify-center text-xs text-muted-foreground">
+              Laster interaktiv stakk …
+            </div>
+          ) : (
           <ReactFlow
             nodes={nodes}
             edges={edges}
@@ -271,6 +280,7 @@ export function OsiStackFlow() {
               }}
             />
           </ReactFlow>
+          )}
         </div>
 
         <aside className="border-t md:border-t-0 md:border-l border-border bg-background p-4 text-sm">

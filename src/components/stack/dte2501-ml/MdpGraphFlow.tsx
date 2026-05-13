@@ -1,4 +1,4 @@
-import { useMemo, useState, useCallback } from "react";
+import { useMemo, useState, useCallback, useEffect } from "react";
 import {
   ReactFlow,
   Background,
@@ -96,6 +96,10 @@ type ActionFilter = "all" | "a0" | "a1";
 export function MdpGraphFlow() {
   const [selectedId, setSelectedId] = useState<string>("s0");
   const [actionFilter, setActionFilter] = useState<ActionFilter>("all");
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const nodes = useMemo<Node<StateNodeData>[]>(() => {
     return STATES.map((s) => ({
@@ -173,6 +177,11 @@ export function MdpGraphFlow() {
 
       <div className="grid md:grid-cols-[1fr_280px]">
         <div className="h-[420px] bg-background" style={{ touchAction: "none" }}>
+          {!mounted ? (
+            <div className="h-full flex items-center justify-center text-xs text-muted-foreground">
+              Laster MDP-graf …
+            </div>
+          ) : (
           <ReactFlow
             nodes={nodes}
             edges={edges}
@@ -194,6 +203,7 @@ export function MdpGraphFlow() {
               style={{ background: "var(--color-card)" }}
             />
           </ReactFlow>
+          )}
         </div>
 
         <aside className="border-t md:border-t-0 md:border-l border-border bg-background p-4 text-sm">
