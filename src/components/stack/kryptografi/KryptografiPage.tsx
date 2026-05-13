@@ -2,10 +2,12 @@ import { Link } from "@tanstack/react-router";
 import { ArrowRight, Lightbulb } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
+import { AesGcmDemo } from "./AesGcmDemo";
 
 const STEPS = [
   { title: "Hva krypto faktisk beskytter mot", anchor: "trusler" },
   { title: "Symmetrisk kryptering", anchor: "symmetrisk" },
+  { title: "AES-GCM i praksis", anchor: "aes-gcm" },
   { title: "Asymmetrisk kryptering", anchor: "asymmetrisk" },
   { title: "Hash-funksjoner", anchor: "hash" },
   { title: "MAC og HMAC — integritet med nøkkel", anchor: "mac" },
@@ -101,8 +103,19 @@ export function KryptografiPage() {
           </div>
         </section>
 
+        <section id="aes-gcm" className="mb-10">
+          <h2 className="text-xl font-semibold mb-3">3. AES-GCM i praksis</h2>
+          <p className="text-sm text-muted-foreground mb-3">
+            Symmetrisk i teorien — over. Nå konkret: <strong>node-forge</strong> kjører
+            AES-256 i GCM-modus i nettleseren din. GCM gir både konfidensialitet OG
+            integritet i én operasjon (kalles AEAD). Generer nøkkel og IV, krypter en
+            melding, og se hvordan en bit-flip i ciphertext gjør at dekryptering avbrytes.
+          </p>
+          <AesGcmDemo />
+        </section>
+
         <section id="asymmetrisk" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">3. Asymmetrisk kryptering (public key)</h2>
+          <h2 className="text-xl font-semibold mb-3">4. Asymmetrisk kryptering (public key)</h2>
           <p className="text-sm text-muted-foreground mb-4">
             <strong>To nøkler:</strong> én offentlig, én privat. Det som krypteres med
             den ene kan KUN dekrypteres med den andre.
@@ -127,7 +140,7 @@ Hvem som helst kan kryptere TIL Bob. Bare Bob kan lese.
         </section>
 
         <section id="hash" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">4. Hash-funksjoner</h2>
+          <h2 className="text-xl font-semibold mb-3">5. Hash-funksjoner</h2>
           <p className="text-sm text-muted-foreground mb-4">
             En ENVEIS funksjon: <code>hash(input) → fixed-size output</code>. Ikke
             mulig å reversere. Liten endring i input gir helt annerledes output (avalanche).
@@ -168,7 +181,7 @@ Kravene til en kryptografisk hash:
         </section>
 
         <section id="mac" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">5. MAC og HMAC — integritet med nøkkel</h2>
+          <h2 className="text-xl font-semibold mb-3">6. MAC og HMAC — integritet med nøkkel</h2>
           <p className="text-sm text-muted-foreground mb-4">
             En hash alene viser bare integritet hvis du STOLER på hashen som ble sendt.
             Hvis angriperen endrer både meldingen og hashen, merker du ingenting.{" "}
@@ -193,7 +206,7 @@ Angriper uten K kan ikke beregne riktig tag.`}</pre>
         </section>
 
         <section id="signatur" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">6. Digital signatur</h2>
+          <h2 className="text-xl font-semibold mb-3">7. Digital signatur</h2>
           <p className="text-sm text-muted-foreground mb-4">
             MAC krever DELT nøkkel — begge sider må ha den. Hva om du vil at HVEM SOM
             HELST skal kunne verifisere at det er DU som signerte? Da trenger du
@@ -218,7 +231,7 @@ Garantier:
         </section>
 
         <section id="pki" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">7. PKI og sertifikater</h2>
+          <h2 className="text-xl font-semibold mb-3">8. PKI og sertifikater</h2>
           <p className="text-sm text-muted-foreground mb-4">
             Problem: hvordan vet du at en gitt public key faktisk tilhører
             «nettbank.no» og ikke en angriper? Løsning:{" "}
@@ -247,7 +260,7 @@ Verifisering:
         </section>
 
         <section id="feller" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">8. Vanlige feller</h2>
+          <h2 className="text-xl font-semibold mb-3">9. Vanlige feller</h2>
           <div className="space-y-3 text-sm">
             <div className="rounded-lg border border-amber-500/30 bg-amber-500/5 p-4">
               <strong>«Vi krypterer passordet i databasen»</strong> — feil terminologi.
