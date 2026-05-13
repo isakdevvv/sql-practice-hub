@@ -4526,6 +4526,235 @@ export const FLASHCARDS: FlashCard[] = [
     answer:
       "Stub-resolver: i OS (libc, systemd-resolved) — sender en query til konfigurert resolver og venter. Rekursiv resolver: tråler hierarkiet for klienten (1.1.1.1, 8.8.8.8). Autoritativ NS: har de ekte sone-dataene for et domene, svarer kun for det domenet — aldri rekursivt.",
   },
+  // ============= TEK-1501: ANOVA (9) =============
+  {
+    id: "c-tek1-anova-hva",
+    category: "statistikk",
+    topic: "ANOVA",
+    question: "Hva er ANOVA, og når bruker du den?",
+    answer:
+      "Analysis of variance — én test som sammenligner snittet i 3+ grupper. H₀: μ₁ = μ₂ = … = μₖ. Brukes når du har én kategorisk faktor (gruppe) og kontinuerlig respons. Unngår oppblåst familywise error fra mange parvise t-tester.",
+  },
+  {
+    id: "c-tek1-anova-fwer",
+    category: "statistikk",
+    topic: "ANOVA",
+    question: "Hvorfor ikke bare gjøre alle parvise t-tester?",
+    answer:
+      "FWER = 1 − (1 − α)^m. Med 4 grupper er m = 6 par. Ved α = 0.05 blir P(minst én falsk forkasting) ≈ 0.265 — over 26 %. ANOVA gir én samlet test med kontrollert α.",
+  },
+  {
+    id: "c-tek1-anova-f-formel",
+    category: "statistikk",
+    topic: "ANOVA",
+    question: "Hvordan beregnes F-statistikken?",
+    answer:
+      "F = MS_between / MS_within = (SS_between / (k−1)) / (SS_within / (N−k)). Stor F ⇒ gruppemiddelene skiller seg fra grand mean mer enn restspredningen kan forklare.",
+  },
+  {
+    id: "c-tek1-anova-ss-id",
+    category: "statistikk",
+    topic: "ANOVA",
+    question: "Hva er SS-dekomponering i ettveis ANOVA?",
+    answer:
+      "SS_total = SS_between + SS_within. SS_between = Σnᵢ(x̄ᵢ − x̄..)². SS_within = ΣΣ(xᵢⱼ − x̄ᵢ)². Identiteten er at all variasjon enten ligger mellom gruppene eller innen dem.",
+  },
+  {
+    id: "c-tek1-anova-df",
+    category: "statistikk",
+    topic: "ANOVA",
+    question: "Frihetsgrader i ettveis ANOVA?",
+    answer:
+      "df_between = k − 1 (antall grupper minus 1). df_within = N − k. df_total = N − 1. F-fordelingen brukes med (df_between, df_within) som første og andre parameter.",
+  },
+  {
+    id: "c-tek1-anova-antakelser",
+    category: "statistikk",
+    topic: "ANOVA",
+    question: "Hvilke 3 antagelser krever ANOVA?",
+    answer:
+      "1) Uavhengighet mellom observasjoner. 2) Normalitet innen hver gruppe (mindre kritisk når n er stor). 3) Lik varians (homoskedastisitet). Hvis 3 brutt: bruk Welch's ANOVA eller Kruskal–Wallis.",
+  },
+  {
+    id: "c-tek1-anova-tukey",
+    category: "statistikk",
+    topic: "ANOVA",
+    question: "Hva er Tukey HSD og hvorfor brukes den?",
+    answer:
+      "Honest significant difference — post-hoc-test som finner HVILKE par av gruppemiddel som skiller seg etter at ANOVA har forkastet H₀. HSD = q_{α,k,N−k} · √(MS_within / n). Mer kraftig enn Bonferroni ved mange grupper.",
+  },
+  {
+    id: "c-tek1-anova-vs-bonferroni",
+    category: "statistikk",
+    topic: "ANOVA",
+    question: "Forskjellen på Tukey HSD og Bonferroni-korreksjon?",
+    answer:
+      "Bonferroni: kjør m parvise tester, krev p < α/m. Enkel, konservativ, generelt anvendelig. Tukey HSD: bruker studentized range fordelingen — mer kraftig når k er stor. Tukey er optimal ved balanserte design.",
+  },
+  {
+    id: "c-tek1-anova-forkast-betyr",
+    category: "statistikk",
+    topic: "ANOVA",
+    question: "Hva betyr 'forkast H₀' i ANOVA?",
+    answer:
+      "MINST ETT par av gruppemiddel skiller seg. Det betyr IKKE at alle par skiller seg. Gjør post-hoc (Tukey/Bonferroni) for å finne hvilke par som faktisk er signifikant forskjellige.",
+  },
+
+  // ============= TEK-1501: PROPORSJONER (9) =============
+  {
+    id: "c-tek1-prop-clt",
+    category: "statistikk",
+    topic: "Proporsjoner",
+    question: "Hva er CLT-betingelsen for inferens om én proporsjon?",
+    answer:
+      "n·p̂ ≥ 10 OG n·(1−p̂) ≥ 10. Da er p̂ tilnærmet normalfordelt og z-baserte CI/tester funker. Hvis brutt: bruk exakt binomial test (Clopper–Pearson-CI) eller Wilson/Agresti-Coull som er robustere.",
+  },
+  {
+    id: "c-tek1-prop-wald-feil",
+    category: "statistikk",
+    topic: "Proporsjoner",
+    question: "Hvorfor er Wald-CI for proporsjon dårlig?",
+    answer:
+      "Wald: p̂ ± z·√(p̂(1−p̂)/n). Når p̂ er nær 0 eller 1 blir SE for liten, og dekningsgraden kan være mye lavere enn 95 %. Ved p̂ = 0 kollapser CI til ett punkt — meningsløst. Bruk Wilson eller Agresti-Coull i stedet.",
+  },
+  {
+    id: "c-tek1-prop-wilson",
+    category: "statistikk",
+    topic: "Proporsjoner",
+    question: "Hva er Wilson-score-CI og hvorfor er den bedre?",
+    answer:
+      "CI = (p̂ + z²/(2n) ± z√(p̂(1−p̂)/n + z²/(4n²))) / (1 + z²/n). Asymmetrisk når p̂ er nær 0 eller 1. Holder seg innenfor [0, 1] og har god dekningsgrad selv ved liten n. Default i R's prop.test.",
+  },
+  {
+    id: "c-tek1-prop-ac",
+    category: "statistikk",
+    topic: "Proporsjoner",
+    question: "Hva er Agresti–Coull-CI («pluss-fire»)?",
+    answer:
+      "Legg til z²/2 suksesser og z²/2 fiaskoer, så gjør Wald: p̃ = (x + z²/2)/(n + z²), CI = p̃ ± z√(p̃(1−p̃)/(n+z²)). Ved 95 %: ~2 av hver. Enkel som Wald, nesten like god som Wilson.",
+  },
+  {
+    id: "c-tek1-prop-1samp-ztest",
+    category: "statistikk",
+    topic: "Proporsjoner",
+    question: "Test av én proporsjon: z = ?",
+    answer:
+      "z = (p̂ − p₀) / √(p₀(1−p₀)/n). Viktig: bruk p₀ (ikke p̂) i SE — vi regner under H₀. CLT-sjekk gjøres med n·p₀ ≥ 10 og n(1−p₀) ≥ 10.",
+  },
+  {
+    id: "c-tek1-prop-2-pooled-vs-unpooled",
+    category: "statistikk",
+    topic: "Proporsjoner",
+    question: "Pooled vs unpooled SE for to proporsjoner — hvilken når?",
+    answer:
+      "KI for p₁ − p₂: bruk UNPOOLED SE (separate p̂ᵢ — vi antar ikke at de er like). Test av H₀: p₁ = p₂: bruk POOLED SE med p̂_pool = (x₁+x₂)/(n₁+n₂) — under H₀ er proporsjonene like, så samme p må estimeres.",
+  },
+  {
+    id: "c-tek1-prop-sample-size",
+    category: "statistikk",
+    topic: "Proporsjoner",
+    question: "Hvor stort utvalg trengs for ±3 % margin ved 95 %?",
+    answer:
+      "n = z² · p̂*(1−p̂*) / E². Konservativt p̂* = 0.5 ⇒ p̂*(1−p̂*) = 0.25. Med z = 1.96, E = 0.03: n = 1.96² · 0.25 / 0.0009 ≈ 1067. Derfor har gallup ~1000 respondenter.",
+  },
+  {
+    id: "c-tek1-prop-exakt",
+    category: "statistikk",
+    topic: "Proporsjoner",
+    question: "Når bruker du exakt binomial test istedenfor z?",
+    answer:
+      "Når CLT-betingelsen brytes (n·p̂ < 10 eller n(1−p̂) < 10) — typisk små n eller veldig sjeldne hendelser. scipy.stats.binomtest gir exakt p-verdi. Clopper–Pearson-CI er den exakte motparten.",
+  },
+  {
+    id: "c-tek1-prop-or-vs-rr",
+    category: "statistikk",
+    topic: "Proporsjoner",
+    question: "Hva er forskjellen på odds-ratio (OR) og relative risk (RR)?",
+    answer:
+      "RR = p₁ / p₂. OR = (p₁/(1−p₁)) / (p₂/(1−p₂)). Når p er liten (~0.05) er OR ≈ RR. Når p er stor avviker de mye — OR overdriver effekten. Logistisk regresjon gir OR-er, ikke RR-er.",
+  },
+
+  // ============= DTE-2602: LOGISTISK REGRESJON (10) =============
+  {
+    id: "c-dte2602-lr-sigmoid",
+    category: "statistikk",
+    topic: "Logistisk regresjon",
+    question: "Hva er sigmoid-funksjonen?",
+    answer:
+      "σ(z) = 1 / (1 + e^{-z}). Mapper R → (0, 1). σ(0) = 0.5, σ(∞) = 1, σ(-∞) = 0. Symmetrisk: σ(-z) = 1 − σ(z). Derivert: σ'(z) = σ(z)(1 − σ(z)). Brukes for å konvertere lineær score til sannsynlighet.",
+  },
+  {
+    id: "c-dte2602-lr-logit",
+    category: "statistikk",
+    topic: "Logistisk regresjon",
+    question: "Hva er logit-funksjonen og hvorfor lineariserer den problemet?",
+    answer:
+      "logit(p) = log(p/(1−p)) = log-odds. Logistisk regresjon modellerer logit(p) = β₀ + β₁x₁ + … — lineær i prediktorene. Det er DENNE linæariseringen som rettferdiggjør ordet «regresjon» i navnet.",
+  },
+  {
+    id: "c-dte2602-lr-hvorfor-ikke-linreg",
+    category: "statistikk",
+    topic: "Logistisk regresjon",
+    question: "Hvorfor passer ikke lineær regresjon for binær y?",
+    answer:
+      "1) Predikerer < 0 eller > 1, ikke tolkbart som sannsynlighet. 2) Restleddet er heteroskedastisk (var avhenger av ŷ). 3) MSE-tap er ikke konsistent for binær y. Logistisk regresjon løser alle tre.",
+  },
+  {
+    id: "c-dte2602-lr-odds-ratio",
+    category: "statistikk",
+    topic: "Logistisk regresjon",
+    question: "Hva betyr en koeffisient β = 0.5 i logistisk regresjon?",
+    answer:
+      "1 enhets økning i xⱼ multipliserer oddsen med e^β = e^{0.5} ≈ 1.65, dvs. 65 % økt odds. Tolkningen krever ceteris paribus (alle andre xₖ holdes fast). Odds-ratio ≠ relative risk i alminnelighet.",
+  },
+  {
+    id: "c-dte2602-lr-loss",
+    category: "statistikk",
+    topic: "Logistisk regresjon",
+    question: "Hva er tap-funksjonen i logistisk regresjon?",
+    answer:
+      "Negativ log-likelihood = log-loss = binær cross-entropy: L = −(1/n) Σ [yᵢ log p̂ᵢ + (1−yᵢ) log(1 − p̂ᵢ)]. Konveks i β ⇒ ingen lokale minima. Ingen lukket form — krever iterasjon (Newton/IRLS eller GD).",
+  },
+  {
+    id: "c-dte2602-lr-gradient",
+    category: "statistikk",
+    topic: "Logistisk regresjon",
+    question: "Hvorfor er gradienten av log-loss så elegant?",
+    answer:
+      "∇L = (1/n) Σ (p̂ᵢ − yᵢ) xᵢ — restleddet (p̂ − y) · x. Identisk struktur som MSE-gradient for lineær regresjon. Takket være σ'(z) = σ(z)(1−σ(z)) kanselleres den deriverte i kjederegelen.",
+  },
+  {
+    id: "c-dte2602-lr-softmax",
+    category: "statistikk",
+    topic: "Logistisk regresjon",
+    question: "Hva er softmax og hvordan generaliserer den sigmoid?",
+    answer:
+      "Softmax: P(y=k|x) = e^{βₖx} / Σⱼ e^{βⱼx}. Brukes for K-klasse-klassifikasjon. Reduserer til sigmoid når K=2. Loss blir kategorisk cross-entropy. I sklearn: LogisticRegression(multi_class='multinomial').",
+  },
+  {
+    id: "c-dte2602-lr-class-imbalance",
+    category: "statistikk",
+    topic: "Logistisk regresjon",
+    question: "Hvordan håndterer du sterkt ubalanserte klasser?",
+    answer:
+      "1) class_weight='balanced' i sklearn (omvendt-frekvens-vekting i loss). 2) SMOTE eller oversampling av minoritetsklasse (kun i trenings-sett). 3) Senk beslutnings-terskel fra 0.5 — velg via ROC eller PR-kurve. Bytt fra accuracy til precision/recall/F1.",
+  },
+  {
+    id: "c-dte2602-lr-perfect-separation",
+    category: "statistikk",
+    topic: "Logistisk regresjon",
+    question: "Hva er 'perfekt separasjon' og hvorfor er det et problem?",
+    answer:
+      "Hvis klassene er lineært separerbare, divergerer MLE — vektene går mot ±∞ for å presse σ til 0 eller 1. L2-regularisering (default i sklearn med C=1) hindrer dette. Slå AV reg kun med god grunn.",
+  },
+  {
+    id: "c-dte2602-lr-scale",
+    category: "statistikk",
+    topic: "Logistisk regresjon",
+    question: "Hvorfor skalere features før logistisk regresjon?",
+    answer:
+      "1) Gradient descent konvergerer langt raskere. 2) L2-reg straffer alle β likt — uten skalering vil features med stor variasjon dominere. StandardScaler er nesten alltid riktig før LogisticRegression i sklearn.",
+  },
 ];
 
 export const CARD_CATEGORIES: { id: FlashCard["category"]; label: string }[] = [

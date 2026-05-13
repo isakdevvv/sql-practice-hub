@@ -179,6 +179,14 @@ const COURSES: Course[] = [
     Icon: Gauge,
     status: "ready",
   },
+  {
+    slug: "dte2602-logistisk-regresjon",
+    title: "Logistisk regresjon dypt",
+    shortDescription:
+      "Sigmoid, log-odds, MLE, log-loss og gradient descent. Live 2D-trening med decision boundary og loss-kurve. Odds-ratio-tolkning, softmax, class-weights.",
+    Icon: TrendingUp,
+    status: "ready",
+  },
 ];
 
 export function Dte2602Hub() {
