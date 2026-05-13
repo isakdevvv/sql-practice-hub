@@ -10,6 +10,9 @@ import {
   Keyboard,
   GitBranch,
   Lightbulb,
+  Activity,
+  MemoryStick,
+  Lock,
 } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 
@@ -92,6 +95,30 @@ const COURSES: Course[] = [
     shortDescription:
       "Tekst-guide gjennom de åtte typiske obligene: VM, Linux-grunnlag, brukere, rettigheter, prosesser, scripting, pakker, tjenester. Med sjekklister og feller.",
     Icon: ClipboardCheck,
+    status: "ready",
+  },
+  {
+    slug: "dte2505-scheduling-drill",
+    title: "CPU-scheduling — Gantt-drill",
+    shortDescription:
+      "OSTEP kap. 7–10. FIFO, SJF, STCF, Round-Robin, MLFQ. Turnaround, respons, throughput. Interaktiv Gantt-simulator med 5 forhåndsdefinerte øvelser.",
+    Icon: Activity,
+    status: "ready",
+  },
+  {
+    slug: "dte2505-virtuelt-minne",
+    title: "Virtuelt minne & paging",
+    shortDescription:
+      "OSTEP kap. 15–22. VPN/PFN/offset, page-tabell, TLB-hit/miss, page faults, demand paging. Replacement: FIFO, LRU, Clock, optimal. Interaktiv adresseoversetter.",
+    Icon: MemoryStick,
+    status: "ready",
+  },
+  {
+    slug: "dte2505-konkurrens",
+    title: "Concurrency & deadlock",
+    shortDescription:
+      "OSTEP kap. 28–33. Race conditions, mutex, condition variables, semaforer. Coffmans fire deadlock-betingelser, dining philosophers, RAG-detektor.",
+    Icon: Lock,
     status: "ready",
   },
 ];
