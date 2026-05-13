@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { Lightbulb, Layers } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
+import { KMeansAnimator } from "./KMeansAnimator";
 
 const STEPS = [
   { title: "Hvorfor klustring?", anchor: "intro" },
@@ -98,6 +99,9 @@ Objektivfunksjon vi minimerer (inertia / WCSS):
             Derfor: kjør flere ganger med ulik init (sklearn{" "}
             <code className="font-mono">n_init=10</code>) og behold beste.
           </p>
+          <div className="mt-4">
+            <KMeansAnimator />
+          </div>
         </section>
 
         <section id="viz" className="mb-10">
