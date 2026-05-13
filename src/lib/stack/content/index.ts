@@ -150,6 +150,7 @@ import { content as tek1EstimeringKi } from "./tek1-estimering-ki";
 import { content as tek1HypotesetestRegresjon } from "./tek1-hypotesetest-regresjon";
 import { content as tek1Anova } from "./tek1-anova";
 import { content as tek1Proporsjoner } from "./tek1-proporsjoner";
+import { content as dte2602LogistiskRegresjon } from "./dte2602-logistisk-regresjon";
 import type { TrinnContent } from "../types";
 
 export const TRINN: TrinnContent[] = [
@@ -193,6 +194,8 @@ export const TRINN: TrinnContent[] = [
   tek1StatistiskAnalyse, tek1Kombinatorikk, tek1DiskreteFordelinger,
   tek1KontinuerligeFordelinger, tek1ForventningClt, tek1EstimeringKi,
   tek1HypotesetestRegresjon, tek1Anova, tek1Proporsjoner,
+  // DTE-2602 — utvidelser
+  dte2602LogistiskRegresjon,
 ];
 
 import { curriculumIndexOf } from "../curriculum";

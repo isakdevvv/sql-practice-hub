@@ -4674,6 +4674,87 @@ export const FLASHCARDS: FlashCard[] = [
       "RR = p₁ / p₂. OR = (p₁/(1−p₁)) / (p₂/(1−p₂)). Når p er liten (~0.05) er OR ≈ RR. Når p er stor avviker de mye — OR overdriver effekten. Logistisk regresjon gir OR-er, ikke RR-er.",
   },
 
+  // ============= DTE-2602: LOGISTISK REGRESJON (10) =============
+  {
+    id: "c-dte2602-lr-sigmoid",
+    category: "statistikk",
+    topic: "Logistisk regresjon",
+    question: "Hva er sigmoid-funksjonen?",
+    answer:
+      "σ(z) = 1 / (1 + e^{-z}). Mapper R → (0, 1). σ(0) = 0.5, σ(∞) = 1, σ(-∞) = 0. Symmetrisk: σ(-z) = 1 − σ(z). Derivert: σ'(z) = σ(z)(1 − σ(z)). Brukes for å konvertere lineær score til sannsynlighet.",
+  },
+  {
+    id: "c-dte2602-lr-logit",
+    category: "statistikk",
+    topic: "Logistisk regresjon",
+    question: "Hva er logit-funksjonen og hvorfor lineariserer den problemet?",
+    answer:
+      "logit(p) = log(p/(1−p)) = log-odds. Logistisk regresjon modellerer logit(p) = β₀ + β₁x₁ + … — lineær i prediktorene. Det er DENNE linæariseringen som rettferdiggjør ordet «regresjon» i navnet.",
+  },
+  {
+    id: "c-dte2602-lr-hvorfor-ikke-linreg",
+    category: "statistikk",
+    topic: "Logistisk regresjon",
+    question: "Hvorfor passer ikke lineær regresjon for binær y?",
+    answer:
+      "1) Predikerer < 0 eller > 1, ikke tolkbart som sannsynlighet. 2) Restleddet er heteroskedastisk (var avhenger av ŷ). 3) MSE-tap er ikke konsistent for binær y. Logistisk regresjon løser alle tre.",
+  },
+  {
+    id: "c-dte2602-lr-odds-ratio",
+    category: "statistikk",
+    topic: "Logistisk regresjon",
+    question: "Hva betyr en koeffisient β = 0.5 i logistisk regresjon?",
+    answer:
+      "1 enhets økning i xⱼ multipliserer oddsen med e^β = e^{0.5} ≈ 1.65, dvs. 65 % økt odds. Tolkningen krever ceteris paribus (alle andre xₖ holdes fast). Odds-ratio ≠ relative risk i alminnelighet.",
+  },
+  {
+    id: "c-dte2602-lr-loss",
+    category: "statistikk",
+    topic: "Logistisk regresjon",
+    question: "Hva er tap-funksjonen i logistisk regresjon?",
+    answer:
+      "Negativ log-likelihood = log-loss = binær cross-entropy: L = −(1/n) Σ [yᵢ log p̂ᵢ + (1−yᵢ) log(1 − p̂ᵢ)]. Konveks i β ⇒ ingen lokale minima. Ingen lukket form — krever iterasjon (Newton/IRLS eller GD).",
+  },
+  {
+    id: "c-dte2602-lr-gradient",
+    category: "statistikk",
+    topic: "Logistisk regresjon",
+    question: "Hvorfor er gradienten av log-loss så elegant?",
+    answer:
+      "∇L = (1/n) Σ (p̂ᵢ − yᵢ) xᵢ — restleddet (p̂ − y) · x. Identisk struktur som MSE-gradient for lineær regresjon. Takket være σ'(z) = σ(z)(1−σ(z)) kanselleres den deriverte i kjederegelen.",
+  },
+  {
+    id: "c-dte2602-lr-softmax",
+    category: "statistikk",
+    topic: "Logistisk regresjon",
+    question: "Hva er softmax og hvordan generaliserer den sigmoid?",
+    answer:
+      "Softmax: P(y=k|x) = e^{βₖx} / Σⱼ e^{βⱼx}. Brukes for K-klasse-klassifikasjon. Reduserer til sigmoid når K=2. Loss blir kategorisk cross-entropy. I sklearn: LogisticRegression(multi_class='multinomial').",
+  },
+  {
+    id: "c-dte2602-lr-class-imbalance",
+    category: "statistikk",
+    topic: "Logistisk regresjon",
+    question: "Hvordan håndterer du sterkt ubalanserte klasser?",
+    answer:
+      "1) class_weight='balanced' i sklearn (omvendt-frekvens-vekting i loss). 2) SMOTE eller oversampling av minoritetsklasse (kun i trenings-sett). 3) Senk beslutnings-terskel fra 0.5 — velg via ROC eller PR-kurve. Bytt fra accuracy til precision/recall/F1.",
+  },
+  {
+    id: "c-dte2602-lr-perfect-separation",
+    category: "statistikk",
+    topic: "Logistisk regresjon",
+    question: "Hva er 'perfekt separasjon' og hvorfor er det et problem?",
+    answer:
+      "Hvis klassene er lineært separerbare, divergerer MLE — vektene går mot ±∞ for å presse σ til 0 eller 1. L2-regularisering (default i sklearn med C=1) hindrer dette. Slå AV reg kun med god grunn.",
+  },
+  {
+    id: "c-dte2602-lr-scale",
+    category: "statistikk",
+    topic: "Logistisk regresjon",
+    question: "Hvorfor skalere features før logistisk regresjon?",
+    answer:
+      "1) Gradient descent konvergerer langt raskere. 2) L2-reg straffer alle β likt — uten skalering vil features med stor variasjon dominere. StandardScaler er nesten alltid riktig før LogisticRegression i sklearn.",
+  },
 ];
 
 export const CARD_CATEGORIES: { id: FlashCard["category"]; label: string }[] = [
