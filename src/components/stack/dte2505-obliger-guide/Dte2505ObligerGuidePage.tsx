@@ -1,10 +1,8 @@
 import { Link } from "@tanstack/react-router";
-import {
-  CheckSquare,
+import {CheckSquare,
   AlertTriangle,
   Lightbulb,
-  Terminal,
-} from "lucide-react";
+  Terminal, ArrowLeft } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
 
@@ -765,7 +763,17 @@ sudo tail -f /var/log/nginx/error.log`}</Code>
             </li>
           </ul>
         </div>
-      </div>
+              <div className="mt-6">
+          <Link
+            to="/stack/$slug"
+            params={{ slug: "dte-2505" }}
+            className="text-brand hover:underline inline-flex items-center gap-1 text-sm"
+          >
+            <ArrowLeft className="h-3.5 w-3.5" />
+            Tilbake til DTE-2505-hub
+          </Link>
+        </div>
+</div>
     </StackPageShell>
   );
 }

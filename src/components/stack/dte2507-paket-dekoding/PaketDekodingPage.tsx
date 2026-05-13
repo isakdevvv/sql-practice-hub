@@ -1,3 +1,5 @@
+import { Link } from "@tanstack/react-router";
+import { ArrowLeft } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { HexDecoder } from "./HexDecoder";
 
@@ -105,7 +107,17 @@ export function PaketDekodingPage() {
                 <tr className="border-t border-border"><td className="px-4 py-3 font-mono text-brand">URG</td><td className="px-4 py-3 font-mono">0x20</td><td className="px-4 py-3 text-muted-foreground">Urgent data — sjelden brukt i praksis.</td></tr>
               </tbody>
             </table>
-          </div>
+                  <div className="mt-6">
+          <Link
+            to="/stack/$slug"
+            params={{ slug: "dte-2507" }}
+            className="text-brand hover:underline inline-flex items-center gap-1 text-sm"
+          >
+            <ArrowLeft className="h-3.5 w-3.5" />
+            Tilbake til DTE-2507-hub
+          </Link>
+        </div>
+</div>
         </section>
       </article>
     </StackPageShell>
