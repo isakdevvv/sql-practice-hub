@@ -2,6 +2,7 @@
 @source "../src";
 @import "tw-animate-css";
 @import "katex/dist/katex.min.css";
+@import "@xyflow/react/dist/style.css";
 
 @custom-variant dark (&:is(.dark *));
 

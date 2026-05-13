@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { ArrowRight, Lightbulb } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
+import { OsiStackFlow } from "./OsiStackFlow";
 
 const STEPS = [
   { title: "OSI vs TCP/IP — to modeller", anchor: "modeller" },
@@ -137,6 +138,9 @@ export function OsiTcpipPage() {
             IP-headeren (lag 3), så TCP (lag 4), så leverer HTTP-bodyen til
             applikasjonen.
           </p>
+          <div className="mt-6">
+            <OsiStackFlow />
+          </div>
         </section>
 
         <section id="applikasjon" className="mb-10">
