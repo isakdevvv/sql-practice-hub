@@ -1,7 +1,18 @@
 import { Link } from "@tanstack/react-router";
-import { ArrowLeft } from "lucide-react";
+import { Lightbulb } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
+import { CourseOutline } from "@/components/stack/CourseOutline";
 import { RsaBuilder } from "./RsaBuilder";
+
+const STEPS = [
+  { title: "Hvorfor asymmetrisk?", anchor: "hvorfor" },
+  { title: "Matematikken (KeyGen)", anchor: "keygen" },
+  { title: "Tall-eksempel — krypter «HI»", anchor: "tall" },
+  { title: "Interaktiv bygger", anchor: "bygger" },
+  { title: "RSA vs AES vs hash", anchor: "sammenligning" },
+  { title: "Signering vs kryptering", anchor: "signering" },
+  { title: "Kjente angrep", anchor: "angrep" },
+];
 
 export function RsaMiniPage() {
   return (
@@ -15,15 +26,65 @@ export function RsaMiniPage() {
             RSA — bygg en mini-versjon
           </h1>
           <p className="mt-3 text-muted-foreground leading-relaxed">
-            RSA er den klassiske asymmetriske kryptosystemet. Hver bruker har et NØKKELPAR: en
-            public key som alle ser, og en private key som bare eieren har. Ting kryptert med
-            public-en kan BARE dekrypteres med private. Ting signert med private kan VERIFISERES av
-            alle med public.
+            RSA er det klassiske asymmetriske kryptosystemet. Hver bruker har et NØKKELPAR: en
+            <strong> public key</strong> som alle ser, og en <strong>private key</strong> som
+            bare eieren har. Ting kryptert med public-en kan BARE dekrypteres med private. Ting
+            signert med private kan VERIFISERES av alle med public. Her bygger vi RSA fra null
+            med tall som er små nok til å regne ut for hånd.
           </p>
+          <div className="mt-4 rounded-lg border border-brand/30 bg-brand/5 p-4 flex items-start gap-3">
+            <Lightbulb className="h-4 w-4 text-brand mt-0.5 shrink-0" />
+            <div className="text-sm">
+              <span className="font-medium">Hands-on:</span> bruk{" "}
+              <a href="#bygger" className="text-brand hover:underline">RSA-byggeren under</a>{" "}
+              til å velge primtall og se ekte tall flyte gjennom enc/dec. Tren på{" "}
+              <Link to="/drag" className="text-brand hover:underline">drag-oppgaver under
+              «Kryptografi»</Link>.
+            </div>
+          </div>
         </header>
 
-        <section className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">1. Matematikken på én side</h2>
+        <CourseOutline courseId="dte2507-rsa-mini" steps={STEPS} />
+
+        <section id="hvorfor" className="mb-10">
+          <h2 className="text-xl font-semibold mb-3">1. Hvorfor finnes asymmetrisk krypto?</h2>
+          <p className="text-sm text-muted-foreground mb-3">
+            Symmetrisk kryptografi (AES) er rask, men har et problem: du må allerede dele en
+            nøkkel for å bruke det. RSA løser nøkkel-distribusjon: legg ut public-en din i åpent
+            terreng — alle kan kryptere TIL deg uten å avtale noe på forhånd.
+          </p>
+          <div className="grid sm:grid-cols-2 gap-4">
+            <div className="rounded-xl border border-border bg-card p-5">
+              <div className="text-xs uppercase tracking-wider text-brand font-semibold mb-2">
+                Symmetrisk — én delt nøkkel
+              </div>
+              <pre className="font-mono text-xs whitespace-pre">{`Alice ──[K]── Bob
+
+K må deles på forhånd
+gjennom en sikker kanal
+(eller du har ingen).`}</pre>
+            </div>
+            <div className="rounded-xl border border-border bg-card p-5">
+              <div className="text-xs uppercase tracking-wider text-brand font-semibold mb-2">
+                Asymmetrisk — par per bruker
+              </div>
+              <pre className="font-mono text-xs whitespace-pre">{`Alice (Pa, Sa)
+Bob   (Pb, Sb)
+
+Alice → Bob: krypter m. Pb
+Bob ← Sb: dekrypterer.
+Ingen forhåndsavtale.`}</pre>
+            </div>
+          </div>
+          <div className="mt-4 rounded-lg border border-brand/30 bg-brand/5 p-4 text-sm">
+            <strong className="text-brand">Tips:</strong> public-nøkkelen er trygg å publisere
+            fordi den bare lar deg LÅSE — ikke åpne. Tenk på det som et hengelås noen sender deg:
+            du kan klikke det igjen rundt en pakke, men bare eieren har nøkkelen som åpner det.
+          </div>
+        </section>
+
+        <section id="keygen" className="mb-10">
+          <h2 className="text-xl font-semibold mb-3">2. Matematikken på én side</h2>
           <div className="rounded-xl border border-border bg-card p-5">
             <pre className="font-mono text-xs overflow-x-auto whitespace-pre">{`KEY GENERATION
 1. Velg to store primtall p, q.
@@ -41,35 +102,126 @@ DEKRYPTERING: m = c^d mod n
 SIGNERING:    s = m^d mod n
 VERIFIKASJON: m == s^e mod n`}</pre>
           </div>
-        </section>
-
-        <section className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">2. Hvorfor er RSA sikkert?</h2>
-          <div className="rounded-xl border border-border bg-card p-5">
-            <p className="text-sm text-muted-foreground mb-3">
-              Sikkerheten hviler på faktorising-problemet: gitt et stort tall n = p·q, er det
-              ekstremt kostbart å finne p og q. Uten p og q kan man ikke regne ut φ(n), og uten
-              φ(n) kan man ikke finne d fra e.
-            </p>
-            <ul className="text-sm space-y-1 list-disc pl-5 text-muted-foreground">
-              <li>For ekte sikkerhet bruker man n med 2048–4096 bits (614+ desimaltall).</li>
-              <li>Beste kjente faktorisering: GNFS — sub-eksponentiell tid.</li>
-              <li>Shors algoritme (kvante-datamaskin) løser dette i polynomisk tid. Derfor jakter
-                  vi nå på post-kvante alternativer (Kyber, Dilithium).</li>
-            </ul>
+          <div className="mt-3 overflow-hidden rounded-lg border border-border">
+            <table className="w-full text-sm">
+              <thead className="bg-muted/50">
+                <tr>
+                  <th className="text-left font-semibold px-4 py-2 w-24">Symbol</th>
+                  <th className="text-left font-semibold px-4 py-2 w-32">Hva er det?</th>
+                  <th className="text-left font-semibold px-4 py-2">Public eller hemmelig?</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr className="border-t border-border"><td className="px-4 py-3 font-mono text-brand">p, q</td><td className="px-4 py-3">To store primtall</td><td className="px-4 py-3 text-muted-foreground">HEMMELIG. Hvis noen finner dem, faller hele sikkerheten.</td></tr>
+                <tr className="border-t border-border"><td className="px-4 py-3 font-mono text-brand">n</td><td className="px-4 py-3">p · q (moduluset)</td><td className="px-4 py-3 text-muted-foreground">PUBLIC — alle ser det, men ingen kan faktorisere det.</td></tr>
+                <tr className="border-t border-border"><td className="px-4 py-3 font-mono text-brand">φ(n)</td><td className="px-4 py-3">(p−1)(q−1)</td><td className="px-4 py-3 text-muted-foreground">HEMMELIG. Brukes bare i nøkkelgenerering.</td></tr>
+                <tr className="border-t border-border"><td className="px-4 py-3 font-mono text-brand">e</td><td className="px-4 py-3">Public exponent (ofte 65537)</td><td className="px-4 py-3 text-muted-foreground">PUBLIC — del av public key (n, e).</td></tr>
+                <tr className="border-t border-border"><td className="px-4 py-3 font-mono text-brand">d</td><td className="px-4 py-3">Private exponent (e⁻¹ mod φ)</td><td className="px-4 py-3 text-muted-foreground">HEMMELIG — del av private key (n, d).</td></tr>
+              </tbody>
+            </table>
           </div>
         </section>
 
-        <section className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">3. Trinnvis bygger</h2>
+        <section id="tall" className="mb-10">
+          <h2 className="text-xl font-semibold mb-3">3. Konkret tall-eksempel side om side</h2>
+          <p className="text-sm text-muted-foreground mb-3">
+            Vi velger leketøy-primtall <code className="font-mono">p=11, q=13</code>. Det gir
+            <code className="font-mono"> n=143, φ=120</code>. Velg <code className="font-mono">e=7</code>,
+            da blir <code className="font-mono">d=103</code> (utvidet Euklid). Klartekst er
+            tegnet «H» = ASCII 72. La oss krypter og dekryptere.
+          </p>
+          <div className="grid sm:grid-cols-2 gap-4">
+            <div className="rounded-xl border border-border bg-card p-5">
+              <div className="text-xs uppercase tracking-wider text-brand font-semibold mb-2">
+                Kryptering m → c
+              </div>
+              <pre className="font-mono text-xs whitespace-pre">{`m = 72            (klartekst)
+e = 7   n = 143
+
+c = m^e mod n
+  = 72^7 mod 143
+  = 10030613004288 mod 143
+  = 19              ← cipher`}</pre>
+            </div>
+            <div className="rounded-xl border border-border bg-card p-5">
+              <div className="text-xs uppercase tracking-wider text-brand font-semibold mb-2">
+                Dekryptering c → m
+              </div>
+              <pre className="font-mono text-xs whitespace-pre">{`c = 19
+d = 103   n = 143
+
+m = c^d mod n
+  = 19^103 mod 143
+  = 72              ← tilbake til H
+
+(Square-and-multiply gjør
+ dette mulig uten 19^103
+ som tall.)`}</pre>
+            </div>
+          </div>
+          <div className="mt-4 rounded-lg border border-amber-500/30 bg-amber-500/5 p-4 text-sm">
+            <strong className="text-amber-700 dark:text-amber-400">Advarsel:</strong> i ekte RSA
+            må <code className="font-mono">m &lt; n</code>. Med n=143 kan vi kryptere ett byte
+            (max 127), ikke en hel melding. Derfor splittes lange meldinger i blokker — og i
+            praksis brukes RSA bare til å bytte en symmetrisk AES-nøkkel.
+          </div>
+        </section>
+
+        <section id="bygger" className="mb-10">
+          <h2 className="text-xl font-semibold mb-3">4. Trinnvis bygger</h2>
           <p className="text-sm text-muted-foreground mb-3">
             Velg små primtall, og se hele oppsettet med ekte tall. Krypter «HI» tegn for tegn.
           </p>
           <RsaBuilder />
+          <div className="mt-4 rounded-xl border border-border bg-card p-5 text-sm">
+            <div className="text-xs uppercase tracking-wider text-brand font-semibold mb-2">
+              Samme regneoperasjon i Python
+            </div>
+            <pre className="font-mono text-xs overflow-x-auto whitespace-pre">{`# Pythons innebygde pow tar (base, exp, mod) — kjernen i RSA:
+p, q = 11, 13
+n = p * q                # 143
+phi = (p - 1) * (q - 1)  # 120
+e = 7
+d = pow(e, -1, phi)      # 103 (Python 3.8+ støtter modulær invers)
+
+m = 72                   # 'H'
+c = pow(m, e, n)         # 19
+m_back = pow(c, d, n)    # 72
+assert m == m_back`}</pre>
+            <p className="mt-2 text-xs text-muted-foreground">
+              Kjør dette i{" "}
+              <Link to="/python" className="text-brand hover:underline">Python-konsollen</Link>{" "}
+              og bytt ut p og q med større primtall for å se hvor fort tallene vokser.
+            </p>
+          </div>
         </section>
 
-        <section className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">4. Signering vs kryptering</h2>
+        <section id="sammenligning" className="mb-10">
+          <h2 className="text-xl font-semibold mb-3">5. RSA vs AES vs hash</h2>
+          <div className="overflow-hidden rounded-lg border border-border">
+            <table className="w-full text-sm">
+              <thead className="bg-muted/50">
+                <tr>
+                  <th className="text-left font-semibold px-4 py-2 w-32">Egenskap</th>
+                  <th className="text-left font-semibold px-4 py-2">RSA</th>
+                  <th className="text-left font-semibold px-4 py-2">AES</th>
+                  <th className="text-left font-semibold px-4 py-2">SHA-256 (hash)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr className="border-t border-border"><td className="px-4 py-3 font-mono text-brand">Type</td><td className="px-4 py-3 text-muted-foreground">Asymmetrisk</td><td className="px-4 py-3 text-muted-foreground">Symmetrisk</td><td className="px-4 py-3 text-muted-foreground">Enveis</td></tr>
+                <tr className="border-t border-border"><td className="px-4 py-3 font-mono text-brand">Nøkler</td><td className="px-4 py-3 text-muted-foreground">Par (public + private)</td><td className="px-4 py-3 text-muted-foreground">Én delt</td><td className="px-4 py-3 text-muted-foreground">Ingen</td></tr>
+                <tr className="border-t border-border"><td className="px-4 py-3 font-mono text-brand">Hastighet</td><td className="px-4 py-3 text-muted-foreground">~0.1 ms enc / 3 ms dec</td><td className="px-4 py-3 text-muted-foreground">GB/s med HW</td><td className="px-4 py-3 text-muted-foreground">GB/s</td></tr>
+                <tr className="border-t border-border"><td className="px-4 py-3 font-mono text-brand">Nøkkellengde</td><td className="px-4 py-3 text-muted-foreground">2048–4096 bit</td><td className="px-4 py-3 text-muted-foreground">128 / 256 bit</td><td className="px-4 py-3 text-muted-foreground">256 bit output</td></tr>
+                <tr className="border-t border-border"><td className="px-4 py-3 font-mono text-brand">Reversibel?</td><td className="px-4 py-3 text-muted-foreground">Ja, med private</td><td className="px-4 py-3 text-muted-foreground">Ja, med nøkkel</td><td className="px-4 py-3 text-muted-foreground">NEI — enveis</td></tr>
+                <tr className="border-t border-border"><td className="px-4 py-3 font-mono text-brand">Brukes til</td><td className="px-4 py-3 text-muted-foreground">Nøkkelutveksling, signaturer</td><td className="px-4 py-3 text-muted-foreground">Selve dataen (TLS body, disk)</td><td className="px-4 py-3 text-muted-foreground">Integritet, passord-hash, HMAC</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section id="signering" className="mb-10">
+          <h2 className="text-xl font-semibold mb-3">6. Signering vs kryptering</h2>
           <div className="overflow-hidden rounded-lg border border-border">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
@@ -87,35 +239,63 @@ VERIFIKASJON: m == s^e mod n`}</pre>
           </div>
           <p className="text-xs text-muted-foreground mt-3">
             <strong>I praksis:</strong> man signerer ikke meldingen direkte — først hash, så
-            signer hashen. Raskere og standardisert.
+            signer hashen. Raskere og standardisert (RSA-PSS, ECDSA).
           </p>
         </section>
 
-        <section className="mb-6">
-          <h2 className="text-xl font-semibold mb-3">5. Hvorfor er RSA tregt?</h2>
-          <div className="rounded-xl border border-border bg-card p-5 text-sm">
-            <p className="text-muted-foreground">
-              RSA-operasjoner er ~1000× tregere enn symmetriske som AES. Derfor brukes RSA bare
-              til å etablere en symmetrisk nøkkel (hybrid kryptografi) — så kjører selve kommunikasjonen
-              med AES. Det er nøyaktig hva TLS-handshake gjør.
-            </p>
-            <ul className="mt-3 space-y-1 list-disc pl-5 text-muted-foreground">
-              <li>RSA-2048 enc: ~0.1 ms. RSA-2048 dec: ~3 ms.</li>
-              <li>AES-256 enc/dec: ~3 GB/s med HW-instruksjoner.</li>
-              <li>Konklusjon: aldri krypter store data direkte med RSA. Bruk hybrid.</li>
-            </ul>
-                  <div className="mt-6">
-          <Link
-            to="/stack/$slug"
-            params={{ slug: "dte-2507" }}
-            className="text-brand hover:underline inline-flex items-center gap-1 text-sm"
-          >
-            <ArrowLeft className="h-3.5 w-3.5" />
-            Tilbake til DTE-2507-hub
-          </Link>
-        </div>
-</div>
+        <section id="angrep" className="mb-10">
+          <h2 className="text-xl font-semibold mb-3">7. Kjente angrep på RSA</h2>
+          <div className="overflow-hidden rounded-lg border border-border">
+            <table className="w-full text-sm">
+              <thead className="bg-muted/50">
+                <tr>
+                  <th className="text-left font-semibold px-4 py-2 w-40">Angrep</th>
+                  <th className="text-left font-semibold px-4 py-2">Hva utnytter det?</th>
+                  <th className="text-left font-semibold px-4 py-2">Forsvar</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr className="border-t border-border"><td className="px-4 py-3 font-mono text-brand">Faktorisering</td><td className="px-4 py-3 text-muted-foreground">For lite n (under 2048 bit), eller dårlige primtall (p og q nær hverandre).</td><td className="px-4 py-3 text-muted-foreground">Bruk &ge;2048 bit. Tilfeldige primtall, ikke nære.</td></tr>
+                <tr className="border-t border-border"><td className="px-4 py-3 font-mono text-brand">Low-exponent</td><td className="px-4 py-3 text-muted-foreground">e=3 og kort melding m → m³ &lt; n, så c = m³ direkte. Kubrot gir m.</td><td className="px-4 py-3 text-muted-foreground">Bruk e=65537 + OAEP-padding (legger random til m).</td></tr>
+                <tr className="border-t border-border"><td className="px-4 py-3 font-mono text-brand">Padding oracle (Bleichenbacher)</td><td className="px-4 py-3 text-muted-foreground">Server lekker «padding ok / padding feil». Angriper sender millioner av ciphers og lærer.</td><td className="px-4 py-3 text-muted-foreground">Konstant-tids respons. Bruk OAEP, ikke PKCS#1 v1.5.</td></tr>
+                <tr className="border-t border-border"><td className="px-4 py-3 font-mono text-brand">Timing-angrep</td><td className="px-4 py-3 text-muted-foreground">Måler hvor lang tid en dekryptering tar — kan avsløre bits av d.</td><td className="px-4 py-3 text-muted-foreground">Blinding: krypter et tilfeldig r først, dekrypter (r·c), del på r.</td></tr>
+                <tr className="border-t border-border"><td className="px-4 py-3 font-mono text-brand">Shors algoritme (kvante)</td><td className="px-4 py-3 text-muted-foreground">Kvantedatamaskin kan faktorisere i polynomisk tid.</td><td className="px-4 py-3 text-muted-foreground">Post-kvante: Kyber, Dilithium (NIST 2024).</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div className="mt-4 rounded-lg border border-amber-500/30 bg-amber-500/5 p-4 text-sm">
+            <strong className="text-amber-700 dark:text-amber-400">Eksamen-felle:</strong>{" "}
+            blank RSA («textbook RSA») er aldri sikker. Sann RSA inkluderer ALLTID padding
+            (OAEP for enc, PSS for sign). Hvis et oppgave-svar krypterer rett uten padding,
+            er det per definisjon en sårbarhet.
+          </div>
         </section>
+
+        <div className="mt-10 rounded-xl border border-border bg-card p-5 text-sm">
+          <h2 className="font-semibold mb-2">Tilbake til oversikten</h2>
+          <ul className="space-y-1.5 text-muted-foreground list-disc pl-5">
+            <li>
+              <Link to="/stack/$slug" params={{ slug: "dte-2507" }} className="text-brand hover:underline">
+                DTE-2507-hub
+              </Link>
+              {" "}— alle nettverks- og sikkerhets-mini-kursene.
+            </li>
+            <li>
+              <Link to="/stack/$slug" params={{ slug: "dte2507-tls-handshake" }} className="text-brand hover:underline">
+                TLS-handshake
+              </Link>
+              {" "}— se hvor RSA brukes i ekte protokoller.
+            </li>
+            <li>
+              <Link to="/drag" className="text-brand hover:underline">Drag-oppgaver</Link>{" "}
+              under «Kryptografi» — pugg matte og angrep.
+            </li>
+            <li>
+              <Link to="/cards" className="text-brand hover:underline">Repetisjonskort</Link>{" "}
+              i kategorien <em>sikkerhet</em>.
+            </li>
+          </ul>
+        </div>
       </article>
     </StackPageShell>
   );
