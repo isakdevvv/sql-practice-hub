@@ -3,6 +3,7 @@ import { Link } from "@tanstack/react-router";
 import {Lightbulb, ArrowLeft } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
+import { DecisionBoundary } from "./DecisionBoundary";
 
 const STEPS = [
   { title: "Beslutningstre — intuisjon", anchor: "intuisjon" },
@@ -12,6 +13,7 @@ const STEPS = [
   { title: "Feature importance", anchor: "importance" },
   { title: "Visuell: bygg tre steg-for-steg", anchor: "visual" },
   { title: "Sammenlign single-tree vs forest", anchor: "compare" },
+  { title: "Dypere: beslutningsgrenser, depth & n_estimators", anchor: "boundary" },
 ];
 
 export function Dte2602TreesRfPage() {
@@ -182,6 +184,21 @@ imp.sort_values().plot(kind="barh")`}</pre>
             forest av 50 trær glatter ut grensene — overfitter mindre.
           </p>
           <ForestVsTreeDemo />
+        </Section>
+
+        <Section
+          number="8"
+          id="boundary"
+          title="Dypere: beslutningsgrenser, depth & n_estimators"
+        >
+          <p className="text-sm text-muted-foreground mb-3">
+            Tre klasser i 2D. Bytt mellom Decision Tree og Random Forest, og
+            skru på <code>max_depth</code> og <code>n_estimators</code> for å
+            se hvordan beslutningsgrensene endrer karakter. Med tre,
+            depth=10 får du tydelige trappetrinn (overfit). Med forest,
+            n_estimators=50 glatter grensene seg ut til mer organiske kurver.
+          </p>
+          <DecisionBoundary />
         </Section>
               <div className="mt-6">
           <Link
