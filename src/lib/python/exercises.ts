@@ -4,6 +4,7 @@ import { DTE2507_EXERCISES } from "./exercises-dte2507";
 import { PY_DTE2602_EXERCISES } from "./exercises-dte2602";
 import { DTE2505_EXERCISES } from "./exercises-dte2505";
 import { PY_EXERCISES_DTE2501 } from "./exercises-dte2501";
+import { PY_TEK1_GAPS_EXERCISES } from "./exercises-tek1-gaps";
 
 // All exercises target DAT1000-pensum: Flask, Jinja, MySQL via prepared
 // statements, sessions, login, CSRF, JSON-API, HTTP-statuskoder.
@@ -7444,6 +7445,9 @@ print(f"95% CI = ({ci_low * 100:.1f}%, {ci_high * 100:.1f}%)")
 
   // DTE-2501 ML-pensum — k-NN, trær, ensemble, k-Means, GMM, PCA, NLP, GA, RL, DP.
   ...PY_EXERCISES_DTE2501,
+
+  // TEK-1501 — ANOVA og inferens for proporsjoner.
+  ...PY_TEK1_GAPS_EXERCISES,
 ];
 
 export const PY_EXERCISES: PyExercise[] = [

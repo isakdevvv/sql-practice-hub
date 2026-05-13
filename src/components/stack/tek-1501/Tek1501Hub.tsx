@@ -83,6 +83,11 @@ const MODULER: Modul[] = [
         title: "Konfidensintervall, hypotesetest, regresjon",
         note: "Hele eksamen-tyngdepunktet",
       },
+      {
+        slug: "tek1-anova",
+        title: "Ettveis ANOVA og F-test",
+        note: "SS-dekomp, F, post-hoc (Tukey HSD)",
+      },
     ],
   },
 ];

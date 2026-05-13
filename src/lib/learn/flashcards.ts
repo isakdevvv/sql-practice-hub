@@ -4526,6 +4526,80 @@ export const FLASHCARDS: FlashCard[] = [
     answer:
       "Stub-resolver: i OS (libc, systemd-resolved) — sender en query til konfigurert resolver og venter. Rekursiv resolver: tråler hierarkiet for klienten (1.1.1.1, 8.8.8.8). Autoritativ NS: har de ekte sone-dataene for et domene, svarer kun for det domenet — aldri rekursivt.",
   },
+  // ============= TEK-1501: ANOVA (9) =============
+  {
+    id: "c-tek1-anova-hva",
+    category: "statistikk",
+    topic: "ANOVA",
+    question: "Hva er ANOVA, og når bruker du den?",
+    answer:
+      "Analysis of variance — én test som sammenligner snittet i 3+ grupper. H₀: μ₁ = μ₂ = … = μₖ. Brukes når du har én kategorisk faktor (gruppe) og kontinuerlig respons. Unngår oppblåst familywise error fra mange parvise t-tester.",
+  },
+  {
+    id: "c-tek1-anova-fwer",
+    category: "statistikk",
+    topic: "ANOVA",
+    question: "Hvorfor ikke bare gjøre alle parvise t-tester?",
+    answer:
+      "FWER = 1 − (1 − α)^m. Med 4 grupper er m = 6 par. Ved α = 0.05 blir P(minst én falsk forkasting) ≈ 0.265 — over 26 %. ANOVA gir én samlet test med kontrollert α.",
+  },
+  {
+    id: "c-tek1-anova-f-formel",
+    category: "statistikk",
+    topic: "ANOVA",
+    question: "Hvordan beregnes F-statistikken?",
+    answer:
+      "F = MS_between / MS_within = (SS_between / (k−1)) / (SS_within / (N−k)). Stor F ⇒ gruppemiddelene skiller seg fra grand mean mer enn restspredningen kan forklare.",
+  },
+  {
+    id: "c-tek1-anova-ss-id",
+    category: "statistikk",
+    topic: "ANOVA",
+    question: "Hva er SS-dekomponering i ettveis ANOVA?",
+    answer:
+      "SS_total = SS_between + SS_within. SS_between = Σnᵢ(x̄ᵢ − x̄..)². SS_within = ΣΣ(xᵢⱼ − x̄ᵢ)². Identiteten er at all variasjon enten ligger mellom gruppene eller innen dem.",
+  },
+  {
+    id: "c-tek1-anova-df",
+    category: "statistikk",
+    topic: "ANOVA",
+    question: "Frihetsgrader i ettveis ANOVA?",
+    answer:
+      "df_between = k − 1 (antall grupper minus 1). df_within = N − k. df_total = N − 1. F-fordelingen brukes med (df_between, df_within) som første og andre parameter.",
+  },
+  {
+    id: "c-tek1-anova-antakelser",
+    category: "statistikk",
+    topic: "ANOVA",
+    question: "Hvilke 3 antagelser krever ANOVA?",
+    answer:
+      "1) Uavhengighet mellom observasjoner. 2) Normalitet innen hver gruppe (mindre kritisk når n er stor). 3) Lik varians (homoskedastisitet). Hvis 3 brutt: bruk Welch's ANOVA eller Kruskal–Wallis.",
+  },
+  {
+    id: "c-tek1-anova-tukey",
+    category: "statistikk",
+    topic: "ANOVA",
+    question: "Hva er Tukey HSD og hvorfor brukes den?",
+    answer:
+      "Honest significant difference — post-hoc-test som finner HVILKE par av gruppemiddel som skiller seg etter at ANOVA har forkastet H₀. HSD = q_{α,k,N−k} · √(MS_within / n). Mer kraftig enn Bonferroni ved mange grupper.",
+  },
+  {
+    id: "c-tek1-anova-vs-bonferroni",
+    category: "statistikk",
+    topic: "ANOVA",
+    question: "Forskjellen på Tukey HSD og Bonferroni-korreksjon?",
+    answer:
+      "Bonferroni: kjør m parvise tester, krev p < α/m. Enkel, konservativ, generelt anvendelig. Tukey HSD: bruker studentized range fordelingen — mer kraftig når k er stor. Tukey er optimal ved balanserte design.",
+  },
+  {
+    id: "c-tek1-anova-forkast-betyr",
+    category: "statistikk",
+    topic: "ANOVA",
+    question: "Hva betyr 'forkast H₀' i ANOVA?",
+    answer:
+      "MINST ETT par av gruppemiddel skiller seg. Det betyr IKKE at alle par skiller seg. Gjør post-hoc (Tukey/Bonferroni) for å finne hvilke par som faktisk er signifikant forskjellige.",
+  },
+
 ];
 
 export const CARD_CATEGORIES: { id: FlashCard["category"]; label: string }[] = [
