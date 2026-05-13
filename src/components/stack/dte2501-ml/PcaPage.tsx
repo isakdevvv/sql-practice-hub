@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { Lightbulb, Axis3D, AlertTriangle, ArrowLeft } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
+import { PcaProjector } from "./PcaProjector";
 
 const STEPS = [
   { title: "Hvorfor dimensjonsreduksjon?", anchor: "why" },
@@ -254,6 +255,9 @@ Tommelfingerregler:
    - Behold k PCs så cumul(k) ≥ 0.90 eller 0.95
    - Eller bruk knekken i scree plot
    - Eller Kaiser-kriteriet: behold PCs med λᵢ > 1 (etter standardisering)`}</pre>
+          </div>
+          <div className="mt-4">
+            <PcaProjector />
           </div>
         </section>
 

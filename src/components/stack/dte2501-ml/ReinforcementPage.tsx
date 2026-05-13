@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { Lightbulb, Gamepad2, AlertTriangle, ArrowLeft } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
+import { MdpGridworld } from "./MdpGridworld";
 
 const STEPS = [
   { title: "Hvorfor RL?", anchor: "intro" },
@@ -121,6 +122,9 @@ Når vi har V* eller Q*, er optimal policy:
    π*(s) = argmax_a  Q*(s, a)
 
 Det er ikke-lineære likninger (max-operator) men har unik løsning.`}</pre>
+          </div>
+          <div className="mt-4">
+            <MdpGridworld />
           </div>
         </section>
 

@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { Lightbulb, Boxes, AlertTriangle, ArrowLeft } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
+import { KnnExplorer } from "./KnnExplorer";
 
 const STEPS = [
   { title: "Lazy learning — hva betyr det?", anchor: "lazy" },
@@ -101,6 +102,9 @@ predict(x') →  ŷ = w · x'                          For hver xi i X:
             man la stemmen være 1/avstand — nære naboer veier mer. Det reduserer
             problemer ved klassebalanse og dempes hjørne-effekter.
           </p>
+          <div className="mt-4">
+            <KnnExplorer />
+          </div>
         </section>
 
         <section id="distance" className="mb-10">
