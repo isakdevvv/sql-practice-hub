@@ -65,6 +65,66 @@ type Sektor = {
   subjects: Subject[];
 };
 
+type HostSubject = Subject & { stp: number; eksamen: string; type: string };
+
+const HOST_2026: HostSubject[] = [
+  {
+    slug: "tek-1501",
+    code: "TEK-1501",
+    navn: "Sannsynlighet og statistikk for ingeniører",
+    blurb:
+      "Deskriptiv statistikk, fordelinger (binom/Poisson/normal/t/χ²), hypotesetest, regresjon. 4 moduler + 15 numpy/scipy-øvelser.",
+    Icon: Sigma,
+    stp: 5,
+    eksamen: "14.12.2026 (3t skriftlig)",
+    type: "Programfaglig basis",
+  },
+  {
+    slug: "dte-2505",
+    code: "DTE-2505",
+    navn: "Operativsystemer",
+    blurb:
+      "Linux, virtualisering, prosesser, rettigheter, shell-scripting. 5 mini-kurs + 8-oblig-guide + shell-drill med 40 scenarier.",
+    Icon: TerminalSquare,
+    stp: 5,
+    eksamen: "02.12.2026 (2t skriftlig)",
+    type: "Programfaglig basis",
+  },
+  {
+    slug: "dte-2501",
+    code: "DTE-2501",
+    navn: "AI Methods and Applications",
+    blurb:
+      "k-NN, k-Means, GA, NLP, PCA, GMM, ensemble, RL, DP — 10 ML-mini-kurs + 20 sklearn-øvelser. Også klassisk AI som backup-spor.",
+    Icon: Brain,
+    stp: 10,
+    eksamen: "Hjemmeeksamen + portefølje (3t × 2 + mappe)",
+    type: "Fordypning kunstig intelligens",
+  },
+  {
+    slug: "dte-2507",
+    code: "DTE-2507",
+    navn: "Datakommunikasjon og sikkerhet",
+    blurb:
+      "OSI/TCP-IP, TLS, brannmur, Wireshark/pcap-quiz med 15 scenarier, socket-shim med 15 Python-øvelser.",
+    Icon: Network,
+    stp: 10,
+    eksamen: "30.11.2026 (2 × 2t)",
+    type: "Teknisk spesialisering",
+  },
+  {
+    slug: "dte-2602",
+    code: "DTE-2602",
+    navn: "Introduksjon maskinlæring og AI",
+    blurb:
+      "9 dybde-leksjoner + 2 ML-prosjekter (Iris, klustering) + 31 sklearn-øvelser. Etikk, evaluering, prosjektflyt.",
+    Icon: Layers,
+    stp: 10,
+    eksamen: "09.12.2026 (3t hjemme) + mappe 16.12",
+    type: "Obligatorisk emne",
+  },
+];
+
 const SEKTORER: Sektor[] = [
   {
     navn: "Databaser og web",
@@ -460,10 +520,70 @@ function LandingPage() {
           </div>
         </section>
 
+        {/* Høst 2026 — fremhevet semester */}
+        <section className="container mx-auto px-4 pt-14 max-w-6xl">
+          <div className="rounded-2xl border-2 border-brand/40 bg-gradient-to-br from-brand/10 via-card to-success/5 p-6 sm:p-8 shadow-lg shadow-brand/5">
+            <div className="flex items-baseline gap-3 flex-wrap mb-2">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-brand">
+                Høst 2026
+              </span>
+              <span className="text-xs text-muted-foreground">· 40 studiepoeng · 5 fag</span>
+            </div>
+            <h2 className="text-2xl sm:text-3xl font-bold tracking-tight mb-2">
+              Mitt semester
+            </h2>
+            <p className="text-sm text-muted-foreground mb-6 max-w-2xl">
+              De fem fagene du tar nå. Hvert kort lenker rett til kurs-huben med modul-oversikt
+              og øvelser tilpasset eksamen.
+            </p>
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
+              {HOST_2026.map((s) => {
+                const Icon = s.Icon;
+                return (
+                  <Link
+                    key={s.slug}
+                    to="/stack/$slug"
+                    params={{ slug: s.slug }}
+                    className="group rounded-xl border border-border bg-background/80 hover:border-brand backdrop-blur p-4 transition-all block"
+                  >
+                    <div className="flex items-center gap-2 mb-2">
+                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-brand/15">
+                        <Icon className="h-4 w-4 text-brand" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-baseline gap-2 flex-wrap">
+                          <span className="text-[10px] font-bold text-brand uppercase tracking-wider">
+                            {s.code}
+                          </span>
+                          <span className="text-[10px] text-muted-foreground">
+                            {s.stp} stp
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                    <h4 className="font-semibold text-foreground leading-tight mb-1.5 text-sm">
+                      {s.navn}
+                    </h4>
+                    <p className="text-xs text-muted-foreground leading-relaxed mb-2">
+                      {s.blurb}
+                    </p>
+                    <div className="flex items-center justify-between text-[10px]">
+                      <span className="text-muted-foreground">📅 {s.eksamen}</span>
+                      <span className="text-brand group-hover:translate-x-0.5 transition-transform">
+                        Åpne →
+                      </span>
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+
         {/* Sektor-grid */}
         <section className="container mx-auto px-4 py-14 max-w-6xl">
           <div className="mb-8 text-center">
-            <h2 className="text-3xl font-bold tracking-tight">Velg fag</h2>
+            <h2 className="text-3xl font-bold tracking-tight">Alle fag</h2>
             <p className="mt-2 text-muted-foreground">
               Hver kursside har modul-oversikt, mini-kurs og direkte tilgang til
               øvingsmateriale.
