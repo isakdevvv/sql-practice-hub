@@ -38,7 +38,7 @@ function LearnHub() {
             icon={<Layers className="h-5 w-5 text-brand" />}
             title="Repetisjonskort"
             count={`${FLASHCARDS.length} kort`}
-            description="Snu-kort med spørsmål og svar — begreper, SQL, Flask, HTTP, sikkerhet. Marker hva du kan og ikke kan."
+            description="Tre moduser: quiz med svaralternativer, blaing gjennom alle kort, og spaced repetition (FSRS) som planlegger neste repetisjon for deg."
             accent="brand"
           />
           <ModeCard
