@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import {Lightbulb, ArrowLeft } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
+import { Tex, TexBlock } from "@/components/Tex";
 
 const STEPS = [
   { title: "Hvorfor deskriptiv statistikk?", anchor: "motivasjon" },
@@ -81,25 +82,31 @@ export function Tek1DeskriptivPage() {
             «Hvor ligger midten av dataene?» Tre vanlige svar — hvert med sine
             styrker og svakheter.
           </p>
-          <div className="rounded-xl border border-border bg-card p-5">
-            <pre className="font-mono text-xs overflow-x-auto whitespace-pre">{`Gjennomsnitt (mean, x̄):
-  x̄ = (1/n) Σ xᵢ        — summen delt på antall
-
-  Pros: matematisk håndterbart, bruker ALL info.
-  Cons: TREKKES KRAFTIG av ekstreme verdier (outliers).
-
-Median:
-  Sorter dataene. Median = midtre verdi (eller snittet av de to
-  midtre hvis n er partall).
-
-  Pros: ROBUST mot outliers. Riktig sentralmål for skjeve fordelinger.
-  Cons: bruker bare midt-info, ikke alle verdier.
-
-Modus:
-  Verdien som forekommer oftest.
-
-  Pros: eneste som funker for kategoriske data ("blå", "rød", ...).
-  Cons: kan være ikke-unik eller ikke eksistere.`}</pre>
+          <div className="rounded-xl border border-border bg-card p-5 space-y-4">
+            <div>
+              <div className="font-semibold text-sm mb-1">Gjennomsnitt (mean, <Tex>{"\\bar{x}"}</Tex>):</div>
+              <TexBlock>{"\\bar{x} = \\frac{1}{n} \\sum_{i=1}^{n} x_i"}</TexBlock>
+              <p className="text-xs text-muted-foreground mt-2">
+                Pros: matematisk håndterbart, bruker ALL info.<br />
+                Cons: TREKKES KRAFTIG av ekstreme verdier (outliers).
+              </p>
+            </div>
+            <div>
+              <div className="font-semibold text-sm mb-1">Median:</div>
+              <p className="text-xs text-muted-foreground">
+                Sorter dataene. Median = midtre verdi (eller snittet av de to midtre hvis n er partall).<br />
+                Pros: ROBUST mot outliers. Riktig sentralmål for skjeve fordelinger.<br />
+                Cons: bruker bare midt-info, ikke alle verdier.
+              </p>
+            </div>
+            <div>
+              <div className="font-semibold text-sm mb-1">Modus:</div>
+              <p className="text-xs text-muted-foreground">
+                Verdien som forekommer oftest.<br />
+                Pros: eneste som funker for kategoriske data ("blå", "rød", ...).<br />
+                Cons: kan være ikke-unik eller ikke eksistere.
+              </p>
+            </div>
           </div>
           <div className="mt-4 rounded-xl border border-border bg-card p-5">
             <div className="text-xs uppercase tracking-wider text-brand font-semibold mb-2">
@@ -155,21 +162,30 @@ IQR (Interkvartilbredde) = Q3 - Q1
           <p className="text-sm text-muted-foreground mb-4">
             «Hvor mye varierer dataene rundt sentralmålet?» Tre vanlige svar.
           </p>
-          <div className="rounded-xl border border-border bg-card p-5">
-            <pre className="font-mono text-xs overflow-x-auto whitespace-pre">{`Range = max - min                ← enkleste, men outlier-sensitiv
-
-Varians (stikkprøve, s²):
-  s² = (1 / (n-1)) Σ (xᵢ - x̄)²    ← MERK: n-1, ikke n
-
-  Hvorfor n-1? Vi har brukt opp én "frihetsgrad" på x̄.
-  n-1 gjør s² forventningsrett (unbiased) for σ².
-
-Standardavvik (stikkprøve, s):
-  s = √s²
-
-  Samme enhet som dataene. Lettere å tolke enn varians.
-
-IQR = Q3 - Q1                    ← robust mot outliers`}</pre>
+          <div className="rounded-xl border border-border bg-card p-5 space-y-4">
+            <div>
+              <div className="font-semibold text-sm mb-1">Range (variasjonsbredde):</div>
+              <TexBlock>{"\\text{Range} = x_{\\max} - x_{\\min}"}</TexBlock>
+              <p className="text-xs text-muted-foreground mt-1">Enkleste, men outlier-sensitiv.</p>
+            </div>
+            <div>
+              <div className="font-semibold text-sm mb-1">Varians (stikkprøve, <Tex>{"s^2"}</Tex>):</div>
+              <TexBlock>{"s^2 = \\frac{1}{n-1} \\sum_{i=1}^{n} (x_i - \\bar{x})^2"}</TexBlock>
+              <p className="text-xs text-muted-foreground mt-1">
+                MERK: <Tex>{"n-1"}</Tex>, ikke <Tex>{"n"}</Tex>. Vi har brukt opp én "frihetsgrad" på <Tex>{"\\bar{x}"}</Tex>.
+                Det gjør <Tex>{"s^2"}</Tex> forventningsrett (unbiased) for <Tex>{"\\sigma^2"}</Tex>.
+              </p>
+            </div>
+            <div>
+              <div className="font-semibold text-sm mb-1">Standardavvik (stikkprøve, <Tex>{"s"}</Tex>):</div>
+              <TexBlock>{"s = \\sqrt{s^2} = \\sqrt{\\frac{1}{n-1} \\sum_{i=1}^{n} (x_i - \\bar{x})^2}"}</TexBlock>
+              <p className="text-xs text-muted-foreground mt-1">Samme enhet som dataene. Lettere å tolke enn varians.</p>
+            </div>
+            <div>
+              <div className="font-semibold text-sm mb-1">IQR (interkvartilbredde):</div>
+              <TexBlock>{"\\text{IQR} = Q_3 - Q_1"}</TexBlock>
+              <p className="text-xs text-muted-foreground mt-1">Robust mot outliers.</p>
+            </div>
           </div>
           <div className="mt-4 rounded-xl border border-amber-500/30 bg-amber-500/5 p-4 text-sm">
             <strong>Klassisk eksamen-felle:</strong> blande sammen{" "}
@@ -183,16 +199,14 @@ IQR = Q3 - Q1                    ← robust mot outliers`}</pre>
             <div className="text-xs uppercase tracking-wider text-brand font-semibold mb-2">
               Manuell beregning — fem målinger
             </div>
-            <pre className="font-mono text-xs overflow-x-auto whitespace-pre">{`Data:  2, 4, 4, 6, 8     (n = 5)
-
-  x̄ = (2+4+4+6+8) / 5 = 24/5 = 4.8
+            <pre className="font-mono text-xs overflow-x-auto whitespace-pre mb-3">{`Data:  2, 4, 4, 6, 8     (n = 5)
 
   Avvik:        -2.8, -0.8, -0.8, 1.2, 3.2
   Kvadrert:     7.84, 0.64, 0.64, 1.44, 10.24
-  Sum:          20.80
-
-  s² = 20.80 / (5-1) = 5.20
-  s  = √5.20 ≈ 2.28`}</pre>
+  Sum:          20.80`}</pre>
+            <TexBlock>{"\\bar{x} = \\frac{2+4+4+6+8}{5} = \\frac{24}{5} = 4.8"}</TexBlock>
+            <TexBlock>{"s^2 = \\frac{20.80}{5-1} = 5.20"}</TexBlock>
+            <TexBlock>{"s = \\sqrt{5.20} \\approx 2.28"}</TexBlock>
           </div>
         </section>
 
@@ -317,14 +331,14 @@ Antall:   3      8     12      6      1
               flytte snittet kraftig. Median påvirkes bare av rekkefølgen.
             </div>
             <div className="rounded-lg border border-amber-500/30 bg-amber-500/5 p-4">
-              <strong>Standardavvik ≠ standardfeil.</strong> s = utvalgets
-              spredning. SE = s/√n = usikkerheten i snittet. De forveksles ofte.
+              <strong>Standardavvik <Tex>{"\\neq"}</Tex> standardfeil.</strong> <Tex>{"s"}</Tex> = utvalgets
+              spredning. <Tex>{"SE = s/\\sqrt{n}"}</Tex> = usikkerheten i snittet. De forveksles ofte.
               Mer om SE i Modul 4.
             </div>
             <div className="rounded-lg border border-amber-500/30 bg-amber-500/5 p-4">
               <strong>Bins påvirker histogrammet.</strong> For få bins skjuler
-              struktur, for mange viser støy. Vanlig tommelregel: bins ≈ √n eller
-              Sturges' formel ⌈log₂(n)+1⌉.
+              struktur, for mange viser støy. Vanlig tommelregel: <Tex>{"\\text{bins} \\approx \\sqrt{n}"}</Tex> eller
+              Sturges' formel <Tex>{"\\lceil \\log_2(n) + 1 \\rceil"}</Tex>.
             </div>
           </div>
         </section>
