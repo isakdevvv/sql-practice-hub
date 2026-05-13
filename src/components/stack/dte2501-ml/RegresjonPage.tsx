@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import {Lightbulb, TrendingUp, ArrowLeft } from "lucide-react";
+import { Lightbulb, TrendingUp, AlertTriangle, ArrowLeft } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
 
@@ -106,6 +106,45 @@ Huber loss (mix):
              δ·(|r| − δ/2) ellers
     Glatt nær 0 (som MSE), lineær langt unna (som MAE).`}</pre>
           </div>
+
+          <div className="mt-4 overflow-hidden rounded-lg border border-border">
+            <table className="w-full text-sm">
+              <thead className="bg-muted/50">
+                <tr>
+                  <th className="text-left font-semibold px-4 py-2 w-28">Loss</th>
+                  <th className="text-left font-semibold px-4 py-2">Formel</th>
+                  <th className="text-left font-semibold px-4 py-2">Bruk når</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-2 font-medium">MSE</td>
+                  <td className="px-4 py-2 font-mono text-xs">(1/n) Σ(yᵢ − ŷᵢ)²</td>
+                  <td className="px-4 py-2 text-muted-foreground">Standard. Glatt, deriverbar, men outlier-sensitiv.</td>
+                </tr>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-2 font-medium">MAE</td>
+                  <td className="px-4 py-2 font-mono text-xs">(1/n) Σ|yᵢ − ŷᵢ|</td>
+                  <td className="px-4 py-2 text-muted-foreground">Data har outliers du IKKE vil at modellen skal jage.</td>
+                </tr>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-2 font-medium">Huber</td>
+                  <td className="px-4 py-2 font-mono text-xs">½r² eller δ(|r|−δ/2)</td>
+                  <td className="px-4 py-2 text-muted-foreground">Du vil ha både MSE-glatthet og MAE-robusthet.</td>
+                </tr>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-2 font-medium">MAPE</td>
+                  <td className="px-4 py-2 font-mono text-xs">(100/n) Σ|yᵢ−ŷᵢ|/|yᵢ|</td>
+                  <td className="px-4 py-2 text-muted-foreground">Forretningsrapport krever %-feil. NB: y ≈ 0 sprenger.</td>
+                </tr>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-2 font-medium">Log-cosh</td>
+                  <td className="px-4 py-2 font-mono text-xs">Σ log(cosh(yᵢ−ŷᵢ))</td>
+                  <td className="px-4 py-2 text-muted-foreground">Du vil ha Huber-egenskaper, men trenger to-deriverbar.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </section>
 
         <section id="poly" className="mb-10">
@@ -158,6 +197,17 @@ Tegn på overfitting:
   - vektkoeffisientene blir HUGE
   - modellen passer perfekt — også støyen`}</pre>
           </div>
+
+          <div className="mt-4 rounded-lg border border-amber-500/30 bg-amber-500/5 p-4 flex items-start gap-3">
+            <AlertTriangle className="h-4 w-4 text-amber-500 mt-0.5 shrink-0" />
+            <div className="text-sm">
+              <span className="font-medium">Tre tegn-signaler du må se etter:</span>{" "}
+              (1) train-loss går mot 0 mens val-loss stiger, (2) noen vekt-koeffisienter
+              er enormt store (10³–10⁶), (3) små perturbasjoner i treningsdata flytter
+              prediksjonene mye. Hvis du ser noen av disse — krymp modellen,
+              regulariser, eller hent mer data.
+            </div>
+          </div>
         </section>
 
         <section id="regul" className="mb-10">
@@ -186,6 +236,39 @@ Elastic Net = blanding av begge:
     α = 0   → vanlig lin.reg
     α → ∞   → alle vekter mot 0 (underfit)`}</pre>
           </div>
+
+          <div className="mt-4 overflow-hidden rounded-lg border border-border">
+            <table className="w-full text-sm">
+              <thead className="bg-muted/50">
+                <tr>
+                  <th className="text-left font-semibold px-4 py-2 w-28">Metode</th>
+                  <th className="text-left font-semibold px-4 py-2">Straff</th>
+                  <th className="text-left font-semibold px-4 py-2">Sparsity?</th>
+                  <th className="text-left font-semibold px-4 py-2">Bra på</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-2 font-medium">Ridge (L2)</td>
+                  <td className="px-4 py-2 font-mono text-xs">α · Σwⱼ²</td>
+                  <td className="px-4 py-2 text-muted-foreground">Nei — krymper alle</td>
+                  <td className="px-4 py-2 text-muted-foreground">Multi-kollinearitet, mange korrelerte features</td>
+                </tr>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-2 font-medium">Lasso (L1)</td>
+                  <td className="px-4 py-2 font-mono text-xs">α · Σ|wⱼ|</td>
+                  <td className="px-4 py-2 text-muted-foreground">Ja — vekter blir 0</td>
+                  <td className="px-4 py-2 text-muted-foreground">Feature-seleksjon, få viktige features blant mange</td>
+                </tr>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-2 font-medium">ElasticNet</td>
+                  <td className="px-4 py-2 font-mono text-xs">α(ρ‖w‖₁ + (1−ρ)/2‖w‖₂²)</td>
+                  <td className="px-4 py-2 text-muted-foreground">Ja (delvis)</td>
+                  <td className="px-4 py-2 text-muted-foreground">Grupper av korrelerte features (genetikk, tekst)</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </section>
 
         <section id="eval" className="mb-10">
@@ -206,6 +289,45 @@ RMSE (Root Mean Squared Error):
 MAPE (Mean Absolute Percentage Error):
     MAPE = (100/n) · Σ |yᵢ − ŷᵢ| / |yᵢ|
     Tolkbar prosent. Pass på division by zero hvis yᵢ ≈ 0.`}</pre>
+          </div>
+
+          <div className="mt-4 overflow-hidden rounded-lg border border-border">
+            <table className="w-full text-sm">
+              <thead className="bg-muted/50">
+                <tr>
+                  <th className="text-left font-semibold px-4 py-2 w-32">Metrikk</th>
+                  <th className="text-left font-semibold px-4 py-2">Tolkning</th>
+                  <th className="text-left font-semibold px-4 py-2">Når aktuell</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-2 font-medium">R²</td>
+                  <td className="px-4 py-2 text-muted-foreground">Andel forklart varians (1 = perfekt, 0 = som å gjette snittet)</td>
+                  <td className="px-4 py-2 text-muted-foreground">Sammenligne modeller på SAMME data</td>
+                </tr>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-2 font-medium">Adjusted R²</td>
+                  <td className="px-4 py-2 text-muted-foreground">R² straffet for antall features</td>
+                  <td className="px-4 py-2 text-muted-foreground">Modeller med ulikt antall features</td>
+                </tr>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-2 font-medium">RMSE</td>
+                  <td className="px-4 py-2 text-muted-foreground">Typisk feil i samme enhet som y</td>
+                  <td className="px-4 py-2 text-muted-foreground">Du må kommunisere absolutt feilstørrelse</td>
+                </tr>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-2 font-medium">MAE</td>
+                  <td className="px-4 py-2 text-muted-foreground">Snitt absolutt feil i samme enhet som y</td>
+                  <td className="px-4 py-2 text-muted-foreground">Outliers ikke skal dominere snittet</td>
+                </tr>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-2 font-medium">MAPE</td>
+                  <td className="px-4 py-2 text-muted-foreground">Snitt % feil</td>
+                  <td className="px-4 py-2 text-muted-foreground">Forretningsrapport, y ≫ 0 (ikke priser nær 0)</td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </section>
 

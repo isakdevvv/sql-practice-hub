@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import {Lightbulb, Infinity as InfinityIcon, ArrowLeft } from "lucide-react";
+import { Lightbulb, Infinity as InfinityIcon, AlertTriangle, ArrowLeft } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
 
@@ -106,6 +106,45 @@ TABULATION (bottom-up):
 
 Velg memoization når tilstandsrommet er sparsomt brukt.
 Velg tabulation når du må ha hele tabellen, eller minne er kritisk.`}</pre>
+          </div>
+
+          <div className="mt-4 overflow-hidden rounded-lg border border-border">
+            <table className="w-full text-sm">
+              <thead className="bg-muted/50">
+                <tr>
+                  <th className="text-left font-semibold px-4 py-2 w-32">Aspekt</th>
+                  <th className="text-left font-semibold px-4 py-2">Memoization (top-down)</th>
+                  <th className="text-left font-semibold px-4 py-2">Tabulation (bottom-up)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-2 font-medium">Retning</td>
+                  <td className="px-4 py-2 text-muted-foreground">Rekursjon med cache fra n nedover</td>
+                  <td className="px-4 py-2 text-muted-foreground">Iterasjon fra base case og oppover</td>
+                </tr>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-2 font-medium">Tid</td>
+                  <td className="px-4 py-2 text-muted-foreground">O(antall reachable subproblems)</td>
+                  <td className="px-4 py-2 text-muted-foreground">O(antall subproblems totalt)</td>
+                </tr>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-2 font-medium">Minne</td>
+                  <td className="px-4 py-2 text-muted-foreground">O(antall reachable) + stack-frames</td>
+                  <td className="px-4 py-2 text-muted-foreground">O(tabell-størrelse), ofte rullbar</td>
+                </tr>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-2 font-medium">Risiko</td>
+                  <td className="px-4 py-2 text-muted-foreground">Stack-overflow ved dyp rekursjon</td>
+                  <td className="px-4 py-2 text-muted-foreground">Beregner unyttige tilstander</td>
+                </tr>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-2 font-medium">Bra på</td>
+                  <td className="px-4 py-2 text-muted-foreground">Sparse tilstandsrom</td>
+                  <td className="px-4 py-2 text-muted-foreground">Tett tilstandsrom, minne-kritisk</td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </section>
 
@@ -231,6 +270,51 @@ TSP er DET kanoniske eksemplet på «DP for kombinatorisk problem»
 og kombinerer fint med eksamen-pensum: DP, ACO og GA fra
 metaheuristikk-trinnet, og brute-force som baseline.`}</pre>
           </div>
+
+          <div className="mt-4 overflow-hidden rounded-lg border border-border">
+            <table className="w-full text-sm">
+              <thead className="bg-muted/50">
+                <tr>
+                  <th className="text-left font-semibold px-4 py-2 w-40">Metode</th>
+                  <th className="text-left font-semibold px-4 py-2">Kompleksitet</th>
+                  <th className="text-left font-semibold px-4 py-2">Garanti</th>
+                  <th className="text-left font-semibold px-4 py-2">Praktisk n</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-2 font-medium">Brute force</td>
+                  <td className="px-4 py-2 text-muted-foreground">O(n!)</td>
+                  <td className="px-4 py-2 text-muted-foreground">Eksakt</td>
+                  <td className="px-4 py-2 text-muted-foreground">n ≤ 12</td>
+                </tr>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-2 font-medium">Held-Karp DP</td>
+                  <td className="px-4 py-2 text-muted-foreground">O(2ⁿ·n²)</td>
+                  <td className="px-4 py-2 text-muted-foreground">Eksakt</td>
+                  <td className="px-4 py-2 text-muted-foreground">n ≤ 25–30</td>
+                </tr>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-2 font-medium">Branch &amp; bound</td>
+                  <td className="px-4 py-2 text-muted-foreground">Verste fall O(n!), praksis raskere</td>
+                  <td className="px-4 py-2 text-muted-foreground">Eksakt</td>
+                  <td className="px-4 py-2 text-muted-foreground">n ≤ ~60</td>
+                </tr>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-2 font-medium">Christofides</td>
+                  <td className="px-4 py-2 text-muted-foreground">O(n³)</td>
+                  <td className="px-4 py-2 text-muted-foreground">≤ 1.5 × optimum (metrisk)</td>
+                  <td className="px-4 py-2 text-muted-foreground">n ≤ 10 000+</td>
+                </tr>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-2 font-medium">GA / ACO / 2-opt</td>
+                  <td className="px-4 py-2 text-muted-foreground">Stokastisk, justerbar</td>
+                  <td className="px-4 py-2 text-muted-foreground">Ingen — heuristisk</td>
+                  <td className="px-4 py-2 text-muted-foreground">n &gt; 1000 i praksis</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </section>
 
         <section id="dp-rl" className="mb-10">
@@ -256,6 +340,64 @@ som kan løses i lukket form, ikke iterert backup.
 Dette er hvorfor RL og DP er to sider av samme sak. Forskjellen:
    - Klassisk DP:  hele modellen er kjent (P og R)
    - RL:           lærer V eller Q ved sampling fra ukjent miljø`}</pre>
+          </div>
+
+          <div className="mt-4 overflow-hidden rounded-lg border border-border">
+            <table className="w-full text-sm">
+              <thead className="bg-muted/50">
+                <tr>
+                  <th className="text-left font-semibold px-4 py-2 w-44">Problem</th>
+                  <th className="text-left font-semibold px-4 py-2">Tilstand</th>
+                  <th className="text-left font-semibold px-4 py-2">Substruktur</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-2 font-medium">Fibonacci</td>
+                  <td className="px-4 py-2 text-muted-foreground">n (én indeks)</td>
+                  <td className="px-4 py-2 text-muted-foreground">fib(n) = fib(n−1) + fib(n−2)</td>
+                </tr>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-2 font-medium">0/1 Knapsack</td>
+                  <td className="px-4 py-2 text-muted-foreground">(i, w) — gjenstand-indeks + kapasitet</td>
+                  <td className="px-4 py-2 text-muted-foreground">max(ta i, hopp over i)</td>
+                </tr>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-2 font-medium">LCS</td>
+                  <td className="px-4 py-2 text-muted-foreground">(i, j) — prefiks-lengder i to strenger</td>
+                  <td className="px-4 py-2 text-muted-foreground">match → 1 + LCS(i−1,j−1), else max(...)</td>
+                </tr>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-2 font-medium">Edit distance</td>
+                  <td className="px-4 py-2 text-muted-foreground">(i, j) — prefiks-lengder</td>
+                  <td className="px-4 py-2 text-muted-foreground">min(insert, delete, replace) + 1</td>
+                </tr>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-2 font-medium">TSP (Held-Karp)</td>
+                  <td className="px-4 py-2 text-muted-foreground">(S, i) — besøkt sett + slutt-by</td>
+                  <td className="px-4 py-2 text-muted-foreground">min_j  dp[S\\{`{i}`}][j] + dist(j, i)</td>
+                </tr>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-2 font-medium">Coin change</td>
+                  <td className="px-4 py-2 text-muted-foreground">resterende sum</td>
+                  <td className="px-4 py-2 text-muted-foreground">min over hver mynt c: 1 + dp[s−c]</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div className="mt-4 rounded-lg border border-amber-500/30 bg-amber-500/5 p-4 flex items-start gap-3">
+            <AlertTriangle className="h-4 w-4 text-amber-500 mt-0.5 shrink-0" />
+            <div className="text-sm">
+              <span className="font-medium">Når DP IKKE er løsningen:</span> hvis
+              det IKKE finnes optimal substruktur (eks: korteste vei med negative
+              sykluser — Bellman-Ford trengs, ikke ren DP), eller hvis problemet
+              er greedy-løsbart (Dijkstra, MST). Et annet rødt flagg: hvis du må
+              «tenke deg om om» når du formulerer rekurrensen, har du sannsynligvis
+              ikke en gyldig DP-struktur. Prøv først å verifisere{" "}
+              <em>Bellman&apos;s principle of optimality</em> — kan optimal løsning
+              for (n) faktisk bygges fra optimale løsninger for &lt; n?
+            </div>
           </div>
         </section>
 
