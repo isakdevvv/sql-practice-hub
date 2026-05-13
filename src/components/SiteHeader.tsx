@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Search } from "lucide-react";
 import { searchEntries, type SearchEntry, type SearchKind } from "@/lib/search";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 // 4 hubs replace the previous 13-link nav. Each hub-landingsside lister
 // alle de eksisterende rutene som hører hjemme der — URL-ene er beholdt,
@@ -38,6 +39,8 @@ export function SiteHeader() {
             </Link>
           ))}
         </nav>
+
+        <ThemeToggle />
       </div>
     </header>
   );
