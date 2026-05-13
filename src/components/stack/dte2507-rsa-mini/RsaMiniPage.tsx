@@ -1,3 +1,5 @@
+import { Link } from "@tanstack/react-router";
+import { ArrowLeft } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { RsaBuilder } from "./RsaBuilder";
 
@@ -102,7 +104,17 @@ VERIFIKASJON: m == s^e mod n`}</pre>
               <li>AES-256 enc/dec: ~3 GB/s med HW-instruksjoner.</li>
               <li>Konklusjon: aldri krypter store data direkte med RSA. Bruk hybrid.</li>
             </ul>
-          </div>
+                  <div className="mt-6">
+          <Link
+            to="/stack/$slug"
+            params={{ slug: "dte-2507" }}
+            className="text-brand hover:underline inline-flex items-center gap-1 text-sm"
+          >
+            <ArrowLeft className="h-3.5 w-3.5" />
+            Tilbake til DTE-2507-hub
+          </Link>
+        </div>
+</div>
         </section>
       </article>
     </StackPageShell>

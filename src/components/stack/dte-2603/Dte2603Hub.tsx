@@ -8,8 +8,34 @@ import {
   Wifi,
   Layers3,
   Code2,
+  GitBranch,
+  Lightbulb,
 } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
+
+type Practice = {
+  href: string;
+  Icon: typeof Smartphone;
+  tittel: string;
+  blurb: string;
+};
+
+const PRACTICE: Practice[] = [
+  {
+    href: "/drag",
+    Icon: GitBranch,
+    tittel: "Drag-oppgaver",
+    blurb:
+      "Filter på «Mobil» — ~30 oppgaver om Kotlin, livssyklus, MVVM, korutiner og Retrofit.",
+  },
+  {
+    href: "/cards",
+    Icon: Lightbulb,
+    tittel: "Flashcards",
+    blurb:
+      "Drillbare kort over Kotlin-syntaks, Android-livssyklus, MVVM-roller og Room/Retrofit-mønstre.",
+  },
+];
 
 type Course = {
   slug: string;
@@ -225,6 +251,36 @@ tall.filter { it > 2 }.map { it * 10 }     // → [30, 40]`}</pre>
                   <p className="text-sm text-muted-foreground leading-relaxed">
                     {c.shortDescription}
                   </p>
+                  <div className="mt-3 flex items-center text-xs text-muted-foreground group-hover:text-foreground transition-colors">
+                    Åpne
+                    <ArrowRight className="h-3.5 w-3.5 ml-1 group-hover:translate-x-0.5 transition-transform" />
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+        </section>
+
+        <section className="mb-10">
+          <h2 className="text-xl font-semibold mb-1">Praktisk øvelse</h2>
+          <p className="text-xs text-muted-foreground mb-5">
+            Kotlin krever JVM/Android — øv på konsepter og syntaks her, kjør faktisk app
+            i Android Studio.
+          </p>
+          <div className="grid sm:grid-cols-2 gap-3">
+            {PRACTICE.map((r) => {
+              const Icon = r.Icon;
+              return (
+                <Link
+                  key={r.href}
+                  to={r.href}
+                  className="group rounded-xl border border-border bg-card hover:border-brand/40 p-5 transition-colors block"
+                >
+                  <div className="flex items-center gap-2 mb-2">
+                    <Icon className="h-4 w-4 text-brand" />
+                    <h3 className="font-semibold text-foreground leading-tight">{r.tittel}</h3>
+                  </div>
+                  <p className="text-sm text-muted-foreground leading-relaxed">{r.blurb}</p>
                   <div className="mt-3 flex items-center text-xs text-muted-foreground group-hover:text-foreground transition-colors">
                     Åpne
                     <ArrowRight className="h-3.5 w-3.5 ml-1 group-hover:translate-x-0.5 transition-transform" />

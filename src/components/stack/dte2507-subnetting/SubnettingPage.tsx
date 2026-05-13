@@ -1,3 +1,5 @@
+import { Link } from "@tanstack/react-router";
+import { ArrowLeft } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { SubnetCalculator } from "./SubnetCalculator";
 import { VlsmTrainer } from "./VlsmTrainer";
@@ -112,7 +114,17 @@ Spesielle:
             <p className="text-xs text-muted-foreground mt-2">
               Private adresser kan ikke rutes på Internett — derfor trenger du NAT for å nå ut.
             </p>
-          </div>
+                  <div className="mt-6">
+          <Link
+            to="/stack/$slug"
+            params={{ slug: "dte-2507" }}
+            className="text-brand hover:underline inline-flex items-center gap-1 text-sm"
+          >
+            <ArrowLeft className="h-3.5 w-3.5" />
+            Tilbake til DTE-2507-hub
+          </Link>
+        </div>
+</div>
         </section>
       </article>
     </StackPageShell>
