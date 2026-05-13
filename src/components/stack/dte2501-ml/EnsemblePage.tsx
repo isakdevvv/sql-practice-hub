@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Lightbulb, GitMerge } from "lucide-react";
+import { Lightbulb, GitMerge, AlertTriangle, ArrowLeft } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
 
@@ -122,6 +122,45 @@ Sluttprediksjon: majoritetsstemme
 Default i sklearn: B=100 trær, k=√d features.
 Lite tuning trengs — RF er «default arbeidshesten» i industri.`}</pre>
           </div>
+
+          <div className="mt-4 overflow-hidden rounded-lg border border-border">
+            <table className="w-full text-sm">
+              <thead className="bg-muted/50">
+                <tr>
+                  <th className="text-left font-semibold px-4 py-2 w-44">Hyperparameter</th>
+                  <th className="text-left font-semibold px-4 py-2">Effekt når du øker</th>
+                  <th className="text-left font-semibold px-4 py-2">Typisk verdi</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-2 font-medium">n_estimators</td>
+                  <td className="px-4 py-2 text-muted-foreground">Mer stabil — flate ut etter ~500</td>
+                  <td className="px-4 py-2 text-muted-foreground">100–500</td>
+                </tr>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-2 font-medium">max_depth</td>
+                  <td className="px-4 py-2 text-muted-foreground">Dypere trær → høyere variance per tre</td>
+                  <td className="px-4 py-2 text-muted-foreground">None (fri) eller 8–20</td>
+                </tr>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-2 font-medium">min_samples_split</td>
+                  <td className="px-4 py-2 text-muted-foreground">Større → enklere trær, mer bias</td>
+                  <td className="px-4 py-2 text-muted-foreground">2 (default) til 20</td>
+                </tr>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-2 font-medium">max_features</td>
+                  <td className="px-4 py-2 text-muted-foreground">Færre → mer diversitet, mindre korrelasjon mellom trær</td>
+                  <td className="px-4 py-2 text-muted-foreground">√d (klass.), d/3 (regresjon)</td>
+                </tr>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-2 font-medium">bootstrap</td>
+                  <td className="px-4 py-2 text-muted-foreground">På: gir OOB-estimat. Av: hvert tre ser hele data</td>
+                  <td className="px-4 py-2 text-muted-foreground">True (default)</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </section>
 
         <section id="boost" className="mb-10">
@@ -203,6 +242,58 @@ Hyperparametere du må kjenne:
    learning_rate (η):     0.01–0.3, ofte 0.1
    max_depth:             2–8, ofte 3 (kalt «stumps»)
    subsample:             stochastic GB → 0.5–1.0`}</pre>
+          </div>
+
+          <div className="mt-4 overflow-hidden rounded-lg border border-border">
+            <table className="w-full text-sm">
+              <thead className="bg-muted/50">
+                <tr>
+                  <th className="text-left font-semibold px-4 py-2 w-32">Variant</th>
+                  <th className="text-left font-semibold px-4 py-2">Hva som gjøres annerledes</th>
+                  <th className="text-left font-semibold px-4 py-2">Best på</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-2 font-medium">AdaBoost</td>
+                  <td className="px-4 py-2 text-muted-foreground">Oppdaterer eksempel-vekter, kombinerer med αₘ</td>
+                  <td className="px-4 py-2 text-muted-foreground">Binær klassifikasjon, ren data</td>
+                </tr>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-2 font-medium">Gradient Boosting</td>
+                  <td className="px-4 py-2 text-muted-foreground">Predikerer residual / negativ gradient av loss</td>
+                  <td className="px-4 py-2 text-muted-foreground">Regresjon, fleksibel loss</td>
+                </tr>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-2 font-medium">XGBoost</td>
+                  <td className="px-4 py-2 text-muted-foreground">GB + 2.ordens-info, regularisering, parallell</td>
+                  <td className="px-4 py-2 text-muted-foreground">Tabular Kaggle, structured data</td>
+                </tr>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-2 font-medium">LightGBM</td>
+                  <td className="px-4 py-2 text-muted-foreground">Histogram-baserte splits, leaf-wise vekst</td>
+                  <td className="px-4 py-2 text-muted-foreground">Store datasett, raskeste trening</td>
+                </tr>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-2 font-medium">CatBoost</td>
+                  <td className="px-4 py-2 text-muted-foreground">Innebygd håndtering av kategoriske features</td>
+                  <td className="px-4 py-2 text-muted-foreground">Mange kategoriske kolonner</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div className="mt-4 rounded-lg border border-amber-500/30 bg-amber-500/5 p-4 flex items-start gap-3">
+            <AlertTriangle className="h-4 w-4 text-amber-500 mt-0.5 shrink-0" />
+            <div className="text-sm">
+              <span className="font-medium">Når ensemble IKKE hjelper:</span>{" "}
+              hvis basis-modellene er sterkt korrelerte (gjør samme feil), så
+              hjelper det lite å snitte. Tegn: bagging gir bare 1–2 % bedre
+              accuracy enn én enkelt baseline. Tiltak: øk diversiteten
+              (max_features, ulike algoritmer i stacking) — eller bytt
+              modell-type helt. Hvis basis-modellen allerede er state-of-the-art
+              (XGBoost på godt tunet tabular), gir stacking sjelden mer enn ~1%.
+            </div>
           </div>
         </section>
 
@@ -296,7 +387,17 @@ Hyperparametere du må kjenne:
             </li>
           </ul>
         </div>
-      </div>
+              <div className="mt-6">
+          <Link
+            to="/stack/$slug"
+            params={{ slug: "dte-2501" }}
+            className="text-brand hover:underline inline-flex items-center gap-1 text-sm"
+          >
+            <ArrowLeft className="h-3.5 w-3.5" />
+            Tilbake til DTE-2501-hub
+          </Link>
+        </div>
+</div>
     </StackPageShell>
   );
 }

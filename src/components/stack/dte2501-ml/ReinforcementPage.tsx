@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Lightbulb, Gamepad2 } from "lucide-react";
+import { Lightbulb, Gamepad2, AlertTriangle, ArrowLeft } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
 import { MdpGridworld } from "./MdpGridworld";
@@ -188,6 +188,45 @@ Sammenligning VI vs PI:
    PI:  full policy evaluation (lukket form O(|S|³)) per iterasjon
         men færre policy-skift før konvergens`}</pre>
           </div>
+
+          <div className="mt-4 overflow-hidden rounded-lg border border-border">
+            <table className="w-full text-sm">
+              <thead className="bg-muted/50">
+                <tr>
+                  <th className="text-left font-semibold px-4 py-2 w-44">Aspekt</th>
+                  <th className="text-left font-semibold px-4 py-2">Value Iteration (VI)</th>
+                  <th className="text-left font-semibold px-4 py-2">Policy Iteration (PI)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-2 font-medium">Algoritme-flyt</td>
+                  <td className="px-4 py-2 text-muted-foreground">Én Bellman-backup per state, gjenta</td>
+                  <td className="px-4 py-2 text-muted-foreground">Full eval + improvement i hver runde</td>
+                </tr>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-2 font-medium">Konvergens</td>
+                  <td className="px-4 py-2 text-muted-foreground">Mange iterasjoner — V flytter seg gradvis</td>
+                  <td className="px-4 py-2 text-muted-foreground">Få iterasjoner — policy stabiliserer raskt</td>
+                </tr>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-2 font-medium">Per-iterasjon-kost</td>
+                  <td className="px-4 py-2 text-muted-foreground">O(|S|²·|A|)</td>
+                  <td className="px-4 py-2 text-muted-foreground">O(|S|³) (lineært system) + improvement</td>
+                </tr>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-2 font-medium">Beregningstid totalt</td>
+                  <td className="px-4 py-2 text-muted-foreground">Bedre når |S| er stor og |A| er liten</td>
+                  <td className="px-4 py-2 text-muted-foreground">Bedre når |S| er liten — løses raskt eksakt</td>
+                </tr>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-2 font-medium">Stopp-kriterie</td>
+                  <td className="px-4 py-2 text-muted-foreground">Δ &lt; θ (verdier bevegelse)</td>
+                  <td className="px-4 py-2 text-muted-foreground">Policy uendret én runde</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </section>
 
         <section id="world" className="mb-10">
@@ -210,6 +249,57 @@ EXPLORATION vs EXPLOITATION:
    Eksploater: ta beste kjente action
    Eksplorer:  prøv noe nytt — kanskje den er enda bedre
    ε-greedy: med p=1−ε ta best, med p=ε ta tilfeldig`}</pre>
+          </div>
+
+          <div className="mt-4 overflow-hidden rounded-lg border border-border">
+            <table className="w-full text-sm">
+              <thead className="bg-muted/50">
+                <tr>
+                  <th className="text-left font-semibold px-4 py-2 w-40">Setting</th>
+                  <th className="text-left font-semibold px-4 py-2">Known world (model-based)</th>
+                  <th className="text-left font-semibold px-4 py-2">Unknown world (model-free)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-2 font-medium">P og R</td>
+                  <td className="px-4 py-2 text-muted-foreground">Kjent eksplisitt</td>
+                  <td className="px-4 py-2 text-muted-foreground">Må estimeres ved interaksjon</td>
+                </tr>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-2 font-medium">Algoritmer</td>
+                  <td className="px-4 py-2 text-muted-foreground">Value Iteration, Policy Iteration (DP)</td>
+                  <td className="px-4 py-2 text-muted-foreground">Q-learning, SARSA, Monte Carlo, DQN</td>
+                </tr>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-2 font-medium">Eksempler</td>
+                  <td className="px-4 py-2 text-muted-foreground">Brettspill m/ kjente regler, simulator</td>
+                  <td className="px-4 py-2 text-muted-foreground">Robot, online anbefaling, fysisk verden</td>
+                </tr>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-2 font-medium">Sample-effektivitet</td>
+                  <td className="px-4 py-2 text-muted-foreground">N/A — ingen samples nødvendig</td>
+                  <td className="px-4 py-2 text-muted-foreground">Lav — krever mange episoder</td>
+                </tr>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-2 font-medium">Exploration</td>
+                  <td className="px-4 py-2 text-muted-foreground">Trivielt (vi sweeper alle states)</td>
+                  <td className="px-4 py-2 text-muted-foreground">Sentralt — ε-greedy, UCB, softmax</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div className="mt-4 rounded-lg border border-amber-500/30 bg-amber-500/5 p-4 flex items-start gap-3">
+            <AlertTriangle className="h-4 w-4 text-amber-500 mt-0.5 shrink-0" />
+            <div className="text-sm">
+              <span className="font-medium">Explore-exploit trade-off:</span> hvis
+              du alltid tar best-kjente action (ε=0), kan du sitte fast i et
+              suboptimal område du aldri har utforsket. Hvis du alltid utforsker
+              (ε=1), lærer du aldri å utnytte. Standard mønster:{" "}
+              <em>ε-decay</em> — start ε=1.0, reduser eksponentielt til 0.01 over
+              treningen. Tidlig fase: utforsk; sen fase: utnytt.
+            </div>
           </div>
         </section>
 
@@ -245,6 +335,45 @@ uendelig ofte, α reduseres på riktig vis).
 
 Når state-rommet er KONTINUERLIG (bilder, robot-sensor) blir tabellen
 umulig. Da brukes deep Q-learning (DQN) — Q er et nevralt nett.`}</pre>
+          </div>
+
+          <div className="mt-4 overflow-hidden rounded-lg border border-border">
+            <table className="w-full text-sm">
+              <thead className="bg-muted/50">
+                <tr>
+                  <th className="text-left font-semibold px-4 py-2 w-32">Aspekt</th>
+                  <th className="text-left font-semibold px-4 py-2">Q-learning</th>
+                  <th className="text-left font-semibold px-4 py-2">SARSA</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-2 font-medium">Policy-type</td>
+                  <td className="px-4 py-2 text-muted-foreground">Off-policy</td>
+                  <td className="px-4 py-2 text-muted-foreground">On-policy</td>
+                </tr>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-2 font-medium">Target-action</td>
+                  <td className="px-4 py-2 text-muted-foreground">max_a&apos; Q[s&apos;, a&apos;] (gridig)</td>
+                  <td className="px-4 py-2 text-muted-foreground">Q[s&apos;, a&apos;] der a&apos; er faktisk valgt</td>
+                </tr>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-2 font-medium">Eksplor.-strategi</td>
+                  <td className="px-4 py-2 text-muted-foreground">Kan eksplorere risikabelt — lærer optimal Q*</td>
+                  <td className="px-4 py-2 text-muted-foreground">Konservativ — tar hensyn til faktisk policy</td>
+                </tr>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-2 font-medium">Klassisk eksempel</td>
+                  <td className="px-4 py-2 text-muted-foreground">Cliff-walking: hopper i klippa for å lære optimum</td>
+                  <td className="px-4 py-2 text-muted-foreground">Cliff-walking: tar trygg rute (unngår klippa)</td>
+                </tr>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-2 font-medium">Bra på</td>
+                  <td className="px-4 py-2 text-muted-foreground">Når du bare bryr deg om sluttresultatet</td>
+                  <td className="px-4 py-2 text-muted-foreground">Når dårlige actions under trening har høy kost</td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </section>
 
@@ -304,7 +433,17 @@ umulig. Da brukes deep Q-learning (DQN) — Q er et nevralt nett.`}</pre>
             </li>
           </ul>
         </div>
-      </div>
+              <div className="mt-6">
+          <Link
+            to="/stack/$slug"
+            params={{ slug: "dte-2501" }}
+            className="text-brand hover:underline inline-flex items-center gap-1 text-sm"
+          >
+            <ArrowLeft className="h-3.5 w-3.5" />
+            Tilbake til DTE-2501-hub
+          </Link>
+        </div>
+</div>
     </StackPageShell>
   );
 }

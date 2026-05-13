@@ -1,16 +1,22 @@
 import { Link } from "@tanstack/react-router";
-import { Lightbulb, Dna } from "lucide-react";
+import { Lightbulb, Dna, AlertTriangle, ArrowLeft } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
+import { GaEvolution } from "./GaEvolution";
+import { PsoSwarm } from "./PsoSwarm";
+import { AcoTsp } from "./AcoTsp";
 
 const STEPS = [
   { title: "Hvorfor metaheuristikker?", anchor: "intro" },
   { title: "Genetic algorithm — komponentene", anchor: "ga-parts" },
   { title: "Seleksjon — roulette og tournament", anchor: "selection" },
   { title: "Crossover og mutasjon", anchor: "operators" },
+  { title: "Interaktiv: GA-evolusjon", anchor: "ga-vis" },
   { title: "GA pseudokode", anchor: "code" },
   { title: "Swarm intelligence — PSO", anchor: "pso" },
+  { title: "Interaktiv: PSO-flokken", anchor: "pso-vis" },
   { title: "Ant Colony Optimization", anchor: "aco" },
+  { title: "Interaktiv: ACO på TSP", anchor: "aco-vis" },
   { title: "Eksamen-typiske spørsmål", anchor: "exam" },
 ];
 
@@ -121,6 +127,51 @@ ELITISM:
    Behold de top-k beste UENDRET i neste generasjon. Sikrer at vi aldri
    "mister" beste-så-langt.`}</pre>
           </div>
+
+          <div className="mt-4 overflow-hidden rounded-lg border border-border">
+            <table className="w-full text-sm">
+              <thead className="bg-muted/50">
+                <tr>
+                  <th className="text-left font-semibold px-4 py-2 w-32">Seleksjon</th>
+                  <th className="text-left font-semibold px-4 py-2">Bias mot beste</th>
+                  <th className="text-left font-semibold px-4 py-2">Exploration</th>
+                  <th className="text-left font-semibold px-4 py-2">Kommentar</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-2 font-medium">Roulette</td>
+                  <td className="px-4 py-2 text-muted-foreground">Høyt (fitness-prop.)</td>
+                  <td className="px-4 py-2 text-muted-foreground">Lavt</td>
+                  <td className="px-4 py-2 text-muted-foreground">Skala-sensitiv, prematur konvergens</td>
+                </tr>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-2 font-medium">Tournament</td>
+                  <td className="px-4 py-2 text-muted-foreground">Justerbart via t</td>
+                  <td className="px-4 py-2 text-muted-foreground">Justerbart</td>
+                  <td className="px-4 py-2 text-muted-foreground">Robust, mest brukt i praksis</td>
+                </tr>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-2 font-medium">Rank</td>
+                  <td className="px-4 py-2 text-muted-foreground">Moderat</td>
+                  <td className="px-4 py-2 text-muted-foreground">Høyt</td>
+                  <td className="px-4 py-2 text-muted-foreground">Skala-uavhengig — bra med extreme fitness-skala</td>
+                </tr>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-2 font-medium">Elitism</td>
+                  <td className="px-4 py-2 text-muted-foreground">Maks (top-k)</td>
+                  <td className="px-4 py-2 text-muted-foreground">0 for de elite</td>
+                  <td className="px-4 py-2 text-muted-foreground">Sikrer beste aldri tapes — kombineres med annet</td>
+                </tr>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-2 font-medium">Truncation</td>
+                  <td className="px-4 py-2 text-muted-foreground">Hardt — bare topp x %</td>
+                  <td className="px-4 py-2 text-muted-foreground">Veldig lavt</td>
+                  <td className="px-4 py-2 text-muted-foreground">Aggressiv — fungerer hvis populasjon er stor</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </section>
 
         <section id="operators" className="mb-10">
@@ -151,10 +202,72 @@ MUTASJON:
    Mutasjonsrate er liten, typisk 0.01-0.05 per gen.
    For lav → for tidlig konvergens. For høy → tilfeldig søk.`}</pre>
           </div>
+
+          <div className="overflow-hidden rounded-lg border border-border">
+            <table className="w-full text-sm">
+              <thead className="bg-muted/50">
+                <tr>
+                  <th className="text-left font-semibold px-4 py-2 w-40">Operator</th>
+                  <th className="text-left font-semibold px-4 py-2">Hva den gjør</th>
+                  <th className="text-left font-semibold px-4 py-2">Effekt på diversitet</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-2 font-medium">Single-point cross</td>
+                  <td className="px-4 py-2 text-muted-foreground">Bytt halene etter ett tilfeldig kuttpunkt</td>
+                  <td className="px-4 py-2 text-muted-foreground">Lav blanding — segment-konservativ</td>
+                </tr>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-2 font-medium">Two-point cross</td>
+                  <td className="px-4 py-2 text-muted-foreground">Bytt segment mellom to kuttpunkter</td>
+                  <td className="px-4 py-2 text-muted-foreground">Moderat — vanlig standard</td>
+                </tr>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-2 font-medium">Uniform cross</td>
+                  <td className="px-4 py-2 text-muted-foreground">For hvert gen, velg 50/50 fra A eller B</td>
+                  <td className="px-4 py-2 text-muted-foreground">Høy — bryter ned bygge-blokker</td>
+                </tr>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-2 font-medium">Order (OX) — TSP</td>
+                  <td className="px-4 py-2 text-muted-foreground">Behold segment, fyll resten i B-rekkefølge</td>
+                  <td className="px-4 py-2 text-muted-foreground">Moderat — bevarer permutasjon</td>
+                </tr>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-2 font-medium">Mutasjon p_m ≈ 1/L</td>
+                  <td className="px-4 py-2 text-muted-foreground">Tommelfingerregel: 1 endring per kromosom-snitt</td>
+                  <td className="px-4 py-2 text-muted-foreground">Lav rate → ekspl. svekkes; høy → random walk</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div className="mt-4 rounded-lg border border-amber-500/30 bg-amber-500/5 p-4 flex items-start gap-3">
+            <AlertTriangle className="h-4 w-4 text-amber-500 mt-0.5 shrink-0" />
+            <div className="text-sm">
+              <span className="font-medium">Hvorfor GA er trege:</span> hver
+              generasjon krever N fitness-evalueringer. For et nevralt nett
+              betyr hver evaluering en full forward+backward pass på et helt
+              treningssett. 100 generasjoner × 200 individer = 20 000 trenings-runder.
+              Det er hvorfor gradient-descent vinner når gradient er tilgjengelig.
+            </div>
+          </div>
+        </section>
+
+        <section id="ga-vis" className="mb-10">
+          <h2 className="text-xl font-semibold mb-3">5. Interaktiv: GA-evolusjon (OneMax)</h2>
+          <p className="text-sm text-muted-foreground mb-4">
+            En populasjon av 16-bit strenger. Fitness = antall 1-ere
+            (OneMax-problemet — vi vil ha bare 1-ere). Trykk «Neste generasjon»
+            for å se ett steg av seleksjon → crossover → mutasjon. Gule bits er
+            nylig muterte. Kjør 50 generasjoner og se hvor fort populasjonen
+            konvergerer mot 16/16.
+          </p>
+          <GaEvolution />
         </section>
 
         <section id="code" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">5. GA pseudokode</h2>
+          <h2 className="text-xl font-semibold mb-3">6. GA pseudokode</h2>
           <div className="rounded-xl border border-border bg-card p-5">
             <pre className="font-mono text-xs overflow-x-auto whitespace-pre">{`function genetic_algorithm(fitness, N, generations, p_cross, p_mut):
     # 1. Init
@@ -191,7 +304,7 @@ Stopp-kriterier:
         </section>
 
         <section id="pso" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">6. Swarm intelligence — PSO</h2>
+          <h2 className="text-xl font-semibold mb-3">7. Swarm intelligence — PSO</h2>
           <p className="text-sm text-muted-foreground mb-4">
             Particle Swarm Optimization (PSO) modellerer en flokk fugler som søker
             etter mat. Hver fugl («partikkel») har posisjon og hastighet, og
@@ -220,8 +333,22 @@ hyperparameter tuning).`}</pre>
           </div>
         </section>
 
+        <section id="pso-vis" className="mb-10">
+          <h2 className="text-xl font-semibold mb-3">
+            8. Interaktiv: PSO på 2D-landskap
+          </h2>
+          <p className="text-sm text-muted-foreground mb-4">
+            Partikler søker etter minimum av Rastrigin-funksjonen — et brutalt
+            ikke-konvekst landskap med svært mange lokale minima. Mørk = lav
+            verdi (mål). Hver partikkel husker sitt eget beste (liten ring) og
+            følger flokkens beste (gul stjerne). Skru på vekt-parametrene og
+            se hvordan flokken oppfører seg.
+          </p>
+          <PsoSwarm />
+        </section>
+
         <section id="aco" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">7. Ant Colony Optimization</h2>
+          <h2 className="text-xl font-semibold mb-3">9. Ant Colony Optimization</h2>
           <p className="text-sm text-muted-foreground mb-4">
             Maur finner korteste vei mellom bol og mat ved å legge igjen
             feromon-spor — kortere veier blir besøkt mer ofte, fordi feromoner
@@ -255,10 +382,67 @@ Anvendelser:
    - Nettverks-ruting (AntNet)
    - Jobb-schedulering`}</pre>
           </div>
+
+          <div className="mt-4 overflow-hidden rounded-lg border border-border">
+            <table className="w-full text-sm">
+              <thead className="bg-muted/50">
+                <tr>
+                  <th className="text-left font-semibold px-4 py-2 w-32">Aspekt</th>
+                  <th className="text-left font-semibold px-4 py-2">GA</th>
+                  <th className="text-left font-semibold px-4 py-2">PSO (Swarm)</th>
+                  <th className="text-left font-semibold px-4 py-2">ACO</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-2 font-medium">Informasjons-deling</td>
+                  <td className="px-4 py-2 text-muted-foreground">Crossover av foreldre</td>
+                  <td className="px-4 py-2 text-muted-foreground">Personlig + global beste</td>
+                  <td className="px-4 py-2 text-muted-foreground">Indirekte via feromon-spor</td>
+                </tr>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-2 font-medium">Konvergens</td>
+                  <td className="px-4 py-2 text-muted-foreground">Sakte, mangfoldig</td>
+                  <td className="px-4 py-2 text-muted-foreground">Rask — kan kollapse</td>
+                  <td className="px-4 py-2 text-muted-foreground">Stadig forbedring</td>
+                </tr>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-2 font-medium">Søkerom</td>
+                  <td className="px-4 py-2 text-muted-foreground">Diskret eller blandet</td>
+                  <td className="px-4 py-2 text-muted-foreground">Kontinuerlig</td>
+                  <td className="px-4 py-2 text-muted-foreground">Graf/kombinatorisk</td>
+                </tr>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-2 font-medium">Klassisk bruk</td>
+                  <td className="px-4 py-2 text-muted-foreground">Schedulering, design, TSP</td>
+                  <td className="px-4 py-2 text-muted-foreground">Hyperparameter, NN-vekter</td>
+                  <td className="px-4 py-2 text-muted-foreground">TSP, VRP, nettverk-ruting</td>
+                </tr>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-2 font-medium">Naturkilde</td>
+                  <td className="px-4 py-2 text-muted-foreground">Darwinsk evolusjon</td>
+                  <td className="px-4 py-2 text-muted-foreground">Fugleflokker/fiskestim</td>
+                  <td className="px-4 py-2 text-muted-foreground">Maurkolonier</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section id="aco-vis" className="mb-10">
+          <h2 className="text-xl font-semibold mb-3">
+            10. Interaktiv: ACO på TSP
+          </h2>
+          <p className="text-sm text-muted-foreground mb-4">
+            8 byer i 2D. Tykke kanter = høyt feromon-nivå, tynne = lite. Send
+            én maur for å se hvordan ruten bygges probabilistisk. Kjør 20
+            iterasjoner: korte ruter forsterkes, lange fordamper bort.
+          </p>
+          <AcoTsp />
         </section>
 
         <section id="exam" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">8. Eksamen-typiske spørsmål</h2>
+          <h2 className="text-xl font-semibold mb-3">11. Eksamen-typiske spørsmål</h2>
           <ul className="space-y-2 text-sm text-muted-foreground list-disc pl-5">
             <li>
               <strong className="text-foreground">«Forklar de fire grunn-operatorene i en GA.»</strong>{" "}
@@ -310,7 +494,17 @@ Anvendelser:
             </li>
           </ul>
         </div>
-      </div>
+              <div className="mt-6">
+          <Link
+            to="/stack/$slug"
+            params={{ slug: "dte-2501" }}
+            className="text-brand hover:underline inline-flex items-center gap-1 text-sm"
+          >
+            <ArrowLeft className="h-3.5 w-3.5" />
+            Tilbake til DTE-2501-hub
+          </Link>
+        </div>
+</div>
     </StackPageShell>
   );
 }

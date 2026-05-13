@@ -1,8 +1,9 @@
 import { useMemo, useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { Lightbulb } from "lucide-react";
+import {Lightbulb, ArrowLeft } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
+import { RocExplorer } from "./RocExplorer";
 
 const STEPS = [
   { title: "Forvirringsmatrise — TP/FP/FN/TN", anchor: "cm" },
@@ -11,6 +12,7 @@ const STEPS = [
   { title: "Terskel-valg", anchor: "terskel" },
   { title: "Ubalansert data", anchor: "ubalanse" },
   { title: "Interaktiv: ROC + flyttbar terskel", anchor: "roc-vis" },
+  { title: "Dypere: bytt modell-kvalitet, se AUC endre seg", anchor: "roc-explorer" },
 ];
 
 export function Dte2602EvaluationRocPage() {
@@ -186,7 +188,28 @@ y_pred = (probs >= best_thr).astype(int)`}</pre>
           </p>
           <RocThresholdDemo />
         </Section>
-      </div>
+
+        <Section number="7" id="roc-explorer" title="Dypere: bytt modell-kvalitet">
+          <p className="text-sm text-muted-foreground mb-3">
+            Samme oppsett, men nå med tre forhåndsdefinerte modeller. Bytt fra
+            «dårlig» til «god» til «perfekt» og se hvordan AUC kryper fra
+            ~0.55 til 1.00 og histogrammene gradvis separeres. Knappen
+            «Maks-F1» søker terskelen som maksimerer F1 — en god default i
+            mange anvendelser.
+          </p>
+          <RocExplorer />
+        </Section>
+              <div className="mt-6">
+          <Link
+            to="/stack/$slug"
+            params={{ slug: "dte-2602" }}
+            className="text-brand hover:underline inline-flex items-center gap-1 text-sm"
+          >
+            <ArrowLeft className="h-3.5 w-3.5" />
+            Tilbake til DTE-2602-hub
+          </Link>
+        </div>
+</div>
     </StackPageShell>
   );
 }

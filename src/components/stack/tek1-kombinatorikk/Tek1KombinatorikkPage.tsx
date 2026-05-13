@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { Link } from "@tanstack/react-router";
-import { Lightbulb } from "lucide-react";
+import {Lightbulb, ArrowLeft } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 
 function fact(n: number): number {
@@ -422,7 +422,17 @@ For 6 rette:
             </li>
           </ul>
         </div>
-      </div>
+              <div className="mt-6">
+          <Link
+            to="/stack/$slug"
+            params={{ slug: "tek-1501" }}
+            className="text-brand hover:underline inline-flex items-center gap-1 text-sm"
+          >
+            <ArrowLeft className="h-3.5 w-3.5" />
+            Tilbake til TEK-1501-hub
+          </Link>
+        </div>
+</div>
     </StackPageShell>
   );
 }

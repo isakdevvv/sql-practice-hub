@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Lightbulb, Axis3D } from "lucide-react";
+import { Lightbulb, Axis3D, AlertTriangle, ArrowLeft } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
 import { PcaProjector } from "./PcaProjector";
@@ -182,6 +182,50 @@ STEG 6: PROJISÉR
     X = U · S · Vᵀ
     PC-ene er kolonnene i V, og λᵢ = σᵢ² / (n−1) der σ = singulærverdier.)`}</pre>
           </div>
+
+          <div className="mt-4 overflow-hidden rounded-lg border border-border">
+            <table className="w-full text-sm">
+              <thead className="bg-muted/50">
+                <tr>
+                  <th className="text-left font-semibold px-4 py-2 w-32">Steg</th>
+                  <th className="text-left font-semibold px-4 py-2">Operasjon</th>
+                  <th className="text-left font-semibold px-4 py-2">Formel / output</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-2 font-medium">1. Sentrér</td>
+                  <td className="px-4 py-2 text-muted-foreground">Trekk fra kolonne-snitt</td>
+                  <td className="px-4 py-2 font-mono text-xs">xⱼ ← xⱼ − μⱼ</td>
+                </tr>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-2 font-medium">2. Skalér</td>
+                  <td className="px-4 py-2 text-muted-foreground">Del på standardavvik (ofte)</td>
+                  <td className="px-4 py-2 font-mono text-xs">xⱼ ← xⱼ / σⱼ</td>
+                </tr>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-2 font-medium">3. Kovarians</td>
+                  <td className="px-4 py-2 text-muted-foreground">Beregn d × d kovariansmatrise</td>
+                  <td className="px-4 py-2 font-mono text-xs">Σ = (1/(n−1)) XᵀX</td>
+                </tr>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-2 font-medium">4. Egen</td>
+                  <td className="px-4 py-2 text-muted-foreground">Egenvektorer + egenverdier</td>
+                  <td className="px-4 py-2 font-mono text-xs">Σvᵢ = λᵢvᵢ</td>
+                </tr>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-2 font-medium">5. Sortér</td>
+                  <td className="px-4 py-2 text-muted-foreground">Avtakende på λ, velg top-k</td>
+                  <td className="px-4 py-2 font-mono text-xs">Vₖ = [v₁ ... vₖ]</td>
+                </tr>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-2 font-medium">6. Projisér</td>
+                  <td className="px-4 py-2 text-muted-foreground">Multipliser data med Vₖ</td>
+                  <td className="px-4 py-2 font-mono text-xs">X_red = X · Vₖ</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </section>
 
         <section id="explained" className="mb-10">
@@ -250,6 +294,63 @@ Tommelfingerregler:
               </p>
             </div>
           </div>
+
+          <div className="mt-4 overflow-hidden rounded-lg border border-border">
+            <table className="w-full text-sm">
+              <thead className="bg-muted/50">
+                <tr>
+                  <th className="text-left font-semibold px-4 py-2 w-32">Metode</th>
+                  <th className="text-left font-semibold px-4 py-2">Lineær?</th>
+                  <th className="text-left font-semibold px-4 py-2">Supervisert?</th>
+                  <th className="text-left font-semibold px-4 py-2">Bruksområde</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-2 font-medium">PCA</td>
+                  <td className="px-4 py-2 text-muted-foreground">Ja</td>
+                  <td className="px-4 py-2 text-muted-foreground">Nei</td>
+                  <td className="px-4 py-2 text-muted-foreground">Komprimere features, pre-prosessering</td>
+                </tr>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-2 font-medium">t-SNE</td>
+                  <td className="px-4 py-2 text-muted-foreground">Nei</td>
+                  <td className="px-4 py-2 text-muted-foreground">Nei</td>
+                  <td className="px-4 py-2 text-muted-foreground">2D-visualisering av klustre, bevarer lokal struktur</td>
+                </tr>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-2 font-medium">UMAP</td>
+                  <td className="px-4 py-2 text-muted-foreground">Nei</td>
+                  <td className="px-4 py-2 text-muted-foreground">Valgfritt</td>
+                  <td className="px-4 py-2 text-muted-foreground">Som t-SNE, men raskere og bevarer global form</td>
+                </tr>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-2 font-medium">LDA</td>
+                  <td className="px-4 py-2 text-muted-foreground">Ja</td>
+                  <td className="px-4 py-2 text-muted-foreground">Ja (krever labels)</td>
+                  <td className="px-4 py-2 text-muted-foreground">Maks separasjon mellom klasser</td>
+                </tr>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-2 font-medium">Autoencoder</td>
+                  <td className="px-4 py-2 text-muted-foreground">Nei</td>
+                  <td className="px-4 py-2 text-muted-foreground">Nei (self-superv.)</td>
+                  <td className="px-4 py-2 text-muted-foreground">Ikke-lineær komprimering, bilder, sekvenser</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div className="mt-4 rounded-lg border border-amber-500/30 bg-amber-500/5 p-4 flex items-start gap-3">
+            <AlertTriangle className="h-4 w-4 text-amber-500 mt-0.5 shrink-0" />
+            <div className="text-sm">
+              <span className="font-medium">Når PCA ikke gir mening:</span>{" "}
+              (1) binær eller kategorisk data — kovarians er meningsløst, bruk MCA
+              eller embedding; (2) ikke-lineær struktur (manifold som halvmåner,
+              swiss roll) — PCA forkortes; bruk t-SNE/UMAP/autoencoder; (3) du
+              trenger tolkbare features etterpå — PC-ene er lineære miks av
+              originaler, navngiingen er borte.
+            </div>
+          </div>
         </section>
 
         <section id="code" className="mb-10">
@@ -304,7 +405,17 @@ print(f"Sum: {pca.explained_variance_ratio_.sum():.3f}")
             </li>
           </ul>
         </div>
-      </div>
+              <div className="mt-6">
+          <Link
+            to="/stack/$slug"
+            params={{ slug: "dte-2501" }}
+            className="text-brand hover:underline inline-flex items-center gap-1 text-sm"
+          >
+            <ArrowLeft className="h-3.5 w-3.5" />
+            Tilbake til DTE-2501-hub
+          </Link>
+        </div>
+</div>
     </StackPageShell>
   );
 }

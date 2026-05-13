@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Lightbulb, Boxes } from "lucide-react";
+import { Lightbulb, Boxes, AlertTriangle, ArrowLeft } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
 import { KnnExplorer } from "./KnnExplorer";
@@ -133,6 +133,45 @@ Cosine (vinkel mellom vektorer — ofte i NLP):
             <code className="font-mono">StandardScaler</code> eller{" "}
             <code className="font-mono">MinMaxScaler</code>.
           </div>
+
+          <div className="mt-4 overflow-hidden rounded-lg border border-border">
+            <table className="w-full text-sm">
+              <thead className="bg-muted/50">
+                <tr>
+                  <th className="text-left font-semibold px-4 py-2 w-32">Distansemål</th>
+                  <th className="text-left font-semibold px-4 py-2">Formel</th>
+                  <th className="text-left font-semibold px-4 py-2">Bruksområde</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-2 font-medium">Euklidsk</td>
+                  <td className="px-4 py-2 font-mono text-xs">√Σ(xᵢ − yᵢ)²</td>
+                  <td className="px-4 py-2 text-muted-foreground">Default. Kontinuerlige, skalerte features.</td>
+                </tr>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-2 font-medium">Manhattan</td>
+                  <td className="px-4 py-2 font-mono text-xs">Σ|xᵢ − yᵢ|</td>
+                  <td className="px-4 py-2 text-muted-foreground">Rutenett/byblokk-data, robust mot outliers.</td>
+                </tr>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-2 font-medium">Minkowski</td>
+                  <td className="px-4 py-2 font-mono text-xs">(Σ|xᵢ − yᵢ|ᵖ)^(1/p)</td>
+                  <td className="px-4 py-2 text-muted-foreground">Generell familie. p=1 Manhattan, p=2 euklidsk.</td>
+                </tr>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-2 font-medium">Mahalanobis</td>
+                  <td className="px-4 py-2 font-mono text-xs">√((x−y)ᵀ Σ⁻¹ (x−y))</td>
+                  <td className="px-4 py-2 text-muted-foreground">Korrelerte features. Tar hensyn til kovarians.</td>
+                </tr>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-2 font-medium">Cosine</td>
+                  <td className="px-4 py-2 font-mono text-xs">1 − (x·y)/(‖x‖‖y‖)</td>
+                  <td className="px-4 py-2 text-muted-foreground">Tekst/NLP, sparse vektorer, retning &gt; lengde.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </section>
 
         <section id="k-choice" className="mb-10">
@@ -159,6 +198,17 @@ Bruk oddetall k for binær klassifikasjon for å unngå uavgjort.`}</pre>
             <strong>Visuell intuisjon:</strong> liten k = krøllete decision boundary,
             stor k = jevn/glatt boundary.
           </p>
+
+          <div className="mt-4 rounded-lg border border-brand/30 bg-brand/5 p-4 flex items-start gap-3">
+            <Lightbulb className="h-4 w-4 text-brand mt-0.5 shrink-0" />
+            <div className="text-sm">
+              <span className="font-medium">Bias-variance trade-off:</span> k er en
+              direkte knapp på trade-off-en. Tegn deg en U-formet validation-feil
+              over k — bunnen av U-en er optimal k. Til venstre overfitter du
+              (høy variance), til høyre underfitter du (høy bias). Cross-validation
+              er den eneste pålitelige måten å finne bunnen.
+            </div>
+          </div>
         </section>
 
         <section id="regress" className="mb-10">
@@ -219,6 +269,56 @@ filmer basert på lignende brukere, predikere energibruk fra værdata.`}</pre>
                 Med k=1 kan ett feilmerket eksempel ødelegge nabolaget rundt seg.
                 Større k jevner dette ut.
               </p>
+            </div>
+          </div>
+
+          <div className="mt-4 overflow-hidden rounded-lg border border-border">
+            <table className="w-full text-sm">
+              <thead className="bg-muted/50">
+                <tr>
+                  <th className="text-left font-semibold px-4 py-2 w-44">Problem</th>
+                  <th className="text-left font-semibold px-4 py-2">Symptom</th>
+                  <th className="text-left font-semibold px-4 py-2">Tiltak</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-2 font-medium">Høy dimensjon</td>
+                  <td className="px-4 py-2 text-muted-foreground">Alle avstander likner hverandre, naboer mister mening</td>
+                  <td className="px-4 py-2 text-muted-foreground">PCA, feature-seleksjon, gå over til tre-basert modell</td>
+                </tr>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-2 font-medium">Klasse-ubalanse</td>
+                  <td className="px-4 py-2 text-muted-foreground">Majoritetsklasse «svelger» minoriteten i naboutvalget</td>
+                  <td className="px-4 py-2 text-muted-foreground">Vektet stemming (1/d), SMOTE, klasse-vekter</td>
+                </tr>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-2 font-medium">Blandet kategorisk/numerisk</td>
+                  <td className="px-4 py-2 text-muted-foreground">Euklidsk avstand er udefinert for kategoriske felter</td>
+                  <td className="px-4 py-2 text-muted-foreground">One-hot-encoding, Gower-avstand, eller dele modellen</td>
+                </tr>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-2 font-medium">Mange treningseksempler</td>
+                  <td className="px-4 py-2 text-muted-foreground">Predict er O(N·d) — sekunder per spørring ved 1M rader</td>
+                  <td className="px-4 py-2 text-muted-foreground">KD-tree/Ball-tree, ANN-indeks (HNSW, FAISS)</td>
+                </tr>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-2 font-medium">Uskalerte features</td>
+                  <td className="px-4 py-2 text-muted-foreground">Én kolonne dominerer alle avstander</td>
+                  <td className="px-4 py-2 text-muted-foreground">StandardScaler / MinMaxScaler før fit</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div className="mt-4 rounded-lg border border-amber-500/30 bg-amber-500/5 p-4 flex items-start gap-3">
+            <AlertTriangle className="h-4 w-4 text-amber-500 mt-0.5 shrink-0" />
+            <div className="text-sm">
+              <span className="font-medium">Felle:</span> k-NN ser enkel ut, men er
+              treigest av alle pensum-algoritmene <em>i produksjon</em>. Hvis du har
+              &gt; 100k treningseksempler eller &gt; 50 dimensjoner, vurder
+              alternativer (logistisk regresjon, random forest) før du investerer
+              i k-NN-indeksering.
             </div>
           </div>
         </section>
@@ -316,7 +416,17 @@ print(clf.score(X_te_s, y_te))             # ~0.97 på Iris`}</pre>
             </li>
           </ul>
         </div>
-      </div>
+              <div className="mt-6">
+          <Link
+            to="/stack/$slug"
+            params={{ slug: "dte-2501" }}
+            className="text-brand hover:underline inline-flex items-center gap-1 text-sm"
+          >
+            <ArrowLeft className="h-3.5 w-3.5" />
+            Tilbake til DTE-2501-hub
+          </Link>
+        </div>
+</div>
     </StackPageShell>
   );
 }
