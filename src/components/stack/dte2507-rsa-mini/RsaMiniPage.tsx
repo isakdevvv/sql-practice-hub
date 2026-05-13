@@ -3,12 +3,14 @@ import { Lightbulb } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
 import { RsaBuilder } from "./RsaBuilder";
+import { RsaPlayground } from "./RsaPlayground";
 
 const STEPS = [
   { title: "Hvorfor asymmetrisk?", anchor: "hvorfor" },
   { title: "Matematikken (KeyGen)", anchor: "keygen" },
   { title: "Tall-eksempel — krypter «HI»", anchor: "tall" },
   { title: "Interaktiv bygger", anchor: "bygger" },
+  { title: "Ekte RSA-2048", anchor: "ekte-rsa" },
   { title: "RSA vs AES vs hash", anchor: "sammenligning" },
   { title: "Signering vs kryptering", anchor: "signering" },
   { title: "Kjente angrep", anchor: "angrep" },
@@ -196,8 +198,19 @@ assert m == m_back`}</pre>
           </div>
         </section>
 
+        <section id="ekte-rsa" className="mb-10">
+          <h2 className="text-xl font-semibold mb-3">5. Ekte RSA-2048 (produksjons-krypto)</h2>
+          <p className="text-sm text-muted-foreground mb-3">
+            Mini-versjonen over bruker p=11, q=13 — knust på en mikrosekund. Her gjør vi det
+            samme, men med <strong>node-forge</strong> og 2048-bit nøkler: samme oppskrift
+            som OpenSSL, bare i nettleseren din. Generer et nøkkelpar, krypter med OAEP-padding,
+            signer en melding og verifiser signaturen.
+          </p>
+          <RsaPlayground />
+        </section>
+
         <section id="sammenligning" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">5. RSA vs AES vs hash</h2>
+          <h2 className="text-xl font-semibold mb-3">6. RSA vs AES vs hash</h2>
           <div className="overflow-hidden rounded-lg border border-border">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
@@ -221,7 +234,7 @@ assert m == m_back`}</pre>
         </section>
 
         <section id="signering" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">6. Signering vs kryptering</h2>
+          <h2 className="text-xl font-semibold mb-3">7. Signering vs kryptering</h2>
           <div className="overflow-hidden rounded-lg border border-border">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
@@ -244,7 +257,7 @@ assert m == m_back`}</pre>
         </section>
 
         <section id="angrep" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">7. Kjente angrep på RSA</h2>
+          <h2 className="text-xl font-semibold mb-3">8. Kjente angrep på RSA</h2>
           <div className="overflow-hidden rounded-lg border border-border">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">

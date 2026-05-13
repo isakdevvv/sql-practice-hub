@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { ArrowRight, Lightbulb } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
+import { CertificateInspector } from "./CertificateInspector";
 
 const STEPS = [
   { title: "Hva TLS faktisk gir deg", anchor: "hva" },
@@ -11,6 +12,7 @@ const STEPS = [
   { title: "Finished + symmetrisk fase", anchor: "finished" },
   { title: "TLS 1.2 vs 1.3", anchor: "versjoner" },
   { title: "Sertifikatvalidering", anchor: "validering" },
+  { title: "Inspiser et ekte sertifikat", anchor: "sertifikat-inspeksjon" },
 ];
 
 export function TlsPage() {
@@ -238,6 +240,17 @@ export function TlsPage() {
             Hvis en av sjekkene feiler får du «Your connection is not private»-skjermen
             i Chrome. ALDRI klikk «Proceed anyway» på en bank-side.
           </p>
+        </section>
+
+        <section id="sertifikat-inspeksjon" className="mb-10">
+          <h2 className="text-xl font-semibold mb-3">8. Inspiser et ekte sertifikat</h2>
+          <p className="text-sm text-muted-foreground mb-3">
+            Et X.509-sertifikat er bare en ASN.1-struktur kodet i DER, ofte base64-pakket
+            i PEM. Vi parser det med <code className="font-mono">node-forge</code> og viser
+            innholdet — samme felt som <code className="font-mono">openssl x509 -text</code>{" "}
+            i terminalen gir.
+          </p>
+          <CertificateInspector />
         </section>
 
         <div className="mt-10 rounded-xl border border-border bg-card p-5 text-sm">
