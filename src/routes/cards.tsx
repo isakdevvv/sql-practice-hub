@@ -20,6 +20,7 @@ import {
   getDueCards,
   getLearnedCount,
   getNewCards,
+  Rating,
   recordReview,
   resetFsrs,
   type ReviewRating,
@@ -570,8 +571,8 @@ function StudyMode({ pool }: { pool: FlashCard[] }) {
       {card ? (
         <FlashCardView
           card={card}
-          onKnown={() => handleRate(3 as ReviewRating /* Good */)}
-          onUnknown={() => handleRate(1 as ReviewRating /* Again */)}
+          onKnown={() => handleRate(Rating.Good)}
+          onUnknown={() => handleRate(Rating.Again)}
           onRate={handleRate}
         />
       ) : (
