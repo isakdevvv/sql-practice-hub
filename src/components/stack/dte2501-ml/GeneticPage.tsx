@@ -5,6 +5,16 @@ import { CourseOutline } from "@/components/stack/CourseOutline";
 import { GaEvolution } from "./GaEvolution";
 import { PsoSwarm } from "./PsoSwarm";
 import { AcoTsp } from "./AcoTsp";
+import { Mermaid } from "@/components/Mermaid";
+
+const GA_LOOP_CHART = `graph TD
+  A[Init: populasjon] --> B[Evaluer fitness]
+  B --> C{Konvergert?}
+  C -->|Ja| D[Returner beste]
+  C -->|Nei| E[Seleksjon]
+  E --> F[Crossover]
+  F --> G[Mutasjon]
+  G --> B`;
 
 const STEPS = [
   { title: "Hvorfor metaheuristikker?", anchor: "intro" },
@@ -268,6 +278,20 @@ MUTASJON:
 
         <section id="code" className="mb-10">
           <h2 className="text-xl font-semibold mb-3">6. GA pseudokode</h2>
+          <div className="rounded-xl border border-border bg-card p-5 mb-4">
+            <div className="text-xs uppercase tracking-wider text-brand font-semibold mb-3">
+              GA-loopen som flowchart
+            </div>
+            <Mermaid
+              chart={GA_LOOP_CHART}
+              ariaLabel="Flowchart over genetic algorithm: init, evaluer fitness, konvergens-sjekk, seleksjon, crossover, mutasjon, loop tilbake"
+            />
+            <p className="text-xs text-muted-foreground mt-3">
+              Loopen kjorer til konvergens-kriteriet slar inn (antall
+              generasjoner, fitness-threshold, eller K generasjoner uten
+              forbedring). Pseudokoden under viser detaljene.
+            </p>
+          </div>
           <div className="rounded-xl border border-border bg-card p-5">
             <pre className="font-mono text-xs overflow-x-auto whitespace-pre">{`function genetic_algorithm(fitness, N, generations, p_cross, p_mut):
     # 1. Init
