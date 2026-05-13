@@ -3,6 +3,7 @@ import { Lightbulb, Axis3D, AlertTriangle, ArrowLeft } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
 import { PcaProjector } from "./PcaProjector";
+import { Tex, TexBlock } from "@/components/Tex";
 
 const STEPS = [
   { title: "Hvorfor dimensjonsreduksjon?", anchor: "why" },
@@ -104,83 +105,63 @@ Etter PCA (samme datapunkter, nye akser):
           <p className="text-sm text-muted-foreground mb-4">
             Kovariansmatrisen oppsummerer hvordan features varierer SAMMEN.
           </p>
-          <div className="rounded-xl border border-border bg-card p-5">
-            <pre className="font-mono text-xs overflow-x-auto whitespace-pre">{`For data X med n rader og d kolonner, etter sentrering (trekk fra snitt):
-
-    Σ = (1 / (n−1)) · Xᵀ · X         (d × d matrise)
-
-Element Σᵢⱼ = kovarians mellom feature i og feature j.
-
-For d=2 (to features):
-
-      ┌                    ┐
-   Σ = │  var(x₁)   cov(x₁,x₂)  │
-      │  cov(x₁,x₂)  var(x₂)    │
-      └                    ┘
-
-Egenskaper:
-   - SYMMETRISK (Σᵢⱼ = Σⱼᵢ)
-   - POSITIV SEMI-DEFINIT
-   - Diagonal = varians av hver feature alene
-   - Off-diagonal = korrelasjons-info`}</pre>
+          <div className="rounded-xl border border-border bg-card p-5 space-y-3 text-sm">
+            <p>
+              For data <Tex>{"X"}</Tex> med <Tex>{"n"}</Tex> rader og <Tex>{"d"}</Tex> kolonner, etter sentrering (trekk fra snitt):
+            </p>
+            <TexBlock>{"\\Sigma = \\frac{1}{n-1} X^\\top X \\quad (d \\times d)"}</TexBlock>
+            <p className="text-xs text-muted-foreground">
+              Element <Tex>{"\\Sigma_{ij}"}</Tex> = kovarians mellom feature <Tex>{"i"}</Tex> og <Tex>{"j"}</Tex>.
+            </p>
+            <div className="font-semibold pt-1">For <Tex>{"d = 2"}</Tex>:</div>
+            <TexBlock>{"\\Sigma = \\begin{pmatrix} \\mathrm{Var}(x_1) & \\mathrm{Cov}(x_1, x_2) \\\\ \\mathrm{Cov}(x_1, x_2) & \\mathrm{Var}(x_2) \\end{pmatrix}"}</TexBlock>
+            <ul className="text-xs text-muted-foreground list-disc pl-5 space-y-0.5">
+              <li>Symmetrisk: <Tex>{"\\Sigma_{ij} = \\Sigma_{ji}"}</Tex></li>
+              <li>Positiv semi-definit</li>
+              <li>Diagonal = varians av hver feature; off-diagonal = korrelasjons-info</li>
+            </ul>
           </div>
         </section>
 
         <section id="eig" className="mb-10">
           <h2 className="text-xl font-semibold mb-3">4. Egenvektorer og egenverdier</h2>
           <p className="text-sm text-muted-foreground mb-4">
-            Husker du fra lineær algebra: en egenvektor v av matrisen A oppfyller
-            <span className="font-mono"> Av = λv</span> — matrisen «strekker» v
-            uten å rotere den. λ er egenverdien (skaleringsfaktoren).
+            Husker du fra lineær algebra: en egenvektor <Tex>{"v"}</Tex> av matrisen <Tex>{"A"}</Tex> oppfyller <Tex>{"Av = \\lambda v"}</Tex> — matrisen «strekker» <Tex>{"v"}</Tex> uten å rotere den. <Tex>{"\\lambda"}</Tex> er egenverdien (skaleringsfaktoren).
           </p>
-          <div className="rounded-xl border border-border bg-card p-5">
-            <pre className="font-mono text-xs overflow-x-auto whitespace-pre">{`For kovariansmatrisen Σ (d × d):
-    Σ · vᵢ = λᵢ · vᵢ        for i = 1, 2, ..., d
-
-Vi får:
-    v₁, v₂, ..., v_d   — egenvektorer (PCs — orthonormale akser)
-    λ₁ ≥ λ₂ ≥ ... ≥ λ_d   — egenverdier sortert avtakende
-
-Tolking:
-   - Egenvektoren vᵢ er retningen til den i-te hovedkomponenten
-   - Egenverdien λᵢ er HVOR MYE varians dataen har langs den retningen
-
-Σ_i λᵢ = total varians (summen langs originale akser)
-
-For PCA velger vi de k STØRSTE egenverdiene → bevarer mest varians.`}</pre>
+          <div className="rounded-xl border border-border bg-card p-5 space-y-3 text-sm">
+            <div className="font-semibold">For kovariansmatrisen <Tex>{"\\Sigma"}</Tex>:</div>
+            <TexBlock>{"\\Sigma\\, v_i = \\lambda_i\\, v_i, \\quad i = 1, 2, \\ldots, d"}</TexBlock>
+            <p className="text-xs text-muted-foreground">
+              <Tex>{"v_1, v_2, \\ldots, v_d"}</Tex>: egenvektorer (PC-er, ortonormale akser). <Tex>{"\\lambda_1 \\geq \\lambda_2 \\geq \\cdots \\geq \\lambda_d"}</Tex>: egenverdier sortert avtakende.
+            </p>
+            <ul className="text-xs text-muted-foreground list-disc pl-5 space-y-0.5">
+              <li><Tex>{"v_i"}</Tex> = retningen til den <Tex>{"i"}</Tex>-te hovedkomponenten</li>
+              <li><Tex>{"\\lambda_i"}</Tex> = HVOR MYE varians langs den retningen</li>
+            </ul>
+            <TexBlock>{"\\sum_{i=1}^d \\lambda_i = \\text{total varians}"}</TexBlock>
+            <p className="text-xs text-muted-foreground">For PCA velger vi de <Tex>{"k"}</Tex> største egenverdiene <Tex>{"\\Rightarrow"}</Tex> bevarer mest varians.</p>
           </div>
         </section>
 
         <section id="algo" className="mb-10">
           <h2 className="text-xl font-semibold mb-3">5. Steg-for-steg PCA-algoritme</h2>
-          <div className="rounded-xl border border-border bg-card p-5">
-            <pre className="font-mono text-xs overflow-x-auto whitespace-pre">{`Input:  X (n × d datasett)
-Output: X_reduced (n × k, k < d)
-
-STEG 1: SENTRER
-    For hver kolonne j: xⱼ ← xⱼ − mean(xⱼ)
-    (Trekk fra snittet så data har snitt 0)
-
-STEG 2: SKALÉR (valgfritt men anbefalt)
-    For hver kolonne j: xⱼ ← xⱼ / std(xⱼ)
-    (Eller bruk StandardScaler)
-
-STEG 3: KOVARIANSMATRISE
-    Σ = (1 / (n−1)) · Xᵀ X
-
-STEG 4: EGEN-DEKOMPOSISJON
-    [v₁, ..., v_d], [λ₁, ..., λ_d] = eig(Σ)
-    sorter så λ₁ ≥ λ₂ ≥ ... ≥ λ_d
-
-STEG 5: VELG TOP-k
-    V_k = [v₁ | v₂ | ... | v_k]    (d × k matrise)
-
-STEG 6: PROJISÉR
-    X_reduced = X · V_k             (n × k)
-
-(I praksis brukes SVD i stedet for egendekomp. for numerisk stabilitet:
-    X = U · S · Vᵀ
-    PC-ene er kolonnene i V, og λᵢ = σᵢ² / (n−1) der σ = singulærverdier.)`}</pre>
+          <div className="rounded-xl border border-border bg-card p-5 space-y-3 text-sm">
+            <p>Input: <Tex>{"X \\;(n \\times d)"}</Tex>. Output: <Tex>{"X_{\\mathrm{red}} \\;(n \\times k)"}</Tex>, <Tex>{"k < d"}</Tex>.</p>
+            <div className="font-semibold pt-2">Steg 1: Sentrér</div>
+            <TexBlock>{"x_j \\leftarrow x_j - \\mathrm{mean}(x_j)"}</TexBlock>
+            <div className="font-semibold pt-1">Steg 2: Skalér (valgfritt)</div>
+            <TexBlock>{"x_j \\leftarrow \\frac{x_j}{\\mathrm{std}(x_j)}"}</TexBlock>
+            <div className="font-semibold pt-1">Steg 3: Kovariansmatrise</div>
+            <TexBlock>{"\\Sigma = \\frac{1}{n-1} X^\\top X"}</TexBlock>
+            <div className="font-semibold pt-1">Steg 4: Egen-dekomposisjon</div>
+            <TexBlock>{"\\Sigma v_i = \\lambda_i v_i, \\quad \\lambda_1 \\geq \\lambda_2 \\geq \\cdots \\geq \\lambda_d"}</TexBlock>
+            <div className="font-semibold pt-1">Steg 5: Velg top-<Tex>{"k"}</Tex></div>
+            <TexBlock>{"V_k = [v_1 \\mid v_2 \\mid \\cdots \\mid v_k] \\;\\; (d \\times k)"}</TexBlock>
+            <div className="font-semibold pt-1">Steg 6: Projisér</div>
+            <TexBlock>{"X_{\\mathrm{red}} = X V_k"}</TexBlock>
+            <p className="text-xs text-muted-foreground pt-2">
+              I praksis brukes SVD i stedet for egendekomp. for numerisk stabilitet: <Tex>{"X = U S V^\\top"}</Tex>. PC-ene er kolonnene i <Tex>{"V"}</Tex>, og <Tex>{"\\lambda_i = \\sigma_i^2 / (n-1)"}</Tex>.
+            </p>
           </div>
 
           <div className="mt-4 overflow-hidden rounded-lg border border-border">
@@ -230,31 +211,26 @@ STEG 6: PROJISÉR
 
         <section id="explained" className="mb-10">
           <h2 className="text-xl font-semibold mb-3">6. Forklart varians + scree plot</h2>
-          <div className="rounded-xl border border-border bg-card p-5">
-            <pre className="font-mono text-xs overflow-x-auto whitespace-pre">{`Forklart varians per PC:
-    explained_var(i) = λᵢ / Σⱼ λⱼ
+          <div className="rounded-xl border border-border bg-card p-5 space-y-3 text-sm">
+            <div className="font-semibold">Forklart varians per PC:</div>
+            <TexBlock>{"\\mathrm{explained\\_var}(i) = \\frac{\\lambda_i}{\\sum_j \\lambda_j}"}</TexBlock>
+            <div className="font-semibold">Kumulativ:</div>
+            <TexBlock>{"\\mathrm{cumul}(k) = \\frac{\\sum_{i=1}^k \\lambda_i}{\\sum_j \\lambda_j}"}</TexBlock>
+            <p className="text-xs text-muted-foreground">"Vi beholder <Tex>{"\\mathrm{cumul}(k)"}</Tex> av variansen."</p>
+            <pre className="font-mono text-xs overflow-x-auto whitespace-pre">{`SCREE PLOT — egenverdiene sortert avtakende:
 
-Cumulativ:
-    cumul(k) = Σᵢ₌₁ᵏ λᵢ / Σⱼ λⱼ      "Vi beholder cumul(k) av variansen"
-
-SCREE PLOT — egenverdiene sortert avtakende:
-
-  λᵢ
-   ↑
    │ ●
-   │
    │  ●
-   │      "knekk" ← her bør vi kutte
+   │     "knekk" ← her bør vi kutte
    │   ●
-   │      ●
-   │         ●  ●  ●  ●
+   │      ●  ●  ●  ●
    └────────────────────────→  i (PC nummer)
-     1  2  3  4  5  6  7  8
-
-Tommelfingerregler:
-   - Behold k PCs så cumul(k) ≥ 0.90 eller 0.95
-   - Eller bruk knekken i scree plot
-   - Eller Kaiser-kriteriet: behold PCs med λᵢ > 1 (etter standardisering)`}</pre>
+     1  2  3  4  5  6  7  8`}</pre>
+            <ul className="text-xs text-muted-foreground list-disc pl-5 space-y-0.5">
+              <li>Behold <Tex>{"k"}</Tex> PCs så <Tex>{"\\mathrm{cumul}(k) \\geq 0.90"}</Tex> eller <Tex>{"0.95"}</Tex></li>
+              <li>Eller bruk knekken i scree plot</li>
+              <li>Kaiser-kriteriet: behold PCs med <Tex>{"\\lambda_i > 1"}</Tex> (etter standardisering)</li>
+            </ul>
           </div>
           <div className="mt-4">
             <PcaProjector />

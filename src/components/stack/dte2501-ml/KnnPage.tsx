@@ -3,6 +3,7 @@ import { Lightbulb, Boxes, AlertTriangle, ArrowLeft } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
 import { KnnExplorer } from "./KnnExplorer";
+import { Tex, TexBlock } from "@/components/Tex";
 
 const STEPS = [
   { title: "Lazy learning — hva betyr det?", anchor: "lazy" },
@@ -112,20 +113,21 @@ predict(x') →  ŷ = w · x'                          For hver xi i X:
           <p className="text-sm text-muted-foreground mb-4">
             «Nærmest» trenger en metrikk. Tre du må kunne for eksamen:
           </p>
-          <div className="rounded-xl border border-border bg-card p-5">
-            <pre className="font-mono text-xs overflow-x-auto whitespace-pre">{`Euklidsk (p=2) — rett-linje:
-    d(x, y) = √( Σ (x_i − y_i)² )
+          <div className="rounded-xl border border-border bg-card p-5 space-y-3 text-sm">
+            <div className="font-semibold">Euklidsk (<Tex>{"p = 2"}</Tex>) — rett-linje:</div>
+            <TexBlock>{"d(x, y) = \\sqrt{\\sum_{i=1}^d (x_i - y_i)^2}"}</TexBlock>
 
-Manhattan (p=1) — bymønster:
-    d(x, y) = Σ |x_i − y_i|
+            <div className="font-semibold pt-2">Manhattan (<Tex>{"p = 1"}</Tex>) — bymønster:</div>
+            <TexBlock>{"d(x, y) = \\sum_{i=1}^d |x_i - y_i|"}</TexBlock>
 
-Minkowski (generell, parameter p):
-    d(x, y) = ( Σ |x_i − y_i|ᵖ )^(1/p)
-    p=1 → Manhattan,  p=2 → euklidsk,  p→∞ → Chebyshev (maks-akse).
+            <div className="font-semibold pt-2">Minkowski (generell, parameter <Tex>{"p"}</Tex>):</div>
+            <TexBlock>{"d(x, y) = \\left(\\sum_{i=1}^d |x_i - y_i|^p\\right)^{1/p}"}</TexBlock>
+            <p className="text-xs text-muted-foreground">
+              <Tex>{"p = 1"}</Tex> Manhattan, <Tex>{"p = 2"}</Tex> euklidsk, <Tex>{"p \\to \\infty"}</Tex> Chebyshev (maks-akse).
+            </p>
 
-Cosine (vinkel mellom vektorer — ofte i NLP):
-    sim(x, y) = (x · y) / (‖x‖ · ‖y‖)
-    d = 1 − sim`}</pre>
+            <div className="font-semibold pt-2">Cosine (vinkel mellom vektorer):</div>
+            <TexBlock>{"\\mathrm{sim}(x, y) = \\frac{x \\cdot y}{\\|x\\| \\, \\|y\\|}, \\quad d = 1 - \\mathrm{sim}"}</TexBlock>
           </div>
           <div className="mt-3 rounded-lg border border-amber-500/30 bg-amber-500/5 p-3 text-xs">
             <strong>Kritisk:</strong> features må skaleres FØR k-NN. En kolonne i
@@ -146,27 +148,27 @@ Cosine (vinkel mellom vektorer — ofte i NLP):
               <tbody>
                 <tr className="border-t border-border">
                   <td className="px-4 py-2 font-medium">Euklidsk</td>
-                  <td className="px-4 py-2 font-mono text-xs">√Σ(xᵢ − yᵢ)²</td>
+                  <td className="px-4 py-2 text-xs"><Tex>{"\\sqrt{\\sum (x_i - y_i)^2}"}</Tex></td>
                   <td className="px-4 py-2 text-muted-foreground">Default. Kontinuerlige, skalerte features.</td>
                 </tr>
                 <tr className="border-t border-border">
                   <td className="px-4 py-2 font-medium">Manhattan</td>
-                  <td className="px-4 py-2 font-mono text-xs">Σ|xᵢ − yᵢ|</td>
+                  <td className="px-4 py-2 text-xs"><Tex>{"\\sum |x_i - y_i|"}</Tex></td>
                   <td className="px-4 py-2 text-muted-foreground">Rutenett/byblokk-data, robust mot outliers.</td>
                 </tr>
                 <tr className="border-t border-border">
                   <td className="px-4 py-2 font-medium">Minkowski</td>
-                  <td className="px-4 py-2 font-mono text-xs">(Σ|xᵢ − yᵢ|ᵖ)^(1/p)</td>
-                  <td className="px-4 py-2 text-muted-foreground">Generell familie. p=1 Manhattan, p=2 euklidsk.</td>
+                  <td className="px-4 py-2 text-xs"><Tex>{"\\left(\\sum |x_i - y_i|^p\\right)^{1/p}"}</Tex></td>
+                  <td className="px-4 py-2 text-muted-foreground">Generell familie. <Tex>{"p = 1"}</Tex> Manhattan, <Tex>{"p = 2"}</Tex> euklidsk.</td>
                 </tr>
                 <tr className="border-t border-border">
                   <td className="px-4 py-2 font-medium">Mahalanobis</td>
-                  <td className="px-4 py-2 font-mono text-xs">√((x−y)ᵀ Σ⁻¹ (x−y))</td>
+                  <td className="px-4 py-2 text-xs"><Tex>{"\\sqrt{(x - y)^\\top \\Sigma^{-1} (x - y)}"}</Tex></td>
                   <td className="px-4 py-2 text-muted-foreground">Korrelerte features. Tar hensyn til kovarians.</td>
                 </tr>
                 <tr className="border-t border-border">
                   <td className="px-4 py-2 font-medium">Cosine</td>
-                  <td className="px-4 py-2 font-mono text-xs">1 − (x·y)/(‖x‖‖y‖)</td>
+                  <td className="px-4 py-2 text-xs"><Tex>{"1 - \\frac{x \\cdot y}{\\|x\\| \\, \\|y\\|}"}</Tex></td>
                   <td className="px-4 py-2 text-muted-foreground">Tekst/NLP, sparse vektorer, retning &gt; lengde.</td>
                 </tr>
               </tbody>
@@ -217,13 +219,13 @@ Bruk oddetall k for binær klassifikasjon for å unngå uavgjort.`}</pre>
             Samme algoritme, men i stedet for majoritetsstemme tar vi{" "}
             <strong>snittet</strong> av y-verdiene til de k nærmeste naboene.
           </p>
-          <div className="rounded-xl border border-border bg-card p-5">
-            <pre className="font-mono text-xs overflow-x-auto whitespace-pre">{`Klassifikasjon:   ŷ = mode( y_(1), y_(2), ..., y_(k) )
-Regresjon:        ŷ = (1/k) · Σ y_(i)              uvektet
-                  ŷ = Σ w_i · y_(i)  / Σ w_i      vektet (w_i = 1/d_i)
-
-Brukt med suksess: forutsi boligpris fra nabolagspriser, anbefale
-filmer basert på lignende brukere, predikere energibruk fra værdata.`}</pre>
+          <div className="rounded-xl border border-border bg-card p-5 space-y-3 text-sm">
+            <div className="font-semibold">Klassifikasjon:</div>
+            <TexBlock>{"\\hat{y} = \\mathrm{mode}\\!\\left(y_{(1)}, y_{(2)}, \\ldots, y_{(k)}\\right)"}</TexBlock>
+            <div className="font-semibold">Regresjon (uvektet):</div>
+            <TexBlock>{"\\hat{y} = \\frac{1}{k} \\sum_{i=1}^k y_{(i)}"}</TexBlock>
+            <div className="font-semibold">Regresjon (avstands-vektet):</div>
+            <TexBlock>{"\\hat{y} = \\frac{\\sum_{i=1}^k w_i\\, y_{(i)}}{\\sum_{i=1}^k w_i}, \\quad w_i = \\frac{1}{d_i}"}</TexBlock>
           </div>
         </section>
 

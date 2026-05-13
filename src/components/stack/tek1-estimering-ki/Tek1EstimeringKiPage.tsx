@@ -2,6 +2,7 @@ import { useState, useMemo } from "react";
 import { Link } from "@tanstack/react-router";
 import {Lightbulb, ArrowLeft } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
+import { Tex, TexBlock } from "@/components/Tex";
 
 // Z and t critical values (for 90/95/99 %)
 const Z_CRIT: Record<number, number> = { 0.9: 1.6449, 0.95: 1.96, 0.99: 2.5758 };
@@ -174,24 +175,20 @@ export function Tek1EstimeringKiPage() {
 
         <section className="mb-10">
           <h2 className="text-xl font-semibold mb-3">1. Punktestimat</h2>
-          <div className="rounded-xl border border-border bg-card p-5">
-            <pre className="font-mono text-xs overflow-x-auto whitespace-pre">{`Egenskaper en god estimator skal ha:
+          <div className="rounded-xl border border-border bg-card p-5 space-y-3 text-sm">
+            <div className="font-semibold">Forventningsrett (unbiased):</div>
+            <TexBlock>{"E[\\hat{\\theta}] = \\theta"}</TexBlock>
+            <p className="text-xs text-muted-foreground">
+              <Tex>{"\\bar{X}"}</Tex> er forventningsrett for <Tex>{"\\mu"}</Tex>; <Tex>{"s^2 = \\frac{1}{n-1}\\sum (x_i - \\bar{x})^2"}</Tex> er forventningsrett for <Tex>{"\\sigma^2"}</Tex>.
+            </p>
 
-  Forventningsrett (unbiased):  E[θ̂] = θ
-    Eks: X̄ er forventningsrett for μ.
-         s² = (1/(n-1))Σ(xᵢ - x̄)² er forventningsrett for σ².
-         (Det er derfor vi deler på n-1 og ikke n!)
+            <div className="font-semibold pt-2">Konsistens:</div>
+            <TexBlock>{"\\hat{\\theta} \\xrightarrow{p} \\theta \\quad \\text{når } n \\to \\infty"}</TexBlock>
 
-  Konsistens:  θ̂ → θ når n → ∞
-    Sannsynlighet for at θ̂ er nær θ vokser med n.
-
-  Effisiens: minst mulig varians blant forventningsrette estimatorer.
-
-Vanlige estimatorer:
-  μ      → X̄  = (1/n) Σ xᵢ
-  σ²     → s² = (1/(n-1)) Σ (xᵢ - x̄)²
-  σ      → s   (NB: ikke helt forventningsrett, men praktisk)
-  p (proporsjon) → p̂ = (antall suksesser) / n`}</pre>
+            <div className="font-semibold pt-2">Vanlige estimatorer:</div>
+            <TexBlock>{"\\hat{\\mu} = \\bar{X} = \\frac{1}{n}\\sum_i x_i"}</TexBlock>
+            <TexBlock>{"\\hat{\\sigma}^2 = s^2 = \\frac{1}{n-1}\\sum_i (x_i - \\bar{x})^2"}</TexBlock>
+            <TexBlock>{"\\hat{p} = \\frac{\\#\\,\\text{suksesser}}{n}"}</TexBlock>
           </div>
         </section>
 
@@ -200,24 +197,16 @@ Vanlige estimatorer:
           <p className="text-sm text-muted-foreground mb-3">
             Bruker normalfordelingen direkte (z-tabell).
           </p>
-          <div className="rounded-xl border border-border bg-card p-5">
-            <pre className="font-mono text-xs overflow-x-auto whitespace-pre">{`(1 - α) · 100 % KI for μ når σ er kjent:
+          <div className="rounded-xl border border-border bg-card p-5 space-y-3 text-sm">
+            <div className="font-semibold"><Tex>{"(1-\\alpha) \\cdot 100\\%"}</Tex> KI for <Tex>{"\\mu"}</Tex> når <Tex>{"\\sigma"}</Tex> er kjent:</div>
+            <TexBlock>{"\\bar{X} \\pm z_{\\alpha/2} \\cdot \\frac{\\sigma}{\\sqrt{n}}"}</TexBlock>
+            <div className="text-xs text-muted-foreground">
+              <p>Vanlige z-verdier: <Tex>{"z_{0.05} = 1.6449"}</Tex> (90%), <Tex>{"z_{0.025} = 1.96"}</Tex> (95%), <Tex>{"z_{0.005} = 2.5758"}</Tex> (99%).</p>
+              <p>Bredde = <Tex>{"2 z \\sigma / \\sqrt{n}"}</Tex>; å halvere bredden krever 4x <Tex>{"n"}</Tex>.</p>
+            </div>
 
-  X̄ ± z_(α/2) · σ/√n
-
-Vanlige z-verdier:
-  90 % KI:  z = 1.6449
-  95 % KI:  z = 1.96
-  99 % KI:  z = 2.5758
-
-Bredde = 2 · z · σ/√n
-  → halver bredden krever 4x n.
-
-Eks: n = 25, σ = 10 (kjent), x̄ = 50, 95% KI?
-  95% KI: 50 ± 1.96 · (10/√25)
-        = 50 ± 1.96 · 2
-        = 50 ± 3.92
-        = [46.08, 53.92]`}</pre>
+            <div className="font-semibold pt-2">Eksempel: <Tex>{"n = 25"}</Tex>, <Tex>{"\\sigma = 10"}</Tex>, <Tex>{"\\bar{x} = 50"}</Tex>, 95% KI:</div>
+            <TexBlock>{"50 \\pm 1.96 \\cdot \\frac{10}{\\sqrt{25}} = 50 \\pm 3.92 = [46.08,\\, 53.92]"}</TexBlock>
           </div>
         </section>
 
@@ -226,39 +215,31 @@ Eks: n = 25, σ = 10 (kjent), x̄ = 50, 95% KI?
           <p className="text-sm text-muted-foreground mb-3">
             Vanligste situasjon i praksis. Erstatt σ med s og z med t.
           </p>
-          <div className="rounded-xl border border-border bg-card p-5">
-            <pre className="font-mono text-xs overflow-x-auto whitespace-pre">{`(1 - α) · 100 % KI for μ når σ er ukjent:
+          <div className="rounded-xl border border-border bg-card p-5 space-y-3 text-sm">
+            <div className="font-semibold"><Tex>{"(1-\\alpha) \\cdot 100\\%"}</Tex> KI for <Tex>{"\\mu"}</Tex> når <Tex>{"\\sigma"}</Tex> er ukjent:</div>
+            <TexBlock>{"\\bar{X} \\pm t_{\\alpha/2,\\, n-1} \\cdot \\frac{s}{\\sqrt{n}}"}</TexBlock>
+            <p className="text-xs text-muted-foreground">
+              <Tex>{"t"}</Tex>-fordelingen har <Tex>{"n - 1"}</Tex> frihetsgrader. Tyngre haler <Tex>{"\\Rightarrow"}</Tex> større kritisk verdi <Tex>{"\\Rightarrow"}</Tex> bredere KI.
+            </p>
 
-  X̄ ± t_(α/2, n-1) · s/√n
-
-t-fordelingen har n−1 frihetsgrader. Tyngre haler → større kritisk
-verdi → bredere KI enn hvis σ var kjent.
-
-Eks: n = 10, x̄ = 50, s = 12 (utvalgsstandardavvik), 95% KI?
-  df = 9
-  t-tabell: t_(0.025, 9) = 2.262
-  95% KI: 50 ± 2.262 · (12/√10)
-        = 50 ± 2.262 · 3.795
-        = 50 ± 8.59
-        = [41.41, 58.59]
-
-Når n ≥ 30: t ≈ z → kan bruke z-tabell som tilnærming.`}</pre>
+            <div className="font-semibold pt-2">Eksempel: <Tex>{"n = 10"}</Tex>, <Tex>{"\\bar{x} = 50"}</Tex>, <Tex>{"s = 12"}</Tex>, 95% KI:</div>
+            <TexBlock>{"t_{0.025,\\, 9} = 2.262"}</TexBlock>
+            <TexBlock>{"50 \\pm 2.262 \\cdot \\frac{12}{\\sqrt{10}} = 50 \\pm 8.59 = [41.41,\\, 58.59]"}</TexBlock>
+            <p className="text-xs text-muted-foreground">Når <Tex>{"n \\geq 30"}</Tex>: <Tex>{"t \\approx z"}</Tex>.</p>
           </div>
         </section>
 
         <section className="mb-10">
           <h2 className="text-xl font-semibold mb-3">4. KI for proporsjon p</h2>
-          <div className="rounded-xl border border-border bg-card p-5">
-            <pre className="font-mono text-xs overflow-x-auto whitespace-pre">{`Hvis np̂ ≥ 5 og n(1-p̂) ≥ 5 (normaltilnærming gyldig):
+          <div className="rounded-xl border border-border bg-card p-5 space-y-3 text-sm">
+            <p className="text-xs text-muted-foreground">
+              Hvis <Tex>{"n\\hat{p} \\geq 5"}</Tex> og <Tex>{"n(1 - \\hat{p}) \\geq 5"}</Tex> (normaltilnærming gyldig):
+            </p>
+            <TexBlock>{"\\hat{p} \\pm z_{\\alpha/2} \\cdot \\sqrt{\\frac{\\hat{p}(1 - \\hat{p})}{n}}"}</TexBlock>
 
-  p̂ ± z_(α/2) · √(p̂(1-p̂)/n)
-
-Eks: meningsmåling, 400 spurt, 220 svarer JA.
-  p̂ = 220/400 = 0.55
-  95% KI: 0.55 ± 1.96 · √(0.55·0.45/400)
-         = 0.55 ± 1.96 · 0.02487
-         = 0.55 ± 0.0488
-         = [0.501, 0.599]   ← 50.1 % til 59.9 %`}</pre>
+            <div className="font-semibold pt-2">Eksempel: 400 spurt, 220 svarer JA:</div>
+            <TexBlock>{"\\hat{p} = \\frac{220}{400} = 0.55"}</TexBlock>
+            <TexBlock>{"0.55 \\pm 1.96 \\cdot \\sqrt{\\frac{0.55 \\cdot 0.45}{400}} = 0.55 \\pm 0.0488 = [0.501,\\, 0.599]"}</TexBlock>
           </div>
         </section>
 

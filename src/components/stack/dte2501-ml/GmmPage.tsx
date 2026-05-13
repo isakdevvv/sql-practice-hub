@@ -3,6 +3,7 @@ import { Lightbulb, Sparkles, AlertTriangle, ArrowLeft } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
 import { GmmVisualizer } from "./GmmVisualizer";
+import { Tex, TexBlock } from "@/components/Tex";
 
 const STEPS = [
   { title: "Generative vs diskriminative modeller", anchor: "intro" },
@@ -64,27 +65,23 @@ GMM er generativ + unsupervised:
 
         <section id="formula" className="mb-10">
           <h2 className="text-xl font-semibold mb-3">2. GMM-formel</h2>
-          <div className="rounded-xl border border-border bg-card p-5">
-            <pre className="font-mono text-xs overflow-x-auto whitespace-pre">{`En GMM med k komponenter har parametrene:
-   π_j   — miksevekt for komponent j  (Σ π_j = 1)
-   μ_j   — sentrum (mean) for komponent j
-   Σ_j   — kovariansmatrise for komponent j (form/orientering)
+          <div className="rounded-xl border border-border bg-card p-5 space-y-3 text-sm">
+            <p>En GMM med <Tex>{"k"}</Tex> komponenter har parametrene:</p>
+            <ul className="text-xs text-muted-foreground list-disc pl-5 space-y-0.5">
+              <li><Tex>{"\\pi_j"}</Tex> — miksevekt for komponent <Tex>{"j"}</Tex>, med <Tex>{"\\sum_j \\pi_j = 1"}</Tex></li>
+              <li><Tex>{"\\mu_j"}</Tex> — sentrum (mean)</li>
+              <li><Tex>{"\\Sigma_j"}</Tex> — kovariansmatrise (form/orientering)</li>
+            </ul>
 
-Sannsynlighetsmodellen:
-   p(x) = Σⱼ₌₁ᵏ  π_j · N(x | μ_j, Σ_j)
+            <div className="font-semibold pt-2">Sannsynlighetsmodellen:</div>
+            <TexBlock>{"p(x) = \\sum_{j=1}^k \\pi_j \\, \\mathcal{N}(x \\mid \\mu_j, \\Sigma_j)"}</TexBlock>
 
-der N(x | μ, Σ) er multivariat normalfordeling:
-                       1                     ┌─ 1                  ┐
-   N(x | μ, Σ) = ───────────────────── · exp │ − (x−μ)ᵀ Σ⁻¹ (x−μ)  │
-                  (2π)^(d/2) |Σ|^(1/2)        └  2                  ┘
+            <div className="font-semibold pt-2">Multivariat normalfordeling:</div>
+            <TexBlock>{"\\mathcal{N}(x \\mid \\mu, \\Sigma) = \\frac{1}{(2\\pi)^{d/2} |\\Sigma|^{1/2}} \\exp\\!\\left(-\\tfrac{1}{2}(x - \\mu)^\\top \\Sigma^{-1} (x - \\mu)\\right)"}</TexBlock>
 
-Intuisjon:
-   - π_j sier "hvor mange er i klustre j?"
-   - μ_j sier "hvor er klustret?"
-   - Σ_j sier "hvor STORT og hvilken FORM?"
-
-Hver komponent kan ha sin egen form — derfor klustre kan være ellipser
-(ikke bare sirkler som i k-Means).`}</pre>
+            <p className="text-xs text-muted-foreground pt-1">
+              <Tex>{"\\pi_j"}</Tex>: hvor mange? <Tex>{"\\mu_j"}</Tex>: hvor? <Tex>{"\\Sigma_j"}</Tex>: hvor stort og hvilken form? Hver komponent kan ha sin egen form — klustre kan være ellipser, ikke bare sirkler som i k-Means.
+            </p>
           </div>
         </section>
 
@@ -94,50 +91,38 @@ Hver komponent kan ha sin egen form — derfor klustre kan være ellipser
             Expectation-Maximization. Generelt opplegg for MLE når noen variabler
             er skjult — her er det skjulte hvilken komponent som genererte hver xᵢ.
           </p>
-          <div className="rounded-xl border border-border bg-card p-5">
-            <pre className="font-mono text-xs overflow-x-auto whitespace-pre">{`Mål: maksimer log-likelihood
-    ln p(X | π, μ, Σ) = Σᵢ ln ( Σⱼ π_j N(xᵢ | μ_j, Σ_j) )
-
-Direkte optimering er hard (loggen rundt summen).
-EM finner et lokalt maks ved iterasjon:
-
-  Init: tilfeldige (π, μ, Σ)
-  Repeat til konvergens:
-     E-step:  for hver xᵢ og hver j, beregn r(i, j)
-              = P(komponent j produserte xᵢ | nåværende parametre)
-     M-step:  oppdatér (π, μ, Σ) maksimerings-vis basert på r(i, j)
-
-Log-likelihood ØKER (eller står stille) i hver iterasjon.
-Konvergens garantert — men til LOKALT maks.
-Sensitiv for init (bruk k-Means til å initialisere).`}</pre>
+          <div className="rounded-xl border border-border bg-card p-5 space-y-3 text-sm">
+            <div className="font-semibold">Mål: maksimer log-likelihood</div>
+            <TexBlock>{"\\ln p(X \\mid \\pi, \\mu, \\Sigma) = \\sum_{i=1}^n \\ln\\!\\left(\\sum_{j=1}^k \\pi_j\\, \\mathcal{N}(x_i \\mid \\mu_j, \\Sigma_j)\\right)"}</TexBlock>
+            <p className="text-xs text-muted-foreground">
+              Direkte optimering er hard (loggen rundt summen). EM finner et lokalt maks ved iterasjon:
+            </p>
+            <ul className="text-xs text-muted-foreground list-disc pl-5 space-y-0.5">
+              <li>Init: tilfeldige <Tex>{"(\\pi, \\mu, \\Sigma)"}</Tex></li>
+              <li>Gjenta til konvergens: E-step (beregn ansvar <Tex>{"r(i, j)"}</Tex>), M-step (oppdatér parametre).</li>
+              <li>Log-likelihood øker (eller står stille) i hver iterasjon. Konvergens er garantert til LOKALT maks.</li>
+            </ul>
           </div>
         </section>
 
         <section id="em-detail" className="mb-10">
           <h2 className="text-xl font-semibold mb-3">4. E-step og M-step i detalj</h2>
-          <div className="rounded-xl border border-border bg-card p-5">
-            <pre className="font-mono text-xs overflow-x-auto whitespace-pre">{`E-STEP — beregn "responsibilities" r(i, j):
+          <div className="rounded-xl border border-border bg-card p-5 space-y-3 text-sm">
+            <div className="font-semibold">E-step — "responsibilities" <Tex>{"r(i, j)"}</Tex>:</div>
+            <TexBlock>{"r(i, j) = \\frac{\\pi_j\\, \\mathcal{N}(x_i \\mid \\mu_j, \\Sigma_j)}{\\sum_{l=1}^k \\pi_l\\, \\mathcal{N}(x_i \\mid \\mu_l, \\Sigma_l)}"}</TexBlock>
+            <p className="text-xs text-muted-foreground">
+              <Tex>{"r(i, j) \\in [0, 1]"}</Tex> = sannsynlighet for at <Tex>{"x_i"}</Tex> kom fra komponent <Tex>{"j"}</Tex>. <Tex>{"\\sum_j r(i, j) = 1"}</Tex>.
+            </p>
 
-                π_j · N(xᵢ | μ_j, Σ_j)
-   r(i, j) = ──────────────────────────────────────
-              Σ_l  π_l · N(xᵢ | μ_l, Σ_l)
+            <div className="font-semibold pt-3">M-step — oppdatér parametrene (vektet snitt):</div>
+            <TexBlock>{"N_j = \\sum_{i=1}^n r(i, j) \\quad \\text{(effektivt antall punkter)}"}</TexBlock>
+            <TexBlock>{"\\pi_j \\leftarrow \\frac{N_j}{n}"}</TexBlock>
+            <TexBlock>{"\\mu_j \\leftarrow \\frac{1}{N_j} \\sum_{i=1}^n r(i, j)\\, x_i"}</TexBlock>
+            <TexBlock>{"\\Sigma_j \\leftarrow \\frac{1}{N_j} \\sum_{i=1}^n r(i, j)\\, (x_i - \\mu_j)(x_i - \\mu_j)^\\top"}</TexBlock>
 
-r(i, j) ∈ [0, 1] — sannsynlighet for at xᵢ kom fra komponent j.
-Σⱼ r(i, j) = 1 for hver i.
-
-M-STEP — oppdatér parametrene som vektet snitt:
-
-   N_j = Σᵢ r(i, j)              "effektivt antall punkter i j"
-
-   π_j ← N_j / n
-   μ_j ← (1 / N_j) · Σᵢ r(i, j) · xᵢ
-   Σ_j ← (1 / N_j) · Σᵢ r(i, j) · (xᵢ − μ_j)(xᵢ − μ_j)ᵀ
-
-Merk paralellen til k-Means:
-   k-Means assignment = hard "winner-take-all" r(i, j) ∈ {0, 1}
-   GMM E-step        = soft r(i, j) ∈ [0, 1]
-   k-Means update    = uvektet snitt
-   GMM M-step        = r-vektet snitt`}</pre>
+            <p className="text-xs text-muted-foreground pt-2">
+              Parallell til k-Means: k-Means bruker hard "winner-take-all" <Tex>{"r(i, j) \\in \\{0, 1\\}"}</Tex>, GMM bruker soft <Tex>{"r(i, j) \\in [0, 1]"}</Tex> og r-vektede snitt.
+            </p>
           </div>
           <div className="mt-4">
             <GmmVisualizer />

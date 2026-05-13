@@ -3,6 +3,7 @@ import { Lightbulb, Layers, AlertTriangle, ArrowLeft } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
 import { KMeansAnimator } from "./KMeansAnimator";
+import { Tex, TexBlock } from "@/components/Tex";
 
 const STEPS = [
   { title: "Hvorfor klustring?", anchor: "intro" },
@@ -70,28 +71,26 @@ forskjellige».`}</pre>
             Også kjent som «Lloyd's algorithm». Fire trinn, alterneres til
             konvergens.
           </p>
-          <div className="rounded-xl border border-border bg-card p-5">
-            <pre className="font-mono text-xs overflow-x-auto whitespace-pre">{`Input: data X = {x₁, ..., x_n}, antall klustre k
-Output: sentre μ₁, ..., μ_k og tilordning c(i) ∈ {1..k}
+          <div className="rounded-xl border border-border bg-card p-5 space-y-3 text-sm">
+            <p>
+              Input: data <Tex>{"X = \\{x_1, \\ldots, x_n\\}"}</Tex>, antall klustre <Tex>{"k"}</Tex>.
+              Output: sentre <Tex>{"\\mu_1, \\ldots, \\mu_k"}</Tex> og tilordning <Tex>{"c(i) \\in \\{1, \\ldots, k\\}"}</Tex>.
+            </p>
 
-1. INIT
-   Velg k start-sentre tilfeldig (eller bedre: k-Means++)
+            <div className="font-semibold pt-2">1. Init</div>
+            <p className="text-xs text-muted-foreground">Velg <Tex>{"k"}</Tex> start-sentre tilfeldig (eller bedre: k-Means++).</p>
 
-2. ASSIGN  (E-steg)
-   For hver xᵢ:
-       c(i) ← argmin_j  ‖xᵢ − μ_j‖²
-   (Tilordne hvert punkt til nærmeste sentrum)
+            <div className="font-semibold pt-2">2. Assign (E-steg) — tilordne til nærmeste sentrum:</div>
+            <TexBlock>{"c(i) \\leftarrow \\arg\\min_{j} \\, \\|x_i - \\mu_j\\|^2"}</TexBlock>
 
-3. UPDATE  (M-steg)
-   For hver klustre j:
-       μ_j ← (1/|Cj|) · Σ_{i ∈ Cj} xᵢ
-   (Flytt sentret til snittet av sine punkter)
+            <div className="font-semibold pt-2">3. Update (M-steg) — flytt sentrum til snittet av sine punkter:</div>
+            <TexBlock>{"\\mu_j \\leftarrow \\frac{1}{|C_j|} \\sum_{i \\in C_j} x_i"}</TexBlock>
 
-4. STOPP når sentrene IKKE flytter seg lenger (konvergens)
-   eller etter max_iter iterasjoner.
+            <div className="font-semibold pt-2">4. Stopp</div>
+            <p className="text-xs text-muted-foreground">Sentrene flytter seg ikke lenger (konvergens), eller etter <Tex>{"\\mathrm{max\\_iter}"}</Tex> iterasjoner.</p>
 
-Objektivfunksjon vi minimerer (inertia / WCSS):
-    J = Σᵢ ‖xᵢ − μ_{c(i)}‖²`}</pre>
+            <div className="font-semibold pt-2">Objektivfunksjon (inertia / WCSS):</div>
+            <TexBlock>{"J = \\sum_{i=1}^n \\|x_i - \\mu_{c(i)}\\|^2"}</TexBlock>
           </div>
           <p className="mt-3 text-xs text-muted-foreground">
             <strong>Konvergens:</strong> J synker (eller står stille) i hver iterasjon. Algoritmen
@@ -171,16 +170,19 @@ Gjentar... til ingen ★ flytter seg.`}</pre>
         └──────────────────→  k
         1 2 3 4 5 6 7 8 9 10
 
-Silhouette-koeffisient s(i) ∈ [-1, 1]:
-    a(i) = snitt-avstand fra xᵢ til andre i SAMME klustre
-    b(i) = snitt-avstand fra xᵢ til punkter i NÆRMESTE andre klustre
-    s(i) = (b − a) / max(a, b)
-
-    s ≈ 1   xᵢ er godt plassert i sitt klustre
-    s ≈ 0   xᵢ er på grensa
-    s < 0   xᵢ er feil plassert
-
-Velg k som maks. snitt-silhouette over alle punkter.`}</pre>
+`}</pre>
+            <div className="mt-4 space-y-2 text-sm">
+              <div className="font-semibold">Silhouette-koeffisient <Tex>{"s(i) \\in [-1, 1]"}</Tex>:</div>
+              <ul className="text-xs text-muted-foreground list-disc pl-5 space-y-0.5">
+                <li><Tex>{"a(i)"}</Tex> = snitt-avstand fra <Tex>{"x_i"}</Tex> til andre i SAMME klustre</li>
+                <li><Tex>{"b(i)"}</Tex> = snitt-avstand fra <Tex>{"x_i"}</Tex> til punkter i NÆRMESTE andre klustre</li>
+              </ul>
+              <TexBlock>{"s(i) = \\frac{b(i) - a(i)}{\\max\\{a(i),\\, b(i)\\}}"}</TexBlock>
+              <p className="text-xs text-muted-foreground">
+                <Tex>{"s \\approx 1"}</Tex>: godt plassert. <Tex>{"s \\approx 0"}</Tex>: på grensa. <Tex>{"s < 0"}</Tex>: feil plassert.
+                Velg <Tex>{"k"}</Tex> som maks snitt-silhouette over alle punkter.
+              </p>
+            </div>
           </div>
 
           <div className="overflow-hidden rounded-lg border border-border">

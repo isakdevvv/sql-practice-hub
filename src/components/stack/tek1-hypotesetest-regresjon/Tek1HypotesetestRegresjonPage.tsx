@@ -2,6 +2,7 @@ import { useState, useMemo, useRef, useEffect } from "react";
 import { Link } from "@tanstack/react-router";
 import {Lightbulb, ArrowLeft } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
+import { Tex, TexBlock } from "@/components/Tex";
 
 // ---- helpers ----
 function normPdf(x: number, mu: number, sigma: number): number {
@@ -494,53 +495,42 @@ Større n → mindre β for samme α (bedre styrke).`}</pre>
 
         <section className="mb-10">
           <h2 className="text-xl font-semibold mb-3">3. t-test for én og to utvalg</h2>
-          <div className="rounded-xl border border-border bg-card p-5">
-            <pre className="font-mono text-xs overflow-x-auto whitespace-pre">{`Én-utvalgs t-test (sammenlign x̄ mot μ₀):
-  H₀: μ = μ₀
-  T = (x̄ - μ₀) / (s/√n)    ~  t(n-1) under H₀
+          <div className="rounded-xl border border-border bg-card p-5 space-y-3 text-sm">
+            <div className="font-semibold">Én-utvalgs t-test:</div>
+            <p className="text-xs text-muted-foreground"><Tex>{"H_0: \\mu = \\mu_0"}</Tex></p>
+            <TexBlock>{"T = \\frac{\\bar{x} - \\mu_0}{s / \\sqrt{n}} \\;\\sim\\; t(n - 1) \\text{ under } H_0"}</TexBlock>
+            <p className="text-xs text-muted-foreground">Forkast <Tex>{"H_0"}</Tex> hvis <Tex>{"|T| > t_{\\alpha/2,\\, n-1}"}</Tex>.</p>
 
-  Forkast H₀ hvis |T| > t_(α/2, n-1).
+            <div className="font-semibold pt-3">To-utvalgs t-test (lik varians):</div>
+            <p className="text-xs text-muted-foreground"><Tex>{"H_0: \\mu_1 = \\mu_2"}</Tex></p>
+            <TexBlock>{"T = \\frac{\\bar{x}_1 - \\bar{x}_2}{s_p \\sqrt{\\tfrac{1}{n_1} + \\tfrac{1}{n_2}}} \\;\\sim\\; t(n_1 + n_2 - 2)"}</TexBlock>
+            <p className="text-xs text-muted-foreground">Pooled varians:</p>
+            <TexBlock>{"s_p^2 = \\frac{(n_1 - 1) s_1^2 + (n_2 - 1) s_2^2}{n_1 + n_2 - 2}"}</TexBlock>
+            <p className="text-xs text-muted-foreground">
+              Welch-t (ulik varians): bruk separate <Tex>{"s_1^2, s_2^2"}</Tex>. <Tex>{"\\mathrm{df}"}</Tex> beregnes med Welch–Satterthwaite. Default i scipy.
+            </p>
 
-To-utvalgs t-test (sammenlign to grupper, antar lik varians):
-  H₀: μ₁ = μ₂
-  T = (x̄₁ - x̄₂) / (sp · √(1/n₁ + 1/n₂))   ~  t(n₁+n₂-2)
-
-  sp² = ((n₁-1)s₁² + (n₂-1)s₂²) / (n₁+n₂-2)     ← pooled varians
-
-Welch-t (ulik varians): bruk separate s₁², s₂² — df beregnes med
-                         Welch-Satterthwaite-formelen. Default i scipy.
-
-p-verdi: areal i halen(e) av t-fordelingen som er like ekstrem som
-         observert T. Forkast hvis p < α.
-
-Eks: x̄ = 102, s = 10, n = 25. Test H₀: μ = 100 (to-sidig, α = 0.05).
-  T = (102 - 100)/(10/√25) = 2/2 = 1.00
-  t_(0.025, 24) = 2.064
-  |1.00| < 2.064 → behold H₀. p-verdi ≈ 0.327`}</pre>
+            <div className="font-semibold pt-3">Eksempel: <Tex>{"\\bar{x} = 102, s = 10, n = 25"}</Tex>, test <Tex>{"H_0: \\mu = 100"}</Tex>:</div>
+            <TexBlock>{"T = \\frac{102 - 100}{10 / \\sqrt{25}} = 1.00"}</TexBlock>
+            <p className="text-xs text-muted-foreground"><Tex>{"t_{0.025,\\, 24} = 2.064"}</Tex>; <Tex>{"|1.00| < 2.064 \\Rightarrow"}</Tex> behold <Tex>{"H_0"}</Tex>. p-verdi <Tex>{"\\approx 0.327"}</Tex>.</p>
           </div>
         </section>
 
         <section className="mb-10">
           <h2 className="text-xl font-semibold mb-3">4. Kji²-test</h2>
-          <div className="rounded-xl border border-border bg-card p-5">
-            <pre className="font-mono text-xs overflow-x-auto whitespace-pre">{`Goodness-of-fit (passer observerte til en forventet fordeling?):
-  χ² = Σ (Oᵢ - Eᵢ)² / Eᵢ        ~  χ²(k - 1 - p)
-  k = antall kategorier
-  p = antall estimerte parametere
+          <div className="rounded-xl border border-border bg-card p-5 space-y-3 text-sm">
+            <div className="font-semibold">Goodness-of-fit:</div>
+            <TexBlock>{"\\chi^2 = \\sum_{i=1}^k \\frac{(O_i - E_i)^2}{E_i} \\;\\sim\\; \\chi^2(k - 1 - p)"}</TexBlock>
+            <p className="text-xs text-muted-foreground"><Tex>{"k"}</Tex> = antall kategorier, <Tex>{"p"}</Tex> = antall estimerte parametere.</p>
 
-Test for uavhengighet (kontingenstabell r × c):
-  Eᵢⱼ = (radᵢ_sum · kolonneⱼ_sum) / totalt
-  χ² = Σᵢⱼ (Oᵢⱼ - Eᵢⱼ)² / Eᵢⱼ    ~  χ²((r-1)(c-1))
+            <div className="font-semibold pt-2">Test for uavhengighet (<Tex>{"r \\times c"}</Tex>):</div>
+            <TexBlock>{"E_{ij} = \\frac{(\\text{rad}_i\\,\\text{sum}) \\cdot (\\text{kol}_j\\,\\text{sum})}{n}"}</TexBlock>
+            <TexBlock>{"\\chi^2 = \\sum_{i, j} \\frac{(O_{ij} - E_{ij})^2}{E_{ij}} \\;\\sim\\; \\chi^2\\big((r - 1)(c - 1)\\big)"}</TexBlock>
+            <p className="text-xs text-muted-foreground">Krav: <Tex>{"E_i \\geq 5"}</Tex>. Forkast hvis <Tex>{"\\chi^2 > \\chi^2_{\\alpha,\\, \\mathrm{df}}"}</Tex>.</p>
 
-Krav: Eᵢ ≥ 5 i hver celle (ellers slå sammen kategorier).
-Forkast H₀ hvis χ² > χ²_(α, df).
-
-Eks: terning kastes 60 ganger. Observert: [8,12,9,11,10,10].
-  Forventet under "fair": 10 i hver.
-  χ² = (8-10)²/10 + (12-10)²/10 + ... = 1.0
-  df = 6-1 = 5
-  χ²_(0.05, 5) = 11.07
-  1.0 < 11.07 → behold H₀ (terningen er konsistent med fair).`}</pre>
+            <div className="font-semibold pt-2">Eksempel: terning kastet 60 ganger, observert [8, 12, 9, 11, 10, 10]:</div>
+            <TexBlock>{"\\chi^2 = \\frac{(8-10)^2}{10} + \\frac{(12-10)^2}{10} + \\cdots = 1.0"}</TexBlock>
+            <p className="text-xs text-muted-foreground"><Tex>{"\\mathrm{df} = 5"}</Tex>, <Tex>{"\\chi^2_{0.05,\\, 5} = 11.07"}</Tex>; <Tex>{"1.0 < 11.07 \\Rightarrow"}</Tex> behold <Tex>{"H_0"}</Tex>.</p>
           </div>
         </section>
 
@@ -552,17 +542,18 @@ Eks: terning kastes 60 ganger. Observert: [8,12,9,11,10,10].
             minimerer Σ(yᵢ − ŷᵢ)². Dra punktene under og se R² endre seg.
           </p>
           <ScatterRegression />
-          <div className="rounded-xl border border-border bg-card p-5 mt-4">
-            <pre className="font-mono text-xs overflow-x-auto whitespace-pre">{`Hellingstall:  b = Σ(xᵢ - x̄)(yᵢ - ȳ) / Σ(xᵢ - x̄)²
-Skjæringspunkt: a = ȳ - b · x̄
-
-Pearson-r:  r = Σ(xᵢ - x̄)(yᵢ - ȳ) / √(Σ(xᵢ - x̄)² · Σ(yᵢ - ȳ)²)
-
-Determinasjonskoeffisient:  R² = r²  ∈ [0, 1]
-  Andel av variasjonen i y som forklares av lineær sammenheng med x.
-
-Hypotesetest for hellingen (er b signifikant ulik 0?):
-  T = b / SE(b)    ~  t(n - 2)`}</pre>
+          <div className="rounded-xl border border-border bg-card p-5 mt-4 space-y-3 text-sm">
+            <div className="font-semibold">Hellingstall:</div>
+            <TexBlock>{"b = \\frac{\\sum_i (x_i - \\bar{x})(y_i - \\bar{y})}{\\sum_i (x_i - \\bar{x})^2}"}</TexBlock>
+            <div className="font-semibold">Skjæringspunkt:</div>
+            <TexBlock>{"a = \\bar{y} - b\\, \\bar{x}"}</TexBlock>
+            <div className="font-semibold">Pearson <Tex>{"r"}</Tex>:</div>
+            <TexBlock>{"r = \\frac{\\sum_i (x_i - \\bar{x})(y_i - \\bar{y})}{\\sqrt{\\sum_i (x_i - \\bar{x})^2 \\cdot \\sum_i (y_i - \\bar{y})^2}}"}</TexBlock>
+            <div className="font-semibold">Determinasjonskoeffisient:</div>
+            <TexBlock>{"R^2 = r^2 \\in [0, 1]"}</TexBlock>
+            <p className="text-xs text-muted-foreground">Andel av variasjonen i <Tex>{"y"}</Tex> som forklares av lineær sammenheng med <Tex>{"x"}</Tex>.</p>
+            <div className="font-semibold pt-2">Hypotesetest for hellingen (<Tex>{"b \\neq 0"}</Tex>?):</div>
+            <TexBlock>{"T = \\frac{b}{\\mathrm{SE}(b)} \\;\\sim\\; t(n - 2)"}</TexBlock>
           </div>
         </section>
 
