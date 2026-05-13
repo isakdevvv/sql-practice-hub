@@ -2,15 +2,21 @@ import { Link } from "@tanstack/react-router";
 import {Lightbulb, Dna, ArrowLeft } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
+import { GaEvolution } from "./GaEvolution";
+import { PsoSwarm } from "./PsoSwarm";
+import { AcoTsp } from "./AcoTsp";
 
 const STEPS = [
   { title: "Hvorfor metaheuristikker?", anchor: "intro" },
   { title: "Genetic algorithm — komponentene", anchor: "ga-parts" },
   { title: "Seleksjon — roulette og tournament", anchor: "selection" },
   { title: "Crossover og mutasjon", anchor: "operators" },
+  { title: "Interaktiv: GA-evolusjon", anchor: "ga-vis" },
   { title: "GA pseudokode", anchor: "code" },
   { title: "Swarm intelligence — PSO", anchor: "pso" },
+  { title: "Interaktiv: PSO-flokken", anchor: "pso-vis" },
   { title: "Ant Colony Optimization", anchor: "aco" },
+  { title: "Interaktiv: ACO på TSP", anchor: "aco-vis" },
   { title: "Eksamen-typiske spørsmål", anchor: "exam" },
 ];
 
@@ -153,8 +159,20 @@ MUTASJON:
           </div>
         </section>
 
+        <section id="ga-vis" className="mb-10">
+          <h2 className="text-xl font-semibold mb-3">5. Interaktiv: GA-evolusjon (OneMax)</h2>
+          <p className="text-sm text-muted-foreground mb-4">
+            En populasjon av 16-bit strenger. Fitness = antall 1-ere
+            (OneMax-problemet — vi vil ha bare 1-ere). Trykk «Neste generasjon»
+            for å se ett steg av seleksjon → crossover → mutasjon. Gule bits er
+            nylig muterte. Kjør 50 generasjoner og se hvor fort populasjonen
+            konvergerer mot 16/16.
+          </p>
+          <GaEvolution />
+        </section>
+
         <section id="code" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">5. GA pseudokode</h2>
+          <h2 className="text-xl font-semibold mb-3">6. GA pseudokode</h2>
           <div className="rounded-xl border border-border bg-card p-5">
             <pre className="font-mono text-xs overflow-x-auto whitespace-pre">{`function genetic_algorithm(fitness, N, generations, p_cross, p_mut):
     # 1. Init
@@ -191,7 +209,7 @@ Stopp-kriterier:
         </section>
 
         <section id="pso" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">6. Swarm intelligence — PSO</h2>
+          <h2 className="text-xl font-semibold mb-3">7. Swarm intelligence — PSO</h2>
           <p className="text-sm text-muted-foreground mb-4">
             Particle Swarm Optimization (PSO) modellerer en flokk fugler som søker
             etter mat. Hver fugl («partikkel») har posisjon og hastighet, og
@@ -220,8 +238,22 @@ hyperparameter tuning).`}</pre>
           </div>
         </section>
 
+        <section id="pso-vis" className="mb-10">
+          <h2 className="text-xl font-semibold mb-3">
+            8. Interaktiv: PSO på 2D-landskap
+          </h2>
+          <p className="text-sm text-muted-foreground mb-4">
+            Partikler søker etter minimum av Rastrigin-funksjonen — et brutalt
+            ikke-konvekst landskap med svært mange lokale minima. Mørk = lav
+            verdi (mål). Hver partikkel husker sitt eget beste (liten ring) og
+            følger flokkens beste (gul stjerne). Skru på vekt-parametrene og
+            se hvordan flokken oppfører seg.
+          </p>
+          <PsoSwarm />
+        </section>
+
         <section id="aco" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">7. Ant Colony Optimization</h2>
+          <h2 className="text-xl font-semibold mb-3">9. Ant Colony Optimization</h2>
           <p className="text-sm text-muted-foreground mb-4">
             Maur finner korteste vei mellom bol og mat ved å legge igjen
             feromon-spor — kortere veier blir besøkt mer ofte, fordi feromoner
@@ -257,8 +289,20 @@ Anvendelser:
           </div>
         </section>
 
+        <section id="aco-vis" className="mb-10">
+          <h2 className="text-xl font-semibold mb-3">
+            10. Interaktiv: ACO på TSP
+          </h2>
+          <p className="text-sm text-muted-foreground mb-4">
+            8 byer i 2D. Tykke kanter = høyt feromon-nivå, tynne = lite. Send
+            én maur for å se hvordan ruten bygges probabilistisk. Kjør 20
+            iterasjoner: korte ruter forsterkes, lange fordamper bort.
+          </p>
+          <AcoTsp />
+        </section>
+
         <section id="exam" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">8. Eksamen-typiske spørsmål</h2>
+          <h2 className="text-xl font-semibold mb-3">11. Eksamen-typiske spørsmål</h2>
           <ul className="space-y-2 text-sm text-muted-foreground list-disc pl-5">
             <li>
               <strong className="text-foreground">«Forklar de fire grunn-operatorene i en GA.»</strong>{" "}
