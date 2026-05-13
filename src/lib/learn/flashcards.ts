@@ -4064,6 +4064,252 @@ export const FLASHCARDS: FlashCard[] = [
     answer:
       "Når riktig handling ikke er kjent på forhånd, men man kan måle belønning over tid. Sekvensielle beslutninger, ingen labeled data, men miljø man kan interagere med. Eks: spill, robotikk.",
   },
+
+  // ============= DTE-2507 — Congestion Control =============
+  {
+    id: "c-cong-flow-vs-cong",
+    category: "begrep",
+    topic: "DTE-2507",
+    question: "Forskjell på TCP flow control og congestion control?",
+    answer:
+      "Flow control beskytter MOTTAKEREN (rwnd i ACK-headeren — 'jeg har bare X bytes ledig'). Congestion control beskytter NETTVERKET (cwnd, internt — 'ruter-køene fyller seg'). Senderen sender min(rwnd, cwnd) outstanding.",
+  },
+  {
+    id: "c-cong-slow-start",
+    category: "begrep",
+    topic: "DTE-2507",
+    question: "Hva er TCP slow start?",
+    answer:
+      "Starter med cwnd = 1 MSS (eller 10 i moderne Linux) og dobler hver RTT (eksponentiell vekst) til cwnd når ssthresh. Da bytter den til congestion avoidance. Navnet er misvisende — den starter LITE men vokser RASKT.",
+  },
+  {
+    id: "c-cong-aimd",
+    category: "begrep",
+    topic: "DTE-2507",
+    question: "Hva er AIMD?",
+    answer:
+      "Additive Increase, Multiplicative Decrease. I congestion avoidance: cwnd += 1 MSS per RTT (lineær opp). Ved tap: cwnd /= 2 (halvering). Gir sagtann-mønster og er matematisk bevist rettferdig mellom to TCP-strømmer på samme flaskehals.",
+  },
+  {
+    id: "c-cong-tahoe-vs-reno",
+    category: "begrep",
+    topic: "DTE-2507",
+    question: "Tahoe vs Reno ved 3 dup-ACKs?",
+    answer:
+      "Tahoe: cwnd → 1, ssthresh → cwnd/2, slow start om. Reno: cwnd → ssthresh = cwnd/2, hopp rett til congestion avoidance (fast recovery). Reno henter seg raskere inn — slipper å slow-starte fra null.",
+  },
+  {
+    id: "c-cong-cubic",
+    category: "begrep",
+    topic: "DTE-2507",
+    question: "Hva er TCP Cubic, og hvor brukes den?",
+    answer:
+      "Linux-default siden 2006. Vekst styres av kubikkfunksjon W(t) = C(t-K)³ + Wmax — konkav nær gammel toppverdi, konveks over. RTT-uavhengig (rettferdig mellom strømmer med ulik RTT). β=0.7 (mindre aggressiv halvering enn Reno).",
+  },
+  {
+    id: "c-cong-bbr",
+    category: "begrep",
+    topic: "DTE-2507",
+    question: "Hva gjør TCP BBR annerledes enn Tahoe/Reno/Cubic?",
+    answer:
+      "BBR er IKKE loss-basert. Den estimerer BtlBw (flaskehals-båndbredde) og RTprop (min-RTT) og sender med rate BtlBw, holder BDP=BtlBw×RTprop outstanding. Ignorerer enkelt-tap. Brukes av Google (YouTube). Løser bufferbloat-problemet.",
+  },
+  {
+    id: "c-cong-bufferbloat",
+    category: "begrep",
+    topic: "DTE-2507",
+    question: "Hva er bufferbloat?",
+    answer:
+      "For store kø-buffere i (særlig hjemme-)rutere. Loss-basert TCP ser ingen tap (køen sluker pakkene), så cwnd vokser ukontrollert. Køen fylles → latency går fra ~20 ms til ~2000 ms. Forsvar: AQM (CoDel, PIE), ECN, BBR, FQ-CoDel.",
+  },
+  {
+    id: "c-cong-rto-vs-dupack",
+    category: "begrep",
+    topic: "DTE-2507",
+    question: "Hva trigger fast retransmit, og hva er forskjellen fra RTO-timeout?",
+    answer:
+      "Fast retransmit: 3 like dup-ACKs i rad → send tapt segment uten å vente på timer. Indikerer ISOLERT tap (etterfølgende pakker kom fram). RTO-timeout: ingen ACK på lang stund → alvorligere, tyder på stor stopp. Tahoe/Reno reagerer ulikt på de to.",
+  },
+  {
+    id: "c-cong-ecn",
+    category: "begrep",
+    topic: "DTE-2507",
+    question: "Hva er ECN?",
+    answer:
+      "Explicit Congestion Notification. I stedet for å droppe en pakke kan ruteren sette ECN-CE-bit i IP-headeren. Mottakeren reflekterer det i neste ACK; senderen reagerer som ved tap (halverer cwnd) MEN uten å miste data. Krever ECN-støtte begge ender.",
+  },
+  {
+    id: "c-cong-bdp",
+    category: "praktisk",
+    topic: "DTE-2507",
+    question: "Hva er Bandwidth-Delay Product (BDP) og hvorfor relevant?",
+    answer:
+      "BDP = båndbredde × RTT = antall bits som er i 'flyet' samtidig. Sett 1 Gbps × 50 ms = 50 Mbit ≈ 6.25 MB. For å fylle en lenke trenger TCP cwnd ≥ BDP. På høy-BDP-pipes sliter Reno (lineær økning er for langsom) — der kommer Cubic og BBR til sin rett.",
+  },
+
+  // ============= DTE-2507 — Ruting =============
+  {
+    id: "c-route-data-vs-control",
+    category: "begrep",
+    topic: "DTE-2507",
+    question: "Data plane vs control plane i en ruter?",
+    answer:
+      "Data plane (forwarding): per-pakke, slår dest-IP opp i forwarding-tabellen, sender ut. Implementert i ASIC, nanosekunder. Control plane (routing): bygger tabellen ved å snakke med naboer (OSPF/BGP). CPU + software, sekunder–minutter. SDN flytter control plane til ekstern kontroller.",
+  },
+  {
+    id: "c-route-lpm",
+    category: "begrep",
+    topic: "DTE-2507",
+    question: "Hva er longest-prefix-match (LPM)?",
+    answer:
+      "Når flere prefix i forwarding-tabellen matcher dest-IP, velges det LENGSTE (mest spesifikke). Eks: dest 10.1.2.200 mot tabell med 0/0, 10/8, 10.1/16, 10.1.2/24, 10.1.2.128/25 → /25 vinner. Default-rute 0.0.0.0/0 fanger alt som ikke matcher noe annet.",
+  },
+  {
+    id: "c-route-dijkstra",
+    category: "begrep",
+    topic: "DTE-2507",
+    question: "Hva er Dijkstras algoritme i nettverkskontekst?",
+    answer:
+      "Beregner korteste vei fra én kilde til alle noder. Init dist[s]=0, dist[andre]=∞. Velg ubesøkt node med minst dist (u), marker visited, relax alle naboer. Brukes av link-state-protokoller som OSPF. Krever at hver ruter kjenner hele topologien (LSA-flooding).",
+  },
+  {
+    id: "c-route-bellman-ford",
+    category: "begrep",
+    topic: "DTE-2507",
+    question: "Bellman-Ford og distance-vector?",
+    answer:
+      "Hver ruter kjenner kun naboene sine. Itererer: dx(y) = min over naboer v av { c(x,v) + dv(y) }. Sender hele distance-vektoren til naboene; de oppdaterer sine. Konvergerer over flere runder. RIP bruker dette. Problem: count-to-infinity ved lenkefall (delvis løst med split horizon).",
+  },
+  {
+    id: "c-route-ospf-vs-rip",
+    category: "begrep",
+    topic: "DTE-2507",
+    question: "Hvorfor brukes OSPF mer enn RIP i moderne nett?",
+    answer:
+      "RIP er distance-vector (hopp-teller, maks 15 hopp) og konvergerer sakte med count-to-infinity-problemer. OSPF er link-state (Dijkstra), kjenner hele topologien, konvergerer raskt, støtter areas for skalering og bruker vekter (ikke bare hopp).",
+  },
+  {
+    id: "c-route-bgp",
+    category: "begrep",
+    topic: "DTE-2507",
+    question: "Hvorfor er BGP fundamentalt annerledes enn OSPF?",
+    answer:
+      "BGP er INTER-AS (mellom autonome systemer) og handler om POLITIKK/forretning — ikke korteste vei. Path-vector: annonserer hele AS-stien til prefixet. Kjører over TCP/179 (pålitelig sesjon). Hvert AS kan rute via partner selv om en annen sti er kortere.",
+  },
+  {
+    id: "c-route-as",
+    category: "begrep",
+    topic: "DTE-2507",
+    question: "Hva er et Autonomt System (AS)?",
+    answer:
+      "Et sammenhengende nettverk under én administrativ enhet, med ett ASN (AS-nummer, 32-bit). Hvert AS ruter internt med en IGP (OSPF, RIP, IS-IS) og snakker med andre AS-er via BGP. Eks: UNINETT har AS 224, Telia AS 1299, Google AS 15169.",
+  },
+  {
+    id: "c-route-ttl",
+    category: "begrep",
+    topic: "DTE-2507",
+    question: "Hva skjer med TTL og MAC når en pakke forwardes?",
+    answer:
+      "TTL dekrementeres med 1 per hopp (når 0 → ICMP Time Exceeded). MAC-adressene re-skrives på hvert hopp (src=ruter-iface, dst=neste-hops MAC). IP-adressene endres IKKE (med mindre NAT). IP-headerens checksum oppdateres pga TTL-endringen.",
+  },
+  {
+    id: "c-route-default",
+    category: "praktisk",
+    topic: "DTE-2507",
+    question: "Hvordan ser default-ruten ut i en forwarding-tabell?",
+    answer:
+      "0.0.0.0/0 → next-hop, vanligvis ut WAN-grensesnittet. Matcher ALT (0 bits maske), men er kortest så LPM gir den bare hvis ingen annen rute matcher. På Linux: 'ip route' viser den som 'default via X dev Y'.",
+  },
+  {
+    id: "c-route-igp-egp",
+    category: "begrep",
+    topic: "DTE-2507",
+    question: "IGP vs EGP — hva er forskjellen?",
+    answer:
+      "IGP (Interior Gateway Protocol): innen et AS. RIP, OSPF, IS-IS. Optimerer korteste vei. EGP (Exterior Gateway Protocol): mellom AS-er. BGP. Optimerer for politikk, ikke avstand. Et AS kjører typisk én IGP internt og BGP mot omverdenen.",
+  },
+
+  // ============= DTE-2507 — DNS-dyp =============
+  {
+    id: "c-dns-hierarki",
+    category: "begrep",
+    topic: "DTE-2507",
+    question: "Hvilke fire nivåer er DNS-hierarkiet?",
+    answer:
+      "1) Root (.) — 13 root-NS, anycastet. 2) TLD (.no, .com, .org) — driftes av registries (Norid for .no). 3) Autoritativ NS for domenet (eks ns.uit.no). 4) Resolver / klient (rekursiv NS som 1.1.1.1 eller stub-resolver i OS).",
+  },
+  {
+    id: "c-dns-recursive-iterative",
+    category: "begrep",
+    topic: "DTE-2507",
+    question: "Recursive vs iterative DNS-query?",
+    answer:
+      "Recursive: klient ber resolver om å gi tilbake endelig svar, klient venter. Iterative: spørger må selv tråle hierarkiet (root → TLD → auth). I praksis: klient → resolver er recursive; resolver → autoritative NS-er er iterative. Autoritative svarer aldri rekursivt.",
+  },
+  {
+    id: "c-dns-rr-typer",
+    category: "begrep",
+    topic: "DTE-2507",
+    question: "Hva returnerer en A-, AAAA-, MX-, CNAME-, NS- og PTR-record?",
+    answer:
+      "A: IPv4. AAAA: IPv6 ('quad-A'). MX: mail-server + prioritet for domenet. CNAME: alias (www → example.com). NS: hvilken NS er autoritativ for domenet. PTR: reverse — IP → navn (in-addr.arpa-treet).",
+  },
+  {
+    id: "c-dns-ttl",
+    category: "begrep",
+    topic: "DTE-2507",
+    question: "Hva er DNS TTL og hvorfor er det viktig?",
+    answer:
+      "Time To Live i sekunder per record — hvor lenge en resolver får lov å cache svaret. Etter TTL må den slå opp på nytt. Lav TTL (30s) brukes av CDNer for fleksibilitet. Høy TTL (1 dag) for stabile records. Før en migrering: senk TTL i forkant.",
+  },
+  {
+    id: "c-dns-poisoning",
+    category: "sikkerhet",
+    topic: "DTE-2507",
+    question: "Hva er DNS cache-poisoning, og hva er Kaminsky-angrepet?",
+    answer:
+      "Angriper races et falskt DNS-svar inn til resolveren før det ekte. Hvis akseptert, caches det — alle påfølgende oppslag returnerer angriperens IP. Kaminsky (2008): viste at fast source-port + lav entropi gjorde dette praktisk. Mitigert med random src-port, random transaction-ID, 0x20 encoding.",
+  },
+  {
+    id: "c-dns-dnssec",
+    category: "sikkerhet",
+    topic: "DTE-2507",
+    question: "Hva sikrer DNSSEC, og hvilke records er nye?",
+    answer:
+      "Digitale signaturer på records — autentisitet og integritet (ikke konfidensialitet). Nye RR-typer: RRSIG (signatur), DNSKEY (offentlig nøkkel), DS (Delegation Signer i forelder-sone), NSEC/NSEC3 (signert 'finnes ikke'). Chain of trust fra root-KSK ned til hver sone.",
+  },
+  {
+    id: "c-dns-doh-dot",
+    category: "sikkerhet",
+    topic: "DTE-2507",
+    question: "DoH vs DoT — porter og forskjeller?",
+    answer:
+      "DoT (DNS over TLS): port 853, direkte TLS-wrapping av DNS. Lett å se at det er DNS, men kryptert innhold. DoH (DNS over HTTPS): port 443, DNS-meldinger pakket i HTTPS. Vanskelig å skille fra vanlig web-trafikk (kontroversielt for nettverks-admin). Begge skjuler oppslag fra ISP.",
+  },
+  {
+    id: "c-dns-dnssec-vs-doh",
+    category: "sikkerhet",
+    topic: "DTE-2507",
+    question: "DNSSEC og DoH — løser de samme problem?",
+    answer:
+      "Nei. DNSSEC autentiserer SVARET over hele kjeden (er det virkelig fra autoritativ NS?). DoH krypterer KANALEN mellom klient og resolver (kan noen på samme nett se hva jeg slår opp?). Bruk dem sammen — de er komplementære, ikke alternativer.",
+  },
+  {
+    id: "c-dns-port",
+    category: "begrep",
+    topic: "DTE-2507",
+    question: "Hvilken port og transport bruker klassisk DNS?",
+    answer:
+      "UDP port 53 for vanlige spørringer (rask, idempotent — retransmit ved tap). TCP port 53 brukes når svaret er for stort for UDP (over 512 bytes, eller med EDNS over 4096) eller for zone-transfer (AXFR/IXFR mellom name-servere).",
+  },
+  {
+    id: "c-dns-resolver-typer",
+    category: "begrep",
+    topic: "DTE-2507",
+    question: "Stub-resolver, rekursiv resolver, autoritativ NS — hva er hva?",
+    answer:
+      "Stub-resolver: i OS (libc, systemd-resolved) — sender en query til konfigurert resolver og venter. Rekursiv resolver: tråler hierarkiet for klienten (1.1.1.1, 8.8.8.8). Autoritativ NS: har de ekte sone-dataene for et domene, svarer kun for det domenet — aldri rekursivt.",
+  },
 ];
 
 export const CARD_CATEGORIES: { id: FlashCard["category"]; label: string }[] = [
