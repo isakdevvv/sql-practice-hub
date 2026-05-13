@@ -10,6 +10,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { StackPageShell } from "@/components/stack/StackPageShell";
+import { Tex, TexBlock } from "@/components/Tex";
 
 type DistName = "uniform" | "exp" | "skewed" | "bimodal";
 
@@ -245,67 +246,72 @@ export function Tek1ForventningCltPage() {
         </div>
 
         <section className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">1. Forventning E[X]</h2>
-          <div className="rounded-xl border border-border bg-card p-5">
-            <pre className="font-mono text-xs overflow-x-auto whitespace-pre">{`Definisjon (=μ, populasjonsgjennomsnitt):
+          <h2 className="text-xl font-semibold mb-3">1. Forventning <Tex>{"E[X]"}</Tex></h2>
+          <div className="rounded-xl border border-border bg-card p-5 space-y-3 text-sm">
+            <div className="font-semibold">Definisjon (<Tex>{"= \\mu"}</Tex>, populasjonsgjennomsnitt):</div>
+            <div>
+              <div className="text-muted-foreground text-xs">Diskret:</div>
+              <TexBlock>{"E[X] = \\sum_{x} x \\cdot p(x)"}</TexBlock>
+            </div>
+            <div>
+              <div className="text-muted-foreground text-xs">Kontinuerlig:</div>
+              <TexBlock>{"E[X] = \\int_{-\\infty}^{\\infty} x \\cdot f(x)\\, dx"}</TexBlock>
+            </div>
 
-  Diskret:        E[X] = Σ x · p(x)
-  Kontinuerlig:   E[X] = ∫ x · f(x) dx
+            <div className="font-semibold pt-2">Linearitet (gjelder ALLTID):</div>
+            <TexBlock>{"E[aX + b] = a\\, E[X] + b"}</TexBlock>
+            <TexBlock>{"E[X + Y] = E[X] + E[Y] \\quad \\text{(også når } X, Y \\text{ er avhengige)}"}</TexBlock>
+            <TexBlock>{"E\\!\\left[\\sum_i a_i X_i\\right] = \\sum_i a_i\\, E[X_i]"}</TexBlock>
 
-Linearitet (gjelder ALLTID):
-  E[aX + b]   = aE[X] + b
-  E[X + Y]    = E[X] + E[Y]              ← også når X,Y er avhengige!
-  E[Σ aᵢ Xᵢ]  = Σ aᵢ E[Xᵢ]
-
-Multiplikasjon (krever uavhengighet):
-  E[XY] = E[X] · E[Y]                    ← kun hvis X,Y uavhengige`}</pre>
+            <div className="font-semibold pt-2">Multiplikasjon (krever uavhengighet):</div>
+            <TexBlock>{"E[XY] = E[X] \\cdot E[Y] \\quad \\text{(kun hvis } X, Y \\text{ uavhengige)}"}</TexBlock>
           </div>
         </section>
 
         <section className="mb-10">
           <h2 className="text-xl font-semibold mb-3">2. Varians og kovarians</h2>
-          <div className="rounded-xl border border-border bg-card p-5">
-            <pre className="font-mono text-xs overflow-x-auto whitespace-pre">{`Definisjon:
-  Var(X) = E[(X - μ)²] = E[X²] - μ²       ← praktisk formel
+          <div className="rounded-xl border border-border bg-card p-5 space-y-3 text-sm">
+            <div className="font-semibold">Definisjon:</div>
+            <TexBlock>{"\\mathrm{Var}(X) = E[(X - \\mu)^2] = E[X^2] - \\mu^2"}</TexBlock>
 
-Egenskaper:
-  Var(aX + b)  = a² · Var(X)              (translasjon endrer ikke spredning)
-  Var(X + Y)   = Var(X) + Var(Y) + 2Cov(X,Y)
+            <div className="font-semibold pt-2">Egenskaper:</div>
+            <TexBlock>{"\\mathrm{Var}(aX + b) = a^2\\, \\mathrm{Var}(X)"}</TexBlock>
+            <TexBlock>{"\\mathrm{Var}(X + Y) = \\mathrm{Var}(X) + \\mathrm{Var}(Y) + 2\\,\\mathrm{Cov}(X, Y)"}</TexBlock>
 
-Standardavvik:
-  σ = √Var(X)                              (samme enhet som X)
+            <div className="font-semibold pt-2">Standardavvik:</div>
+            <TexBlock>{"\\sigma = \\sqrt{\\mathrm{Var}(X)} \\quad \\text{(samme enhet som } X\\text{)}"}</TexBlock>
 
-Kovarians (mål på samvariasjon):
-  Cov(X,Y) = E[(X - μx)(Y - μy)] = E[XY] - E[X]E[Y]
+            <div className="font-semibold pt-2">Kovarians (mål på samvariasjon):</div>
+            <TexBlock>{"\\mathrm{Cov}(X, Y) = E[(X - \\mu_X)(Y - \\mu_Y)] = E[XY] - E[X]\\,E[Y]"}</TexBlock>
+            <ul className="text-xs text-muted-foreground space-y-0.5 list-disc pl-5">
+              <li><Tex>{"\\mathrm{Cov} > 0"}</Tex>: tendens til å variere sammen</li>
+              <li><Tex>{"\\mathrm{Cov} < 0"}</Tex>: motsatt tendens</li>
+              <li><Tex>{"\\mathrm{Cov} = 0"}</Tex>: ukorrelerte</li>
+              <li>Hvis <Tex>{"X, Y"}</Tex> er UAVHENGIGE <Tex>{"\\Rightarrow \\mathrm{Cov}(X, Y) = 0"}</Tex> (men ikke omvendt)</li>
+            </ul>
 
-  Cov > 0: X og Y har tendens til å variere sammen
-  Cov < 0: motsatt tendens
-  Cov = 0: ukorrelerte
-
-  Hvis X,Y er UAVHENGIGE → Cov(X,Y) = 0
-  (men Cov = 0 medfører IKKE uavhengighet generelt)
-
-Korrelasjonskoeffisient:
-  ρ = Cov(X,Y) / (σx · σy)        ∈ [-1, 1]      (dimensjonsløs)`}</pre>
+            <div className="font-semibold pt-2">Korrelasjonskoeffisient:</div>
+            <TexBlock>{"\\rho = \\frac{\\mathrm{Cov}(X, Y)}{\\sigma_X \\, \\sigma_Y} \\in [-1, 1]"}</TexBlock>
           </div>
         </section>
 
         <section className="mb-10">
           <h2 className="text-xl font-semibold mb-3">
-            3. Utvalgsgjennomsnitt X̄ og standardfeil
+            3. Utvalgsgjennomsnitt <Tex>{"\\bar{X}"}</Tex> og standardfeil
           </h2>
-          <div className="rounded-xl border border-border bg-card p-5">
-            <pre className="font-mono text-xs overflow-x-auto whitespace-pre">{`Hvis X₁, X₂, ..., Xₙ er iid med E[Xᵢ] = μ og Var(Xᵢ) = σ²,
-og X̄ = (1/n) Σ Xᵢ:
-
-  E[X̄]    = μ                              ← X̄ er forventningsrett for μ
-  Var(X̄) = σ² / n                          ← spredningen MINKER med √n
-  SD(X̄)  = σ / √n  ← STANDARDFEIL (SE)
-
-Tolkning:
-  • X̄ varierer rundt μ, men mindre og mindre når n vokser.
-  • Halvere SE krever 4-doble n.
-  • SE er ikke det samme som σ (utvalgets spredning).`}</pre>
+          <div className="rounded-xl border border-border bg-card p-5 space-y-3 text-sm">
+            <p>
+              Hvis <Tex>{"X_1, X_2, \\ldots, X_n"}</Tex> er iid med <Tex>{"E[X_i] = \\mu"}</Tex> og <Tex>{"\\mathrm{Var}(X_i) = \\sigma^2"}</Tex>,
+              og <Tex>{"\\bar{X} = \\frac{1}{n} \\sum_{i=1}^n X_i"}</Tex>:
+            </p>
+            <TexBlock>{"E[\\bar{X}] = \\mu"}</TexBlock>
+            <TexBlock>{"\\mathrm{Var}(\\bar{X}) = \\frac{\\sigma^2}{n}"}</TexBlock>
+            <TexBlock>{"\\mathrm{SD}(\\bar{X}) = \\frac{\\sigma}{\\sqrt{n}} \\quad \\text{(standardfeil, SE)}"}</TexBlock>
+            <ul className="text-xs text-muted-foreground list-disc pl-5 space-y-0.5">
+              <li><Tex>{"\\bar{X}"}</Tex> varierer rundt <Tex>{"\\mu"}</Tex>, men mindre når <Tex>{"n"}</Tex> vokser.</li>
+              <li>Å halvere SE krever 4-doble <Tex>{"n"}</Tex>.</li>
+              <li>SE er ikke det samme som <Tex>{"\\sigma"}</Tex> (utvalgets spredning).</li>
+            </ul>
           </div>
         </section>
 
@@ -316,24 +322,27 @@ Tolkning:
           <p className="text-sm text-muted-foreground mb-3">
             Hjørnestenen i statistisk inferens. Sier:
           </p>
-          <div className="rounded-xl border border-border bg-card p-5 mb-4">
-            <pre className="font-mono text-xs overflow-x-auto whitespace-pre">{`Hvis X₁, X₂, ... er iid med E[X] = μ, Var(X) = σ² (begge endelige):
+          <div className="rounded-xl border border-border bg-card p-5 mb-4 space-y-3 text-sm">
+            <p>
+              Hvis <Tex>{"X_1, X_2, \\ldots"}</Tex> er iid med <Tex>{"E[X] = \\mu"}</Tex>, <Tex>{"\\mathrm{Var}(X) = \\sigma^2"}</Tex> (begge endelige):
+            </p>
+            <TexBlock>{"\\bar{X}_n \\approx \\mathcal{N}\\!\\left(\\mu,\\, \\frac{\\sigma^2}{n}\\right) \\quad \\text{for stor } n"}</TexBlock>
+            <p className="text-muted-foreground">Ekvivalent formulert:</p>
+            <TexBlock>{"\\frac{\\bar{X}_n - \\mu}{\\sigma / \\sqrt{n}} \\xrightarrow{d} \\mathcal{N}(0, 1) \\quad \\text{når } n \\to \\infty"}</TexBlock>
 
-  X̄ₙ ≈ N(μ, σ²/n)            for stor n
+            <div className="font-semibold pt-2">Tommelfingerregel for <Tex>{"n"}</Tex>:</div>
+            <ul className="text-xs text-muted-foreground list-disc pl-5 space-y-0.5">
+              <li>Underliggende <Tex>{"\\approx"}</Tex> normal: <Tex>{"n \\geq 5"}</Tex></li>
+              <li>Underliggende symmetrisk: <Tex>{"n \\geq 15"}</Tex></li>
+              <li>Underliggende meget skjev: <Tex>{"n \\geq 30"}</Tex></li>
+              <li>TEK-1501 default: <Tex>{"n \\geq 30 \\Rightarrow"}</Tex> bruk normaltilnærming</li>
+            </ul>
 
-Ekvivalent formulert:
-  (X̄ₙ - μ) / (σ/√n)  →  N(0, 1)   når n → ∞
-
-Tommelfingerregel for n:
-  • Underliggende ≈ normal: n ≥ 5
-  • Underliggende symmetrisk: n ≥ 15
-  • Underliggende meget skjev: n ≥ 30
-  • TEK-1501 default antagelse: n ≥ 30 → bruk normaltilnærming
-
-Konsekvenser:
-  • Vi kan konstruere KI og hypotesetester med normaltabellen
-    SELV når den underliggende fordelingen ikke er normal.
-  • Mange estimatorer er asymptotisk normale.`}</pre>
+            <div className="font-semibold pt-2">Konsekvenser:</div>
+            <ul className="text-xs text-muted-foreground list-disc pl-5 space-y-0.5">
+              <li>Vi kan konstruere KI og hypotesetester med normaltabellen SELV når den underliggende fordelingen ikke er normal.</li>
+              <li>Mange estimatorer er asymptotisk normale.</li>
+            </ul>
           </div>
           <CltDemo />
         </section>
@@ -342,23 +351,16 @@ Konsekvenser:
           <h2 className="text-xl font-semibold mb-3">5. Eksamen-feller</h2>
           <div className="space-y-3 text-sm">
             <div className="rounded-lg border border-amber-500/30 bg-amber-500/5 p-4">
-              <strong>SE vs SD.</strong> Standardfeil er
-              <code className="text-xs">σ/√n</code> (usikkerheten i X̄), ikke
-              <code className="text-xs">σ</code> (utvalgets spredning). Den
-              første minker med n, den andre ikke.
+              <strong>SE vs SD.</strong> Standardfeil er <Tex>{"\\sigma / \\sqrt{n}"}</Tex> (usikkerheten i <Tex>{"\\bar{X}"}</Tex>), ikke <Tex>{"\\sigma"}</Tex> (utvalgets spredning). Den første minker med <Tex>{"n"}</Tex>, den andre ikke.
             </div>
             <div className="rounded-lg border border-amber-500/30 bg-amber-500/5 p-4">
-              <strong>CLT gjelder X̄, ikke X.</strong> Det er gjennomsnittet
-              som blir normalfordelt, ikke de enkelte observasjonene.
+              <strong>CLT gjelder <Tex>{"\\bar{X}"}</Tex>, ikke <Tex>{"X"}</Tex>.</strong> Det er gjennomsnittet som blir normalfordelt, ikke de enkelte observasjonene.
             </div>
             <div className="rounded-lg border border-amber-500/30 bg-amber-500/5 p-4">
-              <strong>Var(X + Y) ≠ Var(X) + Var(Y) generelt.</strong> Bare når
-              X og Y er ukorrelerte (Cov = 0). Med kovarians må du regne med
-              + 2Cov(X,Y).
+              <strong><Tex>{"\\mathrm{Var}(X + Y) \\neq \\mathrm{Var}(X) + \\mathrm{Var}(Y)"}</Tex> generelt.</strong> Bare når <Tex>{"X"}</Tex> og <Tex>{"Y"}</Tex> er ukorrelerte (<Tex>{"\\mathrm{Cov} = 0"}</Tex>). Med kovarians må du regne med <Tex>{"+ 2\\,\\mathrm{Cov}(X, Y)"}</Tex>.
             </div>
             <div className="rounded-lg border border-amber-500/30 bg-amber-500/5 p-4">
-              <strong>E[XY] ≠ E[X]E[Y] generelt.</strong> Bare når X og Y er
-              uavhengige.
+              <strong><Tex>{"E[XY] \\neq E[X]\\,E[Y]"}</Tex> generelt.</strong> Bare når <Tex>{"X"}</Tex> og <Tex>{"Y"}</Tex> er uavhengige.
             </div>
           </div>
         </section>
