@@ -2303,6 +2303,1767 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Hva er 802.1Q og hvorfor brukes VLAN?",
     answer: "802.1Q legger en 4-byte VLAN-tag i Ethernet-headeren med 12-bit VLAN-ID. Lar én fysisk switch håndtere flere logisk separerte nettverk uten å trenge flere kabler. Mellom switcher: trunk-port som sender taggede frames.",
   },
+
+  // ============= DTE-2602 — ML/AI (30 kort) =============
+  {
+    id: "c-dte2602-bias-varians-def",
+    category: "begrep",
+    topic: "DTE-2602",
+    question: "Hva er bias-varians-dekomposisjonen?",
+    answer:
+      "Forventet kvadratisk feil splittes i tre ledd: E[(ŷ-y)²] = Bias(ŷ)² + Var(ŷ) + σ². Bias = hvor systematisk modellen bommer. Varians = hvor ustabil modellen er på tvers av treningssett. σ² = irreduserbar støy.",
+    code: "E[(ŷ-y)²] = Bias² + Var + σ²",
+  },
+  {
+    id: "c-dte2602-overfit-symptom",
+    category: "begrep",
+    topic: "DTE-2602",
+    question: "Klassisk symptom på overfitting?",
+    answer:
+      "Stor gap mellom train- og test-feil — modellen gjør det nesten perfekt på treningsdata men dårlig på nye data. Høy varians. Fiks: regularisering, mer data, enklere modell.",
+  },
+  {
+    id: "c-dte2602-underfit-symptom",
+    category: "begrep",
+    topic: "DTE-2602",
+    question: "Klassisk symptom på underfitting?",
+    answer:
+      "Både train- og test-feil er høye og ligger nær hverandre. Høy bias. Fiks: mer fleksibel modell, flere features, mindre regularisering.",
+  },
+  {
+    id: "c-dte2602-ridge",
+    category: "begrep",
+    topic: "DTE-2602",
+    question: "Hva gjør Ridge-regulering (L2)?",
+    answer:
+      "Legger til α·Σβ² til tap-funksjonen. Skrumper alle koeffisienter mot 0 (men aldri helt). Stabiliserer løsningen ved multikollinearitet og motvirker overfitting.",
+    code: "L = MSE + α·Σ β_j²",
+  },
+  {
+    id: "c-dte2602-lasso",
+    category: "begrep",
+    topic: "DTE-2602",
+    question: "Hva gjør Lasso-regulering (L1)?",
+    answer:
+      "Legger til α·Σ|β| til tap-funksjonen. Skyver noen koeffisienter HELT til 0 — Lasso gjør automatisk feature selection. Nyttig når du har mange features og tror få er relevante.",
+    code: "L = MSE + α·Σ |β_j|",
+  },
+  {
+    id: "c-dte2602-ridge-vs-lasso",
+    category: "begrep",
+    topic: "DTE-2602",
+    question: "Når Ridge og når Lasso?",
+    answer:
+      "Ridge: korrelerte features (fordeler vekt jevnt), standardvalg. Lasso: mange features hvorav få er viktige (du vil ha sparse modell). Vet du ikke — bruk ElasticNet som blander begge.",
+  },
+  {
+    id: "c-dte2602-cv-kfold",
+    category: "begrep",
+    topic: "DTE-2602",
+    question: "Hva er k-fold cross-validation?",
+    answer:
+      "Del treningsdata i k like deler (folds). Tren k ganger: hver gang holdes én fold ut som val-set, resten trenes på. Snittet av k val-scores gir mer robust estimat enn ett enkelt val-set. k=5 eller 10 er vanlig.",
+    code: "scores = cross_val_score(model, X, y, cv=5)",
+  },
+  {
+    id: "c-dte2602-stratified",
+    category: "begrep",
+    topic: "DTE-2602",
+    question: "Hva er stratifisert split, og når trenger du det?",
+    answer:
+      "Vanlig train_test_split kan ved uflaks gi 0 % minoritetsklasse i test-settet. Stratify=y sikrer at klassebalansen blir lik i begge sett. Bruk alltid for klassifikasjon, og særlig ved ubalansert data.",
+    code: "train_test_split(X, y, stratify=y, test_size=0.2)",
+  },
+  {
+    id: "c-dte2602-metric-precision",
+    category: "begrep",
+    topic: "DTE-2602",
+    question: "Når er precision viktigere enn recall?",
+    answer:
+      "Når en false positive er dyrere enn en false negative. Eksempler: spam-filter (bedre å la noe spam slippe gjennom enn å droppe en viktig epost), kreditt-godkjenning, rekommendasjons-systemer.",
+  },
+  {
+    id: "c-dte2602-metric-recall",
+    category: "begrep",
+    topic: "DTE-2602",
+    question: "Når er recall viktigere enn precision?",
+    answer:
+      "Når en false negative er dyrere enn en false positive. Eksempler: kreft-screening, fraud-deteksjon, sikkerhets-alarmer — å miste en ekte positiv har høye kostnader.",
+  },
+  {
+    id: "c-dte2602-f1",
+    category: "begrep",
+    topic: "DTE-2602",
+    question: "Hva er F1-score, og hvorfor harmonisk snitt?",
+    answer:
+      "F1 = 2·P·R/(P+R). Harmonisk snitt straffer ekstreme verdier hardere enn aritmetisk: hvis P=1.0 og R=0.0 blir F1=0, ikke 0.5. Nyttig når du vil ha balansert presisjon og recall.",
+    code: "F1 = 2 * precision * recall / (precision + recall)",
+  },
+  {
+    id: "c-dte2602-roc-auc",
+    category: "begrep",
+    topic: "DTE-2602",
+    question: "Hva måler ROC-AUC?",
+    answer:
+      "Areal under ROC-kurven (TPR mot FPR over alle terskler). AUC=0.5 er random, 1.0 er perfekt. Måler modellens evne til å RANGERE positiver foran negativer — terskel-uavhengig.",
+  },
+  {
+    id: "c-dte2602-leak",
+    category: "begrep",
+    topic: "DTE-2602",
+    question: "Hva er datalekkasje (data leakage)?",
+    answer:
+      "Når informasjon fra test-settet sniker seg inn i trening, så test-scoren blir kunstig høy. Klassisk feil: skalere/imputere på hele X før train/test-split. Løsning: gjør all preprocessing inne i en sklearn Pipeline.",
+  },
+  {
+    id: "c-dte2602-hyperparam-vs-param",
+    category: "begrep",
+    topic: "DTE-2602",
+    question: "Forskjell på hyperparameter og parameter?",
+    answer:
+      "Parametere lærer modellen av data under .fit() (f.eks. koeffisientene β i regresjon). Hyperparametere setter DU før trening og tunes med val-set/CV (f.eks. max_depth, C, alpha, k i kNN).",
+  },
+  {
+    id: "c-dte2602-gridsearch",
+    category: "begrep",
+    topic: "DTE-2602",
+    question: "Hva gjør GridSearchCV?",
+    answer:
+      "Prøver alle kombinasjoner av hyperparametre du oppgir og kjører k-fold CV på hver. Returnerer best_estimator_, best_params_, best_score_. Refit-er modellen på hele treningsdata med beste params.",
+    code: "GridSearchCV(pipe, {'clf__C': [0.1, 1, 10]}, cv=5)",
+  },
+  {
+    id: "c-dte2602-train-val-test",
+    category: "begrep",
+    topic: "DTE-2602",
+    question: "Hvorfor tre sett (train/val/test), ikke to?",
+    answer:
+      "Train: tren modellen. Val: velg hyperparametre (eller bruk CV inni train). Test: ÉN gang helt på slutten, for å estimere ekte generalisering. Bruker du test til tuning lekker du info — modellen velges biased mot test-settet.",
+  },
+  {
+    id: "c-dte2602-pipeline",
+    category: "begrep",
+    topic: "DTE-2602",
+    question: "Hvorfor pakke preprocessing i Pipeline?",
+    answer:
+      "Tre grunner: (1) hindrer datalekkasje — fit kjøres bare på train. (2) GridSearchCV kan tune alle steg samtidig. (3) Ett objekt å lagre/deploye — joblib.dump(pipe, 'model.pkl').",
+    code: "Pipeline([('sc', StandardScaler()), ('lr', LogisticRegression())])",
+  },
+  {
+    id: "c-dte2602-rf",
+    category: "begrep",
+    topic: "DTE-2602",
+    question: "Hvorfor er Random Forest mer robust enn ett enkelt tre?",
+    answer:
+      "Bootstrap-sampling gir hver tre litt forskjellig treningsdata, og random feature subset i hver split dekorrelerer trærne. Når 100+ trær stemmer reduseres varians dramatisk — uten å øke bias merkbart.",
+  },
+  {
+    id: "c-dte2602-gini",
+    category: "begrep",
+    topic: "DTE-2602",
+    question: "Hva er Gini-impurity?",
+    answer:
+      "G = 1 - Σp_i². Mål for hvor 'urent' (blandet) en node er. G=0 = bare én klasse. G=0.5 (binær) = perfekt blandet. Treet velger split som minimerer vektet sum av Gini i barnenodene.",
+  },
+  {
+    id: "c-dte2602-class-weight",
+    category: "begrep",
+    topic: "DTE-2602",
+    question: "Hva gjør class_weight='balanced' i sklearn?",
+    answer:
+      "Justerer vekten på hver klasse omvendt proporsjonalt med frekvens. Minoritetsklassen får større innflytelse på tap-funksjonen. Førstevalget for ubalansert data — enklere enn SMOTE.",
+  },
+  {
+    id: "c-dte2602-standardscaler",
+    category: "begrep",
+    topic: "DTE-2602",
+    question: "Hva gjør StandardScaler?",
+    answer:
+      "Per kolonne: trekker fra mean og deler på std, slik at hver feature får mean=0, std=1. Krev for kNN, k-means, SVM (RBF), PCA, og for å akselerere konvergens i gradient-baserte modeller.",
+    code: "x_scaled = (x - mean) / std",
+  },
+  {
+    id: "c-dte2602-onehot",
+    category: "begrep",
+    topic: "DTE-2602",
+    question: "Når og hvordan bruke OneHotEncoder?",
+    answer:
+      "Bruk for nominelle kategoriske kolonner (ingen iboende rekkefølge, f.eks. 'by', 'farge'). Returner én kolonne per kategori med 0/1. handle_unknown='ignore' for å unngå krasj på nye kategorier i test.",
+    code: "OneHotEncoder(handle_unknown='ignore', sparse_output=False)",
+  },
+  {
+    id: "c-dte2602-learning-curve",
+    category: "begrep",
+    topic: "DTE-2602",
+    question: "Hva forteller en læringskurve deg?",
+    answer:
+      "Plot av train- og val-feil som funksjon av treningssett-størrelse. Begge høyt og nær hverandre → bias-problem (mer data hjelper ikke). Train lav + val høy med stort gap → varians-problem (mer data hjelper).",
+  },
+  {
+    id: "c-dte2602-feature-importance",
+    category: "begrep",
+    topic: "DTE-2602",
+    question: "Hvordan tolke feature_importances_ i Random Forest?",
+    answer:
+      "Verdi mellom 0 og 1 per feature, summerer til 1. Måler hvor mye splits på den featuren reduserer Gini i snitt. Biased mot features med høy kardinalitet — bruk permutation_importance for et mer pålitelig mål.",
+  },
+  {
+    id: "c-dte2602-rmse-vs-mae",
+    category: "begrep",
+    topic: "DTE-2602",
+    question: "Forskjell på RMSE og MAE?",
+    answer:
+      "RMSE = √(snitt(ŷ-y)²) — straffer store feil hardere (kvadrert). MAE = snitt(|ŷ-y|) — robust mot outliers, alle feil teller likt. Velg RMSE når store feil er ekstra ille (f.eks. prising av sjelden vare), MAE ellers.",
+  },
+  {
+    id: "c-dte2602-r2",
+    category: "begrep",
+    topic: "DTE-2602",
+    question: "Hva betyr R²?",
+    answer:
+      "Andel varians forklart av modellen. R²=1 perfekt, R²=0 like dårlig som gjennomsnittsmodell, R²<0 verre enn gjennomsnitt. Ikke tolkn det som 'prosent riktig' — det er en relativ score.",
+  },
+  {
+    id: "c-dte2602-knn-k",
+    category: "begrep",
+    topic: "DTE-2602",
+    question: "Hvordan velge k i kNN?",
+    answer:
+      "Liten k → høy varians, sensitive til støy. Stor k → høy bias, glatter for mye. Bruk CV: test k ∈ {1, 3, 5, 7, ..., 25} og velg den med best val-score. Skalér features først — kNN er avstandsbasert.",
+  },
+  {
+    id: "c-dte2602-confusion-matrix",
+    category: "begrep",
+    topic: "DTE-2602",
+    question: "Hvordan leser du sklearn sin confusion_matrix?",
+    answer:
+      "Rader = faktiske klasser, kolonner = predikerte. cm[0,0]=TN, cm[0,1]=FP, cm[1,0]=FN, cm[1,1]=TP. Diagonal = riktige, off-diagonal = feil. Visualiser med ConfusionMatrixDisplay for tydeligere bilde.",
+  },
+  {
+    id: "c-dte2602-imbalance-acc-trap",
+    category: "begrep",
+    topic: "DTE-2602",
+    question: "Hvorfor er accuracy farlig på ubalansert data?",
+    answer:
+      "Med 99 % klasse 0 får en modell som ALLTID sier 0 hele 99 % accuracy — og er ubrukelig. Bruk F1, recall, balanced_accuracy, eller AUC for å fange dette. Se også på confusion_matrix per klasse.",
+  },
+  {
+    id: "c-dte2602-pipeline-cv-leak",
+    category: "begrep",
+    topic: "DTE-2602",
+    question: "Hvorfor må preprocessing være INNI Pipeline når du bruker CV?",
+    answer:
+      "cross_val_score lager nye train/val-folds i hver iterasjon. Hvis du skalerte på hele X først, har scaler-en sett val-folden under fit — datalekkasje. Med Pipeline blir scaler fit_transform-et per fold, ærlig estimat.",
+  },
+
+  // ===== DTE-2602 PORTEFØLJE — AI-historie, etikk, filosofi, mappe-mal =====
+  {
+    id: "c-dte2602p-ai-fodsel",
+    category: "begrep",
+    topic: "AI-historie",
+    question: "Hva markerte AI sin fødsel som fagfelt?",
+    answer:
+      "Dartmouth-konferansen i 1956. John McCarthy myntet uttrykket «artificial intelligence». Pionerene (McCarthy, Minsky, Shannon, Rochester) samlet seg for å definere feltet.",
+  },
+  {
+    id: "c-dte2602p-ai-vintre",
+    category: "begrep",
+    topic: "AI-historie",
+    question: "Hva var AI-vintrene?",
+    answer:
+      "Perioder med lite finansiering og sviktende forventninger. Første vinter (1970-tallet) etter Minsky/Papert viste at perceptron ikke kunne lære XOR. Andre vinter (1990-tallet) — expert systems-bølgen kollapset. Dagens DL-bølge er drevet av store data + GPU + bedre optimering.",
+  },
+  {
+    id: "c-dte2602p-turing-test",
+    category: "begrep",
+    topic: "AI-historie",
+    question: "Hva er Turing-testen?",
+    answer:
+      "Foreslått av Alan Turing (1950): en maskin 'tenker' hvis en menneskelig dommer ikke kan skille den fra et menneske i en tekstbasert samtale. Operasjonell definisjon. Kritisk respons: Searles Kinarom-argument (1980) hevder at å bestå ikke betyr at maskinen 'forstår'.",
+  },
+  {
+    id: "c-dte2602p-bias-historisk",
+    category: "begrep",
+    topic: "AI-etikk",
+    question: "Konkret eksempel på historisk bias i ML?",
+    answer:
+      "Amazon CV-screening (2018) — trent på 10 år med CV-er fra mest menn. Modellen lærte å straffe ordet 'kvinne-' (f.eks. «kvinne-fotball-lag»). Amazon trakk systemet. 'Objektiv' modell videreførte historisk diskriminering.",
+  },
+  {
+    id: "c-dte2602p-bias-sampling",
+    category: "begrep",
+    topic: "AI-etikk",
+    question: "Hva viste Gender Shades-studien?",
+    answer:
+      "Joy Buolamwini (MIT, 2018) testet IBM/Microsoft/Face++ ansiktsgjenkjenning. Feilrate < 1% på lyse menn, opp til 35% på mørke kvinner. Skjeve treningsdata = skjev ytelse — klassisk sampling-bias.",
+  },
+  {
+    id: "c-dte2602p-bias-compas",
+    category: "begrep",
+    topic: "AI-etikk",
+    question: "Hva var COMPAS-skandalen?",
+    answer:
+      "COMPAS — kommersiell risiko-score for tilbakefall i USAs rettsvesen. ProPublica (2016) viste at modellen markerte svarte tiltalte som «høyrisiko» dobbelt så ofte som hvite. Rase var ikke en feature, men postnummer + anholdelses-historikk fungerte som proxies — eksempel på måle-bias.",
+  },
+  {
+    id: "c-dte2602p-bias-uk-karakter",
+    category: "begrep",
+    topic: "AI-etikk",
+    question: "Hva var UK-karakterskandalen i 2020?",
+    answer:
+      "Under pandemien ble eksamen avlyst. Algoritmen satte karakterer basert delvis på skolens historikk → elever fra 'svake' skoler ble systematisk underkarakter, uavhengig av personlig prestasjon. Eksempel på aggregerings-bias: én modell anvendt på undergrupper med ulik underliggende distribusjon.",
+  },
+  {
+    id: "c-dte2602p-gdpr-art22",
+    category: "sikkerhet",
+    topic: "AI-etikk",
+    question: "GDPR Art. 22 — hva gir det?",
+    answer:
+      "Ved automatiserte beslutninger med betydelig påvirkning (lån, ansettelse, forsikring): rett til menneskelig vurdering + rett til forklaring. Driver behovet for tolkbare modeller eller XAI-verktøy (SHAP/LIME).",
+  },
+  {
+    id: "c-dte2602p-gdpr-prinsipper",
+    category: "sikkerhet",
+    topic: "AI-etikk",
+    question: "GDPR-prinsipper relevant for ML?",
+    answer:
+      "Dataminimering (argument for feature selection), formålsbegrensning (data samlet for X kan ikke uten videre brukes for Y), lagringsbegrensning (slett etter formål), rett til forklaring (Art. 22), og rett til å bli glemt (utfordring — 'machine unlearning' er aktivt forskningsfelt).",
+  },
+  {
+    id: "c-dte2602p-xai-tolkbar",
+    category: "begrep",
+    topic: "AI-etikk",
+    question: "Inherent tolkbar vs post-hoc forklart?",
+    answer:
+      "Inherent tolkbar (white-box): du leser modellen direkte — lineær/logistisk regresjon (vektene), decision trees (grener), regelsystemer. Post-hoc: black-box + verktøy som SHAP, LIME, feature_importance, partial dependence plots. Trade-off: tolkbarhet vs maksimal nøyaktighet.",
+  },
+  {
+    id: "c-dte2602p-kinarom",
+    category: "begrep",
+    topic: "AI-etikk",
+    question: "Searles Kinarom-argument — hva sier det?",
+    answer:
+      "En person i et rom uten kinesisk-kunnskap følger en oppslagstavle og svarer korrekt på kinesiske tegn. Utenfor virker det som forståelse, men personen 'forstår' ikke. Konklusjon (Searle): symbolmanipulering ≠ forståelse. Argument mot Sterk AI. Motsvar: 'systemet svar' — det er HELE systemet som forstår.",
+  },
+  {
+    id: "c-dte2602p-svak-sterk-ai",
+    category: "begrep",
+    topic: "AI-etikk",
+    question: "Svak AI vs Sterk AI?",
+    answer:
+      "Svak AI: modell som simulerer intelligens på begrenset domene (sjakk, oversettelse, bilde-klassifisering). Det vi har i dag. Sterk AI: hypotetisk modell som FAKTISK er bevisst og har generell forståelse. Eksisterer ikke. Kinarom-argumentet er rettet mot Sterk AI.",
+  },
+  {
+    id: "c-dte2602p-eu-ai-act-pyramide",
+    category: "sikkerhet",
+    topic: "AI-etikk",
+    question: "EU AI Act-pyramiden — fire risikonivå?",
+    answer:
+      "(1) Uakseptabel — FORBUDT (social scoring, sårbar manipulasjon). (2) Høy risiko — strenge krav (kritisk infra, helse, utdanning, jobb, justis). (3) Limited risk — merking (chatbots, deepfakes). (4) Minimal risk — ingen krav (spam-filter, anbefalingssystem).",
+  },
+  {
+    id: "c-dte2602p-eu-7-prinsipper",
+    category: "sikkerhet",
+    topic: "AI-etikk",
+    question: "EUs 7 etiske prinsipper for pålitelig AI?",
+    answer:
+      "Menneskelig tilsyn, teknisk robusthet + sikkerhet, personvern + datastyring, transparens, mangfold + ikke-diskriminering, samfunns- + miljønytte, og ansvarlighet. Ligger til grunn for EU AI Act og er et nyttig rammeverk for etisk drøfting i mappe-rapporten.",
+  },
+  {
+    id: "c-dte2602p-fairness-metrikker",
+    category: "begrep",
+    topic: "AI-etikk",
+    question: "Tre fairness-metrikker — og det matematiske dilemmaet",
+    answer:
+      "Demographic parity (lik prediksjons-rate per gruppe), equalized odds (lik TPR + FPR per gruppe), predictive parity (lik precision per gruppe). Et matematisk teorem (Chouldechova 2017) viser at de tre IKKE kan tilfredsstilles samtidig hvis baseline-ratene varierer per gruppe — du må velge.",
+  },
+  {
+    id: "c-dte2602p-mappe-struktur",
+    category: "praktisk",
+    topic: "ML-prosjektflyt",
+    question: "Standard kapittel-struktur i en ML-mappe-rapport?",
+    answer:
+      "1. Sammendrag, 2. Innledning (problemstilling + suksesskriterium), 3. Data (kilde + størrelse + begrensninger), 4. EDA (3-5 figurer + tolkning), 5. Metode (algoritmer + hyperparam-søk), 6. Resultater (metrikker + confusion matrix), 7. Diskusjon (begrensninger + etikk), 8. Konklusjon, 9. Referanser.",
+  },
+  {
+    id: "c-dte2602p-mappe-kode-droftning",
+    category: "praktisk",
+    topic: "ML-prosjektflyt",
+    question: "Hvor mye kode hører til i rapporten kontra notebook?",
+    answer:
+      "Rapport (10 sider): 1-2 sider kode-snippets som ILLUSTRERER poenger — ikke hele filer. Resten er tabeller, figurer, drøfting. Notebook: 500+ linjer hvis nødvendig — der bor den kjørbare koden.",
+  },
+  {
+    id: "c-dte2602p-mappe-reproduserbarhet",
+    category: "praktisk",
+    topic: "ML-prosjektflyt",
+    question: "Tre ting som gir reproducerbarhet i en mappe-oppgave?",
+    answer:
+      "(1) random_state satt OVERALT (train_test_split, modeller, cv-objekter). (2) requirements.txt med eksakte versjoner. (3) Relative stier (pathlib) — ikke /Users/ola/data/. Test på ren venv før innlevering!",
+  },
+  {
+    id: "c-dte2602p-mappe-feller",
+    category: "praktisk",
+    topic: "ML-prosjektflyt",
+    question: "Tre vanlige sensor-feller i en ML-mappe?",
+    answer:
+      "(1) «Funker på min maskin» — ingen requirements.txt, hardkodet sti. (2) Manglende random_state — sensor får andre tall. (3) Hyperparametere oppgis ikke — rapport sier 'tuned' men nevner ikke hvilke verdier som vant.",
+  },
+  {
+    id: "c-dte2602p-llm-opphavsrett",
+    category: "begrep",
+    topic: "AI-etikk",
+    question: "Hva er LLM-er + opphavsrett-debatten?",
+    answer:
+      "Store språkmodeller (GPT, Claude) trent på enorm web-tekst, ofte uten eksplisitt samtykke. NYT saksøker OpenAI (2023). Uavklart juss: er 'trening' fair use (transformative) eller ulovlig reproduksjon? Diskusjoner om kompensasjon og lisensiering pågår — viktig case for mappe-drøfting.",
+  },
+
+  // ============= TEK-1501: STATISTIKK =============
+  // Deskriptiv statistikk
+  {
+    id: "c-tek1-mean",
+    category: "statistikk",
+    topic: "Deskriptiv statistikk",
+    question: "Hva er gjennomsnitt (mean)?",
+    answer:
+      "Summen av alle verdier delt på antall. Formel: x̄ = (1/n) Σ xᵢ. Bruker all informasjon men er sårbar for outliers — én ekstremverdi kan flytte mean kraftig.",
+  },
+  {
+    id: "c-tek1-median",
+    category: "statistikk",
+    topic: "Deskriptiv statistikk",
+    question: "Hva er median, og når foretrekkes den fremfor mean?",
+    answer:
+      "Median er den midtre verdien i sortert datasett (eller snittet av de to midtre hvis n er partall). Foretrekkes ved skjeve fordelinger eller når det er outliers, fordi median er robust — den påvirkes ikke av ekstreme verdier.",
+  },
+  {
+    id: "c-tek1-modus",
+    category: "statistikk",
+    topic: "Deskriptiv statistikk",
+    question: "Hva er modus, og når brukes den?",
+    answer:
+      "Verdien som forekommer oftest i datasettet. Eneste sentralmål som funker for kategoriske data (farger, merker). Kan være ikke-unik eller ikke-eksisterende i kontinuerlige data.",
+  },
+  {
+    id: "c-tek1-variance",
+    category: "statistikk",
+    topic: "Deskriptiv statistikk",
+    question: "Formel for stikkprøve-varians s²?",
+    answer:
+      "s² = (1/(n−1)) · Σ (xᵢ − x̄)². Vi deler på n−1 (ikke n) — Bessel-korreksjonen — for å få en forventningsrett estimator for σ². I numpy: np.var(x, ddof=1).",
+  },
+  {
+    id: "c-tek1-std",
+    category: "statistikk",
+    topic: "Deskriptiv statistikk",
+    question: "Hva er standardavvik, og hvorfor brukes det?",
+    answer:
+      "s = √s² — kvadratroten av varians. Foretrekkes fremfor varians fordi det har samme enhet som dataene (m, sek, kr), så det er lettere å tolke direkte.",
+  },
+  {
+    id: "c-tek1-iqr",
+    category: "statistikk",
+    topic: "Deskriptiv statistikk",
+    question: "Hva er IQR, og hva forteller det?",
+    answer:
+      "IQR (Interquartile Range) = Q3 − Q1. Spredningen i de midtre 50 % av dataene. Robust mot outliers — i motsetning til standardavvik. Grunnlaget for boksplottets boks.",
+  },
+  {
+    id: "c-tek1-quartiles",
+    category: "statistikk",
+    topic: "Deskriptiv statistikk",
+    question: "Hva er kvartiler (Q1, Q2, Q3)?",
+    answer:
+      "Verdier som deler datasettet i fire like deler. Q1 = 25-persentilen (25 % av data er ≤ Q1). Q2 = median (50 %). Q3 = 75-persentilen. Sammen med min og max danner de 5-tallsoppsummeringen som boksplott bygges på.",
+  },
+  {
+    id: "c-tek1-skewness",
+    category: "statistikk",
+    topic: "Deskriptiv statistikk",
+    question: "Hva er en skjev (skewed) fordeling?",
+    answer:
+      "En fordeling som IKKE er symmetrisk. Høyrehale-skjev (positiv): lang hale mot høyre, mean > median (eks: inntekt). Venstrehale-skjev (negativ): lang hale mot venstre, mean < median (eks: eksamen-resultater for lett oppgave).",
+  },
+  {
+    id: "c-tek1-outlier",
+    category: "statistikk",
+    topic: "Deskriptiv statistikk",
+    question: "Hvordan defineres en outlier (1.5·IQR-regelen)?",
+    answer:
+      "En observasjon er outlier hvis den er under Q1 − 1.5·IQR eller over Q3 + 1.5·IQR. Tukey-regelen — også grensen for whiskers i boksplott. Verdier utenfor markeres som punkter.",
+  },
+  {
+    id: "c-tek1-histogram-bins",
+    category: "statistikk",
+    topic: "Deskriptiv statistikk",
+    question: "Hvor mange bins bør et histogram ha?",
+    answer:
+      "Tommelfingerregel: bins ≈ √n eller Sturges' formel ⌈log₂ n + 1⌉. For få bins skjuler struktur, for mange viser bare støy. Eksperimenter — målet er å se den underliggende formen.",
+  },
+
+  // Sannsynlighet
+  {
+    id: "c-tek1-axioms",
+    category: "statistikk",
+    topic: "Sannsynlighet",
+    question: "Kolmogorovs tre sannsynlighets-aksiomer?",
+    answer:
+      "(1) 0 ≤ P(A) ≤ 1. (2) P(Ω) = 1. (3) P(A ∪ B) = P(A) + P(B) hvis A ∩ B = ∅. All sannsynlighetsteori bygger fra disse tre reglene.",
+  },
+  {
+    id: "c-tek1-complement",
+    category: "statistikk",
+    topic: "Sannsynlighet",
+    question: "Komplementregelen — formel og bruk?",
+    answer:
+      "P(Aᶜ) = 1 − P(A). Spesielt nyttig for 'minst én'-spørsmål: P(minst én feil i n forsøk) = 1 − P(ingen feil) = 1 − (1−p)ⁿ. Sparer kompliserte summer.",
+  },
+  {
+    id: "c-tek1-inklusjon",
+    category: "statistikk",
+    topic: "Sannsynlighet",
+    question: "Inklusjon-eksklusjon for P(A ∪ B)?",
+    answer:
+      "P(A ∪ B) = P(A) + P(B) − P(A ∩ B). Vi må trekke fra snittet, ellers dobbelt-teller vi overlappet. Hvis A og B er disjunkte er P(A ∩ B) = 0 og formelen forenkles.",
+  },
+  {
+    id: "c-tek1-conditional",
+    category: "statistikk",
+    topic: "Sannsynlighet",
+    question: "Definisjon av betinget sannsynlighet P(A | B)?",
+    answer:
+      "P(A | B) = P(A ∩ B) / P(B), forutsatt P(B) > 0. Tolkning: 'sannsynligheten for A, gitt at B har skjedd'. Snitt over evidence.",
+  },
+  {
+    id: "c-tek1-independence",
+    category: "statistikk",
+    topic: "Sannsynlighet",
+    question: "Når er A og B uavhengige?",
+    answer:
+      "Når P(A ∩ B) = P(A) · P(B). Ekvivalent: P(A | B) = P(A). NB: uavhengig er IKKE det samme som disjunkt — disjunkte hendelser med positiv sannsynlighet er nødvendigvis avhengige.",
+  },
+  {
+    id: "c-tek1-bayes",
+    category: "statistikk",
+    topic: "Sannsynlighet",
+    question: "Bayes' teorem?",
+    answer:
+      "P(A | B) = P(B | A) · P(A) / P(B). Snur betingingen: gitt P(B | A), kan vi finne P(A | B). Bruk for diagnostiske tester, kvalitetskontroll, oppdaterte tro etter observasjon.",
+  },
+  {
+    id: "c-tek1-total-prob",
+    category: "statistikk",
+    topic: "Sannsynlighet",
+    question: "Total sannsynlighet (med partisjon)?",
+    answer:
+      "Hvis B₁, ..., Bₙ er en partisjon av Ω: P(A) = Σᵢ P(A | Bᵢ) · P(Bᵢ). Brukes til å beregne P(B) i nevneren av Bayes-formelen — eks: P(test+) = P(test+|syk)·P(syk) + P(test+|frisk)·P(frisk).",
+  },
+  {
+    id: "c-tek1-permutation",
+    category: "statistikk",
+    topic: "Kombinatorikk",
+    question: "Permutasjon-formel P(n, k)?",
+    answer:
+      "P(n, k) = n! / (n−k)! — antall måter å velge k av n der REKKEFØLGEN teller. Eks: 8 løpere, antall ulike topp-3-rekkefølger = 8·7·6 = 336.",
+  },
+  {
+    id: "c-tek1-combination",
+    category: "statistikk",
+    topic: "Kombinatorikk",
+    question: "Kombinasjon-formel C(n, k) / 'n velg k'?",
+    answer:
+      "C(n, k) = n! / (k!(n−k)!) — antall måter å velge k av n der rekkefølgen IKKE teller. Eks: 8 personer, velg 3 til en gruppe = C(8,3) = 56.",
+  },
+  {
+    id: "c-tek1-perm-vs-comb",
+    category: "statistikk",
+    topic: "Kombinatorikk",
+    question: "Permutasjon eller kombinasjon — hvordan velge?",
+    answer:
+      "Spør: 'spiller rekkefølgen rolle?'. Hvis JA (pall, kode, rangering) → permutasjon P(n,k). Hvis NEI (komité, utvalg, lottokupong) → kombinasjon C(n,k).",
+  },
+
+  // Fordelinger
+  {
+    id: "c-tek1-rv",
+    category: "statistikk",
+    topic: "Fordelinger",
+    question: "Hva er en stokastisk variabel?",
+    answer:
+      "En funksjon X: Ω → ℝ som tilordner et tall til hvert utfall. Diskret (tellbart antall verdier) eller kontinuerlig (intervall i ℝ). Beskrives av PMF (diskret) eller PDF (kontinuerlig).",
+  },
+  {
+    id: "c-tek1-expected",
+    category: "statistikk",
+    topic: "Fordelinger",
+    question: "Forventning E[X] — formel?",
+    answer:
+      "Diskret: E[X] = Σ x · p(x). Kontinuerlig: E[X] = ∫ x · f(x) dx. Lineær: E[aX + b] = aE[X] + b, E[X + Y] = E[X] + E[Y] (alltid).",
+  },
+  {
+    id: "c-tek1-variance-rv",
+    category: "statistikk",
+    topic: "Fordelinger",
+    question: "Var(X) — formel og praktisk versjon?",
+    answer:
+      "Var(X) = E[(X − μ)²] = E[X²] − (E[X])². Praktisk: Var(aX + b) = a²·Var(X). For uavhengige X og Y: Var(X + Y) = Var(X) + Var(Y).",
+  },
+  {
+    id: "c-tek1-bernoulli",
+    category: "statistikk",
+    topic: "Fordelinger",
+    question: "Bernoulli(p) — kjernefakta?",
+    answer:
+      "Ett forsøk, to utfall: suksess (p) eller fiasko (1−p). E[X] = p, Var(X) = p(1−p). Byggesteinen for binomisk fordeling.",
+  },
+  {
+    id: "c-tek1-binomial",
+    category: "statistikk",
+    topic: "Fordelinger",
+    question: "Binomisk B(n, p) — PMF, E, Var?",
+    answer:
+      "P(X = k) = C(n,k) · pᵏ · (1−p)ⁿ⁻ᵏ. E[X] = np, Var(X) = np(1−p). Brukes for antall suksesser i n uavhengige forsøk med samme p.",
+  },
+  {
+    id: "c-tek1-hypergeom",
+    category: "statistikk",
+    topic: "Fordelinger",
+    question: "Hypergeometrisk vs. binomisk?",
+    answer:
+      "Hypergeometrisk: trekninger UTEN tilbakelegging (P endres for hvert trekk). Binomisk: trekninger MED tilbakelegging eller fra stor populasjon (P konstant). For store N er hypergeometrisk ≈ binomisk.",
+  },
+  {
+    id: "c-tek1-poisson",
+    category: "statistikk",
+    topic: "Fordelinger",
+    question: "Poisson(λ) — PMF og kjernefakta?",
+    answer:
+      "P(X = k) = e^(−λ) · λᵏ / k!. E[X] = Var(X) = λ. Brukes for antall sjeldne hendelser i fast intervall (kundeankomster, defekter per areal).",
+  },
+  {
+    id: "c-tek1-poi-approx-bin",
+    category: "statistikk",
+    topic: "Fordelinger",
+    question: "Når kan Poisson tilnærme binomisk?",
+    answer:
+      "Når n er stor (≥ 30) og p er liten (≤ 0.1), slik at np ≤ 10. Da gjelder B(n, p) ≈ Poi(np). Tilnærmingen er kraftig fordi den krever bare ett parameter (λ) i stedet for to (n, p).",
+  },
+  {
+    id: "c-tek1-uniform",
+    category: "statistikk",
+    topic: "Fordelinger",
+    question: "Uniform U(a, b) — PDF, E, Var?",
+    answer:
+      "f(x) = 1/(b−a) for a ≤ x ≤ b. E[X] = (a+b)/2, Var(X) = (b−a)²/12. Konstant tetthet over intervallet.",
+  },
+  {
+    id: "c-tek1-exp",
+    category: "statistikk",
+    topic: "Fordelinger",
+    question: "Eksponential Exp(λ) — PDF, E, Var, memoryless?",
+    answer:
+      "f(x) = λ e^(−λx) for x ≥ 0. E[X] = 1/λ, Var(X) = 1/λ². Memoryless: P(X > s+t | X > s) = P(X > t). Brukes for tid mellom Poisson-hendelser, levetid uten aldring.",
+  },
+  {
+    id: "c-tek1-normal",
+    category: "statistikk",
+    topic: "Fordelinger",
+    question: "Normal N(μ, σ²) — egenskaper?",
+    answer:
+      "Klokkeformet, symmetrisk om μ. E[X] = μ, Var(X) = σ². 68/95/99.7-regel: 68 % innen ±1σ, 95 % innen ±2σ (egentlig ±1.96σ), 99.7 % innen ±3σ. Default-modell for målestøy.",
+  },
+  {
+    id: "c-tek1-standardize",
+    category: "statistikk",
+    topic: "Fordelinger",
+    question: "Standardisering — hvordan og hvorfor?",
+    answer:
+      "Z = (X − μ)/σ ~ N(0,1) når X ~ N(μ, σ²). Hvorfor: med Z kan vi slå opp i én tabell (standardnormaltabellen) uavhengig av μ og σ. P(X ≤ x) = Φ((x−μ)/σ).",
+  },
+  {
+    id: "c-tek1-clt",
+    category: "statistikk",
+    topic: "Fordelinger",
+    question: "Sentralgrenseteoremet (CLT) — hva sier det?",
+    answer:
+      "For i.i.d. variabler med E = μ og Var = σ²: X̄ = (1/n) Σ Xᵢ ~ N(μ, σ²/n) tilnærmet for stort n (typisk n ≥ 30). Uavhengig av den underliggende fordelingens form. Grunnlaget for inferens.",
+  },
+  {
+    id: "c-tek1-chi2",
+    category: "statistikk",
+    topic: "Fordelinger",
+    question: "Kji-kvadrat χ²(k) — hva er det?",
+    answer:
+      "Sum av k uavhengige standardnormaler kvadrert: X = Z₁² + ... + Zₖ². E = k, Var = 2k. Brukes til varians-tester og kji-kvadrat-test for uavhengighet/tilpasning.",
+  },
+  {
+    id: "c-tek1-t-dist",
+    category: "statistikk",
+    topic: "Fordelinger",
+    question: "Student-t — hvorfor og når?",
+    answer:
+      "T = (X̄ − μ) / (s/√n) ~ tₙ₋₁. Brukes når σ er ukjent og må estimeres med s. Likner normalfordelingen men har tyngre haler. For n > 30 er tₙ₋₁ ≈ N(0,1).",
+  },
+
+  // Inferens
+  {
+    id: "c-tek1-estimator",
+    category: "statistikk",
+    topic: "Inferens",
+    question: "Forventningsrett (unbiased) estimator?",
+    answer:
+      "E[θ̂] = θ — estimatoren treffer parameteren I SNITT (ikke nødvendigvis i hver enkelt prøve). x̄ er unbiased for μ. s² (med n−1 i nevner) er unbiased for σ².",
+  },
+  {
+    id: "c-tek1-ci-mu-known",
+    category: "statistikk",
+    topic: "Inferens",
+    question: "95 % CI for μ når σ er kjent — formel?",
+    answer:
+      "x̄ ± 1.96 · σ/√n. Bruk z-kritisk (1.96 for 95 %). For 90 %: z = 1.645. For 99 %: z = 2.576.",
+  },
+  {
+    id: "c-tek1-ci-mu-unknown",
+    category: "statistikk",
+    topic: "Inferens",
+    question: "95 % CI for μ når σ er ukjent — formel?",
+    answer:
+      "x̄ ± t_(α/2, n−1) · s/√n. Bruk t-kritisk med n−1 frihetsgrader. For n = 12: t_0.025, 11 = 2.201.",
+  },
+  {
+    id: "c-tek1-ci-interp",
+    category: "statistikk",
+    topic: "Inferens",
+    question: "Korrekt tolkning av 95 % CI?",
+    answer:
+      "Hvis vi gjentok eksperimentet mange ganger og konstruerte CI hver gang, ville 95 % av disse intervallene inneholde det sanne μ. IKKE: 'det er 95 % sannsynlig at μ er i [a, b]' (μ er fast, ikke tilfeldig).",
+  },
+  {
+    id: "c-tek1-hypothesis",
+    category: "statistikk",
+    topic: "Inferens",
+    question: "Strukturen i en hypotesetest?",
+    answer:
+      "1) Formuler H₀ og H₁. 2) Velg α. 3) Velg teststatistikk med kjent fordeling under H₀. 4) Beregn observert verdi. 5) Sammenlign med kritisk verdi eller p-verdi. 6) Konkluder: p < α → forkast H₀.",
+  },
+  {
+    id: "c-tek1-type-i-ii",
+    category: "statistikk",
+    topic: "Inferens",
+    question: "Type I- vs. Type II-feil?",
+    answer:
+      "Type I (α): forkaste H₀ når den er sann (falsk alarm). Type II (β): beholde H₀ når den er usann (vi misser virkelig effekt). 1 − β = styrke. Trade-off: lavere α → høyere β, mer data reduserer begge.",
+  },
+  {
+    id: "c-tek1-p-value",
+    category: "statistikk",
+    topic: "Inferens",
+    question: "Hva er en p-verdi?",
+    answer:
+      "Sannsynligheten for å observere en teststatistikk minst så ekstrem som det observerte, GITT at H₀ er sann. Liten p = uvanlig under H₀ = bevis mot H₀. p < α → forkast H₀.",
+  },
+  {
+    id: "c-tek1-t-test",
+    category: "statistikk",
+    topic: "Inferens",
+    question: "One-sample t-test — teststatistikk?",
+    answer:
+      "t = (x̄ − μ₀) / (s/√n), med n−1 frihetsgrader. H₀: μ = μ₀. Tosidig: forkast hvis |t| > t_(α/2, n−1). Python: scipy.stats.ttest_1samp(data, μ₀).",
+  },
+  {
+    id: "c-tek1-two-sample",
+    category: "statistikk",
+    topic: "Inferens",
+    question: "Two-sample t-test for to grupper?",
+    answer:
+      "t = (x̄₁ − x̄₂) / √(sₚ²·(1/n₁ + 1/n₂)) med n₁+n₂−2 frihetsgrader, der sₚ² er pooled varians. Welch's t-test (ulike varianser): annen df-formel. Python: stats.ttest_ind(a, b, equal_var=False).",
+  },
+  {
+    id: "c-tek1-chi2-test",
+    category: "statistikk",
+    topic: "Inferens",
+    question: "Kji-kvadrat-test for uavhengighet?",
+    answer:
+      "χ² = Σ (O_ij − E_ij)² / E_ij, der E_ij = (rad_total · kol_total) / total. Frihetsgrader = (r−1)(c−1). Forkast H₀ hvis χ² > χ²_(α, df). Forutsetter alle E_ij ≥ 5.",
+  },
+
+  // Regresjon
+  {
+    id: "c-tek1-pearson-r",
+    category: "statistikk",
+    topic: "Regresjon",
+    question: "Pearson-korrelasjon r — formel og verdier?",
+    answer:
+      "r = Σ(xᵢ−x̄)(yᵢ−ȳ) / √(Σ(xᵢ−x̄)²·Σ(yᵢ−ȳ)²). r ∈ [−1, +1]. r = 0 → ingen LINEÆR sammenheng (men kan ha ikke-lineær). Husk: korrelasjon ≠ kausalitet.",
+  },
+  {
+    id: "c-tek1-regression-line",
+    category: "statistikk",
+    topic: "Regresjon",
+    question: "Minste kvadraters metode — koeffisienter?",
+    answer:
+      "β̂₁ = Σ(xᵢ−x̄)(yᵢ−ȳ) / Σ(xᵢ−x̄)² = r·(s_y/s_x). β̂₀ = ȳ − β̂₁·x̄. Linjen går alltid gjennom (x̄, ȳ). Minimerer Σ(yᵢ − ŷᵢ)².",
+  },
+  {
+    id: "c-tek1-r-squared",
+    category: "statistikk",
+    topic: "Regresjon",
+    question: "Hva er R², og hvordan tolkes det?",
+    answer:
+      "R² = 1 − SS_res/SS_tot ∈ [0, 1]. Andel av variasjonen i Y som forklares av modellen. I enkel lineær regresjon: R² = r². R² = 0.72 → 72 % av Y's varians forklares av X.",
+  },
+  {
+    id: "c-tek1-residual",
+    category: "statistikk",
+    topic: "Regresjon",
+    question: "Hva er residualer, og hva skal du sjekke i residual-plot?",
+    answer:
+      "Residual eᵢ = yᵢ − ŷᵢ. Plot residualer mot x: tilfeldighet = modell passer. Trakt = heteroskedastisitet (ulik varians). Krumning = ikke-lineær sammenheng — prøv polynomisk eller log-transform.",
+  },
+  {
+    id: "c-tek1-corr-causation",
+    category: "statistikk",
+    topic: "Regresjon",
+    question: "Korrelasjon vs. kausalitet?",
+    answer:
+      "Sterk korrelasjon betyr ikke at den ene forårsaker den andre. Eks: Iskremsalg og drukninger korrelerer (begge øker om sommeren), men iskrem forårsaker ikke drukning. Kausalitet krever eksperiment eller streng kausal modell.",
+  },
+
+  // ============= DTE-2505: LINUX-GRUNNLAG =============
+  {
+    id: "c2505-fhs",
+    category: "praktisk",
+    topic: "Linux",
+    question: "Hva er FHS — Filesystem Hierarchy Standard?",
+    answer:
+      "Konvensjonen for hvor ting ligger på Linux. /etc = config, /var = variable data (logger, mail-køer), /usr = programmer og bibliotek, /home = brukere, /tmp = midlertidig, /opt = tredje-parts programvare. Standarden gjør at du finner samme filer på samme sti på tvers av distroer.",
+  },
+  {
+    id: "c2505-etc-passwd-felter",
+    category: "praktisk",
+    topic: "Linux",
+    question: "Hva er feltene i /etc/passwd?",
+    answer:
+      "Sju kolon-separerte felter: brukernavn:passord-flag:UID:GID:GECOS:hjemmekatalog:login-shell. `x` i passord-feltet betyr at hashen ligger i /etc/shadow. GECOS er fullnavn/kontaktinfo (historisk).",
+    code: "isak:x:1000:1000:Isak Olsen,,,:/home/isak:/bin/bash",
+  },
+  {
+    id: "c2505-etc-shadow",
+    category: "sikkerhet",
+    topic: "Linux",
+    question: "Hvorfor ligger passordet i /etc/shadow og ikke /etc/passwd?",
+    answer:
+      "/etc/passwd må være lesbar for alle (programmer bruker den til å mappe UID til navn). Da kan passord-hashen ikke ligge der — hvem som helst kunne kjørt offline brute-force. /etc/shadow er kun lesbar av root (rettigheter 640 root:shadow). Sjekken skjer via SUID-program `passwd` / `su`.",
+  },
+  {
+    id: "c2505-uid-gid",
+    category: "praktisk",
+    topic: "Linux",
+    question: "Hva er UID og GID?",
+    answer:
+      "Hver bruker har et heltall-UID (User ID) og hver gruppe et GID (Group ID). UID 0 = root. UID 1-999 = system-brukere (services). UID 1000+ = vanlige brukere. Kernelen jobber bare med tall — navn er bare en presentasjon (oppslag via /etc/passwd og /etc/group).",
+  },
+  {
+    id: "c2505-find-vs-locate",
+    category: "praktisk",
+    topic: "Linux",
+    question: "Forskjell på find og locate?",
+    answer:
+      "find traverserer filsystemet i sanntid — tregt for store trær, men alltid riktig. locate slår opp i en indeks (vanligvis bygget av updatedb daglig) — superraskt, men kan være utdatert. Bruk locate for «finnes det noe slikt?» og find for «alle filer som matcher disse kriteriene akkurat nå».",
+  },
+  {
+    id: "c2505-man-seksjoner",
+    category: "praktisk",
+    topic: "Linux",
+    question: "Hva betyr man-side-seksjoner som `man 5 passwd`?",
+    answer:
+      "1 = bruker-kommandoer, 2 = syscalls, 3 = bibliotek-funksjoner, 5 = filformater, 7 = misc/konvensjoner, 8 = system-admin-kommandoer. `man passwd` viser kommando-versjonen (seksjon 1). `man 5 passwd` viser filformatet for /etc/passwd.",
+  },
+
+  // ============= DTE-2505: PROSESSER =============
+  {
+    id: "c2505-prosess-vs-trad",
+    category: "praktisk",
+    topic: "Prosesser",
+    question: "Forskjell på prosess og tråd?",
+    answer:
+      "Prosess = eget adresserom, egne file descriptors, egen PID. Trådene innenfor en prosess deler adresserom og filer, men har egne stacker. Lett-vekt parallelisme = tråder. Isolasjon = prosesser. På Linux er begge representert som task_struct i kernelen, og threads har egne TIDs (lik PID for hovedtråden).",
+  },
+  {
+    id: "c2505-pid-1",
+    category: "praktisk",
+    topic: "Prosesser",
+    question: "Hvilken prosess har PID 1?",
+    answer:
+      "Init-prosessen — på moderne Linux er det systemd. Den startes av kernelen og er forelder til alle andre prosesser direkte eller indirekte. Hvis init dør, panikker kernelen. systemd håndterer også reaping av orphans.",
+  },
+  {
+    id: "c2505-fork-exec",
+    category: "praktisk",
+    topic: "Prosesser",
+    question: "Hva er fork+exec-mønsteret?",
+    answer:
+      "Slik starter Linux nye programmer. fork() lager en barn-prosess som er en kopi av forelder. Barnet kaller deretter exec() som BYTTER UT programkoden med en ny binær. Mellom fork og exec kan barnet f.eks. lukke file descriptors, sette nye rettigheter eller redirige stdin/stdout.",
+  },
+  {
+    id: "c2505-orphan-vs-zombie",
+    category: "praktisk",
+    topic: "Prosesser",
+    question: "Orphan vs zombie?",
+    answer:
+      "Orphan = barn hvis forelder har dødd. Den blir adoptert av init (systemd) og fortsetter normalt. Zombie = barn som har dødd og venter på at forelderen kaller wait() for å hente exit-koden. Zombie bruker bare en plass i prosess-tabellen — ikke RAM eller CPU. Mange zombies = forelder har bug.",
+  },
+  {
+    id: "c2505-signaler-sigterm-sigkill",
+    category: "praktisk",
+    topic: "Prosesser",
+    question: "Hvorfor SIGTERM før SIGKILL?",
+    answer:
+      "SIGTERM (15) kan fanges. Programmet får mulighet til å rydde opp: lukke åpne filer, flushe bufrede skrivinger, lagre state, slippe locker. SIGKILL (9) kan IKKE fanges — programmet dør på flekken og kan etterlate halv-skrevne filer eller stale lock-filer. Bruk SIGKILL bare når SIGTERM ikke virker etter noen sekunder.",
+  },
+  {
+    id: "c2505-ps-aux",
+    category: "praktisk",
+    topic: "Prosesser",
+    question: "Hva betyr STAT-kolonnen i `ps aux`?",
+    answer:
+      "R = running, S = sleeping (interruptible), D = uninterruptible sleep (typisk venter på disk-IO), Z = zombie, T = stopped (av SIGSTOP eller debugger). Tilleggsbokstaver: `s` = session leader, `+` = foreground, `<` = høy prioritet, `N` = lav prioritet.",
+  },
+  {
+    id: "c2505-systemd-unit",
+    category: "praktisk",
+    topic: "Prosesser",
+    question: "Hva er en systemd-unit?",
+    answer:
+      "En unit er en konfig-fil som beskriver noe systemd kan håndtere. Vanligste typer: .service (en demon), .timer (en cron-erstatning), .mount (auto-mounting), .target (en samling andre units, som multi-user.target ≈ runlevel 3). Units ligger i /etc/systemd/system/ (egne) og /lib/systemd/system/ (pakker).",
+  },
+
+  // ============= DTE-2505: RETTIGHETER =============
+  {
+    id: "c2505-rwx-octal",
+    category: "praktisk",
+    topic: "Rettigheter",
+    question: "Hvordan oversetter du rwx til oktalt?",
+    answer:
+      "r = 4, w = 2, x = 1. Sum per gruppe: rwx = 7, rw- = 6, r-x = 5, r-- = 4, --- = 0. 755 betyr 7 (rwx) for eier, 5 (r-x) for gruppe, 5 (r-x) for andre. Mental sjekk: hvert siffer er et 3-bit-tall, og 3 sifre = owner/group/other.",
+  },
+  {
+    id: "c2505-suid",
+    category: "sikkerhet",
+    topic: "Rettigheter",
+    question: "Hva er SUID og når brukes det?",
+    answer:
+      "SUID-bit (4xxx) gjør at programmet kjører som filens EIER, ikke som brukeren som starter den. Klassikeren er /usr/bin/passwd: vanlig bruker kjører den, men den må skrive til /etc/shadow som krever root. SUID på root-eide binærer er den vanligste angreps-overflaten — minimér antallet.",
+  },
+  {
+    id: "c2505-sgid-kat",
+    category: "praktisk",
+    topic: "Rettigheter",
+    question: "Hva gjør SGID på en katalog?",
+    answer:
+      "Nye filer som lages inni katalogen får KATALOGENS gruppe (ikke brukerens primær-gruppe). Mest brukt på delte arbeids-kataloger der teamet vil at alle filer skal være `developers`-gruppe uansett hvem som la dem til. Sett med `chmod 2755 katalog` eller `chmod g+s katalog`.",
+  },
+  {
+    id: "c2505-sticky",
+    category: "praktisk",
+    topic: "Rettigheter",
+    question: "Hva er sticky bit?",
+    answer:
+      "På katalog (1xxx) hindrer det at brukere sletter HVERANDRES filer, selv om katalogen er skrivbar for alle. Klassikeren er /tmp — alle kan lage filer, men ingen kan slette dine. På fil gjør sticky bit ingenting på moderne Linux.",
+  },
+  {
+    id: "c2505-umask",
+    category: "praktisk",
+    topic: "Rettigheter",
+    question: "Hva er umask og hvordan virker den?",
+    answer:
+      "umask trekkes fra DEFAULT-rettighetene når du lager nye filer/kataloger. Default for fil er 666, for katalog 777. umask 022 → ny fil 644, ny katalog 755 (vanlig). umask 077 → ny fil 600, ny katalog 700 (paranoid). Sett i ~/.bashrc eller /etc/profile.",
+  },
+  {
+    id: "c2505-acl-vs-rwx",
+    category: "sikkerhet",
+    topic: "Rettigheter",
+    question: "Når trenger du ACL i stedet for vanlig rwx?",
+    answer:
+      "Når flere brukere eller grupper trenger ULIKE rettigheter på samme fil. rwx har bare tre 'slots' (owner, group, other). ACL lar deg si 'bob: rw, alice: r, devs: rwx' uten å lage nye grupper for hver kombinasjon. Bruk `setfacl -m` og `getfacl` for å sjekke.",
+    code: "setfacl -m u:bob:rw fil\ngetfacl fil",
+  },
+  {
+    id: "c2505-ssh-key-perms",
+    category: "sikkerhet",
+    topic: "Rettigheter",
+    question: "Hvorfor må ~/.ssh/id_rsa være 600?",
+    answer:
+      "ssh nekter å bruke en privat nøkkel som er lesbar for andre. Filen må være 600 (rw-------) og katalogen ~/.ssh må være 700 (rwx------). Vanlig feil: kopiert nøklene over fra en annen maskin med scp som ga 644.",
+  },
+
+  // ============= DTE-2505: SHELL & SCRIPTING =============
+  {
+    id: "c2505-shebang",
+    category: "praktisk",
+    topic: "Shell",
+    question: "Hva er shebang og hva skal stå der?",
+    answer:
+      "Shebang er første linje i et skript: `#!` fulgt av interpreter-stien. Kernelen leser dette når den exec-er fila. `#!/bin/bash` er vanlig. `#!/usr/bin/env bash` er mer portabelt fordi env finner bash i $PATH selv om den ligger annet sted.",
+  },
+  {
+    id: "c2505-bash-strict-mode",
+    category: "praktisk",
+    topic: "Shell",
+    question: "Hva gjør `set -euo pipefail`?",
+    answer:
+      "Bash strict mode. -e = avslutt ved første feilende kommando. -u = error når en udefinert variabel brukes (fanger typos). -o pipefail = feil i en pipe propagerer (ellers er pipens exit-kode bare den siste kommandoen). Anbefales i alle robuste skript.",
+  },
+  {
+    id: "c2505-special-vars",
+    category: "praktisk",
+    topic: "Shell",
+    question: "Hva betyr $0, $1, $#, $@, $? og $$ i bash?",
+    answer:
+      "$0 = skriptets navn. $1, $2, ... = argumenter. $# = antall argumenter. $@ = alle argumenter som separate ord (quote med \"$@\"). $* = alle som én streng. $? = exit-kode fra forrige kommando. $$ = PID til selve skriptet. $! = PID til siste bakgrunns-jobb.",
+  },
+  {
+    id: "c2505-command-substitution",
+    category: "praktisk",
+    topic: "Shell",
+    question: "Hvordan fanger du output fra en kommando i en variabel?",
+    answer:
+      "Bruk $(KOMMANDO). Eksempel: `antall=$(ls -1 | wc -l)`. Den eldre syntaksen med backticks (`...`) virker også men er vanskeligere å nøste — bruk $(...) som default.",
+  },
+  {
+    id: "c2505-exit-koder",
+    category: "praktisk",
+    topic: "Shell",
+    question: "Hva betyr ulike exit-koder?",
+    answer:
+      "0 = suksess. 1 = generell feil. 2 = feil bruk (manglende argumenter). 126 = kunne ikke kjøre (permission denied). 127 = kommando ikke funnet. 128+N = drept av signal N. Eksempel: 130 = avbrutt av Ctrl+C (128+SIGINT 2). 137 = drept av SIGKILL (128+9). Du leser exit-kode med $?.",
+  },
+  {
+    id: "c2505-quoting",
+    category: "praktisk",
+    topic: "Shell",
+    question: "Når skal du bruke double quotes vs single quotes?",
+    answer:
+      "Double quotes (\"$var\") ekspanderer $variabler og $(kommandoer) — bruk når du trenger verdier. Single quotes ('$var') er bokstavelige — bruk for regex og når du vil at $ skal bety dollar-tegn. Som regel: quote variabler ALLTID i if-tester og rm-kommandoer — beskytter mot mellomrom i filnavn.",
+  },
+  {
+    id: "c2505-pipe-vs-redirect",
+    category: "praktisk",
+    topic: "Shell",
+    question: "Forskjell på pipe (|) og redirect (>)?",
+    answer:
+      "Pipe sender stdout fra én kommando som stdin til neste — KOMMANDO til KOMMANDO. Redirect sender stdout til en FIL. `ls > fil.txt` skriver til fil. `ls | grep foo` sender output videre. Du kan kombinere: `ls | grep foo > funnet.txt`.",
+  },
+  {
+    id: "c2505-heredoc",
+    category: "praktisk",
+    topic: "Shell",
+    question: "Hva er en heredoc?",
+    answer:
+      "En måte å sende fler-linje stdin inline. `cat <<EOF` leser inntil linjen 'EOF' som stdin. Brukes ofte til å lage config-filer i skript: `sudo tee /etc/foo.conf <<EOF`. Bruk `<<'EOF'` (med quotes) for å SLÅ AV variabel-ekspansjon i bodyen.",
+    code: "cat <<EOF > /etc/min-app.conf\nport=8080\nuser=$USER\nEOF",
+  },
+
+  // ============= DTE-2505: SYSTEMD =============
+  {
+    id: "c2505-systemd-vs-init",
+    category: "praktisk",
+    topic: "Systemd",
+    question: "Hva er forskjellen på systemd og SysV init?",
+    answer:
+      "SysV init brukte shell-skript i /etc/init.d/ og kjørte dem sekvensielt. Tregt. systemd håndterer tjenester som unit-filer (deklarativ syntaks), kan starte ting parallelt basert på avhengighetsgraf, har innebygget logging (journald), socket-aktivering, cgroups for ressurs-kontroll og timers (cron-erstatning).",
+  },
+  {
+    id: "c2505-systemctl-enable-vs-start",
+    category: "praktisk",
+    topic: "Systemd",
+    question: "Forskjell på `systemctl start` og `systemctl enable`?",
+    answer:
+      "start = start tjenesten NÅ, men ikke gjør noe permanent. enable = lag symlink slik at tjenesten starter ved hver boot, men ikke start den nå. `enable --now` gjør begge i ett. Vanlig fallgruve: enable uten --now, så fungerer alt fint til neste reboot — så starter den ikke.",
+  },
+  {
+    id: "c2505-journalctl-grunnlag",
+    category: "praktisk",
+    topic: "Systemd",
+    question: "Hvorfor journalctl i stedet for /var/log/-filer?",
+    answer:
+      "journald lagrer logger som strukturerte records, ikke ren tekst. Du kan filtrere på unit (-u nginx), priority (-p err), tid (--since '1 hour ago'), boot (-b) og felt (_PID=, _UID=). Vanlig tekstlogg i /var/log/ skrives fortsatt av rsyslog parallelt på de fleste systemer.",
+  },
+  {
+    id: "c2505-cron-vs-systemd-timer",
+    category: "praktisk",
+    topic: "Systemd",
+    question: "cron vs systemd-timer?",
+    answer:
+      "cron er den klassiske periodiske job-scheduler — enkel, men kjører ikke jobben hvis maskinen var av på det tidspunktet. systemd-timer kan ta igjen tapte kjøringer (Persistent=true), logger via journald, og kan trigge på andre events (boot, network). På servere kan cron være OK. På laptoper er timer bedre.",
+  },
+  {
+    id: "c2505-logrotate",
+    category: "praktisk",
+    topic: "Systemd",
+    question: "Hva gjør logrotate?",
+    answer:
+      "Forhindrer at loggfiler vokser i det uendelige. Konfig i /etc/logrotate.d/. Standard: roter daglig eller når fila når en størrelse, komprimer gamle versjoner (.gz), behold N kopier, slett resten. Kjøres via cron.daily eller systemd-timer. Test config med `logrotate -d` (dry-run).",
+  },
+
+  // ============= DTE-2505 deep-dive: 25 nye =============
+  {
+    id: "c2505d-chmod-755",
+    category: "praktisk",
+    topic: "DTE-2505",
+    question: "Hva er chmod 755 i symbolsk form?",
+    answer: "rwxr-xr-x. Eier har alle tre (rwx = 4+2+1 = 7). Gruppe og andre har read+execute (4+1 = 5). Standard for skript og kjørbare binærer.",
+  },
+  {
+    id: "c2505d-chmod-644",
+    category: "praktisk",
+    topic: "DTE-2505",
+    question: "Hva er chmod 644 i symbolsk form?",
+    answer: "rw-r--r--. Eier kan lese og skrive (6 = 4+2). Gruppe og andre kan bare lese (4). Standard for vanlige tekstfiler.",
+  },
+  {
+    id: "c2505d-chmod-600",
+    category: "sikkerhet",
+    topic: "DTE-2505",
+    question: "Hva er chmod 600 i symbolsk form, og når brukes det?",
+    answer: "rw-------. Bare eier kan lese og skrive. Standard for private nøkler (~/.ssh/id_rsa), tokens, secrets. ssh nekter å bruke en privatnøkkel som er videre enn 600.",
+  },
+  {
+    id: "c2505d-rwx-mappe",
+    category: "praktisk",
+    topic: "DTE-2505",
+    question: "Hva betyr x-biten på en KATALOG?",
+    answer: "Lov til å traversere — gå inn i, eller bruke katalogen som del av en sti. UTEN x kan du ikke gjøre `cd` eller lese filer inne i den, selv om r er satt. r uten x lar deg `ls` katalogen, men ikke åpne filene.",
+  },
+  {
+    id: "c2505d-signal-1-2-9-15",
+    category: "praktisk",
+    topic: "DTE-2505",
+    question: "Hva er signal-numrene 1, 2, 9 og 15?",
+    answer: "1 = SIGHUP (terminal lukket / reload). 2 = SIGINT (Ctrl+C). 9 = SIGKILL (kan IKKE fanges). 15 = SIGTERM (standard «vær så snill å slutte»).",
+  },
+  {
+    id: "c2505d-sighup-bruk",
+    category: "praktisk",
+    topic: "DTE-2505",
+    question: "Hvorfor sender man SIGHUP til daemoner som nginx?",
+    answer: "Konvensjon: SIGHUP betyr «re-les config-filen din uten å restarte». nginx, sshd, apache lytter på SIGHUP og laster ny config inn i minne uten å miste tilkoblinger. Brukes ofte etter at config er endret med ansible/cron.",
+  },
+  {
+    id: "c2505d-ps-stat-d",
+    category: "praktisk",
+    topic: "DTE-2505",
+    question: "Hva betyr STAT-flagg «D» og hvorfor er det viktig?",
+    answer: "Uninterruptible sleep — prosessen venter på maskinvare (typisk disk-IO). Kan IKKE drepes selv med SIGKILL. Hvis du ser mange D-prosesser: disken er overbelastet eller har feil.",
+  },
+  {
+    id: "c2505d-nice-range",
+    category: "praktisk",
+    topic: "DTE-2505",
+    question: "Hva er rekkevidden for nice-verdier, og hvem kan minske den?",
+    answer: "Niceness går fra −20 (høyest prioritet) til +19 (lavest). Vanlige brukere kan bare øke niceness — gjøre prosessen mer ettergivende. Bare root kan gi negativ niceness.",
+  },
+  {
+    id: "c2505d-jobs-ctrlz",
+    category: "praktisk",
+    topic: "DTE-2505",
+    question: "Hva gjør Ctrl+Z i terminalen?",
+    answer: "Sender SIGTSTP (20) til foreground-prosessen. Den pauses (STAT går til T) og du får prompten tilbake. Bruk `fg` for å hente den tilbake, `bg` for å la den fortsette i bakgrunnen.",
+  },
+  {
+    id: "c2505d-disown-nohup",
+    category: "praktisk",
+    topic: "DTE-2505",
+    question: "Forskjell på disown og nohup?",
+    answer: "Begge gjør at prosessen overlever logout. nohup brukes ved START: `nohup ./tj.sh &` — fortsetter selv om terminalen lukkes. disown brukes ETTER at jobben er startet: `./tj.sh &` så `disown %1` — løser jobben fra shell-tabellen.",
+  },
+  {
+    id: "c2505d-shebang-env",
+    category: "praktisk",
+    topic: "DTE-2505",
+    question: "Hvorfor `#!/usr/bin/env python3` i stedet for `#!/usr/bin/python3`?",
+    answer: "env søker etter python3 i $PATH. Mer portabelt — fungerer både på systemer der python3 ligger i /usr/bin og i /usr/local/bin (Homebrew, virtualenv, etc.). Hard-kodet path bryter når Python ligger annet sted.",
+  },
+  {
+    id: "c2505d-bash-test-vs-bracket",
+    category: "praktisk",
+    topic: "DTE-2505",
+    question: "Forskjell på `[ ... ]` og `[[ ... ]]` i bash?",
+    answer: "[ ] er POSIX-test — en separat kommando, krever quoting av variabler, ingen regex. [[ ]] er bash-built-in: ord-deling og glob skjer ikke, støtter =~ for regex og &&/|| inni. Bruk [[ ]] i bash-skript; [ ] for kompatibilitet med sh/dash.",
+  },
+  {
+    id: "c2505d-bash-arithmetic",
+    category: "praktisk",
+    topic: "DTE-2505",
+    question: "Hvordan gjør du aritmetikk i bash?",
+    answer: "$((uttrykk)) — for eksempel $((5 + 3)) eller $((i + 1)). Eller `let i=i+1`. Eller `((i++))` (bash-builtin). bash regner BARE med heltall — for desimaler trenger du bc eller awk.",
+  },
+  {
+    id: "c2505d-read-input",
+    category: "praktisk",
+    topic: "DTE-2505",
+    question: "Hvordan leser du brukerinput i bash?",
+    answer: "`read -p \"Navn: \" navn` viser prompt og lagrer i $navn. `read -s passord` skjuler input. `read -t 5 svar` har 5 sekunders timeout. `read -r linje < fil` (-r = bevar backslashes) i en while-løkke leser fil-linjer.",
+  },
+  {
+    id: "c2505d-test-file-flags",
+    category: "praktisk",
+    topic: "DTE-2505",
+    question: "Hva tester -f, -d, -e, -r, -w, -x i bash?",
+    answer: "-f = vanlig fil, -d = katalog, -e = finnes (av en eller annen type), -r = lesbar, -w = skrivbar, -x = kjørbar. Eks: `if [ -f /etc/passwd ]`. Tester rettigheter ut fra BRUKERENS perspektiv — påvirket av effektiv UID.",
+  },
+  {
+    id: "c2505d-fd-redirect",
+    category: "praktisk",
+    topic: "DTE-2505",
+    question: "Hva betyr `2>&1`?",
+    answer: "«Send fd 2 (stderr) til samme sted som fd 1 (stdout) går nå». Eks: `cmd > log 2>&1` → både stdout og stderr til log. Rekkefølgen betyr noe — `cmd 2>&1 > log` virker IKKE som forventet (2 går til terminalen, så går 1 til log).",
+  },
+  {
+    id: "c2505d-systemctl-status",
+    category: "praktisk",
+    topic: "DTE-2505",
+    question: "Hva viser `systemctl status nginx`?",
+    answer: "Om tjenesten kjører (active/inactive/failed), PID, hvor lenge den har kjørt, hvilken unit-fil den kom fra, og siste linjer fra loggen. Standard verktøy for å feilsøke en daemon.",
+  },
+  {
+    id: "c2505d-journalctl-unit",
+    category: "praktisk",
+    topic: "DTE-2505",
+    question: "Hvordan ser du loggen for kun én systemd-tjeneste?",
+    answer: "`journalctl -u nginx` viser bare nginx-logger. `-f` for follow (live), `--since '10 min ago'` for tidsfilter, `-p err` for bare error-nivå, `-b` for siste boot.",
+  },
+  {
+    id: "c2505d-apt-update-vs-upgrade",
+    category: "praktisk",
+    topic: "DTE-2505",
+    question: "Forskjell på `apt update` og `apt upgrade`?",
+    answer: "update = hent nyeste pakkeliste fra repoene (oppdaterer INDEKSEN). upgrade = installer nyere versjoner av allerede installerte pakker. Du kjører alltid update FØR upgrade.",
+  },
+  {
+    id: "c2505d-dpkg-vs-apt",
+    category: "praktisk",
+    topic: "DTE-2505",
+    question: "Forskjell på dpkg og apt?",
+    answer: "dpkg er lav-nivå pakkebehandler — installerer/fjerner én .deb-fil, vet ikke om avhengigheter. apt er høy-nivå wrapper rundt dpkg som løser avhengigheter, henter fra repoer og er den vanlige bruker-fasaden.",
+  },
+  {
+    id: "c2505d-dpkg-listfiles",
+    category: "praktisk",
+    topic: "DTE-2505",
+    question: "Hvilken kommando viser alle filer en pakke installerer?",
+    answer: "`dpkg -L pakkenavn`. Eks: `dpkg -L nginx`. Motsatt vei: `dpkg -S /path/to/fil` viser HVILKEN pakke som eier den fila.",
+  },
+  {
+    id: "c2505d-ln-soft-hard",
+    category: "praktisk",
+    topic: "DTE-2505",
+    question: "Forskjell på hard link og symbolic link?",
+    answer: "Hard link (`ln`) lager et nytt navn for samme inode — fjerner du originalen, lever lenken (begge peker til samme data). Symlink (`ln -s`) er en TEKST-peker til en sti — hvis originalen slettes, blir lenken brutt. Hard links kan ikke krysse filsystemer eller peke på kataloger.",
+  },
+  {
+    id: "c2505d-which-vs-whereis",
+    category: "praktisk",
+    topic: "DTE-2505",
+    question: "Forskjell på which, whereis og type?",
+    answer: "which = vis stien til en binær i $PATH. whereis = vis binær + man-side + kildekode. type = bash-builtin som forteller om kommandoen er alias, builtin, function eller ekstern (anbefales: avslører aliaser).",
+  },
+  {
+    id: "c2505d-environment-variabler",
+    category: "praktisk",
+    topic: "DTE-2505",
+    question: "Hva er forskjellen på lokal variabel og environment-variabel i bash?",
+    answer: "`navn=Per` er bare lokal — barn-prosesser ser den ikke. `export navn=Per` putter den i environment slik at barn (sub-shells, programmer du starter) arver den. Sjekk eksisterende environment med `env` eller `printenv`.",
+  },
+  {
+    id: "c2505d-bash-funksjon-return",
+    category: "praktisk",
+    topic: "DTE-2505",
+    question: "Hva returnerer en bash-funksjon med `return 0`?",
+    answer: "Bare en exit-kode (0-255), ikke en verdi. For å «returnere» data: skriv til stdout og fang med $(funksjon). Eks: `dato() { date +%Y-%m-%d; }`, så `i_dag=$(dato)`.",
+  },
+
+  // ===================== DTE-2501 ML =====================
+  // Formler, konsept og algoritme-steg for moderne ML-pensum.
+
+  // ---------- Formler ----------
+  {
+    id: "dte2501-c-gini",
+    category: "praktisk",
+    topic: "DTE-2501 ML",
+    question: "Formel for Gini-urenhet i en node?",
+    answer:
+      "Gini(S) = 1 − Σ pᵢ², der pᵢ er andelen klasse i i S. Gini = 0 betyr noden er ren; maks ved jevn fordeling.",
+    code: "p_A = 3/5, p_B = 2/5\nGini = 1 − (3/5)² − (2/5)² = 1 − 0.36 − 0.16 = 0.48",
+  },
+  {
+    id: "dte2501-c-entropy",
+    category: "praktisk",
+    topic: "DTE-2501 ML",
+    question: "Formel for entropi (Shannon)?",
+    answer:
+      "H(S) = − Σ pᵢ · log₂(pᵢ). Måler hvor mange bits informasjon som kreves for å beskrive klassen i S. Alternativ til Gini i beslutningstrær (criterion='entropy').",
+  },
+  {
+    id: "dte2501-c-info-gain",
+    category: "praktisk",
+    topic: "DTE-2501 ML",
+    question: "Hvordan beregnes informasjonsgevinst (IG) ved en split?",
+    answer:
+      "IG = Urenhet(foreldre) − Σ (|barn_i| / |foreldre|) · Urenhet(barn_i). Vektet snitt av barn-urenhet, trukket fra foreldrenodens. Velg splitten med størst IG.",
+  },
+  {
+    id: "dte2501-c-kmeans-obj",
+    category: "praktisk",
+    topic: "DTE-2501 ML",
+    question: "Objektiv-funksjon for k-Means?",
+    answer:
+      "J = Σᵢ ‖xᵢ − μ_{c(i)}‖² — Within-Cluster Sum of Squares (WCSS / inertia). k-Means minimerer dette grådig ved skiftende assign/update-steg.",
+  },
+  {
+    id: "dte2501-c-bellman",
+    category: "praktisk",
+    topic: "DTE-2501 ML",
+    question: "Bellman-likningen for optimal value V*?",
+    answer:
+      "V*(s) = max_a Σ_s' P(s'|s,a) · [R(s,a,s') + γ V*(s')]. Verdien i s er forventet umiddelbar belønning + diskontert verdi av neste tilstand, optimalt valg av handling.",
+  },
+  {
+    id: "dte2501-c-qlearn-update",
+    category: "praktisk",
+    topic: "DTE-2501 ML",
+    question: "Q-learning-oppdateringen?",
+    answer:
+      "Q(s,a) ← Q(s,a) + α · [r + γ · max_a' Q(s',a') − Q(s,a)]. α er læringsrate, leddet i hakeparentesen er TD-feilen.",
+  },
+  {
+    id: "dte2501-c-tfidf",
+    category: "praktisk",
+    topic: "DTE-2501 ML",
+    question: "Definer TF-IDF for term t i dokument d.",
+    answer:
+      "TF-IDF(t,d) = TF(t,d) · IDF(t). TF er termfrekvens i d. IDF = ln((1+N)/(1+df(t))) + 1 i sklearn — øker for sjeldne ord. Demper vanlige ord.",
+  },
+  {
+    id: "dte2501-c-cosine",
+    category: "praktisk",
+    topic: "DTE-2501 ML",
+    question: "Formel for cosine similarity mellom vektorer x og y?",
+    answer:
+      "cos(x,y) = (x · y) / (‖x‖ · ‖y‖). Ligger i [−1,1], for TF-IDF i [0,1]. For L2-normaliserte vektorer reduseres det til x · y.",
+  },
+  {
+    id: "dte2501-c-knn-dist",
+    category: "praktisk",
+    topic: "DTE-2501 ML",
+    question: "Euklidsk vs Manhattan-avstand?",
+    answer:
+      "Euklidsk: √(Σ(xᵢ−yᵢ)²) — rett linje (Minkowski p=2). Manhattan: Σ|xᵢ−yᵢ| — bymønster (Minkowski p=1). Manhattan er mer robust mot uteliggere.",
+  },
+  {
+    id: "dte2501-c-pca-evr",
+    category: "praktisk",
+    topic: "DTE-2501 ML",
+    question: "Hva er explained variance ratio i PCA?",
+    answer:
+      "EVR_i = λ_i / Σⱼ λⱼ — andelen av total varians forklart av prinsipalkomponent i. Velg k slik at kumulert EVR ≥ 0.95.",
+  },
+  {
+    id: "dte2501-c-pso",
+    category: "praktisk",
+    topic: "DTE-2501 ML",
+    question: "PSO-oppdatering for hastighet?",
+    answer:
+      "v(t+1) = w·v(t) + c₁·r₁·(pbest − x) + c₂·r₂·(gbest − x). Tre ledd: treghet, kognitivt (egen beste), sosialt (flokkens beste).",
+  },
+  {
+    id: "dte2501-c-aco-pher",
+    category: "praktisk",
+    topic: "DTE-2501 ML",
+    question: "Feromon-oppdatering i ACO?",
+    answer:
+      "τᵢⱼ(t+1) = (1 − ρ)·τᵢⱼ(t) + Σₖ Δτᵢⱼᵏ. Første ledd er fordamping (ρ), andre er bidrag fra maur som brukte (i,j), typisk Δτ = Q/L_k for hver maur som brukte kanten.",
+  },
+  {
+    id: "dte2501-c-em-gmm-resp",
+    category: "praktisk",
+    topic: "DTE-2501 ML",
+    question: "Hva er responsibility γᵢₖ i EM for GMM?",
+    answer:
+      "γᵢₖ = πₖ·N(xᵢ|μₖ,Σₖ) / Σⱼ πⱼ·N(xᵢ|μⱼ,Σⱼ). Posterior sannsynlighet for at xᵢ tilhører komponent k — soft assignment.",
+  },
+  {
+    id: "dte2501-c-held-karp",
+    category: "praktisk",
+    topic: "DTE-2501 ML",
+    question: "Held-Karp DP-rekursjon for TSP?",
+    answer:
+      "dp[S][j] = min over i ∈ S\\{j}: dp[S\\{j}][i] + dist(i,j). Optimum: min over j: dp[full][j] + dist(j,0). Kompleksitet O(n²·2ⁿ).",
+  },
+
+  // ---------- Konsept ----------
+  {
+    id: "dte2501-c-bagging-vs-boosting",
+    category: "praktisk",
+    topic: "DTE-2501 ML",
+    question: "Bagging vs boosting — hovedforskjell?",
+    answer:
+      "Bagging trener mange modeller PARALLELT på bootstrap-sampler og reduserer variance. Boosting trener modeller SEKVENSIELT der hver retter feilene fra forrige, og reduserer bias.",
+  },
+  {
+    id: "dte2501-c-hard-vs-soft",
+    category: "praktisk",
+    topic: "DTE-2501 ML",
+    question: "Hard vs soft assignment i clustering?",
+    answer:
+      "Hard: hvert x tilhører ett cluster fullt ut (k-Means, argmin avstand). Soft: hvert x har sannsynlighetsfordeling over alle k komponenter (GMM, γᵢₖ).",
+  },
+  {
+    id: "dte2501-c-pca-vs-kmeans",
+    category: "praktisk",
+    topic: "DTE-2501 ML",
+    question: "Forskjellen på PCA og k-Means?",
+    answer:
+      "PCA komprimerer DIMENSJONER (features → færre prinsipalkomponenter). k-Means komprimerer PUNKTER (N → k cluster-senter). Begge unsupervised; ofte gjøres PCA → k-Means.",
+  },
+  {
+    id: "dte2501-c-knn-lazy",
+    category: "praktisk",
+    topic: "DTE-2501 ML",
+    question: "Hvorfor kalles k-NN lazy learning?",
+    answer:
+      "Fordi den ikke lærer en eksplisitt modell ved trening — bare lagrer datasettet. All beregning skjer ved prediksjon (sammenligning mot alle N treningseksempler).",
+  },
+  {
+    id: "dte2501-c-scale-knn",
+    category: "praktisk",
+    topic: "DTE-2501 ML",
+    question: "Hvorfor må vi skalere features før k-NN?",
+    answer:
+      "Distansemål summerer kvadrerte forskjeller. En feature med stor numerisk skala (f.eks. inntekt 10⁵) dominerer over en med liten (alder 10¹). Bruk StandardScaler eller MinMaxScaler.",
+  },
+  {
+    id: "dte2501-c-no-scale-trees",
+    category: "praktisk",
+    topic: "DTE-2501 ML",
+    question: "Hvorfor må man IKKE skalere features før beslutningstrær?",
+    answer:
+      "Treet splitter på terskelverdier (feature ≤ threshold). Skala påvirker ikke rekkefølgen på verdier, kun terskelverdien — splittingen blir lik. Skala-uavhengig.",
+  },
+  {
+    id: "dte2501-c-curse-dim",
+    category: "praktisk",
+    topic: "DTE-2501 ML",
+    question: "Hva er curse of dimensionality?",
+    answer:
+      "I høye dimensjoner blir alle datapunkter omtrent like langt unna hverandre — «nærmeste nabo» mister mening. Volum av en kule vokser eksponentielt, dataene blir sparse. Affekter k-NN, k-Means og avstandsbaserte metoder.",
+  },
+  {
+    id: "dte2501-c-elbow",
+    category: "praktisk",
+    topic: "DTE-2501 ML",
+    question: "Hva er albuemetoden for å velge k i k-Means?",
+    answer:
+      "Plot J(k) (inertia) mot k. J synker monotont, men det er ofte en «albue» der nedgangen flater ut — den k-verdien velges. Subjektivt; silhouette-score er mer kvantitativ.",
+  },
+  {
+    id: "dte2501-c-silhouette",
+    category: "praktisk",
+    topic: "DTE-2501 ML",
+    question: "Hva er silhouette-score?",
+    answer:
+      "s(i) = (b−a)/max(a,b), der a = snittavstand til eget cluster, b = snittavstand til nærmeste andre cluster. Snittet over alle punkt gir silhouette-score. > 0.5 = bra, > 0.7 = sterk struktur.",
+  },
+  {
+    id: "dte2501-c-bias-variance",
+    category: "praktisk",
+    topic: "DTE-2501 ML",
+    question: "Bias-variance dekomponering — kort.",
+    answer:
+      "E[(ŷ−y)²] = Bias² + Variance + støy. Bias = feilantakelser. Variance = ustabilitet mellom treningssett. Bagging ↓variance, boosting ↓bias.",
+  },
+  {
+    id: "dte2501-c-mdp-markov",
+    category: "praktisk",
+    topic: "DTE-2501 ML",
+    question: "Hva er Markov-egenskapen i en MDP?",
+    answer:
+      "P(s_{t+1} | s_t, a_t, s_{t−1}, …) = P(s_{t+1} | s_t, a_t). Sannsynligheten for neste tilstand avhenger bare av nåværende tilstand og handling — «memoryless future».",
+  },
+  {
+    id: "dte2501-c-gamma",
+    category: "praktisk",
+    topic: "DTE-2501 ML",
+    question: "Hva betyr diskonteringsfaktoren γ i RL?",
+    answer:
+      "Vekt for fremtidige belønninger: G = r₁ + γr₂ + γ²r₃ + … γ → 0 = bare umiddelbar belønning. γ → 1 = langsiktig. 0<γ<1 garanterer endelig sum på uendelig horisont. Typisk 0.9–0.99.",
+  },
+  {
+    id: "dte2501-c-explore-exploit",
+    category: "praktisk",
+    topic: "DTE-2501 ML",
+    question: "Eksplorering vs eksploitering — hvor ser vi det?",
+    answer:
+      "I RL: ε-greedy (gjør tilfeldig handling med ε, ellers greedy). I GA: mutasjon (utforsk) vs crossover (utnytt). I PSO: stor w utforsk, liten w utnytt.",
+  },
+  {
+    id: "dte2501-c-knn-vs-kmeans",
+    category: "praktisk",
+    topic: "DTE-2501 ML",
+    question: "k-NN vs k-Means — likhet og forskjell?",
+    answer:
+      "Begge bruker «k» og avstandsmål. k-NN er SUPERVISED (predikér klasse fra naboer). k-Means er UNSUPERVISED (finn k cluster-senter).",
+  },
+  {
+    id: "dte2501-c-ga-elitism",
+    category: "praktisk",
+    topic: "DTE-2501 ML",
+    question: "Hva er elitisme i GA?",
+    answer:
+      "De E beste individene overlever urørt til neste generasjon. Garanterer at beste-fitness aldri synker. Pris: noe redusert diversitet.",
+  },
+  {
+    id: "dte2501-c-bow-vs-emb",
+    category: "praktisk",
+    topic: "DTE-2501 ML",
+    question: "TF-IDF vs embeddings — kjernen?",
+    answer:
+      "TF-IDF: én dimensjon per ord, ortogonale (selv «bil» og «auto» blir helt ulike). Embeddings (Word2Vec, BERT): tette vektorer, semantisk like ord ligger nær hverandre.",
+  },
+  {
+    id: "dte2501-c-rf-vs-bagging",
+    category: "praktisk",
+    topic: "DTE-2501 ML",
+    question: "Hva skiller Random Forest fra ren bagging?",
+    answer:
+      "I tillegg til bootstrap-sampling av rader, sampler RF også et tilfeldig subset av features ved HVER split. Det reduserer korrelasjonen mellom trærne, gir bedre variance-reduksjon.",
+  },
+  {
+    id: "dte2501-c-pca-center",
+    category: "praktisk",
+    topic: "DTE-2501 ML",
+    question: "Hvorfor må vi mean-centre før PCA?",
+    answer:
+      "Hvis vi ikke gjør det, peker første komponent mot snittet i stedet for langs størst variansretning. PCA antar at variansen er sentrert om origo.",
+  },
+  {
+    id: "dte2501-c-off-vs-on-policy",
+    category: "praktisk",
+    topic: "DTE-2501 ML",
+    question: "Off-policy vs on-policy RL?",
+    answer:
+      "Off-policy (Q-learning): lærer optimal Q* selv om agenten følger en annen policy (ε-greedy). On-policy (SARSA): lærer policyen man faktisk følger.",
+  },
+  {
+    id: "dte2501-c-tournament",
+    category: "praktisk",
+    topic: "DTE-2501 ML",
+    question: "Tournament selection i GA?",
+    answer:
+      "Trekk k individer tilfeldig fra populasjonen, velg den med høyest fitness blant dem. k justerer seleksjonspress (k=2 = mildt, k=7 = hardt).",
+  },
+
+  // ---------- Algoritme-steg ----------
+  {
+    id: "dte2501-c-em-steps",
+    category: "praktisk",
+    topic: "DTE-2501 ML",
+    question: "EM-algoritmen — hvilke to steg gjentas?",
+    answer:
+      "E-step (Expectation): beregn responsibilities γᵢₖ gitt nåværende parametre. M-step (Maximization): re-estimer π, μ, Σ basert på γᵢₖ (vektet snitt og kovarians). Repeter til log-likelihood konvergerer.",
+  },
+  {
+    id: "dte2501-c-vi-steps",
+    category: "praktisk",
+    topic: "DTE-2501 ML",
+    question: "Value Iteration — algoritmen i 3 setninger.",
+    answer:
+      "1) Initialiser V(s)=0. 2) For hver iter: V_{k+1}(s) = max_a Σ_s' P(s'|s,a)·[R + γV_k(s')]. 3) Stopp når ‖V_{k+1}−V_k‖<ε. Hent π*(s) = argmax_a Q*.",
+  },
+  {
+    id: "dte2501-c-pi-steps",
+    category: "praktisk",
+    topic: "DTE-2501 ML",
+    question: "Policy Iteration — to faser?",
+    answer:
+      "1) Policy evaluation: beregn V^π for current π (løs Bellman som lineært system). 2) Policy improvement: π_new(s) = argmax_a Σ_s' P(s'|s,a)·[R + γV^π(s')]. Repeter til π ikke endrer seg.",
+  },
+  {
+    id: "dte2501-c-ga-loop",
+    category: "praktisk",
+    topic: "DTE-2501 ML",
+    question: "Hovedloopen i en genetisk algoritme?",
+    answer:
+      "1) Initialiser populasjon. 2) Evaluer fitness. 3) Seleksjon. 4) Crossover. 5) Mutasjon. 6) Erstatt (med elitisme). Gjenta inntil maks generasjoner eller konvergens.",
+  },
+  {
+    id: "dte2501-c-kmeans-steps",
+    category: "praktisk",
+    topic: "DTE-2501 ML",
+    question: "k-Means (Lloyd's) — algoritmen.",
+    answer:
+      "1) Init k senter (k-means++). 2) ASSIGN: hvert x til nærmeste senter. 3) UPDATE: hvert senter til snitt av sine punkter. 4) Repeter 2-3 til ingen punkt skifter cluster.",
+  },
+  {
+    id: "dte2501-c-knn-predict",
+    category: "praktisk",
+    topic: "DTE-2501 ML",
+    question: "k-NN prediksjon — stegene?",
+    answer:
+      "1) Beregn dist(x_query, xᵢ) for alle i. 2) Sorter, behold de k minste. 3) Klassifisering: majoritetsstemme. Regresjon: snitt (evt. vektet med 1/dist).",
+  },
+  {
+    id: "dte2501-c-adaboost-steps",
+    category: "praktisk",
+    topic: "DTE-2501 ML",
+    question: "AdaBoost — sentrale steg per runde?",
+    answer:
+      "1) Tren svak klassifikator på vektet data. 2) Beregn ε_m (vektet feilrate). 3) α_m = ½·ln((1−ε_m)/ε_m). 4) Oppdater eksempel-vekter (øk for misklassifiserte) og normaliser.",
+  },
+  {
+    id: "dte2501-c-gradient-boost-steps",
+    category: "praktisk",
+    topic: "DTE-2501 ML",
+    question: "Gradient Boosting — hva gjør hver iterasjon?",
+    answer:
+      "1) Beregn negativ gradient av tap = pseudoresiduals. 2) Tren et nytt tre til å predikere residualene. 3) Oppdater ŷ_m = ŷ_{m-1} + η·h_m(x). Repeter M runder.",
+  },
+  {
+    id: "dte2501-c-pca-steps",
+    category: "praktisk",
+    topic: "DTE-2501 ML",
+    question: "PCA-pipeline — fra X til Z?",
+    answer:
+      "1) Mean-centre (og evt. standardiser). 2) Beregn Σ = X̃ᵀX̃/(N−1). 3) Egenvektor-dekomp: Σv = λv. 4) Sorter λ avtagende, velg k største. 5) Z = X̃·V_k.",
+  },
+  {
+    id: "dte2501-c-aco-loop",
+    category: "praktisk",
+    topic: "DTE-2501 ML",
+    question: "ACO-loopen for TSP — stegene?",
+    answer:
+      "1) Init feromon τ. 2) Hver maur bygger tur via stokastiske valg ∝ τ^α·η^β. 3) Beregn L_k. 4) Fordamp: τ ← (1−ρ)τ. 5) Legg til Δτ = Q/L_k på besøkte kanter. Repeter.",
+  },
+  {
+    id: "dte2501-c-knn-k-choice",
+    category: "praktisk",
+    topic: "DTE-2501 ML",
+    question: "Hvordan velger man k i k-NN?",
+    answer:
+      "Kryssvalidér over k ∈ {1,3,5,…,√N}, velg den med høyest validation accuracy. Bruk oddetall for binær klassifikasjon (unngår uavgjort).",
+  },
+  {
+    id: "dte2501-c-kmeans-pp",
+    category: "praktisk",
+    topic: "DTE-2501 ML",
+    question: "k-means++ init — hvorfor og hvordan?",
+    answer:
+      "Bedre init enn random: velg μ₁ tilfeldig, så velg hvert neste senter med sannsynlighet ∝ D(x)² (avstanden til nærmeste eksisterende senter)². Spredt init → mindre risiko for lokalt min.",
+  },
+  {
+    id: "dte2501-c-roulette",
+    category: "praktisk",
+    topic: "DTE-2501 ML",
+    question: "Roulette wheel-seleksjon — hvordan?",
+    answer:
+      "p_i = f_i / Σⱼ f_j. Tegn et tilfeldig tall i [0, Σf), finn hvilket kumulative vindu det treffer. Risiko: ett dominerende individ tar over.",
+  },
+  {
+    id: "dte2501-c-one-point-x",
+    category: "praktisk",
+    topic: "DTE-2501 ML",
+    question: "One-point crossover — beskriv.",
+    answer:
+      "Velg et cut-point i kromosomet. Barn 1 = forelder A før cut + forelder B etter cut. Barn 2 = motsatt. Bevarer sammenheng på lokale gen-blokker.",
+  },
+  {
+    id: "dte2501-c-aic-bic",
+    category: "praktisk",
+    topic: "DTE-2501 ML",
+    question: "AIC og BIC — hva er forskjellen?",
+    answer:
+      "Begge straffer modellkompleksitet for å velge antall komponenter (f.eks. K i GMM). AIC = −2logL + 2p. BIC = −2logL + p·ln(N). BIC straffer parametre hardere — foretrekker enklere modeller.",
+  },
+  {
+    id: "dte2501-c-knn-vekt",
+    category: "praktisk",
+    topic: "DTE-2501 ML",
+    question: "Vektet k-NN — hva er forskjellen?",
+    answer:
+      "I stedet for én stemme per nabo, vektes stemmen med 1/avstand. Nærmere naboer teller mer. Reduserer hjørne-effekter og er typisk litt bedre enn uniform vekt.",
+  },
+  {
+    id: "dte2501-c-stop-words",
+    category: "praktisk",
+    topic: "DTE-2501 ML",
+    question: "Hva er stop-words og hvorfor fjerne dem?",
+    answer:
+      "Vanlige ord uten innholdsbetydning: «og», «er», «the», «is». Fjernes før vektorisering for å redusere støy og dimensjonalitet. Moderne embeddings beholder dem ofte.",
+  },
+  {
+    id: "dte2501-c-mut-rate",
+    category: "praktisk",
+    topic: "DTE-2501 ML",
+    question: "Hvilken mutasjonsrate p_m er typisk i GA?",
+    answer:
+      "p_m ≈ 1/L, der L er kromosomlengden. Gir i snitt én mutasjon per individ. For lavt → for liten utforskning; for høyt → random walk.",
+  },
+  {
+    id: "dte2501-c-tsp-naive",
+    category: "praktisk",
+    topic: "DTE-2501 ML",
+    question: "Hvorfor er naiv TSP O(n!) og Held-Karp O(n²·2ⁿ)?",
+    answer:
+      "Naiv: prøv alle n! permutasjoner av byer. Held-Karp: state-rom 2ⁿ subsett × n endesteder, hver transisjon O(n). 2ⁿ vokser mye langsommere enn n!.",
+  },
+  {
+    id: "dte2501-c-bow-limit",
+    category: "praktisk",
+    topic: "DTE-2501 ML",
+    question: "Hva er hovedsvakheten ved Bag-of-Words?",
+    answer:
+      "Ignorerer ordrekkefølge og syntaks. «Hund biter mann» = «Mann biter hund». Også: ingen forståelse av synonymer — hvert ord er sin egen dimensjon.",
+  },
+  {
+    id: "dte2501-c-rmse-mae",
+    category: "praktisk",
+    topic: "DTE-2501 ML",
+    question: "RMSE vs MAE for regresjon — hva er forskjellen?",
+    answer:
+      "RMSE = √mean((y−ŷ)²) straffer store feil ekstra mye (kvadratet). MAE = mean(|y−ŷ|) behandler alle feil likt. RMSE er mer følsom for outliers.",
+  },
+  {
+    id: "dte2501-c-overfit",
+    category: "praktisk",
+    topic: "DTE-2501 ML",
+    question: "Hva er overfitting — i én setning?",
+    answer:
+      "Modellen lærer treningsdataens støy istedenfor underliggende mønster — høy trenings-accuracy, lav test-accuracy. Symptom på for høy variance / for kompleks modell.",
+  },
+  {
+    id: "dte2501-c-mse-vs-r2",
+    category: "praktisk",
+    topic: "DTE-2501 ML",
+    question: "Hva forteller R²?",
+    answer:
+      "R² = 1 − SS_res/SS_tot. Andel av variansen i y forklart av modellen. R²=1 = perfekt; R²=0 = like god som å gjette snittet; R²<0 = verre enn snitt-modell.",
+  },
+  {
+    id: "dte2501-c-clustering-pipeline",
+    category: "praktisk",
+    topic: "DTE-2501 ML",
+    question: "Standard clustering-pipeline på rå data?",
+    answer:
+      "1) Skalér (StandardScaler). 2) Evt. PCA for dimensjonsreduksjon. 3) Velg k via albue/silhouette. 4) Kjør k-Means eller GMM. 5) Evaluer cluster-kvalitet og tolk semantisk.",
+  },
+  {
+    id: "dte2501-c-when-rl",
+    category: "praktisk",
+    topic: "DTE-2501 ML",
+    question: "Når bruker man RL fremfor supervised learning?",
+    answer:
+      "Når riktig handling ikke er kjent på forhånd, men man kan måle belønning over tid. Sekvensielle beslutninger, ingen labeled data, men miljø man kan interagere med. Eks: spill, robotikk.",
+  },
 ];
 
 export const CARD_CATEGORIES: { id: FlashCard["category"]; label: string }[] = [
@@ -2313,4 +4074,5 @@ export const CARD_CATEGORIES: { id: FlashCard["category"]; label: string }[] = [
   { id: "http", label: "HTTP / API" },
   { id: "sikkerhet", label: "Sikkerhet" },
   { id: "praktisk", label: "Praktisk" },
+  { id: "statistikk", label: "Statistikk" },
 ];

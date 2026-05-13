@@ -49,6 +49,7 @@ import { content as linuxBruk } from "./linux-bruk";
 import { content as shellScripting } from "./shell-scripting";
 import { content as brukereRettigheter } from "./brukere-rettigheter";
 import { content as virtualisering } from "./virtualisering";
+import { content as dte2505ObligerGuide } from "./dte2505-obliger-guide";
 import { content as trinn1 } from "./trinn-1-transistor";
 import { content as trinn2 } from "./trinn-2-nand-porter";
 import { content as trinn3 } from "./trinn-3-adders";
@@ -111,6 +112,36 @@ import { content as hashingDypere } from "./hashing-dypere";
 import { content as dynamicProgramming } from "./dynamic-programming";
 import { content as brukerhandtering } from "./brukerhandtering";
 import { content as dte2509 } from "./dte-2509";
+import { content as dte2602Prosjektflyt } from "./dte2602-prosjektflyt";
+import { content as dte2602Evaluering } from "./dte2602-evaluering-metoder";
+import { content as dte2602Etikk } from "./dte2602-etikk-filosofi";
+import { content as dte2602MappeMal } from "./dte2602-mappe-mal";
+import { content as dte2602EdaPandas } from "./dte2602-eda-pandas";
+import { content as dte2602PreprocessingPipeline } from "./dte2602-preprocessing-pipeline";
+import { content as dte2602TreesRf } from "./dte2602-trees-rf";
+import { content as dte2602BiasVarians } from "./dte2602-bias-varians";
+import { content as dte2602EvaluationRoc } from "./dte2602-evaluation-roc";
+import { content as dte2501Knn } from "./dte2501-knn";
+import { content as dte2501Regresjon } from "./dte2501-supervised-regresjon";
+import { content as dte2501KMeans } from "./dte2501-kmeans-clustering";
+import { content as dte2501Genetic } from "./dte2501-genetic-algorithms";
+import { content as dte2501Nlp } from "./dte2501-nlp-intro";
+import { content as dte2501Pca } from "./dte2501-pca";
+import { content as dte2501Gmm } from "./dte2501-gmm";
+import { content as dte2501Ensemble } from "./dte2501-ensemble";
+import { content as dte2501Reinforcement } from "./dte2501-reinforcement";
+import { content as dte2501Dp } from "./dte2501-dp";
+import { content as tek1501 } from "./tek-1501";
+import { content as tek1Deskriptiv } from "./tek1-deskriptiv";
+import { content as tek1Sannsynlighet } from "./tek1-sannsynlighet";
+import { content as tek1Fordelinger } from "./tek1-fordelinger";
+import { content as tek1StatistiskAnalyse } from "./tek1-statistisk-analyse";
+import { content as tek1Kombinatorikk } from "./tek1-kombinatorikk";
+import { content as tek1DiskreteFordelinger } from "./tek1-diskrete-fordelinger";
+import { content as tek1KontinuerligeFordelinger } from "./tek1-kontinuerlige-fordelinger";
+import { content as tek1ForventningClt } from "./tek1-forventning-clt";
+import { content as tek1EstimeringKi } from "./tek1-estimering-ki";
+import { content as tek1HypotesetestRegresjon } from "./tek1-hypotesetest-regresjon";
 import type { TrinnContent } from "../types";
 
 export const TRINN: TrinnContent[] = [
@@ -125,6 +156,7 @@ export const TRINN: TrinnContent[] = [
   dte2501, sokAlgoritmer, csp, logiskResonnering, planlegging, bayes,
   flaskLivssyklus, pythonDrill, httpAnatomi,
   dte2505, osGrunnlag, linuxBruk, shellScripting, brukereRettigheter, virtualisering,
+  dte2505ObligerGuide,
   trinn1, trinn2, trinn3, trinn4, trinn5, trinn6, trinn7, trinn8, trinn9, trinn10,
   dte2802, csharpGrunnlag, aspnetMvc, aspnetWebapi, efCore, blazor,
   dte2502, backpropDyp, cnn, regularisering, optimering, pytorchTf,
@@ -139,6 +171,18 @@ export const TRINN: TrinnContent[] = [
   javascriptGrunnlag, typescript, reactGrunnlag, cssModerne,
   traer, graferDypere, hashingDypere, dynamicProgramming,
   dte2509, brukerhandtering,
+  // DTE-2602 — portfolio
+  dte2602Prosjektflyt, dte2602Evaluering, dte2602Etikk, dte2602MappeMal,
+  dte2602EdaPandas, dte2602PreprocessingPipeline, dte2602TreesRf,
+  dte2602BiasVarians, dte2602EvaluationRoc,
+  // DTE-2501 — moderne ML-spor (eksamen-pensum)
+  dte2501Knn, dte2501Regresjon, dte2501KMeans, dte2501Genetic, dte2501Nlp,
+  dte2501Pca, dte2501Gmm, dte2501Ensemble, dte2501Reinforcement, dte2501Dp,
+  // TEK-1501 — statistikk
+  tek1501, tek1Deskriptiv, tek1Sannsynlighet, tek1Fordelinger,
+  tek1StatistiskAnalyse, tek1Kombinatorikk, tek1DiskreteFordelinger,
+  tek1KontinuerligeFordelinger, tek1ForventningClt, tek1EstimeringKi,
+  tek1HypotesetestRegresjon,
 ];
 
 import { curriculumIndexOf } from "../curriculum";

@@ -11,7 +11,8 @@ export type CardCategory =
   | "flask"
   | "http"
   | "sikkerhet"
-  | "praktisk";
+  | "praktisk"
+  | "statistikk";
 
 export interface FlashCard {
   id: string;
