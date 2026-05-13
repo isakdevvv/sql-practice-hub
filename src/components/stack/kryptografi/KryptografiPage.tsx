@@ -3,6 +3,7 @@ import { ArrowRight, Lightbulb } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
 import { AesGcmDemo } from "./AesGcmDemo";
+import { HashAndHmac } from "./HashAndHmac";
 
 const STEPS = [
   { title: "Hva krypto faktisk beskytter mot", anchor: "trusler" },
@@ -10,6 +11,7 @@ const STEPS = [
   { title: "AES-GCM i praksis", anchor: "aes-gcm" },
   { title: "Asymmetrisk kryptering", anchor: "asymmetrisk" },
   { title: "Hash-funksjoner", anchor: "hash" },
+  { title: "Hash & HMAC (live)", anchor: "hash-hmac" },
   { title: "MAC og HMAC — integritet med nøkkel", anchor: "mac" },
   { title: "Digital signatur", anchor: "signatur" },
   { title: "PKI og sertifikater", anchor: "pki" },
@@ -180,8 +182,19 @@ Kravene til en kryptografisk hash:
           </p>
         </section>
 
+        <section id="hash-hmac" className="mb-10">
+          <h2 className="text-xl font-semibold mb-3">6. Hash &amp; HMAC (live demo)</h2>
+          <p className="text-sm text-muted-foreground mb-3">
+            Skriv en streng og se hvordan fire hash-familier (MD5, SHA-1, SHA-256, SHA-512)
+            beregnes samtidig — alle via <code className="font-mono">node-forge</code>. Endre
+            ÉN bokstav og se avalanche-effekten i praksis. Under: HMAC-SHA-256 med valgbar
+            nøkkel — kjernen i JWT-tokens og API-signering.
+          </p>
+          <HashAndHmac />
+        </section>
+
         <section id="mac" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">6. MAC og HMAC — integritet med nøkkel</h2>
+          <h2 className="text-xl font-semibold mb-3">7. MAC og HMAC — integritet med nøkkel</h2>
           <p className="text-sm text-muted-foreground mb-4">
             En hash alene viser bare integritet hvis du STOLER på hashen som ble sendt.
             Hvis angriperen endrer både meldingen og hashen, merker du ingenting.{" "}
@@ -206,7 +219,7 @@ Angriper uten K kan ikke beregne riktig tag.`}</pre>
         </section>
 
         <section id="signatur" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">7. Digital signatur</h2>
+          <h2 className="text-xl font-semibold mb-3">8. Digital signatur</h2>
           <p className="text-sm text-muted-foreground mb-4">
             MAC krever DELT nøkkel — begge sider må ha den. Hva om du vil at HVEM SOM
             HELST skal kunne verifisere at det er DU som signerte? Da trenger du
@@ -231,7 +244,7 @@ Garantier:
         </section>
 
         <section id="pki" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">8. PKI og sertifikater</h2>
+          <h2 className="text-xl font-semibold mb-3">9. PKI og sertifikater</h2>
           <p className="text-sm text-muted-foreground mb-4">
             Problem: hvordan vet du at en gitt public key faktisk tilhører
             «nettbank.no» og ikke en angriper? Løsning:{" "}
@@ -260,7 +273,7 @@ Verifisering:
         </section>
 
         <section id="feller" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">9. Vanlige feller</h2>
+          <h2 className="text-xl font-semibold mb-3">10. Vanlige feller</h2>
           <div className="space-y-3 text-sm">
             <div className="rounded-lg border border-amber-500/30 bg-amber-500/5 p-4">
               <strong>«Vi krypterer passordet i databasen»</strong> — feil terminologi.
