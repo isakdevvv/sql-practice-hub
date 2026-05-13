@@ -1,5 +1,6 @@
 import type { PyExercise } from "./types";
 import { DEMO_APP_PYTHON } from "../api-konsoll/demoApp";
+import { DTE2507_EXERCISES } from "./exercises-dte2507";
 import { PY_DTE2602_EXERCISES } from "./exercises-dte2602";
 import { DTE2505_EXERCISES } from "./exercises-dte2505";
 import { PY_EXERCISES_DTE2501 } from "./exercises-dte2501";
@@ -5945,6 +5946,792 @@ print(f"t = {t_stat:.3f}, p = {p_val:.4f}")
       },
     ],
   },
+
+  // ============================================================
+  // DTE-2507 — Socket-programmering (TCP, UDP, threading, TLS, krypto)
+  //
+  // Pyodide har ikke ekte sockets — vi har en in-process shim (socketShim.ts)
+  // som emulerer socket.socket() med kø-baserte pipes. Studenter kan derfor
+  // skrive ekte-utseende kode (bind, listen, accept, send, recv) og kjore det.
+  // For oppgaver der server-loopen ellers ville blokkere evig kjorer vi den
+  // i en bakgrunnstrad — Python's threading-modul finnes i Pyodide.
+  // ============================================================
+  {
+    id: "sock-tcp-echo-server",
+    topic: "Sockets (TCP)",
+    title: "TCP-echo-server — server-loop i ren Python",
+    description:
+      "Skriv en TCP-echo-server som lytter pa port 9000, tar imot ÉN tilkobling, leser opp til 1024 bytes, og sender det samme tilbake. Bruk threading sa main-traden kan starte klienten etterpa.",
+    requires: [],
+    starter: `# === TCP-echo-server ===
+# Server skal:
+#   1) lage en SOCK_STREAM-socket
+#   2) bind til (127.0.0.1, 9000)
+#   3) listen()
+#   4) accept() (returnerer conn, addr)
+#   5) recv(1024), send det samme tilbake, close
+#
+# Klient skal:
+#   1) socket(), connect((127.0.0.1, 9000))
+#   2) sendall(b"Hei server")
+#   3) recv(1024), print resultatet
+
+import socket, threading
+
+def server():
+    # TODO: lag server-socket, bind, listen, accept, recv, send, close
+    pass
+
+# Start serveren i en bakgrunnstrad sa hovedtraden kan kjore klienten.
+t = threading.Thread(target=server, daemon=True)
+t.start()
+
+# === KLIENT ===
+c = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+c.connect(("127.0.0.1", 9000))
+c.sendall(b"Hei server")
+data = c.recv(1024)
+print("Klient mottok:", data.decode())
+c.close()
+`,
+    solution: `import socket, threading
+
+def server():
+    srv = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    srv.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    srv.bind(("127.0.0.1", 9000))
+    srv.listen(1)
+    conn, addr = srv.accept()
+    data = conn.recv(1024)
+    conn.sendall(data)
+    conn.close()
+    srv.close()
+
+t = threading.Thread(target=server, daemon=True)
+t.start()
+
+c = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+c.connect(("127.0.0.1", 9000))
+c.sendall(b"Hei server")
+data = c.recv(1024)
+print("Klient mottok:", data.decode())
+c.close()
+`,
+    hints: [
+      "Server-loopen: socket.socket(AF_INET, SOCK_STREAM); bind((host, port)); listen(); conn, addr = accept().",
+      "accept() blokkerer til en klient kobler til. Returnerer (conn, addr).",
+      "Husk a close() bade conn og srv etter du er ferdig.",
+    ],
+  },
+
+  {
+    id: "sock-tcp-client",
+    topic: "Sockets (TCP)",
+    title: "TCP-klient som snakker med en eksisterende server",
+    description:
+      "En echo-server kjorer allerede pa (127.0.0.1, 8080) — den er startet for deg. Skriv klient-koden som sender 'PING' og printer svaret.",
+    requires: [],
+    setup: `
+import socket, threading
+
+def _bg_server():
+    srv = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    srv.bind(("127.0.0.1", 8080))
+    srv.listen(1)
+    conn, _ = srv.accept()
+    data = conn.recv(1024)
+    conn.sendall(b"PONG: " + data)
+    conn.close()
+    srv.close()
+
+threading.Thread(target=_bg_server, daemon=True).start()
+import time as _t; _t.sleep(0.01)  # gi serveren litt tid pa seg
+`,
+    starter: `import socket
+
+# === OPPGAVE ===
+# Koble til 127.0.0.1:8080
+# Send b"PING"
+# Les opp til 1024 bytes
+# Print svaret
+
+c = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+# TODO: skriv koden under
+`,
+    solution: `import socket
+
+c = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+c.connect(("127.0.0.1", 8080))
+c.sendall(b"PING")
+print(c.recv(1024).decode())
+c.close()
+`,
+    hints: [
+      "connect() tar en tuple (host, port).",
+      "sendall() looper til alt er sendt — bedre enn send() som kan vere kort.",
+      "recv(n) returnerer bytes — bruk .decode() for a fa str.",
+    ],
+  },
+
+  {
+    id: "sock-udp-time-server",
+    topic: "Sockets (UDP)",
+    title: "UDP-time-server — returner epoch time",
+    description:
+      "Skriv en UDP-server som lytter pa port 1234. For hver mottatte datagram skal den svare med string(int(time.time())). Klienten sender 'TID?' og forventer epoch som tekst.",
+    requires: [],
+    starter: `import socket, threading, time
+
+def server():
+    # TODO: lag SOCK_DGRAM-socket, bind, recvfrom, sendto
+    pass
+
+threading.Thread(target=server, daemon=True).start()
+
+# Klient
+c = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+c.sendto(b"TID?", ("127.0.0.1", 1234))
+data, _ = c.recvfrom(1024)
+print("Server tid:", data.decode())
+c.close()
+`,
+    solution: `import socket, threading, time
+
+def server():
+    srv = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    srv.bind(("127.0.0.1", 1234))
+    data, addr = srv.recvfrom(1024)
+    srv.sendto(str(int(time.time())).encode(), addr)
+    srv.close()
+
+threading.Thread(target=server, daemon=True).start()
+
+c = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+c.sendto(b"TID?", ("127.0.0.1", 1234))
+data, _ = c.recvfrom(1024)
+print("Server tid:", data.decode())
+c.close()
+`,
+    hints: [
+      "UDP bruker SOCK_DGRAM, ikke SOCK_STREAM.",
+      "recvfrom returnerer (data, addr) — du trenger addr for a kunne sendto tilbake.",
+      "Bruk str(int(time.time())).encode() for a fa epoch som bytes.",
+    ],
+  },
+
+  {
+    id: "sock-http-get-raw",
+    topic: "HTTP via sockets",
+    title: "HTTP GET med rene sockets (uten requests-biblioteket)",
+    description:
+      "Skriv en mini-HTTP-klient som sender en GET /hello mot 127.0.0.1:8000 og leser hele svaret. Server-en er startet for deg og svarer alltid '200 OK Hei!'.",
+    requires: [],
+    setup: `
+import socket, threading
+
+def _bg_server():
+    srv = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    srv.bind(("127.0.0.1", 8000))
+    srv.listen(1)
+    conn, _ = srv.accept()
+    _ = conn.recv(4096)  # ignorer request-en for enkelhets skyld
+    body = b"Hei!"
+    resp = (
+        b"HTTP/1.1 200 OK\\r\\n"
+        b"Content-Type: text/plain\\r\\n"
+        b"Content-Length: " + str(len(body)).encode() + b"\\r\\n"
+        b"Connection: close\\r\\n\\r\\n" + body
+    )
+    conn.sendall(resp)
+    conn.close()
+    srv.close()
+
+threading.Thread(target=_bg_server, daemon=True).start()
+import time as _t; _t.sleep(0.01)
+`,
+    starter: `import socket
+
+# === OPPGAVE ===
+# 1) Koble til 127.0.0.1:8000
+# 2) Send en gyldig HTTP/1.1 GET-request mot /hello.
+#    Husk Host-header og linje-skiller \\r\\n.
+# 3) Les hele responsen til serveren stenger (recv returnerer b"").
+# 4) Print den dekodede responsen.
+
+c = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+# TODO: skriv koden under
+`,
+    solution: `import socket
+
+c = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+c.connect(("127.0.0.1", 8000))
+c.sendall(
+    b"GET /hello HTTP/1.1\\r\\n"
+    b"Host: 127.0.0.1\\r\\n"
+    b"Connection: close\\r\\n\\r\\n"
+)
+chunks = []
+while True:
+    chunk = c.recv(4096)
+    if not chunk:
+        break
+    chunks.append(chunk)
+print(b"".join(chunks).decode())
+c.close()
+`,
+    hints: [
+      "HTTP-request-format: 'GET <path> HTTP/1.1\\r\\nHost: <host>\\r\\n\\r\\n'",
+      "Connection: close gjor at server lukker etter svaret — recv returnerer b\"\" sluttsignal.",
+      "Loop recv(4096) til den returnerer tom bytes.",
+    ],
+  },
+
+  {
+    id: "sock-tcp-multiclient",
+    topic: "Sockets (concurrent)",
+    title: "Concurrent server — én thread per klient",
+    description:
+      "Bygg en TCP-server som kan ta imot to klienter samtidig. Hver tilkobling skal hanteres i sin egen thread. Send en personalisert hilsen tilbake basert pa det klienten sender.",
+    requires: [],
+    starter: `import socket, threading, time
+
+def handle(conn, addr):
+    data = conn.recv(1024).decode()
+    conn.sendall(f"Hei {data}".encode())
+    conn.close()
+
+def server():
+    # TODO: socket, bind 7777, listen, accept-loop som starter thread per accept
+    pass
+
+threading.Thread(target=server, daemon=True).start()
+time.sleep(0.01)
+
+# Test med to klienter
+for navn in ["Ola", "Kari"]:
+    c = socket.socket()
+    c.connect(("127.0.0.1", 7777))
+    c.sendall(navn.encode())
+    print(c.recv(1024).decode())
+    c.close()
+`,
+    solution: `import socket, threading, time
+
+def handle(conn, addr):
+    data = conn.recv(1024).decode()
+    conn.sendall(f"Hei {data}".encode())
+    conn.close()
+
+def server():
+    srv = socket.socket()
+    srv.bind(("127.0.0.1", 7777))
+    srv.listen(5)
+    for _ in range(2):
+        conn, addr = srv.accept()
+        threading.Thread(target=handle, args=(conn, addr), daemon=True).start()
+
+threading.Thread(target=server, daemon=True).start()
+time.sleep(0.05)
+
+for navn in ["Ola", "Kari"]:
+    c = socket.socket()
+    c.connect(("127.0.0.1", 7777))
+    c.sendall(navn.encode())
+    print(c.recv(1024).decode())
+    c.close()
+
+time.sleep(0.05)
+`,
+    hints: [
+      "Server-loopen: accept() returnerer (conn, addr); start en Thread(target=handle, args=(conn, addr)).",
+      "Bruk daemon=True for at threadene ikke skal hindre programmet i a avslutte.",
+      "Med 2 forventede klienter kan du for-loop accept-en akkurat 2 ganger.",
+    ],
+  },
+
+  {
+    id: "sock-parse-http-request",
+    topic: "HTTP via sockets",
+    title: "Parse HTTP-headers fra rå bytes",
+    description:
+      "Du har mottatt en HTTP-request som bytes. Skriv kode som splitter den i (method, path, headers-dict). Headers er linjer 'Key: Value' fram til en tom linje.",
+    requires: [],
+    starter: `raw = (
+    b"GET /produkter?id=5 HTTP/1.1\\r\\n"
+    b"Host: example.com\\r\\n"
+    b"User-Agent: Mozilla/5.0\\r\\n"
+    b"Accept: text/html\\r\\n"
+    b"\\r\\n"
+)
+
+# === OPPGAVE ===
+# Splitt opp raw i:
+#   method = "GET"
+#   path   = "/produkter?id=5"
+#   headers = {"Host": "example.com", "User-Agent": "Mozilla/5.0", "Accept": "text/html"}
+#
+# Print method, path og headers.
+`,
+    solution: `raw = (
+    b"GET /produkter?id=5 HTTP/1.1\\r\\n"
+    b"Host: example.com\\r\\n"
+    b"User-Agent: Mozilla/5.0\\r\\n"
+    b"Accept: text/html\\r\\n"
+    b"\\r\\n"
+)
+
+text = raw.decode("utf-8", errors="replace")
+header_block, _, _body = text.partition("\\r\\n\\r\\n")
+lines = header_block.split("\\r\\n")
+request_line = lines[0]
+method, path, _version = request_line.split(" ")
+
+headers = {}
+for line in lines[1:]:
+    key, _, value = line.partition(": ")
+    headers[key] = value
+
+print("Method :", method)
+print("Path   :", path)
+print("Headers:", headers)
+`,
+    hints: [
+      "Bruk .decode() for a fa en str, sa kan du bruke str-metoder.",
+      ".partition(\"\\r\\n\\r\\n\") splitter pa forste blanke linje (skille mellom headers og body).",
+      "Request-linjen splitter pa mellomrom: METHOD PATH HTTP/x.x",
+    ],
+  },
+
+  {
+    id: "sock-shutdown-half-close",
+    topic: "Sockets (TCP)",
+    title: "shutdown(SHUT_WR) — half-close",
+    description:
+      "Forklarende oppgave: en klient sender alle data, signaliserer 'jeg er ferdig med a sende' med shutdown(SHUT_WR), og leser sa svaret. Server-en venter til recv returnerer b\"\" for a vite at alt er sendt.",
+    requires: [],
+    setup: `
+import socket, threading, time
+
+def _bg():
+    srv = socket.socket()
+    srv.bind(("127.0.0.1", 7600))
+    srv.listen(1)
+    conn, _ = srv.accept()
+    total = b""
+    while True:
+        chunk = conn.recv(4096)
+        if not chunk:
+            break  # klienten har shutdown'et
+        total += chunk
+    conn.sendall(b"Mottok totalt " + str(len(total)).encode() + b" bytes")
+    conn.close()
+    srv.close()
+
+threading.Thread(target=_bg, daemon=True).start()
+time.sleep(0.01)
+`,
+    starter: `import socket
+
+c = socket.socket()
+c.connect(("127.0.0.1", 7600))
+
+# Send tre meldinger
+for msg in [b"hello ", b"world", b" foo"]:
+    c.sendall(msg)
+
+# === OPPGAVE ===
+# Vi vil at serveren skal vite at vi er ferdige a sende, men vi vil
+# fremdeles kunne lese svar. Bruk shutdown(SHUT_WR).
+
+# TODO: c.shutdown(socket.SHUT_WR)
+
+print(c.recv(4096).decode())
+c.close()
+`,
+    solution: `import socket
+
+c = socket.socket()
+c.connect(("127.0.0.1", 7600))
+
+for msg in [b"hello ", b"world", b" foo"]:
+    c.sendall(msg)
+
+c.shutdown(socket.SHUT_WR)
+print(c.recv(4096).decode())
+c.close()
+`,
+    hints: [
+      "shutdown(SHUT_WR) sender FIN men holder lese-retningen apen.",
+      "Uten shutdown vil server-en sin recv-loop blokkere fordi den ikke vet om mer kommer.",
+      "Alternativet er Content-Length-headers eller en linje-avgrenser — protokoll-design.",
+    ],
+  },
+
+  {
+    id: "sock-udp-broadcast-flow",
+    topic: "Sockets (UDP)",
+    title: "UDP: flere klienter, én server",
+    description:
+      "Lag en UDP-server som tar imot 3 datagrams fra ulike klienter og samler dem til en liste. Print listen.",
+    requires: [],
+    starter: `import socket, threading, time
+
+received = []
+
+def server():
+    srv = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    srv.bind(("127.0.0.1", 9999))
+    for _ in range(3):
+        data, addr = srv.recvfrom(1024)
+        received.append((data.decode(), addr[1]))
+    srv.close()
+
+t = threading.Thread(target=server, daemon=True)
+t.start()
+time.sleep(0.01)
+
+# Tre klienter
+for navn in ["Ola", "Kari", "Per"]:
+    # TODO: opprett UDP-socket, send navn til (127.0.0.1, 9999)
+    pass
+
+t.join(timeout=1.0)
+print(received)
+`,
+    solution: `import socket, threading, time
+
+received = []
+
+def server():
+    srv = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    srv.bind(("127.0.0.1", 9999))
+    for _ in range(3):
+        data, addr = srv.recvfrom(1024)
+        received.append((data.decode(), addr[1]))
+    srv.close()
+
+t = threading.Thread(target=server, daemon=True)
+t.start()
+time.sleep(0.01)
+
+for navn in ["Ola", "Kari", "Per"]:
+    c = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    c.sendto(navn.encode(), ("127.0.0.1", 9999))
+    c.close()
+
+t.join(timeout=1.0)
+print(received)
+`,
+    hints: [
+      "UDP-klient trenger ikke connect — bare sendto med dst-addr.",
+      "Hver klient kan lage og lukke sin egen UDP-socket umiddelbart.",
+    ],
+  },
+
+  {
+    id: "sock-tls-konsept-handshake",
+    topic: "TLS / SSL",
+    title: "TLS-handshake — skritt for skritt",
+    description:
+      "Forklar TLS 1.3-handshake-en ved a skrive ut riktig sekvens av meldinger i riktig rekkefolge. Dette er en konseptuell ovelse — vi bygger ikke ekte TLS, men du skal vise at du kjenner stegene.",
+    requires: [],
+    starter: `# Vi skal modellere TLS 1.3 handshake mellom Klient og Server.
+# Hver melding er en (avsender, navn) tuple.
+#
+# Riktig rekkefolge for TLS 1.3 (forenklet):
+#   1. Klient -> Server : Client Hello (med SNI, supported ciphers)
+#   2. Server -> Klient : Server Hello + Certificate + Finished (i én pakke)
+#   3. Klient -> Server : Finished
+#   4. Klient -> Server : Application Data (krypterte HTTP-bytes)
+#
+# OPPGAVE: bygg en liste 'meldinger' med disse fire stegene i riktig rekkefolge
+# og print dem.
+
+meldinger = []
+# TODO: append de fire trinnene
+
+for avsender, navn in meldinger:
+    print(f"{avsender:>7s}  ->  {navn}")
+`,
+    solution: `meldinger = [
+    ("Klient", "Client Hello (SNI, supported ciphers)"),
+    ("Server", "Server Hello + Certificate + Finished"),
+    ("Klient", "Finished"),
+    ("Klient", "Application Data (kryptert HTTP)"),
+]
+for avsender, navn in meldinger:
+    print(f"{avsender:>7s}  ->  {navn}")
+`,
+    hints: [
+      "TLS 1.3 reduserte 2-RTT (TLS 1.2) til 1-RTT — server pakker hello+cert+finished i én pakke.",
+      "SNI gar i klartekst i Client Hello — det er det eneste en passiv sniffer ser av destinasjonen.",
+      "Sertifikatet i 1.3 er kryptert (etter Server Hello-headeren), i 1.2 er det klartekst.",
+    ],
+  },
+
+  {
+    id: "sock-krypto-hash",
+    topic: "Kryptografi",
+    title: "Hashing — SHA-256 av et passord",
+    description:
+      "Beregn SHA-256 av strengen 'hemmelig123' og print resultatet bade som hex og kort byte-lengde.",
+    requires: [],
+    starter: `import hashlib
+
+passord = "hemmelig123"
+# TODO: beregn SHA-256, print hexdigest og lengde i bytes
+`,
+    solution: `import hashlib
+
+passord = "hemmelig123"
+h = hashlib.sha256(passord.encode())
+print("Hex:", h.hexdigest())
+print("Bytes:", h.digest_size)
+`,
+    hints: [
+      "hashlib.sha256(b\"...\") returnerer et hash-objekt — kall .hexdigest() for hex-string.",
+      "digest_size er fast 32 bytes for SHA-256 (256 bits).",
+      "Husk: hashlib trenger bytes, ikke str. Bruk .encode().",
+    ],
+  },
+
+  {
+    id: "sock-krypto-hmac",
+    topic: "Kryptografi",
+    title: "HMAC — autentisert melding",
+    description:
+      "HMAC er en hash som ogsa beviser at sender kjenner et felles nokkel. Beregn HMAC-SHA256 av meldingen 'overfor 1000kr til Per' med nokkel 'shared-secret'.",
+    requires: [],
+    starter: `import hmac, hashlib
+
+key = b"shared-secret"
+msg = b"overfor 1000kr til Per"
+
+# TODO: lag HMAC-objekt, print hexdigest
+`,
+    solution: `import hmac, hashlib
+
+key = b"shared-secret"
+msg = b"overfor 1000kr til Per"
+
+mac = hmac.new(key, msg, hashlib.sha256)
+print("HMAC:", mac.hexdigest())
+
+# Bonus: sjekk om en innkommende MAC matcher
+sent_mac = mac.hexdigest()
+ok = hmac.compare_digest(sent_mac, mac.hexdigest())
+print("Verifikasjon:", "OK" if ok else "FEIL")
+`,
+    hints: [
+      "hmac.new(key, msg, hashlib.sha256) lager et HMAC-objekt — kall .hexdigest().",
+      "compare_digest bruker konstant tid og er trygt mot timing-angrep.",
+      "HMAC beskytter mot lengde-utvidelse, som naken H(key||msg) ikke gjor.",
+    ],
+  },
+
+  {
+    id: "sock-krypto-token-secrets",
+    topic: "Kryptografi",
+    title: "Sikre tilfeldige tokens (secrets-modulen)",
+    description:
+      "Generer et kryptografisk sikkert tilfeldig session-token pa 32 bytes og print det som hex-string. Hvorfor secrets og ikke random?",
+    requires: [],
+    starter: `import secrets
+
+# TODO: generer 32 tilfeldige bytes som hex
+token = ""
+print(token)
+print("Lengde:", len(token), "tegn")
+`,
+    solution: `import secrets
+
+token = secrets.token_hex(32)
+print(token)
+print("Lengde:", len(token), "tegn")
+# token_hex(32) returnerer 32 bytes -> 64 hex-tegn.
+# random.random/randint er IKKE kryptografisk sikker — predikerbar fra seed.
+# secrets bruker OS-CSPRNG (urandom).
+`,
+    hints: [
+      "secrets.token_hex(n) returnerer 2n hex-tegn (én byte = to hex-siffer).",
+      "secrets.token_urlsafe(n) er fin for tokens i URL-er.",
+      "Bruk ALDRI random-modulen for sikkerhets-tokens — det er pseudoslump.",
+    ],
+  },
+
+  {
+    id: "sock-time-wait-quiz",
+    topic: "Sockets (TCP)",
+    title: "TIME_WAIT — forklar feilen",
+    description:
+      "En student kjorer sin server, stopper med Ctrl+C, og restarter umiddelbart. De far 'Address already in use'. Forklar i print hvorfor — og fiks koden.",
+    requires: [],
+    starter: `# === OPPGAVE ===
+# Server-en under feiler ofte ved restart fordi TCP holder den forrige
+# tilkoblingen i TIME_WAIT-tilstand i 60-120 sek for a fange forsinkede
+# pakker.
+#
+# Legg til riktig setsockopt-kall slik at restart fungerer umiddelbart.
+
+import socket, threading
+
+def server():
+    srv = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    # TODO: legg til setsockopt for SO_REUSEADDR
+    srv.bind(("127.0.0.1", 5555))
+    srv.listen(1)
+    srv.close()
+    print("Server startet og stoppet ok")
+
+threading.Thread(target=server, daemon=True).start()
+
+# Restart umiddelbart:
+threading.Thread(target=server, daemon=True).start()
+
+import time; time.sleep(0.05)
+`,
+    solution: `import socket, threading
+
+def server():
+    srv = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    srv.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    srv.bind(("127.0.0.1", 5555))
+    srv.listen(1)
+    srv.close()
+    print("Server startet og stoppet ok")
+
+threading.Thread(target=server, daemon=True).start()
+threading.Thread(target=server, daemon=True).start()
+
+import time; time.sleep(0.05)
+`,
+    hints: [
+      "setsockopt(SOL_SOCKET, SO_REUSEADDR, 1) lar OS rebind selv om gammel TCP-state finnes.",
+      "Gjor det FOR bind(), ikke etter.",
+      "TIME_WAIT er en feature, ikke en bug — beskytter mot at gamle pakker rotes inn i nye tilkoblinger.",
+    ],
+  },
+
+  {
+    id: "sock-tcp-message-framing",
+    topic: "Sockets (TCP)",
+    title: "Meldings-framing — lengde-prefiks",
+    description:
+      "TCP er en byte-stream — du kan ikke regne med at en recv() = en send(). Implementer et enkelt protokoll med 4-byte little-endian lengde foran hver melding.",
+    requires: [],
+    starter: `import socket, threading, time, struct
+
+def server():
+    srv = socket.socket()
+    srv.bind(("127.0.0.1", 6000))
+    srv.listen(1)
+    conn, _ = srv.accept()
+    # === OPPGAVE: les én melding ===
+    # 1) Les 4 bytes lengde
+    # 2) Pakk ut som unsigned int (little-endian): struct.unpack("<I", ...)
+    # 3) Les akkurat 'lengde' bytes til
+    # 4) Print meldingen
+    raw_len = conn.recv(4)
+    # TODO
+    conn.close()
+    srv.close()
+
+threading.Thread(target=server, daemon=True).start()
+time.sleep(0.01)
+
+# Klient
+msg = b"Hei med deg, lange ord forsvinner hvis vi ikke framer."
+c = socket.socket()
+c.connect(("127.0.0.1", 6000))
+c.sendall(struct.pack("<I", len(msg)) + msg)
+c.close()
+time.sleep(0.05)
+`,
+    solution: `import socket, threading, time, struct
+
+def server():
+    srv = socket.socket()
+    srv.bind(("127.0.0.1", 6000))
+    srv.listen(1)
+    conn, _ = srv.accept()
+    raw_len = conn.recv(4)
+    (n,) = struct.unpack("<I", raw_len)
+    payload = b""
+    while len(payload) < n:
+        chunk = conn.recv(n - len(payload))
+        if not chunk:
+            break
+        payload += chunk
+    print(payload.decode())
+    conn.close()
+    srv.close()
+
+threading.Thread(target=server, daemon=True).start()
+time.sleep(0.01)
+
+msg = b"Hei med deg, lange ord forsvinner hvis vi ikke framer."
+c = socket.socket()
+c.connect(("127.0.0.1", 6000))
+c.sendall(struct.pack("<I", len(msg)) + msg)
+c.close()
+time.sleep(0.05)
+`,
+    hints: [
+      "struct.pack('<I', n) gir 4 bytes little-endian unsigned int.",
+      "Loop recv(n - len(buffer)) til du har all data — bare recv(n) en gang er ikke nok pa byte-stream.",
+      "Real-world: HTTP/2, Redis-RESP, alle bruker en variant av denne lengde-prefiks-mekanismen.",
+    ],
+  },
+
+  {
+    id: "sock-port-pa-osi",
+    topic: "Sockets (TCP)",
+    title: "Hvilken port hvilken protokoll?",
+    description:
+      "Print en mapping av port-nummer til protokoll for de mest brukte tjenestene. Lar fingrene huske dem.",
+    requires: [],
+    starter: `# === OPPGAVE ===
+# Bygg en dict med port -> protokoll for tjenestene:
+#   21 FTP
+#   22 SSH
+#   25 SMTP
+#   53 DNS
+#   80 HTTP
+#   110 POP3
+#   143 IMAP
+#   443 HTTPS
+#   3306 MySQL
+#   5432 PostgreSQL
+#
+# Print sortert pa port-nummer.
+
+porter = {}
+# TODO
+
+for port in sorted(porter):
+    print(f"{port:>5}  {porter[port]}")
+`,
+    solution: `porter = {
+    21: "FTP",
+    22: "SSH",
+    25: "SMTP",
+    53: "DNS",
+    80: "HTTP",
+    110: "POP3",
+    143: "IMAP",
+    443: "HTTPS",
+    3306: "MySQL",
+    5432: "PostgreSQL",
+}
+for port in sorted(porter):
+    print(f"{port:>5}  {porter[port]}")
+`,
+    hints: [
+      "Port-numrene under 1024 kalles well-known ports og krever root for a binde til pa Linux.",
+      "DNS er det klassiske UDP-eksemplet (port 53). Resten her er TCP.",
+    ],
+  },
+  ...DTE2507_EXERCISES,
 
   // ============ TEK-1501: 15 STATISTIKK-ØVELSER ============
   {
