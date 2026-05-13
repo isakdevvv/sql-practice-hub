@@ -142,6 +142,10 @@ import { content as tek1KontinuerligeFordelinger } from "./tek1-kontinuerlige-fo
 import { content as tek1ForventningClt } from "./tek1-forventning-clt";
 import { content as tek1EstimeringKi } from "./tek1-estimering-ki";
 import { content as tek1HypotesetestRegresjon } from "./tek1-hypotesetest-regresjon";
+import { content as dte2505RwxKalkulator } from "./dte2505-rwx-kalkulator";
+import { content as dte2505ProsesserSignaler } from "./dte2505-prosesser-signaler";
+import { content as dte2505BashScripts } from "./dte2505-bash-scripts";
+import { content as dte2505Obliger } from "./dte2505-obliger";
 import type { TrinnContent } from "../types";
 
 export const TRINN: TrinnContent[] = [
@@ -157,6 +161,7 @@ export const TRINN: TrinnContent[] = [
   flaskLivssyklus, pythonDrill, httpAnatomi,
   dte2505, osGrunnlag, linuxBruk, shellScripting, brukereRettigheter, virtualisering,
   dte2505ObligerGuide,
+  dte2505RwxKalkulator, dte2505ProsesserSignaler, dte2505BashScripts, dte2505Obliger,
   trinn1, trinn2, trinn3, trinn4, trinn5, trinn6, trinn7, trinn8, trinn9, trinn10,
   dte2802, csharpGrunnlag, aspnetMvc, aspnetWebapi, efCore, blazor,
   dte2502, backpropDyp, cnn, regularisering, optimering, pytorchTf,
