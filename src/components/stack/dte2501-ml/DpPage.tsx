@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import {Lightbulb, Infinity as InfinityIcon, ArrowLeft } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
+import { TspDpVisualizer } from "./TspDpVisualizer";
 
 const STEPS = [
   { title: "DP-prinsipp", anchor: "intro" },
@@ -10,6 +11,7 @@ const STEPS = [
   { title: "0/1 Knapsack", anchor: "knap" },
   { title: "TSP — brute force", anchor: "tsp-bf" },
   { title: "Held-Karp DP for TSP", anchor: "held-karp" },
+  { title: "Interaktiv: Held-Karp DP-tabell", anchor: "held-karp-vis" },
   { title: "DP og RL", anchor: "dp-rl" },
   { title: "Eksamen-typiske spørsmål", anchor: "exam" },
 ];
@@ -233,8 +235,21 @@ metaheuristikk-trinnet, og brute-force som baseline.`}</pre>
           </div>
         </section>
 
+        <section id="held-karp-vis" className="mb-10">
+          <h2 className="text-xl font-semibold mb-3">
+            7. Interaktiv: Held-Karp DP-tabell, steg-for-steg
+          </h2>
+          <p className="text-sm text-muted-foreground mb-4">
+            Velg 4 eller 5 byer. Klikk «Fyll neste celle» for å se DP-tabellen
+            bygges opp én tilstand av gangen — fra base case <code>dp[{`{0}`}][0]=0</code>,
+            via subsets med 2 byer, deretter 3, og så videre. Den gule kanten i
+            byene viser hvilken tidligere celle som ga minimumsverdi.
+          </p>
+          <TspDpVisualizer />
+        </section>
+
         <section id="dp-rl" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">7. DP og RL</h2>
+          <h2 className="text-xl font-semibold mb-3">8. DP og RL</h2>
           <p className="text-sm text-muted-foreground mb-4">
             Value Iteration og Policy Iteration ER dynamic programming. Bellman-
             likningen er rekurrens-relasjonen.
@@ -260,7 +275,7 @@ Dette er hvorfor RL og DP er to sider av samme sak. Forskjellen:
         </section>
 
         <section id="exam" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">8. Eksamen-typiske spørsmål</h2>
+          <h2 className="text-xl font-semibold mb-3">9. Eksamen-typiske spørsmål</h2>
           <ul className="space-y-2 text-sm text-muted-foreground list-disc pl-5">
             <li>
               <strong className="text-foreground">«Når kan DP brukes?»</strong> Optimal
