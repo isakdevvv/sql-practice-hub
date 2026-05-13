@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Lightbulb, Layers } from "lucide-react";
+import { Lightbulb, Layers, AlertTriangle } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
 
@@ -98,6 +98,18 @@ Objektivfunksjon vi minimerer (inertia / WCSS):
             Derfor: kjør flere ganger med ulik init (sklearn{" "}
             <code className="font-mono">n_init=10</code>) og behold beste.
           </p>
+
+          <div className="mt-4 rounded-lg border border-brand/30 bg-brand/5 p-4 flex items-start gap-3">
+            <Lightbulb className="h-4 w-4 text-brand mt-0.5 shrink-0" />
+            <div className="text-sm">
+              <span className="font-medium">Tips:</span> bruk alltid{" "}
+              <code className="font-mono">init=&quot;k-means++&quot;</code> og{" "}
+              <code className="font-mono">n_init=10</code>. K-Means++ velger
+              start-sentre som ligger spredt fra hverandre, og n_init kjører hele
+              algoritmen ti ganger og beholder beste run. Sammen reduserer de
+              risiko for dårlig lokalt optimum med en størrelsesorden.
+            </div>
+          </div>
         </section>
 
         <section id="viz" className="mb-10">
@@ -167,6 +179,45 @@ Silhouette-koeffisient s(i) ∈ [-1, 1]:
 
 Velg k som maks. snitt-silhouette over alle punkter.`}</pre>
           </div>
+
+          <div className="overflow-hidden rounded-lg border border-border">
+            <table className="w-full text-sm">
+              <thead className="bg-muted/50">
+                <tr>
+                  <th className="text-left font-semibold px-4 py-2 w-40">Metode</th>
+                  <th className="text-left font-semibold px-4 py-2">Hva måles</th>
+                  <th className="text-left font-semibold px-4 py-2">Velg k som</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-2 font-medium">Elbow (WCSS)</td>
+                  <td className="px-4 py-2 text-muted-foreground">Sum kvadrert avstand til sentrum</td>
+                  <td className="px-4 py-2 text-muted-foreground">Albuen — der kurven knekker</td>
+                </tr>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-2 font-medium">Silhouette</td>
+                  <td className="px-4 py-2 text-muted-foreground">Hvor «riktig» plassert hvert punkt er</td>
+                  <td className="px-4 py-2 text-muted-foreground">Maks snitt-silhouette ∈ [−1, 1]</td>
+                </tr>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-2 font-medium">Gap statistic</td>
+                  <td className="px-4 py-2 text-muted-foreground">WCSS sammenlignet med uniform null-data</td>
+                  <td className="px-4 py-2 text-muted-foreground">Minste k der gap(k) ≥ gap(k+1) − sₖ₊₁</td>
+                </tr>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-2 font-medium">Davies-Bouldin</td>
+                  <td className="px-4 py-2 text-muted-foreground">Snitt-likhet mellom hvert klustre og sitt nærmeste</td>
+                  <td className="px-4 py-2 text-muted-foreground">Lavest DB-indeks</td>
+                </tr>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-2 font-medium">Calinski-Harabasz</td>
+                  <td className="px-4 py-2 text-muted-foreground">Ratio mellom inter- og intra-klustre-spredning</td>
+                  <td className="px-4 py-2 text-muted-foreground">Høyest CH-skår</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </section>
 
         <section id="fails" className="mb-10">
@@ -204,6 +255,18 @@ Velg k som maks. snitt-silhouette over alle punkter.`}</pre>
               </p>
             </div>
           </div>
+
+          <div className="mt-4 rounded-lg border border-amber-500/30 bg-amber-500/5 p-4 flex items-start gap-3">
+            <AlertTriangle className="h-4 w-4 text-amber-500 mt-0.5 shrink-0" />
+            <div className="text-sm">
+              <span className="font-medium">Felle:</span> tre datageometrier knuser
+              k-Means — <strong>ikke-konvekse</strong> former (halvmåner, ringer),
+              klustre med <strong>veldig ulik størrelse</strong> (overrepresentert
+              vinner), og klustre med <strong>ulik tetthet</strong> (de tette blir
+              splittet). Hvis du ser en av disse i en EDA-plot, bruk DBSCAN,
+              spectral clustering eller GMM i stedet.
+            </div>
+          </div>
         </section>
 
         <section id="hierarchical" className="mb-10">
@@ -220,6 +283,51 @@ Reproducerbar:  bare med n_init=mange + seed     deterministisk
 Når bruke hva?
   - k-Means: stor data, du vet hvor mange grupper, kuleformede
   - Hierarkisk: liten data, vil utforske ulike k visuelt`}</pre>
+          </div>
+
+          <div className="mt-4 overflow-hidden rounded-lg border border-border">
+            <table className="w-full text-sm">
+              <thead className="bg-muted/50">
+                <tr>
+                  <th className="text-left font-semibold px-4 py-2 w-32">Egenskap</th>
+                  <th className="text-left font-semibold px-4 py-2">k-Means</th>
+                  <th className="text-left font-semibold px-4 py-2">Hierarkisk</th>
+                  <th className="text-left font-semibold px-4 py-2">DBSCAN</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-2 font-medium">Klustre-form</td>
+                  <td className="px-4 py-2 text-muted-foreground">Kuleformet</td>
+                  <td className="px-4 py-2 text-muted-foreground">Vilkårlig (linkage)</td>
+                  <td className="px-4 py-2 text-muted-foreground">Vilkårlig</td>
+                </tr>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-2 font-medium">k på forhånd</td>
+                  <td className="px-4 py-2 text-muted-foreground">Ja</td>
+                  <td className="px-4 py-2 text-muted-foreground">Nei (kuttes etterpå)</td>
+                  <td className="px-4 py-2 text-muted-foreground">Nei (ε + minPts styrer)</td>
+                </tr>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-2 font-medium">Ytelse</td>
+                  <td className="px-4 py-2 text-muted-foreground">O(n·k·iter) — rask</td>
+                  <td className="px-4 py-2 text-muted-foreground">O(n²)–O(n³) — treg</td>
+                  <td className="px-4 py-2 text-muted-foreground">O(n log n) med index</td>
+                </tr>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-2 font-medium">Outliers</td>
+                  <td className="px-4 py-2 text-muted-foreground">Dras inn i klustre</td>
+                  <td className="px-4 py-2 text-muted-foreground">Dras inn (kort linkage)</td>
+                  <td className="px-4 py-2 text-muted-foreground">Markeres som «noise»</td>
+                </tr>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-2 font-medium">Beste på</td>
+                  <td className="px-4 py-2 text-muted-foreground">Stor, kuleformet data</td>
+                  <td className="px-4 py-2 text-muted-foreground">Utforske struktur visuelt</td>
+                  <td className="px-4 py-2 text-muted-foreground">Tetthetsbasert, ujevn data</td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </section>
 

@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Lightbulb, MessageSquare } from "lucide-react";
+import { Lightbulb, MessageSquare, AlertTriangle } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
 
@@ -88,6 +88,61 @@ NORMALISERING — lowercase, fjern punktum, fjern emojis...
 
 Pipeline: raw text → lowercase → split → fjern stoppord → stem/lem`}</pre>
           </div>
+
+          <div className="mt-4 overflow-hidden rounded-lg border border-border">
+            <table className="w-full text-sm">
+              <thead className="bg-muted/50">
+                <tr>
+                  <th className="text-left font-semibold px-4 py-2 w-44">Steg</th>
+                  <th className="text-left font-semibold px-4 py-2">Hva det gjør</th>
+                  <th className="text-left font-semibold px-4 py-2">Når trengs</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-2 font-medium">Tokenisering</td>
+                  <td className="px-4 py-2 text-muted-foreground">Splitter tekst i ord/sub-ord</td>
+                  <td className="px-4 py-2 text-muted-foreground">Alltid — fundamentalt</td>
+                </tr>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-2 font-medium">Lowercase</td>
+                  <td className="px-4 py-2 text-muted-foreground">«Hund» = «hund»</td>
+                  <td className="px-4 py-2 text-muted-foreground">BoW, TF-IDF. Skip for NER (Egennavn matters)</td>
+                </tr>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-2 font-medium">Stopord-fjerning</td>
+                  <td className="px-4 py-2 text-muted-foreground">Fjerner «og, i, å, det»</td>
+                  <td className="px-4 py-2 text-muted-foreground">BoW/TF-IDF. Skip for transformere (de lærer selv)</td>
+                </tr>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-2 font-medium">Stemming</td>
+                  <td className="px-4 py-2 text-muted-foreground">Regelbasert «kutt endelse»</td>
+                  <td className="px-4 py-2 text-muted-foreground">Søk, klustring — rask &amp; grov</td>
+                </tr>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-2 font-medium">Lemmatisering</td>
+                  <td className="px-4 py-2 text-muted-foreground">Ordbok-oppslag av grunnform</td>
+                  <td className="px-4 py-2 text-muted-foreground">Klassifikasjon, QA — krever ordbok</td>
+                </tr>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-2 font-medium">Subword (BPE/WP)</td>
+                  <td className="px-4 py-2 text-muted-foreground">Deler ord i hyppige biter</td>
+                  <td className="px-4 py-2 text-muted-foreground">Transformere, OOV-håndtering</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div className="mt-4 rounded-lg border border-amber-500/30 bg-amber-500/5 p-4 flex items-start gap-3">
+            <AlertTriangle className="h-4 w-4 text-amber-500 mt-0.5 shrink-0" />
+            <div className="text-sm">
+              <span className="font-medium">OOV-problemet:</span> «out-of-vocabulary»
+              betyr ord modellen aldri har sett. BoW/TF-IDF kaster slike ord (mister
+              info). Word2Vec gir UNK-vektor (mister mening). Moderne løsning:
+              subword-tokenisering (BPE, WordPiece, SentencePiece) som garanterer
+              at hvert ord kan settes sammen av kjente biter — null OOV.
+            </div>
+          </div>
         </section>
 
         <section id="bow" className="mb-10">
@@ -150,6 +205,17 @@ I sklearn:
     v = TfidfVectorizer(stop_words="english")
     X = v.fit_transform(["doc1 text...", "doc2 text..."])`}</pre>
           </div>
+
+          <div className="mt-4 rounded-lg border border-brand/30 bg-brand/5 p-4 flex items-start gap-3">
+            <Lightbulb className="h-4 w-4 text-brand mt-0.5 shrink-0" />
+            <div className="text-sm">
+              <span className="font-medium">Tips:</span> bruk{" "}
+              <code className="font-mono">ngram_range=(1, 2)</code> i TfidfVectorizer
+              for å fange bigrams («ikke god», «New York»). Det utvider vokabularet
+              vesentlig, men gir BoW/TF-IDF tilbake litt rekkefølge-info — ofte
+              hopper du opp 2–5 % accuracy på tekst-klassifikasjon nesten gratis.
+            </div>
+          </div>
         </section>
 
         <section id="embeddings" className="mb-10">
@@ -184,6 +250,51 @@ Embeddings gir oss:
 
 Begrensning: hver ord har EN vektor — kan ikke skille polysemi
 ("bank" = pengeinstitusjon vs elvebredd). Løses av transformers/BERT.`}</pre>
+          </div>
+
+          <div className="mt-4 overflow-hidden rounded-lg border border-border">
+            <table className="w-full text-sm">
+              <thead className="bg-muted/50">
+                <tr>
+                  <th className="text-left font-semibold px-4 py-2 w-32">Metode</th>
+                  <th className="text-left font-semibold px-4 py-2">Egenskap</th>
+                  <th className="text-left font-semibold px-4 py-2">Dim</th>
+                  <th className="text-left font-semibold px-4 py-2">Kontekst?</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-2 font-medium">BoW</td>
+                  <td className="px-4 py-2 text-muted-foreground">Ord-tellinger, sparse</td>
+                  <td className="px-4 py-2 text-muted-foreground">|V| (10k–100k)</td>
+                  <td className="px-4 py-2 text-muted-foreground">Nei</td>
+                </tr>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-2 font-medium">TF-IDF</td>
+                  <td className="px-4 py-2 text-muted-foreground">BoW vektet etter sjeldenhet</td>
+                  <td className="px-4 py-2 text-muted-foreground">|V|</td>
+                  <td className="px-4 py-2 text-muted-foreground">Nei</td>
+                </tr>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-2 font-medium">Word2Vec</td>
+                  <td className="px-4 py-2 text-muted-foreground">Tett vektor fra co-occurrence</td>
+                  <td className="px-4 py-2 text-muted-foreground">100–300</td>
+                  <td className="px-4 py-2 text-muted-foreground">Statisk (én vektor per ord)</td>
+                </tr>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-2 font-medium">GloVe</td>
+                  <td className="px-4 py-2 text-muted-foreground">Matrise-faktorisering</td>
+                  <td className="px-4 py-2 text-muted-foreground">50–300</td>
+                  <td className="px-4 py-2 text-muted-foreground">Statisk</td>
+                </tr>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-2 font-medium">BERT/transformere</td>
+                  <td className="px-4 py-2 text-muted-foreground">Attention over kontekst</td>
+                  <td className="px-4 py-2 text-muted-foreground">768+</td>
+                  <td className="px-4 py-2 text-muted-foreground">Ja — én vektor per ord+kontekst</td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </section>
 

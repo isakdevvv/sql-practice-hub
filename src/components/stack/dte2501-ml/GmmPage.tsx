@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Lightbulb, Sparkles } from "lucide-react";
+import { Lightbulb, Sparkles, AlertTriangle } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
 
@@ -138,6 +138,40 @@ Merk paralellen til k-Means:
    k-Means update    = uvektet snitt
    GMM M-step        = r-vektet snitt`}</pre>
           </div>
+
+          <div className="mt-4 overflow-hidden rounded-lg border border-border">
+            <table className="w-full text-sm">
+              <thead className="bg-muted/50">
+                <tr>
+                  <th className="text-left font-semibold px-4 py-2 w-28">Step</th>
+                  <th className="text-left font-semibold px-4 py-2">Hva som beregnes</th>
+                  <th className="text-left font-semibold px-4 py-2">Formel</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-2 font-medium">E-step</td>
+                  <td className="px-4 py-2 text-muted-foreground">Responsibility: P(komponent j produserte xᵢ)</td>
+                  <td className="px-4 py-2 font-mono text-xs">r(i,j) = πⱼN(xᵢ|μⱼ,Σⱼ) / Σₗ πₗN(xᵢ|μₗ,Σₗ)</td>
+                </tr>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-2 font-medium">M-step π</td>
+                  <td className="px-4 py-2 text-muted-foreground">Ny miksevekt</td>
+                  <td className="px-4 py-2 font-mono text-xs">πⱼ ← Nⱼ / n, Nⱼ = Σᵢ r(i,j)</td>
+                </tr>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-2 font-medium">M-step μ</td>
+                  <td className="px-4 py-2 text-muted-foreground">Nytt sentrum (vektet snitt)</td>
+                  <td className="px-4 py-2 font-mono text-xs">μⱼ ← (1/Nⱼ) Σᵢ r(i,j)·xᵢ</td>
+                </tr>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-2 font-medium">M-step Σ</td>
+                  <td className="px-4 py-2 text-muted-foreground">Ny kovariansmatrise (vektet)</td>
+                  <td className="px-4 py-2 font-mono text-xs">Σⱼ ← (1/Nⱼ) Σᵢ r(i,j)·(xᵢ−μⱼ)(xᵢ−μⱼ)ᵀ</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </section>
 
         <section id="vs-kmeans" className="mb-10">
@@ -155,6 +189,101 @@ Sensitiv for skala: ja                    nei (modellerer kovariansen!)
 
 GMM med Σ_j = σ²·I (diagonal og lik) blir nesten k-Means.
 GMM med full Σ_j fanger korrelerte features og ellipse-former.`}</pre>
+          </div>
+
+          <div className="mt-4 overflow-hidden rounded-lg border border-border">
+            <table className="w-full text-sm">
+              <thead className="bg-muted/50">
+                <tr>
+                  <th className="text-left font-semibold px-4 py-2 w-32">Egenskap</th>
+                  <th className="text-left font-semibold px-4 py-2">k-Means</th>
+                  <th className="text-left font-semibold px-4 py-2">GMM</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-2 font-medium">Tilordning</td>
+                  <td className="px-4 py-2 text-muted-foreground">Hard (én klustre)</td>
+                  <td className="px-4 py-2 text-muted-foreground">Soft (sannsynlighet over alle)</td>
+                </tr>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-2 font-medium">Klustre-form</td>
+                  <td className="px-4 py-2 text-muted-foreground">Sirkler (kuleformet)</td>
+                  <td className="px-4 py-2 text-muted-foreground">Ellipser (kovariansen styrer)</td>
+                </tr>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-2 font-medium">Parametre per klustre</td>
+                  <td className="px-4 py-2 text-muted-foreground">d (kun sentrum)</td>
+                  <td className="px-4 py-2 text-muted-foreground">d + d(d+1)/2 + 1</td>
+                </tr>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-2 font-medium">Beregning per i</td>
+                  <td className="px-4 py-2 text-muted-foreground">O(k·d)</td>
+                  <td className="px-4 py-2 text-muted-foreground">O(k·d²) (invertere kovarians)</td>
+                </tr>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-2 font-medium">Modell-valg</td>
+                  <td className="px-4 py-2 text-muted-foreground">Elbow/silhouette</td>
+                  <td className="px-4 py-2 text-muted-foreground">BIC, AIC (probabilistisk kriterium)</td>
+                </tr>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-2 font-medium">Density / outliers</td>
+                  <td className="px-4 py-2 text-muted-foreground">Ikke direkte</td>
+                  <td className="px-4 py-2 text-muted-foreground">Ja — lav p(x) = outlier</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div className="mt-4 overflow-hidden rounded-lg border border-border">
+            <table className="w-full text-sm">
+              <thead className="bg-muted/50">
+                <tr>
+                  <th className="text-left font-semibold px-4 py-2 w-32">Kovarians-type</th>
+                  <th className="text-left font-semibold px-4 py-2">Form</th>
+                  <th className="text-left font-semibold px-4 py-2">Parametre (k klustre, d dim)</th>
+                  <th className="text-left font-semibold px-4 py-2">Bruk når</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-2 font-medium">spherical</td>
+                  <td className="px-4 py-2 text-muted-foreground">Sirkel (σ²·I)</td>
+                  <td className="px-4 py-2 text-muted-foreground">k</td>
+                  <td className="px-4 py-2 text-muted-foreground">Mange klustre, lite data per klustre</td>
+                </tr>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-2 font-medium">diag</td>
+                  <td className="px-4 py-2 text-muted-foreground">Akse-justert ellipse</td>
+                  <td className="px-4 py-2 text-muted-foreground">k·d</td>
+                  <td className="px-4 py-2 text-muted-foreground">Features ukorrelerte men har ulik skala</td>
+                </tr>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-2 font-medium">tied</td>
+                  <td className="px-4 py-2 text-muted-foreground">Samme ellipse for alle klustre</td>
+                  <td className="px-4 py-2 text-muted-foreground">d(d+1)/2</td>
+                  <td className="px-4 py-2 text-muted-foreground">Klustre med antatt lik form</td>
+                </tr>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-2 font-medium">full</td>
+                  <td className="px-4 py-2 text-muted-foreground">Helt fri ellipse per klustre</td>
+                  <td className="px-4 py-2 text-muted-foreground">k·d(d+1)/2</td>
+                  <td className="px-4 py-2 text-muted-foreground">Mye data, ulik form per klustre</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div className="mt-4 rounded-lg border border-amber-500/30 bg-amber-500/5 p-4 flex items-start gap-3">
+            <AlertTriangle className="h-4 w-4 text-amber-500 mt-0.5 shrink-0" />
+            <div className="text-sm">
+              <span className="font-medium">Konvergens og lokale optima:</span>{" "}
+              EM garanterer at log-likelihood øker monotont, men bare til et{" "}
+              <em>lokalt</em> maks. Initialisér med k-Means+ og kjør{" "}
+              <code className="font-mono">n_init=5–10</code>. Hvis en kovarians
+              kollapser mot 0 (én komponent fanger ett enkelt punkt), legg til
+              <code className="font-mono"> reg_covar=1e-6</code> for å unngå singularitet.
+            </div>
           </div>
         </section>
 
