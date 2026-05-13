@@ -149,6 +149,7 @@ import { content as tek1ForventningClt } from "./tek1-forventning-clt";
 import { content as tek1EstimeringKi } from "./tek1-estimering-ki";
 import { content as tek1HypotesetestRegresjon } from "./tek1-hypotesetest-regresjon";
 import { content as tek1Anova } from "./tek1-anova";
+import { content as tek1Proporsjoner } from "./tek1-proporsjoner";
 import type { TrinnContent } from "../types";
 
 export const TRINN: TrinnContent[] = [
@@ -191,7 +192,7 @@ export const TRINN: TrinnContent[] = [
   tek1501, tek1Deskriptiv, tek1Sannsynlighet, tek1Fordelinger,
   tek1StatistiskAnalyse, tek1Kombinatorikk, tek1DiskreteFordelinger,
   tek1KontinuerligeFordelinger, tek1ForventningClt, tek1EstimeringKi,
-  tek1HypotesetestRegresjon, tek1Anova,
+  tek1HypotesetestRegresjon, tek1Anova, tek1Proporsjoner,
 ];
 
 import { curriculumIndexOf } from "../curriculum";

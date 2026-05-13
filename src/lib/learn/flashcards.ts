@@ -4600,6 +4600,80 @@ export const FLASHCARDS: FlashCard[] = [
       "MINST ETT par av gruppemiddel skiller seg. Det betyr IKKE at alle par skiller seg. Gjør post-hoc (Tukey/Bonferroni) for å finne hvilke par som faktisk er signifikant forskjellige.",
   },
 
+  // ============= TEK-1501: PROPORSJONER (9) =============
+  {
+    id: "c-tek1-prop-clt",
+    category: "statistikk",
+    topic: "Proporsjoner",
+    question: "Hva er CLT-betingelsen for inferens om én proporsjon?",
+    answer:
+      "n·p̂ ≥ 10 OG n·(1−p̂) ≥ 10. Da er p̂ tilnærmet normalfordelt og z-baserte CI/tester funker. Hvis brutt: bruk exakt binomial test (Clopper–Pearson-CI) eller Wilson/Agresti-Coull som er robustere.",
+  },
+  {
+    id: "c-tek1-prop-wald-feil",
+    category: "statistikk",
+    topic: "Proporsjoner",
+    question: "Hvorfor er Wald-CI for proporsjon dårlig?",
+    answer:
+      "Wald: p̂ ± z·√(p̂(1−p̂)/n). Når p̂ er nær 0 eller 1 blir SE for liten, og dekningsgraden kan være mye lavere enn 95 %. Ved p̂ = 0 kollapser CI til ett punkt — meningsløst. Bruk Wilson eller Agresti-Coull i stedet.",
+  },
+  {
+    id: "c-tek1-prop-wilson",
+    category: "statistikk",
+    topic: "Proporsjoner",
+    question: "Hva er Wilson-score-CI og hvorfor er den bedre?",
+    answer:
+      "CI = (p̂ + z²/(2n) ± z√(p̂(1−p̂)/n + z²/(4n²))) / (1 + z²/n). Asymmetrisk når p̂ er nær 0 eller 1. Holder seg innenfor [0, 1] og har god dekningsgrad selv ved liten n. Default i R's prop.test.",
+  },
+  {
+    id: "c-tek1-prop-ac",
+    category: "statistikk",
+    topic: "Proporsjoner",
+    question: "Hva er Agresti–Coull-CI («pluss-fire»)?",
+    answer:
+      "Legg til z²/2 suksesser og z²/2 fiaskoer, så gjør Wald: p̃ = (x + z²/2)/(n + z²), CI = p̃ ± z√(p̃(1−p̃)/(n+z²)). Ved 95 %: ~2 av hver. Enkel som Wald, nesten like god som Wilson.",
+  },
+  {
+    id: "c-tek1-prop-1samp-ztest",
+    category: "statistikk",
+    topic: "Proporsjoner",
+    question: "Test av én proporsjon: z = ?",
+    answer:
+      "z = (p̂ − p₀) / √(p₀(1−p₀)/n). Viktig: bruk p₀ (ikke p̂) i SE — vi regner under H₀. CLT-sjekk gjøres med n·p₀ ≥ 10 og n(1−p₀) ≥ 10.",
+  },
+  {
+    id: "c-tek1-prop-2-pooled-vs-unpooled",
+    category: "statistikk",
+    topic: "Proporsjoner",
+    question: "Pooled vs unpooled SE for to proporsjoner — hvilken når?",
+    answer:
+      "KI for p₁ − p₂: bruk UNPOOLED SE (separate p̂ᵢ — vi antar ikke at de er like). Test av H₀: p₁ = p₂: bruk POOLED SE med p̂_pool = (x₁+x₂)/(n₁+n₂) — under H₀ er proporsjonene like, så samme p må estimeres.",
+  },
+  {
+    id: "c-tek1-prop-sample-size",
+    category: "statistikk",
+    topic: "Proporsjoner",
+    question: "Hvor stort utvalg trengs for ±3 % margin ved 95 %?",
+    answer:
+      "n = z² · p̂*(1−p̂*) / E². Konservativt p̂* = 0.5 ⇒ p̂*(1−p̂*) = 0.25. Med z = 1.96, E = 0.03: n = 1.96² · 0.25 / 0.0009 ≈ 1067. Derfor har gallup ~1000 respondenter.",
+  },
+  {
+    id: "c-tek1-prop-exakt",
+    category: "statistikk",
+    topic: "Proporsjoner",
+    question: "Når bruker du exakt binomial test istedenfor z?",
+    answer:
+      "Når CLT-betingelsen brytes (n·p̂ < 10 eller n(1−p̂) < 10) — typisk små n eller veldig sjeldne hendelser. scipy.stats.binomtest gir exakt p-verdi. Clopper–Pearson-CI er den exakte motparten.",
+  },
+  {
+    id: "c-tek1-prop-or-vs-rr",
+    category: "statistikk",
+    topic: "Proporsjoner",
+    question: "Hva er forskjellen på odds-ratio (OR) og relative risk (RR)?",
+    answer:
+      "RR = p₁ / p₂. OR = (p₁/(1−p₁)) / (p₂/(1−p₂)). Når p er liten (~0.05) er OR ≈ RR. Når p er stor avviker de mye — OR overdriver effekten. Logistisk regresjon gir OR-er, ikke RR-er.",
+  },
+
 ];
 
 export const CARD_CATEGORIES: { id: FlashCard["category"]; label: string }[] = [

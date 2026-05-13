@@ -84,6 +84,11 @@ const MODULER: Modul[] = [
         note: "Hele eksamen-tyngdepunktet",
       },
       {
+        slug: "tek1-proporsjoner",
+        title: "Inferens for proporsjoner",
+        note: "Wald vs Wilson vs Agresti-Coull, pooled vs unpooled",
+      },
+      {
         slug: "tek1-anova",
         title: "Ettveis ANOVA og F-test",
         note: "SS-dekomp, F, post-hoc (Tukey HSD)",
