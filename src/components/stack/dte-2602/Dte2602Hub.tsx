@@ -20,6 +20,7 @@ import {
   Lightbulb,
 } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
+import { MlPipelineFlow } from "./MlPipelineFlow";
 import { Mermaid } from "@/components/Mermaid";
 
 const ML_PIPELINE_CHART = `graph LR
@@ -234,6 +235,9 @@ export function Dte2602Hub() {
             Bruker du det til hyperparameter-tuning, har du «lekket» informasjon og
             modellen din vil prestere dårligere i produksjon.
           </p>
+          <div className="mt-6">
+            <MlPipelineFlow />
+          </div>
         </section>
 
         <section className="mb-10">

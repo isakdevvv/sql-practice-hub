@@ -3,6 +3,7 @@ import { Lightbulb, Gamepad2, AlertTriangle, ArrowLeft } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
 import { MdpGridworld } from "./MdpGridworld";
+import { MdpGraphFlow } from "./MdpGraphFlow";
 import { Tex, TexBlock } from "@/components/Tex";
 
 const STEPS = [
@@ -123,8 +124,16 @@ Agenten må lære long-horizon credit assignment.`}</pre>
             <TexBlock>{"\\pi^*(s) = \\arg\\max_{a} Q^*(s, a)"}</TexBlock>
             <p className="text-xs text-muted-foreground">Ikke-lineære likninger (<Tex>{"\\max"}</Tex>-operator), men har unik løsning.</p>
           </div>
-          <div className="mt-4">
+          <div className="mt-4 space-y-4">
             <MdpGridworld />
+            <div>
+              <p className="text-xs text-muted-foreground mb-2">
+                Alternativ visualisering — samme idé som node-graf med eksplisitte
+                transition probabilities og rewards. Klikk på en state for
+                detaljer.
+              </p>
+              <MdpGraphFlow />
+            </div>
           </div>
         </section>
 

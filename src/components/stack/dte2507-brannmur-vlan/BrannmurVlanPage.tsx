@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import {Lightbulb, ArrowLeft } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
+import { NetworkTopology } from "@/components/stack/dte2507-praksis/NetworkTopology";
 
 const STEPS = [
   { title: "Brannmur — hva og hvorfor", anchor: "intro" },
@@ -188,6 +189,9 @@ bryte FW2 for &aring; komme til LAN. Brukes for high-stakes-milj&oslash;er.`}</p
             blokkerer det aapenbare; host-brannmuren stopper at en
             kompromittert webserver port-skanner sine naboer.
           </p>
+          <div className="mt-6">
+            <NetworkTopology />
+          </div>
         </section>
 
         <section id="acl" className="mb-10">
