@@ -3,6 +3,16 @@ import { Lightbulb } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
 import { ProsessMonitor } from "./ProsessMonitor";
+import { Mermaid } from "@/components/Mermaid";
+
+const PROSESS_LIVSSYKLUS = `stateDiagram-v2
+  [*] --> Ready: fork() / exec()
+  Ready --> Running: scheduler velger
+  Running --> Ready: time slice utlopt
+  Running --> Blocked: I/O wait
+  Blocked --> Ready: I/O ferdig
+  Running --> Terminated: exit() / kill
+  Terminated --> [*]`;
 
 const STEPS = [
   { title: "Prosess-tilstander", anchor: "tilstander" },
@@ -71,6 +81,19 @@ export function ProsesserSignalerPage() {
 
         <section id="transitions" className="mb-10">
           <h2 className="text-xl font-semibold mb-3">2. Hvordan kommer en prosess i hver tilstand?</h2>
+          <div className="rounded-xl border border-border bg-card p-5 mb-4">
+            <div className="text-xs uppercase tracking-wider text-brand font-semibold mb-3">
+              Livssyklus — fra fork() til exit()
+            </div>
+            <Mermaid
+              chart={PROSESS_LIVSSYKLUS}
+              ariaLabel="Tilstandsdiagram: prosess-livssyklus mellom Ready, Running, Blocked og Terminated"
+            />
+            <p className="text-xs text-muted-foreground mt-3">
+              Forenklet bilde med fire kjernetilstander. Linux har flere
+              (Stopped/Zombie), men dette er rammeverket pensum bygger pa.
+            </p>
+          </div>
           <div className="overflow-hidden rounded-lg border border-border">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
