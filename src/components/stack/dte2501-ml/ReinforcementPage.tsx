@@ -3,6 +3,7 @@ import { Lightbulb, Gamepad2, AlertTriangle, ArrowLeft } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
 import { MdpGridworld } from "./MdpGridworld";
+import { Tex, TexBlock } from "@/components/Tex";
 
 const STEPS = [
   { title: "Hvorfor RL?", anchor: "intro" },
@@ -74,24 +75,25 @@ Agenten må lære long-horizon credit assignment.`}</pre>
             Det formelle rammeverket for RL. Markov = framtiden avhenger bare av
             nåværende state, ikke hele historien.
           </p>
-          <div className="rounded-xl border border-border bg-card p-5">
-            <pre className="font-mono text-xs overflow-x-auto whitespace-pre">{`En MDP er en 5-tuppel  (S, A, P, R, γ):
+          <div className="rounded-xl border border-border bg-card p-5 space-y-3 text-sm">
+            <p>En MDP er en 5-tuppel <Tex>{"(S, A, P, R, \\gamma)"}</Tex>:</p>
+            <ul className="text-xs text-muted-foreground list-disc pl-5 space-y-0.5">
+              <li><Tex>{"S"}</Tex> — mengde states</li>
+              <li><Tex>{"A"}</Tex> — mengde actions</li>
+              <li><Tex>{"P(s' \\mid s, a)"}</Tex> — transition probability</li>
+              <li><Tex>{"R(s, a, s')"}</Tex> — reward når du går fra <Tex>{"s"}</Tex> til <Tex>{"s'"}</Tex> via <Tex>{"a"}</Tex></li>
+              <li><Tex>{"\\gamma \\in [0, 1)"}</Tex> — diskonteringsfaktor</li>
+            </ul>
 
-S       Mengde states (f.eks. ruter på et brett)
-A       Mengde actions (opp/ned/venstre/høyre)
-P(s'|s,a)   Transition probability — sjansen for å havne i s'
-            når du gjør a i s
-R(s,a,s')   Reward når du går fra s til s' med action a
-γ ∈ [0,1)   Diskonteringsfaktor — hvor mye man bryr seg om framtiden
+            <div className="font-semibold pt-2">Policy:</div>
+            <TexBlock>{"\\pi: S \\to A \\quad \\text{(eller stokastisk: } \\pi(a \\mid s)\\text{)}"}</TexBlock>
 
-POLICY π:  S → A   (eller stokastisk: π(a|s))
-   Avgjør hvilken action agenten tar i hver state.
-
-RETURN G_t = Σ_{k=0}^∞  γᵏ · R_{t+k+1}
-   Total framtidig belønning, diskontert.
-   γ=0 → kortsiktig (gridig). γ→1 → langsiktig.
-
-Mål: finn π* som maksimerer E[G_t] for alle s.`}</pre>
+            <div className="font-semibold pt-2">Return (diskontert framtidig belønning):</div>
+            <TexBlock>{"G_t = \\sum_{k=0}^{\\infty} \\gamma^k\\, R_{t+k+1}"}</TexBlock>
+            <p className="text-xs text-muted-foreground">
+              <Tex>{"\\gamma = 0"}</Tex> kortsiktig (grådig); <Tex>{"\\gamma \\to 1"}</Tex> langsiktig.
+              Mål: finn <Tex>{"\\pi^*"}</Tex> som maksimerer <Tex>{"\\mathbb{E}[G_t]"}</Tex> for alle <Tex>{"s"}</Tex>.
+            </p>
           </div>
           <p className="mt-3 text-xs text-muted-foreground">
             <strong>Markov-egenskapen:</strong> P(s' | s, a, s_{`{t-1}`}, ...) = P(s'
@@ -102,26 +104,24 @@ Mål: finn π* som maksimerer E[G_t] for alle s.`}</pre>
 
         <section id="bellman" className="mb-10">
           <h2 className="text-xl font-semibold mb-3">3. Value function og Bellman-likning</h2>
-          <div className="rounded-xl border border-border bg-card p-5">
-            <pre className="font-mono text-xs overflow-x-auto whitespace-pre">{`STATE VALUE V^π(s):
-   "Hvor god er state s, hvis vi følger policy π fra og med nå?"
-   V^π(s) = E_π [ G_t | s_t = s ]
+          <div className="rounded-xl border border-border bg-card p-5 space-y-3 text-sm">
+            <div className="font-semibold">State value <Tex>{"V^\\pi(s)"}</Tex>:</div>
+            <p className="text-xs text-muted-foreground">"Hvor god er state <Tex>{"s"}</Tex> hvis vi følger policy <Tex>{"\\pi"}</Tex> fra og med nå?"</p>
+            <TexBlock>{"V^\\pi(s) = \\mathbb{E}_\\pi\\!\\left[G_t \\mid s_t = s\\right]"}</TexBlock>
 
-ACTION VALUE Q^π(s, a):
-   "Hvor god er det å gjøre a i s, og deretter følge π?"
-   Q^π(s, a) = E [ R + γ V^π(s') | s, a ]
+            <div className="font-semibold pt-2">Action value <Tex>{"Q^\\pi(s, a)"}</Tex>:</div>
+            <TexBlock>{"Q^\\pi(s, a) = \\mathbb{E}\\!\\left[R + \\gamma V^\\pi(s') \\mid s, a\\right]"}</TexBlock>
 
-BELLMAN-LIKNING (rekursiv definisjon av V):
-   V^π(s) = Σ_a π(a|s) · Σ_{s'} P(s'|s,a) · [ R(s,a,s') + γ V^π(s') ]
+            <div className="font-semibold pt-2">Bellman-likning (rekursiv definisjon av <Tex>{"V"}</Tex>):</div>
+            <TexBlock>{"V^\\pi(s) = \\sum_{a} \\pi(a \\mid s) \\sum_{s'} P(s' \\mid s, a) \\big[R(s, a, s') + \\gamma V^\\pi(s')\\big]"}</TexBlock>
 
-BELLMAN OPTIMALITY:
-   V*(s) = max_a  Σ_{s'} P(s'|s,a) · [ R(s,a,s') + γ V*(s') ]
-   Q*(s, a) = Σ_{s'} P(s'|s,a) · [ R(s,a,s') + γ max_{a'} Q*(s', a') ]
+            <div className="font-semibold pt-2">Bellman optimality:</div>
+            <TexBlock>{"V^*(s) = \\max_{a} \\sum_{s'} P(s' \\mid s, a) \\big[R(s, a, s') + \\gamma V^*(s')\\big]"}</TexBlock>
+            <TexBlock>{"Q^*(s, a) = \\sum_{s'} P(s' \\mid s, a) \\big[R(s, a, s') + \\gamma \\max_{a'} Q^*(s', a')\\big]"}</TexBlock>
 
-Når vi har V* eller Q*, er optimal policy:
-   π*(s) = argmax_a  Q*(s, a)
-
-Det er ikke-lineære likninger (max-operator) men har unik løsning.`}</pre>
+            <div className="font-semibold pt-2">Optimal policy:</div>
+            <TexBlock>{"\\pi^*(s) = \\arg\\max_{a} Q^*(s, a)"}</TexBlock>
+            <p className="text-xs text-muted-foreground">Ikke-lineære likninger (<Tex>{"\\max"}</Tex>-operator), men har unik løsning.</p>
           </div>
           <div className="mt-4">
             <MdpGridworld />
@@ -134,25 +134,28 @@ Det er ikke-lineære likninger (max-operator) men har unik løsning.`}</pre>
             Iterativ algoritme for å løse Bellman optimality. Antar at vi KJENNER
             P og R (model-based, «known world»).
           </p>
-          <div className="rounded-xl border border-border bg-card p-5">
+          <div className="rounded-xl border border-border bg-card p-5 space-y-3 text-sm">
+            <p className="text-xs text-muted-foreground">
+              Iterativ algoritme — gjenta Bellman-oppdatering til konvergens (<Tex>{"\\Delta < \\theta"}</Tex>):
+            </p>
+            <TexBlock>{"V(s) \\leftarrow \\max_{a} \\sum_{s'} P(s' \\mid s, a) \\big[R(s, a, s') + \\gamma\\, V(s')\\big]"}</TexBlock>
+            <p className="text-xs text-muted-foreground">Når konvergert, ekstraktér optimal policy:</p>
+            <TexBlock>{"\\pi(s) = \\arg\\max_{a} \\sum_{s'} P(s' \\mid s, a) \\big[R(s, a, s') + \\gamma\\, V(s')\\big]"}</TexBlock>
             <pre className="font-mono text-xs overflow-x-auto whitespace-pre">{`function value_iteration(S, A, P, R, γ, θ):
     V[s] = 0  for alle s
-
     repeat:
         Δ = 0
         for s in S:
             v_old = V[s]
-            V[s] = max_a  Σ_{s'} P(s'|s,a) · [ R(s,a,s') + γ · V[s'] ]
+            V[s] = max_a  Σ_{s'} P(s'|s,a) · [ R + γ · V[s'] ]
             Δ = max(Δ, |v_old − V[s]|)
-        until Δ < θ                    # konvergens
-
-    # Hent optimal policy
+        until Δ < θ
     for s in S:
-        π[s] = argmax_a  Σ_{s'} P(s'|s,a) · [ R(s,a,s') + γ · V[s'] ]
-    return π, V
-
-Konvergens: V[s] → V*[s] for alle s.
-Kompleksitet per iterasjon: O(|S|² · |A|)`}</pre>
+        π[s] = argmax_a  Σ_{s'} P(s'|s,a) · [ R + γ · V[s'] ]
+    return π, V`}</pre>
+            <p className="text-xs text-muted-foreground">
+              Konvergens: <Tex>{"V(s) \\to V^*(s)"}</Tex>. Kompleksitet per iterasjon: <Tex>{"O(|S|^2 \\cdot |A|)"}</Tex>.
+            </p>
           </div>
         </section>
 
@@ -309,32 +312,26 @@ EXPLORATION vs EXPLOITATION:
             Den mest kjente model-free RL-algoritmen. Lærer Q*(s, a) direkte uten å
             modellere P eller R.
           </p>
-          <div className="rounded-xl border border-border bg-card p-5">
-            <pre className="font-mono text-xs overflow-x-auto whitespace-pre">{`Hold en tabell Q[s, a] over alle (state, action)-par.
-Init Q vilkårlig (typisk 0).
-
-For hver episode:
+          <div className="rounded-xl border border-border bg-card p-5 space-y-3 text-sm">
+            <p className="text-xs text-muted-foreground">
+              Hold en tabell <Tex>{"Q[s, a]"}</Tex>. For hver observasjon <Tex>{"(s, a, r, s')"}</Tex> oppdatér via TD-error:
+            </p>
+            <TexBlock>{"Q(s, a) \\leftarrow Q(s, a) + \\alpha \\Big[\\,\\underbrace{r + \\gamma \\max_{a'} Q(s', a') - Q(s, a)}_{\\text{TD-error}}\\,\\Big]"}</TexBlock>
+            <ul className="text-xs text-muted-foreground list-disc pl-5 space-y-0.5">
+              <li><Tex>{"\\alpha"}</Tex> = learning rate (0.01 – 0.1)</li>
+              <li><Tex>{"\\gamma"}</Tex> = discount</li>
+              <li><Tex>{"\\epsilon"}</Tex> = exploration rate (decay: <Tex>{"1.0 \\to 0.01"}</Tex>)</li>
+            </ul>
+            <pre className="font-mono text-xs overflow-x-auto whitespace-pre">{`For hver episode:
     s = start_state
     while s ikke er terminal:
-        a = ε-greedy(Q, s)            # med p=ε ta tilfeldig, ellers argmax_a Q[s,a]
+        a = ε-greedy(Q, s)
         utfør a, observer r og s'
-        # OPPDATÉR Q (Bellman backup):
         Q[s, a] ← Q[s, a] + α · ( r + γ · max_a' Q[s', a']  −  Q[s, a] )
-                            └────── TD-error ──────┘
-        s = s'
-
-α = learning rate (0.01 - 0.1)
-γ = discount
-ε = exploration rate (ofte decay over tid: 1.0 → 0.01)
-
-Q-learning er OFF-POLICY: den lærer optimal Q* selv om policy er ε-greedy.
-SARSA er ON-POLICY-varianten (bruker neste action faktisk valgt).
-
-Konvergens: Q[s,a] → Q*(s,a) under svake betingelser (alle (s,a) besøkes
-uendelig ofte, α reduseres på riktig vis).
-
-Når state-rommet er KONTINUERLIG (bilder, robot-sensor) blir tabellen
-umulig. Da brukes deep Q-learning (DQN) — Q er et nevralt nett.`}</pre>
+        s = s'`}</pre>
+            <p className="text-xs text-muted-foreground">
+              Q-learning er <strong>off-policy</strong>: lærer optimal <Tex>{"Q^*"}</Tex> selv om policy er <Tex>{"\\epsilon"}</Tex>-greedy. SARSA er on-policy. Konvergens: <Tex>{"Q(s, a) \\to Q^*(s, a)"}</Tex> under svake betingelser. Kontinuerlige state-rom: deep Q-learning (DQN) — <Tex>{"Q"}</Tex> er et nevralt nett.
+            </p>
           </div>
 
           <div className="mt-4 overflow-hidden rounded-lg border border-border">
