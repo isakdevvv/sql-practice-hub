@@ -17,6 +17,9 @@ import {
   Code2,
   GitBranch,
   Lightbulb,
+  Activity,
+  Route,
+  Globe,
 } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 
@@ -162,6 +165,30 @@ const COURSES: Course[] = [
     shortDescription:
       "Fem realistiske pakker: TCP SYN, SYN+ACK, UDP DNS, ARP broadcast, ICMP echo. Klikk byte-felter for forklaring og observasjoner.",
     Icon: PackageOpen,
+    status: "ready",
+  },
+  {
+    slug: "dte2507-congestion-control",
+    title: "TCP Congestion Control",
+    shortDescription:
+      "Slow start, AIMD, Tahoe/Reno/Cubic/BBR. Interaktiv cwnd-simulator med pakketap-trigger og side-ved-side-sammenligning. Basert på Kurose & Ross 3.5–3.7.",
+    Icon: Activity,
+    status: "ready",
+  },
+  {
+    slug: "dte2507-ruting",
+    title: "IP-forwarding og ruting",
+    shortDescription:
+      "Data plane vs control plane, longest-prefix-match, Dijkstra vs Bellman-Ford, OSPF/RIP/BGP. Steg-for-steg rute-graf + LPM-trener.",
+    Icon: Route,
+    status: "ready",
+  },
+  {
+    slug: "dte2507-dns-dyp",
+    title: "DNS-dyp og DNSSEC",
+    shortDescription:
+      "Hele DNS-kjeden, RR-typer, caching/TTL, cache-poisoning, DNSSEC chain of trust, DoH/DoT. Interaktiv lookup-simulator.",
+    Icon: Globe,
     status: "ready",
   },
 ];
