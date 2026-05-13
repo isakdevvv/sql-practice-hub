@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { Lightbulb, Sparkles } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
+import { GmmVisualizer } from "./GmmVisualizer";
 
 const STEPS = [
   { title: "Generative vs diskriminative modeller", anchor: "intro" },
@@ -137,6 +138,9 @@ Merk paralellen til k-Means:
    GMM E-step        = soft r(i, j) ∈ [0, 1]
    k-Means update    = uvektet snitt
    GMM M-step        = r-vektet snitt`}</pre>
+          </div>
+          <div className="mt-4">
+            <GmmVisualizer />
           </div>
         </section>
 
