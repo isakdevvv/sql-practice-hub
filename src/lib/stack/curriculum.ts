@@ -201,6 +201,8 @@ export const PHASES: readonly CurriculumPhase[] = [
       "dte2602-bias-varians",
       "dte2602-evaluering-metoder",
       "dte2602-evaluation-roc",
+      "dte2602-cv-varianter",
+      "dte2602-lda-qda-nb",
       "dte2602-etikk-filosofi",
       "dte2602-mappe-mal",
     ],

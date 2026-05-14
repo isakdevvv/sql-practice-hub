@@ -25849,4 +25849,548 @@ pi_star[s] = __4__(
     ],
     explanation: "L2-regularisering (default C=1 i sklearn) hindrer divergens. Slå av kun for spesialformål.",
   },
+
+  // ============= DTE-2602 — LDA / QDA / NB (9 oppgaver) =============
+  {
+    id: "d-dte2602-ldaqda-match-antakelse",
+    kind: "match",
+    title: "Antakelser bak generative modeller",
+    prompt: "Match modellen til antakelsen den gjør om P(x|y).",
+    topic: "LDA-QDA-NB",
+    pairs: [
+      { left: "LDA", right: "Multivariat normal, SAMME Σ for alle klasser" },
+      { left: "QDA", right: "Multivariat normal, ULIK Σ_k per klasse" },
+      { left: "Gaussian NB", right: "Multivariat normal med DIAGONAL Σ_k (features uavhengige)" },
+      { left: "MultinomialNB", right: "Telle-features (word counts), multinomial likelihood per klasse" },
+      { left: "BernoulliNB", right: "Binære features (term present/absent)" },
+    ],
+  },
+  {
+    id: "d-dte2602-ldaqda-match-grense",
+    kind: "match",
+    title: "Modell til beslutningsgrense",
+    prompt: "Hvilken form har grensa mellom to klasser?",
+    topic: "LDA-QDA-NB",
+    pairs: [
+      { left: "LDA", right: "Lineær (hyperplan)" },
+      { left: "QDA", right: "Kvadratisk (ellipse, hyperbel, parabel)" },
+      { left: "Gaussian NB", right: "Kvadratisk, men akse-justert (ingen rotasjon)" },
+      { left: "Logistisk regresjon", right: "Lineær (også når data ikke er gauss)" },
+    ],
+    explanation:
+      "LDA og logistisk gir BEGGE lineær grense, men kommer fra ulike antakelser: LDA antar Gauss for x, logistisk antar logistisk for P(y|x).",
+  },
+  {
+    id: "d-dte2602-ldaqda-quiz-iris",
+    kind: "quiz",
+    title: "LDA vs QDA på iris-like data",
+    prompt: "Du har 30 samples per klasse i 3 klasser. Klassene er Gauss men har tydelig ulik spredning.",
+    topic: "LDA-QDA-NB",
+    question: "Hvilken modell forventes å gjøre det best?",
+    options: [
+      {
+        text: "QDA — tillater ulik Σ_k, bias-reduksjonen overkjør variansøkningen når n_k er moderat",
+        correct: true,
+        rationale: "30 per klasse er nok til å estimere én Σ_k pålitelig.",
+      },
+      {
+        text: "LDA — antar lik Σ, alltid trygt",
+        correct: false,
+        rationale: "Antakelsen er brutt her — LDA undersjekker den ulike spredningen.",
+      },
+      {
+        text: "Naive Bayes — uavhengige features er alltid trygt",
+        correct: false,
+        rationale: "NB ignorerer korrelasjon mellom features og bommer hvis det er reell korrelasjon.",
+      },
+    ],
+  },
+  {
+    id: "d-dte2602-ldaqda-quiz-text",
+    kind: "quiz",
+    title: "Tekstklassifisering med 50 000 features",
+    prompt: "Spam-filter, 5000 epost, 50 000 unike ord. Hvilken klassifikator er førstevalget?",
+    topic: "LDA-QDA-NB",
+    question: "Velg den mest robuste klassifikatoren her.",
+    options: [
+      {
+        text: "MultinomialNB — overlever når p >> n, robust på telle-features",
+        correct: true,
+        rationale: "Klassisk for tekst. NB estimerer kun marginale per klasse — ikke kovariansmatriser.",
+      },
+      {
+        text: "QDA — beste decision boundary",
+        correct: false,
+        rationale: "Med p=50000 må QDA estimere en 50000×50000 Σ_k per klasse. Umulig.",
+      },
+      {
+        text: "LDA — minst parametre",
+        correct: false,
+        rationale: "LDA krever fortsatt én delt Σ med p(p+1)/2 ≈ 10⁹ parametre. Singular.",
+      },
+    ],
+  },
+  {
+    id: "d-dte2602-ldaqda-fill-bayes",
+    kind: "fill",
+    title: "Bayes-teoremet for klassifikasjon",
+    prompt: "Fyll inn formelen for klasse-posterior.",
+    topic: "LDA-QDA-NB",
+    language: "python",
+    template: `# P(y=k | x) = ___1___(k) * ___2___(x) / SUM_l prior(l) * likelihood_l(x)
+# argmax over k er ekvivalent med argmax av:
+#   log ___3___(k) + log f_k(x)`,
+    blanks: ["prior", "f_k", "prior"],
+    options: ["prior", "f_k", "posterior", "x", "y"],
+    explanation:
+      "Posterior ∝ prior × likelihood. Argmax er invariant under log og under nevneren (felles).",
+  },
+  {
+    id: "d-dte2602-ldaqda-fill-sklearn",
+    kind: "fill",
+    title: "Sammenlign LDA/QDA/NB i sklearn",
+    prompt: "Importer riktige klasser fra sklearn.",
+    topic: "LDA-QDA-NB",
+    language: "python",
+    template: `from sklearn.discriminant_analysis import __1__, __2__
+from sklearn.naive_bayes import __3__
+
+models = [LinearDiscriminantAnalysis(), QuadraticDiscriminantAnalysis(), GaussianNB()]`,
+    blanks: [
+      "LinearDiscriminantAnalysis",
+      "QuadraticDiscriminantAnalysis",
+      "GaussianNB",
+    ],
+    options: [
+      "LinearDiscriminantAnalysis",
+      "QuadraticDiscriminantAnalysis",
+      "GaussianNB",
+      "LogisticRegression",
+      "DecisionTreeClassifier",
+    ],
+  },
+  {
+    id: "d-dte2602-ldaqda-order-bayes",
+    kind: "order",
+    title: "Bygg en LDA-klassifikator fra bunn",
+    prompt: "Sortér stegene.",
+    topic: "LDA-QDA-NB",
+    items: [
+      "1. Beregn klasse-prior π̂_k = n_k / n",
+      "2. Beregn klasse-snitt μ̂_k for hver klasse",
+      "3. Beregn FELLES kovariansmatrise Σ̂ (pooled across klasser)",
+      "4. For et nytt punkt x: regn ut δ_k(x) for hver klasse k",
+      "5. Velg klassen med høyest δ_k(x)",
+    ],
+    explanation:
+      "QDA er likt MEN bruker én Σ̂_k per klasse i steg 3. NB bruker diagonal Σ̂_k.",
+  },
+  {
+    id: "d-dte2602-ldaqda-quiz-bias-var",
+    kind: "quiz",
+    title: "Bias-varians for LDA, QDA og NB",
+    prompt: "Rangér i synkende rekkefølge.",
+    topic: "LDA-QDA-NB",
+    question: "Hvilken rekkefølge stemmer for VARIANS av estimatet (mest varians først)?",
+    options: [
+      {
+        text: "QDA > LDA > NB (gauss)",
+        correct: true,
+        rationale:
+          "QDA estimerer flest parametre (K kovariansmatriser). NB estimerer færrest (diag per klasse). Mer parametre ⇒ mer varians på små n.",
+      },
+      { text: "LDA > QDA > NB", correct: false },
+      { text: "NB > LDA > QDA", correct: false },
+    ],
+  },
+  {
+    id: "d-dte2602-ldaqda-quiz-nar-velge",
+    kind: "quiz",
+    title: "Velg riktig generativ klassifikator",
+    prompt: "Du har 50 samples, 8 features, 3 klasser. Klassene er ikke åpenbart Gauss, men features korrelerer.",
+    topic: "LDA-QDA-NB",
+    question: "Hva er et godt førstevalg?",
+    options: [
+      {
+        text: "LDA — én delt Σ, få parametre, robust på lite data, ignorerer brudd på Gauss-antakelsen rimelig godt",
+        correct: true,
+      },
+      {
+        text: "QDA — beste decision boundary",
+        correct: false,
+        rationale: "Med n=50 og p=8 må QDA estimere 3 × 36 = 108 kovarians-parametre. Bommer.",
+      },
+      {
+        text: "Naive Bayes — alltid trygt",
+        correct: false,
+        rationale: "Antakelsen om uavhengighet er åpenbart brutt her.",
+      },
+    ],
+  },
+
+  // ============= DTE-2602 — CV-varianter (9 oppgaver) =============
+  {
+    id: "d-dte2602-cv-match-variant",
+    kind: "match",
+    title: "CV-variant til situasjon",
+    prompt: "Match CV-typen til når den passer.",
+    topic: "CV-varianter",
+    pairs: [
+      { left: "Validation 80/20", right: "Stor data, rask iterasjon, du tåler støy i estimatet" },
+      { left: "KFold(5)", right: "Standard regresjon med uavhengige observasjoner" },
+      { left: "StratifiedKFold", right: "Klassifikasjon, særlig ved ubalansert target" },
+      { left: "GroupKFold", right: "Data har grupper (samme pasient, samme bruker)" },
+      { left: "TimeSeriesSplit", right: "Tidsserie — train må komme før test kronologisk" },
+      { left: "LeaveOneOut", right: "Veldig lite datasett, lav-bias estimat trumfer kompute" },
+    ],
+  },
+  {
+    id: "d-dte2602-cv-match-bias-var",
+    kind: "match",
+    title: "Bias-varians per k",
+    prompt: "Match k til bias-varians-profilen.",
+    topic: "CV-varianter",
+    pairs: [
+      { left: "k=2", right: "Høy bias (lite data per trening), lav varians" },
+      { left: "k=5 eller 10", right: "God balanse — ISLP-anbefaling" },
+      { left: "k=n (LOOCV)", right: "Lav bias, HØY varians pga korrelerte modeller" },
+    ],
+    explanation:
+      "Intuisjon: LOOCV-modellene ser nesten samme data ⇒ deres feilestimater er sterkt korrelerte ⇒ snittet svinger mer.",
+  },
+  {
+    id: "d-dte2602-cv-quiz-leak",
+    kind: "quiz",
+    title: "Datalekkasje i CV",
+    prompt: "Hva er feilen?",
+    topic: "CV-varianter",
+    language: "python",
+    code: `scaler = StandardScaler().fit(X)
+X_scaled = scaler.transform(X)
+scores = cross_val_score(LogisticRegression(), X_scaled, y, cv=5)`,
+    question: "Hvilken setning er mest presis?",
+    options: [
+      {
+        text: "StandardScaler er fit-et på HELE X før split ⇒ val-folden lekker inn i train (via mean/std). Bruk Pipeline.",
+        correct: true,
+      },
+      {
+        text: "cv=5 er for lavt — bruk cv=10",
+        correct: false,
+        rationale: "Det er ikke selve problemet.",
+      },
+      {
+        text: "fit + transform skal være fit_transform",
+        correct: false,
+        rationale: "Stilforskjell, ikke korrekthetsforskjell.",
+      },
+    ],
+    explanation: "Fiks: pipe = Pipeline([('sc', StandardScaler()), ('clf', LogisticRegression())])",
+  },
+  {
+    id: "d-dte2602-cv-quiz-stratify",
+    kind: "quiz",
+    title: "Når trenger du stratifisering?",
+    prompt: "Velg den BESTE begrunnelsen.",
+    topic: "CV-varianter",
+    question: "Du har 100 samples, 5 % er klasse 1. Du kjører KFold(n_splits=10, shuffle=True). Hva er risikoen?",
+    options: [
+      {
+        text: "Én av foldene kan inneholde 0 samples av klasse 1 ⇒ recall ikke definert, fold-scoren blir uberegnelig",
+        correct: true,
+      },
+      {
+        text: "Test-settet blir for lite",
+        correct: false,
+        rationale: "10 samples per fold er fint i seg selv.",
+      },
+      {
+        text: "Modellen overfit-er",
+        correct: false,
+        rationale: "Overfit påvirkes ikke direkte av fold-strategi.",
+      },
+    ],
+    explanation: "Bruk StratifiedKFold (eller cross_val_score med cv=int på klassifikator — det stratifiserer automatisk).",
+  },
+  {
+    id: "d-dte2602-cv-quiz-ts",
+    kind: "quiz",
+    title: "Tidsserier i CV",
+    prompt: "Aksje-prediksjon, daglige observasjoner over 5 år.",
+    topic: "CV-varianter",
+    question: "Hvilken CV er forsvarlig?",
+    options: [
+      {
+        text: "TimeSeriesSplit — train alltid før test i tid",
+        correct: true,
+      },
+      {
+        text: "KFold(shuffle=True)",
+        correct: false,
+        rationale: "Da kan modellen tilfeldigvis trene på 2024 og teste på 2022 — fasit-lekkasje.",
+      },
+      {
+        text: "StratifiedKFold",
+        correct: false,
+        rationale: "Stratifisering har ingen mening her — regresjon, ikke klasser. Og bryter også tidsrekkefølgen.",
+      },
+    ],
+  },
+  {
+    id: "d-dte2602-cv-fill-kfold",
+    kind: "fill",
+    title: "5-fold CV med StratifiedKFold",
+    prompt: "Bevar klassebalanse over folder.",
+    topic: "CV-varianter",
+    language: "python",
+    template: `from sklearn.model_selection import __1__, cross_val_score
+
+cv = __1__(n_splits=__2__, shuffle=True, random_state=42)
+scores = cross_val_score(pipe, X, y, cv=cv, scoring="__3__")
+print(scores.mean(), scores.std())`,
+    blanks: ["StratifiedKFold", "5", "f1"],
+    options: ["StratifiedKFold", "KFold", "LeaveOneOut", "5", "10", "f1", "accuracy", "mse"],
+  },
+  {
+    id: "d-dte2602-cv-fill-tssplit",
+    kind: "fill",
+    title: "TimeSeriesSplit",
+    prompt: "Sørg for at train alltid kommer før test.",
+    topic: "CV-varianter",
+    language: "python",
+    template: `from sklearn.model_selection import __1__
+
+cv = __1__(n_splits=5)
+for tr, te in cv.split(X):
+    assert tr.max() < te.__2__()   # train slutter før test starter`,
+    blanks: ["TimeSeriesSplit", "min"],
+    options: ["TimeSeriesSplit", "KFold", "GroupKFold", "min", "max", "len"],
+  },
+  {
+    id: "d-dte2602-cv-order-flow",
+    kind: "order",
+    title: "Korrekt CV-flyt for klassifikasjon",
+    prompt: "Sortér stegene i riktig rekkefølge.",
+    topic: "CV-varianter",
+    items: [
+      "1. train_test_split med stratify=y for å holde tilbake et test-sett",
+      "2. Bygg Pipeline: preprocessing + modell",
+      "3. Velg CV-strategi (Stratified for klassifikasjon)",
+      "4. cross_val_score(pipe, X_train, y_train, cv=cv) — snitt og std",
+      "5. GridSearchCV på samme pipe for hyperparameter-tuning",
+      "6. Refit på hele X_train med beste params",
+      "7. Score ÉN gang på X_test",
+    ],
+    explanation:
+      "Test-settet røres bare i steg 7. Alt CV-arbeid skjer på X_train, så test-scoren forblir ærlig.",
+  },
+  {
+    id: "d-dte2602-cv-quiz-loocv",
+    kind: "quiz",
+    title: "LOOCV varians",
+    prompt: "ISLP påpeker at LOOCV-estimatet ofte har HØYERE varians enn 10-fold. Hvorfor?",
+    topic: "CV-varianter",
+    question: "Velg den beste forklaringen.",
+    options: [
+      {
+        text: "Hver av de n modellene ser nesten samme data ⇒ feilestimatene er sterkt korrelerte ⇒ snittet er mer ustabilt",
+        correct: true,
+      },
+      {
+        text: "LOOCV bruker for lite data per trening",
+        correct: false,
+        rationale: "Motsatt — n−1 av n samples er nesten alt.",
+      },
+      {
+        text: "LOOCV er ikke deterministisk",
+        correct: false,
+        rationale: "LOOCV er deterministisk (ingen shuffle).",
+      },
+    ],
+  },
+
+  // ============= TEK-1501 — Regresjon-diagnostikk (9 oppgaver) =============
+  {
+    id: "d-tek1-diag-match-symptom",
+    kind: "match",
+    title: "Residualplott-symptom til diagnose",
+    prompt: "Match mønsteret i residualplottet til hva det indikerer.",
+    topic: "Regresjon-diagnostikk",
+    pairs: [
+      { left: "Random sky rundt 0", right: "Alt OK — antakelsene holder" },
+      { left: "Tydelig U- eller ∩-form", right: "Ikke-lineær sammenheng — legg til kvadratisk ledd" },
+      { left: "Trakt — spredning vokser med ŷ", right: "Heteroskedastisitet — log-transform eller WLS" },
+      { left: "Én rein ekstrem residual", right: "Outlier — sjekk Cook's D, undersøk datapunktet" },
+      { left: "Punkter i bånd, ikke sky", right: "Diskrete y eller skala-problem" },
+    ],
+  },
+  {
+    id: "d-tek1-diag-match-tiltak",
+    kind: "match",
+    title: "Brudd → tiltak",
+    prompt: "Match diagnosen til standardtiltaket.",
+    topic: "Regresjon-diagnostikk",
+    pairs: [
+      { left: "Heteroskedastisitet", right: "Log-y, WLS, eller robuste SE (HC3)" },
+      { left: "Ikke-linearitet", right: "Polynom-features, splines, eller bytt modell" },
+      { left: "Innflytelsesrik outlier", right: "Cook's D > 4/n: undersøk; vurder å robustifisere (Huber)" },
+      { left: "Skjeve residualer", right: "Transform y (log/Box-Cox); vurder GLM" },
+      { left: "Multikollinearitet", right: "Drop én korrelert prediktor, Ridge, eller PCA" },
+    ],
+  },
+  {
+    id: "d-tek1-diag-quiz-r2",
+    kind: "quiz",
+    title: "R² stiger alltid",
+    prompt: "Velg den beste begrunnelsen for hvorfor justert R² finnes.",
+    topic: "Regresjon-diagnostikk",
+    question: "Hvorfor straffe ekstra prediktorer med R²_adj?",
+    options: [
+      {
+        text: "Vanlig R² stiger uansett når du legger til en prediktor (selv ren støy) — det er ikke et ærlig mål for modell-kvalitet ved variabelvalg",
+        correct: true,
+      },
+      {
+        text: "R²_adj måler forklart varians bedre",
+        correct: false,
+        rationale: "Den måler ikke en annen ting — den straffer kompleksitet.",
+      },
+      {
+        text: "R² kan bli negativ",
+        correct: false,
+        rationale: "R² kan være negativ for modell verre enn snitt — men det er ikke begrunnelsen for adj.",
+      },
+    ],
+  },
+  {
+    id: "d-tek1-diag-quiz-cook",
+    kind: "quiz",
+    title: "Cook's D-tolkning",
+    prompt: "En observasjon har Cook's D = 1.4. Hva er rimelig respons?",
+    topic: "Regresjon-diagnostikk",
+    question: "Hva gjør du?",
+    options: [
+      {
+        text: "Undersøk observasjonen nøye — D > 1 er kraftig innflytelse. Datafeil? Ekte ekstrem? Refit uten den for å se hvor mye β̂ endrer seg",
+        correct: true,
+      },
+      {
+        text: "Slett den umiddelbart",
+        correct: false,
+        rationale: "Aldri slett uten å forstå hvorfor — du kan miste den mest informative observasjonen.",
+      },
+      {
+        text: "Ignorer — Cook's D > 1 er ufarlig",
+        correct: false,
+        rationale: "Tvert imot — D > 1 er klassisk alvorlig.",
+      },
+    ],
+  },
+  {
+    id: "d-tek1-diag-quiz-hetero",
+    kind: "quiz",
+    title: "Trakt-formet residualplott",
+    prompt: "Du ser tydelig trakt i residual vs ŷ.",
+    topic: "Regresjon-diagnostikk",
+    question: "Hva er konsekvensen for inferens?",
+    options: [
+      {
+        text: "β̂ er fortsatt forventningsrett, MEN SE er feil ⇒ konfidensintervall for smale, p-verdier for små",
+        correct: true,
+      },
+      {
+        text: "β̂ er forventningsskjev",
+        correct: false,
+        rationale: "Forventningsretthet krever ikke homoskedastisitet.",
+      },
+      {
+        text: "R² er ubrukelig",
+        correct: false,
+        rationale: "R² er en deskriptiv statistikk, ikke direkte påvirket.",
+      },
+    ],
+    explanation: "Fiks: log-y, WLS, eller robuste 'sandwich'-SE (HC0/HC3).",
+  },
+  {
+    id: "d-tek1-diag-fill-r2adj",
+    kind: "fill",
+    title: "Justert R²",
+    prompt: "Fyll inn formelen.",
+    topic: "Regresjon-diagnostikk",
+    language: "python",
+    template: `def r2_adjusted(r2, n, p):
+    return 1 - (1 - r2) * (n - __1__) / (n - p - __2__)`,
+    blanks: ["1", "1"],
+    options: ["1", "0", "p", "n"],
+    explanation: "R²_adj = 1 − (1−R²) · (n−1)/(n−p−1). Straffer p ekstra prediktorer.",
+  },
+  {
+    id: "d-tek1-diag-fill-cook",
+    kind: "fill",
+    title: "Cook's distance i statsmodels",
+    prompt: "Hent ut Cook's D for hver observasjon.",
+    topic: "Regresjon-diagnostikk",
+    language: "python",
+    template: `import statsmodels.api as sm
+
+X = sm.add_constant(x)
+model = sm.OLS(y, X).fit()
+infl = model.__1__()
+cooks = infl.__2__[0]              # array of D_i
+outliers = (cooks > __3__).nonzero()[0]
+print("Outliers:", outliers)`,
+    blanks: ["get_influence", "cooks_distance", "4/len(y)"],
+    options: [
+      "get_influence",
+      "summary",
+      "cooks_distance",
+      "leverage",
+      "4/len(y)",
+      "1.0",
+      "0.5",
+    ],
+  },
+  {
+    id: "d-tek1-diag-order-checklist",
+    kind: "order",
+    title: "Diagnostikk-rekkefølge etter OLS",
+    prompt: "Sortér i naturlig rekkefølge.",
+    topic: "Regresjon-diagnostikk",
+    items: [
+      "1. Plot scatter (x, y) — er sammenhengen overhodet lineær?",
+      "2. Fit OLS, hent residualer e = y − ŷ",
+      "3. Plot e mot ŷ — sjekk mønster, trakt, outliers",
+      "4. Q-Q-plot av residualene — sjekk normalitet",
+      "5. Beregn Cook's D — hvilke punkter har > 4/n?",
+      "6. Rapporter R² og R²-adj (særlig ved flere prediktorer)",
+      "7. Hvis flere prediktorer: sjekk VIF for multikollinearitet",
+      "8. TOLKE β̂ først NÅ — etter at antakelsene er sjekket",
+    ],
+    explanation:
+      "Mange hopper rett til β̂ og p-verdier. Diagnostikken sier deg om disse verdiene i det hele tatt kan stoles på.",
+  },
+  {
+    id: "d-tek1-diag-quiz-vif",
+    kind: "quiz",
+    title: "VIF-tolkning",
+    prompt: "Du har VIF = 12 på 'BMI', VIF = 11 på 'vekt'.",
+    topic: "Regresjon-diagnostikk",
+    question: "Hva betyr det og hva gjør du?",
+    options: [
+      {
+        text: "BMI og vekt er sterkt korrelerte (BMI er definert via vekt). Drop én, kombiner dem, eller bruk Ridge",
+        correct: true,
+      },
+      {
+        text: "VIF > 10 betyr at modellen ikke kan brukes — slett den",
+        correct: false,
+        rationale: "Modellen kan prediktere fint; det er β̂-tolkningen for de korrelerte som er ustabil.",
+      },
+      {
+        text: "Bytt til logistisk regresjon",
+        correct: false,
+        rationale: "Logreg hjelper ikke mot multikollinearitet.",
+      },
+    ],
+  },
 ];

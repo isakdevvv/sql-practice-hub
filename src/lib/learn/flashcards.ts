@@ -4755,6 +4755,237 @@ export const FLASHCARDS: FlashCard[] = [
     answer:
       "1) Gradient descent konvergerer langt raskere. 2) L2-reg straffer alle β likt — uten skalering vil features med stor variasjon dominere. StandardScaler er nesten alltid riktig før LogisticRegression i sklearn.",
   },
+
+  // ============= DTE-2602 — LDA / QDA / Naive Bayes (9 kort) =============
+  {
+    id: "c-dte2602-generativ-vs-diskr",
+    category: "statistikk",
+    topic: "LDA-QDA-NB",
+    question: "Forskjell på generativ og diskriminativ klassifikator?",
+    answer:
+      "Diskriminativ (logistisk, SVM, tre) modellerer P(y|x) direkte. Generativ (LDA, QDA, Naive Bayes, GMM) modellerer P(x|y) og P(y), og bruker Bayes-teoremet for å regne ut P(y|x). Generative kan også generere syntetiske samples.",
+  },
+  {
+    id: "c-dte2602-bayes-classifier",
+    category: "statistikk",
+    topic: "LDA-QDA-NB",
+    question: "Hva er Bayes-klassifikatoren og hvorfor er den optimal?",
+    answer:
+      "ŷ = argmax_k P(y=k|x). Den velger klassen med høyest posterior. Bayes-klassifikatoren har lavest mulig feilrate (Bayes-feilen) — alle ekte klassifikatorer prøver å tilnærme den.",
+    code: "P(y=k|x) = π_k · f_k(x) / Σ_l π_l · f_l(x)",
+  },
+  {
+    id: "c-dte2602-lda-antakelse",
+    category: "statistikk",
+    topic: "LDA-QDA-NB",
+    question: "Hvilke antakelser gjør LDA?",
+    answer:
+      "1) Hver klasse er multivariat normalfordelt. 2) Alle klassene deler SAMME kovariansmatrise Σ. Konsekvens: beslutningsgrensa blir lineær (hyperplan). Få parametre ⇒ lav varians, men risiko for bias.",
+  },
+  {
+    id: "c-dte2602-qda-antakelse",
+    category: "statistikk",
+    topic: "LDA-QDA-NB",
+    question: "Hva er forskjellen mellom LDA og QDA?",
+    answer:
+      "QDA tillater ULIK kovariansmatrise per klasse Σ_k. Det gir kvadratisk beslutningsgrense (ellipser, hyperbler). Lavere bias enn LDA, men høyere varians: vi må estimere K kovariansmatriser i stedet for én.",
+  },
+  {
+    id: "c-dte2602-nb-uavhengighet",
+    category: "statistikk",
+    topic: "LDA-QDA-NB",
+    question: "Hva er kjerneantakelsen i Naive Bayes?",
+    answer:
+      "Features er BETINGET UAVHENGIGE gitt klassen: P(x|y=k) = Π_j P(x_j|y=k). Antakelsen er nesten alltid usann, men reduserer parametertall fra Kp(p+1)/2 (QDA) til 2pK — gjør modellen robust på lite data og høy dimensjon.",
+  },
+  {
+    id: "c-dte2602-nb-tekst",
+    category: "statistikk",
+    topic: "LDA-QDA-NB",
+    question: "Hvorfor brukes Naive Bayes så ofte i tekstklassifisering?",
+    answer:
+      "Tekst-features er typisk veldig høy-dimensjonale (titusenvis av ord). Med få samples ville LDA/QDA krasje. NB estimerer kun marginale per klasse — overlever med n << p. Spam-filter, sentiment, språk-id.",
+  },
+  {
+    id: "c-dte2602-lda-discriminant",
+    category: "statistikk",
+    topic: "LDA-QDA-NB",
+    question: "Skriv LDA's lineære diskriminantfunksjon.",
+    answer:
+      "δ_k(x) = xᵀ Σ⁻¹ μ_k − ½ μ_kᵀ Σ⁻¹ μ_k + ln π_k. Lineær i x ⇒ beslutningsgrensa mellom to klasser er et hyperplan. Velg klassen som maksimerer δ_k.",
+    code: "δ_k(x) = x^T Σ^{-1} μ_k − ½ μ_k^T Σ^{-1} μ_k + ln π_k",
+  },
+  {
+    id: "c-dte2602-lda-qda-nar",
+    category: "statistikk",
+    topic: "LDA-QDA-NB",
+    question: "Når LDA over QDA?",
+    answer:
+      "LDA: lite data per klasse, du tror klassene har lik 'form' (samme spredning), eller du vil ha en stabil/tolkbar grense. QDA: mye data per klasse OG klart ulik spredning. På små n bommer QDA fordi den estimerer for mange parametre.",
+  },
+  {
+    id: "c-dte2602-nb-varianter",
+    category: "statistikk",
+    topic: "LDA-QDA-NB",
+    question: "Tre Naive Bayes-varianter og når brukes de?",
+    answer:
+      "GaussianNB — kontinuerlige features (medisinske målinger). MultinomialNB — telle-features (word counts). BernoulliNB — binære features (term present/absent). Velg etter datatypen til x_j.",
+  },
+
+  // ============= DTE-2602 — CV-varianter (9 kort) =============
+  {
+    id: "c-dte2602-cv-formel",
+    category: "statistikk",
+    topic: "CV-varianter",
+    question: "Hva er formelen for k-fold CV-estimatet?",
+    answer:
+      "CV_(k) = (1/k) Σ MSE_i, der MSE_i er feilen på fold i når modellen er trent på de andre k−1 foldene. Hvert datapunkt havner i test nøyaktig én gang.",
+    code: "CV_(k) = (1/k) · Σ MSE_i",
+  },
+  {
+    id: "c-dte2602-cv-loocv",
+    category: "statistikk",
+    topic: "CV-varianter",
+    question: "Fordeler og ulemper med LOOCV?",
+    answer:
+      "Fordel: praktisk talt null bias (hver modell ser n−1 samples). Deterministisk (ingen shuffle). Ulempe: n treninger ⇒ dyrt. Estimater er sterkt KORRELERT (hver modell ser nesten samme data), så snittet har HØYERE varians enn 10-fold ofte.",
+  },
+  {
+    id: "c-dte2602-cv-validset",
+    category: "statistikk",
+    topic: "CV-varianter",
+    question: "Hvorfor er en enkelt validation-set-tilnærming ofte for støyete?",
+    answer:
+      "Estimatet avhenger sterkt av nettopp hvilke punkter som havnet i val-settet. Kjør med ulik random_state og se scoren variere. På lite data er det ubrukelig. CV snitter over flere splittinger og gir mer stabilt estimat.",
+  },
+  {
+    id: "c-dte2602-cv-stratified",
+    category: "statistikk",
+    topic: "CV-varianter",
+    question: "Når MÅ du bruke StratifiedKFold?",
+    answer:
+      "Ved klassifikasjon med ubalansert data. Vanlig KFold kan ved uflaks gi folder med 0 % minoritetsklasse ⇒ scoren blir uberegnelig. Stratified bevarer klassebalansen i hver fold. cross_val_score med cv=int (heltall) gjør dette automatisk for klassifikatorer.",
+    code: "StratifiedKFold(n_splits=5, shuffle=True, random_state=42)",
+  },
+  {
+    id: "c-dte2602-cv-group",
+    category: "statistikk",
+    topic: "CV-varianter",
+    question: "Når trenger du GroupKFold?",
+    answer:
+      "Når observasjoner er korrelerte i grupper (samme pasient med 10 målinger, samme bruker med 100 events). Hvis samme gruppe havner i både train og val, lekker gruppe-spesifikke mønstre. GroupKFold sikrer at hver gruppe ligger helt på én side.",
+  },
+  {
+    id: "c-dte2602-cv-ts",
+    category: "statistikk",
+    topic: "CV-varianter",
+    question: "Hvorfor må tidsserier ha sin egen CV-variant?",
+    answer:
+      "Vanlig k-fold kan tilfeldigvis trene på framtiden og teste på fortida — det er fasit-lekkasje (en klassifikator i produksjon kan ikke se framtiden). TimeSeriesSplit lar train alltid være FØR test-vinduet kronologisk.",
+    code: "TimeSeriesSplit(n_splits=5)",
+  },
+  {
+    id: "c-dte2602-cv-bias-var",
+    category: "statistikk",
+    topic: "CV-varianter",
+    question: "Hvordan endrer bias og varians seg med k?",
+    answer:
+      "Lav k (2-3): hver modell trent på lite data ⇒ HØY BIAS, men foldene overlapper lite ⇒ LAV VARIANS. Høy k (n=LOOCV): lav bias (mye trening), men sterk korrelasjon mellom modellene ⇒ HØY VARIANS. Sweet spot: k=5 eller k=10 (ISLP).",
+  },
+  {
+    id: "c-dte2602-cv-pipeline",
+    category: "statistikk",
+    topic: "CV-varianter",
+    question: "Hvorfor må preprocessing inn i Pipeline før CV?",
+    answer:
+      "Hvis du fit-transformer (skaler/imputer) på X FØR cross_val_score, lærer skaleren mean/std fra val-folden — datalekkasje, scoren blir kunstig god. Pakk preprocessing + modell i Pipeline; sklearn re-fit-er da inne i hver fold.",
+  },
+  {
+    id: "c-dte2602-cv-leak",
+    category: "statistikk",
+    topic: "CV-varianter",
+    question: "Vanligste CV-feller (rekkefølge)?",
+    answer:
+      "1) fit_transform på hele X før split. 2) Feature selection på hele X (også lekkasje). 3) Tidsserie-data uten TimeSeriesSplit. 4) Grupperte data uten GroupKFold. 5) Hyperparameter-tuning på TEST-settet ⇒ test-scoren slutter å være ærlig.",
+  },
+
+  // ============= TEK-1501 — Regresjon-diagnostikk (9 kort) =============
+  {
+    id: "c-tek1-ols-antakelser",
+    category: "statistikk",
+    topic: "Regresjon-diagnostikk",
+    question: "Hva er de 4 antakelsene for OLS?",
+    answer:
+      "1) Linearitet (sann sammenheng lineær). 2) Uavhengige feil ε_i. 3) Homoskedastisitet (konstant varians σ²). 4) Normalfordelte residualer. Når brudd: koeffisientene kan fortsatt være forventningsrette, men SE og p-verdier blir feil.",
+  },
+  {
+    id: "c-tek1-residual",
+    category: "statistikk",
+    topic: "Regresjon-diagnostikk",
+    question: "Hva er en residual og hvordan bruker du den?",
+    answer:
+      "Residual e_i = y_i − ŷ_i. Plot e mot ŷ: bra mønster er random sky rundt 0, samme spredning. Kurve i plottet ⇒ ikke-linearitet. Trakt ⇒ heteroskedastisitet. Enkelt ekstrempunkt ⇒ outlier.",
+    code: "e_i = y_i − ŷ_i",
+  },
+  {
+    id: "c-tek1-hetero",
+    category: "statistikk",
+    topic: "Regresjon-diagnostikk",
+    question: "Hva er heteroskedastisitet og hvordan ser du det?",
+    answer:
+      "Varians i residualene endrer seg med ŷ — typisk trakt-form i residualplott. Estimat β̂ er fortsatt forventningsrett, men SE er feil ⇒ KI for smale, p-verdier for små. Fiks: log-transform y, weighted least squares, eller robuste 'sandwich'-SE (HC3).",
+  },
+  {
+    id: "c-tek1-qq",
+    category: "statistikk",
+    topic: "Regresjon-diagnostikk",
+    question: "Hvordan tolker du et Q-Q-plot?",
+    answer:
+      "Sorterte residualer mot teoretiske kvantiler fra N(0,1). Punktene skal følge diagonalen hvis residualene er normalfordelte. S-form ⇒ tunge/lette haler. Krumning ⇒ skjevhet. Enkeltpunkter langt unna ⇒ outliers.",
+    code: "scipy.stats.probplot(residuals, dist='norm')",
+  },
+  {
+    id: "c-tek1-cook",
+    category: "statistikk",
+    topic: "Regresjon-diagnostikk",
+    question: "Hva måler Cook's distance, og hva er terskelen?",
+    answer:
+      "Cook's D måler hvor mye β̂ endres hvis vi fjerner punkt i — kombinerer residual og leverage. Tommelfingerregel: D_i > 4/n verdt å undersøke; D_i > 1 alvorlig. Punkter med høy Cook drar regresjonen alene.",
+    code: "D_i = e_i² · h_ii / (p · s² · (1−h_ii)²)",
+  },
+  {
+    id: "c-tek1-outlier-vs-lev",
+    category: "statistikk",
+    topic: "Regresjon-diagnostikk",
+    question: "Forskjell på outlier, leverage og influence?",
+    answer:
+      "Outlier: stor residual (langt fra linja i y-retning). Leverage: uvanlig x (langt fra x̄), stor h_ii. Influence: punkter som faktisk drar β̂ — krever BÅDE outlier OG høy leverage. Cook's D fanger nettopp influence.",
+  },
+  {
+    id: "c-tek1-r2-vs-r2adj",
+    category: "statistikk",
+    topic: "Regresjon-diagnostikk",
+    question: "Hva er forskjellen på R² og justert R²?",
+    answer:
+      "R² = 1 − SSE/SST måler hvor mye variasjon modellen forklarer, MEN stiger alltid når man legger til en prediktor (selv om den er støy). R²_adj = 1 − (1−R²) · (n−1)/(n−p−1) straffer ekstra prediktorer. Bruk adj for å sammenligne modeller med ulikt antall prediktorer.",
+    code: "R²_adj = 1 − (1−R²) · (n−1)/(n−p−1)",
+  },
+  {
+    id: "c-tek1-r2-lyver",
+    category: "statistikk",
+    topic: "Regresjon-diagnostikk",
+    question: "Når lyver R²?",
+    answer:
+      "1) Modeller med vs uten intercept (forced through origin) er ikke sammenlignbare. 2) Transformert y (log-y vs y) er ikke sammenlignbart. 3) Ekstreme outliers blåser opp SST. 4) R² er treningsmål — sier ingenting om test-ytelse.",
+  },
+  {
+    id: "c-tek1-vif",
+    category: "statistikk",
+    topic: "Regresjon-diagnostikk",
+    question: "Hva er VIF og hvorfor sjekker du det?",
+    answer:
+      "Variance Inflation Factor: VIF_j = 1/(1 − R_j²) der R_j² er fra regresjon av x_j mot alle andre prediktorer. Måler hvor mye SE for β̂_j er oppblåst pga multikollinearitet. VIF > 5 bekymring, > 10 alvorlig. Fiks: drop én korrelert, kombiner, eller bruk Ridge.",
+  },
 ];
 
 export const CARD_CATEGORIES: { id: FlashCard["category"]; label: string }[] = [
