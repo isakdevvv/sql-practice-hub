@@ -800,6 +800,298 @@ export const PYTHON_CHAPTERS: PythonChapter[] = [
       </>
     ),
   },
+  {
+    nr: 24,
+    topic: "Python kap. 24",
+    title: "Hashing",
+    summary: "Slå opp på O(1) ved å regne ut hvor verdien ligger.",
+    readMinutes: 11,
+    body: (
+      <>
+        <P>
+          Tenk på et oppslag i en stor liste: du må gå gjennom elementene ett
+          for ett til du finner det du leter etter — O(n). Et balansert tre
+          presser det ned til O(log n). Hashing går et hakk lenger: i stedet
+          for å lete, <em>regn ut</em> hvor svaret må ligge. Det tar konstant
+          tid.
+        </P>
+        <H2>Idéen</H2>
+        <P>
+          En <em>hash-funksjon</em> tar inn en nøkkel (f.eks. en streng) og
+          spytter ut et heltall — en indeks i en intern tabell. Lagrer du
+          verdien på den indeksen, kan du senere kjøre samme funksjon med samme
+          nøkkel og gå rett dit. Ingen leting.
+        </P>
+        <F.HashTableLayout />
+        <P>
+          Python-objektet <code>dict</code> bruker hashing under panseret. Når
+          du skriver <code>alder["Ada"] = 30</code>, kjører Python{" "}
+          <code>hash("Ada")</code>, krymper det ned til en tabellindeks, og
+          legger paret der. <code>alder["Ada"]</code> senere gjør samme regning
+          og henter verdien direkte.
+        </P>
+        <H2>Krympe hash-koden til en indeks</H2>
+        <P>
+          <code>hash("Ada")</code> i Python er et stort tall (gjerne negativt).
+          Tabellen har kanskje 16 plasser. Vanlig triks:{" "}
+          <code>indeks = hash_kode % N</code>, der N er tabellstørrelsen. Hvis
+          N er en toer-potens (16, 32, 64, …) kan du bytte modulo med en rask
+          bit-AND:
+        </P>
+        <Code>
+          {`# Begge gir samme svar når N = 2^k\nindeks = hash_kode % N\nindeks = hash_kode & (N - 1)   # mye raskere`}
+        </Code>
+        <P>
+          Det fungerer fordi <code>N − 1</code> er en maske som plukker ut de
+          k laveste bitene — akkurat det som blir igjen etter modulo.
+        </P>
+        <H2>Kollisjoner</H2>
+        <P>
+          To forskjellige nøkler kan havne på samme indeks. Det kalles en{" "}
+          <em>kollisjon</em>, og det er uunngåelig så lenge antall mulige
+          nøkler er større enn tabellstørrelsen. Det finnes to vanlige
+          løsninger.
+        </P>
+        <H2>Separat chaining</H2>
+        <P>
+          Hver tabellplass er en liten liste (bøtte). Ved kollisjon legges det
+          nye paret bakerst i bøtta. Ved oppslag går du gjennom kjeden og
+          sammenligner nøklene.
+        </P>
+        <F.HashCollisionChaining />
+        <H2>Lineær probing (åpen adressering)</H2>
+        <P>
+          Alternativ: kollisjoner havner ikke i en kjede, men i neste ledige
+          celle. Hvis 3 er opptatt, prøv 4, så 5, og så videre.
+        </P>
+        <F.HashLinearProbing />
+        <P>
+          Probing er minne-effektivt (ingen kjeder) men danner{" "}
+          <em>klynger</em> — sammenhengende blokker av fulle celler — som
+          gjør at både innsetting og søk må gå gjennom hele klynga før de
+          finner rom.
+        </P>
+        <H2>Load factor og rehashing</H2>
+        <P>
+          Load factor λ = antall elementer / tabellstørrelse. Når λ blir for
+          høy (vanlig terskel: 0.75 for probing, 0.9 for chaining), blir det
+          for mange kollisjoner og oppslag tregner. Løsning: <em>rehash</em> —
+          lag en ny, dobbelt så stor tabell og legg inn alle eksisterende
+          elementer på nytt. Det er O(n), men skjer sjelden, så gjennomsnittlig
+          innsetting forblir O(1).
+        </P>
+        <H2>Minimumsoppskrift på __hash__</H2>
+        <P>
+          Lager du en egen klasse og vil bruke den som dict-nøkkel eller sette
+          den i et <code>set</code>, må <code>__eq__</code> og{" "}
+          <code>__hash__</code> være konsistente: to objekter som er like
+          (etter <code>__eq__</code>) må gi samme hash. Det omvendte trenger
+          ikke gjelde.
+        </P>
+        <Code>
+          {`class Punkt:\n    def __init__(self, x, y):\n        self.x = x\n        self.y = y\n\n    def __eq__(self, other):\n        return isinstance(other, Punkt) and (self.x, self.y) == (other.x, other.y)\n\n    def __hash__(self):\n        return hash((self.x, self.y))   # bygg på et tuple av feltene`}
+        </Code>
+        <KeyPoints
+          items={[
+            "Hashing erstatter leting med utregning — O(1) i snitt.",
+            "Kollisjoner løses med chaining (kjeder) eller probing (neste ledige celle).",
+            "Når N er 2^k: indeks = hash & (N − 1) gir samme svar som % N, men raskere.",
+            "Load factor over ≈ 0.75 → rehash til større tabell.",
+            "__hash__ og __eq__ skal være konsistente i egne klasser.",
+            "Worst case er O(n) (alt i én bøtte), men en god hash-funksjon gjør det ekstremt sjeldent.",
+          ]}
+        />
+      </>
+    ),
+  },
+  {
+    nr: 25,
+    topic: "Python kap. 25",
+    title: "Grafer — DFS og BFS",
+    summary: "Modeller relasjoner, traverser dem dypt eller bredt.",
+    readMinutes: 12,
+    body: (
+      <>
+        <P>
+          En graf er en mengde <em>noder</em> som er koblet sammen med{" "}
+          <em>kanter</em>. Sosiale nettverk, T-banekart, lenker mellom
+          nettsider og avhengighetsgrafer mellom pakker er alle grafer. Når
+          problemet ditt handler om "hvem kan nå hvem", "kortest vei", eller
+          "er alt koblet sammen", er det sannsynligvis en graf bak.
+        </P>
+        <H2>Grunnbegreper</H2>
+        <P>
+          En graf er <em>rettet</em> hvis kantene har en retning (A følger B
+          på sosiale medier, men ikke nødvendigvis omvendt), eller{" "}
+          <em>urettet</em> hvis kantene går begge veier (to Bluetooth-enheter
+          er paret). <em>Grad</em> av en node er antall kanter som rører den.
+          To noder er <em>naboer</em> hvis det går en kant mellom dem.
+        </P>
+        <H2>Representasjon</H2>
+        <P>To vanlige måter:</P>
+        <P>
+          <strong>Nabomatrise</strong>: en V×V-tabell der <code>m[i][j]</code>{" "}
+          er 1 om det går en kant fra i til j, ellers 0. Rask oppslag "er i og
+          j naboer?" — O(1) — men bruker V² plass selv om grafen er nesten tom.
+        </P>
+        <P>
+          <strong>Naboliste</strong>: én liste per node med dens umiddelbare
+          naboer. Plass: O(V + E). Mest brukt fordi de fleste grafer i praksis
+          er <em>sparse</em> (få kanter sammenlignet med V²).
+        </P>
+        <F.GraphAdjacencyList />
+        <Code>
+          {`# Naboliste som dict-of-lists\ngraf = {\n    "A": ["B", "C", "D"],\n    "B": ["A", "D"],\n    "C": ["A", "D"],\n    "D": ["A", "B", "C"],\n}`}
+        </Code>
+        <H2>Depth-first search (DFS)</H2>
+        <P>
+          DFS starter på en node, går så dypt som mulig langs én gren før den
+          snur og prøver en annen. Tenk på det som å løse en labyrint hvor du
+          alltid tar første ledige sidegang, og bare snur når du møter en
+          blindvei.
+        </P>
+        <F.DFSWalk />
+        <Code>
+          {`def dfs(graf, start):\n    sett = set()\n\n    def besøk(u):\n        if u in sett:\n            return\n        sett.add(u)\n        print(u)            # gjør noe med noden her\n        for v in graf[u]:\n            besøk(v)\n\n    besøk(start)`}
+        </Code>
+        <P>
+          For å unngå uendelig løkke i en graf med sykler må vi huske hvilke
+          noder vi har besøkt. <code>sett</code> tar den jobben.
+        </P>
+        <H2>Breadth-first search (BFS)</H2>
+        <P>
+          BFS sprer seg utover lag for lag: først alle naboene til start, så
+          alle <em>deres</em> naboer, og så videre. Dette gir en viktig
+          egenskap: i en urettet og uvektet graf finner BFS{" "}
+          <strong>korteste sti</strong> (i antall kanter) fra startnoden.
+        </P>
+        <F.BFSWalk />
+        <Code>
+          {`from collections import deque\n\ndef bfs(graf, start):\n    sett = {start}\n    kø = deque([start])\n    forelder = {start: None}   # for å rekonstruere stien\n\n    while kø:\n        u = kø.popleft()\n        for v in graf[u]:\n            if v not in sett:\n                sett.add(v)\n                forelder[v] = u\n                kø.append(v)\n    return forelder`}
+        </Code>
+        <P>
+          Etter en BFS kan du følge <code>forelder[mål]</code> tilbake til
+          startnoden og snu lista — det er korteste vei.
+        </P>
+        <H2>DFS eller BFS?</H2>
+        <P>
+          De har samme tidskompleksitet — O(V + E) — så valget handler om hva
+          spørsmålet er:
+        </P>
+        <P>
+          DFS er kjekt for å finne <em>en eller annen</em> sti, oppdage
+          sykler, eller traversere et tre i preorder. BFS er rett verktøy for
+          korteste sti (uvektet), eller "alt innenfor k hopp".
+        </P>
+        <KeyPoints
+          items={[
+            "Graf = noder + kanter. Rettet eller urettet, vektet eller uvektet.",
+            "Naboliste passer for sparse grafer (de fleste). Plass O(V + E).",
+            "DFS dykker dypt med rekursjon/stack. BFS sprer bredt med kø.",
+            "Begge er O(V + E) — uavhengig av hvor mange ganger en kant nesten ble besøkt.",
+            "BFS i uvektet graf = korteste sti i antall kanter.",
+            "Husk å markere besøkte noder, ellers løper du i ring rundt sykler.",
+          ]}
+        />
+      </>
+    ),
+  },
+  {
+    nr: 26,
+    topic: "Python kap. 26",
+    title: "Vektede grafer — MST og Dijkstra",
+    summary: "Når kantene koster noe: minimum spanning tree og korteste sti.",
+    readMinutes: 13,
+    body: (
+      <>
+        <P>
+          Nå har hver kant et tall — en vekt. Det kan være kilometer mellom
+          steder, kabelpris mellom rom, sekunder mellom maskiner. To klassiske
+          spørsmål dukker opp.
+        </P>
+        <F.WeightedGraphExample />
+        <P>
+          <strong>1. Minimum spanning tree (MST):</strong> hva er den billigste
+          måten å koble alle nodene sammen på? Eksempel: et bygg har flere
+          rom; du skal legge nettverkskabel slik at alle rom henger sammen, og
+          du vil bruke minst mulig kabel. Det blir et tre — V−1 kanter, ingen
+          sykler — som spenner over alle noder med lavest mulig samlet vekt.
+        </P>
+        <P>
+          <strong>2. Korteste sti (Dijkstra):</strong> gitt en startnode, hva
+          er minste samlet vekt for å komme fra start til hver av de andre?
+          Eksempel: hva er raskeste vei fra stua til skolen, gitt at hvert
+          gateavsnitt har en kjent reisetid?
+        </P>
+        <H2>Prims algoritme for MST</H2>
+        <P>
+          Idéen er enkel og grådig: bygg treet vekstvis. Start med én vilkårlig
+          node i et sett <code>T</code>. Ved hvert steg, se på alle kanter som
+          går fra en node i <code>T</code> til en node <em>utenfor</em>{" "}
+          <code>T</code>, og legg til den billigste. Gjenta til alle noder er
+          inne.
+        </P>
+        <F.PrimStep />
+        <Code>
+          {`def prim(graf, start):\n    # graf[u] = [(nabo, vekt), ...]\n    T = {start}\n    tre = []   # kanter i MST\n    total = 0\n\n    while len(T) < len(graf):\n        # finn billigste kant ut av T\n        beste = None\n        for u in T:\n            for v, w in graf[u]:\n                if v not in T:\n                    if beste is None or w < beste[2]:\n                        beste = (u, v, w)\n        u, v, w = beste\n        T.add(v)\n        tre.append((u, v, w))\n        total += w\n    return tre, total`}
+        </Code>
+        <P>
+          Den naive løkken her er O(V·E). I praksis bruker man en heap (Python
+          har <code>heapq</code>) for å hente den letteste kanten i O(log E) —
+          da blir hele algoritmen O(E log V).
+        </P>
+        <H2>Dijkstras algoritme for korteste sti</H2>
+        <P>
+          Veldig lik struktur som Prim, men vi sammenligner ikke vekten på{" "}
+          <em>kanten</em> — vi sammenligner{" "}
+          <em>samlet avstand fra startnoden</em>.
+        </P>
+        <P>
+          Hold en tabell <code>cost[v]</code> = "billigste kjente vei fra
+          start til v". Initialiser <code>cost[start] = 0</code>, alle andre
+          til uendelig. Ved hvert steg: ta noden utenfor T med lavest cost,
+          legg den i T, og se om noen av naboene kan nås billigere gjennom
+          denne noden enn det vi hadde notert. Oppdater i så fall.
+        </P>
+        <F.DijkstraTable />
+        <Code>
+          {`import heapq\n\ndef dijkstra(graf, start):\n    cost = {u: float("inf") for u in graf}\n    cost[start] = 0\n    forelder = {start: None}\n    heap = [(0, start)]   # (cost, node)\n\n    while heap:\n        c, u = heapq.heappop(heap)\n        if c > cost[u]:\n            continue       # gammel oppføring\n        for v, w in graf[u]:\n            ny = c + w\n            if ny < cost[v]:\n                cost[v] = ny\n                forelder[v] = u\n                heapq.heappush(heap, (ny, v))\n    return cost, forelder`}
+        </Code>
+        <P>
+          Heap-versjonen er O((V + E) log V). Linje-for-linje-versjonen uten
+          heap finner minimum med en lineær gjennomgang og er O(V²) — fortsatt
+          OK for små grafer og enklere å forklare på eksamen.
+        </P>
+        <H2>Når fungerer Dijkstra ikke?</H2>
+        <P>
+          Dijkstra antar at alle vekter er <em>ikke-negative</em>. Med
+          negative vekter kan algoritmen "låse fast" en suboptimal kostnad for
+          tidlig. For grafer som tillater negative kanter trenger du
+          Bellman-Ford (utenfor pensum, men greit å vite at det finnes).
+        </P>
+        <H2>Prim vs Dijkstra — ett ords forskjell</H2>
+        <P>Begge plukker grådig "neste node" fra V−T. Forskjellen:</P>
+        <Code>
+          {`# Prim — billigste KANT fra T til V−T\nif w < beste:\n    beste = w\n\n# Dijkstra — billigste SAMLET avstand til start\nif cost[u] + w < cost[v]:\n    cost[v] = cost[u] + w`}
+        </Code>
+        <P>
+          Prim ser bare på kanten alene. Dijkstra ser på hele veien tilbake
+          til startnoden.
+        </P>
+        <KeyPoints
+          items={[
+            "Vekt = tall på kanten. Modellerer kostnad, avstand, tid, …",
+            "MST = billigste måten å koble alle noder sammen på, V−1 kanter, ingen sykler.",
+            "Prim bygger MST grådig: legg til billigste kant ut av treet.",
+            "Dijkstra finner korteste sti fra én startnode til alle andre.",
+            "Dijkstra sammenligner cost[u] + w(u,v) mot cost[v]. Oppdater hvis billigere.",
+            "Dijkstra krever ikke-negative vekter. Negative vekter → Bellman-Ford.",
+            "Begge er O(E log V) med heap, O(V²) uten — match med grafstørrelsen.",
+          ]}
+        />
+      </>
+    ),
+  },
 ];
 
 export function findChapter(nr: number): PythonChapter | undefined {

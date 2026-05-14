@@ -26788,4 +26788,190 @@ print("Outliers:", outliers)`,
       },
     ],
   },
+
+  /* ============ KAP. 24 — HASHING ============ */
+  {
+    id: "d-py24-match-collision",
+    kind: "match",
+    title: "Kollisjonsstrategier",
+    prompt: "Match strategi til beskrivelse.",
+    topic: "Python kap. 24",
+    pairs: [
+      { left: "Separat chaining", right: "Hver tabellplass er en liten liste; kollisjoner legges i kjeden" },
+      { left: "Lineær probing", right: "Ved kollisjon, prøv neste celle, så neste, osv." },
+      { left: "Kvadratisk probing", right: "Ved kollisjon, prøv +1², +2², +3², … fra startcelle" },
+      { left: "Dobbel hashing", right: "Steget mellom forsøk styres av en andre hash-funksjon" },
+    ],
+    explanation:
+      "Probing-variantene unngår klyngedannelse i ulik grad. Chaining er enklest og oppfører seg forutsigbart selv ved høy load factor.",
+  },
+  {
+    id: "d-py24-quiz-bitwise-mod",
+    kind: "quiz",
+    title: "Bit-AND som modulo",
+    prompt: "Når er `x & (N - 1)` det samme som `x % N`?",
+    topic: "Python kap. 24",
+    question: "Velg den riktige betingelsen.",
+    options: [
+      { text: "Når N er en toer-potens (2, 4, 8, 16, …)", correct: true, rationale: "N − 1 er da en bitmaske som plukker ut de k laveste bitene — akkurat det modulo gjør." },
+      { text: "Alltid, uavhengig av N", correct: false, rationale: "For N = 10 stemmer ikke uttrykket — bitmasken matcher ikke desimal-modulo." },
+      { text: "Når x er positiv", correct: false, rationale: "Tegnet på x hjelper ikke hvis N ikke er en toer-potens." },
+      { text: "Bare for N opp til 1024", correct: false, rationale: "Begrensningen er strukturen til N (toer-potens), ikke størrelsen." },
+    ],
+    explanation:
+      "Derfor velger Python-runtime og mange andre hash-implementasjoner toer-potens-størrelser: det blir én rask bit-operasjon istedenfor en divisjon.",
+  },
+  {
+    id: "d-py24-order-rehash",
+    kind: "order",
+    title: "Rehash når load factor er for høy",
+    prompt: "Sortér stegene.",
+    topic: "Python kap. 24",
+    items: [
+      "1. Oppdag at λ > terskel (f.eks. 0.75) etter en innsetting",
+      "2. Alloker en ny tabell, vanligvis dobbelt så stor",
+      "3. Gå gjennom hver bøtte i den gamle tabellen",
+      "4. For hver oppføring: kjør hash på nytt med den nye størrelsen",
+      "5. Plasser oppføringen i riktig bøtte i den nye tabellen",
+      "6. Bytt ut den gamle tabellen med den nye, fortsett som vanlig",
+    ],
+    explanation:
+      "Rehash er O(n), men skjer sjelden. Amortisert kostnad per innsetting forblir O(1).",
+  },
+
+  /* ============ KAP. 25 — GRAFER ============ */
+  {
+    id: "d-py25-quiz-bfs-shortest",
+    kind: "quiz",
+    title: "BFS og korteste sti",
+    prompt: "Velg det riktige utsagnet.",
+    topic: "Python kap. 25",
+    question: "BFS fra startnoden s finner alltid…",
+    options: [
+      { text: "korteste sti i antall kanter til hver nådbar node, i en uvektet graf", correct: true, rationale: "Når BFS oppdager en node er det fordi den er på det lavest mulige lag — dvs. færrest mulige kanter unna s." },
+      { text: "korteste sti i samlet vekt, selv om kantene er vektet", correct: false, rationale: "Vekter krever Dijkstra. BFS bryr seg ikke om vekter." },
+      { text: "alle sykler i grafen", correct: false, rationale: "BFS kan oppdage sykler, men det er ikke det den \"finner\"." },
+      { text: "minimum spanning tree", correct: false, rationale: "MST er Prim/Kruskal, og krever vekter." },
+    ],
+    explanation:
+      "Følger man forelder-pekerne fra mål tilbake til s og snur lista, har man stien selv.",
+  },
+  {
+    id: "d-py25-match-traversal",
+    kind: "match",
+    title: "DFS vs BFS — datastruktur og bruk",
+    prompt: "Match egenskap til riktig traversal.",
+    topic: "Python kap. 25",
+    pairs: [
+      { left: "Bruker en stack (eller rekursjon)", right: "DFS" },
+      { left: "Bruker en FIFO-kø", right: "BFS" },
+      { left: "Naturlig valg for korteste sti (uvektet)", right: "BFS" },
+      { left: "Naturlig valg for å oppdage sykler i et tre", right: "DFS" },
+      { left: "Tidskompleksitet O(V + E)", right: "Begge" },
+    ],
+    explanation:
+      "Tidskompleksiteten er den samme; det er hva spørsmålet er som styrer valget.",
+  },
+  {
+    id: "d-py25-order-bfs-trace",
+    kind: "order",
+    title: "BFS-trinn for en liten graf",
+    prompt:
+      "Grafen er A–B, A–C, B–D, C–D, D–E. Sortér BFS-rekkefølgen fra start = A.",
+    topic: "Python kap. 25",
+    items: [
+      "Besøk A, legg A i kø, marker besøkt",
+      "Pop A. Naboer er B og C — legg dem i kø, marker dem",
+      "Pop B. Nabo D er ny — legg D i kø",
+      "Pop C. Nabo D er allerede besøkt, hopp over",
+      "Pop D. Nabo E er ny — legg E i kø",
+      "Pop E. Ingen ubesøkte naboer. Kø er tom.",
+    ],
+    explanation:
+      "Rekkefølge: A, B, C, D, E. Avstand fra A: A=0, B=1, C=1, D=2, E=3.",
+  },
+
+  /* ============ KAP. 26 — VEKTEDE GRAFER ============ */
+  {
+    id: "d-py26-quiz-prim-vs-dijkstra",
+    kind: "quiz",
+    title: "Prim eller Dijkstra?",
+    prompt: "Velg den riktige forskjellen.",
+    topic: "Python kap. 26",
+    question: "Hva er hovedforskjellen på sammenligningen Prim gjør vs Dijkstra?",
+    options: [
+      {
+        text: "Prim sammenligner vekten på selve kanten; Dijkstra sammenligner cost[u] + w(u,v) med cost[v]",
+        correct: true,
+        rationale: "Prim bryr seg bare om kanten ut av treet. Dijkstra bryr seg om hele veien fra startnoden.",
+      },
+      {
+        text: "Prim virker på rettede grafer, Dijkstra bare på urettede",
+        correct: false,
+        rationale: "Dijkstra håndterer rettede grafer fint. Prim antar urettet.",
+      },
+      {
+        text: "Dijkstra trenger ikke å markere besøkte noder",
+        correct: false,
+        rationale: "Begge må holde styr på hvilke noder som er ferdige.",
+      },
+      {
+        text: "Prim er O(V²), Dijkstra er O(V³)",
+        correct: false,
+        rationale: "Begge er O(V²) naivt, O(E log V) med heap.",
+      },
+    ],
+    explanation:
+      "Pseudokoden er nesten lik — bare relax-uttrykket skiller dem. Det er verdt å huske til eksamen.",
+  },
+  {
+    id: "d-py26-order-dijkstra-trace",
+    kind: "order",
+    title: "Dijkstra trinn-for-trinn",
+    prompt:
+      "Graf: A→B (4), A→D (1), D→E (7), B→E (3), E→C (6). Start = A. Sortér rundene.",
+    topic: "Python kap. 26",
+    items: [
+      "Init: cost = {A:0, B:∞, C:∞, D:∞, E:∞}, T = {}",
+      "Velg A (cost 0). Oppdater B til 4, D til 1.",
+      "Velg D (cost 1). Oppdater E til 8 (via D).",
+      "Velg B (cost 4). E forbedres til 7 (via B).",
+      "Velg E (cost 7). Oppdater C til 13.",
+      "Velg C (cost 13). Ferdig — alle noder i T.",
+    ],
+    explanation:
+      "Endelig cost = A:0, D:1, B:4, E:7, C:13. Stien til E går A→B→E. Stien til C går A→B→E→C.",
+  },
+  {
+    id: "d-py26-quiz-mst-unique",
+    kind: "quiz",
+    title: "Er MST unik?",
+    prompt: "Velg det riktige svaret.",
+    topic: "Python kap. 26",
+    question: "Når har en sammenhengende graf én unik MST?",
+    options: [
+      {
+        text: "Når alle kantvekter er forskjellige",
+        correct: true,
+        rationale: "Med distinkte vekter er det aldri tvil om hvilken kant som er \"den billigste\" i en gitt situasjon — algoritmen tar samme valg uansett.",
+      },
+      {
+        text: "Alltid — MST er per definisjon unik",
+        correct: false,
+        rationale: "Med like vekter kan to forskjellige trær gi samme totale vekt.",
+      },
+      {
+        text: "Bare hvis grafen er urettet og asyklisk",
+        correct: false,
+        rationale: "Hvis grafen allerede er asyklisk og sammenhengende, ER den sitt eget MST — men spørsmålet handler om unikhet generelt.",
+      },
+      {
+        text: "Bare for grafer med ≤ 10 noder",
+        correct: false,
+        rationale: "Størrelsen spiller ingen rolle; det er likhet i vekter som betyr noe.",
+      },
+    ],
+    explanation:
+      "Den totale vekten er fortsatt unik — det er kantvalget som kan variere når flere vekter er like.",
+  },
 ];
