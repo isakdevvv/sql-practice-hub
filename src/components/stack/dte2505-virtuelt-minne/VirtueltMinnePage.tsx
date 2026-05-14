@@ -4,6 +4,7 @@ import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
 import { Tex, TexBlock } from "@/components/Tex";
 import { AddressTranslator } from "./AddressTranslator";
+import { CacheHierarchy } from "./CacheHierarchy";
 
 const STEPS = [
   { title: "Hvorfor virtuelt minne", anchor: "hvorfor" },
@@ -11,6 +12,7 @@ const STEPS = [
   { title: "Adresseoversettelse", anchor: "oversett" },
   { title: "Page-table-strukturer", anchor: "strukturer" },
   { title: "TLB — cachen for oversettelser", anchor: "tlb" },
+  { title: "Cache-hierarkiet (interaktiv)", anchor: "cache" },
   { title: "Page faults og demand paging", anchor: "faults" },
   { title: "Replacement-algoritmer", anchor: "replace" },
   { title: "Working set + thrashing", anchor: "ws" },
@@ -193,7 +195,18 @@ PA = 7 * 4096 + 0x123
           </p>
         </Section>
 
-        <Section number="6" id="faults" title="Page faults og demand paging">
+        <Section number="6" id="cache" title="Cache-hierarkiet — fysisk intuisjon">
+          <p className="text-sm text-muted-foreground mb-3">
+            TLB-en er en cache for adresseoversettelser, men hele maskinen er bygd opp av
+            cache-nivåer. Hvert nivå er <em>en størrelsesorden</em> tregere enn forrige,
+            men også betydelig større. Brukeren <strong>må</strong> ha intuitivt grep om
+            disse forskjellene for å forstå hvorfor det å treffe L1 i 99 % av tilfellene
+            er forskjellen på rask og treg kode.
+          </p>
+          <CacheHierarchy />
+        </Section>
+
+        <Section number="7" id="faults" title="Page faults og demand paging">
           <p className="text-sm text-muted-foreground mb-3">
             En PTE har et <code className="font-mono">present</code>-bit. Hvis det er 0
             ved en aksess — <strong>page fault</strong>. Kernelen tar over via trap-handler.
@@ -226,7 +239,7 @@ PA = 7 * 4096 + 0x123
           </p>
         </Section>
 
-        <Section number="7" id="replace" title="Replacement — hvilken side kastes ut?">
+        <Section number="8" id="replace" title="Replacement — hvilken side kastes ut?">
           <p className="text-sm text-muted-foreground mb-3">
             Når RAM er full og vi trenger en frame for en innkommende side, må noe
             kastes ut. Algoritmen som velger ofrer:
@@ -271,7 +284,7 @@ PA = 7 * 4096 + 0x123
           </div>
         </Section>
 
-        <Section number="8" id="ws" title="Working set + thrashing">
+        <Section number="9" id="ws" title="Working set + thrashing">
           <p className="text-sm text-muted-foreground mb-3">
             <strong>Working set W(t, Δ):</strong> sett av sider prosessen har rørt i de
             siste Δ tidsenhetene. Hvis summen av alle prosessers working sets &gt; RAM:
@@ -291,7 +304,7 @@ PA = 7 * 4096 + 0x123
           </p>
         </Section>
 
-        <Section number="9" id="drill" title="Interaktiv: skriv en virtuell adresse">
+        <Section number="10" id="drill" title="Interaktiv: skriv en virtuell adresse">
           <p className="text-sm text-muted-foreground mb-3">
             Skriv en virtuell adresse i hex (0x...) eller desimal. Se VPN/offset-split,
             TLB-oppslag (grønn = hit), page-tabell-oppslag, og ferdig fysisk adresse.
@@ -300,7 +313,7 @@ PA = 7 * 4096 + 0x123
           <AddressTranslator />
         </Section>
 
-        <Section number="10" id="feller" title="Eksamen-feller">
+        <Section number="11" id="feller" title="Eksamen-feller">
           <ul className="text-sm text-muted-foreground list-disc pl-5 space-y-2">
             <li>
               <strong className="text-foreground">Glemte at offset ikke endrer seg.</strong>{" "}
