@@ -42,6 +42,13 @@ export const PY_TOPIC_LEVEL: Record<string, PyLevel> = {
   "TLS / SSL": 3,
   "Kryptografi": 3,
   "HTTP via sockets": 2,
+  // Kurose-Ross (DTE-2507) — kvantitative nettverksoppgaver
+  "Kurose — Fysisk lag": 2,
+  "Kurose — Applikasjonslag": 2,
+  "Kurose — Transportlag": 3,
+  "Kurose — Nettverkslag": 3,
+  "Kurose — Lenkelag": 3,
+  "Kurose — Sikkerhet": 3,
   "DTE-2602 EDA": 2,
   "DTE-2602 Preprocessing": 2,
   "DTE-2602 Modeller": 3,
