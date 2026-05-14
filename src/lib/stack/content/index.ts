@@ -185,6 +185,7 @@ import { content as flaskAppBuilder } from "./flask-app-builder";
 import { content as fastapiGrunnlag } from "./fastapi-grunnlag";
 import { content as dte2507Nat } from "./dte2507-nat";
 import { content as dte2602Svm } from "./dte2602-svm";
+import { content as programmeringsboker } from "./programmeringsboker";
 import type { TrinnContent } from "../types";
 
 export const TRINN: TrinnContent[] = [
@@ -259,6 +260,8 @@ export const TRINN: TrinnContent[] = [
   dte2507Nat,
   // DTE-2602 — SVM (atom A26)
   dte2602Svm,
+  // Bok-bibliotek for hele DTE-bachelor
+  programmeringsboker,
 ];
 
 import { curriculumIndexOf } from "../curriculum";
