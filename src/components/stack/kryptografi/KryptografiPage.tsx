@@ -5,6 +5,7 @@ import { CourseOutline } from "@/components/stack/CourseOutline";
 import { AesGcmDemo } from "./AesGcmDemo";
 import { AesBlockModes } from "./AesBlockModes";
 import { HashAndHmac } from "./HashAndHmac";
+import { DiffieHellmanColors } from "./DiffieHellmanColors";
 
 const STEPS = [
   { title: "Hva krypto faktisk beskytter mot", anchor: "trusler" },
@@ -12,6 +13,7 @@ const STEPS = [
   { title: "Blokkmoduser — ECB-pingvinen", anchor: "blokk-moduser" },
   { title: "AES-GCM i praksis", anchor: "aes-gcm" },
   { title: "Asymmetrisk kryptering", anchor: "asymmetrisk" },
+  { title: "Diffie-Hellman — nøkkelutveksling", anchor: "diffie-hellman" },
   { title: "Hash-funksjoner", anchor: "hash" },
   { title: "Hash & HMAC (live)", anchor: "hash-hmac" },
   { title: "MAC og HMAC — integritet med nøkkel", anchor: "mac" },
@@ -169,6 +171,20 @@ Hvem som helst kan kryptere TIL Bob. Bare Bob kan lese.
             brukes det BARE til å utveksle en symmetrisk nøkkel — så fortsetter man med AES. Det er
             det TLS gjør.
           </p>
+        </section>
+
+        <section id="diffie-hellman" className="mb-10">
+          <h2 className="text-xl font-semibold mb-3">
+            5b. Diffie-Hellman — nøkkelutveksling uten å lekke nøkkelen
+          </h2>
+          <p className="text-sm text-muted-foreground mb-3">
+            Asymmetrisk krypto er tregt. I praksis brukes den til å «enes om» en
+            symmetrisk nøkkel som AES kan kjøre raskt på etterpå.{" "}
+            <strong>Diffie-Hellman</strong> løser nettopp dét: Alice og Bob
+            kommer fram til samme nøkkel over en kanal Eve avlytter, uten at Eve
+            kan utlede den.
+          </p>
+          <DiffieHellmanColors />
         </section>
 
         <section id="hash" className="mb-10">
