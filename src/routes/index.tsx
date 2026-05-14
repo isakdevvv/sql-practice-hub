@@ -244,7 +244,16 @@ const SEKTORER: Sektor[] = [
 ];
 
 type Verktoy = {
-  href: "/practice" | "/python" | "/drag" | "/cards" | "/prosjekt" | "/exam" | "/eksamen" | "/stack/$slug";
+  href:
+    | "/practice"
+    | "/python"
+    | "/drag"
+    | "/cards"
+    | "/prosjekt"
+    | "/exam"
+    | "/eksamen"
+    | "/git-drill"
+    | "/stack/$slug";
   navn: string;
   blurb: string;
   Icon: typeof Database;
@@ -293,6 +302,12 @@ const VERKTOY: Verktoy[] = [
     navn: "Eksamen-hub",
     blurb: "Samler eksamens-trinn fra alle fag.",
     Icon: Sparkles,
+  },
+  {
+    href: "/git-drill",
+    navn: "Git-drill",
+    blurb: "Øv git-kommandoer i en simulert terminal.",
+    Icon: TerminalSquare,
   },
   {
     href: "/stack/$slug",
@@ -677,7 +692,7 @@ function LandingPage() {
                 return (
                   <Link
                     key={v.navn}
-                    to={v.href as "/practice" | "/python" | "/drag" | "/cards" | "/prosjekt" | "/exam" | "/eksamen"}
+                    to={v.href as "/practice" | "/python" | "/drag" | "/cards" | "/prosjekt" | "/exam" | "/eksamen" | "/git-drill"}
                     className="group rounded-xl border border-border bg-background hover:border-brand/40 p-4 transition-colors block"
                   >
                     {inner}
