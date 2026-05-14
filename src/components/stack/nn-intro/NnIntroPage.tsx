@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { ArrowRight, Lightbulb } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
+import { NeuralNetForwardPass } from "./NeuralNetForwardPass";
 
 const STEPS = [
   { title: "Perceptron — minste byggesten", anchor: "perceptron" },
@@ -10,6 +11,7 @@ const STEPS = [
   { title: "Loss-funksjoner", anchor: "loss" },
   { title: "Gradient descent — intuisjon", anchor: "gd" },
   { title: "Backpropagation — kort", anchor: "backprop" },
+  { title: "Forward + backprop (interaktiv)", anchor: "forward-backprop" },
   { title: "Hyperparametere du må kjenne", anchor: "hyper" },
 ];
 
@@ -195,8 +197,26 @@ Hyperparametere:
           </p>
         </section>
 
+        <section id="forward-backprop" className="mb-10">
+          <h2 className="text-xl font-semibold mb-3">7. Forward + backprop (interaktiv)</h2>
+          <p className="text-sm text-muted-foreground mb-3">
+            Et lite 2&times;3&times;2-nett med ekte vekter og sigmoid. Dra på
+            input-sliderne for å se aktiveringene forplante seg. «Forward pass»
+            animerer signaler venstre-til-høyre. «Backprop» tar ETT
+            gradient-skritt mot målet <span className="font-mono">y = [1, 0]</span>{" "}
+            og oppdaterer vektene — sammenlign loss før og etter.
+          </p>
+          <NeuralNetForwardPass />
+          <p className="mt-3 text-xs text-muted-foreground">
+            Blå kanter er positive vekter, røde er negative; tykkelse =
+            <span className="font-mono"> |w|</span>. Etter flere backprop-klikk
+            ser du vektene gradvis omformes så output-node 1 nærmer seg 1 og
+            node 2 nærmer seg 0.
+          </p>
+        </section>
+
         <section id="hyper" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">7. Hyperparametere du må kjenne</h2>
+          <h2 className="text-xl font-semibold mb-3">8. Hyperparametere du må kjenne</h2>
           <div className="overflow-hidden rounded-lg border border-border">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
