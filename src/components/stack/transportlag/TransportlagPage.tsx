@@ -3,6 +3,7 @@ import { ArrowRight, Lightbulb } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
 import { TcpSlidingWindow } from "./TcpSlidingWindow";
+import { TcpStateMachine } from "./TcpStateMachine";
 
 const STEPS = [
   { title: "Ansvarsområdet til transport", anchor: "ansvar" },
@@ -14,6 +15,7 @@ const STEPS = [
   { title: "Sliding window — interaktiv", anchor: "window-int" },
   { title: "Flow control vs congestion control", anchor: "control" },
   { title: "Lukking — 4-veis avskjed", anchor: "close" },
+  { title: "TCP-tilstandsmaskin — interaktiv", anchor: "state-machine" },
 ];
 
 export function TransportlagPage() {
@@ -272,6 +274,20 @@ window-size annonseres av mottakeren i hver ACK.`}</pre>
             blandes med en ny forbindelse på samme port-par. Server-prosesser bør bruke{" "}
             <code>SO_REUSEADDR</code> for å restarte uten å vente.
           </p>
+        </section>
+
+        <section id="state-machine" className="mb-10">
+          <h2 className="text-xl font-semibold mb-3">
+            9. TCP-tilstandsmaskin — full oversikt
+          </h2>
+          <p className="text-sm text-muted-foreground mb-4">
+            Alt over (handshake, dataoverføring, close) er egentlig én og samme
+            tilstandsmaskin med 11 tilstander. Klikk på event-knappene, eller
+            kjør et komplett scenario, og se hvordan klient og server beveger
+            seg i parallell. Halvåpne tilstander som <code>CLOSE-WAIT</code> og{" "}
+            <code>FIN-WAIT-2</code> er der det meste av eksamen-spørsmål går.
+          </p>
+          <TcpStateMachine />
         </section>
 
         <div className="mt-10 rounded-xl border border-border bg-card p-5 text-sm">
