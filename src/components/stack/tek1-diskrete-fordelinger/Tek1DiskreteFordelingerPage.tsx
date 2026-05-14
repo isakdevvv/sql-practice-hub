@@ -198,7 +198,7 @@ function PmfExplorer() {
             <YAxis tickFormatter={(v) => v.toFixed(2)} />
             <Tooltip formatter={(v: number) => v.toFixed(4)} />
             <Bar dataKey="pmf" fill="var(--brand, #4f46e5)" />
-            <ReferenceLine x={Math.round(mean)} stroke="hsl(var(--success, 142 76% 36%))" strokeDasharray="3 3" />
+            <ReferenceLine x={Math.round(mean)} stroke="var(--success)" strokeDasharray="3 3" />
           </BarChart>
         </ResponsiveContainer>
       </div>

@@ -66,11 +66,11 @@ export function TcpHandshakeDiagram() {
       <div className="rounded-lg bg-background border border-border p-4 mb-4">
         <svg viewBox="0 0 400 260" className="w-full h-auto" role="img" aria-label="TCP håndtrykk sekvensdiagram">
           {/* Klient-kolonne */}
-          <rect x="40" y="10" width="100" height="28" rx="4" fill="hsl(var(--brand))" opacity="0.15" stroke="hsl(var(--brand))" />
+          <rect x="40" y="10" width="100" height="28" rx="4" fill="var(--brand)" opacity="0.15" stroke="var(--brand)" />
           <text x="90" y="29" textAnchor="middle" fontSize="13" fontWeight="600" fill="currentColor">Klient</text>
 
           {/* Server-kolonne */}
-          <rect x="260" y="10" width="100" height="28" rx="4" fill="hsl(var(--brand))" opacity="0.15" stroke="hsl(var(--brand))" />
+          <rect x="260" y="10" width="100" height="28" rx="4" fill="var(--brand)" opacity="0.15" stroke="var(--brand)" />
           <text x="310" y="29" textAnchor="middle" fontSize="13" fontWeight="600" fill="currentColor">Server</text>
 
           {/* Livslinjer */}
@@ -185,7 +185,7 @@ function Arrow({
   reverse?: boolean;
 }) {
   const opacity = active ? (highlight ? 1 : 0.45) : 0.1;
-  const stroke = highlight ? "hsl(var(--brand))" : "currentColor";
+  const stroke = highlight ? "var(--brand)" : "currentColor";
   const arrowId = reverse ? "arrow-rev" : "arrow-fwd";
   const midX = (from.x + to.x) / 2;
   const midY = (from.y + to.y) / 2;
