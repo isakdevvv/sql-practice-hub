@@ -24,6 +24,13 @@ export const PY_TOPIC_LEVEL: Record<string, PyLevel> = {
   "Flask + CSS": 1,
   // FastAPI — moderne Python web framework med type-hints og async
   "FastAPI": 2,
+  // DTE-2505 OS — bit-fiddling, scheduling, paging, konkurrens
+  "DTE-2505 — Permissions": 1,
+  "DTE-2505 — Scheduling": 2,
+  "DTE-2505 — Minne": 2,
+  "DTE-2505 — Konkurrens": 3,
+  "DTE-2505 — Shell": 1,
+  "DTE-2505 — Filsystem": 1,
   "JSON API": 2,
   "HTTP-statuskoder": 2,
   "Sessions": 2,
@@ -99,6 +106,7 @@ export type PyCategoryId =
   | "kurose"
   | "dte2602"
   | "dte2501-ml"
+  | "dte2505-os"
   | "stat-other";
 
 export interface PyCategory {
@@ -220,10 +228,24 @@ export const PY_CATEGORIES: readonly PyCategory[] = [
     ],
   },
   {
+    id: "dte2505-os",
+    label: "DTE-2505 OS",
+    description: "Permissions, scheduling, paging, konkurrens, shell-parsing, filsystem.",
+    topics: [
+      "DTE-2505",
+      "DTE-2505 — Permissions",
+      "DTE-2505 — Scheduling",
+      "DTE-2505 — Minne",
+      "DTE-2505 — Konkurrens",
+      "DTE-2505 — Shell",
+      "DTE-2505 — Filsystem",
+    ],
+  },
+  {
     id: "stat-other",
     label: "Statistikk & annet",
     description: "TEK-1501 statistikk og øvrige gaps-emner.",
-    topics: ["Statistikk-grunnlag", "DTE-2505"],
+    topics: ["Statistikk-grunnlag"],
   },
 ];
 
