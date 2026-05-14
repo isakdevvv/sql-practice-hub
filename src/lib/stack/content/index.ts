@@ -165,6 +165,10 @@ import { content as dte2507BottleneckThroughput } from "./dte2507-bottleneck-thr
 import { content as dte2602LdaQdaNb } from "./dte2602-lda-qda-nb";
 import { content as dte2602CvVarianter } from "./dte2602-cv-varianter";
 import { content as tek1RegresjonDiagnostikk } from "./tek1-regresjon-diagnostikk";
+import { content as dte2507FraChecksumTilHmac } from "./dte2507-fra-checksum-til-hmac";
+import { content as dte2507CbcIv } from "./dte2507-cbc-iv";
+import { content as dte2507StatefulFirewall } from "./dte2507-stateful-firewall";
+import { content as dte2507IdsSnort } from "./dte2507-ids-snort";
 import type { TrinnContent } from "../types";
 
 export const TRINN: TrinnContent[] = [
@@ -216,6 +220,8 @@ export const TRINN: TrinnContent[] = [
   dte2602LogistiskRegresjon, dte2602LdaQdaNb, dte2602CvVarianter,
   // DTE-2507 — Kurose Ch 1 utdypning
   dte2507DelayModell, dte2507BottleneckThroughput,
+  // DTE-2507 — Kurose Ch 8 sikkerhet
+  dte2507FraChecksumTilHmac, dte2507CbcIv, dte2507StatefulFirewall, dte2507IdsSnort,
   // TEK-1501 — utvidelser
   tek1RegresjonDiagnostikk,
 ];

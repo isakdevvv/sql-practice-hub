@@ -132,6 +132,10 @@ export const PHASES: readonly CurriculumPhase[] = [
       "dte2507-aloha-kasino",
       "dte2507-arp-detektiv",
       "dte2507-switch-self-learning",
+      "dte2507-fra-checksum-til-hmac",
+      "dte2507-cbc-iv",
+      "dte2507-stateful-firewall",
+      "dte2507-ids-snort",
     ],
   },
   {
