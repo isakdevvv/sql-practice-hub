@@ -99,6 +99,7 @@ export const PHASES: readonly CurriculumPhase[] = [
       "dte2505-prosesser-signaler",
       "dte2505-bash-scripts",
       "dte2505-obliger",
+      "dte2505-spesialbits",
     ],
   },
   {

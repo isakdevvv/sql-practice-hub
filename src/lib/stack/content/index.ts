@@ -182,6 +182,7 @@ import { content as dte2507IdsSnort } from "./dte2507-ids-snort";
 import { content as dte2507DayInTheLife } from "./dte2507-day-in-the-life";
 import { content as flaskAppBuilder } from "./flask-app-builder";
 import { content as fastapiGrunnlag } from "./fastapi-grunnlag";
+import { content as dte2505Spesialbits } from "./dte2505-spesialbits";
 import type { TrinnContent } from "../types";
 
 export const TRINN: TrinnContent[] = [
@@ -250,6 +251,8 @@ export const TRINN: TrinnContent[] = [
   flaskAppBuilder,
   // FastAPI grunnlag
   fastapiGrunnlag,
+  // DTE-2505 — atom F5: setuid/setgid/sticky som dedikert trio
+  dte2505Spesialbits,
 ];
 
 import { curriculumIndexOf } from "../curriculum";
