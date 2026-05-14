@@ -39,6 +39,7 @@ import { Route as Dte2507PcapRouteImport } from './routes/dte2507.pcap'
 import { Route as Dte2505ShellDrillRouteImport } from './routes/dte2505.shell-drill'
 import { Route as PythonKapIndexRouteImport } from './routes/python_.kap.index'
 import { Route as PythonKapNrRouteImport } from './routes/python_.kap.$nr'
+import { Route as PythonIdeNrRouteImport } from './routes/python_.ide.$nr'
 
 const StackRoute = StackRouteImport.update({
   id: '/stack',
@@ -190,6 +191,11 @@ const PythonKapNrRoute = PythonKapNrRouteImport.update({
   path: '/python/kap/$nr',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PythonIdeNrRoute = PythonIdeNrRouteImport.update({
+  id: '/python_/ide/$nr',
+  path: '/python/ide/$nr',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -220,6 +226,7 @@ export interface FileRoutesByFullPath {
   '/stack/$slug': typeof StackSlugRoute
   '/spor/': typeof SporIndexRoute
   '/stack/': typeof StackIndexRoute
+  '/python/ide/$nr': typeof PythonIdeNrRoute
   '/python/kap/$nr': typeof PythonKapNrRoute
   '/python/kap/': typeof PythonKapIndexRoute
 }
@@ -250,6 +257,7 @@ export interface FileRoutesByTo {
   '/stack/$slug': typeof StackSlugRoute
   '/spor': typeof SporIndexRoute
   '/stack': typeof StackIndexRoute
+  '/python/ide/$nr': typeof PythonIdeNrRoute
   '/python/kap/$nr': typeof PythonKapNrRoute
   '/python/kap': typeof PythonKapIndexRoute
 }
@@ -283,6 +291,7 @@ export interface FileRoutesById {
   '/stack/$slug': typeof StackSlugRoute
   '/spor/': typeof SporIndexRoute
   '/stack/': typeof StackIndexRoute
+  '/python_/ide/$nr': typeof PythonIdeNrRoute
   '/python_/kap/$nr': typeof PythonKapNrRoute
   '/python_/kap/': typeof PythonKapIndexRoute
 }
@@ -317,6 +326,7 @@ export interface FileRouteTypes {
     | '/stack/$slug'
     | '/spor/'
     | '/stack/'
+    | '/python/ide/$nr'
     | '/python/kap/$nr'
     | '/python/kap/'
   fileRoutesByTo: FileRoutesByTo
@@ -347,6 +357,7 @@ export interface FileRouteTypes {
     | '/stack/$slug'
     | '/spor'
     | '/stack'
+    | '/python/ide/$nr'
     | '/python/kap/$nr'
     | '/python/kap'
   id:
@@ -379,6 +390,7 @@ export interface FileRouteTypes {
     | '/stack/$slug'
     | '/spor/'
     | '/stack/'
+    | '/python_/ide/$nr'
     | '/python_/kap/$nr'
     | '/python_/kap/'
   fileRoutesById: FileRoutesById
@@ -408,6 +420,7 @@ export interface RootRouteChildren {
   PortfolioDte2602SlugRoute: typeof PortfolioDte2602SlugRoute
   ProsjektMlSlugRoute: typeof ProsjektMlSlugRoute
   PythonVisualizerRoute: typeof PythonVisualizerRoute
+  PythonIdeNrRoute: typeof PythonIdeNrRoute
   PythonKapNrRoute: typeof PythonKapNrRoute
   PythonKapIndexRoute: typeof PythonKapIndexRoute
 }
@@ -624,6 +637,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PythonKapNrRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/python_/ide/$nr': {
+      id: '/python_/ide/$nr'
+      path: '/python/ide/$nr'
+      fullPath: '/python/ide/$nr'
+      preLoaderRoute: typeof PythonIdeNrRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -676,18 +696,10 @@ const rootRouteChildren: RootRouteChildren = {
   PortfolioDte2602SlugRoute: PortfolioDte2602SlugRoute,
   ProsjektMlSlugRoute: ProsjektMlSlugRoute,
   PythonVisualizerRoute: PythonVisualizerRoute,
+  PythonIdeNrRoute: PythonIdeNrRoute,
   PythonKapNrRoute: PythonKapNrRoute,
   PythonKapIndexRoute: PythonKapIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { createStart } from '@tanstack/react-start'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-  }
-}
