@@ -184,6 +184,7 @@ import { content as dte2507Dhcp } from "./dte2507-dhcp";
 import { content as flaskAppBuilder } from "./flask-app-builder";
 import { content as fastapiGrunnlag } from "./fastapi-grunnlag";
 import { content as dte2507Nat } from "./dte2507-nat";
+import { content as dte2602Svm } from "./dte2602-svm";
 import type { TrinnContent } from "../types";
 
 export const TRINN: TrinnContent[] = [
@@ -256,6 +257,8 @@ export const TRINN: TrinnContent[] = [
   fastapiGrunnlag,
   // DTE-2507 — NAT (Kurose 4.3.4)
   dte2507Nat,
+  // DTE-2602 — SVM (atom A26)
+  dte2602Svm,
 ];
 
 import { curriculumIndexOf } from "../curriculum";
