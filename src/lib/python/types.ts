@@ -83,6 +83,163 @@ export function levelOf(ex: { level?: PyLevel; topic: string }): PyLevel {
   return ex.level ?? PY_TOPIC_LEVEL[ex.topic] ?? 0;
 }
 
+/**
+ * Tematiske kategorier (over level/topic). Brukes for å gruppere sidebar-listen
+ * og som filter-chips. Hver oppgave tilhører nøyaktig én kategori basert på
+ * topic-strengen. Rekkefølgen er pedagogisk — fra mest grunnleggende mot mest
+ * spesialisert.
+ */
+export type PyCategoryId =
+  | "web"
+  | "db-data"
+  | "api-sec"
+  | "dte2507"
+  | "kurose"
+  | "dte2602"
+  | "dte2501-ml"
+  | "stat-other";
+
+export interface PyCategory {
+  id: PyCategoryId;
+  label: string;
+  /** Kort beskrivelse for tooltip. */
+  description: string;
+  /** Topics som hører til denne kategorien. */
+  topics: readonly string[];
+}
+
+export const PY_CATEGORIES: readonly PyCategory[] = [
+  {
+    id: "web",
+    label: "Web & Flask",
+    description: "Flask-routing, Jinja-templates, skjemaer, sessions, Bootstrap/CSS, ORM.",
+    topics: [
+      "Flask routing",
+      "Flask + Jinja",
+      "Flask + forms",
+      "Flask + MySQL",
+      "Flask + Bootstrap",
+      "Flask + CSS",
+      "Flask + Session",
+      "Flask-SQLAlchemy (ORM)",
+      "Flask-utvidelser",
+      "App-arkitektur",
+    ],
+  },
+  {
+    id: "db-data",
+    label: "Database & data",
+    description: "MySQL-connector og databehandling i Python.",
+    topics: ["MySQL connector", "Python data-prosessering", "Decorators"],
+  },
+  {
+    id: "api-sec",
+    label: "API & sikkerhet",
+    description: "JSON-API, HTTP-statuskoder, sesjoner, passord, CSRF, tokens.",
+    topics: [
+      "JSON API",
+      "HTTP-statuskoder",
+      "Sessions",
+      "Login & sessions",
+      "Passord-sikkerhet",
+      "Passordhashing",
+      "CSRF",
+      "API & tokens",
+      "REST / API",
+      "API-kall i Python",
+    ],
+  },
+  {
+    id: "dte2507",
+    label: "DTE-2507 Nettverk",
+    description: "Sockets (TCP/UDP), TLS, kryptografi, HTTP via sockets.",
+    topics: [
+      "DTE-2507",
+      "Sockets (TCP)",
+      "Sockets (UDP)",
+      "Sockets (concurrent)",
+      "TLS / SSL",
+      "Kryptografi",
+      "HTTP via sockets",
+    ],
+  },
+  {
+    id: "kurose",
+    label: "Kurose Ch 1–8",
+    description: "Kvantitative nettverksoppgaver fra Kurose-Ross (delay, RTT, CRC, NAT, DH).",
+    topics: [
+      "Kurose — Fysisk lag",
+      "Kurose — Applikasjonslag",
+      "Kurose — Transportlag",
+      "Kurose — Nettverkslag",
+      "Kurose — Lenkelag",
+      "Kurose — Sikkerhet",
+    ],
+  },
+  {
+    id: "dte2602",
+    label: "DTE-2602 ML-prosjekt",
+    description: "EDA, preprocessing, modeller, evaluering, algoritmer fra bunn.",
+    topics: [
+      "DTE-2602 EDA",
+      "DTE-2602 Preprocessing",
+      "DTE-2602 Modeller",
+      "DTE-2602 Evaluering",
+      "DTE-2602 Algoritmer fra bunn",
+      "Modellevaluering",
+    ],
+  },
+  {
+    id: "dte2501-ml",
+    label: "DTE-2501 ML",
+    description: "k-NN, k-Means, GMM, PCA, ensemble, GA, NLP, RL, DP.",
+    topics: [
+      "ML — Supervised",
+      "ML — Unsupervised",
+      "ML — Dim.-reduksjon",
+      "ML — Ensemble",
+      "ML — NLP",
+      "ML — Metaheuristikk",
+      "ML — Reinforcement learning",
+      "ML — Dynamic programming",
+      "ML — k-NN",
+      "ML — Trær",
+      "ML — k-Means",
+      "ML — GMM",
+      "ML — PCA",
+      "ML — GA",
+      "ML — RL",
+      "ML — DP",
+      "ML — Minimax",
+      "ML — Bandits",
+      "ML — MDP Bellman",
+      "Klustering & dim-red",
+    ],
+  },
+  {
+    id: "stat-other",
+    label: "Statistikk & annet",
+    description: "TEK-1501 statistikk og øvrige gaps-emner.",
+    topics: ["Statistikk-grunnlag", "DTE-2505"],
+  },
+];
+
+/** Build lookup at module-init for O(1) categoryOf. */
+const TOPIC_TO_CATEGORY: Record<string, PyCategoryId> = (() => {
+  const map: Record<string, PyCategoryId> = {};
+  for (const cat of PY_CATEGORIES) {
+    for (const topic of cat.topics) {
+      map[topic] = cat.id;
+    }
+  }
+  return map;
+})();
+
+/** Returnerer kategori-id for en oppgave. Faller tilbake til "stat-other" hvis topic er ukjent. */
+export function categoryOf(ex: { topic: string }): PyCategoryId {
+  return TOPIC_TO_CATEGORY[ex.topic] ?? "stat-other";
+}
+
 export interface PyExercise {
   id: string;
   topic: string;

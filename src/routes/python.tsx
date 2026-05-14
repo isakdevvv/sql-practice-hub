@@ -9,7 +9,14 @@ import { StepVisualizer } from "@/components/python/StepVisualizer";
 import { PY_EXERCISES } from "@/lib/python/exercises";
 import { runScript, runScriptStepwise, runScriptVisual } from "@/lib/python/runner";
 import { loadPyProgress, markPySolved, resetPyProgress, type PyProgress } from "@/lib/python/pyProgress";
-import { levelOf, PY_LEVEL_NAMES, type PyLevel } from "@/lib/python/types";
+import {
+  categoryOf,
+  levelOf,
+  PY_CATEGORIES,
+  PY_LEVEL_NAMES,
+  type PyCategoryId,
+  type PyLevel,
+} from "@/lib/python/types";
 import { DocsPanel } from "@/components/DocsPanel";
 import { getPyodide, isPyodideReady, onPyodideProgress } from "@/lib/python/pyodideLoader";
 import type { PyRunResult, PyStep, VisualStep } from "@/lib/python/types";
@@ -47,14 +54,36 @@ function PythonPage() {
   const [activeId, setActiveId] = useState(PY_EXERCISES[0]?.id ?? "");
   // Level filter: "all" means show everything; a number filters by PY_TOPIC_LEVEL.
   const [levelFilter, setLevelFilter] = useState<"all" | PyLevel>("all");
+  // Category filter — null = vis alle kategorier (sidebar grupperes), ellers vis kun valgt.
+  const [categoryFilter, setCategoryFilter] = useState<PyCategoryId | null>(null);
 
   const filteredExercises = useMemo(
     () =>
-      levelFilter === "all"
-        ? PY_EXERCISES
-        : PY_EXERCISES.filter((e) => levelOf(e) === levelFilter),
-    [levelFilter],
+      PY_EXERCISES.filter(
+        (e) =>
+          (levelFilter === "all" || levelOf(e) === levelFilter) &&
+          (categoryFilter === null || categoryOf(e) === categoryFilter),
+      ),
+    [levelFilter, categoryFilter],
   );
+
+  /** Grupper de filtrerte oppgavene per kategori — for sidebar-seksjoner. */
+  const groupedExercises = useMemo(() => {
+    const groups: Record<PyCategoryId, typeof PY_EXERCISES> = {
+      web: [],
+      "db-data": [],
+      "api-sec": [],
+      dte2507: [],
+      kurose: [],
+      dte2602: [],
+      "dte2501-ml": [],
+      "stat-other": [],
+    };
+    for (const ex of filteredExercises) {
+      groups[categoryOf(ex)].push(ex);
+    }
+    return groups;
+  }, [filteredExercises]);
 
   const exercise = useMemo(
     () =>
@@ -312,6 +341,47 @@ function PythonPage() {
           </div>
         )}
 
+        {/* Category filter pills — pedagogisk grupperting på toppen */}
+        <div className="mb-3 flex flex-wrap gap-2 items-center">
+          <span className="text-xs uppercase tracking-wider text-muted-foreground mr-1">
+            Kategori:
+          </span>
+          <button
+            onClick={() => setCategoryFilter(null)}
+            className={cn(
+              "rounded-full border px-3 py-1 text-xs transition-colors",
+              categoryFilter === null
+                ? "border-brand bg-brand/10 text-brand"
+                : "border-border text-muted-foreground hover:bg-accent",
+            )}
+          >
+            Alle ({PY_EXERCISES.length})
+          </button>
+          {PY_CATEGORIES.map((cat) => {
+            const count = PY_EXERCISES.filter((e) => categoryOf(e) === cat.id).length;
+            if (count === 0) return null;
+            const solved = PY_EXERCISES.filter(
+              (e) => categoryOf(e) === cat.id && progress.solved[e.id],
+            ).length;
+            const active = categoryFilter === cat.id;
+            return (
+              <button
+                key={cat.id}
+                onClick={() => setCategoryFilter(active ? null : cat.id)}
+                title={cat.description}
+                className={cn(
+                  "rounded-full border px-3 py-1 text-xs transition-colors",
+                  active
+                    ? "border-brand bg-brand/10 text-brand"
+                    : "border-border text-muted-foreground hover:bg-accent",
+                )}
+              >
+                {cat.label} ({solved}/{count})
+              </button>
+            );
+          })}
+        </div>
+
         {/* Level filter pills — like /kurs but for Python */}
         <div className="mb-4 flex flex-wrap gap-2 items-center">
           <span className="text-xs uppercase tracking-wider text-muted-foreground mr-1">
@@ -385,35 +455,52 @@ function PythonPage() {
                 }}
               />
             </div>
-            {filteredExercises.map((e) => {
-              const isSolved = !!progress.solved[e.id];
-              const isActive = e.id === exercise.id;
+            {/* Grupper oppgavene per kategori med seksjons-overskrift. Skjul tomme kategorier. */}
+            {PY_CATEGORIES.map((cat) => {
+              const exercisesInCat = groupedExercises[cat.id];
+              if (exercisesInCat.length === 0) return null;
               return (
-                <button
-                  key={e.id}
-                  onClick={() => setActiveId(e.id)}
-                  className={cn(
-                    "w-full text-left rounded-md px-3 py-2 text-sm transition-colors",
-                    isActive
-                      ? "bg-accent text-foreground"
-                      : "text-muted-foreground hover:bg-accent/50 hover:text-foreground",
-                  )}
-                >
-                  <div className="flex items-center gap-2">
-                    <div className="font-medium truncate flex-1">{e.title}</div>
-                    {isSolved && (
-                      <span
-                        className="flex h-4 w-4 shrink-0 items-center justify-center rounded-sm border border-success bg-success text-success-foreground"
-                        title="Godkjent"
+                <div key={cat.id} className="mb-4">
+                  <div className="px-2 mb-1 flex items-baseline justify-between gap-2">
+                    <h3 className="text-[10px] uppercase tracking-wider font-semibold text-brand">
+                      {cat.label}
+                    </h3>
+                    <span className="text-[9px] text-muted-foreground tabular-nums">
+                      {exercisesInCat.length}
+                    </span>
+                  </div>
+                  {exercisesInCat.map((e) => {
+                    const isSolved = !!progress.solved[e.id];
+                    const isActive = e.id === exercise.id;
+                    return (
+                      <button
+                        key={e.id}
+                        onClick={() => setActiveId(e.id)}
+                        className={cn(
+                          "w-full text-left rounded-md px-3 py-2 text-sm transition-colors",
+                          isActive
+                            ? "bg-accent text-foreground"
+                            : "text-muted-foreground hover:bg-accent/50 hover:text-foreground",
+                        )}
                       >
-                        <Check className="h-3 w-3" />
-                      </span>
-                    )}
-                  </div>
-                  <div className="mt-0.5 text-[10px] text-muted-foreground truncate">
-                    Nivå {levelOf(e)} · {e.topic}
-                  </div>
-                </button>
+                        <div className="flex items-center gap-2">
+                          <div className="font-medium truncate flex-1">{e.title}</div>
+                          {isSolved && (
+                            <span
+                              className="flex h-4 w-4 shrink-0 items-center justify-center rounded-sm border border-success bg-success text-success-foreground"
+                              title="Godkjent"
+                            >
+                              <Check className="h-3 w-3" />
+                            </span>
+                          )}
+                        </div>
+                        <div className="mt-0.5 text-[10px] text-muted-foreground truncate">
+                          Nivå {levelOf(e)} · {e.topic}
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
               );
             })}
           </aside>
