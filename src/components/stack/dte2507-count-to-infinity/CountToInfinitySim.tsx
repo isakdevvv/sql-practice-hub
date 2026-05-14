@@ -93,7 +93,7 @@ function simulate(
   // Uten pr: Dy = min(cxyNew, cyz + Dz) = min(60, 1+5) = 6. LOOP.
 
   let Dz_advertised_to_y = poisonedReverse && zVia === "y" ? Number.POSITIVE_INFINITY : Dz;
-  let Dy_advertised_to_z = poisonedReverse && yVia === "z" ? Number.POSITIVE_INFINITY : Dy;
+  let Dy_advertised_to_z = poisonedReverse && (yVia as string) === "z" ? Number.POSITIVE_INFINITY : Dy;
 
   // y reagerer:
   const yAlt1 = cxyNew;
@@ -117,7 +117,7 @@ function simulate(
   // Hvis poisoned reverse aktiverer umiddelbar konvergens, er vi ferdige.
   if (Dy === cxyNew && yVia === "x") {
     // z må fortsatt oppdatere seg.
-    Dy_advertised_to_z = poisonedReverse && yVia === "z" ? Number.POSITIVE_INFINITY : Dy;
+    Dy_advertised_to_z = poisonedReverse && (yVia as string) === "z" ? Number.POSITIVE_INFINITY : Dy;
     const zAlt = cyz + Dy_advertised_to_z;
     Dz = zAlt; // z gar uansett via y i dette mini-eksempelet (ingen direkte z-x).
     zVia = "y";
@@ -138,7 +138,7 @@ function simulate(
   let safetyMax = 100;
   while (safetyMax-- > 0 && Math.max(Dy, Dz) < INFINITY_THRESHOLD) {
     // z reagerer på y sitt rykte
-    Dy_advertised_to_z = poisonedReverse && yVia === "z" ? Number.POSITIVE_INFINITY : Dy;
+    Dy_advertised_to_z = poisonedReverse && (yVia as string) === "z" ? Number.POSITIVE_INFINITY : Dy;
     const newDz = cyz + Dy_advertised_to_z;
     const oldDz = Dz;
     Dz = newDz;
@@ -174,7 +174,7 @@ function simulate(
         event: `y sammenligner: direkte = ${cxyNew}, via z = 1+${Dz} = ${yB}. y velger direkte! Dy = ${Dy}.`,
       });
       // En siste runde til z.
-      Dy_advertised_to_z = poisonedReverse && yVia === "z" ? Number.POSITIVE_INFINITY : Dy;
+      Dy_advertised_to_z = poisonedReverse && (yVia as string) === "z" ? Number.POSITIVE_INFINITY : Dy;
       Dz = cyz + Dy_advertised_to_z;
       steps.push({
         t: t++,
