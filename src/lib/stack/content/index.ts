@@ -175,6 +175,7 @@ import { content as dte2507FraChecksumTilHmac } from "./dte2507-fra-checksum-til
 import { content as dte2507CbcIv } from "./dte2507-cbc-iv";
 import { content as dte2507StatefulFirewall } from "./dte2507-stateful-firewall";
 import { content as dte2507IdsSnort } from "./dte2507-ids-snort";
+import { content as dte2507DayInTheLife } from "./dte2507-day-in-the-life";
 import type { TrinnContent } from "../types";
 
 export const TRINN: TrinnContent[] = [
@@ -236,6 +237,8 @@ export const TRINN: TrinnContent[] = [
   tek1RegresjonDiagnostikk,
   // DTE-2507 — Kurose Ch 5 utdypning
   dte2507CountToInfinity, dte2507BgpStige,
+  // DTE-2507 — Kurose Ch 6.7 crescendo
+  dte2507DayInTheLife,
 ];
 
 import { curriculumIndexOf } from "../curriculum";
