@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { ArrowRight, Lightbulb } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
+import { TcpSlidingWindow } from "./TcpSlidingWindow";
 
 const STEPS = [
   { title: "Ansvarsområdet til transport", anchor: "ansvar" },
@@ -10,6 +11,7 @@ const STEPS = [
   { title: "TCP — 3-veis håndtrykk", anchor: "handshake" },
   { title: "Pålitelig levering — ACK + retransmisjon", anchor: "ack" },
   { title: "Sliding window", anchor: "window" },
+  { title: "Sliding window — interaktiv", anchor: "window-int" },
   { title: "Flow control vs congestion control", anchor: "control" },
   { title: "Lukking — 4-veis avskjed", anchor: "close" },
 ];
@@ -196,6 +198,16 @@ window-size annonseres av mottakeren i hver ACK.`}</pre>
             større). Det er det som lar TCP fylle en gigabit-link med en enkelt
             forbindelse.
           </p>
+        </section>
+
+        <section id="window-int" className="mb-10">
+          <h2 className="text-xl font-semibold mb-3">6b. Sliding window — interaktiv</h2>
+          <p className="text-sm text-muted-foreground mb-4">
+            Drag på vindusslideren og send segmenter manuelt. Du ser i sanntid hvor
+            mange bytes som er &quot;in flight&quot;, og hvordan vinduet glir forover
+            når ACKs kommer. Tap en pakke og se hvordan sender må retransmittere.
+          </p>
+          <TcpSlidingWindow />
         </section>
 
         <section id="control" className="mb-10">
