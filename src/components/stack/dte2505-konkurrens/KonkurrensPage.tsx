@@ -4,12 +4,14 @@ import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
 import { DeadlockGraph } from "./DeadlockGraph";
 import { ConcurrencyTimeline } from "./ConcurrencyTimeline";
+import { ProducerConsumerSim } from "./ProducerConsumerSim";
 
 const STEPS = [
   { title: "Race conditions", anchor: "race" },
   { title: "Mutex / lock", anchor: "mutex" },
   { title: "Condition variables", anchor: "cv" },
   { title: "Semaforer", anchor: "sem" },
+  { title: "Producer-consumer (interaktiv)", anchor: "pc" },
   { title: "Klassiske concurrency-bugs", anchor: "bugs" },
   { title: "Deadlock — Coffmans betingelser", anchor: "coffman" },
   { title: "Dining philosophers", anchor: "dp" },
@@ -187,7 +189,22 @@ worker():
           </div>
         </Section>
 
-        <Section number="5" id="bugs" title="Klassiske concurrency-bugs (Lu et al. 2008)">
+        <Section
+          number="5"
+          id="pc"
+          title="Producer-consumer — bounded buffer med semaforer"
+        >
+          <p className="text-sm text-muted-foreground mb-3">
+            Klassikeren: to producers og to consumers deler et buffer på 10
+            slots. Tre semaforer beskytter både plass-telling og lås. Skru av
+            «Bruk semaforer» og kjør noen steg — bufferet overflower eller
+            underflower og du får rødt utropstegn. Skru på igjen, reset, og se
+            hvordan empty/full holder counterene i sjakk.
+          </p>
+          <ProducerConsumerSim />
+        </Section>
+
+        <Section number="6" id="bugs" title="Klassiske concurrency-bugs (Lu et al. 2008)">
           <div className="overflow-hidden rounded-lg border border-border">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
@@ -237,7 +254,7 @@ worker():
           </div>
         </Section>
 
-        <Section number="6" id="coffman" title="Deadlock — Coffmans fire betingelser">
+        <Section number="7" id="coffman" title="Deadlock — Coffmans fire betingelser">
           <p className="text-sm text-muted-foreground mb-3">
             Deadlock kan KUN oppstå hvis ALLE fire betingelsene er sanne samtidig.
             Bryt én og deadlocken er umulig.
@@ -271,7 +288,7 @@ worker():
           </p>
         </Section>
 
-        <Section number="7" id="dp" title="Dining philosophers — illustrerer alt">
+        <Section number="8" id="dp" title="Dining philosophers — illustrerer alt">
           <p className="text-sm text-muted-foreground mb-3">
             Fem filosofer rundt et bord, fem gafler mellom dem. Hver må ha begge
             sine gafler for å spise.
@@ -317,7 +334,7 @@ worker():
           </div>
         </Section>
 
-        <Section number="8" id="kode" title="pthread og Python — samme idé">
+        <Section number="9" id="kode" title="pthread og Python — samme idé">
           <div className="grid sm:grid-cols-2 gap-3">
             <div className="rounded-xl border border-border bg-card p-4">
               <div className="text-xs uppercase tracking-wider text-brand font-semibold mb-2">
@@ -367,7 +384,7 @@ print(counter)  # 2_000_000`}</pre>
           </p>
         </Section>
 
-        <Section number="9" id="drill" title="Interaktiv: ressurs-allokeringsgraf">
+        <Section number="10" id="drill" title="Interaktiv: ressurs-allokeringsgraf">
           <p className="text-sm text-muted-foreground mb-3">
             En ressurs-allokeringsgraf har sirkler (prosesser) og firkanter
             (ressurser). En kant <em>R → P</em> betyr «R holdes av P». En kant{" "}
@@ -381,7 +398,7 @@ print(counter)  # 2_000_000`}</pre>
           <DeadlockGraph />
         </Section>
 
-        <Section number="10" id="feller" title="Eksamen-feller">
+        <Section number="11" id="feller" title="Eksamen-feller">
           <ul className="text-sm text-muted-foreground list-disc pl-5 space-y-2">
             <li>
               <strong className="text-foreground">«Mutex løser alt».</strong>{" "}
