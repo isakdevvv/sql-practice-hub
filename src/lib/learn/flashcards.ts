@@ -4756,6 +4756,249 @@ export const FLASHCARDS: FlashCard[] = [
       "1) Gradient descent konvergerer langt raskere. 2) L2-reg straffer alle β likt — uten skalering vil features med stor variasjon dominere. StandardScaler er nesten alltid riktig før LogisticRegression i sklearn.",
   },
 
+  // ============================================================
+  // DTE-2501 — Minimax og alpha-beta pruning (AIMA kap. 6)
+  // ============================================================
+  {
+    id: "c-dte2501-minimax-def",
+    category: "praktisk",
+    topic: "Minimax",
+    question: "Hva er minimax-algoritmen?",
+    answer:
+      "Rekursiv algoritme for 2-spiller zero-sum-spill med perfekt info. MAX-noder velger argmax over barneverdier; MIN-noder velger argmin. Optimal mot rasjonell motstander.",
+  },
+  {
+    id: "c-dte2501-minimax-recur",
+    category: "praktisk",
+    topic: "Minimax",
+    question: "Skriv minimax-rekursjonen for V(s).",
+    answer:
+      "minimax(s) = UTILITY(s) hvis terminal; ellers max_a minimax(RESULT(s,a)) hvis MAX, ellers min_a minimax(RESULT(s,a)) hvis MIN.",
+  },
+  {
+    id: "c-dte2501-minimax-complex",
+    category: "praktisk",
+    topic: "Minimax",
+    question: "Tid og plass-kompleksitet for minimax?",
+    answer:
+      "Tid O(b^m), plass O(bm), der b er forgreningsfaktor og m maksimal dybde. Fullstendig (alltid løsning) og optimal (mot rasjonell motstander) i endelige spill.",
+  },
+  {
+    id: "c-dte2501-alphabeta-when",
+    category: "praktisk",
+    topic: "Minimax",
+    question: "Når kan alpha-beta klippe en gren?",
+    answer:
+      "Når α ≥ β. α = beste verdi MAX har garantert seg langs stien, β = beste verdi MIN har garantert seg. Hvis α ≥ β kan grenen aldri velges av en rasjonell motstander.",
+  },
+  {
+    id: "c-dte2501-alphabeta-speedup",
+    category: "praktisk",
+    topic: "Minimax",
+    question: "Hva er gevinsten av alpha-beta pruning?",
+    answer:
+      "Med tilfeldig trekk-rekkefølge: O(b^{3m/4}). Med perfekt rekkefølge (beste trekk først): O(b^{m/2}) — vi kan søke dobbelt så dypt på samme tid. Optimaliteten beholdes.",
+  },
+  {
+    id: "c-dte2501-eval-fn",
+    category: "praktisk",
+    topic: "Minimax",
+    question: "Hvorfor trenger sjakk en evalueringsfunksjon?",
+    answer:
+      "Spilltreet (~10^123 noder) er for stort til å nå løv. Vi cut-off-er på dybde d og bruker EVAL(s) = Σ wᵢfᵢ(s) (materiell, kong-trygghet, struktur) for å estimere ikke-terminale stillinger.",
+  },
+  {
+    id: "c-dte2501-horizon",
+    category: "praktisk",
+    topic: "Minimax",
+    question: "Hva er horisonteffekten?",
+    answer:
+      "En stilling som ser stille ut på dybde d kan eksplodere taktisk på d+1. Algoritmen evaluerer et villedende øyeblikksbilde. Quiescence search løser ved å fortsette søket bare på urolige trekk (slag, sjakk).",
+  },
+  {
+    id: "c-dte2501-minimax-vs-rl",
+    category: "praktisk",
+    topic: "Minimax",
+    question: "Minimax vs Q-learning — når brukes hvilken?",
+    answer:
+      "Minimax: kjent spill-modell, deterministisk, 2-spiller adversarial. Q-learning: model-free RL i én-agent eller stokastisk miljø. Adversarial krever motstanders rasjonalitet; RL antar ukjent dynamikk.",
+  },
+  {
+    id: "c-dte2501-minimax-imperfect",
+    category: "praktisk",
+    topic: "Minimax",
+    question: "Hva bryter minimax i poker?",
+    answer:
+      "Imperfect info — du ser ikke motstanders kort. Vi må håndtere information sets og belief states. Algoritmer: CFR (Counterfactual Regret Minimization). Nash equilibrium i stedet for minimax-trekk.",
+  },
+  {
+    id: "c-dte2501-iterative-deepening",
+    category: "praktisk",
+    topic: "Minimax",
+    question: "Hvorfor iterative deepening på minimax?",
+    answer:
+      "Start med dybde 1, øk én og én. Sikrer at vi alltid har et trekk klart hvis tida går ut. Tidligere iterasjoners resultater hjelper trekk-rekkefølging i neste runde (killer/history heuristics).",
+  },
+
+  // ============================================================
+  // DTE-2501 — Multi-armed bandits (Sutton & Barto kap. 2)
+  // ============================================================
+  {
+    id: "c-dte2501-bandit-def",
+    category: "praktisk",
+    topic: "Bandits",
+    question: "Hva er et K-armet bandit-problem?",
+    answer:
+      "K armer, hver gir tilfeldig belønning fra ukjent distribusjon med snitt q*(a). Vi velger ett trekk per tidssteg, observerer belønningen. Mål: maksimer kumulativ belønning over T trekk. Ingen state — ren explore vs exploit.",
+  },
+  {
+    id: "c-dte2501-bandit-q",
+    category: "praktisk",
+    topic: "Bandits",
+    question: "Sample-mean-estimat for Q(a)?",
+    answer:
+      "Q_t(a) = (sum av observerte belønninger fra a) / N_t(a). Inkrementell: Q_{n+1} = Q_n + (1/n)·(R_n − Q_n). Generelt: NewEstimate ← OldEstimate + StepSize·(Target − OldEstimate).",
+  },
+  {
+    id: "c-dte2501-bandit-egreedy",
+    category: "praktisk",
+    topic: "Bandits",
+    question: "ε-greedy-strategien?",
+    answer:
+      "Med p=1−ε velg argmax_a Q_t(a) (exploit). Med p=ε velg tilfeldig arm (explore). Fast ε gir lineær regret; ε-decay (f.eks. εₜ ∝ 1/t) gir O(ln T).",
+  },
+  {
+    id: "c-dte2501-bandit-ucb",
+    category: "praktisk",
+    topic: "Bandits",
+    question: "UCB1-formel?",
+    answer:
+      "A_t = argmax_a [Q_t(a) + c·√(ln t / N_t(a))]. Første ledd er exploit (gjennomsnitt), andre er explore (bonus til sjeldent prøvde armer). Oppnår O(ln T) regret — optimal.",
+  },
+  {
+    id: "c-dte2501-bandit-optimistic",
+    category: "praktisk",
+    topic: "Bandits",
+    question: "Hvordan virker optimistic initial values?",
+    answer:
+      "Sett Q_0(a) mye høyere enn sann maks-belønning. Grådig algoritme tvinges til å prøve alle armer flere ganger før Q krymper. Gir gratis utforskning uten ε. Funker bare i stasjonære bandits.",
+  },
+  {
+    id: "c-dte2501-bandit-thompson",
+    category: "praktisk",
+    topic: "Bandits",
+    question: "Hva er Thompson sampling?",
+    answer:
+      "Bayesisk strategi: oppretthold posterior over hver arms q*(a). På hvert steg trekk én sample fra hver posterior og velg argmax. Bernoulli-armer: Beta-prior → Beta(α, β) posterior. Empirisk ofte best.",
+  },
+  {
+    id: "c-dte2501-bandit-regret",
+    category: "praktisk",
+    topic: "Bandits",
+    question: "Hva er regret i bandit-problemet?",
+    answer:
+      "L_T = T·q*(a*) − E[Σ R_t]. Forventet tap mot oracle som alltid velger beste arm. Pur grådig og fast-ε gir Θ(T). UCB1 og Thompson gir O(ln T) — logaritmisk og optimalt.",
+  },
+  {
+    id: "c-dte2501-bandit-vs-rl",
+    category: "praktisk",
+    topic: "Bandits",
+    question: "Forskjell på bandits og full RL?",
+    answer:
+      "Bandits har ingen state — ett valg = umiddelbar belønning, ingen langsiktige konsekvenser. RL har state-transitioner, så et valg endrer fremtidige muligheter. Bandits er RL med |S|=1.",
+  },
+  {
+    id: "c-dte2501-bandit-explore-exploit",
+    category: "praktisk",
+    topic: "Bandits",
+    question: "Hvorfor er pur grådig nesten alltid dårlig?",
+    answer:
+      "Med støy kan én uheldig observasjon få oss til å låse oss til en suboptimal arm. Vi prøver aldri den faktisk beste igjen → lineær regret. Litt utforskning unngår det.",
+  },
+
+  // ============================================================
+  // DTE-2501 — MDP Bellman regnedrill (Sutton & Barto kap. 3-4)
+  // ============================================================
+  {
+    id: "c-dte2501-mdp-tuple",
+    category: "praktisk",
+    topic: "MDP Bellman",
+    question: "Hva er MDP-tuppelen?",
+    answer:
+      "(S, A, P, R, γ). S = states, A = actions, P(s'|s,a) = transition probability, R(s,a,s') = reward, γ ∈ [0,1) = discount factor. Markov-egenskap: framtiden avhenger bare av nåtid.",
+  },
+  {
+    id: "c-dte2501-bellman-pi",
+    category: "praktisk",
+    topic: "MDP Bellman",
+    question: "Bellman-konsistens for V^π?",
+    answer:
+      "V^π(s) = Σ_a π(a|s) Σ_{s'} P(s'|s,a)·[R(s,a,s') + γ·V^π(s')]. Lineær i V — kan løses direkte med O(|S|³) for endelig |S|.",
+  },
+  {
+    id: "c-dte2501-bellman-star",
+    category: "praktisk",
+    topic: "MDP Bellman",
+    question: "Bellman optimality for V*?",
+    answer:
+      "V*(s) = max_a Σ_{s'} P(s'|s,a)·[R(s,a,s') + γ·V*(s')]. Ikke-lineær pga max — kan ikke løses direkte, må iterere. Optimal policy: π*(s) = argmax_a samme uttrykk.",
+  },
+  {
+    id: "c-dte2501-vi-update",
+    category: "praktisk",
+    topic: "MDP Bellman",
+    question: "Value Iteration-oppdatering?",
+    answer:
+      "V_{k+1}(s) ← max_a Σ_{s'} P(s'|s,a)·[R + γ·V_k(s')]. Sweep over alle s, mål Δ = max_s |V_{k+1} − V_k|. Stopp når Δ < θ. Per-iterasjon: O(|S|²·|A|).",
+  },
+  {
+    id: "c-dte2501-pi-cycle",
+    category: "praktisk",
+    topic: "MDP Bellman",
+    question: "Policy Iteration-syklusen?",
+    answer:
+      "1) Evaluation: løs V^π eksakt (lineært system O(|S|³)) eller via iterativ Bellman-backup. 2) Improvement: π[s] ← argmax_a Σ P·[R + γ V^π(s')]. Gjenta til π uendret én runde.",
+  },
+  {
+    id: "c-dte2501-vi-vs-pi",
+    category: "praktisk",
+    topic: "MDP Bellman",
+    question: "VI vs PI — hovedforskjell?",
+    answer:
+      "VI: én Bellman-backup per state per iterasjon, mange iterasjoner. PI: full evaluering (O(|S|³)), så improvement — færre iterasjoner. VI billigere per iterasjon, PI billigere totalt for moderate |S|.",
+  },
+  {
+    id: "c-dte2501-vi-convergence",
+    category: "praktisk",
+    topic: "MDP Bellman",
+    question: "Hvorfor konvergerer VI?",
+    answer:
+      "Bellman-operatoren T er en γ-kontraksjon i sup-normen: ‖TV₁ − TV₂‖_∞ ≤ γ·‖V₁ − V₂‖_∞. Banach gir unikt fixed-point V*. ‖V_k − V*‖_∞ ≤ γᵏ·‖V₀ − V*‖_∞ — eksponentielt rate γ.",
+  },
+  {
+    id: "c-dte2501-pi-stable",
+    category: "praktisk",
+    topic: "MDP Bellman",
+    question: "Når stopper PI?",
+    answer:
+      "Når improvement-steget gir samme policy som forrige — π[s] uendret for alle s. PI konvergerer på endelig antall iterasjoner (typisk < |S|·|A|), gir eksakt optimal π — ikke bare asymptotisk.",
+  },
+  {
+    id: "c-dte2501-gamma-role",
+    category: "praktisk",
+    topic: "MDP Bellman",
+    question: "Hvorfor γ < 1?",
+    answer:
+      "Sikrer at G_t = Σ γᵏR konvergerer ved uendelig horisont. Gir Bellman-operatoren kontraksjons-egenskap. γ → 0 = kortsiktig (grådig); γ → 1 = langsiktig. Typisk 0.9–0.99.",
+  },
+  {
+    id: "c-dte2501-modified-pi",
+    category: "praktisk",
+    topic: "MDP Bellman",
+    question: "Hva er Modified Policy Iteration?",
+    answer:
+      "I stedet for full eksakt evaluering, gjør k Bellman-backups for V^π før improvement. Krysser VI (k=1) og full PI (k→∞). Praktisk sweet-spot — konvergerer raskt uten dyrt lineært system.",
+  },
   // ============= DTE-2602 — LDA / QDA / Naive Bayes (9 kort) =============
   {
     id: "c-dte2602-generativ-vs-diskr",

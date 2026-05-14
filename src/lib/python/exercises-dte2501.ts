@@ -927,4 +927,705 @@ print(knapsack([(60, 10), (100, 20), (120, 30)], 50))
 print(knapsack([(1, 1), (2, 2), (3, 3), (4, 4)], 5))
 `,
   },
+
+  // --------------------------- Minimax (AIMA kap. 6) ---------------------------
+  {
+    id: "py-dte2501-minimax-ttt",
+    topic: "ML — Minimax",
+    title: "Minimax på tic-tac-toe",
+    description:
+      "Implementér minimax for tic-tac-toe. Returnér +1 hvis X vinner, -1 hvis O vinner, 0 ved uavgjort. Test at startposisjonen gir 0 (optimal spill = uavgjort).",
+    requires: [],
+    starter: `# Brett som 9-tuppel: ' ' = tomt, 'X' eller 'O'. X starter (MAX).
+
+def winner(b):
+    lines = [(0,1,2),(3,4,5),(6,7,8),(0,3,6),(1,4,7),(2,5,8),(0,4,8),(2,4,6)]
+    for a,c,d in lines:
+        if b[a] != ' ' and b[a] == b[c] == b[d]:
+            return b[a]
+    return None
+
+def to_move(b):
+    # X starter, så hvis like mange X og O er X på tur.
+    return 'X' if b.count('X') == b.count('O') else 'O'
+
+def minimax(b):
+    """Returnér optimal utility for X (MAX) fra stilling b."""
+    w = winner(b)
+    if w == 'X': return 1
+    if w == 'O': return -1
+    if ' ' not in b: return 0
+    # TODO:
+    # 1. Bestem hvem som er på tur via to_move(b).
+    # 2. For hver lovlig flytt (' ' i b): generer ny stilling og rekursér.
+    # 3. Hvis X på tur: returner max. Hvis O: returner min.
+    pass
+
+# Tester:
+print("startposisjon:", minimax(tuple(' '*9)))  # forventet 0 (uavgjort med optimal spill)
+print("X kan vinne:", minimax(('X','X',' ', 'O','O',' ', ' ',' ',' ')))  # forventet 1
+`,
+    solution: `def winner(b):
+    lines = [(0,1,2),(3,4,5),(6,7,8),(0,3,6),(1,4,7),(2,5,8),(0,4,8),(2,4,6)]
+    for a,c,d in lines:
+        if b[a] != ' ' and b[a] == b[c] == b[d]:
+            return b[a]
+    return None
+
+def to_move(b):
+    return 'X' if b.count('X') == b.count('O') else 'O'
+
+def minimax(b):
+    w = winner(b)
+    if w == 'X': return 1
+    if w == 'O': return -1
+    if ' ' not in b: return 0
+    player = to_move(b)
+    moves = []
+    for i, c in enumerate(b):
+        if c == ' ':
+            new = b[:i] + (player,) + b[i+1:]
+            moves.append(minimax(new))
+    return max(moves) if player == 'X' else min(moves)
+
+print("startposisjon:", minimax(tuple(' '*9)))
+print("X kan vinne:", minimax(('X','X',' ', 'O','O',' ', ' ',' ',' ')))
+`,
+    hints: [
+      "Brett er en tuple med 9 strenger — tuples er hashbare (kan caches).",
+      "to_move bytter mellom 'X' og 'O' basert på antall plasserte brikker.",
+      "Rekursjons-base: terminal (winner finnes eller fullt brett).",
+      "Bonus: legg på `from functools import lru_cache` og dekoré minimax for fart.",
+    ],
+  },
+  {
+    id: "py-dte2501-alphabeta",
+    topic: "ML — Minimax",
+    title: "Alpha-beta pruning — telle besøkte noder",
+    description:
+      "Implementér alpha-beta pruning og tell antall noder besøkt vs ren minimax. På et lite syntetisk tre skal du se ~30-50% færre besøk.",
+    requires: [],
+    starter: `# Lite tre: liste-av-lister, hvor blader er int (utility).
+# Eksempel: [[3, 5], [6, 9]] er depth-2-tre med 2 grener, hver med 2 blader.
+# MAX først (rot), så MIN.
+
+TREE = [
+    [[3, 5], [6, 9]],
+    [[1, 2], [0, -1]],
+]
+
+count = {'minimax': 0, 'alphabeta': 0}
+
+def minimax(node, is_max):
+    count['minimax'] += 1
+    if isinstance(node, int):
+        return node
+    # TODO: returnér max eller min av barn-verdier rekursivt.
+    pass
+
+def alphabeta(node, alpha, beta, is_max):
+    count['alphabeta'] += 1
+    if isinstance(node, int):
+        return node
+    # TODO:
+    # MAX: v=-inf; for child: v=max(v, alphabeta(child, alpha, beta, False));
+    #      if v >= beta: return v ; alpha=max(alpha, v)
+    # MIN: tilsvarende speilvendt.
+    pass
+
+print("minimax:", minimax(TREE, True), "besøk:", count['minimax'])
+count['minimax'] = 0
+print("alphabeta:", alphabeta(TREE, float('-inf'), float('inf'), True), "besøk:", count['alphabeta'])
+`,
+    solution: `TREE = [
+    [[3, 5], [6, 9]],
+    [[1, 2], [0, -1]],
+]
+
+count = {'minimax': 0, 'alphabeta': 0}
+
+def minimax(node, is_max):
+    count['minimax'] += 1
+    if isinstance(node, int):
+        return node
+    if is_max:
+        return max(minimax(c, False) for c in node)
+    return min(minimax(c, True) for c in node)
+
+def alphabeta(node, alpha, beta, is_max):
+    count['alphabeta'] += 1
+    if isinstance(node, int):
+        return node
+    if is_max:
+        v = float('-inf')
+        for c in node:
+            v = max(v, alphabeta(c, alpha, beta, False))
+            if v >= beta: return v
+            alpha = max(alpha, v)
+        return v
+    else:
+        v = float('inf')
+        for c in node:
+            v = min(v, alphabeta(c, alpha, beta, True))
+            if v <= alpha: return v
+            beta = min(beta, v)
+        return v
+
+print("minimax:", minimax(TREE, True), "besøk:", count['minimax'])
+count['minimax'] = 0
+print("alphabeta:", alphabeta(TREE, float('-inf'), float('inf'), True), "besøk:", count['alphabeta'])
+`,
+    hints: [
+      "Bruk isinstance(node, int) for å oppdage løv.",
+      "Pruning skjer når v >= beta (MAX) eller v <= alpha (MIN) — returnér umiddelbart.",
+      "Sammenlign telleren før og etter — vinninga er typisk 30-50% på dette treet.",
+    ],
+  },
+  {
+    id: "py-dte2501-minimax-best-move",
+    topic: "ML — Minimax",
+    title: "Velg beste trekk med minimax",
+    description:
+      "Skriv best_move(b) som returnerer indeks 0-8 for det optimale trekket for spilleren som er på tur. Bruk minimax under panseret.",
+    requires: [],
+    starter: `from functools import lru_cache
+
+def winner(b):
+    lines = [(0,1,2),(3,4,5),(6,7,8),(0,3,6),(1,4,7),(2,5,8),(0,4,8),(2,4,6)]
+    for a,c,d in lines:
+        if b[a] != ' ' and b[a] == b[c] == b[d]: return b[a]
+    return None
+
+def to_move(b):
+    return 'X' if b.count('X') == b.count('O') else 'O'
+
+@lru_cache(maxsize=None)
+def minimax(b):
+    w = winner(b)
+    if w == 'X': return 1
+    if w == 'O': return -1
+    if ' ' not in b: return 0
+    player = to_move(b)
+    vals = []
+    for i, c in enumerate(b):
+        if c == ' ':
+            new = b[:i] + (player,) + b[i+1:]
+            vals.append(minimax(new))
+    return max(vals) if player == 'X' else min(vals)
+
+def best_move(b):
+    # TODO: returnér indeksen i [0..8] som gir best utility for spilleren på tur.
+    pass
+
+# Tester:
+b = ('X', 'X', ' ', 'O', 'O', ' ', ' ', ' ', ' ')  # X på tur (vant)
+print("X bør vinne her ved å spille på indeks 2:", best_move(b))
+`,
+    solution: `from functools import lru_cache
+
+def winner(b):
+    lines = [(0,1,2),(3,4,5),(6,7,8),(0,3,6),(1,4,7),(2,5,8),(0,4,8),(2,4,6)]
+    for a,c,d in lines:
+        if b[a] != ' ' and b[a] == b[c] == b[d]: return b[a]
+    return None
+
+def to_move(b):
+    return 'X' if b.count('X') == b.count('O') else 'O'
+
+@lru_cache(maxsize=None)
+def minimax(b):
+    w = winner(b)
+    if w == 'X': return 1
+    if w == 'O': return -1
+    if ' ' not in b: return 0
+    player = to_move(b)
+    vals = []
+    for i, c in enumerate(b):
+        if c == ' ':
+            new = b[:i] + (player,) + b[i+1:]
+            vals.append(minimax(new))
+    return max(vals) if player == 'X' else min(vals)
+
+def best_move(b):
+    player = to_move(b)
+    best = None
+    best_v = float('-inf') if player == 'X' else float('inf')
+    for i, c in enumerate(b):
+        if c == ' ':
+            new = b[:i] + (player,) + b[i+1:]
+            v = minimax(new)
+            if (player == 'X' and v > best_v) or (player == 'O' and v < best_v):
+                best_v = v
+                best = i
+    return best
+
+b = ('X', 'X', ' ', 'O', 'O', ' ', ' ', ' ', ' ')
+print("X bør vinne her ved å spille på indeks 2:", best_move(b))
+`,
+  },
+
+  // --------------------------- Bandits (Sutton & Barto kap. 2) ---------------------------
+  {
+    id: "py-dte2501-bandit-egreedy",
+    topic: "ML — Bandits",
+    title: "ε-greedy på 5 armer",
+    description:
+      "Implementér ε-greedy for 5 gaussiske armer med sanne μ = [0.2, -0.3, 0.7, 0.1, 0.5]. Kjør 1000 trekk og rapporter gjennomsnittlig belønning, slutt-Q og hvor ofte beste arm ble valgt.",
+    requires: ["numpy"],
+    starter: `import numpy as np
+rng = np.random.default_rng(0)
+
+TRUE_MU = np.array([0.2, -0.3, 0.7, 0.1, 0.5])
+K = len(TRUE_MU)
+T = 1000
+EPS = 0.1
+
+Q = np.zeros(K)
+N = np.zeros(K, dtype=int)
+cum_reward = 0.0
+
+for t in range(T):
+    # TODO:
+    # 1. Med p=EPS, velg tilfeldig arm; ellers argmax Q.
+    # 2. Sample reward = N(TRUE_MU[a], 1.0).
+    # 3. Inkrement N[a], oppdater Q[a] += (reward - Q[a]) / N[a].
+    pass
+
+print(f"Beste sann arm: {TRUE_MU.argmax()}  μ={TRUE_MU.max():.2f}")
+print(f"Q-estimater:  {np.round(Q, 2)}")
+print(f"N (valg-frekvens): {N}")
+print(f"Gj.snitt belønning: {cum_reward / T:.3f}")
+`,
+    solution: `import numpy as np
+rng = np.random.default_rng(0)
+
+TRUE_MU = np.array([0.2, -0.3, 0.7, 0.1, 0.5])
+K = len(TRUE_MU)
+T = 1000
+EPS = 0.1
+
+Q = np.zeros(K)
+N = np.zeros(K, dtype=int)
+cum_reward = 0.0
+
+for t in range(T):
+    if rng.random() < EPS:
+        a = rng.integers(0, K)
+    else:
+        a = int(np.argmax(Q))
+    reward = TRUE_MU[a] + rng.normal(0, 1.0)
+    N[a] += 1
+    Q[a] += (reward - Q[a]) / N[a]
+    cum_reward += reward
+
+print(f"Beste sann arm: {TRUE_MU.argmax()}  μ={TRUE_MU.max():.2f}")
+print(f"Q-estimater:  {np.round(Q, 2)}")
+print(f"N (valg-frekvens): {N}")
+print(f"Gj.snitt belønning: {cum_reward / T:.3f}")
+`,
+    hints: [
+      "rng.random() < EPS gir True med sannsynlighet EPS.",
+      "np.argmax(Q) er grådig — sjekk om EPS=0 låser deg fast.",
+      "Inkrementell mean: Q[a] += (reward - Q[a]) / N[a].",
+    ],
+  },
+  {
+    id: "py-dte2501-bandit-ucb1",
+    topic: "ML — Bandits",
+    title: "UCB1 — sammenlign mot ε-greedy",
+    description:
+      "Kjør UCB1-algoritmen på samme 5-armede setup og sammenlign sluttverdi av regret med ε-greedy (ε=0.1).",
+    requires: ["numpy"],
+    starter: `import numpy as np
+rng = np.random.default_rng(1)
+
+TRUE_MU = np.array([0.2, -0.3, 0.7, 0.1, 0.5])
+K = len(TRUE_MU)
+T = 1000
+BEST = TRUE_MU.max()
+
+def run_ucb(c=2.0):
+    Q = np.zeros(K); N = np.zeros(K, dtype=int); cum = 0.0
+    for t in range(1, T+1):
+        # TODO:
+        # Sørg for at hver arm prøves minst én gang (N[i] == 0 → velg den).
+        # Ellers: a = argmax( Q + c * sqrt(ln t / N) )
+        pass
+    return cum
+
+def run_egreedy(eps=0.1):
+    Q = np.zeros(K); N = np.zeros(K, dtype=int); cum = 0.0
+    for t in range(T):
+        a = rng.integers(0, K) if rng.random() < eps else int(np.argmax(Q))
+        r = TRUE_MU[a] + rng.normal(0, 1)
+        N[a] += 1; Q[a] += (r - Q[a]) / N[a]; cum += r
+    return cum
+
+cum_ucb = run_ucb()
+cum_eg = run_egreedy()
+print(f"UCB1  cum_reward: {cum_ucb:.1f}   regret: {BEST*T - cum_ucb:.1f}")
+print(f"ε-grd cum_reward: {cum_eg:.1f}   regret: {BEST*T - cum_eg:.1f}")
+`,
+    solution: `import numpy as np
+rng = np.random.default_rng(1)
+
+TRUE_MU = np.array([0.2, -0.3, 0.7, 0.1, 0.5])
+K = len(TRUE_MU)
+T = 1000
+BEST = TRUE_MU.max()
+
+def run_ucb(c=2.0):
+    Q = np.zeros(K); N = np.zeros(K, dtype=int); cum = 0.0
+    for t in range(1, T+1):
+        untried = np.where(N == 0)[0]
+        if len(untried) > 0:
+            a = int(untried[0])
+        else:
+            ucb = Q + c * np.sqrt(np.log(t) / N)
+            a = int(np.argmax(ucb))
+        r = TRUE_MU[a] + rng.normal(0, 1)
+        N[a] += 1; Q[a] += (r - Q[a]) / N[a]; cum += r
+    return cum
+
+def run_egreedy(eps=0.1):
+    Q = np.zeros(K); N = np.zeros(K, dtype=int); cum = 0.0
+    for t in range(T):
+        a = rng.integers(0, K) if rng.random() < eps else int(np.argmax(Q))
+        r = TRUE_MU[a] + rng.normal(0, 1)
+        N[a] += 1; Q[a] += (r - Q[a]) / N[a]; cum += r
+    return cum
+
+cum_ucb = run_ucb()
+cum_eg = run_egreedy()
+print(f"UCB1  cum_reward: {cum_ucb:.1f}   regret: {BEST*T - cum_ucb:.1f}")
+print(f"ε-grd cum_reward: {cum_eg:.1f}   regret: {BEST*T - cum_eg:.1f}")
+`,
+    hints: [
+      "Sørg for at N[a] > 0 før du deler — første sweep må prøve alle armer.",
+      "Bonus-leddet skaleres av c — typisk c = √2 eller 2.",
+      "Regret = BEST*T − Σ R_t.",
+    ],
+  },
+  {
+    id: "py-dte2501-bandit-optimistic",
+    topic: "ML — Bandits",
+    title: "Optimistic initial values — pur grådig",
+    description:
+      "Initialiser Q₀ = 5 (mye over sann maks-belønning). Bruk PUR grådig (ε=0) og se at algoritmen automatisk utforsker armer mens Q-verdiene krymper.",
+    requires: ["numpy"],
+    starter: `import numpy as np
+rng = np.random.default_rng(2)
+
+TRUE_MU = np.array([0.2, -0.3, 0.7, 0.1, 0.5])
+K = len(TRUE_MU)
+T = 500
+
+Q = np.full(K, 5.0)
+N = np.zeros(K, dtype=int)
+chose_best = 0
+BEST_IDX = TRUE_MU.argmax()
+
+for t in range(T):
+    # TODO: pur grådig — a = argmax(Q). Oppdater som vanlig.
+    pass
+
+print(f"Slutt-Q: {np.round(Q, 2)}")
+print(f"Antall valg av beste arm ({BEST_IDX}): {chose_best} / {T}")
+`,
+    solution: `import numpy as np
+rng = np.random.default_rng(2)
+
+TRUE_MU = np.array([0.2, -0.3, 0.7, 0.1, 0.5])
+K = len(TRUE_MU)
+T = 500
+
+Q = np.full(K, 5.0)
+N = np.zeros(K, dtype=int)
+chose_best = 0
+BEST_IDX = int(TRUE_MU.argmax())
+
+for t in range(T):
+    a = int(np.argmax(Q))
+    r = TRUE_MU[a] + rng.normal(0, 1)
+    N[a] += 1
+    Q[a] += (r - Q[a]) / N[a]
+    if a == BEST_IDX:
+        chose_best += 1
+
+print(f"Slutt-Q: {np.round(Q, 2)}")
+print(f"Antall valg av beste arm ({BEST_IDX}): {chose_best} / {T}")
+`,
+    hints: [
+      "Q₀=5 betyr at alle armer ser 'for gode ut' — grådig må prøve hver flere ganger før Q krymper.",
+      "Effekten er kortlivd: når N(a) blir stor, dominerer faktiske rewards.",
+      "Sammenlign med ε=0 og Q₀=0 — der låses du på første arm.",
+    ],
+  },
+
+  // --------------------------- MDP Bellman regnedrill (Sutton & Barto kap. 3-4) ---------------------------
+  {
+    id: "py-dte2501-vi-2state",
+    topic: "ML — MDP Bellman",
+    title: "Value Iteration på 2-state MDP",
+    description:
+      "Implementér Value Iteration på 2-state-MDPen fra leksjonen (A,B + stay/move). Verifiser V*(A) = 1/(1−γ) ved γ = 0.9.",
+    requires: ["numpy"],
+    starter: `import numpy as np
+
+# states: 0 = A, 1 = B.   actions: 0 = stay, 1 = move
+# T[s][a] = (next_state, reward)
+T = {
+    (0, 0): (0, +1),  # A·stay -> A, reward +1
+    (0, 1): (1,  0),  # A·move -> B, reward 0
+    (1, 0): (1,  0),  # B·stay -> B, reward 0
+    (1, 1): (0, -1),  # B·move -> A, reward -1
+}
+GAMMA = 0.9
+THETA = 1e-6
+
+V = np.zeros(2)
+k = 0
+
+while True:
+    delta = 0.0
+    V_new = np.zeros(2)
+    for s in range(2):
+        # TODO:
+        # 1. For hver action a: q = R + γ V[next].
+        # 2. V_new[s] = max q.
+        # 3. delta = max(delta, |V_new[s] - V[s]|).
+        pass
+    V = V_new
+    k += 1
+    if delta < THETA:
+        break
+
+print(f"Iterasjoner til konvergens: {k}")
+print(f"V*: A = {V[0]:.4f}, B = {V[1]:.4f}")
+print(f"Lukket form: V*(A) = 1/(1-γ) = {1/(1-GAMMA):.4f}")
+`,
+    solution: `import numpy as np
+
+T = {
+    (0, 0): (0, +1),
+    (0, 1): (1,  0),
+    (1, 0): (1,  0),
+    (1, 1): (0, -1),
+}
+GAMMA = 0.9
+THETA = 1e-6
+
+V = np.zeros(2)
+k = 0
+
+while True:
+    delta = 0.0
+    V_new = np.zeros(2)
+    for s in range(2):
+        qs = []
+        for a in range(2):
+            ns, r = T[(s, a)]
+            qs.append(r + GAMMA * V[ns])
+        V_new[s] = max(qs)
+        delta = max(delta, abs(V_new[s] - V[s]))
+    V = V_new
+    k += 1
+    if delta < THETA:
+        break
+
+print(f"Iterasjoner til konvergens: {k}")
+print(f"V*: A = {V[0]:.4f}, B = {V[1]:.4f}")
+print(f"Lukket form: V*(A) = 1/(1-γ) = {1/(1-GAMMA):.4f}")
+`,
+    hints: [
+      "Bruk en np.zeros(2)-vektor for V og en frisk V_new i hver sweep (synchronous backup).",
+      "delta = max over states av |V_new − V_old|. Stopp når delta < THETA.",
+      "Ved γ=0.9 forventes ~100 iterasjoner — kontraksjons-rate 0.9.",
+    ],
+  },
+  {
+    id: "py-dte2501-pi-2state",
+    topic: "ML — MDP Bellman",
+    title: "Policy Iteration på 2-state MDP",
+    description:
+      "Implementér Policy Iteration: 1) løs lineært system (I − γ P_π)V = R_π eksakt med np.linalg.solve, 2) gjør policy improvement. Verifiser at policy konvergerer på 1-2 iterasjoner.",
+    requires: ["numpy"],
+    starter: `import numpy as np
+
+T = {
+    (0, 0): (0, +1),
+    (0, 1): (1,  0),
+    (1, 0): (1,  0),
+    (1, 1): (0, -1),
+}
+S = [0, 1]
+A = [0, 1]  # 0 = stay, 1 = move
+GAMMA = 0.9
+
+# Start med tilfeldig policy (stay for begge).
+policy = {0: 0, 1: 0}
+
+for it in range(20):
+    # EVALUATION: bygg (I - γ P_π) V = R_π og løs.
+    # TODO:
+    # P_pi = 2x2 matrix der P_pi[s, s'] = 1 hvis T[s, policy[s]] -> s', else 0.
+    # R_pi = 2-vektor med R for s, policy[s].
+    # V = np.linalg.solve(I - γ P_pi, R_pi).
+    P_pi = np.zeros((2, 2))
+    R_pi = np.zeros(2)
+    # ... fyll P_pi og R_pi ...
+    V = np.linalg.solve(np.eye(2) - GAMMA * P_pi, R_pi)
+
+    # IMPROVEMENT
+    stable = True
+    new_policy = {}
+    for s in S:
+        qs = [T[(s, a)][1] + GAMMA * V[T[(s, a)][0]] for a in A]
+        a_star = int(np.argmax(qs))
+        new_policy[s] = a_star
+        if a_star != policy[s]:
+            stable = False
+    policy = new_policy
+    print(f"it={it}  policy={policy}  V={np.round(V, 3)}  stable={stable}")
+    if stable:
+        break
+
+print(f"\\nOptimal policy: {policy}")
+print(f"Optimal V: {np.round(V, 4)}")
+`,
+    solution: `import numpy as np
+
+T = {
+    (0, 0): (0, +1),
+    (0, 1): (1,  0),
+    (1, 0): (1,  0),
+    (1, 1): (0, -1),
+}
+S = [0, 1]
+A = [0, 1]
+GAMMA = 0.9
+
+policy = {0: 0, 1: 0}
+
+for it in range(20):
+    P_pi = np.zeros((2, 2))
+    R_pi = np.zeros(2)
+    for s in S:
+        ns, r = T[(s, policy[s])]
+        P_pi[s, ns] = 1
+        R_pi[s] = r
+    V = np.linalg.solve(np.eye(2) - GAMMA * P_pi, R_pi)
+
+    stable = True
+    new_policy = {}
+    for s in S:
+        qs = [T[(s, a)][1] + GAMMA * V[T[(s, a)][0]] for a in A]
+        a_star = int(np.argmax(qs))
+        new_policy[s] = a_star
+        if a_star != policy[s]:
+            stable = False
+    policy = new_policy
+    print(f"it={it}  policy={policy}  V={np.round(V, 3)}  stable={stable}")
+    if stable:
+        break
+
+print(f"\\nOptimal policy: {policy}")
+print(f"Optimal V: {np.round(V, 4)}")
+`,
+    hints: [
+      "P_π[s, s'] = 1 når T[s, policy[s]] gir overgang til s' (deterministic).",
+      "R_π[s] = R(s, policy[s], next_state).",
+      "np.linalg.solve(A, b) løser Ax = b — bruk på (I − γP_π) V = R_π.",
+      "PI konvergerer på maks 1–2 iterasjoner her fordi |S| og |A| er små.",
+    ],
+  },
+  {
+    id: "py-dte2501-vi-grid",
+    topic: "ML — MDP Bellman",
+    title: "VI på 3×3 grid — kortest sti til mål",
+    description:
+      "Et 3×3 grid med mål i nedre-høyre (reward +1) og veggene som +-1. Implementér VI for å finne V*(s) og optimal policy. Test at startposisjonen (0,0) får verdi ~ γ^4 = 0.9^4 hvis γ=0.9.",
+    requires: ["numpy"],
+    starter: `import numpy as np
+
+ROWS, COLS = 3, 3
+GOAL = (2, 2)
+GAMMA = 0.9
+THETA = 1e-5
+ACTIONS = [(-1,0), (1,0), (0,-1), (0,1)]  # up, down, left, right
+
+def step(state, action):
+    """Returnér (next_state, reward, done) — deterministic."""
+    if state == GOAL:
+        return state, 0, True  # absorberende
+    r, c = state
+    dr, dc = action
+    nr, nc = max(0, min(ROWS-1, r+dr)), max(0, min(COLS-1, c+dc))
+    next_s = (nr, nc)
+    reward = 1.0 if next_s == GOAL else 0.0
+    return next_s, reward, False
+
+V = np.zeros((ROWS, COLS))
+
+for it in range(200):
+    delta = 0.0
+    V_new = np.zeros_like(V)
+    for r in range(ROWS):
+        for c in range(COLS):
+            if (r, c) == GOAL:
+                continue
+            # TODO: V_new[r,c] = max over actions av reward + γ V[next]
+            pass
+            delta = max(delta, abs(V_new[r, c] - V[r, c]))
+    V = V_new
+    if delta < THETA: break
+
+print("V*:"); print(np.round(V, 3))
+print(f"V*((0,0)) = {V[0,0]:.3f}  (forventet ≈ γ^4 = {GAMMA**4:.3f})")
+`,
+    solution: `import numpy as np
+
+ROWS, COLS = 3, 3
+GOAL = (2, 2)
+GAMMA = 0.9
+THETA = 1e-5
+ACTIONS = [(-1,0), (1,0), (0,-1), (0,1)]
+
+def step(state, action):
+    if state == GOAL:
+        return state, 0, True
+    r, c = state
+    dr, dc = action
+    nr, nc = max(0, min(ROWS-1, r+dr)), max(0, min(COLS-1, c+dc))
+    next_s = (nr, nc)
+    reward = 1.0 if next_s == GOAL else 0.0
+    return next_s, reward, False
+
+V = np.zeros((ROWS, COLS))
+
+for it in range(200):
+    delta = 0.0
+    V_new = np.zeros_like(V)
+    for r in range(ROWS):
+        for c in range(COLS):
+            if (r, c) == GOAL:
+                continue
+            qs = []
+            for a in ACTIONS:
+                (nr, nc), rwd, _ = step((r, c), a)
+                qs.append(rwd + GAMMA * V[nr, nc])
+            V_new[r, c] = max(qs)
+            delta = max(delta, abs(V_new[r, c] - V[r, c]))
+    V = V_new
+    if delta < THETA: break
+
+print("V*:"); print(np.round(V, 3))
+print(f"V*((0,0)) = {V[0,0]:.3f}  (forventet ≈ γ^4 = {GAMMA**4:.3f})")
+`,
+    hints: [
+      "step() klipper koordinater til grid-bounds — å gå inn i en vegg holder deg i samme rute.",
+      "Reward +1 gis ved overgang INN i målet. Selve målet er absorberende med 0.",
+      "Optimum-sti fra (0,0) til (2,2) er 4 trekk → V*(0,0) ≈ γ^3 · 1 = 0.729 (siste reward kommer ved trekk 4 = γ^3 · 1).",
+    ],
+  },
 ];

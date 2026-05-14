@@ -137,6 +137,9 @@ import { content as dte2501Gmm } from "./dte2501-gmm";
 import { content as dte2501Ensemble } from "./dte2501-ensemble";
 import { content as dte2501Reinforcement } from "./dte2501-reinforcement";
 import { content as dte2501Dp } from "./dte2501-dp";
+import { content as dte2501Minimax } from "./dte2501-minimax";
+import { content as dte2501Bandits } from "./dte2501-bandits";
+import { content as dte2501MdpBellman } from "./dte2501-mdp-bellman";
 import { content as tek1501 } from "./tek-1501";
 import { content as tek1Deskriptiv } from "./tek1-deskriptiv";
 import { content as tek1Sannsynlighet } from "./tek1-sannsynlighet";
@@ -192,6 +195,8 @@ export const TRINN: TrinnContent[] = [
   // DTE-2501 — moderne ML-spor (eksamen-pensum)
   dte2501Knn, dte2501Regresjon, dte2501KMeans, dte2501Genetic, dte2501Nlp,
   dte2501Pca, dte2501Gmm, dte2501Ensemble, dte2501Reinforcement, dte2501Dp,
+  // DTE-2501 — gap-utfyllere (Sutton & Barto + AIMA)
+  dte2501Minimax, dte2501Bandits, dte2501MdpBellman,
   // TEK-1501 — statistikk
   tek1501, tek1Deskriptiv, tek1Sannsynlighet, tek1Fordelinger,
   tek1StatistiskAnalyse, tek1Kombinatorikk, tek1DiskreteFordelinger,

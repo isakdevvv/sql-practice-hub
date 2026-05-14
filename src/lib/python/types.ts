@@ -65,6 +65,10 @@ export const PY_TOPIC_LEVEL: Record<string, PyLevel> = {
   "ML — GA": 4,
   "ML — RL": 5,
   "ML — DP": 4,
+  // Gap-utfyllere (Sutton & Barto + AIMA)
+  "ML — Minimax": 4,
+  "ML — Bandits": 4,
+  "ML — MDP Bellman": 5,
 };
 
 /** Resolve a PyExercise's level — explicit field wins, else look up topic, else 0. */

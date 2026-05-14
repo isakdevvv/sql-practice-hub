@@ -25850,6 +25850,401 @@ pi_star[s] = __4__(
     explanation: "L2-regularisering (default C=1 i sklearn) hindrer divergens. Slå av kun for spesialformål.",
   },
 
+  // ============================================================
+  // DTE-2501 ML — Minimax og alpha-beta pruning (AIMA kap. 6)
+  // ============================================================
+  {
+    id: "d-dte2501-minimax-quiz-def",
+    kind: "quiz",
+    title: "Hva er minimax?",
+    prompt: "Velg riktig definisjon.",
+    topic: "Minimax",
+    question: "Hva forutsetter minimax-algoritmen?",
+    options: [
+      { text: "Stokastisk miljø med tilfeldighet i hvert trekk.", correct: false },
+      { text: "2 spillere, zero-sum, perfekt info, deterministisk og turn-taking.", correct: true, rationale: "Klassiske antagelser: sjakk, dam, tic-tac-toe oppfyller alle." },
+      { text: "Ukjent overgangs-modell P(s'|s,a).", correct: false, rationale: "Det er settingen for model-free RL, ikke minimax." },
+      { text: "Tilfeldig motstander uten strategi.", correct: false, rationale: "Minimax forutsetter rasjonell motstander — optimaler MOT minimax-motstand." },
+    ],
+  },
+  {
+    id: "d-dte2501-minimax-quiz-cutoff",
+    kind: "quiz",
+    title: "Alpha-beta cutoff",
+    prompt: "Når klipper alpha-beta?",
+    topic: "Minimax",
+    question: "Når kan alpha-beta klippe (prune) en gren uten å miste optimalitet?",
+    options: [
+      { text: "Når α ≥ β.", correct: true, rationale: "MAX vil ikke velge en gren med verdi ≤ α; MIN vil ikke velge en med verdi ≥ β. Hvis α ≥ β er grenen død." },
+      { text: "Når dybden overstiger en heuristisk grense.", correct: false, rationale: "Det er depth cutoff, ikke alpha-beta." },
+      { text: "Når node-evalueringen er negativ.", correct: false },
+      { text: "Når begge spillere har 0 utility.", correct: false },
+    ],
+  },
+  {
+    id: "d-dte2501-minimax-match-best-worst",
+    kind: "match",
+    title: "Worst- og best-case alpha-beta",
+    prompt: "Match scenario til kompleksitet.",
+    topic: "Minimax",
+    pairs: [
+      { left: "Minimax uten pruning", right: "O(b^m)" },
+      { left: "Alpha-beta, tilfeldig trekk-rekkefølge", right: "O(b^{3m/4})" },
+      { left: "Alpha-beta, beste trekk først (perfekt ordering)", right: "O(b^{m/2})" },
+      { left: "Plass-kompleksitet (DFS)", right: "O(bm)" },
+    ],
+  },
+  {
+    id: "d-dte2501-minimax-order-algo",
+    kind: "order",
+    title: "Minimax — kjøre-rekkefølge",
+    prompt: "Sorter stegene i en rekursiv minimax-evaluering av rot-noden.",
+    topic: "Minimax",
+    items: [
+      "Sjekk om noden er terminal — i så fall returnér UTILITY(s)",
+      "Bestem om noden er MAX eller MIN (TO-MOVE(s))",
+      "For hver lovlig action a, kall rekursivt på RESULT(s, a)",
+      "For MAX: ta max av barneverdiene; for MIN: ta min",
+      "Returnér verdien til kallende node",
+    ],
+  },
+  {
+    id: "d-dte2501-minimax-fill-alphabeta",
+    kind: "fill",
+    title: "Alpha-beta pseudokode",
+    prompt: "Fyll inn alpha-beta-pseudokoden for MAX-noden.",
+    topic: "Minimax",
+    language: "python",
+    template: `def alphabeta(state, alpha, beta):
+    if is_terminal(state):
+        return utility(state)
+    if to_move(state) == "MAX":
+        v = __1__
+        for a in actions(state):
+            v = max(v, alphabeta(result(state, a), alpha, beta))
+            if v __2__ beta:
+                return v       # cutoff
+            alpha = __3__(alpha, v)
+        return v`,
+    blanks: ["-float('inf')", ">=", "max"],
+    options: ["-float('inf')", "float('inf')", "0", ">=", "<=", "==", "max", "min", "alpha", "beta"],
+  },
+  {
+    id: "d-dte2501-minimax-quiz-eval",
+    kind: "quiz",
+    title: "Evalueringsfunksjon",
+    prompt: "Hvorfor brukes EVAL i sjakk?",
+    topic: "Minimax",
+    question: "Hvorfor må sjakk-engines bruke en evalueringsfunksjon i stedet for ren minimax til løv?",
+    options: [
+      { text: "Reglene er ikke kjente.", correct: false },
+      { text: "Spilltreet er for stort (~10^123 stillinger) til å nå løv på rimelig tid.", correct: true, rationale: "Shannon-tallet. Vi cut-off på dybde d og estimerer ikke-terminale stillinger." },
+      { text: "Brikkene flytter seg stokastisk.", correct: false },
+      { text: "Minimax er ikke optimal i sjakk.", correct: false, rationale: "Den ville vært optimal med uendelig tid — problemet er tid." },
+    ],
+  },
+  {
+    id: "d-dte2501-minimax-quiz-horizon",
+    kind: "quiz",
+    title: "Horisonteffekten",
+    prompt: "Hva er horisonteffekten?",
+    topic: "Minimax",
+    question: "Hva er horisonteffekten i sjakk-engines med depth cutoff?",
+    options: [
+      { text: "Algoritmen vurderer alltid det dypeste mulige trekket først.", correct: false },
+      { text: "En stilling kan se rolig ut på dybde d men inneholde taktisk vold på d+1, som vi savner.", correct: true, rationale: "Quiescence search løser det ved å fortsette på urolige trekk inntil stilla 'beroliger seg'." },
+      { text: "Alle trekk har samme prioritet.", correct: false },
+      { text: "Vi prøver alle trekk i parallel.", correct: false },
+    ],
+  },
+  {
+    id: "d-dte2501-minimax-match-tech",
+    kind: "match",
+    title: "Sjakk-engine-teknikker",
+    prompt: "Match teknikk til problem den løser.",
+    topic: "Minimax",
+    pairs: [
+      { left: "Quiescence search", right: "Horisonteffekten — fortsetter søk på urolige trekk" },
+      { left: "Move ordering (killer/history)", right: "Maksimere alpha-beta-cutoffs" },
+      { left: "Transposition table", right: "Cache stillinger som dukker opp via ulike trekkrekkefølger" },
+      { left: "Iterative deepening", right: "Alltid ha et beste-trekk klart hvis tida går ut" },
+      { left: "Null-move pruning", right: "La motstander 'hoppe' — hvis du fortsatt vinner, klipp" },
+    ],
+  },
+  {
+    id: "d-dte2501-minimax-quiz-imperfect",
+    kind: "quiz",
+    title: "Imperfect info",
+    prompt: "Hva bryter ren minimax i poker?",
+    topic: "Minimax",
+    question: "Hva er hovedutfordringen som gjør at klassisk minimax ikke kan brukes direkte i poker?",
+    options: [
+      { text: "Reglene er stokastiske.", correct: false, rationale: "Det er ikke hovedutfordringen — vi har sannsynlighetsfordelinger." },
+      { text: "Spillerne har ikke perfekt informasjon — du ser ikke motstanders kort.", correct: true, rationale: "Vi må håndtere information sets og belief states. Algoritmer: CFR." },
+      { text: "Antall spillere overstiger 2.", correct: false },
+      { text: "Trekkene er ikke turn-taking.", correct: false },
+    ],
+  },
+
+  // ============================================================
+  // DTE-2501 ML — Multi-armed bandits (Sutton & Barto kap. 2)
+  // ============================================================
+  {
+    id: "d-dte2501-bandits-quiz-state",
+    kind: "quiz",
+    title: "Bandits vs RL",
+    prompt: "Hva skiller bandits fra full RL?",
+    topic: "Bandits",
+    question: "Hva er hovedforskjellen mellom et bandit-problem og en MDP?",
+    options: [
+      { text: "Bandits har deterministisk belønning, MDP stokastisk.", correct: false },
+      { text: "Bandits har ingen state — ett valg = umiddelbar belønning, ingen langsiktige konsekvenser.", correct: true, rationale: "Bandits er MDP med |S| = 1. Ingen state-transitioner." },
+      { text: "Bandits krever discount γ < 1, MDP ikke.", correct: false },
+      { text: "Bandits har flere agenter, MDP én.", correct: false },
+    ],
+  },
+  {
+    id: "d-dte2501-bandits-match-strategies",
+    kind: "match",
+    title: "Bandit-strategier",
+    prompt: "Match strategi til beskrivelse.",
+    topic: "Bandits",
+    pairs: [
+      { left: "ε-greedy", right: "Med p=ε velg tilfeldig arm, ellers grådig" },
+      { left: "Optimistic initial values", right: "Sett Q₀ stort positivt — grådig prøver alt før verdiene krymper" },
+      { left: "UCB1", right: "argmax_a [Q(a) + c·√(ln t / N(a))] — bonus til sjeldent prøvde armer" },
+      { left: "Thompson sampling", right: "Bayesisk: trekk sample fra posterior over q*(a), velg argmax" },
+      { left: "Pur grådig", right: "Alltid argmax Q — låser ofte på suboptimal arm" },
+    ],
+  },
+  {
+    id: "d-dte2501-bandits-quiz-ucb",
+    kind: "quiz",
+    title: "UCB1-bonus",
+    prompt: "Velg riktig formel.",
+    topic: "Bandits",
+    question: "Hva er bonus-leddet i UCB1 for arm a på tidspunkt t?",
+    options: [
+      { text: "Q(a)·ln t", correct: false },
+      { text: "c·√(ln t / N_t(a))", correct: true, rationale: "Stort når N_t(a) er liten (sjeldent prøvd) eller t er stort. c regulerer styrken, typisk √2." },
+      { text: "ε·1/N_t(a)", correct: false },
+      { text: "γ^t · Q(a)", correct: false },
+    ],
+  },
+  {
+    id: "d-dte2501-bandits-quiz-regret",
+    kind: "quiz",
+    title: "Regret",
+    prompt: "Velg definisjonen.",
+    topic: "Bandits",
+    question: "Hva er kumulativ regret L_T?",
+    options: [
+      { text: "Σ R_t — den observerte belønningen.", correct: false },
+      { text: "T·q*(a*) − E[Σ R_t] — forskjell mellom oracle og faktisk strategi.", correct: true, rationale: "Lavere regret = bedre algoritme. UCB1 oppnår O(ln T)." },
+      { text: "Standardavviket til Q(a)-estimatet.", correct: false },
+      { text: "Antall ganger vi har valgt feil arm.", correct: false, rationale: "Det er beslektet (Σ Δ_a · N(a)), men ikke standard-definisjonen." },
+    ],
+  },
+  {
+    id: "d-dte2501-bandits-order-egreedy",
+    kind: "order",
+    title: "ε-greedy én iterasjon",
+    prompt: "Sorter stegene i én ε-greedy-iterasjon.",
+    topic: "Bandits",
+    items: [
+      "Trekk u ~ Uniform(0, 1)",
+      "Hvis u < ε: velg en arm tilfeldig (utforske)",
+      "Hvis u ≥ ε: velg arm a = argmax_a Q(a) (utnytte)",
+      "Utfør valgt arm, observer belønning R_t",
+      "Inkrement N(a) og oppdater Q(a) ← Q(a) + (1/N(a))·(R − Q(a))",
+    ],
+  },
+  {
+    id: "d-dte2501-bandits-fill-incremental",
+    kind: "fill",
+    title: "Inkrementell Q-oppdatering",
+    prompt: "Fyll inn sample-mean-oppdateringen.",
+    topic: "Bandits",
+    language: "python",
+    template: `# Etter at vi valgte arm a og fikk reward R:
+N[a] += __1__
+Q[a] = Q[a] + (__2__ / N[a]) * (__3__ - Q[a])`,
+    blanks: ["1", "1", "R"],
+    options: ["1", "0", "R", "Q[a]", "N[a]", "alpha", "gamma"],
+  },
+  {
+    id: "d-dte2501-bandits-quiz-optimistic",
+    kind: "quiz",
+    title: "Optimistic init",
+    prompt: "Hvorfor virker optimistic initial values?",
+    topic: "Bandits",
+    question: "En grådig algoritme med Q₀(a) = 5 og sann μ ≈ 0.5 vil:",
+    options: [
+      { text: "Aldri konvergere, fordi Q starter for langt unna sannheten.", correct: false },
+      { text: "Tvinges til å prøve hver arm flere ganger før Q krymper ned mot sannheten — gir gratis utforskning.", correct: true, rationale: "Hver arm må prøves nok ganger til at sample-mean drar Q ned. Resultat: balansert exploration uten ε." },
+      { text: "Alltid velge arm 0 fordi Q er likt for alle.", correct: false, rationale: "Ved første trekk, ja — men da krymper Q₀ for den ene og andre er fortsatt optimistic." },
+      { text: "Konvergere identisk med ren grådig fra start.", correct: false },
+    ],
+  },
+  {
+    id: "d-dte2501-bandits-quiz-egreedy-decay",
+    kind: "quiz",
+    title: "ε-decay og regret",
+    prompt: "Velg riktig sammenheng.",
+    topic: "Bandits",
+    question: "Hvilken regret-orden gir ε-greedy med ε fastsatt vs εₜ ∝ 1/t?",
+    options: [
+      { text: "Begge gir O(ln T).", correct: false },
+      { text: "Fast ε: Θ(T) (lineær — utforsker like mye til slutt). Decay εₜ=1/t: O(ln T).", correct: true, rationale: "Med fast ε utforskes for mye. Med decay går utforskingen ned med tida og total tap blir logaritmisk." },
+      { text: "Fast ε: O(√T). Decay: O(ln T).", correct: false },
+      { text: "Fast ε er alltid bedre.", correct: false },
+    ],
+  },
+  {
+    id: "d-dte2501-bandits-match-tradeoff",
+    kind: "match",
+    title: "Explore vs exploit",
+    prompt: "Match egenskap til riktig fase.",
+    topic: "Bandits",
+    pairs: [
+      { left: "Forbedrer estimater Q(a)", right: "Explore" },
+      { left: "Maksimerer umiddelbar forventet belønning", right: "Exploit" },
+      { left: "Risikerer å låse seg på dårlig arm", right: "Exploit (alene)" },
+      { left: "Risikerer å sløse trekk på dårlige armer", right: "Explore (for mye)" },
+      { left: "Asymptotisk optimal", right: "Balansert (ε-decay, UCB, Thompson)" },
+    ],
+  },
+
+  // ============================================================
+  // DTE-2501 ML — MDP Bellman regnedrill (Sutton & Barto kap. 3-4)
+  // ============================================================
+  {
+    id: "d-dte2501-bellman-quiz-vpi",
+    kind: "quiz",
+    title: "Bellman for V^π",
+    prompt: "Velg riktig formel.",
+    topic: "MDP Bellman",
+    question: "Hva er Bellman-konsistens-likningen for V^π(s)?",
+    options: [
+      { text: "V^π(s) = max_a Σ_{s'} P(s'|s,a)·[R + γV^π(s')]", correct: false, rationale: "Det er Bellman optimality, ikke konsistens for en gitt π." },
+      { text: "V^π(s) = Σ_a π(a|s) Σ_{s'} P(s'|s,a)·[R(s,a,s') + γ·V^π(s')]", correct: true, rationale: "Forventet belønning + diskontert verdi av neste state, vekta over π og P." },
+      { text: "V^π(s) = R(s) + γ·V^π(s')", correct: false, rationale: "Mangler vekting over actions og overganger." },
+      { text: "V^π(s) = argmax_a Q(s,a)", correct: false },
+    ],
+  },
+  {
+    id: "d-dte2501-bellman-quiz-star",
+    kind: "quiz",
+    title: "Bellman optimality",
+    prompt: "Velg riktig.",
+    topic: "MDP Bellman",
+    question: "Hvilken egenskap skiller Bellman optimality-likningen fra V^π-konsistens-likningen?",
+    options: [
+      { text: "Den er lineær.", correct: false, rationale: "Tvert imot — max-operatoren gjør den ikke-lineær." },
+      { text: "Den er ikke-lineær pga max-operatoren — kan ikke løses direkte, må iterere.", correct: true, rationale: "Derfor VI/PI. V^π er derimot lineær og kan løses i O(|S|³)." },
+      { text: "Den har ingen unik løsning.", correct: false, rationale: "Den har unik løsning V* — Banach gir det." },
+      { text: "Den krever γ = 1.", correct: false },
+    ],
+  },
+  {
+    id: "d-dte2501-bellman-order-vi",
+    kind: "order",
+    title: "Én VI-iterasjon på papir",
+    prompt: "Sorter stegene for én Value Iteration-sweep.",
+    topic: "MDP Bellman",
+    items: [
+      "Skriv ned gjeldende V_k(s) for hver state",
+      "For hver state s: regn Q_k(s, a) = Σ_{s'} P·[R + γV_k(s')] for hver action",
+      "Sett V_{k+1}(s) = max_a Q_k(s, a)",
+      "Mål Δ = max_s |V_{k+1}(s) − V_k(s)|",
+      "Hvis Δ < θ stopp — ekstraktér π[s] = argmax_a Q_k(s, a). Ellers k++",
+    ],
+  },
+  {
+    id: "d-dte2501-bellman-order-pi",
+    kind: "order",
+    title: "Én PI-iterasjon på papir",
+    prompt: "Sorter stegene for én Policy Iteration-runde.",
+    topic: "MDP Bellman",
+    items: [
+      "Start med (eller behold) gjeldende policy π",
+      "Evaluering: skriv lineært system (I − γP_π)V = R_π og løs eksakt",
+      "Improvement: for hver s, regn argmax_a Σ P·[R + γ V^π(s')]",
+      "Sammenlign ny π med gammel",
+      "Hvis identisk → optimum. Ellers oppdater π og gjenta",
+    ],
+  },
+  {
+    id: "d-dte2501-bellman-fill-vi-update",
+    kind: "fill",
+    title: "VI-oppdatering",
+    prompt: "Fyll inn Value Iteration-oppdateringen.",
+    topic: "MDP Bellman",
+    language: "python",
+    template: `# Value Iteration update for state s:
+V_new[s] = __1__(
+    sum(P[s,a,s_p] * (R[s,a,s_p] + __2__ * V_old[s_p]) for s_p in S)
+    for a in A
+)`,
+    blanks: ["max", "gamma"],
+    options: ["max", "min", "sum", "argmax", "gamma", "alpha", "epsilon", "R[s,a,s_p]"],
+  },
+  {
+    id: "d-dte2501-bellman-quiz-vi-vs-pi",
+    kind: "quiz",
+    title: "VI vs PI — kost",
+    prompt: "Match kostnader.",
+    topic: "MDP Bellman",
+    question: "Hvilken iterasjons-kost passer best?",
+    options: [
+      { text: "VI: O(|S|²·|A|) per iterasjon, mange iterasjoner. PI: O(|S|³) per evaluering, få iterasjoner.", correct: true, rationale: "Klassisk: VI billig per iterasjon men trenger flere; PI dyrt per iterasjon men færre." },
+      { text: "VI: O(|S|³). PI: O(|S|²).", correct: false },
+      { text: "VI og PI er asymptotisk like dyre.", correct: false },
+      { text: "PI krever ikke at modellen er kjent.", correct: false, rationale: "Begge er model-based DP — trenger P og R." },
+    ],
+  },
+  {
+    id: "d-dte2501-bellman-quiz-stop",
+    kind: "quiz",
+    title: "Stopp-kriterier",
+    prompt: "Match.",
+    topic: "MDP Bellman",
+    question: "Hvilket stopp-kriterie gjelder for hvilken algoritme?",
+    options: [
+      { text: "VI: policy uendret. PI: Δ < θ.", correct: false, rationale: "Omvendt." },
+      { text: "VI: Δ = max_s |V_{k+1} − V_k| < θ. PI: policy uendret én runde.", correct: true, rationale: "VI konvergerer asymptotisk — vi setter en numerisk grense. PI gir eksakt finitt konvergens." },
+      { text: "Begge: Δ < θ.", correct: false },
+      { text: "Begge: policy uendret.", correct: false },
+    ],
+  },
+  {
+    id: "d-dte2501-bellman-quiz-contraction",
+    kind: "quiz",
+    title: "Konvergens-garanti for VI",
+    prompt: "Hvorfor konvergerer VI?",
+    topic: "MDP Bellman",
+    question: "Hva er den teoretiske grunnen til at Value Iteration konvergerer?",
+    options: [
+      { text: "Bellman-operatoren T er en γ-kontraksjon i sup-normen; Banachs fixed-point-teorem gir unikt V*.", correct: true, rationale: "‖TV₁ − TV₂‖_∞ ≤ γ·‖V₁ − V₂‖_∞. Krever γ < 1." },
+      { text: "Antall states er endelig.", correct: false, rationale: "Det hjelper, men ikke nok. Kontraksjon trengs." },
+      { text: "Σ γᵏ konvergerer.", correct: false, rationale: "Beslektet, men ikke det formelle argumentet." },
+      { text: "VI bruker greedy policy.", correct: false },
+    ],
+  },
+  {
+    id: "d-dte2501-bellman-match-terms",
+    kind: "match",
+    title: "MDP-terminologi",
+    prompt: "Match begrep til definisjon.",
+    topic: "MDP Bellman",
+    pairs: [
+      { left: "Q^π(s, a)", right: "Action-value: forventet retur når man tar a i s og deretter følger π" },
+      { left: "V^π(s)", right: "State-value: forventet retur når man følger π fra s" },
+      { left: "Backup (Bellman-backup)", right: "Én oppdaterings-operasjon for V eller Q basert på Bellman-likningen" },
+      { left: "Policy improvement-teoremet", right: "Greedy m.h.t. V^π gir π' med V^{π'} ≥ V^π for alle s" },
+      { left: "Synchronous backup", right: "Skriv alle nye verdier til en ny tabell, oppdater alle samtidig" },
+    ],
+  },
   // ============= DTE-2602 — LDA / QDA / NB (9 oppgaver) =============
   {
     id: "d-dte2602-ldaqda-match-antakelse",
