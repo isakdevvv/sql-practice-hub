@@ -182,6 +182,7 @@ import { content as dte2507IdsSnort } from "./dte2507-ids-snort";
 import { content as dte2507DayInTheLife } from "./dte2507-day-in-the-life";
 import { content as flaskAppBuilder } from "./flask-app-builder";
 import { content as fastapiGrunnlag } from "./fastapi-grunnlag";
+import { content as dte2507Nat } from "./dte2507-nat";
 import type { TrinnContent } from "../types";
 
 export const TRINN: TrinnContent[] = [
@@ -250,6 +251,8 @@ export const TRINN: TrinnContent[] = [
   flaskAppBuilder,
   // FastAPI grunnlag
   fastapiGrunnlag,
+  // DTE-2507 — NAT (Kurose 4.3.4)
+  dte2507Nat,
 ];
 
 import { curriculumIndexOf } from "../curriculum";
