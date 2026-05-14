@@ -32,6 +32,8 @@ import { content as dte2507Praksis } from "./dte2507-praksis";
 import { content as dte2507Congestion } from "./dte2507-congestion-control";
 import { content as dte2507Ruting } from "./dte2507-ruting";
 import { content as dte2507DnsDyp } from "./dte2507-dns-dyp";
+import { content as dte2507InniRuter } from "./dte2507-inni-ruter";
+import { content as dte2507PacketScheduling } from "./dte2507-packet-scheduling";
 import { content as dte2602 } from "./dte-2602";
 import { content as mlGrunnlag } from "./ml-grunnlag";
 import { content as supervisedLearning } from "./supervised-learning";
@@ -164,6 +166,7 @@ export const TRINN: TrinnContent[] = [
   dte2507Wireshark, dte2507Socket, dte2507Brannmur,
   dte2507Subnetting, dte2507TlsHandshake, dte2507PaketDekoding, dte2507RsaMini, dte2507Praksis,
   dte2507Congestion, dte2507Ruting, dte2507DnsDyp,
+  dte2507InniRuter, dte2507PacketScheduling,
   dte2602, mlGrunnlag, supervisedLearning, unsupervisedLearning, nnIntro,
   dte2501, sokAlgoritmer, csp, logiskResonnering, planlegging, bayes,
   flaskLivssyklus, pythonDrill, httpAnatomi,
