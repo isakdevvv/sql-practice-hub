@@ -3,7 +3,6 @@ import {
   ReactFlow,
   Background,
   Controls,
-  MiniMap,
   type Node,
   type Edge,
   type NodeMouseHandler,
@@ -271,14 +270,6 @@ export function OsiStackFlow() {
           >
             <Background gap={20} size={1} />
             <Controls showInteractive={false} />
-            <MiniMap
-              pannable
-              zoomable
-              maskColor="rgba(0,0,0,0.1)"
-              style={{
-                background: "var(--color-card)",
-              }}
-            />
           </ReactFlow>
           )}
         </div>
