@@ -31,6 +31,12 @@ export const PY_TOPIC_LEVEL: Record<string, PyLevel> = {
   "DTE-2505 — Konkurrens": 3,
   "DTE-2505 — Shell": 1,
   "DTE-2505 — Filsystem": 1,
+  // TEK-1501 — utvidelse: z/t/χ²-tester, regresjon fra bunn, bootstrap, power
+  "TEK-1501 — z-test": 2,
+  "TEK-1501 — t-test": 2,
+  "TEK-1501 — χ²-test": 2,
+  "TEK-1501 — Regresjon": 2,
+  "TEK-1501 — Bootstrap & power": 3,
   "JSON API": 2,
   "HTTP-statuskoder": 2,
   "Sessions": 2,
@@ -245,7 +251,14 @@ export const PY_CATEGORIES: readonly PyCategory[] = [
     id: "stat-other",
     label: "Statistikk & annet",
     description: "TEK-1501 statistikk og øvrige gaps-emner.",
-    topics: ["Statistikk-grunnlag"],
+    topics: [
+      "Statistikk-grunnlag",
+      "TEK-1501 — z-test",
+      "TEK-1501 — t-test",
+      "TEK-1501 — χ²-test",
+      "TEK-1501 — Regresjon",
+      "TEK-1501 — Bootstrap & power",
+    ],
   },
 ];
 
