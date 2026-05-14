@@ -3,15 +3,19 @@ import { Link } from "@tanstack/react-router";
 import {Lightbulb, ArrowLeft } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
+import { BiasVariansDartboard } from "./BiasVariansDartboard";
+import { GradientDescentSurface } from "./GradientDescentSurface";
 
 const STEPS = [
   { title: "Bias-varians-tradeoff — definisjonen", anchor: "def" },
+  { title: "Dartboard-intuisjon (interaktiv)", anchor: "dart" },
   { title: "Læringskurver", anchor: "kurver" },
   { title: "Regularisering — Ridge (L2)", anchor: "ridge" },
   { title: "Regularisering — Lasso (L1)", anchor: "lasso" },
   { title: "Ridge vs Lasso — når hva?", anchor: "vs" },
   { title: "Interaktiv: polynom-grad slider", anchor: "poly" },
   { title: "Interaktiv: Lasso → null-koeffisienter", anchor: "lasso-vis" },
+  { title: "Gradient descent på loss-flate", anchor: "gd" },
 ];
 
 export function Dte2602BiasVariansPage() {
@@ -74,7 +78,18 @@ export function Dte2602BiasVariansPage() {
           </p>
         </Section>
 
-        <Section number="2" id="kurver" title="Læringskurver">
+        <Section number="2" id="dart" title="Dartboard-intuisjon (interaktiv)">
+          <p className="text-sm text-muted-foreground mb-3">
+            Tenk på treningen som dart-kast mot en blink (= sann modell). Hvert kast er
+            <em> én modell trent på et nytt treningssett</em>. Bias = hvor langt
+            gjennomsnittet bommer fra blink. Varians = hvor mye kastene spriker fra
+            hverandre. Skru på sliderne — pilenes mønster oppfører seg som de fire
+            klassiske scenariene fra Géron.
+          </p>
+          <BiasVariansDartboard />
+        </Section>
+
+        <Section number="3" id="kurver" title="Læringskurver">
           <p className="text-sm text-muted-foreground mb-3">
             Plot trenings- og validerings-feil som funksjon av treningssett-størrelse.
             Mønstrene avslører om du har bias-problem eller varians-problem:
@@ -108,7 +123,7 @@ sizes, train_scores, val_scores = learning_curve(
 )`}</pre>
         </Section>
 
-        <Section number="3" id="ridge" title="Regularisering — Ridge (L2)">
+        <Section number="4" id="ridge" title="Regularisering — Ridge (L2)">
           <p className="text-sm text-muted-foreground mb-3">
             Ridge legger til en straff på <em>kvadratisk sum av koeffisienter</em>{" "}
             til tap-funksjonen:
@@ -127,7 +142,7 @@ ridge.fit(X_train_scaled, y_train)
 print(ridge.alpha_)        # beste α valgt av CV`}</pre>
         </Section>
 
-        <Section number="4" id="lasso" title="Regularisering — Lasso (L1)">
+        <Section number="5" id="lasso" title="Regularisering — Lasso (L1)">
           <p className="text-sm text-muted-foreground mb-3">
             Lasso bruker <em>absoluttverdi</em> i straffen:
           </p>
@@ -146,7 +161,7 @@ lasso.fit(X_train_scaled, y_train)
 print((lasso.coef_ != 0).sum(), "features valgt")`}</pre>
         </Section>
 
-        <Section number="5" id="vs" title="Ridge vs Lasso — når hva?">
+        <Section number="6" id="vs" title="Ridge vs Lasso — når hva?">
           <div className="overflow-hidden rounded-lg border border-border">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
@@ -181,7 +196,7 @@ print((lasso.coef_ != 0).sum(), "features valgt")`}</pre>
           </p>
         </Section>
 
-        <Section number="6" id="poly" title="Interaktiv: slider for polynom-grad">
+        <Section number="7" id="poly" title="Interaktiv: slider for polynom-grad">
           <p className="text-sm text-muted-foreground mb-3">
             Drag slideren for å øke polynom-graden. Treningsfeil faller monotont,
             men test-feil danner en U: optimal grad ligger der test-feilen er minst.
@@ -189,12 +204,22 @@ print((lasso.coef_ != 0).sum(), "features valgt")`}</pre>
           <PolynomialComplexityDemo />
         </Section>
 
-        <Section number="7" id="lasso-vis" title="Interaktiv: Lasso skyver koeffisienter mot 0">
+        <Section number="8" id="lasso-vis" title="Interaktiv: Lasso skyver koeffisienter mot 0">
           <p className="text-sm text-muted-foreground mb-3">
             8 features, varierende α. Når α øker mot høyre, ser du at Lasso slår
             ut features én for én — koeffisienter går helt til 0:
           </p>
           <LassoPathDemo />
+        </Section>
+
+        <Section number="9" id="gd" title="Gradient descent på loss-flate">
+          <p className="text-sm text-muted-foreground mb-3">
+            Modellen treningen din kjører — den følger gradienten nedover loss-flata.
+            Her er flata kvadratisk og langstrakt (vanskelig retning). Klikk i flata
+            for å sette startpunkt. Dra på lærings-rate og momentum og se hvordan
+            banen endres.
+          </p>
+          <GradientDescentSurface />
         </Section>
               <div className="mt-6">
           <Link

@@ -2,12 +2,14 @@ import { Link } from "@tanstack/react-router";
 import { ArrowRight, Lightbulb } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
+import { BayesArealer } from "./BayesArealer";
 
 const STEPS = [
   { title: "Hvorfor sannsynlighet?", anchor: "intro" },
   { title: "Betinget sannsynlighet", anchor: "betinget" },
   { title: "Bayes' teorem", anchor: "bayes" },
   { title: "Gjennomgått eksempel — sykdomstest", anchor: "eksempel" },
+  { title: "Bayes som arealer (interaktiv)", anchor: "arealer" },
   { title: "Naive Bayes-klassifikator", anchor: "naive" },
   { title: "Betinget uavhengighet", anchor: "uavhengighet" },
   { title: "Praktiske fallgruver", anchor: "fallgruver" },
@@ -136,8 +138,19 @@ Det er base-rate-fellen.`}</pre>
           </p>
         </section>
 
+        <section id="arealer" className="mb-10">
+          <h2 className="text-xl font-semibold mb-3">5. Bayes som arealer — fysisk intuisjon</h2>
+          <p className="text-sm text-muted-foreground mb-4">
+            Bayes-formelen er enkel å skrive, men vanskelig å føle på kroppen. Hvert
+            rektangel under representerer en gruppe mennesker. Drag på sliderne for
+            prevalens, sensitivitet og spesifisitet — og se direkte hvor mange av de
+            som tester positivt som faktisk er syke.
+          </p>
+          <BayesArealer />
+        </section>
+
         <section id="naive" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">5. Naive Bayes-klassifikator</h2>
+          <h2 className="text-xl font-semibold mb-3">6. Naive Bayes-klassifikator</h2>
           <p className="text-sm text-muted-foreground mb-4">
             Generaliser sykdomseksempelet til en hel klassifikator: gitt features
             (x1, ..., xn), hvilken klasse C er mest sannsynlig?
@@ -168,7 +181,7 @@ Klassifikatoren:
         </section>
 
         <section id="uavhengighet" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">6. Betinget uavhengighet</h2>
+          <h2 className="text-xl font-semibold mb-3">7. Betinget uavhengighet</h2>
           <p className="text-sm text-muted-foreground mb-4">
             «Uavhengig» og «betinget uavhengig» er ikke det samme — pass på!
           </p>
@@ -192,7 +205,7 @@ Eksempel:
         </section>
 
         <section id="fallgruver" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">7. Praktiske fallgruver</h2>
+          <h2 className="text-xl font-semibold mb-3">8. Praktiske fallgruver</h2>
           <div className="space-y-3 text-sm">
             <div className="rounded-lg border border-amber-500/30 bg-amber-500/5 p-4">
               <strong>Zero-frequency:</strong> hvis en feature-verdi ikke fins i
