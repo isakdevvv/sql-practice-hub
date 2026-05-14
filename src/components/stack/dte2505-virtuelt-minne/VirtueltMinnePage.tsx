@@ -6,6 +6,8 @@ import { Tex, TexBlock } from "@/components/Tex";
 import { AddressTranslator } from "./AddressTranslator";
 import { CacheHierarchy } from "./CacheHierarchy";
 import { MemoryLayout } from "./MemoryLayout";
+import { PageReplacementSim } from "./PageReplacementSim";
+import { InodeStructure } from "./InodeStructure";
 
 const STEPS = [
   { title: "Hvorfor virtuelt minne", anchor: "hvorfor" },
@@ -17,7 +19,9 @@ const STEPS = [
   { title: "Adresserommet — stack/heap/.data/.text", anchor: "layout" },
   { title: "Page faults og demand paging", anchor: "faults" },
   { title: "Replacement-algoritmer", anchor: "replace" },
+  { title: "Page-replacement-simulator", anchor: "pagesim" },
   { title: "Working set + thrashing", anchor: "ws" },
+  { title: "Inode-struktur (filsystem)", anchor: "inode" },
   { title: "Interaktiv oversetter", anchor: "drill" },
   { title: "Eksamen-feller", anchor: "feller" },
 ];
@@ -358,7 +362,22 @@ PA = 7 * 4096 + 0x123
           </div>
         </Section>
 
-        <Section number="10" id="ws" title="Working set + thrashing">
+        <Section
+          number="10"
+          id="pagesim"
+          title="Page-replacement-simulator — kjør algoritmene side om side"
+        >
+          <p className="text-sm text-muted-foreground mb-3">
+            Skriv en reference string, velg antall frames, og bytt mellom FIFO,
+            LRU, Clock og Optimal. Tabellen viser frame-innholdet ved hvert
+            steg, og søylediagrammet sammenligner total faults. Belady-insetten
+            nederst varierer frame-tallet 3-5 og avslører om reference-strengen
+            din viser <em>Beladys anomali</em> for FIFO.
+          </p>
+          <PageReplacementSim />
+        </Section>
+
+        <Section number="11" id="ws" title="Working set + thrashing">
           <p className="text-sm text-muted-foreground mb-3">
             <strong>Working set W(t, Δ):</strong> sett av sider prosessen har rørt i de siste Δ
             tidsenhetene. Hvis summen av alle prosessers working sets &gt; RAM:
@@ -378,7 +397,23 @@ PA = 7 * 4096 + 0x123
           </p>
         </Section>
 
-        <Section number="11" id="drill" title="Interaktiv: skriv en virtuell adresse">
+        <Section
+          number="12"
+          id="inode"
+          title="Inode-struktur — direkte, indirect, double, triple"
+        >
+          <p className="text-sm text-muted-foreground mb-3">
+            Page-tabellen mapper virtuelle adresser til frames. Filsystemet har
+            sin egen indirection-struktur: <strong>inoden</strong>. Hver fil har
+            en inode med 12 direkte blokk-pekere + én indirect + én
+            double-indirect + én triple-indirect. Dra sliderne for å se hvilke
+            pekere som faktisk tas i bruk for en gitt filstørrelse, og les av
+            maks-størrelsen for 4 KB-blokker og 32-bit-pekere.
+          </p>
+          <InodeStructure />
+        </Section>
+
+        <Section number="13" id="drill" title="Interaktiv: skriv en virtuell adresse">
           <p className="text-sm text-muted-foreground mb-3">
             Skriv en virtuell adresse i hex (0x...) eller desimal. Se VPN/offset-split, TLB-oppslag
             (grønn = hit), page-tabell-oppslag, og ferdig fysisk adresse. Tre presets demonstrerer
@@ -387,7 +422,7 @@ PA = 7 * 4096 + 0x123
           <AddressTranslator />
         </Section>
 
-        <Section number="12" id="feller" title="Eksamen-feller">
+        <Section number="14" id="feller" title="Eksamen-feller">
           <ul className="text-sm text-muted-foreground list-disc pl-5 space-y-2">
             <li>
               <strong className="text-foreground">Glemte at offset ikke endrer seg.</strong> Bare
