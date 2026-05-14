@@ -3,6 +3,7 @@ import { Lightbulb, ArrowLeft } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { Tex, TexBlock } from "@/components/Tex";
 import { RegresjonDiagnostikk } from "./RegresjonDiagnostikk";
+import { QqPlotInteractive } from "./QqPlotInteractive";
 
 export function Tek1RegresjonDiagnostikkPage() {
   return (
@@ -134,6 +135,9 @@ import matplotlib.pyplot as plt
 
 st.probplot(residuals, dist="norm", plot=plt)
 plt.show()`}</pre>
+          <div className="mt-4">
+            <QqPlotInteractive />
+          </div>
         </Section>
 
         <Section number="5" title="Outliers, leverage og innflytelse">
