@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { ArrowRight, ShieldAlert, ShieldCheck } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
+import { BufferOverflowAttack } from "./BufferOverflowAttack";
 
 // Security primer: SQL injection, XSS, CSRF, password storage, cookie flags.
 // Each attack has: how it works, what the sårbarheten looks like, and the fix.
@@ -166,6 +167,7 @@ export function SikkerhetPage() {
           steps={[
             ...ATTACKS.map((a) => ({ title: a.navn, anchor: a.anchor })),
             { title: "CSRF — full angreps-gjennomgang", anchor: "csrf-walkthrough" },
+            { title: "Buffer overflow — stack-frame", anchor: "buffer-overflow" },
             { title: "Bonus: Sikre cookies", anchor: "cookies" },
             { title: "Fem prinsipper", anchor: "prinsipper" },
           ]}
@@ -209,6 +211,26 @@ export function SikkerhetPage() {
 
         {/* CSRF walkthrough side-om-side */}
         <CsrfWalkthrough />
+
+        {/* Buffer overflow */}
+        <section id="buffer-overflow" className="mb-10">
+          <div className="flex items-center gap-2 mb-3">
+            <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-destructive/10 text-destructive text-xs font-bold">
+              6
+            </span>
+            <h2 className="text-xl font-semibold">Buffer overflow — stack-frame-overskriving</h2>
+          </div>
+          <p className="text-sm text-muted-foreground mb-4">
+            Web-stack-en sitter på toppen av C/C++-biblioteker (Nginx, SQLite,
+            libpng, OpenSSL ...). Når en av disse mangler bounds-check, kan en
+            stor input overskrive minnet bortenfor bufferen — inkludert{" "}
+            <strong>saved return address</strong>. Da kan angriperen bestemme
+            hvor programmet hopper når funksjonen returnerer. Det er
+            ur-eksempelet på minne-sikkerhetsbrudd og motivasjonen bak
+            stack-canary, ASLR og overgang til minne-trygge språk.
+          </p>
+          <BufferOverflowAttack />
+        </section>
 
         {/* Cookies */}
         <section id="cookies" className="mb-10">
