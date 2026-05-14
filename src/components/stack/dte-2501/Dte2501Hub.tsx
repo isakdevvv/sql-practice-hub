@@ -19,6 +19,9 @@ import {
   Code2,
   GitBranch,
   Lightbulb,
+  Swords,
+  Dices,
+  Calculator,
 } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 
@@ -186,6 +189,30 @@ const ML_COURSES: Course[] = [
     shortDescription:
       "Memoization vs tabulation, Fibonacci, knapsack. Held-Karp DP for Travelling Salesman.",
     Icon: InfinityIcon,
+    status: "ready",
+  },
+  {
+    slug: "dte2501-minimax",
+    title: "Minimax og alpha-beta pruning",
+    shortDescription:
+      "Adversarial search i 2-spillerspill. Minimax-algoritmen, alpha-beta pruning, evalueringsfunksjoner og quiescence search. AIMA kap. 6.",
+    Icon: Swords,
+    status: "ready",
+  },
+  {
+    slug: "dte2501-bandits",
+    title: "Multi-armed bandits",
+    shortDescription:
+      "Bandit-problemet, action-value Q(a), ε-greedy, optimistic initial values, UCB1, Thompson sampling og regret. Sutton & Barto kap. 2.",
+    Icon: Dices,
+    status: "ready",
+  },
+  {
+    slug: "dte2501-mdp-bellman",
+    title: "MDP-regnedrill — Bellman, VI og PI",
+    shortDescription:
+      "Regnedrill for Bellman-likningen, Value Iteration og Policy Iteration på en liten 2-state MDP. Steg-for-steg.",
+    Icon: Calculator,
     status: "ready",
   },
 ];

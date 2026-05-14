@@ -143,6 +143,9 @@ import { content as dte2501Gmm } from "./dte2501-gmm";
 import { content as dte2501Ensemble } from "./dte2501-ensemble";
 import { content as dte2501Reinforcement } from "./dte2501-reinforcement";
 import { content as dte2501Dp } from "./dte2501-dp";
+import { content as dte2501Minimax } from "./dte2501-minimax";
+import { content as dte2501Bandits } from "./dte2501-bandits";
+import { content as dte2501MdpBellman } from "./dte2501-mdp-bellman";
 import { content as tek1501 } from "./tek-1501";
 import { content as tek1Deskriptiv } from "./tek1-deskriptiv";
 import { content as tek1Sannsynlighet } from "./tek1-sannsynlighet";
@@ -159,6 +162,9 @@ import { content as tek1Proporsjoner } from "./tek1-proporsjoner";
 import { content as dte2602LogistiskRegresjon } from "./dte2602-logistisk-regresjon";
 import { content as dte2507DelayModell } from "./dte2507-delay-modell";
 import { content as dte2507BottleneckThroughput } from "./dte2507-bottleneck-throughput";
+import { content as dte2602LdaQdaNb } from "./dte2602-lda-qda-nb";
+import { content as dte2602CvVarianter } from "./dte2602-cv-varianter";
+import { content as tek1RegresjonDiagnostikk } from "./tek1-regresjon-diagnostikk";
 import type { TrinnContent } from "../types";
 
 export const TRINN: TrinnContent[] = [
@@ -199,15 +205,19 @@ export const TRINN: TrinnContent[] = [
   // DTE-2501 — moderne ML-spor (eksamen-pensum)
   dte2501Knn, dte2501Regresjon, dte2501KMeans, dte2501Genetic, dte2501Nlp,
   dte2501Pca, dte2501Gmm, dte2501Ensemble, dte2501Reinforcement, dte2501Dp,
+  // DTE-2501 — gap-utfyllere (Sutton & Barto + AIMA)
+  dte2501Minimax, dte2501Bandits, dte2501MdpBellman,
   // TEK-1501 — statistikk
   tek1501, tek1Deskriptiv, tek1Sannsynlighet, tek1Fordelinger,
   tek1StatistiskAnalyse, tek1Kombinatorikk, tek1DiskreteFordelinger,
   tek1KontinuerligeFordelinger, tek1ForventningClt, tek1EstimeringKi,
   tek1HypotesetestRegresjon, tek1Anova, tek1Proporsjoner,
   // DTE-2602 — utvidelser
-  dte2602LogistiskRegresjon,
+  dte2602LogistiskRegresjon, dte2602LdaQdaNb, dte2602CvVarianter,
   // DTE-2507 — Kurose Ch 1 utdypning
   dte2507DelayModell, dte2507BottleneckThroughput,
+  // TEK-1501 — utvidelser
+  tek1RegresjonDiagnostikk,
 ];
 
 import { curriculumIndexOf } from "../curriculum";

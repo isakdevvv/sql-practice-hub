@@ -93,6 +93,11 @@ const MODULER: Modul[] = [
         title: "Ettveis ANOVA og F-test",
         note: "SS-dekomp, F, post-hoc (Tukey HSD)",
       },
+      {
+        slug: "tek1-regresjon-diagnostikk",
+        title: "Regresjon-diagnostikk",
+        note: "Residualer, Q-Q, Cook's D, R² vs R²-adj, VIF",
+      },
     ],
   },
 ];

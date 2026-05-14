@@ -4755,6 +4755,480 @@ export const FLASHCARDS: FlashCard[] = [
     answer:
       "1) Gradient descent konvergerer langt raskere. 2) L2-reg straffer alle β likt — uten skalering vil features med stor variasjon dominere. StandardScaler er nesten alltid riktig før LogisticRegression i sklearn.",
   },
+
+  // ============================================================
+  // DTE-2501 — Minimax og alpha-beta pruning (AIMA kap. 6)
+  // ============================================================
+  {
+    id: "c-dte2501-minimax-def",
+    category: "praktisk",
+    topic: "Minimax",
+    question: "Hva er minimax-algoritmen?",
+    answer:
+      "Rekursiv algoritme for 2-spiller zero-sum-spill med perfekt info. MAX-noder velger argmax over barneverdier; MIN-noder velger argmin. Optimal mot rasjonell motstander.",
+  },
+  {
+    id: "c-dte2501-minimax-recur",
+    category: "praktisk",
+    topic: "Minimax",
+    question: "Skriv minimax-rekursjonen for V(s).",
+    answer:
+      "minimax(s) = UTILITY(s) hvis terminal; ellers max_a minimax(RESULT(s,a)) hvis MAX, ellers min_a minimax(RESULT(s,a)) hvis MIN.",
+  },
+  {
+    id: "c-dte2501-minimax-complex",
+    category: "praktisk",
+    topic: "Minimax",
+    question: "Tid og plass-kompleksitet for minimax?",
+    answer:
+      "Tid O(b^m), plass O(bm), der b er forgreningsfaktor og m maksimal dybde. Fullstendig (alltid løsning) og optimal (mot rasjonell motstander) i endelige spill.",
+  },
+  {
+    id: "c-dte2501-alphabeta-when",
+    category: "praktisk",
+    topic: "Minimax",
+    question: "Når kan alpha-beta klippe en gren?",
+    answer:
+      "Når α ≥ β. α = beste verdi MAX har garantert seg langs stien, β = beste verdi MIN har garantert seg. Hvis α ≥ β kan grenen aldri velges av en rasjonell motstander.",
+  },
+  {
+    id: "c-dte2501-alphabeta-speedup",
+    category: "praktisk",
+    topic: "Minimax",
+    question: "Hva er gevinsten av alpha-beta pruning?",
+    answer:
+      "Med tilfeldig trekk-rekkefølge: O(b^{3m/4}). Med perfekt rekkefølge (beste trekk først): O(b^{m/2}) — vi kan søke dobbelt så dypt på samme tid. Optimaliteten beholdes.",
+  },
+  {
+    id: "c-dte2501-eval-fn",
+    category: "praktisk",
+    topic: "Minimax",
+    question: "Hvorfor trenger sjakk en evalueringsfunksjon?",
+    answer:
+      "Spilltreet (~10^123 noder) er for stort til å nå løv. Vi cut-off-er på dybde d og bruker EVAL(s) = Σ wᵢfᵢ(s) (materiell, kong-trygghet, struktur) for å estimere ikke-terminale stillinger.",
+  },
+  {
+    id: "c-dte2501-horizon",
+    category: "praktisk",
+    topic: "Minimax",
+    question: "Hva er horisonteffekten?",
+    answer:
+      "En stilling som ser stille ut på dybde d kan eksplodere taktisk på d+1. Algoritmen evaluerer et villedende øyeblikksbilde. Quiescence search løser ved å fortsette søket bare på urolige trekk (slag, sjakk).",
+  },
+  {
+    id: "c-dte2501-minimax-vs-rl",
+    category: "praktisk",
+    topic: "Minimax",
+    question: "Minimax vs Q-learning — når brukes hvilken?",
+    answer:
+      "Minimax: kjent spill-modell, deterministisk, 2-spiller adversarial. Q-learning: model-free RL i én-agent eller stokastisk miljø. Adversarial krever motstanders rasjonalitet; RL antar ukjent dynamikk.",
+  },
+  {
+    id: "c-dte2501-minimax-imperfect",
+    category: "praktisk",
+    topic: "Minimax",
+    question: "Hva bryter minimax i poker?",
+    answer:
+      "Imperfect info — du ser ikke motstanders kort. Vi må håndtere information sets og belief states. Algoritmer: CFR (Counterfactual Regret Minimization). Nash equilibrium i stedet for minimax-trekk.",
+  },
+  {
+    id: "c-dte2501-iterative-deepening",
+    category: "praktisk",
+    topic: "Minimax",
+    question: "Hvorfor iterative deepening på minimax?",
+    answer:
+      "Start med dybde 1, øk én og én. Sikrer at vi alltid har et trekk klart hvis tida går ut. Tidligere iterasjoners resultater hjelper trekk-rekkefølging i neste runde (killer/history heuristics).",
+  },
+
+  // ============================================================
+  // DTE-2501 — Multi-armed bandits (Sutton & Barto kap. 2)
+  // ============================================================
+  {
+    id: "c-dte2501-bandit-def",
+    category: "praktisk",
+    topic: "Bandits",
+    question: "Hva er et K-armet bandit-problem?",
+    answer:
+      "K armer, hver gir tilfeldig belønning fra ukjent distribusjon med snitt q*(a). Vi velger ett trekk per tidssteg, observerer belønningen. Mål: maksimer kumulativ belønning over T trekk. Ingen state — ren explore vs exploit.",
+  },
+  {
+    id: "c-dte2501-bandit-q",
+    category: "praktisk",
+    topic: "Bandits",
+    question: "Sample-mean-estimat for Q(a)?",
+    answer:
+      "Q_t(a) = (sum av observerte belønninger fra a) / N_t(a). Inkrementell: Q_{n+1} = Q_n + (1/n)·(R_n − Q_n). Generelt: NewEstimate ← OldEstimate + StepSize·(Target − OldEstimate).",
+  },
+  {
+    id: "c-dte2501-bandit-egreedy",
+    category: "praktisk",
+    topic: "Bandits",
+    question: "ε-greedy-strategien?",
+    answer:
+      "Med p=1−ε velg argmax_a Q_t(a) (exploit). Med p=ε velg tilfeldig arm (explore). Fast ε gir lineær regret; ε-decay (f.eks. εₜ ∝ 1/t) gir O(ln T).",
+  },
+  {
+    id: "c-dte2501-bandit-ucb",
+    category: "praktisk",
+    topic: "Bandits",
+    question: "UCB1-formel?",
+    answer:
+      "A_t = argmax_a [Q_t(a) + c·√(ln t / N_t(a))]. Første ledd er exploit (gjennomsnitt), andre er explore (bonus til sjeldent prøvde armer). Oppnår O(ln T) regret — optimal.",
+  },
+  {
+    id: "c-dte2501-bandit-optimistic",
+    category: "praktisk",
+    topic: "Bandits",
+    question: "Hvordan virker optimistic initial values?",
+    answer:
+      "Sett Q_0(a) mye høyere enn sann maks-belønning. Grådig algoritme tvinges til å prøve alle armer flere ganger før Q krymper. Gir gratis utforskning uten ε. Funker bare i stasjonære bandits.",
+  },
+  {
+    id: "c-dte2501-bandit-thompson",
+    category: "praktisk",
+    topic: "Bandits",
+    question: "Hva er Thompson sampling?",
+    answer:
+      "Bayesisk strategi: oppretthold posterior over hver arms q*(a). På hvert steg trekk én sample fra hver posterior og velg argmax. Bernoulli-armer: Beta-prior → Beta(α, β) posterior. Empirisk ofte best.",
+  },
+  {
+    id: "c-dte2501-bandit-regret",
+    category: "praktisk",
+    topic: "Bandits",
+    question: "Hva er regret i bandit-problemet?",
+    answer:
+      "L_T = T·q*(a*) − E[Σ R_t]. Forventet tap mot oracle som alltid velger beste arm. Pur grådig og fast-ε gir Θ(T). UCB1 og Thompson gir O(ln T) — logaritmisk og optimalt.",
+  },
+  {
+    id: "c-dte2501-bandit-vs-rl",
+    category: "praktisk",
+    topic: "Bandits",
+    question: "Forskjell på bandits og full RL?",
+    answer:
+      "Bandits har ingen state — ett valg = umiddelbar belønning, ingen langsiktige konsekvenser. RL har state-transitioner, så et valg endrer fremtidige muligheter. Bandits er RL med |S|=1.",
+  },
+  {
+    id: "c-dte2501-bandit-explore-exploit",
+    category: "praktisk",
+    topic: "Bandits",
+    question: "Hvorfor er pur grådig nesten alltid dårlig?",
+    answer:
+      "Med støy kan én uheldig observasjon få oss til å låse oss til en suboptimal arm. Vi prøver aldri den faktisk beste igjen → lineær regret. Litt utforskning unngår det.",
+  },
+
+  // ============================================================
+  // DTE-2501 — MDP Bellman regnedrill (Sutton & Barto kap. 3-4)
+  // ============================================================
+  {
+    id: "c-dte2501-mdp-tuple",
+    category: "praktisk",
+    topic: "MDP Bellman",
+    question: "Hva er MDP-tuppelen?",
+    answer:
+      "(S, A, P, R, γ). S = states, A = actions, P(s'|s,a) = transition probability, R(s,a,s') = reward, γ ∈ [0,1) = discount factor. Markov-egenskap: framtiden avhenger bare av nåtid.",
+  },
+  {
+    id: "c-dte2501-bellman-pi",
+    category: "praktisk",
+    topic: "MDP Bellman",
+    question: "Bellman-konsistens for V^π?",
+    answer:
+      "V^π(s) = Σ_a π(a|s) Σ_{s'} P(s'|s,a)·[R(s,a,s') + γ·V^π(s')]. Lineær i V — kan løses direkte med O(|S|³) for endelig |S|.",
+  },
+  {
+    id: "c-dte2501-bellman-star",
+    category: "praktisk",
+    topic: "MDP Bellman",
+    question: "Bellman optimality for V*?",
+    answer:
+      "V*(s) = max_a Σ_{s'} P(s'|s,a)·[R(s,a,s') + γ·V*(s')]. Ikke-lineær pga max — kan ikke løses direkte, må iterere. Optimal policy: π*(s) = argmax_a samme uttrykk.",
+  },
+  {
+    id: "c-dte2501-vi-update",
+    category: "praktisk",
+    topic: "MDP Bellman",
+    question: "Value Iteration-oppdatering?",
+    answer:
+      "V_{k+1}(s) ← max_a Σ_{s'} P(s'|s,a)·[R + γ·V_k(s')]. Sweep over alle s, mål Δ = max_s |V_{k+1} − V_k|. Stopp når Δ < θ. Per-iterasjon: O(|S|²·|A|).",
+  },
+  {
+    id: "c-dte2501-pi-cycle",
+    category: "praktisk",
+    topic: "MDP Bellman",
+    question: "Policy Iteration-syklusen?",
+    answer:
+      "1) Evaluation: løs V^π eksakt (lineært system O(|S|³)) eller via iterativ Bellman-backup. 2) Improvement: π[s] ← argmax_a Σ P·[R + γ V^π(s')]. Gjenta til π uendret én runde.",
+  },
+  {
+    id: "c-dte2501-vi-vs-pi",
+    category: "praktisk",
+    topic: "MDP Bellman",
+    question: "VI vs PI — hovedforskjell?",
+    answer:
+      "VI: én Bellman-backup per state per iterasjon, mange iterasjoner. PI: full evaluering (O(|S|³)), så improvement — færre iterasjoner. VI billigere per iterasjon, PI billigere totalt for moderate |S|.",
+  },
+  {
+    id: "c-dte2501-vi-convergence",
+    category: "praktisk",
+    topic: "MDP Bellman",
+    question: "Hvorfor konvergerer VI?",
+    answer:
+      "Bellman-operatoren T er en γ-kontraksjon i sup-normen: ‖TV₁ − TV₂‖_∞ ≤ γ·‖V₁ − V₂‖_∞. Banach gir unikt fixed-point V*. ‖V_k − V*‖_∞ ≤ γᵏ·‖V₀ − V*‖_∞ — eksponentielt rate γ.",
+  },
+  {
+    id: "c-dte2501-pi-stable",
+    category: "praktisk",
+    topic: "MDP Bellman",
+    question: "Når stopper PI?",
+    answer:
+      "Når improvement-steget gir samme policy som forrige — π[s] uendret for alle s. PI konvergerer på endelig antall iterasjoner (typisk < |S|·|A|), gir eksakt optimal π — ikke bare asymptotisk.",
+  },
+  {
+    id: "c-dte2501-gamma-role",
+    category: "praktisk",
+    topic: "MDP Bellman",
+    question: "Hvorfor γ < 1?",
+    answer:
+      "Sikrer at G_t = Σ γᵏR konvergerer ved uendelig horisont. Gir Bellman-operatoren kontraksjons-egenskap. γ → 0 = kortsiktig (grådig); γ → 1 = langsiktig. Typisk 0.9–0.99.",
+  },
+  {
+    id: "c-dte2501-modified-pi",
+    category: "praktisk",
+    topic: "MDP Bellman",
+    question: "Hva er Modified Policy Iteration?",
+    answer:
+      "I stedet for full eksakt evaluering, gjør k Bellman-backups for V^π før improvement. Krysser VI (k=1) og full PI (k→∞). Praktisk sweet-spot — konvergerer raskt uten dyrt lineært system.",
+  },
+  // ============= DTE-2602 — LDA / QDA / Naive Bayes (9 kort) =============
+  {
+    id: "c-dte2602-generativ-vs-diskr",
+    category: "statistikk",
+    topic: "LDA-QDA-NB",
+    question: "Forskjell på generativ og diskriminativ klassifikator?",
+    answer:
+      "Diskriminativ (logistisk, SVM, tre) modellerer P(y|x) direkte. Generativ (LDA, QDA, Naive Bayes, GMM) modellerer P(x|y) og P(y), og bruker Bayes-teoremet for å regne ut P(y|x). Generative kan også generere syntetiske samples.",
+  },
+  {
+    id: "c-dte2602-bayes-classifier",
+    category: "statistikk",
+    topic: "LDA-QDA-NB",
+    question: "Hva er Bayes-klassifikatoren og hvorfor er den optimal?",
+    answer:
+      "ŷ = argmax_k P(y=k|x). Den velger klassen med høyest posterior. Bayes-klassifikatoren har lavest mulig feilrate (Bayes-feilen) — alle ekte klassifikatorer prøver å tilnærme den.",
+    code: "P(y=k|x) = π_k · f_k(x) / Σ_l π_l · f_l(x)",
+  },
+  {
+    id: "c-dte2602-lda-antakelse",
+    category: "statistikk",
+    topic: "LDA-QDA-NB",
+    question: "Hvilke antakelser gjør LDA?",
+    answer:
+      "1) Hver klasse er multivariat normalfordelt. 2) Alle klassene deler SAMME kovariansmatrise Σ. Konsekvens: beslutningsgrensa blir lineær (hyperplan). Få parametre ⇒ lav varians, men risiko for bias.",
+  },
+  {
+    id: "c-dte2602-qda-antakelse",
+    category: "statistikk",
+    topic: "LDA-QDA-NB",
+    question: "Hva er forskjellen mellom LDA og QDA?",
+    answer:
+      "QDA tillater ULIK kovariansmatrise per klasse Σ_k. Det gir kvadratisk beslutningsgrense (ellipser, hyperbler). Lavere bias enn LDA, men høyere varians: vi må estimere K kovariansmatriser i stedet for én.",
+  },
+  {
+    id: "c-dte2602-nb-uavhengighet",
+    category: "statistikk",
+    topic: "LDA-QDA-NB",
+    question: "Hva er kjerneantakelsen i Naive Bayes?",
+    answer:
+      "Features er BETINGET UAVHENGIGE gitt klassen: P(x|y=k) = Π_j P(x_j|y=k). Antakelsen er nesten alltid usann, men reduserer parametertall fra Kp(p+1)/2 (QDA) til 2pK — gjør modellen robust på lite data og høy dimensjon.",
+  },
+  {
+    id: "c-dte2602-nb-tekst",
+    category: "statistikk",
+    topic: "LDA-QDA-NB",
+    question: "Hvorfor brukes Naive Bayes så ofte i tekstklassifisering?",
+    answer:
+      "Tekst-features er typisk veldig høy-dimensjonale (titusenvis av ord). Med få samples ville LDA/QDA krasje. NB estimerer kun marginale per klasse — overlever med n << p. Spam-filter, sentiment, språk-id.",
+  },
+  {
+    id: "c-dte2602-lda-discriminant",
+    category: "statistikk",
+    topic: "LDA-QDA-NB",
+    question: "Skriv LDA's lineære diskriminantfunksjon.",
+    answer:
+      "δ_k(x) = xᵀ Σ⁻¹ μ_k − ½ μ_kᵀ Σ⁻¹ μ_k + ln π_k. Lineær i x ⇒ beslutningsgrensa mellom to klasser er et hyperplan. Velg klassen som maksimerer δ_k.",
+    code: "δ_k(x) = x^T Σ^{-1} μ_k − ½ μ_k^T Σ^{-1} μ_k + ln π_k",
+  },
+  {
+    id: "c-dte2602-lda-qda-nar",
+    category: "statistikk",
+    topic: "LDA-QDA-NB",
+    question: "Når LDA over QDA?",
+    answer:
+      "LDA: lite data per klasse, du tror klassene har lik 'form' (samme spredning), eller du vil ha en stabil/tolkbar grense. QDA: mye data per klasse OG klart ulik spredning. På små n bommer QDA fordi den estimerer for mange parametre.",
+  },
+  {
+    id: "c-dte2602-nb-varianter",
+    category: "statistikk",
+    topic: "LDA-QDA-NB",
+    question: "Tre Naive Bayes-varianter og når brukes de?",
+    answer:
+      "GaussianNB — kontinuerlige features (medisinske målinger). MultinomialNB — telle-features (word counts). BernoulliNB — binære features (term present/absent). Velg etter datatypen til x_j.",
+  },
+
+  // ============= DTE-2602 — CV-varianter (9 kort) =============
+  {
+    id: "c-dte2602-cv-formel",
+    category: "statistikk",
+    topic: "CV-varianter",
+    question: "Hva er formelen for k-fold CV-estimatet?",
+    answer:
+      "CV_(k) = (1/k) Σ MSE_i, der MSE_i er feilen på fold i når modellen er trent på de andre k−1 foldene. Hvert datapunkt havner i test nøyaktig én gang.",
+    code: "CV_(k) = (1/k) · Σ MSE_i",
+  },
+  {
+    id: "c-dte2602-cv-loocv",
+    category: "statistikk",
+    topic: "CV-varianter",
+    question: "Fordeler og ulemper med LOOCV?",
+    answer:
+      "Fordel: praktisk talt null bias (hver modell ser n−1 samples). Deterministisk (ingen shuffle). Ulempe: n treninger ⇒ dyrt. Estimater er sterkt KORRELERT (hver modell ser nesten samme data), så snittet har HØYERE varians enn 10-fold ofte.",
+  },
+  {
+    id: "c-dte2602-cv-validset",
+    category: "statistikk",
+    topic: "CV-varianter",
+    question: "Hvorfor er en enkelt validation-set-tilnærming ofte for støyete?",
+    answer:
+      "Estimatet avhenger sterkt av nettopp hvilke punkter som havnet i val-settet. Kjør med ulik random_state og se scoren variere. På lite data er det ubrukelig. CV snitter over flere splittinger og gir mer stabilt estimat.",
+  },
+  {
+    id: "c-dte2602-cv-stratified",
+    category: "statistikk",
+    topic: "CV-varianter",
+    question: "Når MÅ du bruke StratifiedKFold?",
+    answer:
+      "Ved klassifikasjon med ubalansert data. Vanlig KFold kan ved uflaks gi folder med 0 % minoritetsklasse ⇒ scoren blir uberegnelig. Stratified bevarer klassebalansen i hver fold. cross_val_score med cv=int (heltall) gjør dette automatisk for klassifikatorer.",
+    code: "StratifiedKFold(n_splits=5, shuffle=True, random_state=42)",
+  },
+  {
+    id: "c-dte2602-cv-group",
+    category: "statistikk",
+    topic: "CV-varianter",
+    question: "Når trenger du GroupKFold?",
+    answer:
+      "Når observasjoner er korrelerte i grupper (samme pasient med 10 målinger, samme bruker med 100 events). Hvis samme gruppe havner i både train og val, lekker gruppe-spesifikke mønstre. GroupKFold sikrer at hver gruppe ligger helt på én side.",
+  },
+  {
+    id: "c-dte2602-cv-ts",
+    category: "statistikk",
+    topic: "CV-varianter",
+    question: "Hvorfor må tidsserier ha sin egen CV-variant?",
+    answer:
+      "Vanlig k-fold kan tilfeldigvis trene på framtiden og teste på fortida — det er fasit-lekkasje (en klassifikator i produksjon kan ikke se framtiden). TimeSeriesSplit lar train alltid være FØR test-vinduet kronologisk.",
+    code: "TimeSeriesSplit(n_splits=5)",
+  },
+  {
+    id: "c-dte2602-cv-bias-var",
+    category: "statistikk",
+    topic: "CV-varianter",
+    question: "Hvordan endrer bias og varians seg med k?",
+    answer:
+      "Lav k (2-3): hver modell trent på lite data ⇒ HØY BIAS, men foldene overlapper lite ⇒ LAV VARIANS. Høy k (n=LOOCV): lav bias (mye trening), men sterk korrelasjon mellom modellene ⇒ HØY VARIANS. Sweet spot: k=5 eller k=10 (ISLP).",
+  },
+  {
+    id: "c-dte2602-cv-pipeline",
+    category: "statistikk",
+    topic: "CV-varianter",
+    question: "Hvorfor må preprocessing inn i Pipeline før CV?",
+    answer:
+      "Hvis du fit-transformer (skaler/imputer) på X FØR cross_val_score, lærer skaleren mean/std fra val-folden — datalekkasje, scoren blir kunstig god. Pakk preprocessing + modell i Pipeline; sklearn re-fit-er da inne i hver fold.",
+  },
+  {
+    id: "c-dte2602-cv-leak",
+    category: "statistikk",
+    topic: "CV-varianter",
+    question: "Vanligste CV-feller (rekkefølge)?",
+    answer:
+      "1) fit_transform på hele X før split. 2) Feature selection på hele X (også lekkasje). 3) Tidsserie-data uten TimeSeriesSplit. 4) Grupperte data uten GroupKFold. 5) Hyperparameter-tuning på TEST-settet ⇒ test-scoren slutter å være ærlig.",
+  },
+
+  // ============= TEK-1501 — Regresjon-diagnostikk (9 kort) =============
+  {
+    id: "c-tek1-ols-antakelser",
+    category: "statistikk",
+    topic: "Regresjon-diagnostikk",
+    question: "Hva er de 4 antakelsene for OLS?",
+    answer:
+      "1) Linearitet (sann sammenheng lineær). 2) Uavhengige feil ε_i. 3) Homoskedastisitet (konstant varians σ²). 4) Normalfordelte residualer. Når brudd: koeffisientene kan fortsatt være forventningsrette, men SE og p-verdier blir feil.",
+  },
+  {
+    id: "c-tek1-residual",
+    category: "statistikk",
+    topic: "Regresjon-diagnostikk",
+    question: "Hva er en residual og hvordan bruker du den?",
+    answer:
+      "Residual e_i = y_i − ŷ_i. Plot e mot ŷ: bra mønster er random sky rundt 0, samme spredning. Kurve i plottet ⇒ ikke-linearitet. Trakt ⇒ heteroskedastisitet. Enkelt ekstrempunkt ⇒ outlier.",
+    code: "e_i = y_i − ŷ_i",
+  },
+  {
+    id: "c-tek1-hetero",
+    category: "statistikk",
+    topic: "Regresjon-diagnostikk",
+    question: "Hva er heteroskedastisitet og hvordan ser du det?",
+    answer:
+      "Varians i residualene endrer seg med ŷ — typisk trakt-form i residualplott. Estimat β̂ er fortsatt forventningsrett, men SE er feil ⇒ KI for smale, p-verdier for små. Fiks: log-transform y, weighted least squares, eller robuste 'sandwich'-SE (HC3).",
+  },
+  {
+    id: "c-tek1-qq",
+    category: "statistikk",
+    topic: "Regresjon-diagnostikk",
+    question: "Hvordan tolker du et Q-Q-plot?",
+    answer:
+      "Sorterte residualer mot teoretiske kvantiler fra N(0,1). Punktene skal følge diagonalen hvis residualene er normalfordelte. S-form ⇒ tunge/lette haler. Krumning ⇒ skjevhet. Enkeltpunkter langt unna ⇒ outliers.",
+    code: "scipy.stats.probplot(residuals, dist='norm')",
+  },
+  {
+    id: "c-tek1-cook",
+    category: "statistikk",
+    topic: "Regresjon-diagnostikk",
+    question: "Hva måler Cook's distance, og hva er terskelen?",
+    answer:
+      "Cook's D måler hvor mye β̂ endres hvis vi fjerner punkt i — kombinerer residual og leverage. Tommelfingerregel: D_i > 4/n verdt å undersøke; D_i > 1 alvorlig. Punkter med høy Cook drar regresjonen alene.",
+    code: "D_i = e_i² · h_ii / (p · s² · (1−h_ii)²)",
+  },
+  {
+    id: "c-tek1-outlier-vs-lev",
+    category: "statistikk",
+    topic: "Regresjon-diagnostikk",
+    question: "Forskjell på outlier, leverage og influence?",
+    answer:
+      "Outlier: stor residual (langt fra linja i y-retning). Leverage: uvanlig x (langt fra x̄), stor h_ii. Influence: punkter som faktisk drar β̂ — krever BÅDE outlier OG høy leverage. Cook's D fanger nettopp influence.",
+  },
+  {
+    id: "c-tek1-r2-vs-r2adj",
+    category: "statistikk",
+    topic: "Regresjon-diagnostikk",
+    question: "Hva er forskjellen på R² og justert R²?",
+    answer:
+      "R² = 1 − SSE/SST måler hvor mye variasjon modellen forklarer, MEN stiger alltid når man legger til en prediktor (selv om den er støy). R²_adj = 1 − (1−R²) · (n−1)/(n−p−1) straffer ekstra prediktorer. Bruk adj for å sammenligne modeller med ulikt antall prediktorer.",
+    code: "R²_adj = 1 − (1−R²) · (n−1)/(n−p−1)",
+  },
+  {
+    id: "c-tek1-r2-lyver",
+    category: "statistikk",
+    topic: "Regresjon-diagnostikk",
+    question: "Når lyver R²?",
+    answer:
+      "1) Modeller med vs uten intercept (forced through origin) er ikke sammenlignbare. 2) Transformert y (log-y vs y) er ikke sammenlignbart. 3) Ekstreme outliers blåser opp SST. 4) R² er treningsmål — sier ingenting om test-ytelse.",
+  },
+  {
+    id: "c-tek1-vif",
+    category: "statistikk",
+    topic: "Regresjon-diagnostikk",
+    question: "Hva er VIF og hvorfor sjekker du det?",
+    answer:
+      "Variance Inflation Factor: VIF_j = 1/(1 − R_j²) der R_j² er fra regresjon av x_j mot alle andre prediktorer. Måler hvor mye SE for β̂_j er oppblåst pga multikollinearitet. VIF > 5 bekymring, > 10 alvorlig. Fiks: drop én korrelert, kombiner, eller bruk Ridge.",
+  },
 ];
 
 export const CARD_CATEGORIES: { id: FlashCard["category"]; label: string }[] = [
