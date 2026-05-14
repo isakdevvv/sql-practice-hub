@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { SiteHeader } from "@/components/SiteHeader";
 import { PROBLEMS } from "@/lib/problems/data";
 import { PY_EXERCISES } from "@/lib/python/exercises";
+import { GIT_SCENARIOS } from "@/lib/git/scenarios";
 
 export const Route = createFileRoute("/ov")({
   head: () => ({
@@ -72,6 +73,12 @@ function OvHub() {
             href="/drag"
             title="Drag-and-drop"
             body="Sett sammen spørringer ved å dra klausuler på plass. Bra for å låse rekkefølgen."
+          />
+          <HubCard
+            href="/git-drill"
+            title="Git-drill"
+            badge={`${GIT_SCENARIOS.length} scenarier`}
+            body="Skriv git-kommandoer i en simulert terminal — init, add, commit, branch, merge, reset. Ingen ekte git, alt kjører lokalt."
           />
         </div>
       </main>

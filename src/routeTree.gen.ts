@@ -19,6 +19,7 @@ import { Route as LarRouteImport } from './routes/lar'
 import { Route as KursRouteImport } from './routes/kurs'
 import { Route as KonsollRouteImport } from './routes/konsoll'
 import { Route as JoinsRouteImport } from './routes/joins'
+import { Route as GitDrillRouteImport } from './routes/git-drill'
 import { Route as ExamRouteImport } from './routes/exam'
 import { Route as ErTegnerRouteImport } from './routes/er-tegner'
 import { Route as EksamenRouteImport } from './routes/eksamen'
@@ -84,6 +85,11 @@ const KonsollRoute = KonsollRouteImport.update({
 const JoinsRoute = JoinsRouteImport.update({
   id: '/joins',
   path: '/joins',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GitDrillRoute = GitDrillRouteImport.update({
+  id: '/git-drill',
+  path: '/git-drill',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ExamRoute = ExamRouteImport.update({
@@ -175,6 +181,7 @@ export interface FileRoutesByFullPath {
   '/eksamen': typeof EksamenRoute
   '/er-tegner': typeof ErTegnerRoute
   '/exam': typeof ExamRoute
+  '/git-drill': typeof GitDrillRoute
   '/joins': typeof JoinsRoute
   '/konsoll': typeof KonsollRoute
   '/kurs': typeof KursRoute
@@ -203,6 +210,7 @@ export interface FileRoutesByTo {
   '/eksamen': typeof EksamenRoute
   '/er-tegner': typeof ErTegnerRoute
   '/exam': typeof ExamRoute
+  '/git-drill': typeof GitDrillRoute
   '/joins': typeof JoinsRoute
   '/konsoll': typeof KonsollRoute
   '/kurs': typeof KursRoute
@@ -231,6 +239,7 @@ export interface FileRoutesById {
   '/eksamen': typeof EksamenRoute
   '/er-tegner': typeof ErTegnerRoute
   '/exam': typeof ExamRoute
+  '/git-drill': typeof GitDrillRoute
   '/joins': typeof JoinsRoute
   '/konsoll': typeof KonsollRoute
   '/kurs': typeof KursRoute
@@ -261,6 +270,7 @@ export interface FileRouteTypes {
     | '/eksamen'
     | '/er-tegner'
     | '/exam'
+    | '/git-drill'
     | '/joins'
     | '/konsoll'
     | '/kurs'
@@ -289,6 +299,7 @@ export interface FileRouteTypes {
     | '/eksamen'
     | '/er-tegner'
     | '/exam'
+    | '/git-drill'
     | '/joins'
     | '/konsoll'
     | '/kurs'
@@ -316,6 +327,7 @@ export interface FileRouteTypes {
     | '/eksamen'
     | '/er-tegner'
     | '/exam'
+    | '/git-drill'
     | '/joins'
     | '/konsoll'
     | '/kurs'
@@ -345,6 +357,7 @@ export interface RootRouteChildren {
   EksamenRoute: typeof EksamenRoute
   ErTegnerRoute: typeof ErTegnerRoute
   ExamRoute: typeof ExamRoute
+  GitDrillRoute: typeof GitDrillRoute
   JoinsRoute: typeof JoinsRoute
   KonsollRoute: typeof KonsollRoute
   KursRoute: typeof KursRoute
@@ -434,6 +447,13 @@ declare module '@tanstack/react-router' {
       path: '/joins'
       fullPath: '/joins'
       preLoaderRoute: typeof JoinsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/git-drill': {
+      id: '/git-drill'
+      path: '/git-drill'
+      fullPath: '/git-drill'
+      preLoaderRoute: typeof GitDrillRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/exam': {
@@ -571,6 +591,7 @@ const rootRouteChildren: RootRouteChildren = {
   EksamenRoute: EksamenRoute,
   ErTegnerRoute: ErTegnerRoute,
   ExamRoute: ExamRoute,
+  GitDrillRoute: GitDrillRoute,
   JoinsRoute: JoinsRoute,
   KonsollRoute: KonsollRoute,
   KursRoute: KursRoute,
