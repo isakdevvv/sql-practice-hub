@@ -3,6 +3,7 @@ import { Lightbulb } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
 import { DeadlockGraph } from "./DeadlockGraph";
+import { ConcurrencyTimeline } from "./ConcurrencyTimeline";
 
 const STEPS = [
   { title: "Race conditions", anchor: "race" },
@@ -65,11 +66,18 @@ mov [counter], eax     // 3. lagre
 // kan tråd B også lese den GAMLE verdien.
 // Da går teller bare opp med 1 i stedet for 2.`}</pre>
           </div>
-          <p className="text-xs text-muted-foreground">
+          <p className="text-xs text-muted-foreground mb-4">
             <strong>Kritisk seksjon:</strong> koden mellom load og store er en
             kritisk seksjon. Det må kjøre <em>atomisk</em> — som om ingen andre
             tråder kunne se den halvferdige tilstanden. Det er det låser gir oss.
           </p>
+          <p className="text-sm text-muted-foreground mb-3">
+            <strong>Prøv selv:</strong> Hver tråd kjører tre instruksjoner.
+            Flytt på rekkefølgen og se den delte counteren oppdatere live. Slå{" "}
+            <em>Lås på</em> og merk hvordan operasjoner i den andre tråden
+            blokkeres.
+          </p>
+          <ConcurrencyTimeline />
         </Section>
 
         <Section number="2" id="mutex" title="Mutex / lock — gjensidig utelukkelse">

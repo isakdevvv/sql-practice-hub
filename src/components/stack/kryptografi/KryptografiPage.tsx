@@ -3,11 +3,13 @@ import { ArrowRight, Lightbulb } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
 import { AesGcmDemo } from "./AesGcmDemo";
+import { AesBlockModes } from "./AesBlockModes";
 import { HashAndHmac } from "./HashAndHmac";
 
 const STEPS = [
   { title: "Hva krypto faktisk beskytter mot", anchor: "trusler" },
   { title: "Symmetrisk kryptering", anchor: "symmetrisk" },
+  { title: "Blokkmoduser — ECB-pingvinen", anchor: "blokk-moduser" },
   { title: "AES-GCM i praksis", anchor: "aes-gcm" },
   { title: "Asymmetrisk kryptering", anchor: "asymmetrisk" },
   { title: "Hash-funksjoner", anchor: "hash" },
@@ -30,18 +32,20 @@ export function KryptografiPage() {
             Kryptografi — hva som beskytter mot hva
           </h1>
           <p className="mt-3 text-muted-foreground">
-            Krypto handler om tre garantier: <strong>konfidensialitet</strong>{" "}
-            (ingen andre kan lese), <strong>integritet</strong> (ingen har endret), og{" "}
-            <strong>autentisitet</strong> (jeg vet hvem som sendte). Ulike algoritmer
-            dekker ulike garantier. Lær deg hvilke som dekker hva.
+            Krypto handler om tre garantier: <strong>konfidensialitet</strong> (ingen andre kan
+            lese), <strong>integritet</strong> (ingen har endret), og <strong>autentisitet</strong>{" "}
+            (jeg vet hvem som sendte). Ulike algoritmer dekker ulike garantier. Lær deg hvilke som
+            dekker hva.
           </p>
           <div className="mt-4 rounded-lg border border-brand/30 bg-brand/5 p-4 flex items-start gap-3">
             <Lightbulb className="h-4 w-4 text-brand mt-0.5 shrink-0" />
             <div className="text-sm">
               <span className="font-medium">Hands-on:</span>{" "}
-              <Link to="/drag" className="text-brand hover:underline">drag-oppgavene</Link>{" "}
-              under «Kryptografi» — match algoritme til garanti, quiz om hash vs encrypt,
-              sortér digital-signatur-flyt.
+              <Link to="/drag" className="text-brand hover:underline">
+                drag-oppgavene
+              </Link>{" "}
+              under «Kryptografi» — match algoritme til garanti, quiz om hash vs encrypt, sortér
+              digital-signatur-flyt.
             </div>
           </div>
         </div>
@@ -51,8 +55,8 @@ export function KryptografiPage() {
         <section id="trusler" className="mb-10">
           <h2 className="text-xl font-semibold mb-3">1. Hva krypto faktisk beskytter mot</h2>
           <p className="text-sm text-muted-foreground mb-4">
-            Krypto-løsning skal alltid være en respons til en konkret trussel. Først:
-            forstå CIA-trekanten.
+            Krypto-løsning skal alltid være en respons til en konkret trussel. Først: forstå
+            CIA-trekanten.
           </p>
           <div className="grid sm:grid-cols-3 gap-3">
             <div className="rounded-xl border border-border bg-card p-4">
@@ -60,21 +64,31 @@ export function KryptografiPage() {
                 Konfidensialitet
               </div>
               <p className="text-sm text-foreground">Ingen uautoriserte kan LESE.</p>
-              <p className="mt-2 text-xs text-muted-foreground">Trussel: avlytting (eavesdropping). Verktøy: kryptering.</p>
+              <p className="mt-2 text-xs text-muted-foreground">
+                Trussel: avlytting (eavesdropping). Verktøy: kryptering.
+              </p>
             </div>
             <div className="rounded-xl border border-border bg-card p-4">
               <div className="text-xs uppercase tracking-wider text-brand font-semibold mb-2">
                 Integritet
               </div>
-              <p className="text-sm text-foreground">Ingen uautoriserte kan ENDRE — eller du oppdager det.</p>
-              <p className="mt-2 text-xs text-muted-foreground">Trussel: tampering. Verktøy: hash + MAC.</p>
+              <p className="text-sm text-foreground">
+                Ingen uautoriserte kan ENDRE — eller du oppdager det.
+              </p>
+              <p className="mt-2 text-xs text-muted-foreground">
+                Trussel: tampering. Verktøy: hash + MAC.
+              </p>
             </div>
             <div className="rounded-xl border border-border bg-card p-4">
               <div className="text-xs uppercase tracking-wider text-brand font-semibold mb-2">
                 Autentisitet
               </div>
-              <p className="text-sm text-foreground">Du VET hvem som sendte (eller hvem du snakker med).</p>
-              <p className="mt-2 text-xs text-muted-foreground">Trussel: impersonation. Verktøy: signatur, sertifikat.</p>
+              <p className="text-sm text-foreground">
+                Du VET hvem som sendte (eller hvem du snakker med).
+              </p>
+              <p className="mt-2 text-xs text-muted-foreground">
+                Trussel: impersonation. Verktøy: signatur, sertifikat.
+              </p>
             </div>
           </div>
         </section>
@@ -82,8 +96,8 @@ export function KryptografiPage() {
         <section id="symmetrisk" className="mb-10">
           <h2 className="text-xl font-semibold mb-3">2. Symmetrisk kryptering</h2>
           <p className="text-sm text-muted-foreground mb-4">
-            En enkelt nøkkel som BÅDE krypterer og dekrypterer. Avsender og mottaker må
-            ha samme nøkkel.
+            En enkelt nøkkel som BÅDE krypterer og dekrypterer. Avsender og mottaker må ha samme
+            nøkkel.
           </p>
           <div className="rounded-xl border border-border bg-card p-5">
             <pre className="font-mono text-xs overflow-x-auto whitespace-pre">{`klartekst ──[ ENC(nøkkel) ]──► chiffertekst ──[ DEC(nøkkel) ]──► klartekst
@@ -94,33 +108,49 @@ export function KryptografiPage() {
           </div>
           <div className="mt-3 grid sm:grid-cols-2 gap-3">
             <div className="rounded-lg border border-success/30 bg-success/5 p-4 text-sm">
-              <strong className="text-success">Fordeler:</strong> Raskt. AES kan gjøre flere GB/s med hardware-støtte.
-              Liten cipher-tekst (samme størrelse som klartekst + IV).
+              <strong className="text-success">Fordeler:</strong> Raskt. AES kan gjøre flere GB/s
+              med hardware-støtte. Liten cipher-tekst (samme størrelse som klartekst + IV).
             </div>
             <div className="rounded-lg border border-amber-500/30 bg-amber-500/5 p-4 text-sm">
-              <strong className="text-amber-600 dark:text-amber-400">Problemet:</strong> Hvordan deler dere nøkkelen? Hvis du sender den
-              ukryptert er det jo poenget med å kryptere som forsvinner. Løses med
-              asymmetrisk krypto.
+              <strong className="text-amber-600 dark:text-amber-400">Problemet:</strong> Hvordan
+              deler dere nøkkelen? Hvis du sender den ukryptert er det jo poenget med å kryptere som
+              forsvinner. Løses med asymmetrisk krypto.
             </div>
           </div>
         </section>
 
-        <section id="aes-gcm" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">3. AES-GCM i praksis</h2>
+        <section id="blokk-moduser" className="mb-10">
+          <h2 className="text-xl font-semibold mb-3">3. Blokkmoduser — ECB-pingvinen</h2>
           <p className="text-sm text-muted-foreground mb-3">
-            Symmetrisk i teorien — over. Nå konkret: <strong>node-forge</strong> kjører
-            AES-256 i GCM-modus i nettleseren din. GCM gir både konfidensialitet OG
-            integritet i én operasjon (kalles AEAD). Generer nøkkel og IV, krypter en
-            melding, og se hvordan en bit-flip i ciphertext gjør at dekryptering avbrytes.
+            AES krypterer 16 byte om gangen. For å håndtere meldinger lengre enn 16 byte trenger man
+            en <strong>blokkmodus</strong>. Det berømte «pingvin-eksempelet» viser hvorfor ECB-modus
+            er katastrofalt: identiske klartekst-blokker gir identiske ciphertext-blokker, så
+            mønstre i bildet overlever krypteringen.
+          </p>
+          <AesBlockModes />
+          <p className="mt-3 text-xs text-muted-foreground">
+            Praksis: alle moderne protokoller (TLS 1.3, IPsec, WireGuard, SSH) bruker AEAD-moduser
+            som AES-GCM eller ChaCha20-Poly1305. ECB dukker stort sett bare opp i CTF-utfordringer
+            og gamle kryptolib-defaulter.
+          </p>
+        </section>
+
+        <section id="aes-gcm" className="mb-10">
+          <h2 className="text-xl font-semibold mb-3">4. AES-GCM i praksis</h2>
+          <p className="text-sm text-muted-foreground mb-3">
+            Symmetrisk i teorien — over. Nå konkret: <strong>node-forge</strong> kjører AES-256 i
+            GCM-modus i nettleseren din. GCM gir både konfidensialitet OG integritet i én operasjon
+            (kalles AEAD). Generer nøkkel og IV, krypter en melding, og se hvordan en bit-flip i
+            ciphertext gjør at dekryptering avbrytes.
           </p>
           <AesGcmDemo />
         </section>
 
         <section id="asymmetrisk" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">4. Asymmetrisk kryptering (public key)</h2>
+          <h2 className="text-xl font-semibold mb-3">5. Asymmetrisk kryptering (public key)</h2>
           <p className="text-sm text-muted-foreground mb-4">
-            <strong>To nøkler:</strong> én offentlig, én privat. Det som krypteres med
-            den ene kan KUN dekrypteres med den andre.
+            <strong>To nøkler:</strong> én offentlig, én privat. Det som krypteres med den ene kan
+            KUN dekrypteres med den andre.
           </p>
           <div className="rounded-xl border border-border bg-card p-5">
             <pre className="font-mono text-xs overflow-x-auto whitespace-pre">{`Alice vil sende hemmelig melding til Bob:
@@ -135,17 +165,17 @@ Hvem som helst kan kryptere TIL Bob. Bare Bob kan lese.
   ECC (Curve25519): mindre nøkler, samme styrke som RSA-3072`}</pre>
           </div>
           <p className="mt-3 text-xs text-muted-foreground">
-            <strong>Hastighet:</strong> asymmetrisk krypto er 1000x tregere enn AES. I
-            praksis brukes det BARE til å utveksle en symmetrisk nøkkel — så fortsetter
-            man med AES. Det er det TLS gjør.
+            <strong>Hastighet:</strong> asymmetrisk krypto er 1000x tregere enn AES. I praksis
+            brukes det BARE til å utveksle en symmetrisk nøkkel — så fortsetter man med AES. Det er
+            det TLS gjør.
           </p>
         </section>
 
         <section id="hash" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">5. Hash-funksjoner</h2>
+          <h2 className="text-xl font-semibold mb-3">6. Hash-funksjoner</h2>
           <p className="text-sm text-muted-foreground mb-4">
-            En ENVEIS funksjon: <code>hash(input) → fixed-size output</code>. Ikke
-            mulig å reversere. Liten endring i input gir helt annerledes output (avalanche).
+            En ENVEIS funksjon: <code>hash(input) → fixed-size output</code>. Ikke mulig å
+            reversere. Liten endring i input gir helt annerledes output (avalanche).
           </p>
           <div className="rounded-xl border border-border bg-card p-5">
             <pre className="font-mono text-xs overflow-x-auto whitespace-pre">{`sha256("hei")        → 3edfb8085...0e7f8d (256 bit)
@@ -166,39 +196,59 @@ Kravene til en kryptografisk hash:
                 </tr>
               </thead>
               <tbody>
-                <tr className="border-t border-border"><td className="px-4 py-3 font-mono">MD5</td><td className="px-4 py-3 font-mono">128 bit</td><td className="px-4 py-3 text-destructive">Knust — ikke bruk</td></tr>
-                <tr className="border-t border-border"><td className="px-4 py-3 font-mono">SHA-1</td><td className="px-4 py-3 font-mono">160 bit</td><td className="px-4 py-3 text-destructive">Knust — ikke bruk</td></tr>
-                <tr className="border-t border-border"><td className="px-4 py-3 font-mono">SHA-256</td><td className="px-4 py-3 font-mono">256 bit</td><td className="px-4 py-3 text-success">Anbefalt</td></tr>
-                <tr className="border-t border-border"><td className="px-4 py-3 font-mono">SHA-3</td><td className="px-4 py-3 font-mono">variabel</td><td className="px-4 py-3 text-success">Anbefalt, ny generasjon</td></tr>
-                <tr className="border-t border-border"><td className="px-4 py-3 font-mono">bcrypt/Argon2</td><td className="px-4 py-3 font-mono">variabel</td><td className="px-4 py-3 text-success">For PASSORD — slow hash</td></tr>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-3 font-mono">MD5</td>
+                  <td className="px-4 py-3 font-mono">128 bit</td>
+                  <td className="px-4 py-3 text-destructive">Knust — ikke bruk</td>
+                </tr>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-3 font-mono">SHA-1</td>
+                  <td className="px-4 py-3 font-mono">160 bit</td>
+                  <td className="px-4 py-3 text-destructive">Knust — ikke bruk</td>
+                </tr>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-3 font-mono">SHA-256</td>
+                  <td className="px-4 py-3 font-mono">256 bit</td>
+                  <td className="px-4 py-3 text-success">Anbefalt</td>
+                </tr>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-3 font-mono">SHA-3</td>
+                  <td className="px-4 py-3 font-mono">variabel</td>
+                  <td className="px-4 py-3 text-success">Anbefalt, ny generasjon</td>
+                </tr>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-3 font-mono">bcrypt/Argon2</td>
+                  <td className="px-4 py-3 font-mono">variabel</td>
+                  <td className="px-4 py-3 text-success">For PASSORD — slow hash</td>
+                </tr>
               </tbody>
             </table>
           </div>
           <p className="mt-3 text-xs text-muted-foreground">
-            <strong>Viktig:</strong> SHA-256 er RASK. Det er bra for fingeravtrykk og
-            blockchain, men <strong>katastrofalt for passord</strong> — angriperen
-            tester milliarder per sekund med GPU. Bruk bcrypt eller Argon2 for
-            passord-lagring.
+            <strong>Viktig:</strong> SHA-256 er RASK. Det er bra for fingeravtrykk og blockchain,
+            men <strong>katastrofalt for passord</strong> — angriperen tester milliarder per sekund
+            med GPU. Bruk bcrypt eller Argon2 for passord-lagring.
           </p>
         </section>
 
         <section id="hash-hmac" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">6. Hash &amp; HMAC (live demo)</h2>
+          <h2 className="text-xl font-semibold mb-3">7. Hash &amp; HMAC (live demo)</h2>
           <p className="text-sm text-muted-foreground mb-3">
-            Skriv en streng og se hvordan fire hash-familier (MD5, SHA-1, SHA-256, SHA-512)
-            beregnes samtidig — alle via <code className="font-mono">node-forge</code>. Endre
-            ÉN bokstav og se avalanche-effekten i praksis. Under: HMAC-SHA-256 med valgbar
-            nøkkel — kjernen i JWT-tokens og API-signering.
+            Skriv en streng og se hvordan fire hash-familier (MD5, SHA-1, SHA-256, SHA-512) beregnes
+            samtidig — alle via <code className="font-mono">node-forge</code>. Endre ÉN bokstav og
+            se avalanche-effekten i praksis. Under: HMAC-SHA-256 med valgbar nøkkel — kjernen i
+            JWT-tokens og API-signering.
           </p>
           <HashAndHmac />
         </section>
 
         <section id="mac" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">7. MAC og HMAC — integritet med nøkkel</h2>
+          <h2 className="text-xl font-semibold mb-3">8. MAC og HMAC — integritet med nøkkel</h2>
           <p className="text-sm text-muted-foreground mb-4">
-            En hash alene viser bare integritet hvis du STOLER på hashen som ble sendt.
-            Hvis angriperen endrer både meldingen og hashen, merker du ingenting.{" "}
-            <strong>MAC (Message Authentication Code)</strong> løser det: hash av (melding + delt hemmelig nøkkel).
+            En hash alene viser bare integritet hvis du STOLER på hashen som ble sendt. Hvis
+            angriperen endrer både meldingen og hashen, merker du ingenting.{" "}
+            <strong>MAC (Message Authentication Code)</strong> løser det: hash av (melding + delt
+            hemmelig nøkkel).
           </p>
           <div className="rounded-xl border border-border bg-card p-5">
             <pre className="font-mono text-xs overflow-x-auto whitespace-pre">{`Alice → Bob (med delt nøkkel K):
@@ -213,17 +263,17 @@ Bob mottar:
 Angriper uten K kan ikke beregne riktig tag.`}</pre>
           </div>
           <p className="mt-3 text-xs text-muted-foreground">
-            HMAC er en standardisert måte å bygge MAC fra en hvilken som helst hash:
-            HMAC-SHA256, HMAC-SHA3, osv. Brukes i JWT-tokens, API-signering, TLS.
+            HMAC er en standardisert måte å bygge MAC fra en hvilken som helst hash: HMAC-SHA256,
+            HMAC-SHA3, osv. Brukes i JWT-tokens, API-signering, TLS.
           </p>
         </section>
 
         <section id="signatur" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">8. Digital signatur</h2>
+          <h2 className="text-xl font-semibold mb-3">9. Digital signatur</h2>
           <p className="text-sm text-muted-foreground mb-4">
-            MAC krever DELT nøkkel — begge sider må ha den. Hva om du vil at HVEM SOM
-            HELST skal kunne verifisere at det er DU som signerte? Da trenger du
-            asymmetrisk: signér med PRIVAT nøkkel, verifiser med PUBLIC.
+            MAC krever DELT nøkkel — begge sider må ha den. Hva om du vil at HVEM SOM HELST skal
+            kunne verifisere at det er DU som signerte? Da trenger du asymmetrisk: signér med PRIVAT
+            nøkkel, verifiser med PUBLIC.
           </p>
           <div className="rounded-xl border border-border bg-card p-5">
             <pre className="font-mono text-xs overflow-x-auto whitespace-pre">{`Alice signerer:
@@ -244,12 +294,11 @@ Garantier:
         </section>
 
         <section id="pki" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">9. PKI og sertifikater</h2>
+          <h2 className="text-xl font-semibold mb-3">10. PKI og sertifikater</h2>
           <p className="text-sm text-muted-foreground mb-4">
-            Problem: hvordan vet du at en gitt public key faktisk tilhører
-            «nettbank.no» og ikke en angriper? Løsning:{" "}
-            <strong>Public Key Infrastructure</strong> — sertifikater signert av Certificate
-            Authorities (CA-er) som nettleseren stoler på.
+            Problem: hvordan vet du at en gitt public key faktisk tilhører «nettbank.no» og ikke en
+            angriper? Løsning: <strong>Public Key Infrastructure</strong> — sertifikater signert av
+            Certificate Authorities (CA-er) som nettleseren stoler på.
           </p>
           <div className="rounded-xl border border-border bg-card p-5">
             <pre className="font-mono text-xs overflow-x-auto whitespace-pre">{`Et X.509-sertifikat inneholder:
@@ -266,34 +315,31 @@ Verifisering:
   4. Hvis kjeden er gyldig og navnet matcher → trygg`}</pre>
           </div>
           <p className="mt-3 text-xs text-muted-foreground">
-            <strong>Sertifikatkjede:</strong> ofte signerer en root-CA en mellom-CA som
-            igjen signerer serveren. Browseren følger kjeden helt opp til en root den
-            stoler på.
+            <strong>Sertifikatkjede:</strong> ofte signerer en root-CA en mellom-CA som igjen
+            signerer serveren. Browseren følger kjeden helt opp til en root den stoler på.
           </p>
         </section>
 
         <section id="feller" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">10. Vanlige feller</h2>
+          <h2 className="text-xl font-semibold mb-3">11. Vanlige feller</h2>
           <div className="space-y-3 text-sm">
             <div className="rounded-lg border border-amber-500/30 bg-amber-500/5 p-4">
-              <strong>«Vi krypterer passordet i databasen»</strong> — feil terminologi.
-              Krypterer er reversibelt. Passord skal HASHES (med bcrypt/Argon2) — enveis.
-              Hvis du faktisk krypterer, kan en lekkasje av nøkkelen gi alle passord i
-              klartekst.
+              <strong>«Vi krypterer passordet i databasen»</strong> — feil terminologi. Krypterer er
+              reversibelt. Passord skal HASHES (med bcrypt/Argon2) — enveis. Hvis du faktisk
+              krypterer, kan en lekkasje av nøkkelen gi alle passord i klartekst.
             </div>
             <div className="rounded-lg border border-amber-500/30 bg-amber-500/5 p-4">
-              <strong>SHA-256 av passord</strong> er nesten like dårlig som klartekst.
-              GPU-er tester milliarder per sekund. Bruk slow hashes (bcrypt, Argon2).
+              <strong>SHA-256 av passord</strong> er nesten like dårlig som klartekst. GPU-er tester
+              milliarder per sekund. Bruk slow hashes (bcrypt, Argon2).
             </div>
             <div className="rounded-lg border border-amber-500/30 bg-amber-500/5 p-4">
               <strong>Egen krypto-implementasjon</strong> — ikke gjør det. Bruk bibliotek
-              (libsodium, OpenSSL, cryptography i Python). 99% av sikkerhetshull i krypto
-              kommer fra feilbruk eller egne implementasjoner, ikke knust algoritme.
+              (libsodium, OpenSSL, cryptography i Python). 99% av sikkerhetshull i krypto kommer fra
+              feilbruk eller egne implementasjoner, ikke knust algoritme.
             </div>
             <div className="rounded-lg border border-amber-500/30 bg-amber-500/5 p-4">
-              <strong>Statisk IV/nonce</strong> — å bruke samme initialiseringsvektor for
-              flere meldinger med samme nøkkel kan lekke informasjon. Generér ny IV per
-              melding.
+              <strong>Statisk IV/nonce</strong> — å bruke samme initialiseringsvektor for flere
+              meldinger med samme nøkkel kan lekke informasjon. Generér ny IV per melding.
             </div>
           </div>
         </section>
@@ -302,11 +348,17 @@ Verifisering:
           <h2 className="font-semibold mb-2">Neste steg</h2>
           <ul className="space-y-1.5 text-muted-foreground list-disc pl-5">
             <li>
-              <Link to="/drag" className="text-brand hover:underline">Drag-oppgaver</Link>
+              <Link to="/drag" className="text-brand hover:underline">
+                Drag-oppgaver
+              </Link>
               : match algoritme til garanti, quiz om hash vs encrypt.
             </li>
             <li>
-              <Link to="/stack/$slug" params={{ slug: "tls" }} className="text-brand hover:underline">
+              <Link
+                to="/stack/$slug"
+                params={{ slug: "tls" }}
+                className="text-brand hover:underline"
+              >
                 TLS-håndtrykk
               </Link>
               : alle disse byggesteinene satt sammen i ekte protokoll.

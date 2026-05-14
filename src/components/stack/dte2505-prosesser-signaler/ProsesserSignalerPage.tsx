@@ -3,6 +3,7 @@ import { Lightbulb } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
 import { ProsessMonitor } from "./ProsessMonitor";
+import { ProcessStateMachine } from "./ProcessStateMachine";
 import { Mermaid } from "@/components/Mermaid";
 
 const PROSESS_LIVSSYKLUS = `stateDiagram-v2
@@ -93,6 +94,18 @@ export function ProsesserSignalerPage() {
               Forenklet bilde med fire kjernetilstander. Linux har flere
               (Stopped/Zombie), men dette er rammeverket pensum bygger pa.
             </p>
+          </div>
+          <div className="mb-4">
+            <div className="text-xs uppercase tracking-wider text-brand font-semibold mb-2">
+              Interaktiv: kjør gjennom hendelser
+            </div>
+            <p className="text-xs text-muted-foreground mb-3">
+              Klikk en hendelse for å se prosessen bevege seg gjennom livssyklusen.
+              Bare gyldige overganger fra nåværende tilstand er aktive — du kan
+              ikke I/O-blokkere en READY-prosess, bare en RUNNING. PCB-en oppdaterer
+              seg med ny state og PC.
+            </p>
+            <ProcessStateMachine />
           </div>
           <div className="overflow-hidden rounded-lg border border-border">
             <table className="w-full text-sm">
