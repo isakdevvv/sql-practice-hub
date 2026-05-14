@@ -686,7 +686,7 @@ export const FileLifecycle: FC = () => (
             y={60}
             width={i === 1 ? 130 : 80}
             height={50}
-            fill={`hsl(var(--${s.c}) / 0.18)`}
+            fill={`color-mix(in oklch, var(--${s.c}) 18%, transparent)`}
             stroke={STROKE}
           />
           <text

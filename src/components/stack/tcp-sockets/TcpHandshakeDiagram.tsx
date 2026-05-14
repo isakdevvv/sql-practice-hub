@@ -108,7 +108,7 @@ export function TcpHandshakeDiagram() {
           {/* ESTABLISHED-bånd */}
           {step >= 3 && (
             <g opacity={step === 3 ? 1 : 0.6}>
-              <rect x="50" y="175" width="300" height="22" rx="11" fill="hsl(var(--success, 142 76% 36%))" opacity="0.18" stroke="hsl(var(--success, 142 76% 36%))" />
+              <rect x="50" y="175" width="300" height="22" rx="11" fill="var(--success)" opacity="0.18" stroke="var(--success)" />
               <text x="200" y="190" textAnchor="middle" fontSize="11" fontWeight="600" fill="currentColor">
                 ESTABLISHED — bytes flyter begge veier
               </text>
