@@ -18,6 +18,8 @@ import {
   Gauge,
   Code2,
   Lightbulb,
+  Sigma,
+  Shuffle,
 } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { MlPipelineFlow } from "./MlPipelineFlow";
@@ -185,6 +187,22 @@ const COURSES: Course[] = [
     shortDescription:
       "Sigmoid, log-odds, MLE, log-loss og gradient descent. Live 2D-trening med decision boundary og loss-kurve. Odds-ratio-tolkning, softmax, class-weights.",
     Icon: TrendingUp,
+    status: "ready",
+  },
+  {
+    slug: "dte2602-lda-qda-nb",
+    title: "LDA, QDA og Naive Bayes",
+    shortDescription:
+      "Generative klassifikatorer: Bayes-teorem, lineær (LDA) vs kvadratisk (QDA) vs uavhengige features (NB) — decision boundaries side-by-side med live data.",
+    Icon: Sigma,
+    status: "ready",
+  },
+  {
+    slug: "dte2602-cv-varianter",
+    title: "Cross-validation-varianter",
+    shortDescription:
+      "Validation-set, LOOCV, k-fold, Stratified, GroupKFold og TimeSeriesSplit. Slider-visualisering av hvilke punkter som er train/test i hver iterasjon.",
+    Icon: Shuffle,
     status: "ready",
   },
 ];
