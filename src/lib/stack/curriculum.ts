@@ -182,6 +182,7 @@ export const PHASES: readonly CurriculumPhase[] = [
       "mvc-monster",
       "flask-livssyklus",
       "trinn-10-flask-dyp",
+      "flask-app-builder",
     ],
   },
   {
