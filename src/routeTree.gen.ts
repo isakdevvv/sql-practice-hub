@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as StackRouteImport } from './routes/stack'
+import { Route as SporRouteImport } from './routes/spor'
 import { Route as PythonRouteImport } from './routes/python'
 import { Route as ProsjektRouteImport } from './routes/prosjekt'
 import { Route as PracticeRouteImport } from './routes/practice'
@@ -29,6 +30,7 @@ import { Route as CardsRouteImport } from './routes/cards'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as StackIndexRouteImport } from './routes/stack.index'
 import { Route as StackSlugRouteImport } from './routes/stack.$slug'
+import { Route as SporSlugRouteImport } from './routes/spor.$slug'
 import { Route as PythonVisualizerRouteImport } from './routes/python_.visualizer'
 import { Route as ProsjektMlSlugRouteImport } from './routes/prosjekt-ml.$slug'
 import { Route as PortfolioDte2602SlugRouteImport } from './routes/portfolio-dte2602.$slug'
@@ -40,6 +42,11 @@ import { Route as PythonKapNrRouteImport } from './routes/python_.kap.$nr'
 const StackRoute = StackRouteImport.update({
   id: '/stack',
   path: '/stack',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SporRoute = SporRouteImport.update({
+  id: '/spor',
+  path: '/spor',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PythonRoute = PythonRouteImport.update({
@@ -137,6 +144,11 @@ const StackSlugRoute = StackSlugRouteImport.update({
   path: '/$slug',
   getParentRoute: () => StackRoute,
 } as any)
+const SporSlugRoute = SporSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => SporRoute,
+} as any)
 const PythonVisualizerRoute = PythonVisualizerRouteImport.update({
   id: '/python_/visualizer',
   path: '/python/visualizer',
@@ -191,12 +203,14 @@ export interface FileRoutesByFullPath {
   '/practice': typeof PracticeRoute
   '/prosjekt': typeof ProsjektRoute
   '/python': typeof PythonRoute
+  '/spor': typeof SporRouteWithChildren
   '/stack': typeof StackRouteWithChildren
   '/dte2505/shell-drill': typeof Dte2505ShellDrillRoute
   '/dte2507/pcap': typeof Dte2507PcapRoute
   '/portfolio-dte2602/$slug': typeof PortfolioDte2602SlugRoute
   '/prosjekt-ml/$slug': typeof ProsjektMlSlugRoute
   '/python/visualizer': typeof PythonVisualizerRoute
+  '/spor/$slug': typeof SporSlugRoute
   '/stack/$slug': typeof StackSlugRoute
   '/stack/': typeof StackIndexRoute
   '/python/kap/$nr': typeof PythonKapNrRoute
@@ -220,11 +234,13 @@ export interface FileRoutesByTo {
   '/practice': typeof PracticeRoute
   '/prosjekt': typeof ProsjektRoute
   '/python': typeof PythonRoute
+  '/spor': typeof SporRouteWithChildren
   '/dte2505/shell-drill': typeof Dte2505ShellDrillRoute
   '/dte2507/pcap': typeof Dte2507PcapRoute
   '/portfolio-dte2602/$slug': typeof PortfolioDte2602SlugRoute
   '/prosjekt-ml/$slug': typeof ProsjektMlSlugRoute
   '/python/visualizer': typeof PythonVisualizerRoute
+  '/spor/$slug': typeof SporSlugRoute
   '/stack/$slug': typeof StackSlugRoute
   '/stack': typeof StackIndexRoute
   '/python/kap/$nr': typeof PythonKapNrRoute
@@ -249,12 +265,14 @@ export interface FileRoutesById {
   '/practice': typeof PracticeRoute
   '/prosjekt': typeof ProsjektRoute
   '/python': typeof PythonRoute
+  '/spor': typeof SporRouteWithChildren
   '/stack': typeof StackRouteWithChildren
   '/dte2505/shell-drill': typeof Dte2505ShellDrillRoute
   '/dte2507/pcap': typeof Dte2507PcapRoute
   '/portfolio-dte2602/$slug': typeof PortfolioDte2602SlugRoute
   '/prosjekt-ml/$slug': typeof ProsjektMlSlugRoute
   '/python_/visualizer': typeof PythonVisualizerRoute
+  '/spor/$slug': typeof SporSlugRoute
   '/stack/$slug': typeof StackSlugRoute
   '/stack/': typeof StackIndexRoute
   '/python_/kap/$nr': typeof PythonKapNrRoute
@@ -280,12 +298,14 @@ export interface FileRouteTypes {
     | '/practice'
     | '/prosjekt'
     | '/python'
+    | '/spor'
     | '/stack'
     | '/dte2505/shell-drill'
     | '/dte2507/pcap'
     | '/portfolio-dte2602/$slug'
     | '/prosjekt-ml/$slug'
     | '/python/visualizer'
+    | '/spor/$slug'
     | '/stack/$slug'
     | '/stack/'
     | '/python/kap/$nr'
@@ -309,11 +329,13 @@ export interface FileRouteTypes {
     | '/practice'
     | '/prosjekt'
     | '/python'
+    | '/spor'
     | '/dte2505/shell-drill'
     | '/dte2507/pcap'
     | '/portfolio-dte2602/$slug'
     | '/prosjekt-ml/$slug'
     | '/python/visualizer'
+    | '/spor/$slug'
     | '/stack/$slug'
     | '/stack'
     | '/python/kap/$nr'
@@ -337,12 +359,14 @@ export interface FileRouteTypes {
     | '/practice'
     | '/prosjekt'
     | '/python'
+    | '/spor'
     | '/stack'
     | '/dte2505/shell-drill'
     | '/dte2507/pcap'
     | '/portfolio-dte2602/$slug'
     | '/prosjekt-ml/$slug'
     | '/python_/visualizer'
+    | '/spor/$slug'
     | '/stack/$slug'
     | '/stack/'
     | '/python_/kap/$nr'
@@ -367,6 +391,7 @@ export interface RootRouteChildren {
   PracticeRoute: typeof PracticeRoute
   ProsjektRoute: typeof ProsjektRoute
   PythonRoute: typeof PythonRoute
+  SporRoute: typeof SporRouteWithChildren
   StackRoute: typeof StackRouteWithChildren
   Dte2505ShellDrillRoute: typeof Dte2505ShellDrillRoute
   Dte2507PcapRoute: typeof Dte2507PcapRoute
@@ -384,6 +409,13 @@ declare module '@tanstack/react-router' {
       path: '/stack'
       fullPath: '/stack'
       preLoaderRoute: typeof StackRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/spor': {
+      id: '/spor'
+      path: '/spor'
+      fullPath: '/spor'
+      preLoaderRoute: typeof SporRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/python': {
@@ -519,6 +551,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof StackSlugRouteImport
       parentRoute: typeof StackRoute
     }
+    '/spor/$slug': {
+      id: '/spor/$slug'
+      path: '/$slug'
+      fullPath: '/spor/$slug'
+      preLoaderRoute: typeof SporSlugRouteImport
+      parentRoute: typeof SporRoute
+    }
     '/python_/visualizer': {
       id: '/python_/visualizer'
       path: '/python/visualizer'
@@ -571,6 +610,16 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface SporRouteChildren {
+  SporSlugRoute: typeof SporSlugRoute
+}
+
+const SporRouteChildren: SporRouteChildren = {
+  SporSlugRoute: SporSlugRoute,
+}
+
+const SporRouteWithChildren = SporRoute._addFileChildren(SporRouteChildren)
+
 interface StackRouteChildren {
   StackSlugRoute: typeof StackSlugRoute
   StackIndexRoute: typeof StackIndexRoute
@@ -601,6 +650,7 @@ const rootRouteChildren: RootRouteChildren = {
   PracticeRoute: PracticeRoute,
   ProsjektRoute: ProsjektRoute,
   PythonRoute: PythonRoute,
+  SporRoute: SporRouteWithChildren,
   StackRoute: StackRouteWithChildren,
   Dte2505ShellDrillRoute: Dte2505ShellDrillRoute,
   Dte2507PcapRoute: Dte2507PcapRoute,
