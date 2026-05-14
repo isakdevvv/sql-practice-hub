@@ -165,6 +165,8 @@ import { content as dte2507BottleneckThroughput } from "./dte2507-bottleneck-thr
 import { content as dte2602LdaQdaNb } from "./dte2602-lda-qda-nb";
 import { content as dte2602CvVarianter } from "./dte2602-cv-varianter";
 import { content as tek1RegresjonDiagnostikk } from "./tek1-regresjon-diagnostikk";
+import { content as dte2507CountToInfinity } from "./dte2507-count-to-infinity";
+import { content as dte2507BgpStige } from "./dte2507-bgp-stige";
 import type { TrinnContent } from "../types";
 
 export const TRINN: TrinnContent[] = [
@@ -218,6 +220,8 @@ export const TRINN: TrinnContent[] = [
   dte2507DelayModell, dte2507BottleneckThroughput,
   // TEK-1501 — utvidelser
   tek1RegresjonDiagnostikk,
+  // DTE-2507 — Kurose Ch 5 utdypning
+  dte2507CountToInfinity, dte2507BgpStige,
 ];
 
 import { curriculumIndexOf } from "../curriculum";
