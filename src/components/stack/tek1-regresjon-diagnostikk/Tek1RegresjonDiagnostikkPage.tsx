@@ -3,6 +3,8 @@ import { Lightbulb, ArrowLeft } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { Tex, TexBlock } from "@/components/Tex";
 import { RegresjonDiagnostikk } from "./RegresjonDiagnostikk";
+import { QqPlotInteractive } from "./QqPlotInteractive";
+import { BootstrapResamplingSim } from "@/components/stack/tek1-bootstrap/BootstrapResamplingSim";
 
 export function Tek1RegresjonDiagnostikkPage() {
   return (
@@ -134,6 +136,20 @@ import matplotlib.pyplot as plt
 
 st.probplot(residuals, dist="norm", plot=plt)
 plt.show()`}</pre>
+          <div className="mt-4">
+            <QqPlotInteractive />
+          </div>
+        </Section>
+
+        <Section number="4b" title="Bootstrap — CI uten å anta normalfordeling">
+          <p className="text-sm text-muted-foreground mb-3">
+            Når residualene ikke ser normale ut og du fortsatt vil ha et
+            konfidensintervall for en parameter, kan bootstrap hjelpe. Vi
+            sampler MED tilbakelegging fra det observerte utvalget, regner
+            statistikken på hvert resample, og bruker percentilene av
+            resultatene som CI.
+          </p>
+          <BootstrapResamplingSim />
         </Section>
 
         <Section number="5" title="Outliers, leverage og innflytelse">

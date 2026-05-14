@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { Lightbulb } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
+import { CnnConvolution } from "./CnnConvolution";
 
 const STEPS = [
   { title: "Hvorfor CNN — vekt-deling", anchor: "hvorfor" },
@@ -117,6 +118,9 @@ Filtre brukes per fargekanal. For RGB:
    output:        (H', W')         ← summeres på tvers av kanaler
 
 Antall filtre = antall output-kanaler i neste lag.`}</pre>
+          </div>
+          <div className="mt-4">
+            <CnnConvolution />
           </div>
         </section>
 

@@ -3,6 +3,8 @@ import { Link } from "@tanstack/react-router";
 import {Lightbulb, ArrowLeft } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { Tex, TexBlock } from "@/components/Tex";
+import { Type1Type2ErrorAreas } from "./Type1Type2ErrorAreas";
+import { PowerCurve } from "./PowerCurve";
 
 // ---- helpers ----
 function normPdf(x: number, mu: number, sigma: number): number {
@@ -491,6 +493,20 @@ styrke = 1 - β = P(forkast | H₁)  ← evnen til å detektere effekt
 Trade-off: kan ikke minimere både α og β samtidig.
 Større n → mindre β for samme α (bedre styrke).`}</pre>
           </div>
+        </section>
+
+        <section className="mb-10">
+          <h2 className="text-xl font-semibold mb-3">
+            2b. Arealene visuelt — drag c og se α, β krympe sammen med n
+          </h2>
+          <Type1Type2ErrorAreas />
+        </section>
+
+        <section className="mb-10">
+          <h2 className="text-xl font-semibold mb-3">
+            2c. Power-kurver og sample-size-kalkulator
+          </h2>
+          <PowerCurve />
         </section>
 
         <section className="mb-10">
