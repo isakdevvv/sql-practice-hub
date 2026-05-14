@@ -132,6 +132,8 @@ export const PHASES: readonly CurriculumPhase[] = [
       "dte2507-aloha-kasino",
       "dte2507-arp-detektiv",
       "dte2507-switch-self-learning",
+      "dte2507-http2-hol",
+      "dte2507-web-caching-matte",
     ],
   },
   {
