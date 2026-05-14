@@ -128,6 +128,10 @@ export const PHASES: readonly CurriculumPhase[] = [
       "dte2507-bottleneck-throughput",
       "dte2507-inni-ruter",
       "dte2507-packet-scheduling",
+      "dte2507-crc-kalkulator",
+      "dte2507-aloha-kasino",
+      "dte2507-arp-detektiv",
+      "dte2507-switch-self-learning",
     ],
   },
   {
