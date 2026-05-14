@@ -180,6 +180,7 @@ import { content as dte2507CbcIv } from "./dte2507-cbc-iv";
 import { content as dte2507StatefulFirewall } from "./dte2507-stateful-firewall";
 import { content as dte2507IdsSnort } from "./dte2507-ids-snort";
 import { content as dte2507DayInTheLife } from "./dte2507-day-in-the-life";
+import { content as dte2507Dhcp } from "./dte2507-dhcp";
 import { content as flaskAppBuilder } from "./flask-app-builder";
 import { content as fastapiGrunnlag } from "./fastapi-grunnlag";
 import { content as dte2507Nat } from "./dte2507-nat";
@@ -247,6 +248,8 @@ export const TRINN: TrinnContent[] = [
   dte2507CountToInfinity, dte2507BgpStige,
   // DTE-2507 — Kurose Ch 6.7 crescendo
   dte2507DayInTheLife,
+  // DTE-2507 — Kurose Ch 4.3.3 DHCP DORA
+  dte2507Dhcp,
   // Flask App Builder — interaktiv kodegenerator
   flaskAppBuilder,
   // FastAPI grunnlag
