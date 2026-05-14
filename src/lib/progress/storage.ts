@@ -17,6 +17,7 @@ export interface Progress {
   streak: number;
   lastActiveDate?: string; // YYYY-MM-DD
   achievements: string[];
+  lastExportedAt?: string; // ISO timestamp — set by downloadProgressJson
 }
 
 const EMPTY: Progress = {
@@ -75,6 +76,12 @@ export function exportToJson(): string {
 }
 
 export function downloadProgressJson() {
+  // Stamp lastExportedAt BEFORE we serialize so the file records that this
+  // file is itself the snapshot — re-importing later sets lastExportedAt back.
+  const progress = loadProgress();
+  progress.lastExportedAt = new Date().toISOString();
+  saveProgress(progress);
+
   const json = exportToJson();
   const blob = new Blob([json], { type: "application/json" });
   const url = URL.createObjectURL(blob);
@@ -86,6 +93,38 @@ export function downloadProgressJson() {
   a.click();
   a.remove();
   URL.revokeObjectURL(url);
+}
+
+export interface ExportFreshness {
+  exportedAt: string | null;
+  daysSince: number | null;
+  unsavedSolves: number; // solves whose solvedAt is after lastExportedAt
+  stale: boolean; // true → header indicator should glow
+}
+
+export function getExportFreshness(): ExportFreshness {
+  const p = loadProgress();
+  const exportedAt = p.lastExportedAt ?? null;
+  const solved = Object.values(p.attempts).filter((a) => a.solved);
+  if (!exportedAt) {
+    return {
+      exportedAt: null,
+      daysSince: null,
+      unsavedSolves: solved.length,
+      stale: solved.length > 0,
+    };
+  }
+  const exportedMs = new Date(exportedAt).getTime();
+  const daysSince = Math.floor((Date.now() - exportedMs) / 86400000);
+  const unsaved = solved.filter(
+    (a) => a.solvedAt && new Date(a.solvedAt).getTime() > exportedMs,
+  ).length;
+  return {
+    exportedAt,
+    daysSince,
+    unsavedSolves: unsaved,
+    stale: unsaved >= 5 || daysSince >= 7,
+  };
 }
 
 export function importFromJson(text: string): { ok: true } | { ok: false; error: string } {
