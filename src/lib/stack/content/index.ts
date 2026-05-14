@@ -165,6 +165,8 @@ import { content as dte2507BottleneckThroughput } from "./dte2507-bottleneck-thr
 import { content as dte2602LdaQdaNb } from "./dte2602-lda-qda-nb";
 import { content as dte2602CvVarianter } from "./dte2602-cv-varianter";
 import { content as tek1RegresjonDiagnostikk } from "./tek1-regresjon-diagnostikk";
+import { content as dte2507RdtProgresjon } from "./dte2507-rdt-progresjon";
+import { content as dte2507ApProgresjon } from "./dte2507-ap-progresjon";
 import type { TrinnContent } from "../types";
 
 export const TRINN: TrinnContent[] = [
@@ -216,6 +218,8 @@ export const TRINN: TrinnContent[] = [
   dte2602LogistiskRegresjon, dte2602LdaQdaNb, dte2602CvVarianter,
   // DTE-2507 — Kurose Ch 1 utdypning
   dte2507DelayModell, dte2507BottleneckThroughput,
+  // DTE-2507 — Kurose flaggskip-progresjoner (Ch 3.4, Ch 8.4)
+  dte2507RdtProgresjon, dte2507ApProgresjon,
   // TEK-1501 — utvidelser
   tek1RegresjonDiagnostikk,
 ];
