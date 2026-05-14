@@ -3,7 +3,8 @@ import { SiteHeader } from "@/components/SiteHeader";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { PYTHON_CHAPTERS, findChapter } from "@/lib/learn/pythonChapters";
-import { ChevronLeft, ChevronRight, BookOpen, ListChecks } from "lucide-react";
+import { ChevronLeft, ChevronRight, BookOpen, ListChecks, Terminal } from "lucide-react";
+import { findWorkspace } from "@/lib/python/chapterWorkspaces";
 
 export const Route = createFileRoute("/python_/kap/$nr")({
   head: ({ params }) => {
@@ -46,6 +47,7 @@ function ChapterPage() {
   const prev = idx > 0 ? PYTHON_CHAPTERS[idx - 1] : null;
   const next = idx < PYTHON_CHAPTERS.length - 1 ? PYTHON_CHAPTERS[idx + 1] : null;
   const dragHref = `/drag?fag=python&kap=${chapter.nr}`;
+  const hasIdeWorkspace = !!findWorkspace(chapter.nr);
 
   return (
     <div className="min-h-screen bg-background">
@@ -71,6 +73,12 @@ function ChapterPage() {
           <h1 className="text-2xl font-bold tracking-tight">{chapter.title}</h1>
           <p className="text-sm text-muted-foreground mt-1.5">{chapter.summary}</p>
           <div className="mt-4 flex flex-wrap gap-2">
+            <Link to="/python_/ide/$nr" params={{ nr: String(chapter.nr) }}>
+              <Button size="sm">
+                <Terminal className="h-3.5 w-3.5 mr-1.5" />
+                Åpne mini-IDE{hasIdeWorkspace ? "" : " (fri-modus)"}
+              </Button>
+            </Link>
             <Link to="/python">
               <Button variant="outline" size="sm">
                 <BookOpen className="h-3.5 w-3.5 mr-1.5" />
