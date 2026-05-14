@@ -77,6 +77,7 @@ function PythonPage() {
       kurose: [],
       dte2602: [],
       "dte2501-ml": [],
+      "dte2505-os": [],
       "stat-other": [],
     };
     for (const ex of filteredExercises) {
