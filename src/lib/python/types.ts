@@ -20,6 +20,8 @@ export const PY_TOPIC_LEVEL: Record<string, PyLevel> = {
   "Flask + Jinja": 1,
   "Flask + forms": 1,
   "Flask + MySQL": 1,
+  "Flask + Bootstrap": 1,
+  "Flask + CSS": 1,
   "JSON API": 2,
   "HTTP-statuskoder": 2,
   "Sessions": 2,
