@@ -136,6 +136,8 @@ export const PHASES: readonly CurriculumPhase[] = [
       "dte2507-switch-self-learning",
       "dte2507-http2-hol",
       "dte2507-web-caching-matte",
+      "dte2507-count-to-infinity",
+      "dte2507-bgp-stige",
     ],
   },
   {
