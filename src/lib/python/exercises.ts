@@ -7,6 +7,7 @@ import { PY_EXERCISES_DTE2501 } from "./exercises-dte2501";
 import { PY_TEK1_GAPS_EXERCISES } from "./exercises-tek1-gaps";
 import { PY_DTE2602_LOGISTISK_EXERCISES } from "./exercises-dte2602-logistisk";
 import { PY_FLASK_BOOTSTRAP_EXERCISES } from "./exercises-flask-bootstrap";
+import { PY_KUROSE_EXERCISES } from "./exercises-kurose";
 
 // All exercises target DAT1000-pensum: Flask, Jinja, MySQL via prepared
 // statements, sessions, login, CSRF, JSON-API, HTTP-statuskoder.
@@ -7450,6 +7451,9 @@ print(f"95% CI = ({ci_low * 100:.1f}%, {ci_high * 100:.1f}%)")
 
   // TEK-1501 — ANOVA og inferens for proporsjoner.
   ...PY_TEK1_GAPS_EXERCISES,
+
+  // Kurose-Ross — fase 1: kvantitative nettverksoppgaver (Ch 1, 2, 3, 4, 6, 8).
+  ...PY_KUROSE_EXERCISES,
 ];
 
 export const PY_EXERCISES: PyExercise[] = [
@@ -7457,4 +7461,5 @@ export const PY_EXERCISES: PyExercise[] = [
   ...PY_DTE2602_EXERCISES,
   ...PY_DTE2602_LOGISTISK_EXERCISES,
   ...PY_FLASK_BOOTSTRAP_EXERCISES,
+  ...PY_KUROSE_EXERCISES,
 ];
