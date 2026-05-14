@@ -24,28 +24,28 @@ export const IfElseFlow: FC = () => (
   <figure className="my-4">
     <svg viewBox="0 0 360 240" className="w-full max-w-md mx-auto text-foreground">
       {/* Start */}
-      <ellipse cx="180" cy="22" rx="34" ry="14" fill="hsl(var(--muted) / 0.5)" stroke={STROKE} />
+      <ellipse cx="180" cy="22" rx="34" ry="14" fill="color-mix(in oklch, var(--muted) 50%, transparent)" stroke={STROKE} />
       <text x="180" y="26" textAnchor="middle" className="text-[10px] fill-current font-mono">start</text>
       <line x1="180" y1="36" x2="180" y2="60" stroke={STROKE} markerEnd="url(#arr-ie)" />
       {/* Decision diamond */}
-      <polygon points="180,60 250,100 180,140 110,100" fill="hsl(var(--brand) / 0.15)" stroke={STROKE} />
+      <polygon points="180,60 250,100 180,140 110,100" fill="color-mix(in oklch, var(--brand) 15%, transparent)" stroke={STROKE} />
       <text x="180" y="104" textAnchor="middle" className="text-[11px] fill-current font-mono">x &gt; 0?</text>
       {/* True branch */}
       <line x1="250" y1="100" x2="300" y2="100" stroke={STROKE} markerEnd="url(#arr-ie)" />
       <text x="262" y="92" className="text-[9px] fill-current opacity-80">True</text>
-      <rect x="300" y="80" width="50" height="40" fill="hsl(var(--success) / 0.18)" stroke={STROKE} />
+      <rect x="300" y="80" width="50" height="40" fill="color-mix(in oklch, var(--success) 18%, transparent)" stroke={STROKE} />
       <text x="325" y="105" textAnchor="middle" className="text-[10px] fill-current font-mono">positiv</text>
       {/* False branch */}
       <line x1="110" y1="100" x2="60" y2="100" stroke={STROKE} markerEnd="url(#arr-ie)" />
       <text x="78" y="92" className="text-[9px] fill-current opacity-80">False</text>
-      <rect x="10" y="80" width="50" height="40" fill="hsl(var(--warning) / 0.18)" stroke={STROKE} />
+      <rect x="10" y="80" width="50" height="40" fill="color-mix(in oklch, var(--warning) 18%, transparent)" stroke={STROKE} />
       <text x="35" y="105" textAnchor="middle" className="text-[10px] fill-current font-mono">null/neg</text>
       {/* Join */}
       <line x1="325" y1="120" x2="325" y2="180" stroke={STROKE} />
       <line x1="35" y1="120" x2="35" y2="180" stroke={STROKE} />
       <line x1="35" y1="180" x2="325" y2="180" stroke={STROKE} />
       <line x1="180" y1="180" x2="180" y2="210" stroke={STROKE} markerEnd="url(#arr-ie)" />
-      <ellipse cx="180" cy="222" rx="34" ry="14" fill="hsl(var(--muted) / 0.5)" stroke={STROKE} />
+      <ellipse cx="180" cy="222" rx="34" ry="14" fill="color-mix(in oklch, var(--muted) 50%, transparent)" stroke={STROKE} />
       <text x="180" y="226" textAnchor="middle" className="text-[10px] fill-current font-mono">slutt</text>
       <defs>
         <marker id="arr-ie" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
@@ -63,7 +63,7 @@ export const TruthTable: FC = () => (
       {/* Header row */}
       {["A", "B", "A and B", "A or B", "not A"].map((h, i) => (
         <g key={h}>
-          <rect x={10 + i * 60} y={10} width={60} height={28} fill="hsl(var(--brand) / 0.18)" stroke={STROKE} />
+          <rect x={10 + i * 60} y={10} width={60} height={28} fill="color-mix(in oklch, var(--brand) 18%, transparent)" stroke={STROKE} />
           <text x={40 + i * 60} y={28} textAnchor="middle" className="text-[10px] fill-current font-mono font-semibold">{h}</text>
         </g>
       ))}
@@ -82,7 +82,7 @@ export const TruthTable: FC = () => (
                 y={38 + r * 30}
                 width={60}
                 height={30}
-                fill={cell === "T" ? "hsl(var(--success) / 0.12)" : "hsl(var(--muted) / 0.4)"}
+                fill={cell === "T" ? "color-mix(in oklch, var(--success) 12%, transparent)" : "color-mix(in oklch, var(--muted) 40%, transparent)"}
                 stroke={STROKE}
               />
               <text
@@ -112,10 +112,10 @@ export const ComparisonOps: FC = () => (
         { op: ">=", desc: "større/lik", ex: "4 >= 4", res: "True" },
       ].map((row, i) => (
         <g key={row.op}>
-          <rect x="10" y={10 + i * 38} width="60" height="32" fill="hsl(var(--brand) / 0.18)" stroke={STROKE} />
+          <rect x="10" y={10 + i * 38} width="60" height="32" fill="color-mix(in oklch, var(--brand) 18%, transparent)" stroke={STROKE} />
           <text x="40" y={31 + i * 38} textAnchor="middle" className="text-[12px] fill-current font-mono font-semibold">{row.op}</text>
           <text x="80" y={31 + i * 38} className="text-[11px] fill-current">{row.desc}</text>
-          <rect x="170" y={10 + i * 38} width="100" height="32" fill="hsl(var(--muted) / 0.3)" stroke={STROKE} />
+          <rect x="170" y={10 + i * 38} width="100" height="32" fill="color-mix(in oklch, var(--muted) 30%, transparent)" stroke={STROKE} />
           <text x="220" y={31 + i * 38} textAnchor="middle" className="text-[11px] fill-current font-mono">{row.ex}</text>
           <text x="280" y={31 + i * 38} className="text-[11px] fill-current font-mono text-emerald-500">→ {row.res}</text>
         </g>
@@ -132,18 +132,18 @@ export const ComparisonOps: FC = () => (
 export const WhileFlow: FC = () => (
   <figure className="my-4">
     <svg viewBox="0 0 360 240" className="w-full max-w-md mx-auto text-foreground">
-      <ellipse cx="180" cy="22" rx="34" ry="14" fill="hsl(var(--muted) / 0.5)" stroke={STROKE} />
+      <ellipse cx="180" cy="22" rx="34" ry="14" fill="color-mix(in oklch, var(--muted) 50%, transparent)" stroke={STROKE} />
       <text x="180" y="26" textAnchor="middle" className="text-[10px] fill-current font-mono">start</text>
       <line x1="180" y1="36" x2="180" y2="58" stroke={STROKE} markerEnd="url(#arr-w)" />
-      <polygon points="180,60 250,95 180,130 110,95" fill="hsl(var(--brand) / 0.15)" stroke={STROKE} />
+      <polygon points="180,60 250,95 180,130 110,95" fill="color-mix(in oklch, var(--brand) 15%, transparent)" stroke={STROKE} />
       <text x="180" y="99" textAnchor="middle" className="text-[10px] fill-current font-mono">betingelse?</text>
       <line x1="250" y1="95" x2="310" y2="95" stroke={STROKE} markerEnd="url(#arr-w)" />
       <text x="266" y="86" className="text-[9px] fill-current">False</text>
-      <ellipse cx="335" cy="95" rx="22" ry="14" fill="hsl(var(--muted) / 0.5)" stroke={STROKE} />
+      <ellipse cx="335" cy="95" rx="22" ry="14" fill="color-mix(in oklch, var(--muted) 50%, transparent)" stroke={STROKE} />
       <text x="335" y="99" textAnchor="middle" className="text-[9px] fill-current font-mono">slutt</text>
       <line x1="180" y1="130" x2="180" y2="155" stroke={STROKE} markerEnd="url(#arr-w)" />
       <text x="192" y="146" className="text-[9px] fill-current">True</text>
-      <rect x="120" y="155" width="120" height="32" fill="hsl(var(--success) / 0.18)" stroke={STROKE} />
+      <rect x="120" y="155" width="120" height="32" fill="color-mix(in oklch, var(--success) 18%, transparent)" stroke={STROKE} />
       <text x="180" y="175" textAnchor="middle" className="text-[11px] fill-current font-mono">kjør kroppen</text>
       {/* loop back */}
       <path d="M 120 171 Q 40 171 40 95 Q 40 60 110 60" fill="none" stroke={STROKE} markerEnd="url(#arr-w)" />
@@ -168,7 +168,7 @@ export const ForRangeStrip: FC = () => (
             y={36}
             width={60}
             height={40}
-            fill="hsl(var(--brand) / 0.15)"
+            fill="color-mix(in oklch, var(--brand) 15%, transparent)"
             stroke={STROKE}
           />
           <text x={40 + i * 66} y={60} textAnchor="middle" className="text-[11px] fill-current font-mono">iter {i}</text>
@@ -200,19 +200,19 @@ export const BreakContinue: FC = () => (
   <figure className="my-4">
     <svg viewBox="0 0 360 200" className="w-full max-w-md mx-auto text-foreground">
       {/* loop body box */}
-      <rect x="20" y="20" width="320" height="160" fill="hsl(var(--muted) / 0.18)" stroke={STROKE} strokeDasharray="4 3" />
+      <rect x="20" y="20" width="320" height="160" fill="color-mix(in oklch, var(--muted) 18%, transparent)" stroke={STROKE} strokeDasharray="4 3" />
       <text x="30" y="35" className="text-[10px] fill-current font-mono opacity-80">for x in data:</text>
       {/* statement 1 */}
-      <rect x="40" y="48" width="280" height="26" fill="hsl(var(--success) / 0.15)" stroke={STROKE} />
+      <rect x="40" y="48" width="280" height="26" fill="color-mix(in oklch, var(--success) 15%, transparent)" stroke={STROKE} />
       <text x="50" y="65" className="text-[10px] fill-current font-mono">behandle x</text>
       {/* continue arrow back to top */}
       <path d="M 40 100 Q 10 100 10 60 Q 10 35 30 35" fill="none" stroke={STROKE} markerEnd="url(#arr-bc)" />
       <text x="0" y="55" className="text-[9px] fill-current opacity-80">continue</text>
       {/* statement that may continue */}
-      <rect x="40" y="86" width="280" height="26" fill="hsl(var(--warning) / 0.18)" stroke={STROKE} />
+      <rect x="40" y="86" width="280" height="26" fill="color-mix(in oklch, var(--warning) 18%, transparent)" stroke={STROKE} />
       <text x="50" y="103" className="text-[10px] fill-current font-mono">if hopp_over: continue</text>
       {/* statement that may break */}
-      <rect x="40" y="124" width="280" height="26" fill="hsl(var(--destructive) / 0.18)" stroke={STROKE} />
+      <rect x="40" y="124" width="280" height="26" fill="color-mix(in oklch, var(--destructive) 18%, transparent)" stroke={STROKE} />
       <text x="50" y="141" className="text-[10px] fill-current font-mono">if ferdig: break</text>
       {/* break arrow exiting */}
       <path d="M 320 137 L 348 137" fill="none" stroke={STROKE} markerEnd="url(#arr-bc)" />
@@ -235,11 +235,11 @@ export const FunctionCallDiagram: FC = () => (
   <figure className="my-4">
     <svg viewBox="0 0 360 200" className="w-full max-w-md mx-auto text-foreground">
       {/* Caller block */}
-      <rect x="10" y="20" width="150" height="60" fill="hsl(var(--brand) / 0.12)" stroke={STROKE} />
+      <rect x="10" y="20" width="150" height="60" fill="color-mix(in oklch, var(--brand) 12%, transparent)" stroke={STROKE} />
       <text x="20" y="38" className="text-[10px] fill-current font-mono opacity-80">kaller</text>
       <text x="20" y="58" className="text-[11px] fill-current font-mono">svar = sum(3, 4)</text>
       {/* Callee block */}
-      <rect x="200" y="20" width="150" height="100" fill="hsl(var(--success) / 0.15)" stroke={STROKE} />
+      <rect x="200" y="20" width="150" height="100" fill="color-mix(in oklch, var(--success) 15%, transparent)" stroke={STROKE} />
       <text x="210" y="38" className="text-[10px] fill-current font-mono opacity-80">def sum(a, b):</text>
       <text x="220" y="60" className="text-[11px] fill-current font-mono">a = 3</text>
       <text x="220" y="78" className="text-[11px] fill-current font-mono">b = 4</text>
@@ -267,11 +267,11 @@ export const ScopeDiagram: FC = () => (
   <figure className="my-4">
     <svg viewBox="0 0 360 200" className="w-full max-w-md mx-auto text-foreground">
       {/* Global scope */}
-      <rect x="10" y="10" width="340" height="180" fill="hsl(var(--brand) / 0.05)" stroke={STROKE} strokeDasharray="4 3" />
+      <rect x="10" y="10" width="340" height="180" fill="color-mix(in oklch, var(--brand) 5%, transparent)" stroke={STROKE} strokeDasharray="4 3" />
       <text x="20" y="28" className="text-[10px] fill-current font-mono opacity-80">globalt scope</text>
       <text x="20" y="48" className="text-[11px] fill-current font-mono">total = 0</text>
       {/* Local scope inside */}
-      <rect x="30" y="60" width="320" height="120" fill="hsl(var(--success) / 0.1)" stroke={STROKE} />
+      <rect x="30" y="60" width="320" height="120" fill="color-mix(in oklch, var(--success) 10%, transparent)" stroke={STROKE} />
       <text x="40" y="78" className="text-[10px] fill-current font-mono opacity-80">lokalt scope: def regn(x):</text>
       <text x="50" y="100" className="text-[11px] fill-current font-mono">y = x * 2</text>
       <text x="50" y="120" className="text-[11px] fill-current font-mono">total = total + y  # NameError uten 'global'</text>
@@ -295,19 +295,19 @@ export const CallStackGrowth: FC = () => (
           {/* frames bottom-up */}
           {i >= 0 && (
             <g>
-              <rect x={col.x} y={170} width={100} height={36} fill="hsl(var(--muted) / 0.4)" stroke={STROKE} />
+              <rect x={col.x} y={170} width={100} height={36} fill="color-mix(in oklch, var(--muted) 40%, transparent)" stroke={STROKE} />
               <text x={col.x + 50} y={192} textAnchor="middle" className="text-[11px] fill-current font-mono">main</text>
             </g>
           )}
           {i >= 1 && (
             <g>
-              <rect x={col.x} y={130} width={100} height={36} fill="hsl(var(--brand) / 0.18)" stroke={STROKE} />
+              <rect x={col.x} y={130} width={100} height={36} fill="color-mix(in oklch, var(--brand) 18%, transparent)" stroke={STROKE} />
               <text x={col.x + 50} y={152} textAnchor="middle" className="text-[11px] fill-current font-mono">a()</text>
             </g>
           )}
           {i >= 2 && (
             <g>
-              <rect x={col.x} y={90} width={100} height={36} fill="hsl(var(--success) / 0.22)" stroke={STROKE} />
+              <rect x={col.x} y={90} width={100} height={36} fill="color-mix(in oklch, var(--success) 22%, transparent)" stroke={STROKE} />
               <text x={col.x + 50} y={112} textAnchor="middle" className="text-[11px] fill-current font-mono">b()</text>
             </g>
           )}
@@ -327,15 +327,15 @@ export const CallStackGrowth: FC = () => (
 export const ClassAnatomy: FC = () => (
   <figure className="my-4">
     <svg viewBox="0 0 360 220" className="w-full max-w-md mx-auto text-foreground">
-      <rect x="20" y="10" width="320" height="200" fill="hsl(var(--brand) / 0.08)" stroke={STROKE} />
+      <rect x="20" y="10" width="320" height="200" fill="color-mix(in oklch, var(--brand) 8%, transparent)" stroke={STROKE} />
       <text x="30" y="30" className="text-[12px] fill-current font-mono font-semibold">class Hund:</text>
       {/* __init__ */}
-      <rect x="40" y="42" width="290" height="56" fill="hsl(var(--success) / 0.15)" stroke={STROKE} />
+      <rect x="40" y="42" width="290" height="56" fill="color-mix(in oklch, var(--success) 15%, transparent)" stroke={STROKE} />
       <text x="50" y="60" className="text-[10px] fill-current font-mono opacity-80">konstruktør (__init__)</text>
       <text x="50" y="76" className="text-[11px] fill-current font-mono">def __init__(self, navn):</text>
       <text x="60" y="92" className="text-[11px] fill-current font-mono">self.navn = navn  # attributt</text>
       {/* method */}
-      <rect x="40" y="108" width="290" height="56" fill="hsl(var(--warning) / 0.15)" stroke={STROKE} />
+      <rect x="40" y="108" width="290" height="56" fill="color-mix(in oklch, var(--warning) 15%, transparent)" stroke={STROKE} />
       <text x="50" y="126" className="text-[10px] fill-current font-mono opacity-80">metode</text>
       <text x="50" y="142" className="text-[11px] fill-current font-mono">def bjeff(self):</text>
       <text x="60" y="158" className="text-[11px] fill-current font-mono">return f"&#123;self.navn&#125; sier voff!"</text>
@@ -350,7 +350,7 @@ export const InstanceVsClass: FC = () => (
   <figure className="my-4">
     <svg viewBox="0 0 360 200" className="w-full max-w-md mx-auto text-foreground">
       {/* class blueprint */}
-      <rect x="10" y="20" width="120" height="100" fill="hsl(var(--brand) / 0.15)" stroke={STROKE} />
+      <rect x="10" y="20" width="120" height="100" fill="color-mix(in oklch, var(--brand) 15%, transparent)" stroke={STROKE} />
       <text x="70" y="40" textAnchor="middle" className="text-[12px] fill-current font-mono font-semibold">class Hund</text>
       <text x="70" y="60" textAnchor="middle" className="text-[10px] fill-current font-mono opacity-80">malen</text>
       <text x="70" y="84" textAnchor="middle" className="text-[10px] fill-current">attributter: navn</text>
@@ -366,7 +366,7 @@ export const InstanceVsClass: FC = () => (
         { y: 142, name: "Buddy" },
       ].map((inst) => (
         <g key={inst.name}>
-          <rect x={210} y={inst.y} width={140} height={42} fill="hsl(var(--success) / 0.18)" stroke={STROKE} />
+          <rect x={210} y={inst.y} width={140} height={42} fill="color-mix(in oklch, var(--success) 18%, transparent)" stroke={STROKE} />
           <text x={280} y={inst.y + 18} textAnchor="middle" className="text-[10px] fill-current font-mono opacity-80">instans</text>
           <text x={280} y={inst.y + 35} textAnchor="middle" className="text-[11px] fill-current font-mono">navn = "{inst.name}"</text>
         </g>
@@ -392,7 +392,7 @@ export const StringIndex: FC = () => {
       <svg viewBox="0 0 360 160" className="w-full max-w-md mx-auto text-foreground">
         {[...s].map((ch, i) => (
           <g key={i}>
-            <rect x={20 + i * 50} y={50} width={50} height={50} fill="hsl(var(--brand) / 0.15)" stroke={STROKE} />
+            <rect x={20 + i * 50} y={50} width={50} height={50} fill="color-mix(in oklch, var(--brand) 15%, transparent)" stroke={STROKE} />
             <text x={45 + i * 50} y={82} textAnchor="middle" className="text-[18px] fill-current font-mono">{ch}</text>
             <text x={45 + i * 50} y={42} textAnchor="middle" className="text-[10px] fill-current opacity-80">{i}</text>
             <text x={45 + i * 50} y={120} textAnchor="middle" className="text-[10px] fill-current opacity-60">{i - s.length}</text>
@@ -413,7 +413,7 @@ export const SliceDiagram: FC = () => (
       {/* tick marks 0..6 between letters of HELLO */}
       {["H", "E", "L", "L", "O"].map((ch, i) => (
         <g key={i}>
-          <rect x={40 + i * 50} y={40} width={50} height={40} fill="hsl(var(--muted) / 0.3)" stroke={STROKE} />
+          <rect x={40 + i * 50} y={40} width={50} height={40} fill="color-mix(in oklch, var(--muted) 30%, transparent)" stroke={STROKE} />
           <text x={65 + i * 50} y={67} textAnchor="middle" className="text-[16px] fill-current font-mono">{ch}</text>
         </g>
       ))}
@@ -425,7 +425,7 @@ export const SliceDiagram: FC = () => (
         </g>
       ))}
       {/* slice highlight 1..4 */}
-      <rect x="90" y="38" width="150" height="44" fill="hsl(var(--success) / 0.22)" stroke="hsl(var(--success))" strokeWidth="1.5" />
+      <rect x="90" y="38" width="150" height="44" fill="color-mix(in oklch, var(--success) 22%, transparent)" stroke="var(--success)" strokeWidth="1.5" />
       <text x="165" y="110" textAnchor="middle" className="text-[11px] fill-current font-mono">"HELLO"[1:4] == "ELL"</text>
     </svg>
     <Caption>Slicing bruker tick-posisjoner mellom tegnene: start inkluderes, stopp ekskluderes.</Caption>
@@ -440,14 +440,14 @@ export const WidgetTree: FC = () => (
   <figure className="my-4">
     <svg viewBox="0 0 360 200" className="w-full max-w-md mx-auto text-foreground">
       {/* root */}
-      <rect x="130" y="10" width="100" height="36" fill="hsl(var(--brand) / 0.2)" stroke={STROKE} />
+      <rect x="130" y="10" width="100" height="36" fill="color-mix(in oklch, var(--brand) 20%, transparent)" stroke={STROKE} />
       <text x="180" y="32" textAnchor="middle" className="text-[11px] fill-current font-mono">Tk() root</text>
       <line x1="160" y1="46" x2="80" y2="78" stroke={STROKE} />
       <line x1="200" y1="46" x2="280" y2="78" stroke={STROKE} />
       {/* mid level */}
-      <rect x="30" y="80" width="100" height="36" fill="hsl(var(--success) / 0.18)" stroke={STROKE} />
+      <rect x="30" y="80" width="100" height="36" fill="color-mix(in oklch, var(--success) 18%, transparent)" stroke={STROKE} />
       <text x="80" y="102" textAnchor="middle" className="text-[11px] fill-current font-mono">Frame</text>
-      <rect x="230" y="80" width="100" height="36" fill="hsl(var(--success) / 0.18)" stroke={STROKE} />
+      <rect x="230" y="80" width="100" height="36" fill="color-mix(in oklch, var(--success) 18%, transparent)" stroke={STROKE} />
       <text x="280" y="102" textAnchor="middle" className="text-[11px] fill-current font-mono">Frame</text>
       {/* leaves */}
       <line x1="60" y1="116" x2="40" y2="150" stroke={STROKE} />
@@ -458,7 +458,7 @@ export const WidgetTree: FC = () => (
         const xs = [10, 90, 210, 290];
         return (
           <g key={w}>
-            <rect x={xs[i]} y={150} width={60} height={32} fill="hsl(var(--warning) / 0.2)" stroke={STROKE} />
+            <rect x={xs[i]} y={150} width={60} height={32} fill="color-mix(in oklch, var(--warning) 20%, transparent)" stroke={STROKE} />
             <text x={xs[i] + 30} y={170} textAnchor="middle" className="text-[10px] fill-current font-mono">{w}</text>
           </g>
         );
@@ -471,7 +471,7 @@ export const WidgetTree: FC = () => (
 export const EventLoop: FC = () => (
   <figure className="my-4">
     <svg viewBox="0 0 360 200" className="w-full max-w-md mx-auto text-foreground">
-      <circle cx="180" cy="100" r="70" fill="hsl(var(--brand) / 0.08)" stroke={STROKE} strokeDasharray="4 3" />
+      <circle cx="180" cy="100" r="70" fill="color-mix(in oklch, var(--brand) 8%, transparent)" stroke={STROKE} strokeDasharray="4 3" />
       <text x="180" y="35" textAnchor="middle" className="text-[10px] fill-current opacity-80">event-løkke</text>
       {/* 4 phases as labels around */}
       {[
@@ -508,7 +508,7 @@ export const ListBoxes: FC = () => {
         <text x="20" y="22" className="text-[11px] fill-current font-mono">tall = [10, 20, 30, 40]</text>
         {items.map((v, i) => (
           <g key={i}>
-            <rect x={20 + i * 80} y={40} width={70} height={50} fill="hsl(var(--brand) / 0.15)" stroke={STROKE} />
+            <rect x={20 + i * 80} y={40} width={70} height={50} fill="color-mix(in oklch, var(--brand) 15%, transparent)" stroke={STROKE} />
             <text x={55 + i * 80} y={70} textAnchor="middle" className="text-[14px] fill-current font-mono">{v}</text>
             <text x={55 + i * 80} y={108} textAnchor="middle" className="text-[10px] fill-current opacity-80">indeks {i}</text>
           </g>
@@ -523,15 +523,15 @@ export const AliasingDiagram: FC = () => (
   <figure className="my-4">
     <svg viewBox="0 0 360 200" className="w-full max-w-md mx-auto text-foreground">
       {/* heap object */}
-      <rect x="170" y="60" width="170" height="60" fill="hsl(var(--success) / 0.18)" stroke={STROKE} />
+      <rect x="170" y="60" width="170" height="60" fill="color-mix(in oklch, var(--success) 18%, transparent)" stroke={STROKE} />
       <text x="180" y="78" className="text-[10px] fill-current opacity-80">heap-objekt</text>
       <g fontFamily="monospace" className="text-[12px] fill-current">
         <text x="190" y="105">[1, 2, 3, 99]</text>
       </g>
       {/* two variables */}
-      <rect x="10" y="30" width="70" height="28" fill="hsl(var(--brand) / 0.15)" stroke={STROKE} />
+      <rect x="10" y="30" width="70" height="28" fill="color-mix(in oklch, var(--brand) 15%, transparent)" stroke={STROKE} />
       <text x="45" y="48" textAnchor="middle" className="text-[11px] fill-current font-mono">a</text>
-      <rect x="10" y="120" width="70" height="28" fill="hsl(var(--brand) / 0.15)" stroke={STROKE} />
+      <rect x="10" y="120" width="70" height="28" fill="color-mix(in oklch, var(--brand) 15%, transparent)" stroke={STROKE} />
       <text x="45" y="138" textAnchor="middle" className="text-[11px] fill-current font-mono">b</text>
       <path d="M 80 44 Q 130 60 170 80" fill="none" stroke={STROKE} markerEnd="url(#arr-al)" />
       <path d="M 80 134 Q 130 120 170 100" fill="none" stroke={STROKE} markerEnd="url(#arr-al)" />
@@ -557,9 +557,9 @@ export const ListMethods: FC = () => (
         { m: "len(lst)", e: "[1,2,3] → 3" },
       ].map((row, i) => (
         <g key={row.m}>
-          <rect x="10" y={10 + i * 36} width="120" height="30" fill="hsl(var(--brand) / 0.15)" stroke={STROKE} />
+          <rect x="10" y={10 + i * 36} width="120" height="30" fill="color-mix(in oklch, var(--brand) 15%, transparent)" stroke={STROKE} />
           <text x="70" y={30 + i * 36} textAnchor="middle" className="text-[11px] fill-current font-mono">{row.m}</text>
-          <rect x="140" y={10 + i * 36} width="210" height="30" fill="hsl(var(--muted) / 0.3)" stroke={STROKE} />
+          <rect x="140" y={10 + i * 36} width="210" height="30" fill="color-mix(in oklch, var(--muted) 30%, transparent)" stroke={STROKE} />
           <text x="245" y={30 + i * 36} textAnchor="middle" className="text-[11px] fill-current font-mono">{row.e}</text>
         </g>
       ))}
@@ -586,7 +586,7 @@ export const Grid2D: FC = () => (
                 y={40 + r * 50}
                 width={56}
                 height={46}
-                fill="hsl(var(--brand) / 0.15)"
+                fill="color-mix(in oklch, var(--brand) 15%, transparent)"
                 stroke={STROKE}
               />
               <text x={98 + c * 60} y={65 + r * 50} textAnchor="middle" className="text-[14px] fill-current font-mono">{v}</text>
@@ -614,19 +614,19 @@ export const Grid2D: FC = () => (
 export const InheritanceTree: FC = () => (
   <figure className="my-4">
     <svg viewBox="0 0 360 220" className="w-full max-w-md mx-auto text-foreground">
-      <rect x="140" y="10" width="80" height="36" fill="hsl(var(--brand) / 0.2)" stroke={STROKE} />
+      <rect x="140" y="10" width="80" height="36" fill="color-mix(in oklch, var(--brand) 20%, transparent)" stroke={STROKE} />
       <text x="180" y="32" textAnchor="middle" className="text-[12px] fill-current font-mono">Dyr</text>
       <line x1="180" y1="46" x2="80" y2="90" stroke={STROKE} markerEnd="url(#arr-ih)" />
       <line x1="180" y1="46" x2="280" y2="90" stroke={STROKE} markerEnd="url(#arr-ih)" />
-      <rect x="30" y="90" width="100" height="36" fill="hsl(var(--success) / 0.2)" stroke={STROKE} />
+      <rect x="30" y="90" width="100" height="36" fill="color-mix(in oklch, var(--success) 20%, transparent)" stroke={STROKE} />
       <text x="80" y="112" textAnchor="middle" className="text-[12px] fill-current font-mono">Hund(Dyr)</text>
-      <rect x="230" y="90" width="100" height="36" fill="hsl(var(--success) / 0.2)" stroke={STROKE} />
+      <rect x="230" y="90" width="100" height="36" fill="color-mix(in oklch, var(--success) 20%, transparent)" stroke={STROKE} />
       <text x="280" y="112" textAnchor="middle" className="text-[12px] fill-current font-mono">Katt(Dyr)</text>
       <line x1="80" y1="126" x2="50" y2="170" stroke={STROKE} markerEnd="url(#arr-ih)" />
       <line x1="80" y1="126" x2="110" y2="170" stroke={STROKE} markerEnd="url(#arr-ih)" />
-      <rect x="5" y="170" width="90" height="32" fill="hsl(var(--warning) / 0.2)" stroke={STROKE} />
+      <rect x="5" y="170" width="90" height="32" fill="color-mix(in oklch, var(--warning) 20%, transparent)" stroke={STROKE} />
       <text x="50" y="190" textAnchor="middle" className="text-[11px] fill-current font-mono">Puddel</text>
-      <rect x="80" y="170" width="90" height="32" fill="hsl(var(--warning) / 0.2)" stroke={STROKE} />
+      <rect x="80" y="170" width="90" height="32" fill="color-mix(in oklch, var(--warning) 20%, transparent)" stroke={STROKE} />
       <text x="125" y="190" textAnchor="middle" className="text-[11px] fill-current font-mono">Schäfer</text>
       <defs>
         <marker id="arr-ih" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
@@ -641,7 +641,7 @@ export const InheritanceTree: FC = () => (
 export const MethodOverride: FC = () => (
   <figure className="my-4">
     <svg viewBox="0 0 360 200" className="w-full max-w-md mx-auto text-foreground">
-      <rect x="10" y="10" width="160" height="86" fill="hsl(var(--brand) / 0.12)" stroke={STROKE} />
+      <rect x="10" y="10" width="160" height="86" fill="color-mix(in oklch, var(--brand) 12%, transparent)" stroke={STROKE} />
       <text x="20" y="30" className="text-[11px] fill-current font-mono font-semibold">class Dyr:</text>
       <text x="30" y="50" className="text-[11px] fill-current font-mono">def lyd(self):</text>
       <text x="40" y="68" className="text-[11px] fill-current font-mono">return "..."</text>
@@ -650,12 +650,12 @@ export const MethodOverride: FC = () => (
       <line x1="170" y1="50" x2="200" y2="50" stroke={STROKE} markerEnd="url(#arr-ov)" />
       <text x="175" y="42" className="text-[9px] fill-current">override</text>
 
-      <rect x="200" y="10" width="150" height="86" fill="hsl(var(--success) / 0.2)" stroke={STROKE} />
+      <rect x="200" y="10" width="150" height="86" fill="color-mix(in oklch, var(--success) 20%, transparent)" stroke={STROKE} />
       <text x="210" y="30" className="text-[11px] fill-current font-mono font-semibold">class Hund(Dyr):</text>
       <text x="220" y="50" className="text-[11px] fill-current font-mono">def lyd(self):</text>
       <text x="230" y="68" className="text-[11px] fill-current font-mono">return "voff"</text>
 
-      <rect x="10" y="120" width="340" height="64" fill="hsl(var(--muted) / 0.3)" stroke={STROKE} />
+      <rect x="10" y="120" width="340" height="64" fill="color-mix(in oklch, var(--muted) 30%, transparent)" stroke={STROKE} />
       <text x="20" y="140" className="text-[11px] fill-current font-mono">h = Hund(); h.lyd()  →  "voff"</text>
       <text x="20" y="160" className="text-[10px] fill-current opacity-80">Hund.lyd skygger over Dyr.lyd for instanser av Hund.</text>
       <defs>
@@ -726,22 +726,22 @@ export const FileLifecycle: FC = () => (
 export const TryExceptFlow: FC = () => (
   <figure className="my-4">
     <svg viewBox="0 0 360 240" className="w-full max-w-md mx-auto text-foreground">
-      <rect x="20" y="10" width="320" height="60" fill="hsl(var(--success) / 0.15)" stroke={STROKE} />
+      <rect x="20" y="10" width="320" height="60" fill="color-mix(in oklch, var(--success) 15%, transparent)" stroke={STROKE} />
       <text x="30" y="30" className="text-[10px] fill-current font-mono opacity-80">try:</text>
       <text x="40" y="52" className="text-[11px] fill-current font-mono">x = int(brukerinput)  # kan kaste ValueError</text>
       <line x1="180" y1="70" x2="180" y2="90" stroke={STROKE} markerEnd="url(#arr-te)" />
       {/* split */}
       <line x1="180" y1="90" x2="80" y2="115" stroke={STROKE} markerEnd="url(#arr-te)" />
       <line x1="180" y1="90" x2="280" y2="115" stroke={STROKE} markerEnd="url(#arr-te)" />
-      <rect x="20" y="115" width="130" height="60" fill="hsl(var(--muted) / 0.3)" stroke={STROKE} />
+      <rect x="20" y="115" width="130" height="60" fill="color-mix(in oklch, var(--muted) 30%, transparent)" stroke={STROKE} />
       <text x="85" y="135" textAnchor="middle" className="text-[10px] fill-current opacity-80">ingen feil</text>
       <text x="85" y="155" textAnchor="middle" className="text-[10px] fill-current font-mono">fortsett</text>
-      <rect x="210" y="115" width="130" height="60" fill="hsl(var(--destructive) / 0.18)" stroke={STROKE} />
+      <rect x="210" y="115" width="130" height="60" fill="color-mix(in oklch, var(--destructive) 18%, transparent)" stroke={STROKE} />
       <text x="275" y="135" textAnchor="middle" className="text-[10px] fill-current opacity-80">except ValueError:</text>
       <text x="275" y="155" textAnchor="middle" className="text-[10px] fill-current font-mono">vis feilmelding</text>
       <line x1="85" y1="175" x2="180" y2="210" stroke={STROKE} />
       <line x1="275" y1="175" x2="180" y2="210" stroke={STROKE} />
-      <ellipse cx="180" cy="220" rx="40" ry="14" fill="hsl(var(--muted) / 0.5)" stroke={STROKE} />
+      <ellipse cx="180" cy="220" rx="40" ry="14" fill="color-mix(in oklch, var(--muted) 50%, transparent)" stroke={STROKE} />
       <text x="180" y="224" textAnchor="middle" className="text-[10px] fill-current font-mono">finally</text>
       <defs>
         <marker id="arr-te" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
@@ -761,7 +761,7 @@ export const TupleVsList: FC = () => (
   <figure className="my-4">
     <svg viewBox="0 0 360 180" className="w-full max-w-md mx-auto text-foreground">
       {/* list */}
-      <rect x="20" y="20" width="150" height="120" fill="hsl(var(--brand) / 0.12)" stroke={STROKE} />
+      <rect x="20" y="20" width="150" height="120" fill="color-mix(in oklch, var(--brand) 12%, transparent)" stroke={STROKE} />
       <text x="95" y="40" textAnchor="middle" className="text-[11px] fill-current font-mono font-semibold">list (muterbar)</text>
       <text x="95" y="65" textAnchor="middle" className="text-[11px] fill-current font-mono">[1, 2, 3]</text>
       <text x="95" y="90" textAnchor="middle" className="text-[10px] fill-current opacity-80">.append(4)</text>
@@ -769,7 +769,7 @@ export const TupleVsList: FC = () => (
       <text x="95" y="128" textAnchor="middle" className="text-[10px] fill-current opacity-80">lst[0] = 99 ✓</text>
 
       {/* tuple */}
-      <rect x="190" y="20" width="150" height="120" fill="hsl(var(--success) / 0.15)" stroke={STROKE} />
+      <rect x="190" y="20" width="150" height="120" fill="color-mix(in oklch, var(--success) 15%, transparent)" stroke={STROKE} />
       <text x="265" y="40" textAnchor="middle" className="text-[11px] fill-current font-mono font-semibold">tuple (immutabel)</text>
       <text x="265" y="65" textAnchor="middle" className="text-[11px] fill-current font-mono">(1, 2, 3)</text>
       <text x="265" y="90" textAnchor="middle" className="text-[10px] fill-current opacity-80">— ingen append</text>
@@ -790,9 +790,9 @@ export const SetOps: FC = () => (
         <clipPath id="setB"><circle cx="220" cy="80" r="50" /></clipPath>
       </defs>
       {/* Intersection */}
-      <circle cx="130" cy="80" r="50" fill="hsl(var(--brand) / 0.18)" stroke={STROKE} />
-      <circle cx="220" cy="80" r="50" fill="hsl(var(--brand) / 0.18)" stroke={STROKE} />
-      <g clipPath="url(#setA)"><circle cx="220" cy="80" r="50" fill="hsl(var(--success) / 0.5)" /></g>
+      <circle cx="130" cy="80" r="50" fill="color-mix(in oklch, var(--brand) 18%, transparent)" stroke={STROKE} />
+      <circle cx="220" cy="80" r="50" fill="color-mix(in oklch, var(--brand) 18%, transparent)" stroke={STROKE} />
+      <g clipPath="url(#setA)"><circle cx="220" cy="80" r="50" fill="color-mix(in oklch, var(--success) 50%, transparent)" /></g>
       <text x="105" y="84" textAnchor="middle" className="text-[11px] fill-current font-mono">A</text>
       <text x="245" y="84" textAnchor="middle" className="text-[11px] fill-current font-mono">B</text>
       <text x="175" y="84" textAnchor="middle" className="text-[10px] fill-current font-mono">A ∩ B</text>
@@ -815,10 +815,10 @@ export const DictStructure: FC = () => (
         { k: "\"melk\"", v: "25" },
       ].map((row, i) => (
         <g key={row.k}>
-          <rect x={20} y={40 + i * 42} width={120} height={36} fill="hsl(var(--brand) / 0.15)" stroke={STROKE} />
+          <rect x={20} y={40 + i * 42} width={120} height={36} fill="color-mix(in oklch, var(--brand) 15%, transparent)" stroke={STROKE} />
           <text x={80} y={62 + i * 42} textAnchor="middle" className="text-[11px] fill-current font-mono">{row.k}</text>
           <line x1={140} y1={58 + i * 42} x2={170} y2={58 + i * 42} stroke={STROKE} markerEnd="url(#arr-d)" />
-          <rect x={170} y={40 + i * 42} width={80} height={36} fill="hsl(var(--success) / 0.2)" stroke={STROKE} />
+          <rect x={170} y={40 + i * 42} width={80} height={36} fill="color-mix(in oklch, var(--success) 20%, transparent)" stroke={STROKE} />
           <text x={210} y={62 + i * 42} textAnchor="middle" className="text-[11px] fill-current font-mono">{row.v}</text>
         </g>
       ))}
@@ -854,7 +854,7 @@ export const RecursionStack: FC = () => (
             width="280"
             height="32"
             fill={
-              i === 3 ? "hsl(var(--success) / 0.22)" : "hsl(var(--brand) / 0.15)"
+              i === 3 ? "color-mix(in oklch, var(--success) 22%, transparent)" : "color-mix(in oklch, var(--brand) 15%, transparent)"
             }
             stroke={STROKE}
           />
@@ -884,7 +884,7 @@ export const RecursionTree: FC = () => (
           { x: 80, y: 170, label: "fib(0)" },
         ].map((n) => (
           <g key={`${n.x}-${n.y}`}>
-            <rect x={n.x - 28} y={n.y - 12} width={56} height={22} fill="hsl(var(--brand) / 0.15)" stroke={STROKE} />
+            <rect x={n.x - 28} y={n.y - 12} width={56} height={22} fill="color-mix(in oklch, var(--brand) 15%, transparent)" stroke={STROKE} />
             <text x={n.x} y={n.y + 4} textAnchor="middle">{n.label}</text>
           </g>
         ))}
@@ -933,7 +933,7 @@ export const SelectionSortSteps: FC = () => {
                   y={6 + s * 42}
                   width={40}
                   height={28}
-                  fill={i < s ? "hsl(var(--success) / 0.25)" : "hsl(var(--brand) / 0.15)"}
+                  fill={i < s ? "color-mix(in oklch, var(--success) 25%, transparent)" : "color-mix(in oklch, var(--brand) 15%, transparent)"}
                   stroke={STROKE}
                 />
                 <text x={80 + i * 45} y={25 + s * 42} textAnchor="middle" className="text-[11px] fill-current font-mono">{v}</text>
@@ -969,7 +969,7 @@ export const InsertionSortSteps: FC = () => {
                   y={6 + s * 42}
                   width={40}
                   height={28}
-                  fill={i <= s ? "hsl(var(--success) / 0.25)" : "hsl(var(--brand) / 0.15)"}
+                  fill={i <= s ? "color-mix(in oklch, var(--success) 25%, transparent)" : "color-mix(in oklch, var(--brand) 15%, transparent)"}
                   stroke={STROKE}
                 />
                 <text x={80 + i * 45} y={25 + s * 42} textAnchor="middle" className="text-[11px] fill-current font-mono">{v}</text>
@@ -998,9 +998,9 @@ export const LinkedListSingly: FC = () => (
         { v: "C", x: 230 },
       ].map((n, i, all) => (
         <g key={n.v}>
-          <rect x={n.x} y={55} width={50} height={40} fill="hsl(var(--brand) / 0.15)" stroke={STROKE} />
+          <rect x={n.x} y={55} width={50} height={40} fill="color-mix(in oklch, var(--brand) 15%, transparent)" stroke={STROKE} />
           <text x={n.x + 25} y={80} textAnchor="middle" className="text-[12px] fill-current font-mono">{n.v}</text>
-          <rect x={n.x + 50} y={55} width={30} height={40} fill="hsl(var(--success) / 0.15)" stroke={STROKE} />
+          <rect x={n.x + 50} y={55} width={30} height={40} fill="color-mix(in oklch, var(--success) 15%, transparent)" stroke={STROKE} />
           {i < all.length - 1 && (
             <line x1={n.x + 80} y1={75} x2={n.x + 105} y2={75} stroke={STROKE} markerEnd="url(#arr-ll)" />
           )}
@@ -1025,21 +1025,21 @@ export const LinkedListInsert: FC = () => (
     <svg viewBox="0 0 360 200" className="w-full max-w-md mx-auto text-foreground">
       {/* Before */}
       <text x="10" y="22" className="text-[10px] fill-current opacity-80">FØR (sett X mellom A og B):</text>
-      <rect x="40" y="32" width="60" height="32" fill="hsl(var(--brand) / 0.15)" stroke={STROKE} />
+      <rect x="40" y="32" width="60" height="32" fill="color-mix(in oklch, var(--brand) 15%, transparent)" stroke={STROKE} />
       <text x="70" y="54" textAnchor="middle" className="text-[12px] fill-current font-mono">A</text>
       <line x1="100" y1="48" x2="135" y2="48" stroke={STROKE} markerEnd="url(#arr-li)" />
-      <rect x="140" y="32" width="60" height="32" fill="hsl(var(--brand) / 0.15)" stroke={STROKE} />
+      <rect x="140" y="32" width="60" height="32" fill="color-mix(in oklch, var(--brand) 15%, transparent)" stroke={STROKE} />
       <text x="170" y="54" textAnchor="middle" className="text-[12px] fill-current font-mono">B</text>
 
       {/* After */}
       <text x="10" y="100" className="text-[10px] fill-current opacity-80">ETTER:</text>
-      <rect x="20" y="110" width="60" height="32" fill="hsl(var(--brand) / 0.15)" stroke={STROKE} />
+      <rect x="20" y="110" width="60" height="32" fill="color-mix(in oklch, var(--brand) 15%, transparent)" stroke={STROKE} />
       <text x="50" y="132" textAnchor="middle" className="text-[12px] fill-current font-mono">A</text>
       <line x1="80" y1="126" x2="115" y2="126" stroke={STROKE} markerEnd="url(#arr-li)" />
-      <rect x="120" y="110" width="60" height="32" fill="hsl(var(--success) / 0.25)" stroke={STROKE} />
+      <rect x="120" y="110" width="60" height="32" fill="color-mix(in oklch, var(--success) 25%, transparent)" stroke={STROKE} />
       <text x="150" y="132" textAnchor="middle" className="text-[12px] fill-current font-mono">X</text>
       <line x1="180" y1="126" x2="215" y2="126" stroke={STROKE} markerEnd="url(#arr-li)" />
-      <rect x="220" y="110" width="60" height="32" fill="hsl(var(--brand) / 0.15)" stroke={STROKE} />
+      <rect x="220" y="110" width="60" height="32" fill="color-mix(in oklch, var(--brand) 15%, transparent)" stroke={STROKE} />
       <text x="250" y="132" textAnchor="middle" className="text-[12px] fill-current font-mono">B</text>
       <text x="10" y="180" className="text-[10px] fill-current opacity-80">2 peker-endringer: A.next = X, X.next = B. Konstant tid.</text>
       <defs>
@@ -1071,7 +1071,7 @@ export const BSTStructure: FC = () => (
         { x: 170, y: 180, v: 6 },
       ].map((n) => (
         <g key={`${n.x}-${n.v}`}>
-          <circle cx={n.x} cy={n.y} r={16} fill="hsl(var(--brand) / 0.2)" stroke={STROKE} />
+          <circle cx={n.x} cy={n.y} r={16} fill="color-mix(in oklch, var(--brand) 20%, transparent)" stroke={STROKE} />
           <text x={n.x} y={n.y + 5} textAnchor="middle" className="text-[11px] fill-current font-mono">{n.v}</text>
         </g>
       ))}
@@ -1110,7 +1110,7 @@ export const BSTSearchPath: FC = () => (
             cx={n.x}
             cy={n.y}
             r={16}
-            fill={n.hit ? "hsl(var(--success) / 0.4)" : "hsl(var(--muted) / 0.4)"}
+            fill={n.hit ? "color-mix(in oklch, var(--success) 40%, transparent)" : "color-mix(in oklch, var(--muted) 40%, transparent)"}
             stroke={STROKE}
             strokeWidth={n.hit ? 2 : 1}
           />
@@ -1131,7 +1131,7 @@ export const BSTSearchPath: FC = () => (
           y1={y1 as number}
           x2={x2 as number}
           y2={y2 as number}
-          stroke={hit ? "hsl(var(--success))" : STROKE}
+          stroke={hit ? "var(--success)" : STROKE}
           strokeWidth={hit ? 2 : 1}
         />
       ))}

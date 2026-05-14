@@ -16,7 +16,7 @@ export const MemoryHierarchy: FC = () => (
       {/* CPU/registers tip */}
       <polygon
         points="160,10 200,10 210,40 150,40"
-        fill="hsl(var(--brand) / 0.15)"
+        fill="color-mix(in oklch, var(--brand) 15%, transparent)"
         stroke={STROKE}
         strokeWidth="1"
       />
@@ -24,7 +24,7 @@ export const MemoryHierarchy: FC = () => (
       {/* RAM */}
       <polygon
         points="150,40 210,40 230,80 130,80"
-        fill="hsl(var(--success) / 0.15)"
+        fill="color-mix(in oklch, var(--success) 15%, transparent)"
         stroke={STROKE}
         strokeWidth="1"
       />
@@ -32,7 +32,7 @@ export const MemoryHierarchy: FC = () => (
       {/* SSD */}
       <polygon
         points="130,80 230,80 255,130 105,130"
-        fill="hsl(var(--brand) / 0.08)"
+        fill="color-mix(in oklch, var(--brand) 8%, transparent)"
         stroke={STROKE}
         strokeWidth="1"
       />
@@ -40,7 +40,7 @@ export const MemoryHierarchy: FC = () => (
       {/* HDD */}
       <polygon
         points="105,130 255,130 290,200 70,200"
-        fill="hsl(var(--muted) / 0.5)"
+        fill="color-mix(in oklch, var(--muted) 50%, transparent)"
         stroke={STROKE}
         strokeWidth="1"
       />
@@ -88,16 +88,16 @@ export const JoinVenn: FC<{ kind: "INNER" | "LEFT" | "RIGHT" | "FULL" }> = ({ ki
         </defs>
         {/* Left-only region */}
         {filledLeft && (
-          <circle cx="80" cy="60" r="44" fill="hsl(var(--brand) / 0.35)" />
+          <circle cx="80" cy="60" r="44" fill="color-mix(in oklch, var(--brand) 35%, transparent)" />
         )}
         {/* Right-only region */}
         {filledRight && (
-          <circle cx="140" cy="60" r="44" fill="hsl(var(--brand) / 0.35)" />
+          <circle cx="140" cy="60" r="44" fill="color-mix(in oklch, var(--brand) 35%, transparent)" />
         )}
         {/* Intersection (drawn over) */}
         {filledIntersect && (
           <g clipPath={`url(#vlA-${kind})`}>
-            <circle cx="140" cy="60" r="44" fill="hsl(var(--success) / 0.55)" />
+            <circle cx="140" cy="60" r="44" fill="color-mix(in oklch, var(--success) 55%, transparent)" />
           </g>
         )}
         {/* Outlines */}
@@ -126,16 +126,16 @@ export const CssBoxModel: FC = () => (
   <figure className="my-4">
     <svg viewBox="0 0 320 220" className="w-full max-w-md mx-auto text-foreground">
       {/* margin */}
-      <rect x="6" y="6" width="308" height="208" fill="hsl(var(--brand) / 0.1)" stroke={STROKE} strokeDasharray="4 3" strokeWidth="1" />
+      <rect x="6" y="6" width="308" height="208" fill="color-mix(in oklch, var(--brand) 10%, transparent)" stroke={STROKE} strokeDasharray="4 3" strokeWidth="1" />
       <text x="14" y="20" className="text-[10px] fill-current font-mono">margin</text>
       {/* border */}
-      <rect x="34" y="34" width="252" height="152" fill="hsl(var(--muted) / 0.6)" stroke={STROKE} strokeWidth="1.5" />
+      <rect x="34" y="34" width="252" height="152" fill="color-mix(in oklch, var(--muted) 60%, transparent)" stroke={STROKE} strokeWidth="1.5" />
       <text x="42" y="48" className="text-[10px] fill-current font-mono">border</text>
       {/* padding */}
-      <rect x="62" y="62" width="196" height="96" fill="hsl(var(--success) / 0.18)" stroke={STROKE} strokeWidth="1" strokeDasharray="2 2" />
+      <rect x="62" y="62" width="196" height="96" fill="color-mix(in oklch, var(--success) 18%, transparent)" stroke={STROKE} strokeWidth="1" strokeDasharray="2 2" />
       <text x="70" y="76" className="text-[10px] fill-current font-mono">padding</text>
       {/* content */}
-      <rect x="92" y="92" width="136" height="36" fill="hsl(var(--brand) / 0.25)" stroke={STROKE} strokeWidth="1" />
+      <rect x="92" y="92" width="136" height="36" fill="color-mix(in oklch, var(--brand) 25%, transparent)" stroke={STROKE} strokeWidth="1" />
       <text x="160" y="115" textAnchor="middle" className="text-[11px] fill-current font-semibold font-mono">content</text>
     </svg>
     <figcaption className="text-center text-[11px] text-muted-foreground mt-1">
@@ -152,7 +152,7 @@ export const BTreeIndex: FC = () => (
       {/* Root node — 2 separator-nøkler (30, 60) gir 3 barn:
           <30, 30..59, ≥60. Det er den kanoniske B-tre-fanouten:
           N nøkler = N+1 barn-pekere. */}
-      <rect x="140" y="10" width="100" height="32" rx="3" fill="hsl(var(--brand) / 0.2)" stroke={STROKE} strokeWidth="1.5" />
+      <rect x="140" y="10" width="100" height="32" rx="3" fill="color-mix(in oklch, var(--brand) 20%, transparent)" stroke={STROKE} strokeWidth="1.5" />
       <line x1="180" y1="10" x2="180" y2="42" stroke={STROKE} strokeWidth="1" />
       <line x1="210" y1="10" x2="210" y2="42" stroke={STROKE} strokeWidth="1" />
       <text x="160" y="30" textAnchor="middle" className="text-[10px] fill-current font-mono">30</text>
@@ -164,13 +164,13 @@ export const BTreeIndex: FC = () => (
       <line x1="230" y1="42" x2="320" y2="80" stroke={STROKE} strokeWidth="1" />
 
       {/* Leaf 1: nøkler < 30 */}
-      <rect x="10" y="80" width="100" height="32" rx="3" fill="hsl(var(--success) / 0.18)" stroke={STROKE} strokeWidth="1.5" />
+      <rect x="10" y="80" width="100" height="32" rx="3" fill="color-mix(in oklch, var(--success) 18%, transparent)" stroke={STROKE} strokeWidth="1.5" />
       <text x="60" y="100" textAnchor="middle" className="text-[10px] fill-current font-mono">5 · 18 · 27</text>
       {/* Leaf 2: 30 ≤ nøkler < 60 */}
-      <rect x="140" y="80" width="100" height="32" rx="3" fill="hsl(var(--success) / 0.18)" stroke={STROKE} strokeWidth="1.5" />
+      <rect x="140" y="80" width="100" height="32" rx="3" fill="color-mix(in oklch, var(--success) 18%, transparent)" stroke={STROKE} strokeWidth="1.5" />
       <text x="190" y="100" textAnchor="middle" className="text-[10px] fill-current font-mono">35 · 47 · 58</text>
       {/* Leaf 3: nøkler ≥ 60 */}
-      <rect x="270" y="80" width="100" height="32" rx="3" fill="hsl(var(--success) / 0.18)" stroke={STROKE} strokeWidth="1.5" />
+      <rect x="270" y="80" width="100" height="32" rx="3" fill="color-mix(in oklch, var(--success) 18%, transparent)" stroke={STROKE} strokeWidth="1.5" />
       <text x="320" y="100" textAnchor="middle" className="text-[10px] fill-current font-mono">62 · 75 · 88</text>
 
       {/* Leaf links (B+ tree) */}
@@ -206,10 +206,10 @@ export const DatabasePage: FC = () => (
   <figure className="my-4">
     <svg viewBox="0 0 380 180" className="w-full max-w-md mx-auto text-foreground">
       {/* Disk icon */}
-      <ellipse cx="40" cy="50" rx="22" ry="6" fill="hsl(var(--muted))" stroke={STROKE} />
+      <ellipse cx="40" cy="50" rx="22" ry="6" fill="var(--muted)" stroke={STROKE} />
       <line x1="18" y1="50" x2="18" y2="100" stroke={STROKE} />
       <line x1="62" y1="50" x2="62" y2="100" stroke={STROKE} />
-      <ellipse cx="40" cy="100" rx="22" ry="6" fill="hsl(var(--muted))" stroke={STROKE} />
+      <ellipse cx="40" cy="100" rx="22" ry="6" fill="var(--muted)" stroke={STROKE} />
       <text x="40" y="130" textAnchor="middle" className="text-[10px] fill-current">Disk</text>
 
       {/* Arrow: one I/O reads a whole page */}
@@ -217,7 +217,7 @@ export const DatabasePage: FC = () => (
       <text x="100" y="68" textAnchor="middle" className="text-[9px] fill-current opacity-70">1 I/O</text>
 
       {/* Page (8 KB block) with rows inside */}
-      <rect x="135" y="20" width="230" height="135" rx="4" fill="hsl(var(--brand) / 0.08)" stroke={STROKE} strokeWidth="1.5" />
+      <rect x="135" y="20" width="230" height="135" rx="4" fill="color-mix(in oklch, var(--brand) 8%, transparent)" stroke={STROKE} strokeWidth="1.5" />
       <text x="250" y="38" textAnchor="middle" className="text-[10px] fill-current font-semibold font-mono">page (8 KB)</text>
       {Array.from({ length: 6 }).map((_, i) => (
         <rect
@@ -227,7 +227,7 @@ export const DatabasePage: FC = () => (
           width="210"
           height="12"
           rx="1"
-          fill="hsl(var(--success) / 0.18)"
+          fill="color-mix(in oklch, var(--success) 18%, transparent)"
           stroke={STROKE}
           strokeWidth="0.5"
         />
@@ -264,11 +264,11 @@ export const HttpSequence: FC = () => (
   <figure className="my-4">
     <svg viewBox="0 0 360 200" className="w-full max-w-md mx-auto text-foreground">
       {/* Lifelines */}
-      <rect x="40" y="10" width="80" height="24" rx="3" fill="hsl(var(--brand) / 0.18)" stroke={STROKE} />
+      <rect x="40" y="10" width="80" height="24" rx="3" fill="color-mix(in oklch, var(--brand) 18%, transparent)" stroke={STROKE} />
       <text x="80" y="27" textAnchor="middle" className="text-[10px] fill-current font-semibold">Klient</text>
       <line x1="80" y1="34" x2="80" y2="190" stroke={STROKE} strokeDasharray="3 3" />
 
-      <rect x="240" y="10" width="80" height="24" rx="3" fill="hsl(var(--success) / 0.2)" stroke={STROKE} />
+      <rect x="240" y="10" width="80" height="24" rx="3" fill="color-mix(in oklch, var(--success) 20%, transparent)" stroke={STROKE} />
       <text x="280" y="27" textAnchor="middle" className="text-[10px] fill-current font-semibold">Server (Flask)</text>
       <line x1="280" y1="34" x2="280" y2="190" stroke={STROKE} strokeDasharray="3 3" />
 
@@ -277,7 +277,7 @@ export const HttpSequence: FC = () => (
       <text x="180" y="55" textAnchor="middle" className="text-[10px] fill-current font-mono">GET /kunder</text>
 
       {/* Server activity bar */}
-      <rect x="276" y="68" width="8" height="50" fill="hsl(var(--success) / 0.4)" stroke={STROKE} strokeWidth="0.5" />
+      <rect x="276" y="68" width="8" height="50" fill="color-mix(in oklch, var(--success) 40%, transparent)" stroke={STROKE} strokeWidth="0.5" />
       <text x="294" y="95" className="text-[9px] fill-current opacity-70">render_template()</text>
 
       {/* Response arrow */}
@@ -285,7 +285,7 @@ export const HttpSequence: FC = () => (
       <text x="180" y="123" textAnchor="middle" className="text-[10px] fill-current font-mono">200 OK + HTML</text>
 
       {/* Browser render */}
-      <rect x="76" y="138" width="8" height="32" fill="hsl(var(--brand) / 0.4)" stroke={STROKE} strokeWidth="0.5" />
+      <rect x="76" y="138" width="8" height="32" fill="color-mix(in oklch, var(--brand) 40%, transparent)" stroke={STROKE} strokeWidth="0.5" />
       <text x="92" y="158" className="text-[9px] fill-current opacity-70">render</text>
 
       <defs>
@@ -439,19 +439,19 @@ export const AcidAtomic: FC = () => (
   <figure className="my-4">
     <svg viewBox="0 0 380 180" className="w-full max-w-md mx-auto text-foreground">
       {/* Account A */}
-      <rect x="10" y="50" width="100" height="60" rx="4" fill="hsl(var(--brand) / 0.15)" stroke={STROKE} strokeWidth="1.5" />
+      <rect x="10" y="50" width="100" height="60" rx="4" fill="color-mix(in oklch, var(--brand) 15%, transparent)" stroke={STROKE} strokeWidth="1.5" />
       <text x="60" y="72" textAnchor="middle" className="text-[10px] fill-current font-semibold">Konto A</text>
       <text x="60" y="92" textAnchor="middle" className="text-[12px] fill-current font-mono">1000 →  900</text>
 
       {/* Transaction box */}
-      <rect x="130" y="20" width="120" height="120" rx="6" fill="hsl(var(--success) / 0.08)" stroke={STROKE} strokeDasharray="4 3" strokeWidth="1.5" />
+      <rect x="130" y="20" width="120" height="120" rx="6" fill="color-mix(in oklch, var(--success) 8%, transparent)" stroke={STROKE} strokeDasharray="4 3" strokeWidth="1.5" />
       <text x="190" y="40" textAnchor="middle" className="text-[10px] fill-current font-semibold">TRANSAKSJON</text>
       <text x="190" y="80" textAnchor="middle" className="text-[10px] fill-current font-mono">UPDATE A −100</text>
       <text x="190" y="100" textAnchor="middle" className="text-[10px] fill-current font-mono">UPDATE B +100</text>
       <text x="190" y="125" textAnchor="middle" className="text-[10px] fill-current opacity-70">COMMIT eller ROLLBACK</text>
 
       {/* Account B */}
-      <rect x="270" y="50" width="100" height="60" rx="4" fill="hsl(var(--brand) / 0.15)" stroke={STROKE} strokeWidth="1.5" />
+      <rect x="270" y="50" width="100" height="60" rx="4" fill="color-mix(in oklch, var(--brand) 15%, transparent)" stroke={STROKE} strokeWidth="1.5" />
       <text x="320" y="72" textAnchor="middle" className="text-[10px] fill-current font-semibold">Konto B</text>
       <text x="320" y="92" textAnchor="middle" className="text-[12px] fill-current font-mono">500 → 600</text>
 
@@ -483,23 +483,23 @@ export const HtmlSemanticLayout: FC = () => (
       <text x="14" y="20" className="text-[9px] fill-current opacity-60 font-mono">&lt;body&gt;</text>
 
       {/* header */}
-      <rect x="20" y="28" width="280" height="32" fill="hsl(var(--brand) / 0.2)" stroke={STROKE} />
+      <rect x="20" y="28" width="280" height="32" fill="color-mix(in oklch, var(--brand) 20%, transparent)" stroke={STROKE} />
       <text x="160" y="49" textAnchor="middle" className="text-[11px] fill-current font-mono">&lt;header&gt;</text>
 
       {/* nav */}
-      <rect x="20" y="66" width="280" height="20" fill="hsl(var(--brand) / 0.1)" stroke={STROKE} />
+      <rect x="20" y="66" width="280" height="20" fill="color-mix(in oklch, var(--brand) 10%, transparent)" stroke={STROKE} />
       <text x="160" y="80" textAnchor="middle" className="text-[10px] fill-current font-mono">&lt;nav&gt;</text>
 
       {/* main + aside */}
-      <rect x="20" y="92" width="200" height="80" fill="hsl(var(--success) / 0.18)" stroke={STROKE} />
+      <rect x="20" y="92" width="200" height="80" fill="color-mix(in oklch, var(--success) 18%, transparent)" stroke={STROKE} />
       <text x="120" y="135" textAnchor="middle" className="text-[11px] fill-current font-mono">&lt;main&gt;</text>
       <text x="120" y="150" textAnchor="middle" className="text-[9px] fill-current opacity-70 font-mono">&lt;article&gt;</text>
 
-      <rect x="226" y="92" width="74" height="80" fill="hsl(var(--muted) / 0.5)" stroke={STROKE} />
+      <rect x="226" y="92" width="74" height="80" fill="color-mix(in oklch, var(--muted) 50%, transparent)" stroke={STROKE} />
       <text x="263" y="135" textAnchor="middle" className="text-[10px] fill-current font-mono">&lt;aside&gt;</text>
 
       {/* footer */}
-      <rect x="20" y="178" width="280" height="28" fill="hsl(var(--brand) / 0.2)" stroke={STROKE} />
+      <rect x="20" y="178" width="280" height="28" fill="color-mix(in oklch, var(--brand) 20%, transparent)" stroke={STROKE} />
       <text x="160" y="196" textAnchor="middle" className="text-[11px] fill-current font-mono">&lt;footer&gt;</text>
     </svg>
     <figcaption className="text-center text-[11px] text-muted-foreground mt-1">
@@ -549,12 +549,12 @@ export const SessionFlow: FC = () => (
   <figure className="my-4">
     <svg viewBox="0 0 380 220" className="w-full max-w-md mx-auto text-foreground">
       {/* Browser */}
-      <rect x="10" y="20" width="80" height="40" rx="3" fill="hsl(var(--brand) / 0.18)" stroke={STROKE} />
+      <rect x="10" y="20" width="80" height="40" rx="3" fill="color-mix(in oklch, var(--brand) 18%, transparent)" stroke={STROKE} />
       <text x="50" y="44" textAnchor="middle" className="text-[10px] fill-current font-semibold">Nettleser</text>
       <line x1="50" y1="60" x2="50" y2="200" stroke={STROKE} strokeDasharray="3 3" />
 
       {/* Server */}
-      <rect x="290" y="20" width="80" height="40" rx="3" fill="hsl(var(--success) / 0.2)" stroke={STROKE} />
+      <rect x="290" y="20" width="80" height="40" rx="3" fill="color-mix(in oklch, var(--success) 20%, transparent)" stroke={STROKE} />
       <text x="330" y="44" textAnchor="middle" className="text-[10px] fill-current font-semibold">Server</text>
       <line x1="330" y1="60" x2="330" y2="200" stroke={STROKE} strokeDasharray="3 3" />
 
@@ -571,7 +571,7 @@ export const SessionFlow: FC = () => (
       <text x="190" y="145" textAnchor="middle" className="text-[10px] fill-current font-mono">GET /dashboard · Cookie: sid=abc123</text>
 
       {/* Server lookup */}
-      <rect x="305" y="158" width="60" height="34" fill="hsl(var(--muted) / 0.6)" stroke={STROKE} strokeWidth="0.5" />
+      <rect x="305" y="158" width="60" height="34" fill="color-mix(in oklch, var(--muted) 60%, transparent)" stroke={STROKE} strokeWidth="0.5" />
       <text x="335" y="172" textAnchor="middle" className="text-[9px] fill-current font-mono">sessions[</text>
       <text x="335" y="184" textAnchor="middle" className="text-[9px] fill-current font-mono">abc123]</text>
 
@@ -610,7 +610,7 @@ export const IndexVsScan: FC = () => (
               y={y}
               width="10"
               height="12"
-              fill={i === 14 ? "hsl(var(--success) / 0.5)" : "hsl(var(--destructive) / 0.25)"}
+              fill={i === 14 ? "color-mix(in oklch, var(--success) 50%, transparent)" : "color-mix(in oklch, var(--destructive) 25%, transparent)"}
               stroke={STROKE}
               strokeWidth="0.5"
             />
@@ -626,12 +626,12 @@ export const IndexVsScan: FC = () => (
 
       {/* B-tree shortcut */}
       <g>
-        <rect x="265" y="30" width="40" height="12" fill="hsl(var(--brand) / 0.25)" stroke={STROKE} strokeWidth="0.5" />
+        <rect x="265" y="30" width="40" height="12" fill="color-mix(in oklch, var(--brand) 25%, transparent)" stroke={STROKE} strokeWidth="0.5" />
         <text x="285" y="40" textAnchor="middle" className="text-[8px] fill-current font-mono">rot</text>
         <line x1="285" y1="42" x2="270" y2="55" stroke={STROKE} strokeWidth="0.5" />
         <line x1="285" y1="42" x2="300" y2="55" stroke={STROKE} strokeWidth="0.5" />
-        <rect x="255" y="55" width="30" height="10" fill="hsl(var(--muted))" stroke={STROKE} strokeWidth="0.5" />
-        <rect x="290" y="55" width="30" height="10" fill="hsl(var(--success) / 0.5)" stroke={STROKE} strokeWidth="0.5" />
+        <rect x="255" y="55" width="30" height="10" fill="var(--muted)" stroke={STROKE} strokeWidth="0.5" />
+        <rect x="290" y="55" width="30" height="10" fill="color-mix(in oklch, var(--success) 50%, transparent)" stroke={STROKE} strokeWidth="0.5" />
         <text x="285" y="80" textAnchor="middle" className="text-[9px] fill-current opacity-70">
           få hopp til treffet
         </text>
