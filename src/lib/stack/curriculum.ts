@@ -138,6 +138,10 @@ export const PHASES: readonly CurriculumPhase[] = [
       "dte2507-web-caching-matte",
       "dte2507-count-to-infinity",
       "dte2507-bgp-stige",
+      "dte2507-fra-checksum-til-hmac",
+      "dte2507-cbc-iv",
+      "dte2507-stateful-firewall",
+      "dte2507-ids-snort",
     ],
   },
   {

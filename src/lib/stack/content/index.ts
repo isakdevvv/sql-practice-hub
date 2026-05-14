@@ -171,6 +171,10 @@ import { content as dte2507RdtProgresjon } from "./dte2507-rdt-progresjon";
 import { content as dte2507ApProgresjon } from "./dte2507-ap-progresjon";
 import { content as dte2507CountToInfinity } from "./dte2507-count-to-infinity";
 import { content as dte2507BgpStige } from "./dte2507-bgp-stige";
+import { content as dte2507FraChecksumTilHmac } from "./dte2507-fra-checksum-til-hmac";
+import { content as dte2507CbcIv } from "./dte2507-cbc-iv";
+import { content as dte2507StatefulFirewall } from "./dte2507-stateful-firewall";
+import { content as dte2507IdsSnort } from "./dte2507-ids-snort";
 import type { TrinnContent } from "../types";
 
 export const TRINN: TrinnContent[] = [
@@ -226,6 +230,8 @@ export const TRINN: TrinnContent[] = [
   dte2507RdtProgresjon, dte2507ApProgresjon,
   // DTE-2507 — Kurose Ch 2 utdypning
   dte2507Http2Hol, dte2507WebCachingMatte,
+  // DTE-2507 — Kurose Ch 8 sikkerhet
+  dte2507FraChecksumTilHmac, dte2507CbcIv, dte2507StatefulFirewall, dte2507IdsSnort,
   // TEK-1501 — utvidelser
   tek1RegresjonDiagnostikk,
   // DTE-2507 — Kurose Ch 5 utdypning
