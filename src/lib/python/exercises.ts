@@ -6,6 +6,8 @@ import { DTE2505_EXERCISES } from "./exercises-dte2505";
 import { PY_EXERCISES_DTE2501 } from "./exercises-dte2501";
 import { PY_TEK1_GAPS_EXERCISES } from "./exercises-tek1-gaps";
 import { PY_DTE2602_LOGISTISK_EXERCISES } from "./exercises-dte2602-logistisk";
+import { PY_DTE2602_GAPS2_EXERCISES } from "./exercises-dte2602-gaps2";
+import { PY_TEK1_REGDIAG_EXERCISES } from "./exercises-tek1-regdiag";
 import { PY_FLASK_BOOTSTRAP_EXERCISES } from "./exercises-flask-bootstrap";
 
 // All exercises target DAT1000-pensum: Flask, Jinja, MySQL via prepared
@@ -7456,5 +7458,7 @@ export const PY_EXERCISES: PyExercise[] = [
   ...PY_EXERCISES_BASE,
   ...PY_DTE2602_EXERCISES,
   ...PY_DTE2602_LOGISTISK_EXERCISES,
+  ...PY_DTE2602_GAPS2_EXERCISES,
+  ...PY_TEK1_REGDIAG_EXERCISES,
   ...PY_FLASK_BOOTSTRAP_EXERCISES,
 ];
