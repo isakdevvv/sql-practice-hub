@@ -22,6 +22,8 @@ export const PY_TOPIC_LEVEL: Record<string, PyLevel> = {
   "Flask + MySQL": 1,
   "Flask + Bootstrap": 1,
   "Flask + CSS": 1,
+  // FastAPI — moderne Python web framework med type-hints og async
+  "FastAPI": 2,
   "JSON API": 2,
   "HTTP-statuskoder": 2,
   "Sessions": 2,
@@ -124,6 +126,7 @@ export const PY_CATEGORIES: readonly PyCategory[] = [
       "Flask-SQLAlchemy (ORM)",
       "Flask-utvidelser",
       "App-arkitektur",
+      "FastAPI",
     ],
   },
   {

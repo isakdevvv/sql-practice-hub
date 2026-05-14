@@ -181,6 +181,7 @@ import { content as dte2507StatefulFirewall } from "./dte2507-stateful-firewall"
 import { content as dte2507IdsSnort } from "./dte2507-ids-snort";
 import { content as dte2507DayInTheLife } from "./dte2507-day-in-the-life";
 import { content as flaskAppBuilder } from "./flask-app-builder";
+import { content as fastapiGrunnlag } from "./fastapi-grunnlag";
 import type { TrinnContent } from "../types";
 
 export const TRINN: TrinnContent[] = [
@@ -247,6 +248,8 @@ export const TRINN: TrinnContent[] = [
   dte2507DayInTheLife,
   // Flask App Builder — interaktiv kodegenerator
   flaskAppBuilder,
+  // FastAPI grunnlag
+  fastapiGrunnlag,
 ];
 
 import { curriculumIndexOf } from "../curriculum";

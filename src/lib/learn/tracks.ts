@@ -276,6 +276,72 @@ export const TRACKS: readonly Track[] = [
     ],
   },
 
+  // ============ 5. FastAPI ================================================
+  {
+    id: "fastapi",
+    label: "FastAPI — moderne Python-API",
+    blurb: "Type-hint-drevet web-framework. Pydantic-validering, async, automatisk OpenAPI.",
+    longDescription:
+      "FastAPI er Pythons mest populære moderne web-framework. Erstatter mye av Flasks boilerplate med type-hints og Pydantic-modeller. Async-støtte ut av boksen, automatisk OpenAPI-dokumentasjon, og dependency injection som faktisk er testbart. Sporet introduserer FastAPI-mønstrene parallelt med Flask, og avsluttes med en API-server med auth og response-modeller.",
+    prerequisites: ["Python-grunnlag (type hints, klasser)", "Forståelse av HTTP og REST"],
+    estimatedHours: "10–15 timer",
+    color: "success",
+    capstoneStackSlug: "fastapi-grunnlag",
+    capstoneNote:
+      "Bygg en mini-CRUD-API med Pydantic-modeller, dependency-injected DB, og Bearer-auth. Sjekk at /docs gir komplett Swagger.",
+    sections: [
+      {
+        title: "1. Forutsetninger — HTTP, REST og type-hints",
+        description: "Du må forstå HTTP-flyten og kunne lese type-annotasjoner.",
+        steps: [
+          { kind: "stack", ref: "http-anatomi", note: "request/response, status-koder, headere" },
+          { kind: "stack", ref: "typesystemer", note: "Hva type-hints faktisk gjør" },
+          { kind: "stack", ref: "api-arkitektur", note: "REST-prinsipper og endpoint-design" },
+        ],
+      },
+      {
+        title: "2. FastAPI-grunnlag",
+        description: "Konseptene som gjør FastAPI annerledes enn Flask.",
+        steps: [
+          { kind: "stack", ref: "fastapi-grunnlag", note: "Type-hints, Pydantic, async, Depends, OpenAPI" },
+          { kind: "exercise", ref: "py-fastapi-hello" },
+          { kind: "exercise", ref: "py-fastapi-path-param" },
+          { kind: "exercise", ref: "py-fastapi-query-param" },
+        ],
+      },
+      {
+        title: "3. Pydantic-modeller",
+        description: "Hjørnesteinen — datavalidering via type-hints.",
+        steps: [
+          { kind: "exercise", ref: "py-fastapi-pydantic-body" },
+          { kind: "exercise", ref: "py-fastapi-status-code", note: "response_model + status_code" },
+        ],
+      },
+      {
+        title: "4. Dependency injection og auth",
+        description: "Erstatter Flasks before_request og decorators.",
+        steps: [
+          { kind: "exercise", ref: "py-fastapi-depends" },
+          { kind: "exercise", ref: "py-fastapi-bearer-auth" },
+        ],
+      },
+      {
+        title: "5. Async / await",
+        description: "Native async-støtte — derfor velger folk FastAPI for I/O-tunge APIs.",
+        steps: [
+          { kind: "exercise", ref: "py-fastapi-async" },
+        ],
+      },
+      {
+        title: "6. Capstone",
+        description: "Sett alt sammen.",
+        steps: [
+          { kind: "capstone", ref: "fastapi-grunnlag" },
+        ],
+      },
+    ],
+  },
+
   // ============ 4. Data-ingeniør i Python =================================
   {
     id: "data-engineer",
