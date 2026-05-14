@@ -124,6 +124,10 @@ export const PHASES: readonly CurriculumPhase[] = [
       "dte2507-paket-dekoding",
       "dte2507-rsa-mini",
       "dte2507-praksis",
+      "dte2507-crc-kalkulator",
+      "dte2507-aloha-kasino",
+      "dte2507-arp-detektiv",
+      "dte2507-switch-self-learning",
     ],
   },
   {
