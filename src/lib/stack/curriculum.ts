@@ -124,6 +124,8 @@ export const PHASES: readonly CurriculumPhase[] = [
       "dte2507-paket-dekoding",
       "dte2507-rsa-mini",
       "dte2507-praksis",
+      "dte2507-delay-modell",
+      "dte2507-bottleneck-throughput",
     ],
   },
   {
