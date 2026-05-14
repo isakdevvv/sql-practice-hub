@@ -154,6 +154,9 @@ import { content as tek1HypotesetestRegresjon } from "./tek1-hypotesetest-regres
 import { content as tek1Anova } from "./tek1-anova";
 import { content as tek1Proporsjoner } from "./tek1-proporsjoner";
 import { content as dte2602LogistiskRegresjon } from "./dte2602-logistisk-regresjon";
+import { content as dte2602LdaQdaNb } from "./dte2602-lda-qda-nb";
+import { content as dte2602CvVarianter } from "./dte2602-cv-varianter";
+import { content as tek1RegresjonDiagnostikk } from "./tek1-regresjon-diagnostikk";
 import type { TrinnContent } from "../types";
 
 export const TRINN: TrinnContent[] = [
@@ -200,7 +203,9 @@ export const TRINN: TrinnContent[] = [
   tek1KontinuerligeFordelinger, tek1ForventningClt, tek1EstimeringKi,
   tek1HypotesetestRegresjon, tek1Anova, tek1Proporsjoner,
   // DTE-2602 — utvidelser
-  dte2602LogistiskRegresjon,
+  dte2602LogistiskRegresjon, dte2602LdaQdaNb, dte2602CvVarianter,
+  // TEK-1501 — utvidelser
+  tek1RegresjonDiagnostikk,
 ];
 
 import { curriculumIndexOf } from "../curriculum";
