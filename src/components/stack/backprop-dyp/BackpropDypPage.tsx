@@ -2,10 +2,12 @@ import { Link } from "@tanstack/react-router";
 import { Lightbulb } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
+import { BackpropVisualizer } from "./BackpropVisualizer";
 
 const STEPS = [
   { title: "Kjerne-regelen — backprops motor", anchor: "chain-rule" },
   { title: "Beregningsgraf", anchor: "compgraph" },
+  { title: "Visualisering — forover/bakover-pass", anchor: "visualizer" },
   { title: "Backward pass — worked example", anchor: "worked" },
   { title: "Vanishing & exploding gradient", anchor: "vanishing" },
   { title: "Vekt-initialisering: Xavier & He", anchor: "init" },
@@ -111,8 +113,19 @@ Regel: ved hver node multiplisér INNKOMMENDE gradient med
           </p>
         </section>
 
+        <section id="visualizer" className="mb-10">
+          <h2 className="text-xl font-semibold mb-3">3. Visualisering — forover/bakover-pass</h2>
+          <p className="text-sm text-muted-foreground mb-3">
+            Klikk gjennom kjerne-regelen steg for steg. Forward (forover) fyller
+            verdier i grafen, backward (bakover) sender gradienter tilbake — rød
+            pil per kant med lokal deriverte og akkumulert ∂L/∂node. Bytt mellom
+            uttrykk, ett nevron, et 2-lags nett og et 10-lags vanishing-eksempel.
+          </p>
+          <BackpropVisualizer />
+        </section>
+
         <section id="worked" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">3. Backward pass — worked example</h2>
+          <h2 className="text-xl font-semibold mb-3">4. Backward pass — worked example</h2>
           <p className="text-sm text-muted-foreground mb-3">
             La oss kjøre kjerne-regelen gjennom et mini-nett med to lag.
           </p>
@@ -156,7 +169,7 @@ Update (lr=0.1):
         </section>
 
         <section id="vanishing" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">4. Vanishing & exploding gradient</h2>
+          <h2 className="text-xl font-semibold mb-3">5. Vanishing & exploding gradient</h2>
           <p className="text-sm text-muted-foreground mb-3">
             Når et nett er dypt (mange lag), multipliseres mange deriverte sammen i
             kjernen. Hvis hver deriverte er &lt; 1, krymper produktet eksponensielt
@@ -194,7 +207,7 @@ Fixes:
         </section>
 
         <section id="init" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">5. Vekt-initialisering: Xavier & He</h2>
+          <h2 className="text-xl font-semibold mb-3">6. Vekt-initialisering: Xavier & He</h2>
           <p className="text-sm text-muted-foreground mb-3">
             Hvis du starter alle vekter til 0, er hvert lag like — symmetri-bryting
             feiler og nettet lærer ingenting. Hvis du starter for stort, eksploderer
@@ -241,7 +254,7 @@ Fixes:
         </section>
 
         <section id="clip" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">6. Gradient clipping</h2>
+          <h2 className="text-xl font-semibold mb-3">7. Gradient clipping</h2>
           <p className="text-sm text-muted-foreground mb-3">
             Praktisk hammer mot exploding gradient: kapp gradienten hvis den blir
             for stor før du oppdaterer vektene.
@@ -271,7 +284,7 @@ billig forsikring som koster nesten ingenting.`}</pre>
         </section>
 
         <section id="autograd" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">7. Autograd — slik gjør PyTorch det</h2>
+          <h2 className="text-xl font-semibold mb-3">8. Autograd — slik gjør PyTorch det</h2>
           <p className="text-sm text-muted-foreground mb-3">
             Du implementerer aldri backward pass for hånd i moderne rammeverk.
             PyTorch bygger beregningsgrafen dynamisk når du kjører forward, og kjører
