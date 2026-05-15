@@ -2,8 +2,10 @@ import { Link } from "@tanstack/react-router";
 import { ArrowRight, Lightbulb } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
+import { AdderVisualizer } from "./AdderVisualizer";
 
 const STEPS = [
+  { title: "Interaktiv visualisering", anchor: "viz" },
   { title: "Hva er en adder", anchor: "hva" },
   { title: "Half-adder — to bits inn, sum og carry", anchor: "half" },
   { title: "Full-adder — håndterer carry-in", anchor: "full" },
@@ -41,6 +43,17 @@ export function Trinn3AddersPage() {
         </div>
 
         <CourseOutline courseId="trinn-3-adders" steps={STEPS} />
+
+        <section id="viz" className="mb-10">
+          <h2 className="text-xl font-semibold mb-3">Interaktiv visualisering</h2>
+          <p className="text-sm text-muted-foreground mb-4">
+            Vipp bits, se hvilke wires som lyser opp, og la carry-en ringle
+            gjennom 4-bit ripple-carry-adderen ett steg om gangen. Bytt til
+            subtraksjons-modus for å se hvordan to&apos;s complement gjør samme
+            adder om til en subtraktor (A - B = A + ~B + 1).
+          </p>
+          <AdderVisualizer />
+        </section>
 
         <section id="hva" className="mb-10">
           <h2 className="text-xl font-semibold mb-3">1. Hva er en adder</h2>
