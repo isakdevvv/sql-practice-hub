@@ -4,8 +4,10 @@ import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
 import { NatTableDemo } from "./NatTableDemo";
 import { NatDrill } from "./NatDrill";
+import { NatVisualizer } from "./NatVisualizer";
 
 const STEPS = [
+  { title: "Pakke-translasjon — visualisering", anchor: "visualizer" },
   { title: "Problemet: to interne hosts, én server", anchor: "problem" },
   { title: "Privatadresser (RFC 1918) — hvorfor finnes de?", anchor: "rfc1918" },
   { title: "NAT-tabellen — interaktiv demo", anchor: "demo" },
@@ -48,6 +50,20 @@ export function Dte2507NatPage() {
         </header>
 
         <CourseOutline courseId="dte2507-nat" steps={STEPS} />
+
+        {/* 0. Visualisering */}
+        <section id="visualizer" className="mb-10">
+          <h2 className="text-xl font-semibold mb-3">
+            Pakke-translasjon — visualisering
+          </h2>
+          <p className="text-sm text-muted-foreground mb-3 leading-relaxed">
+            To interne hosts (H1, H2) bak NAT-ruteren, to eksterne servere (S1,
+            S2) på Internett. Bytt mellom fire scenarier og se hvordan pakke-
+            headerne omskrives, hvordan NAT-tabellen vokser, og hva som skjer
+            når noen utenfra prøver å nå inn.
+          </p>
+          <NatVisualizer />
+        </section>
 
         {/* 1. Problemet */}
         <section id="problem" className="mb-10">
