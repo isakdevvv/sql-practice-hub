@@ -6,9 +6,11 @@ import { AesGcmDemo } from "./AesGcmDemo";
 import { AesBlockModes } from "./AesBlockModes";
 import { HashAndHmac } from "./HashAndHmac";
 import { DiffieHellmanColors } from "./DiffieHellmanColors";
+import { CryptoVisualizer } from "./CryptoVisualizer";
 
 const STEPS = [
   { title: "Hva krypto faktisk beskytter mot", anchor: "trusler" },
+  { title: "Krypto-visualisering (Caesar, XOR, hash, RSA, DH)", anchor: "krypto-visualizer" },
   { title: "Symmetrisk kryptering", anchor: "symmetrisk" },
   { title: "Blokkmoduser — ECB-pingvinen", anchor: "blokk-moduser" },
   { title: "AES-GCM i praksis", anchor: "aes-gcm" },
@@ -93,6 +95,22 @@ export function KryptografiPage() {
               </p>
             </div>
           </div>
+        </section>
+
+        <section id="krypto-visualizer" className="mb-10">
+          <h2 className="text-xl font-semibold mb-3">
+            1b. Krypto-visualisering — bygg intuisjon før algoritmene
+          </h2>
+          <p className="text-sm text-muted-foreground mb-3">
+            Fem moduser i ett verktøy:{" "}
+            <strong>Caesar</strong> (alfabet-rotasjon),{" "}
+            <strong>XOR</strong> (byte-for-byte symmetrisk operasjon),{" "}
+            <strong>SHA-256</strong> (avalanche-effekt side-ved-side),{" "}
+            <strong>RSA-mini</strong> (håndregning med små primtall) og{" "}
+            <strong>Diffie-Hellman</strong> (delt nøkkel uten å lekke). Lek deg gjennom alle
+            før du leser teorien nedenfor — du kommer til å gjenkjenne mønstrene mye lettere.
+          </p>
+          <CryptoVisualizer />
         </section>
 
         <section id="symmetrisk" className="mb-10">
