@@ -25,6 +25,7 @@ import {
   Boxes,
   KeyboardMusic,
   Sigma,
+  Apple,
 } from "lucide-react";
 
 export const Route = createFileRoute("/")({
@@ -254,6 +255,7 @@ type Verktoy = {
     | "/eksamen"
     | "/git-drill"
     | "/venv-drill"
+    | "/mac-drill"
     | "/stack/$slug";
   navn: string;
   blurb: string;
@@ -315,6 +317,12 @@ const VERKTOY: Verktoy[] = [
     navn: "Venv-drill",
     blurb: "Øv Python venv og pip i en simulert terminal.",
     Icon: TerminalSquare,
+  },
+  {
+    href: "/mac-drill",
+    navn: "Mac-automatisering",
+    blurb: "AppleScript, Shortcuts, Automator og terminal-automatisering — tutorials + øvelser.",
+    Icon: Apple,
   },
   {
     href: "/stack/$slug",
@@ -699,7 +707,7 @@ function LandingPage() {
                 return (
                   <Link
                     key={v.navn}
-                    to={v.href as "/practice" | "/python" | "/drag" | "/cards" | "/prosjekt" | "/exam" | "/eksamen" | "/git-drill" | "/venv-drill"}
+                    to={v.href as "/practice" | "/python" | "/drag" | "/cards" | "/prosjekt" | "/exam" | "/eksamen" | "/git-drill" | "/venv-drill" | "/mac-drill"}
                     className="group rounded-xl border border-border bg-background hover:border-brand/40 p-4 transition-colors block"
                   >
                     {inner}
