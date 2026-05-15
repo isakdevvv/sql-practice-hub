@@ -2,8 +2,10 @@ import { Link } from "@tanstack/react-router";
 import { ArrowRight, Lightbulb } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
+import { AssemblyVisualizer } from "./AssemblyVisualizer";
 
 const STEPS = [
+  { title: "Interaktiv assembly-trace", anchor: "trace" },
   { title: "Hva assembly er", anchor: "hva" },
   { title: "Registre i x86-64", anchor: "registre" },
   { title: "mov, add, sub, cmp — grunninstruksjonene", anchor: "grunn" },
@@ -43,6 +45,19 @@ export function Trinn5AssemblyPage() {
         </div>
 
         <CourseOutline courseId="trinn-5-assembly" steps={STEPS} />
+
+        <section id="trace" className="mb-10">
+          <h2 className="text-xl font-semibold mb-3">
+            Interaktiv assembly-trace
+          </h2>
+          <p className="text-sm text-muted-foreground mb-4">
+            Steg deg gjennom fire små programmer i en miniatyr-x86-64. Se hva
+            som skjer i registrene, minnet og stacken for hver instruksjon. Bytt
+            program øverst, bruk Play eller piltastene under for å trå
+            instruksjon for instruksjon.
+          </p>
+          <AssemblyVisualizer />
+        </section>
 
         <section id="hva" className="mb-10">
           <h2 className="text-xl font-semibold mb-3">1. Hva assembly er</h2>
