@@ -188,6 +188,7 @@ import { content as dte2602Svm } from "./dte2602-svm";
 import { content as dte2505Spesialbits } from "./dte2505-spesialbits";
 import { content as programmeringsboker } from "./programmeringsboker";
 import { content as youtubeKanaler } from "./youtube-kanaler";
+import { content as moocBibliotek } from "./mooc-bibliotek";
 import type { TrinnContent } from "../types";
 
 export const TRINN: TrinnContent[] = [
@@ -268,6 +269,8 @@ export const TRINN: TrinnContent[] = [
   programmeringsboker,
   // YouTube-kanal-bibliotek
   youtubeKanaler,
+  // MOOC-bibliotek (gratis universitetskurs)
+  moocBibliotek,
 ];
 
 import { curriculumIndexOf } from "../curriculum";
