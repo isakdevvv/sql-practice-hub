@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { SiteHeader } from "@/components/SiteHeader";
 import { Button } from "@/components/ui/button";
@@ -34,6 +34,8 @@ import {
   Trophy,
   Network,
   ExternalLink,
+  Compass,
+  FolderTree,
 } from "lucide-react";
 
 export const Route = createFileRoute("/python")({
@@ -360,6 +362,29 @@ function PythonPage() {
             mysql.connector, Flask-routes + Jinja, sessions, login, CSRF-token, JSON-API
             og Bearer-tokens — alt mot en innebygd test-database.
           </p>
+          <div className="mt-3 flex flex-wrap gap-2 text-xs">
+            <Link
+              to="/python_/kap"
+              className="inline-flex items-center gap-1 rounded-md border border-border bg-card px-2.5 py-1 hover:bg-accent hover:text-foreground transition-colors text-muted-foreground"
+            >
+              <BookOpen className="h-3 w-3" />
+              Python kapittel-sider (15 stk)
+            </Link>
+            <Link
+              to="/mini-kurs"
+              className="inline-flex items-center gap-1 rounded-md border border-border bg-card px-2.5 py-1 hover:bg-accent hover:text-foreground transition-colors text-muted-foreground"
+            >
+              <FolderTree className="h-3 w-3" />
+              Mini-kurs (sandkasse)
+            </Link>
+            <Link
+              to="/spor"
+              className="inline-flex items-center gap-1 rounded-md border border-border bg-card px-2.5 py-1 hover:bg-accent hover:text-foreground transition-colors text-muted-foreground"
+            >
+              <Compass className="h-3 w-3" />
+              Læringsspor
+            </Link>
+          </div>
         </div>
 
         {/* Loading banner */}

@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as VizLesjonRouteImport } from './routes/viz-lesjon'
 import { Route as VenvDrillRouteImport } from './routes/venv-drill'
 import { Route as StackRouteImport } from './routes/stack'
 import { Route as SporRouteImport } from './routes/spor'
@@ -17,6 +18,7 @@ import { Route as ProsjektRouteImport } from './routes/prosjekt'
 import { Route as PracticeRouteImport } from './routes/practice'
 import { Route as OvRouteImport } from './routes/ov'
 import { Route as MiniKursRouteImport } from './routes/mini-kurs'
+import { Route as MacDrillRouteImport } from './routes/mac-drill'
 import { Route as LearnRouteImport } from './routes/learn'
 import { Route as LarRouteImport } from './routes/lar'
 import { Route as KursRouteImport } from './routes/kurs'
@@ -30,9 +32,11 @@ import { Route as DragRouteImport } from './routes/drag'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as CardsRouteImport } from './routes/cards'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as VizLesjonIndexRouteImport } from './routes/viz-lesjon.index'
 import { Route as StackIndexRouteImport } from './routes/stack.index'
 import { Route as SporIndexRouteImport } from './routes/spor.index'
 import { Route as MiniKursIndexRouteImport } from './routes/mini-kurs.index'
+import { Route as VizLesjonSlugRouteImport } from './routes/viz-lesjon.$slug'
 import { Route as StackSlugRouteImport } from './routes/stack.$slug'
 import { Route as SporSlugRouteImport } from './routes/spor.$slug'
 import { Route as PythonVisualizerRouteImport } from './routes/python_.visualizer'
@@ -45,6 +49,11 @@ import { Route as PythonKapIndexRouteImport } from './routes/python_.kap.index'
 import { Route as PythonKapNrRouteImport } from './routes/python_.kap.$nr'
 import { Route as PythonIdeNrRouteImport } from './routes/python_.ide.$nr'
 
+const VizLesjonRoute = VizLesjonRouteImport.update({
+  id: '/viz-lesjon',
+  path: '/viz-lesjon',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const VenvDrillRoute = VenvDrillRouteImport.update({
   id: '/venv-drill',
   path: '/venv-drill',
@@ -83,6 +92,11 @@ const OvRoute = OvRouteImport.update({
 const MiniKursRoute = MiniKursRouteImport.update({
   id: '/mini-kurs',
   path: '/mini-kurs',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MacDrillRoute = MacDrillRouteImport.update({
+  id: '/mac-drill',
+  path: '/mac-drill',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LearnRoute = LearnRouteImport.update({
@@ -150,6 +164,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const VizLesjonIndexRoute = VizLesjonIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => VizLesjonRoute,
+} as any)
 const StackIndexRoute = StackIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -164,6 +183,11 @@ const MiniKursIndexRoute = MiniKursIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => MiniKursRoute,
+} as any)
+const VizLesjonSlugRoute = VizLesjonSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => VizLesjonRoute,
 } as any)
 const StackSlugRoute = StackSlugRouteImport.update({
   id: '/$slug',
@@ -235,6 +259,7 @@ export interface FileRoutesByFullPath {
   '/kurs': typeof KursRoute
   '/lar': typeof LarRoute
   '/learn': typeof LearnRoute
+  '/mac-drill': typeof MacDrillRoute
   '/mini-kurs': typeof MiniKursRouteWithChildren
   '/ov': typeof OvRoute
   '/practice': typeof PracticeRoute
@@ -243,6 +268,7 @@ export interface FileRoutesByFullPath {
   '/spor': typeof SporRouteWithChildren
   '/stack': typeof StackRouteWithChildren
   '/venv-drill': typeof VenvDrillRoute
+  '/viz-lesjon': typeof VizLesjonRouteWithChildren
   '/dte2505/shell-drill': typeof Dte2505ShellDrillRoute
   '/dte2507/pcap': typeof Dte2507PcapRoute
   '/mini-kurs/$slug': typeof MiniKursSlugRoute
@@ -251,9 +277,11 @@ export interface FileRoutesByFullPath {
   '/python/visualizer': typeof PythonVisualizerRoute
   '/spor/$slug': typeof SporSlugRoute
   '/stack/$slug': typeof StackSlugRoute
+  '/viz-lesjon/$slug': typeof VizLesjonSlugRoute
   '/mini-kurs/': typeof MiniKursIndexRoute
   '/spor/': typeof SporIndexRoute
   '/stack/': typeof StackIndexRoute
+  '/viz-lesjon/': typeof VizLesjonIndexRoute
   '/python/ide/$nr': typeof PythonIdeNrRoute
   '/python/kap/$nr': typeof PythonKapNrRoute
   '/python/kap/': typeof PythonKapIndexRoute
@@ -272,6 +300,7 @@ export interface FileRoutesByTo {
   '/kurs': typeof KursRoute
   '/lar': typeof LarRoute
   '/learn': typeof LearnRoute
+  '/mac-drill': typeof MacDrillRoute
   '/ov': typeof OvRoute
   '/practice': typeof PracticeRoute
   '/prosjekt': typeof ProsjektRoute
@@ -285,9 +314,11 @@ export interface FileRoutesByTo {
   '/python/visualizer': typeof PythonVisualizerRoute
   '/spor/$slug': typeof SporSlugRoute
   '/stack/$slug': typeof StackSlugRoute
+  '/viz-lesjon/$slug': typeof VizLesjonSlugRoute
   '/mini-kurs': typeof MiniKursIndexRoute
   '/spor': typeof SporIndexRoute
   '/stack': typeof StackIndexRoute
+  '/viz-lesjon': typeof VizLesjonIndexRoute
   '/python/ide/$nr': typeof PythonIdeNrRoute
   '/python/kap/$nr': typeof PythonKapNrRoute
   '/python/kap': typeof PythonKapIndexRoute
@@ -307,6 +338,7 @@ export interface FileRoutesById {
   '/kurs': typeof KursRoute
   '/lar': typeof LarRoute
   '/learn': typeof LearnRoute
+  '/mac-drill': typeof MacDrillRoute
   '/mini-kurs': typeof MiniKursRouteWithChildren
   '/ov': typeof OvRoute
   '/practice': typeof PracticeRoute
@@ -315,6 +347,7 @@ export interface FileRoutesById {
   '/spor': typeof SporRouteWithChildren
   '/stack': typeof StackRouteWithChildren
   '/venv-drill': typeof VenvDrillRoute
+  '/viz-lesjon': typeof VizLesjonRouteWithChildren
   '/dte2505/shell-drill': typeof Dte2505ShellDrillRoute
   '/dte2507/pcap': typeof Dte2507PcapRoute
   '/mini-kurs/$slug': typeof MiniKursSlugRoute
@@ -323,9 +356,11 @@ export interface FileRoutesById {
   '/python_/visualizer': typeof PythonVisualizerRoute
   '/spor/$slug': typeof SporSlugRoute
   '/stack/$slug': typeof StackSlugRoute
+  '/viz-lesjon/$slug': typeof VizLesjonSlugRoute
   '/mini-kurs/': typeof MiniKursIndexRoute
   '/spor/': typeof SporIndexRoute
   '/stack/': typeof StackIndexRoute
+  '/viz-lesjon/': typeof VizLesjonIndexRoute
   '/python_/ide/$nr': typeof PythonIdeNrRoute
   '/python_/kap/$nr': typeof PythonKapNrRoute
   '/python_/kap/': typeof PythonKapIndexRoute
@@ -346,6 +381,7 @@ export interface FileRouteTypes {
     | '/kurs'
     | '/lar'
     | '/learn'
+    | '/mac-drill'
     | '/mini-kurs'
     | '/ov'
     | '/practice'
@@ -354,6 +390,7 @@ export interface FileRouteTypes {
     | '/spor'
     | '/stack'
     | '/venv-drill'
+    | '/viz-lesjon'
     | '/dte2505/shell-drill'
     | '/dte2507/pcap'
     | '/mini-kurs/$slug'
@@ -362,9 +399,11 @@ export interface FileRouteTypes {
     | '/python/visualizer'
     | '/spor/$slug'
     | '/stack/$slug'
+    | '/viz-lesjon/$slug'
     | '/mini-kurs/'
     | '/spor/'
     | '/stack/'
+    | '/viz-lesjon/'
     | '/python/ide/$nr'
     | '/python/kap/$nr'
     | '/python/kap/'
@@ -383,6 +422,7 @@ export interface FileRouteTypes {
     | '/kurs'
     | '/lar'
     | '/learn'
+    | '/mac-drill'
     | '/ov'
     | '/practice'
     | '/prosjekt'
@@ -396,9 +436,11 @@ export interface FileRouteTypes {
     | '/python/visualizer'
     | '/spor/$slug'
     | '/stack/$slug'
+    | '/viz-lesjon/$slug'
     | '/mini-kurs'
     | '/spor'
     | '/stack'
+    | '/viz-lesjon'
     | '/python/ide/$nr'
     | '/python/kap/$nr'
     | '/python/kap'
@@ -417,6 +459,7 @@ export interface FileRouteTypes {
     | '/kurs'
     | '/lar'
     | '/learn'
+    | '/mac-drill'
     | '/mini-kurs'
     | '/ov'
     | '/practice'
@@ -425,6 +468,7 @@ export interface FileRouteTypes {
     | '/spor'
     | '/stack'
     | '/venv-drill'
+    | '/viz-lesjon'
     | '/dte2505/shell-drill'
     | '/dte2507/pcap'
     | '/mini-kurs/$slug'
@@ -433,9 +477,11 @@ export interface FileRouteTypes {
     | '/python_/visualizer'
     | '/spor/$slug'
     | '/stack/$slug'
+    | '/viz-lesjon/$slug'
     | '/mini-kurs/'
     | '/spor/'
     | '/stack/'
+    | '/viz-lesjon/'
     | '/python_/ide/$nr'
     | '/python_/kap/$nr'
     | '/python_/kap/'
@@ -455,6 +501,7 @@ export interface RootRouteChildren {
   KursRoute: typeof KursRoute
   LarRoute: typeof LarRoute
   LearnRoute: typeof LearnRoute
+  MacDrillRoute: typeof MacDrillRoute
   MiniKursRoute: typeof MiniKursRouteWithChildren
   OvRoute: typeof OvRoute
   PracticeRoute: typeof PracticeRoute
@@ -463,6 +510,7 @@ export interface RootRouteChildren {
   SporRoute: typeof SporRouteWithChildren
   StackRoute: typeof StackRouteWithChildren
   VenvDrillRoute: typeof VenvDrillRoute
+  VizLesjonRoute: typeof VizLesjonRouteWithChildren
   Dte2505ShellDrillRoute: typeof Dte2505ShellDrillRoute
   Dte2507PcapRoute: typeof Dte2507PcapRoute
   PortfolioDte2602SlugRoute: typeof PortfolioDte2602SlugRoute
@@ -475,6 +523,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/viz-lesjon': {
+      id: '/viz-lesjon'
+      path: '/viz-lesjon'
+      fullPath: '/viz-lesjon'
+      preLoaderRoute: typeof VizLesjonRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/venv-drill': {
       id: '/venv-drill'
       path: '/venv-drill'
@@ -529,6 +584,13 @@ declare module '@tanstack/react-router' {
       path: '/mini-kurs'
       fullPath: '/mini-kurs'
       preLoaderRoute: typeof MiniKursRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/mac-drill': {
+      id: '/mac-drill'
+      path: '/mac-drill'
+      fullPath: '/mac-drill'
+      preLoaderRoute: typeof MacDrillRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/learn': {
@@ -622,6 +684,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/viz-lesjon/': {
+      id: '/viz-lesjon/'
+      path: '/'
+      fullPath: '/viz-lesjon/'
+      preLoaderRoute: typeof VizLesjonIndexRouteImport
+      parentRoute: typeof VizLesjonRoute
+    }
     '/stack/': {
       id: '/stack/'
       path: '/'
@@ -642,6 +711,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/mini-kurs/'
       preLoaderRoute: typeof MiniKursIndexRouteImport
       parentRoute: typeof MiniKursRoute
+    }
+    '/viz-lesjon/$slug': {
+      id: '/viz-lesjon/$slug'
+      path: '/$slug'
+      fullPath: '/viz-lesjon/$slug'
+      preLoaderRoute: typeof VizLesjonSlugRouteImport
+      parentRoute: typeof VizLesjonRoute
     }
     '/stack/$slug': {
       id: '/stack/$slug'
@@ -761,6 +837,20 @@ const StackRouteChildren: StackRouteChildren = {
 
 const StackRouteWithChildren = StackRoute._addFileChildren(StackRouteChildren)
 
+interface VizLesjonRouteChildren {
+  VizLesjonSlugRoute: typeof VizLesjonSlugRoute
+  VizLesjonIndexRoute: typeof VizLesjonIndexRoute
+}
+
+const VizLesjonRouteChildren: VizLesjonRouteChildren = {
+  VizLesjonSlugRoute: VizLesjonSlugRoute,
+  VizLesjonIndexRoute: VizLesjonIndexRoute,
+}
+
+const VizLesjonRouteWithChildren = VizLesjonRoute._addFileChildren(
+  VizLesjonRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CardsRoute: CardsRoute,
@@ -775,6 +865,7 @@ const rootRouteChildren: RootRouteChildren = {
   KursRoute: KursRoute,
   LarRoute: LarRoute,
   LearnRoute: LearnRoute,
+  MacDrillRoute: MacDrillRoute,
   MiniKursRoute: MiniKursRouteWithChildren,
   OvRoute: OvRoute,
   PracticeRoute: PracticeRoute,
@@ -783,6 +874,7 @@ const rootRouteChildren: RootRouteChildren = {
   SporRoute: SporRouteWithChildren,
   StackRoute: StackRouteWithChildren,
   VenvDrillRoute: VenvDrillRoute,
+  VizLesjonRoute: VizLesjonRouteWithChildren,
   Dte2505ShellDrillRoute: Dte2505ShellDrillRoute,
   Dte2507PcapRoute: Dte2507PcapRoute,
   PortfolioDte2602SlugRoute: PortfolioDte2602SlugRoute,

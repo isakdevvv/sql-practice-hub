@@ -26,6 +26,8 @@ import {
   KeyboardMusic,
   Sigma,
   Apple,
+  Compass,
+  FolderTree,
 } from "lucide-react";
 
 export const Route = createFileRoute("/")({
@@ -264,6 +266,18 @@ type Verktoy = {
 };
 
 const VERKTOY: Verktoy[] = [
+  {
+    href: "/spor",
+    navn: "Læringsspor",
+    blurb: "5 curerte stier — Flask, backend, React, FastAPI, data-ingeniør. Velg framework, få rekkefølge.",
+    Icon: Compass,
+  },
+  {
+    href: "/mini-kurs",
+    navn: "Mini-kurs (sandkasse)",
+    blurb: "Bygg ekte prosjekter trinn for trinn. Filer, mapper, editor, kjør-knapp i nettleseren.",
+    Icon: FolderTree,
+  },
   {
     href: "/practice",
     navn: "SQL Practice",

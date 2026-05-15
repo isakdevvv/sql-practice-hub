@@ -1,21 +1,32 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Search } from "lucide-react";
+import { Search, Menu, X } from "lucide-react";
 import { searchEntries, type SearchEntry, type SearchKind } from "@/lib/search";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { ProfileButton } from "@/components/ProfileButton";
 
-// 4 hubs replace the previous 13-link nav. Each hub-landingsside lister
-// alle de eksisterende rutene som hører hjemme der — URL-ene er beholdt,
-// så ingen lenker brytes; bare top-navigasjonen er forenklet.
+// 6 hubs. Spor og Mini-kurs lagt til i fase A-IA-fix —
+// før dette var de kun oppdagelig via globalt søk.
 const HUBS: { label: string; to: string }[] = [
   { label: "Lær", to: "/lar" },
   { label: "Øv", to: "/ov" },
+  { label: "Spor", to: "/spor" },
+  { label: "Mini-kurs", to: "/mini-kurs" },
   { label: "Eksamen", to: "/eksamen" },
   { label: "Du", to: "/dashboard" },
 ];
 
 export function SiteHeader() {
+  const [mobileOpen, setMobileOpen] = useState(false);
+
+  // Lukk mobil-meny ved navigasjon (route-bytte)
+  useEffect(() => {
+    if (!mobileOpen) return;
+    const close = () => setMobileOpen(false);
+    window.addEventListener("popstate", close);
+    return () => window.removeEventListener("popstate", close);
+  }, [mobileOpen]);
+
   return (
     <header className="sticky top-0 z-40 w-full border-b border-border bg-background/80 backdrop-blur-md">
       <div className="container mx-auto flex h-14 items-center gap-3 px-4">
@@ -28,6 +39,7 @@ export function SiteHeader() {
 
         <GlobalSearch />
 
+        {/* Desktop-navigasjon — md og oppover */}
         <nav className="hidden md:flex items-center gap-1 text-sm shrink-0">
           {HUBS.map((p) => (
             <Link
@@ -41,9 +53,39 @@ export function SiteHeader() {
           ))}
         </nav>
 
+        {/* Mobil hamburger-knapp — under md */}
+        <button
+          type="button"
+          onClick={() => setMobileOpen((o) => !o)}
+          aria-label={mobileOpen ? "Lukk meny" : "Åpne meny"}
+          aria-expanded={mobileOpen}
+          className="md:hidden rounded-md p-2 text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
+        >
+          {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+        </button>
+
         <ProfileButton />
         <ThemeToggle />
       </div>
+
+      {/* Mobil-meny dropdown — vises kun når mobileOpen og under md */}
+      {mobileOpen && (
+        <nav className="md:hidden border-t border-border bg-background">
+          <div className="container mx-auto px-4 py-2 flex flex-col gap-0.5">
+            {HUBS.map((p) => (
+              <Link
+                key={p.to}
+                to={p.to}
+                onClick={() => setMobileOpen(false)}
+                className="rounded-md px-3 py-2 text-sm text-foreground hover:bg-accent transition-colors"
+                activeProps={{ className: "rounded-md px-3 py-2 text-sm text-foreground bg-accent font-semibold" }}
+              >
+                {p.label}
+              </Link>
+            ))}
+          </div>
+        </nav>
+      )}
     </header>
   );
 }
