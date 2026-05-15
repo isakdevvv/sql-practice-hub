@@ -239,6 +239,112 @@ export const BOOKS: readonly Book[] = [
     motArgument:
       "Clean Code er kontroversiell og dogmatisk. Pragmatic er pragmatisk — gir deg verktøy uten å forsøke å konvertere deg til en religion.",
   },
+
+  // ============ BØLGE 2 ============================================
+  {
+    id: "crafting-interpreters",
+    title: "Crafting Interpreters",
+    authors: "Robert Nystrom",
+    year: "2021 — gratis online",
+    free: true,
+    url: "https://craftinginterpreters.com/",
+    blurb:
+      "Bygg en hel programmeringsspråk-tolker fra null — først i Java (tre-walking), så i C (bytecode VM). Eneste boka som virkelig demystifiserer hva et språk ER.",
+    metaforer: [
+      "Tre-walker først, bytecode-VM etterpå — du ser SAMME språk implementert to ganger",
+      "Forklarer parsing som 'å lese ferdig før du forstår' — recursive descent uten teoretisk tåke",
+      "Bytecode-kapittelet viser HVORFOR Python er treg og hvorfor JIT eksisterer",
+      "Garbage collection-kapittelet bygger en mark-and-sweep GC i ren C — magi forsvinner",
+    ],
+    fag: ["trinn-8 (python er C)", "trinn-10 (Flask dyp)", "DTE-2511 Vid. programmering"],
+    tier: 2,
+    motArgument:
+      "Dragon Book er den akademiske kompilatorboka, men er teoritung og pedagogisk dårlig. Nystrom bygger noe FAKTISK kjørbart og vil at du skal skjønne — ikke bare bestå eksamen.",
+  },
+
+  {
+    id: "petrov-database-internals",
+    title: "Database Internals: A Deep Dive into How Distributed Data Systems Work",
+    authors: "Alex Petrov",
+    year: "2019",
+    free: false,
+    url: "https://www.databass.dev/",
+    blurb:
+      "Hva som faktisk skjer inne i en database — B-trees, LSM-trees, write-ahead-log, replikasjon, konsensus. Komplement til Kleppmann (DDIA): Petrov viser HVORDAN, Kleppmann HVORFOR.",
+    metaforer: [
+      "B-tree vs LSM-tree visualisert med konkret read/write-karakteristikk",
+      "WAL (write-ahead-log) forklart som 'commit-bok du skriver i før du gjør jobben'",
+      "Raft-konsensus illustrert som 'møtekall der alle enige om hvem som leder'",
+      "Tar opp eksakt samme tema som Kleppmann men med 10x mer KODE og diagrammer",
+    ],
+    fag: ["DTE-2509 Databaser (avansert lesning)", "DTE-2604 Systemutvikling", "bachelor-oppgave hvis DB"],
+    tier: 3,
+    motArgument:
+      "DDIA er bredere men mindre dyp på selve DB-internalene. Petrov supplerer med tekniske detaljer DDIA hopper over.",
+  },
+
+  {
+    id: "huyen-mlops",
+    title: "Designing Machine Learning Systems",
+    authors: "Chip Huyen",
+    year: "2022",
+    free: false,
+    url: "https://huyenchip.com/ml-interviews-book/",
+    blurb:
+      "Hvordan ML faktisk leveres i produksjon. Géron lærer deg å bygge en modell; Huyen lærer deg hvordan modellen møter virkelig data, drift, monitorering og A/B-testing.",
+    metaforer: [
+      "'Data flywheel' = mer brukere → mer data → bedre modell → flere brukere",
+      "Concept drift forklart med konkrete eksempler (Covid-19 endret ALLE ML-modeller på én dag)",
+      "Feature store som 'database for ML-features' — løser duplisering mellom team",
+      "Online vs batch learning trade-offs presentert som beslutningsmatrise, ikke ideologi",
+    ],
+    fag: ["DTE-2602 ML intro (ekstra)", "DTE-2502 Deep Learning", "bachelor-oppgave hvis ML i prod"],
+    tier: 2,
+    motArgument:
+      "Géron + ISLR lærer deg modellteori. Huyen er HVA SKJER ETTER MODELL FERDIG — som ingen lærebok dekker. Direkte relevant for jobb-intervjuer i ML-roller.",
+  },
+
+  {
+    id: "grokking-algorithms",
+    title: "Grokking Algorithms",
+    authors: "Aditya Bhargava",
+    year: "2nd ed. 2024",
+    free: false,
+    url: "https://www.manning.com/books/grokking-algorithms-second-edition",
+    blurb:
+      "Tegneserie-aktig algoritmebok. Visuell, vennlig, og dekker datastrukturer/algoritmer du trenger overalt. Komplement til CLRS hvis du vil ha dybde — men start her.",
+    metaforer: [
+      "Quicksort visualisert som 'velg pivot, alle mindre venstre, alle større høyre' — TEGNET",
+      "Hash-tabeller forklart med 'navn-til-skuffenummer-funksjon' — du SER hvorfor hash er rask",
+      "Dijkstra steg-for-steg med kart, ikke matriser",
+      "Dynamic programming forklart via knapsack med visuelle griller — endelig forståelig",
+    ],
+    fag: ["algoritmer-stack-sider", "intervju-prep", "DTE-2511"],
+    tier: 2,
+    motArgument:
+      "CLRS er KING for teori men er en murstein på 1300 sider. Bhargava er 250 sider og lærer deg det 80% bruker uten gråt. Komplement, ikke konkurrent.",
+  },
+
+  {
+    id: "fowler-refactoring",
+    title: "Refactoring: Improving the Design of Existing Code",
+    authors: "Martin Fowler",
+    year: "2nd ed. 2018",
+    free: false,
+    url: "https://martinfowler.com/books/refactoring.html",
+    blurb:
+      "Hvordan endre kode SAFE — uten å bryte den. Hver refactoring har et navn ('Extract Method', 'Inline Variable') som blir et begrep du bruker resten av karrieren.",
+    metaforer: [
+      "'Code smell' = symptomer som indikerer designproblem (Long Method, Feature Envy, ...)",
+      "Refactoring-katalog: 60+ navngitte transformasjoner med før/etter-kode",
+      "'Refactor first, THEN add the feature' — mantra som forhindrer rot",
+      "Tester som 'sikkerhetsnett som lar deg endre uten frykt' — kobler refactoring til TDD",
+    ],
+    fag: ["DTE-2511 Vid. programmering", "DTE-2604 Systemutvikling", "alle prosjekt-fag"],
+    tier: 3,
+    motArgument:
+      "Pragmatic Programmer gir prinsipper. Fowler gir KATALOG av konkrete grep. Begge to = komplett — Pragmatic alene = teori uten verktøy.",
+  },
 ];
 
 /**
@@ -290,6 +396,31 @@ export const LESEORDEN_FOR_BACHELOR = [
     semester: "Bachelor-prosjekt (industri-perspektiv)",
     bok: "ddia",
     why: "Hvis bacheloroppgaven din involverer database eller distribuert system — denne gir deg språk for design-valg.",
+  },
+  {
+    semester: "Sommer-prosjekt 1.→2. år (om du vil bygge noe morsomt)",
+    bok: "crafting-interpreters",
+    why: "Bygg din egen tolker. Beste sommer-prosjekt en datastudent kan gjøre — du lærer rekursjon, parsing, tre-traversering, GC i én bok.",
+  },
+  {
+    semester: "Etter Géron — før eller parallell med bachelor-prosjekt",
+    bok: "huyen-mlops",
+    why: "Hvis bacheloroppgaven din er ML-relatert: les denne FØR du designer pipeline. Sparer deg fra rookie-feil i produksjon.",
+  },
+  {
+    semester: "Som referanse hele tiden",
+    bok: "grokking-algorithms",
+    why: "Oppslagsverk når du møter et algoritmeproblem og trenger 'å se' løsningen. Bla gjennom på lørdag formiddag.",
+  },
+  {
+    semester: "Når du har skrevet >2000 linjer kode",
+    bok: "fowler-refactoring",
+    why: "Refactoring gir mest mening når du allerede har følt smerten av rotete kode. Les den ETTER du har erfaring å henge teknikkene på.",
+  },
+  {
+    semester: "Avansert valg — bachelor-prosjekt om DB",
+    bok: "petrov-database-internals",
+    why: "Kun hvis bacheloroppgaven din krever dyp DB-kunnskap. Ellers nok å vite at den finnes.",
   },
   {
     semester: "Når som helst, fortsett å bruke",
