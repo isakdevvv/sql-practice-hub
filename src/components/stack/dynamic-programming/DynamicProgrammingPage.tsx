@@ -2,8 +2,10 @@ import { Link } from "@tanstack/react-router";
 import { ArrowRight, Lightbulb } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
+import { DPVisualizer } from "./DPVisualizer";
 
 const STEPS = [
+  { title: "Interaktiv: se DP-tabellen fylles", anchor: "interaktiv" },
   { title: "Hvorfor DP — to forutsetninger", anchor: "hvorfor" },
   { title: "Memoisering vs tabulering", anchor: "memo-tab" },
   { title: "Fibonacci — kanonisk eksempel", anchor: "fib" },
@@ -43,6 +45,19 @@ export function DynamicProgrammingPage() {
         </div>
 
         <CourseOutline courseId="dynamic-programming" steps={STEPS} />
+
+        <section id="interaktiv" className="mb-10">
+          <h2 className="text-xl font-semibold mb-3">
+            Interaktiv: se DP-tabellen fylles
+          </h2>
+          <p className="text-sm text-muted-foreground mb-4">
+            Velg modus, juster input og trykk <strong>Step</strong> eller{" "}
+            <strong>Play</strong>. Hver iterasjon viser cella som skrives, hvilke
+            forrige celler den leser fra (gule), og hva rekurrensen evaluerer til.
+            Når tabellen er full markeres svar-cella grønt.
+          </p>
+          <DPVisualizer />
+        </section>
 
         <section id="hvorfor" className="mb-10">
           <h2 className="text-xl font-semibold mb-3">1. Hvorfor DP — to forutsetninger</h2>
