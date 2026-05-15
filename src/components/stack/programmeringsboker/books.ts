@@ -345,6 +345,112 @@ export const BOOKS: readonly Book[] = [
     motArgument:
       "Pragmatic Programmer gir prinsipper. Fowler gir KATALOG av konkrete grep. Begge to = komplett — Pragmatic alene = teori uten verktøy.",
   },
+
+  // ============ BØLGE 3 — gratis-tunge spesialister ===================
+  {
+    id: "grigorik-hpbn",
+    title: "High Performance Browser Networking",
+    authors: "Ilya Grigorik (Google)",
+    year: "2013 (fortsatt mest oppdaterte ressurs på HTTP/2-3, QUIC)",
+    free: true,
+    url: "https://hpbn.co/",
+    blurb:
+      "Hva nettet faktisk gjør i nettleseren — TCP, TLS, HTTP/1.1/2/3, QUIC, WebSocket, WebRTC. Skrevet av Googles tidligere web-perf-leder. Komplement til Kurose: Kurose lærer protokollene, Grigorik lærer hvordan de møter ekte nettsider.",
+    metaforer: [
+      "TCP-handshake-pris målt i konkrete RTT — viser hvorfor HTTP/3 over QUIC vant",
+      "TLS 1.2 vs 1.3 sammenlignet RTT-for-RTT (1.3 sparer én round trip)",
+      "HTTP/2 server-push og prioritering forklart med konkrete eksempler",
+      "Mobile/celle-radio-tilstander (RRC) — hvorfor mobil-perf er annerledes",
+    ],
+    fag: ["DTE-2507 (web-perf-perspektiv)", "DTE-2509 (HTTP/2/3-detaljer)", "web-prosjekter"],
+    tier: 2,
+    motArgument:
+      "Kurose dekker protokollene generelt, men er klassisk akademisk. Grigorik er Google-ingeniøren som faktisk har målt og optimalisert dette i prod.",
+  },
+
+  {
+    id: "google-sre",
+    title: "Site Reliability Engineering: How Google Runs Production Systems",
+    authors: "Beyer, Jones, Petoff & Murphy (Google SRE-team)",
+    year: "2016 — gratis online",
+    free: true,
+    url: "https://sre.google/sre-book/table-of-contents/",
+    blurb:
+      "Hvordan moderne firma faktisk drifter systemer i 2026. SLI/SLO/SLA, error budgets, blameless postmortems, toil-automatisering — terminologien som brukes overalt i industrien.",
+    metaforer: [
+      "SLO som 'kontrakt mellom team' — bytter ut subjektivitet med tall",
+      "Error budget = 'hvor mye nedetid har du råd til denne måneden' — løser konflikten dev vs ops",
+      "Blameless postmortem = 'vi spør hvorfor systemet svikter, ikke hvem'",
+      "Toil-budsjett ≤ 50% av tiden — kvantifiserer 'vi må automatisere mer'",
+    ],
+    fag: ["DTE-2511 Vid. programmering", "DTE-2604 Systemutvikling", "bachelor-prosjekt med devops-aspekt"],
+    tier: 2,
+    motArgument:
+      "Pragmatic Programmer er individuelt-perspektiv. Phoenix Project er roman. SRE-boka er det eneste tekniske som beskriver moderne drift fra topp til bunn — gratis fordi Google ville heve standarden i industrien.",
+  },
+
+  {
+    id: "goodfellow-deep-learning",
+    title: "Deep Learning",
+    authors: "Ian Goodfellow, Yoshua Bengio, Aaron Courville",
+    year: "2016 — gratis online",
+    free: true,
+    url: "https://www.deeplearningbook.org/",
+    blurb:
+      "Den matematiske bibelen for deep learning. Tre forskere som fant opp store deler av feltet. Tung lesning, men ingen annen bok bygger fundamentet med samme rigor.",
+    metaforer: [
+      "Del 1: matematisk fundament (lin.alg., sannsynlighet, info-teori) — alt du trenger samlet",
+      "Del 2: feedforward, regularisering, optimering, CNN, RNN — kjernen",
+      "Del 3: research-frontier per 2016 (litt utdatert, men prinsippene står)",
+      "Begrepet 'representation learning' formaliseres her — hvorfor deep > shallow",
+    ],
+    fag: ["DTE-2502 Deep Learning (etter Nielsen)"],
+    tier: 2,
+    motArgument:
+      "Nielsen NNDL gir intuisjon, og det er der du starter. Goodfellow er hva du leser når du må forstå BEVIS, ikke bare hvordan kalle .fit() på Keras. Stein-tung men gratis.",
+  },
+
+  {
+    id: "sutton-barto-rl",
+    title: "Reinforcement Learning: An Introduction",
+    authors: "Richard S. Sutton & Andrew G. Barto",
+    year: "2nd ed. 2018 — gratis online",
+    free: true,
+    url: "http://incompleteideas.net/book/the-book-2nd.html",
+    blurb:
+      "RL-bibelen. Sutton & Barto fant opp temporal-difference learning, Q-learning og mye annet. Boka deres er der alle (inkludert DeepMind-folk) startet.",
+    metaforer: [
+      "Multi-armed bandits som introduksjon til exploration vs exploitation",
+      "Bellman-ligningen bygd opp fra null — endelig forståelig",
+      "Policy iteration vs value iteration sammenlignet med pseudokode",
+      "Actor-critic forklart som 'én del lærer hva som er bra, en annen velger handling'",
+    ],
+    fag: ["DTE-2501 (RL-delen)", "DTE-2502 (om du vil dypt inn i deep RL etter)"],
+    tier: 2,
+    motArgument:
+      "AIMA dekker RL i ett kapittel. Sutton & Barto er HELE boka, av folkene som fant opp algoritmene. Når DeepMind-folk skriver papers refererer de til denne.",
+  },
+
+  {
+    id: "ramalho-fluent-python",
+    title: "Fluent Python",
+    authors: "Luciano Ramalho",
+    year: "2nd ed. 2022",
+    free: false,
+    url: "https://www.oreilly.com/library/view/fluent-python-2nd/9781492056348/",
+    blurb:
+      "Python qua Python — ikke ML, ikke web, men språket selv. Ramalho lærer deg HVORFOR Python ser ut som det gjør, og hvordan skrive idiomatisk Python.",
+    metaforer: [
+      "Data model — `__dunder__`-metoder forklart fra grunnen (= alt!)",
+      "Generators som 'lazy lister' — `yield` blir åpenbart",
+      "Decorators-kapittelet er den klareste forklaringen som finnes",
+      "asyncio og concurrency — stort sett uendret etter 3.12, prinsippene står",
+    ],
+    fag: ["DTE-2501/2602/2502/2509", "alle Python-tunge fag"],
+    tier: 3,
+    motArgument:
+      "Géron lærer ML-Python (sklearn-API). Fluent Python lærer deg språket. Ingen overlapp — kun les denne om du skriver Python ofte og vil bli faktisk god.",
+  },
 ];
 
 /**
@@ -421,6 +527,31 @@ export const LESEORDEN_FOR_BACHELOR = [
     semester: "Avansert valg — bachelor-prosjekt om DB",
     bok: "petrov-database-internals",
     why: "Kun hvis bacheloroppgaven din krever dyp DB-kunnskap. Ellers nok å vite at den finnes.",
+  },
+  {
+    semester: "Bygger React/web-prosjekt — vil du faktisk forstå det",
+    bok: "grigorik-hpbn",
+    why: "Gratis, lesbar i biter. Etter Kurose-grunnlag — Grigorik viser hvordan protokollene møter ekte browser-perf.",
+  },
+  {
+    semester: "Bachelor-prosjekt med devops/produksjon",
+    bok: "google-sre",
+    why: "Lær terminologien (SLO, error budget) FØR du designer systemet. Ellers ender du opp med å gjenoppfinne ordene.",
+  },
+  {
+    semester: "Etter Nielsen — vår 3. år eller master-forberedelse",
+    bok: "goodfellow-deep-learning",
+    why: "Når du må forstå BEVIS bak deep learning, ikke bare ringe `.fit()`. Kun hvis du faktisk skal forske eller jobbe DL-tungt.",
+  },
+  {
+    semester: "Når DTE-2501 dekker RL — eller om du vil bygge en RL-agent",
+    bok: "sutton-barto-rl",
+    why: "AIMA gir overblikk; Sutton & Barto gir hele dybden. Gratis, så kost null å lese parallelt.",
+  },
+  {
+    semester: "Når du har skrevet >5000 linjer Python",
+    bok: "ramalho-fluent-python",
+    why: "Ramalho gir mest mening når du har erfaring å henge idiomene på. Før dette: bruk Python; etter: bli god på Python.",
   },
   {
     semester: "Når som helst, fortsett å bruke",

@@ -187,6 +187,7 @@ import { content as dte2507Nat } from "./dte2507-nat";
 import { content as dte2602Svm } from "./dte2602-svm";
 import { content as dte2505Spesialbits } from "./dte2505-spesialbits";
 import { content as programmeringsboker } from "./programmeringsboker";
+import { content as youtubeKanaler } from "./youtube-kanaler";
 import type { TrinnContent } from "../types";
 
 export const TRINN: TrinnContent[] = [
@@ -265,6 +266,8 @@ export const TRINN: TrinnContent[] = [
   dte2505Spesialbits,
   // Bok-bibliotek for hele DTE-bachelor
   programmeringsboker,
+  // YouTube-kanal-bibliotek
+  youtubeKanaler,
 ];
 
 import { curriculumIndexOf } from "../curriculum";
