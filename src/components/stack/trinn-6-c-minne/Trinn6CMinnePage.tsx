@@ -3,6 +3,7 @@ import { ArrowRight, Lightbulb } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
 import { MemoryVisualizer } from "./MemoryVisualizer";
+import { MemoryModel } from "./MemoryModel";
 
 const STEPS = [
   { title: "Interaktiv minne-visualiserer", anchor: "visualiser" },
@@ -10,6 +11,7 @@ const STEPS = [
   { title: "Pekere — adresser til bytes", anchor: "pekere" },
   { title: "Stack-allokering — lokale variabler", anchor: "stack" },
   { title: "Heap-allokering — malloc og free", anchor: "heap" },
+  { title: "Livssyklus — frames, allokeringer, dangling pekere", anchor: "livssyklus" },
   { title: "Vanlige feil og segfaults", anchor: "feil" },
   { title: "Strukturer og alignment", anchor: "struct" },
 ];
@@ -233,8 +235,22 @@ Memory-leak-eksempel:
           </div>
         </section>
 
+        <section id="livssyklus" className="mb-12">
+          <h2 className="text-xl font-semibold mb-3">
+            5. Livssyklus — frames, allokeringer, dangling pekere
+          </h2>
+          <p className="text-sm text-muted-foreground mb-4">
+            Visualiseren over fokuserer på <em>bytes på adresser</em>. Denne
+            fokuserer på <em>tid</em>: hvordan stacken og heapen forandrer seg
+            mens programmet kjører. Step gjennom tre forskjellige
+            C-programmer og se frames bli pushet, malloc-blokker bli født og
+            frigjort, og pekere bli dangling.
+          </p>
+          <MemoryModel />
+        </section>
+
         <section id="feil" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">5. Vanlige feil og segfaults</h2>
+          <h2 className="text-xl font-semibold mb-3">6. Vanlige feil og segfaults</h2>
           <p className="text-sm text-muted-foreground mb-4">
             «Segmentation fault» betyr at prosessen prøvde å lese eller
             skrive til en adresse OS-en ikke ga tillatelse til. Det er
@@ -278,7 +294,7 @@ Verktøy som hjelper:
         </section>
 
         <section id="struct" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">6. Strukturer og alignment</h2>
+          <h2 className="text-xl font-semibold mb-3">7. Strukturer og alignment</h2>
           <p className="text-sm text-muted-foreground mb-4">
             En struct er bare en sammensetning av felter. Kompilatoren
             legger til padding for at hvert felt skal være aligned på en
