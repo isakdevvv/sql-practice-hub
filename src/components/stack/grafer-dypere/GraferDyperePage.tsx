@@ -2,8 +2,10 @@ import { Link } from "@tanstack/react-router";
 import { ArrowRight, Lightbulb } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
+import { GraphAlgoVisualizer } from "./GraphAlgoVisualizer";
 
 const STEPS = [
+  { title: "Interaktiv: BFS/DFS/Dijkstra", anchor: "interaktiv" },
   { title: "Representasjon — list vs matrise", anchor: "rep" },
   { title: "BFS og DFS", anchor: "bfs-dfs" },
   { title: "Dijkstra (vektede grafer)", anchor: "dijkstra" },
@@ -43,6 +45,20 @@ export function GraferDyperePage() {
         </div>
 
         <CourseOutline courseId="grafer-dypere" steps={STEPS} />
+
+        <section id="interaktiv" className="mb-10">
+          <h2 className="text-xl font-semibold mb-3">
+            Interaktiv: kjør BFS/DFS/Dijkstra
+          </h2>
+          <p className="text-sm text-muted-foreground mb-3">
+            Velg algoritme og startnode, så trykk <strong>Steg</strong> for å
+            utforske én nabo om gangen — eller la <strong>Spill av</strong> gå
+            i valgt tempo. Følg med på køen/stacken/heapen nederst og hvilke
+            kanter som blir fete. Grafen er bygget for å være regnbar for
+            hånd, så test om du klarer å forutsi neste steg.
+          </p>
+          <GraphAlgoVisualizer />
+        </section>
 
         <section id="rep" className="mb-10">
           <h2 className="text-xl font-semibold mb-3">1. Representasjon — list vs matrise</h2>
