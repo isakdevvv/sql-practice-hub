@@ -1579,3 +1579,346 @@ export const DijkstraTable: FC = () => (
     <Caption>Dijkstra trinn-for-trinn: cost-tabellen krymper mot endelige korteste-sti-avstander.</Caption>
   </figure>
 );
+
+/* =====================================================================
+ * MEMORY-/ADRESSE-DIAGRAMMER
+ * Variabler holder *adresser* til heap-objekter, ikke verdiene selv.
+ * Brukes i flere kapitler — Visualizer-panelet viser samme id=… i header.
+ * ===================================================================*/
+
+const ARR_ID = "arr-id";
+function IdArrowDef() {
+  return (
+    <defs>
+      <marker id={ARR_ID} viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+        <path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor" />
+      </marker>
+    </defs>
+  );
+}
+
+/* Kap. 6 — Funksjoner: mutable default arg (én delt liste per def) */
+export const MutableDefaultArg: FC = () => (
+  <figure className="my-4">
+    <svg viewBox="0 0 360 220" className="w-full max-w-md mx-auto text-foreground">
+      {/* Function box */}
+      <rect x="10" y="10" width="160" height="56" fill="color-mix(in oklch, var(--brand) 15%, transparent)" stroke={STROKE} />
+      <text x="20" y="28" className="text-[10px] fill-current opacity-80">funksjons-objekt</text>
+      <text x="20" y="48" className="text-[11px] fill-current font-mono">def legg(x, b=[])</text>
+      <text x="20" y="62" className="text-[9px] fill-current opacity-70">id=4711</text>
+      {/* Default value lives on heap, ONE list */}
+      <rect x="200" y="80" width="150" height="56" fill="color-mix(in oklch, var(--success) 18%, transparent)" stroke={STROKE} />
+      <text x="210" y="98" className="text-[10px] fill-current opacity-80">heap-liste (default-arg)</text>
+      <text x="210" y="120" className="text-[12px] fill-current font-mono">[1, 2, 3]</text>
+      <text x="210" y="132" className="text-[9px] fill-current opacity-70">id=9001</text>
+      {/* Two calls — both bind b to the SAME id */}
+      <rect x="10" y="100" width="80" height="26" fill="color-mix(in oklch, var(--warning) 15%, transparent)" stroke={STROKE} />
+      <text x="50" y="117" textAnchor="middle" className="text-[10px] fill-current font-mono">kall 1: b</text>
+      <rect x="10" y="150" width="80" height="26" fill="color-mix(in oklch, var(--warning) 15%, transparent)" stroke={STROKE} />
+      <text x="50" y="167" textAnchor="middle" className="text-[10px] fill-current font-mono">kall 2: b</text>
+      <path d="M 90 113 Q 145 110 200 105" fill="none" stroke={STROKE} markerEnd={`url(#${ARR_ID})`} />
+      <path d="M 90 163 Q 145 140 200 120" fill="none" stroke={STROKE} markerEnd={`url(#${ARR_ID})`} />
+      <text x="10" y="200" className="text-[10px] fill-current opacity-80">def-en evalueres én gang. Begge kall ser samme id=9001 →</text>
+      <text x="10" y="214" className="text-[10px] fill-current opacity-80">.append() i kall 1 er synlig i kall 2.</text>
+      <IdArrowDef />
+    </svg>
+    <Caption>Mutable default-arg-fellen: parameteren <code>b</code> binder til samme heap-objekt ved hvert kall.</Caption>
+  </figure>
+);
+
+/* Kap. 7 — Klasser: self er en referanse til heap-instansen */
+export const SelfReference: FC = () => (
+  <figure className="my-4">
+    <svg viewBox="0 0 360 220" className="w-full max-w-md mx-auto text-foreground">
+      {/* Two instance heap objects */}
+      <rect x="200" y="20" width="150" height="64" fill="color-mix(in oklch, var(--success) 18%, transparent)" stroke={STROKE} />
+      <text x="210" y="38" className="text-[10px] fill-current opacity-80">Hund-instans</text>
+      <text x="210" y="58" className="text-[12px] fill-current font-mono">navn = "Rex"</text>
+      <text x="210" y="78" className="text-[9px] fill-current opacity-70">id=8200</text>
+      <rect x="200" y="120" width="150" height="64" fill="color-mix(in oklch, var(--success) 18%, transparent)" stroke={STROKE} />
+      <text x="210" y="138" className="text-[10px] fill-current opacity-80">Hund-instans</text>
+      <text x="210" y="158" className="text-[12px] fill-current font-mono">navn = "Mira"</text>
+      <text x="210" y="178" className="text-[9px] fill-current opacity-70">id=8244</text>
+      {/* Variable boxes */}
+      <rect x="10" y="36" width="80" height="28" fill="color-mix(in oklch, var(--brand) 15%, transparent)" stroke={STROKE} />
+      <text x="50" y="55" textAnchor="middle" className="text-[11px] fill-current font-mono">rex</text>
+      <rect x="10" y="136" width="80" height="28" fill="color-mix(in oklch, var(--brand) 15%, transparent)" stroke={STROKE} />
+      <text x="50" y="155" textAnchor="middle" className="text-[11px] fill-current font-mono">mira</text>
+      {/* self labels — what self binds to during method call */}
+      <text x="105" y="40" className="text-[9px] fill-current opacity-70">self under rex.bjeff()</text>
+      <text x="105" y="140" className="text-[9px] fill-current opacity-70">self under mira.bjeff()</text>
+      <path d="M 90 50 L 200 50" fill="none" stroke={STROKE} markerEnd={`url(#${ARR_ID})`} />
+      <path d="M 90 150 L 200 150" fill="none" stroke={STROKE} markerEnd={`url(#${ARR_ID})`} />
+      <IdArrowDef />
+    </svg>
+    <Caption><code>self</code> er en lokal variabel som ved hvert metodekall holder adressen til riktig instans.</Caption>
+  </figure>
+);
+
+/* Kap. 8 — Strenger: is vs == og interning */
+export const IsVsEquals: FC = () => (
+  <figure className="my-4">
+    <svg viewBox="0 0 360 240" className="w-full max-w-md mx-auto text-foreground">
+      {/* Top: same value, different ids */}
+      <text x="10" y="18" className="text-[11px] fill-current font-mono opacity-90">a = "hei verden"; b = "hei verden"</text>
+      <rect x="10" y="28" width="60" height="26" fill="color-mix(in oklch, var(--brand) 15%, transparent)" stroke={STROKE} />
+      <text x="40" y="46" textAnchor="middle" className="text-[11px] fill-current font-mono">a</text>
+      <rect x="10" y="62" width="60" height="26" fill="color-mix(in oklch, var(--brand) 15%, transparent)" stroke={STROKE} />
+      <text x="40" y="80" textAnchor="middle" className="text-[11px] fill-current font-mono">b</text>
+      <rect x="170" y="22" width="180" height="32" fill="color-mix(in oklch, var(--success) 18%, transparent)" stroke={STROKE} />
+      <text x="180" y="42" className="text-[11px] fill-current font-mono">"hei verden"</text>
+      <text x="298" y="42" className="text-[9px] fill-current opacity-70">id=51</text>
+      <rect x="170" y="60" width="180" height="32" fill="color-mix(in oklch, var(--success) 18%, transparent)" stroke={STROKE} />
+      <text x="180" y="80" className="text-[11px] fill-current font-mono">"hei verden"</text>
+      <text x="298" y="80" className="text-[9px] fill-current opacity-70">id=72</text>
+      <path d="M 70 41 L 170 38" fill="none" stroke={STROKE} markerEnd={`url(#${ARR_ID})`} />
+      <path d="M 70 75 L 170 76" fill="none" stroke={STROKE} markerEnd={`url(#${ARR_ID})`} />
+      <text x="10" y="108" className="text-[10px] fill-current opacity-80">a == b → True (samme verdi). a is b → False (ulik id).</text>
+      {/* Bottom: interned short string — same id */}
+      <text x="10" y="138" className="text-[11px] fill-current font-mono opacity-90">x = "ok"; y = "ok"   # kort/identifier-aktig → interned</text>
+      <rect x="10" y="148" width="60" height="26" fill="color-mix(in oklch, var(--brand) 15%, transparent)" stroke={STROKE} />
+      <text x="40" y="166" textAnchor="middle" className="text-[11px] fill-current font-mono">x</text>
+      <rect x="10" y="182" width="60" height="26" fill="color-mix(in oklch, var(--brand) 15%, transparent)" stroke={STROKE} />
+      <text x="40" y="200" textAnchor="middle" className="text-[11px] fill-current font-mono">y</text>
+      <rect x="170" y="160" width="180" height="32" fill="color-mix(in oklch, var(--success) 18%, transparent)" stroke={STROKE} />
+      <text x="180" y="180" className="text-[11px] fill-current font-mono">"ok"</text>
+      <text x="298" y="180" className="text-[9px] fill-current opacity-70">id=99</text>
+      <path d="M 70 161 Q 120 170 170 175" fill="none" stroke={STROKE} markerEnd={`url(#${ARR_ID})`} />
+      <path d="M 70 195 Q 120 188 170 180" fill="none" stroke={STROKE} markerEnd={`url(#${ARR_ID})`} />
+      <text x="10" y="226" className="text-[10px] fill-current opacity-80">Her gir x is y → True (samme id, interning).</text>
+      <IdArrowDef />
+    </svg>
+    <Caption><code>==</code> sammenligner verdi. <code>is</code> sammenligner adresse (id). Stol bare på <code>is</code> for <code>None</code>.</Caption>
+  </figure>
+);
+
+/* Kap. 11 — [[0]*3]*3-fellen: én delt indre liste */
+export const NestedListAliasing: FC = () => (
+  <figure className="my-4">
+    <svg viewBox="0 0 360 240" className="w-full max-w-md mx-auto text-foreground">
+      <text x="10" y="18" className="text-[11px] fill-current font-mono">m = [[0]*3] * 3</text>
+      {/* Outer list with 3 cells, all pointing to ONE inner list */}
+      <rect x="10" y="36" width="160" height="40" fill="color-mix(in oklch, var(--success) 14%, transparent)" stroke={STROKE} />
+      <text x="20" y="52" className="text-[10px] fill-current opacity-80">ytre liste id=4001</text>
+      {[0, 1, 2].map((i) => (
+        <g key={i}>
+          <rect x={20 + i * 50} y={56} width={40} height={16} fill="color-mix(in oklch, var(--brand) 18%, transparent)" stroke={STROKE} />
+          <text x={40 + i * 50} y={68} textAnchor="middle" className="text-[9px] fill-current font-mono">m[{i}]</text>
+        </g>
+      ))}
+      <rect x="220" y="46" width="130" height="40" fill="color-mix(in oklch, var(--warning) 18%, transparent)" stroke={STROKE} />
+      <text x="230" y="62" className="text-[10px] fill-current opacity-80">indre liste id=4099</text>
+      <text x="230" y="80" className="text-[12px] fill-current font-mono">[0, 0, 0]</text>
+      <path d="M 60 64 Q 140 48 220 56" fill="none" stroke={STROKE} markerEnd={`url(#${ARR_ID})`} />
+      <path d="M 110 64 Q 165 56 220 64" fill="none" stroke={STROKE} markerEnd={`url(#${ARR_ID})`} />
+      <path d="M 160 64 Q 190 70 220 72" fill="none" stroke={STROKE} markerEnd={`url(#${ARR_ID})`} />
+      <text x="10" y="106" className="text-[10px] fill-current opacity-80">m[0][0] = 9 endrer alle radene — det finnes bare én indre liste.</text>
+      {/* contrast: list-comp version */}
+      <text x="10" y="138" className="text-[11px] fill-current font-mono">m = [[0]*3 for _ in range(3)]</text>
+      <rect x="10" y="156" width="160" height="40" fill="color-mix(in oklch, var(--success) 14%, transparent)" stroke={STROKE} />
+      <text x="20" y="172" className="text-[10px] fill-current opacity-80">ytre liste id=4111</text>
+      {[0, 1, 2].map((i) => (
+        <g key={i}>
+          <rect x={20 + i * 50} y={176} width={40} height={16} fill="color-mix(in oklch, var(--brand) 18%, transparent)" stroke={STROKE} />
+          <text x={40 + i * 50} y={188} textAnchor="middle" className="text-[9px] fill-current font-mono">m[{i}]</text>
+        </g>
+      ))}
+      {[0, 1, 2].map((i) => (
+        <g key={i}>
+          <rect x={210 + i * 48} y={156 + i * 4} width={40} height={26} fill="color-mix(in oklch, var(--warning) 18%, transparent)" stroke={STROKE} />
+          <text x={230 + i * 48} y={172 + i * 4} textAnchor="middle" className="text-[9px] fill-current font-mono">[0,0,0]</text>
+          <text x={230 + i * 48} y={184 + i * 4} textAnchor="middle" className="text-[8px] fill-current opacity-70">id={4200 + i}</text>
+          <path d={`M ${40 + i * 50} 192 Q ${130 + i * 30} ${200 + i * 4} ${210 + i * 48} ${172 + i * 4}`} fill="none" stroke={STROKE} markerEnd={`url(#${ARR_ID})`} />
+        </g>
+      ))}
+      <text x="10" y="232" className="text-[10px] fill-current opacity-80">Tre uavhengige indre lister — ulike id-er. Trygg å mutere per rad.</text>
+      <IdArrowDef />
+    </svg>
+    <Caption>Multiplikasjon kopierer <em>referansen</em>, ikke listen. List-comp gir hver rad sin egen id.</Caption>
+  </figure>
+);
+
+/* Kap. 14 — hashable nøkler: tuple (immutable) ja, list (mutable) nei */
+export const HashableKeys: FC = () => (
+  <figure className="my-4">
+    <svg viewBox="0 0 360 220" className="w-full max-w-md mx-auto text-foreground">
+      {/* Dict on the right with two entries */}
+      <rect x="160" y="10" width="190" height="200" fill="color-mix(in oklch, var(--success) 14%, transparent)" stroke={STROKE} />
+      <text x="170" y="28" className="text-[10px] fill-current opacity-80">dict id=6001</text>
+      <text x="170" y="50" className="text-[11px] fill-current font-mono">hash((1,2)) → 5 → bøtte 5</text>
+      <rect x="170" y="58" width="160" height="38" fill="color-mix(in oklch, var(--brand) 15%, transparent)" stroke={STROKE} />
+      <text x="180" y="78" className="text-[11px] fill-current font-mono">(1,2)</text>
+      <text x="220" y="78" className="text-[10px] fill-current opacity-80">→</text>
+      <text x="240" y="78" className="text-[11px] fill-current font-mono">"a"</text>
+      <text x="180" y="92" className="text-[8px] fill-current opacity-60">tuple id=6111 (immutable, hash stabil)</text>
+      {/* Failed key — list */}
+      <rect x="170" y="120" width="160" height="42" fill="color-mix(in oklch, var(--warning) 12%, transparent)" stroke={STROKE} strokeDasharray="3,2" />
+      <text x="180" y="140" className="text-[11px] fill-current font-mono opacity-70">[1, 2]</text>
+      <text x="220" y="140" className="text-[10px] fill-current opacity-70">→</text>
+      <text x="240" y="140" className="text-[11px] fill-current font-mono opacity-70">"b" ✗</text>
+      <text x="180" y="156" className="text-[8px] fill-current opacity-60">list id=6122 (mutable → unhashable)</text>
+      <text x="170" y="186" className="text-[9px] fill-current opacity-80">TypeError: unhashable type: 'list'</text>
+      {/* Variable boxes pointing in */}
+      <rect x="10" y="60" width="120" height="28" fill="color-mix(in oklch, var(--brand) 15%, transparent)" stroke={STROKE} />
+      <text x="70" y="78" textAnchor="middle" className="text-[11px] fill-current font-mono">nøkkel = (1,2)</text>
+      <path d="M 130 74 L 170 75" fill="none" stroke={STROKE} markerEnd={`url(#${ARR_ID})`} />
+      <rect x="10" y="130" width="120" height="28" fill="color-mix(in oklch, var(--warning) 15%, transparent)" stroke={STROKE} strokeDasharray="3,2" />
+      <text x="70" y="148" textAnchor="middle" className="text-[11px] fill-current font-mono">nøkkel = [1,2]</text>
+      <path d="M 130 144 L 170 140" fill="none" stroke={STROKE} markerEnd={`url(#${ARR_ID})`} strokeDasharray="3,2" />
+      <IdArrowDef />
+    </svg>
+    <Caption>En dict-nøkkel må ha stabil hash. Tuple er immutable → trygg. Liste er muterbar → forbudt.</Caption>
+  </figure>
+);
+
+/* Kap. 22 — Lenkede lister: head → Node(id=…) → … */
+export const LinkedListNodeIds: FC = () => (
+  <figure className="my-4">
+    <svg viewBox="0 0 360 160" className="w-full max-w-md mx-auto text-foreground">
+      <rect x="10" y="50" width="60" height="32" fill="color-mix(in oklch, var(--brand) 15%, transparent)" stroke={STROKE} />
+      <text x="40" y="70" textAnchor="middle" className="text-[11px] fill-current font-mono">head</text>
+      {[
+        { x: 100, label: "A", id: 1001 },
+        { x: 195, label: "B", id: 1002 },
+        { x: 290, label: "C", id: 1003 },
+      ].map((n, i, arr) => (
+        <g key={n.id}>
+          <rect x={n.x} y={40} width={60} height={50} fill="color-mix(in oklch, var(--success) 18%, transparent)" stroke={STROKE} />
+          <text x={n.x + 30} y={62} textAnchor="middle" className="text-[12px] fill-current font-mono">{n.label}</text>
+          <text x={n.x + 30} y={78} textAnchor="middle" className="text-[8px] fill-current opacity-70">id={n.id}</text>
+          <text x={n.x + 30} y={104} textAnchor="middle" className="text-[9px] fill-current opacity-70">.neste</text>
+          {i > 0 && (
+            <path
+              d={`M ${arr[i - 1].x + 60} 65 L ${n.x} 65`}
+              fill="none"
+              stroke={STROKE}
+              markerEnd={`url(#${ARR_ID})`}
+            />
+          )}
+        </g>
+      ))}
+      <path d="M 70 65 L 100 65" fill="none" stroke={STROKE} markerEnd={`url(#${ARR_ID})`} />
+      {/* tail None */}
+      <text x="290" y="125" className="text-[10px] fill-current opacity-80">C.neste = None</text>
+      <text x="10" y="148" className="text-[10px] fill-current opacity-80">head holder adressen til første Node. Hver .neste er en adresse, ikke en kopi.</text>
+      <IdArrowDef />
+    </svg>
+    <Caption>Pekere er adresser. <code>None</code> betyr "ingen adresse" — slutten på lista.</Caption>
+  </figure>
+);
+
+/* Kap. 23 — BST: hver node har venstre/høyre adresser */
+export const BSTNodeIds: FC = () => (
+  <figure className="my-4">
+    <svg viewBox="0 0 360 220" className="w-full max-w-md mx-auto text-foreground">
+      {[
+        { x: 160, y: 20, v: 50, id: 7001, l: 7010, r: 7020 },
+        { x: 80, y: 90, v: 30, id: 7010, l: null, r: 7011 },
+        { x: 250, y: 90, v: 70, id: 7020, l: null, r: null },
+        { x: 130, y: 160, v: 40, id: 7011, l: null, r: null },
+      ].map((n) => (
+        <g key={n.id}>
+          <rect x={n.x - 30} y={n.y} width={60} height={48} fill="color-mix(in oklch, var(--success) 18%, transparent)" stroke={STROKE} />
+          <text x={n.x} y={n.y + 18} textAnchor="middle" className="text-[12px] fill-current font-mono">{n.v}</text>
+          <text x={n.x} y={n.y + 32} textAnchor="middle" className="text-[8px] fill-current opacity-70">id={n.id}</text>
+          <text x={n.x - 26} y={n.y + 44} className="text-[7px] fill-current opacity-60">L:{n.l ?? "None"}</text>
+          <text x={n.x + 4} y={n.y + 44} className="text-[7px] fill-current opacity-60">R:{n.r ?? "None"}</text>
+        </g>
+      ))}
+      {/* arrows */}
+      <path d="M 145 68 L 100 90" fill="none" stroke={STROKE} markerEnd={`url(#${ARR_ID})`} />
+      <path d="M 175 68 L 230 90" fill="none" stroke={STROKE} markerEnd={`url(#${ARR_ID})`} />
+      <path d="M 100 138 L 130 160" fill="none" stroke={STROKE} markerEnd={`url(#${ARR_ID})`} />
+      <text x="10" y="200" className="text-[10px] fill-current opacity-80">venstre/høyre er adresser til andre Node-er (eller None).</text>
+      <text x="10" y="214" className="text-[10px] fill-current opacity-80">Sjekk <code>node is None</code> = "har ingen barn-adresse".</text>
+      <IdArrowDef />
+    </svg>
+    <Caption>BST-noder bærer to pekere — hver er en adresse til neste node, ikke en kopi.</Caption>
+  </figure>
+);
+
+/* Kap. 24 — Hashing: nøkkel-id → hash() → modulo → bucket */
+export const HashFromIdToBucket: FC = () => (
+  <figure className="my-4">
+    <svg viewBox="0 0 360 220" className="w-full max-w-md mx-auto text-foreground">
+      {/* Key on heap */}
+      <rect x="10" y="20" width="120" height="42" fill="color-mix(in oklch, var(--success) 18%, transparent)" stroke={STROKE} />
+      <text x="20" y="38" className="text-[10px] fill-current opacity-80">streng "Ada"</text>
+      <text x="20" y="56" className="text-[10px] fill-current font-mono opacity-70">id=3142</text>
+      {/* hash() box */}
+      <rect x="150" y="20" width="80" height="42" fill="color-mix(in oklch, var(--brand) 15%, transparent)" stroke={STROKE} />
+      <text x="190" y="38" textAnchor="middle" className="text-[11px] fill-current font-mono">hash()</text>
+      <text x="190" y="54" textAnchor="middle" className="text-[10px] fill-current opacity-80">→ 84219…</text>
+      {/* modulo box */}
+      <rect x="250" y="20" width="100" height="42" fill="color-mix(in oklch, var(--warning) 18%, transparent)" stroke={STROKE} />
+      <text x="300" y="38" textAnchor="middle" className="text-[11px] fill-current font-mono">% N (=8)</text>
+      <text x="300" y="54" textAnchor="middle" className="text-[10px] fill-current opacity-80">→ 3</text>
+      {/* arrows */}
+      <path d="M 130 41 L 150 41" fill="none" stroke={STROKE} markerEnd={`url(#${ARR_ID})`} />
+      <path d="M 230 41 L 250 41" fill="none" stroke={STROKE} markerEnd={`url(#${ARR_ID})`} />
+      {/* Bucket array */}
+      <text x="10" y="100" className="text-[10px] fill-current opacity-80">tabell (8 bøtter):</text>
+      {[0, 1, 2, 3, 4, 5, 6, 7].map((i) => (
+        <g key={i}>
+          <rect
+            x={10 + i * 42}
+            y={110}
+            width={40}
+            height={36}
+            fill={i === 3 ? "color-mix(in oklch, var(--brand) 25%, transparent)" : "color-mix(in oklch, var(--muted) 35%, transparent)"}
+            stroke={STROKE}
+          />
+          <text x={30 + i * 42} y={132} textAnchor="middle" className="text-[10px] fill-current font-mono">{i === 3 ? "Ada→30" : "·"}</text>
+          <text x={30 + i * 42} y={158} textAnchor="middle" className="text-[9px] fill-current opacity-70">{i}</text>
+        </g>
+      ))}
+      <path d="M 300 62 L 145 110" fill="none" stroke={STROKE} markerEnd={`url(#${ARR_ID})`} />
+      <text x="10" y="186" className="text-[10px] fill-current opacity-80">Samme nøkkel-id → samme hash → samme bøtte. Det er hele O(1)-trikset.</text>
+      <text x="10" y="200" className="text-[10px] fill-current opacity-80">Mutérbare objekter forbudt: hvis id endret hash, ville bøtta blitt feil.</text>
+      <IdArrowDef />
+    </svg>
+    <Caption>Hashing: regn ut bøtte-indeksen direkte fra nøkkelens identitet — ingen leting.</Caption>
+  </figure>
+);
+
+/* Kap. 25 — Naboliste lagrer adresser til nabo-noder */
+export const GraphAdjAddresses: FC = () => (
+  <figure className="my-4">
+    <svg viewBox="0 0 360 220" className="w-full max-w-md mx-auto text-foreground">
+      {/* Adjacency dict on left */}
+      <rect x="10" y="10" width="150" height="200" fill="color-mix(in oklch, var(--brand) 12%, transparent)" stroke={STROKE} />
+      <text x="20" y="26" className="text-[10px] fill-current opacity-80">graf id=5001 (dict)</text>
+      {[
+        { k: "A", v: '["B","C"]', y: 46 },
+        { k: "B", v: '["A","D"]', y: 86 },
+        { k: "C", v: '["A","D"]', y: 126 },
+        { k: "D", v: '["B","C"]', y: 166 },
+      ].map((row) => (
+        <g key={row.k}>
+          <text x={20} y={row.y} className="text-[11px] fill-current font-mono">{row.k}:</text>
+          <text x={40} y={row.y} className="text-[11px] fill-current font-mono opacity-80">{row.v}</text>
+        </g>
+      ))}
+      {/* Heap nodes on the right */}
+      {[
+        { lbl: "A", x: 220, y: 16, id: 5101 },
+        { lbl: "B", x: 290, y: 16, id: 5102 },
+        { lbl: "C", x: 220, y: 86, id: 5103 },
+        { lbl: "D", x: 290, y: 86, id: 5104 },
+      ].map((n) => (
+        <g key={n.id}>
+          <circle cx={n.x + 30} cy={n.y + 30} r={22} fill="color-mix(in oklch, var(--success) 18%, transparent)" stroke={STROKE} />
+          <text x={n.x + 30} y={n.y + 28} textAnchor="middle" className="text-[12px] fill-current font-mono">{n.lbl}</text>
+          <text x={n.x + 30} y={n.y + 42} textAnchor="middle" className="text-[8px] fill-current opacity-70">id={n.id}</text>
+        </g>
+      ))}
+      {/* Arrows from A's list to B and C node objects */}
+      <path d="M 160 46 L 220 38" fill="none" stroke={STROKE} markerEnd={`url(#${ARR_ID})`} />
+      <path d="M 160 46 Q 200 80 220 110" fill="none" stroke={STROKE} markerEnd={`url(#${ARR_ID})`} />
+      <text x="10" y="200" className="text-[9px] fill-current opacity-80">"B" og "C" er nøkler til samme noder. Endrer du en nodes data, ser alle naboer det.</text>
+      <IdArrowDef />
+    </svg>
+    <Caption>Naboliste-verdier (her strenger) er nøkler/adresser inn i samme graf-dict — ikke kopier av nodene.</Caption>
+  </figure>
+);
+
