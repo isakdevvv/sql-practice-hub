@@ -4,8 +4,10 @@ import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
 import { Tex } from "@/components/Tex";
 import { SequenceDiagram } from "./SequenceDiagram";
+import { CsmaVisualizer } from "./CsmaVisualizer";
 
 const STEPS = [
+  { title: "MAC-progresjonen (ALOHA → CSMA/CA)", anchor: "csma" },
   { title: "Bakteppe — Alice, Bob og Trudy", anchor: "intro" },
   { title: "ap1.0 — «I am Alice»", anchor: "ap10" },
   { title: "ap2.0 — IP-adressen min er X", anchor: "ap20" },
@@ -47,6 +49,30 @@ export function ApProgresjonPage() {
         </header>
 
         <CourseOutline courseId="dte2507-ap-progresjon" steps={STEPS} />
+
+        <section id="csma" className="mb-10">
+          <h2 className="text-xl font-semibold mb-3">
+            0. Sidespor — MAC-progresjonen (ALOHA → CSMA → CSMA/CD → CSMA/CA)
+          </h2>
+          <p className="text-sm text-muted-foreground mb-3 leading-relaxed">
+            Mens ap-progresjonen handler om <em>hvem som har lov til å snakke</em>, handler{" "}
+            MAC-progresjonen om <em>hvordan flere kan dele en delt fysisk kanal</em>. Begge
+            følger samme didaktiske mønster: en naiv start, et angrep/problem som bryter den,
+            og en stadig smartere versjon. Her er den interaktive utgaven —{" "}
+            <strong>Pure ALOHA</strong> kolliderer hele tiden;{" "}
+            <strong>slottet ALOHA</strong> halverer kollisjonsvinduet;{" "}
+            <strong>CSMA</strong> lytter først; <strong>CSMA/CD</strong> avbryter ved kollisjon
+            og gjør binær eksponentiell backoff (Ethernet); og{" "}
+            <strong>CSMA/CA</strong> bruker RTS/CTS for å løse skjult-terminal-problemet
+            (WiFi).
+          </p>
+          <CsmaVisualizer />
+          <p className="text-xs text-muted-foreground mt-3 leading-relaxed">
+            Tips: skru opp ankomstraten λ og se hvordan ALOHA kollapser, mens CSMA/CD fortsatt
+            klarer å skille pakker — men med stadig lengre backoff-vinduer. Samme seed gir
+            samme sekvens, slik at du kan sammenligne modusene rettferdig.
+          </p>
+        </section>
 
         <section id="intro" className="mb-10">
           <h2 className="text-xl font-semibold mb-3">1. Bakteppe — Alice, Bob og Trudy</h2>
