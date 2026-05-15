@@ -4,10 +4,12 @@ import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
 import { Tex, TexBlock } from "@/components/Tex";
 import { DelaySim } from "./DelaySim";
+import { DelayVisualizer } from "./DelayVisualizer";
 import { CaravanAnalogy } from "./CaravanAnalogy";
 import { TrafficIntensitySim } from "./TrafficIntensitySim";
 
 const STEPS = [
+  { title: "Delay-visualisering (to rutere)", anchor: "vis" },
   { title: "Hvorfor 4 forsinkelser?", anchor: "hvorfor" },
   { title: "d_proc — prosessering", anchor: "proc" },
   { title: "d_queue — venting i kø", anchor: "queue" },
@@ -61,6 +63,23 @@ export function DelayModellPage() {
         </header>
 
         <CourseOutline courseId="dte2507-delay-modell" steps={STEPS} />
+
+        <section id="vis" className="mb-10">
+          <h2 className="text-xl font-semibold mb-3">Interaktiv delay-visualisering</h2>
+          <p className="text-sm text-muted-foreground mb-3 leading-relaxed">
+            Før vi går gjennom de fire forsinkelsene én for én — her er hele bildet i ett:
+            en pakke som reiser fra sender gjennom to rutere (R1 og R2) til mottaker. Hver
+            av de tre lenkene har sin egen båndbredde, avstand og kø. Skru på sliderne og se
+            hvilken komponent som dominerer per hop. Trykk «Spill av» for å la pakken faktisk
+            bevege seg gjennom topologien.
+          </p>
+          <DelayVisualizer />
+          <p className="text-xs text-muted-foreground mt-3 leading-relaxed">
+            Bytt mellom presetene <em>Slim link</em>, <em>Lang strekk</em>, <em>Trafikkpropp</em>{" "}
+            og <em>Datasenter</em> for å kjenne igjen de fire klassiske regimene. Resten av
+            siden forklarer hvert ledd matematisk.
+          </p>
+        </section>
 
         <section id="hvorfor" className="mb-10">
           <h2 className="text-xl font-semibold mb-3">1. Hvorfor fire forsinkelser?</h2>
