@@ -3,8 +3,10 @@ import { ArrowRight, Lightbulb } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
 import { NeuralNetForwardPass } from "./NeuralNetForwardPass";
+import { NeuronVisualizer } from "./NeuronVisualizer";
 
 const STEPS = [
+  { title: "Nevron-visualizer (interaktiv)", anchor: "visualizer" },
   { title: "Perceptron — minste byggesten", anchor: "perceptron" },
   { title: "Aktiveringsfunksjoner", anchor: "aktivering" },
   { title: "Feed-forward — flere lag", anchor: "feedforward" },
@@ -41,6 +43,16 @@ export function NnIntroPage() {
         </div>
 
         <CourseOutline courseId="nn-intro" steps={STEPS} />
+
+        <section id="visualizer" className="mb-10">
+          <h2 className="text-xl font-semibold mb-3">Nevron-visualizer (interaktiv)</h2>
+          <p className="text-sm text-muted-foreground mb-4">
+            Lek deg med ett nevron, sammenlign aktiveringer, eller bygg et lite 2-lags
+            nett — all matte oppdaterer seg live mens du drar i sliderne. XOR-modus
+            er et godt sted å oppleve hvorfor flere lag trengs.
+          </p>
+          <NeuronVisualizer />
+        </section>
 
         <section id="perceptron" className="mb-10">
           <h2 className="text-xl font-semibold mb-3">1. Perceptron — minste byggesten</h2>
