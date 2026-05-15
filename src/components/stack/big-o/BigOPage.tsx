@@ -2,8 +2,10 @@ import { Link } from "@tanstack/react-router";
 import { ArrowRight, Lightbulb } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
+import { BigOVisualizer } from "./BigOVisualizer";
 
 const STEPS = [
+  { title: "Interaktiv visualisering", anchor: "viz" },
   { title: "Hva er Big-O — intuisjon", anchor: "intuisjon" },
   { title: "De syv klassene", anchor: "klasser" },
   { title: "Analyse-regler", anchor: "regler" },
@@ -104,8 +106,20 @@ export function BigOPage() {
 
         <CourseOutline courseId="big-o" steps={STEPS} />
 
+        <section id="viz" className="mb-10">
+          <h2 className="text-xl font-semibold mb-3">
+            1. Interaktiv visualisering
+          </h2>
+          <p className="text-sm text-muted-foreground mb-4">
+            Lek deg fram. Skru på kurvene du vil se, dra <code>n</code> opp og ned,
+            slå på log-y for å skille klassene visuelt, kjør et race mellom
+            lineær- og binærsøk, og test deg selv med quiz-snippets.
+          </p>
+          <BigOVisualizer />
+        </section>
+
         <section id="intuisjon" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">1. Hva er Big-O — intuisjon</h2>
+          <h2 className="text-xl font-semibold mb-3">2. Hva er Big-O — intuisjon</h2>
           <p className="text-sm text-muted-foreground mb-4">
             Forestill deg to algoritmer som begge sorterer en liste. På 100 elementer
             tar de begge under et sekund. Men på 1 million elementer: den ene er ferdig
@@ -129,7 +143,7 @@ export function BigOPage() {
         </section>
 
         <section id="klasser" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">2. De syv klassene</h2>
+          <h2 className="text-xl font-semibold mb-3">3. De syv klassene</h2>
           <p className="text-sm text-muted-foreground mb-4">
             Nesten alle pensum-algoritmer hører til en av disse. Lær dem utenat —
             spesielt forskjellen mellom <code>O(log n)</code>, <code>O(n)</code>,{" "}
@@ -155,7 +169,7 @@ export function BigOPage() {
         </section>
 
         <section id="regler" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">3. Tre analyse-regler</h2>
+          <h2 className="text-xl font-semibold mb-3">4. Tre analyse-regler</h2>
           <p className="text-sm text-muted-foreground mb-4">
             Dette er hele verktøykassa for å gå fra kode til Big-O.
           </p>
@@ -208,7 +222,7 @@ while lo < hi:
         </section>
 
         <section id="case" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">4. Beste, verste og forventet tilfelle</h2>
+          <h2 className="text-xl font-semibold mb-3">5. Beste, verste og forventet tilfelle</h2>
           <p className="text-sm text-muted-foreground mb-4">
             Big-O er <em>verste tilfelle</em> by default. Men noen algoritmer har vidt
             forskjellig beste og verste — det er viktig å vite begge.
@@ -277,7 +291,7 @@ while lo < hi:
         </section>
 
         <section id="eksempler" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">5. Eksempler — les kode, gjett Big-O</h2>
+          <h2 className="text-xl font-semibold mb-3">6. Eksempler — les kode, gjett Big-O</h2>
           <p className="text-sm text-muted-foreground mb-4">
             Tren mønstergjenkjenning på disse seks.
           </p>
@@ -368,7 +382,7 @@ while lo < hi:
         </section>
 
         <section id="feller" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">6. Vanlige feller</h2>
+          <h2 className="text-xl font-semibold mb-3">7. Vanlige feller</h2>
           <div className="space-y-3 text-sm">
             <div className="rounded-lg border border-amber-500/30 bg-amber-500/5 p-4">
               <strong>«To løkker etter hverandre er O(n²)»</strong> — nei. Sekvens er
