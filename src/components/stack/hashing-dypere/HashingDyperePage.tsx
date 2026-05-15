@@ -2,9 +2,11 @@ import { Link } from "@tanstack/react-router";
 import { ArrowRight, Lightbulb } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
+import { HashTableVisualizer } from "./HashTableVisualizer";
 
 const STEPS = [
   { title: "Hva en hash-funksjon må gjøre", anchor: "krav" },
+  { title: "Interaktiv: se hashing-strategiene", anchor: "visualisering" },
   { title: "Separate chaining", anchor: "chaining" },
   { title: "Open addressing", anchor: "open" },
   { title: "Lastfaktor og resize", anchor: "resize" },
@@ -85,8 +87,20 @@ def hash_str(s, m):
           </p>
         </section>
 
+        <section id="visualisering" className="mb-10">
+          <h2 className="text-xl font-semibold mb-3">2. Interaktiv: se hashing-strategiene</h2>
+          <p className="text-sm text-muted-foreground mb-4">
+            Bytt mellom <strong>separate chaining</strong>, <strong>linear probing</strong> og{" "}
+            <strong>double hashing</strong>, og kjør <code>insert</code>/<code>lookup</code>/<code>delete</code>{" "}
+            mot samme tabell. Probe-sekvensen blinker gult mens nøkkelen leter seg fram til
+            destinasjons-sloten (blå). Hash-verdien <code>h(k) = sum(ord(c)) % m</code> regnes ut
+            live mens du skriver, og du ser lastfaktoren stige etter hvert som du fyller tabellen.
+          </p>
+          <HashTableVisualizer />
+        </section>
+
         <section id="chaining" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">2. Separate chaining</h2>
+          <h2 className="text-xl font-semibold mb-3">3. Separate chaining</h2>
           <p className="text-sm text-muted-foreground mb-3">
             Hver slot inneholder en lenkeliste (eller dynamisk array) av
             entries som hasher til samme indeks. Kollisjoner løses ved å
@@ -140,7 +154,7 @@ def hash_str(s, m):
         </section>
 
         <section id="open" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">3. Open addressing</h2>
+          <h2 className="text-xl font-semibold mb-3">4. Open addressing</h2>
           <p className="text-sm text-muted-foreground mb-3">
             Ingen lenkelister — alt lagres i selve tabellen. Når slotet er
             opptatt, prøver vi neste slot etter en probe-strategi.
@@ -186,7 +200,7 @@ Lookup Cia:
         </section>
 
         <section id="resize" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">4. Lastfaktor og resize</h2>
+          <h2 className="text-xl font-semibold mb-3">5. Lastfaktor og resize</h2>
           <p className="text-sm text-muted-foreground mb-3">
             <strong>Lastfaktor α = n / m</strong> — antall elementer delt på
             antall slots. Når α blir stor, øker kollisjonsfrekvensen og
@@ -244,7 +258,7 @@ def _resize(self, ny_m):
         </section>
 
         <section id="krypto" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">5. Kryptografisk vs ikke-kryptografisk</h2>
+          <h2 className="text-xl font-semibold mb-3">6. Kryptografisk vs ikke-kryptografisk</h2>
           <div className="overflow-hidden rounded-lg border border-border mb-4">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
@@ -294,7 +308,7 @@ def _resize(self, ny_m):
         </section>
 
         <section id="bloom" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">6. Bloom filter</h2>
+          <h2 className="text-xl font-semibold mb-3">7. Bloom filter</h2>
           <p className="text-sm text-muted-foreground mb-3">
             Probabilistisk struktur som svarer på «er denne nøkkelen i settet?»
             med <strong>false positives</strong> men ALDRI false negatives.
@@ -335,7 +349,7 @@ Eksempel (m=10, k=3):
         </section>
 
         <section id="feller" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">7. Vanlige feller</h2>
+          <h2 className="text-xl font-semibold mb-3">8. Vanlige feller</h2>
           <div className="rounded-xl border-2 border-destructive/40 bg-destructive/5 p-5 text-sm">
             <ul className="space-y-2 list-disc pl-5">
               <li>
