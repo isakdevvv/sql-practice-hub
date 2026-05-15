@@ -34,6 +34,25 @@ export function PythonEditor({
     editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter, () => {
       onRunRef.current?.();
     });
+
+    // Smart Tab: if the cursor sits immediately before a closing bracket or
+    // quote, jump past it instead of inserting indentation.
+    const CLOSERS = new Set([")", "]", "}", '"', "'", "`"]);
+    editor.onKeyDown((e) => {
+      if (e.keyCode !== monaco.KeyCode.Tab || e.shiftKey || e.altKey || e.ctrlKey || e.metaKey) return;
+      const selection = editor.getSelection();
+      if (!selection || !selection.isEmpty()) return;
+      const model = editor.getModel();
+      const pos = editor.getPosition();
+      if (!model || !pos) return;
+      const line = model.getLineContent(pos.lineNumber);
+      const nextChar = line[pos.column - 1];
+      if (nextChar && CLOSERS.has(nextChar)) {
+        editor.setPosition({ lineNumber: pos.lineNumber, column: pos.column + 1 });
+        e.preventDefault();
+        e.stopPropagation();
+      }
+    });
   };
 
   // Update line decoration when highlight changes.

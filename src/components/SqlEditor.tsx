@@ -57,6 +57,55 @@ export function SqlEditor({ value, onChange, onRun, height = "100%" }: Props) {
       }
     });
 
+    // Smart Tab:
+    //   1. If cursor is right before a closing bracket/quote, jump past it.
+    //   2. Else if there is a <placeholder> after the cursor, select it.
+    //   3. Else fall through to default Tab (indent).
+    const CLOSERS = new Set([")", "]", "}", '"', "'", "`"]);
+    const findNextPlaceholder = (
+      fromLine: number,
+      fromCol: number,
+    ): import("monaco-editor").Range | null => {
+      const model = editor.getModel();
+      if (!model) return null;
+      const lineCount = model.getLineCount();
+      for (let ln = fromLine; ln <= lineCount; ln++) {
+        const line = model.getLineContent(ln);
+        const re = /<[A-Za-z][A-Za-z0-9 ]*>/g;
+        let m: RegExpExecArray | null;
+        while ((m = re.exec(line))) {
+          const start = m.index + 1;
+          if (ln > fromLine || start >= fromCol) {
+            return new monaco.Range(ln, start, ln, start + m[0].length);
+          }
+        }
+      }
+      return null;
+    };
+    editor.onKeyDown((e) => {
+      if (e.keyCode !== monaco.KeyCode.Tab || e.shiftKey || e.altKey || e.ctrlKey || e.metaKey) return;
+      const selection = editor.getSelection();
+      if (!selection || !selection.isEmpty()) return;
+      const model = editor.getModel();
+      const pos = editor.getPosition();
+      if (!model || !pos) return;
+      const line = model.getLineContent(pos.lineNumber);
+      const nextChar = line[pos.column - 1];
+      if (nextChar && CLOSERS.has(nextChar)) {
+        editor.setPosition({ lineNumber: pos.lineNumber, column: pos.column + 1 });
+        e.preventDefault();
+        e.stopPropagation();
+        return;
+      }
+      const next = findNextPlaceholder(pos.lineNumber, pos.column);
+      if (next) {
+        editor.setSelection(next);
+        editor.revealRangeInCenterIfOutsideViewport(next);
+        e.preventDefault();
+        e.stopPropagation();
+      }
+    });
+
     // Decorate <...> placeholders so they look like inline tokens, not plain text.
     const refreshPlaceholderDecorations = () => {
       const model = editor.getModel();
