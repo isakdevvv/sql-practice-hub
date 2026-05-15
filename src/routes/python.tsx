@@ -124,6 +124,7 @@ function PythonPage() {
   // Progress (XP + solved-set), persistert i localStorage.
   const [progress, setProgress] = useState<PyProgress>(() => loadPyProgress());
   const [xpToast, setXpToast] = useState<{ xp: number; total: number } | null>(null);
+  const [noEffortToast, setNoEffortToast] = useState(false);
 
   // Reset state when switching exercise
   useEffect(() => {
@@ -145,6 +146,18 @@ function PythonPage() {
       setXpToast({ xp: xpEarned, total: next.xp });
       setTimeout(() => setXpToast(null), 3500);
     }
+  }
+
+  // Sammenligner brukerens kode med starter etter å ha fjernet kommentarer,
+  // tomme linjer og whitespace. Hvis identisk har studenten ikke gjort noe.
+  function isUnchangedFromStarter(userCode: string, starter: string): boolean {
+    const normalize = (s: string) =>
+      s
+        .split("\n")
+        .map((l) => l.replace(/#.*$/, "").trim())
+        .filter((l) => l.length > 0)
+        .join("\n");
+    return normalize(userCode) === normalize(starter);
   }
   function resetAllProgress() {
     if (typeof window !== "undefined" && !window.confirm("Nullstille all Python-progresjon?"))
@@ -189,6 +202,7 @@ function PythonPage() {
     setSteps(null);
     setVisualSteps(null);
     setStepIdx(0);
+    setNoEffortToast(false);
     try {
       await ensureLoaded();
       const result: PyRunResult = await runScript(code, {
@@ -198,11 +212,14 @@ function PythonPage() {
       setStdout(result.stdout);
       if (!result.ok) {
         setError(result.error ?? "Ukjent feil");
+      } else if (isUnchangedFromStarter(code, exercise.starter)) {
+        // Studenten har ikke endret starter-koden — ikke gi XP for å bare trykke "Kjør".
+        if (!progress.solved[exercise.id]) {
+          setNoEffortToast(true);
+          setTimeout(() => setNoEffortToast(false), 3500);
+        }
       } else {
-        // Kjørte uten feil → marker som "godkjent" og gi XP. Vi bruker
-        // suksessfull execution som proxy for "studenten har løst oppgaven";
-        // det er ikke perfekt validering, men match-mot-fasit krever per-oppgave
-        // expected output som ikke er definert. "Godkjent" = "kjørte rent".
+        // Koden kjørte uten feil OG er endret fra starter — godkjent.
         markCurrentSolved();
       }
     } finally {
@@ -321,6 +338,17 @@ function PythonPage() {
           <div>
             <div className="font-semibold text-success text-sm">+{xpToast.xp} XP — Godkjent!</div>
             <div className="text-[10px] text-muted-foreground">Total: {xpToast.total} XP</div>
+          </div>
+        </div>
+      )}
+      {noEffortToast && (
+        <div className="fixed top-20 left-1/2 -translate-x-1/2 z-50 rounded-lg border border-warning bg-card shadow-lg px-4 py-3 flex items-center gap-2.5 animate-in fade-in slide-in-from-top-2 max-w-sm">
+          <Lightbulb className="h-4 w-4 text-warning shrink-0" />
+          <div>
+            <div className="font-semibold text-warning text-sm">Ingen XP ennå</div>
+            <div className="text-[11px] text-muted-foreground">
+              Starter-koden er uendret. Skriv din egen løsning før du trykker Kjør.
+            </div>
           </div>
         </div>
       )}
