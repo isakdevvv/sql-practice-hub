@@ -5,7 +5,7 @@ import { BOOKS, LESEORDEN_FOR_BACHELOR, type Book } from "./books";
 
 const STEPS = [
   { title: "Hvordan jeg har valgt", anchor: "metode" },
-  { title: "De 15 bøkene", anchor: "boker" },
+  { title: "De 20 bøkene", anchor: "boker" },
   { title: "Lese-rekkefølge for bachelor (3 år)", anchor: "rekkefolge" },
   { title: "Bok per fag — quick-ref", anchor: "per-fag" },
 ];
@@ -27,15 +27,15 @@ export function ProgrammeringsbokerPage() {
       <article className="container mx-auto px-4 py-10 max-w-4xl">
         <header className="mb-8">
           <div className="text-xs uppercase tracking-wider text-brand font-semibold mb-2">
-            Bibliotek · 15 bøker som dekker hele DTE-pensumet
+            Bibliotek · 20 bøker som dekker hele DTE-pensumet
           </div>
           <h1 className="text-3xl sm:text-4xl font-bold tracking-tight">
-            15 bøker en data-ingeniør faktisk trenger
+            20 bøker en data-ingeniør faktisk trenger
           </h1>
           <p className="mt-3 text-muted-foreground leading-relaxed">
             Ikke "topp 10 most-cited" eller "alle pensum-bøker på UiT". Dette er bøker valgt fordi
             DE ER BEST på sitt område — boka som forklarer det best, som har de mest minneverdige
-            metaforene, som faktisk leser seg som et menneske skrev den. 5 av dem er gratis online.
+            metaforene, som faktisk leser seg som et menneske skrev den. 9 av dem er gratis online.
           </p>
         </header>
 
@@ -73,7 +73,7 @@ export function ProgrammeringsbokerPage() {
         </section>
 
         <section id="boker" className="mb-12">
-          <h2 className="text-xl font-semibold mb-3">De 15 bøkene</h2>
+          <h2 className="text-xl font-semibold mb-3">De 20 bøkene</h2>
           <div className="space-y-4">
             {BOOKS.map((b) => (
               <BookCard key={b.id} book={b} />
@@ -141,6 +141,11 @@ export function ProgrammeringsbokerPage() {
                 <FagRow fag="Algoritmer og datastrukturer" primary="Grokking Algorithms" extra="CLRS for dybde" />
                 <FagRow fag="MLOps / produksjon-ML" primary="Designing ML Systems (Huyen)" extra="Etter Géron" />
                 <FagRow fag="Bygge ditt eget språk (sommer-prosjekt)" primary="Crafting Interpreters" extra="—" />
+                <FagRow fag="Web-perf / HTTP/2/3 / QUIC" primary="High Performance Browser Networking (Grigorik)" extra="Etter Kurose" />
+                <FagRow fag="DevOps / produksjon-drift" primary="Site Reliability Engineering (Google)" extra="Pragmatic for individ-perspektiv" />
+                <FagRow fag="Deep Learning matematisk fundament" primary="Goodfellow et al" extra="Etter Nielsen NNDL" />
+                <FagRow fag="Reinforcement Learning" primary="Sutton & Barto" extra="AIMA gir kort intro" />
+                <FagRow fag="Idiomatisk Python" primary="Fluent Python (Ramalho)" extra="Etter du har skrevet 5000+ linjer" />
               </tbody>
             </table>
           </div>
