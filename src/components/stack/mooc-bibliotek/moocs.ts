@@ -19,6 +19,10 @@ export interface Mooc {
   plattform: string;
   free: boolean;
   tier: 1 | 2 | 3;
+  /** YouTube video-id eller playlist-id for første-forelesningen ("start her"). */
+  startVideoId?: string;
+  /** Original YouTube-URL for fallback. */
+  startVideoUrl?: string;
 }
 
 export const MOOCS: readonly Mooc[] = [
@@ -41,6 +45,8 @@ export const MOOCS: readonly Mooc[] = [
       "Malan er en stjerne-foreleser. CS50 dekker C, Python, SQL, JS, Flask — bredt nok til å treffe halvparten av bachelor-pensumet, og morsomt nok til å fullføre. 4M+ studenter har tatt det.",
     free: true,
     tier: 1,
+    startVideoId: "8mAITcNt710",
+    startVideoUrl: "https://www.youtube.com/watch?v=8mAITcNt710",
   },
   {
     id: "mit-6006",
@@ -60,6 +66,8 @@ export const MOOCS: readonly Mooc[] = [
       "Erik Demaine er en av verdens beste pedagoger på algoritmer. CLRS-boka er pensum, men forelesningene gir intuisjon CLRS mangler. Gull for alt fra kompleksitet til DP.",
     free: true,
     tier: 1,
+    startVideoId: "HtSuA80QTyo",
+    startVideoUrl: "https://www.youtube.com/watch?v=HtSuA80QTyo",
   },
   {
     id: "stanford-cs229",
@@ -79,6 +87,8 @@ export const MOOCS: readonly Mooc[] = [
       "Andrew Ng er DEN utbredte ML-foreleseren. Hans Coursera-versjon er forenklet; Stanford CS229 er hans MASTER-nivå-kurs på YouTube. Fundament for alt videre i ML.",
     free: true,
     tier: 1,
+    startVideoId: "jGwO_UgTS7I",
+    startVideoUrl: "https://www.youtube.com/watch?v=jGwO_UgTS7I",
   },
 
   // ============ TIER 2 — fag-spesifikke ============================
@@ -100,6 +110,8 @@ export const MOOCS: readonly Mooc[] = [
       "Det BESTE OS-kurset i verden. Du implementerer xv6 (en mini-Unix) selv. OSTEP-boka er parallell-pensum. Hvis du vil bli en faktisk OS-utvikler, går du gjennom denne.",
     free: true,
     tier: 2,
+    startVideoId: "hH4omN7tHTU",
+    startVideoUrl: "https://www.youtube.com/watch?v=hH4omN7tHTU",
   },
   {
     id: "stanford-cs144",
@@ -119,6 +131,8 @@ export const MOOCS: readonly Mooc[] = [
       "Implementer din egen TCP-stakk i C++ over kurset. Kurose-boka er pensum. Etter dette kurset SKJØNNER du nettverk på en helt annen måte enn etter forelesninger på UiT.",
     free: true,
     tier: 2,
+    startVideoId: "hPiHkH7p-l0",
+    startVideoUrl: "https://www.youtube.com/watch?v=hPiHkH7p-l0",
   },
   {
     id: "stanford-cs231n",
@@ -138,6 +152,8 @@ export const MOOCS: readonly Mooc[] = [
       "Karpathys 2016-versjon på YouTube er fortsatt der nye ML-folk lærer CNN. Han er nå hos OpenAI/Tesla. Kombineres godt med Karpathys 'Zero to Hero'-serie på YouTube.",
     free: true,
     tier: 2,
+    startVideoId: "vT1JzLTH4G4",
+    startVideoUrl: "https://www.youtube.com/watch?v=vT1JzLTH4G4",
   },
   {
     id: "cmu-15445",
@@ -157,6 +173,8 @@ export const MOOCS: readonly Mooc[] = [
       "Andy Pavlo er DB-pedagogikkens Andrew Ng. Dropper Hawaii-skjorter og forklarer B-tree-internals slik at du SKJØNNER hvorfor Postgres/MySQL er bygd som de er. Bachelor-prosjekt om database? Se denne.",
     free: true,
     tier: 2,
+    startVideoId: "XGPoP3WUWhY",
+    startVideoUrl: "https://www.youtube.com/watch?v=XGPoP3WUWhY",
   },
 
   // ============ TIER 3 — alternativer / dypere ====================
@@ -178,6 +196,8 @@ export const MOOCS: readonly Mooc[] = [
       "Berkeleys svar på SICP-tradisjonen, men bruker Python (ikke Scheme). Lærer programmering som ABSTRAKSJON, ikke som syntaks. Annerledes filosofi enn UiT-fagene — verdt det hvis du vil tenke som en lisp-er.",
     free: true,
     tier: 3,
+    startVideoId: "VG-rg2Yq6F4",
+    startVideoUrl: "https://www.youtube.com/watch?v=VG-rg2Yq6F4",
   },
   {
     id: "mit-6s191",
@@ -197,6 +217,8 @@ export const MOOCS: readonly Mooc[] = [
       "Mer kompakt enn CS231n. MIT kjører dette som en uke-lang intensiv-bootcamp i januar. Perfekt forberedelse til DTE-2502 hvis du vil ha en raskere intro enn Stanford.",
     free: true,
     tier: 3,
+    startVideoId: "alfdI7S6wCY",
+    startVideoUrl: "https://www.youtube.com/watch?v=alfdI7S6wCY",
   },
   {
     id: "harvard-cs50w",
@@ -216,5 +238,7 @@ export const MOOCS: readonly Mooc[] = [
       "Etter CS50: dypere på web. Bruker Django (ikke Flask) men prinsippene overlapper. Treffer DTE-2509 sin web-del godt og lærer deg JS+React-oppsett.",
     free: true,
     tier: 3,
+    startVideoId: "zN6VZ6P1nFo",
+    startVideoUrl: "https://www.youtube.com/watch?v=zN6VZ6P1nFo",
   },
 ];

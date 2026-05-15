@@ -10,7 +10,7 @@ export interface Channel {
   url: string;
   blurb: string;
   /** Den ene videoen som beviser hvorfor kanalen er bra. */
-  bestVideo: { tittel: string; url: string; varighet: string };
+  bestVideo: { tittel: string; url: string; varighet: string; videoId: string };
   fag: string[];
   tier: 1 | 2 | 3;
   hvorforHer: string;
@@ -29,6 +29,7 @@ export const CHANNELS: readonly Channel[] = [
       tittel: "But what is a neural network?",
       url: "https://www.youtube.com/watch?v=aircAruvnKk",
       varighet: "19 min",
+      videoId: "aircAruvnKk",
     },
     fag: ["TEK-1501 (matte)", "DTE-2502 (deep learning)", "DTE-2602 (ML)"],
     tier: 1,
@@ -46,6 +47,7 @@ export const CHANNELS: readonly Channel[] = [
       tittel: "Public Key Cryptography",
       url: "https://www.youtube.com/watch?v=GSIDS_lvRv4",
       varighet: "26 min",
+      videoId: "GSIDS_lvRv4",
     },
     fag: ["DTE-2507 (sikkerhet/krypto)", "DTE-2505 (OS-konsepter)", "alle CS-emner"],
     tier: 1,
@@ -63,6 +65,7 @@ export const CHANNELS: readonly Channel[] = [
       tittel: "DeepMind's New AI Plays Soccer ⚽",
       url: "https://www.youtube.com/watch?v=KHWuTBmT1oI",
       varighet: "5 min",
+      videoId: "KHWuTBmT1oI",
     },
     fag: ["DTE-2501 (AI)", "DTE-2502 (Deep Learning)"],
     tier: 1,
@@ -80,6 +83,7 @@ export const CHANNELS: readonly Channel[] = [
       tittel: "Coding Adventure: Solar System",
       url: "https://www.youtube.com/watch?v=7axImc1sxa0",
       varighet: "26 min",
+      videoId: "7axImc1sxa0",
     },
     fag: ["programmeringsprosjekter", "DTE-2511", "valgfag spillgrafikk"],
     tier: 1,
@@ -99,6 +103,7 @@ export const CHANNELS: readonly Channel[] = [
       tittel: "How a CPU works",
       url: "https://www.youtube.com/watch?v=cNN_tTXABUA",
       varighet: "9 min",
+      videoId: "cNN_tTXABUA",
     },
     fag: ["trinn-1 til trinn-9 (CPU)", "DTE-2505 (lavnivå-OS)"],
     tier: 2,
@@ -116,6 +121,7 @@ export const CHANNELS: readonly Channel[] = [
       tittel: "Two Sum - Leetcode 1",
       url: "https://www.youtube.com/watch?v=KLlXCFG5TnA",
       varighet: "9 min",
+      videoId: "KLlXCFG5TnA",
     },
     fag: ["algoritmer", "intervju-prep", "DTE-2511"],
     tier: 2,
@@ -133,6 +139,7 @@ export const CHANNELS: readonly Channel[] = [
       tittel: "Let's build GPT: from scratch, in code, spelled out",
       url: "https://www.youtube.com/watch?v=kCc8FmEb1nY",
       varighet: "1 t 56 min",
+      videoId: "kCc8FmEb1nY",
     },
     fag: ["DTE-2502 (deep learning)", "DTE-2501 (NLP-delen)"],
     tier: 2,
@@ -150,6 +157,7 @@ export const CHANNELS: readonly Channel[] = [
       tittel: "Code! Programming with p5.js",
       url: "https://www.youtube.com/watch?v=8j0UDiN7my4",
       varighet: "9 min",
+      videoId: "8j0UDiN7my4",
     },
     fag: ["JavaScript / web-prosjekter", "DTE-2501 (genetiske algoritmer)"],
     tier: 2,
@@ -167,6 +175,7 @@ export const CHANNELS: readonly Channel[] = [
       tittel: "100+ Web Development Things you Should Know",
       url: "https://www.youtube.com/watch?v=erEgovG9WBs",
       varighet: "12 min",
+      videoId: "erEgovG9WBs",
     },
     fag: ["DTE-2509 (web)", "moderne stack-orientering"],
     tier: 2,
@@ -186,6 +195,7 @@ export const CHANNELS: readonly Channel[] = [
       tittel: "1. Algorithmic Thinking, Peak Finding (6.006)",
       url: "https://www.youtube.com/watch?v=HtSuA80QTyo",
       varighet: "53 min",
+      videoId: "HtSuA80QTyo",
     },
     fag: ["alle CS-emner", "spesielt for dypere fundament"],
     tier: 3,
@@ -203,6 +213,7 @@ export const CHANNELS: readonly Channel[] = [
       tittel: "Lecture 1 - Introduction to ML | Stanford CS229: Machine Learning (Autumn 2018) - Andrew Ng",
       url: "https://www.youtube.com/watch?v=jGwO_UgTS7I",
       varighet: "1 t 17 min",
+      videoId: "jGwO_UgTS7I",
     },
     fag: ["DTE-2501", "DTE-2602", "DTE-2502"],
     tier: 3,
@@ -220,6 +231,7 @@ export const CHANNELS: readonly Channel[] = [
       tittel: "Simple Made Easy — Rich Hickey",
       url: "https://www.youtube.com/watch?v=SxdOUGdseq4",
       varighet: "1 t 1 min",
+      videoId: "SxdOUGdseq4",
     },
     fag: ["software-design generelt", "DTE-2604 Systemutvikling"],
     tier: 3,

@@ -1,6 +1,7 @@
-import { ExternalLink, Play, Youtube } from "lucide-react";
+import { ExternalLink, Youtube } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
+import { MediaEmbed } from "@/components/stack/MediaEmbed";
 import { CHANNELS, type Channel } from "./channels";
 
 const STEPS = [
@@ -162,25 +163,16 @@ function ChannelCard({ channel: c }: { channel: Channel }) {
 
           <p className="text-sm leading-relaxed mb-3">{c.blurb}</p>
 
-          <div className="rounded-lg border border-border bg-background p-3 mb-3">
+          <div className="mb-3">
             <div className="text-[10px] uppercase tracking-wider font-semibold text-brand mb-1">
-              Start her
+              Start her — {c.bestVideo.varighet}
             </div>
-            <a
-              href={c.bestVideo.url}
-              target="_blank"
-              rel="noreferrer"
-              className="flex items-start gap-2 text-sm hover:text-brand transition-colors"
-            >
-              <Play className="h-3.5 w-3.5 mt-1 shrink-0" />
-              <div className="flex-1">
-                <div className="font-medium">{c.bestVideo.tittel}</div>
-                <div className="text-[11px] text-muted-foreground mt-0.5">
-                  {c.bestVideo.varighet}
-                </div>
-              </div>
-              <ExternalLink className="h-3 w-3 mt-1.5 shrink-0 text-muted-foreground" />
-            </a>
+            <MediaEmbed
+              kind="youtube"
+              src={c.bestVideo.videoId}
+              title={c.bestVideo.tittel}
+              externalUrl={c.bestVideo.url}
+            />
           </div>
 
           <div className="text-xs">
