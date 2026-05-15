@@ -2,8 +2,10 @@ import { Link } from "@tanstack/react-router";
 import { ArrowRight, Lightbulb } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
+import { CpuVisualizer } from "@/components/stack/trinn-4-cpu/CpuVisualizer";
 
 const STEPS = [
+  { title: "Visualisering — fetch-decode-execute live", anchor: "visualisering" },
   { title: "CPU-blokkdiagram — én tegning", anchor: "blokk" },
   { title: "Fetch — hente instruksjon fra minne", anchor: "fetch" },
   { title: "Decode — bestemme hva instruksjonen er", anchor: "decode" },
@@ -43,8 +45,31 @@ export function Trinn4CpuPage() {
 
         <CourseOutline courseId="trinn-4-cpu" steps={STEPS} />
 
+        <section id="visualisering" className="mb-10">
+          <h2 className="text-xl font-semibold mb-3">
+            1. Visualisering — fetch-decode-execute live
+          </h2>
+          <p className="text-sm text-muted-foreground mb-4">
+            Før vi går gjennom hver fase i prosa: prøv visualiseringen
+            under. Velg et lite program, så steges du gjennom de fire
+            fasene (fetch, decode, execute, writeback) én om gangen. Du
+            ser PC (program counter), IR (instruksjons-register),
+            register-fila, ALU-en og RAM lyse opp etter hvert som
+            dataene flyter mellom dem.
+          </p>
+          <CpuVisualizer />
+          <p className="mt-3 text-xs text-muted-foreground">
+            Tips: start med <span className="font-mono">MOV R0, 5</span>{" "}
+            (enklest — kun immediate), gå videre til{" "}
+            <span className="font-mono">LOAD</span> /{" "}
+            <span className="font-mono">STORE</span> for å se data-bussen
+            mot RAM, og avslutt med «Sum 1..3» for et fullt program med
+            løkke (PC inkrementerer, JNZ hopper).
+          </p>
+        </section>
+
         <section id="blokk" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">1. CPU-blokkdiagram — én tegning</h2>
+          <h2 className="text-xl font-semibold mb-3">2. CPU-blokkdiagram — én tegning</h2>
           <p className="text-sm text-muted-foreground mb-4">
             La oss begynne med å se hele CPU-en på et skall-nivå. Detaljene
             kommer etterpå, men dette bildet er kartet du holder i hodet.
@@ -92,7 +117,7 @@ Hovedaktørene:
         </section>
 
         <section id="fetch" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">2. Fetch — hente instruksjon</h2>
+          <h2 className="text-xl font-semibold mb-3">3. Fetch — hente instruksjon</h2>
           <p className="text-sm text-muted-foreground mb-4">
             Hver klokkesyklus (eller -gruppe) gjør CPU-en dette først: bruk
             verdien i PC som adresse, les ut 4 bytes (en 32-bit instruksjon
@@ -125,7 +150,7 @@ I sann CPU er det selvsagt mer optimering:
         </section>
 
         <section id="decode" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">3. Decode — hva betyr instruksjonen</h2>
+          <h2 className="text-xl font-semibold mb-3">4. Decode — hva betyr instruksjonen</h2>
           <p className="text-sm text-muted-foreground mb-4">
             32 bits er bare bytes. Decoder-en deler dem opp i felter etter
             ISA-en (Instruction Set Architecture). Resultatet er kontroll-signaler:
@@ -158,7 +183,7 @@ Kontroll-signaler som decoder-en lager:
         </section>
 
         <section id="execute" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">4. Execute — ALU, register-skriv, hopp</h2>
+          <h2 className="text-xl font-semibold mb-3">5. Execute — ALU, register-skriv, hopp</h2>
           <p className="text-sm text-muted-foreground mb-4">
             Med signalene fra decoder-en utfører resten av CPU-en
             operasjonen. ALU-en regner ut, register-filen skrives, eller
@@ -190,7 +215,7 @@ For en BRANCH: beq x10, x11, label
         </section>
 
         <section id="pipeline" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">5. Pipeline — flere instruksjoner samtidig</h2>
+          <h2 className="text-xl font-semibold mb-3">6. Pipeline — flere instruksjoner samtidig</h2>
           <p className="text-sm text-muted-foreground mb-4">
             I praksis utfører moderne CPU-er fetch på instruksjon N+3 mens
             decoder jobber med N+2 og ALU med N+1 og register-skriv med N.
@@ -225,7 +250,7 @@ parallell (superscalar), og kjører "out of order".`}</pre>
         </section>
 
         <section id="cache" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">6. Cache-hierarki</h2>
+          <h2 className="text-xl font-semibold mb-3">7. Cache-hierarki</h2>
           <p className="text-sm text-muted-foreground mb-4">
             RAM er tregt. CPU-en holder kopier av mye-brukte data nær seg.
             Typisk i 3 nivåer L1/L2/L3, hver større men tregere.
@@ -256,7 +281,7 @@ Hva betyr dette for kode?
         </section>
 
         <section id="risc-cisc" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">7. RISC vs CISC</h2>
+          <h2 className="text-xl font-semibold mb-3">8. RISC vs CISC</h2>
           <p className="text-sm text-muted-foreground mb-4">
             To filosofier for instruksjonssett. RISC: få, enkle, raske
             instruksjoner. CISC: mange, mektige instruksjoner som
