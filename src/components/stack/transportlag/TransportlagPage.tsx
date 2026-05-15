@@ -4,8 +4,10 @@ import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
 import { TcpSlidingWindow } from "./TcpSlidingWindow";
 import { TcpStateMachine } from "./TcpStateMachine";
+import { TcpVisualizer } from "./TcpVisualizer";
 
 const STEPS = [
+  { title: "TCP-visualisator — alle moduser", anchor: "tcp-visualizer" },
   { title: "Ansvarsområdet til transport", anchor: "ansvar" },
   { title: "Multipleksing — portnummer", anchor: "porter" },
   { title: "UDP — enkel og rask", anchor: "udp" },
@@ -47,6 +49,20 @@ export function TransportlagPage() {
         </div>
 
         <CourseOutline courseId="transportlag" steps={STEPS} />
+
+        <section id="tcp-visualizer" className="mb-12">
+          <h2 className="text-xl font-semibold mb-3">
+            TCP-visualisator — fire moduser på rad
+          </h2>
+          <p className="text-sm text-muted-foreground mb-4">
+            Én komponent, fire perspektiver: spill av <strong>3-veis handshake</strong>{" "}
+            med ekte seq/ack-numre, kjør hele <strong>livssyklusen</strong> fra open
+            til 4-veis close, klikk deg gjennom den <strong>interaktive
+            tilstandsmaskinen</strong>, eller dra <strong>sliding window</strong>{" "}
+            forover med cwnd og rwnd. Bytt modus med knappene øverst.
+          </p>
+          <TcpVisualizer />
+        </section>
 
         <section id="ansvar" className="mb-10">
           <h2 className="text-xl font-semibold mb-3">1. Ansvarsområdet til transport</h2>
