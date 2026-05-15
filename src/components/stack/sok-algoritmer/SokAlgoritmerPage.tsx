@@ -2,8 +2,10 @@ import { Link } from "@tanstack/react-router";
 import { ArrowRight, Lightbulb } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
+import { SearchVisualizer } from "@/components/stack/sok-algoritmer/SearchVisualizer";
 
 const STEPS = [
+  { title: "Array-søk — oppvarming og visualisering", anchor: "array-sok" },
   { title: "Søk som AI-problem", anchor: "intro" },
   { title: "Uinformert søk — BFS, DFS, UCS", anchor: "uninformert" },
   { title: "Iterative deepening", anchor: "ids" },
@@ -43,6 +45,25 @@ export function SokAlgoritmerPage() {
         </div>
 
         <CourseOutline courseId="sok-algoritmer" steps={STEPS} />
+
+        <section id="array-sok" className="mb-10">
+          <h2 className="text-xl font-semibold mb-3">
+            0. Array-søk — oppvarming
+          </h2>
+          <p className="text-sm text-muted-foreground mb-4">
+            Før vi går løs på BFS/DFS/A* på grafer, er det verdt å se klassisk
+            søk i en talliste. Det er samme idé — utforsk et søkerom så smart
+            som mulig — bare i én dimensjon. Visualiseringen lar deg sette
+            target, velge algoritme og steppe gjennom hver sammenligning.
+          </p>
+          <SearchVisualizer />
+          <p className="mt-3 text-xs text-muted-foreground">
+            <strong>Sammenheng:</strong> invarianten «målet ligger i a[lo..hi]»
+            i binærsøk er samme tankesett som «målet ligger et sted i frontier»
+            i AI-søk. Forskjellen er at AI-frontieren er en mengde noder, ikke
+            et indeksintervall.
+          </p>
+        </section>
 
         <section id="intro" className="mb-10">
           <h2 className="text-xl font-semibold mb-3">1. Søk som AI-problem</h2>
