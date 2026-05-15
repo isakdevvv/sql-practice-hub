@@ -2,8 +2,10 @@ import { Link } from "@tanstack/react-router";
 import { ArrowRight, Lightbulb } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
+import { MemoryVisualizer } from "./MemoryVisualizer";
 
 const STEPS = [
+  { title: "Interaktiv minne-visualiserer", anchor: "visualiser" },
   { title: "Minneoppsett — hvor ligger hva", anchor: "minneoppsett" },
   { title: "Pekere — adresser til bytes", anchor: "pekere" },
   { title: "Stack-allokering — lokale variabler", anchor: "stack" },
@@ -42,6 +44,19 @@ export function Trinn6CMinnePage() {
         </div>
 
         <CourseOutline courseId="trinn-6-c-minne" steps={STEPS} />
+
+        <section id="visualiser" className="mb-12">
+          <h2 className="text-xl font-semibold mb-3">
+            Interaktiv minne-visualiserer
+          </h2>
+          <p className="text-sm text-muted-foreground mb-4">
+            Bytt mellom moduser og stega gjennom hver C-snutt. Hver byte vises
+            med adresse (heksadesimalt) og verdi. Stacken er blå, heapen grønn,
+            padding skravert i gult. Pekere tegnes som navngitte bokser med
+            piler ned til adressen de peker på.
+          </p>
+          <MemoryVisualizer />
+        </section>
 
         <section id="minneoppsett" className="mb-10">
           <h2 className="text-xl font-semibold mb-3">1. Minneoppsett — hvor ligger hva</h2>
