@@ -3,8 +3,10 @@ import { ArrowRight, Lightbulb } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
 import { OsiStackFlow } from "./OsiStackFlow";
+import { LayerVisualizer } from "./LayerVisualizer";
 
 const STEPS = [
+  { title: "Interaktiv visualisering", anchor: "visualisering" },
   { title: "OSI vs TCP/IP — to modeller", anchor: "modeller" },
   { title: "Encapsulation — pakka inn lag-for-lag", anchor: "encapsulation" },
   { title: "Lag 5: Applikasjon", anchor: "applikasjon" },
@@ -43,6 +45,19 @@ export function OsiTcpipPage() {
         </div>
 
         <CourseOutline courseId="osi-tcpip" steps={STEPS} />
+
+        <section id="visualisering" className="mb-10">
+          <h2 className="text-xl font-semibold mb-3">
+            Interaktiv visualisering — bygg, send og strip pakka
+          </h2>
+          <p className="text-sm text-muted-foreground mb-4">
+            Fire moduser: <em>innkapsling</em> (legg på header lag-for-lag på vei
+            ned), <em>avkapsling</em> (strip på vei opp), <em>OSI vs TCP/IP</em>{" "}
+            (klikk et lag for protokoller og PDU), og <em>to-vert-reise</em> (se
+            hvilke headere ruteren rewrittet på hvert hopp).
+          </p>
+          <LayerVisualizer />
+        </section>
 
         <section id="modeller" className="mb-10">
           <h2 className="text-xl font-semibold mb-3">1. OSI vs TCP/IP — to modeller, samme idé</h2>
