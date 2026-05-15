@@ -2,9 +2,11 @@ import { Link } from "@tanstack/react-router";
 import { ArrowRight, Lightbulb } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
+import { SortingVisualizer } from "./SortingVisualizer";
 
 const STEPS = [
   { title: "Hvorfor sortere", anchor: "hvorfor" },
+  { title: "Interaktiv: se sorteringen kjøre", anchor: "interaktiv" },
   { title: "Bubble sort", anchor: "bubble" },
   { title: "Selection sort", anchor: "selection" },
   { title: "Insertion sort", anchor: "insertion" },
@@ -56,8 +58,22 @@ export function SorteringPage() {
           </p>
         </section>
 
+        <section id="interaktiv" className="mb-10">
+          <h2 className="text-xl font-semibold mb-3">
+            2. Interaktiv: se sorteringen kjøre
+          </h2>
+          <p className="text-sm text-muted-foreground mb-4">
+            Velg algoritme, stokk arrayet, og trykk Play — eller bla steg for steg.
+            Gule søyler blir sammenliknet, røde blir byttet, grønne er ferdig sortert.
+            Pseudokoden ved siden av lyser opp på den linja som kjøres akkurat nå.
+            Sammenlign hvor fort tellerne vokser for <code>O(n²)</code>-sortene mot{" "}
+            <code>O(n log n)</code> — særlig på <code>n = 32</code>.
+          </p>
+          <SortingVisualizer />
+        </section>
+
         <section id="bubble" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">2. Bubble sort — O(n²)</h2>
+          <h2 className="text-xl font-semibold mb-3">3. Bubble sort — O(n²)</h2>
           <p className="text-sm text-muted-foreground mb-3">
             Gå gjennom lista, bytt om naboer som er i feil rekkefølge, gjenta til
             ingen bytter trengs. Største element «bobler» til høyre hver runde.
@@ -83,7 +99,7 @@ export function SorteringPage() {
         </section>
 
         <section id="selection" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">3. Selection sort — O(n²)</h2>
+          <h2 className="text-xl font-semibold mb-3">4. Selection sort — O(n²)</h2>
           <p className="text-sm text-muted-foreground mb-3">
             Finn minste element, bytt med første. Finn nest minste, bytt med andre.
             Osv. Antall bytter er bare <code>O(n)</code> — billig om bytter er dyre.
@@ -106,7 +122,7 @@ export function SorteringPage() {
         </section>
 
         <section id="insertion" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">4. Insertion sort — O(n²)</h2>
+          <h2 className="text-xl font-semibold mb-3">5. Insertion sort — O(n²)</h2>
           <p className="text-sm text-muted-foreground mb-3">
             For hvert nye element, sett det inn på riktig plass i den allerede
             sorterte starten. Hjernen din gjør dette med kortstokk.
@@ -131,7 +147,7 @@ export function SorteringPage() {
         </section>
 
         <section id="merge" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">5. Mergesort — O(n log n), stabil</h2>
+          <h2 className="text-xl font-semibold mb-3">6. Mergesort — O(n log n), stabil</h2>
           <p className="text-sm text-muted-foreground mb-3">
             Klassisk divide-and-conquer: del lista i to, sortér hver halvdel rekursivt,
             flett resultatene sammen.
@@ -165,7 +181,7 @@ def merge(a, b):
         </section>
 
         <section id="quick" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">6. Quicksort — O(n log n) snitt, O(n²) verste</h2>
+          <h2 className="text-xl font-semibold mb-3">7. Quicksort — O(n log n) snitt, O(n²) verste</h2>
           <p className="text-sm text-muted-foreground mb-3">
             Velg en <em>pivot</em>, partisjoner lista i &lt; pivot, = pivot, &gt; pivot,
             sortér de to ytterdelene rekursivt. I praksis raskere enn mergesort fordi den
@@ -193,7 +209,7 @@ def quicksort(lst):
         </section>
 
         <section id="heap" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">7. Heapsort — O(n log n)</h2>
+          <h2 className="text-xl font-semibold mb-3">8. Heapsort — O(n log n)</h2>
           <p className="text-sm text-muted-foreground mb-3">
             Bygg en heap fra lista, pop ut minste (eller største) element gjentatte
             ganger. Hver pop er <code>O(log n)</code>, og vi popper n ganger.
@@ -214,7 +230,7 @@ def heapsort(lst):
         </section>
 
         <section id="sammenligning" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">8. Sammenligning + stabilitet</h2>
+          <h2 className="text-xl font-semibold mb-3">9. Sammenligning + stabilitet</h2>
           <div className="overflow-hidden rounded-lg border border-border mb-4">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
