@@ -36,3 +36,10 @@ dist-ssr
 
 # Local Claude Code project memory (contains local paths and dev notes)
 CLAUDE.md
+
+# Lokale referanse-PDFer (opphavsrettsbeskyttede programmeringsbøker, holdes utenfor repo)
+Books/
+
+# Lokal scratch (PDF-uttrekk, eksperimenter)
+tmp/
+
