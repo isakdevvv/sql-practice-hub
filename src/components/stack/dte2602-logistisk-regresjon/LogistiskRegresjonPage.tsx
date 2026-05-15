@@ -1,8 +1,25 @@
 import { Link } from "@tanstack/react-router";
 import { Lightbulb, ArrowLeft } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
+import { CourseOutline } from "@/components/stack/CourseOutline";
 import { Tex, TexBlock } from "@/components/Tex";
 import { LogisticRegressionSim, SigmoidVisual } from "./LogisticRegressionSim";
+import { LogRegVisualizer } from "./LogRegVisualizer";
+
+const STEPS = [
+  { title: "Visualisering — sigmoid, beslutningsgrense og GD", anchor: "visualisering" },
+  { title: "Hvorfor ikke bare lineær regresjon?", anchor: "hvorfor" },
+  { title: "Sigmoid og log-odds", anchor: "sigmoid" },
+  { title: "Sigmoid-leken", anchor: "sigmoidlek" },
+  { title: "Tolkning av koeffisienter (odds-ratio)", anchor: "odds" },
+  { title: "MLE og log-loss", anchor: "mle" },
+  { title: "Gradient descent på log-loss", anchor: "gd" },
+  { title: "Live trening", anchor: "trening" },
+  { title: "Multinomial logistisk regresjon (softmax)", anchor: "softmax" },
+  { title: "Class imbalance og class-weights", anchor: "imbalance" },
+  { title: "Eksamen-feller", anchor: "feller" },
+  { title: "Python — sklearn på iris", anchor: "sklearn" },
+];
 
 export function LogistiskRegresjonPage() {
   return (
@@ -34,7 +51,24 @@ export function LogistiskRegresjonPage() {
           </div>
         </div>
 
-        <section className="mb-10">
+        <CourseOutline courseId="dte2602-logistisk-regresjon" steps={STEPS} />
+
+        <section id="visualisering" className="mb-10">
+          <h2 className="text-xl font-semibold mb-3">
+            0. Visualisering — sigmoid, beslutningsgrense og GD
+          </h2>
+          <p className="text-sm text-muted-foreground mb-3">
+            Før formlene: kjenn på selve mekanismen. Skyv på{" "}
+            <code className="text-xs">w</code> og <code className="text-xs">b</code> i
+            1D-modus og se hvordan sigmoid forskyver/strekker seg. Roter
+            beslutningsgrensa manuelt i 2D, eller la gradient descent finne den
+            for deg. Til slutt: se hvorfor log-loss straffer «selvsikkert feil»
+            mye hardere enn MSE.
+          </p>
+          <LogRegVisualizer />
+        </section>
+
+        <section id="hvorfor" className="mb-10">
           <h2 className="text-xl font-semibold mb-3">
             1. Hvorfor ikke bare lineær regresjon?
           </h2>
@@ -69,7 +103,7 @@ export function LogistiskRegresjonPage() {
           </div>
         </section>
 
-        <section className="mb-10">
+        <section id="sigmoid" className="mb-10">
           <h2 className="text-xl font-semibold mb-3">2. Sigmoid og log-odds</h2>
           <div className="rounded-xl border border-border bg-card p-5 space-y-3 text-sm">
             <div className="font-semibold">Sigmoid (logistisk funksjon):</div>
@@ -93,12 +127,12 @@ export function LogistiskRegresjonPage() {
           </div>
         </section>
 
-        <section className="mb-10">
+        <section id="sigmoidlek" className="mb-10">
           <h2 className="text-xl font-semibold mb-3">3. Sigmoid-leken</h2>
           <SigmoidVisual />
         </section>
 
-        <section className="mb-10">
+        <section id="odds" className="mb-10">
           <h2 className="text-xl font-semibold mb-3">4. Tolkning av koeffisienter (odds-ratio)</h2>
           <div className="rounded-xl border border-border bg-card p-5 space-y-3 text-sm">
             <p>
@@ -127,7 +161,7 @@ export function LogistiskRegresjonPage() {
           </div>
         </section>
 
-        <section className="mb-10">
+        <section id="mle" className="mb-10">
           <h2 className="text-xl font-semibold mb-3">5. MLE og log-loss</h2>
           <div className="rounded-xl border border-border bg-card p-5 space-y-3 text-sm">
             <p>
@@ -158,7 +192,7 @@ export function LogistiskRegresjonPage() {
           </div>
         </section>
 
-        <section className="mb-10">
+        <section id="gd" className="mb-10">
           <h2 className="text-xl font-semibold mb-3">6. Gradient descent på log-loss</h2>
           <div className="rounded-xl border border-border bg-card p-5 space-y-3 text-sm">
             <p>
@@ -179,7 +213,7 @@ export function LogistiskRegresjonPage() {
           </div>
         </section>
 
-        <section className="mb-10">
+        <section id="trening" className="mb-10">
           <h2 className="text-xl font-semibold mb-3">7. Live trening</h2>
           <LogisticRegressionSim />
           <p className="text-xs text-muted-foreground mt-3">
@@ -190,7 +224,7 @@ export function LogistiskRegresjonPage() {
           </p>
         </section>
 
-        <section className="mb-10">
+        <section id="softmax" className="mb-10">
           <h2 className="text-xl font-semibold mb-3">8. Multinomial logistisk regresjon (softmax)</h2>
           <div className="rounded-xl border border-border bg-card p-5 space-y-3 text-sm">
             <p>
@@ -211,7 +245,7 @@ export function LogistiskRegresjonPage() {
           </div>
         </section>
 
-        <section className="mb-10">
+        <section id="imbalance" className="mb-10">
           <h2 className="text-xl font-semibold mb-3">9. Class imbalance og class-weights</h2>
           <div className="rounded-xl border border-border bg-card p-5 space-y-3 text-sm">
             <p>
@@ -242,7 +276,7 @@ export function LogistiskRegresjonPage() {
           </div>
         </section>
 
-        <section className="mb-10">
+        <section id="feller" className="mb-10">
           <h2 className="text-xl font-semibold mb-3">10. Eksamen-feller</h2>
           <div className="space-y-3 text-sm">
             <div className="rounded-lg border border-amber-500/30 bg-amber-500/5 p-4">
@@ -273,7 +307,7 @@ export function LogistiskRegresjonPage() {
           </div>
         </section>
 
-        <section className="mb-10">
+        <section id="sklearn" className="mb-10">
           <h2 className="text-xl font-semibold mb-3">11. Python — sklearn på iris</h2>
           <pre className="rounded-xl border border-border bg-card p-4 font-mono text-xs overflow-x-auto whitespace-pre">{`from sklearn.datasets import load_iris
 from sklearn.linear_model import LogisticRegression
