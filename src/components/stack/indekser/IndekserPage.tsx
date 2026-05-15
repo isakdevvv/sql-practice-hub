@@ -2,11 +2,13 @@ import { Link } from "@tanstack/react-router";
 import { ArrowRight, Lightbulb, TreeDeciduous, AlertTriangle, Zap } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
+import { IndexVisualizer } from "@/components/stack/indekser/IndexVisualizer";
 
 // Course on indexes: B-tree, hash, covering, composite, when indexes
 // don't get used, write-cost trade-offs. Pairs with /drag (topic "Indekser").
 
 const STEPS = [
+  { title: "Visualisering — kjør indeks i praksis", anchor: "viz" },
   { title: "Hva er en indeks egentlig?", anchor: "hva" },
   { title: "B-tree-indekser — struktur", anchor: "btree" },
   { title: "Hash-indeks — punkt-oppslag", anchor: "hash" },
@@ -112,6 +114,19 @@ export function IndekserPage() {
         </div>
 
         <CourseOutline courseId="indekser" steps={STEPS} />
+
+        {/* Interaktiv visualisering */}
+        <section id="viz" className="mb-10">
+          <h2 className="text-xl font-semibold mb-3">Visualisering — kjør indeks i praksis</h2>
+          <p className="text-sm text-muted-foreground mb-4">
+            Tre interaktive moduser: traversér et B-tree (order 4) ned til ønsket nøkkel og
+            tell sammenligninger; sammenlign seq scan mot index scan på en 100-rads tabell;
+            og se hvorfor en composite-indeks (a, b) hjelper for{" "}
+            <code className="font-mono">WHERE a=? AND b=?</code> men ikke for{" "}
+            <code className="font-mono">WHERE b=?</code>.
+          </p>
+          <IndexVisualizer />
+        </section>
 
         {/* Hva er en indeks */}
         <section id="hva" className="mb-10">
