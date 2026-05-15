@@ -253,6 +253,7 @@ type Verktoy = {
     | "/exam"
     | "/eksamen"
     | "/git-drill"
+    | "/venv-drill"
     | "/stack/$slug";
   navn: string;
   blurb: string;
@@ -307,6 +308,12 @@ const VERKTOY: Verktoy[] = [
     href: "/git-drill",
     navn: "Git-drill",
     blurb: "Øv git-kommandoer i en simulert terminal.",
+    Icon: TerminalSquare,
+  },
+  {
+    href: "/venv-drill",
+    navn: "Venv-drill",
+    blurb: "Øv Python venv og pip i en simulert terminal.",
     Icon: TerminalSquare,
   },
   {
@@ -692,7 +699,7 @@ function LandingPage() {
                 return (
                   <Link
                     key={v.navn}
-                    to={v.href as "/practice" | "/python" | "/drag" | "/cards" | "/prosjekt" | "/exam" | "/eksamen" | "/git-drill"}
+                    to={v.href as "/practice" | "/python" | "/drag" | "/cards" | "/prosjekt" | "/exam" | "/eksamen" | "/git-drill" | "/venv-drill"}
                     className="group rounded-xl border border-border bg-background hover:border-brand/40 p-4 transition-colors block"
                   >
                     {inner}
