@@ -219,6 +219,22 @@ export const PYTHON_CHAPTERS: PythonChapter[] = [
         <Code>
           {`def hilsen(navn, hilsemate="Hei"):\n    return f"{hilsemate}, {navn}!"\n\nhilsen("Ada")           # "Hei, Ada!"\nhilsen("Bob", "Hallo")   # "Hallo, Bob!"`}
         </Code>
+        <H2>Argumenter er adresser, ikke kopier</H2>
+        <P>
+          Når du sender et objekt inn i en funksjon, får parameteren{" "}
+          <em>adressen</em> til samme heap-objekt som kalleren har. Dette er
+          spesielt viktig å se for muterbare standardverdier — de evalueres{" "}
+          <em>én gang</em> når <code>def</code> kjører, ikke på nytt per kall:
+        </P>
+        <F.MutableDefaultArg />
+        <Code>
+          {`def legg(x, b=[]):     # b = [] evalueres én gang ved def!\n    b.append(x)\n    return b\n\nlegg(1)   # [1]\nlegg(2)   # [1, 2]  ← samme liste, ikke ny\nlegg(3)   # [1, 2, 3]\n\n# Riktig idiom: bruk None som sentinel\ndef legg(x, b=None):\n    if b is None:\n        b = []\n    b.append(x)\n    return b`}
+        </Code>
+        <P>
+          Kjør koden i Visualiser-panelet — du vil se at <code>b</code> i alle
+          tre kall har samme <code>id=…</code>. Variabelen holder en adresse,
+          ikke en verdi.
+        </P>
         <H2>Scope — hvor lever variabler?</H2>
         <P>
           En variabel definert inni en funksjon er <em>lokal</em> — den
@@ -238,6 +254,8 @@ export const PYTHON_CHAPTERS: PythonChapter[] = [
             "Parametre binder seg til argumenter ved kall — ny ramme på stacken.",
             "return sender verdi tilbake. Uten return returneres None.",
             "Lokale variabler dør når funksjonen returnerer.",
+            "Argumenter sendes som adresser — muter et list-/dict-argument og kalleren ser endringen.",
+            "Mutable default-arg = én delt heap-liste per def. Bruk None-sentinel.",
             "Stort program = mange små funksjoner som hver gjør én ting.",
           ]}
         />
@@ -272,6 +290,24 @@ export const PYTHON_CHAPTERS: PythonChapter[] = [
           Klassen er en mal. Hver instans har sin egen kopi av attributtene.
         </P>
         <F.InstanceVsClass />
+        <H2><code>self</code> er bare en variabel som holder en adresse</H2>
+        <P>
+          Hver instans bor som et eget objekt på heap-en med sin egen{" "}
+          <code>id(…)</code>. Når du skriver <code>rex.bjeff()</code>, finner
+          Python metoden i klassen og kaller den med <code>rex</code> som
+          første argument — det er det vi ellers kaller <code>self</code>.
+          Inni metoden er <code>self</code> rett og slett en lokal variabel
+          som holder adressen til riktig instans:
+        </P>
+        <F.SelfReference />
+        <Code>
+          {`rex = Hund("Rex")\nmira = Hund("Mira")\nprint(id(rex), id(mira))   # to ulike adresser\n\nrex.bjeff()                # self bindes til rex (samme id som over)\nmira.bjeff()               # self bindes til mira (annen id)`}
+        </Code>
+        <P>
+          Kjør koden i Visualiser-panelet — du ser to <code>Hund</code>-bokser
+          på heap-en med ulike <code>id=…</code>, og <code>self</code>{" "}
+          peker på den som tilhører kallet.
+        </P>
         <H2>Hvorfor klasser?</H2>
         <P>
           Klasser samler relatert data og oppførsel på ett sted. Når koden vokser
@@ -326,12 +362,33 @@ export const PYTHON_CHAPTERS: PythonChapter[] = [
         <Code>
           {`navn = "Ada"\nalder = 30\nprint(f"{navn} er {alder} år ({alder*12} måneder).")`}
         </Code>
+        <H2><code>is</code> vs <code>==</code> og interning</H2>
+        <P>
+          Strenger er uforanderlige objekter på heap-en, og hver streng har en{" "}
+          <em>adresse</em> — det Python kaller <code>id(s)</code>.{" "}
+          <code>==</code> sammenligner <em>verdiene</em> tegn for tegn,{" "}
+          <code>is</code> sammenligner <em>adressene</em>. Det er to ulike
+          spørsmål — og de gir ofte ulikt svar:
+        </P>
+        <F.IsVsEquals />
+        <Code>
+          {`a = "hei verden"\nb = "hei verden"\na == b   # True  (samme verdi)\na is b   # ofte False (to ulike heap-objekter)\n\nx = "ok"\ny = "ok"\nx is y   # True — Python "interner" korte/identifier-aktige strenger`}
+        </Code>
+        <P>
+          Python bestemmer selv hvilke strenger som blir <em>interned</em>{" "}
+          (delt på samme adresse) — typisk korte og identifier-lignende. Stol
+          aldri på <code>is</code> for verdi-likhet. Eneste tilfellet hvor{" "}
+          <code>is</code> er riktig: sammenligning mot <code>None</code>,{" "}
+          <code>True</code> og <code>False</code>, som alltid er enkelt-objekter
+          i Python.
+        </P>
         <KeyPoints
           items={[
             "Strenger er uforanderlige — metoder returnerer ny streng.",
             "Negativ indeks teller fra slutten: s[-1] er siste tegn.",
             "Slice s[a:b] inkluderer a, ekskluderer b.",
             "Bruk f-strenger for interpolasjon.",
+            "== sjekker verdi, is sjekker adresse (id). Bruk is bare mot None/True/False.",
           ]}
         />
       </>
@@ -447,18 +504,28 @@ export const PYTHON_CHAPTERS: PythonChapter[] = [
         <Code>
           {`for rad in grid:\n    for v in rad:\n        print(v, end=" ")\n    print()       # ny linje per rad`}
         </Code>
-        <H2>Bygge en tom matrise</H2>
+        <H2>Bygge en tom matrise — aliasing-fellen i 2D</H2>
         <P>
-          Et vanlig mønster, men pass opp for aliasing-fellen:
+          Et vanlig mønster, men pass opp for aliasing-fellen. Multiplikasjon
+          av en liste kopierer <em>referanser</em>, ikke selve elementene. Med
+          en indre liste betyr det at alle radene ender opp som samme objekt
+          på heap-en — samme <code>id</code>:
         </P>
+        <F.NestedListAliasing />
         <Code>
-          {`# RIKTIG: ny indre liste per rad\nm = [[0] * 3 for _ in range(3)]\n\n# FEIL: alle rader er SAMME liste!\nm = [[0] * 3] * 3   # endring av m[0] endrer alle radene`}
+          {`# FEIL: alle rader er SAMME liste!\nm = [[0] * 3] * 3\nm[0][0] = 9\nprint(m)              # [[9,0,0], [9,0,0], [9,0,0]] — alle endret\nprint(id(m[0]) == id(m[1]) == id(m[2]))   # True\n\n# RIKTIG: ny indre liste per rad\nm = [[0] * 3 for _ in range(3)]\nm[0][0] = 9\nprint(m)              # [[9,0,0], [0,0,0], [0,0,0]]\nprint(id(m[0]) == id(m[1]))               # False`}
         </Code>
+        <P>
+          Kjør begge variantene i Visualiser-panelet — du ser én indre boks
+          med tre piler i den feile versjonen, og tre separate bokser med ulik
+          <code>id=…</code> i den riktige.
+        </P>
         <KeyPoints
           items={[
             "2D-liste = liste av lister; grid[rad][kol].",
             "Nøstede løkker er den naturlige gjennomgangen.",
-            "[[0]*3]*3 lager 3 referanser til samme rad — bruk list-comprehension.",
+            "[[0]*3]*3 lager 3 referanser til samme rad (samme id) — bruk list-comprehension.",
+            "id(m[0]) == id(m[1]) er testen som avslører aliasing.",
           ]}
         />
       </>
@@ -596,12 +663,31 @@ export const PYTHON_CHAPTERS: PythonChapter[] = [
         <Code>
           {`pris = {"eple": 12, "banan": 8}\npris["eple"]              # 12\npris["melk"] = 25         # legge til\ndel pris["banan"]         # fjerne\n"eple" in pris            # True\n\nfor nøkkel, verdi in pris.items():\n    print(nøkkel, verdi)`}
         </Code>
+        <H2>Hvorfor må nøkler være «hashable»?</H2>
+        <P>
+          Dict-er finner verdier ved å regne <code>hash(nøkkel)</code> og
+          bruke det som indeks i en intern tabell. For at oppslaget skal
+          fungere, må samme nøkkel alltid gi samme hash — altså må nøkkelens{" "}
+          identitet være <em>stabil</em>. Et muterbart objekt (som en liste)
+          kan endre seg etter at du har lagt det inn, og da finner Python det
+          ikke igjen i bøtta. Derfor er det forbudt:
+        </P>
+        <F.HashableKeys />
+        <Code>
+          {`d = {}\nd[(1, 2)] = "a"      # OK: tuple er immutable, hash stabil\nd[[1, 2]] = "b"      # TypeError: unhashable type: 'list'\n\n# Vil du ha listen som nøkkel? Konverter til tuple:\nd[tuple([1, 2])] = "b"`}
+        </Code>
+        <P>
+          Samme regel gjelder for <code>set</code>-medlemmer. I praksis: tall,
+          strenger, tupler (av hashable elementer) og <code>frozenset</code>{" "}
+          fungerer; lister, sets og dicts gjør ikke.
+        </P>
         <KeyPoints
           items={[
             "Tuple: fast rekkefølge, ingen endring etter opprettelse.",
             "Set: unike elementer, ingen rekkefølge, lynrask in-sjekk.",
             "Dict: nøkkel → verdi, lynrask oppslag, bevarer innsettingsrekkefølge.",
             "Bare hashable verdier (tall, str, tuple) kan være dict-nøkler eller set-medlemmer.",
+            "Hashable = stabil hash, som krever at objektet ikke kan muteres.",
           ]}
         />
       </>
@@ -721,6 +807,17 @@ export const PYTHON_CHAPTERS: PythonChapter[] = [
         <Code>
           {`class Node:\n    def __init__(self, verdi, neste=None):\n        self.verdi = verdi\n        self.neste = neste\n\nhead = Node("A", Node("B", Node("C")))`}
         </Code>
+        <H2><code>.neste</code> er en adresse</H2>
+        <P>
+          Hver node er sitt eget objekt på heap-en med en egen{" "}
+          <code>id(…)</code>. Feltet <code>.neste</code> holder bare adressen
+          til neste node — ingen kopi av dataene. Slutten av lista markeres
+          med <code>None</code>, som betyr "ingen adresse":
+        </P>
+        <F.LinkedListNodeIds />
+        <Code>
+          {`head = Node("A", Node("B", Node("C")))\nprint(id(head))           # f.eks. 1001\nprint(id(head.neste))     # f.eks. 1002 — annet objekt\nprint(head.neste.neste.neste is None)   # True — slutten`}
+        </Code>
         <H2>Innsetting</H2>
         <F.LinkedListInsert />
         <P>
@@ -766,6 +863,15 @@ export const PYTHON_CHAPTERS: PythonChapter[] = [
         <Code>
           {`class Node:\n    def __init__(self, verdi):\n        self.verdi = verdi\n        self.venstre = None\n        self.høyre = None`}
         </Code>
+        <H2>Hver node har <em>to adresser</em></H2>
+        <P>
+          Akkurat som i lenkede lister er <code>venstre</code> og{" "}
+          <code>høyre</code> adresser til andre <code>Node</code>-objekter på
+          heap-en — eller <code>None</code> hvis det ikke finnes noe barn der.
+          Det er hele poenget med "<code>if rot is None</code>"-sjekken: vi
+          spør om vi har en adresse å følge.
+        </P>
+        <F.BSTNodeIds />
         <H2>Søk</H2>
         <P>
           Sammenlign med roten — gå venstre hvis mindre, høyre hvis større. Hvert
@@ -829,6 +935,20 @@ export const PYTHON_CHAPTERS: PythonChapter[] = [
           <code>hash("Ada")</code>, krymper det ned til en tabellindeks, og
           legger paret der. <code>alder["Ada"]</code> senere gjør samme regning
           og henter verdien direkte.
+        </P>
+        <H2>Fra nøkkel-id til bøtte</H2>
+        <P>
+          Selve nøkkelen er et heap-objekt med en <code>id(…)</code>.{" "}
+          <code>hash(nøkkel)</code> deriveres fra innholdet (ikke{" "}
+          <code>id</code>-en direkte — to like strenger skal kunne treffe
+          samme bøtte selv om de bor på ulike adresser), og resultatet kappes
+          ned til tabellstørrelsen:
+        </P>
+        <F.HashFromIdToBucket />
+        <P>
+          Det er derfor nøkkelen må være <em>uforanderlig</em>: hadde
+          <code>hash</code> kunnet endre seg etter innsetting, ville Python
+          slått opp i feil bøtte.
         </P>
         <H2>Krympe hash-koden til en indeks</H2>
         <P>
@@ -942,6 +1062,17 @@ export const PYTHON_CHAPTERS: PythonChapter[] = [
         <F.GraphAdjacencyList />
         <Code>
           {`# Naboliste som dict-of-lists\ngraf = {\n    "A": ["B", "C", "D"],\n    "B": ["A", "D"],\n    "C": ["A", "D"],\n    "D": ["A", "B", "C"],\n}`}
+        </Code>
+        <P>
+          Strengene <code>"B"</code> og <code>"C"</code> i <code>graf["A"]</code>{" "}
+          er ikke kopier av nodene — de er nøkler tilbake inn i samme
+          dict. Bruker du i stedet en klasse <code>Node</code>, blir
+          naboliste-innslagene <em>adresser</em> (referanser) til samme
+          heap-objekter:
+        </P>
+        <F.GraphAdjAddresses />
+        <Code>
+          {`# Med Node-objekter: nabolisten holder adressene direkte\nclass Node:\n    def __init__(self, navn):\n        self.navn = navn\n        self.naboer = []\n\na, b, c, d = Node("A"), Node("B"), Node("C"), Node("D")\na.naboer = [b, c, d]   # b, c, d her er ID-ene til de samme objektene\nprint(a.naboer[0] is b)   # True — samme adresse, ikke kopi`}
         </Code>
         <H2>Depth-first search (DFS)</H2>
         <P>
