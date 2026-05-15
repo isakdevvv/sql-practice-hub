@@ -22,6 +22,7 @@ import {
   Shuffle,
 } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
+import { LearningPath } from "@/components/stack/LearningPath";
 import { MlPipelineFlow } from "./MlPipelineFlow";
 import { Mermaid } from "@/components/Mermaid";
 
@@ -224,6 +225,47 @@ export function Dte2602Hub() {
             nettleseren via Pyodide.
           </p>
         </div>
+
+        <section className="mb-10">
+          <LearningPath
+            fag="DTE-2602"
+            forbinder={["DTE-2501 (utvider med RL, GA og dyperere ML-algoritmer)", "DTE-2502 (Neural Networks — dyplæring)", "TEK-1501 (statistikk for hypotesetest av modeller)"]}
+            layers={[
+              {
+                navn: "Basis — fra rådata til modell",
+                intro:
+                  "Lær workflow'en før algoritmene. Hva du gjør FØR fit/predict avgjør om modellen faktisk lærer noe nyttig.",
+                steps: [
+                  { slug: "ml-grunnlag", title: "ML-grunnlag", blurb: "Hva ML er, supervised vs unsupervised, evaluering — mental modell." },
+                  { slug: "dte2602-eda-pandas", title: "EDA med pandas (interaktiv)", blurb: "describe/info/korrelasjon — drop en CSV og se auto-rapport." },
+                  { slug: "dte2602-preprocessing-pipeline", title: "Pipelines + datalekkasje", blurb: "Scaler, OneHotEncoder, ColumnTransformer — og hvorfor scaling før split er dødelig." },
+                ],
+              },
+              {
+                navn: "Dypere — algoritmer og evaluering",
+                intro:
+                  "Når data er klart kan vi velge algoritme. Like viktig: hvilke metrics vi måler med og hvor modellen feiler.",
+                steps: [
+                  { slug: "supervised-learning", title: "Supervised — generelt", blurb: "Klassifisering vs regresjon, baseline-tankegang." },
+                  { slug: "dte2602-trees-rf", title: "Trær og Random Forest", blurb: "Gini, max_depth, bootstrap + feature subsampling. Single-tree vs forest live." },
+                  { slug: "unsupervised-learning", title: "Unsupervised — generelt", blurb: "Clustering, dim.reduksjon — når labels mangler." },
+                  { slug: "dte2602-evaluation-roc", title: "ROC + forvirringsmatrise", blurb: "Flyttbar terskel → precision/recall oppdateres live." },
+                ],
+              },
+              {
+                navn: "Eksamen — bevisst valg og refleksjon",
+                intro:
+                  "Mappevurderingen krever rapport + kode. Disse leksjonene gir deg språket for å forklare valg, trade-offs og bias.",
+                steps: [
+                  { slug: "dte2602-bias-varians", title: "Bias-varians + regularisering", blurb: "Polynom-grad slider med ekte train/test-MSE. Lasso soft-thresholding." },
+                  { slug: "dte2602-prosjektflyt", title: "Prosjekt-workflow", blurb: "Stegene fra problem-formulering til deploy." },
+                  { slug: "dte2602-etikk-filosofi", title: "Etikk og filosofi", blurb: "Bias i data, hvem som rammes, LLM/opphavsrett — mappe-drøftings-stoff." },
+                  { slug: "dte2602-mappe-mal", title: "Mappe-mal", blurb: "Hvordan strukturere de to mappe-oppgavene for å treffe karaktersettingen." },
+                ],
+              },
+            ]}
+          />
+        </section>
 
         <section className="mb-10">
           <h2 className="text-xl font-semibold mb-3">ML-pipeline — én side</h2>

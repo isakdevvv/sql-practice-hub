@@ -24,6 +24,7 @@ import {
   Calculator,
 } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
+import { LearningPath } from "@/components/stack/LearningPath";
 
 type Practice = {
   href: string;
@@ -271,6 +272,50 @@ export function Dte2501Hub() {
             å lese.
           </p>
         </div>
+
+        <section className="mb-10">
+          <LearningPath
+            fag="DTE-2501"
+            forbinder={[
+              "DTE-2602 (deler grunnlaget for supervised/unsupervised)",
+              "TEK-1501 (sannsynlighet, fordelinger og estimering)",
+              "Lineær algebra (PCA, gradient)",
+            ]}
+            layers={[
+              {
+                navn: "Basis — supervised vs unsupervised",
+                intro:
+                  "Først skiller vi merkede fra umerkede data. Lær k-NN og k-Means som de enkleste algoritmene for hvert tilfelle.",
+                steps: [
+                  { slug: "dte2501-knn", title: "k-NN — nærmeste-nabo", blurb: "Euclidean avstand, valg av k, hvorfor skalering er kritisk." },
+                  { slug: "dte2501-supervised-regresjon", title: "Lineær/polynom regresjon", blurb: "Ridge/Lasso — første møte med regularisering." },
+                  { slug: "dte2501-kmeans-clustering", title: "k-Means clustering", blurb: "Lloyd's algoritme, k-means++, albue/silhouette for å velge k." },
+                ],
+              },
+              {
+                navn: "Dypere — sannsynlighet og struktur",
+                intro:
+                  "Når enkle algoritmer ikke holder, går vi til probabilistiske modeller (GMM/EM), dimensjonsreduksjon (PCA), og kombinerer mange modeller (ensembler).",
+                steps: [
+                  { slug: "dte2501-gmm", title: "GMM + EM", blurb: "Soft clustering — sannsynligheter i stedet for harde tildelinger." },
+                  { slug: "dte2501-pca", title: "PCA — dimensjonsreduksjon", blurb: "Kovariansmatrise, egenvektorer, explained variance ratio." },
+                  { slug: "dte2501-ensemble", title: "Ensembler", blurb: "Bagging (RF) vs Boosting (AdaBoost, GBM) — to ulike måter å kombinere modeller." },
+                  { slug: "dte2501-nlp-intro", title: "NLP & TF-IDF", blurb: "Tokenisering, bag-of-words, TF-IDF, cosine similarity." },
+                ],
+              },
+              {
+                navn: "Eksamen — beslutninger og optimering",
+                intro:
+                  "Pensumets toppnivå: metaheuristikker (GA/PSO/ACO), reinforcement learning og dynamisk programmering. Disse er ofte stilløftere på eksamen.",
+                steps: [
+                  { slug: "dte2501-genetic-algorithms", title: "GA, PSO, ACO", blurb: "Bit-strenger, crossover, mutasjon, fitness — og swarm-varianter." },
+                  { slug: "dte2501-reinforcement", title: "MDP, VI, PI, Q-learning", blurb: "Bellman-likning, Value/Policy Iteration, kjent vs ukjent verden." },
+                  { slug: "dte2501-dp", title: "Dynamic Programming", blurb: "TSP via Held-Karp bitmask, knapsack — DP-prinsippet konkretisert." },
+                ],
+              },
+            ]}
+          />
+        </section>
 
         <section className="mb-10">
           <h2 className="text-xl font-semibold mb-3">Pensum-oversikt</h2>

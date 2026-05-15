@@ -15,6 +15,7 @@ import {
   Lock,
 } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
+import { LearningPath } from "@/components/stack/LearningPath";
 
 type Practice = {
   href: string;
@@ -141,6 +142,45 @@ export function Dte2505Hub() {
             eksamen.
           </p>
         </div>
+
+        <section className="mb-10">
+          <LearningPath
+            fag="DTE-2505"
+            forbinder={["DTE-2507 (TCP/IP og lab-oppsett bruker Linux)", "DTE-2509 (server-driften til Flask-appen)", "Git og CLI generelt"]}
+            layers={[
+              {
+                navn: "Basis — operativsystemet under føttene",
+                intro:
+                  "Forstå hva et OS er, hvordan Linux er organisert, og hvor ting bor i filsystemet. Bygg trygg navigering før vi går dypere.",
+                steps: [
+                  { slug: "os-grunnlag", title: "OS-grunnlag", blurb: "Kernel, brukerrom, prosesser, syscalls — den mentale modellen." },
+                  { slug: "linux-bruk", title: "Linux i bruk", blurb: "FHS, navigasjon (ls/cd/find), filer (cat/less/grep) — den daglige verktøykassen." },
+                  { slug: "virtualisering", title: "Virtualisering", blurb: "VMer vs containere — hvorfor du kjører Ubuntu i en boks på Mac/Win." },
+                ],
+              },
+              {
+                navn: "Dypere — kontroll og automatisering",
+                intro:
+                  "Når navigering sitter, lærer vi å eie systemet: brukere, rettigheter og automatisering via shell-skript.",
+                steps: [
+                  { slug: "brukere-rettigheter", title: "Brukere og rettigheter", blurb: "rwx, chmod (oktal+symbolsk), chown, umask, setuid/setgid." },
+                  { slug: "dte2505-rwx-kalkulator", title: "rwx-kalkulator (interaktiv)", blurb: "9-bits-grid → oktal og ls-streng live. Konverter begge veier." },
+                  { slug: "shell-scripting", title: "Shell-scripting", blurb: "Variabler, if/for/while, pipes, omdirigering, exit codes." },
+                  { slug: "dte2505-bash-scripts", title: "Bash-pad med mock-FS", blurb: "Skriv skript, kjør mot et fake filsystem, sammenlign stdout mot fasit." },
+                ],
+              },
+              {
+                navn: "Eksamen — anvende på obliger",
+                intro:
+                  "Eksamen krever 8 obliger godkjent. Disse leksjonene speiler oblig-temaene og lar deg drille mot dem.",
+                steps: [
+                  { slug: "dte2505-prosesser-signaler", title: "Prosesser og signaler", blurb: "Mock-prosess-monitor: send SIGTERM vs SIGKILL, se forskjellen." },
+                  { slug: "dte2505-obliger-guide", title: "Oblig-guide", blurb: "Gjennomgang av typiske oppgavetyper med løsningsstrategi." },
+                ],
+              },
+            ]}
+          />
+        </section>
 
         <section className="mb-10">
           <h2 className="text-xl font-semibold mb-3">OS-oversikt — komponentene</h2>
