@@ -2,9 +2,11 @@ import { Link } from "@tanstack/react-router";
 import { ArrowRight, Lightbulb } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
+import { LinkedStructuresVisualizer } from "./LinkedStructuresVisualizer";
 
 const STEPS = [
   { title: "Hva er en lenket struktur", anchor: "hva" },
+  { title: "Interaktiv visualisering", anchor: "visualisering" },
   { title: "Linked list", anchor: "linked-list" },
   { title: "Stack (LIFO)", anchor: "stack" },
   { title: "Queue (FIFO)", anchor: "queue" },
@@ -77,8 +79,19 @@ export function LenkedeStrukturerPage() {
           </div>
         </section>
 
+        <section id="visualisering" className="mb-10">
+          <h2 className="text-xl font-semibold mb-3">2. Interaktiv visualisering</h2>
+          <p className="text-sm text-muted-foreground mb-4">
+            Bytt mellom de fem strukturene og kjør operasjoner — se hvordan nodene flyttes,
+            hvor <code>head</code>/<code>tail</code>/<code>top</code>/<code>front</code> sitter,
+            og hvilken Python-linje som tilsvarer. Det å fysisk se en node fade inn foran head
+            er forskjellen mellom å pugge og å forstå.
+          </p>
+          <LinkedStructuresVisualizer />
+        </section>
+
         <section id="linked-list" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">2. Linked list</h2>
+          <h2 className="text-xl font-semibold mb-3">3. Linked list</h2>
           <p className="text-sm text-muted-foreground mb-3">
             Hver Node holder et element og en peker til neste Node. Klassen{" "}
             <code>LinkedList</code> holder peker til head og tail (og typisk en{" "}
@@ -133,7 +146,7 @@ class LinkedList:
         </section>
 
         <section id="stack" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">3. Stack — LIFO</h2>
+          <h2 className="text-xl font-semibold mb-3">4. Stack — LIFO</h2>
           <p className="text-sm text-muted-foreground mb-3">
             Last-In-First-Out: det siste du la inn er det første du tar ut. Som en
             stable med tallerkener — du legger på toppen, du tar fra toppen.
@@ -162,7 +175,7 @@ stack.pop()`}</pre>
         </section>
 
         <section id="queue" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">4. Queue — FIFO</h2>
+          <h2 className="text-xl font-semibold mb-3">5. Queue — FIFO</h2>
           <p className="text-sm text-muted-foreground mb-3">
             First-In-First-Out: den som kom først blir behandlet først. Som kø i
             butikken.
@@ -190,7 +203,7 @@ queue.popleft()                                  # → "Kari"
         </section>
 
         <section id="deque" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">5. Deque — best av begge</h2>
+          <h2 className="text-xl font-semibold mb-3">6. Deque — best av begge</h2>
           <p className="text-sm text-muted-foreground mb-3">
             «Double-ended queue». Push og pop fra <em>begge ender</em> er <code>O(1)</code>.
             Kan brukes som både stack og kø — derfor er det Python sin go-to.
@@ -207,7 +220,7 @@ dq.pop()            # → 40, [10, 20, 30]`}</pre>
         </section>
 
         <section id="prioritetsko" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">6. Prioritetskø + heapq</h2>
+          <h2 className="text-xl font-semibold mb-3">7. Prioritetskø + heapq</h2>
           <p className="text-sm text-muted-foreground mb-3">
             Elementer har en <em>prioritet</em>. Du tar alltid ut det elementet med
             HØYEST prioritet (eller LAVEST, avhenger av implementasjon). Python sin{" "}
@@ -241,7 +254,7 @@ heapq.heappop(pq)         # → (1, "høyest")`}</pre>
         </section>
 
         <section id="postfix" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">7. Postfix-evaluator — klassisk stack-bruk</h2>
+          <h2 className="text-xl font-semibold mb-3">8. Postfix-evaluator — klassisk stack-bruk</h2>
           <p className="text-sm text-muted-foreground mb-3">
             Postfix-notasjon (Reverse Polish): operatorer kommer ETTER operandene.{" "}
             <code>(4 + 5) * 3</code> blir <code>4 5 + 3 *</code>. Trivielt å evaluere
@@ -276,7 +289,7 @@ eval_postfix("3 4 + 5 * 2 -") # → 33`}</pre>
         </section>
 
         <section id="sammenligning" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">8. Sammenligning</h2>
+          <h2 className="text-xl font-semibold mb-3">9. Sammenligning</h2>
           <div className="overflow-hidden rounded-lg border border-border">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
