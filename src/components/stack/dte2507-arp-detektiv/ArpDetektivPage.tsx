@@ -3,8 +3,10 @@ import { Lightbulb, Quote } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
 import { ArpQuiz } from "./ArpQuiz";
+import { ArpVisualizer } from "./ArpVisualizer";
 
 const STEPS = [
+  { title: "Interaktiv ARP-visualisering", anchor: "visualisering" },
   { title: "Postadresse vs. personnummer", anchor: "metafor" },
   { title: "MAC-adresser i detalj", anchor: "mac" },
   { title: "ARP-protokollen", anchor: "arp" },
@@ -47,6 +49,17 @@ export function ArpDetektivPage() {
         </header>
 
         <CourseOutline courseId="dte2507-arp-detektiv" steps={STEPS} />
+
+        <section id="visualisering" className="mb-10">
+          <h2 className="text-xl font-semibold mb-3">0. Interaktiv ARP-visualisering</h2>
+          <p className="text-sm text-muted-foreground mb-3 leading-relaxed">
+            Fire hoster (A, B, C, D) på samme subnett, koblet via en switch. Velg et
+            scenario og se hvordan ARP-spørringer kringkastes, hvordan svar er unicast,
+            og hva som skjer når en angriper løyver. Spill av automatisk eller stepp
+            gjennom ett hopp om gangen — og følg med på cachene som oppdaterer seg.
+          </p>
+          <ArpVisualizer />
+        </section>
 
         <section id="metafor" className="mb-10">
           <h2 className="text-xl font-semibold mb-3">1. Postadresse vs. personnummer</h2>
