@@ -1,6 +1,7 @@
 import { Lightbulb } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
+import { EksterneRessurser } from "@/components/stack/EksterneRessurser";
 import { DayWalker } from "./DayWalker";
 
 const STEPS = [
@@ -254,6 +255,32 @@ export function DayInTheLifePage() {
             </ul>
           </div>
         </section>
+
+        <EksterneRessurser
+          resources={[
+            {
+              type: "bok",
+              tittel: "Computer Networking: Top-Down Approach",
+              forfatter: "Kurose & Ross — Ch 6.7",
+              href: "/stack/programmeringsboker#kurose-ross",
+              why: "Hele Section 6.7 er der disse 24 stegene kommer fra. Bibelen.",
+            },
+            {
+              type: "bok",
+              tittel: "High Performance Browser Networking",
+              forfatter: "Grigorik — gratis",
+              href: "/stack/programmeringsboker#grigorik-hpbn",
+              why: "Når du har skjønt protokoll-flyten her, gir Grigorik web-perf-perspektivet på toppen.",
+            },
+            {
+              type: "mooc",
+              tittel: "Stanford CS144: Day in the Life of an Application",
+              forfatter: "Lecture 1.1",
+              href: "/stack/mooc-bibliotek#stanford-cs144",
+              why: "CS144 åpner med samme idé. Implementer din egen TCP-stakk for å virkelig forstå.",
+            },
+          ]}
+        />
       </article>
     </StackPageShell>
   );

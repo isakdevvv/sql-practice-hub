@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { Lightbulb } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
+import { EksterneRessurser } from "@/components/stack/EksterneRessurser";
 import { Tex, TexBlock } from "@/components/Tex";
 import {
   FsmRdt10,
@@ -322,6 +323,32 @@ export function RdtProgresjonPage() {
             </li>
           </ul>
         </div>
+
+        <EksterneRessurser
+          resources={[
+            {
+              type: "bok",
+              tittel: "Computer Networking: A Top-Down Approach",
+              forfatter: "Kurose & Ross",
+              href: "/stack/programmeringsboker#kurose-ross",
+              why: "Ch 3.4 (s. 200-227) er der rdt-progresjonen kommer fra. Bibelen for kurset.",
+            },
+            {
+              type: "mooc",
+              tittel: "Stanford CS144: Computer Networking",
+              forfatter: "Nick McKeown, Philip Levis",
+              href: "/stack/mooc-bibliotek#stanford-cs144",
+              why: "Du implementerer DIN egen TCP-stakk i C++. Beste komplementet til pensum.",
+            },
+            {
+              type: "youtube",
+              tittel: "Computerphile",
+              forfatter: "Mike Pound m.fl.",
+              href: "/stack/youtube-kanaler#computerphile",
+              why: "Søk etter 'TCP' og 'reliability' — kortere forklaringer av samme prinsipper.",
+            },
+          ]}
+        />
       </article>
     </StackPageShell>
   );
