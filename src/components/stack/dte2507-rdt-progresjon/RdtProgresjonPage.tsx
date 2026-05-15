@@ -11,9 +11,11 @@ import {
   FsmRdt30Sender,
 } from "./RdtFsm";
 import { UtilizationCalc } from "./UtilizationCalc";
+import { RdtVisualizer } from "./RdtVisualizer";
 
 const STEPS = [
   { title: "Hvorfor en progresjon?", anchor: "hvorfor" },
+  { title: "Interaktiv pakke-tidslinje", anchor: "visualizer" },
   { title: "rdt1.0 — perfekt kanal", anchor: "rdt10" },
   { title: "rdt2.0 — bit-feil (ACK/NAK)", anchor: "rdt20" },
   { title: "rdt2.1 — korrupt ACK (seq# 0/1)", anchor: "rdt21" },
@@ -103,8 +105,28 @@ export function RdtProgresjonPage() {
           </div>
         </section>
 
+        <section id="visualizer" className="mb-10">
+          <h2 className="text-xl font-semibold mb-3">
+            2. Interaktiv pakke-tidslinje
+          </h2>
+          <p className="text-sm text-muted-foreground mb-3 leading-relaxed">
+            Velg en rdt-versjon og se hva som skjer mellom sender og mottaker når
+            pakker reiser ned-til-høyre og ACK-er opp-til-venstre. Toggle feil-injeksjonene
+            for å se hvorfor hver enkelt mekanisme (NAK, sekvensnummer, timer) faktisk er
+            nødvendig — ikke bare en festlig akademisk øvelse. Drar du i tidsgliderne kan
+            du fryse bildet og lese hva sender og mottaker mener akkurat nå.
+          </p>
+          <RdtVisualizer />
+          <p className="text-xs text-muted-foreground leading-relaxed">
+            Tipset er å begynne med <code>rdt 2.0</code> + «korruptér data-pkt #1» (du ser
+            NAK-en), deretter <code>rdt 3.0</code> + «mist data-pkt #2» (timeren utløses), og
+            til slutt <code>GBN</code> + samme tap — se hvor mye lengre stoppet blir når
+            base-pakka ikke kommer fram.
+          </p>
+        </section>
+
         <section id="rdt10" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">2. rdt1.0 — perfekt kanal</h2>
+          <h2 className="text-xl font-semibold mb-3">3. rdt1.0 — perfekt kanal</h2>
           <p className="text-sm text-muted-foreground mb-3 leading-relaxed">
             Anta at kanalen aldri korrupterer eller mister pakker. Da har vi ingenting å
             beskytte oss mot. Senderen pakker dataen og ringer <code>udt_send</code>
@@ -119,7 +141,7 @@ export function RdtProgresjonPage() {
         </section>
 
         <section id="rdt20" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">3. rdt2.0 — bit-feil med ACK/NAK</h2>
+          <h2 className="text-xl font-semibold mb-3">4. rdt2.0 — bit-feil med ACK/NAK</h2>
           <p className="text-sm text-muted-foreground mb-3 leading-relaxed">
             Nytt problem: bits i pakken kan flippes underveis. Hvordan vet mottakeren at en
             pakke er korrupt? <strong>Checksum.</strong> Hvordan får senderen vite? Mottakeren
@@ -136,7 +158,7 @@ export function RdtProgresjonPage() {
         </section>
 
         <section id="rdt21" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">4. rdt2.1 — sekvensnummer 0/1</h2>
+          <h2 className="text-xl font-semibold mb-3">5. rdt2.1 — sekvensnummer 0/1</h2>
           <p className="text-sm text-muted-foreground mb-3 leading-relaxed">
             Løsning: gi hver pakke et <strong>sekvensnummer</strong>. For stop-and-wait
             trenger vi bare 1 bit — 0 og 1 veksler. Hvis mottakeren får pkt med samme seq# som
@@ -152,7 +174,7 @@ export function RdtProgresjonPage() {
         </section>
 
         <section id="rdt22" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">5. rdt2.2 — kvitt NAK-en</h2>
+          <h2 className="text-xl font-semibold mb-3">6. rdt2.2 — kvitt NAK-en</h2>
           <p className="text-sm text-muted-foreground mb-3 leading-relaxed">
             Observasjon: vi trenger faktisk ikke NAK. I stedet for å si «NAK», kan mottakeren
             sende en <em>duplikat-ACK</em> — en ny ACK for sist <em>korrekt</em> mottatte
@@ -168,7 +190,7 @@ export function RdtProgresjonPage() {
         </section>
 
         <section id="rdt30" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">6. rdt3.0 — pakketap håndteres av timer</h2>
+          <h2 className="text-xl font-semibold mb-3">7. rdt3.0 — pakketap håndteres av timer</h2>
           <p className="text-sm text-muted-foreground mb-3 leading-relaxed">
             Nytt problem: pakker kan <em>tapes</em> (forsvinne) — ikke bare korruptes.
             Senderen sitter da og venter på en ACK som aldri kommer. Vi kan ikke vente
@@ -190,7 +212,7 @@ export function RdtProgresjonPage() {
         </section>
 
         <section id="utilization" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">7. Stop-and-wait sin svakhet</h2>
+          <h2 className="text-xl font-semibold mb-3">8. Stop-and-wait sin svakhet</h2>
           <p className="text-sm text-muted-foreground mb-3 leading-relaxed">
             Stop-and-wait sender én pakke, venter på ACK, sender neste. Senderens
             <em> utnyttelse</em> er andelen tid han faktisk trasmitterer:
@@ -220,7 +242,7 @@ export function RdtProgresjonPage() {
         </section>
 
         <section id="pipeline" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">8. Løsningen: pipelining (GBN og SR)</h2>
+          <h2 className="text-xl font-semibold mb-3">9. Løsningen: pipelining (GBN og SR)</h2>
           <p className="text-sm text-muted-foreground mb-3 leading-relaxed">
             Fiksen er enkel og dyp: ikke vent på ACK før neste pakke. Tillat at flere pakker
             er «in flight». Det krever tre ting:
@@ -260,7 +282,7 @@ export function RdtProgresjonPage() {
         </section>
 
         <section id="ref" className="mb-6">
-          <h2 className="text-xl font-semibold mb-3">9. Oppsummering — én tabell</h2>
+          <h2 className="text-xl font-semibold mb-3">10. Oppsummering — én tabell</h2>
           <div className="overflow-hidden rounded-lg border border-border">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
