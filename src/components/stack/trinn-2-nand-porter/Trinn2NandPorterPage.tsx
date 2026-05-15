@@ -2,8 +2,10 @@ import { Link } from "@tanstack/react-router";
 import { ArrowRight, Lightbulb } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
+import { GateVisualizer } from "./GateVisualizer";
 
 const STEPS = [
+  { title: "Interaktiv port-bygger", anchor: "visualizer" },
   { title: "Hva en logisk port er", anchor: "hva" },
   { title: "NAND — den universelle porten", anchor: "nand" },
   { title: "Bygge NOT, AND, OR fra NAND", anchor: "bygging" },
@@ -42,6 +44,19 @@ export function Trinn2NandPorterPage() {
         </div>
 
         <CourseOutline courseId="trinn-2-nand-porter" steps={STEPS} />
+
+        <section id="visualizer" className="mb-10">
+          <h2 className="text-xl font-semibold mb-3">
+            Interaktiv port-bygger
+          </h2>
+          <p className="text-sm text-muted-foreground mb-4">
+            Vri på bryterne, bytt port-type, og se hvordan ledningene lyser
+            grønt når de fører 1. I de tre siste modusene bygger vi AND, OR
+            og en hel halvadder fra kun NAND-porter — det er hele poenget
+            med «funksjonelt komplett».
+          </p>
+          <GateVisualizer />
+        </section>
 
         <section id="hva" className="mb-10">
           <h2 className="text-xl font-semibold mb-3">1. Hva en logisk port er</h2>
