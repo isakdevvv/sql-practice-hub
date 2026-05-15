@@ -4,14 +4,16 @@ import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
 import { Tex, TexBlock } from "@/components/Tex";
 import { HolTimeline } from "./HolTimeline";
+import { Http2Visualizer } from "./Http2Visualizer";
 
 const STEPS = [
+  { title: "Side-ved-side-simulator", anchor: "sim-top" },
   { title: "Problemet med HTTP/1.0", anchor: "non-persistent" },
   { title: "Persistente tilkoblinger", anchor: "persistent" },
   { title: "Pipelining og HOL-blokkering", anchor: "hol" },
   { title: "Hvorfor 6 parallelle ikke er nok", anchor: "parallel" },
   { title: "HTTP/2 — frames og interleaving", anchor: "http2" },
-  { title: "Interaktiv timeline", anchor: "sim" },
+  { title: "Frame-for-frame timeline", anchor: "sim" },
   { title: "Eksamen-quick-ref", anchor: "ref" },
 ];
 
@@ -46,6 +48,18 @@ export function Http2HolPage() {
         </header>
 
         <CourseOutline courseId="dte2507-http2-hol" steps={STEPS} />
+
+        <section id="sim-top" className="mb-10">
+          <h2 className="text-xl font-semibold mb-3">Side-ved-side-simulator</h2>
+          <p className="text-sm text-muted-foreground mb-3 leading-relaxed">
+            Velg modus og se hvordan samme sett ressurser leveres under HTTP/1.0,
+            HTTP/1.1 med pipelining, 6 parallelle TCP-er, HTTP/2 med multipleksing,
+            og HTTP/2 når en TCP-pakke mistes. Skyv ressurs-slideren for å se hva
+            som skjer når sida vokser. Time-distanse-diagrammet er tegnet i samme
+            skala på tvers av modusene — sammenlign totaltidene visuelt.
+          </p>
+          <Http2Visualizer />
+        </section>
 
         <section id="non-persistent" className="mb-10">
           <h2 className="text-xl font-semibold mb-3">1. HTTP/1.0 — non-persistent: 2 RTT per objekt</h2>
