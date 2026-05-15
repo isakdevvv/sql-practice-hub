@@ -1922,3 +1922,73 @@ export const GraphAdjAddresses: FC = () => (
   </figure>
 );
 
+/* Kap. 6 — Foundational: én rad per type med kjennemerke, mutabilitet og størrelse */
+export const TypeOverview: FC = () => {
+  const rows: Array<{
+    type: string;
+    example: string;
+    mark: string;
+    mutable: boolean;
+    bytes: number;
+  }> = [
+    { type: "int",   example: "42",         mark: "(siffer)",  mutable: false, bytes: 28 },
+    { type: "float", example: "3.14",       mark: ". (punkt)", mutable: false, bytes: 24 },
+    { type: "str",   example: '"hei"',      mark: '"..."',     mutable: false, bytes: 52 },
+    { type: "list",  example: "[1, 2, 3]",  mark: "[...]",     mutable: true,  bytes: 88 },
+    { type: "tuple", example: "(1, 2)",     mark: "(.., ..)",  mutable: false, bytes: 56 },
+    { type: "dict",  example: '{"a": 1}',   mark: "{k: v}",    mutable: true,  bytes: 232 },
+    { type: "set",   example: "{1, 2}",     mark: "{..}",      mutable: true,  bytes: 216 },
+  ];
+  const rowH = 24;
+  const headerY = 22;
+  const startY = 32;
+  const totalH = startY + rows.length * rowH + 32;
+  const colType = 12;
+  const colExample = 64;
+  const colMut = 178;
+  const colBytes = 232;
+  const colMark = 290;
+  return (
+    <figure className="my-4">
+      <svg
+        viewBox={`0 0 360 ${totalH}`}
+        className="w-full max-w-md mx-auto text-foreground"
+      >
+        <text x={colType} y={headerY} className="text-[10px] fill-current opacity-80 font-semibold">type</text>
+        <text x={colExample} y={headerY} className="text-[10px] fill-current opacity-80 font-semibold">eksempel</text>
+        <text x={colMut} y={headerY} className="text-[10px] fill-current opacity-80 font-semibold">mutabel</text>
+        <text x={colBytes} y={headerY} className="text-[10px] fill-current opacity-80 font-semibold">bytes</text>
+        <text x={colMark} y={headerY} className="text-[10px] fill-current opacity-80 font-semibold">kjennemerke</text>
+        <line x1={8} y1={26} x2={352} y2={26} stroke={STROKE} opacity={0.3} />
+        {rows.map((r, i) => {
+          const y = startY + i * rowH;
+          const rowFill = r.mutable
+            ? "color-mix(in oklch, var(--warning) 12%, transparent)"
+            : "color-mix(in oklch, var(--success) 12%, transparent)";
+          return (
+            <g key={r.type}>
+              <rect x={8} y={y} width={344} height={rowH - 2} fill={rowFill} stroke={STROKE} strokeOpacity={0.25} />
+              <text x={colType} y={y + 15} className="text-[11px] fill-current font-mono font-semibold">{r.type}</text>
+              <text x={colExample} y={y + 15} className="text-[11px] fill-current font-mono">{r.example}</text>
+              <text x={colMut} y={y + 15} className="text-[10px] fill-current opacity-90">
+                {r.mutable ? "ja" : "nei"}
+              </text>
+              <text x={colBytes} y={y + 15} className="text-[10px] fill-current font-mono opacity-90">{r.bytes} B</text>
+              <text x={colMark} y={y + 15} className="text-[10px] fill-current font-mono opacity-90">{r.mark}</text>
+            </g>
+          );
+        })}
+        <text x={12} y={totalH - 14} className="text-[9px] fill-current opacity-70">
+          Bytes ≈ sys.getsizeof i CPython 3.11 — varierer med versjon og innhold.
+        </text>
+        <text x={12} y={totalH - 2} className="text-[9px] fill-current opacity-70">
+          Grønn = immutable (id stabil). Oransje = mutable (innhold kan endres in-place).
+        </text>
+      </svg>
+      <Caption>
+        Hver verdi i Python er et heap-objekt med et <code>id</code>. Type, mutabilitet og syntaktisk kjennemerke avgjør hvordan du leser koden.
+      </Caption>
+    </figure>
+  );
+};
+

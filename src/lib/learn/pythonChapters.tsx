@@ -219,6 +219,15 @@ export const PYTHON_CHAPTERS: PythonChapter[] = [
         <Code>
           {`def hilsen(navn, hilsemate="Hei"):\n    return f"{hilsemate}, {navn}!"\n\nhilsen("Ada")           # "Hei, Ada!"\nhilsen("Bob", "Hallo")   # "Hallo, Bob!"`}
         </Code>
+        <H2>Hva ligger på heap-en — én rad per type</H2>
+        <P>
+          Før vi snakker om adresser: hver verdi i Python er et heap-objekt
+          med sin egen <code>id</code>. Tabellen viser hvordan de mest brukte
+          typene skiller seg fra hverandre — hvilket{" "}
+          <em>syntaktisk kjennemerke</em> de har, om de er mutable, og hvor
+          mye de typisk veier i bytes.
+        </P>
+        <F.TypeOverview />
         <H2>Argumenter er adresser, ikke kopier</H2>
         <P>
           Når du sender et objekt inn i en funksjon, får parameteren{" "}
