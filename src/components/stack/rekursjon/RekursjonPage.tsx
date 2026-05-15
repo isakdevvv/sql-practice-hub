@@ -2,8 +2,10 @@ import { Link } from "@tanstack/react-router";
 import { ArrowRight, Lightbulb } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
+import { RecursionVisualizer } from "./RecursionVisualizer";
 
 const STEPS = [
+  { title: "Interaktiv visualisering", anchor: "visualisering" },
   { title: "Hva er rekursjon", anchor: "hva" },
   { title: "Anatomi — base case + rekursivt steg", anchor: "anatomi" },
   { title: "Kallstacken — hva skjer i minnet", anchor: "kallstack" },
@@ -42,6 +44,19 @@ export function RekursjonPage() {
         </div>
 
         <CourseOutline courseId="rekursjon" steps={STEPS} />
+
+        <section id="visualisering" className="mb-12">
+          <h2 className="text-xl font-semibold mb-2">
+            Interaktiv: se rekursjonen brette seg ut
+          </h2>
+          <p className="text-sm text-muted-foreground mb-4">
+            Velg en funksjon, sett <code>n</code>, og steg gjennom kallene én og én — eller
+            trykk Play. Til venstre ser du kallstacken bygge seg opp og rive seg ned igjen.
+            Til høyre ser du selve rekursjonstreet med pending (gult), returnert (grønt)
+            og — for naiv fib — duplikat-noder i rødt som motiverer memoisering.
+          </p>
+          <RecursionVisualizer />
+        </section>
 
         <section id="hva" className="mb-10">
           <h2 className="text-xl font-semibold mb-3">1. Hva er rekursjon</h2>
