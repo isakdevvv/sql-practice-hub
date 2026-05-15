@@ -26,6 +26,12 @@ export interface Book {
   tier: 1 | 2 | 3;
   /** Hva alternativet ville vært (og hvorfor denne vinner). */
   motArgument?: string;
+  /** For gratis bøker: URL som kan vises i iframe (HTML eller PDF). Tom hvis paid eller blokkert. */
+  embedUrl?: string;
+  /** "html" eller "pdf" — påvirker iframe-høyde og advarsel. */
+  embedKind?: "html" | "pdf";
+  /** True hvis embedding kan blokkeres av X-Frame-Options (vis advarsel). */
+  embedMayBlock?: boolean;
 }
 
 export const BOOKS: readonly Book[] = [
@@ -69,6 +75,9 @@ export const BOOKS: readonly Book[] = [
     tier: 1,
     motArgument:
       "Tanenbaum er klassisk, men OSTEP slår den på didaktikk. Den er gratis, og forfatterne er aktive forelesere som tester innhold på studenter hvert år.",
+    embedUrl: "https://pages.cs.wisc.edu/~remzi/OSTEP/",
+    embedKind: "html",
+    embedMayBlock: true,
   },
 
   {
@@ -175,6 +184,9 @@ export const BOOKS: readonly Book[] = [
     tier: 1,
     motArgument:
       "Goodfellow's 'Deep Learning' er standardreferansen, men er stein-tung. Nielsen er hva du leser FØR Goodfellow så du har intuisjon å henge teori på.",
+    embedUrl: "http://neuralnetworksanddeeplearning.com/chap1.html",
+    embedKind: "html",
+    embedMayBlock: true,
   },
 
   {
@@ -196,6 +208,9 @@ export const BOOKS: readonly Book[] = [
     tier: 2,
     motArgument:
       "Géron lærer deg å BRUKE ML; ISLR lærer deg å TENKE som statistiker om ML. De komplementerer hverandre.",
+    embedUrl: "https://hastie.su.domains/ISLP/ISLP_website.pdf",
+    embedKind: "pdf",
+    embedMayBlock: false,
   },
 
   {
@@ -217,6 +232,9 @@ export const BOOKS: readonly Book[] = [
     tier: 1,
     motArgument:
       "Stranger sin 'Linear Algebra and Its Applications' er klassisk, men du trenger ikke 80% av den til ML. MML er nøyaktig det du trenger.",
+    embedUrl: "https://mml-book.github.io/book/mml-book.pdf",
+    embedKind: "pdf",
+    embedMayBlock: false,
   },
 
   {
@@ -260,6 +278,9 @@ export const BOOKS: readonly Book[] = [
     tier: 2,
     motArgument:
       "Dragon Book er den akademiske kompilatorboka, men er teoritung og pedagogisk dårlig. Nystrom bygger noe FAKTISK kjørbart og vil at du skal skjønne — ikke bare bestå eksamen.",
+    embedUrl: "https://craftinginterpreters.com/contents.html",
+    embedKind: "html",
+    embedMayBlock: false,
   },
 
   {
@@ -366,6 +387,9 @@ export const BOOKS: readonly Book[] = [
     tier: 2,
     motArgument:
       "Kurose dekker protokollene generelt, men er klassisk akademisk. Grigorik er Google-ingeniøren som faktisk har målt og optimalisert dette i prod.",
+    embedUrl: "https://hpbn.co/",
+    embedKind: "html",
+    embedMayBlock: true,
   },
 
   {
@@ -387,6 +411,9 @@ export const BOOKS: readonly Book[] = [
     tier: 2,
     motArgument:
       "Pragmatic Programmer er individuelt-perspektiv. Phoenix Project er roman. SRE-boka er det eneste tekniske som beskriver moderne drift fra topp til bunn — gratis fordi Google ville heve standarden i industrien.",
+    embedUrl: "https://sre.google/sre-book/table-of-contents/",
+    embedKind: "html",
+    embedMayBlock: true,
   },
 
   {
@@ -408,6 +435,9 @@ export const BOOKS: readonly Book[] = [
     tier: 2,
     motArgument:
       "Nielsen NNDL gir intuisjon, og det er der du starter. Goodfellow er hva du leser når du må forstå BEVIS, ikke bare hvordan kalle .fit() på Keras. Stein-tung men gratis.",
+    embedUrl: "https://www.deeplearningbook.org/",
+    embedKind: "html",
+    embedMayBlock: true,
   },
 
   {
@@ -429,6 +459,9 @@ export const BOOKS: readonly Book[] = [
     tier: 2,
     motArgument:
       "AIMA dekker RL i ett kapittel. Sutton & Barto er HELE boka, av folkene som fant opp algoritmene. Når DeepMind-folk skriver papers refererer de til denne.",
+    embedUrl: "http://incompleteideas.net/book/RLbook2020.pdf",
+    embedKind: "pdf",
+    embedMayBlock: false,
   },
 
   {

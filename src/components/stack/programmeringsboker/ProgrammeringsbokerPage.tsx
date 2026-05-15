@@ -1,6 +1,7 @@
 import { ExternalLink, BookOpen, CheckCircle2, AlertTriangle } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
+import { MediaEmbed } from "@/components/stack/MediaEmbed";
 import { BOOKS, LESEORDEN_FOR_BACHELOR, type Book } from "./books";
 
 const STEPS = [
@@ -231,6 +232,16 @@ function BookCard({ book }: { book: Book }) {
               </summary>
               <p className="mt-1.5 leading-relaxed">{book.motArgument}</p>
             </details>
+          )}
+
+          {book.embedUrl && book.embedKind && (
+            <MediaEmbed
+              kind={book.embedKind}
+              src={book.embedUrl}
+              title={`Les ${book.title} her`}
+              externalUrl={book.url}
+              mayBlock={book.embedMayBlock}
+            />
           )}
         </div>
       </div>

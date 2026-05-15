@@ -1,6 +1,7 @@
 import { ExternalLink, GraduationCap, Play, Clock, AlertTriangle } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
+import { MediaEmbed } from "@/components/stack/MediaEmbed";
 import { MOOCS, type Mooc } from "./moocs";
 
 const STEPS = [
@@ -239,6 +240,15 @@ function MoocCard({ mooc: m }: { mooc: Mooc }) {
             </summary>
             <p className="mt-1.5 leading-relaxed">{m.hvorforHer}</p>
           </details>
+
+          {m.startVideoId && m.startVideoUrl && (
+            <MediaEmbed
+              kind="youtube"
+              src={m.startVideoId}
+              title={`Start her — ${m.bestForelesninger[0].tittel}`}
+              externalUrl={m.startVideoUrl}
+            />
+          )}
         </div>
       </div>
     </div>
