@@ -2,8 +2,10 @@ import { Link } from "@tanstack/react-router";
 import { ArrowRight, Lightbulb } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
+import { TreeVisualizer } from "./TreeVisualizer";
 
 const STEPS = [
+  { title: "Interaktiv: bygg og traverser tre", anchor: "visualisering" },
   { title: "Binærtre — grunnbegrepene", anchor: "basics" },
   { title: "Binary Search Tree (BST)", anchor: "bst" },
   { title: "Traversering", anchor: "traversering" },
@@ -44,8 +46,19 @@ export function TraerPage() {
 
         <CourseOutline courseId="traer" steps={STEPS} />
 
+        <section id="visualisering" className="mb-10">
+          <h2 className="text-xl font-semibold mb-3">1. Interaktiv: bygg og traverser tre</h2>
+          <p className="text-sm text-muted-foreground mb-3">
+            Bytt mellom modusene under: bygg ditt eget binære søketre, animer de
+            fire traverseringene, eller kjør AVL-rotasjoner steg for steg på et
+            ubalansert tre. Layout: x-aksen er inorder-rekkefølge, y-aksen er
+            dybde — så et BST står alltid sortert fra venstre til høyre.
+          </p>
+          <TreeVisualizer />
+        </section>
+
         <section id="basics" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">1. Binærtre — grunnbegrepene</h2>
+          <h2 className="text-xl font-semibold mb-3">2. Binærtre — grunnbegrepene</h2>
           <p className="text-sm text-muted-foreground mb-3">
             Et tre er noder koblet sammen uten sykler. <strong>Binærtre</strong>{" "}
             betyr at hver node har maks to barn — venstre og høyre. Begrepene
@@ -79,7 +92,7 @@ export function TraerPage() {
         </section>
 
         <section id="bst" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">2. Binary Search Tree (BST)</h2>
+          <h2 className="text-xl font-semibold mb-3">3. Binary Search Tree (BST)</h2>
           <p className="text-sm text-muted-foreground mb-3">
             BST er et binærtre med en <strong>invariant</strong>: for hver node
             er alle nøkler i venstre subtree mindre enn noden, og alle i høyre
@@ -134,7 +147,7 @@ def delete(rot, key):
         </section>
 
         <section id="traversering" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">3. Traversering</h2>
+          <h2 className="text-xl font-semibold mb-3">4. Traversering</h2>
           <p className="text-sm text-muted-foreground mb-3">
             Fire klassiske måter å besøke alle noder. Tre er DFS-baserte
             (rekursjon), én er BFS-basert (kø).
@@ -177,7 +190,7 @@ def level_order(rot):
         </section>
 
         <section id="balansert" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">4. Balanserte trær — AVL</h2>
+          <h2 className="text-xl font-semibold mb-3">5. Balanserte trær — AVL</h2>
           <p className="text-sm text-muted-foreground mb-3">
             En BST kan bli <strong>skewed</strong> hvis du setter inn allerede
             sortert data — alt havner til høyre, treet blir en lenkeliste,
@@ -223,7 +236,7 @@ AVL etter samme inserts:
         </section>
 
         <section id="heap" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">5. Heap — tre vs array</h2>
+          <h2 className="text-xl font-semibold mb-3">6. Heap — tre vs array</h2>
           <p className="text-sm text-muted-foreground mb-3">
             En <strong>min-heap</strong> er et komplett binærtre der hver
             forelder er mindre enn begge barna. Roten er alltid minste element.
@@ -266,7 +279,7 @@ heapq.heapify([5, 1, 3, 7, 2])`}</pre>
         </section>
 
         <section id="tradeoffs" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">6. BST vs hash — trade-offs</h2>
+          <h2 className="text-xl font-semibold mb-3">7. BST vs hash — trade-offs</h2>
           <div className="overflow-hidden rounded-lg border border-border mb-4">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
@@ -313,7 +326,7 @@ heapq.heapify([5, 1, 3, 7, 2])`}</pre>
         </section>
 
         <section id="feller" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">7. Vanlige feller</h2>
+          <h2 className="text-xl font-semibold mb-3">8. Vanlige feller</h2>
           <div className="rounded-xl border-2 border-destructive/40 bg-destructive/5 p-5 text-sm">
             <ul className="space-y-2 list-disc pl-5">
               <li>
