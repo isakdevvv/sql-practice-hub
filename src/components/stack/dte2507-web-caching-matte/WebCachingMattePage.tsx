@@ -4,8 +4,10 @@ import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
 import { Tex, TexBlock } from "@/components/Tex";
 import { CacheCalculator } from "./CacheCalculator";
+import { CacheVisualizer } from "./CacheVisualizer";
 
 const STEPS = [
+  { title: "Cache-visualisering", anchor: "vis" },
   { title: "Hvorfor cache?", anchor: "hvorfor" },
   { title: "Trafikkintensitet ρ", anchor: "rho" },
   { title: "Bokens eksempel", anchor: "bokens-eks" },
@@ -46,6 +48,17 @@ export function WebCachingMattePage() {
         </header>
 
         <CourseOutline courseId="dte2507-web-caching-matte" steps={STEPS} />
+
+        <section id="vis" className="mb-10">
+          <h2 className="text-xl font-semibold mb-3">0. Cache-visualisering — pakker, LRU, TTL og 304</h2>
+          <p className="text-sm text-muted-foreground mb-3 leading-relaxed">
+            Før vi går inn i matematikken: en interaktiv visualisering av hvordan en
+            web-cache faktisk fungerer. Bytt mellom modusene for å se første-miss → fyll
+            → hit, LRU-eviction, TTL-utløp, betinget GET med 304 Not Modified, og en
+            kalkulator for snitt-responstid <Tex>{`\\;p \\cdot T_{\\text{cache}} + (1-p)\\cdot T_{\\text{origin}}`}</Tex>.
+          </p>
+          <CacheVisualizer />
+        </section>
 
         <section id="hvorfor" className="mb-10">
           <h2 className="text-xl font-semibold mb-3">1. Hvorfor web-caching?</h2>
