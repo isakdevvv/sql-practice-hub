@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { BitsToByte } from "./BitsToByte";
 import { AsciiTable } from "./AsciiTable";
 import { EncodingConverter } from "./EncodingConverter";
+import { EncodingVisualizer } from "./EncodingVisualizer";
 
 export function BytesEncodingPage() {
   return (
@@ -40,18 +41,27 @@ export function BytesEncodingPage() {
           <BitsToByte />
         </Section>
 
-        {/* 2. ASCII */}
+        {/* 2. INTERAKTIV VISUALISERING */}
         <Section
           number="2"
+          title="Visualiser kodingen live"
+          lede="Skriv inn tekst eller tall og se hvordan bytene ser ut. Bytt modus for å sammenligne ASCII, UTF-8, Base64 og endianness."
+        >
+          <EncodingVisualizer />
+        </Section>
+
+        {/* 3. ASCII */}
+        <Section
+          number="3"
           title="ASCII — én byte per tegn"
           lede="Den eldste avtalen om tegn → tall. Bruker bare 7 bits, så bare 128 tegn passer. Engelsk fungerer. Norsk gjør det ikke."
         >
           <AsciiTable />
         </Section>
 
-        {/* 3. UTF-8 */}
+        {/* 4. UTF-8 */}
         <Section
-          number="3"
+          number="4"
           title="UTF-8 — flere bytes for ikke-engelske tegn"
           lede="UTF-8 utvider ASCII: ASCII-tegn er fortsatt én byte, men alt annet bruker 2, 3 eller 4 bytes per tegn."
         >
@@ -129,18 +139,18 @@ export function BytesEncodingPage() {
           </div>
         </Section>
 
-        {/* 4. KONVERTER */}
+        {/* 5. KONVERTER */}
         <Section
-          number="4"
+          number="5"
           title="Prøv selv: tekst ↔ bytes"
           lede="Skriv tekst og se UTF-8-bytene. Eller lim inn hex-bytes og se hvilken tekst de blir til."
         >
           <EncodingConverter />
         </Section>
 
-        {/* 5. STR VS BYTES I PYTHON */}
+        {/* 6. STR VS BYTES I PYTHON */}
         <Section
-          number="5"
+          number="6"
           title="str vs bytes i Python"
           lede="Python skiller hardt mellom tekst (str) og rå bytes (bytes). Det er ikke det samme — selv om de ser likt ut når du printer dem."
         >
@@ -198,9 +208,9 @@ text = data.decode("utf-8")     # nå er det en str`}
           </div>
         </Section>
 
-        {/* 6. HVORFOR DETTE BETYR NOE */}
+        {/* 7. HVORFOR DETTE BETYR NOE */}
         <Section
-          number="6"
+          number="7"
           title="Hvorfor dette er viktig for web"
           lede="Alt som krysser nettverket er bytes. Alt som leses fra disk er bytes. Tekst eksisterer bare inne i programmet — på begge sider av kabelen står det noen som må kode og dekode."
         >
