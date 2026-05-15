@@ -2,11 +2,13 @@ import { Link } from "@tanstack/react-router";
 import { ArrowRight, Lightbulb, AlertTriangle, Lock, RefreshCw } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
+import { TransactionVisualizer } from "@/components/stack/transaksjoner/TransactionVisualizer";
 
 // Course page for transactions, ACID, isolation levels, locking and deadlocks.
 // Drag-øvelser under emnet "Transaksjoner" parres med denne siden.
 
 const STEPS = [
+  { title: "Interaktiv: isolation-anomalier", anchor: "vis" },
   { title: "Hva er en transaksjon?", anchor: "hva" },
   { title: "ACID — fire egenskaper", anchor: "acid" },
   { title: "BEGIN, COMMIT, ROLLBACK", anchor: "kontroll" },
@@ -169,6 +171,19 @@ export function TransaksjonerPage() {
         </div>
 
         <CourseOutline courseId="transaksjoner" steps={STEPS} />
+
+        {/* Interaktiv visualisering */}
+        <section id="vis" className="mb-10">
+          <h2 className="text-xl font-semibold mb-3">
+            Interaktiv: se anomalien skje (eller bli forhindret)
+          </h2>
+          <p className="text-sm text-muted-foreground mb-4">
+            Velg et scenario og et isolation level, og step gjennom timelinen for to
+            samtidige transaksjoner (TX1 og TX2). Rød pulserende boks = anomali. Grønt
+            låse-ikon = nivået holdt deg trygg.
+          </p>
+          <TransactionVisualizer />
+        </section>
 
         {/* Hva er en transaksjon */}
         <section id="hva" className="mb-10">
