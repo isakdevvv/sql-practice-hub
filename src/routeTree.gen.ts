@@ -15,6 +15,7 @@ import { Route as PythonRouteImport } from './routes/python'
 import { Route as ProsjektRouteImport } from './routes/prosjekt'
 import { Route as PracticeRouteImport } from './routes/practice'
 import { Route as OvRouteImport } from './routes/ov'
+import { Route as MiniKursRouteImport } from './routes/mini-kurs'
 import { Route as LearnRouteImport } from './routes/learn'
 import { Route as LarRouteImport } from './routes/lar'
 import { Route as KursRouteImport } from './routes/kurs'
@@ -30,11 +31,13 @@ import { Route as CardsRouteImport } from './routes/cards'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as StackIndexRouteImport } from './routes/stack.index'
 import { Route as SporIndexRouteImport } from './routes/spor.index'
+import { Route as MiniKursIndexRouteImport } from './routes/mini-kurs.index'
 import { Route as StackSlugRouteImport } from './routes/stack.$slug'
 import { Route as SporSlugRouteImport } from './routes/spor.$slug'
 import { Route as PythonVisualizerRouteImport } from './routes/python_.visualizer'
 import { Route as ProsjektMlSlugRouteImport } from './routes/prosjekt-ml.$slug'
 import { Route as PortfolioDte2602SlugRouteImport } from './routes/portfolio-dte2602.$slug'
+import { Route as MiniKursSlugRouteImport } from './routes/mini-kurs.$slug'
 import { Route as Dte2507PcapRouteImport } from './routes/dte2507.pcap'
 import { Route as Dte2505ShellDrillRouteImport } from './routes/dte2505.shell-drill'
 import { Route as PythonKapIndexRouteImport } from './routes/python_.kap.index'
@@ -69,6 +72,11 @@ const PracticeRoute = PracticeRouteImport.update({
 const OvRoute = OvRouteImport.update({
   id: '/ov',
   path: '/ov',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MiniKursRoute = MiniKursRouteImport.update({
+  id: '/mini-kurs',
+  path: '/mini-kurs',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LearnRoute = LearnRouteImport.update({
@@ -146,6 +154,11 @@ const SporIndexRoute = SporIndexRouteImport.update({
   path: '/',
   getParentRoute: () => SporRoute,
 } as any)
+const MiniKursIndexRoute = MiniKursIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => MiniKursRoute,
+} as any)
 const StackSlugRoute = StackSlugRouteImport.update({
   id: '/$slug',
   path: '/$slug',
@@ -170,6 +183,11 @@ const PortfolioDte2602SlugRoute = PortfolioDte2602SlugRouteImport.update({
   id: '/portfolio-dte2602/$slug',
   path: '/portfolio-dte2602/$slug',
   getParentRoute: () => rootRouteImport,
+} as any)
+const MiniKursSlugRoute = MiniKursSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => MiniKursRoute,
 } as any)
 const Dte2507PcapRoute = Dte2507PcapRouteImport.update({
   id: '/dte2507/pcap',
@@ -211,6 +229,7 @@ export interface FileRoutesByFullPath {
   '/kurs': typeof KursRoute
   '/lar': typeof LarRoute
   '/learn': typeof LearnRoute
+  '/mini-kurs': typeof MiniKursRouteWithChildren
   '/ov': typeof OvRoute
   '/practice': typeof PracticeRoute
   '/prosjekt': typeof ProsjektRoute
@@ -219,11 +238,13 @@ export interface FileRoutesByFullPath {
   '/stack': typeof StackRouteWithChildren
   '/dte2505/shell-drill': typeof Dte2505ShellDrillRoute
   '/dte2507/pcap': typeof Dte2507PcapRoute
+  '/mini-kurs/$slug': typeof MiniKursSlugRoute
   '/portfolio-dte2602/$slug': typeof PortfolioDte2602SlugRoute
   '/prosjekt-ml/$slug': typeof ProsjektMlSlugRoute
   '/python/visualizer': typeof PythonVisualizerRoute
   '/spor/$slug': typeof SporSlugRoute
   '/stack/$slug': typeof StackSlugRoute
+  '/mini-kurs/': typeof MiniKursIndexRoute
   '/spor/': typeof SporIndexRoute
   '/stack/': typeof StackIndexRoute
   '/python/ide/$nr': typeof PythonIdeNrRoute
@@ -250,11 +271,13 @@ export interface FileRoutesByTo {
   '/python': typeof PythonRoute
   '/dte2505/shell-drill': typeof Dte2505ShellDrillRoute
   '/dte2507/pcap': typeof Dte2507PcapRoute
+  '/mini-kurs/$slug': typeof MiniKursSlugRoute
   '/portfolio-dte2602/$slug': typeof PortfolioDte2602SlugRoute
   '/prosjekt-ml/$slug': typeof ProsjektMlSlugRoute
   '/python/visualizer': typeof PythonVisualizerRoute
   '/spor/$slug': typeof SporSlugRoute
   '/stack/$slug': typeof StackSlugRoute
+  '/mini-kurs': typeof MiniKursIndexRoute
   '/spor': typeof SporIndexRoute
   '/stack': typeof StackIndexRoute
   '/python/ide/$nr': typeof PythonIdeNrRoute
@@ -276,6 +299,7 @@ export interface FileRoutesById {
   '/kurs': typeof KursRoute
   '/lar': typeof LarRoute
   '/learn': typeof LearnRoute
+  '/mini-kurs': typeof MiniKursRouteWithChildren
   '/ov': typeof OvRoute
   '/practice': typeof PracticeRoute
   '/prosjekt': typeof ProsjektRoute
@@ -284,11 +308,13 @@ export interface FileRoutesById {
   '/stack': typeof StackRouteWithChildren
   '/dte2505/shell-drill': typeof Dte2505ShellDrillRoute
   '/dte2507/pcap': typeof Dte2507PcapRoute
+  '/mini-kurs/$slug': typeof MiniKursSlugRoute
   '/portfolio-dte2602/$slug': typeof PortfolioDte2602SlugRoute
   '/prosjekt-ml/$slug': typeof ProsjektMlSlugRoute
   '/python_/visualizer': typeof PythonVisualizerRoute
   '/spor/$slug': typeof SporSlugRoute
   '/stack/$slug': typeof StackSlugRoute
+  '/mini-kurs/': typeof MiniKursIndexRoute
   '/spor/': typeof SporIndexRoute
   '/stack/': typeof StackIndexRoute
   '/python_/ide/$nr': typeof PythonIdeNrRoute
@@ -311,6 +337,7 @@ export interface FileRouteTypes {
     | '/kurs'
     | '/lar'
     | '/learn'
+    | '/mini-kurs'
     | '/ov'
     | '/practice'
     | '/prosjekt'
@@ -319,11 +346,13 @@ export interface FileRouteTypes {
     | '/stack'
     | '/dte2505/shell-drill'
     | '/dte2507/pcap'
+    | '/mini-kurs/$slug'
     | '/portfolio-dte2602/$slug'
     | '/prosjekt-ml/$slug'
     | '/python/visualizer'
     | '/spor/$slug'
     | '/stack/$slug'
+    | '/mini-kurs/'
     | '/spor/'
     | '/stack/'
     | '/python/ide/$nr'
@@ -350,11 +379,13 @@ export interface FileRouteTypes {
     | '/python'
     | '/dte2505/shell-drill'
     | '/dte2507/pcap'
+    | '/mini-kurs/$slug'
     | '/portfolio-dte2602/$slug'
     | '/prosjekt-ml/$slug'
     | '/python/visualizer'
     | '/spor/$slug'
     | '/stack/$slug'
+    | '/mini-kurs'
     | '/spor'
     | '/stack'
     | '/python/ide/$nr'
@@ -375,6 +406,7 @@ export interface FileRouteTypes {
     | '/kurs'
     | '/lar'
     | '/learn'
+    | '/mini-kurs'
     | '/ov'
     | '/practice'
     | '/prosjekt'
@@ -383,11 +415,13 @@ export interface FileRouteTypes {
     | '/stack'
     | '/dte2505/shell-drill'
     | '/dte2507/pcap'
+    | '/mini-kurs/$slug'
     | '/portfolio-dte2602/$slug'
     | '/prosjekt-ml/$slug'
     | '/python_/visualizer'
     | '/spor/$slug'
     | '/stack/$slug'
+    | '/mini-kurs/'
     | '/spor/'
     | '/stack/'
     | '/python_/ide/$nr'
@@ -409,6 +443,7 @@ export interface RootRouteChildren {
   KursRoute: typeof KursRoute
   LarRoute: typeof LarRoute
   LearnRoute: typeof LearnRoute
+  MiniKursRoute: typeof MiniKursRouteWithChildren
   OvRoute: typeof OvRoute
   PracticeRoute: typeof PracticeRoute
   ProsjektRoute: typeof ProsjektRoute
@@ -467,6 +502,13 @@ declare module '@tanstack/react-router' {
       path: '/ov'
       fullPath: '/ov'
       preLoaderRoute: typeof OvRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/mini-kurs': {
+      id: '/mini-kurs'
+      path: '/mini-kurs'
+      fullPath: '/mini-kurs'
+      preLoaderRoute: typeof MiniKursRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/learn': {
@@ -574,6 +616,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SporIndexRouteImport
       parentRoute: typeof SporRoute
     }
+    '/mini-kurs/': {
+      id: '/mini-kurs/'
+      path: '/'
+      fullPath: '/mini-kurs/'
+      preLoaderRoute: typeof MiniKursIndexRouteImport
+      parentRoute: typeof MiniKursRoute
+    }
     '/stack/$slug': {
       id: '/stack/$slug'
       path: '/$slug'
@@ -608,6 +657,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/portfolio-dte2602/$slug'
       preLoaderRoute: typeof PortfolioDte2602SlugRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/mini-kurs/$slug': {
+      id: '/mini-kurs/$slug'
+      path: '/$slug'
+      fullPath: '/mini-kurs/$slug'
+      preLoaderRoute: typeof MiniKursSlugRouteImport
+      parentRoute: typeof MiniKursRoute
     }
     '/dte2507/pcap': {
       id: '/dte2507/pcap'
@@ -647,6 +703,20 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface MiniKursRouteChildren {
+  MiniKursSlugRoute: typeof MiniKursSlugRoute
+  MiniKursIndexRoute: typeof MiniKursIndexRoute
+}
+
+const MiniKursRouteChildren: MiniKursRouteChildren = {
+  MiniKursSlugRoute: MiniKursSlugRoute,
+  MiniKursIndexRoute: MiniKursIndexRoute,
+}
+
+const MiniKursRouteWithChildren = MiniKursRoute._addFileChildren(
+  MiniKursRouteChildren,
+)
+
 interface SporRouteChildren {
   SporSlugRoute: typeof SporSlugRoute
   SporIndexRoute: typeof SporIndexRoute
@@ -685,6 +755,7 @@ const rootRouteChildren: RootRouteChildren = {
   KursRoute: KursRoute,
   LarRoute: LarRoute,
   LearnRoute: LearnRoute,
+  MiniKursRoute: MiniKursRouteWithChildren,
   OvRoute: OvRoute,
   PracticeRoute: PracticeRoute,
   ProsjektRoute: ProsjektRoute,
