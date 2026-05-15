@@ -2,8 +2,10 @@ import { Link } from "@tanstack/react-router";
 import { Lightbulb } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
+import { GradientDescentVisualizer } from "@/components/stack/optimering/GradientDescentVisualizer";
 
 const STEPS = [
+  { title: "Visualisering — gradient descent live", anchor: "visualisering" },
   { title: "SGD — utgangspunktet", anchor: "sgd" },
   { title: "Momentum", anchor: "momentum" },
   { title: "Adaptiv lr — RMSProp & Adam", anchor: "adam" },
@@ -40,6 +42,19 @@ export function OptimeringPage() {
         </div>
 
         <CourseOutline courseId="optimering" steps={STEPS} />
+
+        <section id="visualisering" className="mb-10">
+          <h2 className="text-xl font-semibold mb-3">
+            0. Visualisering — gradient descent live
+          </h2>
+          <p className="text-sm text-muted-foreground mb-3">
+            Før vi går inn i formlene: lek litt med selve mekanismen. Skru på α,
+            flytt startpunktet, se hvordan GD finner bunnen — eller ikke finner
+            den når α er for høy. Sammenlikn ren GD med momentum og Adam på
+            samme ill-conditioned bowl.
+          </p>
+          <GradientDescentVisualizer />
+        </section>
 
         <section id="sgd" className="mb-10">
           <h2 className="text-xl font-semibold mb-3">1. SGD — utgangspunktet</h2>
