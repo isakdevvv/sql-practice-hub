@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as VenvDrillRouteImport } from './routes/venv-drill'
 import { Route as StackRouteImport } from './routes/stack'
 import { Route as SporRouteImport } from './routes/spor'
 import { Route as PythonRouteImport } from './routes/python'
@@ -44,6 +45,11 @@ import { Route as PythonKapIndexRouteImport } from './routes/python_.kap.index'
 import { Route as PythonKapNrRouteImport } from './routes/python_.kap.$nr'
 import { Route as PythonIdeNrRouteImport } from './routes/python_.ide.$nr'
 
+const VenvDrillRoute = VenvDrillRouteImport.update({
+  id: '/venv-drill',
+  path: '/venv-drill',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const StackRoute = StackRouteImport.update({
   id: '/stack',
   path: '/stack',
@@ -236,6 +242,7 @@ export interface FileRoutesByFullPath {
   '/python': typeof PythonRoute
   '/spor': typeof SporRouteWithChildren
   '/stack': typeof StackRouteWithChildren
+  '/venv-drill': typeof VenvDrillRoute
   '/dte2505/shell-drill': typeof Dte2505ShellDrillRoute
   '/dte2507/pcap': typeof Dte2507PcapRoute
   '/mini-kurs/$slug': typeof MiniKursSlugRoute
@@ -269,6 +276,7 @@ export interface FileRoutesByTo {
   '/practice': typeof PracticeRoute
   '/prosjekt': typeof ProsjektRoute
   '/python': typeof PythonRoute
+  '/venv-drill': typeof VenvDrillRoute
   '/dte2505/shell-drill': typeof Dte2505ShellDrillRoute
   '/dte2507/pcap': typeof Dte2507PcapRoute
   '/mini-kurs/$slug': typeof MiniKursSlugRoute
@@ -306,6 +314,7 @@ export interface FileRoutesById {
   '/python': typeof PythonRoute
   '/spor': typeof SporRouteWithChildren
   '/stack': typeof StackRouteWithChildren
+  '/venv-drill': typeof VenvDrillRoute
   '/dte2505/shell-drill': typeof Dte2505ShellDrillRoute
   '/dte2507/pcap': typeof Dte2507PcapRoute
   '/mini-kurs/$slug': typeof MiniKursSlugRoute
@@ -344,6 +353,7 @@ export interface FileRouteTypes {
     | '/python'
     | '/spor'
     | '/stack'
+    | '/venv-drill'
     | '/dte2505/shell-drill'
     | '/dte2507/pcap'
     | '/mini-kurs/$slug'
@@ -377,6 +387,7 @@ export interface FileRouteTypes {
     | '/practice'
     | '/prosjekt'
     | '/python'
+    | '/venv-drill'
     | '/dte2505/shell-drill'
     | '/dte2507/pcap'
     | '/mini-kurs/$slug'
@@ -413,6 +424,7 @@ export interface FileRouteTypes {
     | '/python'
     | '/spor'
     | '/stack'
+    | '/venv-drill'
     | '/dte2505/shell-drill'
     | '/dte2507/pcap'
     | '/mini-kurs/$slug'
@@ -450,6 +462,7 @@ export interface RootRouteChildren {
   PythonRoute: typeof PythonRoute
   SporRoute: typeof SporRouteWithChildren
   StackRoute: typeof StackRouteWithChildren
+  VenvDrillRoute: typeof VenvDrillRoute
   Dte2505ShellDrillRoute: typeof Dte2505ShellDrillRoute
   Dte2507PcapRoute: typeof Dte2507PcapRoute
   PortfolioDte2602SlugRoute: typeof PortfolioDte2602SlugRoute
@@ -462,6 +475,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/venv-drill': {
+      id: '/venv-drill'
+      path: '/venv-drill'
+      fullPath: '/venv-drill'
+      preLoaderRoute: typeof VenvDrillRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/stack': {
       id: '/stack'
       path: '/stack'
@@ -762,6 +782,7 @@ const rootRouteChildren: RootRouteChildren = {
   PythonRoute: PythonRoute,
   SporRoute: SporRouteWithChildren,
   StackRoute: StackRouteWithChildren,
+  VenvDrillRoute: VenvDrillRoute,
   Dte2505ShellDrillRoute: Dte2505ShellDrillRoute,
   Dte2507PcapRoute: Dte2507PcapRoute,
   PortfolioDte2602SlugRoute: PortfolioDte2602SlugRoute,
