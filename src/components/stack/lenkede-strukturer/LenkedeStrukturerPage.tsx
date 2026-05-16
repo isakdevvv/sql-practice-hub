@@ -2,9 +2,14 @@ import { Link } from "@tanstack/react-router";
 import { ArrowRight, Lightbulb } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
-import { LinkedStructuresVisualizer } from "./LinkedStructuresVisualizer";
 import { Stack as StackIllustration } from "@/components/illustrations";
 import { RelatedVisualizers } from "@/components/stack/RelatedVisualizers";
+import { lazy, Suspense } from "react";
+import { VisualizerSkeleton } from "@/components/visualizer-shell";
+
+const LinkedStructuresVisualizer = lazy(() =>
+  import("./LinkedStructuresVisualizer").then((m) => ({ default: m.LinkedStructuresVisualizer })),
+);
 
 const STEPS = [
   { title: "Hva er en lenket struktur", anchor: "hva" },
@@ -96,7 +101,9 @@ export function LenkedeStrukturerPage() {
             og hvilken Python-linje som tilsvarer. Det å fysisk se en node fade inn foran head
             er forskjellen mellom å pugge og å forstå.
           </p>
-          <LinkedStructuresVisualizer />
+          <Suspense fallback={<VisualizerSkeleton />}>
+            <LinkedStructuresVisualizer />
+          </Suspense>
         </section>
 
         <section id="linked-list" className="mb-10">

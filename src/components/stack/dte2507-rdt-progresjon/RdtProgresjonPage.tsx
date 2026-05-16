@@ -12,7 +12,12 @@ import {
 } from "./RdtFsm";
 import { RelatedVisualizers } from "@/components/stack/RelatedVisualizers";
 import { UtilizationCalc } from "./UtilizationCalc";
-import { RdtVisualizer } from "./RdtVisualizer";
+import { lazy, Suspense } from "react";
+import { VisualizerSkeleton } from "@/components/visualizer-shell";
+
+const RdtVisualizer = lazy(() =>
+  import("./RdtVisualizer").then((m) => ({ default: m.RdtVisualizer })),
+);
 
 const STEPS = [
   { title: "Hvorfor en progresjon?", anchor: "hvorfor" },
@@ -117,7 +122,9 @@ export function RdtProgresjonPage() {
             nødvendig — ikke bare en festlig akademisk øvelse. Drar du i tidsgliderne kan
             du fryse bildet og lese hva sender og mottaker mener akkurat nå.
           </p>
-          <RdtVisualizer />
+          <Suspense fallback={<VisualizerSkeleton />}>
+            <RdtVisualizer />
+          </Suspense>
           <p className="text-xs text-muted-foreground leading-relaxed">
             Tipset er å begynne med <code>rdt 2.0</code> + «korruptér data-pkt #1» (du ser
             NAK-en), deretter <code>rdt 3.0</code> + «mist data-pkt #2» (timeren utløses), og

@@ -2,8 +2,13 @@ import { Link } from "@tanstack/react-router";
 import { ArrowRight, Lightbulb } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
-import { ProbabilityVisualizer } from "./ProbabilityVisualizer";
 import { RelatedVisualizers } from "@/components/stack/RelatedVisualizers";
+import { lazy, Suspense } from "react";
+import { VisualizerSkeleton } from "@/components/visualizer-shell";
+
+const ProbabilityVisualizer = lazy(() =>
+  import("./ProbabilityVisualizer").then((m) => ({ default: m.ProbabilityVisualizer })),
+);
 
 const STEPS = [
   { title: "Interaktiv visualisering — tre, Venn, Monty Hall, bursdag, Bayes", anchor: "visualisering" },
@@ -54,7 +59,9 @@ export function SannsynlighetPage() {
             simuleringene. Hver modus har en kort intuisjon-rute som forklarer
             hvorfor svaret pleier overraske.
           </p>
-          <ProbabilityVisualizer />
+          <Suspense fallback={<VisualizerSkeleton />}>
+            <ProbabilityVisualizer />
+          </Suspense>
         </section>
 
         <section id="aksiomer" className="mb-10">

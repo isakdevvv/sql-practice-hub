@@ -2,8 +2,13 @@ import { Link } from "@tanstack/react-router";
 import { ArrowRight, Lightbulb } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
-import { TreeVisualizer } from "./TreeVisualizer";
 import { RelatedVisualizers } from "@/components/stack/RelatedVisualizers";
+import { lazy, Suspense } from "react";
+import { VisualizerSkeleton } from "@/components/visualizer-shell";
+
+const TreeVisualizer = lazy(() =>
+  import("./TreeVisualizer").then((m) => ({ default: m.TreeVisualizer })),
+);
 
 const STEPS = [
   { title: "Interaktiv: bygg og traverser tre", anchor: "visualisering" },
@@ -55,7 +60,9 @@ export function TraerPage() {
             ubalansert tre. Layout: x-aksen er inorder-rekkefølge, y-aksen er
             dybde — så et BST står alltid sortert fra venstre til høyre.
           </p>
-          <TreeVisualizer />
+          <Suspense fallback={<VisualizerSkeleton />}>
+            <TreeVisualizer />
+          </Suspense>
         </section>
 
         <section id="basics" className="mb-10">

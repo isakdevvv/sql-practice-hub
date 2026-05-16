@@ -4,10 +4,15 @@ import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
 import { Tex, TexBlock } from "@/components/Tex";
 import { DelaySim } from "./DelaySim";
-import { DelayVisualizer } from "./DelayVisualizer";
 import { CaravanAnalogy } from "./CaravanAnalogy";
 import { TrafficIntensitySim } from "./TrafficIntensitySim";
 import { RelatedVisualizers } from "@/components/stack/RelatedVisualizers";
+import { lazy, Suspense } from "react";
+import { VisualizerSkeleton } from "@/components/visualizer-shell";
+
+const DelayVisualizer = lazy(() =>
+  import("./DelayVisualizer").then((m) => ({ default: m.DelayVisualizer })),
+);
 
 const STEPS = [
   { title: "Delay-visualisering (to rutere)", anchor: "vis" },
@@ -74,7 +79,9 @@ export function DelayModellPage() {
             hvilken komponent som dominerer per hop. Trykk «Spill av» for å la pakken faktisk
             bevege seg gjennom topologien.
           </p>
-          <DelayVisualizer />
+          <Suspense fallback={<VisualizerSkeleton />}>
+            <DelayVisualizer />
+          </Suspense>
           <p className="text-xs text-muted-foreground mt-3 leading-relaxed">
             Bytt mellom presetene <em>Slim link</em>, <em>Lang strekk</em>, <em>Trafikkpropp</em>{" "}
             og <em>Datasenter</em> for å kjenne igjen de fire klassiske regimene. Resten av

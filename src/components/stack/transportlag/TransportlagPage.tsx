@@ -4,8 +4,13 @@ import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
 import { TcpSlidingWindow } from "./TcpSlidingWindow";
 import { TcpStateMachine } from "./TcpStateMachine";
-import { TcpVisualizer } from "./TcpVisualizer";
 import { RelatedVisualizers } from "@/components/stack/RelatedVisualizers";
+import { lazy, Suspense } from "react";
+import { VisualizerSkeleton } from "@/components/visualizer-shell";
+
+const TcpVisualizer = lazy(() =>
+  import("./TcpVisualizer").then((m) => ({ default: m.TcpVisualizer })),
+);
 
 const STEPS = [
   { title: "TCP-visualisator — alle moduser", anchor: "tcp-visualizer" },
@@ -62,7 +67,9 @@ export function TransportlagPage() {
             tilstandsmaskinen</strong>, eller dra <strong>sliding window</strong>{" "}
             forover med cwnd og rwnd. Bytt modus med knappene øverst.
           </p>
-          <TcpVisualizer />
+          <Suspense fallback={<VisualizerSkeleton />}>
+            <TcpVisualizer />
+          </Suspense>
         </section>
 
         <section id="ansvar" className="mb-10">

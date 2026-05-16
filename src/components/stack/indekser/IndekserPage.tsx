@@ -2,9 +2,14 @@ import { Link } from "@tanstack/react-router";
 import { ArrowRight, Lightbulb, TreeDeciduous, AlertTriangle, Zap } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
-import { IndexVisualizer } from "@/components/stack/indekser/IndexVisualizer";
 import { Indexes as IndexesIllustration } from "@/components/illustrations";
 import { RelatedVisualizers } from "@/components/stack/RelatedVisualizers";
+import { lazy, Suspense } from "react";
+import { VisualizerSkeleton } from "@/components/visualizer-shell";
+
+const IndexVisualizer = lazy(() =>
+  import("@/components/stack/indekser/IndexVisualizer").then((m) => ({ default: m.IndexVisualizer })),
+);
 
 // Course on indexes: B-tree, hash, covering, composite, when indexes
 // don't get used, write-cost trade-offs. Pairs with /drag (topic "Indekser").
@@ -134,7 +139,9 @@ export function IndekserPage() {
             <code className="font-mono">WHERE a=? AND b=?</code> men ikke for{" "}
             <code className="font-mono">WHERE b=?</code>.
           </p>
-          <IndexVisualizer />
+          <Suspense fallback={<VisualizerSkeleton />}>
+            <IndexVisualizer />
+          </Suspense>
         </section>
 
         {/* Hva er en indeks */}

@@ -3,8 +3,13 @@ import { ArrowRight, Lightbulb } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
 import { NeuralNetForwardPass } from "./NeuralNetForwardPass";
-import { NeuronVisualizer } from "./NeuronVisualizer";
 import { RelatedVisualizers } from "@/components/stack/RelatedVisualizers";
+import { lazy, Suspense } from "react";
+import { VisualizerSkeleton } from "@/components/visualizer-shell";
+
+const NeuronVisualizer = lazy(() =>
+  import("./NeuronVisualizer").then((m) => ({ default: m.NeuronVisualizer })),
+);
 
 const STEPS = [
   { title: "Nevron-visualizer (interaktiv)", anchor: "visualizer" },
@@ -52,7 +57,9 @@ export function NnIntroPage() {
             nett — all matte oppdaterer seg live mens du drar i sliderne. XOR-modus
             er et godt sted å oppleve hvorfor flere lag trengs.
           </p>
-          <NeuronVisualizer />
+          <Suspense fallback={<VisualizerSkeleton />}>
+            <NeuronVisualizer />
+          </Suspense>
         </section>
 
         <section id="perceptron" className="mb-10">

@@ -3,8 +3,13 @@ import { ArrowRight, Lightbulb, AlertTriangle } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
 import { NormaliseringSteps } from "./NormaliseringSteps";
-import { NormalizationVisualizer } from "./NormalizationVisualizer";
 import { RelatedVisualizers } from "@/components/stack/RelatedVisualizers";
+import { lazy, Suspense } from "react";
+import { VisualizerSkeleton } from "@/components/visualizer-shell";
+
+const NormalizationVisualizer = lazy(() =>
+  import("./NormalizationVisualizer").then((m) => ({ default: m.NormalizationVisualizer })),
+);
 
 const STEPS = [
   { title: "Hvorfor normalisere?", anchor: "hvorfor" },
@@ -98,7 +103,9 @@ export function NormaliseringPage() {
         </section>
 
         {/* Interaktiv visualisering — øverst slik at studenten ser hva normalisering faktisk gjør før teorien */}
-        <NormalizationVisualizer />
+        <Suspense fallback={<VisualizerSkeleton />}>
+            <NormalizationVisualizer />
+          </Suspense>
 
         {/* Begreper */}
         <section id="begreper" className="mb-10">

@@ -2,9 +2,14 @@ import { Link } from "@tanstack/react-router";
 import { Lightbulb, Sparkles, AlertTriangle, ArrowLeft } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
-import { GmmVisualizer } from "./GmmVisualizer";
 import { Tex, TexBlock } from "@/components/Tex";
 import { RelatedVisualizers } from "@/components/stack/RelatedVisualizers";
+import { lazy, Suspense } from "react";
+import { VisualizerSkeleton } from "@/components/visualizer-shell";
+
+const GmmVisualizer = lazy(() =>
+  import("./GmmVisualizer").then((m) => ({ default: m.GmmVisualizer })),
+);
 
 const STEPS = [
   { title: "Generative vs diskriminative modeller", anchor: "intro" },
@@ -126,7 +131,9 @@ GMM er generativ + unsupervised:
             </p>
           </div>
           <div className="mt-4">
+            <Suspense fallback={<VisualizerSkeleton />}>
             <GmmVisualizer />
+          </Suspense>
           </div>
           <div className="mt-4 overflow-x-auto rounded-lg border border-border">
             <table className="w-full text-sm">

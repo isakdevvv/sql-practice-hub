@@ -2,8 +2,13 @@ import { Link } from "@tanstack/react-router";
 import { ArrowRight, Lightbulb } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
-import { DPVisualizer } from "./DPVisualizer";
 import { RelatedVisualizers } from "@/components/stack/RelatedVisualizers";
+import { lazy, Suspense } from "react";
+import { VisualizerSkeleton } from "@/components/visualizer-shell";
+
+const DPVisualizer = lazy(() =>
+  import("./DPVisualizer").then((m) => ({ default: m.DPVisualizer })),
+);
 
 const STEPS = [
   { title: "Interaktiv: se DP-tabellen fylles", anchor: "interaktiv" },
@@ -57,7 +62,9 @@ export function DynamicProgrammingPage() {
             forrige celler den leser fra (gule), og hva rekurrensen evaluerer til.
             Når tabellen er full markeres svar-cella grønt.
           </p>
-          <DPVisualizer />
+          <Suspense fallback={<VisualizerSkeleton />}>
+            <DPVisualizer />
+          </Suspense>
         </section>
 
         <section id="hvorfor" className="mb-10">

@@ -2,8 +2,13 @@ import { Link } from "@tanstack/react-router";
 import { ArrowRight, Lightbulb } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
-import { AdderVisualizer } from "./AdderVisualizer";
 import { RelatedVisualizers } from "@/components/stack/RelatedVisualizers";
+import { lazy, Suspense } from "react";
+import { VisualizerSkeleton } from "@/components/visualizer-shell";
+
+const AdderVisualizer = lazy(() =>
+  import("./AdderVisualizer").then((m) => ({ default: m.AdderVisualizer })),
+);
 
 const STEPS = [
   { title: "Interaktiv visualisering", anchor: "viz" },
@@ -53,7 +58,9 @@ export function Trinn3AddersPage() {
             subtraksjons-modus for å se hvordan to&apos;s complement gjør samme
             adder om til en subtraktor (A - B = A + ~B + 1).
           </p>
-          <AdderVisualizer />
+          <Suspense fallback={<VisualizerSkeleton />}>
+            <AdderVisualizer />
+          </Suspense>
         </section>
 
         <section id="hva" className="mb-10">

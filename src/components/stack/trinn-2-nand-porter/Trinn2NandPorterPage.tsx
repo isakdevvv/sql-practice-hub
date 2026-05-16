@@ -2,8 +2,13 @@ import { Link } from "@tanstack/react-router";
 import { ArrowRight, Lightbulb } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
-import { GateVisualizer } from "./GateVisualizer";
 import { RelatedVisualizers } from "@/components/stack/RelatedVisualizers";
+import { lazy, Suspense } from "react";
+import { VisualizerSkeleton } from "@/components/visualizer-shell";
+
+const GateVisualizer = lazy(() =>
+  import("./GateVisualizer").then((m) => ({ default: m.GateVisualizer })),
+);
 
 const STEPS = [
   { title: "Interaktiv port-bygger", anchor: "visualizer" },
@@ -56,7 +61,9 @@ export function Trinn2NandPorterPage() {
             og en hel halvadder fra kun NAND-porter — det er hele poenget
             med «funksjonelt komplett».
           </p>
-          <GateVisualizer />
+          <Suspense fallback={<VisualizerSkeleton />}>
+            <GateVisualizer />
+          </Suspense>
         </section>
 
         <section id="hva" className="mb-10">

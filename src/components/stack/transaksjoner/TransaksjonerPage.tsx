@@ -2,8 +2,13 @@ import { Link } from "@tanstack/react-router";
 import { ArrowRight, Lightbulb, AlertTriangle, Lock, RefreshCw } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
-import { TransactionVisualizer } from "@/components/stack/transaksjoner/TransactionVisualizer";
 import { RelatedVisualizers } from "@/components/stack/RelatedVisualizers";
+import { lazy, Suspense } from "react";
+import { VisualizerSkeleton } from "@/components/visualizer-shell";
+
+const TransactionVisualizer = lazy(() =>
+  import("@/components/stack/transaksjoner/TransactionVisualizer").then((m) => ({ default: m.TransactionVisualizer })),
+);
 
 // Course page for transactions, ACID, isolation levels, locking and deadlocks.
 // Drag-øvelser under emnet "Transaksjoner" parres med denne siden.
@@ -183,7 +188,9 @@ export function TransaksjonerPage() {
             samtidige transaksjoner (TX1 og TX2). Rød pulserende boks = anomali. Grønt
             låse-ikon = nivået holdt deg trygg.
           </p>
-          <TransactionVisualizer />
+          <Suspense fallback={<VisualizerSkeleton />}>
+            <TransactionVisualizer />
+          </Suspense>
         </section>
 
         {/* Hva er en transaksjon */}

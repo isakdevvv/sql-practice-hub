@@ -3,8 +3,13 @@ import { ArrowRight, Lightbulb } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
 import { OsiStackFlow } from "./OsiStackFlow";
-import { LayerVisualizer } from "./LayerVisualizer";
 import { RelatedVisualizers } from "@/components/stack/RelatedVisualizers";
+import { lazy, Suspense } from "react";
+import { VisualizerSkeleton } from "@/components/visualizer-shell";
+
+const LayerVisualizer = lazy(() =>
+  import("./LayerVisualizer").then((m) => ({ default: m.LayerVisualizer })),
+);
 
 const STEPS = [
   { title: "Interaktiv visualisering", anchor: "visualisering" },
@@ -57,7 +62,9 @@ export function OsiTcpipPage() {
             (klikk et lag for protokoller og PDU), og <em>to-vert-reise</em> (se
             hvilke headere ruteren rewrittet på hvert hopp).
           </p>
-          <LayerVisualizer />
+          <Suspense fallback={<VisualizerSkeleton />}>
+            <LayerVisualizer />
+          </Suspense>
         </section>
 
         <section id="modeller" className="mb-10">

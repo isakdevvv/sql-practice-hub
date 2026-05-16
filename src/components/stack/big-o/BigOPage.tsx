@@ -2,8 +2,13 @@ import { Link } from "@tanstack/react-router";
 import { ArrowRight, Lightbulb } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
-import { BigOVisualizer } from "./BigOVisualizer";
 import { RelatedVisualizers } from "@/components/stack/RelatedVisualizers";
+import { lazy, Suspense } from "react";
+import { VisualizerSkeleton } from "@/components/visualizer-shell";
+
+const BigOVisualizer = lazy(() =>
+  import("./BigOVisualizer").then((m) => ({ default: m.BigOVisualizer })),
+);
 
 const STEPS = [
   { title: "Interaktiv visualisering", anchor: "viz" },
@@ -116,7 +121,9 @@ export function BigOPage() {
             slå på log-y for å skille klassene visuelt, kjør et race mellom
             lineær- og binærsøk, og test deg selv med quiz-snippets.
           </p>
-          <BigOVisualizer />
+          <Suspense fallback={<VisualizerSkeleton />}>
+            <BigOVisualizer />
+          </Suspense>
         </section>
 
         <section id="intuisjon" className="mb-10">

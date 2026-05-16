@@ -2,8 +2,13 @@ import { Link } from "@tanstack/react-router";
 import { Lightbulb } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
-import { BackpropVisualizer } from "./BackpropVisualizer";
 import { RelatedVisualizers } from "@/components/stack/RelatedVisualizers";
+import { lazy, Suspense } from "react";
+import { VisualizerSkeleton } from "@/components/visualizer-shell";
+
+const BackpropVisualizer = lazy(() =>
+  import("./BackpropVisualizer").then((m) => ({ default: m.BackpropVisualizer })),
+);
 
 const STEPS = [
   { title: "Kjerne-regelen — backprops motor", anchor: "chain-rule" },
@@ -122,7 +127,9 @@ Regel: ved hver node multiplisér INNKOMMENDE gradient med
             pil per kant med lokal deriverte og akkumulert ∂L/∂node. Bytt mellom
             uttrykk, ett nevron, et 2-lags nett og et 10-lags vanishing-eksempel.
           </p>
-          <BackpropVisualizer />
+          <Suspense fallback={<VisualizerSkeleton />}>
+            <BackpropVisualizer />
+          </Suspense>
         </section>
 
         <section id="worked" className="mb-10">

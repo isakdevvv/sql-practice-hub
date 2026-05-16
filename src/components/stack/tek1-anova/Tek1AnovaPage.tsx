@@ -3,8 +3,13 @@ import { Lightbulb, ArrowLeft } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { Tex, TexBlock } from "@/components/Tex";
 import { AnovaCalculator } from "./AnovaCalculator";
-import { AnovaVisualizer } from "./AnovaVisualizer";
 import { RelatedVisualizers } from "@/components/stack/RelatedVisualizers";
+import { lazy, Suspense } from "react";
+import { VisualizerSkeleton } from "@/components/visualizer-shell";
+
+const AnovaVisualizer = lazy(() =>
+  import("./AnovaVisualizer").then((m) => ({ default: m.AnovaVisualizer })),
+);
 
 export function Tek1AnovaPage() {
   return (
@@ -46,7 +51,9 @@ export function Tek1AnovaPage() {
             for å se boxplots, varians-dekomponering, F-fordelingen, Bonferroni og
             et komplett worked example.
           </p>
-          <AnovaVisualizer />
+          <Suspense fallback={<VisualizerSkeleton />}>
+            <AnovaVisualizer />
+          </Suspense>
         </section>
 
         <section className="mb-10">

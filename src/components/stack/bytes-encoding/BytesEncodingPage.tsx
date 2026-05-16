@@ -4,8 +4,13 @@ import { Badge } from "@/components/ui/badge";
 import { BitsToByte } from "./BitsToByte";
 import { AsciiTable } from "./AsciiTable";
 import { EncodingConverter } from "./EncodingConverter";
-import { EncodingVisualizer } from "./EncodingVisualizer";
 import { RelatedVisualizers } from "@/components/stack/RelatedVisualizers";
+import { lazy, Suspense } from "react";
+import { VisualizerSkeleton } from "@/components/visualizer-shell";
+
+const EncodingVisualizer = lazy(() =>
+  import("./EncodingVisualizer").then((m) => ({ default: m.EncodingVisualizer })),
+);
 
 export function BytesEncodingPage() {
   return (
@@ -48,7 +53,9 @@ export function BytesEncodingPage() {
           title="Visualiser kodingen live"
           lede="Skriv inn tekst eller tall og se hvordan bytene ser ut. Bytt modus for å sammenligne ASCII, UTF-8, Base64 og endianness."
         >
-          <EncodingVisualizer />
+          <Suspense fallback={<VisualizerSkeleton />}>
+            <EncodingVisualizer />
+          </Suspense>
         </Section>
 
         {/* 3. ASCII */}

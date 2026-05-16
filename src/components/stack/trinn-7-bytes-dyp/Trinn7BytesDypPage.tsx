@@ -2,8 +2,13 @@ import { Link } from "@tanstack/react-router";
 import { ArrowRight, Lightbulb } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
-import { BitsDypVisualizer } from "./BitsDypVisualizer";
 import { RelatedVisualizers } from "@/components/stack/RelatedVisualizers";
+import { lazy, Suspense } from "react";
+import { VisualizerSkeleton } from "@/components/visualizer-shell";
+
+const BitsDypVisualizer = lazy(() =>
+  import("./BitsDypVisualizer").then((m) => ({ default: m.BitsDypVisualizer })),
+);
 
 const STEPS = [
   { title: "Bit-manipulasjon — interaktiv", anchor: "bit-vis" },
@@ -55,7 +60,9 @@ export function Trinn7BytesDypPage() {
             dra på slidere, og se hvordan AND/OR/XOR, skift, to-er-komplement
             og bitmasker oppfører seg.
           </p>
-          <BitsDypVisualizer />
+          <Suspense fallback={<VisualizerSkeleton />}>
+            <BitsDypVisualizer />
+          </Suspense>
         </section>
 
         <section id="bits-bytes" className="mb-10">

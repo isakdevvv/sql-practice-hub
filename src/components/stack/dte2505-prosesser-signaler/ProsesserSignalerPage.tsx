@@ -4,9 +4,14 @@ import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
 import { ProsessMonitor } from "./ProsessMonitor";
 import { ProcessStateMachine } from "./ProcessStateMachine";
-import { ProcessVisualizer } from "./ProcessVisualizer";
 import { Mermaid } from "@/components/Mermaid";
 import { RelatedVisualizers } from "@/components/stack/RelatedVisualizers";
+import { lazy, Suspense } from "react";
+import { VisualizerSkeleton } from "@/components/visualizer-shell";
+
+const ProcessVisualizer = lazy(() =>
+  import("./ProcessVisualizer").then((m) => ({ default: m.ProcessVisualizer })),
+);
 
 const PROSESS_LIVSSYKLUS = `stateDiagram-v2
   [*] --> Ready: fork() / exec()
@@ -72,7 +77,9 @@ export function ProsesserSignalerPage() {
             <code className="font-mono">wait()</code> er bakeren som venter ved ovnen.
             Klikk gjennom hver modus.
           </p>
-          <ProcessVisualizer />
+          <Suspense fallback={<VisualizerSkeleton />}>
+            <ProcessVisualizer />
+          </Suspense>
         </section>
 
         <section id="tilstander" className="mb-10">

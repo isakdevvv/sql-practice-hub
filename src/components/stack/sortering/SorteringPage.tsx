@@ -2,8 +2,13 @@ import { Link } from "@tanstack/react-router";
 import { ArrowRight, Lightbulb } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
-import { SortingVisualizer } from "./SortingVisualizer";
 import { RelatedVisualizers } from "@/components/stack/RelatedVisualizers";
+import { lazy, Suspense } from "react";
+import { VisualizerSkeleton } from "@/components/visualizer-shell";
+
+const SortingVisualizer = lazy(() =>
+  import("./SortingVisualizer").then((m) => ({ default: m.SortingVisualizer })),
+);
 
 const STEPS = [
   { title: "Hvorfor sortere", anchor: "hvorfor" },
@@ -70,7 +75,9 @@ export function SorteringPage() {
             Sammenlign hvor fort tellerne vokser for <code>O(n²)</code>-sortene mot{" "}
             <code>O(n log n)</code> — særlig på <code>n = 32</code>.
           </p>
-          <SortingVisualizer />
+          <Suspense fallback={<VisualizerSkeleton />}>
+            <SortingVisualizer />
+          </Suspense>
         </section>
 
         <section id="bubble" className="mb-10">

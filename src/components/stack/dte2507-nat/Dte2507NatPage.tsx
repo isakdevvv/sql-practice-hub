@@ -4,8 +4,13 @@ import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
 import { NatTableDemo } from "./NatTableDemo";
 import { NatDrill } from "./NatDrill";
-import { NatVisualizer } from "./NatVisualizer";
 import { RelatedVisualizers } from "@/components/stack/RelatedVisualizers";
+import { lazy, Suspense } from "react";
+import { VisualizerSkeleton } from "@/components/visualizer-shell";
+
+const NatVisualizer = lazy(() =>
+  import("./NatVisualizer").then((m) => ({ default: m.NatVisualizer })),
+);
 
 const STEPS = [
   { title: "Pakke-translasjon — visualisering", anchor: "visualizer" },
@@ -63,7 +68,9 @@ export function Dte2507NatPage() {
             headerne omskrives, hvordan NAT-tabellen vokser, og hva som skjer
             når noen utenfra prøver å nå inn.
           </p>
-          <NatVisualizer />
+          <Suspense fallback={<VisualizerSkeleton />}>
+            <NatVisualizer />
+          </Suspense>
         </section>
 
         {/* 1. Problemet */}

@@ -2,8 +2,13 @@ import { Link } from "@tanstack/react-router";
 import { ArrowRight, Lightbulb } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
-import { TransistorVisualizer } from "./TransistorVisualizer";
 import { RelatedVisualizers } from "@/components/stack/RelatedVisualizers";
+import { lazy, Suspense } from "react";
+import { VisualizerSkeleton } from "@/components/visualizer-shell";
+
+const TransistorVisualizer = lazy(() =>
+  import("./TransistorVisualizer").then((m) => ({ default: m.TransistorVisualizer })),
+);
 
 const STEPS = [
   { title: "Interaktiv visualisering — fra NMOS til CMOS", anchor: "visualisering" },
@@ -56,7 +61,9 @@ export function Trinn1TransistorPage() {
             NOT-gate, NAND og en CMOS-inverter — alle bygd av de samme to
             byggeklossene.
           </p>
-          <TransistorVisualizer />
+          <Suspense fallback={<VisualizerSkeleton />}>
+            <TransistorVisualizer />
+          </Suspense>
         </section>
 
         <section id="hva" className="mb-10">

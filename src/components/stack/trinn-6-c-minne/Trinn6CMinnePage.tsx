@@ -2,9 +2,14 @@ import { Link } from "@tanstack/react-router";
 import { ArrowRight, Lightbulb } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
-import { MemoryVisualizer } from "./MemoryVisualizer";
 import { MemoryModel } from "./MemoryModel";
 import { RelatedVisualizers } from "@/components/stack/RelatedVisualizers";
+import { lazy, Suspense } from "react";
+import { VisualizerSkeleton } from "@/components/visualizer-shell";
+
+const MemoryVisualizer = lazy(() =>
+  import("./MemoryVisualizer").then((m) => ({ default: m.MemoryVisualizer })),
+);
 
 const STEPS = [
   { title: "Interaktiv minne-visualiserer", anchor: "visualiser" },
@@ -58,7 +63,9 @@ export function Trinn6CMinnePage() {
             padding skravert i gult. Pekere tegnes som navngitte bokser med
             piler ned til adressen de peker på.
           </p>
-          <MemoryVisualizer />
+          <Suspense fallback={<VisualizerSkeleton />}>
+            <MemoryVisualizer />
+          </Suspense>
         </section>
 
         <section id="minneoppsett" className="mb-10">
