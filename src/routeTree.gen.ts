@@ -41,6 +41,7 @@ import { Route as VizLesjonSlugRouteImport } from './routes/viz-lesjon.$slug'
 import { Route as StackSlugRouteImport } from './routes/stack.$slug'
 import { Route as SporSlugRouteImport } from './routes/spor.$slug'
 import { Route as PythonVisualizerRouteImport } from './routes/python_.visualizer'
+import { Route as PythonKjerneRouteImport } from './routes/python_.kjerne'
 import { Route as ProsjektMlSlugRouteImport } from './routes/prosjekt-ml.$slug'
 import { Route as PortfolioDte2602SlugRouteImport } from './routes/portfolio-dte2602.$slug'
 import { Route as MiniKursSlugRouteImport } from './routes/mini-kurs.$slug'
@@ -210,6 +211,11 @@ const PythonVisualizerRoute = PythonVisualizerRouteImport.update({
   path: '/python/visualizer',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PythonKjerneRoute = PythonKjerneRouteImport.update({
+  id: '/python_/kjerne',
+  path: '/python/kjerne',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ProsjektMlSlugRoute = ProsjektMlSlugRouteImport.update({
   id: '/prosjekt-ml/$slug',
   path: '/prosjekt-ml/$slug',
@@ -281,6 +287,7 @@ export interface FileRoutesByFullPath {
   '/mini-kurs/$slug': typeof MiniKursSlugRoute
   '/portfolio-dte2602/$slug': typeof PortfolioDte2602SlugRoute
   '/prosjekt-ml/$slug': typeof ProsjektMlSlugRoute
+  '/python/kjerne': typeof PythonKjerneRoute
   '/python/visualizer': typeof PythonVisualizerRoute
   '/spor/$slug': typeof SporSlugRoute
   '/stack/$slug': typeof StackSlugRoute
@@ -319,6 +326,7 @@ export interface FileRoutesByTo {
   '/mini-kurs/$slug': typeof MiniKursSlugRoute
   '/portfolio-dte2602/$slug': typeof PortfolioDte2602SlugRoute
   '/prosjekt-ml/$slug': typeof ProsjektMlSlugRoute
+  '/python/kjerne': typeof PythonKjerneRoute
   '/python/visualizer': typeof PythonVisualizerRoute
   '/spor/$slug': typeof SporSlugRoute
   '/stack/$slug': typeof StackSlugRoute
@@ -362,6 +370,7 @@ export interface FileRoutesById {
   '/mini-kurs/$slug': typeof MiniKursSlugRoute
   '/portfolio-dte2602/$slug': typeof PortfolioDte2602SlugRoute
   '/prosjekt-ml/$slug': typeof ProsjektMlSlugRoute
+  '/python_/kjerne': typeof PythonKjerneRoute
   '/python_/visualizer': typeof PythonVisualizerRoute
   '/spor/$slug': typeof SporSlugRoute
   '/stack/$slug': typeof StackSlugRoute
@@ -406,6 +415,7 @@ export interface FileRouteTypes {
     | '/mini-kurs/$slug'
     | '/portfolio-dte2602/$slug'
     | '/prosjekt-ml/$slug'
+    | '/python/kjerne'
     | '/python/visualizer'
     | '/spor/$slug'
     | '/stack/$slug'
@@ -444,6 +454,7 @@ export interface FileRouteTypes {
     | '/mini-kurs/$slug'
     | '/portfolio-dte2602/$slug'
     | '/prosjekt-ml/$slug'
+    | '/python/kjerne'
     | '/python/visualizer'
     | '/spor/$slug'
     | '/stack/$slug'
@@ -486,6 +497,7 @@ export interface FileRouteTypes {
     | '/mini-kurs/$slug'
     | '/portfolio-dte2602/$slug'
     | '/prosjekt-ml/$slug'
+    | '/python_/kjerne'
     | '/python_/visualizer'
     | '/spor/$slug'
     | '/stack/$slug'
@@ -528,6 +540,7 @@ export interface RootRouteChildren {
   Dte2507PcapRoute: typeof Dte2507PcapRoute
   PortfolioDte2602SlugRoute: typeof PortfolioDte2602SlugRoute
   ProsjektMlSlugRoute: typeof ProsjektMlSlugRoute
+  PythonKjerneRoute: typeof PythonKjerneRoute
   PythonVisualizerRoute: typeof PythonVisualizerRoute
   PythonIdeNrRoute: typeof PythonIdeNrRoute
   PythonKapNrRoute: typeof PythonKapNrRoute
@@ -760,6 +773,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PythonVisualizerRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/python_/kjerne': {
+      id: '/python_/kjerne'
+      path: '/python/kjerne'
+      fullPath: '/python/kjerne'
+      preLoaderRoute: typeof PythonKjerneRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/prosjekt-ml/$slug': {
       id: '/prosjekt-ml/$slug'
       path: '/prosjekt-ml/$slug'
@@ -900,6 +920,7 @@ const rootRouteChildren: RootRouteChildren = {
   Dte2507PcapRoute: Dte2507PcapRoute,
   PortfolioDte2602SlugRoute: PortfolioDte2602SlugRoute,
   ProsjektMlSlugRoute: ProsjektMlSlugRoute,
+  PythonKjerneRoute: PythonKjerneRoute,
   PythonVisualizerRoute: PythonVisualizerRoute,
   PythonIdeNrRoute: PythonIdeNrRoute,
   PythonKapNrRoute: PythonKapNrRoute,
