@@ -27606,4 +27606,495 @@ gcd(252, 198) = __5__`,
     explanation:
       "Modulær invers eksisterer ⇔ gcd = 1. Finnes med utvidet Euklids algoritme. RSA bygger på dette.",
   },
+
+  // ============= DTE-2505: OS / LINUX KOMMANDOER (30 nye) =============
+  // Bygd ut for å dekke audit-gap: kommando-flagg, prosessar, rettigheter,
+  // boot/livssyklus, og scheduling-algoritmer.
+
+  // ----- 8 fill-in: kommando-flagg -----
+  {
+    id: "dte2505-fill-ls-la",
+    kind: "fill",
+    title: "ls med skjulte filer og detaljer",
+    prompt:
+      "Vi vil liste ALLE filer (inkludert skjulte) i en katalog i langt format (rettigheter, eier, størrelse).",
+    topic: "DTE-2505 / Linux-kommandoer",
+    language: "python",
+    template: "__1__ __2__",
+    blanks: ["ls", "-la"],
+    options: ["ls", "ll", "dir", "-la", "-l", "-a", "-lh", "-r"],
+    explanation:
+      "`-l` = langt format (én linje per fil med rettigheter/eier/størrelse). `-a` = vis skjulte filer (de som starter med .). Slått sammen: `-la`. Mange skriver også `ls -lah` for menneskelesbare størrelser.",
+  },
+  {
+    id: "dte2505-fill-chmod-755",
+    kind: "fill",
+    title: "Gjør et script kjørbart for alle",
+    prompt:
+      "Sett rettighetene på `deploy.sh` slik at eier får rwx, gruppe og andre får rx (typisk for et eksekverbart script).",
+    topic: "DTE-2505 / Rettigheter",
+    language: "python",
+    template: "__1__ __2__ deploy.sh",
+    blanks: ["chmod", "755"],
+    options: ["chmod", "chown", "chgrp", "755", "644", "777", "750", "700"],
+    explanation:
+      "755 = rwxr-xr-x: eier (7=rwx), gruppe (5=r-x), andre (5=r-x). Standard for scripts og programmer. 644 brukes for vanlige datafiler.",
+  },
+  {
+    id: "dte2505-fill-ps-ef",
+    kind: "fill",
+    title: "List alle prosesser i fullt format",
+    prompt:
+      "Bruk `ps` til å vise ALLE prosesser på systemet med full kommando-linje og foreldre-PID.",
+    topic: "DTE-2505 / Prosesser",
+    language: "python",
+    template: "__1__ __2__",
+    blanks: ["ps", "-ef"],
+    options: ["ps", "top", "kill", "-ef", "-aux", "-e", "-f", "-A"],
+    explanation:
+      "`-e` = alle prosesser (ikke bare mine). `-f` = fullt format inkl. PPID, UID, kommando. Alternativ BSD-syntaks: `ps aux`.",
+  },
+  {
+    id: "dte2505-fill-grep-rn",
+    kind: "fill",
+    title: "Søk rekursivt med linjenummer",
+    prompt:
+      "Finn alle forekomster av 'TODO' i prosjektmappen, rekursivt, med linjenummer ved hver treff.",
+    topic: "DTE-2505 / Linux-kommandoer",
+    language: "python",
+    template: '__1__ __2__ "TODO" .',
+    blanks: ["grep", "-rn"],
+    options: ["grep", "find", "ack", "-rn", "-r", "-n", "-v", "-i"],
+    explanation:
+      "`-r` (recursive) går ned i underkataloger. `-n` (line-number) viser linjenummer. Sammen: `-rn`. Legg til `-i` for case-insensitive.",
+  },
+  {
+    id: "dte2505-fill-find-name",
+    kind: "fill",
+    title: "Finn filer etter navn",
+    prompt:
+      "Finn alle `.log`-filer i `/var/log` og under, uten å følge symbolske lenker.",
+    topic: "DTE-2505 / Linux-kommandoer",
+    language: "python",
+    template: '__1__ /var/log __2__ "*.log"',
+    blanks: ["find", "-name"],
+    options: ["find", "locate", "grep", "-name", "-iname", "-type", "-path", "-regex"],
+    explanation:
+      "`find <path> -name <pattern>` søker etter filnavn. Bruk anførselstegn rundt mønster med wildcard for at shellet ikke skal ekspandere det.",
+  },
+  {
+    id: "dte2505-fill-tar-czf",
+    kind: "fill",
+    title: "Lag en gzippet tarball",
+    prompt:
+      "Pakk hele `prosjekt/`-mappen til en gzippet arkiv-fil kalt `prosjekt.tar.gz`.",
+    topic: "DTE-2505 / Linux-kommandoer",
+    language: "python",
+    template: "__1__ __2__ prosjekt.tar.gz prosjekt/",
+    blanks: ["tar", "-czf"],
+    options: ["tar", "zip", "gzip", "-czf", "-xzf", "-tvf", "-cvf", "-rf"],
+    explanation:
+      "`-c` = create, `-z` = gzip-komprimer, `-f` = filnavn følger. For å pakke ut: `tar -xzf prosjekt.tar.gz`. Husk: f MÅ være sist.",
+  },
+  {
+    id: "dte2505-fill-kill-9",
+    kind: "fill",
+    title: "Tving en hengende prosess til å dø",
+    prompt:
+      "Prosess 4287 svarer ikke på SIGTERM. Send SIGKILL (signal 9) for å avslutte den umiddelbart.",
+    topic: "DTE-2505 / Prosesser",
+    language: "python",
+    template: "__1__ __2__ 4287",
+    blanks: ["kill", "-9"],
+    options: ["kill", "killall", "pkill", "-9", "-15", "-1", "-HUP", "-TERM"],
+    explanation:
+      "Signal 9 = SIGKILL kan ikke fanges eller ignoreres — kjernen dreper prosessen direkte. Prøv ALLTID `kill <pid>` (SIGTERM=15) først, slik at prosessen får ryddet opp.",
+  },
+  {
+    id: "dte2505-fill-ssh-port",
+    kind: "fill",
+    title: "SSH til en server på annen port",
+    prompt:
+      "Logg inn som brukeren `student` på `server.uit.no` på port 2222.",
+    topic: "DTE-2505 / Nettverk",
+    language: "python",
+    template: "__1__ __2__ 2222 student@server.uit.no",
+    blanks: ["ssh", "-p"],
+    options: ["ssh", "scp", "telnet", "-p", "-P", "-l", "-i", "--port"],
+    explanation:
+      "OpenSSH bruker `-p <port>` (lowercase). `scp` bruker derimot stor `-P`. Vanlig fall-grop på eksamen.",
+  },
+
+  // ----- 8 match: kommando ↔ formål -----
+  {
+    id: "dte2505-match-signaler",
+    kind: "match",
+    title: "Linux-signaler",
+    prompt: "Match signal-flagg med hva det gjør med prosessen.",
+    topic: "DTE-2505 / Prosesser",
+    pairs: [
+      { left: "kill -9 (SIGKILL)", right: "Drep prosess ufrivillig — kan ikke fanges" },
+      { left: "kill -15 (SIGTERM)", right: "Be prosessen avslutte pent (kan ryddes opp)" },
+      { left: "kill -1 (SIGHUP)", right: "Be daemon laste konfig på nytt" },
+      { left: "kill -2 (SIGINT)", right: "Som Ctrl+C — avbryt fra terminal" },
+      { left: "kill -19 (SIGSTOP)", right: "Pause prosess (kan ikke fanges)" },
+      { left: "kill -18 (SIGCONT)", right: "Fortsett pauset prosess" },
+    ],
+    explanation:
+      "SIGTERM er høflig, SIGKILL er brutalt. SIGHUP brukes ofte til 'reload config' av daemons (nginx, sshd). SIGSTOP/SIGCONT brukes av jobbkontroll i shellet.",
+  },
+  {
+    id: "dte2505-match-filkommando",
+    kind: "match",
+    title: "Filkommandoer",
+    prompt: "Match kommando med formål.",
+    topic: "DTE-2505 / Linux-kommandoer",
+    pairs: [
+      { left: "cp -r", right: "Kopier mappe rekursivt" },
+      { left: "mv", right: "Flytt eller gi nytt navn" },
+      { left: "ln -s", right: "Lag symbolsk lenke (snarvei)" },
+      { left: "touch", right: "Lag tom fil eller oppdater tidsstempel" },
+      { left: "rm -rf", right: "Slett fil/mappe rekursivt uten å spørre" },
+      { left: "stat", right: "Vis detaljert metadata om fil (inode, eier, tid)" },
+    ],
+    explanation:
+      "`rm -rf /` er den klassiske 'aldri-skriv-dette' kommandoen — den sletter HELE filsystemet uten å spørre.",
+  },
+  {
+    id: "dte2505-match-tekstverktoy",
+    kind: "match",
+    title: "Tekstverktøy i shellet",
+    prompt: "Match Unix-verktøy med oppgaven det løser.",
+    topic: "DTE-2505 / Shell",
+    pairs: [
+      { left: "wc -l", right: "Tell antall linjer" },
+      { left: "sort -u", right: "Sorter og fjern duplikater" },
+      { left: "uniq -c", right: "Tell forekomster av like påfølgende linjer" },
+      { left: "cut -d: -f1", right: "Hent første kolonne, kolon-separert" },
+      { left: "sed 's/foo/bar/g'", right: "Erstatt 'foo' med 'bar' overalt" },
+      { left: "awk '{print $3}'", right: "Skriv ut tredje whitespace-separert felt" },
+    ],
+    explanation:
+      "Disse er hjørnesteinene i Unix-philosophy: små verktøy som gjør én ting bra, og pipes til å lime dem sammen.",
+  },
+  {
+    id: "dte2505-match-prosessverktoy",
+    kind: "match",
+    title: "Prosess- og system-verktøy",
+    prompt: "Match verktøy med hva det viser/gjør.",
+    topic: "DTE-2505 / Prosesser",
+    pairs: [
+      { left: "top / htop", right: "Live-oversikt over CPU/minnebruk per prosess" },
+      { left: "ps -ef", right: "Snapshot av alle prosesser akkurat nå" },
+      { left: "free -h", right: "Total/brukt/ledig RAM i menneskelesbar form" },
+      { left: "df -h", right: "Diskplass per filsystem (mountpoints)" },
+      { left: "du -sh", right: "Total størrelse på én katalog" },
+      { left: "lsof", right: "List åpne filer (og hvilken prosess som har dem)" },
+    ],
+    explanation:
+      "Husk: i Unix er ALT en fil — også sockets og pipes. Derfor er `lsof` så kraftig for debugging.",
+  },
+  {
+    id: "dte2505-match-nettverk",
+    kind: "match",
+    title: "Nettverksverktøy",
+    prompt: "Match nettverkskommando med formål.",
+    topic: "DTE-2505 / Nettverk",
+    pairs: [
+      { left: "ping", right: "Sjekk om en host svarer (ICMP echo)" },
+      { left: "traceroute", right: "Vis hver hopp pakken tar til destinasjonen" },
+      { left: "netstat -tlnp / ss -tlnp", right: "List TCP-porter som lytter, og hvilken prosess" },
+      { left: "curl -I", right: "Hent BARE HTTP-headere fra en URL" },
+      { left: "dig", right: "Slå opp DNS-records for et domene" },
+      { left: "scp", right: "Kopier filer over SSH" },
+    ],
+    explanation:
+      "`ss` er moderne erstatning for `netstat`. `dig` gir mer info enn `nslookup` for DNS-debugging.",
+  },
+  {
+    id: "dte2505-match-permissions",
+    kind: "match",
+    title: "Rettighets-kommandoer",
+    prompt: "Match kommando med hva den endrer.",
+    topic: "DTE-2505 / Rettigheter",
+    pairs: [
+      { left: "chmod", right: "Endre lese/skrive/kjøre-rettigheter" },
+      { left: "chown", right: "Endre eier av fil/mappe" },
+      { left: "chgrp", right: "Endre gruppe-tilhørighet" },
+      { left: "umask", right: "Sett standard-rettighetsmaske for nye filer" },
+      { left: "sudo", right: "Kjør én kommando som root" },
+      { left: "su -", right: "Bytt til en annen bruker (full ny shell)" },
+    ],
+    explanation:
+      "umask 022 betyr at nye filer får 666 - 022 = 644 (rw-r--r--). umask trekker FRA standard-rettighetene.",
+  },
+  {
+    id: "dte2505-match-pakkebehandling",
+    kind: "match",
+    title: "Pakkebehandling (apt vs. dnf vs. pip)",
+    prompt: "Match kommando med distro/scope.",
+    topic: "DTE-2505 / Pakkebehandling",
+    pairs: [
+      { left: "apt install", right: "Debian/Ubuntu — installer system-pakke" },
+      { left: "apt update", right: "Oppdater pakke-liste (ikke selve pakkene)" },
+      { left: "apt upgrade", right: "Oppgrader alle installerte pakker" },
+      { left: "dnf install", right: "Fedora/RHEL — installer system-pakke" },
+      { left: "pip install --user", right: "Python-pakke i hjemmemappen, ikke system" },
+      { left: "snap install", right: "Sandboxed pakke (Ubuntu, distro-uavhengig)" },
+    ],
+    explanation:
+      "`apt update` oppdaterer LISTEN over hva som finnes; `apt upgrade` faktisk OPPGRADERER det du har. Vanlig nybegynnerfeil å forveksle dem.",
+  },
+  {
+    id: "dte2505-match-shell-redirect",
+    kind: "match",
+    title: "Shell-omdirigering",
+    prompt: "Match symbol med hva det gjør.",
+    topic: "DTE-2505 / Shell",
+    pairs: [
+      { left: "cmd > fil", right: "Skriv stdout til fil (overskriv)" },
+      { left: "cmd >> fil", right: "Skriv stdout til fil (legg til)" },
+      { left: "cmd 2> fil", right: "Skriv stderr til fil" },
+      { left: "cmd &> fil", right: "Skriv både stdout og stderr til fil" },
+      { left: "cmd < fil", right: "Bruk fil som stdin" },
+      { left: "cmd1 | cmd2", right: "Send stdout fra cmd1 inn som stdin på cmd2" },
+    ],
+    explanation:
+      "Filedescriptors: 0=stdin, 1=stdout, 2=stderr. `2>&1` betyr 'send stderr dit stdout går'. Pipe `|` er kjernen i Unix-filosofien.",
+  },
+
+  // ----- 6 order: systemboot, prosess-livssyklus, page-fault-handling -----
+  {
+    id: "dte2505-order-boot",
+    kind: "order",
+    title: "Linux boot-sekvens",
+    prompt: "Dra stegene fra strøm-på til innloggingsprompt i riktig rekkefølge.",
+    topic: "DTE-2505 / Boot",
+    items: [
+      "BIOS/UEFI POST — sjekker maskinvare",
+      "Bootloader (GRUB) laster fra disk",
+      "Kjernen (vmlinuz) lastes inn i minnet",
+      "initramfs monterer rotfilsystem",
+      "init/systemd starter som PID 1",
+      "systemd starter target-tjenester (network, sshd, ...)",
+      "getty/display-manager viser login-prompt",
+    ],
+    explanation:
+      "PID 1 (init/systemd) er foreldre til alle andre prosesser. Hvis PID 1 dør, panikker kjernen.",
+  },
+  {
+    id: "dte2505-order-livssyklus",
+    kind: "order",
+    title: "Prosess-livssyklus (fork/exec)",
+    prompt: "Dra stegene som skjer når shellet starter `ls` i riktig rekkefølge.",
+    topic: "DTE-2505 / Prosesser",
+    items: [
+      "Shell kaller fork() — kjernen dupliserer prosessen",
+      "Barneprosess får ny PID, samme kode (returnerer 0 fra fork)",
+      "Barneprosess kaller exec(\"/bin/ls\") — bytter ut sitt eget bilde",
+      "Barneprosess kjører ls og skriver til stdout",
+      "Barneprosess kaller exit() — blir zombie",
+      "Foreldre (shell) kaller wait() — leser exit-status",
+      "Kjernen rydder zombien og frigjør PID",
+    ],
+    explanation:
+      "fork+exec er Unix-måten å starte programmer. Hvis foreldre dør før wait(), blir barnet 'orphan' og adopteres av init (PID 1). Hvis foreldre aldri kaller wait(), blir barnet zombie permanent.",
+  },
+  {
+    id: "dte2505-order-page-fault",
+    kind: "order",
+    title: "Page-fault-håndtering",
+    prompt:
+      "Prosessen leser en adresse som ikke er i RAM. Dra stegene i rekkefølge.",
+    topic: "DTE-2505 / Minnehåndtering",
+    items: [
+      "CPU sjekker MMU/TLB — finner ingen mapping for adressen",
+      "MMU utløser page-fault exception (trap til kjernen)",
+      "Kjernen sjekker om adressen er gyldig (segfault eller lovlig?)",
+      "Hvis lovlig: finn ledig fysisk ramme (eller swap ut én)",
+      "Les sida inn fra disk/swap til ramfemma",
+      "Oppdater sidetabell + TLB med ny mapping",
+      "Returner til brukerprosess og restart instruksjonen",
+    ],
+    explanation:
+      "Page-faults er normalt (demand paging). Først 'major fault' (disk-lest) er dyrt — millioner av nanosekunder vs. nanosekunder for RAM-tilgang.",
+  },
+  {
+    id: "dte2505-order-context-switch",
+    kind: "order",
+    title: "Context switch mellom to prosesser",
+    prompt:
+      "Scheduler bestemmer at prosess A skal vike for prosess B. Dra stegene i rekkefølge.",
+    topic: "DTE-2505 / Scheduling",
+    items: [
+      "Timer-interrupt avbryter prosess A",
+      "Kjernen lagrer A's registre + program counter i A's PCB",
+      "Scheduler velger neste prosess (B) fra ready-køen",
+      "Kjernen laster B's registre + PC fra B's PCB",
+      "MMU bytter til B's adresserom (last ny page table base)",
+      "TLB flushes (eller delvis, med ASID)",
+      "Returner til user mode — B kjører",
+    ],
+    explanation:
+      "Context switch er overhead — derfor er threads (samme adresserom) billigere å bytte enn prosesser. TLB-flush er en stor del av kostnaden.",
+  },
+  {
+    id: "dte2505-order-syscall",
+    kind: "order",
+    title: "Hva skjer ved et syscall (read())",
+    prompt:
+      "Prosessen kaller `read(fd, buf, 100)`. Dra stegene fra brukerkode til retur.",
+    topic: "DTE-2505 / Kjerne",
+    items: [
+      "Brukerkode legger syscall-nummer + argumenter i registre",
+      "Kjør `syscall`-instruksjon — CPU bytter til kernel mode",
+      "Kjernens syscall-dispatcher slår opp syscall-tabellen",
+      "Kjernen utfører read (kopierer data fra fil/socket til buf)",
+      "Kjernen legger retur-verdi i register",
+      "`sysret` — CPU bytter tilbake til user mode",
+      "Brukerkode fortsetter med retur-verdi i registret",
+    ],
+    explanation:
+      "Mode-switch (user↔kernel) er billigere enn full context switch (samme prosess, samme adresserom). Likevel betydelig — derfor batching av syscalls (writev, io_uring).",
+  },
+  {
+    id: "dte2505-order-pipeline",
+    kind: "order",
+    title: "Shell-pipeline `ls | grep py | wc -l`",
+    prompt: "Dra stegene shellet gjør for å sette opp pipelinen i riktig rekkefølge.",
+    topic: "DTE-2505 / Shell",
+    items: [
+      "Shell parser kommandolinjen, ser to pipes → tre prosesser",
+      "Shell oppretter to pipes med pipe() — to filedescriptor-par",
+      "Shell fork()-er én gang per kommando (3 ganger)",
+      "Hver barn dup2()-er pipen til stdin/stdout",
+      "Hver barn exec()-er sitt program (ls, grep, wc)",
+      "Pipene formidler data: ls.stdout → grep.stdin → wc.stdin",
+      "Shell wait()-er på alle tre — viser deretter ny prompt",
+    ],
+    explanation:
+      "Pipes er kjerne-objekt — buffer i RAM. Når ls dør, får grep EOF på sin stdin og avslutter, så får wc EOF. Slik 'flyter' SIGPIPE/EOF nedover.",
+  },
+
+  // ----- 4 fill-in: rwx-permisjoner (oktal ↔ symbolsk) -----
+  {
+    id: "dte2505-fill-perm-755",
+    kind: "fill",
+    title: "Symbolske rettigheter for 755",
+    prompt:
+      "Skriv den symbolske formen (10 tegn, inkludert filtype-prefiks) av oktalt 755 for en vanlig fil.",
+    topic: "DTE-2505 / Rettigheter",
+    template: "__1____2____3____4__",
+    blanks: ["-", "rwx", "r-x", "r-x"],
+    options: [
+      "-", "d", "l",
+      "rwx", "rw-", "r-x", "r--", "---", "-wx", "--x",
+    ],
+    explanation:
+      "Første tegn = type (- vanlig fil, d katalog, l symlink). Deretter tre triplet: eier=7=rwx, gruppe=5=r-x, andre=5=r-x. Resultat: `-rwxr-xr-x`.",
+  },
+  {
+    id: "dte2505-fill-perm-644",
+    kind: "fill",
+    title: "Oktal form av -rw-r--r--",
+    prompt:
+      "En fil har rettigheter `-rw-r--r--`. Skriv den 3-sifrede oktale formen.",
+    topic: "DTE-2505 / Rettigheter",
+    template: "__1____2____3__",
+    blanks: ["6", "4", "4"],
+    options: ["0", "1", "2", "3", "4", "5", "6", "7"],
+    explanation:
+      "rw- = 4+2+0 = 6. r-- = 4+0+0 = 4. Hver bit: r=4, w=2, x=1. Vanlig for datafiler — eier kan skrive, alle kan lese.",
+  },
+  {
+    id: "dte2505-fill-perm-katalog",
+    kind: "fill",
+    title: "Katalog-rettigheter for 750",
+    prompt:
+      "En katalog skal være rwx for eier, r-x for gruppe, ingenting for andre. Skriv den symbolske formen (10 tegn).",
+    topic: "DTE-2505 / Rettigheter",
+    template: "__1____2____3____4__",
+    blanks: ["d", "rwx", "r-x", "---"],
+    options: [
+      "-", "d", "l",
+      "rwx", "rw-", "r-x", "r--", "---", "wx-", "--x",
+    ],
+    explanation:
+      "Første tegn `d` = katalog. På kataloger betyr x = 'kan cd inn'; r = 'kan ls innhold'. 750 brukes når gruppen skal se inn, men andre ikke skal vite at katalogen finnes.",
+  },
+  {
+    id: "dte2505-fill-perm-script",
+    kind: "fill",
+    title: "Oktal form av -rwxr-x---",
+    prompt:
+      "Et script skal være kjørbart for eier og gruppe, men helt skjult for andre. Skriv 3-sifret oktal form.",
+    topic: "DTE-2505 / Rettigheter",
+    template: "__1____2____3__",
+    blanks: ["7", "5", "0"],
+    options: ["0", "1", "2", "3", "4", "5", "6", "7"],
+    explanation:
+      "rwx = 4+2+1 = 7. r-x = 4+0+1 = 5. --- = 0. Resultat: 750. Vanlig for interne deploy-scripts der bare devops-gruppen skal kunne kjøre.",
+  },
+
+  // ----- 4 match: scheduling-algoritmer ↔ trade-off -----
+  {
+    id: "dte2505-match-sched-fcfs",
+    kind: "match",
+    title: "Scheduling: FCFS",
+    prompt: "Match FCFS-egenskap med beskrivelse.",
+    topic: "DTE-2505 / Scheduling",
+    pairs: [
+      { left: "Algoritme", right: "First-Come, First-Served — ingen prioritering" },
+      { left: "Implementasjon", right: "Enkel FIFO-kø — minimum overhead" },
+      { left: "Hovedproblem", right: "Convoy effect — én lang jobb blokkerer alle korte" },
+      { left: "Egnet for", right: "Batch-system uten interaktive krav" },
+    ],
+    explanation:
+      "FCFS gir høy gjennomstrømning, men dårlig responsivitet. En CPU-bound jobb foran I/O-bound jobber gir convoy effect — alle venter på den ene.",
+  },
+  {
+    id: "dte2505-match-sched-sjf",
+    kind: "match",
+    title: "Scheduling: SJF / SRTF",
+    prompt: "Match SJF-egenskap med beskrivelse.",
+    topic: "DTE-2505 / Scheduling",
+    pairs: [
+      { left: "Algoritme", right: "Shortest Job First — korteste CPU-burst går først" },
+      { left: "Bevist optimum", right: "Minimerer gjennomsnittlig waiting time" },
+      { left: "Hovedproblem", right: "Starvation — lange jobber kan bli skjøvet på evig" },
+      { left: "Praktisk utfordring", right: "CPU-burst-lengden er ikke kjent på forhånd (må estimeres)" },
+    ],
+    explanation:
+      "SJF er teoretisk optimal for average waiting time, men umulig å implementere perfekt — vi vet ikke fremtiden. I praksis estimerer man med exponential averaging.",
+  },
+  {
+    id: "dte2505-match-sched-rr",
+    kind: "match",
+    title: "Scheduling: Round-Robin",
+    prompt: "Match RR-egenskap med beskrivelse.",
+    topic: "DTE-2505 / Scheduling",
+    pairs: [
+      { left: "Algoritme", right: "Time-slicing — hver prosess får et kvantum og roterer" },
+      { left: "Hovedstyrke", right: "God responsivitet — alle får CPU jevnlig" },
+      { left: "Kvantum for stort", right: "Degenererer til FCFS — lang ventetid for siste" },
+      { left: "Kvantum for lite", right: "For mye overhead fra context switches" },
+    ],
+    explanation:
+      "Typisk kvantum: 10–100 ms. For lite (1 ms) → CPU bruker mer tid på å bytte enn å regne. For stort (1 s) → interaktive prosesser føles trege.",
+  },
+  {
+    id: "dte2505-match-sched-mlfq",
+    kind: "match",
+    title: "Scheduling: MLFQ",
+    prompt: "Match MLFQ-egenskap med beskrivelse.",
+    topic: "DTE-2505 / Scheduling",
+    pairs: [
+      { left: "Algoritme", right: "Multi-Level Feedback Queue — flere køer med ulik prioritet" },
+      { left: "Læring", right: "Justerer prioritet basert på observert oppførsel" },
+      { left: "I/O-bound jobb", right: "Holdes høyt fordi den slipper CPU frivillig" },
+      { left: "CPU-bound jobb", right: "Faller ned i prioritet jo lenger den bruker kvantum" },
+    ],
+    explanation:
+      "MLFQ er det de fleste moderne OS bruker (Linux CFS er en variant). Periodisk 'priority boost' hindrer starvation av lavprioritets-jobber.",
+  },
 ];
