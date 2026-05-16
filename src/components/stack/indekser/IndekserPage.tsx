@@ -6,6 +6,7 @@ import { Indexes as IndexesIllustration } from "@/components/illustrations";
 import { RelatedVisualizers } from "@/components/stack/RelatedVisualizers";
 import { lazy, Suspense } from "react";
 import { VisualizerSkeleton } from "@/components/visualizer-shell";
+import { IndeksDrill } from "@/components/stack/indekser/IndeksDrill";
 
 const IndexVisualizer = lazy(() =>
   import("@/components/stack/indekser/IndexVisualizer").then((m) => ({ default: m.IndexVisualizer })),
@@ -16,6 +17,7 @@ const IndexVisualizer = lazy(() =>
 
 const STEPS = [
   { title: "Visualisering — kjør indeks i praksis", anchor: "viz" },
+  { title: "Prøv selv — velg riktig indeks", anchor: "drill" },
   { title: "Hva er en indeks egentlig?", anchor: "hva" },
   { title: "B-tree-indekser — struktur", anchor: "btree" },
   { title: "Hash-indeks — punkt-oppslag", anchor: "hash" },
@@ -143,6 +145,9 @@ export function IndekserPage() {
             <IndexVisualizer />
           </Suspense>
         </section>
+
+        {/* Interaktiv drill */}
+        <IndeksDrill />
 
         {/* Hva er en indeks */}
         <section id="hva" className="mb-10">
