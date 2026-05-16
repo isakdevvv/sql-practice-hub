@@ -2,8 +2,10 @@ import { Link } from "@tanstack/react-router";
 import { ArrowRight, Lightbulb } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
+import { SupervisedLearningVisualizer } from "@/components/stack/supervised-learning/SupervisedLearningVisualizer";
 
 const STEPS = [
+  { title: "Interaktiv visualisering", anchor: "visualisering" },
   { title: "Regresjon vs klassifikasjon", anchor: "regr-vs-klass" },
   { title: "Lineær regresjon", anchor: "linear" },
   { title: "Logistisk regresjon", anchor: "logistic" },
@@ -43,8 +45,22 @@ export function SupervisedPage() {
 
         <CourseOutline courseId="supervised-learning" steps={STEPS} />
 
+        <section id="visualisering" className="mb-10">
+          <h2 className="text-xl font-semibold mb-3">
+            1. Interaktiv visualisering — bias/varians, splits, k-NN, metrikker
+          </h2>
+          <p className="text-sm text-muted-foreground mb-4">
+            Før vi går algoritme for algoritme: lek med de generelle prinsippene.
+            Overfit vs underfit på polynom-fit, hvorfor vi splitter i train/val/test,
+            hvordan læringskurver avslører hva som er galt, k-NN sin
+            beslutningsgrense som funksjon av k, og forskjellen på accuracy / precision /
+            recall / F1.
+          </p>
+          <SupervisedLearningVisualizer />
+        </section>
+
         <section id="regr-vs-klass" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">1. Regresjon vs klassifikasjon</h2>
+          <h2 className="text-xl font-semibold mb-3">2. Regresjon vs klassifikasjon</h2>
           <p className="text-sm text-muted-foreground mb-4">
             Forskjellen ligger i typen <code>y</code>:
           </p>
@@ -85,7 +101,7 @@ export function SupervisedPage() {
         </section>
 
         <section id="linear" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">2. Lineær regresjon</h2>
+          <h2 className="text-xl font-semibold mb-3">3. Lineær regresjon</h2>
           <p className="text-sm text-muted-foreground mb-4">
             Den enkleste regresjonsmodellen — antakelsen er at output er en lineær
             kombinasjon av features.
@@ -118,7 +134,7 @@ I sklearn:
         </section>
 
         <section id="logistic" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">3. Logistisk regresjon</h2>
+          <h2 className="text-xl font-semibold mb-3">4. Logistisk regresjon</h2>
           <p className="text-sm text-muted-foreground mb-4">
             Tross navnet er det en KLASSIFIKATOR. Wraps lineær kombinasjon i en
             sigmoid-funksjon som gir sannsynlighet ∈ [0, 1].
@@ -145,7 +161,7 @@ I sklearn:
         </section>
 
         <section id="knn" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">4. kNN — k-Nearest Neighbors</h2>
+          <h2 className="text-xl font-semibold mb-3">5. kNN — k-Nearest Neighbors</h2>
           <p className="text-sm text-muted-foreground mb-4">
             Ingen «trening» — modellen er bare data. Ved prediksjon: finn de k nærmeste
             punktene, ta majority vote (klassifikasjon) eller gjennomsnitt (regresjon).
@@ -176,7 +192,7 @@ I sklearn:
         </section>
 
         <section id="tree" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">5. Decision tree</h2>
+          <h2 className="text-xl font-semibold mb-3">6. Decision tree</h2>
           <p className="text-sm text-muted-foreground mb-4">
             Splitt datasettet rekursivt på feature-grenser slik at hver gren blir så
             «ren» som mulig. Resultatet er et tre du kan tolke direkte.
@@ -210,7 +226,7 @@ I sklearn:
         </section>
 
         <section id="ensemble" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">6. Ensembles — random forest, gradient boosting</h2>
+          <h2 className="text-xl font-semibold mb-3">7. Ensembles — random forest, gradient boosting</h2>
           <p className="text-sm text-muted-foreground mb-4">
             Ett tre er ustabilt. Mange trær sammen er kjempemye bedre. To strategier:
           </p>
@@ -253,7 +269,7 @@ model = GradientBoostingClassifier(
         </section>
 
         <section id="svm" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">7. SVM — Support Vector Machine</h2>
+          <h2 className="text-xl font-semibold mb-3">8. SVM — Support Vector Machine</h2>
           <p className="text-sm text-muted-foreground mb-4">
             Finn hyperplanet som SKILLER klassene med størst margin. Med kernel-triks
             kan SVM håndtere ikke-lineære grenser.
@@ -275,7 +291,7 @@ Hyperparametere:
         </section>
 
         <section id="valg" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">8. Hvilken algoritme velger du?</h2>
+          <h2 className="text-xl font-semibold mb-3">9. Hvilken algoritme velger du?</h2>
           <p className="text-sm text-muted-foreground mb-4">
             Praktisk valg-tre. Start på toppen.
           </p>
