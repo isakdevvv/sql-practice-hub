@@ -187,3 +187,92 @@
   background-color: rgba(99, 102, 241, 0.45);
   color: rgba(238, 242, 255, 1) !important;
 }
+
+/* ============================================================
+ * A11y: prefers-reduced-motion
+ *
+ * Folk med vestibular-følsomhet kan reagere på sveipende animasjoner
+ * i visualiseringene (gradient descent som beveger seg, frames som
+ * fader inn, piler som flytter på seg). Når OS-en signaliserer at
+ * brukeren vil ha redusert bevegelse, slår vi av animasjoner og
+ * transitions globalt — viz-en er fortsatt fullt funksjonell, bare
+ * uten den smooth interpolasjonen.
+ * ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ============================================================
+ * A11y: state-mønstre for fargeblinde
+ *
+ * Visualiseringene bruker farge for å signalisere tilstand
+ * (gul=sammenligner, rød=bytter, grønn=ferdig). For ~8% av menn
+ * med rød-grønn-blindhet er gul/grønn vanskelig å skille. Disse
+ * utility-klassene legger til et sekundært mønster (stripes) eller
+ * en liten markør (✓/⚠/●) som funker uavhengig av farge.
+ *
+ * Bruk:  <div class="state-marker state-active">...</div>
+ * Eller: <div class="state-marker" data-state="comparing">...</div>
+ * ============================================================ */
+.state-marker[data-state="comparing"],
+.state-marker.state-comparing {
+  background-image: repeating-linear-gradient(
+    45deg,
+    transparent,
+    transparent 4px,
+    rgba(0, 0, 0, 0.08) 4px,
+    rgba(0, 0, 0, 0.08) 6px
+  );
+}
+.dark .state-marker[data-state="comparing"],
+.dark .state-marker.state-comparing {
+  background-image: repeating-linear-gradient(
+    45deg,
+    transparent,
+    transparent 4px,
+    rgba(255, 255, 255, 0.12) 4px,
+    rgba(255, 255, 255, 0.12) 6px
+  );
+}
+.state-marker[data-state="active"]::before,
+.state-marker.state-active::before {
+  content: "\25CF";
+  margin-right: 0.25rem;
+  font-size: 0.7em;
+  vertical-align: middle;
+}
+.state-marker[data-state="done"]::before,
+.state-marker.state-done::before {
+  content: "\2713 ";
+  font-weight: 700;
+}
+.state-marker[data-state="warning"]::before,
+.state-marker.state-warning::before {
+  content: "\26A0 ";
+}
+.state-marker[data-state="error"]::before,
+.state-marker.state-error::before {
+  content: "\2717 ";
+  font-weight: 700;
+}
+
+/* ============================================================
+ * A11y: focus-visible for tastatur-brukere
+ *
+ * Default focus-ringen var fjernet på enkelte interaktive
+ * elementer (knapper med tilpassede border). Sørg for at det
+ * alltid finnes et tydelig fokus-merke ved tastatur-navigasjon.
+ * ============================================================ */
+:focus-visible {
+  outline: 2px solid oklch(0.65 0.18 250);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
