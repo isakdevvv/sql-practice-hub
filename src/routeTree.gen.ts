@@ -14,6 +14,7 @@ import { Route as VisualiseringerRouteImport } from './routes/visualiseringer'
 import { Route as VenvDrillRouteImport } from './routes/venv-drill'
 import { Route as StackRouteImport } from './routes/stack'
 import { Route as SporRouteImport } from './routes/spor'
+import { Route as RepetisjonRouteImport } from './routes/repetisjon'
 import { Route as PythonRouteImport } from './routes/python'
 import { Route as ProsjektRouteImport } from './routes/prosjekt'
 import { Route as PracticeRouteImport } from './routes/practice'
@@ -77,6 +78,11 @@ const StackRoute = StackRouteImport.update({
 const SporRoute = SporRouteImport.update({
   id: '/spor',
   path: '/spor',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RepetisjonRoute = RepetisjonRouteImport.update({
+  id: '/repetisjon',
+  path: '/repetisjon',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PythonRoute = PythonRouteImport.update({
@@ -297,6 +303,7 @@ export interface FileRoutesByFullPath {
   '/practice': typeof PracticeRoute
   '/prosjekt': typeof ProsjektRoute
   '/python': typeof PythonRoute
+  '/repetisjon': typeof RepetisjonRoute
   '/spor': typeof SporRouteWithChildren
   '/stack': typeof StackRouteWithChildren
   '/venv-drill': typeof VenvDrillRoute
@@ -342,6 +349,7 @@ export interface FileRoutesByTo {
   '/practice': typeof PracticeRoute
   '/prosjekt': typeof ProsjektRoute
   '/python': typeof PythonRoute
+  '/repetisjon': typeof RepetisjonRoute
   '/venv-drill': typeof VenvDrillRoute
   '/visualiseringer': typeof VisualiseringerRoute
   '/drill/_demo': typeof DrillChar91_demoChar93Route
@@ -386,6 +394,7 @@ export interface FileRoutesById {
   '/practice': typeof PracticeRoute
   '/prosjekt': typeof ProsjektRoute
   '/python': typeof PythonRoute
+  '/repetisjon': typeof RepetisjonRoute
   '/spor': typeof SporRouteWithChildren
   '/stack': typeof StackRouteWithChildren
   '/venv-drill': typeof VenvDrillRoute
@@ -434,6 +443,7 @@ export interface FileRouteTypes {
     | '/practice'
     | '/prosjekt'
     | '/python'
+    | '/repetisjon'
     | '/spor'
     | '/stack'
     | '/venv-drill'
@@ -479,6 +489,7 @@ export interface FileRouteTypes {
     | '/practice'
     | '/prosjekt'
     | '/python'
+    | '/repetisjon'
     | '/venv-drill'
     | '/visualiseringer'
     | '/drill/_demo'
@@ -522,6 +533,7 @@ export interface FileRouteTypes {
     | '/practice'
     | '/prosjekt'
     | '/python'
+    | '/repetisjon'
     | '/spor'
     | '/stack'
     | '/venv-drill'
@@ -569,6 +581,7 @@ export interface RootRouteChildren {
   PracticeRoute: typeof PracticeRoute
   ProsjektRoute: typeof ProsjektRoute
   PythonRoute: typeof PythonRoute
+  RepetisjonRoute: typeof RepetisjonRoute
   SporRoute: typeof SporRouteWithChildren
   StackRoute: typeof StackRouteWithChildren
   VenvDrillRoute: typeof VenvDrillRoute
@@ -622,6 +635,13 @@ declare module '@tanstack/react-router' {
       path: '/spor'
       fullPath: '/spor'
       preLoaderRoute: typeof SporRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/repetisjon': {
+      id: '/repetisjon'
+      path: '/repetisjon'
+      fullPath: '/repetisjon'
+      preLoaderRoute: typeof RepetisjonRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/python': {
@@ -973,6 +993,7 @@ const rootRouteChildren: RootRouteChildren = {
   PracticeRoute: PracticeRoute,
   ProsjektRoute: ProsjektRoute,
   PythonRoute: PythonRoute,
+  RepetisjonRoute: RepetisjonRoute,
   SporRoute: SporRouteWithChildren,
   StackRoute: StackRouteWithChildren,
   VenvDrillRoute: VenvDrillRoute,
