@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { PYTHON_CHAPTERS, findChapter } from "@/lib/learn/pythonChapters";
 import { ChevronLeft, ChevronRight, BookOpen, ListChecks, Terminal } from "lucide-react";
 import { findWorkspace } from "@/lib/python/chapterWorkspaces";
+import { ChapterToc } from "@/components/learn/ChapterToc";
 
 export const Route = createFileRoute("/python_/kap/$nr")({
   head: ({ params }) => {
@@ -93,6 +94,8 @@ function ChapterPage() {
             </a>
           </div>
         </header>
+
+        <ChapterToc resetKey={chapter.nr} />
 
         <article className="prose-tight text-[15px]">{chapter.body}</article>
 
