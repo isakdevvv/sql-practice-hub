@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as VizLesjonRouteImport } from './routes/viz-lesjon'
+import { Route as VisualiseringerRouteImport } from './routes/visualiseringer'
 import { Route as VenvDrillRouteImport } from './routes/venv-drill'
 import { Route as StackRouteImport } from './routes/stack'
 import { Route as SporRouteImport } from './routes/spor'
@@ -53,6 +54,11 @@ import { Route as PythonIdeNrRouteImport } from './routes/python_.ide.$nr'
 const VizLesjonRoute = VizLesjonRouteImport.update({
   id: '/viz-lesjon',
   path: '/viz-lesjon',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const VisualiseringerRoute = VisualiseringerRouteImport.update({
+  id: '/visualiseringer',
+  path: '/visualiseringer',
   getParentRoute: () => rootRouteImport,
 } as any)
 const VenvDrillRoute = VenvDrillRouteImport.update({
@@ -275,6 +281,7 @@ export interface FileRoutesByFullPath {
   '/spor': typeof SporRouteWithChildren
   '/stack': typeof StackRouteWithChildren
   '/venv-drill': typeof VenvDrillRoute
+  '/visualiseringer': typeof VisualiseringerRoute
   '/viz-lesjon': typeof VizLesjonRouteWithChildren
   '/dte2505/shell-drill': typeof Dte2505ShellDrillRoute
   '/dte2507/pcap': typeof Dte2507PcapRoute
@@ -314,6 +321,7 @@ export interface FileRoutesByTo {
   '/prosjekt': typeof ProsjektRoute
   '/python': typeof PythonRoute
   '/venv-drill': typeof VenvDrillRoute
+  '/visualiseringer': typeof VisualiseringerRoute
   '/dte2505/shell-drill': typeof Dte2505ShellDrillRoute
   '/dte2507/pcap': typeof Dte2507PcapRoute
   '/mini-kurs/$slug': typeof MiniKursSlugRoute
@@ -356,6 +364,7 @@ export interface FileRoutesById {
   '/spor': typeof SporRouteWithChildren
   '/stack': typeof StackRouteWithChildren
   '/venv-drill': typeof VenvDrillRoute
+  '/visualiseringer': typeof VisualiseringerRoute
   '/viz-lesjon': typeof VizLesjonRouteWithChildren
   '/dte2505/shell-drill': typeof Dte2505ShellDrillRoute
   '/dte2507/pcap': typeof Dte2507PcapRoute
@@ -400,6 +409,7 @@ export interface FileRouteTypes {
     | '/spor'
     | '/stack'
     | '/venv-drill'
+    | '/visualiseringer'
     | '/viz-lesjon'
     | '/dte2505/shell-drill'
     | '/dte2507/pcap'
@@ -439,6 +449,7 @@ export interface FileRouteTypes {
     | '/prosjekt'
     | '/python'
     | '/venv-drill'
+    | '/visualiseringer'
     | '/dte2505/shell-drill'
     | '/dte2507/pcap'
     | '/mini-kurs/$slug'
@@ -480,6 +491,7 @@ export interface FileRouteTypes {
     | '/spor'
     | '/stack'
     | '/venv-drill'
+    | '/visualiseringer'
     | '/viz-lesjon'
     | '/dte2505/shell-drill'
     | '/dte2507/pcap'
@@ -523,6 +535,7 @@ export interface RootRouteChildren {
   SporRoute: typeof SporRouteWithChildren
   StackRoute: typeof StackRouteWithChildren
   VenvDrillRoute: typeof VenvDrillRoute
+  VisualiseringerRoute: typeof VisualiseringerRoute
   VizLesjonRoute: typeof VizLesjonRouteWithChildren
   Dte2505ShellDrillRoute: typeof Dte2505ShellDrillRoute
   Dte2507PcapRoute: typeof Dte2507PcapRoute
@@ -541,6 +554,13 @@ declare module '@tanstack/react-router' {
       path: '/viz-lesjon'
       fullPath: '/viz-lesjon'
       preLoaderRoute: typeof VizLesjonRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/visualiseringer': {
+      id: '/visualiseringer'
+      path: '/visualiseringer'
+      fullPath: '/visualiseringer'
+      preLoaderRoute: typeof VisualiseringerRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/venv-drill': {
@@ -895,6 +915,7 @@ const rootRouteChildren: RootRouteChildren = {
   SporRoute: SporRouteWithChildren,
   StackRoute: StackRouteWithChildren,
   VenvDrillRoute: VenvDrillRoute,
+  VisualiseringerRoute: VisualiseringerRoute,
   VizLesjonRoute: VizLesjonRouteWithChildren,
   Dte2505ShellDrillRoute: Dte2505ShellDrillRoute,
   Dte2507PcapRoute: Dte2507PcapRoute,
