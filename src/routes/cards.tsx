@@ -1,5 +1,6 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate, useSearch } from "@tanstack/react-router";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { z } from "zod";
 import { SiteHeader } from "@/components/SiteHeader";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -38,7 +39,26 @@ import {
   HelpCircle,
 } from "lucide-react";
 
+const CARD_CATEGORY_VALUES = [
+  "alle",
+  "begrep",
+  "design",
+  "sql",
+  "flask",
+  "http",
+  "sikkerhet",
+  "praktisk",
+  "statistikk",
+] as const;
+
+const searchSchema = z.object({
+  mode: z.enum(["quiz", "browse", "study"]).optional().catch(undefined),
+  category: z.enum(CARD_CATEGORY_VALUES).optional().catch(undefined),
+  topic: z.string().optional().catch(undefined),
+});
+
 export const Route = createFileRoute("/cards")({
+  validateSearch: searchSchema,
   head: () => ({
     meta: [
       { title: "Repetisjonskort — SQL Sandbox" },
@@ -64,15 +84,65 @@ function shuffle<T>(arr: T[]): T[] {
 }
 
 function CardsPage() {
-  const [mode, setMode] = useState<Mode>("quiz");
-  const [activeCategory, setActiveCategory] = useState<CardCategory | "alle">("alle");
+  const search = useSearch({ from: "/cards" });
+  const navigate = useNavigate({ from: "/cards" });
 
-  const filteredPool = useMemo(
+  const mode: Mode = search.mode ?? "quiz";
+  const activeCategory: CardCategory | "alle" = search.category ?? "alle";
+  const activeTopic: string | null = search.topic ?? null;
+
+  const setMode = useCallback(
+    (m: Mode) => {
+      navigate({ search: (prev) => ({ ...prev, mode: m === "quiz" ? undefined : m }) });
+    },
+    [navigate],
+  );
+  const setCategory = useCallback(
+    (c: CardCategory | "alle") => {
+      navigate({
+        search: (prev) => ({
+          ...prev,
+          category: c === "alle" ? undefined : c,
+          // Clear topic if it doesn't belong to the new category.
+          topic: undefined,
+        }),
+      });
+    },
+    [navigate],
+  );
+  const setTopic = useCallback(
+    (t: string | null) => {
+      navigate({ search: (prev) => ({ ...prev, topic: t ?? undefined }) });
+    },
+    [navigate],
+  );
+
+  const categoryPool = useMemo(
     () =>
       activeCategory === "alle"
         ? FLASHCARDS
         : FLASHCARDS.filter((c) => c.category === activeCategory),
     [activeCategory],
+  );
+
+  const availableTopics = useMemo(() => {
+    const counts = new Map<string, number>();
+    for (const c of categoryPool) counts.set(c.topic, (counts.get(c.topic) ?? 0) + 1);
+    return Array.from(counts.entries())
+      .sort((a, b) => a[0].localeCompare(b[0], "nb"))
+      .map(([topic, count]) => ({ topic, count }));
+  }, [categoryPool]);
+
+  // If the URL specifies a topic but it doesn't exist in the current category,
+  // silently drop it (avoid stale-link breakage).
+  const validTopic =
+    activeTopic && availableTopics.some((t) => t.topic === activeTopic)
+      ? activeTopic
+      : null;
+
+  const filteredPool = useMemo(
+    () => (validTopic ? categoryPool.filter((c) => c.topic === validTopic) : categoryPool),
+    [categoryPool, validTopic],
   );
 
   return (
@@ -89,15 +159,53 @@ function CardsPage() {
 
         <ModeSwitcher mode={mode} onChange={setMode} />
 
-        <CategoryRow
-          activeCategory={activeCategory}
-          onChange={setActiveCategory}
+        <CategoryRow activeCategory={activeCategory} onChange={setCategory} />
+
+        <TopicRow
+          topics={availableTopics}
+          activeTopic={validTopic}
+          onChange={setTopic}
         />
 
         {mode === "quiz" && <QuizMode pool={filteredPool} />}
         {mode === "browse" && <BrowseMode pool={filteredPool} />}
         {mode === "study" && <StudyMode pool={filteredPool} />}
       </main>
+    </div>
+  );
+}
+
+function TopicRow({
+  topics,
+  activeTopic,
+  onChange,
+}: {
+  topics: { topic: string; count: number }[];
+  activeTopic: string | null;
+  onChange: (topic: string | null) => void;
+}) {
+  // Skip rendering entirely when there's only one (or zero) topic — no value.
+  if (topics.length <= 1) return null;
+  return (
+    <div className="mb-5">
+      <label className="text-[11px] uppercase tracking-wider text-muted-foreground font-semibold">
+        Tema {activeTopic && <span className="text-brand normal-case">— filter aktivt</span>}
+      </label>
+      <div className="mt-1.5 flex flex-wrap gap-1.5">
+        <CategoryChip
+          label="Alle"
+          active={activeTopic === null}
+          onClick={() => onChange(null)}
+        />
+        {topics.map(({ topic, count }) => (
+          <CategoryChip
+            key={topic}
+            label={`${topic} (${count})`}
+            active={activeTopic === topic}
+            onClick={() => onChange(topic)}
+          />
+        ))}
+      </div>
     </div>
   );
 }
