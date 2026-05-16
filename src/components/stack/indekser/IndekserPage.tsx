@@ -4,6 +4,7 @@ import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
 import { IndexVisualizer } from "@/components/stack/indekser/IndexVisualizer";
 import { Indexes as IndexesIllustration } from "@/components/illustrations";
+import { RelatedVisualizers } from "@/components/stack/RelatedVisualizers";
 
 // Course on indexes: B-tree, hash, covering, composite, when indexes
 // don't get used, write-cost trade-offs. Pairs with /drag (topic "Indekser").
@@ -374,6 +375,7 @@ SELECT * FROM Ordre WHERE kundenr = 5 AND dato > '2026-01-01';
             </li>
           </ul>
         </div>
+        <RelatedVisualizers slug="indekser" />
       </div>
     </StackPageShell>
   );

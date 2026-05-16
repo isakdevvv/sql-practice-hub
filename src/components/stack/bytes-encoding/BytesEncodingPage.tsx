@@ -5,6 +5,7 @@ import { BitsToByte } from "./BitsToByte";
 import { AsciiTable } from "./AsciiTable";
 import { EncodingConverter } from "./EncodingConverter";
 import { EncodingVisualizer } from "./EncodingVisualizer";
+import { RelatedVisualizers } from "@/components/stack/RelatedVisualizers";
 
 export function BytesEncodingPage() {
   return (
@@ -252,6 +253,7 @@ text = data.decode("utf-8")     # nå er det en str`}
             </div>
           </div>
         </Section>
+        <RelatedVisualizers slug="bytes-encoding" />
       </article>
     </StackPageShell>
   );

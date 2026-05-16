@@ -5,6 +5,7 @@ import { CourseOutline } from "@/components/stack/CourseOutline";
 import { Tex, TexBlock } from "@/components/Tex";
 import { HolTimeline } from "./HolTimeline";
 import { Http2Visualizer } from "./Http2Visualizer";
+import { RelatedVisualizers } from "@/components/stack/RelatedVisualizers";
 
 const STEPS = [
   { title: "Side-ved-side-simulator", anchor: "sim-top" },
@@ -255,6 +256,7 @@ export function Http2HolPage() {
             </li>
           </ul>
         </div>
+        <RelatedVisualizers slug="http2" />
       </article>
     </StackPageShell>
   );

@@ -639,3 +639,143 @@ export function searchVisualizers(query: string): VizEntry[] {
     return tokens.every((t) => hay.includes(t));
   });
 }
+
+// ---------------------------------------------------------------------------
+// Slug-alias-map + related-koblinger for <RelatedVisualizers />-footnoten.
+// Brukes for å peke fra én visualizer-side til 2–4 relaterte visualiseringer
+// i andre kurs som viser samme idé fra et annet abstraksjonsnivå.
+// ---------------------------------------------------------------------------
+
+/** Aliaser fra page-slug (brukt i RelatedVisualizers slug="…") til VizEntry.id. */
+const SLUG_ALIAS: Record<string, string> = {
+  adders: "adder",
+  "ap-progresjon": "csma",
+  "arp-detektiv": "arp",
+  "bayes-grid": "sannsynlighet",
+  "bytes-encoding": "encoding",
+  "c-minne": "c-minne-bytes",
+  "cv-varianter": "cv-splits",
+  "delay-modell": "delay",
+  "dynamic-programming": "dp",
+  http2: "http2-hol",
+  kryptografi: "krypto-progresjon",
+  "nand-porter": "gate",
+  "nn-intro": "neuron",
+  optimering: "gradient-descent",
+  "osi-lag": "osi-tcpip",
+  "prosesser-signaler": "process-lifecycle",
+  "rdt-progresjon": "rdt",
+  "sok-algoritmer-ai": "sok-algoritmer",
+  "supervised-learning": "supervised",
+  "web-caching": "web-caching",
+};
+
+/** id → liste over relaterte id-er. Kuratert "samme idé, annet abstraksjonsnivå". */
+const RELATED: Record<string, string[]> = {
+  // Hardware-stack — opp gjennom abstraksjonen
+  transistor: ["gate", "adder", "cpu"],
+  gate: ["transistor", "adder", "cpu"],
+  adder: ["transistor", "gate", "cpu", "bits-dyp"],
+  cpu: ["assembly", "c-minne-bytes", "gate", "adder"],
+  assembly: ["cpu", "c-minne-bytes", "lenkede-strukturer", "rekursjon"],
+  "c-minne-bytes": ["assembly", "cpu", "bits-dyp", "encoding"],
+  "c-minne-livssyklus": ["c-minne-bytes", "process-lifecycle", "encoding"],
+  "bits-dyp": ["adder", "encoding", "c-minne-bytes", "krypto-progresjon"],
+  encoding: ["bits-dyp", "c-minne-bytes", "krypto-progresjon"],
+
+  // Datastrukturer + algoritmer
+  "lenkede-strukturer": ["rekursjon", "assembly", "sortering", "hashing"],
+  traer: ["indekser", "query-plan", "grafer", "hashing"],
+  grafer: ["traer", "sok-algoritmer", "rekursjon"],
+  hashing: ["lenkede-strukturer", "indekser", "web-caching"],
+  rekursjon: ["lenkede-strukturer", "assembly", "dp", "traer"],
+  dp: ["rekursjon", "tsp-dp", "sortering", "sok-algoritmer"],
+  "tsp-dp": ["dp", "grafer", "sok-algoritmer"],
+  sortering: ["sok-algoritmer", "big-o", "dp"],
+  "sok-algoritmer": ["sortering", "big-o", "indekser", "grafer"],
+  "big-o": ["sortering", "sok-algoritmer", "dp", "hashing"],
+
+  // Database
+  indekser: ["traer", "query-plan", "hashing", "transaksjoner"],
+  normalisering: ["transaksjoner", "indekser", "query-plan"],
+  transaksjoner: ["normalisering", "scheduling", "process-lifecycle"],
+  "query-plan": ["indekser", "traer", "normalisering", "big-o"],
+
+  // OS
+  scheduling: ["process-lifecycle", "page-replacement", "transaksjoner"],
+  "process-lifecycle": ["scheduling", "page-replacement", "c-minne-livssyklus"],
+  "page-replacement": ["process-lifecycle", "scheduling", "web-caching"],
+  "producer-consumer": ["process-lifecycle", "scheduling"],
+
+  // Nettverk — opp gjennom OSI
+  "osi-tcpip": ["transportlag", "nat", "rdt", "arp"],
+  transportlag: ["osi-tcpip", "rdt", "http2-hol", "delay"],
+  rdt: ["transportlag", "osi-tcpip", "delay"],
+  nat: ["osi-tcpip", "arp", "transportlag", "inni-ruter"],
+  arp: ["nat", "osi-tcpip", "switch-self-learning"],
+  "switch-self-learning": ["arp", "nat", "osi-tcpip"],
+  "http2-hol": ["transportlag", "web-caching", "rdt"],
+  "web-caching": ["http2-hol", "hashing", "page-replacement"],
+  delay: ["transportlag", "rdt", "osi-tcpip", "bottleneck"],
+  csma: ["rdt", "transportlag", "aloha-kasino"],
+  "aloha-kasino": ["csma", "rdt"],
+  "inni-ruter": ["nat", "ruting", "osi-tcpip"],
+  ruting: ["inni-ruter", "grafer", "bgp"],
+  bgp: ["ruting", "count-to-infinity"],
+  "count-to-infinity": ["bgp", "ruting"],
+  bottleneck: ["delay", "transportlag"],
+  congestion: ["transportlag", "rdt", "delay"],
+  dns: ["osi-tcpip", "web-caching"],
+
+  // ML / stats
+  neuron: ["backprop", "supervised", "logreg", "cnn"],
+  backprop: ["neuron", "supervised", "logreg", "gradient-descent"],
+  logreg: ["neuron", "supervised", "backprop"],
+  supervised: ["neuron", "logreg", "backprop", "cv-splits"],
+  cnn: ["neuron", "backprop"],
+  "gradient-descent": ["backprop", "neuron", "logreg"],
+  "cv-splits": ["supervised", "logreg", "anova"],
+  svm: ["supervised", "logreg"],
+  bandits: ["bellman", "gmm"],
+  bellman: ["bandits", "dp"],
+  gmm: ["supervised", "bandits"],
+
+  // Statistikk
+  sannsynlighet: ["anova", "supervised", "bootstrap"],
+  anova: ["sannsynlighet", "supervised", "cv-splits"],
+  bootstrap: ["sannsynlighet", "anova"],
+
+  // Krypto
+  "krypto-progresjon": ["aes-gcm", "cbc-iv", "bits-dyp"],
+  "aes-gcm": ["krypto-progresjon", "cbc-iv"],
+  "cbc-iv": ["krypto-progresjon", "aes-gcm"],
+  "ids-snort": ["krypto-progresjon", "nat"],
+
+  // Python / matte
+  "python-step": ["assembly", "rekursjon", "c-minne-livssyklus"],
+  "function-types": ["sannsynlighet"],
+};
+
+/** Type-alias bevart for eldre kallsteder. */
+export type VisualizerEntry = VizEntry;
+
+/** Lookup en VizEntry ut fra slug-aliaser eller direkte id. */
+export function getVisualizer(slugOrId: string): VizEntry | undefined {
+  const id = SLUG_ALIAS[slugOrId] ?? slugOrId;
+  return VISUALIZERS.find((v) => v.id === id);
+}
+
+/** Relaterte visualiseringer for en gitt slug/id. Max 4 entries. */
+export function getRelatedVisualizers(slugOrId: string): VizEntry[] {
+  const id = SLUG_ALIAS[slugOrId] ?? slugOrId;
+  const ids = RELATED[id] ?? [];
+  return ids
+    .map((rid) => VISUALIZERS.find((v) => v.id === rid))
+    .filter((v): v is VizEntry => Boolean(v))
+    .slice(0, 4);
+}
+
+/** Bygg href for en VizEntry — i praksis bare entry.route, men holder mulighet åpen for fremtidig variasjon. */
+export function buildPageHref(entry: VizEntry): string {
+  return entry.route;
+}

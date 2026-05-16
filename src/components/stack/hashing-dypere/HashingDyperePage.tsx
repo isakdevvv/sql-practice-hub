@@ -3,6 +3,7 @@ import { ArrowRight, Lightbulb } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
 import { HashTableVisualizer } from "./HashTableVisualizer";
+import { RelatedVisualizers } from "@/components/stack/RelatedVisualizers";
 
 const STEPS = [
   { title: "Hva en hash-funksjon må gjøre", anchor: "krav" },
@@ -407,6 +408,7 @@ Eksempel (m=10, k=3):
             </li>
           </ul>
         </div>
+        <RelatedVisualizers slug="hashing" />
       </div>
     </StackPageShell>
   );

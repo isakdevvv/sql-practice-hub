@@ -5,6 +5,7 @@ import { CourseOutline } from "@/components/stack/CourseOutline";
 import { NatTableDemo } from "./NatTableDemo";
 import { NatDrill } from "./NatDrill";
 import { NatVisualizer } from "./NatVisualizer";
+import { RelatedVisualizers } from "@/components/stack/RelatedVisualizers";
 
 const STEPS = [
   { title: "Pakke-translasjon — visualisering", anchor: "visualizer" },
@@ -387,6 +388,7 @@ export function Dte2507NatPage() {
             </li>
           </ul>
         </div>
+        <RelatedVisualizers slug="nat" />
       </article>
     </StackPageShell>
   );

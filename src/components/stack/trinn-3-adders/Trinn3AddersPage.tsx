@@ -3,6 +3,7 @@ import { ArrowRight, Lightbulb } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
 import { AdderVisualizer } from "./AdderVisualizer";
+import { RelatedVisualizers } from "@/components/stack/RelatedVisualizers";
 
 const STEPS = [
   { title: "Interaktiv visualisering", anchor: "viz" },
@@ -311,6 +312,7 @@ Hva slags registre har en CPU?
             </li>
           </ul>
         </div>
+        <RelatedVisualizers slug="adders" />
       </div>
     </StackPageShell>
   );

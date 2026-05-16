@@ -4,6 +4,7 @@ import { StackPageShell } from "@/components/stack/StackPageShell";
 import { Tex, TexBlock } from "@/components/Tex";
 import { AnovaCalculator } from "./AnovaCalculator";
 import { AnovaVisualizer } from "./AnovaVisualizer";
+import { RelatedVisualizers } from "@/components/stack/RelatedVisualizers";
 
 export function Tek1AnovaPage() {
   return (
@@ -287,6 +288,7 @@ print(pairwise_tukeyhsd(data, labels, alpha=0.05))`}</pre>
             Tilbake til TEK-1501-hub
           </Link>
         </div>
+        <RelatedVisualizers slug="anova" />
       </div>
     </StackPageShell>
   );

@@ -5,6 +5,7 @@ import { CourseOutline } from "@/components/stack/CourseOutline";
 import { Tex, TexBlock } from "@/components/Tex";
 import { CacheCalculator } from "./CacheCalculator";
 import { CacheVisualizer } from "./CacheVisualizer";
+import { RelatedVisualizers } from "@/components/stack/RelatedVisualizers";
 
 const STEPS = [
   { title: "Cache-visualisering", anchor: "vis" },
@@ -282,6 +283,7 @@ export function WebCachingMattePage() {
             </li>
           </ul>
         </div>
+        <RelatedVisualizers slug="web-caching" />
       </article>
     </StackPageShell>
   );

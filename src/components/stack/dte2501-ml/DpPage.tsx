@@ -3,6 +3,7 @@ import { Lightbulb, Infinity as InfinityIcon, AlertTriangle, ArrowLeft } from "l
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
 import { TspDpVisualizer } from "./TspDpVisualizer";
+import { RelatedVisualizers } from "@/components/stack/RelatedVisualizers";
 
 const STEPS = [
   { title: "DP-prinsipp", anchor: "intro" },
@@ -482,6 +483,7 @@ Dette er hvorfor RL og DP er to sider av samme sak. Forskjellen:
             Tilbake til DTE-2501-hub
           </Link>
         </div>
+        <RelatedVisualizers slug="tsp-dp" />
 </div>
     </StackPageShell>
   );

@@ -3,6 +3,7 @@ import { ArrowRight, Lightbulb } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
 import { ProbabilityVisualizer } from "./ProbabilityVisualizer";
+import { RelatedVisualizers } from "@/components/stack/RelatedVisualizers";
 
 const STEPS = [
   { title: "Interaktiv visualisering — tre, Venn, Monty Hall, bursdag, Bayes", anchor: "visualisering" },
@@ -350,6 +351,7 @@ Lærdom: kjør lenger eller bruk større utvalg.`}</pre>
             </li>
           </ul>
         </div>
+        <RelatedVisualizers slug="bayes-grid" />
       </div>
     </StackPageShell>
   );

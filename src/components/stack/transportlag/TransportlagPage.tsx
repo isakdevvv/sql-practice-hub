@@ -5,6 +5,7 @@ import { CourseOutline } from "@/components/stack/CourseOutline";
 import { TcpSlidingWindow } from "./TcpSlidingWindow";
 import { TcpStateMachine } from "./TcpStateMachine";
 import { TcpVisualizer } from "./TcpVisualizer";
+import { RelatedVisualizers } from "@/components/stack/RelatedVisualizers";
 
 const STEPS = [
   { title: "TCP-visualisator — alle moduser", anchor: "tcp-visualizer" },
@@ -322,6 +323,7 @@ window-size annonseres av mottakeren i hver ACK.`}</pre>
             </li>
           </ul>
         </div>
+        <RelatedVisualizers slug="transportlag" />
       </div>
     </StackPageShell>
   );

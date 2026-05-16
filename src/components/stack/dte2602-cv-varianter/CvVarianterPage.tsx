@@ -3,6 +3,7 @@ import { Lightbulb, ArrowLeft } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { Tex, TexBlock } from "@/components/Tex";
 import { CvSplitVisualizer } from "./CvSplitVisualizer";
+import { RelatedVisualizers } from "@/components/stack/RelatedVisualizers";
 
 export function CvVarianterPage() {
   return (
@@ -311,6 +312,7 @@ for name, cv in [
             Tilbake til DTE-2602-hub
           </Link>
         </div>
+        <RelatedVisualizers slug="cv-varianter" />
       </div>
     </StackPageShell>
   );

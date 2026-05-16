@@ -3,6 +3,7 @@ import { ArrowRight, Lightbulb } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
 import { DPVisualizer } from "./DPVisualizer";
+import { RelatedVisualizers } from "@/components/stack/RelatedVisualizers";
 
 const STEPS = [
   { title: "Interaktiv: se DP-tabellen fylles", anchor: "interaktiv" },
@@ -390,6 +391,7 @@ def levenshtein(a, b):
             </li>
           </ul>
         </div>
+        <RelatedVisualizers slug="dynamic-programming" />
       </div>
     </StackPageShell>
   );

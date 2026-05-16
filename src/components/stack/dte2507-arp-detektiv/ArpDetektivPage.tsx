@@ -4,6 +4,7 @@ import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
 import { ArpQuiz } from "./ArpQuiz";
 import { ArpVisualizer } from "./ArpVisualizer";
+import { RelatedVisualizers } from "@/components/stack/RelatedVisualizers";
 
 const STEPS = [
   { title: "Interaktiv ARP-visualisering", anchor: "visualisering" },
@@ -317,6 +318,7 @@ export function ArpDetektivPage() {
             </li>
           </ul>
         </div>
+        <RelatedVisualizers slug="arp-detektiv" />
       </article>
     </StackPageShell>
   );

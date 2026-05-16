@@ -4,6 +4,7 @@ import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
 import { NormaliseringSteps } from "./NormaliseringSteps";
 import { NormalizationVisualizer } from "./NormalizationVisualizer";
+import { RelatedVisualizers } from "@/components/stack/RelatedVisualizers";
 
 const STEPS = [
   { title: "Hvorfor normalisere?", anchor: "hvorfor" },
@@ -430,6 +431,7 @@ CREATE TABLE OrdreLinje (
             </li>
           </ul>
         </div>
+        <RelatedVisualizers slug="normalisering" />
       </div>
     </StackPageShell>
   );

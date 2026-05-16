@@ -3,6 +3,7 @@ import { ArrowRight, Lightbulb } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
 import { CpuVisualizer } from "@/components/stack/trinn-4-cpu/CpuVisualizer";
+import { RelatedVisualizers } from "@/components/stack/RelatedVisualizers";
 
 const STEPS = [
   { title: "Visualisering — fetch-decode-execute live", anchor: "visualisering" },
@@ -329,6 +330,7 @@ Moderne realitet:
             </li>
           </ul>
         </div>
+        <RelatedVisualizers slug="cpu" />
       </div>
     </StackPageShell>
   );

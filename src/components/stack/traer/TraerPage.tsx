@@ -3,6 +3,7 @@ import { ArrowRight, Lightbulb } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
 import { TreeVisualizer } from "./TreeVisualizer";
+import { RelatedVisualizers } from "@/components/stack/RelatedVisualizers";
 
 const STEPS = [
   { title: "Interaktiv: bygg og traverser tre", anchor: "visualisering" },
@@ -386,6 +387,7 @@ heapq.heapify([5, 1, 3, 7, 2])`}</pre>
             </li>
           </ul>
         </div>
+        <RelatedVisualizers slug="traer" />
       </div>
     </StackPageShell>
   );
