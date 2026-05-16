@@ -3,6 +3,7 @@ import { Lightbulb, ArrowLeft } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { Tex, TexBlock } from "@/components/Tex";
 import { AnovaCalculator } from "./AnovaCalculator";
+import { AnovaVisualizer } from "./AnovaVisualizer";
 
 export function Tek1AnovaPage() {
   return (
@@ -32,6 +33,20 @@ export function Tek1AnovaPage() {
             </div>
           </div>
         </div>
+
+        <section className="mb-10">
+          <h2 className="text-xl font-semibold mb-3">
+            Interaktiv visualisering
+          </h2>
+          <p className="text-sm text-muted-foreground mb-3">
+            ANOVA = sammenligning av varians mellom grupper mot innenfor grupper.
+            Hvis gruppene er mer forskjellige fra hverandre enn de er internt, så
+            er gruppe-tilhørighet sannsynlig viktig. Bytt mellom modusene under
+            for å se boxplots, varians-dekomponering, F-fordelingen, Bonferroni og
+            et komplett worked example.
+          </p>
+          <AnovaVisualizer />
+        </section>
 
         <section className="mb-10">
           <h2 className="text-xl font-semibold mb-3">
