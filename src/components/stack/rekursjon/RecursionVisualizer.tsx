@@ -1,21 +1,21 @@
-import { useEffect, useMemo, useRef, useState } from "react";
-import { Play, Pause, SkipBack, SkipForward, RotateCcw, Check } from "lucide-react";
+import { useMemo, useState } from "react";
+import { Check } from "lucide-react";
+import {
+  VisualizerShell,
+  StepControls,
+  useStepRunner,
+  type ModeDef,
+} from "@/components/visualizer-shell";
 
 // --------------------------------------------------------------------------
-// Interaktiv visualisering for rekursjon.
-// Fire moduser, alle bygget på samme step-generator-pattern:
-//   1) factorial  — lineær rekursjon (én gren ned, én opp)
-//   2) fib        — eksponentiell rekursjon (to grener, gjentatte delproblem)
-//   3) hanoi      — tre stacker av disker + kallstack av move(n, src, via, dst)
-//   4) fibMemo    — fib med cache; cache-treff utvider IKKE treet
-//
-// Steg-listen for hver kjøring bygges opp-front (ren funksjon). Det gjør
-// step / step-back / play / scrub trivielt — vi indekserer bare inn i lista.
+// Interaktiv visualisering for rekursjon. Fire moduser: factorial / fib /
+// hanoi / fibMemo. Bruker shared shell-primitiver. Steg-listen bygges
+// opp-front for hver kjøring; useStepRunner styrer play/pause/step/scrub.
 // --------------------------------------------------------------------------
 
 type Mode = "factorial" | "fib" | "hanoi" | "fibMemo";
 
-const MODES: { id: Mode; label: string; sub: string }[] = [
+const MODES: ModeDef<Mode>[] = [
   { id: "factorial", label: "factorial(n)", sub: "lineær — én gren" },
   { id: "fib", label: "fib(n)", sub: "eksponentiell — to grener" },
   { id: "hanoi", label: "Tårnene i Hanoi", sub: "del-og-hersk + flytt disk" },
@@ -32,26 +32,12 @@ const MODE_NOTE: Record<Mode, string> = {
     "Memoisering: vi cacher fib(k) første gang vi regner det ut. Andre gang trenger vi ikke ekspandere treet — returnerer rett fra cache.",
 };
 
-const CODE: Record<Mode, { lines: string[]; lineForState: (s: string) => number }> = {
+const CODE: Record<Mode, { lines: string[] }> = {
   factorial: {
-    lines: [
-      "def fakultet(n):",
-      "    if n <= 1:",
-      "        return 1",
-      "    return n * fakultet(n - 1)",
-    ],
-    lineForState: (s) =>
-      s === "enter" ? 0 : s === "base" ? 2 : s === "recurse" ? 3 : 3,
+    lines: ["def fakultet(n):", "    if n <= 1:", "        return 1", "    return n * fakultet(n - 1)"],
   },
   fib: {
-    lines: [
-      "def fib(n):",
-      "    if n < 2:",
-      "        return n",
-      "    return fib(n - 1) + fib(n - 2)",
-    ],
-    lineForState: (s) =>
-      s === "enter" ? 0 : s === "base" ? 2 : s === "recurse-left" ? 3 : 3,
+    lines: ["def fib(n):", "    if n < 2:", "        return n", "    return fib(n - 1) + fib(n - 2)"],
   },
   hanoi: {
     lines: [
@@ -63,165 +49,92 @@ const CODE: Record<Mode, { lines: string[]; lineForState: (s: string) => number 
       "    move(src, dst)",
       "    hanoi(n - 1, via, src, dst)",
     ],
-    lineForState: (s) =>
-      s === "enter"
-        ? 0
-        : s === "base"
-        ? 2
-        : s === "recurse-left"
-        ? 4
-        : s === "move"
-        ? 5
-        : s === "recurse-right"
-        ? 6
-        : 0,
   },
   fibMemo: {
-    lines: [
-      "@lru_cache(maxsize=None)",
-      "def fib(n):",
-      "    if n < 2:",
-      "        return n",
-      "    return fib(n - 1) + fib(n - 2)",
-    ],
-    lineForState: (s) =>
-      s === "enter" ? 1 : s === "base" ? 3 : s === "cache-hit" ? 0 : 4,
+    lines: ["@lru_cache(maxsize=None)", "def fib(n):", "    if n < 2:", "        return n", "    return fib(n - 1) + fib(n - 2)"],
   },
 };
-
-// --------------------------------------------------------------------------
-// Tre-node modell, brukt av factorial / fib / fibMemo.
-// Hver node har en unik id, en label, foreldre-id, status, og evt. returverdi.
-// --------------------------------------------------------------------------
 
 type NodeStatus = "pending" | "active" | "returning" | "done" | "cache-hit";
 
 interface TreeNode {
   id: number;
   parent: number | null;
-  label: string; // "f(3)", "fakt(2)" osv.
+  label: string;
   depth: number;
   status: NodeStatus;
   returnValue?: number;
-  /** Markeres rødt i fib for å motivere memoization (gjentatte delproblem). */
   duplicate?: boolean;
-  /** Sant i fibMemo når noden faktisk traff cachen. */
   cached?: boolean;
 }
 
 interface StackFrame {
   id: number;
   label: string;
-  // Tekst som vises under funksjonsnavnet ("venter på f(2)+f(1)", "n=1 → 1")
   detail?: string;
 }
 
 interface HanoiState {
-  pegs: number[][]; // disker per peg [A, B, C], minste øverst (= høyest index)
+  pegs: number[][];
   lastMove?: { disk: number; from: number; to: number };
 }
 
 interface FrameSnapshot {
-  description: string; // norsk beskrivelse av hva som skjer
+  description: string;
   codeLine: number;
   stack: StackFrame[];
   tree: TreeNode[];
   activeNodeId: number | null;
   hanoi?: HanoiState;
-  // For fib-memo: viser teller "kall: x"
   callCount?: number;
-  // For fib: hva som hadde vært antall kall uten cache (for sammenligning)
   uncachedCount?: number;
 }
 
 // --------------------------------------------------------------------------
-// Step-generatorer per modus. Returnerer FrameSnapshot[].
+// Step-generatorer per modus.
 // --------------------------------------------------------------------------
 
 function buildFactorialFrames(n: number): FrameSnapshot[] {
   const frames: FrameSnapshot[] = [];
   let nextId = 1;
-
-  // Bygg full kall-kjede først, så vi kan referere til ID-er underveis.
   const ids: number[] = [];
   for (let k = n; k >= 1; k--) ids.push(nextId++);
-
   const tree: TreeNode[] = ids.map((id, i) => ({
-    id,
-    parent: i === 0 ? null : ids[i - 1],
-    label: `fakt(${n - i})`,
-    depth: i,
-    status: "pending",
+    id, parent: i === 0 ? null : ids[i - 1], label: `fakt(${n - i})`, depth: i, status: "pending",
   }));
-
-  // Vi muterer ikke tree på tvers av frames — vi snapshoter med deep copy.
-  const snap = (
-    description: string,
-    codeLine: number,
-    stack: StackFrame[],
-    activeNodeId: number | null,
-  ) => {
-    frames.push({
-      description,
-      codeLine,
-      stack: stack.map((s) => ({ ...s })),
-      tree: tree.map((t) => ({ ...t })),
-      activeNodeId,
-    });
+  const snap = (description: string, codeLine: number, stack: StackFrame[], activeNodeId: number | null) => {
+    frames.push({ description, codeLine, stack: stack.map((s) => ({ ...s })), tree: tree.map((t) => ({ ...t })), activeNodeId });
   };
-
   const stack: StackFrame[] = [];
-
-  // PUSH-fase
   for (let i = 0; i < ids.length; i++) {
     const value = n - i;
     const id = ids[i];
     tree[i].status = "active";
-    stack.push({
-      id,
-      label: `fakt(${value})`,
-      detail: value <= 1 ? "n=1 → base case" : `venter på fakt(${value - 1})`,
-    });
+    stack.push({ id, label: `fakt(${value})`, detail: value <= 1 ? "n=1 → base case" : `venter på fakt(${value - 1})` });
     const codeLine = value <= 1 ? 2 : 3;
-    const desc =
-      value <= 1
-        ? `fakt(${value}): base case treffer — returnerer 1.`
-        : `fakt(${value}) kalles → push frame. Trenger fakt(${value - 1}) først.`;
+    const desc = value <= 1
+      ? `fakt(${value}): base case treffer — returnerer 1.`
+      : `fakt(${value}) kalles → push frame. Trenger fakt(${value - 1}) først.`;
     snap(desc, codeLine, stack, id);
   }
-
-  // POP-fase (returner verdier oppover)
   let acc = 1;
   tree[tree.length - 1].status = "done";
   tree[tree.length - 1].returnValue = 1;
-
   for (let i = ids.length - 1; i >= 0; i--) {
     const value = n - i;
-    const id = ids[i];
     if (value <= 1) {
       acc = 1;
       stack.pop();
-      snap(
-        `fakt(1) returnerer 1. Pop frame.`,
-        2,
-        stack,
-        i > 0 ? ids[i - 1] : null,
-      );
+      snap(`fakt(1) returnerer 1. Pop frame.`, 2, stack, i > 0 ? ids[i - 1] : null);
     } else {
       const prev = acc;
       acc = value * acc;
       tree[i].status = "done";
       tree[i].returnValue = acc;
       stack.pop();
-      snap(
-        `fakt(${value}) regner ${value} · ${prev} = ${acc}. Pop frame.`,
-        3,
-        stack,
-        i > 0 ? ids[i - 1] : null,
-      );
+      snap(`fakt(${value}) regner ${value} · ${prev} = ${acc}. Pop frame.`, 3, stack, i > 0 ? ids[i - 1] : null);
     }
   }
-
   return frames;
 }
 
@@ -229,49 +142,23 @@ function buildFibFrames(n: number): FrameSnapshot[] {
   const frames: FrameSnapshot[] = [];
   const tree: TreeNode[] = [];
   let nextId = 1;
-  // Spor hvor mange ganger vi har sett fib(k); duplikater markeres røde.
   const seenCounts: Map<number, number> = new Map();
   const stack: StackFrame[] = [];
-
   const snap = (description: string, codeLine: number, activeNodeId: number | null) => {
-    frames.push({
-      description,
-      codeLine,
-      stack: stack.map((s) => ({ ...s })),
-      tree: tree.map((t) => ({ ...t })),
-      activeNodeId,
-    });
+    frames.push({ description, codeLine, stack: stack.map((s) => ({ ...s })), tree: tree.map((t) => ({ ...t })), activeNodeId });
   };
-
-  // Rekursiv builder som bygger frames mens den «kjører».
   function run(k: number, parent: number | null, depth: number): number {
     const id = nextId++;
-    const node: TreeNode = {
-      id,
-      parent,
-      label: `f(${k})`,
-      depth,
-      status: "active",
-    };
+    const node: TreeNode = { id, parent, label: `f(${k})`, depth, status: "active" };
     const count = (seenCounts.get(k) ?? 0) + 1;
     seenCounts.set(k, count);
-    if (count > 1 && k >= 2) {
-      node.duplicate = true;
-    }
+    if (count > 1 && k >= 2) node.duplicate = true;
     tree.push(node);
-    stack.push({
-      id,
-      label: `f(${k})`,
-      detail: k < 2 ? `n=${k} → base` : `venter på f(${k - 1}) + f(${k - 2})`,
-    });
+    stack.push({ id, label: `f(${k})`, detail: k < 2 ? `n=${k} → base` : `venter på f(${k - 1}) + f(${k - 2})` });
     snap(
-      k < 2
-        ? `f(${k}): base case — returnerer ${k}.`
-        : `f(${k}) kalles → push frame. Trenger f(${k - 1}) + f(${k - 2}).`,
-      k < 2 ? 2 : 0,
-      id,
+      k < 2 ? `f(${k}): base case — returnerer ${k}.` : `f(${k}) kalles → push frame. Trenger f(${k - 1}) + f(${k - 2}).`,
+      k < 2 ? 2 : 0, id,
     );
-
     if (k < 2) {
       node.status = "done";
       node.returnValue = k;
@@ -279,43 +166,21 @@ function buildFibFrames(n: number): FrameSnapshot[] {
       snap(`f(${k}) returnerer ${k}. Pop frame.`, 2, parent);
       return k;
     }
-    // Venstre underkall
     snap(`f(${k}): kall venstre — f(${k - 1}).`, 3, id);
     const left = run(k - 1, id, depth + 1);
-    // Tilbake til denne noden — den er nå "active" igjen
     node.status = "active";
-    stack.push({
-      id,
-      label: `f(${k})`,
-      detail: `f(${k - 1})=${left}, venter på f(${k - 2})`,
-    });
-    // Vi pusher faktisk ikke frame to ganger; men UI-visningen skal vise at vi er tilbake.
-    // For å holde stacken konsistent: pop den nettopp pushede.
     stack.pop();
-    stack.push({
-      id,
-      label: `f(${k})`,
-      detail: `f(${k - 1})=${left}, kall høyre`,
-    });
+    stack.push({ id, label: `f(${k})`, detail: `f(${k - 1})=${left}, kall høyre` });
     snap(`f(${k}): venstre returnerte ${left}. Kall høyre — f(${k - 2}).`, 3, id);
     const right = run(k - 2, id, depth + 1);
-
     node.status = "done";
     node.returnValue = left + right;
     stack.pop();
-    snap(
-      `f(${k}) = ${left} + ${right} = ${left + right}. Pop frame.`,
-      3,
-      parent,
-    );
+    snap(`f(${k}) = ${left} + ${right} = ${left + right}. Pop frame.`, 3, parent);
     return left + right;
   }
-
   run(n, null, 0);
-  // Etter at vi er ferdige, sett alle pending-noder til done (skal ikke skje, men sikrer renhet).
-  tree.forEach((t) => {
-    if (t.status === "active" || t.status === "pending") t.status = "done";
-  });
+  tree.forEach((t) => { if (t.status === "active" || t.status === "pending") t.status = "done"; });
   return frames;
 }
 
@@ -324,49 +189,32 @@ function buildHanoiFrames(n: number): FrameSnapshot[] {
   let nextId = 1;
   const tree: TreeNode[] = [];
   const stack: StackFrame[] = [];
-
-  // Initial pegs: disker 1..n på peg 0, største nederst (= indeks 0).
   const pegs: number[][] = [[], [], []];
   for (let d = n; d >= 1; d--) pegs[0].push(d);
-
   const snap = (description: string, codeLine: number, activeNodeId: number | null) => {
     frames.push({
-      description,
-      codeLine,
-      stack: stack.map((s) => ({ ...s })),
-      tree: tree.map((t) => ({ ...t })),
-      activeNodeId,
-      hanoi: {
-        pegs: pegs.map((p) => [...p]),
-      },
+      description, codeLine,
+      stack: stack.map((s) => ({ ...s })), tree: tree.map((t) => ({ ...t })),
+      activeNodeId, hanoi: { pegs: pegs.map((p) => [...p]) },
     });
   };
-
   const pegName = (i: number) => ["A", "B", "C"][i];
-
   function run(k: number, src: number, via: number, dst: number, parent: number | null, depth: number) {
     const id = nextId++;
     const node: TreeNode = {
-      id,
-      parent,
-      label: `h(${k}, ${pegName(src)}→${pegName(dst)})`,
-      depth,
-      status: "active",
+      id, parent, label: `h(${k}, ${pegName(src)}→${pegName(dst)})`, depth, status: "active",
     };
     tree.push(node);
     stack.push({
-      id,
-      label: `hanoi(${k}, ${pegName(src)}, ${pegName(via)}, ${pegName(dst)})`,
+      id, label: `hanoi(${k}, ${pegName(src)}, ${pegName(via)}, ${pegName(dst)})`,
       detail: k === 1 ? "base: flytt direkte" : `flytt ${k - 1} via ${pegName(via)}, flytt 1, flytt ${k - 1} tilbake`,
     });
     snap(
       k === 1
         ? `hanoi(1, ${pegName(src)}→${pegName(dst)}) — base, flytt øverste disk.`
         : `hanoi(${k}, ${pegName(src)}→${pegName(dst)}) kalles.`,
-      k === 1 ? 2 : 0,
-      id,
+      k === 1 ? 2 : 0, id,
     );
-
     if (k === 1) {
       const disk = pegs[src].pop();
       if (disk !== undefined) {
@@ -377,10 +225,7 @@ function buildHanoiFrames(n: number): FrameSnapshot[] {
           stack: stack.map((s) => ({ ...s })),
           tree: tree.map((t) => ({ ...t })),
           activeNodeId: id,
-          hanoi: {
-            pegs: pegs.map((p) => [...p]),
-            lastMove: { disk, from: src, to: dst },
-          },
+          hanoi: { pegs: pegs.map((p) => [...p]), lastMove: { disk, from: src, to: dst } },
         });
       }
       node.status = "done";
@@ -388,12 +233,8 @@ function buildHanoiFrames(n: number): FrameSnapshot[] {
       snap(`hanoi(1) ferdig. Pop frame.`, 3, parent);
       return;
     }
-
-    // Steg 1: flytt n-1 fra src til via, med dst som hjelp
     snap(`hanoi(${k}): rekursivt — flytt ${k - 1} fra ${pegName(src)} til ${pegName(via)}.`, 4, id);
     run(k - 1, src, dst, via, id, depth + 1);
-
-    // Steg 2: flytt største disk fra src til dst
     node.status = "active";
     const disk = pegs[src].pop();
     if (disk !== undefined) {
@@ -404,22 +245,15 @@ function buildHanoiFrames(n: number): FrameSnapshot[] {
         stack: stack.map((s) => ({ ...s })),
         tree: tree.map((t) => ({ ...t })),
         activeNodeId: id,
-        hanoi: {
-          pegs: pegs.map((p) => [...p]),
-          lastMove: { disk, from: src, to: dst },
-        },
+        hanoi: { pegs: pegs.map((p) => [...p]), lastMove: { disk, from: src, to: dst } },
       });
     }
-
-    // Steg 3: flytt n-1 fra via til dst, med src som hjelp
     snap(`hanoi(${k}): rekursivt — flytt ${k - 1} fra ${pegName(via)} til ${pegName(dst)}.`, 6, id);
     run(k - 1, via, src, dst, id, depth + 1);
-
     node.status = "done";
     stack.pop();
     snap(`hanoi(${k}, ${pegName(src)}→${pegName(dst)}) ferdig. Pop frame.`, 0, parent);
   }
-
   run(n, 0, 1, 2, null, 0);
   return frames;
 }
@@ -431,64 +265,35 @@ function buildFibMemoFrames(n: number): FrameSnapshot[] {
   const cache: Map<number, number> = new Map();
   const stack: StackFrame[] = [];
   let callCount = 0;
-  // For sammenligning: hvor mange kall ville naiv fib gjort?
-  // T(n) = T(n-1) + T(n-2) + 1, T(0)=T(1)=1
   const naiveCounts: number[] = [1, 1];
   for (let i = 2; i <= n; i++) naiveCounts[i] = naiveCounts[i - 1] + naiveCounts[i - 2] + 1;
   const uncachedTotal = naiveCounts[n];
-
   const snap = (description: string, codeLine: number, activeNodeId: number | null) => {
     frames.push({
-      description,
-      codeLine,
-      stack: stack.map((s) => ({ ...s })),
-      tree: tree.map((t) => ({ ...t })),
-      activeNodeId,
-      callCount,
-      uncachedCount: uncachedTotal,
+      description, codeLine,
+      stack: stack.map((s) => ({ ...s })), tree: tree.map((t) => ({ ...t })),
+      activeNodeId, callCount, uncachedCount: uncachedTotal,
     });
   };
-
   function run(k: number, parent: number | null, depth: number): number {
     callCount++;
     const id = nextId++;
     const cached = cache.has(k);
-
     const node: TreeNode = {
-      id,
-      parent,
-      label: `f(${k})`,
-      depth,
+      id, parent, label: `f(${k})`, depth,
       status: cached ? "cache-hit" : "active",
-      cached,
-      returnValue: cached ? cache.get(k) : undefined,
+      cached, returnValue: cached ? cache.get(k) : undefined,
     };
     tree.push(node);
-
     if (cached) {
-      // Bare logg cache-hit. Ingen frame på stacken, ingen ekspandering.
       stack.push({ id, label: `f(${k})`, detail: `cache-hit → ${cache.get(k)}` });
-      snap(
-        `f(${k}): cache-hit! Returnerer ${cache.get(k)} uten å ekspandere.`,
-        0,
-        id,
-      );
+      snap(`f(${k}): cache-hit! Returnerer ${cache.get(k)} uten å ekspandere.`, 0, id);
       stack.pop();
       snap(`f(${k}): pop — returverdi ${cache.get(k)} bobler opp.`, 0, parent);
       return cache.get(k)!;
     }
-
-    stack.push({
-      id,
-      label: `f(${k})`,
-      detail: k < 2 ? `n=${k} → base` : `regn fra bunn`,
-    });
-    snap(
-      k < 2 ? `f(${k}): base — returnerer ${k}.` : `f(${k}) kalles (ikke i cache).`,
-      k < 2 ? 3 : 1,
-      id,
-    );
-
+    stack.push({ id, label: `f(${k})`, detail: k < 2 ? `n=${k} → base` : `regn fra bunn` });
+    snap(k < 2 ? `f(${k}): base — returnerer ${k}.` : `f(${k}) kalles (ikke i cache).`, k < 2 ? 3 : 1, id);
     if (k < 2) {
       node.status = "done";
       node.returnValue = k;
@@ -497,7 +302,6 @@ function buildFibMemoFrames(n: number): FrameSnapshot[] {
       snap(`f(${k}) → ${k}. Lagre i cache.`, 3, parent);
       return k;
     }
-
     const left = run(k - 1, id, depth + 1);
     node.status = "active";
     const right = run(k - 2, id, depth + 1);
@@ -509,7 +313,6 @@ function buildFibMemoFrames(n: number): FrameSnapshot[] {
     snap(`f(${k}) = ${left} + ${right} = ${v}. Lagre i cache.`, 4, parent);
     return v;
   }
-
   run(n, null, 0);
   return frames;
 }
@@ -536,33 +339,12 @@ export function RecursionVisualizer() {
   const [mode, setMode] = useState<Mode>("factorial");
   const [n, setN] = useState<number>(N_RANGE.factorial.default);
   const frames = useMemo(() => buildFrames(mode, n), [mode, n]);
-  const [step, setStep] = useState(0);
-  const [playing, setPlaying] = useState(false);
 
-  // Resett step når frames endres
-  useEffect(() => {
-    setStep(0);
-    setPlaying(false);
-  }, [mode, n]);
+  const initialSpeed = mode === "hanoi" ? 700 : 550;
+  const runner = useStepRunner<FrameSnapshot>(frames, { initialSpeed });
 
-  // Autoplay
-  useEffect(() => {
-    if (!playing) return;
-    if (step >= frames.length - 1) {
-      setPlaying(false);
-      return;
-    }
-    const speed = mode === "hanoi" ? 700 : 550;
-    const t = window.setTimeout(() => setStep((s) => s + 1), speed);
-    return () => window.clearTimeout(t);
-  }, [playing, step, frames.length, mode]);
-
-  const current: FrameSnapshot = frames[step] ?? {
-    description: "",
-    codeLine: 0,
-    stack: [],
-    tree: [],
-    activeNodeId: null,
+  const current: FrameSnapshot = runner.frame ?? {
+    description: "", codeLine: 0, stack: [], tree: [], activeNodeId: null,
   };
 
   const code = CODE[mode];
@@ -575,43 +357,14 @@ export function RecursionVisualizer() {
   const range = N_RANGE[mode];
 
   return (
-    <div className="rounded-2xl border border-border bg-card overflow-hidden">
-      {/* Topp-bar med modus-velger */}
-      <div className="px-4 py-3 border-b border-border bg-muted/30">
-        <div className="flex items-center justify-between gap-3 flex-wrap">
-          <div>
-            <div className="text-xs uppercase tracking-wider text-muted-foreground">
-              Interaktiv visualisering
-            </div>
-            <div className="text-sm font-semibold">
-              Rekursjon — se kallstacken og treet bygges opp
-            </div>
-          </div>
-          <div className="flex items-center gap-2 text-xs">
-            <span className="text-muted-foreground tabular-nums">
-              steg {Math.min(step + 1, frames.length)} / {frames.length}
-            </span>
-          </div>
-        </div>
-        <div className="mt-3 flex flex-wrap gap-1.5">
-          {MODES.map((m) => (
-            <button
-              key={m.id}
-              type="button"
-              onClick={() => switchMode(m.id)}
-              className={`px-3 py-1.5 rounded-md text-xs font-medium border transition-colors ${
-                mode === m.id
-                  ? "bg-brand text-brand-foreground border-brand"
-                  : "border-border hover:bg-muted"
-              }`}
-              title={m.sub}
-            >
-              {m.label}
-            </button>
-          ))}
-        </div>
-      </div>
-
+    <VisualizerShell<Mode>
+      title="Rekursjon — se kallstacken og treet bygges opp"
+      modes={MODES}
+      activeMode={mode}
+      onModeChange={switchMode}
+      onReset={runner.reset}
+      note={MODE_NOTE[mode]}
+    >
       {/* Kode-panel med aktiv linje markert */}
       <div className="px-4 py-3 border-b border-border bg-background">
         <pre className="font-mono text-xs leading-relaxed overflow-x-auto whitespace-pre">
@@ -624,9 +377,7 @@ export function RecursionVisualizer() {
                   : "text-muted-foreground border-l-2 border-transparent"
               }`}
             >
-              <span className="inline-block w-6 text-right pr-2 select-none opacity-60">
-                {i + 1}
-              </span>
+              <span className="inline-block w-6 text-right pr-2 select-none opacity-60">{i + 1}</span>
               {line || " "}
             </div>
           ))}
@@ -658,108 +409,39 @@ export function RecursionVisualizer() {
           </div>
           {mode === "fibMemo" && current.callCount !== undefined && (
             <div className="text-xs font-mono shrink-0">
-              <span className="text-brand font-semibold">
-                kall: {current.callCount}
-              </span>
-              <span className="text-muted-foreground">
-                {" "}
-                vs uten cache: {current.uncachedCount}
-              </span>
+              <span className="text-brand font-semibold">kall: {current.callCount}</span>
+              <span className="text-muted-foreground"> vs uten cache: {current.uncachedCount}</span>
             </div>
           )}
         </div>
-        <div className="text-xs text-muted-foreground italic mt-2">{MODE_NOTE[mode]}</div>
       </div>
 
-      {/* Kontroller */}
-      <div className="px-4 py-3 bg-muted/20 flex flex-wrap items-center gap-3">
-        <div className="flex items-center gap-1">
-          <button
-            type="button"
-            onClick={() => {
-              setPlaying(false);
-              setStep(0);
-            }}
-            className="px-2 py-1 rounded border border-border hover:bg-muted text-xs inline-flex items-center gap-1"
-            title="Reset"
-          >
-            <RotateCcw className="h-3 w-3" /> Reset
-          </button>
-          <button
-            type="button"
-            onClick={() => {
-              setPlaying(false);
-              setStep((s) => Math.max(0, s - 1));
-            }}
-            disabled={step === 0}
-            className="px-2 py-1 rounded border border-border hover:bg-muted text-xs inline-flex items-center gap-1 disabled:opacity-40"
-            title="Forrige steg"
-          >
-            <SkipBack className="h-3 w-3" /> Forrige
-          </button>
-          <button
-            type="button"
-            onClick={() => setPlaying((p) => !p)}
-            disabled={step >= frames.length - 1 && !playing}
-            className="px-3 py-1 rounded border border-brand bg-brand text-brand-foreground hover:opacity-90 text-xs inline-flex items-center gap-1 disabled:opacity-40"
-            title={playing ? "Pause" : "Play"}
-          >
-            {playing ? (
-              <>
-                <Pause className="h-3 w-3" /> Pause
-              </>
-            ) : (
-              <>
-                <Play className="h-3 w-3" /> Play
-              </>
-            )}
-          </button>
-          <button
-            type="button"
-            onClick={() => {
-              setPlaying(false);
-              setStep((s) => Math.min(frames.length - 1, s + 1));
-            }}
-            disabled={step >= frames.length - 1}
-            className="px-2 py-1 rounded border border-border hover:bg-muted text-xs inline-flex items-center gap-1 disabled:opacity-40"
-            title="Neste steg"
-          >
-            Neste <SkipForward className="h-3 w-3" />
-          </button>
-        </div>
+      <StepControls
+        step={runner.index}
+        total={runner.total}
+        playing={runner.playing}
+        onStep={runner.step}
+        onStepBack={runner.stepBack}
+        onPlayPause={runner.playPause}
+        onReset={runner.reset}
+        onScrub={runner.setIndex}
+      />
 
-        <div className="flex items-center gap-2 ml-auto">
-          <label className="text-xs text-muted-foreground" htmlFor="rek-n">
-            n =
-          </label>
-          <input
-            id="rek-n"
-            type="range"
-            min={range.min}
-            max={range.max}
-            value={n}
-            onChange={(e) => setN(Number.parseInt(e.target.value, 10))}
-            className="w-32 accent-brand"
-          />
-          <span className="text-xs font-mono w-6 text-right tabular-nums">{n}</span>
-        </div>
-
-        <div className="w-full">
-          <input
-            type="range"
-            min={0}
-            max={Math.max(0, frames.length - 1)}
-            value={step}
-            onChange={(e) => {
-              setPlaying(false);
-              setStep(Number.parseInt(e.target.value, 10));
-            }}
-            className="w-full accent-brand"
-            aria-label="Steg-scrubber"
-          />
-        </div>
+      {/* N-slider */}
+      <div className="px-4 py-3 border-t border-border bg-muted/20 flex items-center gap-2">
+        <label className="text-xs text-muted-foreground" htmlFor="rek-n">n =</label>
+        <input
+          id="rek-n"
+          type="range"
+          min={range.min}
+          max={range.max}
+          value={n}
+          onChange={(e) => setN(Number.parseInt(e.target.value, 10))}
+          className="w-32 accent-brand"
+        />
+        <span className="text-xs font-mono w-6 text-right tabular-nums">{n}</span>
       </div>
-    </div>
+    </VisualizerShell>
   );
 }
 
@@ -775,7 +457,6 @@ function StackPanel({ frames, activeId }: { frames: StackFrame[]; activeId: numb
       </div>
     );
   }
-  // Topp av stacken (aktiv) tegnes ØVERST.
   const reversed = [...frames].reverse();
   return (
     <div className="flex flex-col gap-1.5">
@@ -792,54 +473,30 @@ function StackPanel({ frames, activeId }: { frames: StackFrame[]; activeId: numb
             }`}
           >
             <div className="font-mono text-xs font-semibold">{f.label}</div>
-            {f.detail && (
-              <div className="font-mono text-[10px] opacity-80 mt-0.5">{f.detail}</div>
-            )}
+            {f.detail && <div className="font-mono text-[10px] opacity-80 mt-0.5">{f.detail}</div>}
           </div>
         );
       })}
-      <div className="text-[10px] uppercase tracking-wider text-muted-foreground text-center mt-1">
-        bunn
-      </div>
+      <div className="text-[10px] uppercase tracking-wider text-muted-foreground text-center mt-1">bunn</div>
     </div>
   );
 }
 
 function nodeStyle(status: NodeStatus, duplicate?: boolean, cached?: boolean) {
-  // returnerer Tailwind-klasser for boksen
   if (cached) return "border-brand bg-brand/15 text-brand";
-  if (status === "cache-hit")
-    return "border-brand bg-brand/20 text-brand shadow-[0_0_0_2px_var(--brand-tint,rgba(99,102,241,0.2))]";
-  if (status === "done")
-    return duplicate
-      ? "border-destructive/60 bg-destructive/10 text-destructive"
-      : "border-success/60 bg-success/10 text-success";
-  if (status === "active")
-    return duplicate
-      ? "border-destructive bg-destructive/15 text-destructive"
-      : "border-amber-500 bg-amber-500/15 text-amber-700 dark:text-amber-300";
+  if (status === "cache-hit") return "border-brand bg-brand/20 text-brand shadow-[0_0_0_2px_var(--brand-tint,rgba(99,102,241,0.2))]";
+  if (status === "done") return duplicate ? "border-destructive/60 bg-destructive/10 text-destructive" : "border-success/60 bg-success/10 text-success";
+  if (status === "active") return duplicate ? "border-destructive bg-destructive/15 text-destructive" : "border-amber-500 bg-amber-500/15 text-amber-700 dark:text-amber-300";
   if (status === "returning") return "border-success bg-success/20 text-success";
-  return duplicate
-    ? "border-destructive/40 bg-destructive/5 text-destructive/80"
-    : "border-border bg-card text-muted-foreground";
+  return duplicate ? "border-destructive/40 bg-destructive/5 text-destructive/80" : "border-border bg-card text-muted-foreground";
 }
 
-function RecursionTree({
-  tree,
-  activeId,
-  mode,
-}: {
-  tree: TreeNode[];
-  activeId: number | null;
-  mode: Mode;
-}) {
-  // Grupper noder per dybde
+function RecursionTree({ tree, activeId, mode }: { tree: TreeNode[]; activeId: number | null; mode: Mode }) {
   const byDepth: TreeNode[][] = [];
   tree.forEach((node) => {
     if (!byDepth[node.depth]) byDepth[node.depth] = [];
     byDepth[node.depth].push(node);
   });
-
   if (tree.length === 0) {
     return (
       <div className="text-xs text-muted-foreground italic h-full flex items-center justify-center">
@@ -847,18 +504,13 @@ function RecursionTree({
       </div>
     );
   }
-
   return (
     <div className="flex flex-col items-center gap-3 overflow-x-auto h-full">
-      <div className="text-[10px] uppercase tracking-wider text-muted-foreground">
-        Rekursjonstre
-      </div>
+      <div className="text-[10px] uppercase tracking-wider text-muted-foreground">Rekursjonstre</div>
       <div className="flex flex-col gap-2 items-center min-w-fit">
         {byDepth.map((level, lvl) => (
           <div key={lvl} className="flex items-start gap-2 flex-wrap justify-center">
-            {level.map((node) => (
-              <NodeBox key={node.id} node={node} active={node.id === activeId} />
-            ))}
+            {level.map((node) => <NodeBox key={node.id} node={node} active={node.id === activeId} />)}
           </div>
         ))}
       </div>
@@ -867,11 +519,7 @@ function RecursionTree({
         <Legend color="border-success/60 bg-success/10" label="returnert" />
         {(mode === "fib" || mode === "fibMemo") && (
           <Legend
-            color={
-              mode === "fibMemo"
-                ? "border-brand bg-brand/15"
-                : "border-destructive/60 bg-destructive/10"
-            }
+            color={mode === "fibMemo" ? "border-brand bg-brand/15" : "border-destructive/60 bg-destructive/10"}
             label={mode === "fibMemo" ? "cache-hit" : "duplikat — bortkastet arbeid"}
           />
         )}
@@ -884,9 +532,7 @@ function NodeBox({ node, active }: { node: TreeNode; active: boolean }) {
   return (
     <div
       className={`relative rounded-lg border-2 px-2 py-1 font-mono text-xs font-semibold transition-all ${nodeStyle(
-        node.status,
-        node.duplicate,
-        node.cached,
+        node.status, node.duplicate, node.cached,
       )} ${active ? "ring-2 ring-brand/40" : ""}`}
     >
       <div className="flex items-center gap-1">
@@ -911,10 +557,9 @@ function Legend({ color, label }: { color: string; label: string }) {
 
 function HanoiBoard({ state, n }: { state?: HanoiState; n: number }) {
   const pegs = state?.pegs ?? [[], [], []];
-  const maxWidth = 18 + (n - 1) * 14; // px-bredde for største disk
+  const maxWidth = 18 + (n - 1) * 14;
   const pegLabels = ["A", "B", "C"];
   const lastMove = state?.lastMove;
-
   return (
     <div className="flex flex-col gap-4 items-center h-full">
       <div className="text-[10px] uppercase tracking-wider text-muted-foreground">
@@ -934,9 +579,7 @@ function HanoiBoard({ state, n }: { state?: HanoiState; n: number }) {
                     <div
                       key={`${pegIdx}-${disk}-${i}`}
                       className={`h-3.5 rounded-sm border-2 transition-all duration-300 ${
-                        isMoving
-                          ? "border-brand bg-brand/40"
-                          : "border-brand/60 bg-brand/20"
+                        isMoving ? "border-brand bg-brand/40" : "border-brand/60 bg-brand/20"
                       }`}
                       style={{ width: `${width}px` }}
                       title={`disk ${disk}`}
@@ -944,11 +587,8 @@ function HanoiBoard({ state, n }: { state?: HanoiState; n: number }) {
                   );
                 })}
               </div>
-              {/* Peg base */}
               <div
-                className={`h-1 rounded ${
-                  isFromOrTo ? "bg-brand" : "bg-muted-foreground/50"
-                }`}
+                className={`h-1 rounded ${isFromOrTo ? "bg-brand" : "bg-muted-foreground/50"}`}
                 style={{ width: `${maxWidth + 8}px` }}
               />
               <div className="text-xs font-mono font-semibold text-muted-foreground mt-1">
