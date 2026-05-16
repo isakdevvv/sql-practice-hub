@@ -49,6 +49,7 @@ import { Route as PortfolioDte2602SlugRouteImport } from './routes/portfolio-dte
 import { Route as MiniKursSlugRouteImport } from './routes/mini-kurs.$slug'
 import { Route as Dte2507PcapRouteImport } from './routes/dte2507.pcap'
 import { Route as Dte2505ShellDrillRouteImport } from './routes/dte2505.shell-drill'
+import { Route as DrillChar91_demoChar93RouteImport } from './routes/drill.[_demo]'
 import { Route as PythonKapIndexRouteImport } from './routes/python_.kap.index'
 import { Route as PythonKapNrRouteImport } from './routes/python_.kap.$nr'
 import { Route as PythonIdeNrRouteImport } from './routes/python_.ide.$nr'
@@ -254,6 +255,11 @@ const Dte2505ShellDrillRoute = Dte2505ShellDrillRouteImport.update({
   path: '/dte2505/shell-drill',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DrillChar91_demoChar93Route = DrillChar91_demoChar93RouteImport.update({
+  id: '/drill/_demo',
+  path: '/drill/_demo',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PythonKapIndexRoute = PythonKapIndexRouteImport.update({
   id: '/python_/kap/',
   path: '/python/kap/',
@@ -296,6 +302,7 @@ export interface FileRoutesByFullPath {
   '/venv-drill': typeof VenvDrillRoute
   '/visualiseringer': typeof VisualiseringerRoute
   '/viz-lesjon': typeof VizLesjonRouteWithChildren
+  '/drill/_demo': typeof DrillChar91_demoChar93Route
   '/dte2505/shell-drill': typeof Dte2505ShellDrillRoute
   '/dte2507/pcap': typeof Dte2507PcapRoute
   '/mini-kurs/$slug': typeof MiniKursSlugRoute
@@ -337,6 +344,7 @@ export interface FileRoutesByTo {
   '/python': typeof PythonRoute
   '/venv-drill': typeof VenvDrillRoute
   '/visualiseringer': typeof VisualiseringerRoute
+  '/drill/_demo': typeof DrillChar91_demoChar93Route
   '/dte2505/shell-drill': typeof Dte2505ShellDrillRoute
   '/dte2507/pcap': typeof Dte2507PcapRoute
   '/mini-kurs/$slug': typeof MiniKursSlugRoute
@@ -383,6 +391,7 @@ export interface FileRoutesById {
   '/venv-drill': typeof VenvDrillRoute
   '/visualiseringer': typeof VisualiseringerRoute
   '/viz-lesjon': typeof VizLesjonRouteWithChildren
+  '/drill/_demo': typeof DrillChar91_demoChar93Route
   '/dte2505/shell-drill': typeof Dte2505ShellDrillRoute
   '/dte2507/pcap': typeof Dte2507PcapRoute
   '/mini-kurs/$slug': typeof MiniKursSlugRoute
@@ -430,6 +439,7 @@ export interface FileRouteTypes {
     | '/venv-drill'
     | '/visualiseringer'
     | '/viz-lesjon'
+    | '/drill/_demo'
     | '/dte2505/shell-drill'
     | '/dte2507/pcap'
     | '/mini-kurs/$slug'
@@ -471,6 +481,7 @@ export interface FileRouteTypes {
     | '/python'
     | '/venv-drill'
     | '/visualiseringer'
+    | '/drill/_demo'
     | '/dte2505/shell-drill'
     | '/dte2507/pcap'
     | '/mini-kurs/$slug'
@@ -516,6 +527,7 @@ export interface FileRouteTypes {
     | '/venv-drill'
     | '/visualiseringer'
     | '/viz-lesjon'
+    | '/drill/_demo'
     | '/dte2505/shell-drill'
     | '/dte2507/pcap'
     | '/mini-kurs/$slug'
@@ -562,6 +574,7 @@ export interface RootRouteChildren {
   VenvDrillRoute: typeof VenvDrillRoute
   VisualiseringerRoute: typeof VisualiseringerRoute
   VizLesjonRoute: typeof VizLesjonRouteWithChildren
+  DrillChar91_demoChar93Route: typeof DrillChar91_demoChar93Route
   Dte2505ShellDrillRoute: typeof Dte2505ShellDrillRoute
   Dte2507PcapRoute: typeof Dte2507PcapRoute
   PortfolioDte2602SlugRoute: typeof PortfolioDte2602SlugRoute
@@ -856,6 +869,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof Dte2505ShellDrillRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/drill/_demo': {
+      id: '/drill/_demo'
+      path: '/drill/_demo'
+      fullPath: '/drill/_demo'
+      preLoaderRoute: typeof DrillChar91_demoChar93RouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/python_/kap/': {
       id: '/python_/kap/'
       path: '/python/kap'
@@ -958,6 +978,7 @@ const rootRouteChildren: RootRouteChildren = {
   VenvDrillRoute: VenvDrillRoute,
   VisualiseringerRoute: VisualiseringerRoute,
   VizLesjonRoute: VizLesjonRouteWithChildren,
+  DrillChar91_demoChar93Route: DrillChar91_demoChar93Route,
   Dte2505ShellDrillRoute: Dte2505ShellDrillRoute,
   Dte2507PcapRoute: Dte2507PcapRoute,
   PortfolioDte2602SlugRoute: PortfolioDte2602SlugRoute,
