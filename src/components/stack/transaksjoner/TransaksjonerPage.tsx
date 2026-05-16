@@ -7,7 +7,14 @@ import { lazy, Suspense } from "react";
 import { VisualizerSkeleton } from "@/components/visualizer-shell";
 
 const TransactionVisualizer = lazy(() =>
-  import("@/components/stack/transaksjoner/TransactionVisualizer").then((m) => ({ default: m.TransactionVisualizer })),
+  import("@/components/stack/transaksjoner/TransactionVisualizer").then((m) => ({
+    default: m.TransactionVisualizer,
+  })),
+);
+const TransaksjonsIsolasjonsDrill = lazy(() =>
+  import("@/components/stack/transaksjoner/TransaksjonsIsolasjonsDrill").then((m) => ({
+    default: m.TransaksjonsIsolasjonsDrill,
+  })),
 );
 
 // Course page for transactions, ACID, isolation levels, locking and deadlocks.
@@ -15,6 +22,7 @@ const TransactionVisualizer = lazy(() =>
 
 const STEPS = [
   { title: "Interaktiv: isolation-anomalier", anchor: "vis" },
+  { title: "Prøv selv: diagnostiser anomalien", anchor: "drill" },
   { title: "Hva er en transaksjon?", anchor: "hva" },
   { title: "ACID — fire egenskaper", anchor: "acid" },
   { title: "BEGIN, COMMIT, ROLLBACK", anchor: "kontroll" },
@@ -127,21 +135,24 @@ const ISOLATION_LEVELS: Isolation[] = [
     dirty: "Nei",
     nonrep: "Mulig",
     phantom: "Mulig",
-    kommentar: "Default i Postgres og Oracle. Du leser bare committet data — men kan se ulike svar i samme transaksjon.",
+    kommentar:
+      "Default i Postgres og Oracle. Du leser bare committet data — men kan se ulike svar i samme transaksjon.",
   },
   {
     navn: "REPEATABLE READ",
     dirty: "Nei",
     nonrep: "Nei",
     phantom: "Mulig (i SQL-standard)",
-    kommentar: "Default i MySQL/InnoDB. Hver rad du leser, forblir den samme gjennom hele transaksjonen.",
+    kommentar:
+      "Default i MySQL/InnoDB. Hver rad du leser, forblir den samme gjennom hele transaksjonen.",
   },
   {
     navn: "SERIALIZABLE",
     dirty: "Nei",
     nonrep: "Nei",
     phantom: "Nei",
-    kommentar: "Strikteste. Som om transaksjonene kjørte etter hverandre. Treig og kan kaste serialization-feil — du må prøve på nytt.",
+    kommentar:
+      "Strikteste. Som om transaksjonene kjørte etter hverandre. Treig og kan kaste serialization-feil — du må prøve på nytt.",
   },
 ];
 
@@ -157,10 +168,10 @@ export function TransaksjonerPage() {
             Transaksjoner, ACID og isolation levels
           </h1>
           <p className="mt-3 text-muted-foreground">
-            En transaksjon (eng: <em>transaction</em>) er en logisk arbeidsenhet som
-            enten lykkes i sin helhet eller rulles tilbake helt. Når flere klienter
-            jobber mot samme database samtidig, må DB-en garantere både korrekthet
-            (ACID) og noenlunde fornuftig ytelse — det er en avveiing styrt av
+            En transaksjon (eng: <em>transaction</em>) er en logisk arbeidsenhet som enten lykkes i
+            sin helhet eller rulles tilbake helt. Når flere klienter jobber mot samme database
+            samtidig, må DB-en garantere både korrekthet (ACID) og noenlunde fornuftig ytelse — det
+            er en avveiing styrt av
             <em> isolation levels</em>.
           </p>
           <div className="mt-4 rounded-lg border border-brand/30 bg-brand/5 p-4 flex items-start gap-3">
@@ -170,8 +181,8 @@ export function TransaksjonerPage() {
               <Link to="/drag" className="text-brand hover:underline">
                 drag-oppgavene
               </Link>{" "}
-              har et eget sett under «Transaksjoner» — ACID-bokstav-match,
-              isolation-level-quiz, deadlock-scenario og savepoint-fill.
+              har et eget sett under «Transaksjoner» — ACID-bokstav-match, isolation-level-quiz,
+              deadlock-scenario og savepoint-fill.
             </div>
           </div>
         </div>
@@ -184,23 +195,28 @@ export function TransaksjonerPage() {
             Interaktiv: se anomalien skje (eller bli forhindret)
           </h2>
           <p className="text-sm text-muted-foreground mb-4">
-            Velg et scenario og et isolation level, og step gjennom timelinen for to
-            samtidige transaksjoner (TX1 og TX2). Rød pulserende boks = anomali. Grønt
-            låse-ikon = nivået holdt deg trygg.
+            Velg et scenario og et isolation level, og step gjennom timelinen for to samtidige
+            transaksjoner (TX1 og TX2). Rød pulserende boks = anomali. Grønt låse-ikon = nivået
+            holdt deg trygg.
           </p>
           <Suspense fallback={<VisualizerSkeleton />}>
             <TransactionVisualizer />
           </Suspense>
         </section>
 
+        {/* Drill — bruker diagnostiserer anomalier selv */}
+        <Suspense fallback={<VisualizerSkeleton />}>
+          <TransaksjonsIsolasjonsDrill />
+        </Suspense>
+
         {/* Hva er en transaksjon */}
         <section id="hva" className="mb-10">
           <h2 className="text-xl font-semibold mb-3">Hva er en transaksjon?</h2>
           <p className="text-sm text-muted-foreground mb-3">
-            En transaksjon er en sekvens av SQL-setninger som DB-en behandler som ÉN
-            uatskillelig enhet. Klassiske eksempel: pengeoverføring, ordrelegging,
-            studentregistrering. Hvis noe går galt midt i, må alt rulles tilbake — du
-            kan ikke ha halve operasjonen liggende igjen.
+            En transaksjon er en sekvens av SQL-setninger som DB-en behandler som ÉN uatskillelig
+            enhet. Klassiske eksempel: pengeoverføring, ordrelegging, studentregistrering. Hvis noe
+            går galt midt i, må alt rulles tilbake — du kan ikke ha halve operasjonen liggende
+            igjen.
           </p>
           <pre className="font-mono text-xs overflow-x-auto whitespace-pre rounded bg-background border border-border p-3">{`-- Den klassiske bankoverføringen
 BEGIN;                                         -- start transaksjon
@@ -217,9 +233,8 @@ COMMIT;                                        -- gjør endringene varige
         <section id="acid" className="mb-10">
           <h2 className="text-xl font-semibold mb-3">ACID — de fire garantiene</h2>
           <p className="text-sm text-muted-foreground mb-4">
-            ACID er fire egenskaper en relasjonsdatabase lover å overholde. Lær
-            bokstavene én og én — eksamen spør ofte «hvilken ACID-bokstav handler om
-            X?».
+            ACID er fire egenskaper en relasjonsdatabase lover å overholde. Lær bokstavene én og én
+            — eksamen spør ofte «hvilken ACID-bokstav handler om X?».
           </p>
           <div className="space-y-4">
             {ACID_EGENSKAPER.map((a) => (
@@ -244,8 +259,8 @@ COMMIT;                                        -- gjør endringene varige
           <h2 className="text-xl font-semibold mb-3">BEGIN, COMMIT, ROLLBACK</h2>
           <p className="text-sm text-muted-foreground mb-4">
             Tre setninger styrer transaksjonen. <code>BEGIN</code> (eller{" "}
-            <code>START TRANSACTION</code>) åpner en. <code>COMMIT</code> gjør alt
-            varig. <code>ROLLBACK</code> kaster alt.
+            <code>START TRANSACTION</code>) åpner en. <code>COMMIT</code> gjør alt varig.{" "}
+            <code>ROLLBACK</code> kaster alt.
           </p>
           <div className="overflow-x-auto rounded-lg border border-border mb-4">
             <table className="w-full text-sm">
@@ -265,7 +280,8 @@ COMMIT;                                        -- gjør endringene varige
                 <tr className="border-t border-border">
                   <td className="px-4 py-3 font-mono text-brand">COMMIT</td>
                   <td className="px-4 py-3 text-muted-foreground">
-                    Skriv endringer til disk varig. Frigjør låser. Andre transaksjoner ser nå dataene.
+                    Skriv endringer til disk varig. Frigjør låser. Andre transaksjoner ser nå
+                    dataene.
                   </td>
                 </tr>
                 <tr className="border-t border-border">
@@ -291,13 +307,15 @@ COMMIT;`}</pre>
         <section id="leseproblemer" className="mb-10">
           <h2 className="text-xl font-semibold mb-3">Tre lese-problemer ved samtidighet</h2>
           <p className="text-sm text-muted-foreground mb-4">
-            Når flere transaksjoner kjører parallelt mot samme rader, kan rare ting
-            skje. Tre klassiske mønstre — og isolation level styrer hvilke av dem
-            DB-en hindrer.
+            Når flere transaksjoner kjører parallelt mot samme rader, kan rare ting skje. Tre
+            klassiske mønstre — og isolation level styrer hvilke av dem DB-en hindrer.
           </p>
           <div className="space-y-4">
             {LESE_PROBLEMER.map((p) => (
-              <div key={p.navn} className="rounded-xl border border-amber-500/40 bg-amber-500/5 p-5">
+              <div
+                key={p.navn}
+                className="rounded-xl border border-amber-500/40 bg-amber-500/5 p-5"
+              >
                 <div className="flex items-center gap-2 mb-2">
                   <AlertTriangle className="h-4 w-4 text-amber-700 dark:text-amber-400" />
                   <h3 className="font-semibold">{p.navn}</h3>
@@ -310,10 +328,9 @@ COMMIT;`}</pre>
             ))}
           </div>
           <div className="mt-4 rounded-lg border border-amber-500/30 bg-amber-500/5 p-4 text-sm">
-            <strong>Lost update</strong> er en fjerde klassiker: T1 og T2 leser samme
-            rad, begge regner ut ny verdi basert på den, og T2 skriver over T1 sitt
-            resultat. Løses med SELECT ... FOR UPDATE eller optimistisk locking
-            (versjonskolonne).
+            <strong>Lost update</strong> er en fjerde klassiker: T1 og T2 leser samme rad, begge
+            regner ut ny verdi basert på den, og T2 skriver over T1 sitt resultat. Løses med SELECT
+            ... FOR UPDATE eller optimistisk locking (versjonskolonne).
           </div>
         </section>
 
@@ -321,9 +338,9 @@ COMMIT;`}</pre>
         <section id="isolation" className="mb-10">
           <h2 className="text-xl font-semibold mb-3">Isolation levels — fra svak til streng</h2>
           <p className="text-sm text-muted-foreground mb-4">
-            SQL-standarden definerer fire isolation levels. Hvert nivå tetter flere av
-            de tre lese-problemene — men koster mer i ytelse fordi DB-en må holde
-            flere låser eller versjoner.
+            SQL-standarden definerer fire isolation levels. Hvert nivå tetter flere av de tre
+            lese-problemene — men koster mer i ytelse fordi DB-en må holde flere låser eller
+            versjoner.
           </p>
           <div className="overflow-x-auto rounded-lg border border-border">
             <table className="w-full text-sm">
@@ -331,8 +348,12 @@ COMMIT;`}</pre>
                 <tr>
                   <th className="text-left font-semibold px-4 py-2">Nivå</th>
                   <th className="text-left font-semibold px-2 py-2 hidden sm:table-cell">Dirty</th>
-                  <th className="text-left font-semibold px-2 py-2 hidden sm:table-cell">Non-rep</th>
-                  <th className="text-left font-semibold px-2 py-2 hidden sm:table-cell">Phantom</th>
+                  <th className="text-left font-semibold px-2 py-2 hidden sm:table-cell">
+                    Non-rep
+                  </th>
+                  <th className="text-left font-semibold px-2 py-2 hidden sm:table-cell">
+                    Phantom
+                  </th>
                   <th className="text-left font-semibold px-4 py-2">Kommentar</th>
                 </tr>
               </thead>
@@ -360,8 +381,8 @@ COMMIT;`}</pre>
         <section id="laasing" className="mb-10">
           <h2 className="text-xl font-semibold mb-3">Optimistisk vs pessimistisk låsing</h2>
           <p className="text-sm text-muted-foreground mb-4">
-            To strategier for å unngå at to transaksjoner overskriver hverandre. Velg
-            ut fra konflikt-frekvens.
+            To strategier for å unngå at to transaksjoner overskriver hverandre. Velg ut fra
+            konflikt-frekvens.
           </p>
           <div className="grid sm:grid-cols-2 gap-4">
             <div className="rounded-xl border border-success/40 bg-success/5 p-5">
@@ -370,8 +391,8 @@ COMMIT;`}</pre>
                 <h3 className="font-semibold">Pessimistisk — lås tidlig</h3>
               </div>
               <p className="text-sm mb-3">
-                Lås raden mens du jobber. Andre må vente til du commit-er. Trygt,
-                men kan skape kø og deadlocks ved høy last.
+                Lås raden mens du jobber. Andre må vente til du commit-er. Trygt, men kan skape kø
+                og deadlocks ved høy last.
               </p>
               <pre className="font-mono text-xs overflow-x-auto whitespace-pre rounded bg-background border border-border p-3">{`BEGIN;
 SELECT saldo FROM Konto WHERE id=1
@@ -386,9 +407,8 @@ COMMIT;`}</pre>
                 <h3 className="font-semibold">Optimistisk — sjekk ved skriving</h3>
               </div>
               <p className="text-sm mb-3">
-                Ikke lås — bare sjekk om raden er endret mellom lesing og skriving
-                (versjonsnummer). Hvis ja: feil, prøv på nytt. Bra ved lav
-                konflikt-rate.
+                Ikke lås — bare sjekk om raden er endret mellom lesing og skriving (versjonsnummer).
+                Hvis ja: feil, prøv på nytt. Bra ved lav konflikt-rate.
               </p>
               <pre className="font-mono text-xs overflow-x-auto whitespace-pre rounded bg-background border border-border p-3">{`-- Les versjon
 SELECT saldo, versjon FROM Konto WHERE id=1;
@@ -406,9 +426,8 @@ UPDATE Konto
         <section id="savepoints" className="mb-10">
           <h2 className="text-xl font-semibold mb-3">Savepoints — delvis rollback</h2>
           <p className="text-sm text-muted-foreground mb-4">
-            Inne i en transaksjon kan du sette navngitte sjekkpunkter. Da kan du
-            rulle tilbake til ett av dem uten å avbryte hele transaksjonen. Brukes
-            for å håndtere feil i understeg.
+            Inne i en transaksjon kan du sette navngitte sjekkpunkter. Da kan du rulle tilbake til
+            ett av dem uten å avbryte hele transaksjonen. Brukes for å håndtere feil i understeg.
           </p>
           <pre className="font-mono text-xs overflow-x-auto whitespace-pre rounded bg-background border border-border p-3">{`BEGIN;
   INSERT INTO Ordre (kundenr, total) VALUES (5, 0);
@@ -428,12 +447,13 @@ COMMIT;`}</pre>
 
         {/* Deadlock */}
         <section id="deadlock" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">Deadlock — to transaksjoner venter på hverandre</h2>
+          <h2 className="text-xl font-semibold mb-3">
+            Deadlock — to transaksjoner venter på hverandre
+          </h2>
           <p className="text-sm text-muted-foreground mb-4">
-            En deadlock oppstår når T1 venter på en lås T2 holder, samtidig som T2
-            venter på en lås T1 holder. DB-en oppdager dette automatisk, dreper én av
-            transaksjonene (offeret), og lar den andre fortsette. Klienten må fange
-            feilen og prøve igjen.
+            En deadlock oppstår når T1 venter på en lås T2 holder, samtidig som T2 venter på en lås
+            T1 holder. DB-en oppdager dette automatisk, dreper én av transaksjonene (offeret), og
+            lar den andre fortsette. Klienten må fange feilen og prøve igjen.
           </p>
           <pre className="font-mono text-xs overflow-x-auto whitespace-pre rounded bg-background border border-border p-3">{`-- Klassisk eksempel: motsatt rekkefølge på låsing
 -- T1:                                T2:
@@ -465,8 +485,7 @@ COMMIT;`}</pre>
               <Link to="/drag" className="text-brand hover:underline">
                 Drag-oppgaver
               </Link>{" "}
-              under «Transaksjoner» — ACID-bokstav-match, isolation-level-quiz,
-              deadlock-scenario.
+              under «Transaksjoner» — ACID-bokstav-match, isolation-level-quiz, deadlock-scenario.
             </li>
             <li>
               <Link
