@@ -4,6 +4,7 @@ import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
 import { ProsessMonitor } from "./ProsessMonitor";
 import { ProcessStateMachine } from "./ProcessStateMachine";
+import { ProcessVisualizer } from "./ProcessVisualizer";
 import { Mermaid } from "@/components/Mermaid";
 
 const PROSESS_LIVSSYKLUS = `stateDiagram-v2
@@ -16,6 +17,7 @@ const PROSESS_LIVSSYKLUS = `stateDiagram-v2
   Terminated --> [*]`;
 
 const STEPS = [
+  { title: "Livssyklus-visualisering", anchor: "livssyklus" },
   { title: "Prosess-tilstander", anchor: "tilstander" },
   { title: "Hva sender en prosess hvor?", anchor: "transitions" },
   { title: "ps aux — slik leser du output", anchor: "ps" },
@@ -57,6 +59,20 @@ export function ProsesserSignalerPage() {
         </header>
 
         <CourseOutline courseId="dte2505-prosesser-signaler" steps={STEPS} />
+
+        <section id="livssyklus" className="mb-10">
+          <h2 className="text-xl font-semibold mb-3">
+            Interaktiv: hele livssyklusen
+          </h2>
+          <p className="text-sm text-muted-foreground mb-3">
+            Fem moduser i ett verktøy. Tenk på prosessen som en oppskrift som blir
+            til en kake — <code className="font-mono">fork()</code> kopierer oppskriften,{" "}
+            <code className="font-mono">exec()</code> bytter oppskrift midt i, og{" "}
+            <code className="font-mono">wait()</code> er bakeren som venter ved ovnen.
+            Klikk gjennom hver modus.
+          </p>
+          <ProcessVisualizer />
+        </section>
 
         <section id="tilstander" className="mb-10">
           <h2 className="text-xl font-semibold mb-3">1. Prosess-tilstander (STAT-kolonnen)</h2>
