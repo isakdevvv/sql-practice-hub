@@ -2,9 +2,11 @@ import { Link } from "@tanstack/react-router";
 import { Lightbulb } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
+import { RequestLifecycle } from "./RequestLifecycle";
 
 const STEPS = [
   { title: "Den fulle stakken — TCP til Python", anchor: "stakk" },
+  { title: "Request-livssyklus — step gjennom alle åtte lag", anchor: "livssyklus" },
   { title: "Socket-aksept og raw bytes", anchor: "socket" },
   { title: "HTTP-parsing — bytes til request", anchor: "http" },
   { title: "WSGI — kontrakten mellom server og app", anchor: "wsgi" },
@@ -84,8 +86,22 @@ På Python-siden — det er flere lag:
           </div>
         </section>
 
+        <section id="livssyklus" className="mb-12">
+          <h2 className="text-xl font-semibold mb-3">
+            2. Request-livssyklus — step gjennom alle åtte lag
+          </h2>
+          <p className="text-sm text-muted-foreground mb-4">
+            Følg ett <code>curl http://localhost:5000/hei?navn=Ola</code> fra
+            rå bytes på TCP-socket-en, gjennom HTTP-parsing, WSGI-environ,
+            Flask-routing, view-funksjonen din, Response-objektet, og tilbake
+            ut som bytes. Hvert steg viser hvilken kode som kjører på akkurat
+            det laget og hvordan dataen ser ut der.
+          </p>
+          <RequestLifecycle />
+        </section>
+
         <section id="socket" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">2. Socket-aksept og raw bytes</h2>
+          <h2 className="text-xl font-semibold mb-3">3. Socket-aksept og raw bytes</h2>
           <p className="text-sm text-muted-foreground mb-4">
             WSGI-server-en (i utvikling: Werkzeug) har en hoved-loop som
             ligner mye på en C-server. Forenklet:
@@ -124,7 +140,7 @@ def handle(conn):
         </section>
 
         <section id="http" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">3. HTTP-parsing — bytes til request</h2>
+          <h2 className="text-xl font-semibold mb-3">4. HTTP-parsing — bytes til request</h2>
           <div className="rounded-xl border border-border bg-card p-5">
             <pre className="font-mono text-xs overflow-x-auto whitespace-pre">{`HTTP/1.1-formatet er tekstbasert (mens HTTP/2 er binær). En request:
 
@@ -168,7 +184,7 @@ environ-dict (forenklet, ekte har flere felter):
         </section>
 
         <section id="wsgi" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">4. WSGI — kontrakten</h2>
+          <h2 className="text-xl font-semibold mb-3">5. WSGI — kontrakten</h2>
           <p className="text-sm text-muted-foreground mb-4">
             WSGI (PEP 3333) er en avtale: serveren leverer to ting (environ
             + start_response), applikasjonen returnerer en iterable av
@@ -223,7 +239,7 @@ Flask er en WSGI-app:
         </section>
 
         <section id="flask" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">5. Hvordan Flask svarer en route</h2>
+          <h2 className="text-xl font-semibold mb-3">6. Hvordan Flask svarer en route</h2>
           <div className="rounded-xl border border-border bg-card p-5">
             <pre className="font-mono text-xs overflow-x-auto whitespace-pre">{`Flask sin wsgi_app-metode (forenklet):
 
@@ -275,7 +291,7 @@ Konvertering av return → Response:
         </section>
 
         <section id="produksjon" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">6. Produksjon — gunicorn, workere, nginx</h2>
+          <h2 className="text-xl font-semibold mb-3">7. Produksjon — gunicorn, workere, nginx</h2>
           <p className="text-sm text-muted-foreground mb-4">
             Werkzeug-dev-serveren bruker én tråd. Den er for utvikling.
             I produksjon kjører du en ekte WSGI-server som gunicorn
