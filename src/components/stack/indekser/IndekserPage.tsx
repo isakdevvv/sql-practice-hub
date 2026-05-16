@@ -3,6 +3,7 @@ import { ArrowRight, Lightbulb, TreeDeciduous, AlertTriangle, Zap } from "lucide
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
 import { IndexVisualizer } from "@/components/stack/indekser/IndexVisualizer";
+import { Indexes as IndexesIllustration } from "@/components/illustrations";
 
 // Course on indexes: B-tree, hash, covering, composite, when indexes
 // don't get used, write-cost trade-offs. Pairs with /drag (topic "Indekser").
@@ -88,12 +89,19 @@ export function IndekserPage() {
     <StackPageShell title="Indekser — B-tree, covering og trade-offs" group="stack">
       <div className="container mx-auto px-4 py-12 max-w-3xl">
         <div className="mb-8">
-          <div className="text-xs uppercase tracking-wider text-brand font-semibold mb-2">
-            Database · Ytelse
+          <div className="flex items-start gap-4">
+            <div className="text-brand shrink-0" aria-hidden>
+              <IndexesIllustration size={64} />
+            </div>
+            <div>
+              <div className="text-xs uppercase tracking-wider text-brand font-semibold mb-2">
+                Database · Ytelse
+              </div>
+              <h1 className="text-3xl font-bold tracking-tight">
+                Indekser — slik finner DB-en rader uten å lese hele tabellen
+              </h1>
+            </div>
           </div>
-          <h1 className="text-3xl font-bold tracking-tight">
-            Indekser — slik finner DB-en rader uten å lese hele tabellen
-          </h1>
           <p className="mt-3 text-muted-foreground">
             En indeks er en sekundær datastruktur som lar DB-en hoppe direkte til de
             radene du leter etter, i stedet for å lese tabellen rad for rad. Riktig

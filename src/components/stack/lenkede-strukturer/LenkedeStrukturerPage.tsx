@@ -3,6 +3,7 @@ import { ArrowRight, Lightbulb } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
 import { LinkedStructuresVisualizer } from "./LinkedStructuresVisualizer";
+import { Stack as StackIllustration } from "@/components/illustrations";
 
 const STEPS = [
   { title: "Hva er en lenket struktur", anchor: "hva" },
@@ -21,12 +22,19 @@ export function LenkedeStrukturerPage() {
     <StackPageShell title="Lenkede strukturer — list, stack, kø" group="eksamen">
       <div className="container mx-auto px-4 py-12 max-w-3xl">
         <div className="mb-8">
-          <div className="text-xs uppercase tracking-wider text-brand font-semibold mb-2">
-            Algoritmer · Kap 20
+          <div className="flex items-start gap-4">
+            <div className="text-brand shrink-0" aria-hidden>
+              <StackIllustration size={64} />
+            </div>
+            <div>
+              <div className="text-xs uppercase tracking-wider text-brand font-semibold mb-2">
+                Algoritmer · Kap 20
+              </div>
+              <h1 className="text-3xl font-bold tracking-tight">
+                Lenket liste, stack, kø, prioritetskø
+              </h1>
+            </div>
           </div>
-          <h1 className="text-3xl font-bold tracking-tight">
-            Lenket liste, stack, kø, prioritetskø
-          </h1>
           <p className="mt-3 text-muted-foreground">
             Fire datastrukturer som virker like ved første øyekast, men har vidt forskjellig
             oppførsel. Lær hvilken som passer hvor — det er det som skiller en god løsning
