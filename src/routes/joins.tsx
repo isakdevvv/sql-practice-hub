@@ -4,6 +4,7 @@ import { SiteHeader } from "@/components/SiteHeader";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { JoinExplorer } from "@/components/learn/JoinExplorer";
+import { JoinTypeDrill } from "@/components/learn/JoinTypeDrill";
 import { JOIN_EXERCISES } from "@/lib/learn/joinExercises";
 import { loadJoinProgress, resetJoinProgress } from "@/lib/learn/joinProgress";
 import { Check, ChevronLeft, ChevronRight, RotateCcw } from "lucide-react";
@@ -30,7 +31,10 @@ function JoinsPage() {
     () => JOIN_EXERCISES.find((e) => e.id === activeId) ?? JOIN_EXERCISES[0],
     [activeId],
   );
-  const idx = Math.max(0, JOIN_EXERCISES.findIndex((e) => e.id === activeId));
+  const idx = Math.max(
+    0,
+    JOIN_EXERCISES.findIndex((e) => e.id === activeId),
+  );
   const solvedCount = Object.keys(solved).length;
   const hasNext = JOIN_EXERCISES.length > 1;
 
@@ -89,8 +93,8 @@ function JoinsPage() {
         <div className="mb-6">
           <h1 className="text-2xl font-bold tracking-tight">Visuelle JOIN-oppgaver</h1>
           <p className="text-sm text-muted-foreground mt-1">
-            Bytt mellom INNER, LEFT, RIGHT og FULL JOIN på samme tabeller. Matchende rader
-            lyser opp grønt; rader uten match dempes. NULL vises som rød pille.
+            Bytt mellom INNER, LEFT, RIGHT og FULL JOIN på samme tabeller. Matchende rader lyser opp
+            grønt; rader uten match dempes. NULL vises som rød pille.
           </p>
         </div>
 
@@ -135,9 +139,7 @@ function JoinsPage() {
                   )}
                 >
                   <div className="flex items-center gap-2">
-                    <span className="font-mono text-[10px] text-muted-foreground">
-                      {e.id}
-                    </span>
+                    <span className="font-mono text-[10px] text-muted-foreground">{e.id}</span>
                     <span className="font-medium truncate flex-1">{e.title}</span>
                     {isSolved && <Check className="h-3.5 w-3.5 text-success shrink-0" />}
                   </div>
@@ -145,9 +147,7 @@ function JoinsPage() {
                     <Badge variant="outline" className="text-[10px] px-1.5 py-0">
                       {"●".repeat(e.difficulty)}
                     </Badge>
-                    <span className="text-[10px] text-muted-foreground truncate">
-                      {e.topic}
-                    </span>
+                    <span className="text-[10px] text-muted-foreground truncate">{e.topic}</span>
                   </div>
                 </button>
               );
@@ -174,6 +174,8 @@ function JoinsPage() {
             </div>
           </div>
         </div>
+
+        <JoinTypeDrill />
       </main>
     </div>
   );
