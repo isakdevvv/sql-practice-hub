@@ -1,6 +1,12 @@
 import type { Problem } from "../problems/types";
+import { createFsrsStore, Rating, type ReviewRating } from "../learn/fsrs";
 
 const STORAGE_KEY = "sql-practice-progress-v1";
+
+/** Independent FSRS namespace for SQL problems. Lives next to the existing
+ *  progress in localStorage but in its own key so the legacy progress shape
+ *  is untouched. */
+export const problemFsrs = createFsrsStore("fsrs.problems.v1");
 
 export interface ProblemAttempt {
   solved: boolean;
@@ -249,7 +255,33 @@ export function recordAttempt(
   }
 
   saveProgress(progress);
+
+  // Feed FSRS. We schedule on every submission so re-attempts also push the
+  // due date forward. Rating heuristic: Again on wrong, Hard if hints used,
+  // Easy if a clean first-try solve, otherwise Good. Wrapped in try/catch so
+  // a scheduler error never breaks problem submission.
+  try {
+    let rating: ReviewRating;
+    if (!outcome.correct) {
+      rating = Rating.Again;
+    } else if (outcome.hintsUsed > 0) {
+      rating = Rating.Hard;
+    } else if (newAttempts === 1) {
+      rating = Rating.Easy;
+    } else {
+      rating = Rating.Good;
+    }
+    problemFsrs.recordReview(problem.id, rating);
+  } catch {
+    /* ignore */
+  }
+
   return { progress, xpEarned, newAchievements };
+}
+
+/** Ids of SQL problems whose FSRS interval is due now-or-earlier. */
+export function getDueProblemIds(now: number = Date.now()): string[] {
+  return problemFsrs.getDueIds(now);
 }
 
 export function recordHintUsed(problemId: string) {

@@ -1,5 +1,6 @@
-// FSRS-4.5 spaced repetition for flashcards.
-// Wraps `ts-fsrs` and persists per-card state to localStorage. The library's
+// FSRS-4.5 spaced repetition. Originally written for flashcards; now generic
+// over `id: string` so drag/JOIN/SQL progress can plug in their own stores.
+// Wraps `ts-fsrs` and persists per-id state to localStorage. The library's
 // `Card` type uses Date objects and snake_case fields; we store a flat,
 // JSON-friendly shape and convert at the boundary.
 
@@ -13,7 +14,7 @@ import {
 } from "ts-fsrs";
 import type { FlashCard } from "./types";
 
-const STORAGE_KEY = "fsrs.cards.v1";
+const FLASHCARD_STORAGE_KEY = "fsrs.cards.v1";
 
 export type CardStateName = "new" | "learning" | "review" | "relearning";
 
@@ -91,14 +92,14 @@ function emptyState(id: string, now: number = Date.now()): CardState {
   return fromTsCard(id, createEmptyCard(new Date(now)));
 }
 
-// ---- persistence ----
+// ---- persistence (parameterized by storage key) ----
 
 type Store = Record<string, CardState>;
 
-function loadStore(): Store {
+function loadStoreAt(storageKey: string): Store {
   if (typeof window === "undefined") return {};
   try {
-    const raw = window.localStorage.getItem(STORAGE_KEY);
+    const raw = window.localStorage.getItem(storageKey);
     if (!raw) return {};
     const parsed = JSON.parse(raw) as Store;
     return parsed ?? {};
@@ -107,46 +108,18 @@ function loadStore(): Store {
   }
 }
 
-function saveStore(store: Store) {
+function saveStoreAt(storageKey: string, store: Store) {
   if (typeof window === "undefined") return;
   try {
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(store));
+    window.localStorage.setItem(storageKey, JSON.stringify(store));
   } catch {
     // quota etc. — silently ignored, in-memory state stays consistent.
   }
 }
 
-/** Get the stored state for `id`, lazily initializing a fresh card if missing. */
-export function getCardState(id: string, now: number = Date.now()): CardState {
-  const store = loadStore();
-  const existing = store[id];
-  if (existing) return existing;
-  return emptyState(id, now);
-}
-
-/** Read the full store (used for stats / debugging). */
-export function getAllStates(): Store {
-  return loadStore();
-}
-
 // ---- review ----
 
 export type ReviewRating = Rating.Again | Rating.Hard | Rating.Good | Rating.Easy;
-
-/** Run the FSRS scheduler with the given rating and persist the result. */
-export function recordReview(
-  id: string,
-  rating: ReviewRating,
-  now: number = Date.now(),
-): CardState {
-  const store = loadStore();
-  const current = store[id] ?? emptyState(id, now);
-  const next: RecordLogItem = scheduler.next(toTsCard(current), new Date(now), rating);
-  const updated = fromTsCard(id, next.card);
-  store[id] = updated;
-  saveStore(store);
-  return updated;
-}
 
 /** Preview the four possible outcomes for `id` at `now` — used to label
  *  the Again/Hard/Good/Easy buttons with their predicted intervals. */
@@ -158,22 +131,6 @@ export interface RatingPreview {
   label: string;
   /** Resulting state — useful for showing state transitions. */
   state: CardStateName;
-}
-
-export function previewRatings(id: string, now: number = Date.now()): RatingPreview[] {
-  const current = getCardState(id, now);
-  const preview = scheduler.repeat(toTsCard(current), new Date(now));
-  const grades: ReviewRating[] = [Rating.Again, Rating.Hard, Rating.Good, Rating.Easy];
-  return grades.map((g) => {
-    const item = preview[g];
-    const dueMs = item.card.due.getTime() - now;
-    return {
-      rating: g,
-      scheduledDays: item.card.scheduled_days,
-      label: formatInterval(dueMs),
-      state: STATE_FROM_NUM[item.card.state],
-    };
-  });
 }
 
 function formatInterval(ms: number): string {
@@ -189,11 +146,110 @@ function formatInterval(ms: number): string {
   return `${(d / 365).toFixed(1)}å`;
 }
 
-// ---- queue helpers ----
+// ---- generic FSRS store factory ----
+
+/** A self-contained FSRS scheduler bound to one localStorage key. Used by
+ *  flashcards, drag exercises, JOIN exercises and SQL problems — each gets
+ *  its own namespace so ids don't collide and one feature's data is
+ *  independent of another's. */
+export interface FsrsStore {
+  /** Get the stored state for `id`, lazily initializing a fresh card. */
+  getCardState(id: string, now?: number): CardState;
+  /** Read the full underlying store. */
+  getAllStates(): Record<string, CardState>;
+  /** Run the FSRS scheduler with the given rating and persist the result. */
+  recordReview(id: string, rating: ReviewRating, now?: number): CardState;
+  /** Preview Again/Hard/Good/Easy intervals for the next review. */
+  previewRatings(id: string, now?: number): RatingPreview[];
+  /** Wipe all state in this namespace. */
+  reset(): void;
+  /** Return ids that are due now or earlier. Excludes brand-new ids. */
+  getDueIds(now?: number): string[];
+  /** Underlying localStorage key — exposed for migration/debug only. */
+  readonly storageKey: string;
+}
+
+export function createFsrsStore(storageKey: string): FsrsStore {
+  return {
+    storageKey,
+    getCardState(id, now = Date.now()) {
+      const store = loadStoreAt(storageKey);
+      return store[id] ?? emptyState(id, now);
+    },
+    getAllStates() {
+      return loadStoreAt(storageKey);
+    },
+    recordReview(id, rating, now = Date.now()) {
+      const store = loadStoreAt(storageKey);
+      const current = store[id] ?? emptyState(id, now);
+      const next: RecordLogItem = scheduler.next(toTsCard(current), new Date(now), rating);
+      const updated = fromTsCard(id, next.card);
+      store[id] = updated;
+      saveStoreAt(storageKey, store);
+      return updated;
+    },
+    previewRatings(id, now = Date.now()) {
+      const current = this.getCardState(id, now);
+      const preview = scheduler.repeat(toTsCard(current), new Date(now));
+      const grades: ReviewRating[] = [Rating.Again, Rating.Hard, Rating.Good, Rating.Easy];
+      return grades.map((g) => {
+        const item = preview[g];
+        const dueMs = item.card.due.getTime() - now;
+        return {
+          rating: g,
+          scheduledDays: item.card.scheduled_days,
+          label: formatInterval(dueMs),
+          state: STATE_FROM_NUM[item.card.state],
+        };
+      });
+    },
+    reset() {
+      if (typeof window === "undefined") return;
+      window.localStorage.removeItem(storageKey);
+    },
+    getDueIds(now = Date.now()) {
+      const store = loadStoreAt(storageKey);
+      return Object.values(store)
+        .filter((s) => s.state !== "new" && s.due <= now)
+        .sort((a, b) => a.due - b.due)
+        .map((s) => s.id);
+    },
+  };
+}
+
+// ---- flashcard store (the original, kept under its old localStorage key) ----
+
+/** Shared FSRS namespace for FlashCards. */
+export const flashcardFsrs = createFsrsStore(FLASHCARD_STORAGE_KEY);
+
+// Backward-compatible function-style exports used across the flashcard UI.
+// (These were the only public surface before the refactor.)
+
+export function getCardState(id: string, now: number = Date.now()): CardState {
+  return flashcardFsrs.getCardState(id, now);
+}
+
+export function getAllStates(): Record<string, CardState> {
+  return flashcardFsrs.getAllStates();
+}
+
+export function recordReview(
+  id: string,
+  rating: ReviewRating,
+  now: number = Date.now(),
+): CardState {
+  return flashcardFsrs.recordReview(id, rating, now);
+}
+
+export function previewRatings(id: string, now: number = Date.now()): RatingPreview[] {
+  return flashcardFsrs.previewRatings(id, now);
+}
+
+// ---- queue helpers (flashcard-specific; preserved for cards.tsx) ----
 
 /** Cards due now or earlier, sorted oldest-due first. Excludes brand-new cards. */
 export function getDueCards(cards: FlashCard[], now: number = Date.now(), limit?: number): FlashCard[] {
-  const store = loadStore();
+  const store = flashcardFsrs.getAllStates();
   const due = cards
     .map((c) => ({ card: c, state: store[c.id] }))
     .filter((x) => x.state && x.state.state !== "new" && x.state.due <= now)
@@ -204,14 +260,14 @@ export function getDueCards(cards: FlashCard[], now: number = Date.now(), limit?
 
 /** Cards never reviewed yet. Order matches input. */
 export function getNewCards(cards: FlashCard[], limit?: number): FlashCard[] {
-  const store = loadStore();
+  const store = flashcardFsrs.getAllStates();
   const fresh = cards.filter((c) => !store[c.id] || store[c.id].state === "new");
   return limit != null ? fresh.slice(0, limit) : fresh;
 }
 
 /** Cards with state but not currently due — counted as "learned" in the stats. */
 export function getLearnedCount(cards: FlashCard[], now: number = Date.now()): number {
-  const store = loadStore();
+  const store = flashcardFsrs.getAllStates();
   return cards.filter((c) => {
     const s = store[c.id];
     return s && s.state !== "new" && s.due > now;
@@ -236,10 +292,9 @@ export function buildStudyQueue(
   return queue;
 }
 
-/** Wipe all FSRS state. Used by the reset button. */
+/** Wipe all flashcard FSRS state. Used by the reset button. */
 export function resetFsrs(): void {
-  if (typeof window === "undefined") return;
-  window.localStorage.removeItem(STORAGE_KEY);
+  flashcardFsrs.reset();
 }
 
 // Re-export Rating so consumers don't need a second ts-fsrs import.
