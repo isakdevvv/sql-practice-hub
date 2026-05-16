@@ -216,6 +216,22 @@ const ML_COURSES: Course[] = [
     Icon: Calculator,
     status: "ready",
   },
+  {
+    slug: "dte2501-kmeans-visualizer",
+    title: "k-Means live-plot",
+    shortDescription:
+      "Interaktiv visualisering: velg k, dataset (Iris/blobs/moons/klikk selv), steg ASSIGN/UPDATE eller animer. Inertia-graf per steg.",
+    Icon: Layers,
+    status: "ready",
+  },
+  {
+    slug: "dte2501-pca-visualizer",
+    title: "PCA interaktiv projeksjon",
+    shortDescription:
+      "Roter selv en akse og se PC1 maksimere varians. Iris/Wine i 2D, projisert på PC1 vs PC1+PC2, explained variance ratio.",
+    Icon: Axis3D,
+    status: "ready",
+  },
 ];
 
 function CourseCard({ c }: { c: Course }) {
