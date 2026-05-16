@@ -12,14 +12,15 @@ import {
 // Komplementerer MemoryVisualizer (byte-fokus) ved å vise frames og
 // allokeringer over tid, med realistiske ASLR-adresser.
 //
-// Tre scenarier:
-//   1. stack-heap-peker — int x; int *p = malloc; *p = 7; free
-//   2. rekursjon        — sum(3) bygger og river ned 4 frames
-//   3. use-after-free   — *p etter free er udefinert
+// To språk:
+//   C       — eksplisitt minnehåndtering, frames og malloc/free
+//   Python  — alt er heap-objekter med refcount; stacken har bare navne-
+//             bindinger (referanser). Samme adressemodell under huden.
 // ---------------------------------------------------------------------------
 
 type Region = "stack" | "heap";
 type CellState = "live" | "free" | "dangling";
+type Language = "c" | "python";
 
 type Cell = {
   id: string;
@@ -33,6 +34,9 @@ type Cell = {
   pointsTo?: number;
   asInt?: number;
   asPointer?: boolean;
+  // Python-spesifikt:
+  kind?: "reference"; // navne-binding på stacken — ingen adresse, ingen bytes
+  refcount?: number; // for heap-objekter
 };
 
 type Step = {
@@ -48,10 +52,12 @@ type Scenario = {
   blurb: string;
   code: string[];
   steps: Step[];
+  language: Language;
 };
 
 const STACK_BASE = 0x7ffda4c0;
 const HEAP_BASE = 0x55abe100;
+const PY_HEAP_BASE = 0x55cc1000;
 
 function fmtAddr(addr: number): string {
   const hex = addr.toString(16).padStart(8, "0");
@@ -119,6 +125,7 @@ function buildStackHeapScenario(): Scenario {
   return {
     id: "stack-heap-peker",
     title: "Stack + heap + peker",
+    language: "c",
     blurb:
       "Lokal int på stacken, malloc reserverer på heapen, peker på stacken som peker dit, free frigjør blokka.",
     code: [
@@ -192,6 +199,7 @@ function buildRekursjonScenario(): Scenario {
   return {
     id: "rekursjon",
     title: "Rekursjon — frames på stacken",
+    language: "c",
     blurb:
       "Hvert kall til sum() legger en ny stack-frame på toppen. Når base-case treffer, river kallene seg ned igjen og hver frame leverer sin returverdi til den under.",
     code: [
@@ -278,6 +286,7 @@ function buildUAFScenario(): Scenario {
   return {
     id: "use-after-free",
     title: "Use-after-free — pekeren overlever blokka",
+    language: "c",
     blurb:
       "free fjerner ikke pekeren — den fjerner kun allokatorens regnskap. Bruker du pekeren etterpå, gambler du.",
     code: [
@@ -313,10 +322,227 @@ function buildUAFScenario(): Scenario {
   };
 }
 
+// --- Python-scenarier ------------------------------------------------------
+// I CPython er ALT et heap-objekt med en refcount. Stacken har bare
+// navne-bindinger (lokale variabler) som er pekere inn i heapen. Når en
+// refcount når 0 frigjøres objektet umiddelbart (CPython bruker også en
+// cyclic GC for å rydde sykluser, men vi visualiserer kun refcount).
+
+function pyRef(name: string, target: number, hovered = false): Cell {
+  return {
+    id: `ref-${name}`,
+    region: "stack",
+    addr: 0,
+    size: 0,
+    label: name,
+    bytes: [],
+    state: hovered ? "live" : "live",
+    pointsTo: target,
+    kind: "reference",
+  };
+}
+
+function pyInt(addr: number, value: number, refcount: number, state: CellState = "live"): Cell {
+  return {
+    id: `obj-${addr.toString(16)}`,
+    region: "heap",
+    addr,
+    size: 4,
+    label: `int(${value})`,
+    type: "PyLongObject",
+    bytes: state === "free" ? Array(4).fill(null) : littleEndianBytes(value, 4),
+    state,
+    asInt: state === "free" ? undefined : value,
+    refcount,
+  };
+}
+
+function pyStr(addr: number, value: string, refcount: number, state: CellState = "live"): Cell {
+  const charBytes = [...value].map((c) => c.charCodeAt(0) & 0xff);
+  return {
+    id: `obj-${addr.toString(16)}`,
+    region: "heap",
+    addr,
+    size: charBytes.length,
+    label: `str("${value}")`,
+    type: "PyUnicodeObject",
+    bytes: state === "free" ? Array(charBytes.length).fill(null) : charBytes,
+    state,
+    refcount,
+  };
+}
+
+function pyList(addr: number, items: number[], refcount: number, state: CellState = "live"): Cell {
+  return {
+    id: `obj-${addr.toString(16)}`,
+    region: "heap",
+    addr,
+    size: items.length * 8,
+    label: `list([${items.join(", ")}])`,
+    type: "PyListObject",
+    bytes: [],
+    state,
+    refcount,
+  };
+}
+
+function buildPyObjectsScenario(): Scenario {
+  const addrInt = PY_HEAP_BASE;
+  const addrStr = PY_HEAP_BASE + 0x40;
+  return {
+    id: "py-objekter",
+    title: "Alt er objekter på heapen",
+    language: "python",
+    blurb:
+      "I Python har ingen variabel en 'verdi' direkte. Variabler er navn som peker inn i heapen, hvor selve objektet — int, str, list — lever med sin egen refcount.",
+    code: [
+      "x = 42",
+      'y = "hei"',
+      "print(x, y)",
+    ],
+    steps: [
+      {
+        line: 0,
+        cells: [pyRef("x", addrInt), pyInt(addrInt, 42, 1)],
+        note: "x = 42 lager et PyLongObject på heapen og binder navnet x til adressen. Stacken inneholder ikke 42 — bare en peker dit.",
+      },
+      {
+        line: 1,
+        cells: [
+          pyRef("x", addrInt),
+          pyRef("y", addrStr),
+          pyInt(addrInt, 42, 1),
+          pyStr(addrStr, "hei", 1),
+        ],
+        note: 'y = "hei" lager et PyUnicodeObject. Strenger har sin egen heap-blokk med bytes for hvert tegn (0x68 0x65 0x69 = h e i). To navn, to objekter, hver refcount=1.',
+      },
+      {
+        line: 2,
+        cells: [
+          pyRef("x", addrInt),
+          pyRef("y", addrStr),
+          pyInt(addrInt, 42, 1),
+          pyStr(addrStr, "hei", 1),
+        ],
+        note: "print() leser via pekerne, finner objektene på heapen, og kaller deres __str__. Når funksjonen returnerer holdes objektene fortsatt i live av x og y i frame-en.",
+      },
+    ],
+  };
+}
+
+function buildPyAliasingScenario(): Scenario {
+  const addrList = PY_HEAP_BASE;
+  return {
+    id: "py-aliasing",
+    title: "Aliasing — to navn, samme objekt",
+    language: "python",
+    blurb:
+      "Tildeling i Python kopierer aldri objektet — den kopierer pekeren. To navn som peker til samme list-objekt mutereres sammen. Dette er klassisk gotcha.",
+    code: [
+      "a = [1, 2, 3]",
+      "b = a               # b peker til samme liste",
+      "b.append(4)         # muterer listen — a ser endringen",
+      "print(a)            # [1, 2, 3, 4]",
+    ],
+    steps: [
+      {
+        line: 0,
+        cells: [pyRef("a", addrList), pyList(addrList, [1, 2, 3], 1)],
+        note: "a = [1, 2, 3] lager et PyListObject med tre elementer. a peker dit. Refcount = 1.",
+      },
+      {
+        line: 1,
+        cells: [
+          pyRef("a", addrList),
+          pyRef("b", addrList),
+          pyList(addrList, [1, 2, 3], 2),
+        ],
+        note: "b = a kopierer IKKE listen. Den kopierer pekeren — adressen 0x55cc_1000. Refcount øker til 2. Begge navn refererer det samme heap-objektet.",
+      },
+      {
+        line: 2,
+        cells: [
+          pyRef("a", addrList),
+          pyRef("b", addrList),
+          pyList(addrList, [1, 2, 3, 4], 2),
+        ],
+        note: "b.append(4) endrer objektet på heapen — ikke pekeren. Siden a peker til samme objekt, ser a også [1, 2, 3, 4]. Dette er kilde til de fleste 'jeg endret bare b!'-bugs i Python.",
+        warn:
+          "Vil du ha en kopi? Bruk b = a.copy() eller b = list(a) — da blir det et nytt heap-objekt med egen refcount.",
+      },
+      {
+        line: 3,
+        cells: [
+          pyRef("a", addrList),
+          pyRef("b", addrList),
+          pyList(addrList, [1, 2, 3, 4], 2),
+        ],
+        note: "print(a) viser den muterte listen. Begge navnene lever fortsatt — refcount = 2.",
+      },
+    ],
+  };
+}
+
+function buildPyRefcountScenario(): Scenario {
+  const addrInt = PY_HEAP_BASE;
+  const addrStr = PY_HEAP_BASE + 0x40;
+  return {
+    id: "py-refcount",
+    title: "Refcount og GC — hvordan minne frigjøres",
+    language: "python",
+    blurb:
+      "CPython teller hver gang en ny peker til et objekt opprettes. Når telleren når 0 frigjøres objektet umiddelbart. Det er Python sitt 'free' — bare automatisk.",
+    code: [
+      "x = 42",
+      "y = x               # samme objekt",
+      'y = "annet"        # y rebinder',
+      "del x               # x forsvinner",
+    ],
+    steps: [
+      {
+        line: 0,
+        cells: [pyRef("x", addrInt), pyInt(addrInt, 42, 1)],
+        note: "x = 42 — PyLongObject på heapen, refcount = 1.",
+      },
+      {
+        line: 1,
+        cells: [
+          pyRef("x", addrInt),
+          pyRef("y", addrInt),
+          pyInt(addrInt, 42, 2),
+        ],
+        note: "y = x kopierer pekeren. Refcount øker til 2. Begge navn peker til samme int-objekt — i CPython er små heltall ofte cachet, så x is y vil være True her.",
+      },
+      {
+        line: 2,
+        cells: [
+          pyRef("x", addrInt),
+          pyRef("y", addrStr),
+          pyInt(addrInt, 42, 1),
+          pyStr(addrStr, "annet", 1),
+        ],
+        note: 'y = "annet" lager et nytt str-objekt. y rebindes til det. Refcount på int(42) faller fra 2 til 1 — den lever ennå (x peker fortsatt).',
+      },
+      {
+        line: 3,
+        cells: [
+          pyRef("y", addrStr),
+          pyInt(addrInt, 42, 0, "free"),
+          pyStr(addrStr, "annet", 1),
+        ],
+        note: "del x fjerner navnet x fra frame-en. Refcount på int(42) faller til 0 → CPython frigjør objektet umiddelbart. Heap-blokken returneres til allokatoren. y → str-objektet lever videre.",
+      },
+    ],
+  };
+}
+
 const SCENARIOS: Scenario[] = [
   buildStackHeapScenario(),
   buildRekursjonScenario(),
   buildUAFScenario(),
+  buildPyObjectsScenario(),
+  buildPyAliasingScenario(),
+  buildPyRefcountScenario(),
 ];
 
 function hex2(n: number | null): string {
@@ -337,19 +563,31 @@ function stateClasses(state: CellState, region: Region): string {
 }
 
 export function MemoryModel() {
+  const [language, setLanguage] = useState<Language>("c");
   const [scenarioId, setScenarioId] = useState<string>(SCENARIOS[0].id);
   const [stepIdx, setStepIdx] = useState(0);
   const [hoveredId, setHoveredId] = useState<string | null>(null);
 
+  const scenariosForLang = useMemo(
+    () => SCENARIOS.filter((s) => s.language === language),
+    [language],
+  );
+
   const scenario = useMemo(
-    () => SCENARIOS.find((s) => s.id === scenarioId) ?? SCENARIOS[0],
-    [scenarioId],
+    () =>
+      scenariosForLang.find((s) => s.id === scenarioId) ?? scenariosForLang[0],
+    [scenariosForLang, scenarioId],
   );
   const step = scenario.steps[Math.min(stepIdx, scenario.steps.length - 1)];
 
   const stackCells = step.cells
     .filter((c) => c.region === "stack")
-    .sort((a, b) => b.addr - a.addr);
+    .sort((a, b) => {
+      // Referanser øverst (insertion-rekkefølge), så byte-celler synkende på adresse.
+      if (a.kind === "reference" && b.kind !== "reference") return -1;
+      if (b.kind === "reference" && a.kind !== "reference") return 1;
+      return b.addr - a.addr;
+    });
   const heapCells = step.cells
     .filter((c) => c.region === "heap")
     .sort((a, b) => a.addr - b.addr);
@@ -372,17 +610,50 @@ export function MemoryModel() {
     setHoveredId(null);
   };
 
+  const switchLanguage = (lang: Language) => {
+    setLanguage(lang);
+    setStepIdx(0);
+    setHoveredId(null);
+    const first = SCENARIOS.find((s) => s.language === lang);
+    if (first) setScenarioId(first.id);
+  };
+
   return (
     <div className="rounded-2xl border border-border bg-card p-5 space-y-5">
+      <div className="flex items-center gap-2 border-b border-border pb-3">
+        <span className="text-[11px] uppercase tracking-wider text-muted-foreground">
+          Språk
+        </span>
+        {(["c", "python"] as const).map((lang) => (
+          <button
+            key={lang}
+            type="button"
+            onClick={() => switchLanguage(lang)}
+            className={`text-xs px-3 py-1 rounded-md border transition ${
+              language === lang
+                ? "border-brand bg-brand/20 text-foreground font-semibold"
+                : "border-border bg-background hover:bg-muted/40 text-muted-foreground"
+            }`}
+          >
+            {lang === "c" ? "C" : "Python"}
+          </button>
+        ))}
+        <span className="ml-auto text-[11px] text-muted-foreground italic">
+          {language === "c"
+            ? "eksplisitt minne · frames + malloc/free"
+            : "implisitt · alt på heapen med refcount"}
+        </span>
+      </div>
+
       <div>
         <div className="flex flex-wrap gap-2 mb-2">
-          {SCENARIOS.map((s) => (
+          {scenariosForLang.map((s) => (
             <button
               key={s.id}
               type="button"
               onClick={() => switchScenario(s.id)}
               className={`text-xs px-3 py-1.5 rounded-md border transition ${
-                s.id === scenarioId
+                s.id === scenario.id
                   ? "border-brand bg-brand/15 text-foreground font-medium"
                   : "border-border bg-background hover:bg-muted/40 text-muted-foreground"
               }`}
@@ -451,16 +722,29 @@ export function MemoryModel() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <MemoryColumn
-          title="STACK"
-          subtitle="høye adresser øverst · vokser ↓"
+          title={language === "python" ? "STACK · lokale bindinger" : "STACK"}
+          subtitle={
+            language === "python"
+              ? "navn → adresse på heapen"
+              : "høye adresser øverst · vokser ↓"
+          }
           cells={stackCells}
           activePointerTarget={activePointerTarget}
           hoveredId={hoveredId}
           onHover={setHoveredId}
+          empty={
+            language === "python"
+              ? "Ingen lokale variabler ennå."
+              : "Ingen stack-frame ennå."
+          }
         />
         <MemoryColumn
-          title="HEAP"
-          subtitle="lave adresser nederst · vokser ↑"
+          title={language === "python" ? "HEAP · objekter" : "HEAP"}
+          subtitle={
+            language === "python"
+              ? "PyObject med refcount"
+              : "lave adresser nederst · vokser ↑"
+          }
           cells={heapCells}
           activePointerTarget={activePointerTarget}
           hoveredId={hoveredId}
@@ -481,9 +765,21 @@ export function MemoryModel() {
       )}
 
       <p className="text-[11px] text-muted-foreground">
-        Adressene er konstruerte men realistiske: stacken på{" "}
-        <code>0x7ffd_…</code> (typisk Linux x86-64 user-space), heapen på{" "}
-        <code>0x55ab_…</code>. ASLR randomiserer dem hver kjøring.
+        {language === "c" ? (
+          <>
+            Adressene er konstruerte men realistiske: stacken på{" "}
+            <code>0x7ffd_…</code> (typisk Linux x86-64 user-space), heapen på{" "}
+            <code>0x55ab_…</code>. ASLR randomiserer dem hver kjøring.
+          </>
+        ) : (
+          <>
+            CPython holder hvert objekt på heapen via{" "}
+            <code>PyObject_New</code>. Refcount-feltet er 8 bytes som dekrementeres ved hver{" "}
+            <code>Py_DECREF</code> — når det treffer 0 kalles destruktoren og minnet frigjøres.
+            Bytt til C-modusen for å se hvordan dette gjøres manuelt med{" "}
+            <code>malloc</code>/<code>free</code>.
+          </>
+        )}
       </p>
     </div>
   );
@@ -552,12 +848,30 @@ function MemoryCell({
   isHovered: boolean;
   onHover: (id: string | null) => void;
 }) {
-  const stateCls = stateClasses(cell.state, cell.region);
   const ring = isTarget
     ? "ring-2 ring-brand ring-offset-2 ring-offset-card"
     : isHovered
       ? "ring-1 ring-foreground/30"
       : "";
+
+  // Python-referanse: kompakt rad "navn → adresse".
+  if (cell.kind === "reference") {
+    return (
+      <div
+        onMouseEnter={() => onHover(cell.id)}
+        onMouseLeave={() => onHover(null)}
+        className={`rounded-md border border-sky-500/50 bg-sky-500/10 ${ring} px-3 py-1.5 transition flex items-baseline gap-2`}
+      >
+        <span className="text-xs font-semibold">{cell.label}</span>
+        <span className="text-[10px] text-muted-foreground">navn</span>
+        <span className="ml-auto text-[11px] font-mono text-brand">
+          → {cell.pointsTo !== undefined ? fmtAddr(cell.pointsTo) : "—"}
+        </span>
+      </div>
+    );
+  }
+
+  const stateCls = stateClasses(cell.state, cell.region);
 
   return (
     <div
@@ -577,9 +891,23 @@ function MemoryCell({
             </span>
           )}
         </div>
-        <span className="text-[10px] text-muted-foreground tabular-nums">
-          {cell.size} B
-        </span>
+        <div className="flex items-baseline gap-1.5 shrink-0">
+          {cell.refcount !== undefined && (
+            <span
+              className={`text-[10px] px-1.5 py-0.5 rounded-full font-mono tabular-nums ${
+                cell.refcount === 0
+                  ? "bg-red-500/15 text-red-500 border border-red-500/40"
+                  : "bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 border border-emerald-500/40"
+              }`}
+              title="refcount — antall navn som peker til dette objektet"
+            >
+              ref={cell.refcount}
+            </span>
+          )}
+          <span className="text-[10px] text-muted-foreground tabular-nums">
+            {cell.size} B
+          </span>
+        </div>
       </div>
 
       {cell.bytes.length > 0 && (
