@@ -2,8 +2,10 @@ import { Link } from "@tanstack/react-router";
 import { ArrowRight, Lightbulb } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
+import { TransistorVisualizer } from "./TransistorVisualizer";
 
 const STEPS = [
+  { title: "Interaktiv visualisering — fra NMOS til CMOS", anchor: "visualisering" },
   { title: "Hva en transistor faktisk er", anchor: "hva" },
   { title: "Halvledere — hvorfor silisium leder noen ganger", anchor: "halvleder" },
   { title: "MOSFET — gate styrer strømmen", anchor: "mosfet" },
@@ -41,6 +43,20 @@ export function Trinn1TransistorPage() {
         </div>
 
         <CourseOutline courseId="trinn-1-transistor" steps={STEPS} />
+
+        <section id="visualisering" className="mb-10">
+          <h2 className="text-xl font-semibold mb-3">
+            Interaktiv visualisering — fra NMOS til CMOS
+          </h2>
+          <p className="text-sm text-muted-foreground mb-4">
+            Før vi snakker om silisium og dopinger: lek deg gjennom det
+            faktiske mønsteret. Vri gate-spenninger, se elektronene flyte
+            (eller ikke). Bytt mellom MOSFET-skjematikk, vannmetaforen,
+            NOT-gate, NAND og en CMOS-inverter — alle bygd av de samme to
+            byggeklossene.
+          </p>
+          <TransistorVisualizer />
+        </section>
 
         <section id="hva" className="mb-10">
           <h2 className="text-xl font-semibold mb-3">1. Hva en transistor faktisk er</h2>
