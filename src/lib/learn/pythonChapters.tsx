@@ -93,6 +93,14 @@ export const PYTHON_CHAPTERS: PythonChapter[] = [
         <Code>
           {`if temp > 25:\n    melding = "Het."\nelif temp > 15:\n    melding = "Behagelig."\nelse:\n    melding = "Trekk på jakka."`}
         </Code>
+        <H2>Hva skjer steg-for-steg</H2>
+        <P>
+          Python går gjennom kjeden ovenfra og ned, stopper ved første{" "}
+          <code>True</code>, og kjører <em>kun</em> den greinen. Resten hoppes
+          over — ikke evaluert i det hele tatt. Dette er viktig når
+          betingelsene har bivirkninger eller er dyre å beregne.
+        </P>
+        <F.ConditionalAnatomy />
         <H2>Sammenligning</H2>
         <P>
           Operatorer som <code>==</code>, <code>!=</code>, <code>{"<"}</code>,{" "}
@@ -113,11 +121,20 @@ export const PYTHON_CHAPTERS: PythonChapter[] = [
         <Code>
           {`alder = 17\nhar_id = True\nif alder >= 18 and har_id:\n    slipp_inn()\nelif alder >= 18 or har_id:\n    sjekk_nøyere()  # bare én av delene\nelse:\n    avvis()`}
         </Code>
+        <H2>Truthiness — hva regnes som sant?</H2>
+        <P>
+          Du kan skrive <code>if x:</code> uten å sammenligne mot noe. Da
+          oversetter Python via <code>bool(x)</code>. Reglene er enkle: tomme
+          samlinger og null-aktige verdier er <em>falsy</em>, alt annet er{" "}
+          <em>truthy</em>:
+        </P>
+        <F.TruthinessLadder />
         <KeyPoints
           items={[
             "Bare én grein i en if/elif/else-kjede kjører.",
             "Sammenligning gir alltid True/False — bruk == og !=, ikke = og ≠.",
             "and / or short-circuit'er: høyresiden evalueres bare når den må.",
+            "Tomme samlinger, 0 og None er falsy. Alt annet er truthy.",
             "Innrykk markerer hvilken kode som hører til hvilken grein.",
           ]}
         />
@@ -137,6 +154,12 @@ export const PYTHON_CHAPTERS: PythonChapter[] = [
           <code>while</code> kjører så lenge en betingelse er sann, og{" "}
           <code>for</code> går gjennom en sekvens.
         </P>
+        <H2>Anatomien av en løkke — fire steg</H2>
+        <P>
+          Hver løkke er bygd opp av de samme fire stegene. Lærer du å se dem,
+          slipper du både evige løkker og av-med-én-feil:
+        </P>
+        <F.LoopAnatomy />
         <H2>while-løkke</H2>
         <P>
           Bruk <code>while</code> når du ikke vet på forhånd hvor mange
@@ -172,6 +195,13 @@ export const PYTHON_CHAPTERS: PythonChapter[] = [
         <Code>
           {`for bokstav in "Python":\n    print(bokstav)\n\nfor pris in [12, 8, 25]:\n    print(pris)`}
         </Code>
+        <H2>Hva er en for-løkke egentlig?</H2>
+        <P>
+          Under panseret er <code>for</code> bare en pen forkortelse for en{" "}
+          <em>iterator</em> + en <code>next()</code>-løkke. Det er derfor den
+          virker likt på lister, strenger og generator-funksjoner:
+        </P>
+        <F.ForLoopDesugar />
         <H2>break og continue</H2>
         <P>
           <code>break</code> avslutter løkka umiddelbart. <code>continue</code>{" "}
@@ -215,6 +245,30 @@ export const PYTHON_CHAPTERS: PythonChapter[] = [
           bundet til parameteren (her <code>navn</code>). Kroppen kjører, og{" "}
           <code>return</code> sender en verdi tilbake til kallstedet.
         </P>
+        <H2>Anatomien av en def — ord for ord</H2>
+        <P>
+          Hvert ord i en <code>def</code>-linje har en presis rolle. Lærer du
+          dem, kan du lese vilkårlige funksjons-signaturer og skjønne hva som
+          skjer ved kall:
+        </P>
+        <F.FunctionAnatomy />
+        <H2>Tilordning — hva skjer ved <code>=</code></H2>
+        <P>
+          Før vi går videre, en presisering som gjelder all Python-kode:{" "}
+          <code>=</code> evaluerer alltid <em>høyre side først</em>, lager
+          (eller finner) et objekt på heap-en, og binder så navnet til
+          adressen til det objektet:
+        </P>
+        <F.AssignmentSteps />
+        <H2>Hvilken operator binder strammest?</H2>
+        <P>
+          Når høyre side har flere operatorer uten paranteser, evaluerer
+          Python etter en fast prioritets-rekkefølge. <code>3 + 4 * 2</code>{" "}
+          blir <code>11</code>, ikke <code>14</code>, fordi <code>*</code>{" "}
+          binder strammere enn <code>+</code>. Tabellen viser de vanligste —{" "}
+          <strong>1 = sterkest</strong>:
+        </P>
+        <F.OperatorPrecedence />
         <H2>Flere parametre og standardverdier</H2>
         <Code>
           {`def hilsen(navn, hilsemate="Hei"):\n    return f"{hilsemate}, {navn}!"\n\nhilsen("Ada")           # "Hei, Ada!"\nhilsen("Bob", "Hallo")   # "Hallo, Bob!"`}
@@ -257,6 +311,7 @@ export const PYTHON_CHAPTERS: PythonChapter[] = [
           <em>kallstacken</em>. Rammen holder lokale variabler og linjen vi er
           på. Når funksjonen returnerer, fjernes rammen.
         </P>
+        <F.CallFrameDetail />
         <F.CallStackGrowth />
         <KeyPoints
           items={[
@@ -317,6 +372,14 @@ export const PYTHON_CHAPTERS: PythonChapter[] = [
           på heap-en med ulike <code>id=…</code>, og <code>self</code>{" "}
           peker på den som tilhører kallet.
         </P>
+        <H2>Metode vs. funksjon — hva er forskjellen egentlig?</H2>
+        <P>
+          En metode er bare en funksjon som bor inne i en klasse. Punkt-syntaksen{" "}
+          <code>obj.metode(x)</code> er syntaktisk sukker — Python oversetter
+          den til <code>Klasse.metode(obj, x)</code> ved kalltidspunkt. Det er
+          dét som gjør at <code>self</code> alltid får riktig instans:
+        </P>
+        <F.MethodVsFunction />
         <H2>Hvorfor klasser?</H2>
         <P>
           Klasser samler relatert data og oppførsel på ett sted. Når koden vokser
