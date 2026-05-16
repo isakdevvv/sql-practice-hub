@@ -134,7 +134,7 @@ const EKSTRA: ExtraResource[] = [
     internal: true,
   },
   {
-    href: "/exam",
+    href: "/eksamen/trening",
     Icon: Boxes,
     tittel: "Tidsbasert eksamenstrening",
     blurb:

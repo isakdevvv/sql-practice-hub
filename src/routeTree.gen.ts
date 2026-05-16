@@ -40,6 +40,7 @@ import { Route as VizLesjonIndexRouteImport } from './routes/viz-lesjon.index'
 import { Route as StackIndexRouteImport } from './routes/stack.index'
 import { Route as SporIndexRouteImport } from './routes/spor.index'
 import { Route as MiniKursIndexRouteImport } from './routes/mini-kurs.index'
+import { Route as EksamenIndexRouteImport } from './routes/eksamen.index'
 import { Route as VizLesjonSlugRouteImport } from './routes/viz-lesjon.$slug'
 import { Route as StackSlugRouteImport } from './routes/stack.$slug'
 import { Route as SporSlugRouteImport } from './routes/spor.$slug'
@@ -49,6 +50,7 @@ import { Route as PythonChar91_figuresChar93RouteImport } from './routes/python_
 import { Route as ProsjektMlSlugRouteImport } from './routes/prosjekt-ml.$slug'
 import { Route as PortfolioDte2602SlugRouteImport } from './routes/portfolio-dte2602.$slug'
 import { Route as MiniKursSlugRouteImport } from './routes/mini-kurs.$slug'
+import { Route as EksamenTreningRouteImport } from './routes/eksamen.trening'
 import { Route as Dte2507PcapRouteImport } from './routes/dte2507.pcap'
 import { Route as Dte2505ShellDrillRouteImport } from './routes/dte2505.shell-drill'
 import { Route as DrillChar91_demoChar93RouteImport } from './routes/drill.[_demo]'
@@ -211,6 +213,11 @@ const MiniKursIndexRoute = MiniKursIndexRouteImport.update({
   path: '/',
   getParentRoute: () => MiniKursRoute,
 } as any)
+const EksamenIndexRoute = EksamenIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => EksamenRoute,
+} as any)
 const VizLesjonSlugRoute = VizLesjonSlugRouteImport.update({
   id: '/$slug',
   path: '/$slug',
@@ -257,6 +264,11 @@ const MiniKursSlugRoute = MiniKursSlugRouteImport.update({
   path: '/$slug',
   getParentRoute: () => MiniKursRoute,
 } as any)
+const EksamenTreningRoute = EksamenTreningRouteImport.update({
+  id: '/trening',
+  path: '/trening',
+  getParentRoute: () => EksamenRoute,
+} as any)
 const Dte2507PcapRoute = Dte2507PcapRouteImport.update({
   id: '/dte2507/pcap',
   path: '/dte2507/pcap',
@@ -293,7 +305,7 @@ export interface FileRoutesByFullPath {
   '/cards': typeof CardsRoute
   '/dashboard': typeof DashboardRoute
   '/drag': typeof DragRoute
-  '/eksamen': typeof EksamenRoute
+  '/eksamen': typeof EksamenRouteWithChildren
   '/er-tegner': typeof ErTegnerRoute
   '/exam': typeof ExamRoute
   '/git-drill': typeof GitDrillRoute
@@ -319,6 +331,7 @@ export interface FileRoutesByFullPath {
   '/drill/_demo': typeof DrillChar91_demoChar93Route
   '/dte2505/shell-drill': typeof Dte2505ShellDrillRoute
   '/dte2507/pcap': typeof Dte2507PcapRoute
+  '/eksamen/trening': typeof EksamenTreningRoute
   '/mini-kurs/$slug': typeof MiniKursSlugRoute
   '/portfolio-dte2602/$slug': typeof PortfolioDte2602SlugRoute
   '/prosjekt-ml/$slug': typeof ProsjektMlSlugRoute
@@ -328,6 +341,7 @@ export interface FileRoutesByFullPath {
   '/spor/$slug': typeof SporSlugRoute
   '/stack/$slug': typeof StackSlugRoute
   '/viz-lesjon/$slug': typeof VizLesjonSlugRoute
+  '/eksamen/': typeof EksamenIndexRoute
   '/mini-kurs/': typeof MiniKursIndexRoute
   '/spor/': typeof SporIndexRoute
   '/stack/': typeof StackIndexRoute
@@ -341,7 +355,6 @@ export interface FileRoutesByTo {
   '/cards': typeof CardsRoute
   '/dashboard': typeof DashboardRoute
   '/drag': typeof DragRoute
-  '/eksamen': typeof EksamenRoute
   '/er-tegner': typeof ErTegnerRoute
   '/exam': typeof ExamRoute
   '/git-drill': typeof GitDrillRoute
@@ -363,6 +376,7 @@ export interface FileRoutesByTo {
   '/drill/_demo': typeof DrillChar91_demoChar93Route
   '/dte2505/shell-drill': typeof Dte2505ShellDrillRoute
   '/dte2507/pcap': typeof Dte2507PcapRoute
+  '/eksamen/trening': typeof EksamenTreningRoute
   '/mini-kurs/$slug': typeof MiniKursSlugRoute
   '/portfolio-dte2602/$slug': typeof PortfolioDte2602SlugRoute
   '/prosjekt-ml/$slug': typeof ProsjektMlSlugRoute
@@ -372,6 +386,7 @@ export interface FileRoutesByTo {
   '/spor/$slug': typeof SporSlugRoute
   '/stack/$slug': typeof StackSlugRoute
   '/viz-lesjon/$slug': typeof VizLesjonSlugRoute
+  '/eksamen': typeof EksamenIndexRoute
   '/mini-kurs': typeof MiniKursIndexRoute
   '/spor': typeof SporIndexRoute
   '/stack': typeof StackIndexRoute
@@ -386,7 +401,7 @@ export interface FileRoutesById {
   '/cards': typeof CardsRoute
   '/dashboard': typeof DashboardRoute
   '/drag': typeof DragRoute
-  '/eksamen': typeof EksamenRoute
+  '/eksamen': typeof EksamenRouteWithChildren
   '/er-tegner': typeof ErTegnerRoute
   '/exam': typeof ExamRoute
   '/git-drill': typeof GitDrillRoute
@@ -412,6 +427,7 @@ export interface FileRoutesById {
   '/drill/_demo': typeof DrillChar91_demoChar93Route
   '/dte2505/shell-drill': typeof Dte2505ShellDrillRoute
   '/dte2507/pcap': typeof Dte2507PcapRoute
+  '/eksamen/trening': typeof EksamenTreningRoute
   '/mini-kurs/$slug': typeof MiniKursSlugRoute
   '/portfolio-dte2602/$slug': typeof PortfolioDte2602SlugRoute
   '/prosjekt-ml/$slug': typeof ProsjektMlSlugRoute
@@ -421,6 +437,7 @@ export interface FileRoutesById {
   '/spor/$slug': typeof SporSlugRoute
   '/stack/$slug': typeof StackSlugRoute
   '/viz-lesjon/$slug': typeof VizLesjonSlugRoute
+  '/eksamen/': typeof EksamenIndexRoute
   '/mini-kurs/': typeof MiniKursIndexRoute
   '/spor/': typeof SporIndexRoute
   '/stack/': typeof StackIndexRoute
@@ -462,6 +479,7 @@ export interface FileRouteTypes {
     | '/drill/_demo'
     | '/dte2505/shell-drill'
     | '/dte2507/pcap'
+    | '/eksamen/trening'
     | '/mini-kurs/$slug'
     | '/portfolio-dte2602/$slug'
     | '/prosjekt-ml/$slug'
@@ -471,6 +489,7 @@ export interface FileRouteTypes {
     | '/spor/$slug'
     | '/stack/$slug'
     | '/viz-lesjon/$slug'
+    | '/eksamen/'
     | '/mini-kurs/'
     | '/spor/'
     | '/stack/'
@@ -484,7 +503,6 @@ export interface FileRouteTypes {
     | '/cards'
     | '/dashboard'
     | '/drag'
-    | '/eksamen'
     | '/er-tegner'
     | '/exam'
     | '/git-drill'
@@ -506,6 +524,7 @@ export interface FileRouteTypes {
     | '/drill/_demo'
     | '/dte2505/shell-drill'
     | '/dte2507/pcap'
+    | '/eksamen/trening'
     | '/mini-kurs/$slug'
     | '/portfolio-dte2602/$slug'
     | '/prosjekt-ml/$slug'
@@ -515,6 +534,7 @@ export interface FileRouteTypes {
     | '/spor/$slug'
     | '/stack/$slug'
     | '/viz-lesjon/$slug'
+    | '/eksamen'
     | '/mini-kurs'
     | '/spor'
     | '/stack'
@@ -554,6 +574,7 @@ export interface FileRouteTypes {
     | '/drill/_demo'
     | '/dte2505/shell-drill'
     | '/dte2507/pcap'
+    | '/eksamen/trening'
     | '/mini-kurs/$slug'
     | '/portfolio-dte2602/$slug'
     | '/prosjekt-ml/$slug'
@@ -563,6 +584,7 @@ export interface FileRouteTypes {
     | '/spor/$slug'
     | '/stack/$slug'
     | '/viz-lesjon/$slug'
+    | '/eksamen/'
     | '/mini-kurs/'
     | '/spor/'
     | '/stack/'
@@ -577,7 +599,7 @@ export interface RootRouteChildren {
   CardsRoute: typeof CardsRoute
   DashboardRoute: typeof DashboardRoute
   DragRoute: typeof DragRoute
-  EksamenRoute: typeof EksamenRoute
+  EksamenRoute: typeof EksamenRouteWithChildren
   ErTegnerRoute: typeof ErTegnerRoute
   ExamRoute: typeof ExamRoute
   GitDrillRoute: typeof GitDrillRoute
@@ -832,6 +854,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MiniKursIndexRouteImport
       parentRoute: typeof MiniKursRoute
     }
+    '/eksamen/': {
+      id: '/eksamen/'
+      path: '/'
+      fullPath: '/eksamen/'
+      preLoaderRoute: typeof EksamenIndexRouteImport
+      parentRoute: typeof EksamenRoute
+    }
     '/viz-lesjon/$slug': {
       id: '/viz-lesjon/$slug'
       path: '/$slug'
@@ -895,6 +924,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MiniKursSlugRouteImport
       parentRoute: typeof MiniKursRoute
     }
+    '/eksamen/trening': {
+      id: '/eksamen/trening'
+      path: '/trening'
+      fullPath: '/eksamen/trening'
+      preLoaderRoute: typeof EksamenTreningRouteImport
+      parentRoute: typeof EksamenRoute
+    }
     '/dte2507/pcap': {
       id: '/dte2507/pcap'
       path: '/dte2507/pcap'
@@ -939,6 +975,19 @@ declare module '@tanstack/react-router' {
     }
   }
 }
+
+interface EksamenRouteChildren {
+  EksamenTreningRoute: typeof EksamenTreningRoute
+  EksamenIndexRoute: typeof EksamenIndexRoute
+}
+
+const EksamenRouteChildren: EksamenRouteChildren = {
+  EksamenTreningRoute: EksamenTreningRoute,
+  EksamenIndexRoute: EksamenIndexRoute,
+}
+
+const EksamenRouteWithChildren =
+  EksamenRoute._addFileChildren(EksamenRouteChildren)
 
 interface MiniKursRouteChildren {
   MiniKursSlugRoute: typeof MiniKursSlugRoute
@@ -997,7 +1046,7 @@ const rootRouteChildren: RootRouteChildren = {
   CardsRoute: CardsRoute,
   DashboardRoute: DashboardRoute,
   DragRoute: DragRoute,
-  EksamenRoute: EksamenRoute,
+  EksamenRoute: EksamenRouteWithChildren,
   ErTegnerRoute: ErTegnerRoute,
   ExamRoute: ExamRoute,
   GitDrillRoute: GitDrillRoute,

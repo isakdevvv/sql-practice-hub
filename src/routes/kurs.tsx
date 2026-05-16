@@ -224,8 +224,8 @@ function KursPage() {
               : alle oppgaver i én flat liste med filtre.
             </li>
             <li>
-              <Link to="/exam" className="text-brand hover:underline">
-                Exam
+              <Link to="/eksamen/trening" className="text-brand hover:underline">
+                Eksamenstrening
               </Link>
               : tidsbegrenset miks for å teste deg under press.
             </li>

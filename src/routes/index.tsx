@@ -219,7 +219,6 @@ type Verktoy = {
     | "/drag"
     | "/cards"
     | "/prosjekt"
-    | "/exam"
     | "/eksamen"
     | "/git-drill"
     | "/venv-drill"
@@ -277,16 +276,10 @@ const VERKTOY: Verktoy[] = [
     Icon: Boxes,
   },
   {
-    href: "/exam",
-    navn: "Eksamenstrening",
-    blurb: "10 oppgaver, 20 minutter, nedteller.",
-    Icon: GraduationCap,
-  },
-  {
     href: "/eksamen",
-    navn: "Eksamen-hub",
-    blurb: "Samler eksamens-trinn fra alle fag.",
-    Icon: Sparkles,
+    navn: "Eksamen",
+    blurb: "Hub: tidsbasert trening, prosjekt, og eksamens-trinn fra alle fag.",
+    Icon: GraduationCap,
   },
   {
     href: "/git-drill",
@@ -550,6 +543,45 @@ function LandingPage() {
           </div>
         </section>
 
+        {/* Start her — 3-veis velger for nye brukere */}
+        <section className="container mx-auto px-4 pt-10 max-w-5xl">
+          <div className="mb-5 text-center">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-brand">
+              Start her
+            </span>
+            <h2 className="mt-1 text-2xl font-bold tracking-tight">
+              Hva vil du gjøre i dag?
+            </h2>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Tre vanlige veier inn — velg den som passer deg nå.
+            </p>
+          </div>
+          <div className="grid sm:grid-cols-3 gap-3">
+            <StartCard
+              to="/lar"
+              onClick={scrollToCatalog}
+              icon={<Compass className="h-5 w-5" />}
+              eyebrow="Jeg har et fag"
+              title="Jeg skal bestå et fag"
+              body="Pin fagene du tar i «Mine fag» og bruk modul-oversikten + eksamens-trinn for hvert kurs."
+            />
+            <StartCard
+              to="/spor"
+              icon={<FolderTree className="h-5 w-5" />}
+              eyebrow="Jeg vil bygge"
+              title="Bygge noe konkret"
+              body="Curerte læringsspor: Flask, backend, React, FastAPI, data-ingeniør. Velg framework, få rekkefølge."
+            />
+            <StartCard
+              to="/practice"
+              icon={<Dumbbell className="h-5 w-5" />}
+              eyebrow="Jeg vil øve"
+              title="Bare øve på SQL"
+              body="300+ SQL-oppgaver med ekte SQLite i nettleseren — hopp rett inn, ingen oppsett."
+            />
+          </div>
+        </section>
+
         {/* Mine fag — bygges av brukerens egne valg */}
         <section className="container mx-auto px-4 pt-14 max-w-6xl">
           <div className="rounded-2xl border-2 border-brand/40 bg-gradient-to-br from-brand/10 via-card to-success/5 p-6 sm:p-8 shadow-lg shadow-brand/5">
@@ -762,7 +794,7 @@ function LandingPage() {
                 return (
                   <Link
                     key={v.navn}
-                    to={v.href as "/practice" | "/python" | "/drag" | "/cards" | "/prosjekt" | "/exam" | "/eksamen" | "/git-drill" | "/venv-drill" | "/mac-drill" | "/spor" | "/mini-kurs"}
+                    to={v.href as "/practice" | "/python" | "/drag" | "/cards" | "/prosjekt" | "/eksamen" | "/git-drill" | "/venv-drill" | "/mac-drill" | "/spor" | "/mini-kurs"}
                     className="group rounded-xl border border-border bg-background hover:border-brand/40 p-4 transition-colors block"
                   >
                     {inner}
@@ -878,6 +910,47 @@ function ModeCard({
       </div>
       <p className="mt-1.5 text-xs text-muted-foreground leading-relaxed">{body}</p>
     </button>
+  );
+}
+
+function StartCard({
+  to,
+  onClick,
+  icon,
+  eyebrow,
+  title,
+  body,
+}: {
+  to: "/lar" | "/spor" | "/practice";
+  onClick?: () => void;
+  icon: React.ReactNode;
+  eyebrow: string;
+  title: string;
+  body: string;
+}) {
+  return (
+    <Link
+      to={to}
+      onClick={onClick}
+      className="group relative rounded-2xl border-2 border-border bg-card hover:border-brand p-5 transition-all hover:shadow-lg hover:shadow-brand/10 block"
+    >
+      <div className="flex items-center gap-3 mb-3">
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-brand/15 text-brand">
+          {icon}
+        </div>
+        <div className="text-[10px] font-bold uppercase tracking-wider text-brand">
+          {eyebrow}
+        </div>
+      </div>
+      <h3 className="font-bold text-foreground leading-tight mb-1.5 text-base">
+        {title}
+      </h3>
+      <p className="text-xs text-muted-foreground leading-relaxed mb-3">{body}</p>
+      <div className="flex items-center text-xs text-brand font-semibold">
+        Gå hit
+        <ArrowRight className="h-3.5 w-3.5 ml-1 group-hover:translate-x-0.5 transition-transform" />
+      </div>
+    </Link>
   );
 }
 

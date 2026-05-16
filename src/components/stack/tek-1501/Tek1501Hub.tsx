@@ -133,7 +133,7 @@ const EKSTRA: ExtraResource[] = [
       "40+ kort over begreper, formler, og fordelings-parametere — drillbar repetisjon foer eksamen.",
   },
   {
-    href: "/exam",
+    href: "/eksamen/trening",
     Icon: Boxes,
     tittel: "Tidsbasert trening",
     blurb:
