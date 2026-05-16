@@ -3,6 +3,7 @@ import { ArrowRight, Lightbulb, AlertTriangle, GitMerge, Layers } from "lucide-r
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
 import { QueryPlanVisualizer } from "@/components/stack/query-optimisering/QueryPlanVisualizer";
+import { QueryLayersView } from "@/components/stack/query-optimisering/QueryLayersView";
 
 // Course page for query optimization: parser/optimizer/executor, EXPLAIN,
 // join algorithms, stats, common anti-patterns, partitioning + materialized views.
@@ -18,6 +19,7 @@ const STEPS = [
   { title: "Vanlige anti-mønstre", anchor: "anti" },
   { title: "Partitioning kort", anchor: "partitioning" },
   { title: "Views og materialized views", anchor: "views" },
+  { title: "Samme spørring fra flere vinkler", anchor: "vinkler" },
 ];
 
 type Faser = { nr: string; navn: string; hva: string };
@@ -459,6 +461,20 @@ REFRESH MATERIALIZED VIEW kunde_oversikt_mv;`}</pre>
             litt utdaterte tall, og leses ofte. Eksempel: dashboard som spør samme
             «omsetning per måned» tusenvis av ganger per dag.
           </div>
+        </section>
+
+        {/* Samme spørring fra flere vinkler */}
+        <section id="vinkler" className="mb-10">
+          <h2 className="text-xl font-semibold mb-3">Samme spørring fra flere vinkler</h2>
+          <p className="text-sm text-muted-foreground mb-4">
+            Vi har sett spørringen fra parser-, optimizer- og executor-siden
+            hver for seg. Her ligger alle åtte abstraksjonslagene side om side
+            for én og samme spørring —{" "}
+            <code className="font-mono text-xs">SELECT name FROM users WHERE age &gt; 30 ORDER BY created_at DESC LIMIT 10</code>.
+            Hover et fargelagt ord (for eksempel <code>age</code>) og se
+            hvordan det dukker opp i hvert lag det er relevant.
+          </p>
+          <QueryLayersView />
         </section>
 
         {/* CTA */}
