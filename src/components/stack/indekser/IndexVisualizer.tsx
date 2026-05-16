@@ -379,7 +379,7 @@ export function IndexVisualizer() {
   // =====================================================================
 
   return (
-    <div className="rounded-2xl border border-border bg-card overflow-hidden">
+    <div className="rounded-2xl border border-border bg-card overflow-hidden" role="region" aria-label="Interaktiv visualisering: Indekser og B-tree">
       {/* Topp-bar */}
       <div className="px-4 py-3 border-b border-border bg-muted/30">
         <div className="flex items-center justify-between gap-3 flex-wrap">
@@ -579,7 +579,7 @@ export function IndexVisualizer() {
 
       {/* Logg */}
       {log.length > 0 && (
-        <div className="px-4 py-3 border-t border-border bg-card">
+        <div className="px-4 py-3 border-t border-border bg-card" aria-live="polite" aria-atomic="false">
           <div className="text-[10px] uppercase tracking-wider text-muted-foreground mb-2">
             Operasjons-logg (nyeste først)
           </div>

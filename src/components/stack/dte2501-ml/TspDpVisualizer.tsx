@@ -256,7 +256,7 @@ export function TspDpVisualizer() {
   const dpOps = nCities * nCities * (1 << nCities);
 
   return (
-    <div className="rounded-xl border border-border bg-card p-5 space-y-4">
+    <div className="rounded-xl border border-border bg-card p-5 space-y-4" role="region" aria-label="Interaktiv visualisering: TSP dynamic programming">
       <div className="grid sm:grid-cols-2 gap-4">
         <div className="space-y-2">
           <div>

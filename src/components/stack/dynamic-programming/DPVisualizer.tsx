@@ -4,6 +4,7 @@ import {
   StepControls,
   OpLog,
   useStepRunner,
+  KeyboardScope,
   type ModeDef,
   type OpLogEntry,
 } from "@/components/visualizer-shell";
@@ -264,6 +265,15 @@ export function DPVisualizer() {
   }, [plan.steps, filledCount]);
 
   return (
+   <KeyboardScope
+     label="Dynamic programming-tabell"
+     onStep={runner.step}
+     onStepBack={runner.stepBack}
+     onPlayPause={runner.playPause}
+     onReset={runner.reset}
+     onFirst={() => runner.setIndex(0)}
+     onLast={() => runner.setIndex(runner.total - 1)}
+   >
     <VisualizerShell<Mode>
       title="Dynamic programming — se DP-tabellen fylles"
       modes={MODES}
@@ -351,6 +361,7 @@ export function DPVisualizer() {
 
       <OpLog entries={log} totalCount={filledCount} />
     </VisualizerShell>
+   </KeyboardScope>
   );
 }
 

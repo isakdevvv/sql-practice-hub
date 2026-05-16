@@ -4,6 +4,7 @@ import {
   VisualizerShell,
   StepControls,
   useStepRunner,
+  KeyboardScope,
   type ModeDef,
 } from "@/components/visualizer-shell";
 
@@ -357,6 +358,15 @@ export function RecursionVisualizer() {
   const range = N_RANGE[mode];
 
   return (
+   <KeyboardScope
+     label="Rekursjon-visualisering"
+     onStep={runner.step}
+     onStepBack={runner.stepBack}
+     onPlayPause={runner.playPause}
+     onReset={runner.reset}
+     onFirst={() => runner.setIndex(0)}
+     onLast={() => runner.setIndex(runner.total - 1)}
+   >
     <VisualizerShell<Mode>
       title="Rekursjon — se kallstacken og treet bygges opp"
       modes={MODES}
@@ -442,6 +452,7 @@ export function RecursionVisualizer() {
         <span className="text-xs font-mono w-6 text-right tabular-nums">{n}</span>
       </div>
     </VisualizerShell>
+   </KeyboardScope>
   );
 }
 

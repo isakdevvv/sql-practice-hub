@@ -262,7 +262,7 @@ export function LogRegVisualizer() {
   // ---------- RENDER ----------
 
   return (
-    <div className="rounded-2xl border border-border bg-card overflow-hidden">
+    <div className="rounded-2xl border border-border bg-card overflow-hidden" role="region" aria-label="Interaktiv visualisering: Logistisk regresjon">
       {/* Topp-bar */}
       <div className="px-4 py-3 border-b border-border bg-muted/30">
         <div className="flex items-center justify-between gap-3 flex-wrap">

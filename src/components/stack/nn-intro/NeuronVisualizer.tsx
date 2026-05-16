@@ -1209,7 +1209,7 @@ export function NeuronVisualizer() {
   const [mode, setMode] = useState<Mode>("single");
 
   return (
-    <div className="rounded-xl border border-border bg-card p-4">
+    <div className="rounded-xl border border-border bg-card p-4" role="region" aria-label="Interaktiv visualisering: Nevron-intro">
       <ModeSelector mode={mode} setMode={setMode} />
       {mode === "single" && <SingleNeuron />}
       {mode === "act" && <ActivationsCompare />}

@@ -66,7 +66,7 @@ export function CnnVisualizer() {
   const [mode, setMode] = useState<Mode>("conv1d");
 
   return (
-    <div className="rounded-2xl border border-border bg-card overflow-hidden">
+    <div className="rounded-2xl border border-border bg-card overflow-hidden" role="region" aria-label="Interaktiv visualisering: CNN">
       <div className="px-4 py-3 border-b border-border bg-muted/30">
         <div className="flex items-center justify-between gap-3 flex-wrap">
           <div>
@@ -1064,9 +1064,11 @@ function Controls({
       <button
         type="button"
         onClick={onBack}
+        aria-label="Ett steg tilbake"
+        title="Forrige steg"
         className="inline-flex items-center gap-1 px-2 py-1.5 text-xs rounded-md border border-border hover:bg-muted"
       >
-        <SkipBack className="h-3 w-3" />
+        <SkipBack className="h-3 w-3" aria-hidden="true" />
       </button>
       <button
         type="button"

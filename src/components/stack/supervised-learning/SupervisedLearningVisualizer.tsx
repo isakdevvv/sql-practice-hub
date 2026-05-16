@@ -158,7 +158,7 @@ export function SupervisedLearningVisualizer() {
   const [mode, setMode] = useState<Mode>("poly");
 
   return (
-    <div className="rounded-2xl border border-border bg-card overflow-hidden">
+    <div className="rounded-2xl border border-border bg-card overflow-hidden" role="region" aria-label="Interaktiv visualisering: Supervised learning">
       <div className="px-4 py-3 border-b border-border bg-muted/30">
         <div>
           <div className="text-xs uppercase tracking-wider text-muted-foreground">

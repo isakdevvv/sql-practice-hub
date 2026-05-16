@@ -431,7 +431,7 @@ export function Http2Visualizer() {
   const firstByteSec = (scenario.firstByteMs / 1000).toFixed(2);
 
   return (
-    <figure className="my-6 rounded-xl border border-border bg-card">
+    <figure className="my-6 rounded-xl border border-border bg-card" role="region" aria-label="Interaktiv visualisering: HTTP/2 head-of-line blocking">
       <figcaption className="border-b border-border bg-muted/30 px-4 py-3">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div className="text-xs uppercase tracking-wider text-muted-foreground font-semibold">

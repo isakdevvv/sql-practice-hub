@@ -1428,7 +1428,7 @@ export function BackpropVisualizer() {
   const [mode, setMode] = useState<Mode>("expr");
 
   return (
-    <div className="rounded-xl border border-border bg-card p-4">
+    <div className="rounded-xl border border-border bg-card p-4" role="region" aria-label="Interaktiv visualisering: Backpropagation">
       <ModeSelector mode={mode} setMode={setMode} />
       <div className="mb-3 text-xs text-muted-foreground">
         Forward (forover) bygger verdiene gjennom grafen; backward (bakover) sender

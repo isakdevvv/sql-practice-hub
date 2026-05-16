@@ -127,7 +127,7 @@ export function CvSplitVisualizer() {
   }
 
   return (
-    <div className="rounded-xl border border-border bg-card p-5">
+    <div className="rounded-xl border border-border bg-card p-5" role="region" aria-label="Interaktiv visualisering: Cross-validation splits">
       <div className="flex flex-wrap items-center gap-2 mb-4">
         <div className="text-xs text-muted-foreground mr-2">Variant:</div>
         <Pill m="val" label="Validation 80/20" />
