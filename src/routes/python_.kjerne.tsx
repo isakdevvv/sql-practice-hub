@@ -130,7 +130,7 @@ function PythonKjernePage() {
             føles vag rett før eksamen, finn figuren her og se modellen igjen.
           </p>
           <div className="mt-4 flex flex-wrap gap-2">
-            <Link to="/python_/kap">
+            <Link to="/python/kap">
               <Button variant="outline" size="sm">
                 <BookOpen className="h-3.5 w-3.5 mr-1.5" />
                 Kapittel-sider med tekst

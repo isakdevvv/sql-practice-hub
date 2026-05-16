@@ -364,14 +364,14 @@ function PythonPage() {
           </p>
           <div className="mt-3 flex flex-wrap gap-2 text-xs">
             <Link
-              to="/python_/kjerne"
+              to="/python/kjerne"
               className="inline-flex items-center gap-1 rounded-md border border-brand/60 bg-brand/10 px-2.5 py-1 hover:bg-brand/20 transition-colors text-brand font-medium"
             >
               <Compass className="h-3 w-3" />
               Python kjerne — pre-eksamen cheat sheet
             </Link>
             <Link
-              to="/python_/kap"
+              to="/python/kap"
               className="inline-flex items-center gap-1 rounded-md border border-border bg-card px-2.5 py-1 hover:bg-accent hover:text-foreground transition-colors text-muted-foreground"
             >
               <BookOpen className="h-3 w-3" />

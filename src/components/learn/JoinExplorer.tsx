@@ -27,7 +27,7 @@ function pickRandom<T>(xs: T[], not?: T): T {
   if (xs.length === 1 || not === undefined) {
     return xs[Math.floor(Math.random() * xs.length)];
   }
-  let pick = not;
+  let pick: T = not;
   while (pick === not) {
     pick = xs[Math.floor(Math.random() * xs.length)];
   }
