@@ -9,9 +9,11 @@ import { VisualizerSkeleton } from "@/components/visualizer-shell";
 const BigOVisualizer = lazy(() =>
   import("./BigOVisualizer").then((m) => ({ default: m.BigOVisualizer })),
 );
+const BigODrill = lazy(() => import("./BigODrill").then((m) => ({ default: m.BigODrill })));
 
 const STEPS = [
   { title: "Interaktiv visualisering", anchor: "viz" },
+  { title: "Prøv selv — analyser kompleksiteten", anchor: "drill" },
   { title: "Hva er Big-O — intuisjon", anchor: "intuisjon" },
   { title: "De syv klassene", anchor: "klasser" },
   { title: "Analyse-regler", anchor: "regler" },
@@ -33,7 +35,7 @@ const KLASSER: Klasse[] = [
     o: "O(1)",
     navn: "Konstant",
     vekst: "Samme tid uansett hvor stor n er",
-    kode: "lst[5]\nd[\"nøkkel\"]\nstack.append(x)",
+    kode: 'lst[5]\nd["nøkkel"]\nstack.append(x)',
     eksempel: "Array-oppslag, dict-get (snitt), stack push/pop, lengden av en liste",
   },
   {
@@ -88,12 +90,10 @@ export function BigOPage() {
           <div className="text-xs uppercase tracking-wider text-brand font-semibold mb-2">
             Algoritmer · Rammeverk
           </div>
-          <h1 className="text-3xl font-bold tracking-tight">
-            Big-O — hvordan algoritmer skalerer
-          </h1>
+          <h1 className="text-3xl font-bold tracking-tight">Big-O — hvordan algoritmer skalerer</h1>
           <p className="mt-3 text-muted-foreground">
-            Big-O beskriver hvordan en algoritmes <em>arbeid</em> vokser når input-størrelsen
-            øker. Den ignorerer konstanter og smådetaljer — du får et grovt, men kraftig,
+            Big-O beskriver hvordan en algoritmes <em>arbeid</em> vokser når input-størrelsen øker.
+            Den ignorerer konstanter og smådetaljer — du får et grovt, men kraftig,
             sammenligningsgrunnlag. Lær deg de syv klassene og tre regler, så blir analysen
             mønstergjenkjenning.
           </p>
@@ -104,8 +104,8 @@ export function BigOPage() {
               <Link to="/drag" className="text-brand hover:underline">
                 drag-oppgavene
               </Link>{" "}
-              har 18+ oppgaver under emnet «Big-O» — les kode og gjett kompleksitet,
-              sortér vekstrater, identifiser feller.
+              har 18+ oppgaver under emnet «Big-O» — les kode og gjett kompleksitet, sortér
+              vekstrater, identifiser feller.
             </div>
           </div>
         </div>
@@ -113,25 +113,27 @@ export function BigOPage() {
         <CourseOutline courseId="big-o" steps={STEPS} />
 
         <section id="viz" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">
-            1. Interaktiv visualisering
-          </h2>
+          <h2 className="text-xl font-semibold mb-3">1. Interaktiv visualisering</h2>
           <p className="text-sm text-muted-foreground mb-4">
-            Lek deg fram. Skru på kurvene du vil se, dra <code>n</code> opp og ned,
-            slå på log-y for å skille klassene visuelt, kjør et race mellom
-            lineær- og binærsøk, og test deg selv med quiz-snippets.
+            Lek deg fram. Skru på kurvene du vil se, dra <code>n</code> opp og ned, slå på log-y for
+            å skille klassene visuelt, kjør et race mellom lineær- og binærsøk, og test deg selv med
+            quiz-snippets.
           </p>
           <Suspense fallback={<VisualizerSkeleton />}>
             <BigOVisualizer />
           </Suspense>
         </section>
 
+        <Suspense fallback={<VisualizerSkeleton />}>
+          <BigODrill />
+        </Suspense>
+
         <section id="intuisjon" className="mb-10">
           <h2 className="text-xl font-semibold mb-3">2. Hva er Big-O — intuisjon</h2>
           <p className="text-sm text-muted-foreground mb-4">
-            Forestill deg to algoritmer som begge sorterer en liste. På 100 elementer
-            tar de begge under et sekund. Men på 1 million elementer: den ene er ferdig
-            på 0.5 sekund, den andre bruker 30 minutter. Big-O forklarer hvorfor.
+            Forestill deg to algoritmer som begge sorterer en liste. På 100 elementer tar de begge
+            under et sekund. Men på 1 million elementer: den ene er ferdig på 0.5 sekund, den andre
+            bruker 30 minutter. Big-O forklarer hvorfor.
           </p>
           <div className="rounded-xl border-2 border-brand/40 bg-brand/5 p-5">
             <div className="text-xs uppercase tracking-wider text-brand font-semibold mb-2">
@@ -143,9 +145,16 @@ export function BigOPage() {
               <code> f(n)</code> for store n, opp til en konstant».
             </p>
             <ul className="space-y-1 text-sm text-foreground list-disc pl-5">
-              <li>Ignorer konstanter: <code>3n + 50</code> er <code>O(n)</code>, ikke <code>O(3n)</code>.</li>
-              <li>Ignorer mindre ledd: <code>n² + n</code> er <code>O(n²)</code>.</li>
-              <li>Vi sammenligner <em>vekstrate</em>, ikke total tid.</li>
+              <li>
+                Ignorer konstanter: <code>3n + 50</code> er <code>O(n)</code>, ikke{" "}
+                <code>O(3n)</code>.
+              </li>
+              <li>
+                Ignorer mindre ledd: <code>n² + n</code> er <code>O(n²)</code>.
+              </li>
+              <li>
+                Vi sammenligner <em>vekstrate</em>, ikke total tid.
+              </li>
             </ul>
           </div>
         </section>
@@ -153,9 +162,9 @@ export function BigOPage() {
         <section id="klasser" className="mb-10">
           <h2 className="text-xl font-semibold mb-3">3. De syv klassene</h2>
           <p className="text-sm text-muted-foreground mb-4">
-            Nesten alle pensum-algoritmer hører til en av disse. Lær dem utenat —
-            spesielt forskjellen mellom <code>O(log n)</code>, <code>O(n)</code>,{" "}
-            <code>O(n log n)</code> og <code>O(n²)</code>.
+            Nesten alle pensum-algoritmer hører til en av disse. Lær dem utenat — spesielt
+            forskjellen mellom <code>O(log n)</code>, <code>O(n)</code>, <code>O(n log n)</code> og{" "}
+            <code>O(n²)</code>.
           </p>
           <div className="space-y-3">
             {KLASSER.map((k) => (
@@ -202,9 +211,7 @@ for x in lst:        # O(n)
                 <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-brand/10 text-brand text-xs font-bold">
                   2
                 </span>
-                <h3 className="font-semibold text-sm">
-                  Nesting (løkke i løkke) → multiplikasjon
-                </h3>
+                <h3 className="font-semibold text-sm">Nesting (løkke i løkke) → multiplikasjon</h3>
               </div>
               <pre className="font-mono text-xs rounded bg-background border border-border p-2 overflow-x-auto whitespace-pre">{`for i in range(n):     # n iterasjoner
     for j in range(n): # n iterasjoner inni
@@ -216,9 +223,7 @@ for x in lst:        # O(n)
                 <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-brand/10 text-brand text-xs font-bold">
                   3
                 </span>
-                <h3 className="font-semibold text-sm">
-                  Halvering / dobling → logaritme
-                </h3>
+                <h3 className="font-semibold text-sm">Halvering / dobling → logaritme</h3>
               </div>
               <pre className="font-mono text-xs rounded bg-background border border-border p-2 overflow-x-auto whitespace-pre">{`lo, hi = 0, n
 while lo < hi:
@@ -232,8 +237,8 @@ while lo < hi:
         <section id="case" className="mb-10">
           <h2 className="text-xl font-semibold mb-3">5. Beste, verste og forventet tilfelle</h2>
           <p className="text-sm text-muted-foreground mb-4">
-            Big-O er <em>verste tilfelle</em> by default. Men noen algoritmer har vidt
-            forskjellig beste og verste — det er viktig å vite begge.
+            Big-O er <em>verste tilfelle</em> by default. Men noen algoritmer har vidt forskjellig
+            beste og verste — det er viktig å vite begge.
           </p>
           <div className="overflow-x-auto rounded-lg border border-border">
             <table className="w-full text-sm">
@@ -293,8 +298,8 @@ while lo < hi:
           </div>
           <p className="mt-3 text-xs text-muted-foreground">
             Quicksorts verste er <code>O(n²)</code> hvis pivoten alltid er minste/største.
-            Median-of-three reduserer sannsynligheten dramatisk — derfor brukes
-            randomisert eller median-pivot i praksis.
+            Median-of-three reduserer sannsynligheten dramatisk — derfor brukes randomisert eller
+            median-pivot i praksis.
           </p>
         </section>
 
@@ -322,8 +327,7 @@ while lo < hi:
                 return True
     return False`,
                 svar: "O(n²)",
-                forklaring:
-                  "Nestet løkke. Bedre alternativ: set-konvertering gir O(n) snitt.",
+                forklaring: "Nestet løkke. Bedre alternativ: set-konvertering gir O(n) snitt.",
               },
               {
                 kode: `def binary_search(lst, mål):
@@ -335,16 +339,14 @@ while lo < hi:
         else: hi = mid - 1
     return -1`,
                 svar: "O(log n)",
-                forklaring:
-                  "Halverer søkeområdet hvert steg. Krever sortert input.",
+                forklaring: "Halverer søkeområdet hvert steg. Krever sortert input.",
               },
               {
                 kode: `def fib(n):
     if n < 2: return n
     return fib(n-1) + fib(n-2)`,
                 svar: "O(2ⁿ)",
-                forklaring:
-                  "Hvert kall lager to nye kall. Memoization fikser det til O(n).",
+                forklaring: "Hvert kall lager to nye kall. Memoization fikser det til O(n).",
               },
               {
                 kode: `def pair_sum(a, b):
@@ -354,8 +356,7 @@ while lo < hi:
                 return (x, y)
     return None`,
                 svar: "O(n × m)",
-                forklaring:
-                  "To ulike lister — størrelsene må holdes adskilt. Med set: O(n + m).",
+                forklaring: "To ulike lister — størrelsene må holdes adskilt. Med set: O(n + m).",
               },
               {
                 kode: `def double_sort(lst):
@@ -363,17 +364,11 @@ while lo < hi:
     for x in lst:          # O(n)
         print(x)`,
                 svar: "O(n log n)",
-                forklaring:
-                  "Sekvens — sorteringen dominerer. n log n + n = O(n log n).",
+                forklaring: "Sekvens — sorteringen dominerer. n log n + n = O(n log n).",
               },
             ].map((e, i) => (
-              <details
-                key={i}
-                className="rounded-xl border border-border bg-card p-4"
-              >
-                <summary className="cursor-pointer text-sm font-medium">
-                  Eksempel {i + 1}
-                </summary>
+              <details key={i} className="rounded-xl border border-border bg-card p-4">
+                <summary className="cursor-pointer text-sm font-medium">Eksempel {i + 1}</summary>
                 <pre className="mt-3 font-mono text-xs rounded bg-background border border-border p-3 overflow-x-auto whitespace-pre">
                   {e.kode}
                 </pre>
@@ -393,30 +388,28 @@ while lo < hi:
           <h2 className="text-xl font-semibold mb-3">7. Vanlige feller</h2>
           <div className="space-y-3 text-sm">
             <div className="rounded-lg border border-amber-500/30 bg-amber-500/5 p-4">
-              <strong>«To løkker etter hverandre er O(n²)»</strong> — nei. Sekvens er
-              addisjon: O(n) + O(n) = O(n). Kun NESTING gir multiplikasjon.
+              <strong>«To løkker etter hverandre er O(n²)»</strong> — nei. Sekvens er addisjon: O(n)
+              + O(n) = O(n). Kun NESTING gir multiplikasjon.
             </div>
             <div className="rounded-lg border border-amber-500/30 bg-amber-500/5 p-4">
               <strong>Skjult kompleksitet i innebygde funksjoner.</strong>{" "}
               <code>list.index(x)</code> er O(n). <code>x in lst</code> er O(n).{" "}
-              <code>x in set</code> er O(1) snitt. <code>sorted()</code> er O(n log n).
-              Sjekk alltid hva de innebygde funksjonene koster.
+              <code>x in set</code> er O(1) snitt. <code>sorted()</code> er O(n log n). Sjekk alltid
+              hva de innebygde funksjonene koster.
             </div>
             <div className="rounded-lg border border-amber-500/30 bg-amber-500/5 p-4">
-              <strong>String-konkatenering i løkke.</strong>{" "}
-              <code>s = s + ord</code> N ganger lager nye strings hver gang → O(n²).
-              Bruk <code>"".join(liste)</code> for O(n).
+              <strong>String-konkatenering i løkke.</strong> <code>s = s + ord</code> N ganger lager
+              nye strings hver gang → O(n²). Bruk <code>"".join(liste)</code> for O(n).
             </div>
             <div className="rounded-lg border border-amber-500/30 bg-amber-500/5 p-4">
-              <strong>Plass-kompleksitet glemmes ofte.</strong> Rekursjon bruker O(d)
-              minne på kallstacken, der d er dybden. Quicksort er O(log n) plass på
-              gjennomsnitt, O(n) i verste tilfelle.
+              <strong>Plass-kompleksitet glemmes ofte.</strong> Rekursjon bruker O(d) minne på
+              kallstacken, der d er dybden. Quicksort er O(log n) plass på gjennomsnitt, O(n) i
+              verste tilfelle.
             </div>
             <div className="rounded-lg border border-amber-500/30 bg-amber-500/5 p-4">
-              <strong>O(1) ≠ rask.</strong> O(1) betyr «konstant», ikke «rask». En
-              algoritme med 10 millioner steg er O(1) hvis tallet ikke avhenger av n.
-              Mest praktisk: O(log n) eller O(n) med liten konstant slår ofte O(1) med
-              stor konstant for små n.
+              <strong>O(1) ≠ rask.</strong> O(1) betyr «konstant», ikke «rask». En algoritme med 10
+              millioner steg er O(1) hvis tallet ikke avhenger av n. Mest praktisk: O(log n) eller
+              O(n) med liten konstant slår ofte O(1) med stor konstant for små n.
             </div>
           </div>
         </section>
