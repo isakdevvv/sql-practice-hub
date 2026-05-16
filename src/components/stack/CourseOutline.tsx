@@ -1,12 +1,19 @@
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
-import { CheckCircle2, Circle, MapPin } from "lucide-react";
+import { Award, Circle, Eye, MapPin } from "lucide-react";
 
 // A linear "Del X av N" stepper rendered at the top of each mini-course.
 // Each step is an anchor link to a section in the page (#id). The stepper
-// tracks scroll position to highlight the currently-visible section, and
-// persists "visited" state per course in localStorage so the learner can see
-// progress through the course content even if they jump between pages.
+// tracks three states per section:
+//
+//   1. Unvisited (open circle) — scroll has never landed here
+//   2. Visited (eye icon) — user has scrolled into the section
+//   3. Mastered (filled green check) — user has cleared the section's
+//      `SectionQuiz` by getting all questions correct at least once
+//
+// «Visited» is automatic via IntersectionObserver. «Mastered» is set by
+// `SectionQuiz` writing to localStorage and dispatching a
+// `course-mastered-changed` event, which this component listens to.
 
 export interface CourseStep {
   /** Section title shown on the chip. */
@@ -21,12 +28,13 @@ export interface CourseOutlineProps {
   steps: CourseStep[];
 }
 
-const STORAGE_PREFIX = "sql-practice-course-visited-v1:";
+const VISITED_PREFIX = "sql-practice-course-visited-v1:";
+const MASTERED_PREFIX = "sql-practice-course-mastered-v1:";
 
-function loadVisited(courseId: string): Set<string> {
+function loadKey(prefix: string, courseId: string): Set<string> {
   if (typeof window === "undefined") return new Set();
   try {
-    const raw = window.localStorage.getItem(STORAGE_PREFIX + courseId);
+    const raw = window.localStorage.getItem(prefix + courseId);
     if (!raw) return new Set();
     return new Set(JSON.parse(raw) as string[]);
   } catch {
@@ -36,14 +44,15 @@ function loadVisited(courseId: string): Set<string> {
 
 function saveVisited(courseId: string, set: Set<string>) {
   if (typeof window === "undefined") return;
-  window.localStorage.setItem(STORAGE_PREFIX + courseId, JSON.stringify(Array.from(set)));
+  window.localStorage.setItem(VISITED_PREFIX + courseId, JSON.stringify(Array.from(set)));
 }
 
 export function CourseOutline({ courseId, steps }: CourseOutlineProps) {
   const [activeAnchor, setActiveAnchor] = useState<string | null>(null);
-  const [visited, setVisited] = useState<Set<string>>(() => loadVisited(courseId));
+  const [visited, setVisited] = useState<Set<string>>(() => loadKey(VISITED_PREFIX, courseId));
+  const [mastered, setMastered] = useState<Set<string>>(() => loadKey(MASTERED_PREFIX, courseId));
 
-  // Track which section is currently in viewport — that's the "active" step.
+  // IntersectionObserver for «visited» tracking.
   useEffect(() => {
     if (typeof window === "undefined") return;
     const elements = steps
@@ -53,7 +62,6 @@ export function CourseOutline({ courseId, steps }: CourseOutlineProps) {
 
     const observer = new IntersectionObserver(
       (entries) => {
-        // Pick the topmost section that's currently intersecting.
         const visible = entries
           .filter((e) => e.isIntersecting)
           .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
@@ -69,16 +77,38 @@ export function CourseOutline({ courseId, steps }: CourseOutlineProps) {
           });
         }
       },
-      // Mark a section as "active" once its top crosses 30% of the viewport
       { rootMargin: "0px 0px -70% 0px", threshold: 0 },
     );
     elements.forEach((el) => observer.observe(el));
     return () => observer.disconnect();
   }, [courseId, steps]);
 
+  // Listen for mastered-changed events from SectionQuiz (and storage events
+  // from other tabs).
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const refresh = (e: Event) => {
+      const detail = (e as CustomEvent<{ courseId?: string }>).detail;
+      if (detail && detail.courseId && detail.courseId !== courseId) return;
+      setMastered(loadKey(MASTERED_PREFIX, courseId));
+    };
+    const onStorage = (e: StorageEvent) => {
+      if (e.key === MASTERED_PREFIX + courseId) {
+        setMastered(loadKey(MASTERED_PREFIX, courseId));
+      }
+    };
+    window.addEventListener("course-mastered-changed", refresh);
+    window.addEventListener("storage", onStorage);
+    return () => {
+      window.removeEventListener("course-mastered-changed", refresh);
+      window.removeEventListener("storage", onStorage);
+    };
+  }, [courseId]);
+
   const visitedCount = visited.size;
+  const masteredCount = mastered.size;
   const total = steps.length;
-  const pct = Math.round((visitedCount / total) * 100);
+  const pct = Math.round((masteredCount / total) * 100);
 
   return (
     <div className="mb-8 rounded-xl border border-border bg-card p-5">
@@ -86,7 +116,7 @@ export function CourseOutline({ courseId, steps }: CourseOutlineProps) {
         <div className="flex items-center gap-2">
           <MapPin className="h-4 w-4 text-brand" />
           <h2 className="font-semibold text-sm">
-            Kursoversikt — {visitedCount} av {total} deler sett
+            Kursoversikt — {masteredCount} mestret · {visitedCount} sett · {total} totalt
           </h2>
         </div>
         <div className="flex items-center gap-2 text-xs text-muted-foreground">
@@ -103,6 +133,7 @@ export function CourseOutline({ courseId, steps }: CourseOutlineProps) {
         {steps.map((s, i) => {
           const isActive = s.anchor === activeAnchor;
           const isVisited = visited.has(s.anchor);
+          const isMastered = mastered.has(s.anchor);
           return (
             <li key={s.anchor}>
               <a
@@ -111,12 +142,16 @@ export function CourseOutline({ courseId, steps }: CourseOutlineProps) {
                   "flex items-center gap-3 rounded-md px-2 py-1.5 text-sm transition-colors",
                   isActive
                     ? "bg-brand/10 text-brand"
-                    : "text-muted-foreground hover:bg-accent hover:text-foreground",
+                    : isMastered
+                      ? "text-foreground hover:bg-accent"
+                      : "text-muted-foreground hover:bg-accent hover:text-foreground",
                 )}
               >
                 <span className="flex h-6 w-6 shrink-0 items-center justify-center">
-                  {isVisited ? (
-                    <CheckCircle2 className="h-4 w-4 text-success" />
+                  {isMastered ? (
+                    <Award className="h-4 w-4 text-emerald-500" />
+                  ) : isVisited ? (
+                    <Eye className="h-3.5 w-3.5 text-muted-foreground" />
                   ) : (
                     <Circle className="h-4 w-4" />
                   )}
@@ -130,6 +165,18 @@ export function CourseOutline({ courseId, steps }: CourseOutlineProps) {
           );
         })}
       </ol>
+      <div className="mt-3 pt-3 border-t border-border flex items-center gap-3 text-[10px] text-muted-foreground">
+        <span className="inline-flex items-center gap-1">
+          <Circle className="h-3 w-3" /> ikke sett
+        </span>
+        <span className="inline-flex items-center gap-1">
+          <Eye className="h-3 w-3" /> sett
+        </span>
+        <span className="inline-flex items-center gap-1">
+          <Award className="h-3 w-3 text-emerald-500" /> mestret (klart quiz)
+        </span>
+      </div>
     </div>
   );
 }
+
