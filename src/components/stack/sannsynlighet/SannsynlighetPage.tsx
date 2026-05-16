@@ -2,8 +2,10 @@ import { Link } from "@tanstack/react-router";
 import { ArrowRight, Lightbulb } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
+import { ProbabilityVisualizer } from "./ProbabilityVisualizer";
 
 const STEPS = [
+  { title: "Interaktiv visualisering — tre, Venn, Monty Hall, bursdag, Bayes", anchor: "visualisering" },
   { title: "Utfallsrom, hendelser, sannsynlighets-aksiomer", anchor: "aksiomer" },
   { title: "Betinget sannsynlighet og Bayes' teorem", anchor: "bayes" },
   { title: "Stokastiske variabler, forventning, varians", anchor: "variabler" },
@@ -41,6 +43,18 @@ export function SannsynlighetPage() {
         </div>
 
         <CourseOutline courseId="sannsynlighet" steps={STEPS} />
+
+        <section id="visualisering" className="mb-10">
+          <h2 className="text-xl font-semibold mb-3">
+            0. Interaktiv visualisering — fem klassikere
+          </h2>
+          <p className="text-sm text-muted-foreground mb-4">
+            Før vi formaliserer aksiomene: lek med trærne, sett-diagrammene og
+            simuleringene. Hver modus har en kort intuisjon-rute som forklarer
+            hvorfor svaret pleier overraske.
+          </p>
+          <ProbabilityVisualizer />
+        </section>
 
         <section id="aksiomer" className="mb-10">
           <h2 className="text-xl font-semibold mb-3">1. Utfallsrom og aksiomer</h2>
