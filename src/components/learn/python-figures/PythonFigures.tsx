@@ -1992,3 +1992,417 @@ export const TypeOverview: FC = () => {
   );
 };
 
+/* =====================================================================
+ * FIRST-PRINCIPLES FOUNDATION FIGURES
+ *
+ * Disse figurene viser steg-for-steg hva som faktisk skjer når Python
+ * kjører de vanligste konstruksjonene. Mål: gi leseren et mentalt bilde
+ * av evaluation order, scope og hvordan syntaks oversettes til runtime-
+ * oppførsel.
+ * ===================================================================*/
+
+/* Kap. 4 — Hva skjer steg-for-steg i en if/elif/else-kjede */
+export const ConditionalAnatomy: FC = () => {
+  // Eksempel: temp = 22, viser hvilken grein som vinner.
+  const lines: Array<{
+    label: string;
+    expr: string;
+    state: "skip" | "win" | "after-win";
+  }> = [
+    { label: "if",   expr: "temp > 25",  state: "skip" },
+    { label: "elif", expr: "temp > 15",  state: "win" },
+    { label: "else", expr: "(uten test)", state: "after-win" },
+  ];
+  const rowH = 56;
+  const startY = 50;
+  return (
+    <figure className="my-4">
+      <svg viewBox="0 0 360 260" className="w-full max-w-md mx-auto text-foreground">
+        {/* Header: starting value */}
+        <rect x={10} y={10} width={340} height={28} fill="color-mix(in oklch, var(--brand) 12%, transparent)" stroke={STROKE} />
+        <text x={20} y={28} className="text-[11px] fill-current font-mono">temp = 22   ↓ (Python går fra topp til bunn)</text>
+        {lines.map((row, i) => {
+          const y = startY + i * rowH;
+          const isWin = row.state === "win";
+          const isSkip = row.state === "skip";
+          const isAfter = row.state === "after-win";
+          const fill = isWin
+            ? "color-mix(in oklch, var(--success) 22%, transparent)"
+            : "color-mix(in oklch, var(--muted) 25%, transparent)";
+          const opacity = isAfter ? 0.45 : isSkip ? 0.65 : 1;
+          return (
+            <g key={row.label} opacity={opacity}>
+              {/* Condition box */}
+              <rect x={10} y={y} width={130} height={42} fill={fill} stroke={STROKE} />
+              <text x={20} y={y + 17} className="text-[10px] fill-current opacity-80">{row.label}</text>
+              <text x={20} y={y + 33} className="text-[11px] fill-current font-mono">{row.expr}</text>
+              {/* Arrow */}
+              <path d={`M 140 ${y + 21} L 188 ${y + 21}`} fill="none" stroke={STROKE} markerEnd={`url(#${ARR_ID})`} />
+              {/* Result */}
+              {isSkip && (
+                <>
+                  <rect x={190} y={y + 8} width={70} height={26} fill="color-mix(in oklch, var(--muted) 25%, transparent)" stroke={STROKE} />
+                  <text x={225} y={y + 25} textAnchor="middle" className="text-[10px] fill-current">False</text>
+                  <text x={270} y={y + 25} className="text-[10px] fill-current opacity-70">→ hopp videre</text>
+                </>
+              )}
+              {isWin && (
+                <>
+                  <rect x={190} y={y + 8} width={70} height={26} fill="color-mix(in oklch, var(--success) 28%, transparent)" stroke={STROKE} />
+                  <text x={225} y={y + 25} textAnchor="middle" className="text-[10px] fill-current font-semibold">True</text>
+                  <rect x={190} y={y + 36} width={160} height={18} fill="color-mix(in oklch, var(--success) 14%, transparent)" stroke={STROKE} />
+                  <text x={198} y={y + 49} className="text-[10px] fill-current font-mono">melding = "Behagelig."</text>
+                </>
+              )}
+              {isAfter && (
+                <>
+                  <rect x={190} y={y + 8} width={140} height={26} fill="color-mix(in oklch, var(--muted) 20%, transparent)" stroke={STROKE} strokeDasharray="3,2" />
+                  <text x={260} y={y + 25} textAnchor="middle" className="text-[10px] fill-current opacity-70">aldri evaluert</text>
+                </>
+              )}
+            </g>
+          );
+        })}
+        <text x={10} y={235} className="text-[10px] fill-current opacity-80">
+          Regel: første True vinner. Resten av kjeden hoppes over.
+        </text>
+        <text x={10} y={250} className="text-[10px] fill-current opacity-80">
+          else kjører kun hvis ingen av de over var True.
+        </text>
+        <IdArrowDef />
+      </svg>
+      <Caption>
+        En if/elif/else-kjede er en topp-til-bunn-evaluering. Akkurat én blokk kjører — eller ingen, om bare <code>if</code> uten <code>else</code> brukes.
+      </Caption>
+    </figure>
+  );
+};
+
+/* Kap. 4 — Truthiness: hva regnes som sant/usant */
+export const TruthinessLadder: FC = () => {
+  const groups: Array<{ label: string; items: string[]; falsy: boolean }> = [
+    { label: "Falsy (regnes som False)", falsy: true,  items: ["False", "None", "0", "0.0", '""', "[]", "{}", "set()"] },
+    { label: "Truthy (regnes som True)", falsy: false, items: ["True", "1", "-1", '"hei"', "[0]", "{0:0}", "{1}", "objekt"] },
+  ];
+  const groupH = 90;
+  return (
+    <figure className="my-4">
+      <svg viewBox="0 0 360 220" className="w-full max-w-md mx-auto text-foreground">
+        {groups.map((g, gi) => {
+          const y = 10 + gi * groupH;
+          const fill = g.falsy
+            ? "color-mix(in oklch, var(--warning) 14%, transparent)"
+            : "color-mix(in oklch, var(--success) 14%, transparent)";
+          return (
+            <g key={g.label}>
+              <rect x={10} y={y} width={340} height={groupH - 8} fill={fill} stroke={STROKE} />
+              <text x={20} y={y + 18} className="text-[11px] fill-current font-semibold">{g.label}</text>
+              {g.items.map((it, i) => (
+                <g key={it}>
+                  <rect
+                    x={20 + (i % 4) * 80}
+                    y={y + 28 + Math.floor(i / 4) * 24}
+                    width={70}
+                    height={20}
+                    fill="color-mix(in oklch, var(--background) 80%, transparent)"
+                    stroke={STROKE}
+                    strokeOpacity={0.3}
+                  />
+                  <text
+                    x={55 + (i % 4) * 80}
+                    y={y + 42 + Math.floor(i / 4) * 24}
+                    textAnchor="middle"
+                    className="text-[10px] fill-current font-mono"
+                  >
+                    {it}
+                  </text>
+                </g>
+              ))}
+            </g>
+          );
+        })}
+        <text x={10} y={203} className="text-[9px] fill-current opacity-70">
+          Tomme samlinger og 0-aktige verdier er falsy.
+        </text>
+        <text x={10} y={215} className="text-[9px] fill-current opacity-70">
+          Alt annet — også objekter — er truthy.
+        </text>
+      </svg>
+      <Caption>
+        Når <code>if x</code> sjekker en verdi som ikke er bool, oversetter Python via <code>bool(x)</code> etter disse reglene.
+      </Caption>
+    </figure>
+  );
+};
+
+/* Kap. 5 — Anatomien av en løkke: 4 steg som gjentas */
+export const LoopAnatomy: FC = () => (
+  <figure className="my-4">
+    <svg viewBox="0 0 360 260" className="w-full max-w-md mx-auto text-foreground">
+      <text x={10} y={18} className="text-[11px] fill-current font-semibold">while-løkke: 4 steg som gjentas</text>
+      {/* Step 1: init (one-time) */}
+      <rect x={10} y={28} width={140} height={32} fill="color-mix(in oklch, var(--brand) 18%, transparent)" stroke={STROKE} />
+      <text x={20} y={42} className="text-[10px] fill-current opacity-80">1. init (én gang)</text>
+      <text x={20} y={56} className="text-[11px] fill-current font-mono">i = 0</text>
+      <path d={`M 80 60 L 80 78`} fill="none" stroke={STROKE} markerEnd={`url(#${ARR_ID})`} />
+      {/* Step 2: check */}
+      <rect x={10} y={80} width={140} height={36} fill="color-mix(in oklch, var(--success) 16%, transparent)" stroke={STROKE} />
+      <text x={20} y={95} className="text-[10px] fill-current opacity-80">2. sjekk betingelse</text>
+      <text x={20} y={110} className="text-[11px] fill-current font-mono">i &lt; 3 ?</text>
+      {/* False branch out to right */}
+      <path d={`M 150 98 L 240 98`} fill="none" stroke={STROKE} markerEnd={`url(#${ARR_ID})`} />
+      <text x={156} y={92} className="text-[10px] fill-current opacity-80">False →</text>
+      <rect x={240} y={84} width={110} height={28} fill="color-mix(in oklch, var(--muted) 25%, transparent)" stroke={STROKE} />
+      <text x={295} y={102} textAnchor="middle" className="text-[10px] fill-current">avslutt løkke</text>
+      <path d={`M 80 116 L 80 138`} fill="none" stroke={STROKE} markerEnd={`url(#${ARR_ID})`} />
+      <text x={88} y={132} className="text-[10px] fill-current opacity-80">True ↓</text>
+      {/* Step 3: body */}
+      <rect x={10} y={140} width={140} height={36} fill="color-mix(in oklch, var(--brand) 14%, transparent)" stroke={STROKE} />
+      <text x={20} y={155} className="text-[10px] fill-current opacity-80">3. kropp kjører</text>
+      <text x={20} y={170} className="text-[11px] fill-current font-mono">print(i)</text>
+      <path d={`M 80 176 L 80 196`} fill="none" stroke={STROKE} markerEnd={`url(#${ARR_ID})`} />
+      {/* Step 4: mutate */}
+      <rect x={10} y={198} width={140} height={36} fill="color-mix(in oklch, var(--warning) 16%, transparent)" stroke={STROKE} />
+      <text x={20} y={213} className="text-[10px] fill-current opacity-80">4. muter (kritisk!)</text>
+      <text x={20} y={228} className="text-[11px] fill-current font-mono">i = i + 1</text>
+      {/* Loop back arrow */}
+      <path d={`M 150 216 Q 200 216 200 98 L 152 98`} fill="none" stroke={STROKE} markerEnd={`url(#${ARR_ID})`} strokeDasharray="3,2" />
+      <text x={206} y={160} className="text-[9px] fill-current opacity-70">tilbake til 2</text>
+      {/* Hint */}
+      <text x={10} y={252} className="text-[10px] fill-current opacity-80">
+        Glem steg 4 og betingelsen blir aldri False → evig løkke.
+      </text>
+      <IdArrowDef />
+    </svg>
+    <Caption>
+      Hver while-løkke er disse fire stegene. <code>for</code> skjuler steg 1 og 4 i iterator-protokollen — derfor blir den sjelden evig.
+    </Caption>
+  </figure>
+);
+
+/* Kap. 5 — for-løkke desugars til iterator-protokoll */
+export const ForLoopDesugar: FC = () => (
+  <figure className="my-4">
+    <svg viewBox="0 0 360 240" className="w-full max-w-md mx-auto text-foreground">
+      <text x={10} y={18} className="text-[11px] fill-current font-semibold">for x in xs:  ←→  hva Python egentlig gjør</text>
+      {/* Source code */}
+      <rect x={10} y={30} width={150} height={70} fill="color-mix(in oklch, var(--brand) 14%, transparent)" stroke={STROKE} />
+      <text x={20} y={48} className="text-[10px] fill-current opacity-80">Slik du skriver:</text>
+      <text x={20} y={66} className="text-[11px] fill-current font-mono">for x in [10, 20]:</text>
+      <text x={20} y={82} className="text-[11px] fill-current font-mono">    print(x)</text>
+      {/* Arrow */}
+      <path d={`M 165 65 L 195 65`} fill="none" stroke={STROKE} markerEnd={`url(#${ARR_ID})`} />
+      <text x={170} y={58} className="text-[9px] fill-current opacity-70">tilsvarer</text>
+      {/* Desugared */}
+      <rect x={200} y={30} width={150} height={140} fill="color-mix(in oklch, var(--success) 14%, transparent)" stroke={STROKE} />
+      <text x={210} y={48} className="text-[10px] fill-current opacity-80">Det Python gjør:</text>
+      <text x={210} y={66} className="text-[10px] fill-current font-mono">it = iter([10,20])</text>
+      <text x={210} y={82} className="text-[10px] fill-current font-mono">while True:</text>
+      <text x={218} y={96} className="text-[10px] fill-current font-mono">try:</text>
+      <text x={226} y={110} className="text-[10px] fill-current font-mono">x = next(it)</text>
+      <text x={218} y={124} className="text-[10px] fill-current font-mono">except</text>
+      <text x={226} y={138} className="text-[10px] fill-current font-mono">StopIteration:</text>
+      <text x={234} y={152} className="text-[10px] fill-current font-mono">break</text>
+      <text x={218} y={166} className="text-[10px] fill-current font-mono">print(x)</text>
+      {/* Iterator boxes below */}
+      <text x={10} y={194} className="text-[10px] fill-current opacity-80">Iteratoren holder en intern posisjon:</text>
+      {[0, 1, 2].map((step) => (
+        <g key={step}>
+          <rect x={10 + step * 115} y={205} width={105} height={30} fill="color-mix(in oklch, var(--warning) 14%, transparent)" stroke={STROKE} />
+          <text x={20 + step * 115} y={220} className="text-[9px] fill-current opacity-80">next() #{step + 1}</text>
+          <text x={20 + step * 115} y={232} className="text-[10px] fill-current font-mono">
+            {step === 0 ? "→ 10" : step === 1 ? "→ 20" : "→ StopIter"}
+          </text>
+        </g>
+      ))}
+      <IdArrowDef />
+    </svg>
+    <Caption>
+      <code>for</code> er syntaktisk sukker for en iterator + <code>next()</code>-løkke. Derfor virker den på alt som er itererbart — lister, strenger, generator-funksjoner.
+    </Caption>
+  </figure>
+);
+
+/* Kap. 6 — Anatomien av en funksjon: navn, parametre, body, return */
+export const FunctionAnatomy: FC = () => (
+  <figure className="my-4">
+    <svg viewBox="0 0 360 280" className="w-full max-w-md mx-auto text-foreground">
+      <text x={10} y={18} className="text-[11px] fill-current font-semibold">def-en, ord for ord</text>
+      {/* Top: the def line with labels */}
+      <rect x={10} y={30} width={340} height={72} fill="color-mix(in oklch, var(--brand) 12%, transparent)" stroke={STROKE} />
+      <text x={20} y={60} className="text-[14px] fill-current font-mono">def</text>
+      <text x={55} y={60} className="text-[14px] fill-current font-mono">hilsen</text>
+      <text x={110} y={60} className="text-[14px] fill-current font-mono">(navn, gjest=False):</text>
+      {/* Labels with arrows */}
+      <path d={`M 30 70 L 30 86`} fill="none" stroke={STROKE} />
+      <text x={10} y={97} className="text-[9px] fill-current opacity-80">nøkkelord</text>
+      <path d={`M 80 70 L 80 86`} fill="none" stroke={STROKE} />
+      <text x={62} y={97} className="text-[9px] fill-current opacity-80">funksjons-navn</text>
+      <path d={`M 170 70 L 170 86`} fill="none" stroke={STROKE} />
+      <text x={148} y={97} className="text-[9px] fill-current opacity-80">parametre (default)</text>
+      {/* Body box */}
+      <rect x={10} y={114} width={340} height={70} fill="color-mix(in oklch, var(--success) 14%, transparent)" stroke={STROKE} />
+      <text x={20} y={134} className="text-[10px] fill-current opacity-80">kropp — kjøres når funksjonen kalles, ikke ved def</text>
+      <text x={36} y={152} className="text-[12px] fill-current font-mono">if gjest: return f"Velkommen, {`{navn}`}!"</text>
+      <text x={36} y={170} className="text-[12px] fill-current font-mono">return f"Hei, {`{navn}`}!"</text>
+      {/* Bottom: the call */}
+      <text x={10} y={206} className="text-[11px] fill-current font-semibold">Kallet, ord for ord</text>
+      <rect x={10} y={216} width={340} height={36} fill="color-mix(in oklch, var(--warning) 14%, transparent)" stroke={STROKE} />
+      <text x={20} y={240} className="text-[14px] fill-current font-mono">svar = hilsen("Ada", gjest=True)</text>
+      {/* Labels under call */}
+      <text x={10} y={266} className="text-[9px] fill-current opacity-80">
+        navn → "Ada" (posisjonelt). gjest → True (nøkkelord). svar = returverdi.
+      </text>
+    </svg>
+    <Caption>
+      <code>def</code> bygger et funksjons-objekt og binder navnet. Kallet binder argumenter til parametre, kjører kroppen, og <code>return</code> gir verdien tilbake til kallstedet.
+    </Caption>
+  </figure>
+);
+
+/* Kap. 6 — Hva en funksjons-kall lager på stacken (frame-detalj) */
+export const CallFrameDetail: FC = () => (
+  <figure className="my-4">
+    <svg viewBox="0 0 360 240" className="w-full max-w-md mx-auto text-foreground">
+      <text x={10} y={18} className="text-[11px] fill-current font-semibold">Kallstack mens hilsen("Ada", True) kjører</text>
+      {/* Outer frame */}
+      <rect x={10} y={30} width={340} height={70} fill="color-mix(in oklch, var(--muted) 18%, transparent)" stroke={STROKE} />
+      <text x={20} y={48} className="text-[10px] fill-current opacity-80">ramme: &lt;modul&gt; (kalleren)</text>
+      <text x={20} y={68} className="text-[11px] fill-current font-mono">svar = ?  (venter på return)</text>
+      <text x={20} y={86} className="text-[10px] fill-current opacity-70">retur-adresse: linje 12 i hovedprogrammet</text>
+      {/* Inner frame */}
+      <rect x={10} y={114} width={340} height={84} fill="color-mix(in oklch, var(--success) 16%, transparent)" stroke={STROKE} />
+      <text x={20} y={132} className="text-[10px] fill-current opacity-80">ramme: hilsen — NY på toppen</text>
+      <text x={20} y={150} className="text-[11px] fill-current font-mono">navn  = "Ada"</text>
+      <text x={20} y={166} className="text-[11px] fill-current font-mono">gjest = True</text>
+      <text x={20} y={184} className="text-[10px] fill-current opacity-70">linje: 2 (akkurat nå)</text>
+      {/* Annotation */}
+      <text x={10} y={216} className="text-[10px] fill-current opacity-80">
+        Når return kjører: rammen poppes, verdien til kalleren.
+      </text>
+      <text x={10} y={230} className="text-[10px] fill-current opacity-80">
+        Hver kall = én ramme. Rekursjon = mange like rammer.
+      </text>
+    </svg>
+    <Caption>
+      En ramme holder lokale variabler + retur-adresse. Stacken vokser ved kall, krymper ved return.
+    </Caption>
+  </figure>
+);
+
+/* Kap. 7 — Metode-kall: obj.m(x) desugars til Klasse.m(obj, x) */
+export const MethodVsFunction: FC = () => (
+  <figure className="my-4">
+    <svg viewBox="0 0 360 260" className="w-full max-w-md mx-auto text-foreground">
+      <text x={10} y={18} className="text-[11px] fill-current font-semibold">obj.m(x)  →  oversettes til Klasse.m(obj, x)</text>
+      {/* Left: how you write */}
+      <rect x={10} y={30} width={150} height={56} fill="color-mix(in oklch, var(--brand) 14%, transparent)" stroke={STROKE} />
+      <text x={20} y={48} className="text-[10px] fill-current opacity-80">Slik du skriver:</text>
+      <text x={20} y={68} className="text-[13px] fill-current font-mono">rex.bjeff()</text>
+      <text x={20} y={82} className="text-[9px] fill-current opacity-70">instans . metode-navn</text>
+      {/* Right: how Python runs it */}
+      <rect x={200} y={30} width={150} height={56} fill="color-mix(in oklch, var(--success) 14%, transparent)" stroke={STROKE} />
+      <text x={210} y={48} className="text-[10px] fill-current opacity-80">Det Python gjør:</text>
+      <text x={210} y={68} className="text-[13px] fill-current font-mono">Hund.bjeff(rex)</text>
+      <text x={210} y={82} className="text-[9px] fill-current opacity-70">klasse . metode (instans)</text>
+      <path d={`M 165 58 L 195 58`} fill="none" stroke={STROKE} markerEnd={`url(#${ARR_ID})`} />
+      {/* Two-step lookup */}
+      <text x={10} y={110} className="text-[11px] fill-current font-semibold">To-stegs oppslag:</text>
+      <rect x={10} y={120} width={340} height={28} fill="color-mix(in oklch, var(--warning) 12%, transparent)" stroke={STROKE} />
+      <text x={20} y={138} className="text-[10px] fill-current font-mono">
+        1) finn <tspan className="opacity-80">bjeff</tspan> i <tspan className="opacity-80">rex.__class__</tspan> → Hund.bjeff
+      </text>
+      <rect x={10} y={154} width={340} height={28} fill="color-mix(in oklch, var(--warning) 12%, transparent)" stroke={STROKE} />
+      <text x={20} y={172} className="text-[10px] fill-current font-mono">
+        2) kall den med <tspan className="opacity-80">rex</tspan> som første argument (selv)
+      </text>
+      {/* Bottom: definition with self highlighted */}
+      <rect x={10} y={194} width={340} height={42} fill="color-mix(in oklch, var(--brand) 10%, transparent)" stroke={STROKE} />
+      <text x={20} y={212} className="text-[11px] fill-current font-mono">def bjeff(self):</text>
+      <text x={20} y={228} className="text-[11px] fill-current font-mono">    return f"{`{self.navn}`} sier voff!"</text>
+      <text x={10} y={252} className="text-[9px] fill-current opacity-80">
+        self er ikke magisk — det er bare den lokale variabelen som mottar instansen.
+      </text>
+      <IdArrowDef />
+    </svg>
+    <Caption>
+      En metode er en funksjon definert inne i en klasse. Punkt-syntaksen sender instansen som første argument automatisk — det vi vanligvis kaller <code>self</code>.
+    </Caption>
+  </figure>
+);
+
+/* Kap. 6 (assignment) — = evaluerer høyre først, så binder navn til adresse */
+export const AssignmentSteps: FC = () => (
+  <figure className="my-4">
+    <svg viewBox="0 0 360 220" className="w-full max-w-md mx-auto text-foreground">
+      <text x={10} y={18} className="text-[11px] fill-current font-semibold">x = 3 + 4 * 2 — fire steg</text>
+      {/* Step 1: evaluate RHS */}
+      <rect x={10} y={30} width={340} height={32} fill="color-mix(in oklch, var(--brand) 14%, transparent)" stroke={STROKE} />
+      <text x={20} y={48} className="text-[10px] fill-current opacity-80">1. Evaluér høyre side først (her: regn ut uttrykket)</text>
+      <text x={20} y={60} className="text-[11px] fill-current font-mono">3 + 4*2  →  3 + 8  →  11</text>
+      <path d={`M 175 62 L 175 78`} fill="none" stroke={STROKE} markerEnd={`url(#${ARR_ID})`} />
+      {/* Step 2: heap object */}
+      <rect x={10} y={80} width={340} height={32} fill="color-mix(in oklch, var(--success) 14%, transparent)" stroke={STROKE} />
+      <text x={20} y={98} className="text-[10px] fill-current opacity-80">2. Resultatet lever som et objekt på heap-en</text>
+      <text x={20} y={110} className="text-[11px] fill-current font-mono">int-objekt 11    id=140234…</text>
+      <path d={`M 175 112 L 175 128`} fill="none" stroke={STROKE} markerEnd={`url(#${ARR_ID})`} />
+      {/* Step 3: bind name */}
+      <rect x={10} y={130} width={340} height={32} fill="color-mix(in oklch, var(--warning) 14%, transparent)" stroke={STROKE} />
+      <text x={20} y={148} className="text-[10px] fill-current opacity-80">3. Navnet x bindes til adressen til det objektet</text>
+      <text x={20} y={160} className="text-[11px] fill-current font-mono">x  →  id=140234…</text>
+      <path d={`M 175 162 L 175 178`} fill="none" stroke={STROKE} markerEnd={`url(#${ARR_ID})`} />
+      {/* Step 4: future use */}
+      <rect x={10} y={180} width={340} height={32} fill="color-mix(in oklch, var(--brand) 10%, transparent)" stroke={STROKE} />
+      <text x={20} y={198} className="text-[10px] fill-current opacity-80">4. Senere bruk slår opp adressen og leser verdien (11)</text>
+      <text x={20} y={210} className="text-[11px] fill-current font-mono">print(x)  →  les id  →  11</text>
+      <IdArrowDef />
+    </svg>
+    <Caption>
+      <code>=</code> i Python er <em>navn → adresse</em>, ikke <em>boks ← verdi</em>. Derfor kan flere navn peke på samme objekt (aliasing).
+    </Caption>
+  </figure>
+);
+
+/* Kap. 5 — Operator-precedence (hva binder strammest) */
+export const OperatorPrecedence: FC = () => {
+  const rows: Array<{ ops: string; example: string; tier: number }> = [
+    { ops: "**",                  example: "2 ** 3",         tier: 1 },
+    { ops: "+x  -x  ~x",          example: "-5",             tier: 2 },
+    { ops: "*  /  //  %",         example: "6 * 4",          tier: 3 },
+    { ops: "+  -",                example: "3 + 4",          tier: 4 },
+    { ops: "==  !=  <  >  is",    example: "x == 0",         tier: 5 },
+    { ops: "not",                 example: "not done",       tier: 6 },
+    { ops: "and",                 example: "a and b",        tier: 7 },
+    { ops: "or",                  example: "a or b",         tier: 8 },
+    { ops: "=  +=  ...",          example: "x = 11",         tier: 9 },
+  ];
+  const rowH = 20;
+  const totalH = 38 + rows.length * rowH + 28;
+  return (
+    <figure className="my-4">
+      <svg viewBox={`0 0 360 ${totalH}`} className="w-full max-w-md mx-auto text-foreground">
+        <text x={10} y={18} className="text-[11px] fill-current font-semibold">Hvem binder strammest? (1 = sterkest)</text>
+        <text x={10} y={32} className="text-[10px] fill-current opacity-70">Python evaluerer høy prioritet før lav — uten paranteser.</text>
+        {rows.map((r, i) => {
+          const y = 40 + i * rowH;
+          const fill = `color-mix(in oklch, var(--brand) ${18 - r.tier}%, transparent)`;
+          return (
+            <g key={r.ops}>
+              <rect x={10} y={y} width={340} height={rowH - 2} fill={fill} stroke={STROKE} strokeOpacity={0.3} />
+              <text x={20} y={y + 14} className="text-[10px] fill-current font-mono font-semibold">{r.tier}</text>
+              <text x={50} y={y + 14} className="text-[10px] fill-current font-mono">{r.ops}</text>
+              <text x={220} y={y + 14} className="text-[10px] fill-current font-mono opacity-80">{r.example}</text>
+            </g>
+          );
+        })}
+        <text x={10} y={totalH - 8} className="text-[9px] fill-current opacity-70">
+          aritmetikk &gt; sammenligning &gt; logikk &gt; tilordning.
+        </text>
+      </svg>
+      <Caption>
+        Når et uttrykk har flere operatorer, evalueres høy prioritet først. <code>3 + 4 * 2</code> = <code>3 + 8</code> = <code>11</code>, ikke <code>14</code>.
+      </Caption>
+    </figure>
+  );
+};
+
