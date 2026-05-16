@@ -3,6 +3,7 @@ import { ArrowRight, Lightbulb, AlertTriangle } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
 import { NormaliseringSteps } from "./NormaliseringSteps";
+import { NormaliseringDrill } from "./NormaliseringDrill";
 import { RelatedVisualizers } from "@/components/stack/RelatedVisualizers";
 import { lazy, Suspense } from "react";
 import { VisualizerSkeleton } from "@/components/visualizer-shell";
@@ -20,6 +21,7 @@ const STEPS = [
   { title: "2NF — partielle avhengigheter", anchor: "del-2nf" },
   { title: "3NF — transitive avhengigheter", anchor: "del-3nf" },
   { title: "Visuelt — hver overgang stegvis", anchor: "visuelt" },
+  { title: "Prøv selv — normaliser stegvis", anchor: "drill" },
   { title: "Sluttskjema — alle tabellene", anchor: "sluttskjema" },
   { title: "BCNF — når 3NF ikke holder", anchor: "bcnf" },
   { title: "Sjekkliste — normaliser stegvis", anchor: "sjekkliste" },
@@ -273,6 +275,9 @@ OrdreLinje(ordreNr, prodNr, antall)
 
         {/* Visuelt — stegvis tabelltransformasjon */}
         <NormaliseringSteps />
+
+        {/* Drill — bruker normaliserer selv */}
+        <NormaliseringDrill />
 
         {/* Sluttskjema */}
         <section id="sluttskjema" className="mb-10">
