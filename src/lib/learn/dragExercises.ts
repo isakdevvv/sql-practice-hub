@@ -26974,4 +26974,636 @@ print("Outliers:", outliers)`,
     explanation:
       "Den totale vekten er fortsatt unik — det er kantvalget som kan variere når flere vekter er like.",
   },
+
+  // ============ DISKRET MATTE — UTVIDET SETT (dm-* prefiks) ============
+
+  // --- Logikk (8 nye) ---
+  {
+    id: "dm-logikk-tautologi",
+    kind: "quiz",
+    title: "Tautologi, kontradiksjon eller kontingent?",
+    prompt: "Klassifiser utsagnet.",
+    topic: "Logikk (matte)",
+    question: "Hvilket uttrykk er en TAUTOLOGI (alltid sann)?",
+    options: [
+      { text: "p ∨ ¬p", correct: true, rationale: "«Lov om utelukket midtre»: enten er p sann, eller så er ¬p sann. Alltid sann." },
+      { text: "p ∧ ¬p", correct: false, rationale: "Kontradiksjon — alltid usann (p kan ikke være både sann og usann samtidig)." },
+      { text: "p → q", correct: false, rationale: "Kontingent — sant noen ganger, usant ved (T, F)." },
+      { text: "p ↔ ¬p", correct: false, rationale: "Kontradiksjon — p og ¬p har alltid ulik verdi, så bikondisjonalen er alltid usann." },
+    ],
+    explanation:
+      "Tautologi = sant under alle tildelinger. Kontradiksjon = usant under alle. Kontingent = noen sanne, noen usanne.",
+  },
+  {
+    id: "dm-logikk-imp-equiv",
+    kind: "match",
+    title: "Implikasjon — ekvivalente former",
+    prompt: "Match hver form til det den er ekvivalent med.",
+    topic: "Logikk (matte)",
+    pairs: [
+      { left: "p → q", right: "¬p ∨ q" },
+      { left: "p → q", right: "¬q → ¬p (kontrapositiv)" },
+      { left: "¬(p → q)", right: "p ∧ ¬q" },
+      { left: "p ↔ q", right: "(p → q) ∧ (q → p)" },
+    ],
+    explanation:
+      "Implikasjonens disjunktive form (¬p ∨ q) er den vanligste reformuleringen i bevis. Kontrapositivet er logisk ekvivalent og brukes ofte for kortere bevis.",
+  },
+  {
+    id: "dm-logikk-kontrapositiv-quiz",
+    kind: "quiz",
+    title: "Kontrapositiv vs. invers vs. konvers",
+    prompt: "Velg riktig form av «hvis n er primtall og n > 2, så er n oddetall».",
+    topic: "Logikk (matte)",
+    question: "Hva er KONTRAPOSITIVET (logisk ekvivalent) av påstanden?",
+    options: [
+      {
+        text: "Hvis n er partall, så er n ikke primtall, eller n ≤ 2",
+        correct: true,
+        rationale:
+          "Kontrapositiv av «p → q» er «¬q → ¬p». Her: ¬(oddetall) → ¬(primtall ∧ n>2) = partall → ikke-primtall ∨ n≤2.",
+      },
+      {
+        text: "Hvis n er oddetall, så er n primtall og n > 2",
+        correct: false,
+        rationale: "Det er KONVERSET (q → p), ikke ekvivalent.",
+      },
+      {
+        text: "Hvis n ikke er primtall eller n ≤ 2, så er n partall",
+        correct: false,
+        rationale: "Det er INVERSEN (¬p → ¬q), ikke ekvivalent.",
+      },
+      {
+        text: "Hvis n ikke er oddetall, så er n primtall og n > 2",
+        correct: false,
+        rationale: "Det er en blanding — verken ekvivalent eller standard.",
+      },
+    ],
+    explanation:
+      "Husk: p→q har KONTRAPOSITIV ¬q→¬p (ekvivalent), KONVERS q→p (ikke ekvivalent), INVERS ¬p→¬q (ikke ekvivalent).",
+  },
+  {
+    id: "dm-logikk-de-morgan-3vars",
+    kind: "fill",
+    title: "De Morgan — tre variabler",
+    prompt: "Bruk De Morgan til å skrive om uttrykket uten ytterst negasjon.",
+    topic: "Logikk (matte)",
+    template: `¬(p ∧ q ∧ r)  ≡  __1__ ∨ __2__ ∨ __3__
+¬(p ∨ q ∨ r)  ≡  __4__ ∧ __5__ ∧ __6__`,
+    blanks: ["¬p", "¬q", "¬r", "¬p", "¬q", "¬r"],
+    options: ["¬p", "¬q", "¬r", "p", "q", "r"],
+    explanation:
+      "De Morgan generaliserer: ¬(A₁ ∧ A₂ ∧ ... ∧ Aₙ) = ¬A₁ ∨ ¬A₂ ∨ ... ∨ ¬Aₙ, og motsatt med byttet operator.",
+  },
+  {
+    id: "dm-logikk-sql-where",
+    kind: "quiz",
+    title: "De Morgan på SQL-WHERE",
+    prompt: "Forenkle uttrykket.",
+    topic: "Logikk (matte)",
+    code: `-- original
+WHERE NOT (price < 100 AND in_stock)`,
+    language: "sql",
+    question: "Hvilken WHERE er ekvivalent?",
+    options: [
+      { text: "WHERE price >= 100 OR NOT in_stock", correct: true, rationale: "¬(A ∧ B) = ¬A ∨ ¬B. ¬(price < 100) = price >= 100, ¬in_stock = NOT in_stock." },
+      { text: "WHERE price >= 100 AND NOT in_stock", correct: false, rationale: "Det er ¬A ∧ ¬B = ¬(A ∨ B), ikke det vi spør om." },
+      { text: "WHERE price < 100 OR in_stock", correct: false, rationale: "Du har glemt negasjonen — det er originaluttrykket uten NOT, med byttet operator." },
+      { text: "WHERE NOT price < 100 AND NOT in_stock", correct: false, rationale: "Operatorene må byttes — De Morgan tar AND til OR og omvendt." },
+    ],
+    explanation:
+      "Brukbar regel: når du «skyver inn» en NOT, snurr AND ↔ OR og neger hvert ledd.",
+  },
+  {
+    id: "dm-logikk-kvantor",
+    kind: "match",
+    title: "Kvantorer — ∀ og ∃",
+    prompt: "Match utsagnet til riktig kvantor-formel.",
+    topic: "Logikk (matte)",
+    pairs: [
+      { left: "Alle studenter har bestått", right: "∀x (student(x) → bestått(x))" },
+      { left: "Det finnes en student som ikke har bestått", right: "∃x (student(x) ∧ ¬bestått(x))" },
+      { left: "Ingen student har bestått", right: "∀x (student(x) → ¬bestått(x))" },
+      { left: "Negering: «alle har bestått»", right: "∃x (student(x) ∧ ¬bestått(x))" },
+    ],
+    explanation:
+      "Standardmønster: ∀ kombineres med →, ∃ med ∧. ¬∀x P(x) ≡ ∃x ¬P(x). ¬∃x P(x) ≡ ∀x ¬P(x).",
+  },
+  {
+    id: "dm-logikk-kvantor-neg",
+    kind: "quiz",
+    title: "Negering av ∀ og ∃",
+    prompt: "Negér utsagnet.",
+    topic: "Logikk (matte)",
+    question: "Hva er negeringen av: «For alle x finnes et y slik at x + y = 0»? Formelt: ∀x ∃y (x + y = 0).",
+    options: [
+      { text: "∃x ∀y (x + y ≠ 0)", correct: true, rationale: "Negering bytter ∀↔∃ steg for steg og negerer det innerste utsagnet." },
+      { text: "∀x ∃y (x + y ≠ 0)", correct: false, rationale: "Kvantorene må også byttes — kun negere innerst er feil." },
+      { text: "∃x ∃y (x + y ≠ 0)", correct: false, rationale: "Ene ∀ må bli ∃, men det andre må også byttes." },
+      { text: "∀x ∀y (x + y = 0)", correct: false, rationale: "Det er enda sterkere enn originalen, ikke negering." },
+    ],
+    explanation:
+      "Mekanisk regel: push negasjonen innover, og bytt ∀ med ∃ underveis. Til slutt negerer du den innerste predikatet.",
+  },
+  {
+    id: "dm-logikk-cnf",
+    kind: "fill",
+    title: "CNF — konjunktiv normalform",
+    prompt: "Skriv om uttrykket til CNF (AND-av-ORs).",
+    topic: "Logikk (matte)",
+    template: `(p ∧ q) ∨ r
+
+Steg 1 — distribuér: (p ∨ __1__) ∧ (__2__ ∨ r)`,
+    blanks: ["r", "q"],
+    options: ["p", "q", "r", "¬p", "¬q", "¬r"],
+    explanation:
+      "CNF er nyttig fordi SAT-solvere krever det. (p ∧ q) ∨ r = (p ∨ r) ∧ (q ∨ r) ved distribuering — speilbilde av tall-distribuering.",
+  },
+
+  // --- Mengder (6 nye) ---
+  {
+    id: "dm-mengde-power",
+    kind: "quiz",
+    title: "Potensmengde",
+    prompt: "Tell delmengder.",
+    topic: "Mengder",
+    question: "Hvor mange delmengder har A = {a, b, c, d}?",
+    options: [
+      { text: "16", correct: true, rationale: "|𝒫(A)| = 2^|A| = 2⁴ = 16. Hvert element kan være med eller ikke — 2 valg per element." },
+      { text: "4", correct: false, rationale: "Det er |A|, ikke antall delmengder." },
+      { text: "24", correct: false, rationale: "Det er 4! — antall permutasjoner, ikke delmengder." },
+      { text: "8", correct: false, rationale: "2³ = 8 ville vært riktig for A med 3 elementer." },
+    ],
+    explanation:
+      "Bijeksjon: hver delmengde tilsvarer en bit-streng av lengde |A| (1 = med, 0 = ute). Da finnes 2ⁿ delmengder.",
+  },
+  {
+    id: "dm-mengde-symm-diff",
+    kind: "fill",
+    title: "Symmetrisk differanse",
+    prompt: "A = {1, 2, 3, 4}, B = {3, 4, 5, 6}. Fyll inn.",
+    topic: "Mengder",
+    template: `A ⊕ B  =  (A \\ B) ∪ (B \\ A)
+        =  __1__ ∪ __2__
+        =  __3__
+
+Sjekk: x ∈ A ⊕ B  ⇔  i nøyaktig én av A, B.`,
+    blanks: ["{1,2}", "{5,6}", "{1,2,5,6}"],
+    options: ["{1,2}", "{5,6}", "{1,2,5,6}", "{3,4}", "{1,2,3,4,5,6}"],
+    explanation:
+      "Symmetrisk differanse er XOR for mengder. Tilsvarer A ⊕ B = (A ∪ B) \\ (A ∩ B) — alt i union, fjern det som er i begge.",
+  },
+  {
+    id: "dm-mengde-3sets",
+    kind: "quiz",
+    title: "Inkludering–eksklusjon (3 mengder)",
+    prompt: "Tre sett med kjente snittstørrelser.",
+    topic: "Mengder",
+    question:
+      "I en gruppe: 30 leser sport, 25 leser kultur, 20 leser politikk. 12 leser sport+kultur, 10 leser sport+politikk, 8 leser kultur+politikk, 5 leser alle tre. Hvor mange leser minst én avis-seksjon?",
+    options: [
+      {
+        text: "50",
+        correct: true,
+        rationale:
+          "|S ∪ K ∪ P| = 30+25+20 − 12−10−8 + 5 = 75 − 30 + 5 = 50. Bruk inkludering–eksklusjon for 3 mengder.",
+      },
+      { text: "75", correct: false, rationale: "Du har talt overlappene flere ganger. Trekk fra pairwise-snittene og legg til triple-snittet." },
+      { text: "55", correct: false, rationale: "Sjekk regnestykket: 75 − 30 + 5 = 50, ikke 55." },
+      { text: "45", correct: false, rationale: "Du har sannsynligvis glemt å legge til |S ∩ K ∩ P| = 5 til slutt." },
+    ],
+    explanation:
+      "|A ∪ B ∪ C| = sum av enkle − sum av pairwise + triple-snittet. Husk å snu fortegn for hvert «lag».",
+  },
+  {
+    id: "dm-mengde-prove-subset",
+    kind: "order",
+    title: "Bevis: A ⊆ B ∩ C hvis A ⊆ B og A ⊆ C",
+    prompt: "Sortér bevisstegene.",
+    topic: "Mengder",
+    items: [
+      "Anta x ∈ A (vil vise x ∈ B ∩ C)",
+      "Fra A ⊆ B: x ∈ A medfører x ∈ B",
+      "Fra A ⊆ C: x ∈ A medfører x ∈ C",
+      "Da x ∈ B og x ∈ C, så x ∈ B ∩ C per definisjon av snitt",
+      "Siden x ∈ A var vilkårlig, har vi vist A ⊆ B ∩ C. QED.",
+    ],
+    explanation:
+      "Standard «element-bevis» av delmengde-relasjon: vis at et vilkårlig element i venstre side også er i høyre side.",
+  },
+  {
+    id: "dm-mengde-cartesian",
+    kind: "quiz",
+    title: "Kartesisk produkt — |A × B|",
+    prompt: "Beregn størrelse.",
+    topic: "Mengder",
+    question:
+      "A har 4 elementer, B har 7. Hvor mange par (a, b) med a ∈ A, b ∈ B finnes?",
+    options: [
+      { text: "28", correct: true, rationale: "|A × B| = |A| · |B| = 4 · 7 = 28. Multiplikasjonsregelen anvendt på par." },
+      { text: "11", correct: false, rationale: "Det er |A| + |B| — sum, ikke produkt." },
+      { text: "4 · 7 = 28, men kun hvis ingen overlapp", correct: false, rationale: "Overlapp er irrelevant — A × B består av par, hver kombinasjon er unik som par." },
+      { text: "47", correct: false, rationale: "Antall sifre matcher, men matematikken ikke." },
+    ],
+    explanation:
+      "Kartesisk produkt teller PAR — derfor |A| · |B|. SQL-bro: CROSS JOIN gir kartesisk produkt av to tabeller.",
+  },
+  {
+    id: "dm-mengde-laws-match",
+    kind: "match",
+    title: "Mengde-lover — match til navn",
+    prompt: "Match identitet til lov.",
+    topic: "Mengder",
+    pairs: [
+      { left: "A ∩ (B ∪ C) = (A ∩ B) ∪ (A ∩ C)", right: "Distributiv lov" },
+      { left: "A ∪ B = B ∪ A", right: "Kommutativ lov" },
+      { left: "(A ∪ B) ∪ C = A ∪ (B ∪ C)", right: "Assosiativ lov" },
+      { left: "A ∪ ∅ = A", right: "Identitetslov" },
+      { left: "(A ∪ B)ᶜ = Aᶜ ∩ Bᶜ", right: "De Morgan for mengder" },
+    ],
+    explanation:
+      "Mengde-lovene speiler logikk-lovene 1-til-1: ∪ ↔ ∨, ∩ ↔ ∧, komplement ↔ negasjon. Lær én gang, gjelder for begge.",
+  },
+
+  // --- Funksjoner (4 nye) ---
+  {
+    id: "dm-fn-classify",
+    kind: "match",
+    title: "Klassifisér funksjoner",
+    prompt: "Match funksjon til klassifisering.",
+    topic: "Funksjoner",
+    pairs: [
+      { left: "f: ℝ → ℝ, f(x) = eˣ", right: "Injektiv, ikke surjektiv (treffer ikke negative)" },
+      { left: "f: ℝ → [-1, 1], f(x) = sin(x)", right: "Surjektiv, ikke injektiv" },
+      { left: "f: ℤ → ℤ, f(n) = n + 7", right: "Bijektiv (invers: f⁻¹(m) = m − 7)" },
+      { left: "f: ℝ → ℝ⁺, f(x) = eˣ", right: "Bijektiv (med ℝ⁺ som kodomene)" },
+      { left: "f: ℕ → ℕ, f(n) = 2n", right: "Injektiv, ikke surjektiv (oddetallene treffes ikke)" },
+    ],
+    explanation:
+      "Trikset er ofte å justere kodomene: f(x)=eˣ blir bijektiv hvis vi kun tillater ℝ⁺ som kodomene.",
+  },
+  {
+    id: "dm-fn-composition",
+    kind: "quiz",
+    title: "Sammensetning av funksjoner",
+    prompt: "Beregn (g ∘ f)(2).",
+    topic: "Funksjoner",
+    question:
+      "f(x) = 2x + 1, g(x) = x². Hva er (g ∘ f)(2)?",
+    options: [
+      { text: "25", correct: true, rationale: "(g ∘ f)(2) = g(f(2)) = g(2·2 + 1) = g(5) = 5² = 25." },
+      { text: "9", correct: false, rationale: "Du har regnet (f ∘ g)(2): f(g(2)) = f(4) = 9. Rekkefølgen i ∘ er omvendt av lesemåten." },
+      { text: "16", correct: false, rationale: "Det er g(2·2) = 16 — du har glemt + 1 i f." },
+      { text: "5", correct: false, rationale: "Det er f(2), men vi skal anvende g på det." },
+    ],
+    explanation:
+      "Konvensjon: (g ∘ f)(x) = g(f(x)). Les fra HØYRE til VENSTRE — f anvendes først, deretter g.",
+  },
+  {
+    id: "dm-fn-inverse",
+    kind: "fill",
+    title: "Finn invers funksjon",
+    prompt: "Bytt rolle på x og y, løs for y.",
+    topic: "Funksjoner",
+    template: `f(x) = 3x − 4
+
+Sett y = 3x − 4.
+Bytt: x = 3y − __1__.
+Løs: y = (x + __2__) / __3__.
+
+f⁻¹(x) = (x + 4) / __4__`,
+    blanks: ["4", "4", "3", "3"],
+    options: ["3", "4", "1", "0", "x"],
+    explanation:
+      "Standard invers-prosedyre: skriv y = f(x), bytt x og y, isolér y. Krever at f er bijektiv — ellers finnes ingen entydig invers.",
+  },
+  {
+    id: "dm-fn-pigeonhole",
+    kind: "quiz",
+    title: "Skuffeprinsippet (pigeonhole)",
+    prompt: "Anvend skuffeprinsippet.",
+    topic: "Funksjoner",
+    question:
+      "23 personer i et rom. Hvor mange MÅ ha bursdag i samme måned (i verste fall)?",
+    options: [
+      { text: "Minst 2", correct: true, rationale: "12 måneder = 12 skuffer, 23 duer. ⌈23/12⌉ = 2 — minst én måned har minst 2 personer." },
+      { text: "Minst 3", correct: false, rationale: "Krever ≥ 25 personer (12·2 + 1)." },
+      { text: "Minst 23/12 ≈ 1.92", correct: false, rationale: "Antall personer er heltall — vi runder OPP." },
+      { text: "Avhenger av om det er skuddår", correct: false, rationale: "Vi snakker måneder, ikke dager — uavhengig av skuddår." },
+    ],
+    explanation:
+      "Skuffeprinsippet: hvis n duer skal i k skuffer og n > k, må minst én skuffe ha ≥ ⌈n/k⌉ duer. Brukes i hash-kollisjoner, fødselsdag-paradoks, m.m.",
+  },
+
+  // --- Kombinatorikk (5 nye) ---
+  {
+    id: "dm-komb-rep",
+    kind: "quiz",
+    title: "Kombinasjoner MED gjentakelse",
+    prompt: "Multisettets antall.",
+    topic: "Kombinatorikk",
+    question:
+      "Hvor mange ulike utvalg på 3 iskremkuler kan vi lage fra 5 smaker, hvor en smak kan gjentas?",
+    options: [
+      { text: "C(5 + 3 − 1, 3) = C(7, 3) = 35", correct: true, rationale: "Stars-and-bars: utvalg-med-gjentakelse fra n typer, k stk, gir C(n+k−1, k)." },
+      { text: "C(5, 3) = 10", correct: false, rationale: "Det er uten gjentakelse — alle smaker må være ulike." },
+      { text: "5³ = 125", correct: false, rationale: "Det er ordnet utvalg med gjentakelse (rekkefølge teller)." },
+      { text: "P(5, 3) = 60", correct: false, rationale: "Permutasjon uten gjentakelse — vi har ikke begrensningen om unike smaker, og rekkefølge teller ikke." },
+    ],
+    explanation:
+      "Multisetts-formelen C(n+k−1, k) ER stars-and-bars. Visualiser som k stjerner og n−1 streker som deler dem i bunker.",
+  },
+  {
+    id: "dm-komb-anagram",
+    kind: "fill",
+    title: "Anagrammer med gjentatte bokstaver",
+    prompt: "MISSISSIPPI har 11 bokstaver. Fyll inn.",
+    topic: "Kombinatorikk",
+    template: `Antall ulike anagrammer = 11! / (__1__! · __2__! · __3__! · __4__!)
+hvor tallene står for hyppigheten av M, I, S, P.
+
+= 11! / (1! · 4! · 4! · 2!) = __5__`,
+    blanks: ["1", "4", "4", "2", "34650"],
+    options: ["1", "2", "3", "4", "5", "11", "34650", "39916800"],
+    explanation:
+      "Permutasjon med gjentakelser: n! / (n₁! · n₂! · ...) der nᵢ er hyppigheten av hver type. MISSISSIPPI: 1 M, 4 I, 4 S, 2 P.",
+  },
+  {
+    id: "dm-komb-binom-thm",
+    kind: "match",
+    title: "Binomial-teoremet",
+    prompt: "Match koeffisient til ledd i utvidelsen av (x + y)⁴.",
+    topic: "Kombinatorikk",
+    pairs: [
+      { left: "C(4, 0) = 1", right: "x⁴-leddet" },
+      { left: "C(4, 1) = 4", right: "x³y-leddet" },
+      { left: "C(4, 2) = 6", right: "x²y²-leddet" },
+      { left: "C(4, 3) = 4", right: "xy³-leddet" },
+      { left: "C(4, 4) = 1", right: "y⁴-leddet" },
+    ],
+    explanation:
+      "(x+y)ⁿ = Σ_{k=0}^n C(n,k) x^(n−k) y^k. Koeffisientene er rad n i Pascals trekant.",
+  },
+  {
+    id: "dm-komb-prob",
+    kind: "quiz",
+    title: "Kombinatorikk i poker",
+    prompt: "Bruk C(n, k).",
+    topic: "Kombinatorikk",
+    question:
+      "I poker (5-korts hånd av 52 kort): hvor mange hender inneholder NØYAKTIG 2 ess?",
+    options: [
+      {
+        text: "C(4, 2) · C(48, 3) = 6 · 17 296 = 103 776",
+        correct: true,
+        rationale: "Velg 2 av 4 ess: C(4,2) = 6. Velg 3 kort av de 48 ikke-essene: C(48,3) = 17 296. Multipliser.",
+      },
+      { text: "C(52, 5)", correct: false, rationale: "Det er totalt antall hender, ikke med 2-ess-betingelse." },
+      { text: "C(4, 2) · C(52, 3)", correct: false, rationale: "Du må trekke fra essene som allerede er valgt — bruk 48, ikke 52." },
+      { text: "C(4, 2) + C(48, 3)", correct: false, rationale: "Multiplikasjonsregelen — ikke addisjon. To uavhengige valg." },
+    ],
+    explanation:
+      "Klassisk «velg fra to disjunkte grupper»-mønster. Tellingens grunnregel: hvis A på m måter og B (uavhengig) på n måter, så A og B på m·n.",
+  },
+  {
+    id: "dm-komb-mc",
+    kind: "quiz",
+    title: "Multiplikasjon vs. addisjon",
+    prompt: "Velg riktig regel.",
+    topic: "Kombinatorikk",
+    question:
+      "En restaurant tilbyr 5 forretter ELLER 4 hovedretter (du må velge én rett, ikke begge). Hvor mange valg?",
+    options: [
+      { text: "5 + 4 = 9", correct: true, rationale: "Addisjonsregelen: disjunkte alternativer — du gjør ETT valg fra union av muligheter." },
+      { text: "5 · 4 = 20", correct: false, rationale: "Det er multiplikasjon: «én forrett OG én hovedrett» (sekvensielle valg)." },
+      { text: "5⁴ = 625", correct: false, rationale: "Det er ordnet utvalg med gjentakelse — ikke aktuelt her." },
+      { text: "C(9, 1) = 9", correct: false, rationale: "Riktig svar, men feil argumentasjon — du regner direkte på unionen, ikke som C(n,1)." },
+    ],
+    explanation:
+      "Regel: «OG, uavhengig» → multipliser. «ELLER, disjunkt» → adder. Sjekk alltid om alternativene er disjunkte før addisjon.",
+  },
+
+  // --- Induksjon (3 nye) ---
+  {
+    id: "dm-ind-sq-sum",
+    kind: "order",
+    title: "Induksjon: Σ i² = n(n+1)(2n+1)/6",
+    prompt: "Sortér bevisstegene.",
+    topic: "Induksjon",
+    items: [
+      "Basis: n=1, venstre = 1, høyre = 1·2·3/6 = 1 ✓",
+      "Anta som IH at Σᵢ₌₁ᵏ i² = k(k+1)(2k+1)/6",
+      "Skriv Σᵢ₌₁ᵏ⁺¹ i² = Σᵢ₌₁ᵏ i² + (k+1)²",
+      "Erstatt med IH: = k(k+1)(2k+1)/6 + (k+1)²",
+      "Felles faktor (k+1)/6: = (k+1)/6 · [k(2k+1) + 6(k+1)]",
+      "Forenkle hakeparentes: 2k² + 7k + 6 = (k+2)(2k+3)",
+      "Konklusjon: (k+1)(k+2)(2k+3)/6 = formelen for n=k+1. QED.",
+    ],
+    explanation:
+      "Standard kvadratsum-induksjon: basis → IH → skill ut siste ledd → felles faktor → algebraisk forenkling.",
+  },
+  {
+    id: "dm-ind-tower",
+    kind: "quiz",
+    title: "Strong induction — Tower of Hanoi",
+    prompt: "Vis at flytting krever 2ⁿ − 1 trekk.",
+    topic: "Induksjon",
+    question:
+      "T(n) = antall trekk for å flytte n skiver i Tower of Hanoi. Med rekurrensen T(n) = 2·T(n−1) + 1, T(1) = 1. Hva er T(n) på lukket form?",
+    options: [
+      { text: "2ⁿ − 1", correct: true, rationale: "Sjekk: T(1) = 2−1 = 1 ✓. T(n) = 2(2ⁿ⁻¹ − 1) + 1 = 2ⁿ − 2 + 1 = 2ⁿ − 1 ✓." },
+      { text: "n²", correct: false, rationale: "T(1) = 1 ✓ men T(2) = 4 ≠ 3 (rekurrensen gir 2·1+1 = 3)." },
+      { text: "2ⁿ", correct: false, rationale: "T(1) = 2 ≠ 1." },
+      { text: "n!", correct: false, rationale: "T(3) = 6 stemmer for n!, men T(4) = 24 ≠ 15." },
+    ],
+    explanation:
+      "Lukket form bevises ved induksjon. Tower of Hanoi er et klassisk eksempel der rekursjon→induksjon-broen er åpenbar.",
+  },
+  {
+    id: "dm-ind-fibonacci",
+    kind: "quiz",
+    title: "Strong induction — Fibonacci",
+    prompt: "Hva trenger STERK induksjon?",
+    topic: "Induksjon",
+    question:
+      "For å bevise egenskap om Fibonacci-tall F(n) = F(n−1) + F(n−2) trenger vi vanligvis STERK induksjon. Hvorfor?",
+    options: [
+      {
+        text: "Fordi P(k+1) avhenger av BÅDE P(k) og P(k−1) — vi må anta begge",
+        correct: true,
+        rationale: "Sterk induksjon antar P(n₀), ..., P(k) — ikke bare P(k). Brukes når rekurrensen avhenger av flere tidligere termer.",
+      },
+      {
+        text: "Fordi Fibonacci vokser eksponentielt",
+        correct: false,
+        rationale: "Vekstrate har ingenting med induksjons-styrke å gjøre.",
+      },
+      {
+        text: "Fordi F(0) er udefinert",
+        correct: false,
+        rationale: "F(0) = 0, F(1) = 1 — fullt definert.",
+      },
+      {
+        text: "Vanlig induksjon fungerer alltid — sterk er bare for å være sikker",
+        correct: false,
+        rationale: "Logisk ekvivalente, men sterk induksjon er praktisk nødvendig for å håndtere multi-step-rekurranser.",
+      },
+    ],
+    explanation:
+      "Sterk og vanlig induksjon er logisk ekvivalente, men sterk gir oss flere antagelser å bruke. Praktisk for splitt-og-hersk og multi-step-rekurranser.",
+  },
+
+  // --- Grafer (4 nye) ---
+  {
+    id: "dm-graf-handshake",
+    kind: "quiz",
+    title: "Handshake-lemmaet",
+    prompt: "Anvend Σ deg = 2|E|.",
+    topic: "Grafer",
+    question:
+      "En graf har grad-sekvens (3, 3, 3, 2, 2, 1). Hvor mange kanter har den?",
+    options: [
+      { text: "7", correct: true, rationale: "Σ deg = 3+3+3+2+2+1 = 14 = 2|E|, så |E| = 7." },
+      { text: "14", correct: false, rationale: "Det er Σ deg, ikke |E|. Hver kant teller 2 i grad-summen." },
+      { text: "6", correct: false, rationale: "Det er antall noder, ikke kanter." },
+      { text: "Ugyldig sekvens", correct: false, rationale: "Sekvensen har en ODDE-tallssum (14) — nei, 14 er PAR. Sekvensen er gyldig." },
+    ],
+    explanation:
+      "Handshake: Σ deg(v) = 2|E|. Korollar: en grafs grad-sum er ALLTID partall. Sjekk gyldighet før du regner videre.",
+  },
+  {
+    id: "dm-graf-degree-seq",
+    kind: "quiz",
+    title: "Grad-sekvens — gyldig eller ikke?",
+    prompt: "Erdős–Gallai i lite format.",
+    topic: "Grafer",
+    question: "Kan en graf ha grad-sekvensen (4, 3, 2, 2, 1)?",
+    options: [
+      {
+        text: "Nei — summen er odd (12)... vent, 4+3+2+2+1 = 12 er partall. Men 4 er for stor: en node med grad 4 trenger 4 naboer, og det er bare 4 andre noder",
+        correct: false,
+        rationale: "Faktisk: 4+3+2+2+1 = 12 = 2·6, så det er gyldig — sjekk konstruksjon.",
+      },
+      {
+        text: "Ja — for eksempel: node a forbundet til alle de andre, b til a+c+d, c til a+b, d til a+b, e til a (eller liknende)",
+        correct: true,
+        rationale: "Σ = 12, partall ✓. Vi kan konstruere: a har grad 4, kobler til b,c,d,e. Tilpass de andres koblinger.",
+      },
+      { text: "Nei, fordi sum er odd", correct: false, rationale: "4+3+2+2+1 = 12 er partall. Fortsett." },
+      { text: "Ja, alltid når n=5", correct: false, rationale: "Trenger gyldig sekvens — for eksempel (4,4,4,4,4) krever K₅." },
+    ],
+    explanation:
+      "Nødvendige betingelser: (1) sum er partall (handshake), (2) hver grad ≤ n−1, (3) Erdős–Gallai-ulikheten for hvert prefiks. Sjekk minst (1) og (2) raskt.",
+  },
+  {
+    id: "dm-graf-euler",
+    kind: "quiz",
+    title: "Eulersti og Eulersirkel",
+    prompt: "Königsberg-stil.",
+    topic: "Grafer",
+    question:
+      "Når har en sammenhengende graf en EULER-SIRKEL (kjørbar runde som bruker hver kant nøyaktig én gang og ender der den startet)?",
+    options: [
+      {
+        text: "Når ALLE noder har partalls grad",
+        correct: true,
+        rationale: "Hver gang du «går inn» i en node må du «gå ut» igjen — det krever par av kanter. Med oddegrad ville du sittet fast.",
+      },
+      {
+        text: "Når NØYAKTIG TO noder har oddetalls grad",
+        correct: false,
+        rationale: "Det er kriteriet for Euler-STI (åpen kjørbar runde, start ≠ slutt), ikke for sirkel.",
+      },
+      {
+        text: "Når grafen er bipartitt",
+        correct: false,
+        rationale: "Bipartitt-tetthet har ikke direkte sammenheng med Euler-sirkel-eksistens.",
+      },
+      {
+        text: "Når antall noder er partall",
+        correct: false,
+        rationale: "Ikke relevant — antall noder spiller ikke noen rolle, det er gradene som teller.",
+      },
+    ],
+    explanation:
+      "Euler-sirkel ⇔ sammenhengende OG alle grader er partall. Euler-sti ⇔ sammenhengende OG nøyaktig 0 eller 2 noder med oddegrad. Königsberg hadde 4 oddegrad-noder — derfor umulig.",
+  },
+  {
+    id: "dm-graf-tree-prop",
+    kind: "match",
+    title: "Tre-egenskaper",
+    prompt: "Match egenskap til konsekvens.",
+    topic: "Grafer",
+    pairs: [
+      { left: "Sammenhengende OG ingen sykler", right: "Tre — kanonisk definisjon" },
+      { left: "Sammenhengende OG |E| = |V| − 1", right: "Tre" },
+      { left: "Akyklisk OG |E| = |V| − 1", right: "Tre (hvis koblet)" },
+      { left: "Mellom hvert par av noder finnes ENTYDIG sti", right: "Tre" },
+      { left: "Fjerning av en kant lager 2 komponenter", right: "Hver kant i et tre er en bro" },
+    ],
+    explanation:
+      "Trær har MANGE ekvivalente karakteriseringer — alle er like sterke. Velg den enkleste å sjekke for problemet.",
+  },
+
+  // --- Mod (3 nye) ---
+  {
+    id: "dm-mod-pow",
+    kind: "quiz",
+    title: "Fermats lille teorem",
+    prompt: "Beregn modulo primtall.",
+    topic: "Modulær aritmetikk",
+    question: "Hva er 2¹⁰⁰ mod 13?",
+    options: [
+      {
+        text: "3",
+        correct: true,
+        rationale: "13 primtall. Fermat: 2¹² ≡ 1 (mod 13). 100 = 12·8 + 4. 2¹⁰⁰ ≡ (2¹²)⁸ · 2⁴ ≡ 1 · 16 ≡ 3 (mod 13).",
+      },
+      { text: "0", correct: false, rationale: "2 er ikke delelig med 13, så 2^k ≢ 0 (mod 13) for noen k." },
+      { text: "1", correct: false, rationale: "Du har sannsynligvis stoppet ved Fermat uten å trekke ut resten av eksponenten." },
+      { text: "16", correct: false, rationale: "16 mod 13 = 3 — ikke ferdig. Reduser modulo." },
+    ],
+    explanation:
+      "Algoritme: 1) verifiser p primtall, 2) reduser eksponenten modulo p−1, 3) regn ut.",
+  },
+  {
+    id: "dm-mod-gcd",
+    kind: "fill",
+    title: "Euklids algoritme — gcd",
+    prompt: "Beregn gcd(252, 198) med Euklids algoritme.",
+    topic: "Modulær aritmetikk",
+    template: `gcd(252, 198):
+  252 = 1·198 + __1__
+  198 = 3·54 + __2__
+  54 = 1·36 + __3__
+  36 = 2·18 + __4__
+  18 = ...
+
+gcd(252, 198) = __5__`,
+    blanks: ["54", "36", "18", "0", "18"],
+    options: ["0", "18", "36", "54", "1", "2", "3", "9"],
+    explanation:
+      "Euklids algoritme: gcd(a, b) = gcd(b, a mod b), gjenta til rest = 0. Siste IKKE-NULL rest er svaret.",
+  },
+  {
+    id: "dm-mod-inverse",
+    kind: "quiz",
+    title: "Modulær invers",
+    prompt: "Når finnes a⁻¹ (mod n)?",
+    topic: "Modulær aritmetikk",
+    question:
+      "Når finnes den modulære inversen a⁻¹ (mod n), dvs. et tall x med a · x ≡ 1 (mod n)?",
+    options: [
+      {
+        text: "Hvis og bare hvis gcd(a, n) = 1",
+        correct: true,
+        rationale: "Bézouts identitet: gcd(a,n) = 1 ⇔ ∃ x, y: ax + ny = 1 ⇔ ax ≡ 1 (mod n).",
+      },
+      { text: "Alltid, så lenge a ≠ 0", correct: false, rationale: "Nei — a = 2, n = 4: 2·x ≡ 1 mod 4 har ingen løsning (gcd = 2)." },
+      { text: "Hvis a er primtall", correct: false, rationale: "Ikke nødvendig — 4⁻¹ mod 9 finnes (= 7), selv om 4 ikke er primtall. Det viktige er gcd(a,n)=1." },
+      { text: "Hvis n er primtall", correct: false, rationale: "Tilstrekkelig (alle a < n er da koprime), men ikke nødvendig." },
+    ],
+    explanation:
+      "Modulær invers eksisterer ⇔ gcd = 1. Finnes med utvidet Euklids algoritme. RSA bygger på dette.",
+  },
 ];

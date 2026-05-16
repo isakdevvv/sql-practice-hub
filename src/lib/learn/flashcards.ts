@@ -5229,6 +5229,168 @@ export const FLASHCARDS: FlashCard[] = [
     answer:
       "Variance Inflation Factor: VIF_j = 1/(1 − R_j²) der R_j² er fra regresjon av x_j mot alle andre prediktorer. Måler hvor mye SE for β̂_j er oppblåst pga multikollinearitet. VIF > 5 bekymring, > 10 alvorlig. Fiks: drop én korrelert, kombiner, eller bruk Ridge.",
   },
+
+  // ============= DISKRET MATTE (dm-fc-*) =============
+  {
+    id: "dm-fc-tautologi",
+    category: "praktisk",
+    topic: "Diskret matte — logikk",
+    question: "Hva er en tautologi, en kontradiksjon og et kontingent uttrykk?",
+    answer:
+      "Tautologi: alltid sann (f.eks. p ∨ ¬p). Kontradiksjon: alltid usann (f.eks. p ∧ ¬p). Kontingent: noen ganger sann, noen ganger usann — avhenger av variabelverdier (f.eks. p → q).",
+  },
+  {
+    id: "dm-fc-de-morgan",
+    category: "praktisk",
+    topic: "Diskret matte — logikk",
+    question: "Skriv De Morgans lover.",
+    answer:
+      "¬(p ∧ q) ≡ ¬p ∨ ¬q. ¬(p ∨ q) ≡ ¬p ∧ ¬q. Bruk: når du «skyver inn» NOT, snur AND ↔ OR og negér hvert ledd. SQL-bro: NOT (a AND b) = (NOT a) OR (NOT b).",
+  },
+  {
+    id: "dm-fc-implikasjon",
+    category: "praktisk",
+    topic: "Diskret matte — logikk",
+    question: "Når er implikasjonen p → q usann?",
+    answer:
+      "Kun når p er sann OG q er usann (én rad i sannhetstabellen). Ekvivalente former: ¬p ∨ q og kontrapositivet ¬q → ¬p. Med usant premiss er implikasjonen alltid sann (vacuously true).",
+  },
+  {
+    id: "dm-fc-kontrapositiv",
+    category: "praktisk",
+    topic: "Diskret matte — bevis",
+    question: "Forskjell på kontrapositiv, konvers og invers av p → q?",
+    answer:
+      "Kontrapositiv: ¬q → ¬p (logisk EKVIVALENT med originalen). Konvers: q → p (IKKE ekvivalent). Invers: ¬p → ¬q (IKKE ekvivalent). Kontrapositiv brukes ofte for kortere bevis.",
+  },
+  {
+    id: "dm-fc-incl-excl",
+    category: "praktisk",
+    topic: "Diskret matte — mengder",
+    question: "Skriv inkluderings-eksklusjons-formelen for 2 og 3 mengder.",
+    answer:
+      "|A ∪ B| = |A| + |B| − |A ∩ B|. |A ∪ B ∪ C| = |A|+|B|+|C| − |A∩B|−|A∩C|−|B∩C| + |A∩B∩C|. Mønster: addér enkle, trekk fra par, legg til triple — vekselvis fortegn.",
+  },
+  {
+    id: "dm-fc-powerset",
+    category: "praktisk",
+    topic: "Diskret matte — mengder",
+    question: "Hvor mange delmengder har en mengde med n elementer?",
+    answer:
+      "|𝒫(A)| = 2ⁿ. Hvert element har 2 valg (med eller uten). Antall delmengder med eksakt k elementer = C(n, k). Σₖ C(n, k) = 2ⁿ (rad-sum i Pascals trekant).",
+  },
+  {
+    id: "dm-fc-fnclass",
+    category: "praktisk",
+    topic: "Diskret matte — funksjoner",
+    question: "Injektiv, surjektiv, bijektiv — én linje hver.",
+    answer:
+      "Injektiv: ulike input → ulike output (ingen kollisjoner). Surjektiv: hele kodomenet treffes (∀y ∃x: f(x)=y). Bijektiv: begge deler — har entydig invers. Bare bijektive funksjoner kan inverteres.",
+  },
+  {
+    id: "dm-fc-pigeonhole",
+    category: "praktisk",
+    topic: "Diskret matte — kombinatorikk",
+    question: "Skuffeprinsippet (pigeonhole) — formell formulering?",
+    answer:
+      "Hvis n duer plasseres i k skuffer og n > k, må minst én skuffe ha ≥ ⌈n/k⌉ duer. Konsekvenser: hash-kollisjoner uunngåelige hvis nøkkelrom > tabellstørrelse; fødselsdag-paradoks; 13 personer → minst to har bursdag samme måned.",
+  },
+  {
+    id: "dm-fc-perm-vs-komb",
+    category: "praktisk",
+    topic: "Diskret matte — kombinatorikk",
+    question: "Permutasjon vs. kombinasjon — formler og når brukes hva?",
+    answer:
+      "Permutasjon P(n,k) = n!/(n−k)! når REKKEFØLGE teller (medalje-podium, plassering). Kombinasjon C(n,k) = n!/(k!(n−k)!) når rekkefølge IKKE teller (komité, hånd med kort). Relasjon: P(n,k) = C(n,k) · k!.",
+  },
+  {
+    id: "dm-fc-stars-bars",
+    category: "praktisk",
+    topic: "Diskret matte — kombinatorikk",
+    question: "Stars-and-bars (multisett) — hvilken formel?",
+    answer:
+      "Antall måter å velge k elementer fra n typer MED gjentakelse, uten rekkefølge: C(n + k − 1, k). Bilde: k stjerner og n−1 streker plasseres på rad — strekene grupperer stjernene i bunker.",
+  },
+  {
+    id: "dm-fc-induksjon",
+    category: "praktisk",
+    topic: "Diskret matte — induksjon",
+    question: "Struktur i et induksjonsbevis?",
+    answer:
+      "1) BASIS: vis P(n₀) sann. 2) STEG: anta P(k) sann (induksjonshypotesen). Vis P(k+1). 3) KONKLUSJON: P(n) for alle n ≥ n₀. Domino-analogien: vipp første brikke (basis), vis at hver feller neste (steg).",
+  },
+  {
+    id: "dm-fc-sterk-ind",
+    category: "praktisk",
+    topic: "Diskret matte — induksjon",
+    question: "Når trenger du sterk induksjon?",
+    answer:
+      "Når P(k+1) avhenger av FLERE tidligere — typisk i rekurranser som F(n) = F(n−1) + F(n−2). Antagelsen er da P(n₀) ∧ ... ∧ P(k) (ALLE tidligere), ikke bare P(k). Logisk ekvivalent med vanlig induksjon, men praktisk nødvendig.",
+  },
+  {
+    id: "dm-fc-handshake",
+    category: "praktisk",
+    topic: "Diskret matte — grafer",
+    question: "Hva sier handshake-lemmaet?",
+    answer:
+      "Σ_{v ∈ V} deg(v) = 2|E|. Hver kant bidrar 1 til grad-summen i hver ende. Korollar: antallet noder med oddetalls grad er ALLTID partall. Brukbart sanity-check på grad-sekvenser.",
+  },
+  {
+    id: "dm-fc-tree-char",
+    category: "praktisk",
+    topic: "Diskret matte — grafer",
+    question: "Tre — fire ekvivalente karakteriseringer?",
+    answer:
+      "(1) Sammenhengende og akyklisk. (2) Sammenhengende og |E| = |V| − 1. (3) Akyklisk og |E| = |V| − 1 (hvis koblet). (4) Entydig sti mellom hvert par av noder. Hver av disse impliserer de andre.",
+  },
+  {
+    id: "dm-fc-euler-circuit",
+    category: "praktisk",
+    topic: "Diskret matte — grafer",
+    question: "Når har en sammenhengende graf en Euler-sirkel?",
+    answer:
+      "Når ALLE noder har partalls grad. Euler-sti (åpen, start ≠ slutt): nøyaktig 0 eller 2 noder med oddetalls grad. Königsberg hadde 4 oddegrad-noder — derfor ingen sti finnes.",
+  },
+  {
+    id: "dm-fc-mod-def",
+    category: "praktisk",
+    topic: "Diskret matte — modulær aritmetikk",
+    question: "Hva betyr a ≡ b (mod n)?",
+    answer:
+      "a og b gir samme rest når delt med n. Ekvivalent: n deler differansen (a − b). Skrives også «n | (a − b)». Definerer en ekvivalens-relasjon med n klasser: {0, 1, ..., n−1}.",
+  },
+  {
+    id: "dm-fc-mod-props",
+    category: "praktisk",
+    topic: "Diskret matte — modulær aritmetikk",
+    question: "Tre nyttige regneregler for mod n?",
+    answer:
+      "(a + b) mod n = ((a mod n) + (b mod n)) mod n. (a · b) mod n = ((a mod n) · (b mod n)) mod n. (a^k) mod n: bruk fast eksponentiering — O(log k) tid. Brukbart i RSA, hash, sjekksummer.",
+  },
+  {
+    id: "dm-fc-fermat-little",
+    category: "praktisk",
+    topic: "Diskret matte — modulær aritmetikk",
+    question: "Fermats lille teorem — påstand og bruk?",
+    answer:
+      "For primtall p og a ikke delelig med p: a^(p−1) ≡ 1 (mod p). Bruk: 1) raskt beregne a^k mod p ved å redusere k mod (p−1), 2) primtest (Fermat-test, Miller-Rabin), 3) modulær invers via a^(p−2) ≡ a⁻¹ (mod p).",
+  },
+  {
+    id: "dm-fc-gcd-euclid",
+    category: "praktisk",
+    topic: "Diskret matte — modulær aritmetikk",
+    question: "Hva er Euklids algoritme for gcd?",
+    answer:
+      "gcd(a, b) = gcd(b, a mod b), gjenta til rest = 0. Siste ikke-null rest er svaret. Eksempel: gcd(252, 198): 252→54→36→18→0, så gcd = 18. Kjøretid O(log min(a,b)). Utvidet versjon finner Bézout-koeffisienter (x, y med ax + by = gcd).",
+  },
+  {
+    id: "dm-fc-mod-inverse",
+    category: "praktisk",
+    topic: "Diskret matte — modulær aritmetikk",
+    question: "Når har a en modulær invers mod n? Hvordan finne den?",
+    answer:
+      "a⁻¹ (mod n) eksisterer hvis og bare hvis gcd(a, n) = 1. Finnes med utvidet Euklids algoritme som gir x, y med ax + ny = 1 ⇒ x ≡ a⁻¹ (mod n). For primtall p: a⁻¹ ≡ a^(p−2) (mod p) ved Fermat.",
+  },
 ];
 
 export const CARD_CATEGORIES: { id: FlashCard["category"]; label: string }[] = [
