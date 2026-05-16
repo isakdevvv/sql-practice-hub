@@ -216,7 +216,7 @@ export function GmmVisualizer() {
   }
 
   return (
-    <div className="rounded-xl border border-border bg-card p-5 space-y-4">
+    <div className="rounded-xl border border-border bg-card p-5 space-y-4" role="region" aria-label="Interaktiv visualisering: GMM clustering">
       <div className="flex items-center justify-between flex-wrap gap-2">
         <div className="text-xs uppercase tracking-wider text-brand font-semibold">
           GMM &amp; EM-visualiserer

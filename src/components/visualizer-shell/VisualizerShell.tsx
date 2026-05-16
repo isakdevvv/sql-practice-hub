@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { RotateCcw } from "lucide-react";
 import { ModeChips, type ModeDef } from "./ModeChips";
+import { FOCUS_RING } from "./a11y";
 
 // --------------------------------------------------------------------------
 // VisualizerShell: standard topp-bar + body for alle interaktive visualisere.
@@ -42,7 +43,11 @@ export function VisualizerShell<T extends string>({
   topRight,
 }: VisualizerShellProps<T>) {
   return (
-    <div className="rounded-2xl border border-border bg-card overflow-hidden">
+    <div
+      className="rounded-2xl border border-border bg-card overflow-hidden"
+      role="region"
+      aria-label={`Interaktiv visualisering: ${title}`}
+    >
       <div className="px-4 py-3 border-b border-border bg-muted/30">
         <div className="flex items-center justify-between gap-3 flex-wrap">
           <div>
@@ -58,9 +63,10 @@ export function VisualizerShell<T extends string>({
             <button
               type="button"
               onClick={onReset}
-              className="text-xs text-muted-foreground hover:text-foreground inline-flex items-center gap-1 px-2 py-1 rounded border border-border hover:bg-muted"
+              aria-label="Reset visualisering"
+              className={`text-xs text-muted-foreground hover:text-foreground inline-flex items-center gap-1 px-2 py-1 rounded border border-border hover:bg-muted motion-safe:transition-colors ${FOCUS_RING}`}
             >
-              <RotateCcw className="h-3 w-3" />
+              <RotateCcw className="h-3 w-3" aria-hidden="true" />
               Reset
             </button>
           ))}

@@ -363,7 +363,7 @@ export function NormalizationVisualizer() {
     <section
       id="visualizer"
       className="mb-12 rounded-2xl border-2 border-brand/30 bg-card p-5"
-    >
+     role="region" aria-label="Interaktiv visualisering: Normalisering">
       <div className="flex items-start justify-between gap-3 mb-4 flex-wrap">
         <div>
           <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-brand font-semibold mb-1">

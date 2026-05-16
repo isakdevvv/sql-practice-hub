@@ -4,6 +4,8 @@ import {
   VisualizerShell,
   StepControls,
   useStepRunner,
+  KeyboardScope,
+  STATE_GLYPHS,
   type ModeDef,
 } from "@/components/visualizer-shell";
 
@@ -233,6 +235,15 @@ export function SearchVisualizer() {
   const warnUnsorted = needsSorted && !isSorted;
 
   return (
+   <KeyboardScope
+     label={`Array-søk: ${meta.label}`}
+     onStep={runner.step}
+     onStepBack={runner.stepBack}
+     onPlayPause={runner.playPause}
+     onReset={runner.reset}
+     onFirst={() => runner.setIndex(0)}
+     onLast={() => runner.setIndex(runner.total - 1)}
+   >
     <VisualizerShell<Mode>
       title="Array-søk — fire algoritmer, ett steg av gangen"
       modes={MODES}
@@ -367,8 +378,8 @@ export function SearchVisualizer() {
           <div className="ml-auto flex flex-wrap items-center gap-3 text-[11px]">
             <Legend color="bg-foreground/60" label="aktivt intervall" />
             <Legend color="bg-border" label="utenfor [lo..hi]" />
-            <Legend color="bg-brand" label="kandidat (probe)" />
-            <Legend color="bg-emerald-500" label="treff" />
+            <Legend color="bg-brand" glyph={STATE_GLYPHS.active} label="kandidat (probe ●)" />
+            <Legend color="bg-emerald-500" glyph={STATE_GLYPHS.done} label="treff ✓" />
             {current.foundIdx !== null && current.foundIdx >= 0 && (
               <span className="text-emerald-600 dark:text-emerald-400 font-medium">
                 Fant {target} på indeks {current.foundIdx} — {current.comparisons} sammenligninger.
@@ -383,13 +394,27 @@ export function SearchVisualizer() {
         </div>
       </div>
     </VisualizerShell>
+   </KeyboardScope>
   );
 }
 
-function Legend({ color, label }: { color: string; label: string }) {
+function Legend({
+  color,
+  label,
+  glyph,
+}: {
+  color: string;
+  label: string;
+  glyph?: string;
+}) {
   return (
     <span className="inline-flex items-center gap-1.5 text-muted-foreground">
-      <span className={`inline-block w-3 h-3 rounded-sm ${color}`} />
+      <span
+        aria-hidden="true"
+        className={`inline-flex items-center justify-center w-3.5 h-3.5 rounded-sm text-[10px] font-bold text-background ${color}`}
+      >
+        {glyph}
+      </span>
       {label}
     </span>
   );
@@ -419,8 +444,10 @@ function BarRow({
   const loEff = lo ?? 0;
   const hiEff = hi ?? n - 1;
 
+  const ariaDesc = `Array med ${n} elementer. Aktivt intervall: ${lo ?? 0}–${hi ?? n - 1}. ${probe !== null ? `Sjekker indeks ${probe} (verdi ${values[probe]}).` : ""} ${foundIdx !== null && foundIdx >= 0 ? `Treff på indeks ${foundIdx}.` : ""}`;
+
   return (
-    <div className="w-full">
+    <div className="w-full" role="img" aria-label={ariaDesc}>
       <div className="flex items-end justify-center" style={{ gap: `${gap}px`, minHeight: "180px" }}>
         {values.map((v, i) => {
           const inRange = i >= loEff && i <= hiEff;
@@ -429,18 +456,29 @@ function BarRow({
           const isExpFront = expI !== null && i === expI && !isProbe;
 
           let barColor = "bg-foreground/60";
+          let glyph = "";
           if (!inRange) barColor = "bg-border";
-          if (isProbe) barColor = "bg-brand";
-          if (isFound) barColor = "bg-emerald-500";
-          if (isExpFront && !isProbe) barColor = "bg-amber-500";
+          if (isProbe) { barColor = "bg-brand"; glyph = STATE_GLYPHS.active; }
+          if (isFound) { barColor = "bg-emerald-500"; glyph = STATE_GLYPHS.done; }
+          if (isExpFront && !isProbe) { barColor = "bg-amber-500"; glyph = STATE_GLYPHS.comparing; }
 
           return (
             <div key={i} className="flex-1 flex flex-col items-center" style={{ minWidth: "16px", maxWidth: "36px" }}>
-              <div
-                className={`w-full rounded-t-sm transition-[height,background-color] duration-200 ease-out ${barColor} ${isFound ? "ring-2 ring-emerald-400" : ""}`}
-                style={{ height: `${Math.max(8, (v / maxVal) * 140)}px` }}
-                title={`a[${i}] = ${v}`}
-              />
+              <div className="relative w-full">
+                <div
+                  className={`w-full rounded-t-sm motion-safe:transition-[height,background-color] motion-safe:duration-200 ease-out ${barColor} ${isFound ? "ring-2 ring-emerald-400" : ""}`}
+                  style={{ height: `${Math.max(8, (v / maxVal) * 140)}px` }}
+                  title={`a[${i}] = ${v}`}
+                />
+                {glyph && (
+                  <span
+                    aria-hidden="true"
+                    className="absolute -top-3 left-1/2 -translate-x-1/2 text-[10px] font-bold leading-none text-foreground"
+                  >
+                    {glyph}
+                  </span>
+                )}
+              </div>
               <div className="text-[9px] font-mono tabular-nums text-muted-foreground mt-0.5">{v}</div>
               <div className="text-[8px] tabular-nums text-muted-foreground/60">{i}</div>
             </div>

@@ -1432,7 +1432,7 @@ export function TcpVisualizer() {
   );
 
   return (
-    <figure className="my-6 rounded-xl border border-border bg-card">
+    <figure className="my-6 rounded-xl border border-border bg-card" role="region" aria-label="Interaktiv visualisering: TCP transportlag">
       <figcaption className="border-b border-border bg-muted/30 px-4 py-3">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div className="text-xs uppercase tracking-wider text-muted-foreground font-semibold flex items-center gap-2">

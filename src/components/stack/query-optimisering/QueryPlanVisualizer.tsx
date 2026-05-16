@@ -1081,7 +1081,7 @@ export function QueryPlanVisualizer() {
   }, [mode, joinSel, scanSel, pushSel, explSel]);
 
   return (
-    <div className="not-prose rounded-2xl border border-border bg-card shadow-sm overflow-hidden mb-10">
+    <div className="not-prose rounded-2xl border border-border bg-card shadow-sm overflow-hidden mb-10" role="region" aria-label="Interaktiv visualisering: Spørreplan-optimisering">
       {/* Header */}
       <div className="px-4 py-3 border-b border-border bg-muted/30">
         <div className="flex items-start justify-between gap-3">

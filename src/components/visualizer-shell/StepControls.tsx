@@ -1,11 +1,16 @@
 import { Play, Pause, SkipBack, SkipForward, RotateCcw } from "lucide-react";
 import type { ReactNode } from "react";
+import { FOCUS_RING } from "./a11y";
 
 // --------------------------------------------------------------------------
 // StepControls: standard kontroll-bar for "pre-compute frames + step/play"
 // visualisere. Inkluderer Forrige / Play-Pause / Neste / Reset + valgfri
 // tempo-slider og scrub-slider. Designet for å speile det 25+ visualisere
 // allerede har implementert ad-hoc.
+//
+// A11y: hver knapp har aria-label og synlig focus-ring. Steg-teller er
+// markert som aria-live="polite" så skjermlesere annonserer fremdrift.
+// Animasjoner / transitions er gated på motion-safe.
 // --------------------------------------------------------------------------
 
 export interface StepControlsProps {
@@ -59,15 +64,17 @@ export function StepControls({
             type="button"
             onClick={onPlayPause}
             disabled={atEnd && !playing && total <= 1}
-            className="inline-flex items-center gap-1 px-3 py-1.5 rounded-md text-xs font-medium border border-brand/40 text-brand hover:bg-brand/10 disabled:opacity-40 disabled:hover:bg-transparent"
+            aria-label={playing ? "Pause avspilling" : atEnd ? "Spill av på nytt" : "Spill av"}
+            aria-pressed={playing}
+            className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-md text-xs font-medium border border-brand/40 text-brand hover:bg-brand/10 disabled:opacity-40 disabled:hover:bg-transparent motion-safe:transition-colors ${FOCUS_RING}`}
           >
             {playing ? (
               <>
-                <Pause className="h-3.5 w-3.5" /> Pause
+                <Pause className="h-3.5 w-3.5" aria-hidden="true" /> Pause
               </>
             ) : (
               <>
-                <Play className="h-3.5 w-3.5" /> {atEnd ? replayLabel : "Play"}
+                <Play className="h-3.5 w-3.5" aria-hidden="true" /> {atEnd ? replayLabel : "Play"}
               </>
             )}
           </button>
@@ -76,28 +83,31 @@ export function StepControls({
               type="button"
               onClick={onStepBack}
               disabled={step === 0}
-              className="inline-flex items-center gap-1 px-2 py-1.5 rounded-md text-xs font-medium border border-border hover:bg-muted disabled:opacity-40"
-              title="Ett steg tilbake"
+              className={`inline-flex items-center gap-1 px-2 py-1.5 rounded-md text-xs font-medium border border-border hover:bg-muted disabled:opacity-40 motion-safe:transition-colors ${FOCUS_RING}`}
+              title="Ett steg tilbake (←)"
+              aria-label="Ett steg tilbake"
             >
-              <SkipBack className="h-3.5 w-3.5" />
+              <SkipBack className="h-3.5 w-3.5" aria-hidden="true" />
             </button>
           )}
           <button
             type="button"
             onClick={onStep}
             disabled={atEnd}
-            className="inline-flex items-center gap-1 px-2 py-1.5 rounded-md text-xs font-medium border border-border hover:bg-muted disabled:opacity-40"
-            title="Ett steg fram"
+            className={`inline-flex items-center gap-1 px-2 py-1.5 rounded-md text-xs font-medium border border-border hover:bg-muted disabled:opacity-40 motion-safe:transition-colors ${FOCUS_RING}`}
+            title="Ett steg fram (→ eller mellomrom)"
+            aria-label="Ett steg fram"
           >
-            <SkipForward className="h-3.5 w-3.5" />
+            <SkipForward className="h-3.5 w-3.5" aria-hidden="true" />
           </button>
           <button
             type="button"
             onClick={onReset}
-            className="inline-flex items-center gap-1 px-2 py-1.5 rounded-md text-xs font-medium border border-border hover:bg-muted"
-            title="Reset til start"
+            className={`inline-flex items-center gap-1 px-2 py-1.5 rounded-md text-xs font-medium border border-border hover:bg-muted motion-safe:transition-colors ${FOCUS_RING}`}
+            title="Reset til start (R)"
+            aria-label="Reset til start"
           >
-            <RotateCcw className="h-3.5 w-3.5" />
+            <RotateCcw className="h-3.5 w-3.5" aria-hidden="true" />
           </button>
         </div>
 
@@ -117,13 +127,17 @@ export function StepControls({
               onChange={(e) =>
                 onSpeedChange(speedMin + speedMax - Number(e.target.value))
               }
-              className="w-28 accent-brand"
+              className={`w-28 accent-brand ${FOCUS_RING}`}
               title="Venstre = sakte, høyre = raskt"
+              aria-label="Avspillings-tempo"
             />
           </div>
         )}
 
-        <div className="ml-auto flex items-center gap-4 text-xs font-mono">
+        <div
+          className="ml-auto flex items-center gap-4 text-xs font-mono"
+          aria-live="polite"
+        >
           <span>
             <span className="text-muted-foreground">steg</span>{" "}
             <span className="tabular-nums">
@@ -142,7 +156,7 @@ export function StepControls({
             max={Math.max(0, total - 1)}
             value={step}
             onChange={(e) => onScrub(Number.parseInt(e.target.value, 10))}
-            className="w-full accent-brand"
+            className={`w-full accent-brand ${FOCUS_RING}`}
             aria-label="Steg-scrubber"
           />
         </div>

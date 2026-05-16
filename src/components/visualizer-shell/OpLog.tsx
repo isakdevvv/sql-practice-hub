@@ -31,11 +31,15 @@ export function OpLog({
   const baseNumber = totalCount ?? entries.length;
 
   return (
-    <div className="px-4 py-3 border-t border-border bg-card">
+    <div
+      className="px-4 py-3 border-t border-border bg-card"
+      aria-live="polite"
+      aria-atomic="false"
+    >
       <div className="text-[10px] uppercase tracking-wider text-muted-foreground mb-2">
         {title}
       </div>
-      <ol className="space-y-1 font-mono text-xs">
+      <ol className="space-y-1 font-mono text-xs" aria-label={title}>
         {visible.map((entry, i) => (
           <li
             key={`${entry.op}-${i}`}

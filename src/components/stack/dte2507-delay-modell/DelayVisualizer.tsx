@@ -357,7 +357,7 @@ export function DelayVisualizer() {
   };
 
   return (
-    <div className="rounded-xl border border-border bg-card overflow-hidden">
+    <div className="rounded-xl border border-border bg-card overflow-hidden" role="region" aria-label="Interaktiv visualisering: Forsinkelses-modell">
       <div className="border-b border-border bg-muted/30 px-4 py-2 flex items-center justify-between gap-2 flex-wrap">
         <div>
           <div className="text-xs uppercase tracking-wider text-muted-foreground font-semibold">

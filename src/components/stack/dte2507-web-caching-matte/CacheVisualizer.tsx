@@ -794,7 +794,7 @@ export function CacheVisualizer() {
     const wanRate = (1 - pHit) * lambda * avgSizeKB; // KB/s mot origin
 
     return (
-      <div className="rounded-2xl border border-border bg-card overflow-hidden">
+      <div className="rounded-2xl border border-border bg-card overflow-hidden" role="region" aria-label="Interaktiv visualisering: Web-caching">
         <ModeBar mode={mode} switchMode={switchMode} />
         <div className="p-5 space-y-5">
           <p className="text-sm text-muted-foreground leading-relaxed">

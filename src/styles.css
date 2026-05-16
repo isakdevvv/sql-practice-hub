@@ -168,6 +168,28 @@
   }
 }
 
+/* prefers-reduced-motion fallback.
+ *
+ * Visualisere bruker `motion-safe:` prefix på nye animasjoner/transitions,
+ * men det er en del eldre filer som ennå har `animate-*`, `transition-*`
+ * og `duration-*` uten prefix. Denne regelen kollapser dem til en
+ * quasi-instant overgang når brukeren ber om mindre bevegelse, så vi får
+ * sikker dekning selv før hver visualisering er sweeped.
+ *
+ * Vi setter til 0.01ms (ikke 0) for å beholde JS-callbacks som lytter på
+ * transitionend / animationend uten å feile.
+ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
 /* Placeholder pill: Monaco breaks <foo> into 3 syntax tokens (`<`, `foo`, `>`),
    each rendered as a separate span. Per-span padding/outline/border-radius
    would draw them as 3 separate boxes. We keep the styling edge-free so the

@@ -2,7 +2,12 @@
 // ModeChips: brand-tonet pille-rad for modus-velger.
 // Aktiv modus får full brand-bakgrunn. Eksponert som standalone så
 // visualisere som vil ha custom-layout kan plassere chip-raden hvor de vil.
+//
+// A11y: hver chip har aria-pressed, synlig fokus-ring, og raden er en
+// role="group" så skjermlesere kan kunngjøre den.
 // --------------------------------------------------------------------------
+
+import { FOCUS_RING } from "./a11y";
 
 export interface ModeDef<T extends string = string> {
   id: T;
@@ -27,7 +32,11 @@ export function ModeChips<T extends string>({
   className,
 }: ModeChipsProps<T>) {
   return (
-    <div className={`flex flex-wrap gap-1.5 ${className ?? ""}`}>
+    <div
+      className={`flex flex-wrap gap-1.5 ${className ?? ""}`}
+      role="group"
+      aria-label="Modus-velger"
+    >
       {modes.map((m) => {
         const isActive = m.id === active;
         return (
@@ -36,7 +45,9 @@ export function ModeChips<T extends string>({
             type="button"
             onClick={() => onChange(m.id)}
             title={m.sub}
-            className={`px-3 py-1.5 rounded-md text-xs font-medium border transition-colors ${
+            aria-pressed={isActive}
+            aria-label={m.sub ? `${m.label} — ${m.sub}` : m.label}
+            className={`px-3 py-1.5 rounded-md text-xs font-medium border motion-safe:transition-colors ${FOCUS_RING} ${
               isActive
                 ? "bg-brand text-brand-foreground border-brand"
                 : "border-border hover:bg-muted"

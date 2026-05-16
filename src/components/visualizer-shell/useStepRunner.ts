@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useReducedMotion } from "./a11y";
 
 // --------------------------------------------------------------------------
 // useStepRunner: standardiserer "pre-compute alle frames, kjør gjennom dem"
@@ -43,6 +44,7 @@ export function useStepRunner<Frame>(
   const [playing, setPlaying] = useState(false);
   const [speed, setSpeed] = useState(initialSpeed);
   const timerRef = useRef<number | null>(null);
+  const reducedMotion = useReducedMotion();
 
   const total = frames.length;
   const atEnd = total === 0 || index >= total - 1;
@@ -55,10 +57,16 @@ export function useStepRunner<Frame>(
     setPlaying(false);
   }, [frames, resetOnFramesChange]);
 
-  // Auto-play tick
+  // Auto-play tick. Hvis brukeren ber om redusert bevegelse, hopp direkte
+  // til siste frame istedet for å animere gjennom hver frame.
   useEffect(() => {
     if (!playing) return;
     if (atEnd) {
+      if (pauseAtEnd) setPlaying(false);
+      return;
+    }
+    if (reducedMotion) {
+      setIndexState(Math.max(0, total - 1));
       if (pauseAtEnd) setPlaying(false);
       return;
     }
@@ -71,7 +79,7 @@ export function useStepRunner<Frame>(
         timerRef.current = null;
       }
     };
-  }, [playing, index, speed, total, atEnd, pauseAtEnd]);
+  }, [playing, index, speed, total, atEnd, pauseAtEnd, reducedMotion]);
 
   const step = useCallback(() => {
     setPlaying(false);

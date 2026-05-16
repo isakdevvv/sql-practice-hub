@@ -4,6 +4,8 @@ import {
   VisualizerShell,
   StepControls,
   useStepRunner,
+  KeyboardScope,
+  STATE_GLYPHS,
   type ModeDef,
 } from "@/components/visualizer-shell";
 
@@ -329,7 +331,19 @@ export function SortingVisualizer() {
   const pseudo = PSEUDO[algo];
   const meta = ALGOS.find((m) => m.id === algo)!;
 
+  // ARIA-label som beskriver gjeldende tilstand av sorteringen for skjermlesere.
+  const ariaSummary = `Sortering ${meta.label}, steg ${runner.index + 1} av ${runner.total}. ${current.comparisons} sammenligninger, ${current.swaps} bytter${runner.atEnd ? ", ferdig" : ""}.`;
+
   return (
+   <KeyboardScope
+     label={`Sortering: ${meta.label}`}
+     onStep={runner.step}
+     onStepBack={runner.stepBack}
+     onPlayPause={runner.playPause}
+     onReset={runner.reset}
+     onFirst={() => runner.setIndex(0)}
+     onLast={() => runner.setIndex(runner.total - 1)}
+   >
     <VisualizerShell<Algo>
       title="Sortering — se algoritmen kjøre steg for steg"
       modes={ALGOS}
@@ -337,6 +351,7 @@ export function SortingVisualizer() {
       onModeChange={setAlgo}
       onReset={runner.reset}
     >
+      <span className="sr-only" aria-live="polite">{ariaSummary}</span>
       {/* Bar-chart + pseudokode side om side */}
       <div className="grid md:grid-cols-[1fr_280px] gap-0">
         <div className="p-6 min-h-[280px] flex items-end justify-center bg-background border-b md:border-b-0 md:border-r border-border">
@@ -428,10 +443,22 @@ export function SortingVisualizer() {
             />
           </div>
           <div className="ml-auto flex flex-wrap items-center gap-3 text-[11px]">
-            <Legend color="bg-border" label="ikke besøkt" />
-            <Legend color="bg-yellow-400 dark:bg-yellow-500" label="sammenligner" />
-            <Legend color="bg-red-500" label="bytter / overskriver" />
-            <Legend color="bg-emerald-500" label="ferdig sortert" />
+            <Legend color="bg-border" glyph="" label="ikke besøkt (grå)" />
+            <Legend
+              color="bg-yellow-400 dark:bg-yellow-500"
+              glyph={STATE_GLYPHS.comparing}
+              label="gul ⇄ sammenligner"
+            />
+            <Legend
+              color="bg-red-500"
+              glyph={STATE_GLYPHS.error}
+              label="rød × bytter / overskriver"
+            />
+            <Legend
+              color="bg-emerald-500"
+              glyph={STATE_GLYPHS.done}
+              label="grønn ✓ ferdig sortert"
+            />
             {runner.atEnd && (
               <span className="text-emerald-600 dark:text-emerald-400 font-medium">
                 Ferdig — {current.comparisons} sammenligninger, {current.swaps} bytter
@@ -441,13 +468,27 @@ export function SortingVisualizer() {
         </div>
       </div>
     </VisualizerShell>
+   </KeyboardScope>
   );
 }
 
-function Legend({ color, label }: { color: string; label: string }) {
+function Legend({
+  color,
+  label,
+  glyph,
+}: {
+  color: string;
+  label: string;
+  glyph?: string;
+}) {
   return (
     <span className="inline-flex items-center gap-1.5 text-muted-foreground">
-      <span className={`inline-block w-3 h-3 rounded-sm ${color}`} />
+      <span
+        aria-hidden="true"
+        className={`inline-flex items-center justify-center w-3.5 h-3.5 rounded-sm text-[10px] font-bold text-background ${color}`}
+      >
+        {glyph}
+      </span>
       {label}
     </span>
   );
@@ -472,22 +513,40 @@ function BarChart({
   const sortedSet = new Set(sorted);
   const gap = n > 24 ? 1 : n > 16 ? 2 : 3;
 
+  // Bygg en kort tekstoppsummering for skjermlesere.
+  const desc = `Bar-chart med ${n} elementer. Sammenligner indekser ${comparing.join(", ") || "—"}, bytter ${swapping.join(", ") || "—"}, ferdig sortert: ${sorted.length} av ${n}.`;
+
   return (
-    <div className="w-full h-full max-h-[260px] flex items-end justify-center gap-px" style={{ gap: `${gap}px` }}>
+    <div
+      role="img"
+      aria-label={desc}
+      className="w-full h-full max-h-[260px] flex items-end justify-center gap-px"
+      style={{ gap: `${gap}px` }}
+    >
       {values.map((v, i) => {
         const heightPct = Math.max(4, (v / maxVal) * 100);
         let color = "bg-border";
-        if (swpSet.has(i)) color = "bg-red-500";
-        else if (cmpSet.has(i)) color = "bg-yellow-400 dark:bg-yellow-500";
-        else if (sortedSet.has(i)) color = "bg-emerald-500";
+        let glyph = "";
+        if (swpSet.has(i)) { color = "bg-red-500"; glyph = STATE_GLYPHS.error; }
+        else if (cmpSet.has(i)) { color = "bg-yellow-400 dark:bg-yellow-500"; glyph = STATE_GLYPHS.comparing; }
+        else if (sortedSet.has(i)) { color = "bg-emerald-500"; glyph = STATE_GLYPHS.done; }
         else color = "bg-foreground/60";
         return (
           <div
             key={i}
-            className={`flex-1 rounded-t-sm transition-[height,background-color] duration-150 ease-out ${color}`}
+            className={`relative flex-1 rounded-t-sm motion-safe:transition-[height,background-color] motion-safe:duration-150 ease-out ${color}`}
             style={{ height: `${heightPct}%`, minWidth: "6px", maxWidth: "32px" }}
             title={`a[${i}] = ${v}`}
-          />
+          >
+            {glyph && (
+              <span
+                aria-hidden="true"
+                className="absolute -top-4 left-1/2 -translate-x-1/2 text-[10px] font-bold leading-none text-foreground"
+              >
+                {glyph}
+              </span>
+            )}
+          </div>
         );
       })}
     </div>
