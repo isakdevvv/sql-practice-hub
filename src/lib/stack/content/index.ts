@@ -189,6 +189,10 @@ import { content as dte2505Spesialbits } from "./dte2505-spesialbits";
 import { content as programmeringsboker } from "./programmeringsboker";
 import { content as youtubeKanaler } from "./youtube-kanaler";
 import { content as moocBibliotek } from "./mooc-bibliotek";
+import { content as tek1DistribusjonsPlotter } from "./tek1-distribusjons-plotter";
+import { content as tek1PVerdiKalkulator } from "./tek1-p-verdi-kalkulator";
+import { content as dte2602LineaerRegresjon } from "./dte2602-lineaer-regresjon";
+import { content as dte2602RocCurvePlotter } from "./dte2602-roc-curve-plotter";
 import type { TrinnContent } from "../types";
 
 export const TRINN: TrinnContent[] = [
@@ -271,6 +275,9 @@ export const TRINN: TrinnContent[] = [
   youtubeKanaler,
   // MOOC-bibliotek (gratis universitetskurs)
   moocBibliotek,
+  // Interaktive verktøy — eksamensforberedelse
+  tek1DistribusjonsPlotter, tek1PVerdiKalkulator,
+  dte2602LineaerRegresjon, dte2602RocCurvePlotter,
 ];
 
 import { curriculumIndexOf } from "../curriculum";

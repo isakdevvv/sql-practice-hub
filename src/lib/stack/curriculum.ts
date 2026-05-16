@@ -30,7 +30,14 @@ export const PHASES: readonly CurriculumPhase[] = [
     why:
       "Prerekvisitt for ML og algoritmer. Diskret matte for CS, sannsynlighet for ML, linær algebra for nevrale nett og PCA.",
     analog: "MIT 6.042 · Stanford CS 109 · Khan Academy LinAlg",
-    slugs: ["math-foundations", "diskret-matte", "sannsynlighet", "linaer-algebra"],
+    slugs: [
+      "math-foundations",
+      "diskret-matte",
+      "sannsynlighet",
+      "linaer-algebra",
+      "tek1-distribusjons-plotter",
+      "tek1-p-verdi-kalkulator",
+    ],
   },
   {
     num: 1,
@@ -230,6 +237,8 @@ export const PHASES: readonly CurriculumPhase[] = [
       "dte2602-svm",
       "dte2602-etikk-filosofi",
       "dte2602-mappe-mal",
+      "dte2602-lineaer-regresjon",
+      "dte2602-roc-curve-plotter",
     ],
   },
   {
