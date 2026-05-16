@@ -16,6 +16,7 @@ import { Route as StackRouteImport } from './routes/stack'
 import { Route as SporRouteImport } from './routes/spor'
 import { Route as PythonRouteImport } from './routes/python'
 import { Route as ProsjektRouteImport } from './routes/prosjekt'
+import { Route as PredictRouteImport } from './routes/predict'
 import { Route as PracticeRouteImport } from './routes/practice'
 import { Route as OvRouteImport } from './routes/ov'
 import { Route as MiniKursRouteImport } from './routes/mini-kurs'
@@ -87,6 +88,11 @@ const PythonRoute = PythonRouteImport.update({
 const ProsjektRoute = ProsjektRouteImport.update({
   id: '/prosjekt',
   path: '/prosjekt',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PredictRoute = PredictRouteImport.update({
+  id: '/predict',
+  path: '/predict',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PracticeRoute = PracticeRouteImport.update({
@@ -295,6 +301,7 @@ export interface FileRoutesByFullPath {
   '/mini-kurs': typeof MiniKursRouteWithChildren
   '/ov': typeof OvRoute
   '/practice': typeof PracticeRoute
+  '/predict': typeof PredictRoute
   '/prosjekt': typeof ProsjektRoute
   '/python': typeof PythonRoute
   '/spor': typeof SporRouteWithChildren
@@ -340,6 +347,7 @@ export interface FileRoutesByTo {
   '/mac-drill': typeof MacDrillRoute
   '/ov': typeof OvRoute
   '/practice': typeof PracticeRoute
+  '/predict': typeof PredictRoute
   '/prosjekt': typeof ProsjektRoute
   '/python': typeof PythonRoute
   '/venv-drill': typeof VenvDrillRoute
@@ -384,6 +392,7 @@ export interface FileRoutesById {
   '/mini-kurs': typeof MiniKursRouteWithChildren
   '/ov': typeof OvRoute
   '/practice': typeof PracticeRoute
+  '/predict': typeof PredictRoute
   '/prosjekt': typeof ProsjektRoute
   '/python': typeof PythonRoute
   '/spor': typeof SporRouteWithChildren
@@ -432,6 +441,7 @@ export interface FileRouteTypes {
     | '/mini-kurs'
     | '/ov'
     | '/practice'
+    | '/predict'
     | '/prosjekt'
     | '/python'
     | '/spor'
@@ -477,6 +487,7 @@ export interface FileRouteTypes {
     | '/mac-drill'
     | '/ov'
     | '/practice'
+    | '/predict'
     | '/prosjekt'
     | '/python'
     | '/venv-drill'
@@ -520,6 +531,7 @@ export interface FileRouteTypes {
     | '/mini-kurs'
     | '/ov'
     | '/practice'
+    | '/predict'
     | '/prosjekt'
     | '/python'
     | '/spor'
@@ -567,6 +579,7 @@ export interface RootRouteChildren {
   MiniKursRoute: typeof MiniKursRouteWithChildren
   OvRoute: typeof OvRoute
   PracticeRoute: typeof PracticeRoute
+  PredictRoute: typeof PredictRoute
   ProsjektRoute: typeof ProsjektRoute
   PythonRoute: typeof PythonRoute
   SporRoute: typeof SporRouteWithChildren
@@ -636,6 +649,13 @@ declare module '@tanstack/react-router' {
       path: '/prosjekt'
       fullPath: '/prosjekt'
       preLoaderRoute: typeof ProsjektRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/predict': {
+      id: '/predict'
+      path: '/predict'
+      fullPath: '/predict'
+      preLoaderRoute: typeof PredictRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/practice': {
@@ -971,6 +991,7 @@ const rootRouteChildren: RootRouteChildren = {
   MiniKursRoute: MiniKursRouteWithChildren,
   OvRoute: OvRoute,
   PracticeRoute: PracticeRoute,
+  PredictRoute: PredictRoute,
   ProsjektRoute: ProsjektRoute,
   PythonRoute: PythonRoute,
   SporRoute: SporRouteWithChildren,

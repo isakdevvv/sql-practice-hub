@@ -14,6 +14,19 @@ export interface Problem {
   starter_sql: string;
   solution: string;
   alt_solutions?: string[];
+  /** Kuraterte alternative løsninger med pedagogisk kommentar.
+   *  Vises i et "Sammenlign med andre løsninger"-panel etter at brukeren
+   *  har levert riktig svar. Brukes for å vise idiomatiske eller alternative
+   *  SQL-mønstre (window vs subquery, CTE vs nested, COALESCE vs CASE, …). */
+  altSolutions?: {
+    /** Den alternative SQL-koden (kjørbar). */
+    kode: string;
+    /** Kort navn — vises i overskriften (f.eks. "Window function", "CTE"). */
+    navn: string;
+    /** Pedagogisk kommentar: hvorfor er denne formen interessant, og når
+     *  vil du foretrekke den fremfor hovedløsningen? */
+    kommentar: string;
+  }[];
   validation: {
     ignore_order?: boolean;
     ignore_column_names?: boolean;
