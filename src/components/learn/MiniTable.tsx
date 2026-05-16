@@ -3,8 +3,8 @@ import type { Cell, VisualTable } from "@/lib/learn/types";
 
 interface MiniTableProps {
   table: VisualTable;
-  /** Highlight key column with this background tint. */
-  highlightKey?: string;
+  /** Highlight key column(s) with this background tint. Supports composite keys. */
+  highlightKey?: string | string[];
   /** Row indices to render dimmed (unmatched). */
   dimRows?: Set<number>;
   /** Row indices to render with success tint (matched). */
@@ -37,6 +37,13 @@ export function MiniTable({
 }: MiniTableProps) {
   const accentClass = accent ? ACCENT_BORDER[accent] : "border-border";
   const headerClass = accent ? ACCENT_HEADER_BG[accent] : "bg-muted/50 text-foreground/80";
+  const highlightSet = new Set<string>(
+    highlightKey === undefined
+      ? []
+      : Array.isArray(highlightKey)
+        ? highlightKey
+        : [highlightKey],
+  );
   return (
     <div className="space-y-1.5">
       {caption ? (
@@ -53,7 +60,7 @@ export function MiniTable({
                   key={col}
                   className={cn(
                     "px-2.5 py-1.5 text-left font-semibold",
-                    highlightKey === col && "underline underline-offset-2",
+                    highlightSet.has(col) && "underline underline-offset-2",
                   )}
                 >
                   {col}
@@ -86,7 +93,7 @@ export function MiniTable({
                       key={j}
                       className={cn(
                         "px-2.5 py-1.5",
-                        highlightKey && table.columns[j] === highlightKey && "bg-foreground/[0.04]",
+                        highlightSet.has(table.columns[j]) && "bg-foreground/[0.04]",
                       )}
                     >
                       <CellText value={cell} />

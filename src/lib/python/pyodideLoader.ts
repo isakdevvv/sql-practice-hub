@@ -14,6 +14,9 @@ type Pyodide = {
   globals: { get: (name: string) => unknown; set: (name: string, value: unknown) => void };
   toPy: (obj: unknown) => unknown;
   loadPackage: (names: string | string[]) => Promise<void>;
+  /** Emscripten virtual filesystem (Pyodide's own .d.ts doesn't cover this). */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  FS: any;
 };
 
 declare global {
