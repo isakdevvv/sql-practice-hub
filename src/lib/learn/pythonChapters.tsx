@@ -3,8 +3,42 @@
 // own voice. Concepts (variables, loops, recursion, BSTs) are universal CS;
 // the wording, scenarios, and figures are ours.
 
-import type { ReactNode } from "react";
+import { Children, isValidElement, type ReactNode } from "react";
 import * as F from "@/components/learn/python-figures/PythonFigures";
+
+/**
+ * Extract plain text from a React node tree.
+ * Used to derive deterministic id anchors from H2 children that may
+ * contain inline JSX (e.g. <code>=</code>).
+ */
+function nodeText(node: ReactNode): string {
+  if (node == null || typeof node === "boolean") return "";
+  if (typeof node === "string" || typeof node === "number") return String(node);
+  if (Array.isArray(node)) return node.map(nodeText).join("");
+  if (isValidElement(node)) {
+    const props = node.props as { children?: ReactNode };
+    return nodeText(props.children);
+  }
+  return "";
+}
+
+/**
+ * Slugify Norwegian heading text into an id anchor.
+ * Rule: lowercase, æ→ae, ø→oe, å→aa, spaces→-, strip punctuation,
+ * collapse repeats, trim leading/trailing dashes.
+ */
+export function slugifyHeading(text: string): string {
+  return text
+    .toLowerCase()
+    .replace(/æ/g, "ae")
+    .replace(/ø/g, "oe")
+    .replace(/å/g, "aa")
+    .replace(/[^a-z0-9\s-]/g, "")
+    .trim()
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "");
+}
 
 export interface PythonChapter {
   nr: number;
@@ -21,8 +55,16 @@ export interface PythonChapter {
 /* ----------------------------- Building blocks ----------------------------- */
 
 function H2({ children }: { children: ReactNode }) {
+  // Flatten children into a text string and slugify it so we get stable
+  // in-page anchors without changing the authoring API (still `<H2>...</H2>`).
+  const text = Children.toArray(children).map(nodeText).join("");
+  const id = slugifyHeading(text);
   return (
-    <h2 className="mt-8 mb-3 text-lg font-semibold tracking-tight">
+    <h2
+      id={id || undefined}
+      data-toc-heading=""
+      className="mt-8 mb-3 text-lg font-semibold tracking-tight scroll-mt-24"
+    >
       {children}
     </h2>
   );
