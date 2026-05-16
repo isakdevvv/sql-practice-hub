@@ -194,7 +194,7 @@ Typiske defaults:
             En konstant lr er sjelden optimal. Ofte vil du starte stort (utforske raskt)
             og senke etter hvert (finjustere).
           </p>
-          <div className="overflow-hidden rounded-lg border border-border">
+          <div className="overflow-x-auto rounded-lg border border-border">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>
@@ -264,7 +264,7 @@ Når:
 
         <section id="velg" className="mb-10">
           <h2 className="text-xl font-semibold mb-3">7. Velg-tabell — hvilken optimizer når?</h2>
-          <div className="overflow-hidden rounded-lg border border-border">
+          <div className="overflow-x-auto rounded-lg border border-border">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>

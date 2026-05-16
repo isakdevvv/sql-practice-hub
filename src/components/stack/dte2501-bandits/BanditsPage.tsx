@@ -250,7 +250,7 @@ export function BanditsPage() {
               der <Tex>{"\\Delta_a = q_*(a^*) - q_*(a)"}</Tex>. Lav regret =
               god algoritme.
             </p>
-            <div className="overflow-hidden rounded-lg border border-border">
+            <div className="overflow-x-auto rounded-lg border border-border">
               <table className="w-full text-xs">
                 <thead className="bg-muted/50">
                   <tr>

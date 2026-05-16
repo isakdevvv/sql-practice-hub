@@ -66,7 +66,7 @@ export function RdtProgresjonPage() {
             («rdt») skal levere data til applikasjonen som om kanalen var perfekt. Hvordan?
             Vi bygger det opp i fem versjoner, der hver versjon antar litt mer fra under-kanalen:
           </p>
-          <div className="overflow-hidden rounded-lg border border-border">
+          <div className="overflow-x-auto rounded-lg border border-border">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>
@@ -284,7 +284,7 @@ export function RdtProgresjonPage() {
 
         <section id="ref" className="mb-6">
           <h2 className="text-xl font-semibold mb-3">10. Oppsummering — én tabell</h2>
-          <div className="overflow-hidden rounded-lg border border-border">
+          <div className="overflow-x-auto rounded-lg border border-border">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>

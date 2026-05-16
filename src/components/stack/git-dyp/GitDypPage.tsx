@@ -50,7 +50,7 @@ export function GitDypPage() {
             «refs» som peker inn i det lageret.
           </p>
 
-          <div className="overflow-hidden rounded-lg border border-border mb-4">
+          <div className="overflow-x-auto rounded-lg border border-border mb-4">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>
@@ -180,7 +180,7 @@ git checkout feature && git rebase main
   feature:              D' ── E'   ← D og E er REPLAYED på toppen av C`}</pre>
           </div>
 
-          <div className="overflow-hidden rounded-lg border border-border mb-4">
+          <div className="overflow-x-auto rounded-lg border border-border mb-4">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>
@@ -231,7 +231,7 @@ reword  4d5e6f7  feat: ferdig modul X     ← bytte commit-melding
 pick    5e6f7g8  feat: la til tester`}</pre>
           </div>
 
-          <div className="overflow-hidden rounded-lg border border-border mb-4">
+          <div className="overflow-x-auto rounded-lg border border-border mb-4">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>
@@ -277,7 +277,7 @@ git cherry-pick --no-commit 9a7f3c1   # bare apply, ikke commit ennå
 git cherry-pick --abort
 git cherry-pick --continue   # etter at du har fikset filene + git add`}</pre>
           </div>
-          <div className="overflow-hidden rounded-lg border border-border">
+          <div className="overflow-x-auto rounded-lg border border-border">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>
@@ -414,7 +414,7 @@ git unstage fil.txt`}</pre>
             </div>
           </div>
 
-          <div className="overflow-hidden rounded-lg border border-border">
+          <div className="overflow-x-auto rounded-lg border border-border">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>

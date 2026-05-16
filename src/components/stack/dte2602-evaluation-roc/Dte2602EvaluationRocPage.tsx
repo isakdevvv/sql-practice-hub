@@ -47,7 +47,7 @@ export function Dte2602EvaluationRocPage() {
           <p className="text-sm text-muted-foreground mb-3">
             For binær klassifikasjon (positiv = 1, negativ = 0):
           </p>
-          <div className="overflow-hidden rounded-lg border border-border">
+          <div className="overflow-x-auto rounded-lg border border-border">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>

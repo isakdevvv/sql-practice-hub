@@ -111,7 +111,7 @@ export function ApiArkitekturPage() {
             lever — og dermed hva de inneholder.
           </p>
 
-          <div className="overflow-hidden rounded-lg border border-border mb-4">
+          <div className="overflow-x-auto rounded-lg border border-border mb-4">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>

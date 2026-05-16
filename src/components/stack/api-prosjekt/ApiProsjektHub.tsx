@@ -78,7 +78,7 @@ export function ApiProsjektHub() {
             Hver gang du bygger et API for første gang følger du noenlunde
             disse stegene. De fem mini-kursene dekker en del hver.
           </p>
-          <div className="overflow-hidden rounded-lg border border-border">
+          <div className="overflow-x-auto rounded-lg border border-border">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>

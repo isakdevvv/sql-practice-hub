@@ -184,7 +184,7 @@ viewModelScope.launch {
             kanselleres, kanselleres alle korutiner i det. Velg scope ut fra HVA
             korutinen er knyttet til.
           </p>
-          <div className="overflow-hidden rounded-lg border border-border mb-4">
+          <div className="overflow-x-auto rounded-lg border border-border mb-4">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>
@@ -242,7 +242,7 @@ class HovedFragment : Fragment() {
             En <em>dispatcher</em> bestemmer hvilken tråd korutinen kjører på. Tre
             standard-dispatchers å vite om.
           </p>
-          <div className="overflow-hidden rounded-lg border border-border mb-4">
+          <div className="overflow-x-auto rounded-lg border border-border mb-4">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>

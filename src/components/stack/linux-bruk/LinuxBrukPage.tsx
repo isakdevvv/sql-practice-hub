@@ -110,7 +110,7 @@ df -h                # diskplass per filsystem`}</pre>
 │ └──────── owner:  rw- (read, write)
 └────────── type:   - (vanlig fil), d (dir), l (lenke)`}</pre>
           </div>
-          <div className="mt-4 overflow-hidden rounded-lg border border-border">
+          <div className="mt-4 overflow-x-auto rounded-lg border border-border">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>
@@ -170,7 +170,7 @@ fg                   # bring siste jobb til forgrunn
 bg                   # fortsett stoppet jobb i bakgrunn
 nohup cmd &          # kjør selv etter logout`}</pre>
           </div>
-          <div className="mt-4 overflow-hidden rounded-lg border border-border">
+          <div className="mt-4 overflow-x-auto rounded-lg border border-border">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>

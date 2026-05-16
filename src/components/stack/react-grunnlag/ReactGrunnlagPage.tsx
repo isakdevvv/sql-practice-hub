@@ -217,7 +217,7 @@ function Bruker({ id }: { id: number }) {
   return <p>{data.navn}</p>;
 }`}</pre>
           </div>
-          <div className="overflow-hidden rounded-lg border border-border mb-3">
+          <div className="overflow-x-auto rounded-lg border border-border mb-3">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>
@@ -289,7 +289,7 @@ function Bruker({ id }: { id: number }) {
   );
 }`}</pre>
           </div>
-          <div className="overflow-hidden rounded-lg border border-border">
+          <div className="overflow-x-auto rounded-lg border border-border">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>
@@ -345,7 +345,7 @@ return <input ref={inputRef} />;
 const startTid = useRef(Date.now());
 // startTid.current kan endres uten render`}</pre>
           </div>
-          <div className="overflow-hidden rounded-lg border border-border">
+          <div className="overflow-x-auto rounded-lg border border-border">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>

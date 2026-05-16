@@ -218,7 +218,7 @@ Pil med åpent hode = retur eller asynkront.`}</pre>
 
         <section id="naar" className="mb-10">
           <h2 className="text-xl font-semibold mb-3">6. Når du bruker hvilket</h2>
-          <div className="overflow-hidden rounded-lg border border-border">
+          <div className="overflow-x-auto rounded-lg border border-border">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>

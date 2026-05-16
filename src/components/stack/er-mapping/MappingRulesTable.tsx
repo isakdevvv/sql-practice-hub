@@ -47,7 +47,7 @@ export function MappingRulesTable() {
       <p className="text-sm text-muted-foreground mb-4">
         Cheat sheet for å oversette hver ER-konstruksjon til SQL.
       </p>
-      <div className="overflow-hidden rounded-lg border border-border">
+      <div className="overflow-x-auto rounded-lg border border-border">
         <table className="w-full text-sm">
           <thead className="bg-muted/50">
             <tr>

@@ -322,7 +322,7 @@ public async Task<IActionResult> Create(Book b)
             Tre mekanismer for å sende data fra controller til view <em>utenom</em>
             sterk-typet Model. Vit forskjellen — eksamenstoff.
           </p>
-          <div className="overflow-hidden rounded-lg border border-border">
+          <div className="overflow-x-auto rounded-lg border border-border">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>

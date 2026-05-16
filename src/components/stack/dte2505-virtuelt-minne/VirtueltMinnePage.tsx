@@ -86,7 +86,7 @@ export function VirtueltMinnePage() {
             (fysiske). Vanlig page-størrelse: 4 KB (12 bits offset). Page table mapper hver page
             (VPN) til en frame (PFN).
           </p>
-          <div className="overflow-hidden rounded-lg border border-border">
+          <div className="overflow-x-auto rounded-lg border border-border">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>
@@ -164,7 +164,7 @@ PA = 7 * 4096 + 0x123
           <p className="text-sm text-muted-foreground mb-3">
             En lineær tabell over alle mulige VPN-er blir gigantisk i 64-bit. Tre strategier:
           </p>
-          <div className="overflow-hidden rounded-lg border border-border">
+          <div className="overflow-x-auto rounded-lg border border-border">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>
@@ -302,7 +302,7 @@ PA = 7 * 4096 + 0x123
             Når RAM er full og vi trenger en frame for en innkommende side, må noe kastes ut.
             Algoritmen som velger ofrer:
           </p>
-          <div className="overflow-hidden rounded-lg border border-border">
+          <div className="overflow-x-auto rounded-lg border border-border">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>

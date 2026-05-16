@@ -210,7 +210,7 @@ button.setOnClickListener {
             inne i blokken (<code>it</code> eller <code>this</code>), og{" "}
             <strong>hva blokken returnerer</strong>.
           </p>
-          <div className="overflow-hidden rounded-lg border border-border mb-4">
+          <div className="overflow-x-auto rounded-lg border border-border mb-4">
             <table className="w-full text-xs">
               <thead className="bg-muted/50">
                 <tr>

@@ -106,7 +106,7 @@ export function LpmTrainer() {
         </p>
         <div className="text-2xl font-mono text-brand mb-4">{q.ip}</div>
 
-        <div className="overflow-hidden rounded-lg border border-border">
+        <div className="overflow-x-auto rounded-lg border border-border">
           <table className="w-full text-sm">
             <thead className="bg-muted/50">
               <tr>

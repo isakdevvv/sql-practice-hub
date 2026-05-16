@@ -240,7 +240,7 @@ COMMIT;                                        -- gjør endringene varige
             <code>START TRANSACTION</code>) åpner en. <code>COMMIT</code> gjør alt
             varig. <code>ROLLBACK</code> kaster alt.
           </p>
-          <div className="overflow-hidden rounded-lg border border-border mb-4">
+          <div className="overflow-x-auto rounded-lg border border-border mb-4">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>
@@ -318,7 +318,7 @@ COMMIT;`}</pre>
             de tre lese-problemene — men koster mer i ytelse fordi DB-en må holde
             flere låser eller versjoner.
           </p>
-          <div className="overflow-hidden rounded-lg border border-border">
+          <div className="overflow-x-auto rounded-lg border border-border">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>

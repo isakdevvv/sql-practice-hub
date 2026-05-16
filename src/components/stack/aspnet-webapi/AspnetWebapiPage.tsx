@@ -48,7 +48,7 @@ export function AspnetWebapiPage() {
             Samme stakk, samme middleware-pipeline, samme DI. Bare en annen base­klasse
             og en annen «return-type-filosofi».
           </p>
-          <div className="overflow-hidden rounded-lg border border-border">
+          <div className="overflow-x-auto rounded-lg border border-border">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>
@@ -169,7 +169,7 @@ public class UsersController : ControllerBase
             <code>ControllerBase</code> har innebygde hjelpe­metoder som returnerer
             de vanligste HTTP-statuskodene. Du skal kjenne disse på rygg­raden.
           </p>
-          <div className="overflow-hidden rounded-lg border border-border">
+          <div className="overflow-x-auto rounded-lg border border-border">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>

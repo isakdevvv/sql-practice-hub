@@ -119,7 +119,7 @@ export function AlohaKasinoPage() {
             klokka, og sender bare fra starten av en slot. Sårbarhetsvinduet er nå én
             slot (ikke to). Effektiviteten dobles — opptil 1/e ≈ 37%.
           </p>
-          <div className="overflow-hidden rounded-lg border border-border">
+          <div className="overflow-x-auto rounded-lg border border-border">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>
@@ -246,7 +246,7 @@ export function AlohaKasinoPage() {
 
         <section id="ref" className="mb-6">
           <h2 className="text-xl font-semibold mb-3">8. Eksamen-quick-ref</h2>
-          <div className="overflow-hidden rounded-lg border border-border">
+          <div className="overflow-x-auto rounded-lg border border-border">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>

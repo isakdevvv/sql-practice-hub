@@ -62,7 +62,7 @@ export function MathFoundationsHub() {
             Tre familier av matte, tre familier av anvendelser. Hold tabellen i
             hodet — den hjelper deg å plassere hver formel inn i riktig kontekst.
           </p>
-          <div className="overflow-hidden rounded-lg border border-border">
+          <div className="overflow-x-auto rounded-lg border border-border">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>

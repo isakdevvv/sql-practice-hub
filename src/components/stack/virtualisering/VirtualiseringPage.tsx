@@ -49,7 +49,7 @@ export function VirtualiseringPage() {
             maskinvaren bak en virtuell — og du kan kjøre mange uavhengige system på
             samme boks.
           </p>
-          <div className="overflow-hidden rounded-lg border border-border">
+          <div className="overflow-x-auto rounded-lg border border-border">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>
@@ -84,7 +84,7 @@ export function VirtualiseringPage() {
           <p className="text-sm text-muted-foreground mb-3">
             Fire forskjellige måter å «kjøre annet enn vert-OSet» på, fra tyngst til letteste:
           </p>
-          <div className="overflow-hidden rounded-lg border border-border">
+          <div className="overflow-x-auto rounded-lg border border-border">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>
@@ -113,7 +113,7 @@ export function VirtualiseringPage() {
 
         <section id="produkter" className="mb-10">
           <h2 className="text-xl font-semibold mb-3">3. Hypervisor-produkter</h2>
-          <div className="overflow-hidden rounded-lg border border-border">
+          <div className="overflow-x-auto rounded-lg border border-border">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>
@@ -179,7 +179,7 @@ export function VirtualiseringPage() {
                                    │        Maskinvare       │
                                    +─────────────────────────+`}</pre>
           </div>
-          <div className="overflow-hidden rounded-lg border border-border mt-4">
+          <div className="overflow-x-auto rounded-lg border border-border mt-4">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>
@@ -203,7 +203,7 @@ export function VirtualiseringPage() {
 
         <section id="ubuntu-vm" className="mb-10">
           <h2 className="text-xl font-semibold mb-3">5. Steg for steg — lag en Ubuntu-VM i VirtualBox</h2>
-          <div className="overflow-hidden rounded-lg border border-border">
+          <div className="overflow-x-auto rounded-lg border border-border">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>
@@ -274,7 +274,7 @@ CMD ["python", "app.py"]`}</pre>
             Snapshot = «frys» av en VM eller filsystem på et tidspunkt. Du kan rulle
             tilbake hvis en oppgradering går galt.
           </p>
-          <div className="overflow-hidden rounded-lg border border-border">
+          <div className="overflow-x-auto rounded-lg border border-border">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>

@@ -59,7 +59,7 @@ export function SterkSvakRelasjon() {
         påvirker både diagrammet og DDL-en.
       </p>
 
-      <div className="overflow-hidden rounded-lg border border-border mb-5">
+      <div className="overflow-x-auto rounded-lg border border-border mb-5">
         <table className="w-full text-sm">
           <thead className="bg-muted/50">
             <tr>

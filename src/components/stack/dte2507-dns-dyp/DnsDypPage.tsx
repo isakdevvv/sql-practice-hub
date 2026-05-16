@@ -110,7 +110,7 @@ export function DnsDypPage() {
 
         <section id="rr" className="mb-10">
           <h2 className="text-xl font-semibold mb-3">3. Resource Record-typer</h2>
-          <div className="overflow-hidden rounded-lg border border-border">
+          <div className="overflow-x-auto rounded-lg border border-border">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>
@@ -177,7 +177,7 @@ export function DnsDypPage() {
             svar, lagrer den det i RAM til TTL utløper. Det er grunnen til at globale DNS-endringer
             tar tid å «slå inn» — gamle svar lever i cacher rundt om i verden til TTL er ute.
           </p>
-          <div className="overflow-hidden rounded-lg border border-border">
+          <div className="overflow-x-auto rounded-lg border border-border">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>
@@ -314,7 +314,7 @@ Hvis ett ledd feiler → SERVFAIL (ikke det falske svaret).`}</pre>
 
         <section id="ref" className="mb-6">
           <h2 className="text-xl font-semibold mb-3">9. Eksamen-quick-ref</h2>
-          <div className="overflow-hidden rounded-lg border border-border">
+          <div className="overflow-x-auto rounded-lg border border-border">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>

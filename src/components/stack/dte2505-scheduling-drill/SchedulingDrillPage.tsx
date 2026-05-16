@@ -52,7 +52,7 @@ export function SchedulingDrillPage() {
             Ingen scheduler er «best» — de optimerer ulike ting og bytter alltid bort
             noe annet. De fire klassiske metrikkene:
           </p>
-          <div className="overflow-hidden rounded-lg border border-border">
+          <div className="overflow-x-auto rounded-lg border border-border">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>
@@ -236,7 +236,7 @@ turnaround: A=11, B=9, C=17 → snitt 12.3`}</pre>
         </Section>
 
         <Section number="7" id="compare" title="Sammenlign side om side">
-          <div className="overflow-hidden rounded-lg border border-border">
+          <div className="overflow-x-auto rounded-lg border border-border">
             <table className="w-full text-xs">
               <thead className="bg-muted/50">
                 <tr>

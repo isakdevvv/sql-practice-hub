@@ -169,7 +169,7 @@ class BrukerKonto implements Bruker {
   constructor(public id: number, public navn: string) {}
 }`}</pre>
           </div>
-          <div className="overflow-hidden rounded-lg border border-border">
+          <div className="overflow-x-auto rounded-lg border border-border">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>
@@ -301,7 +301,7 @@ function vis(r: Resultat) {
             Innebygde generiske typer som transformerer andre typer. Læres én
             gang, brukes hver dag.
           </p>
-          <div className="overflow-hidden rounded-lg border border-border mb-4">
+          <div className="overflow-x-auto rounded-lg border border-border mb-4">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>

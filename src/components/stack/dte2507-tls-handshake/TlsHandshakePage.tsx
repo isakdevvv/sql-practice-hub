@@ -84,7 +84,7 @@ export function TlsHandshakePage() {
             Klassisk full handshake. Hver melding bærer et formål — og en serie state-skifter
             som ender med en kryptert kanal.
           </p>
-          <div className="overflow-hidden rounded-lg border border-border">
+          <div className="overflow-x-auto rounded-lg border border-border">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>
@@ -157,7 +157,7 @@ C  HTTP request        ──→  ←kryptert
 (0-RTT mulig med PSK)`}</pre>
             </div>
           </div>
-          <div className="overflow-hidden rounded-lg border border-border mt-4">
+          <div className="overflow-x-auto rounded-lg border border-border mt-4">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>
@@ -191,7 +191,7 @@ C  HTTP request        ──→  ←kryptert
     │     │     └────────────────────────── separator
     │     └──────────────────────────────── autentisering (RSA-signatur fra sertifikat)
     └────────────────────────────────────── nøkkelutveksling (Elliptic Curve DH Ephemeral)`}</pre>
-            <div className="overflow-hidden rounded-lg border border-border mt-4">
+            <div className="overflow-x-auto rounded-lg border border-border mt-4">
               <table className="w-full text-sm">
                 <thead className="bg-muted/50">
                   <tr>
@@ -247,7 +247,7 @@ C  HTTP request        ──→  ←kryptert
 
         <section id="sym-asym" className="mb-10">
           <h2 className="text-xl font-semibold mb-3">7. Hvor brukes symmetrisk vs asymmetrisk?</h2>
-          <div className="overflow-hidden rounded-lg border border-border">
+          <div className="overflow-x-auto rounded-lg border border-border">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>
@@ -269,7 +269,7 @@ C  HTTP request        ──→  ←kryptert
 
         <section id="angrep" className="mb-6">
           <h2 className="text-xl font-semibold mb-3">8. Kjente angrep på TLS</h2>
-          <div className="overflow-hidden rounded-lg border border-border">
+          <div className="overflow-x-auto rounded-lg border border-border">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>

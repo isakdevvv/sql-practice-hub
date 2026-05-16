@@ -372,7 +372,7 @@ export function DiffieHellmanColors() {
           </div>
         </div>
 
-        <div className="overflow-hidden rounded-lg border border-border">
+        <div className="overflow-x-auto rounded-lg border border-border">
           <table className="w-full text-sm">
             <thead className="bg-muted/50">
               <tr>

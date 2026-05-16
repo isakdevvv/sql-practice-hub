@@ -189,7 +189,7 @@ export function TlsPage() {
           <p className="text-sm text-muted-foreground mb-4">
             TLS 1.3 (2018) er en MAJOR redesign — enklere, raskere, sikrere.
           </p>
-          <div className="overflow-hidden rounded-lg border border-border">
+          <div className="overflow-x-auto rounded-lg border border-border">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>

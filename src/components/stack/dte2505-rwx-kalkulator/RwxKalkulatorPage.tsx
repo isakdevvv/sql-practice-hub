@@ -72,7 +72,7 @@ Verdi:   4 2 1  4 2 1  4 2 1
           <p className="text-sm text-muted-foreground mb-3">
             Hvert siffer i en chmod-modus kan være 0–7. Tabellen viser hva hver verdi gir:
           </p>
-          <div className="overflow-hidden rounded-lg border border-border">
+          <div className="overflow-x-auto rounded-lg border border-border">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>
@@ -98,7 +98,7 @@ Verdi:   4 2 1  4 2 1  4 2 1
 
         <section id="vanlige" className="mb-10">
           <h2 className="text-xl font-semibold mb-3">3. De fire modusene du må kjenne i søvne</h2>
-          <div className="overflow-hidden rounded-lg border border-border">
+          <div className="overflow-x-auto rounded-lg border border-border">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>
@@ -162,7 +162,7 @@ chmod -R u=rwX,g=rX,o= mappe/
               Tre ekstra bits ligger FORAN de ni vanlige. De vises som et fjerde oktalt siffer
               foran de tre andre (f.eks. <code className="font-mono">chmod 4755</code>).
             </p>
-            <div className="overflow-hidden rounded-lg border border-border">
+            <div className="overflow-x-auto rounded-lg border border-border">
               <table className="w-full text-sm">
                 <thead className="bg-muted/50">
                   <tr>
@@ -217,7 +217,7 @@ chmod -R u=rwX,g=rX,o= mappe/
 
         <section id="referanse" className="mb-10">
           <h2 className="text-xl font-semibold mb-3">7. Hvilken modus passer hvilken fil?</h2>
-          <div className="overflow-hidden rounded-lg border border-border">
+          <div className="overflow-x-auto rounded-lg border border-border">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>

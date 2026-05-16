@@ -73,7 +73,7 @@ Brukbare:      62 stykker (2^6 − 2)`}</pre>
             Hver byte i en IP er 8 bits, hver bit har en verdi (128, 64, 32, 16, 8, 4, 2, 1).
             Lær denne tabellen utenat — så går resten av seg selv.
           </p>
-          <div className="overflow-hidden rounded-lg border border-border">
+          <div className="overflow-x-auto rounded-lg border border-border">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>
@@ -125,7 +125,7 @@ net   11000000 10101000 00000001 10000000
 
         <section id="prefix" className="mb-10">
           <h2 className="text-xl font-semibold mb-3">3. Prefix-tabell</h2>
-          <div className="overflow-hidden rounded-lg border border-border">
+          <div className="overflow-x-auto rounded-lg border border-border">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>
@@ -159,7 +159,7 @@ net   11000000 10101000 00000001 10000000
             Når du legger til 2 bits til prefixet (16 → 18) får du 2² = 4 like store delsubnett.
             Hver /18 har 2¹⁴ = 16384 adresser. Skritt-størrelsen er 64 i andre oktett.
           </p>
-          <div className="overflow-hidden rounded-lg border border-border">
+          <div className="overflow-x-auto rounded-lg border border-border">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>
@@ -216,7 +216,7 @@ net   11000000 10101000 00000001 10000000
             Klassisk eksamen-mønster. Vi har VLSM-en fra forrige seksjon og spør: hvor hører
             192.168.1.135 hjemme?
           </p>
-          <div className="overflow-hidden rounded-lg border border-border">
+          <div className="overflow-x-auto rounded-lg border border-border">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>

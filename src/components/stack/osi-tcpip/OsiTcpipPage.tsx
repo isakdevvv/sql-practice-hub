@@ -68,7 +68,7 @@ export function OsiTcpipPage() {
             holder oss til TCP/IP — det er det Kurose & Ross bruker, og det er det
             studenter blir testet i.
           </p>
-          <div className="overflow-hidden rounded-lg border border-border">
+          <div className="overflow-x-auto rounded-lg border border-border">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>
@@ -165,7 +165,7 @@ export function OsiTcpipPage() {
             Det laget der brukeren faktisk gjør noe. Alle protokollene du møter når du
             programmerer bor her.
           </p>
-          <div className="overflow-hidden rounded-lg border border-border">
+          <div className="overflow-x-auto rounded-lg border border-border">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>
@@ -342,7 +342,7 @@ MAC-adresse: aa:bb:cc:dd:ee:ff
           <p className="text-sm text-muted-foreground mb-4">
             Lær denne tabellen utenat — eksamen tester den nesten alltid.
           </p>
-          <div className="overflow-hidden rounded-lg border border-border">
+          <div className="overflow-x-auto rounded-lg border border-border">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>

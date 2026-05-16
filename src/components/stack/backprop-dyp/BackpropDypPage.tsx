@@ -214,7 +214,7 @@ Fixes:
             feiler og nettet lærer ingenting. Hvis du starter for stort, eksploderer
             aktiveringene. For lite — vanishing.
           </p>
-          <div className="overflow-hidden rounded-lg border border-border">
+          <div className="overflow-x-auto rounded-lg border border-border">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>

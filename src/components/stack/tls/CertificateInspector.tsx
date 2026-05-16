@@ -278,7 +278,7 @@ export function CertificateInspector() {
 
           {parsed.extensions.length > 0 && (
             <Section title="Extensions (X.509 v3)">
-              <div className="overflow-hidden rounded-lg border border-border">
+              <div className="overflow-x-auto rounded-lg border border-border">
                 <table className="w-full text-xs">
                   <thead className="bg-muted/50">
                     <tr>

@@ -77,7 +77,7 @@ export function ProsesserSignalerPage() {
 
         <section id="tilstander" className="mb-10">
           <h2 className="text-xl font-semibold mb-3">1. Prosess-tilstander (STAT-kolonnen)</h2>
-          <div className="overflow-hidden rounded-lg border border-border">
+          <div className="overflow-x-auto rounded-lg border border-border">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>
@@ -124,7 +124,7 @@ export function ProsesserSignalerPage() {
             </p>
             <ProcessStateMachine />
           </div>
-          <div className="overflow-hidden rounded-lg border border-border">
+          <div className="overflow-x-auto rounded-lg border border-border">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>
@@ -171,7 +171,7 @@ isak      1201   0.0  8.2 421000 78900 ?        Tl   14:26   0:03 node webserver
             <code className="font-mono">ps</code> har to historiske syntakser: BSD (uten bindestrek) og UNIX
             (med). Begge fungerer på Linux.
           </p>
-          <div className="overflow-hidden rounded-lg border border-border">
+          <div className="overflow-x-auto rounded-lg border border-border">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>
@@ -196,7 +196,7 @@ isak      1201   0.0  8.2 421000 78900 ?        Tl   14:26   0:03 node webserver
 
         <section id="signaler" className="mb-10">
           <h2 className="text-xl font-semibold mb-3">5. Signaler — språket kernelen bruker</h2>
-          <div className="overflow-hidden rounded-lg border border-border mb-3">
+          <div className="overflow-x-auto rounded-lg border border-border mb-3">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>

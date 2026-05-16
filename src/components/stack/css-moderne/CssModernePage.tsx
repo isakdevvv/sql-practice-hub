@@ -116,7 +116,7 @@ export function CssModernePage() {
   /* shorthand: flex: 1 0 200px;  */
 }`}</pre>
           </div>
-          <div className="overflow-hidden rounded-lg border border-border mb-3">
+          <div className="overflow-x-auto rounded-lg border border-border mb-3">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>

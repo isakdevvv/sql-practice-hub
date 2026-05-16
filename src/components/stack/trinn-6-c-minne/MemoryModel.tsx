@@ -665,7 +665,7 @@ export function MemoryModel() {
         <p className="text-xs text-muted-foreground">{scenario.blurb}</p>
       </div>
 
-      <div className="rounded-lg border border-border bg-background/60 overflow-hidden">
+      <div className="rounded-lg border border-border bg-background/60 overflow-x-auto">
         <pre className="font-mono text-xs leading-relaxed m-0 p-0">
           {scenario.code.map((line, i) => {
             const active = i === step.line;

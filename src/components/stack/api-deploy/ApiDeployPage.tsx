@@ -284,7 +284,7 @@ Hvis dårlig: tilbake til 100% v1.`}</pre>
           <p className="text-sm text-muted-foreground mb-4">
             Når noe er galt i prod: HVA er galt, HVOR, og HVORFOR? «De tre pillarene».
           </p>
-          <div className="overflow-hidden rounded-lg border border-border">
+          <div className="overflow-x-auto rounded-lg border border-border">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>

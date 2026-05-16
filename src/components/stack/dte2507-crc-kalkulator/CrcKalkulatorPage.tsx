@@ -83,7 +83,7 @@ export function CrcKalkulatorPage() {
           <p className="text-sm text-muted-foreground mb-3 leading-relaxed">
             I CRC er all addisjon og subtraksjon det samme: bitvis XOR uten mente. Tabell:
           </p>
-          <div className="overflow-hidden rounded-lg border border-border">
+          <div className="overflow-x-auto rounded-lg border border-border">
             <table className="w-full text-sm font-mono">
               <thead className="bg-muted/50">
                 <tr>
@@ -252,7 +252,7 @@ export function CrcKalkulatorPage() {
 
         <section id="ref" className="mb-6">
           <h2 className="text-xl font-semibold mb-3">8. Eksamen-quick-ref</h2>
-          <div className="overflow-hidden rounded-lg border border-border">
+          <div className="overflow-x-auto rounded-lg border border-border">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>

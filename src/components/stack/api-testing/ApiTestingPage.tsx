@@ -200,7 +200,7 @@ def test_bestilling_e2e():
             Tre relaterte konsepter som lett rotes sammen.
           </p>
 
-          <div className="overflow-hidden rounded-lg border border-border mb-4">
+          <div className="overflow-x-auto rounded-lg border border-border mb-4">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>

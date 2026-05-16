@@ -206,7 +206,7 @@ V^π(B) = R(B,stay,B) + γ V^π(B)       (likn 2)
 
         <section id="compare" className="mb-10">
           <h2 className="text-xl font-semibold mb-3">6. VI vs PI — når foretrekkes hvilken?</h2>
-          <div className="overflow-hidden rounded-lg border border-border">
+          <div className="overflow-x-auto rounded-lg border border-border">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>

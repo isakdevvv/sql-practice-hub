@@ -104,7 +104,7 @@ DEKRYPTERING: m = c^d mod n
 SIGNERING:    s = m^d mod n
 VERIFIKASJON: m == s^e mod n`}</pre>
           </div>
-          <div className="mt-3 overflow-hidden rounded-lg border border-border">
+          <div className="mt-3 overflow-x-auto rounded-lg border border-border">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>
@@ -211,7 +211,7 @@ assert m == m_back`}</pre>
 
         <section id="sammenligning" className="mb-10">
           <h2 className="text-xl font-semibold mb-3">6. RSA vs AES vs hash</h2>
-          <div className="overflow-hidden rounded-lg border border-border">
+          <div className="overflow-x-auto rounded-lg border border-border">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>
@@ -235,7 +235,7 @@ assert m == m_back`}</pre>
 
         <section id="signering" className="mb-10">
           <h2 className="text-xl font-semibold mb-3">7. Signering vs kryptering</h2>
-          <div className="overflow-hidden rounded-lg border border-border">
+          <div className="overflow-x-auto rounded-lg border border-border">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>
@@ -258,7 +258,7 @@ assert m == m_back`}</pre>
 
         <section id="angrep" className="mb-10">
           <h2 className="text-xl font-semibold mb-3">8. Kjente angrep på RSA</h2>
-          <div className="overflow-hidden rounded-lg border border-border">
+          <div className="overflow-x-auto rounded-lg border border-border">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>

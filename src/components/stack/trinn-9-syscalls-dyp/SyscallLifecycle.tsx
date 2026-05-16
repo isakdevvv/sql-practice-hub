@@ -496,7 +496,7 @@ function CodePanel({
       : "bg-sky-500/15 border-l-2 border-sky-500";
   return (
     <div
-      className={`rounded-lg border ${accent} bg-background/60 overflow-hidden ${
+      className={`rounded-lg border ${accent} bg-background/60 overflow-x-auto ${
         dimmed ? "opacity-50" : ""
       }`}
     >

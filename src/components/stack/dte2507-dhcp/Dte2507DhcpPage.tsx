@@ -160,7 +160,7 @@ export function Dte2507DhcpPage() {
             hjemmenett, 8 timer på kontor, 1 time eller mindre på trådløse
             gjestenett.
           </p>
-          <div className="overflow-hidden rounded-lg border border-border">
+          <div className="overflow-x-auto rounded-lg border border-border">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>
@@ -294,7 +294,7 @@ export function Dte2507DhcpPage() {
         {/* 6. Quick-ref */}
         <section id="ref" className="mb-6">
           <h2 className="text-xl font-semibold mb-3">6. Eksamen-quick-ref</h2>
-          <div className="overflow-hidden rounded-lg border border-border">
+          <div className="overflow-x-auto rounded-lg border border-border">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>
@@ -344,7 +344,7 @@ export function Dte2507DhcpPage() {
             </table>
           </div>
 
-          <div className="mt-5 overflow-hidden rounded-lg border border-border">
+          <div className="mt-5 overflow-x-auto rounded-lg border border-border">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>

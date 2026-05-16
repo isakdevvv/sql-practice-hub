@@ -49,7 +49,7 @@ export function MvvmArkitekturPage() {
             UI, håndterer klikk. Det fungerer på 200 linjer. Når koden vokser kommer
             problemer som driver fram MVVM.
           </p>
-          <div className="overflow-hidden rounded-lg border border-border">
+          <div className="overflow-x-auto rounded-lg border border-border">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>
@@ -294,7 +294,7 @@ class BrukerViewModel(
             Tre relaterte mønstre — det er lett å forveksle dem. Forskjellen er hvordan
             View og state-holderen kommuniserer.
           </p>
-          <div className="overflow-hidden rounded-lg border border-border">
+          <div className="overflow-x-auto rounded-lg border border-border">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>

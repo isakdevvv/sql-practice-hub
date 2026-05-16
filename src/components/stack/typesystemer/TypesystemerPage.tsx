@@ -93,7 +93,7 @@ function betal(bruker: Bruker, belop: number): void {
             Folk blander disse hele tiden. De er uavhengige.
           </p>
 
-          <div className="overflow-hidden rounded-lg border border-border mb-4">
+          <div className="overflow-x-auto rounded-lg border border-border mb-4">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>

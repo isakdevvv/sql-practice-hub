@@ -237,7 +237,7 @@ Eller med cross-validation (k-fold):
             Total feil = bias² + variance + irreducible noise. Du kan ikke nullstille
             begge — å redusere én øker som regel den andre.
           </p>
-          <div className="overflow-hidden rounded-lg border border-border">
+          <div className="overflow-x-auto rounded-lg border border-border">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>
