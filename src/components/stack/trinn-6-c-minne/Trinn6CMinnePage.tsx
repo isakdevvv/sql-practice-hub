@@ -11,7 +11,7 @@ const STEPS = [
   { title: "Pekere — adresser til bytes", anchor: "pekere" },
   { title: "Stack-allokering — lokale variabler", anchor: "stack" },
   { title: "Heap-allokering — malloc og free", anchor: "heap" },
-  { title: "Livssyklus — frames, allokeringer, dangling pekere", anchor: "livssyklus" },
+  { title: "Livssyklus — C vs Python, frames og refcount", anchor: "livssyklus" },
   { title: "Vanlige feil og segfaults", anchor: "feil" },
   { title: "Strukturer og alignment", anchor: "struct" },
 ];
@@ -237,14 +237,16 @@ Memory-leak-eksempel:
 
         <section id="livssyklus" className="mb-12">
           <h2 className="text-xl font-semibold mb-3">
-            5. Livssyklus — frames, allokeringer, dangling pekere
+            5. Livssyklus — C vs Python, frames og refcount
           </h2>
           <p className="text-sm text-muted-foreground mb-4">
             Visualiseren over fokuserer på <em>bytes på adresser</em>. Denne
-            fokuserer på <em>tid</em>: hvordan stacken og heapen forandrer seg
-            mens programmet kjører. Step gjennom tre forskjellige
-            C-programmer og se frames bli pushet, malloc-blokker bli født og
-            frigjort, og pekere bli dangling.
+            fokuserer på <em>tid og språk</em>: hvordan stacken og heapen
+            forandrer seg mens programmet kjører. Bytt mellom{" "}
+            <strong>C</strong> (eksplisitt malloc/free, frames, dangling pekere)
+            og <strong>Python</strong> (alt på heapen som objekter med refcount,
+            stacken har bare navne-bindinger). Samme adressemodell under huden
+            — bare forskjellig regnskap.
           </p>
           <MemoryModel />
         </section>
