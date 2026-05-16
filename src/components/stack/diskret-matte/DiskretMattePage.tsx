@@ -2,20 +2,28 @@ import { Link } from "@tanstack/react-router";
 import { ArrowRight, Lightbulb, AlertTriangle, CheckCircle2 } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
+import { AbcMengder } from "./figures/AbcMengder";
+import { QuantorVis } from "./figures/QuantorVis";
+import { NumberSets } from "./figures/NumberSets";
+import { StepProof } from "./figures/StepProof";
 import { TruthTableBuilder } from "./figures/TruthTableBuilder";
 import { VennSandbox } from "./figures/VennSandbox";
 import { FunctionTypeVis } from "./figures/FunctionTypeVis";
 import { ChooseKExplorer } from "./figures/ChooseKExplorer";
 import { PascalTriangle } from "./figures/PascalTriangle";
 import { InductionDominoes } from "./figures/InductionDominoes";
+import { RelationGrid } from "./figures/RelationGrid";
+import { HasseDiagram } from "./figures/HasseDiagram";
 import { GraphSandbox } from "./figures/GraphSandbox";
 import { ModClock } from "./figures/ModClock";
 
 const STEPS = [
+  { title: "Mattens ABC — mengder, ∈ ⊆ ∀ ∃, tallmengder", anchor: "abc" },
   { title: "Propositional logic — sannhetsverdier og konnektiver", anchor: "logikk" },
   { title: "Bevis-strategier (direkte, kontrapositiv, motsigelse)", anchor: "bevis" },
   { title: "Mengder — union, snitt, differanse, delmengde", anchor: "mengder" },
   { title: "Funksjoner og relasjoner — injektiv, surjektiv, bijektiv", anchor: "funksjoner" },
+  { title: "Relasjoner og partielle ordninger", anchor: "relasjoner" },
   { title: "Kombinatorikk — permutasjoner og kombinasjoner", anchor: "kombinatorikk" },
   { title: "Matematisk induksjon", anchor: "induksjon" },
   { title: "Grafer — noder, kanter, stier, trær", anchor: "grafer" },
@@ -53,6 +61,56 @@ export function DiskretMattePage() {
         </div>
 
         <CourseOutline courseId="diskret-matte" steps={STEPS} />
+
+        {/* ============================================================ */}
+        {/* 0. MATTENS ABC — fra null */}
+        {/* ============================================================ */}
+        <section id="abc" className="mb-12">
+          <h2 className="text-xl font-semibold mb-3">0. Mattens ABC — start her</h2>
+          <p className="text-sm text-muted-foreground mb-4">
+            Før vi snakker om logikk, induksjon eller grafer: la oss kalibrere
+            notasjonen. Disse symbolene — <code>∈, ⊆, ∀, ∃, ℕ, ℤ, ℚ, ℝ</code> — er
+            språket alt videre stoff bygger på. Tre korte øvelser:
+          </p>
+
+          <div className="space-y-6">
+            <div>
+              <h3 className="text-sm font-semibold mb-2">A. Hva er en mengde?</h3>
+              <p className="text-xs text-muted-foreground mb-2">
+                En mengde er en uordnet samling av unike ting. Klikk gjennom modus 1, 2,
+                3 i figuren under for å bygge intuisjon for{" "}
+                <code>{`{...}`}</code>, <code>∈</code>, og <code>⊆</code>.
+              </p>
+              <AbcMengder />
+            </div>
+
+            <div>
+              <h3 className="text-sm font-semibold mb-2">B. Tallmengder — ℕ ⊂ ℤ ⊂ ℚ ⊂ ℝ</h3>
+              <p className="text-xs text-muted-foreground mb-2">
+                Alle tall du møter i kurset tilhører en av disse fire familier (i tillegg
+                til ℂ — komplekse tall — som vi ikke trenger her). Familiene er nøstet:
+                ℕ er innebygd i ℤ, som er innebygd i ℚ, som er innebygd i ℝ.
+              </p>
+              <NumberSets />
+            </div>
+
+            <div>
+              <h3 className="text-sm font-semibold mb-2">C. Kvantorer — ∀ og ∃</h3>
+              <p className="text-xs text-muted-foreground mb-2">
+                «For alle» og «det finnes» er det språket bevis er skrevet i. Velg et
+                predikat og se kvantorene vurderes konkret.
+              </p>
+              <QuantorVis />
+            </div>
+          </div>
+
+          <FallBox>
+            <strong>Hvorfor denne seksjonen finnes:</strong> de fleste lærebøker forutsetter
+            at du kan denne notasjonen, og dropper den rett i magen på deg på side 2. Hvis
+            du har slitt med diskret matte før, er det 80% sjanse for at dette var
+            grunnen — ikke matematikken, men notasjonen.
+          </FallBox>
+        </section>
 
         {/* ============================================================ */}
         {/* 1. LOGIKK */}
@@ -170,6 +228,67 @@ Eksempel — kode:
             kontrapositiv <code>¬q → ¬p</code> (ekvivalent), men invers er{" "}
             <code>¬p → ¬q</code> (IKKE ekvivalent). Ikke bytt rekkefølge når du negerer.
           </FallBox>
+
+          <h3 className="text-sm font-semibold mb-2 mt-6">Klassisk motsigelse-bevis: √2 er irrasjonelt</h3>
+          <p className="text-xs text-muted-foreground mb-3">
+            Det mest berømte bevis ved motsigelse. Pythagoras hadde sannsynligvis dette i
+            hodet da han oppdaget at irrasjonale tall fantes — og det skapte krise i den
+            greske matematikken.
+          </p>
+          <StepProof
+            title="√2 er irrasjonelt"
+            claim="Det finnes ingen heltall a, b med b ≠ 0 slik at √2 = a/b."
+            steps={[
+              {
+                label: "Antagelse",
+                line: "Anta √2 = a/b, hvor a/b er på fullt forkortet form.",
+                highlight: "fullt forkortet form",
+                hint: "Motsigelses-strategien: anta det motsatte av påstanden. «Fullt forkortet» betyr gcd(a, b) = 1 — vi har dratt ut alle felles faktorer.",
+              },
+              {
+                label: "Steg 1",
+                line: "Kvadrér begge sider:   2 = a²/b²",
+                highlight: "a²/b²",
+                hint: "Kvadrér likningen for å bli kvitt rota.",
+              },
+              {
+                label: "Steg 2",
+                line: "Multipliser med b²:   2b² = a²",
+                highlight: "2b²",
+                hint: "Da er a² av formen 2·(et heltall) — altså a² er partall.",
+              },
+              {
+                label: "Steg 3",
+                line: "a² partall  ⇒  a partall   (kontrapositiv av oddetall² = oddetall)",
+                highlight: "a partall",
+                hint: "Hvis a² er partall, må a selv være partall (vist tidligere).",
+              },
+              {
+                label: "Steg 4",
+                line: "Skriv a = 2k.   Da:  2b² = (2k)² = 4k²,  så b² = 2k²",
+                highlight: ["a = 2k", "b² = 2k²"],
+                hint: "Substituer a = 2k tilbake. b² blir også av formen 2·(noe).",
+              },
+              {
+                label: "Steg 5",
+                line: "b² partall  ⇒  b partall",
+                highlight: "b partall",
+                hint: "Samme argument som for a: b² partall ⇒ b partall.",
+              },
+              {
+                label: "Motsigelse",
+                line: "Da deler 2 både a og b.   Men gcd(a, b) = 1!   ⊥",
+                highlight: "⊥",
+                hint: "Vi har en motsigelse: antok at brøken var fullt forkortet, men begge er partall (kan forkortes med 2).",
+              },
+              {
+                label: "QED",
+                line: "Antagelsen må være feil.   Altså finnes ingen slik a/b.   √2 er irrasjonelt. ✓",
+                highlight: "irrasjonelt",
+                hint: "Motsigelses-prinsippet: hvis antagelsen leder til en motsigelse, må antagelsen være usann — så det opprinnelige utsagnet er sant.",
+              },
+            ]}
+          />
         </section>
 
         {/* ============================================================ */}
@@ -317,10 +436,76 @@ f(x) = ⌊x⌋  (ℝ → ℤ)  — surjektiv (hvert heltall treffes), ikke injek
         </section>
 
         {/* ============================================================ */}
+        {/* 4b. RELASJONER */}
+        {/* ============================================================ */}
+        <section id="relasjoner" className="mb-12">
+          <h2 className="text-xl font-semibold mb-3">5. Relasjoner og partielle ordninger</h2>
+          <p className="text-sm text-muted-foreground mb-4">
+            En <strong>binær relasjon</strong> R på en mengde A er bare en delmengde av
+            A × A — et utvalg av par. Vi skriver <code>a R b</code> for «paret (a, b) er i
+            R». Funksjoner er en spesiell type relasjon, men relasjoner er mer generelle:
+            de trenger ikke «én-output-per-input»-regel.
+          </p>
+
+          <div className="rounded-xl border border-border bg-card p-5 mb-4">
+            <pre className="font-mono text-xs overflow-x-auto whitespace-pre">{`Egenskap          Definisjon                              Eksempel
+─────────────────────────────────────────────────────────────────
+Refleksiv         ∀a: (a, a) ∈ R                          «=», «≤», «deler»
+Symmetrisk        (a, b) ∈ R ⇒ (b, a) ∈ R                 «=», «søsken til»
+Antisymmetrisk    (a, b), (b, a) ∈ R ⇒ a = b              «≤», «⊆»
+Transitiv         (a, b), (b, c) ∈ R ⇒ (a, c) ∈ R         «=», «≤», «<»
+Ekvivalens        Refleksiv + symmetrisk + transitiv       «samme rest mod n»
+Partiell orden    Refleksiv + antisymmetrisk + transitiv   «⊆», «deler», «≤»`}</pre>
+          </div>
+
+          <h3 className="text-sm font-semibold mb-2">Relasjons-grid — eksperimenter</h3>
+          <p className="text-xs text-muted-foreground mb-2">
+            Velg en preset, eller bygg din egen relasjon. Hver av de fire egenskapene
+            sjekkes live.
+          </p>
+          <RelationGrid />
+
+          <h3 className="text-sm font-semibold mb-2 mt-6">Hasse-diagram — visualisering av partiell orden</h3>
+          <p className="text-xs text-muted-foreground mb-2">
+            Når relasjonen er en partiell orden, kan vi tegne den uten å vise refleksive
+            løkker eller transitive snarveier. Bare de «umiddelbare» dekningene tegnes.
+          </p>
+          <HasseDiagram />
+
+          <FallBox>
+            <strong>Hvorfor relasjoner er overalt i CS:</strong> primærnøkler i databaser er
+            funksjonelle relasjoner. Subtype-systemer (Cat ⊆ Animal) er partielle
+            ordninger. Avhengighets-grafer for builds er strenge partielle ordninger.
+            Versjonering med vector clocks bruker partielle ordninger på hendelser.
+          </FallBox>
+
+          <ProblemBox
+            title="Mini-oppgave — klassifiser relasjonen"
+            problem={
+              <>
+                La R på ℤ være «a R b ⇔ a − b er delelig med 5». Er R en ekvivalens-
+                relasjon? Hvis ja, beskriv ekvivalens-klassene.
+              </>
+            }
+            answer={
+              <>
+                <strong>Ja, det er en ekvivalens-relasjon.</strong>
+                <br />
+                Refleksiv: a − a = 0, delelig med 5 ✓<br />
+                Symmetrisk: 5 deler (a − b) ⇒ 5 deler (b − a) ✓<br />
+                Transitiv: 5 deler (a − b) og (b − c) ⇒ 5 deler summen (a − c) ✓<br />
+                Ekvivalens-klassene er [0], [1], [2], [3], [4] — alle heltall med samme
+                rest mod 5. Dette er presis konstruksjonen av <code>ℤ/5ℤ</code>.
+              </>
+            }
+          />
+        </section>
+
+        {/* ============================================================ */}
         {/* 5. KOMBINATORIKK */}
         {/* ============================================================ */}
         <section id="kombinatorikk" className="mb-12">
-          <h2 className="text-xl font-semibold mb-3">5. Kombinatorikk</h2>
+          <h2 className="text-xl font-semibold mb-3">6. Kombinatorikk</h2>
           <p className="text-sm text-muted-foreground mb-4">
             «Hvor mange måter?» Fire grunnregler bygger nesten alt.
           </p>
@@ -393,7 +578,7 @@ Kombinasjon (rekkefølge teller IKKE):
         {/* 6. INDUKSJON */}
         {/* ============================================================ */}
         <section id="induksjon" className="mb-12">
-          <h2 className="text-xl font-semibold mb-3">6. Matematisk induksjon</h2>
+          <h2 className="text-xl font-semibold mb-3">7. Matematisk induksjon</h2>
           <p className="text-sm text-muted-foreground mb-4">
             For å vise at en påstand P(n) holder for ALLE n ≥ n₀: vis basistilfelle og
             steg. Tankebildet er dominoer — vipp den første, vis at hver feller den
@@ -406,21 +591,64 @@ Kombinasjon (rekkefølge teller IKKE):
   1. BASIS:    Vis P(n₀) er sann (typisk n₀ = 0 eller 1).
   2. STEG:     Anta P(k) sann (induksjonshypotesen, IH).
                Vis at P(k+1) følger fra IH.
-  3. KONKLUSJON: Da gjelder P(n) for alle n ≥ n₀.
-
-Eksempel — bevis: Σᵢ₌₁ⁿ i = n(n+1)/2
-
-  Basis (n=1):  venstre = 1,  høyre = 1·2/2 = 1  ✓
-
-  Steg: anta Σᵢ₌₁ᵏ i = k(k+1)/2 (IH).
-        Da:  Σᵢ₌₁ᵏ⁺¹ i  =  Σᵢ₌₁ᵏ i  +  (k+1)
-                        =  k(k+1)/2  +  (k+1)        ← bruk IH
-                        =  (k+1)(k+2)/2                ← faktoriser
-
-  Som er formelen for n = k+1. QED.`}</pre>
+  3. KONKLUSJON: Da gjelder P(n) for alle n ≥ n₀.`}</pre>
           </div>
 
-          <h3 className="text-sm font-semibold mb-2">Domino-modellen</h3>
+          <h3 className="text-sm font-semibold mb-2">Eksempel-bevis steg-for-steg</h3>
+          <p className="text-xs text-muted-foreground mb-3">
+            Klikk «Neste» for å gå gjennom et fullstendig induksjonsbevis av Gauss-formelen.
+            Hvert algebraisk skritt fremheves med farge.
+          </p>
+          <StepProof
+            title="Gauss-formelen: Σᵢ₌₁ⁿ i = n(n+1)/2"
+            claim="For alle n ≥ 1 gjelder: 1 + 2 + 3 + ... + n = n(n+1)/2"
+            steps={[
+              {
+                label: "Basis",
+                line: "n = 1:   venstre = 1,   høyre = 1·2/2 = 1   ✓",
+                highlight: "n = 1",
+                hint: "Vi starter med det enkleste tilfellet. Sjekk at formelen stemmer for n = 1.",
+              },
+              {
+                label: "IH",
+                line: "Anta:  1 + 2 + ... + k = k(k+1)/2",
+                highlight: "k(k+1)/2",
+                hint: "Induksjonshypotesen (IH): anta påstanden gjelder for n = k. Vi vil bruke dette i neste steg.",
+              },
+              {
+                label: "Steg",
+                line: "Σᵢ₌₁ᵏ⁺¹ i  =  (1 + 2 + ... + k)  +  (k+1)",
+                highlight: "(k+1)",
+                hint: "Splitt summen opp til n = k+1: alle de gamle leddene pluss det nye (k+1).",
+              },
+              {
+                label: "Steg",
+                line: "             =  k(k+1)/2  +  (k+1)",
+                highlight: "k(k+1)/2",
+                hint: "Bruk IH til å erstatte (1 + 2 + ... + k) med k(k+1)/2.",
+              },
+              {
+                label: "Steg",
+                line: "             =  (k+1)·[k/2 + 1]",
+                highlight: "(k+1)",
+                hint: "Faktoriser ut den felles (k+1) fra begge leddene.",
+              },
+              {
+                label: "Steg",
+                line: "             =  (k+1)·(k+2)/2",
+                highlight: "(k+2)/2",
+                hint: "Forenkle: k/2 + 1 = (k + 2)/2.",
+              },
+              {
+                label: "QED",
+                line: "Det er formelen for n = k+1.  ✓",
+                highlight: "k+1",
+                hint: "Vi har vist at hvis P(k), så P(k+1). Sammen med basis: P(n) gjelder for alle n ≥ 1.",
+              },
+            ]}
+          />
+
+          <h3 className="text-sm font-semibold mb-2 mt-6">Domino-modellen</h3>
           <p className="text-xs text-muted-foreground mb-3">
             Klikk «Velt» — første brikke faller (basis), så feller hver brikke den
             neste (steget). Summen Σ₁..n oppdateres og verifiseres mot formelen.
@@ -472,7 +700,7 @@ algoritme-korrekthet for splitt-og-hersk.`}</pre>
         {/* 7. GRAFER */}
         {/* ============================================================ */}
         <section id="grafer" className="mb-12">
-          <h2 className="text-xl font-semibold mb-3">7. Grafer</h2>
+          <h2 className="text-xl font-semibold mb-3">8. Grafer</h2>
           <p className="text-sm text-muted-foreground mb-4">
             En graf <code>G = (V, E)</code> er noder V og kanter E. Den abstrakte
             modellen for nettverk, kart, avhengigheter, sosiale grafer. Halve
@@ -561,7 +789,7 @@ Konsekvens: antallet noder med oddetalls-grad er alltid PARTALL.`}</pre>
         {/* 8. MOD */}
         {/* ============================================================ */}
         <section id="mod" className="mb-12">
-          <h2 className="text-xl font-semibold mb-3">8. Modulær aritmetikk</h2>
+          <h2 className="text-xl font-semibold mb-3">9. Modulær aritmetikk</h2>
           <p className="text-sm text-muted-foreground mb-4">
             <code>a mod n</code> er resten når a deles med n. Vi skriver{" "}
             <code>a ≡ b (mod n)</code> når a og b gir samme rest — altså n deler
@@ -624,6 +852,54 @@ Klokke-aritmetikk: hva er kl 23 + 5 timer?
 # Dette er hjørnesteinen i RSA-kryptering.`}</pre>
           </div>
 
+          <h3 className="text-sm font-semibold mb-2 mt-6">Euklids algoritme — gcd steg-for-steg</h3>
+          <p className="text-xs text-muted-foreground mb-3">
+            Den eldste ikke-trivielle algoritmen vi kjenner (~300 fvt). Bruk: gcd er
+            nøkkelen til modulær invers, brøkforkortelse og RSA. Hovedidé:{" "}
+            <code>gcd(a, b) = gcd(b, a mod b)</code>.
+          </p>
+          <StepProof
+            title="Beregn gcd(252, 198) med Euklid"
+            claim="gcd(a, b) = gcd(b, a mod b), gjenta til resten er 0. Siste ikke-null rest er svaret."
+            steps={[
+              {
+                label: "Start",
+                line: "gcd(252, 198) = ?",
+                hint: "Vi vil finne største felles divisor for 252 og 198.",
+              },
+              {
+                label: "1",
+                line: "252 = 1 · 198 + 54",
+                highlight: "54",
+                hint: "Del 252 på 198: kvotient 1, rest 54. Den nye gcd-en er gcd(198, 54).",
+              },
+              {
+                label: "2",
+                line: "198 = 3 · 54 + 36",
+                highlight: "36",
+                hint: "Erstatt paret (252, 198) → (198, 54). Del 198 på 54: rest 36.",
+              },
+              {
+                label: "3",
+                line: "54 = 1 · 36 + 18",
+                highlight: "18",
+                hint: "Nytt par (54, 36). Rest 18.",
+              },
+              {
+                label: "4",
+                line: "36 = 2 · 18 + 0",
+                highlight: "0",
+                hint: "Resten ble 0 — stopp. Den FORRIGE resten (18) er gcd.",
+              },
+              {
+                label: "QED",
+                line: "gcd(252, 198) = 18",
+                highlight: "18",
+                hint: "Sjekk: 252 = 14·18, 198 = 11·18. Ingen større tall deler begge. Algoritmen kjører i O(log min(a,b)) tid.",
+              },
+            ]}
+          />
+
           <FallBox>
             <strong>Bro til kryptografi:</strong> RSA er fullt og helt modulær
             aritmetikk. Diffie-Hellman, Fermats lille teorem (aᵖ⁻¹ ≡ 1 mod p for primtall
@@ -659,7 +935,7 @@ Klokke-aritmetikk: hva er kl 23 + 5 timer?
         {/* OPPSUMMERING */}
         {/* ============================================================ */}
         <section id="oppsummering" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">9. Oppsummering — hva nå?</h2>
+          <h2 className="text-xl font-semibold mb-3">10. Oppsummering — hva nå?</h2>
 
           <div className="rounded-xl border border-border bg-card p-5 mb-4">
             <div className="text-xs uppercase tracking-wider text-brand font-semibold mb-3">
