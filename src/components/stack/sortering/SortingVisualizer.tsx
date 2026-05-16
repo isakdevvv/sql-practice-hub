@@ -1,12 +1,16 @@
-import { useEffect, useMemo, useRef, useState } from "react";
-import { Play, Pause, SkipForward, Shuffle, RotateCcw } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { Shuffle } from "lucide-react";
+import {
+  VisualizerShell,
+  StepControls,
+  useStepRunner,
+  type ModeDef,
+} from "@/components/visualizer-shell";
 
 // --------------------------------------------------------------------------
 // Interaktiv sortering: animert bar-chart for seks klassiske algoritmer.
-// Strategi: vi kjører hele sorteringen FØRST og bygger en liste med
-// "steps" (snapshot av arrayet + hvilke indekser som sammenliknes/byttes
-// + hvilke som er ferdig sortert + hvilken pseudokode-linje som er aktiv).
-// Play/Pause/Step bare flytter en indeks i den lista — gjør scrub trivielt.
+// Bruker shared shell-primitiver. Strategien er fortsatt: pre-compute alle
+// frames, og useStepRunner-hooken styrer play/pause/step.
 // --------------------------------------------------------------------------
 
 type Algo = "bubble" | "selection" | "insertion" | "merge" | "quick" | "heap";
@@ -15,25 +19,24 @@ type StepKind = "compare" | "swap" | "overwrite" | "mark-sorted" | "done";
 
 type Step = {
   array: number[];
-  comparing: number[]; // indekser som blir sammenliknet (gul)
-  swapping: number[]; // indekser som blir byttet/overskrevet (rød)
-  sorted: number[]; // indekser som er ferdig sortert (grønn)
-  line: number; // 1-indeksert linje i pseudokode (0 = ingen)
+  comparing: number[];
+  swapping: number[];
+  sorted: number[];
+  line: number;
   kind: StepKind;
   comparisons: number;
   swaps: number;
 };
 
-const ALGOS: { id: Algo; label: string; complexity: string }[] = [
-  { id: "bubble", label: "Bubble", complexity: "O(n²)" },
-  { id: "selection", label: "Selection", complexity: "O(n²)" },
-  { id: "insertion", label: "Insertion", complexity: "O(n²)" },
-  { id: "merge", label: "Merge", complexity: "O(n log n)" },
-  { id: "quick", label: "Quick", complexity: "O(n log n) snitt" },
-  { id: "heap", label: "Heap", complexity: "O(n log n)" },
+const ALGOS: ModeDef<Algo>[] = [
+  { id: "bubble", label: "Bubble", badge: "O(n²)", sub: "O(n²)" },
+  { id: "selection", label: "Selection", badge: "O(n²)", sub: "O(n²)" },
+  { id: "insertion", label: "Insertion", badge: "O(n²)", sub: "O(n²)" },
+  { id: "merge", label: "Merge", badge: "O(n log n)", sub: "O(n log n)" },
+  { id: "quick", label: "Quick", badge: "O(n log n)", sub: "O(n log n) snitt" },
+  { id: "heap", label: "Heap", badge: "O(n log n)", sub: "O(n log n)" },
 ];
 
-// Pseudokode for hver algoritme. Linje-numrene matcher det vi sender i steps.
 const PSEUDO: Record<Algo, string[]> = {
   bubble: [
     "for i = 0 .. n-1:",
@@ -81,10 +84,7 @@ const PSEUDO: Record<Algo, string[]> = {
   ],
 };
 
-// ---------- STEP-GENERATORER (samle hele kjøringen før animasjon) ----------
-//
-// Hver funksjon returnerer en liste med Step. Vi maintainer komparator- og
-// swap-tellere globalt så studenten ser kostnaden vokse.
+// ---------- STEP-GENERATORER ----------
 
 function genBubble(input: number[]): Step[] {
   const a = [...input];
@@ -93,25 +93,9 @@ function genBubble(input: number[]): Step[] {
   const sortedIdx: number[] = [];
   let comparisons = 0;
   let swaps = 0;
-
-  const snap = (
-    comparing: number[],
-    swapping: number[],
-    line: number,
-    kind: StepKind,
-  ) => {
-    steps.push({
-      array: [...a],
-      comparing,
-      swapping,
-      sorted: [...sortedIdx],
-      line,
-      kind,
-      comparisons,
-      swaps,
-    });
+  const snap = (comparing: number[], swapping: number[], line: number, kind: StepKind) => {
+    steps.push({ array: [...a], comparing, swapping, sorted: [...sortedIdx], line, kind, comparisons, swaps });
   };
-
   for (let i = 0; i < n - 1; i++) {
     let didSwap = false;
     for (let j = 0; j < n - i - 1; j++) {
@@ -128,18 +112,8 @@ function genBubble(input: number[]): Step[] {
     snap([], [], 1, "mark-sorted");
     if (!didSwap) break;
   }
-  // Resterende indekser er sortert
   for (let i = 0; i < n; i++) if (!sortedIdx.includes(i)) sortedIdx.push(i);
-  steps.push({
-    array: [...a],
-    comparing: [],
-    swapping: [],
-    sorted: Array.from({ length: n }, (_, i) => i),
-    line: 0,
-    kind: "done",
-    comparisons,
-    swaps,
-  });
+  steps.push({ array: [...a], comparing: [], swapping: [], sorted: Array.from({ length: n }, (_, i) => i), line: 0, kind: "done", comparisons, swaps });
   return steps;
 }
 
@@ -150,24 +124,8 @@ function genSelection(input: number[]): Step[] {
   const sortedIdx: number[] = [];
   let comparisons = 0;
   let swaps = 0;
-
-  const snap = (
-    comparing: number[],
-    swapping: number[],
-    line: number,
-    kind: StepKind,
-  ) =>
-    steps.push({
-      array: [...a],
-      comparing,
-      swapping,
-      sorted: [...sortedIdx],
-      line,
-      kind,
-      comparisons,
-      swaps,
-    });
-
+  const snap = (comparing: number[], swapping: number[], line: number, kind: StepKind) =>
+    steps.push({ array: [...a], comparing, swapping, sorted: [...sortedIdx], line, kind, comparisons, swaps });
   for (let i = 0; i < n - 1; i++) {
     let minIdx = i;
     snap([minIdx], [], 2, "compare");
@@ -188,16 +146,7 @@ function genSelection(input: number[]): Step[] {
     snap([], [], 1, "mark-sorted");
   }
   sortedIdx.push(n - 1);
-  steps.push({
-    array: [...a],
-    comparing: [],
-    swapping: [],
-    sorted: Array.from({ length: n }, (_, i) => i),
-    line: 0,
-    kind: "done",
-    comparisons,
-    swaps,
-  });
+  steps.push({ array: [...a], comparing: [], swapping: [], sorted: Array.from({ length: n }, (_, i) => i), line: 0, kind: "done", comparisons, swaps });
   return steps;
 }
 
@@ -207,27 +156,8 @@ function genInsertion(input: number[]): Step[] {
   const n = a.length;
   let comparisons = 0;
   let swaps = 0;
-
-  // Hva som er "sortert" ved insertion er prefiks [0..i-1], men vi viser
-  // sorted-status først helt på slutten — markeringen blir for støyete ellers.
-  const snap = (
-    comparing: number[],
-    swapping: number[],
-    sorted: number[],
-    line: number,
-    kind: StepKind,
-  ) =>
-    steps.push({
-      array: [...a],
-      comparing,
-      swapping,
-      sorted,
-      line,
-      kind,
-      comparisons,
-      swaps,
-    });
-
+  const snap = (comparing: number[], swapping: number[], sorted: number[], line: number, kind: StepKind) =>
+    steps.push({ array: [...a], comparing, swapping, sorted, line, kind, comparisons, swaps });
   snap([], [], [0], 1, "compare");
   for (let i = 1; i < n; i++) {
     const key = a[i];
@@ -241,23 +171,12 @@ function genInsertion(input: number[]): Step[] {
         swaps++;
         snap([], [j + 1], Array.from({ length: i }, (_, k) => k), 5, "overwrite");
         j--;
-      } else {
-        break;
-      }
+      } else break;
     }
     a[j + 1] = key;
     snap([], [j + 1], Array.from({ length: i + 1 }, (_, k) => k), 6, "overwrite");
   }
-  steps.push({
-    array: [...a],
-    comparing: [],
-    swapping: [],
-    sorted: Array.from({ length: n }, (_, i) => i),
-    line: 0,
-    kind: "done",
-    comparisons,
-    swaps,
-  });
+  steps.push({ array: [...a], comparing: [], swapping: [], sorted: Array.from({ length: n }, (_, i) => i), line: 0, kind: "done", comparisons, swaps });
   return steps;
 }
 
@@ -267,80 +186,30 @@ function genMerge(input: number[]): Step[] {
   const n = a.length;
   let comparisons = 0;
   let swaps = 0;
-
-  const snap = (
-    comparing: number[],
-    swapping: number[],
-    line: number,
-    kind: StepKind,
-  ) =>
-    steps.push({
-      array: [...a],
-      comparing,
-      swapping,
-      sorted: [],
-      line,
-      kind,
-      comparisons,
-      swaps,
-    });
-
+  const snap = (comparing: number[], swapping: number[], line: number, kind: StepKind) =>
+    steps.push({ array: [...a], comparing, swapping, sorted: [], line, kind, comparisons, swaps });
   const mergesort = (lo: number, hi: number) => {
     if (hi - lo <= 1) return;
     const mid = Math.floor((lo + hi) / 2);
     snap([], [], 3, "compare");
     mergesort(lo, mid);
     mergesort(mid, hi);
-    // Flett a[lo..mid) og a[mid..hi)
     const left = a.slice(lo, mid);
     const right = a.slice(mid, hi);
-    let i = 0;
-    let j = 0;
-    let k = lo;
+    let i = 0, j = 0, k = lo;
     snap([lo, hi - 1], [], 6, "compare");
     while (i < left.length && j < right.length) {
       comparisons++;
       snap([lo + i, mid + j], [], 6, "compare");
-      if (left[i] <= right[j]) {
-        a[k] = left[i];
-        swaps++;
-        snap([], [k], 6, "overwrite");
-        i++;
-      } else {
-        a[k] = right[j];
-        swaps++;
-        snap([], [k], 6, "overwrite");
-        j++;
-      }
+      if (left[i] <= right[j]) { a[k] = left[i]; swaps++; snap([], [k], 6, "overwrite"); i++; }
+      else { a[k] = right[j]; swaps++; snap([], [k], 6, "overwrite"); j++; }
       k++;
     }
-    while (i < left.length) {
-      a[k] = left[i];
-      swaps++;
-      snap([], [k], 6, "overwrite");
-      i++;
-      k++;
-    }
-    while (j < right.length) {
-      a[k] = right[j];
-      swaps++;
-      snap([], [k], 6, "overwrite");
-      j++;
-      k++;
-    }
+    while (i < left.length) { a[k] = left[i]; swaps++; snap([], [k], 6, "overwrite"); i++; k++; }
+    while (j < right.length) { a[k] = right[j]; swaps++; snap([], [k], 6, "overwrite"); j++; k++; }
   };
-
   mergesort(0, n);
-  steps.push({
-    array: [...a],
-    comparing: [],
-    swapping: [],
-    sorted: Array.from({ length: n }, (_, i) => i),
-    line: 0,
-    kind: "done",
-    comparisons,
-    swaps,
-  });
+  steps.push({ array: [...a], comparing: [], swapping: [], sorted: Array.from({ length: n }, (_, i) => i), line: 0, kind: "done", comparisons, swaps });
   return steps;
 }
 
@@ -351,25 +220,8 @@ function genQuick(input: number[]): Step[] {
   const sortedIdx = new Set<number>();
   let comparisons = 0;
   let swaps = 0;
-
-  const snap = (
-    comparing: number[],
-    swapping: number[],
-    line: number,
-    kind: StepKind,
-  ) =>
-    steps.push({
-      array: [...a],
-      comparing,
-      swapping,
-      sorted: [...sortedIdx],
-      line,
-      kind,
-      comparisons,
-      swaps,
-    });
-
-  // Lomuto-partisjon med pivot = a[hi]. Enkel å visualisere.
+  const snap = (comparing: number[], swapping: number[], line: number, kind: StepKind) =>
+    steps.push({ array: [...a], comparing, swapping, sorted: [...sortedIdx], line, kind, comparisons, swaps });
   const partition = (lo: number, hi: number): number => {
     const pivot = a[hi];
     snap([hi], [], 3, "compare");
@@ -379,11 +231,7 @@ function genQuick(input: number[]): Step[] {
       snap([j, hi], [], 4, "compare");
       if (a[j] <= pivot) {
         i++;
-        if (i !== j) {
-          [a[i], a[j]] = [a[j], a[i]];
-          swaps++;
-          snap([], [i, j], 4, "swap");
-        }
+        if (i !== j) { [a[i], a[j]] = [a[j], a[i]]; swaps++; snap([], [i, j], 4, "swap"); }
       }
     }
     [a[i + 1], a[hi]] = [a[hi], a[i + 1]];
@@ -391,33 +239,16 @@ function genQuick(input: number[]): Step[] {
     snap([], [i + 1, hi], 4, "swap");
     return i + 1;
   };
-
   const quicksort = (lo: number, hi: number) => {
-    if (lo >= hi) {
-      if (lo === hi) {
-        sortedIdx.add(lo);
-        snap([], [], 2, "mark-sorted");
-      }
-      return;
-    }
+    if (lo >= hi) { if (lo === hi) { sortedIdx.add(lo); snap([], [], 2, "mark-sorted"); } return; }
     const p = partition(lo, hi);
     sortedIdx.add(p);
     snap([], [], 4, "mark-sorted");
     quicksort(lo, p - 1);
     quicksort(p + 1, hi);
   };
-
   quicksort(0, n - 1);
-  steps.push({
-    array: [...a],
-    comparing: [],
-    swapping: [],
-    sorted: Array.from({ length: n }, (_, i) => i),
-    line: 0,
-    kind: "done",
-    comparisons,
-    swaps,
-  });
+  steps.push({ array: [...a], comparing: [], swapping: [], sorted: Array.from({ length: n }, (_, i) => i), line: 0, kind: "done", comparisons, swaps });
   return steps;
 }
 
@@ -428,40 +259,15 @@ function genHeap(input: number[]): Step[] {
   const sortedIdx: number[] = [];
   let comparisons = 0;
   let swaps = 0;
-
-  const snap = (
-    comparing: number[],
-    swapping: number[],
-    line: number,
-    kind: StepKind,
-  ) =>
-    steps.push({
-      array: [...a],
-      comparing,
-      swapping,
-      sorted: [...sortedIdx],
-      line,
-      kind,
-      comparisons,
-      swaps,
-    });
-
+  const snap = (comparing: number[], swapping: number[], line: number, kind: StepKind) =>
+    steps.push({ array: [...a], comparing, swapping, sorted: [...sortedIdx], line, kind, comparisons, swaps });
   const siftDown = (start: number, end: number) => {
     let i = start;
     while (true) {
-      const l = 2 * i + 1;
-      const r = 2 * i + 2;
+      const l = 2 * i + 1, r = 2 * i + 2;
       let largest = i;
-      if (l < end) {
-        comparisons++;
-        snap([l, largest], [], 4, "compare");
-        if (a[l] > a[largest]) largest = l;
-      }
-      if (r < end) {
-        comparisons++;
-        snap([r, largest], [], 4, "compare");
-        if (a[r] > a[largest]) largest = r;
-      }
+      if (l < end) { comparisons++; snap([l, largest], [], 4, "compare"); if (a[l] > a[largest]) largest = l; }
+      if (r < end) { comparisons++; snap([r, largest], [], 4, "compare"); if (a[r] > a[largest]) largest = r; }
       if (largest === i) break;
       [a[i], a[largest]] = [a[largest], a[i]];
       swaps++;
@@ -469,14 +275,7 @@ function genHeap(input: number[]): Step[] {
       i = largest;
     }
   };
-
-  // Build max-heap
-  for (let i = Math.floor(n / 2) - 1; i >= 0; i--) {
-    snap([i], [], 1, "compare");
-    siftDown(i, n);
-  }
-
-  // Pop-fase: bytt rot med slutt, redusér heap-størrelse, sift ned.
+  for (let i = Math.floor(n / 2) - 1; i >= 0; i--) { snap([i], [], 1, "compare"); siftDown(i, n); }
   for (let end = n - 1; end > 0; end--) {
     [a[0], a[end]] = [a[end], a[0]];
     swaps++;
@@ -486,16 +285,7 @@ function genHeap(input: number[]): Step[] {
     siftDown(0, end);
   }
   sortedIdx.push(0);
-  steps.push({
-    array: [...a],
-    comparing: [],
-    swapping: [],
-    sorted: Array.from({ length: n }, (_, i) => i),
-    line: 0,
-    kind: "done",
-    comparisons,
-    swaps,
-  });
+  steps.push({ array: [...a], comparing: [], swapping: [], sorted: Array.from({ length: n }, (_, i) => i), line: 0, kind: "done", comparisons, swaps });
   return steps;
 }
 
@@ -508,12 +298,9 @@ const GENERATORS: Record<Algo, (input: number[]) => Step[]> = {
   heap: genHeap,
 };
 
-// --------- Hjelp: lag tilfeldig array av gitt størrelse ----------
 function makeArray(size: number): number[] {
   const out: number[] = [];
-  for (let i = 0; i < size; i++) {
-    out.push(5 + Math.floor(Math.random() * 95));
-  }
+  for (let i = 0; i < size; i++) out.push(5 + Math.floor(Math.random() * 95));
   return out;
 }
 
@@ -523,117 +310,33 @@ export function SortingVisualizer() {
   const [algo, setAlgo] = useState<Algo>("bubble");
   const [size, setSize] = useState(16);
   const [baseArray, setBaseArray] = useState<number[]>(() => makeArray(16));
-  const [stepIdx, setStepIdx] = useState(0);
-  const [playing, setPlaying] = useState(false);
-  const [speed, setSpeed] = useState(60); // ms per step
-  const timerRef = useRef<number | null>(null);
 
-  // Beregn alle steg når algoritme eller baseArray endrer seg.
-  const steps = useMemo<Step[]>(
-    () => GENERATORS[algo](baseArray),
-    [algo, baseArray],
-  );
+  const steps = useMemo<Step[]>(() => GENERATORS[algo](baseArray), [algo, baseArray]);
 
-  const current = steps[Math.min(stepIdx, steps.length - 1)];
-  const atEnd = stepIdx >= steps.length - 1;
+  const runner = useStepRunner<Step>(steps, { initialSpeed: 60 });
+  const current = runner.frame ?? steps[0];
+
   const maxVal = useMemo(() => Math.max(...baseArray, 1), [baseArray]);
 
-  // Auto-play tick
+  // Reset når algo/array endrer seg ivaretas av useStepRunner via frames-referansen.
   useEffect(() => {
-    if (!playing) return;
-    if (atEnd) {
-      setPlaying(false);
-      return;
-    }
-    timerRef.current = window.setTimeout(() => {
-      setStepIdx((s) => Math.min(s + 1, steps.length - 1));
-    }, speed);
-    return () => {
-      if (timerRef.current !== null) window.clearTimeout(timerRef.current);
-    };
-  }, [playing, stepIdx, speed, steps.length, atEnd]);
-
-  // Når algoritme/array endrer seg: reset til steg 0 og stopp avspilling
-  useEffect(() => {
-    setStepIdx(0);
-    setPlaying(false);
+    // Ingen ekstra logikk: useStepRunner resetter selv.
   }, [algo, baseArray]);
 
-  const shuffle = () => {
-    setBaseArray(makeArray(size));
-  };
-
-  const reset = () => {
-    setPlaying(false);
-    setStepIdx(0);
-  };
-
-  const handleSizeChange = (n: number) => {
-    setSize(n);
-    setBaseArray(makeArray(n));
-  };
-
-  const stepOnce = () => {
-    setPlaying(false);
-    setStepIdx((s) => Math.min(s + 1, steps.length - 1));
-  };
-
-  const stepBack = () => {
-    setPlaying(false);
-    setStepIdx((s) => Math.max(s - 1, 0));
-  };
+  const shuffle = () => setBaseArray(makeArray(size));
+  const handleSizeChange = (n: number) => { setSize(n); setBaseArray(makeArray(n)); };
 
   const pseudo = PSEUDO[algo];
   const meta = ALGOS.find((m) => m.id === algo)!;
 
   return (
-    <div className="rounded-2xl border border-border bg-card overflow-hidden">
-      {/* Topp-bar med algoritme-velger */}
-      <div className="px-4 py-3 border-b border-border bg-muted/30">
-        <div className="flex items-center justify-between gap-3 flex-wrap">
-          <div>
-            <div className="text-xs uppercase tracking-wider text-muted-foreground">
-              Interaktiv visualisering
-            </div>
-            <div className="text-sm font-semibold">
-              Sortering — se algoritmen kjøre steg for steg
-            </div>
-          </div>
-          <button
-            type="button"
-            onClick={reset}
-            className="text-xs text-muted-foreground hover:text-foreground inline-flex items-center gap-1 px-2 py-1 rounded border border-border hover:bg-muted"
-          >
-            <RotateCcw className="h-3 w-3" />
-            Reset
-          </button>
-        </div>
-        <div className="mt-3 flex flex-wrap gap-1.5">
-          {ALGOS.map((m) => (
-            <button
-              key={m.id}
-              type="button"
-              onClick={() => setAlgo(m.id)}
-              className={`px-3 py-1.5 rounded-md text-xs font-medium border transition-colors ${
-                algo === m.id
-                  ? "bg-brand text-brand-foreground border-brand"
-                  : "border-border hover:bg-muted"
-              }`}
-              title={m.complexity}
-            >
-              {m.label}{" "}
-              <span
-                className={`ml-1 font-mono text-[10px] ${
-                  algo === m.id ? "text-brand-foreground/80" : "text-muted-foreground"
-                }`}
-              >
-                {m.complexity}
-              </span>
-            </button>
-          ))}
-        </div>
-      </div>
-
+    <VisualizerShell<Algo>
+      title="Sortering — se algoritmen kjøre steg for steg"
+      modes={ALGOS}
+      activeMode={algo}
+      onModeChange={setAlgo}
+      onReset={runner.reset}
+    >
       {/* Bar-chart + pseudokode side om side */}
       <div className="grid md:grid-cols-[1fr_280px] gap-0">
         <div className="p-6 min-h-[280px] flex items-end justify-center bg-background border-b md:border-b-0 md:border-r border-border">
@@ -674,53 +377,42 @@ export function SortingVisualizer() {
         </div>
       </div>
 
-      {/* Kontroller */}
+      <StepControls
+        step={runner.index}
+        total={runner.total}
+        playing={runner.playing}
+        onStep={runner.step}
+        onStepBack={runner.stepBack}
+        onPlayPause={runner.playPause}
+        onReset={runner.reset}
+        speed={runner.speed}
+        onSpeedChange={runner.setSpeed}
+        speedMin={10}
+        speedMax={400}
+        rightSlot={
+          <>
+            <span>
+              <span className="text-muted-foreground">sammenligninger</span>{" "}
+              <span className="tabular-nums text-foreground">{current.comparisons}</span>
+            </span>
+            <span>
+              <span className="text-muted-foreground">bytter</span>{" "}
+              <span className="tabular-nums text-foreground">{current.swaps}</span>
+            </span>
+          </>
+        }
+      />
+
+      {/* Ekstra kontroller: størrelse + stokk + legend */}
       <div className="px-4 py-3 border-t border-border bg-muted/20">
         <div className="flex flex-wrap items-center gap-3">
-          <div className="flex items-center gap-1.5">
-            <button
-              type="button"
-              onClick={() => setPlaying((p) => !p)}
-              disabled={atEnd}
-              className="inline-flex items-center gap-1 px-3 py-1.5 rounded-md text-xs font-medium border border-brand/40 text-brand hover:bg-brand/10 disabled:opacity-40 disabled:hover:bg-transparent"
-            >
-              {playing ? (
-                <>
-                  <Pause className="h-3.5 w-3.5" /> Pause
-                </>
-              ) : (
-                <>
-                  <Play className="h-3.5 w-3.5" /> Play
-                </>
-              )}
-            </button>
-            <button
-              type="button"
-              onClick={stepBack}
-              disabled={stepIdx === 0}
-              className="inline-flex items-center gap-1 px-2 py-1.5 rounded-md text-xs font-medium border border-border hover:bg-muted disabled:opacity-40"
-              title="Ett steg tilbake"
-            >
-              <SkipForward className="h-3.5 w-3.5 -scale-x-100" />
-            </button>
-            <button
-              type="button"
-              onClick={stepOnce}
-              disabled={atEnd}
-              className="inline-flex items-center gap-1 px-2 py-1.5 rounded-md text-xs font-medium border border-border hover:bg-muted disabled:opacity-40"
-              title="Ett steg fram"
-            >
-              <SkipForward className="h-3.5 w-3.5" />
-            </button>
-            <button
-              type="button"
-              onClick={shuffle}
-              className="inline-flex items-center gap-1 px-3 py-1.5 rounded-md text-xs font-medium border border-border hover:bg-muted"
-            >
-              <Shuffle className="h-3.5 w-3.5" /> Stokk
-            </button>
-          </div>
-
+          <button
+            type="button"
+            onClick={shuffle}
+            className="inline-flex items-center gap-1 px-3 py-1.5 rounded-md text-xs font-medium border border-border hover:bg-muted"
+          >
+            <Shuffle className="h-3.5 w-3.5" /> Stokk
+          </button>
           <div className="flex items-center gap-2">
             <label htmlFor="size-slider" className="text-xs text-muted-foreground">
               n = {size}
@@ -735,58 +427,20 @@ export function SortingVisualizer() {
               className="w-28 accent-brand"
             />
           </div>
-
-          <div className="flex items-center gap-2">
-            <label htmlFor="speed-slider" className="text-xs text-muted-foreground">
-              Tempo
-            </label>
-            <input
-              id="speed-slider"
-              type="range"
-              min={10}
-              max={400}
-              step={10}
-              value={400 - speed + 10}
-              onChange={(e) => setSpeed(400 - Number(e.target.value) + 10)}
-              className="w-28 accent-brand"
-              title="Venstre = sakte, høyre = raskt"
-            />
-          </div>
-
-          <div className="ml-auto flex items-center gap-4 text-xs font-mono">
-            <span>
-              <span className="text-muted-foreground">steg</span>{" "}
-              <span className="tabular-nums">
-                {stepIdx + 1}/{steps.length}
+          <div className="ml-auto flex flex-wrap items-center gap-3 text-[11px]">
+            <Legend color="bg-border" label="ikke besøkt" />
+            <Legend color="bg-yellow-400 dark:bg-yellow-500" label="sammenligner" />
+            <Legend color="bg-red-500" label="bytter / overskriver" />
+            <Legend color="bg-emerald-500" label="ferdig sortert" />
+            {runner.atEnd && (
+              <span className="text-emerald-600 dark:text-emerald-400 font-medium">
+                Ferdig — {current.comparisons} sammenligninger, {current.swaps} bytter
               </span>
-            </span>
-            <span>
-              <span className="text-muted-foreground">sammenligninger</span>{" "}
-              <span className="tabular-nums text-foreground">
-                {current.comparisons}
-              </span>
-            </span>
-            <span>
-              <span className="text-muted-foreground">bytter</span>{" "}
-              <span className="tabular-nums text-foreground">{current.swaps}</span>
-            </span>
+            )}
           </div>
-        </div>
-
-        {/* Forklarings-stripe under kontrollene */}
-        <div className="mt-3 flex flex-wrap items-center gap-3 text-[11px]">
-          <Legend color="bg-border" label="ikke besøkt" />
-          <Legend color="bg-yellow-400 dark:bg-yellow-500" label="sammenligner" />
-          <Legend color="bg-red-500" label="bytter / overskriver" />
-          <Legend color="bg-emerald-500" label="ferdig sortert" />
-          {atEnd && (
-            <span className="ml-auto text-emerald-600 dark:text-emerald-400 font-medium">
-              Ferdig — {current.comparisons} sammenligninger, {current.swaps} bytter
-            </span>
-          )}
         </div>
       </div>
-    </div>
+    </VisualizerShell>
   );
 }
 
@@ -816,7 +470,6 @@ function BarChart({
   const cmpSet = new Set(comparing);
   const swpSet = new Set(swapping);
   const sortedSet = new Set(sorted);
-  // Gap skaleres ned for store n så de ikke krymper bort
   const gap = n > 24 ? 1 : n > 16 ? 2 : 3;
 
   return (
