@@ -1,4 +1,4 @@
-import { PythonDrillPage } from "@/components/stack/python-drill/PythonDrillPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -10,5 +10,5 @@ export const content: TrinnContent = {
   status: "ready",
   shortDescription: "Database/web-mønstre i Python: filtrere, gruppere, joine, paginere, validere.",
   prerequisites: [],
-  Component: PythonDrillPage,
+  Component: lazy(() => import("@/components/stack/python-drill/PythonDrillPage").then((m) => ({ default: m.PythonDrillPage }))),
 };

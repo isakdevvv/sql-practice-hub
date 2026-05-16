@@ -1,4 +1,4 @@
-import { Dte2603Hub } from "@/components/stack/dte-2603/Dte2603Hub";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "Seks mini-kurs som dekker DTE-2603-pensum: Kotlin, Android-livssyklus, MVVM, korutiner, Room/RecyclerView og Retrofit.",
   prerequisites: [],
-  Component: Dte2603Hub,
+  Component: lazy(() => import("@/components/stack/dte-2603/Dte2603Hub").then((m) => ({ default: m.Dte2603Hub }))),
 };

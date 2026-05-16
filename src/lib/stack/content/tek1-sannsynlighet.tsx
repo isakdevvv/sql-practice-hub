@@ -1,4 +1,4 @@
-import { Tek1SannsynlighetPage } from "@/components/stack/tek1-sannsynlighet/Tek1SannsynlighetPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "Utfallsrom, mengdelære, Kolmogorovs aksiomer, betinget sannsynlighet, Bayes' teorem, og kombinatorikk (permutasjoner og kombinasjoner).",
   prerequisites: [],
-  Component: Tek1SannsynlighetPage,
+  Component: lazy(() => import("@/components/stack/tek1-sannsynlighet/Tek1SannsynlighetPage").then((m) => ({ default: m.Tek1SannsynlighetPage }))),
 };

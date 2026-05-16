@@ -1,4 +1,4 @@
-import { SuProsjektPraksisPage } from "@/components/stack/su-prosjekt-praksis/SuProsjektPraksisPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "Git feature-branch + PR. Konflikter. Code review. Estimering. Retro. Vanlige team-feller.",
   prerequisites: [],
-  Component: SuProsjektPraksisPage,
+  Component: lazy(() => import("@/components/stack/su-prosjekt-praksis/SuProsjektPraksisPage").then((m) => ({ default: m.SuProsjektPraksisPage }))),
 };

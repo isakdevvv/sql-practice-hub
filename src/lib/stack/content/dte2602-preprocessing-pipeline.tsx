@@ -1,4 +1,4 @@
-import { Dte2602PreprocessingPipelinePage } from "@/components/stack/dte2602-preprocessing-pipeline/Dte2602PreprocessingPipelinePage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "StandardScaler, OneHotEncoder, ColumnTransformer, Pipeline. Datalekkasje — den klassiske bommen.",
   prerequisites: [],
-  Component: Dte2602PreprocessingPipelinePage,
+  Component: lazy(() => import("@/components/stack/dte2602-preprocessing-pipeline/Dte2602PreprocessingPipelinePage").then((m) => ({ default: m.Dte2602PreprocessingPipelinePage }))),
 };

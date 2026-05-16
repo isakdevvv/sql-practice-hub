@@ -1,4 +1,4 @@
-import { BackpropDypPage } from "@/components/stack/backprop-dyp/BackpropDypPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "Kjerne-regelen, beregningsgraf, vanishing/exploding gradient, He/Xavier-init, gradient clipping.",
   prerequisites: [],
-  Component: BackpropDypPage,
+  Component: lazy(() => import("@/components/stack/backprop-dyp/BackpropDypPage").then((m) => ({ default: m.BackpropDypPage }))),
 };

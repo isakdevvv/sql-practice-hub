@@ -1,4 +1,4 @@
-import { Tek1FordelingerPage } from "@/components/stack/tek1-fordelinger/Tek1FordelingerPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "Diskrete (Bernoulli, binomisk, hypergeometrisk, Poisson) og kontinuerlige (uniform, eksponential, normal, kji-kvadrat, Student-t) fordelinger pluss sentralgrenseteoremet.",
   prerequisites: [],
-  Component: Tek1FordelingerPage,
+  Component: lazy(() => import("@/components/stack/tek1-fordelinger/Tek1FordelingerPage").then((m) => ({ default: m.Tek1FordelingerPage }))),
 };

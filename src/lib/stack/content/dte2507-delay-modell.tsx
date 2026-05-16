@@ -1,4 +1,4 @@
-import { DelayModellPage } from "@/components/stack/dte2507-delay-modell/DelayModellPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "Proc + queue + trans + prop = d_nodal. Karavananalogi fra Kurose-Ross, interaktiv delay-bygger, og kø-eksplosjon når ρ→1. LAN vs satellitt side ved side.",
   prerequisites: [],
-  Component: DelayModellPage,
+  Component: lazy(() => import("@/components/stack/dte2507-delay-modell/DelayModellPage").then((m) => ({ default: m.DelayModellPage }))),
 };

@@ -1,4 +1,4 @@
-import { QueryOptimiseringPage } from "@/components/stack/query-optimisering/QueryOptimiseringPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -13,5 +13,5 @@ export const content: TrinnContent = {
   prerequisites: [
     { slug: "indekser", title: "Indekser" },
   ],
-  Component: QueryOptimiseringPage,
+  Component: lazy(() => import("@/components/stack/query-optimisering/QueryOptimiseringPage").then((m) => ({ default: m.QueryOptimiseringPage }))),
 };

@@ -1,4 +1,4 @@
-import { NnIntroPage } from "@/components/stack/nn-intro/NnIntroPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "Perceptron, aktiveringsfunksjoner, feed-forward, loss, gradient descent, backpropagation, hyperparametere.",
   prerequisites: [],
-  Component: NnIntroPage,
+  Component: lazy(() => import("@/components/stack/nn-intro/NnIntroPage").then((m) => ({ default: m.NnIntroPage }))),
 };

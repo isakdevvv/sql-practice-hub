@@ -1,4 +1,4 @@
-import { Dte2602EvaluationRocPage } from "@/components/stack/dte2602-evaluation-roc/Dte2602EvaluationRocPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "TP/FP/FN/TN, precision/recall/F1, ROC-kurve med flyttbar terskel. Ubalansert data og terskel-valg.",
   prerequisites: [],
-  Component: Dte2602EvaluationRocPage,
+  Component: lazy(() => import("@/components/stack/dte2602-evaluation-roc/Dte2602EvaluationRocPage").then((m) => ({ default: m.Dte2602EvaluationRocPage }))),
 };

@@ -1,4 +1,4 @@
-import { BrannmurVlanPage } from "@/components/stack/dte2507-brannmur-vlan/BrannmurVlanPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "Stateless vs stateful, iptables med stateful conntrack, DMZ/screened subnet, VLAN-segmentering, 802.1Q tagged vs untagged, defense in depth + least privilege.",
   prerequisites: [],
-  Component: BrannmurVlanPage,
+  Component: lazy(() => import("@/components/stack/dte2507-brannmur-vlan/BrannmurVlanPage").then((m) => ({ default: m.BrannmurVlanPage }))),
 };

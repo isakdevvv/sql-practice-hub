@@ -1,4 +1,4 @@
-import { SchedulingDrillPage } from "@/components/stack/dte2505-scheduling-drill/SchedulingDrillPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "OSTEP kap. 7–10. Turnaround, respons, throughput. FIFO, SJF, STCF, Round-Robin, MLFQ. Live Gantt-simulator med 5 forhåndsdefinerte øvelser.",
   prerequisites: [],
-  Component: SchedulingDrillPage,
+  Component: lazy(() => import("@/components/stack/dte2505-scheduling-drill/SchedulingDrillPage").then((m) => ({ default: m.SchedulingDrillPage }))),
 };

@@ -1,4 +1,4 @@
-import { SuMetodikkerPage } from "@/components/stack/su-metodikker/SuMetodikkerPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "Fossefall/RUP historisk. Scrum-events og roller, Kanban WIP, XP (TDD, pair programming).",
   prerequisites: [],
-  Component: SuMetodikkerPage,
+  Component: lazy(() => import("@/components/stack/su-metodikker/SuMetodikkerPage").then((m) => ({ default: m.SuMetodikkerPage }))),
 };

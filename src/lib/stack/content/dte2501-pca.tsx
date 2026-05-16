@@ -1,4 +1,4 @@
-import { PcaPage } from "@/components/stack/dte2501-ml/PcaPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "Dimensjonsreduksjon via kovariansmatrise og egenvektorer. Forklart varians, scree plot, eigenfaces.",
   prerequisites: [],
-  Component: PcaPage,
+  Component: lazy(() => import("@/components/stack/dte2501-ml/PcaPage").then((m) => ({ default: m.PcaPage }))),
 };

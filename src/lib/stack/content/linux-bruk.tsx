@@ -1,4 +1,4 @@
-import { LinuxBrukPage } from "@/components/stack/linux-bruk/LinuxBrukPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "Bash-grunnlag, chmod/chown, ps/top/kill, apt og dnf, og vanlige drift-kommandoer.",
   prerequisites: [],
-  Component: LinuxBrukPage,
+  Component: lazy(() => import("@/components/stack/linux-bruk/LinuxBrukPage").then((m) => ({ default: m.LinuxBrukPage }))),
 };

@@ -1,4 +1,4 @@
-import { CsharpGrunnlagPage } from "@/components/stack/csharp-grunnlag/CsharpGrunnlagPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "Typer, classes vs records, properties, LINQ, async/await, nullable reference types.",
   prerequisites: [{ slug: "dte-2802", title: "DTE-2802 Web Applikasjoner 2 — hub" }],
-  Component: CsharpGrunnlagPage,
+  Component: lazy(() => import("@/components/stack/csharp-grunnlag/CsharpGrunnlagPage").then((m) => ({ default: m.CsharpGrunnlagPage }))),
 };

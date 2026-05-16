@@ -1,4 +1,4 @@
-import { LenkedeStrukturerPage } from "@/components/stack/lenkede-strukturer/LenkedeStrukturerPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "Single/double linked list, LIFO stack, FIFO queue, deque, heapq prioritetskø. Postfix-evaluator som klassisk stack-bruk.",
   prerequisites: [],
-  Component: LenkedeStrukturerPage,
+  Component: lazy(() => import("@/components/stack/lenkede-strukturer/LenkedeStrukturerPage").then((m) => ({ default: m.LenkedeStrukturerPage }))),
 };

@@ -1,4 +1,4 @@
-import { Tek1KombinatorikkPage } from "@/components/stack/tek1-kombinatorikk/Tek1KombinatorikkPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "Permutasjoner og kombinasjoner med og uten tilbakelegging, multinomial, og praktiske telleregler for sannsynlighet.",
   prerequisites: [],
-  Component: Tek1KombinatorikkPage,
+  Component: lazy(() => import("@/components/stack/tek1-kombinatorikk/Tek1KombinatorikkPage").then((m) => ({ default: m.Tek1KombinatorikkPage }))),
 };

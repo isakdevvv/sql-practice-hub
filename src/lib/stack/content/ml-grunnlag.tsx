@@ -1,4 +1,4 @@
-import { MlGrunnlagPage } from "@/components/stack/ml-grunnlag/MlGrunnlagPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "Hva ML er, tre paradigmer, data/features, train/val/test, overfitting, bias-variance, evaluering.",
   prerequisites: [],
-  Component: MlGrunnlagPage,
+  Component: lazy(() => import("@/components/stack/ml-grunnlag/MlGrunnlagPage").then((m) => ({ default: m.MlGrunnlagPage }))),
 };

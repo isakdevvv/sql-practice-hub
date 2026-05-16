@@ -1,4 +1,4 @@
-import { Tek1EstimeringKiPage } from "@/components/stack/tek1-estimering-ki/Tek1EstimeringKiPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "Punktestimering, standardfeil, og konfidensintervall — med simulering av 100 utvalg som viser hvor mange intervaller dekker μ.",
   prerequisites: [],
-  Component: Tek1EstimeringKiPage,
+  Component: lazy(() => import("@/components/stack/tek1-estimering-ki/Tek1EstimeringKiPage").then((m) => ({ default: m.Tek1EstimeringKiPage }))),
 };

@@ -1,4 +1,4 @@
-import { Http2HolPage } from "@/components/stack/dte2507-http2-hol/Http2HolPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "Hvorfor HTTP/1.1 trengte 6 parallelle tilkoblinger og HTTP/2 ikke. Pipelining, Head-of-Line-blokkering, frames + interleaving — med interaktiv timeline-sammenligning.",
   prerequisites: [],
-  Component: Http2HolPage,
+  Component: lazy(() => import("@/components/stack/dte2507-http2-hol/Http2HolPage").then((m) => ({ default: m.Http2HolPage }))),
 };

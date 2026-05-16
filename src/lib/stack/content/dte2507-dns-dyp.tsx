@@ -1,4 +1,4 @@
-import { DnsDypPage } from "@/components/stack/dte2507-dns-dyp/DnsDypPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "Hele DNS-kjeden: root → TLD → autoritativ. Iterative vs recursive, RR-typer, cache, poisoning, DNSSEC chain of trust, DoH/DoT. Interaktiv lookup-sim med cache-hit-grafikk.",
   prerequisites: [],
-  Component: DnsDypPage,
+  Component: lazy(() => import("@/components/stack/dte2507-dns-dyp/DnsDypPage").then((m) => ({ default: m.DnsDypPage }))),
 };

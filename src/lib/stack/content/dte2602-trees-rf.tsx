@@ -1,4 +1,4 @@
-import { Dte2602TreesRfPage } from "@/components/stack/dte2602-trees-rf/Dte2602TreesRfPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "Gini, max_depth, min_samples_split. RF = bootstrap + random features. Feature importance. Interaktiv: bygg tre.",
   prerequisites: [],
-  Component: Dte2602TreesRfPage,
+  Component: lazy(() => import("@/components/stack/dte2602-trees-rf/Dte2602TreesRfPage").then((m) => ({ default: m.Dte2602TreesRfPage }))),
 };

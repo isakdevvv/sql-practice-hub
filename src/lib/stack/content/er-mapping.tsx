@@ -1,4 +1,4 @@
-import { ErMappingPage } from "@/components/stack/er-mapping/ErMappingPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -10,5 +10,5 @@ export const content: TrinnContent = {
   status: "ready",
   shortDescription: "Fra krakefot-diagram til CREATE TABLE: 1:1, 1:N, M:N, svake entiteter.",
   prerequisites: [],
-  Component: ErMappingPage,
+  Component: lazy(() => import("@/components/stack/er-mapping/ErMappingPage").then((m) => ({ default: m.ErMappingPage }))),
 };

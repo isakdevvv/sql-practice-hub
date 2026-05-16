@@ -1,4 +1,4 @@
-import { JavascriptGrunnlagPage } from "@/components/stack/javascript-grunnlag/JavascriptGrunnlagPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "var/let/const, typer, this (4 regler), closures, prototyper/klasser, event loop, Promise/async, === vs ==, vanlige feller.",
   prerequisites: [],
-  Component: JavascriptGrunnlagPage,
+  Component: lazy(() => import("@/components/stack/javascript-grunnlag/JavascriptGrunnlagPage").then((m) => ({ default: m.JavascriptGrunnlagPage }))),
 };

@@ -1,4 +1,4 @@
-import { KMeansPage } from "@/components/stack/dte2501-ml/KMeansPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "Init/assign/update/konvergens. Elbow og silhouette. Når k-Means feiler og hierarkisk klustring som alternativ.",
   prerequisites: [],
-  Component: KMeansPage,
+  Component: lazy(() => import("@/components/stack/dte2501-ml/KMeansPage").then((m) => ({ default: m.KMeansPage }))),
 };

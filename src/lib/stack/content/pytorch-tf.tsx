@@ -1,4 +1,4 @@
-import { PytorchTfPage } from "@/components/stack/pytorch-tf/PytorchTfPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "Tensors, autograd, training loop, eager vs graph mode — slik bruker du rammeverkene.",
   prerequisites: [],
-  Component: PytorchTfPage,
+  Component: lazy(() => import("@/components/stack/pytorch-tf/PytorchTfPage").then((m) => ({ default: m.PytorchTfPage }))),
 };

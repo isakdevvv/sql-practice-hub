@@ -1,4 +1,4 @@
-import { ApiKontraktPage } from "@/components/stack/api-kontrakt/ApiKontraktPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "OpenAPI/Swagger, statuskoder, versjonering, RFC 7807 problem-detail, idempotens, paginering.",
   prerequisites: [],
-  Component: ApiKontraktPage,
+  Component: lazy(() => import("@/components/stack/api-kontrakt/ApiKontraktPage").then((m) => ({ default: m.ApiKontraktPage }))),
 };

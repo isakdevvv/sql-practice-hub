@@ -1,4 +1,4 @@
-import { EnsemblePage } from "@/components/stack/dte2501-ml/EnsemblePage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "Bias-variance dekomponering. Bagging og Random Forest. AdaBoost og gradient boosting.",
   prerequisites: [],
-  Component: EnsemblePage,
+  Component: lazy(() => import("@/components/stack/dte2501-ml/EnsemblePage").then((m) => ({ default: m.EnsemblePage }))),
 };

@@ -1,4 +1,4 @@
-import { PaketDekodingPage } from "@/components/stack/dte2507-paket-dekoding/PaketDekodingPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "Ethernet/IP/TCP/UDP-headere byte for byte. Interaktiv hex-dump — hold musen over en byte for tolkning.",
   prerequisites: [],
-  Component: PaketDekodingPage,
+  Component: lazy(() => import("@/components/stack/dte2507-paket-dekoding/PaketDekodingPage").then((m) => ({ default: m.PaketDekodingPage }))),
 };

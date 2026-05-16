@@ -1,4 +1,4 @@
-import { Dte2602MappeMalPage } from "@/components/stack/dte2602-mappe-mal/Dte2602MappeMalPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "Rapport-struktur, header-eksempler, kode-vs-drøfting, sensor-feller (reproduserbarhet, random_state), sjekkliste før innlevering.",
   prerequisites: [],
-  Component: Dte2602MappeMalPage,
+  Component: lazy(() => import("@/components/stack/dte2602-mappe-mal/Dte2602MappeMalPage").then((m) => ({ default: m.Dte2602MappeMalPage }))),
 };

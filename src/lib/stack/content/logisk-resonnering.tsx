@@ -1,4 +1,4 @@
-import { LogiskResonneringPage } from "@/components/stack/logisk-resonnering/LogiskResonneringPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "Propositional logic, sannhetstabeller, modus ponens, resolusjon og en kort introduksjon til first-order logic.",
   prerequisites: [],
-  Component: LogiskResonneringPage,
+  Component: lazy(() => import("@/components/stack/logisk-resonnering/LogiskResonneringPage").then((m) => ({ default: m.LogiskResonneringPage }))),
 };

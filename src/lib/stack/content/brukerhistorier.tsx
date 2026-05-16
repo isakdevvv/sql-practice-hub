@@ -1,4 +1,4 @@
-import { BrukerhistorierPage } from "@/components/stack/brukerhistorier/BrukerhistorierPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "Som-vil-for-å-formatet. INVEST. Akseptansekriterier. Story points (Fibonacci). Planning poker. Splitting.",
   prerequisites: [],
-  Component: BrukerhistorierPage,
+  Component: lazy(() => import("@/components/stack/brukerhistorier/BrukerhistorierPage").then((m) => ({ default: m.BrukerhistorierPage }))),
 };

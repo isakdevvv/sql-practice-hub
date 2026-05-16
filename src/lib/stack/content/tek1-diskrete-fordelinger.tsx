@@ -1,4 +1,4 @@
-import { Tek1DiskreteFordelingerPage } from "@/components/stack/tek1-diskrete-fordelinger/Tek1DiskreteFordelingerPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "Bernoulli, binomisk, hypergeometrisk og Poisson — med live-PMF-bar-chart hvor du justerer parametrene.",
   prerequisites: [],
-  Component: Tek1DiskreteFordelingerPage,
+  Component: lazy(() => import("@/components/stack/tek1-diskrete-fordelinger/Tek1DiskreteFordelingerPage").then((m) => ({ default: m.Tek1DiskreteFordelingerPage }))),
 };

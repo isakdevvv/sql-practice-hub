@@ -1,4 +1,4 @@
-import { Tek1DeskriptivPage } from "@/components/stack/tek1-deskriptiv/Tek1DeskriptivPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "Sentralmål (mean, median, modus, kvartiler), spredningsmål (varians, std, IQR), og visualisering med histogram og boksplott.",
   prerequisites: [],
-  Component: Tek1DeskriptivPage,
+  Component: lazy(() => import("@/components/stack/tek1-deskriptiv/Tek1DeskriptivPage").then((m) => ({ default: m.Tek1DeskriptivPage }))),
 };

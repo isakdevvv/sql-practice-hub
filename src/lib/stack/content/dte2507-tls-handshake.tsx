@@ -1,4 +1,4 @@
-import { TlsHandshakePage } from "@/components/stack/dte2507-tls-handshake/TlsHandshakePage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "TLS 1.2 og 1.3 handshake klikkbar — ClientHello, sertifikat, nøkkelutveksling, Finished. Highlighter symmetrisk vs asymmetrisk i hvert steg.",
   prerequisites: [],
-  Component: TlsHandshakePage,
+  Component: lazy(() => import("@/components/stack/dte2507-tls-handshake/TlsHandshakePage").then((m) => ({ default: m.TlsHandshakePage }))),
 };

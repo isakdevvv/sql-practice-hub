@@ -1,4 +1,4 @@
-import { TlsPage } from "@/components/stack/tls/TlsPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "ClientHello → ServerHello + sertifikat → ECDHE-nøkkel-utveksling → Finished. TLS 1.2 vs 1.3, sertifikatvalidering.",
   prerequisites: [],
-  Component: TlsPage,
+  Component: lazy(() => import("@/components/stack/tls/TlsPage").then((m) => ({ default: m.TlsPage }))),
 };

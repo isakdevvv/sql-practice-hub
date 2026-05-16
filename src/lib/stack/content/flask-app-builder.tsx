@@ -1,4 +1,4 @@
-import { FlaskAppBuilderPage } from "@/components/stack/flask-app-builder/FlaskAppBuilderPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "Kryss av byggesteiner (sider, skjemaer, auth, DB, Bootstrap-UI, JSON-API) og få en komplett Flask + Jinja + Bootstrap-app generert live. 27+ alternativer, klikk Kjør for å teste i Pyodide.",
   prerequisites: [],
-  Component: FlaskAppBuilderPage,
+  Component: lazy(() => import("@/components/stack/flask-app-builder/FlaskAppBuilderPage").then((m) => ({ default: m.FlaskAppBuilderPage }))),
 };

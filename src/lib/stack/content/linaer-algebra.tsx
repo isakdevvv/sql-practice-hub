@@ -1,4 +1,4 @@
-import { LinaerAlgebraPage } from "@/components/stack/linaer-algebra/LinaerAlgebraPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "Vektorer, indreprodukt, matriser, Ax=b, transformasjoner, egenvektorer og PCA-intuisjon. Khan Academy LinAlg på én side.",
   prerequisites: [],
-  Component: LinaerAlgebraPage,
+  Component: lazy(() => import("@/components/stack/linaer-algebra/LinaerAlgebraPage").then((m) => ({ default: m.LinaerAlgebraPage }))),
 };

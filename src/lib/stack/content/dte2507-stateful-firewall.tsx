@@ -1,4 +1,4 @@
-import { StatefulFirewallPage } from "@/components/stack/dte2507-stateful-firewall/StatefulFirewallPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "Bokens pakketabell (Table 8.6/8.8): stateless ACK=1-regelen slipper malformed pakker inn. Stateful brannmur bygger connection table fra 3-veis-handshake. Klassifiser hver pakke først stateless, så stateful.",
   prerequisites: [],
-  Component: StatefulFirewallPage,
+  Component: lazy(() => import("@/components/stack/dte2507-stateful-firewall/StatefulFirewallPage").then((m) => ({ default: m.StatefulFirewallPage }))),
 };

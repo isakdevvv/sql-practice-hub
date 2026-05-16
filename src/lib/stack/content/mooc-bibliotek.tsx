@@ -1,4 +1,4 @@
-import { MoocBibliotekPage } from "@/components/stack/mooc-bibliotek/MoocBibliotekPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "MIT, Stanford, Harvard, CMU, Berkeley — alle gratis. CS50, MIT 6.006/6.S081, Stanford CS144/229/231n, CMU 15-445 (Pavlo), Berkeley CS61A, MIT 6.S191, CS50W. Per fag-tabell + realistisk planleggings-råd.",
   prerequisites: [],
-  Component: MoocBibliotekPage,
+  Component: lazy(() => import("@/components/stack/mooc-bibliotek/MoocBibliotekPage").then((m) => ({ default: m.MoocBibliotekPage }))),
 };

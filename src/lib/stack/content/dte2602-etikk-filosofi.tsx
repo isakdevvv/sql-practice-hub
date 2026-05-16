@@ -1,4 +1,4 @@
-import { Dte2602EtikkPage } from "@/components/stack/dte2602-etikk-filosofi/Dte2602EtikkPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "AI-historie (Turing → Dartmouth → vintrene → DL-bølgen), bias-taksonomi, GDPR, XAI, Kinarommet, EU AI Act, diskusjons-caser.",
   prerequisites: [],
-  Component: Dte2602EtikkPage,
+  Component: lazy(() => import("@/components/stack/dte2602-etikk-filosofi/Dte2602EtikkPage").then((m) => ({ default: m.Dte2602EtikkPage }))),
 };

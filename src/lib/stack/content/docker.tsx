@@ -1,4 +1,4 @@
-import { DockerPage } from "@/components/stack/docker/DockerPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "Containers vs VMs, Dockerfile-direktiver, layer-cache, multi-stage, compose, networks og volumes.",
   prerequisites: [],
-  Component: DockerPage,
+  Component: lazy(() => import("@/components/stack/docker/DockerPage").then((m) => ({ default: m.DockerPage }))),
 };

@@ -1,4 +1,4 @@
-import { ObligerHub } from "@/components/stack/dte2505-obliger/ObligerHub";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "Fem obligatoriske øvinger speilet fra UiT: installasjon, navigasjon, pakker, rettigheter, bash. Steg-svar med automatisk sjekk.",
   prerequisites: [],
-  Component: ObligerHub,
+  Component: lazy(() => import("@/components/stack/dte2505-obliger/ObligerHub").then((m) => ({ default: m.ObligerHub }))),
 };

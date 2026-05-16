@@ -1,4 +1,4 @@
-import { Tek1AnovaPage } from "@/components/stack/tek1-anova/Tek1AnovaPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "ANOVA for å sammenligne snitt på tvers av ≥ 3 grupper. SS-dekomponering, F = MS_between / MS_within, frihetsgrader, og post-hoc (Tukey HSD, Bonferroni). Interaktiv kalkulator med 4 grupper.",
   prerequisites: [],
-  Component: Tek1AnovaPage,
+  Component: lazy(() => import("@/components/stack/tek1-anova/Tek1AnovaPage").then((m) => ({ default: m.Tek1AnovaPage }))),
 };

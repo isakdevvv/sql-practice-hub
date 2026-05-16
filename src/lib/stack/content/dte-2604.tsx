@@ -1,4 +1,4 @@
-import { Dte2604Hub } from "@/components/stack/dte-2604/Dte2604Hub";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "Fire mini-kurs som dekker DTE-2604-pensum: smidige metodikker, brukerhistorier, UML, prosjekt-praksis.",
   prerequisites: [],
-  Component: Dte2604Hub,
+  Component: lazy(() => import("@/components/stack/dte-2604/Dte2604Hub").then((m) => ({ default: m.Dte2604Hub }))),
 };

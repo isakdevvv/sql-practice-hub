@@ -1,4 +1,4 @@
-import { CssModernePage } from "@/components/stack/css-moderne/CssModernePage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "Box model, flexbox (justify/align/gap/grow/shrink), grid (template-areas, auto-fit, fr), mobile-first responsiv, CSS custom properties, dark mode, CSS-in-JS vs Tailwind, tilgjengelighet.",
   prerequisites: [],
-  Component: CssModernePage,
+  Component: lazy(() => import("@/components/stack/css-moderne/CssModernePage").then((m) => ({ default: m.CssModernePage }))),
 };

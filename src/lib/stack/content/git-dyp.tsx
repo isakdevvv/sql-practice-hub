@@ -1,4 +1,4 @@
-import { GitDypPage } from "@/components/stack/git-dyp/GitDypPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "Git-objekter, rebase vs merge, interactive rebase, cherry-pick, bisect, reflog og vanlige feller.",
   prerequisites: [],
-  Component: GitDypPage,
+  Component: lazy(() => import("@/components/stack/git-dyp/GitDypPage").then((m) => ({ default: m.GitDypPage }))),
 };

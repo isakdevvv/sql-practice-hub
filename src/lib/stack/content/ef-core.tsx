@@ -1,4 +1,4 @@
-import { EfCorePage } from "@/components/stack/ef-core/EfCorePage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "DbContext, code-first migrations, LINQ-til-SQL, relasjoner, tracking.",
   prerequisites: [{ slug: "csharp-grunnlag", title: "C# språk-grunnlag" }],
-  Component: EfCorePage,
+  Component: lazy(() => import("@/components/stack/ef-core/EfCorePage").then((m) => ({ default: m.EfCorePage }))),
 };

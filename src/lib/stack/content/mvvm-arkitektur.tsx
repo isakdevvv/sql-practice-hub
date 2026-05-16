@@ -1,4 +1,4 @@
-import { MvvmArkitekturPage } from "@/components/stack/mvvm-arkitektur/MvvmArkitekturPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "Model-View-ViewModel, LiveData/StateFlow, observable patterns, hvorfor MVVM over MVC.",
   prerequisites: [],
-  Component: MvvmArkitekturPage,
+  Component: lazy(() => import("@/components/stack/mvvm-arkitektur/MvvmArkitekturPage").then((m) => ({ default: m.MvvmArkitekturPage }))),
 };

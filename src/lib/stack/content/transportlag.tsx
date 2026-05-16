@@ -1,4 +1,4 @@
-import { TransportlagPage } from "@/components/stack/transportlag/TransportlagPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "TCP 3-veis håndtrykk, sliding window, flow vs congestion control, 4-veis avskjed. UDP når det passer.",
   prerequisites: [],
-  Component: TransportlagPage,
+  Component: lazy(() => import("@/components/stack/transportlag/TransportlagPage").then((m) => ({ default: m.TransportlagPage }))),
 };

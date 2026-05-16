@@ -1,4 +1,4 @@
-import { SokAlgoritmerPage } from "@/components/stack/sok-algoritmer/SokAlgoritmerPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "BFS, DFS, UCS, iterative deepening, greedy og A*. Heuristikker, admissibility, completeness og optimality.",
   prerequisites: [],
-  Component: SokAlgoritmerPage,
+  Component: lazy(() => import("@/components/stack/sok-algoritmer/SokAlgoritmerPage").then((m) => ({ default: m.SokAlgoritmerPage }))),
 };

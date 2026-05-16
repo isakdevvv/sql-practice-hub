@@ -1,4 +1,4 @@
-import { KnnPage } from "@/components/stack/dte2501-ml/KnnPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "Lazy learning, distansemål, bias-variance, k-valg. k-NN for klassifikasjon og regresjon.",
   prerequisites: [],
-  Component: KnnPage,
+  Component: lazy(() => import("@/components/stack/dte2501-ml/KnnPage").then((m) => ({ default: m.KnnPage }))),
 };

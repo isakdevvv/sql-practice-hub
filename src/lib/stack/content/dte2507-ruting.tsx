@@ -1,4 +1,4 @@
-import { RutingPage } from "@/components/stack/dte2507-ruting/RutingPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "Data plane vs control plane, longest-prefix-match, Dijkstra vs Bellman-Ford, OSPF/RIP/BGP. Interaktiv rute-graf med steg-for-steg algoritme + LPM-trener.",
   prerequisites: [],
-  Component: RutingPage,
+  Component: lazy(() => import("@/components/stack/dte2507-ruting/RutingPage").then((m) => ({ default: m.RutingPage }))),
 };

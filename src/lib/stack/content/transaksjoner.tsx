@@ -1,4 +1,4 @@
-import { TransaksjonerPage } from "@/components/stack/transaksjoner/TransaksjonerPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -13,5 +13,5 @@ export const content: TrinnContent = {
   prerequisites: [
     { slug: "nokler", title: "Primær- og fremmednøkler" },
   ],
-  Component: TransaksjonerPage,
+  Component: lazy(() => import("@/components/stack/transaksjoner/TransaksjonerPage").then((m) => ({ default: m.TransaksjonerPage }))),
 };

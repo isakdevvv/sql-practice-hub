@@ -1,4 +1,4 @@
-import { SikkerhetPage } from "@/components/stack/sikkerhet/SikkerhetPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "Fem klassiske web-sårbarheter med sårbar/trygg kode side om side: SQL injection, XSS, CSRF, passord-lagring, mass-assignment.",
   prerequisites: [],
-  Component: SikkerhetPage,
+  Component: lazy(() => import("@/components/stack/sikkerhet/SikkerhetPage").then((m) => ({ default: m.SikkerhetPage }))),
 };

@@ -1,4 +1,4 @@
-import { LaereplanPage } from "@/components/stack/laereplan/LaereplanPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "Hele plattformen som 14 faser i første-prinsipper-rekkefølge. Basert på MIT/Stanford/CMU/ETH bachelor-progresjon.",
   prerequisites: [],
-  Component: LaereplanPage,
+  Component: lazy(() => import("@/components/stack/laereplan/LaereplanPage").then((m) => ({ default: m.LaereplanPage }))),
 };

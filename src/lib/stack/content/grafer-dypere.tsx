@@ -1,4 +1,4 @@
-import { GraferDyperePage } from "@/components/stack/grafer-dypere/GraferDyperePage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "Representasjon, BFS/DFS, Dijkstra, MST (Prim/Kruskal), topologisk sortering, A*. Klassiske grafproblemer.",
   prerequisites: [],
-  Component: GraferDyperePage,
+  Component: lazy(() => import("@/components/stack/grafer-dypere/GraferDyperePage").then((m) => ({ default: m.GraferDyperePage }))),
 };

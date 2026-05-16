@@ -1,4 +1,4 @@
-import { Tek1HypotesetestRegresjonPage } from "@/components/stack/tek1-hypotesetest-regresjon/Tek1HypotesetestRegresjonPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "t-tester (én/to utvalg), p-verdier, type I/II-feil, kji-kvadrat (goodness-of-fit + kontingens), og lineær regresjon med drag-bare punkter og live R².",
   prerequisites: [],
-  Component: Tek1HypotesetestRegresjonPage,
+  Component: lazy(() => import("@/components/stack/tek1-hypotesetest-regresjon/Tek1HypotesetestRegresjonPage").then((m) => ({ default: m.Tek1HypotesetestRegresjonPage }))),
 };

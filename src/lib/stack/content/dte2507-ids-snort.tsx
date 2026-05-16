@@ -1,4 +1,4 @@
-import { IdsSnortPage } from "@/components/stack/dte2507-ids-snort/IdsSnortPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "Snort-regel-eksempel (alert icmp ... msg: ICMP PING NMAP). Signature-based misser 0-day; anomaly-based kan fange dem men sliter med false positives. DMZ-arkitektur som sone-buffer mellom internett og internt nett.",
   prerequisites: [],
-  Component: IdsSnortPage,
+  Component: lazy(() => import("@/components/stack/dte2507-ids-snort/IdsSnortPage").then((m) => ({ default: m.IdsSnortPage }))),
 };

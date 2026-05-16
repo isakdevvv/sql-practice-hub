@@ -1,4 +1,4 @@
-import { BigOPage } from "@/components/stack/big-o/BigOPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "De syv klassene, tre analyse-regler, beste/verste/forventet tilfelle, vanlige feller — rammeverket alle de andre algoritme-temaene bygger på.",
   prerequisites: [],
-  Component: BigOPage,
+  Component: lazy(() => import("@/components/stack/big-o/BigOPage").then((m) => ({ default: m.BigOPage }))),
 };

@@ -1,4 +1,4 @@
-import { ProsesserSignalerPage } from "@/components/stack/dte2505-prosesser-signaler/ProsesserSignalerPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "STAT-tilstander (R/S/D/Z/T), ps aux-tolking, signal-tabell, sandkasse for SIGTERM vs SIGKILL, nice/renice, jobs.",
   prerequisites: [],
-  Component: ProsesserSignalerPage,
+  Component: lazy(() => import("@/components/stack/dte2505-prosesser-signaler/ProsesserSignalerPage").then((m) => ({ default: m.ProsesserSignalerPage }))),
 };

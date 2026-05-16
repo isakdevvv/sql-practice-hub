@@ -1,4 +1,4 @@
-import { ApiArkitekturPage } from "@/components/stack/api-arkitektur/ApiArkitekturPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "Lagdeling (controller/service/repository), DTO vs entity, dependency injection, Clean Architecture.",
   prerequisites: [],
-  Component: ApiArkitekturPage,
+  Component: lazy(() => import("@/components/stack/api-arkitektur/ApiArkitekturPage").then((m) => ({ default: m.ApiArkitekturPage }))),
 };

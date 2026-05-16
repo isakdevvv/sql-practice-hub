@@ -1,4 +1,4 @@
-import { WebCachingMattePage } from "@/components/stack/dte2507-web-caching-matte/WebCachingMattePage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "Kurose-eksemplet 15 req/s × 1 Mbit på 15 Mbps access-link: ρ = 1 gir ∞ delay. Cache med 40 % hit-rate kutter snittforsinkelse til ~1.2 s. Interaktiv kalkulator + Conditional GET.",
   prerequisites: [],
-  Component: WebCachingMattePage,
+  Component: lazy(() => import("@/components/stack/dte2507-web-caching-matte/WebCachingMattePage").then((m) => ({ default: m.WebCachingMattePage }))),
 };

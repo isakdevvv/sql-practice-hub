@@ -1,4 +1,4 @@
-import { OsGrunnlagPage } from "@/components/stack/os-grunnlag/OsGrunnlagPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "Hva et operativsystem faktisk gjør: kernel vs userspace, prosess-livssyklus, scheduling, filsystem, syscalls.",
   prerequisites: [],
-  Component: OsGrunnlagPage,
+  Component: lazy(() => import("@/components/stack/os-grunnlag/OsGrunnlagPage").then((m) => ({ default: m.OsGrunnlagPage }))),
 };

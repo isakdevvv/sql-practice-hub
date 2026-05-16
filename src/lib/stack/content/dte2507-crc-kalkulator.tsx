@@ -1,4 +1,4 @@
-import { CrcKalkulatorPage } from "@/components/stack/dte2507-crc-kalkulator/CrcKalkulatorPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "Interaktiv CRC-kalkulator (Kurose 6.2.3). Velg D og G, se XOR-divisjonen trinn for trinn, og verifiser at mottakerens rest er null. Bokens eksempel D=101110, G=1001 er forhåndsutfylt.",
   prerequisites: [],
-  Component: CrcKalkulatorPage,
+  Component: lazy(() => import("@/components/stack/dte2507-crc-kalkulator/CrcKalkulatorPage").then((m) => ({ default: m.CrcKalkulatorPage }))),
 };

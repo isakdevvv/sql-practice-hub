@@ -1,4 +1,4 @@
-import { ApiRetrofitPage } from "@/components/stack/api-retrofit/ApiRetrofitPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "Retrofit-interface med suspend, JSON-parsing (Moshi/Gson/kotlinx), OkHttp-interceptors og error handling.",
   prerequisites: [],
-  Component: ApiRetrofitPage,
+  Component: lazy(() => import("@/components/stack/api-retrofit/ApiRetrofitPage").then((m) => ({ default: m.ApiRetrofitPage }))),
 };

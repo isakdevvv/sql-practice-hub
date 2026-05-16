@@ -1,4 +1,4 @@
-import { PaketTolker } from "@/components/stack/dte2507-praksis/PaketTolker";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "Fem realistiske pakker (TCP SYN, SYN+ACK, UDP DNS, ARP, ICMP). Klikk byte-felter for forklaring og observasjoner per pakke.",
   prerequisites: [],
-  Component: PaketTolker,
+  Component: lazy(() => import("@/components/stack/dte2507-praksis/PaketTolker").then((m) => ({ default: m.PaketTolker }))),
 };

@@ -1,4 +1,4 @@
-import { RekursjonPage } from "@/components/stack/rekursjon/RekursjonPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "Base case + rekursivt steg, kallstacken, klassikere (fakultet, fib, flatten, ruler), rekursjon vs iterasjon.",
   prerequisites: [],
-  Component: RekursjonPage,
+  Component: lazy(() => import("@/components/stack/rekursjon/RekursjonPage").then((m) => ({ default: m.RekursjonPage }))),
 };

@@ -1,4 +1,4 @@
-import { ApProgresjonPage } from "@/components/stack/dte2507-ap-progresjon/ApProgresjonPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "Kurose & Ross sitt sikkerhets-flaggskip: «I am Alice» → IP-adresse → passord → kryptert passord → nonce. Trudy slår hver versjon helt til ap4.0. Sekvensdiagrammer per fase.",
   prerequisites: [],
-  Component: ApProgresjonPage,
+  Component: lazy(() => import("@/components/stack/dte2507-ap-progresjon/ApProgresjonPage").then((m) => ({ default: m.ApProgresjonPage }))),
 };

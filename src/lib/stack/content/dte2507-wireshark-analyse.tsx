@@ -1,4 +1,4 @@
-import { WiresharkAnalysePage } from "@/components/stack/dte2507-wireshark-analyse/WiresharkAnalysePage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "Les pcap-tabeller som eksamen viser dem. Filter-syntaks, HTTP/DNS/TLS-flyt frame for frame, ARP-spoofing, Wireshark vs tcpdump. Med 15+ pcap-quiz.",
   prerequisites: [],
-  Component: WiresharkAnalysePage,
+  Component: lazy(() => import("@/components/stack/dte2507-wireshark-analyse/WiresharkAnalysePage").then((m) => ({ default: m.WiresharkAnalysePage }))),
 };

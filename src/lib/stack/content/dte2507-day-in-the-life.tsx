@@ -1,4 +1,4 @@
-import { DayInTheLifePage } from "@/components/stack/dte2507-day-in-the-life/DayInTheLifePage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "Bokens crescendo. 24-stegs interaktiv gjennomgang fra at Bob plugger laptopen i nettet til google.com vises — DHCP → ARP → DNS → ruting → TCP → HTTP. Integrerer hele Kurose-Ross.",
   prerequisites: [],
-  Component: DayInTheLifePage,
+  Component: lazy(() => import("@/components/stack/dte2507-day-in-the-life/DayInTheLifePage").then((m) => ({ default: m.DayInTheLifePage }))),
 };

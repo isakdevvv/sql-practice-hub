@@ -1,4 +1,4 @@
-import { Tek1ProporsjonerPage } from "@/components/stack/tek1-proporsjoner/Tek1ProporsjonerPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "Én og to proporsjoner: punktestimat, CLT-betingelse, Wald vs Wilson vs Agresti-Coull-CI, z-tester (pooled vs unpooled SE), sample-size-planlegging, og exakt binomial når CLT ikke holder.",
   prerequisites: [],
-  Component: Tek1ProporsjonerPage,
+  Component: lazy(() => import("@/components/stack/tek1-proporsjoner/Tek1ProporsjonerPage").then((m) => ({ default: m.Tek1ProporsjonerPage }))),
 };

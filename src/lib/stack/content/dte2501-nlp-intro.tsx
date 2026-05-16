@@ -1,4 +1,4 @@
-import { NlpPage } from "@/components/stack/dte2501-ml/NlpPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "Tokenisering, BoW, TF-IDF. Word2Vec og GloVe-embeddings. Tekst-klassifikasjon.",
   prerequisites: [],
-  Component: NlpPage,
+  Component: lazy(() => import("@/components/stack/dte2501-ml/NlpPage").then((m) => ({ default: m.NlpPage }))),
 };

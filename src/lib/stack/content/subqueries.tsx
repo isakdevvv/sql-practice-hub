@@ -1,4 +1,4 @@
-import { SubqueriesPage } from "@/components/stack/subqueries/SubqueriesPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "Subqueries i WHERE/SELECT/FROM/HAVING, EXISTS, korrelert, CTE, og topp-N-per-gruppe — åtte progressive nivåer.",
   prerequisites: [],
-  Component: SubqueriesPage,
+  Component: lazy(() => import("@/components/stack/subqueries/SubqueriesPage").then((m) => ({ default: m.SubqueriesPage }))),
 };

@@ -1,4 +1,4 @@
-import { MvcMonsterPage } from "@/components/stack/mvc-monster/MvcMonsterPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "Slik er en Flask-app delt opp: data (Model), HTML (View), og routing (Controller). Anti-pattern, godt mønster, og Blueprints.",
   prerequisites: [],
-  Component: MvcMonsterPage,
+  Component: lazy(() => import("@/components/stack/mvc-monster/MvcMonsterPage").then((m) => ({ default: m.MvcMonsterPage }))),
 };

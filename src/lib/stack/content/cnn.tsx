@@ -1,4 +1,4 @@
-import { CnnPage } from "@/components/stack/cnn/CnnPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "Convolution, pooling, stride/padding, parameter-deling. LeNet → AlexNet → ResNet.",
   prerequisites: [],
-  Component: CnnPage,
+  Component: lazy(() => import("@/components/stack/cnn/CnnPage").then((m) => ({ default: m.CnnPage }))),
 };

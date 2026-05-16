@@ -1,4 +1,4 @@
-import { Trinn8PythonErCPage } from "@/components/stack/trinn-8-python-er-c/Trinn8PythonErCPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -10,5 +10,5 @@ export const content: TrinnContent = {
   status: "ready",
   shortDescription: "CPython er et C-program. PyLongObject. b\"...\" vs \"...\" på alvor.",
   prerequisites: [],
-  Component: Trinn8PythonErCPage,
+  Component: lazy(() => import("@/components/stack/trinn-8-python-er-c/Trinn8PythonErCPage").then((m) => ({ default: m.Trinn8PythonErCPage }))),
 };

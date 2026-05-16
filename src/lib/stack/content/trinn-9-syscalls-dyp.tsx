@@ -1,4 +1,4 @@
-import { Trinn9SyscallsDypPage } from "@/components/stack/trinn-9-syscalls-dyp/Trinn9SyscallsDypPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -10,5 +10,5 @@ export const content: TrinnContent = {
   status: "ready",
   shortDescription: "User space ↔ kernel ↔ NIC. Hver send() er flere lag av bytekopiering.",
   prerequisites: [],
-  Component: Trinn9SyscallsDypPage,
+  Component: lazy(() => import("@/components/stack/trinn-9-syscalls-dyp/Trinn9SyscallsDypPage").then((m) => ({ default: m.Trinn9SyscallsDypPage }))),
 };

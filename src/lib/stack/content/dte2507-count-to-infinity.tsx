@@ -1,4 +1,4 @@
-import { CountToInfinityPage } from "@/components/stack/dte2507-count-to-infinity/CountToInfinityPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "Distance-vector-loopen som teller sakte oppover når en lenke degraderer: 3-node-simulator med slider for c(y,x), 44 iterasjoner i animasjon, og poisoned reverse-toggle. Kurose Ch 5.2.2.",
   prerequisites: [],
-  Component: CountToInfinityPage,
+  Component: lazy(() => import("@/components/stack/dte2507-count-to-infinity/CountToInfinityPage").then((m) => ({ default: m.CountToInfinityPage }))),
 };

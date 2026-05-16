@@ -1,4 +1,4 @@
-import { Dte2505SpesialbitsPage } from "@/components/stack/dte2505-spesialbits/Dte2505SpesialbitsPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -13,5 +13,5 @@ export const content: TrinnContent = {
   prerequisites: [
     { slug: "dte2505-rwx-kalkulator", title: "rwx-kalkulator" },
   ],
-  Component: Dte2505SpesialbitsPage,
+  Component: lazy(() => import("@/components/stack/dte2505-spesialbits/Dte2505SpesialbitsPage").then((m) => ({ default: m.Dte2505SpesialbitsPage }))),
 };

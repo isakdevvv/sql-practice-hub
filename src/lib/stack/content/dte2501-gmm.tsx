@@ -1,4 +1,4 @@
-import { GmmPage } from "@/components/stack/dte2501-ml/GmmPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "Mikstur av normalfordelinger. EM-algoritmen (E-step + M-step). Soft vs hard clustering.",
   prerequisites: [],
-  Component: GmmPage,
+  Component: lazy(() => import("@/components/stack/dte2501-ml/GmmPage").then((m) => ({ default: m.GmmPage }))),
 };

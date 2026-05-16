@@ -1,4 +1,4 @@
-import { BytesEncodingPage } from "@/components/stack/bytes-encoding/BytesEncodingPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "En byte er bare et tall 0–255. Hvordan blir tegn til bytes? UTF-8, ASCII, hex.",
   prerequisites: [],
-  Component: BytesEncodingPage,
+  Component: lazy(() => import("@/components/stack/bytes-encoding/BytesEncodingPage").then((m) => ({ default: m.BytesEncodingPage }))),
 };

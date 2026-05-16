@@ -1,4 +1,4 @@
-import { HashingDyperePage } from "@/components/stack/hashing-dypere/HashingDyperePage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "Hash-funksjon-krav, separate chaining vs open addressing, lastfaktor, kryptografisk vs ikke, bloom filter.",
   prerequisites: [],
-  Component: HashingDyperePage,
+  Component: lazy(() => import("@/components/stack/hashing-dypere/HashingDyperePage").then((m) => ({ default: m.HashingDyperePage }))),
 };

@@ -1,4 +1,4 @@
-import { TcpSocketsPage } from "@/components/stack/tcp-sockets/TcpSocketsPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -10,5 +10,5 @@ export const content: TrinnContent = {
   status: "ready",
   shortDescription: "Hvor request-en kommer fra: en socket leverer bytes mellom to maskiner.",
   prerequisites: [],
-  Component: TcpSocketsPage,
+  Component: lazy(() => import("@/components/stack/tcp-sockets/TcpSocketsPage").then((m) => ({ default: m.TcpSocketsPage }))),
 };

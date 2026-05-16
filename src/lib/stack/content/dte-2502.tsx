@@ -1,4 +1,4 @@
-import { Dte2502Hub } from "@/components/stack/dte-2502/Dte2502Hub";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "Dyplæring som bygger på DTE-2602: backpropagation dypt, CNN, regularisering, optimerere, PyTorch/TF.",
   prerequisites: [],
-  Component: Dte2502Hub,
+  Component: lazy(() => import("@/components/stack/dte-2502/Dte2502Hub").then((m) => ({ default: m.Dte2502Hub }))),
 };

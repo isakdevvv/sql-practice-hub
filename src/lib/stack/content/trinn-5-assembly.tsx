@@ -1,4 +1,4 @@
-import { Trinn5AssemblyPage } from "@/components/stack/trinn-5-assembly/Trinn5AssemblyPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -10,5 +10,5 @@ export const content: TrinnContent = {
   status: "ready",
   shortDescription: "C ↔ RISC-V asm ↔ hex bytes. Samme uttrykk på tre nivåer.",
   prerequisites: [],
-  Component: Trinn5AssemblyPage,
+  Component: lazy(() => import("@/components/stack/trinn-5-assembly/Trinn5AssemblyPage").then((m) => ({ default: m.Trinn5AssemblyPage }))),
 };

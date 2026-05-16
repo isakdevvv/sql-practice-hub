@@ -1,4 +1,4 @@
-import { CvVarianterPage } from "@/components/stack/dte2602-cv-varianter/CvVarianterPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "Validation-set, LOOCV, k-fold, Stratified, GroupKFold, TimeSeriesSplit. Bias-varians-tradeoff i CV-estimatet og interaktiv splitter.",
   prerequisites: [],
-  Component: CvVarianterPage,
+  Component: lazy(() => import("@/components/stack/dte2602-cv-varianter/CvVarianterPage").then((m) => ({ default: m.CvVarianterPage }))),
 };

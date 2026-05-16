@@ -1,4 +1,4 @@
-import { Tek1KontinuerligeFordelingerPage } from "@/components/stack/tek1-kontinuerlige-fordelinger/Tek1KontinuerligeFordelingerPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "Normal, eksponential, kji-kvadrat og Student-t — interaktive tetthetskurver med skraverbart areal mellom valgte grenser.",
   prerequisites: [],
-  Component: Tek1KontinuerligeFordelingerPage,
+  Component: lazy(() => import("@/components/stack/tek1-kontinuerlige-fordelinger/Tek1KontinuerligeFordelingerPage").then((m) => ({ default: m.Tek1KontinuerligeFordelingerPage }))),
 };

@@ -1,4 +1,4 @@
-import { ReactGrunnlagPage } from "@/components/stack/react-grunnlag/ReactGrunnlagPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -13,5 +13,5 @@ export const content: TrinnContent = {
   prerequisites: [
     { slug: "javascript-grunnlag", title: "JavaScript-grunnlag" },
   ],
-  Component: ReactGrunnlagPage,
+  Component: lazy(() => import("@/components/stack/react-grunnlag/ReactGrunnlagPage").then((m) => ({ default: m.ReactGrunnlagPage }))),
 };
