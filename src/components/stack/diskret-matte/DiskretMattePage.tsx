@@ -6,6 +6,7 @@ import { AbcMengder } from "./figures/AbcMengder";
 import { QuantorVis } from "./figures/QuantorVis";
 import { NumberSets } from "./figures/NumberSets";
 import { StepProof } from "./figures/StepProof";
+import { ProofBuilder } from "./figures/ProofBuilder";
 import { TruthTableBuilder } from "./figures/TruthTableBuilder";
 import { VennSandbox } from "./figures/VennSandbox";
 import { FunctionTypeVis } from "./figures/FunctionTypeVis";
@@ -196,38 +197,175 @@ Eksempel — kode:
             motsigelse. Velg det som gir kortest argument for påstanden din.
           </p>
 
-          <div className="space-y-3">
-            <ProofCard
-              title="Direkte bevis (p → q)"
-              recipe="Anta p. Vis q som logisk konsekvens, steg for steg."
-              example={`Påstand: hvis n er partall, så er n² partall.
-  Anta n = 2k for et heltall k.
-  Da n² = (2k)² = 4k² = 2·(2k²).
-  Det er av formen 2·(heltall), så n² er partall. ✓`}
-            />
-            <ProofCard
-              title="Kontrapositiv (¬q → ¬p)"
-              recipe="Vis at ¬q medfører ¬p. Ekvivalent med direkte bevis av p → q (samme sannhetstabell)."
-              example={`Påstand: hvis n² er partall, så er n partall.
-  Kontrapositivet: hvis n er oddetall, så er n² oddetall.
-  Anta n = 2k+1. Da n² = 4k² + 4k + 1 = 2(2k² + 2k) + 1, altså oddetall. ✓`}
-            />
-            <ProofCard
-              title="Motsigelse (reductio ad absurdum)"
-              recipe="Anta påstanden er usann. Utled en motsigelse. Da må påstanden være sann."
-              example={`Påstand: √2 er irrasjonelt.
-  Anta tvert imot at √2 = a/b på fullt forkortet form.
-  Da 2b² = a², så a² er partall, dermed a partall: a = 2k.
-  Da b² = 2k², så b også partall.
-  Men da kan brøken forkortes med 2 — motsigelse mot «fullt forkortet». ✓`}
-            />
+          <div className="rounded-xl border border-border bg-card p-4 mb-4">
+            <div className="text-xs uppercase tracking-wider text-brand font-semibold mb-2">
+              Oppskrifts-kort
+            </div>
+            <ul className="space-y-2 text-sm">
+              <li>
+                <strong className="text-foreground">Direkte (p → q):</strong>{" "}
+                <span className="text-muted-foreground">
+                  Anta p. Vis q som logisk konsekvens, steg for steg.
+                </span>
+              </li>
+              <li>
+                <strong className="text-foreground">Kontrapositiv (¬q → ¬p):</strong>{" "}
+                <span className="text-muted-foreground">
+                  Vis at ¬q medfører ¬p. Logisk ekvivalent med direkte bevis.
+                </span>
+              </li>
+              <li>
+                <strong className="text-foreground">Motsigelse:</strong>{" "}
+                <span className="text-muted-foreground">
+                  Anta påstanden er usann. Utled en motsigelse. Da må påstanden være sann.
+                </span>
+              </li>
+            </ul>
           </div>
+
+          <h3 className="text-sm font-semibold mb-2 mt-6">Direkte bevis — steg-for-steg</h3>
+          <p className="text-xs text-muted-foreground mb-3">
+            Det enkleste bevis-mønsteret: gå fra antagelse til konklusjon via algebraiske
+            skritt.
+          </p>
+          <StepProof
+            title="Hvis n er partall, så er n² partall"
+            claim="∀n ∈ ℤ : (n partall) → (n² partall)"
+            steps={[
+              {
+                label: "Antagelse",
+                line: "Anta n er partall.",
+                highlight: "partall",
+                hint: "Direkte bevis starter med å anta premisset (det «hvis»-leddet).",
+              },
+              {
+                label: "Steg 1",
+                line: "Per definisjon:  n = 2k  for et heltall k.",
+                highlight: "n = 2k",
+                hint: "Bruk definisjonen av partall — alltid 2 ganger et heltall.",
+              },
+              {
+                label: "Steg 2",
+                line: "Da:  n² = (2k)² = 4k²",
+                highlight: "4k²",
+                hint: "Algebra: kvadrér begge sider.",
+              },
+              {
+                label: "Steg 3",
+                line: "         = 2 · (2k²)",
+                highlight: "2 · (2k²)",
+                hint: "Faktoriser ut 2 — vis at n² er på formen 2·(heltall).",
+              },
+              {
+                label: "QED",
+                line: "Altså er n² partall (av formen 2·heltall). ✓",
+                highlight: "n² partall",
+                hint: "Konklusjon: per definisjon av partall — direkte bevis fullført.",
+              },
+            ]}
+          />
+
+          <h3 className="text-sm font-semibold mb-2 mt-6">Kontrapositiv — steg-for-steg</h3>
+          <p className="text-xs text-muted-foreground mb-3">
+            «Vis at hvis n² er partall, så er n partall.» Direkte forsøk er vanskelig —
+            men kontrapositivet er enkelt.
+          </p>
+          <StepProof
+            title="Hvis n² er partall, så er n partall"
+            claim="∀n ∈ ℤ : (n² partall) → (n partall)"
+            steps={[
+              {
+                label: "Strategi",
+                line: "Vi viser kontrapositivet:  (n oddetall) → (n² oddetall).",
+                highlight: "kontrapositivet",
+                hint: "Kontrapositiv av p → q er ¬q → ¬p — logisk ekvivalent. Negér konklusjonen og premisset, snu retningen.",
+              },
+              {
+                label: "Antagelse",
+                line: "Anta n er oddetall.",
+                highlight: "oddetall",
+                hint: "Nytt premiss: anta den negerte konklusjonen.",
+              },
+              {
+                label: "Steg 1",
+                line: "Per definisjon:  n = 2k + 1  for et heltall k.",
+                highlight: "n = 2k + 1",
+                hint: "Definisjon av oddetall: alltid 2k + 1.",
+              },
+              {
+                label: "Steg 2",
+                line: "n² = (2k + 1)² = 4k² + 4k + 1",
+                highlight: "4k² + 4k + 1",
+                hint: "Algebra: utvid kvadratet.",
+              },
+              {
+                label: "Steg 3",
+                line: "    = 2(2k² + 2k) + 1",
+                highlight: "2(2k² + 2k) + 1",
+                hint: "Faktoriser ut 2 fra de første to leddene — viser at n² er på formen 2·heltall + 1.",
+              },
+              {
+                label: "QED",
+                line: "Altså er n² oddetall.   Da gjelder også kontrapositivet:  n² partall ⇒ n partall. ✓",
+                highlight: "kontrapositivet",
+                hint: "Vi har vist (n oddetall) → (n² oddetall). Det er ekvivalent med originalpåstanden via kontrapositiv.",
+              },
+            ]}
+          />
 
           <FallBox>
             <strong>Felle:</strong> kontrapositiv ≠ invers. <code>p → q</code> har
             kontrapositiv <code>¬q → ¬p</code> (ekvivalent), men invers er{" "}
             <code>¬p → ¬q</code> (IKKE ekvivalent). Ikke bytt rekkefølge når du negerer.
           </FallBox>
+
+          <h3 className="text-sm font-semibold mb-2 mt-6">Bygg ditt eget bevis — Proof Lego</h3>
+          <p className="text-xs text-muted-foreground mb-3">
+            Nå er det din tur. Plukk bevisstegene fra poolen og legg dem i riktig
+            rekkefølge. Systemet sjekker logikken: hver linje må ha sine forutsetninger
+            etablert på et tidligere steg.
+          </p>
+          <ProofBuilder
+            title="Bygg: summen av to oddetall er partall"
+            claim="∀m, n ∈ ℤ : (m oddetall ∧ n oddetall) → (m + n partall)"
+            setup="Anta m og n er oddetall."
+            hint="Direkte bevis. Start med definisjonen av oddetall for begge — m = 2j+1 og n = 2k+1. Adder, faktoriser, vis at summen er av formen 2·heltall."
+            pieces={[
+              {
+                id: "def-m",
+                label: "Steg 1",
+                text: "Per definisjon:  m = 2j + 1  for et heltall j.",
+                justification: "Definisjon av oddetall anvendt på m.",
+              },
+              {
+                id: "def-n",
+                label: "Steg 2",
+                text: "Per definisjon:  n = 2k + 1  for et heltall k.",
+                justification: "Definisjon av oddetall anvendt på n.",
+              },
+              {
+                id: "sum",
+                label: "Steg 3",
+                text: "m + n  =  (2j + 1) + (2k + 1)",
+                deps: ["def-m", "def-n"],
+                justification: "Substituer begge definisjoner inn i summen.",
+              },
+              {
+                id: "simplify",
+                label: "Steg 4",
+                text: "        =  2j + 2k + 2  =  2(j + k + 1)",
+                deps: ["sum"],
+                justification: "Algebra: samle 2-er og faktoriser ut.",
+              },
+              {
+                id: "qed",
+                label: "QED",
+                text: "Altså er m + n av formen 2·(heltall), så m + n er partall. ✓",
+                deps: ["simplify"],
+                justification: "Definisjon av partall: et tall er partall hvis det kan skrives som 2·k for et heltall k.",
+              },
+            ]}
+          />
 
           <h3 className="text-sm font-semibold mb-2 mt-6">Klassisk motsigelse-bevis: √2 er irrasjonelt</h3>
           <p className="text-xs text-muted-foreground mb-3">
@@ -674,6 +812,66 @@ algoritme-korrekthet for splitt-og-hersk.`}</pre>
             induksjonsbevis.
           </FallBox>
 
+          <h3 className="text-sm font-semibold mb-2 mt-6">Bygg et induksjonsbevis — Proof Lego</h3>
+          <p className="text-xs text-muted-foreground mb-3">
+            Vis at 2ⁿ &gt; n for alle n ≥ 1. Plukk bevisstegene fra poolen og legg dem i
+            riktig rekkefølge — fra basis via IH til konklusjon.
+          </p>
+          <ProofBuilder
+            title="Bygg: 2ⁿ > n for alle n ≥ 1"
+            claim="∀n ∈ ℕ, n ≥ 1 : 2ⁿ > n"
+            hint="Standard induksjons-mal: BASIS for n=1, deretter ANTA P(k), så VIS at P(k+1) følger. I steget bruker du IH (2ᵏ > k) sammen med at 2 ≥ 1 for k ≥ 1."
+            pieces={[
+              {
+                id: "basis",
+                label: "Basis",
+                text: "n = 1:  2¹ = 2 > 1 ✓",
+                justification: "Det enkleste tilfellet — sjekk at påstanden holder for startverdien.",
+              },
+              {
+                id: "ih",
+                label: "IH",
+                text: "Anta som induksjonshypotese:  2ᵏ > k.",
+                justification: "Induksjonshypotesen — vi vil bruke denne i steget.",
+              },
+              {
+                id: "step1",
+                label: "Steg",
+                text: "Vi vil vise:  2ᵏ⁺¹ > k + 1.",
+                deps: ["ih"],
+                justification: "Formuler målet for induksjonssteget.",
+              },
+              {
+                id: "step2",
+                label: "Steg",
+                text: "2ᵏ⁺¹  =  2 · 2ᵏ",
+                deps: ["step1"],
+                justification: "Eksponent-regel.",
+              },
+              {
+                id: "step3",
+                label: "Steg",
+                text: "       >  2 · k     (ved IH: 2ᵏ > k)",
+                deps: ["step2", "ih"],
+                justification: "Bruk IH til å erstatte 2ᵏ med en mindre nedre grense.",
+              },
+              {
+                id: "step4",
+                label: "Steg",
+                text: "       =  k + k  ≥  k + 1     (siden k ≥ 1)",
+                deps: ["step3"],
+                justification: "Algebra: 2k = k + k, og k ≥ 1 fra premisset n ≥ 1.",
+              },
+              {
+                id: "qed",
+                label: "QED",
+                text: "Altså 2ᵏ⁺¹ > k + 1, så P(k+1) holder.   Ved induksjon gjelder for alle n ≥ 1. ✓",
+                deps: ["basis", "step4"],
+                justification: "Basis + steg = induksjon. Konklusjon: påstanden gjelder for alle n ≥ 1.",
+              },
+            ]}
+          />
+
           <ProblemBox
             title="Mini-oppgave — kvadratsum"
             problem={
@@ -1020,28 +1218,6 @@ function Check({ children }: { children: React.ReactNode }) {
       <CheckCircle2 className="h-4 w-4 text-emerald-500 mt-0.5 shrink-0" />
       <span className="text-foreground/90">{children}</span>
     </li>
-  );
-}
-
-function ProofCard({
-  title,
-  recipe,
-  example,
-}: {
-  title: string;
-  recipe: string;
-  example: string;
-}) {
-  return (
-    <div className="rounded-xl border border-border bg-card p-4">
-      <div className="text-xs uppercase tracking-wider text-brand font-semibold mb-1">
-        {title}
-      </div>
-      <div className="text-sm text-muted-foreground mb-2">{recipe}</div>
-      <pre className="font-mono text-xs overflow-x-auto whitespace-pre bg-background/60 rounded p-2">
-        {example}
-      </pre>
-    </div>
   );
 }
 
