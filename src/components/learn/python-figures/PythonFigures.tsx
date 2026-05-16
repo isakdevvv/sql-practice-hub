@@ -276,7 +276,7 @@ export const ScopeDiagram: FC = () => (
       <text x="50" y="100" className="text-[11px] fill-current font-mono">y = x * 2</text>
       <text x="50" y="120" className="text-[11px] fill-current font-mono">total = total + y  # NameError uten 'global'</text>
       <text x="50" y="140" className="text-[11px] fill-current font-mono opacity-70"># y finnes bare her inne</text>
-      <text x="50" y="165" className="text-[10px] fill-current opacity-80">⟵ lokal variabel <code>y</code> dør når funksjonen returnerer</text>
+      <text x="50" y="165" className="text-[10px] fill-current opacity-80">⟵ lokal variabel y dør når funksjonen returnerer</text>
     </svg>
     <Caption>Lokale variabler eksisterer kun i sin egen ramme. Globale leses fritt, men endring krever <code>global</code>.</Caption>
   </figure>
@@ -339,8 +339,8 @@ export const ClassAnatomy: FC = () => (
       <text x="50" y="126" className="text-[10px] fill-current font-mono opacity-80">metode</text>
       <text x="50" y="142" className="text-[11px] fill-current font-mono">def bjeff(self):</text>
       <text x="60" y="158" className="text-[11px] fill-current font-mono">return f"&#123;self.navn&#125; sier voff!"</text>
-      <text x="40" y="184" className="text-[10px] fill-current opacity-80">Hund er en mal. <code>r = Hund("Rex")</code> lager en instans.</text>
-      <text x="40" y="200" className="text-[10px] fill-current opacity-80">Instans har sin egen <code>self.navn</code>.</text>
+      <text x="40" y="184" className="text-[10px] fill-current opacity-80">Hund er en mal. r = Hund("Rex") lager en instans.</text>
+      <text x="40" y="200" className="text-[10px] fill-current opacity-80">Instans har sin egen self.navn.</text>
     </svg>
     <Caption>Anatomi av en klasse: konstruktør setter attributter, metoder bruker dem.</Caption>
   </figure>
@@ -712,7 +712,7 @@ export const FileLifecycle: FC = () => (
       <text x="20" y="40" className="text-[10px] fill-current opacity-80">f = open("data.txt", "r")</text>
       <text x="20" y="135" className="text-[10px] fill-current opacity-80">data = f.read()</text>
       <text x="20" y="155" className="text-[10px] fill-current opacity-80">f.close()</text>
-      <text x="20" y="180" className="text-[10px] fill-current">Bruker du <code>with open(...) as f:</code> kalles <code>close()</code> automatisk.</text>
+      <text x="20" y="180" className="text-[10px] fill-current">Bruker du `with open(...) as f:` kalles close() automatisk.</text>
       <defs>
         <marker id="arr-fl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
           <path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor" />
@@ -1009,7 +1009,7 @@ export const LinkedListSingly: FC = () => (
           )}
         </g>
       ))}
-      <text x="10" y="120" className="text-[10px] fill-current opacity-80">Hver node holder en verdi + peker til neste. Siste peker er <code>None</code>.</text>
+      <text x="10" y="120" className="text-[10px] fill-current opacity-80">Hver node holder en verdi + peker til neste. Siste peker er None.</text>
       <defs>
         <marker id="arr-ll" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
           <path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor" />
@@ -1830,7 +1830,7 @@ export const BSTNodeIds: FC = () => (
       <path d="M 175 68 L 230 90" fill="none" stroke={STROKE} markerEnd={`url(#${ARR_ID})`} />
       <path d="M 100 138 L 130 160" fill="none" stroke={STROKE} markerEnd={`url(#${ARR_ID})`} />
       <text x="10" y="200" className="text-[10px] fill-current opacity-80">venstre/høyre er adresser til andre Node-er (eller None).</text>
-      <text x="10" y="214" className="text-[10px] fill-current opacity-80">Sjekk <code>node is None</code> = "har ingen barn-adresse".</text>
+      <text x="10" y="214" className="text-[10px] fill-current opacity-80">Sjekk `node is None` = "har ingen barn-adresse".</text>
       <IdArrowDef />
     </svg>
     <Caption>BST-noder bærer to pekere — hver er en adresse til neste node, ikke en kopi.</Caption>
