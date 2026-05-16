@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { ArrowRight, Lightbulb, AlertTriangle, CheckCircle2 } from "lucide-react";
+import { ArrowRight, Lightbulb, AlertTriangle, CheckCircle2, Brain } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
 import { AbcMengder } from "./figures/AbcMengder";
@@ -1152,6 +1152,33 @@ Klokke-aritmetikk: hva er kl 23 + 5 timer?
               <Check>Hvorfor mod-aritmetikk er hjørnesteinen i RSA</Check>
             </ul>
           </div>
+
+          {/* SRS-drill CTA — løfter fram FSRS-modus filtrert på diskret-matte-kortene */}
+          <Link
+            to="/cards"
+            search={{ mode: "study", category: "praktisk" } as never}
+            className="block rounded-xl border-2 border-brand/40 bg-brand/5 hover:bg-brand/10 hover:border-brand p-5 mb-4 transition-colors group"
+          >
+            <div className="flex items-start gap-3">
+              <div className="rounded-md bg-brand/15 p-2 shrink-0">
+                <Brain className="h-5 w-5 text-brand" />
+              </div>
+              <div className="flex-1">
+                <h3 className="font-semibold text-foreground mb-1">
+                  Drill med spaced repetition →
+                </h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                  20 flashcards for diskret matte — tautologier, De Morgan, Bayes-form,
+                  induksjon, handshake-lemma, Fermat, Euklid. FSRS-algoritmen viser hvert
+                  kort akkurat når du er i ferd med å glemme det.
+                </p>
+                <div className="mt-2 text-xs text-brand font-medium inline-flex items-center gap-1">
+                  Åpne i SRS-modus
+                  <ArrowRight className="h-3 w-3 group-hover:translate-x-0.5 transition-transform" />
+                </div>
+              </div>
+            </div>
+          </Link>
 
           <div className="rounded-xl border border-border bg-card p-5 text-sm">
             <h3 className="font-semibold mb-2">Neste steg</h3>
