@@ -32,14 +32,15 @@ type Tabell = {
 };
 
 // Reusable raw data — different rows used across steps.
-const ORDRE_RAW = [
+// Eksportert slik at NormaliseringDrill kan bruke samme eksempel.
+export const ORDRE_RAW: (string | number)[][] = [
   [1001, 50, 2, 42, "Anne Holm", "9011", "Tromsø", "Te", 49, "22 11 33, 99 88 77"],
   [1001, 51, 1, 42, "Anne Holm", "9011", "Tromsø", "Kaffe", 89, "22 11 33, 99 88 77"],
   [1002, 50, 3, 43, "Bjørn Ås", "9020", "Tromsø", "Te", 49, "76 12 88"],
   [1003, 52, 1, 42, "Anne Holm", "9011", "Tromsø", "Sukker", 19, "22 11 33, 99 88 77"],
 ];
 
-const RAW_COLS = [
+export const RAW_COLS = [
   "ordreNr",
   "prodNr",
   "antall",
@@ -53,20 +54,22 @@ const RAW_COLS = [
 ];
 
 // After 1NF: telefonNumre removed; Telefon-table added
-const STEP_1_COLS = RAW_COLS.filter((c) => c !== "telefonNumre");
-const STEP_1_ROWS = ORDRE_RAW.map((r) => r.slice(0, -1) as (string | number)[]);
+export const STEP_1_COLS = RAW_COLS.filter((c) => c !== "telefonNumre");
+export const STEP_1_ROWS = ORDRE_RAW.map((r) => r.slice(0, -1) as (string | number)[]);
 
-const TELEFON_ROWS: (string | number)[][] = [
+export const TELEFON_ROWS: (string | number)[][] = [
   [42, "22 11 33"],
   [42, "99 88 77"],
   [43, "76 12 88"],
 ];
 
 // After 2NF: prodNavn, prodPris removed; Produkt-table added
-const STEP_2_COLS = STEP_1_COLS.filter((c) => c !== "prodNavn" && c !== "prodPris");
-const STEP_2_ROWS = STEP_1_ROWS.map((r) => r.filter((_, i) => i !== 7 && i !== 8) as (string | number)[]);
+export const STEP_2_COLS = STEP_1_COLS.filter((c) => c !== "prodNavn" && c !== "prodPris");
+export const STEP_2_ROWS = STEP_1_ROWS.map(
+  (r) => r.filter((_, i) => i !== 7 && i !== 8) as (string | number)[],
+);
 
-const PRODUKT_ROWS: (string | number)[][] = [
+export const PRODUKT_ROWS: (string | number)[][] = [
   [50, "Te", 49],
   [51, "Kaffe", 89],
   [52, "Sukker", 19],
@@ -74,26 +77,26 @@ const PRODUKT_ROWS: (string | number)[][] = [
 
 // After 3NF: kundeNavn, postNr, poststed removed from OrdreLinje;
 // Split into Ordre, Kunde, Poststed
-const STEP_3_ORDRELINJE_COLS = ["ordreNr", "prodNr", "antall"];
-const STEP_3_ORDRELINJE_ROWS: (string | number)[][] = [
+export const STEP_3_ORDRELINJE_COLS = ["ordreNr", "prodNr", "antall"];
+export const STEP_3_ORDRELINJE_ROWS: (string | number)[][] = [
   [1001, 50, 2],
   [1001, 51, 1],
   [1002, 50, 3],
   [1003, 52, 1],
 ];
 
-const STEP_3_ORDRE_ROWS: (string | number)[][] = [
+export const STEP_3_ORDRE_ROWS: (string | number)[][] = [
   [1001, 42],
   [1002, 43],
   [1003, 42],
 ];
 
-const STEP_3_KUNDE_ROWS: (string | number)[][] = [
+export const STEP_3_KUNDE_ROWS: (string | number)[][] = [
   [42, "Anne Holm", "9011"],
   [43, "Bjørn Ås", "9020"],
 ];
 
-const STEP_3_POSTSTED_ROWS: (string | number)[][] = [
+export const STEP_3_POSTSTED_ROWS: (string | number)[][] = [
   ["9011", "Tromsø"],
   ["9020", "Tromsø"],
 ];
@@ -110,8 +113,7 @@ const STEGN: Step[] = [
         kolonner: RAW_COLS,
         rader: ORDRE_RAW,
         fjernes: ["telefonNumre"],
-        note:
-          "Marker: telefonNumre er en liste — bryter 1NF. Skal flyttes ut i steg 1.",
+        note: "Marker: telefonNumre er en liste — bryter 1NF. Skal flyttes ut i steg 1.",
       },
     ],
   },
@@ -121,8 +123,7 @@ const STEGN: Step[] = [
       "1NF krever atomiske verdier — én verdi per celle, ingen lister. Vi flytter telefonene ut til en egen tabell. Hver telefon blir én rad.",
     brudd: {
       regel: "1NF — atomiske verdier",
-      forklaring:
-        "telefonNumre = '22 11 33, 99 88 77' er en liste. Det er ikke atomisk.",
+      forklaring: "telefonNumre = '22 11 33, 99 88 77' er en liste. Det er ikke atomisk.",
     },
     fiks: "Flytt ut til ny tabell Telefon(kundeNr, nummer). PK = (kundeNr, nummer). FK kundeNr → Kunde.",
     tabeller: [
@@ -133,8 +134,7 @@ const STEGN: Step[] = [
         rader: STEP_1_ROWS,
         // Now the partial dependency becomes the next problem
         fjernes: ["prodNavn", "prodPris"],
-        note:
-          "Nytt problem: prodNavn og prodPris avhenger bare av prodNr — del av PK. Bryter 2NF. Skal ut i steg 2.",
+        note: "Nytt problem: prodNavn og prodPris avhenger bare av prodNr — del av PK. Bryter 2NF. Skal ut i steg 2.",
       },
       {
         navn: "Telefon (NY)",
@@ -166,8 +166,7 @@ const STEGN: Step[] = [
         rader: STEP_2_ROWS,
         // Now the transitive becomes visible
         fjernes: ["kundeNavn", "postNr", "poststed"],
-        note:
-          "Nytt problem: kundeNavn, postNr, poststed avhenger av kundeNr — ikke direkte av PK. Transitivt. Bryter 3NF.",
+        note: "Nytt problem: kundeNavn, postNr, poststed avhenger av kundeNr — ikke direkte av PK. Transitivt. Bryter 3NF.",
       },
       {
         navn: "Produkt (NY)",
@@ -195,8 +194,7 @@ const STEGN: Step[] = [
       forklaring:
         "ordreNr → kundeNr → kundeNavn er en kjede. kundeNr → postNr → poststed er en til. Ikke-PK-felter må ikke avhenge av andre ikke-PK-felter.",
     },
-    fiks:
-      "Split ut til Ordre(ordreNr, kundeNr), Kunde(kundeNr, kundeNavn, postNr) og Poststed(postNr, poststed).",
+    fiks: "Split ut til Ordre(ordreNr, kundeNr), Kunde(kundeNr, kundeNavn, postNr) og Poststed(postNr, poststed).",
     tabeller: [
       {
         navn: "OrdreLinje (kun det som faktisk hører til linja)",
@@ -257,9 +255,9 @@ export function NormaliseringSteps() {
     <section id="visuelt" className="mb-10">
       <h2 className="text-xl font-semibold mb-3">Visuelt: hvordan tabellen forandres</h2>
       <p className="text-sm text-muted-foreground mb-4">
-        Samme eksempel som over, men nå kan du klikke deg gjennom hvert normaliseringssteg
-        og se hvordan tabellene faktisk endres. Rød markering = «skal ut i neste steg», grønn
-        ramme = «ny tabell i dette steget».
+        Samme eksempel som over, men nå kan du klikke deg gjennom hvert normaliseringssteg og se
+        hvordan tabellene faktisk endres. Rød markering = «skal ut i neste steg», grønn ramme = «ny
+        tabell i dette steget».
       </p>
 
       {/* Stepper UI */}
@@ -415,9 +413,7 @@ function TabellView({ t }: { t: Tabell }) {
         </table>
       </div>
 
-      {t.note && (
-        <p className="mt-2 text-xs text-muted-foreground italic">{t.note}</p>
-      )}
+      {t.note && <p className="mt-2 text-xs text-muted-foreground italic">{t.note}</p>}
     </div>
   );
 }
