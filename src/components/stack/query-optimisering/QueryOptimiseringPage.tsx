@@ -2,12 +2,14 @@ import { Link } from "@tanstack/react-router";
 import { ArrowRight, Lightbulb, AlertTriangle, GitMerge, Layers } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
+import { QueryPlanVisualizer } from "@/components/stack/query-optimisering/QueryPlanVisualizer";
 
 // Course page for query optimization: parser/optimizer/executor, EXPLAIN,
 // join algorithms, stats, common anti-patterns, partitioning + materialized views.
 // Drag-øvelser under emnet "Query-optimisering".
 
 const STEPS = [
+  { title: "Plan-visualisator (interaktiv)", anchor: "plan-vis" },
   { title: "Tre faser: parse → optimize → execute", anchor: "faser" },
   { title: "Lese EXPLAIN-output", anchor: "explain" },
   { title: "Seq scan vs index scan", anchor: "scan-typer" },
@@ -157,6 +159,18 @@ export function QueryOptimiseringPage() {
         </div>
 
         <CourseOutline courseId="query-optimisering" steps={STEPS} />
+
+        {/* Plan-visualisator (interaktiv) */}
+        <section id="plan-vis" className="mb-10">
+          <h2 className="text-xl font-semibold mb-3">Plan-visualisator</h2>
+          <p className="text-sm text-muted-foreground mb-4">
+            Velg modus og scenario. Trykk «Spill av» for å se executor-en gå
+            nedenfra og opp i plan-treet — radene strømmer fra løvnodene
+            (scans) opp mot rota. Hver operator-boks viser estimert kost,
+            estimat-rader og faktiske rader.
+          </p>
+          <QueryPlanVisualizer />
+        </section>
 
         {/* Faser */}
         <section id="faser" className="mb-10">
