@@ -2,8 +2,10 @@ import { Link } from "@tanstack/react-router";
 import { ArrowRight, Lightbulb } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
+import { BitsDypVisualizer } from "./BitsDypVisualizer";
 
 const STEPS = [
+  { title: "Bit-manipulasjon — interaktiv", anchor: "bit-vis" },
   { title: "Bits, bytes og hex", anchor: "bits-bytes" },
   { title: "Endianness — big vs little", anchor: "endian" },
   { title: "Unsigned heltall", anchor: "unsigned" },
@@ -41,6 +43,19 @@ export function Trinn7BytesDypPage() {
         </div>
 
         <CourseOutline courseId="trinn-7-bytes-dyp" steps={STEPS} />
+
+        <section id="bit-vis" className="mb-10">
+          <h2 className="text-xl font-semibold mb-3">
+            Bit-manipulasjon — prøv selv
+          </h2>
+          <p className="text-sm text-muted-foreground mb-4">
+            Bytene er bare bits. Operatorene under er hvordan vi faktisk
+            jobber med dem — i C, Python, Java, SQL, alt. Klikk på bits,
+            dra på slidere, og se hvordan AND/OR/XOR, skift, to-er-komplement
+            og bitmasker oppfører seg.
+          </p>
+          <BitsDypVisualizer />
+        </section>
 
         <section id="bits-bytes" className="mb-10">
           <h2 className="text-xl font-semibold mb-3">1. Bits, bytes og hex</h2>
