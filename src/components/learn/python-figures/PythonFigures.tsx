@@ -2406,3 +2406,142 @@ export const OperatorPrecedence: FC = () => {
   );
 };
 
+/* Kap. 4 — Indentation: hvordan Python bygger blokker */
+export const IndentationBlocks: FC = () => {
+  // Visual representation: each indent level is a "stair step"
+  // Show same code structured by indentation, with vertical "block boundary" lines.
+  const lines: Array<{ indent: number; text: string; tag?: string; highlight?: boolean }> = [
+    { indent: 0, text: "if temp > 0:",                tag: "blokk-start (if)", highlight: true },
+    { indent: 1, text: "print('over null')",          tag: "i blokken" },
+    { indent: 1, text: "if temp > 20:",               tag: "nested blokk-start", highlight: true },
+    { indent: 2, text: "print('varmt')",              tag: "indre blokk" },
+    { indent: 1, text: "print('uansett positiv')",    tag: "fortsatt i if-blokken" },
+    { indent: 0, text: "print('alltid')",             tag: "utenfor if" },
+  ];
+  const rowH = 26;
+  return (
+    <figure className="my-4">
+      <svg viewBox="0 0 360 220" className="w-full max-w-md mx-auto text-foreground">
+        <text x={10} y={16} className="text-[11px] fill-current font-semibold">Hvert innrykk = ny blokk. Slutt på innrykk = slutt på blokk.</text>
+        {/* Indent guide lines */}
+        <line x1={28} y1={28} x2={28} y2={28 + lines.length * rowH} stroke={STROKE} strokeOpacity={0.2} strokeDasharray="2,2" />
+        <line x1={46} y1={62} x2={46} y2={28 + 5 * rowH} stroke={STROKE} strokeOpacity={0.2} strokeDasharray="2,2" />
+        <line x1={64} y1={88} x2={64} y2={28 + 4 * rowH} stroke={STROKE} strokeOpacity={0.2} strokeDasharray="2,2" />
+        {lines.map((line, i) => {
+          const y = 28 + i * rowH;
+          const x = 20 + line.indent * 18;
+          const fill = line.highlight
+            ? "color-mix(in oklch, var(--brand) 18%, transparent)"
+            : "color-mix(in oklch, var(--muted) 18%, transparent)";
+          return (
+            <g key={i}>
+              <rect x={x} y={y} width={140} height={rowH - 4} fill={fill} stroke={STROKE} strokeOpacity={0.4} />
+              <text x={x + 6} y={y + 15} className="text-[11px] fill-current font-mono">{line.text}</text>
+              {line.tag && (
+                <text x={208} y={y + 15} className="text-[9px] fill-current opacity-70">{line.tag}</text>
+              )}
+            </g>
+          );
+        })}
+        <text x={10} y={210} className="text-[9px] fill-current opacity-70">
+          4 mellomrom per nivå er konvensjon. Tab blandet med mellomrom feiler.
+        </text>
+      </svg>
+      <Caption>
+        Python har ingen <code>{`{ }`}</code>. Innrykk er språket — alle linjer med samme innrykk hører til samme blokk.
+      </Caption>
+    </figure>
+  );
+};
+
+/* Kap. 8 — Slicing: hva s[a:b:c] egentlig betyr */
+export const SlicingAnatomy: FC = () => (
+  <figure className="my-4">
+    <svg viewBox="0 0 360 270" className="w-full max-w-md mx-auto text-foreground">
+      <text x={10} y={16} className="text-[11px] fill-current font-mono font-semibold">s = "PYTHON"</text>
+      {/* Top: indices */}
+      {[0, 1, 2, 3, 4, 5].map((i) => (
+        <g key={`pos-${i}`}>
+          <text x={32 + i * 42} y={32} textAnchor="middle" className="text-[9px] fill-current opacity-70">{i}</text>
+          <text x={32 + i * 42} y={44} textAnchor="middle" className="text-[8px] fill-current opacity-50">{i - 6}</text>
+        </g>
+      ))}
+      {/* Boxes */}
+      {["P", "Y", "T", "H", "O", "N"].map((c, i) => (
+        <g key={`c-${i}`}>
+          <rect x={14 + i * 42} y={50} width={36} height={32} fill="color-mix(in oklch, var(--success) 14%, transparent)" stroke={STROKE} />
+          <text x={32 + i * 42} y={71} textAnchor="middle" className="text-[14px] fill-current font-mono">{c}</text>
+        </g>
+      ))}
+      {/* Edge labels (slice boundaries) */}
+      {[0, 1, 2, 3, 4, 5, 6].map((i) => (
+        <text key={`e-${i}`} x={14 + i * 42} y={94} textAnchor="middle" className="text-[8px] fill-current opacity-50">|{i}</text>
+      ))}
+      <text x={10} y={108} className="text-[9px] fill-current opacity-70">
+        Skiver kutter på kantene (|0, |1, …), ikke på selve tegnet. Negativ = teller fra slutten.
+      </text>
+      {/* Examples */}
+      <text x={10} y={132} className="text-[11px] fill-current font-semibold">Eksempler</text>
+      {[
+        { call: 's[0:3]',  meaning: 'fra |0 til |3 (eks)',     result: '"PYT"' },
+        { call: 's[2:]',   meaning: 'fra |2 til slutt',         result: '"THON"' },
+        { call: 's[:4]',   meaning: 'fra start til |4',         result: '"PYTH"' },
+        { call: 's[-3:]',  meaning: 'siste 3 tegn',             result: '"HON"' },
+        { call: 's[::2]',  meaning: 'hvert 2. tegn',            result: '"PTO"' },
+        { call: 's[::-1]', meaning: 'baklengs',                 result: '"NOHTYP"' },
+      ].map((row, i) => {
+        const y = 142 + i * 18;
+        return (
+          <g key={row.call}>
+            <text x={14} y={y} className="text-[10px] fill-current font-mono">{row.call}</text>
+            <text x={90} y={y} className="text-[9px] fill-current opacity-70">{row.meaning}</text>
+            <text x={250} y={y} className="text-[10px] fill-current font-mono">→ {row.result}</text>
+          </g>
+        );
+      })}
+      <text x={10} y={262} className="text-[9px] fill-current opacity-70">
+        s[a:b:c] — a er start (inkl.), b er stopp (eksl.), c er steg.
+      </text>
+    </svg>
+    <Caption>
+      Slicing snittet på <em>kantene mellom</em> tegn (|0, |1, …) — derfor er stoppen eksklusiv. Det forklarer også at <code>s[:n]</code> og <code>s[n:]</code> sammen gir hele strengen.
+    </Caption>
+  </figure>
+);
+
+/* Kap. 10 — List comprehension som syntaktisk sukker for for+append */
+export const ComprehensionDesugar: FC = () => (
+  <figure className="my-4">
+    <svg viewBox="0 0 360 270" className="w-full max-w-md mx-auto text-foreground">
+      <text x={10} y={16} className="text-[11px] fill-current font-semibold">List-comprehension ←→ den lange for-løkken</text>
+      {/* Left: comprehension form, anatomized */}
+      <rect x={10} y={28} width={340} height={48} fill="color-mix(in oklch, var(--brand) 14%, transparent)" stroke={STROKE} />
+      <text x={20} y={56} className="text-[13px] fill-current font-mono">[ x*x  for x in xs  if x &gt; 0 ]</text>
+      <path d={`M 45 60 L 45 72`} fill="none" stroke={STROKE} />
+      <text x={20} y={82} className="text-[8px] fill-current opacity-70">uttrykk</text>
+      <path d={`M 120 60 L 120 72`} fill="none" stroke={STROKE} />
+      <text x={92} y={82} className="text-[8px] fill-current opacity-70">løkke-variabel</text>
+      <path d={`M 215 60 L 215 72`} fill="none" stroke={STROKE} />
+      <text x={194} y={82} className="text-[8px] fill-current opacity-70">filter (valgfritt)</text>
+      {/* Middle: arrow */}
+      <text x={180} y={108} textAnchor="middle" className="text-[10px] fill-current opacity-80">≡ er nøyaktig det samme som</text>
+      {/* Right: desugared for-loop */}
+      <rect x={10} y={120} width={340} height={108} fill="color-mix(in oklch, var(--success) 14%, transparent)" stroke={STROKE} />
+      <text x={20} y={138} className="text-[11px] fill-current font-mono">result = []</text>
+      <text x={20} y={156} className="text-[11px] fill-current font-mono">for x in xs:</text>
+      <text x={36} y={174} className="text-[11px] fill-current font-mono">if x &gt; 0:</text>
+      <text x={52} y={192} className="text-[11px] fill-current font-mono">result.append(x*x)</text>
+      <text x={20} y={216} className="text-[10px] fill-current opacity-70">(implisitt returverdi)</text>
+      {/* Annotation: order of parts */}
+      <text x={10} y={246} className="text-[9px] fill-current opacity-80">
+        Rekkefølge: les comp-en fra venstre høyre → for → if → expr.
+      </text>
+      <text x={10} y={260} className="text-[9px] fill-current opacity-80">
+        Tenk: "samle x*x for hver x i xs, der x &gt; 0."
+      </text>
+    </svg>
+    <Caption>
+      Comprehensions er ikke magi — bare en kompakt skrivemåte for "lag en liste ved å iterere og samle". Dict- og set-comp følger samme mønster: <code>{`{k: v for ...}`}</code>, <code>{`{x for ...}`}</code>.
+    </Caption>
+  </figure>
+);

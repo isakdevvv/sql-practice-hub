@@ -76,6 +76,13 @@ export const PYTHON_CHAPTERS: PythonChapter[] = [
           og <code>else</code> — og under panseret med boolske verdier (
           <code>True</code> / <code>False</code>).
         </P>
+        <H2>Innrykk er språket</H2>
+        <P>
+          Før vi dykker i <code>if</code>: Python har ingen krøllparanteser.
+          Hvilke linjer som hører til hvilken blokk avgjøres av{" "}
+          <em>innrykk</em>. Bytter du innrykk, bytter du blokk:
+        </P>
+        <F.IndentationBlocks />
         <H2>Den enkleste if</H2>
         <P>
           Et boolsk uttrykk er noe som evaluerer til <code>True</code> eller{" "}
@@ -422,6 +429,14 @@ export const PYTHON_CHAPTERS: PythonChapter[] = [
           <code>start</code> til <em>men ikke med</em> <code>stop</code>. Tenk på
           tallene som streker mellom tegnene, ikke som tegnene selv.
         </P>
+        <H2>Anatomien av s[a:b:c]</H2>
+        <P>
+          Slicing skiller seg fra de fleste språk på to måter: indekser er
+          kant-posisjoner (ikke tegnene selv), og du kan ha et{" "}
+          <em>steg</em>. Det forklarer både hvorfor stoppen er eksklusiv og
+          hvorfor <code>s[::-1]</code> snur en streng:
+        </P>
+        <F.SlicingAnatomy />
         <H2>Vanlige metoder</H2>
         <Code>
           {`"hei".upper()          # "HEI"\n"  pakke  ".strip()   # "pakke"\n"a,b,c".split(",")     # ["a", "b", "c"]\n"-".join(["a","b","c"]) # "a-b-c"\n"hei".replace("h", "H") # "Hei"`}
@@ -540,12 +555,23 @@ export const PYTHON_CHAPTERS: PythonChapter[] = [
         <Code>
           {`a = [1, 2, 3]\nb = a            # ikke kopi! samme objekt\nb.append(99)\nprint(a)         # [1, 2, 3, 99]\n\nc = a.copy()     # nå er det en ækte kopi\nc.append(0)\nprint(a)         # [1, 2, 3, 99] (uendret)`}
         </Code>
+        <H2>List-comprehension — kompakt for-løkke</H2>
+        <P>
+          List-comprehensions ser kryptiske ut første gang, men er bare en
+          kortere måte å skrive <em>"lag en liste ved å iterere og samle"</em>.
+          Diagrammet viser den eksakte oversettelsen mellom de to formene:
+        </P>
+        <F.ComprehensionDesugar />
+        <Code>
+          {`# Comprehension\nkvadrater = [x*x for x in range(5)]\n\n# Eksakt det samme:\nkvadrater = []\nfor x in range(5):\n    kvadrater.append(x*x)\n\n# Med filter:\npositive_kvadrater = [x*x for x in tall if x > 0]`}
+        </Code>
         <KeyPoints
           items={[
             "Lister er muterbare — du kan endre dem på plass.",
             "b = a lager ikke kopi. Bruk a.copy() eller list(a) for det.",
             "Slice (lst[2:5]) lager derimot alltid en ny liste.",
             "len() gir lengden, ikke siste indeks.",
+            "[expr for x in xs if cond] er sukker for en for-løkke med append.",
           ]}
         />
       </>
