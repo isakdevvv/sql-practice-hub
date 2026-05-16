@@ -3,9 +3,11 @@ import { ArrowRight, Lightbulb, AlertTriangle } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
 import { NormaliseringSteps } from "./NormaliseringSteps";
+import { NormalizationVisualizer } from "./NormalizationVisualizer";
 
 const STEPS = [
   { title: "Hvorfor normalisere?", anchor: "hvorfor" },
+  { title: "Verkstedet — klikk gjennom 1NF → BCNF", anchor: "visualizer" },
   { title: "Tre begreper du må kunne", anchor: "begreper" },
   { title: "Utgangspunktet — én rotete tabell", anchor: "utgangspunkt" },
   { title: "1NF — atomiske verdier", anchor: "del-1nf" },
@@ -93,6 +95,9 @@ export function NormaliseringPage() {
             ))}
           </div>
         </section>
+
+        {/* Interaktiv visualisering — øverst slik at studenten ser hva normalisering faktisk gjør før teorien */}
+        <NormalizationVisualizer />
 
         {/* Begreper */}
         <section id="begreper" className="mb-10">
