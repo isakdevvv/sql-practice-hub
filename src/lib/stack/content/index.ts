@@ -186,6 +186,9 @@ import { content as fastapiGrunnlag } from "./fastapi-grunnlag";
 import { content as dte2507Nat } from "./dte2507-nat";
 import { content as dte2602Svm } from "./dte2602-svm";
 import { content as dte2505Spesialbits } from "./dte2505-spesialbits";
+import { content as dte2505Filsystem } from "./dte2505-filsystem";
+import { content as dte2505Virtualisering } from "./dte2505-virtualisering";
+import { content as dte2505Ipc } from "./dte2505-ipc";
 import { content as programmeringsboker } from "./programmeringsboker";
 import { content as youtubeKanaler } from "./youtube-kanaler";
 import { content as moocBibliotek } from "./mooc-bibliotek";
@@ -265,6 +268,8 @@ export const TRINN: TrinnContent[] = [
   dte2602Svm,
   // DTE-2505 — atom F5: setuid/setgid/sticky som dedikert trio
   dte2505Spesialbits,
+  // DTE-2505 — gap-fyllere: filsystem, virtualisering, IPC
+  dte2505Filsystem, dte2505Virtualisering, dte2505Ipc,
   // Bok-bibliotek for hele DTE-bachelor
   programmeringsboker,
   // YouTube-kanal-bibliotek
