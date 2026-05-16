@@ -220,7 +220,7 @@ def fib_memo(n):
             Alt som kan løses rekursivt kan også løses iterativt — og motsatt. Valget
             handler om lesbarhet og strukturen til problemet.
           </p>
-          <div className="overflow-hidden rounded-lg border border-border">
+          <div className="overflow-x-auto rounded-lg border border-border">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>

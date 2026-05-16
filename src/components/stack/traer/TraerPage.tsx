@@ -280,7 +280,7 @@ heapq.heapify([5, 1, 3, 7, 2])`}</pre>
 
         <section id="tradeoffs" className="mb-10">
           <h2 className="text-xl font-semibold mb-3">7. BST vs hash — trade-offs</h2>
-          <div className="overflow-hidden rounded-lg border border-border mb-4">
+          <div className="overflow-x-auto rounded-lg border border-border mb-4">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>

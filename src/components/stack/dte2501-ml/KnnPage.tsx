@@ -136,7 +136,7 @@ predict(x') →  ŷ = w · x'                          For hver xi i X:
             <code className="font-mono">MinMaxScaler</code>.
           </div>
 
-          <div className="mt-4 overflow-hidden rounded-lg border border-border">
+          <div className="mt-4 overflow-x-auto rounded-lg border border-border">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>
@@ -274,7 +274,7 @@ Bruk oddetall k for binær klassifikasjon for å unngå uavgjort.`}</pre>
             </div>
           </div>
 
-          <div className="mt-4 overflow-hidden rounded-lg border border-border">
+          <div className="mt-4 overflow-x-auto rounded-lg border border-border">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>

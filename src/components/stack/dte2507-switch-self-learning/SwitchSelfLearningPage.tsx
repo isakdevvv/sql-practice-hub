@@ -131,7 +131,7 @@ export function SwitchSelfLearningPage() {
 
         <section id="tre-tilfeller" className="mb-10">
           <h2 className="text-xl font-semibold mb-3">4. Tre forwarding-tilfeller</h2>
-          <div className="overflow-hidden rounded-lg border border-border">
+          <div className="overflow-x-auto rounded-lg border border-border">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>
@@ -217,7 +217,7 @@ export function SwitchSelfLearningPage() {
 
         <section id="vs" className="mb-10">
           <h2 className="text-xl font-semibold mb-3">7. Switch vs. hub vs. router</h2>
-          <div className="overflow-hidden rounded-lg border border-border">
+          <div className="overflow-x-auto rounded-lg border border-border">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>
@@ -258,7 +258,7 @@ export function SwitchSelfLearningPage() {
 
         <section id="ref" className="mb-6">
           <h2 className="text-xl font-semibold mb-3">8. Eksamen-quick-ref</h2>
-          <div className="overflow-hidden rounded-lg border border-border">
+          <div className="overflow-x-auto rounded-lg border border-border">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>

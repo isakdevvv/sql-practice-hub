@@ -131,7 +131,7 @@ export function HtmlJinjaPage() {
             ingenting visuelt, men forteller skjermlesere, søkemotorer og andre
             utviklere hva delene betyr.
           </p>
-          <div className="overflow-hidden rounded-lg border border-border mb-4">
+          <div className="overflow-x-auto rounded-lg border border-border mb-4">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>
@@ -285,7 +285,7 @@ nav a { text-decoration: none; }`}</pre>
             <code>{"{{ uttrykk }}"}</code> for verdier,{" "}
             <code>{"{% blokk %}"}</code> for kontrollflyt.
           </p>
-          <div className="overflow-hidden rounded-lg border border-border mb-4">
+          <div className="overflow-x-auto rounded-lg border border-border mb-4">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>
@@ -360,7 +360,7 @@ nav a { text-decoration: none; }`}</pre>
             Etter at CSS-en er koblet på, gir Bootstrap deg ferdige klasser du legger direkte
             på HTML-elementer:
           </p>
-          <div className="overflow-hidden rounded-lg border border-border mb-3">
+          <div className="overflow-x-auto rounded-lg border border-border mb-3">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>

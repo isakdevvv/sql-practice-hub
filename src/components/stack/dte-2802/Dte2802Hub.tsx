@@ -103,7 +103,7 @@ export function Dte2802Hub() {
             dependency injection (DI) overalt. Lær lagene utenat — så blir resten
             «hvilken klasse hooker du inn hvor».
           </p>
-          <div className="overflow-hidden rounded-lg border border-border">
+          <div className="overflow-x-auto rounded-lg border border-border">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>

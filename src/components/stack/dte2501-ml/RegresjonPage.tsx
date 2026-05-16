@@ -107,7 +107,7 @@ Huber loss (mix):
     Glatt nær 0 (som MSE), lineær langt unna (som MAE).`}</pre>
           </div>
 
-          <div className="mt-4 overflow-hidden rounded-lg border border-border">
+          <div className="mt-4 overflow-x-auto rounded-lg border border-border">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>
@@ -237,7 +237,7 @@ Elastic Net = blanding av begge:
     α → ∞   → alle vekter mot 0 (underfit)`}</pre>
           </div>
 
-          <div className="mt-4 overflow-hidden rounded-lg border border-border">
+          <div className="mt-4 overflow-x-auto rounded-lg border border-border">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>
@@ -291,7 +291,7 @@ MAPE (Mean Absolute Percentage Error):
     Tolkbar prosent. Pass på division by zero hvis yᵢ ≈ 0.`}</pre>
           </div>
 
-          <div className="mt-4 overflow-hidden rounded-lg border border-border">
+          <div className="mt-4 overflow-x-auto rounded-lg border border-border">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>

@@ -126,7 +126,7 @@ components:
             500».
           </p>
 
-          <div className="overflow-hidden rounded-lg border border-border">
+          <div className="overflow-x-auto rounded-lg border border-border">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>
@@ -240,7 +240,7 @@ Content-Type: application/problem+json
             klient som ikke vet om POST gikk gjennom, må kunne prøve igjen.
           </p>
 
-          <div className="overflow-hidden rounded-lg border border-border mb-4">
+          <div className="overflow-x-auto rounded-lg border border-border mb-4">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>

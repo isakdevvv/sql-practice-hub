@@ -114,7 +114,7 @@ var hade = function() {};`}</pre>
             JavaScript har 7 primitive typer og «alt annet er object». Primitive
             verdier kopieres når de tilordnes; objekter sender referansen.
           </p>
-          <div className="overflow-hidden rounded-lg border border-border mb-4">
+          <div className="overflow-x-auto rounded-lg border border-border mb-4">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>
@@ -289,7 +289,7 @@ Object.getPrototypeOf(g) === DyrGammel.prototype;   // true`}</pre>
             Promise) putter en jobb i en kø, og event-loopen plukker dem opp
             mellom synkrone blokker. To køer har ulike prioriteter:
           </p>
-          <div className="overflow-hidden rounded-lg border border-border mb-3">
+          <div className="overflow-x-auto rounded-lg border border-border mb-3">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>

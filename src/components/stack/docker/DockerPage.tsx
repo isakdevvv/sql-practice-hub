@@ -79,7 +79,7 @@ export function DockerPage() {
             av et image, med et tynt read-write-lag på toppen.
           </p>
 
-          <div className="overflow-hidden rounded-lg border border-border mb-4">
+          <div className="overflow-x-auto rounded-lg border border-border mb-4">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>
@@ -153,7 +153,7 @@ EXPOSE 8000                        # dokumentasjon (ikke binding)
 CMD ["python", "-m", "src.main"]   # default kommando`}</pre>
           </div>
 
-          <div className="overflow-hidden rounded-lg border border-border mb-4">
+          <div className="overflow-x-auto rounded-lg border border-border mb-4">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>
@@ -366,7 +366,7 @@ docker compose down -v          # ... og navngitte volumer (KAST DATA)`}</pre>
             IP-en.
           </p>
 
-          <div className="overflow-hidden rounded-lg border border-border mb-4">
+          <div className="overflow-x-auto rounded-lg border border-border mb-4">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>
@@ -447,7 +447,7 @@ dist
 # .env eller hemmeligheter inn i imaget ved en COPY . . .`}</pre>
           </div>
 
-          <div className="overflow-hidden rounded-lg border border-border mb-4">
+          <div className="overflow-x-auto rounded-lg border border-border mb-4">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>

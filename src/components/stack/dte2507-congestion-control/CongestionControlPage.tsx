@@ -72,7 +72,7 @@ export function CongestionControlPage() {
 
         <section id="flow-vs-cong" className="mb-10">
           <h2 className="text-xl font-semibold mb-3">2. Flow control vs congestion control</h2>
-          <div className="overflow-hidden rounded-lg border border-border">
+          <div className="overflow-x-auto rounded-lg border border-border">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>
@@ -285,7 +285,7 @@ export function CongestionControlPage() {
 
         <section id="ref" className="mb-6">
           <h2 className="text-xl font-semibold mb-3">10. Eksamen-quick-ref</h2>
-          <div className="overflow-hidden rounded-lg border border-border">
+          <div className="overflow-x-auto rounded-lg border border-border">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>

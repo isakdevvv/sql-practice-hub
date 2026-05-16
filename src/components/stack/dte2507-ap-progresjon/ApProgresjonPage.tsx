@@ -332,7 +332,7 @@ export function ApProgresjonPage() {
 
         <section id="ref" className="mb-6">
           <h2 className="text-xl font-semibold mb-3">8. Oppsummering</h2>
-          <div className="overflow-hidden rounded-lg border border-border">
+          <div className="overflow-x-auto rounded-lg border border-border">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>

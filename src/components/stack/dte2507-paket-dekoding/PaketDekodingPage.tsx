@@ -107,7 +107,7 @@ export function PaketDekodingPage() {
             Eksempel-pakke: <code className="font-mono">45 00 00 3c 1c 46 40 00 40 06 b1 e6 c0 a8 01 64 c0 a8 01 01</code>.
             Hver byte mapper til et felt:
           </p>
-          <div className="overflow-hidden rounded-lg border border-border">
+          <div className="overflow-x-auto rounded-lg border border-border">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>
@@ -204,7 +204,7 @@ export function PaketDekodingPage() {
             Pakken reiser gjennom mange rutere på vei til mål. De fleste feltene er
             UENDRET — men noen MÅ endres på hver hop:
           </p>
-          <div className="overflow-hidden rounded-lg border border-border">
+          <div className="overflow-x-auto rounded-lg border border-border">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>
@@ -233,7 +233,7 @@ export function PaketDekodingPage() {
 
         <section id="flagg" className="mb-6">
           <h2 className="text-xl font-semibold mb-3">7. TCP-flagg cheatsheet</h2>
-          <div className="overflow-hidden rounded-lg border border-border">
+          <div className="overflow-x-auto rounded-lg border border-border">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>

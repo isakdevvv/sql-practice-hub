@@ -183,7 +183,7 @@ class BrukerRepository {
             Tre dominerende biblioteker. Du velger ett — alle gjør samme jobb (JSON ↔
             Kotlin-objekter), men ulik filosofi.
           </p>
-          <div className="overflow-hidden rounded-lg border border-border mb-4">
+          <div className="overflow-x-auto rounded-lg border border-border mb-4">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>
@@ -368,7 +368,7 @@ class HovedActivity : AppCompatActivity() {
     }
 }`}</pre>
           </div>
-          <div className="mt-4 overflow-hidden rounded-lg border border-border">
+          <div className="mt-4 overflow-x-auto rounded-lg border border-border">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>

@@ -72,7 +72,7 @@ export function BrannmurVlanPage() {
 
         <section id="typer" className="mb-10">
           <h2 className="text-xl font-semibold mb-3">2. Stateless vs stateful vs applikasjon</h2>
-          <div className="overflow-hidden rounded-lg border border-border">
+          <div className="overflow-x-auto rounded-lg border border-border">
             <table className="w-full text-sm">
               <thead className="bg-muted/40">
                 <tr>
@@ -200,7 +200,7 @@ bryte FW2 for &aring; komme til LAN. Brukes for high-stakes-milj&oslash;er.`}</p
             Klassisk eksamens-oppgave: «Sett opp ACL-regler for en webserver som
             har en MySQL-database bak seg». L&oslash;sning:
           </p>
-          <div className="overflow-hidden rounded-lg border border-border text-sm">
+          <div className="overflow-x-auto rounded-lg border border-border text-sm">
             <table className="w-full">
               <thead className="bg-muted/40">
                 <tr>

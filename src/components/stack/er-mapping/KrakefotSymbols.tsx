@@ -36,7 +36,7 @@ export function KrakefotSymbols() {
         <strong className="text-foreground">indre symbol = minimum</strong>,{" "}
         <strong className="text-foreground">ytre symbol = maksimum</strong>.
       </p>
-      <div className="overflow-hidden rounded-lg border border-border">
+      <div className="overflow-x-auto rounded-lg border border-border">
         <table className="w-full text-sm">
           <thead className="bg-muted/50">
             <tr>

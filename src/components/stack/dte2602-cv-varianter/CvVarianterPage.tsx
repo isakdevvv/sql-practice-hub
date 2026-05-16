@@ -202,7 +202,7 @@ for tr, te in cv.split(X):
         </Section>
 
         <Section number="8" title="Bias-varians-tradeoff i CV-estimatet">
-          <div className="overflow-hidden rounded-lg border border-border">
+          <div className="overflow-x-auto rounded-lg border border-border">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>

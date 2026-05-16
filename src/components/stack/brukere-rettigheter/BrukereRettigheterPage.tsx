@@ -171,7 +171,7 @@ deploy      ALL=(www-data) /usr/bin/systemctl restart nginx`}</pre>
             </Link>{" "}
             for chmod-detaljer. Her: spesielle bits og typiske oppsett.
           </p>
-          <div className="overflow-hidden rounded-lg border border-border">
+          <div className="overflow-x-auto rounded-lg border border-border">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>

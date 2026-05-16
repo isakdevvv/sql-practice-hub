@@ -266,7 +266,7 @@ Execution Time: 2.401 ms`}</pre>
             er index scan raskere. Når 50%+ av tabellen matcher, kan seq scan
             faktisk være raskere — færre random IO-er.
           </p>
-          <div className="overflow-hidden rounded-lg border border-border">
+          <div className="overflow-x-auto rounded-lg border border-border">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>

@@ -270,7 +270,7 @@ export function Tek1FordelingerPage() {
           <p className="text-sm text-muted-foreground mb-4">
             Det viktigste verktøyet på eksamen.
           </p>
-          <div className="overflow-hidden rounded-lg border border-border">
+          <div className="overflow-x-auto rounded-lg border border-border">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>

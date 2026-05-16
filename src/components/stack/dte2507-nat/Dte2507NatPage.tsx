@@ -119,7 +119,7 @@ export function Dte2507NatPage() {
             uten å spørre noen — fordi de ikke kolliderer med noen annens
             offentlige bruk.
           </p>
-          <div className="overflow-hidden rounded-lg border border-border">
+          <div className="overflow-x-auto rounded-lg border border-border">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>
@@ -283,7 +283,7 @@ export function Dte2507NatPage() {
         {/* 7. Quick ref */}
         <section id="ref" className="mb-6">
           <h2 className="text-xl font-semibold mb-3">7. Eksamen-quick-ref</h2>
-          <div className="overflow-hidden rounded-lg border border-border">
+          <div className="overflow-x-auto rounded-lg border border-border">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>

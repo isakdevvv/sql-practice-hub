@@ -116,7 +116,7 @@ if (pid == 0) {
             Du har én CPU (eller noen få kjerner), men hundrevis av prosesser. Scheduleren
             bestemmer hvilken prosess som kjører nå.
           </p>
-          <div className="overflow-hidden rounded-lg border border-border">
+          <div className="overflow-x-auto rounded-lg border border-border">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>
@@ -183,7 +183,7 @@ if (pid == 0) {
             En syscall er en kontrollert overgang fra userspace til kernel mode. Det er
             den eneste måten et program kan be om I/O, minne eller prosess-operasjoner.
           </p>
-          <div className="overflow-hidden rounded-lg border border-border">
+          <div className="overflow-x-auto rounded-lg border border-border">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>

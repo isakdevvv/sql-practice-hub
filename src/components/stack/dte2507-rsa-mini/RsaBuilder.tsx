@@ -231,7 +231,7 @@ export function RsaBuilder() {
             </p>
           )}
           {ciphers && (
-            <div className="overflow-hidden rounded-lg border border-border">
+            <div className="overflow-x-auto rounded-lg border border-border">
               <table className="w-full text-xs font-mono">
                 <thead className="bg-muted/50">
                   <tr>

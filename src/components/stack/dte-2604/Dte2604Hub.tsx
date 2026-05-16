@@ -94,7 +94,7 @@ export function Dte2604Hub() {
             Hvis du må forklare smidig på muntlig eksamen og bare har én side,
             bruk denne. Detaljene står i mini-kursene.
           </p>
-          <div className="overflow-hidden rounded-lg border border-border">
+          <div className="overflow-x-auto rounded-lg border border-border">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>

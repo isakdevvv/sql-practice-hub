@@ -188,7 +188,7 @@ export function Dte2505Hub() {
             Et moderne operativsystem består av disse hovedfunksjonene. Lær lagdelingen,
             så blir resten av kurset enklere å plassere.
           </p>
-          <div className="overflow-hidden rounded-lg border border-border">
+          <div className="overflow-x-auto rounded-lg border border-border">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>

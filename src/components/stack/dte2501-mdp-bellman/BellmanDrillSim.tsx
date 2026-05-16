@@ -299,7 +299,7 @@ export function BellmanDrillSim() {
             </button>
           </div>
 
-          <div className="overflow-hidden rounded-lg border border-border mb-3">
+          <div className="overflow-x-auto rounded-lg border border-border mb-3">
             <table className="w-full text-xs">
               <thead className="bg-muted/50">
                 <tr>
@@ -370,7 +370,7 @@ export function BellmanDrillSim() {
             </button>
           </div>
 
-          <div className="overflow-hidden rounded-lg border border-border mb-3">
+          <div className="overflow-x-auto rounded-lg border border-border mb-3">
             <table className="w-full text-xs">
               <thead className="bg-muted/50">
                 <tr>

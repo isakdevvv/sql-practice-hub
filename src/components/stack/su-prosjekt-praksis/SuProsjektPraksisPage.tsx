@@ -47,7 +47,7 @@ export function SuProsjektPraksisPage() {
             Du skal kunne forklare disse begrepene på muntlig eksamen og bruke
             dem riktig i gruppeprosjektet.
           </p>
-          <div className="overflow-hidden rounded-lg border border-border">
+          <div className="overflow-x-auto rounded-lg border border-border">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>

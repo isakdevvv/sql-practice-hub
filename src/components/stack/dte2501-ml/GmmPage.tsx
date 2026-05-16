@@ -127,7 +127,7 @@ GMM er generativ + unsupervised:
           <div className="mt-4">
             <GmmVisualizer />
           </div>
-          <div className="mt-4 overflow-hidden rounded-lg border border-border">
+          <div className="mt-4 overflow-x-auto rounded-lg border border-border">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>
@@ -179,7 +179,7 @@ GMM med Σ_j = σ²·I (diagonal og lik) blir nesten k-Means.
 GMM med full Σ_j fanger korrelerte features og ellipse-former.`}</pre>
           </div>
 
-          <div className="mt-4 overflow-hidden rounded-lg border border-border">
+          <div className="mt-4 overflow-x-auto rounded-lg border border-border">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>
@@ -223,7 +223,7 @@ GMM med full Σ_j fanger korrelerte features og ellipse-former.`}</pre>
             </table>
           </div>
 
-          <div className="mt-4 overflow-hidden rounded-lg border border-border">
+          <div className="mt-4 overflow-x-auto rounded-lg border border-border">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>

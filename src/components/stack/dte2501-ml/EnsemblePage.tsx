@@ -123,7 +123,7 @@ Default i sklearn: B=100 trær, k=√d features.
 Lite tuning trengs — RF er «default arbeidshesten» i industri.`}</pre>
           </div>
 
-          <div className="mt-4 overflow-hidden rounded-lg border border-border">
+          <div className="mt-4 overflow-x-auto rounded-lg border border-border">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>
@@ -244,7 +244,7 @@ Hyperparametere du må kjenne:
    subsample:             stochastic GB → 0.5–1.0`}</pre>
           </div>
 
-          <div className="mt-4 overflow-hidden rounded-lg border border-border">
+          <div className="mt-4 overflow-x-auto rounded-lg border border-border">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>
@@ -299,7 +299,7 @@ Hyperparametere du må kjenne:
 
         <section id="compare" className="mb-10">
           <h2 className="text-xl font-semibold mb-3">8. Bagging vs boosting — oppsummering</h2>
-          <div className="overflow-hidden rounded-lg border border-border">
+          <div className="overflow-x-auto rounded-lg border border-border">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>

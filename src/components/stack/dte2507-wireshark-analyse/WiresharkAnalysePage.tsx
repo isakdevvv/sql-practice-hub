@@ -176,7 +176,7 @@ Lag 2 (link)              Lag 3 (network)  Lag 4 (transport) Lag 7 (application)
             for a skjule rader i en allerede capturet sesjon). Eksamen tester
             sistnevnte — den ser slik ut:
           </p>
-          <div className="overflow-hidden rounded-lg border border-border">
+          <div className="overflow-x-auto rounded-lg border border-border">
             <table className="w-full text-sm">
               <thead className="bg-muted/40">
                 <tr>

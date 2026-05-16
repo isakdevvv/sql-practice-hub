@@ -639,7 +639,7 @@ export function TcpStateMachine() {
           uavhengig. Det betyr at det finnes flere mellom-tilstander der den
           ene siden har sendt FIN men den andre fortsatt sender data.
         </p>
-        <div className="overflow-hidden rounded-lg border border-border">
+        <div className="overflow-x-auto rounded-lg border border-border">
           <table className="w-full text-xs">
             <thead className="bg-muted/50">
               <tr>

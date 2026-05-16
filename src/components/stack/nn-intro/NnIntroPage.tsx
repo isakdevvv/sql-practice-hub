@@ -87,7 +87,7 @@ Det krever flere lag.`}</pre>
             mange lag. Aktiveringen er det som gir nettet evnen til å lære ikke-lineære
             mønstre.
           </p>
-          <div className="overflow-hidden rounded-lg border border-border">
+          <div className="overflow-x-auto rounded-lg border border-border">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>
@@ -229,7 +229,7 @@ Hyperparametere:
 
         <section id="hyper" className="mb-10">
           <h2 className="text-xl font-semibold mb-3">8. Hyperparametere du må kjenne</h2>
-          <div className="overflow-hidden rounded-lg border border-border">
+          <div className="overflow-x-auto rounded-lg border border-border">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>

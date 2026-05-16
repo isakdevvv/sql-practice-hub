@@ -113,7 +113,7 @@ export function Dte2502Hub() {
             Hvilken arkitektur passer hvilken type input? Bruk dette som første sortering
             før du leser detaljene.
           </p>
-          <div className="overflow-hidden rounded-lg border border-border">
+          <div className="overflow-x-auto rounded-lg border border-border">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>

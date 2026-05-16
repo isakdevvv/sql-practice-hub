@@ -110,7 +110,7 @@ Velg memoization når tilstandsrommet er sparsomt brukt.
 Velg tabulation når du må ha hele tabellen, eller minne er kritisk.`}</pre>
           </div>
 
-          <div className="mt-4 overflow-hidden rounded-lg border border-border">
+          <div className="mt-4 overflow-x-auto rounded-lg border border-border">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>
@@ -273,7 +273,7 @@ og kombinerer fint med eksamen-pensum: DP, ACO og GA fra
 metaheuristikk-trinnet, og brute-force som baseline.`}</pre>
           </div>
 
-          <div className="mt-4 overflow-hidden rounded-lg border border-border">
+          <div className="mt-4 overflow-x-auto rounded-lg border border-border">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>
@@ -357,7 +357,7 @@ Dette er hvorfor RL og DP er to sider av samme sak. Forskjellen:
    - RL:           lærer V eller Q ved sampling fra ukjent miljø`}</pre>
           </div>
 
-          <div className="mt-4 overflow-hidden rounded-lg border border-border">
+          <div className="mt-4 overflow-x-auto rounded-lg border border-border">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>

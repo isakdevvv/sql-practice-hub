@@ -227,7 +227,7 @@ while lo < hi:
             Big-O er <em>verste tilfelle</em> by default. Men noen algoritmer har vidt
             forskjellig beste og verste — det er viktig å vite begge.
           </p>
-          <div className="overflow-hidden rounded-lg border border-border">
+          <div className="overflow-x-auto rounded-lg border border-border">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>

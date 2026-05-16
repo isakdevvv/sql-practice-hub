@@ -106,7 +106,7 @@ Med DP — hver fib(k) regnes EN gang -> O(n)`}</pre>
             To måter å implementere DP på — top-down (memo) eller bottom-up
             (tab). Begge gir samme kompleksitet, men de har ulike fordeler.
           </p>
-          <div className="overflow-hidden rounded-lg border border-border mb-4">
+          <div className="overflow-x-auto rounded-lg border border-border mb-4">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>

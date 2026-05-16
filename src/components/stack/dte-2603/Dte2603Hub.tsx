@@ -122,7 +122,7 @@ export function Dte2603Hub() {
             En moderne Android-app er delt i klare lag. Lær lagdelingen først — så blir
             hvert mini-kurs lettere å plassere.
           </p>
-          <div className="overflow-hidden rounded-lg border border-border">
+          <div className="overflow-x-auto rounded-lg border border-border">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>

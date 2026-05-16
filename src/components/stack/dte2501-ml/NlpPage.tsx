@@ -89,7 +89,7 @@ NORMALISERING — lowercase, fjern punktum, fjern emojis...
 Pipeline: raw text → lowercase → split → fjern stoppord → stem/lem`}</pre>
           </div>
 
-          <div className="mt-4 overflow-hidden rounded-lg border border-border">
+          <div className="mt-4 overflow-x-auto rounded-lg border border-border">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>
@@ -252,7 +252,7 @@ Begrensning: hver ord har EN vektor — kan ikke skille polysemi
 ("bank" = pengeinstitusjon vs elvebredd). Løses av transformers/BERT.`}</pre>
           </div>
 
-          <div className="mt-4 overflow-hidden rounded-lg border border-border">
+          <div className="mt-4 overflow-x-auto rounded-lg border border-border">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>

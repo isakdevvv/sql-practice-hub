@@ -93,7 +93,7 @@ python -c 'import os
 print(os.environ["navn"])'  # Per`}</pre>
             </div>
           </div>
-          <div className="overflow-hidden rounded-lg border border-border mt-4">
+          <div className="overflow-x-auto rounded-lg border border-border mt-4">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>
@@ -187,7 +187,7 @@ until ping -c1 host; do
 done`}</pre>
             </div>
           </div>
-          <div className="mt-4 overflow-hidden rounded-lg border border-border">
+          <div className="mt-4 overflow-x-auto rounded-lg border border-border">
             <table className="w-full text-xs">
               <thead className="bg-muted/50">
                 <tr>
@@ -272,7 +272,7 @@ linjer=$(cat /etc/passwd | wc -l)`}</pre>
 
         <section id="gotchas" className="mb-10">
           <h2 className="text-xl font-semibold mb-3">7. Common gotchas — feller du falt i</h2>
-          <div className="overflow-hidden rounded-lg border border-border">
+          <div className="overflow-x-auto rounded-lg border border-border">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>

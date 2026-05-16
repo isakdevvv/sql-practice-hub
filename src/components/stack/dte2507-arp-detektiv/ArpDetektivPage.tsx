@@ -200,7 +200,7 @@ export function ArpDetektivPage() {
             Dette er kjernen i Kurose fig. 6.19. Når Host A på Subnet 1 sender til Host C
             på Subnet 2, ser pakkens hoder slik ut på de to linkene:
           </p>
-          <div className="overflow-hidden rounded-lg border border-border">
+          <div className="overflow-x-auto rounded-lg border border-border">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>
@@ -258,7 +258,7 @@ export function ArpDetektivPage() {
 
         <section id="ref" className="mb-6">
           <h2 className="text-xl font-semibold mb-3">8. Eksamen-quick-ref</h2>
-          <div className="overflow-hidden rounded-lg border border-border">
+          <div className="overflow-x-auto rounded-lg border border-border">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>

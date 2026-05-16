@@ -117,7 +117,7 @@ def opprett(kunde: KundeInn):
 
         <section id="async" className="mb-10">
           <h2 className="text-xl font-semibold mb-3">4. Async / await</h2>
-          <div className="overflow-hidden rounded-lg border border-border mb-3">
+          <div className="overflow-x-auto rounded-lg border border-border mb-3">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>
@@ -215,7 +215,7 @@ def liste(db = Depends(get_db)):
 
         <section id="vs" className="mb-10">
           <h2 className="text-xl font-semibold mb-3">7. Flask vs FastAPI cheat-sheet</h2>
-          <div className="overflow-hidden rounded-lg border border-border">
+          <div className="overflow-x-auto rounded-lg border border-border">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>

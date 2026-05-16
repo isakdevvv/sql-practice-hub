@@ -272,7 +272,7 @@ export function AesGcmDemo() {
 
       <div className="rounded-lg border border-brand/30 bg-brand/5 p-4 text-sm">
         <h4 className="font-semibold text-brand mb-2">GCM vs CBC — hvorfor velge GCM?</h4>
-        <div className="overflow-hidden rounded-lg border border-border mt-2">
+        <div className="overflow-x-auto rounded-lg border border-border mt-2">
           <table className="w-full text-xs">
             <thead className="bg-muted/50">
               <tr>

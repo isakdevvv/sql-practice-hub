@@ -260,7 +260,7 @@ export function Dte2507Hub() {
             Hver request går ned-gjennom hos sender, opp-gjennom hos mottaker. Lær deg
             «hvilken protokoll bor på hvilket lag» utenat.
           </p>
-          <div className="overflow-hidden rounded-lg border border-border">
+          <div className="overflow-x-auto rounded-lg border border-border">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>

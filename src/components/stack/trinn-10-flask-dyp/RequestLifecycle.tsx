@@ -318,7 +318,7 @@ export function RequestLifecycle() {
 
       {/* Kode-panel + state side om side */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-        <div className="rounded-lg border border-border bg-background/60 overflow-hidden">
+        <div className="rounded-lg border border-border bg-background/60 overflow-x-auto">
           <div className="px-3 py-1.5 text-[11px] font-semibold tracking-wider text-muted-foreground border-b border-border bg-muted/30">
             KODE PÅ DETTE LAGET
           </div>
