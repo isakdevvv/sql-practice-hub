@@ -17,6 +17,7 @@ import { RelationGrid } from "./figures/RelationGrid";
 import { HasseDiagram } from "./figures/HasseDiagram";
 import { GraphSandbox } from "./figures/GraphSandbox";
 import { ModClock } from "./figures/ModClock";
+import { SectionQuiz } from "./figures/SectionQuiz";
 
 const STEPS = [
   { title: "Mattens ABC — mengder, ∈ ⊆ ∀ ∃, tallmengder", anchor: "abc" },
@@ -111,6 +112,41 @@ export function DiskretMattePage() {
             du har slitt med diskret matte før, er det 80% sjanse for at dette var
             grunnen — ikke matematikken, men notasjonen.
           </FallBox>
+
+          <SectionQuiz
+            courseId="diskret-matte"
+            sectionId="abc"
+            nextSection={{ title: "Propositional logic", anchor: "logikk" }}
+            questions={[
+              {
+                prompt: "La A = {2, 4, 6, 8}. Hvilket utsagn er sant?",
+                options: [
+                  { text: "3 ∈ A", correct: false, rationale: "3 er IKKE i A — A inneholder bare partall (2, 4, 6, 8)." },
+                  { text: "4 ∈ A", correct: true, rationale: "4 er ett av elementene i A." },
+                  { text: "{4} ∈ A", correct: false, rationale: "{4} er en MENGDE som inneholder 4 — ikke selve tallet. Vi har 4 ∈ A, men {4} ⊆ A." },
+                  { text: "A ∈ A", correct: false, rationale: "A er ikke et element i seg selv — det ville krevd at A inneholdt seg selv som element." },
+                ],
+              },
+              {
+                prompt: "Hvilket tall hører til en STØRRE familie enn ℚ?",
+                options: [
+                  { text: "1/3", correct: false, rationale: "1/3 er rasjonalt — i ℚ, men ikke større enn ℚ." },
+                  { text: "−7", correct: false, rationale: "−7 ∈ ℤ ⊂ ℚ — i ℚ." },
+                  { text: "π", correct: true, rationale: "π er irrasjonalt — i ℝ men ikke i ℚ. ℝ er strengt større enn ℚ." },
+                  { text: "0", correct: false, rationale: "0 er heltall — i ℕ ⊂ ℤ ⊂ ℚ." },
+                ],
+              },
+              {
+                prompt: "På domene {1, 2, 3, 4, 5}, hvilket utsagn er SANT?",
+                options: [
+                  { text: "∀x : x > 0", correct: true, rationale: "Alle elementene 1..5 er positive — ∀ holder." },
+                  { text: "∀x : x er primtall", correct: false, rationale: "1 og 4 er IKKE primtall — motbevis nok til å gjøre ∀ usann." },
+                  { text: "∃x : x > 10", correct: false, rationale: "Maks er 5 — ingen vitne finnes for ∃." },
+                  { text: "∀x : x < 0", correct: false, rationale: "Ingen elementer er negative." },
+                ],
+              },
+            ]}
+          />
         </section>
 
         {/* ============================================================ */}
@@ -184,6 +220,41 @@ Eksempel — kode:
                 bevis-triksene.
               </>
             }
+          />
+
+          <SectionQuiz
+            courseId="diskret-matte"
+            sectionId="logikk"
+            nextSection={{ title: "Bevis-strategier", anchor: "bevis" }}
+            questions={[
+              {
+                prompt: "p = T, q = F. Hva er sannhetsverdien til (p → q) ∧ (q → p)?",
+                options: [
+                  { text: "T", correct: false, rationale: "Begge må være sanne for ∧. p→q = F (T→F er den eneste falske raden). Da er hele konjunksjonen F." },
+                  { text: "F", correct: true, rationale: "p → q = F (siden T → F). En F i et ∧-uttrykk gjør hele F. (q → p = T er irrelevant.)" },
+                  { text: "Kommer an på r", correct: false, rationale: "Det er ingen r i uttrykket." },
+                  { text: "Ikke definert", correct: false, rationale: "Hver kombinasjon av p, q gir en presis sannhetsverdi." },
+                ],
+              },
+              {
+                prompt: "Hva er den De-Morgan-ekvivalente skrivemåten av ¬(a ∨ b ∨ c)?",
+                options: [
+                  { text: "¬a ∨ ¬b ∨ ¬c", correct: false, rationale: "Operatoren må snus til ∧ etter De Morgan." },
+                  { text: "¬a ∧ ¬b ∧ ¬c", correct: true, rationale: "De Morgan: ¬(A ∨ B) = ¬A ∧ ¬B, generaliseres til vilkårlig mange." },
+                  { text: "a ∧ b ∧ c", correct: false, rationale: "Du må også negere hvert ledd." },
+                  { text: "¬a ∧ b ∧ c", correct: false, rationale: "Bare ÉN er negert — De Morgan negerer hvert ledd." },
+                ],
+              },
+              {
+                prompt: "Implikasjonen p → q er logisk EKVIVALENT med...",
+                options: [
+                  { text: "¬p ∨ q", correct: true, rationale: "Klassisk omskriving — sjekk sannhetstabellen i builder-en. Brukes mye i SAT/SMT." },
+                  { text: "p ∧ ¬q", correct: false, rationale: "Det er NEGASJONEN av p → q." },
+                  { text: "q → p (konvers)", correct: false, rationale: "Konversen er ikke logisk ekvivalent — vanlig forvekslings-fellet." },
+                  { text: "¬p ∧ q", correct: false, rationale: "Sammenlign sannhetstabellene: ¬p ∧ q og p → q er ulike på (T, T)." },
+                ],
+              },
+            ]}
           />
         </section>
 
@@ -427,6 +498,46 @@ Eksempel — kode:
               },
             ]}
           />
+
+          <SectionQuiz
+            courseId="diskret-matte"
+            sectionId="bevis"
+            nextSection={{ title: "Mengder", anchor: "mengder" }}
+            questions={[
+              {
+                prompt: "Du skal vise «hvis x² er irrasjonelt, så er x irrasjonelt». Hvilken strategi gir kortest bevis?",
+                options: [
+                  { text: "Direkte: anta x² irrasjonelt, utled at x irrasjonelt", correct: false, rationale: "Vanskelig å gå fra «x² irrasjonelt» direkte til en strukturell påstand om x." },
+                  { text: "Kontrapositiv: anta x rasjonelt, vis at x² rasjonelt", correct: true, rationale: "Hvis x = a/b, så x² = a²/b² — også brøk-form, altså rasjonelt. Kontrapositiv av p→q er ¬q→¬p, og er ekvivalent." },
+                  { text: "Motsigelse: anta x² rasjonelt og se hvor det går", correct: false, rationale: "Du har snudd premiss og konklusjon — det er ikke motsigelse, det er konversen." },
+                  { text: "Induksjon på x", correct: false, rationale: "Induksjon er for naturlige tall, ikke for et kontinuerlig x." },
+                ],
+              },
+              {
+                prompt: "Hva er FORSKJELLEN mellom «kontrapositiv» og «motsigelse»?",
+                options: [
+                  {
+                    text: "Kontrapositiv: vis ¬q → ¬p direkte. Motsigelse: anta p ∧ ¬q og utled noe absurd.",
+                    correct: true,
+                    rationale:
+                      "Kontrapositiv er en logisk omskriving og krever ingen motsigelse. Motsigelse antar negasjonen av påstanden og leter etter ⊥.",
+                  },
+                  { text: "De er samme metode med ulikt navn", correct: false, rationale: "Lignende, men forskjellige: kontrapositiv-beviset trenger ikke å lede til motsigelse." },
+                  { text: "Motsigelse er svakere — kun for irrasjonale tall", correct: false, rationale: "Motsigelse er en generell teknikk." },
+                  { text: "Kontrapositiv finnes ikke i klassisk logikk", correct: false, rationale: "Den er en grunn-identitet: (p → q) ≡ (¬q → ¬p)." },
+                ],
+              },
+              {
+                prompt: "Hvilken påstand er INVERSEN av «hvis n er primtall og n > 2, så n er oddetall»?",
+                options: [
+                  { text: "Hvis n er oddetall, så er n primtall og n > 2", correct: false, rationale: "Det er KONVERSEN (q → p), ikke inversen." },
+                  { text: "Hvis n IKKE er primtall eller n ≤ 2, så er n IKKE oddetall (n partall)", correct: true, rationale: "Invers er ¬p → ¬q. IKKE logisk ekvivalent med originalen (akkurat slik konvers ikke er)." },
+                  { text: "Hvis n er partall, så er n ikke primtall eller n ≤ 2", correct: false, rationale: "Det er KONTRAPOSITIVET — logisk ekvivalent med originalen." },
+                  { text: "Det finnes ingen primtall > 2 som er oddetall", correct: false, rationale: "Det er en (usann) negasjon av påstanden, ikke en invers." },
+                ],
+              },
+            ]}
+          />
         </section>
 
         {/* ============================================================ */}
@@ -500,6 +611,41 @@ Eksempel — kurs-overlapp:
               </>
             }
           />
+
+          <SectionQuiz
+            courseId="diskret-matte"
+            sectionId="mengder"
+            nextSection={{ title: "Funksjoner", anchor: "funksjoner" }}
+            questions={[
+              {
+                prompt: "A = {1, 2, 3}, B = {2, 3, 4, 5}. Hva er A ∩ B?",
+                options: [
+                  { text: "{1, 2, 3, 4, 5}", correct: false, rationale: "Det er UNION A ∪ B." },
+                  { text: "{2, 3}", correct: true, rationale: "Snitt = elementer i BEGGE. 2 og 3 finnes i både A og B." },
+                  { text: "{1}", correct: false, rationale: "{1} er A \\ B (i A men ikke i B), ikke snitt." },
+                  { text: "{4, 5}", correct: false, rationale: "Det er B \\ A — i B men ikke i A." },
+                ],
+              },
+              {
+                prompt: "Hvor mange delmengder har {a, b, c, d, e}?",
+                options: [
+                  { text: "5", correct: false, rationale: "Det er |A|, antall elementer — ikke antall delmengder." },
+                  { text: "25", correct: false, rationale: "5² = 25, men formelen er 2ⁿ ikke n²." },
+                  { text: "32", correct: true, rationale: "2⁵ = 32. Hvert element har 2 valg (med/ikke med), så 2ⁿ totalt." },
+                  { text: "120", correct: false, rationale: "5! = 120 — det er antall permutasjoner, ikke delmengder." },
+                ],
+              },
+              {
+                prompt: "I en gruppe på 50: 30 liker matte, 25 liker fysikk, 10 liker BEGGE. Hvor mange liker INGEN av fagene?",
+                options: [
+                  { text: "5", correct: true, rationale: "|M ∪ F| = 30 + 25 − 10 = 45. Ingen av fagene: 50 − 45 = 5." },
+                  { text: "10", correct: false, rationale: "10 er antallet som liker begge, ikke ingen." },
+                  { text: "15", correct: false, rationale: "Du har glemt å trekke fra snittet i inkludering-eksklusjon." },
+                  { text: "0", correct: false, rationale: "Med 50 − 45 = 5 er det ikke 0." },
+                ],
+              },
+            ]}
+          />
         </section>
 
         {/* ============================================================ */}
@@ -571,6 +717,45 @@ f(x) = ⌊x⌋  (ℝ → ℤ)  — surjektiv (hvert heltall treffes), ikke injek
               </>
             }
           />
+
+          <SectionQuiz
+            courseId="diskret-matte"
+            sectionId="funksjoner"
+            nextSection={{ title: "Relasjoner", anchor: "relasjoner" }}
+            questions={[
+              {
+                prompt: "f: ℝ → ℝ med f(x) = x². Hvilken klassifisering passer?",
+                options: [
+                  { text: "Bijektiv", correct: false, rationale: "Verken injektiv (f(−2) = f(2) = 4) eller surjektiv (negative tall treffes ikke)." },
+                  { text: "Injektiv, ikke surjektiv", correct: false, rationale: "f(−2) = f(2): kollisjon, så ikke injektiv." },
+                  { text: "Surjektiv, ikke injektiv", correct: false, rationale: "Negative tall i kodomenet ℝ treffes aldri av x²." },
+                  { text: "Verken injektiv eller surjektiv", correct: true, rationale: "Begge svikter på ℝ → ℝ. Hadde vi byttet kodomene til [0, ∞), ville den blitt surjektiv." },
+                ],
+              },
+              {
+                prompt: "f(x) = 2x + 3 fra ℝ → ℝ. Hva er f⁻¹?",
+                options: [
+                  { text: "f⁻¹(y) = (y − 3) / 2", correct: true, rationale: "Sett y = 2x + 3, løs for x: x = (y − 3) / 2. Funksjonen er bijektiv (lineær med stigningstall ≠ 0), så har invers." },
+                  { text: "f⁻¹(y) = 2y + 3", correct: false, rationale: "Det er bare samme f på y. Inversen reverserer operasjonen." },
+                  { text: "f⁻¹(y) = (y + 3) / 2", correct: false, rationale: "Fortegns-feil — vi trekker FRA 3, ikke legger til." },
+                  { text: "Finnes ikke — f er ikke bijektiv", correct: false, rationale: "f er bijektiv (lineær med stigningstall 2 ≠ 0)." },
+                ],
+              },
+              {
+                prompt: "Hvorfor sier vi at en HASH-funksjon ikke er injektiv?",
+                options: [
+                  { text: "Fordi den ikke er deterministisk", correct: false, rationale: "Hash ER deterministisk: samme input gir alltid samme output." },
+                  {
+                    text: "Fordi flere ulike inputs kan gi samme hash-verdi (kollisjon)",
+                    correct: true,
+                    rationale: "Injektiv = ingen kollisjoner. Hash mapper et stort/uendelig input-rom til et begrenset output-rom — kollisjoner er uunngåelige (skuffeprinsippet).",
+                  },
+                  { text: "Fordi hash er en envegs-funksjon", correct: false, rationale: "Envegs ≠ ikke-injektiv. Envegs handler om beregningsvansker, injeksjon om kollisjoner." },
+                  { text: "Fordi hash returnerer NULL", correct: false, rationale: "Hash returnerer alltid en konkret verdi." },
+                ],
+              },
+            ]}
+          />
         </section>
 
         {/* ============================================================ */}
@@ -636,6 +821,41 @@ Partiell orden    Refleksiv + antisymmetrisk + transitiv   «⊆», «deler», �
                 rest mod 5. Dette er presis konstruksjonen av <code>ℤ/5ℤ</code>.
               </>
             }
+          />
+
+          <SectionQuiz
+            courseId="diskret-matte"
+            sectionId="relasjoner"
+            nextSection={{ title: "Kombinatorikk", anchor: "kombinatorikk" }}
+            questions={[
+              {
+                prompt: "Hvilken kombinasjon av egenskaper definerer en EKVIVALENS-relasjon?",
+                options: [
+                  { text: "Refleksiv + antisymmetrisk + transitiv", correct: false, rationale: "Det er PARTIELL ORDEN (f.eks. ⊆, ≤)." },
+                  { text: "Refleksiv + symmetrisk + transitiv", correct: true, rationale: "Klassisk: ekvivalens-relasjoner partisjonerer mengden i klasser. Eks: «=», «samme rest mod n»." },
+                  { text: "Symmetrisk + transitiv", correct: false, rationale: "Trenger refleksivitet — uten den ville ikke alle elementer havne i en klasse." },
+                  { text: "Bare transitiv", correct: false, rationale: "For svakt — gir ikke partisjonering." },
+                ],
+              },
+              {
+                prompt: "Er relasjonen «a deler b» på ℤ⁺ en partiell orden?",
+                options: [
+                  { text: "Ja", correct: true, rationale: "Refleksiv (a|a), antisymmetrisk (a|b ∧ b|a ⇒ a=b for positive heltall), transitiv (a|b ∧ b|c ⇒ a|c). Hasse-diagrammet i denne seksjonen viser delere av 24." },
+                  { text: "Nei — den er ikke transitiv", correct: false, rationale: "Den ER transitiv: hvis a deler b og b deler c, så deler a også c." },
+                  { text: "Nei — den er symmetrisk", correct: false, rationale: "Den er IKKE symmetrisk (2 deler 4 men 4 deler ikke 2). Det er presis det som gjør den til partiell orden snarere enn ekvivalens." },
+                  { text: "Bare på primtall", correct: false, rationale: "Gjelder hele ℤ⁺." },
+                ],
+              },
+              {
+                prompt: "I et Hasse-diagram for en partiell orden, hvorfor tegnes IKKE refleksive løkker (a ≤ a)?",
+                options: [
+                  { text: "De er forbudt i grafer", correct: false, rationale: "Generelt finnes selv-løkker, men i Hasse-konvensjon utelates de." },
+                  { text: "De er implisitte — refleksivitet antas alltid i partiell orden", correct: true, rationale: "Hasse-diagrammet er en RYDDET tegning: bare dekninger (umiddelbare oppoverkanter). Refleksivitet og transitivitet er underforstått." },
+                  { text: "De ville gjort grafen syklisk", correct: false, rationale: "Selv-løkker er ikke vanlige sykler i denne sammenheng." },
+                  { text: "De gjelder bare for ekvivalens-relasjoner", correct: false, rationale: "Refleksivitet gjelder også partielle ordninger." },
+                ],
+              },
+            ]}
           />
         </section>
 
@@ -709,6 +929,41 @@ Kombinasjon (rekkefølge teller IKKE):
                 sifrene gir 13× flere kombinasjoner.
               </>
             }
+          />
+
+          <SectionQuiz
+            courseId="diskret-matte"
+            sectionId="kombinatorikk"
+            nextSection={{ title: "Matematisk induksjon", anchor: "induksjon" }}
+            questions={[
+              {
+                prompt: "Du skal velge 4 kort fra en kortstokk på 52. Hvor mange ulike HENDER (rekkefølge teller ikke)?",
+                options: [
+                  { text: "P(52, 4) = 6 497 400", correct: false, rationale: "Det er permutasjon — rekkefølge teller. En hånd har ikke rekkefølge." },
+                  { text: "C(52, 4) = 270 725", correct: true, rationale: "Kombinasjon: C(52, 4) = 52!/(4!·48!) = 270 725. Bytt «rekkefølge teller IKKE» → C(n, k)." },
+                  { text: "52⁴ = 7 311 616", correct: false, rationale: "Det forutsetter at samme kort kan plukkes flere ganger." },
+                  { text: "52 · 4 = 208", correct: false, rationale: "Ikke en standard kombinatorikk-formel." },
+                ],
+              },
+              {
+                prompt: "10 personer går inn i en heis. Hvor mange ulike måter kan 3 av dem gå ut i FØRSTE etasje (rekkefølge irrelevant)?",
+                options: [
+                  { text: "C(10, 3) = 120", correct: true, rationale: "Vi velger UTEN rekkefølge: C(10, 3) = 120." },
+                  { text: "P(10, 3) = 720", correct: false, rationale: "Det ville vært riktig hvis vi hadde brydd oss om hvem som gikk ut FØRST, ANDRE, TREDJE." },
+                  { text: "3¹⁰ = 59 049", correct: false, rationale: "Det er hvis hver person uavhengig velger blant 3 etasjer." },
+                  { text: "10! = 3 628 800", correct: false, rationale: "10! er alle permutasjoner av hele gruppen." },
+                ],
+              },
+              {
+                prompt: "Rad 5 i Pascals trekant er 1, 5, 10, 10, 5, 1. Hva er summen?",
+                options: [
+                  { text: "32", correct: true, rationale: "Σₖ C(n, k) = 2ⁿ. For n = 5: 2⁵ = 32. Også summen 1+5+10+10+5+1 = 32." },
+                  { text: "25", correct: false, rationale: "5² = 25, men formelen er 2ⁿ ikke n²." },
+                  { text: "120", correct: false, rationale: "5! = 120 — ikke rad-sum." },
+                  { text: "10", correct: false, rationale: "Det er bare C(5, 2) eller C(5, 3) — én verdi i raden, ikke summen." },
+                ],
+              },
+            ]}
           />
         </section>
 
@@ -892,6 +1147,41 @@ algoritme-korrekthet for splitt-og-hersk.`}</pre>
               </>
             }
           />
+
+          <SectionQuiz
+            courseId="diskret-matte"
+            sectionId="induksjon"
+            nextSection={{ title: "Grafer", anchor: "grafer" }}
+            questions={[
+              {
+                prompt: "I et induksjonsbevis: hva er BASIS-tilfellet?",
+                options: [
+                  { text: "Den endelige konklusjonen om alle n", correct: false, rationale: "Det er målet — basis er det enkleste utgangspunktet, typisk n = 0 eller 1." },
+                  { text: "Den minste verdien av n hvor P(n) skal verifiseres direkte", correct: true, rationale: "Basis er domino #1 — den må vippes manuelt for at resten skal kunne falle." },
+                  { text: "Antagelsen P(k) er sann", correct: false, rationale: "Det er induksjonshypotesen (IH), ikke basis." },
+                  { text: "Beviset av P(k+1) fra P(k)", correct: false, rationale: "Det er induksjonssteget, ikke basis." },
+                ],
+              },
+              {
+                prompt: "Når trenger du STERK induksjon i stedet for vanlig?",
+                options: [
+                  { text: "Når basisverdien er n = 0", correct: false, rationale: "Basisverdien påvirker ikke valg av styrke." },
+                  { text: "Når P(k+1) avhenger av flere tidligere ledd, ikke bare P(k)", correct: true, rationale: "Eks: Fibonacci F(n) = F(n−1) + F(n−2) — steget trenger BÅDE P(k) og P(k−1). Da må IH dekke alle tidligere, ikke bare nærmeste." },
+                  { text: "Når påstanden handler om grafer", correct: false, rationale: "Domenet er irrelevant." },
+                  { text: "Når n er irrasjonalt", correct: false, rationale: "Induksjon kjører på ℕ (naturlige tall) uansett." },
+                ],
+              },
+              {
+                prompt: "Hva er IH (induksjonshypotesen) i et bevis av Σ i = n(n+1)/2?",
+                options: [
+                  { text: "Anta formelen er sann for alle n", correct: false, rationale: "Det er det vi vil VISE — IH ville vært sirkulært argument." },
+                  { text: "Anta Σ₁..k i = k(k+1)/2 for et fastsatt k", correct: true, rationale: "IH er antagelsen at påstanden gjelder for ett bestemt k. Steget viser så at den også gjelder for k+1." },
+                  { text: "Anta n = 1", correct: false, rationale: "Det er BASIS-tilfellet, ikke IH." },
+                  { text: "Anta Σ = 0", correct: false, rationale: "Bare sant for n = 0 og ikke nyttig som IH." },
+                ],
+              },
+            ]}
+          />
         </section>
 
         {/* ============================================================ */}
@@ -980,6 +1270,41 @@ Konsekvens: antallet noder med oddetalls-grad er alltid PARTALL.`}</pre>
                 <code>C(12, 2) = 66</code> kanter (komplett graf K₁₂).
               </>
             }
+          />
+
+          <SectionQuiz
+            courseId="diskret-matte"
+            sectionId="grafer"
+            nextSection={{ title: "Modulær aritmetikk", anchor: "mod" }}
+            questions={[
+              {
+                prompt: "En graf har 7 noder med gradene (5, 3, 3, 2, 2, 2, 1). Hvor mange kanter?",
+                options: [
+                  { text: "9", correct: true, rationale: "Σ deg = 5+3+3+2+2+2+1 = 18 = 2·|E|, så |E| = 9. Handshake-lemma." },
+                  { text: "18", correct: false, rationale: "18 er Σ deg, ikke |E|. Hver kant teller 2 i grad-summen." },
+                  { text: "7", correct: false, rationale: "Det er |V|, ikke |E|." },
+                  { text: "Ugyldig sekvens", correct: false, rationale: "Sum er 18 (partall) — sekvensen passerer minimum-sjekk for gyldighet." },
+                ],
+              },
+              {
+                prompt: "Hva er den TYPISKE forskjellen mellom et tre og en generell sammenhengende graf?",
+                options: [
+                  { text: "Treet har akkurat |V| − 1 kanter og ingen sykler", correct: true, rationale: "Sammenhengende + |E| = |V| − 1 ⇔ tre. Mer enn |V| − 1 kanter i en sammenhengende graf ⇒ minst én syklus." },
+                  { text: "Treet er rettet, generell graf er urettet", correct: false, rationale: "Trær kan være urettede også. Rotskifte er en separat operasjon." },
+                  { text: "Treet er vektet, generell graf er uvektet", correct: false, rationale: "Vekting har ingenting med tre-egenskap å gjøre." },
+                  { text: "Treet har sirkler, generell graf ikke", correct: false, rationale: "Motsatt: trær har ingen sykler per definisjon." },
+                ],
+              },
+              {
+                prompt: "BFS i en uvektet graf — hva garanterer den?",
+                options: [
+                  { text: "Korteste vei målt i ANTALL KANTER fra startnoden", correct: true, rationale: "BFS utforsker alle naboer på samme dybde før den går dypere. Det gjør at første gang du møter en node, har du brukt færrest mulig kanter." },
+                  { text: "Korteste vei i en vektet graf", correct: false, rationale: "Det krever Dijkstra. BFS ignorerer kantvekter." },
+                  { text: "Finner alle sykler", correct: false, rationale: "BFS finner et BFS-tre, ikke alle sykler eksplisitt." },
+                  { text: "Sorterer noder etter grad", correct: false, rationale: "Det er ikke BFS sin funksjon." },
+                ],
+              },
+            ]}
           />
         </section>
 
@@ -1126,6 +1451,41 @@ Klokke-aritmetikk: hva er kl 23 + 5 timer?
                 eksponenter «kollapser» modulo primtall.
               </>
             }
+          />
+
+          <SectionQuiz
+            courseId="diskret-matte"
+            sectionId="mod"
+            nextSection={{ title: "Oppsummering", anchor: "oppsummering" }}
+            questions={[
+              {
+                prompt: "Hva er −7 mod 5?",
+                options: [
+                  { text: "−2", correct: false, rationale: "Mod-resultatet skal ALLTID være ikke-negativt, mellom 0 og n−1. Legg til 5 til du får riktig: −7 + 5 = −2 + 5 = 3." },
+                  { text: "3", correct: true, rationale: "−7 = −2·5 + 3 (kvotient −2, rest 3). Verifikasjon: 3 og −7 differ med 10 = 2·5. Eller: −7 + 5 + 5 = 3." },
+                  { text: "−7", correct: false, rationale: "Mod-resultatet er ALLTID i [0, n−1]." },
+                  { text: "7", correct: false, rationale: "7 ≥ n = 5 — for stor." },
+                ],
+              },
+              {
+                prompt: "Hash-tabell med 8 buckets. Du har hash-verdiene {17, 25, 33, 41}. Hvilke kollisjoner får du?",
+                options: [
+                  { text: "Ingen kollisjoner", correct: false, rationale: "17 mod 8 = 1, 25 mod 8 = 1, 33 mod 8 = 1, 41 mod 8 = 1 — ALLE kolliderer i bucket 1!" },
+                  { text: "Alle fire i samme bucket (bucket 1)", correct: true, rationale: "Hver verdi gir rest 1 mod 8: 17 = 2·8 + 1, 25 = 3·8 + 1, 33 = 4·8 + 1, 41 = 5·8 + 1. Klassisk patologisk-input." },
+                  { text: "To og to par-kollisjoner", correct: false, rationale: "Sjekk for hånd: 17 mod 8 = 1, 25 mod 8 = 1 — all fire faktisk lander i samme bucket." },
+                  { text: "17 og 25 kolliderer, de andre er unike", correct: false, rationale: "Alle fire kolliderer." },
+                ],
+              },
+              {
+                prompt: "Når har et tall a en MODULÆR INVERS modulo n?",
+                options: [
+                  { text: "Alltid, så lenge a ≠ 0", correct: false, rationale: "Eks: 2 mod 4 har ingen invers (2x ≡ 1 mod 4 har ingen løsning siden gcd(2, 4) = 2)." },
+                  { text: "Hvis og bare hvis gcd(a, n) = 1", correct: true, rationale: "Bézout: gcd = 1 ⇔ ∃ x, y: ax + ny = 1 ⇔ ax ≡ 1 (mod n). Dette er hvorfor RSA krever koprime tall." },
+                  { text: "Bare når n er primtall", correct: false, rationale: "Tilstrekkelig (alle a < n koprime med p) men ikke nødvendig — 4⁻¹ mod 9 = 7 finnes selv om 9 ikke er primtall." },
+                  { text: "Bare når a er oddetall", correct: false, rationale: "Paritet er ikke avgjørende." },
+                ],
+              },
+            ]}
           />
         </section>
 
