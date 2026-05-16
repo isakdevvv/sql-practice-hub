@@ -2,9 +2,11 @@ import { Link } from "@tanstack/react-router";
 import { ArrowRight, Lightbulb } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
+import { SyscallLifecycle } from "./SyscallLifecycle";
 
 const STEPS = [
   { title: "Hva en syscall faktisk er", anchor: "hva" },
+  { title: "Syscall-livssyklus — fra ring 3 til ring 0 og tilbake", anchor: "livssyklus" },
   { title: "open, read, write, close", anchor: "fileio" },
   { title: "File descriptors og stdin/stdout/stderr", anchor: "fd" },
   { title: "fork og exec — hvordan prosesser starter", anchor: "fork-exec" },
@@ -88,8 +90,23 @@ Hvorfor C-funksjoner som write() ikke ER syscalls:
           </div>
         </section>
 
+        <section id="livssyklus" className="mb-12">
+          <h2 className="text-xl font-semibold mb-3">
+            2. Syscall-livssyklus — step gjennom ring-overgangen
+          </h2>
+          <p className="text-sm text-muted-foreground mb-4">
+            Step gjennom en ekte syscall instruksjon for instruksjon. Se hvordan
+            registrene fylles av user-koden, hvordan{" "}
+            <code>syscall</code>-instruksjonen bytter til ring 0, hva kjernen
+            gjør med argumentene, og hvordan returverdien havner tilbake i{" "}
+            <code>rax</code>. To scenarier: <code>write</code> til stdout, og{" "}
+            <code>open</code> + <code>read</code> + <code>close</code> av en fil.
+          </p>
+          <SyscallLifecycle />
+        </section>
+
         <section id="fileio" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">2. open, read, write, close</h2>
+          <h2 className="text-xl font-semibold mb-3">3. open, read, write, close</h2>
           <p className="text-sm text-muted-foreground mb-4">
             Fil-I/O er den vanligste familien av syscalls. Alt i Unix er
             «en fil» — også sockets, terminaler, pipes, devices.
@@ -140,7 +157,7 @@ Linux man-pages (de gjelder API-en i ekte produksjon):
         </section>
 
         <section id="fd" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">3. File descriptors og stdin/stdout/stderr</h2>
+          <h2 className="text-xl font-semibold mb-3">4. File descriptors og stdin/stdout/stderr</h2>
           <div className="rounded-xl border border-border bg-card p-5">
             <pre className="font-mono text-xs overflow-x-auto whitespace-pre">{`Hver prosess har en fd-tabell. En fd er bare en int (small index).
 
@@ -184,7 +201,7 @@ Filer i /proc/<pid>/fd/ viser hver kjørende prosess sine åpne fd-er:
         </section>
 
         <section id="fork-exec" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">4. fork og exec — hvordan prosesser starter</h2>
+          <h2 className="text-xl font-semibold mb-3">5. fork og exec — hvordan prosesser starter</h2>
           <p className="text-sm text-muted-foreground mb-4">
             På Unix er prosess-opprettelse delt i to: kopier deg selv
             (<code>fork</code>), så bytt ut programkoden
@@ -250,7 +267,7 @@ Tegning av "ls -la" i bash:
         </section>
 
         <section id="pipes" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">5. Pipes — kommunikasjon mellom prosesser</h2>
+          <h2 className="text-xl font-semibold mb-3">6. Pipes — kommunikasjon mellom prosesser</h2>
           <div className="rounded-xl border border-border bg-card p-5">
             <pre className="font-mono text-xs overflow-x-auto whitespace-pre">{`pipe(int fds[2])  — lager en kjernel-buffer med to fd-er.
    fds[0] = lese-ende
@@ -303,7 +320,7 @@ Sockets:
         </section>
 
         <section id="signaler" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">6. Signaler</h2>
+          <h2 className="text-xl font-semibold mb-3">7. Signaler</h2>
           <p className="text-sm text-muted-foreground mb-4">
             Signaler er kernel-ens måte å avbryte en prosess på.
             Ctrl-C sender SIGINT, kill -9 sender SIGKILL, child som dør
