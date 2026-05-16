@@ -3,8 +3,13 @@ import { Lightbulb, Quote } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
 import { ArpQuiz } from "./ArpQuiz";
-import { ArpVisualizer } from "./ArpVisualizer";
 import { RelatedVisualizers } from "@/components/stack/RelatedVisualizers";
+import { lazy, Suspense } from "react";
+import { VisualizerSkeleton } from "@/components/visualizer-shell";
+
+const ArpVisualizer = lazy(() =>
+  import("./ArpVisualizer").then((m) => ({ default: m.ArpVisualizer })),
+);
 
 const STEPS = [
   { title: "Interaktiv ARP-visualisering", anchor: "visualisering" },
@@ -59,7 +64,9 @@ export function ArpDetektivPage() {
             og hva som skjer når en angriper løyver. Spill av automatisk eller stepp
             gjennom ett hopp om gangen — og følg med på cachene som oppdaterer seg.
           </p>
-          <ArpVisualizer />
+          <Suspense fallback={<VisualizerSkeleton />}>
+            <ArpVisualizer />
+          </Suspense>
         </section>
 
         <section id="metafor" className="mb-10">

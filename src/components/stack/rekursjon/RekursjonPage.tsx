@@ -2,8 +2,13 @@ import { Link } from "@tanstack/react-router";
 import { ArrowRight, Lightbulb } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
-import { RecursionVisualizer } from "./RecursionVisualizer";
 import { RelatedVisualizers } from "@/components/stack/RelatedVisualizers";
+import { lazy, Suspense } from "react";
+import { VisualizerSkeleton } from "@/components/visualizer-shell";
+
+const RecursionVisualizer = lazy(() =>
+  import("./RecursionVisualizer").then((m) => ({ default: m.RecursionVisualizer })),
+);
 
 const STEPS = [
   { title: "Interaktiv visualisering", anchor: "visualisering" },
@@ -56,7 +61,9 @@ export function RekursjonPage() {
             Til høyre ser du selve rekursjonstreet med pending (gult), returnert (grønt)
             og — for naiv fib — duplikat-noder i rødt som motiverer memoisering.
           </p>
-          <RecursionVisualizer />
+          <Suspense fallback={<VisualizerSkeleton />}>
+            <RecursionVisualizer />
+          </Suspense>
         </section>
 
         <section id="hva" className="mb-10">

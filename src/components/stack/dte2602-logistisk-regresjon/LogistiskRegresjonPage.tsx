@@ -4,8 +4,13 @@ import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
 import { Tex, TexBlock } from "@/components/Tex";
 import { LogisticRegressionSim, SigmoidVisual } from "./LogisticRegressionSim";
-import { LogRegVisualizer } from "./LogRegVisualizer";
 import { RelatedVisualizers } from "@/components/stack/RelatedVisualizers";
+import { lazy, Suspense } from "react";
+import { VisualizerSkeleton } from "@/components/visualizer-shell";
+
+const LogRegVisualizer = lazy(() =>
+  import("./LogRegVisualizer").then((m) => ({ default: m.LogRegVisualizer })),
+);
 
 const STEPS = [
   { title: "Visualisering — sigmoid, beslutningsgrense og GD", anchor: "visualisering" },
@@ -66,7 +71,9 @@ export function LogistiskRegresjonPage() {
             for deg. Til slutt: se hvorfor log-loss straffer «selvsikkert feil»
             mye hardere enn MSE.
           </p>
-          <LogRegVisualizer />
+          <Suspense fallback={<VisualizerSkeleton />}>
+            <LogRegVisualizer />
+          </Suspense>
         </section>
 
         <section id="hvorfor" className="mb-10">

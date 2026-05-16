@@ -2,8 +2,13 @@ import { Link } from "@tanstack/react-router";
 import { ArrowRight, Lightbulb } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
-import { SupervisedLearningVisualizer } from "@/components/stack/supervised-learning/SupervisedLearningVisualizer";
 import { RelatedVisualizers } from "@/components/stack/RelatedVisualizers";
+import { lazy, Suspense } from "react";
+import { VisualizerSkeleton } from "@/components/visualizer-shell";
+
+const SupervisedLearningVisualizer = lazy(() =>
+  import("@/components/stack/supervised-learning/SupervisedLearningVisualizer").then((m) => ({ default: m.SupervisedLearningVisualizer })),
+);
 
 const STEPS = [
   { title: "Interaktiv visualisering", anchor: "visualisering" },
@@ -57,7 +62,9 @@ export function SupervisedPage() {
             beslutningsgrense som funksjon av k, og forskjellen på accuracy / precision /
             recall / F1.
           </p>
-          <SupervisedLearningVisualizer />
+          <Suspense fallback={<VisualizerSkeleton />}>
+            <SupervisedLearningVisualizer />
+          </Suspense>
         </section>
 
         <section id="regr-vs-klass" className="mb-10">

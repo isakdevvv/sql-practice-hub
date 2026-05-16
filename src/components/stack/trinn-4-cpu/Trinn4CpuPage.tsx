@@ -2,8 +2,13 @@ import { Link } from "@tanstack/react-router";
 import { ArrowRight, Lightbulb } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
-import { CpuVisualizer } from "@/components/stack/trinn-4-cpu/CpuVisualizer";
 import { RelatedVisualizers } from "@/components/stack/RelatedVisualizers";
+import { lazy, Suspense } from "react";
+import { VisualizerSkeleton } from "@/components/visualizer-shell";
+
+const CpuVisualizer = lazy(() =>
+  import("@/components/stack/trinn-4-cpu/CpuVisualizer").then((m) => ({ default: m.CpuVisualizer })),
+);
 
 const STEPS = [
   { title: "Visualisering — fetch-decode-execute live", anchor: "visualisering" },
@@ -58,7 +63,9 @@ export function Trinn4CpuPage() {
             register-fila, ALU-en og RAM lyse opp etter hvert som
             dataene flyter mellom dem.
           </p>
-          <CpuVisualizer />
+          <Suspense fallback={<VisualizerSkeleton />}>
+            <CpuVisualizer />
+          </Suspense>
           <p className="mt-3 text-xs text-muted-foreground">
             Tips: start med <span className="font-mono">MOV R0, 5</span>{" "}
             (enklest — kun immediate), gå videre til{" "}

@@ -4,8 +4,13 @@ import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
 import { Tex, TexBlock } from "@/components/Tex";
 import { HolTimeline } from "./HolTimeline";
-import { Http2Visualizer } from "./Http2Visualizer";
 import { RelatedVisualizers } from "@/components/stack/RelatedVisualizers";
+import { lazy, Suspense } from "react";
+import { VisualizerSkeleton } from "@/components/visualizer-shell";
+
+const Http2Visualizer = lazy(() =>
+  import("./Http2Visualizer").then((m) => ({ default: m.Http2Visualizer })),
+);
 
 const STEPS = [
   { title: "Side-ved-side-simulator", anchor: "sim-top" },
@@ -59,7 +64,9 @@ export function Http2HolPage() {
             som skjer når sida vokser. Time-distanse-diagrammet er tegnet i samme
             skala på tvers av modusene — sammenlign totaltidene visuelt.
           </p>
-          <Http2Visualizer />
+          <Suspense fallback={<VisualizerSkeleton />}>
+            <Http2Visualizer />
+          </Suspense>
         </section>
 
         <section id="non-persistent" className="mb-10">

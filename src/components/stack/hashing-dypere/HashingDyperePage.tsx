@@ -2,8 +2,13 @@ import { Link } from "@tanstack/react-router";
 import { ArrowRight, Lightbulb } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
-import { HashTableVisualizer } from "./HashTableVisualizer";
 import { RelatedVisualizers } from "@/components/stack/RelatedVisualizers";
+import { lazy, Suspense } from "react";
+import { VisualizerSkeleton } from "@/components/visualizer-shell";
+
+const HashTableVisualizer = lazy(() =>
+  import("./HashTableVisualizer").then((m) => ({ default: m.HashTableVisualizer })),
+);
 
 const STEPS = [
   { title: "Hva en hash-funksjon må gjøre", anchor: "krav" },
@@ -97,7 +102,9 @@ def hash_str(s, m):
             destinasjons-sloten (blå). Hash-verdien <code>h(k) = sum(ord(c)) % m</code> regnes ut
             live mens du skriver, og du ser lastfaktoren stige etter hvert som du fyller tabellen.
           </p>
-          <HashTableVisualizer />
+          <Suspense fallback={<VisualizerSkeleton />}>
+            <HashTableVisualizer />
+          </Suspense>
         </section>
 
         <section id="chaining" className="mb-10">

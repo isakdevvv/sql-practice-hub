@@ -2,8 +2,13 @@ import { Link } from "@tanstack/react-router";
 import { ArrowRight, Lightbulb } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
-import { SearchVisualizer } from "@/components/stack/sok-algoritmer/SearchVisualizer";
 import { RelatedVisualizers } from "@/components/stack/RelatedVisualizers";
+import { lazy, Suspense } from "react";
+import { VisualizerSkeleton } from "@/components/visualizer-shell";
+
+const SearchVisualizer = lazy(() =>
+  import("@/components/stack/sok-algoritmer/SearchVisualizer").then((m) => ({ default: m.SearchVisualizer })),
+);
 
 const STEPS = [
   { title: "Array-søk — oppvarming og visualisering", anchor: "array-sok" },
@@ -57,7 +62,9 @@ export function SokAlgoritmerPage() {
             som mulig — bare i én dimensjon. Visualiseringen lar deg sette
             target, velge algoritme og steppe gjennom hver sammenligning.
           </p>
-          <SearchVisualizer />
+          <Suspense fallback={<VisualizerSkeleton />}>
+            <SearchVisualizer />
+          </Suspense>
           <p className="mt-3 text-xs text-muted-foreground">
             <strong>Sammenheng:</strong> invarianten «målet ligger i a[lo..hi]»
             i binærsøk er samme tankesett som «målet ligger et sted i frontier»

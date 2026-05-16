@@ -6,8 +6,13 @@ import { AesGcmDemo } from "./AesGcmDemo";
 import { AesBlockModes } from "./AesBlockModes";
 import { HashAndHmac } from "./HashAndHmac";
 import { DiffieHellmanColors } from "./DiffieHellmanColors";
-import { CryptoVisualizer } from "./CryptoVisualizer";
 import { RelatedVisualizers } from "@/components/stack/RelatedVisualizers";
+import { lazy, Suspense } from "react";
+import { VisualizerSkeleton } from "@/components/visualizer-shell";
+
+const CryptoVisualizer = lazy(() =>
+  import("./CryptoVisualizer").then((m) => ({ default: m.CryptoVisualizer })),
+);
 
 const STEPS = [
   { title: "Hva krypto faktisk beskytter mot", anchor: "trusler" },
@@ -111,7 +116,9 @@ export function KryptografiPage() {
             <strong>Diffie-Hellman</strong> (delt nøkkel uten å lekke). Lek deg gjennom alle
             før du leser teorien nedenfor — du kommer til å gjenkjenne mønstrene mye lettere.
           </p>
-          <CryptoVisualizer />
+          <Suspense fallback={<VisualizerSkeleton />}>
+            <CryptoVisualizer />
+          </Suspense>
         </section>
 
         <section id="symmetrisk" className="mb-10">

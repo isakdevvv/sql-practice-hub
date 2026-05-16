@@ -2,8 +2,13 @@ import { Link } from "@tanstack/react-router";
 import { Lightbulb, Infinity as InfinityIcon, AlertTriangle, ArrowLeft } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
-import { TspDpVisualizer } from "./TspDpVisualizer";
 import { RelatedVisualizers } from "@/components/stack/RelatedVisualizers";
+import { lazy, Suspense } from "react";
+import { VisualizerSkeleton } from "@/components/visualizer-shell";
+
+const TspDpVisualizer = lazy(() =>
+  import("./TspDpVisualizer").then((m) => ({ default: m.TspDpVisualizer })),
+);
 
 const STEPS = [
   { title: "DP-prinsipp", anchor: "intro" },
@@ -330,7 +335,9 @@ metaheuristikk-trinnet, og brute-force som baseline.`}</pre>
             via subsets med 2 byer, deretter 3, og så videre. Den gule kanten i
             byene viser hvilken tidligere celle som ga minimumsverdi.
           </p>
-          <TspDpVisualizer />
+          <Suspense fallback={<VisualizerSkeleton />}>
+            <TspDpVisualizer />
+          </Suspense>
         </section>
 
         <section id="dp-rl" className="mb-10">

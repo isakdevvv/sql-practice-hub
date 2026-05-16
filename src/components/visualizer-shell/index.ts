@@ -4,6 +4,8 @@
 export { VisualizerShell } from "./VisualizerShell";
 export type { VisualizerShellProps } from "./VisualizerShell";
 
+export { VisualizerSkeleton } from "./VisualizerSkeleton";
+
 export { ModeChips } from "./ModeChips";
 export type { ModeDef, ModeChipsProps } from "./ModeChips";
 

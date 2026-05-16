@@ -2,8 +2,13 @@ import { Link } from "@tanstack/react-router";
 import { Lightbulb } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
-import { GradientDescentVisualizer } from "@/components/stack/optimering/GradientDescentVisualizer";
 import { RelatedVisualizers } from "@/components/stack/RelatedVisualizers";
+import { lazy, Suspense } from "react";
+import { VisualizerSkeleton } from "@/components/visualizer-shell";
+
+const GradientDescentVisualizer = lazy(() =>
+  import("@/components/stack/optimering/GradientDescentVisualizer").then((m) => ({ default: m.GradientDescentVisualizer })),
+);
 
 const STEPS = [
   { title: "Visualisering — gradient descent live", anchor: "visualisering" },
@@ -54,7 +59,9 @@ export function OptimeringPage() {
             den når α er for høy. Sammenlikn ren GD med momentum og Adam på
             samme ill-conditioned bowl.
           </p>
-          <GradientDescentVisualizer />
+          <Suspense fallback={<VisualizerSkeleton />}>
+            <GradientDescentVisualizer />
+          </Suspense>
         </section>
 
         <section id="sgd" className="mb-10">

@@ -4,8 +4,13 @@ import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
 import { Tex, TexBlock } from "@/components/Tex";
 import { CacheCalculator } from "./CacheCalculator";
-import { CacheVisualizer } from "./CacheVisualizer";
 import { RelatedVisualizers } from "@/components/stack/RelatedVisualizers";
+import { lazy, Suspense } from "react";
+import { VisualizerSkeleton } from "@/components/visualizer-shell";
+
+const CacheVisualizer = lazy(() =>
+  import("./CacheVisualizer").then((m) => ({ default: m.CacheVisualizer })),
+);
 
 const STEPS = [
   { title: "Cache-visualisering", anchor: "vis" },
@@ -58,7 +63,9 @@ export function WebCachingMattePage() {
             → hit, LRU-eviction, TTL-utløp, betinget GET med 304 Not Modified, og en
             kalkulator for snitt-responstid <Tex>{`\\;p \\cdot T_{\\text{cache}} + (1-p)\\cdot T_{\\text{origin}}`}</Tex>.
           </p>
-          <CacheVisualizer />
+          <Suspense fallback={<VisualizerSkeleton />}>
+            <CacheVisualizer />
+          </Suspense>
         </section>
 
         <section id="hvorfor" className="mb-10">

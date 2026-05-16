@@ -2,8 +2,13 @@ import { Link } from "@tanstack/react-router";
 import { ArrowRight, Lightbulb } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
-import { AssemblyVisualizer } from "./AssemblyVisualizer";
 import { RelatedVisualizers } from "@/components/stack/RelatedVisualizers";
+import { lazy, Suspense } from "react";
+import { VisualizerSkeleton } from "@/components/visualizer-shell";
+
+const AssemblyVisualizer = lazy(() =>
+  import("./AssemblyVisualizer").then((m) => ({ default: m.AssemblyVisualizer })),
+);
 
 const STEPS = [
   { title: "Interaktiv assembly-trace", anchor: "trace" },
@@ -57,7 +62,9 @@ export function Trinn5AssemblyPage() {
             program øverst, bruk Play eller piltastene under for å trå
             instruksjon for instruksjon.
           </p>
-          <AssemblyVisualizer />
+          <Suspense fallback={<VisualizerSkeleton />}>
+            <AssemblyVisualizer />
+          </Suspense>
         </section>
 
         <section id="hva" className="mb-10">

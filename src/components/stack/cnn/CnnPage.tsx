@@ -3,8 +3,13 @@ import { Lightbulb } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
 import { CnnConvolution } from "./CnnConvolution";
-import { CnnVisualizer } from "./CnnVisualizer";
 import { RelatedVisualizers } from "@/components/stack/RelatedVisualizers";
+import { lazy, Suspense } from "react";
+import { VisualizerSkeleton } from "@/components/visualizer-shell";
+
+const CnnVisualizer = lazy(() =>
+  import("./CnnVisualizer").then((m) => ({ default: m.CnnVisualizer })),
+);
 
 const STEPS = [
   { title: "Interaktiv visualisering", anchor: "visualisering" },
@@ -59,7 +64,9 @@ export function CnnPage() {
             mønsteret lyser opp. Bytt mellom de fem modusene under for å se 1D,
             2D, stride/padding, pooling og et galleri av filtre på samme bilde.
           </p>
-          <CnnVisualizer />
+          <Suspense fallback={<VisualizerSkeleton />}>
+            <CnnVisualizer />
+          </Suspense>
         </section>
 
         <section id="hvorfor" className="mb-10">

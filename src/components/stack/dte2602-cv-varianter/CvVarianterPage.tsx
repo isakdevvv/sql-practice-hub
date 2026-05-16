@@ -2,8 +2,13 @@ import { Link } from "@tanstack/react-router";
 import { Lightbulb, ArrowLeft } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { Tex, TexBlock } from "@/components/Tex";
-import { CvSplitVisualizer } from "./CvSplitVisualizer";
 import { RelatedVisualizers } from "@/components/stack/RelatedVisualizers";
+import { lazy, Suspense } from "react";
+import { VisualizerSkeleton } from "@/components/visualizer-shell";
+
+const CvSplitVisualizer = lazy(() =>
+  import("./CvSplitVisualizer").then((m) => ({ default: m.CvSplitVisualizer })),
+);
 
 export function CvVarianterPage() {
   return (
@@ -247,7 +252,9 @@ for tr, te in cv.split(X):
             iterasjon. Se på den lille tabellen — for vanlig k-fold svinger
             «andel klasse 1» mellom foldene, men ikke for stratifisert.
           </p>
-          <CvSplitVisualizer />
+          <Suspense fallback={<VisualizerSkeleton />}>
+            <CvSplitVisualizer />
+          </Suspense>
         </Section>
 
         <Section number="10" title="Python — sammenlign alle på samme datasett">

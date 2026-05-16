@@ -4,8 +4,13 @@ import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
 import { Tex } from "@/components/Tex";
 import { SequenceDiagram } from "./SequenceDiagram";
-import { CsmaVisualizer } from "./CsmaVisualizer";
 import { RelatedVisualizers } from "@/components/stack/RelatedVisualizers";
+import { lazy, Suspense } from "react";
+import { VisualizerSkeleton } from "@/components/visualizer-shell";
+
+const CsmaVisualizer = lazy(() =>
+  import("./CsmaVisualizer").then((m) => ({ default: m.CsmaVisualizer })),
+);
 
 const STEPS = [
   { title: "MAC-progresjonen (ALOHA → CSMA/CA)", anchor: "csma" },
@@ -67,7 +72,9 @@ export function ApProgresjonPage() {
             <strong>CSMA/CA</strong> bruker RTS/CTS for å løse skjult-terminal-problemet
             (WiFi).
           </p>
-          <CsmaVisualizer />
+          <Suspense fallback={<VisualizerSkeleton />}>
+            <CsmaVisualizer />
+          </Suspense>
           <p className="text-xs text-muted-foreground mt-3 leading-relaxed">
             Tips: skru opp ankomstraten λ og se hvordan ALOHA kollapser, mens CSMA/CD fortsatt
             klarer å skille pakker — men med stadig lengre backoff-vinduer. Samme seed gir

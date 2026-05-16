@@ -2,8 +2,13 @@ import { Link } from "@tanstack/react-router";
 import { ArrowRight, Lightbulb } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
-import { GraphAlgoVisualizer } from "./GraphAlgoVisualizer";
 import { RelatedVisualizers } from "@/components/stack/RelatedVisualizers";
+import { lazy, Suspense } from "react";
+import { VisualizerSkeleton } from "@/components/visualizer-shell";
+
+const GraphAlgoVisualizer = lazy(() =>
+  import("./GraphAlgoVisualizer").then((m) => ({ default: m.GraphAlgoVisualizer })),
+);
 
 const STEPS = [
   { title: "Interaktiv: BFS/DFS/Dijkstra", anchor: "interaktiv" },
@@ -58,7 +63,9 @@ export function GraferDyperePage() {
             kanter som blir fete. Grafen er bygget for å være regnbar for
             hånd, så test om du klarer å forutsi neste steg.
           </p>
-          <GraphAlgoVisualizer />
+          <Suspense fallback={<VisualizerSkeleton />}>
+            <GraphAlgoVisualizer />
+          </Suspense>
         </section>
 
         <section id="rep" className="mb-10">

@@ -2,9 +2,16 @@ import { Link } from "@tanstack/react-router";
 import { ArrowRight, Lightbulb, AlertTriangle, GitMerge, Layers } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
-import { QueryPlanVisualizer } from "@/components/stack/query-optimisering/QueryPlanVisualizer";
-import { QueryLayersView } from "@/components/stack/query-optimisering/QueryLayersView";
 import { RelatedVisualizers } from "@/components/stack/RelatedVisualizers";
+import { lazy, Suspense } from "react";
+import { VisualizerSkeleton } from "@/components/visualizer-shell";
+
+const QueryPlanVisualizer = lazy(() =>
+  import("@/components/stack/query-optimisering/QueryPlanVisualizer").then((m) => ({ default: m.QueryPlanVisualizer })),
+);
+const QueryLayersView = lazy(() =>
+  import("@/components/stack/query-optimisering/QueryLayersView").then((m) => ({ default: m.QueryLayersView })),
+);
 
 // Course page for query optimization: parser/optimizer/executor, EXPLAIN,
 // join algorithms, stats, common anti-patterns, partitioning + materialized views.
@@ -172,7 +179,9 @@ export function QueryOptimiseringPage() {
             (scans) opp mot rota. Hver operator-boks viser estimert kost,
             estimat-rader og faktiske rader.
           </p>
-          <QueryPlanVisualizer />
+          <Suspense fallback={<VisualizerSkeleton />}>
+            <QueryPlanVisualizer />
+          </Suspense>
         </section>
 
         {/* Faser */}
@@ -475,7 +484,9 @@ REFRESH MATERIALIZED VIEW kunde_oversikt_mv;`}</pre>
             Hover et fargelagt ord (for eksempel <code>age</code>) og se
             hvordan det dukker opp i hvert lag det er relevant.
           </p>
-          <QueryLayersView />
+          <Suspense fallback={<VisualizerSkeleton />}>
+            <QueryLayersView />
+          </Suspense>
         </section>
 
         {/* CTA */}
