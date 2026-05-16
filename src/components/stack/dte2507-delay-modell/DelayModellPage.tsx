@@ -7,6 +7,7 @@ import { DelaySim } from "./DelaySim";
 import { DelayVisualizer } from "./DelayVisualizer";
 import { CaravanAnalogy } from "./CaravanAnalogy";
 import { TrafficIntensitySim } from "./TrafficIntensitySim";
+import { RelatedVisualizers } from "@/components/stack/RelatedVisualizers";
 
 const STEPS = [
   { title: "Delay-visualisering (to rutere)", anchor: "vis" },
@@ -425,6 +426,7 @@ export function DelayModellPage() {
             </li>
           </ul>
         </div>
+        <RelatedVisualizers slug="delay-modell" />
       </article>
     </StackPageShell>
   );

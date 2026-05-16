@@ -7,6 +7,7 @@ import { AesBlockModes } from "./AesBlockModes";
 import { HashAndHmac } from "./HashAndHmac";
 import { DiffieHellmanColors } from "./DiffieHellmanColors";
 import { CryptoVisualizer } from "./CryptoVisualizer";
+import { RelatedVisualizers } from "@/components/stack/RelatedVisualizers";
 
 const STEPS = [
   { title: "Hva krypto faktisk beskytter mot", anchor: "trusler" },
@@ -400,6 +401,7 @@ Verifisering:
             </li>
           </ul>
         </div>
+        <RelatedVisualizers slug="kryptografi" />
       </div>
     </StackPageShell>
   );

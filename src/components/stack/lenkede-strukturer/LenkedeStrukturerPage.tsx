@@ -4,6 +4,7 @@ import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
 import { LinkedStructuresVisualizer } from "./LinkedStructuresVisualizer";
 import { Stack as StackIllustration } from "@/components/illustrations";
+import { RelatedVisualizers } from "@/components/stack/RelatedVisualizers";
 
 const STEPS = [
   { title: "Hva er en lenket struktur", anchor: "hva" },
@@ -379,6 +380,7 @@ eval_postfix("3 4 + 5 * 2 -") # → 33`}</pre>
             </li>
           </ul>
         </div>
+        <RelatedVisualizers slug="lenkede-strukturer" />
       </div>
     </StackPageShell>
   );

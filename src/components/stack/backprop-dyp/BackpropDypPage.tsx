@@ -3,6 +3,7 @@ import { Lightbulb } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
 import { BackpropVisualizer } from "./BackpropVisualizer";
+import { RelatedVisualizers } from "@/components/stack/RelatedVisualizers";
 
 const STEPS = [
   { title: "Kjerne-regelen — backprops motor", anchor: "chain-rule" },
@@ -343,6 +344,7 @@ with torch.no_grad():
             </li>
           </ul>
         </div>
+        <RelatedVisualizers slug="backprop" />
       </div>
     </StackPageShell>
   );

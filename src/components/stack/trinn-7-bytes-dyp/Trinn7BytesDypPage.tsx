@@ -3,6 +3,7 @@ import { ArrowRight, Lightbulb } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
 import { BitsDypVisualizer } from "./BitsDypVisualizer";
+import { RelatedVisualizers } from "@/components/stack/RelatedVisualizers";
 
 const STEPS = [
   { title: "Bit-manipulasjon — interaktiv", anchor: "bit-vis" },
@@ -348,6 +349,7 @@ Klassisk felle i Python 2 / web:
             </li>
           </ul>
         </div>
+        <RelatedVisualizers slug="bits-dyp" />
       </div>
     </StackPageShell>
   );

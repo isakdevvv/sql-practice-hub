@@ -6,6 +6,7 @@ import { ProsessMonitor } from "./ProsessMonitor";
 import { ProcessStateMachine } from "./ProcessStateMachine";
 import { ProcessVisualizer } from "./ProcessVisualizer";
 import { Mermaid } from "@/components/Mermaid";
+import { RelatedVisualizers } from "@/components/stack/RelatedVisualizers";
 
 const PROSESS_LIVSSYKLUS = `stateDiagram-v2
   [*] --> Ready: fork() / exec()
@@ -373,6 +374,7 @@ ps -eo pid,ni,cmd | head        # se NI-kolonnen`}</pre>
             </li>
           </ul>
         </div>
+        <RelatedVisualizers slug="prosesser-signaler" />
       </article>
     </StackPageShell>
   );

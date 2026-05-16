@@ -3,6 +3,7 @@ import { ArrowRight, Lightbulb } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
 import { SortingVisualizer } from "./SortingVisualizer";
+import { RelatedVisualizers } from "@/components/stack/RelatedVisualizers";
 
 const STEPS = [
   { title: "Hvorfor sortere", anchor: "hvorfor" },
@@ -334,6 +335,7 @@ def heapsort(lst):
             </li>
           </ul>
         </div>
+        <RelatedVisualizers slug="sortering" />
       </div>
     </StackPageShell>
   );

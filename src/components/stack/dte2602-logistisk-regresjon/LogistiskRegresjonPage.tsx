@@ -5,6 +5,7 @@ import { CourseOutline } from "@/components/stack/CourseOutline";
 import { Tex, TexBlock } from "@/components/Tex";
 import { LogisticRegressionSim, SigmoidVisual } from "./LogisticRegressionSim";
 import { LogRegVisualizer } from "./LogRegVisualizer";
+import { RelatedVisualizers } from "@/components/stack/RelatedVisualizers";
 
 const STEPS = [
   { title: "Visualisering — sigmoid, beslutningsgrense og GD", anchor: "visualisering" },
@@ -372,6 +373,7 @@ print(f"odds-ratio per feature (klasse 0): {np.exp(coef[0])}")`}</pre>
             Tilbake til DTE-2602-hub
           </Link>
         </div>
+        <RelatedVisualizers slug="logreg" />
       </div>
     </StackPageShell>
   );

@@ -3,6 +3,7 @@ import { ArrowRight, Lightbulb } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
 import { RecursionVisualizer } from "./RecursionVisualizer";
+import { RelatedVisualizers } from "@/components/stack/RelatedVisualizers";
 
 const STEPS = [
   { title: "Interaktiv visualisering", anchor: "visualisering" },
@@ -310,6 +311,7 @@ def fib_memo(n):
             </li>
           </ul>
         </div>
+        <RelatedVisualizers slug="rekursjon" />
       </div>
     </StackPageShell>
   );

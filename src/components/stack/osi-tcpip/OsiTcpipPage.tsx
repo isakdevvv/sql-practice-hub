@@ -4,6 +4,7 @@ import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
 import { OsiStackFlow } from "./OsiStackFlow";
 import { LayerVisualizer } from "./LayerVisualizer";
+import { RelatedVisualizers } from "@/components/stack/RelatedVisualizers";
 
 const STEPS = [
   { title: "Interaktiv visualisering", anchor: "visualisering" },
@@ -383,6 +384,7 @@ MAC-adresse: aa:bb:cc:dd:ee:ff
             </li>
           </ul>
         </div>
+        <RelatedVisualizers slug="osi-lag" />
       </div>
     </StackPageShell>
   );

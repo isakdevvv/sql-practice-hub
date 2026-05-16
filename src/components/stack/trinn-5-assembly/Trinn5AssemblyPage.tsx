@@ -3,6 +3,7 @@ import { ArrowRight, Lightbulb } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
 import { AssemblyVisualizer } from "./AssemblyVisualizer";
+import { RelatedVisualizers } from "@/components/stack/RelatedVisualizers";
 
 const STEPS = [
   { title: "Interaktiv assembly-trace", anchor: "trace" },
@@ -366,6 +367,7 @@ Samme C-kode med gcc -O2:
             </li>
           </ul>
         </div>
+        <RelatedVisualizers slug="assembly" />
       </div>
     </StackPageShell>
   );

@@ -3,6 +3,7 @@ import { ArrowRight, Lightbulb } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
 import { BigOVisualizer } from "./BigOVisualizer";
+import { RelatedVisualizers } from "@/components/stack/RelatedVisualizers";
 
 const STEPS = [
   { title: "Interaktiv visualisering", anchor: "viz" },
@@ -435,6 +436,7 @@ while lo < hi:
             </li>
           </ul>
         </div>
+        <RelatedVisualizers slug="big-o" />
       </div>
     </StackPageShell>
   );

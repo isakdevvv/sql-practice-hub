@@ -4,6 +4,7 @@ import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
 import { CnnConvolution } from "./CnnConvolution";
 import { CnnVisualizer } from "./CnnVisualizer";
+import { RelatedVisualizers } from "@/components/stack/RelatedVisualizers";
 
 const STEPS = [
   { title: "Interaktiv visualisering", anchor: "visualisering" },
@@ -370,6 +371,7 @@ print(sum(p.numel() for p in model.parameters()))   # antall parametere`}</pre>
             </li>
           </ul>
         </div>
+        <RelatedVisualizers slug="cnn" />
       </div>
     </StackPageShell>
   );

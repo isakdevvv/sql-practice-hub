@@ -4,6 +4,7 @@ import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
 import { QueryPlanVisualizer } from "@/components/stack/query-optimisering/QueryPlanVisualizer";
 import { QueryLayersView } from "@/components/stack/query-optimisering/QueryLayersView";
+import { RelatedVisualizers } from "@/components/stack/RelatedVisualizers";
 
 // Course page for query optimization: parser/optimizer/executor, EXPLAIN,
 // join algorithms, stats, common anti-patterns, partitioning + materialized views.
@@ -500,6 +501,7 @@ REFRESH MATERIALIZED VIEW kunde_oversikt_mv;`}</pre>
             </li>
           </ul>
         </div>
+        <RelatedVisualizers slug="query-plan" />
       </div>
     </StackPageShell>
   );

@@ -10,6 +10,7 @@ import {
   FsmRdt21Sender,
   FsmRdt30Sender,
 } from "./RdtFsm";
+import { RelatedVisualizers } from "@/components/stack/RelatedVisualizers";
 import { UtilizationCalc } from "./UtilizationCalc";
 import { RdtVisualizer } from "./RdtVisualizer";
 
@@ -371,6 +372,7 @@ export function RdtProgresjonPage() {
             },
           ]}
         />
+        <RelatedVisualizers slug="rdt-progresjon" />
       </article>
     </StackPageShell>
   );

@@ -3,6 +3,7 @@ import { ArrowRight, Lightbulb } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
 import { GraphAlgoVisualizer } from "./GraphAlgoVisualizer";
+import { RelatedVisualizers } from "@/components/stack/RelatedVisualizers";
 
 const STEPS = [
   { title: "Interaktiv: BFS/DFS/Dijkstra", anchor: "interaktiv" },
@@ -375,6 +376,7 @@ def astar(start, mal, naboer, h):
             </li>
           </ul>
         </div>
+        <RelatedVisualizers slug="grafer" />
       </div>
     </StackPageShell>
   );

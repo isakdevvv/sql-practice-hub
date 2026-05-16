@@ -3,6 +3,7 @@ import { ArrowRight, Lightbulb, AlertTriangle, Lock, RefreshCw } from "lucide-re
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
 import { TransactionVisualizer } from "@/components/stack/transaksjoner/TransactionVisualizer";
+import { RelatedVisualizers } from "@/components/stack/RelatedVisualizers";
 
 // Course page for transactions, ACID, isolation levels, locking and deadlocks.
 // Drag-øvelser under emnet "Transaksjoner" parres med denne siden.
@@ -473,6 +474,7 @@ COMMIT;`}</pre>
             </li>
           </ul>
         </div>
+        <RelatedVisualizers slug="transaksjoner" />
       </div>
     </StackPageShell>
   );

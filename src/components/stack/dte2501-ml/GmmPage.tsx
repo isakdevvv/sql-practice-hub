@@ -4,6 +4,7 @@ import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
 import { GmmVisualizer } from "./GmmVisualizer";
 import { Tex, TexBlock } from "@/components/Tex";
+import { RelatedVisualizers } from "@/components/stack/RelatedVisualizers";
 
 const STEPS = [
   { title: "Generative vs diskriminative modeller", anchor: "intro" },
@@ -381,6 +382,7 @@ print(f"BIC: {gmm.bic(X):.2f}")        # bruk BIC til å velge k`}</pre>
             Tilbake til DTE-2501-hub
           </Link>
         </div>
+        <RelatedVisualizers slug="gmm" />
 </div>
     </StackPageShell>
   );

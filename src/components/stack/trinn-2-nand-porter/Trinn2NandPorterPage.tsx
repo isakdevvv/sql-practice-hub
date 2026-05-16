@@ -3,6 +3,7 @@ import { ArrowRight, Lightbulb } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
 import { GateVisualizer } from "./GateVisualizer";
+import { RelatedVisualizers } from "@/components/stack/RelatedVisualizers";
 
 const STEPS = [
   { title: "Interaktiv port-bygger", anchor: "visualizer" },
@@ -338,6 +339,7 @@ Implementering: 3 AND-porter + 1 OR med 3 innganger.`}</pre>
             </li>
           </ul>
         </div>
+        <RelatedVisualizers slug="nand-porter" />
       </div>
     </StackPageShell>
   );

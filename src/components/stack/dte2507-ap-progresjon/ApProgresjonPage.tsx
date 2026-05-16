@@ -5,6 +5,7 @@ import { CourseOutline } from "@/components/stack/CourseOutline";
 import { Tex } from "@/components/Tex";
 import { SequenceDiagram } from "./SequenceDiagram";
 import { CsmaVisualizer } from "./CsmaVisualizer";
+import { RelatedVisualizers } from "@/components/stack/RelatedVisualizers";
 
 const STEPS = [
   { title: "MAC-progresjonen (ALOHA → CSMA/CA)", anchor: "csma" },
@@ -395,6 +396,7 @@ export function ApProgresjonPage() {
             </li>
           </ul>
         </div>
+        <RelatedVisualizers slug="ap-progresjon" />
       </article>
     </StackPageShell>
   );

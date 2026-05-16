@@ -3,6 +3,7 @@ import { ArrowRight, Lightbulb } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
 import { TransistorVisualizer } from "./TransistorVisualizer";
+import { RelatedVisualizers } from "@/components/stack/RelatedVisualizers";
 
 const STEPS = [
   { title: "Interaktiv visualisering — fra NMOS til CMOS", anchor: "visualisering" },
@@ -329,6 +330,7 @@ Hva betyr "én chip"?
             </li>
           </ul>
         </div>
+        <RelatedVisualizers slug="transistor" />
       </div>
     </StackPageShell>
   );

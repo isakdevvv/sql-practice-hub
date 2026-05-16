@@ -4,6 +4,7 @@ import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
 import { MemoryVisualizer } from "./MemoryVisualizer";
 import { MemoryModel } from "./MemoryModel";
+import { RelatedVisualizers } from "@/components/stack/RelatedVisualizers";
 
 const STEPS = [
   { title: "Interaktiv minne-visualiserer", anchor: "visualiser" },
@@ -366,6 +367,7 @@ Aksesser:
             </li>
           </ul>
         </div>
+        <RelatedVisualizers slug="c-minne" />
       </div>
     </StackPageShell>
   );

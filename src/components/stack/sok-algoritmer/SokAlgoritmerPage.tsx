@@ -3,6 +3,7 @@ import { ArrowRight, Lightbulb } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
 import { SearchVisualizer } from "@/components/stack/sok-algoritmer/SearchVisualizer";
+import { RelatedVisualizers } from "@/components/stack/RelatedVisualizers";
 
 const STEPS = [
   { title: "Array-søk — oppvarming og visualisering", anchor: "array-sok" },
@@ -367,6 +368,7 @@ Eksempler på heuristikker:
             </li>
           </ul>
         </div>
+        <RelatedVisualizers slug="sok-algoritmer-ai" />
       </div>
     </StackPageShell>
   );

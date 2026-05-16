@@ -3,6 +3,7 @@ import { Lightbulb } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
 import { GradientDescentVisualizer } from "@/components/stack/optimering/GradientDescentVisualizer";
+import { RelatedVisualizers } from "@/components/stack/RelatedVisualizers";
 
 const STEPS = [
   { title: "Visualisering — gradient descent live", anchor: "visualisering" },
@@ -330,6 +331,7 @@ Når:
             </li>
           </ul>
         </div>
+        <RelatedVisualizers slug="optimering" />
       </div>
     </StackPageShell>
   );

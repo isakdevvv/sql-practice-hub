@@ -4,6 +4,7 @@ import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
 import { NeuralNetForwardPass } from "./NeuralNetForwardPass";
 import { NeuronVisualizer } from "./NeuronVisualizer";
+import { RelatedVisualizers } from "@/components/stack/RelatedVisualizers";
 
 const STEPS = [
   { title: "Nevron-visualizer (interaktiv)", anchor: "visualizer" },
@@ -263,6 +264,7 @@ Hyperparametere:
             </li>
           </ul>
         </div>
+        <RelatedVisualizers slug="nn-intro" />
       </div>
     </StackPageShell>
   );
