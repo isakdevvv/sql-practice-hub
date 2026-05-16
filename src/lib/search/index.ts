@@ -57,7 +57,7 @@ const STATIC_PAGES: SearchEntry[] = [
   { id: "page-python", title: "Python", kind: "Side", description: "Python-oppgaver med Pyodide-kjøring.", href: "/python", keywords: "python pyodide flask" },
   { id: "page-prosjekt", title: "Prosjekt", kind: "Side", description: "Større prosjektoppgave.", href: "/prosjekt", keywords: "prosjekt project" },
   { id: "page-konsoll", title: "API-konsoll", kind: "Side", description: "Test API-endepunkter.", href: "/konsoll", keywords: "api konsoll endpoint http" },
-  { id: "page-exam", title: "Exam", kind: "Side", description: "Tidsbasert eksamenstrening.", href: "/exam", keywords: "exam eksamen prøve" },
+  { id: "page-eksamen-trening", title: "Eksamenstrening", kind: "Side", description: "Tidsbasert eksamenstrening — 10 oppgaver, 20 minutter.", href: "/eksamen/trening", keywords: "exam eksamen prøve trening tidsbasert" },
   { id: "page-dashboard", title: "Dashboard", kind: "Side", description: "Fremgangsoversikt og XP.", href: "/dashboard", keywords: "dashboard fremgang xp progress" },
   { id: "page-cards", title: "Quiz", kind: "Side", description: "Multiple-choice quiz med 4 svaralternativer per spørsmål.", href: "/cards", keywords: "quiz flashcards kort repetisjon multiple choice svar alternativer" },
   { id: "page-drag", title: "Drag", kind: "Side", description: "Drag-and-drop-oppgaver.", href: "/drag", keywords: "drag drop interactive" },
