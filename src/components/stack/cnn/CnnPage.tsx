@@ -3,8 +3,10 @@ import { Lightbulb } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
 import { CnnConvolution } from "./CnnConvolution";
+import { CnnVisualizer } from "./CnnVisualizer";
 
 const STEPS = [
+  { title: "Interaktiv visualisering", anchor: "visualisering" },
   { title: "Hvorfor CNN — vekt-deling", anchor: "hvorfor" },
   { title: "Konvolusjon — operasjonen", anchor: "conv" },
   { title: "Stride, padding & output-størrelse", anchor: "stride" },
@@ -43,6 +45,21 @@ export function CnnPage() {
         </div>
 
         <CourseOutline courseId="cnn" steps={STEPS} />
+
+        <section id="visualisering" className="mb-10">
+          <h2 className="text-xl font-semibold mb-3">
+            Interaktiv visualisering — slir lupa over bildet
+          </h2>
+          <p className="text-sm text-muted-foreground mb-3">
+            Den enkleste måten å forstå konvolusjon på er å se den. Tenk på{" "}
+            <strong>kjernen som en lupe</strong> som leter etter et bestemt
+            mønster — den slir over inputen og noterer hvor sterkt mønsteret er
+            hver plass. Resultatet er et nytt "bilde" der det opprinnelige
+            mønsteret lyser opp. Bytt mellom de fem modusene under for å se 1D,
+            2D, stride/padding, pooling og et galleri av filtre på samme bilde.
+          </p>
+          <CnnVisualizer />
+        </section>
 
         <section id="hvorfor" className="mb-10">
           <h2 className="text-xl font-semibold mb-3">1. Hvorfor CNN — vekt-deling</h2>
