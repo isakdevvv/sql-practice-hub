@@ -273,6 +273,20 @@ export const PROBLEMS: Problem[] = [
     solution:
       "SELECT u.id, u.name FROM users u LEFT JOIN orders o ON o.user_id = u.id WHERE o.id IS NULL;",
     alt_solutions: ["SELECT id, name FROM users WHERE id NOT IN (SELECT user_id FROM orders);"],
+    altSolutions: [
+      {
+        navn: "NOT IN (subquery)",
+        kode: "SELECT id, name FROM users\nWHERE id NOT IN (SELECT user_id FROM orders);",
+        kommentar:
+          "Kort og lesbar — men FELLE: hvis subquery returnerer en NULL (f.eks. hvis user_id kunne vært NULL), gir hele NOT IN tomt resultat. Vanlig kilde til subtile bugs.",
+      },
+      {
+        navn: "NOT EXISTS",
+        kode: "SELECT u.id, u.name FROM users u\nWHERE NOT EXISTS (\n  SELECT 1 FROM orders o WHERE o.user_id = u.id\n);",
+        kommentar:
+          "Den NULL-trygge varianten. Optimizer behandler den ofte identisk med LEFT JOIN + IS NULL. Foretrukket form i produksjonskode der data kan ha NULLs.",
+      },
+    ],
     validation: { ignore_order: true, ignore_column_names: true },
     hints: ["LEFT JOIN keeps all users", "WHERE o.id IS NULL keeps unmatched rows"],
     explanation: "LEFT JOIN + IS NULL is the classic 'anti-join' pattern.",
@@ -289,6 +303,20 @@ export const PROBLEMS: Problem[] = [
       "For each order id, return the total value (sum of quantity * price across order_items).",
     starter_sql: "-- Write your SQL query here\n",
     solution: "SELECT order_id, SUM(quantity * price) AS total FROM order_items GROUP BY order_id;",
+    altSolutions: [
+      {
+        navn: "Window function (SUM OVER)",
+        kode: "SELECT DISTINCT order_id,\n  SUM(quantity * price) OVER (PARTITION BY order_id) AS total\nFROM order_items;",
+        kommentar:
+          "Window-versjonen unngår GROUP BY ved å bruke OVER(PARTITION BY). Du må legge til DISTINCT for å unngå duplikater. Lengre og mindre idiomatisk her — GROUP BY er det rette verktøyet for ren aggregering, men dette mønsteret er verdt å kjenne når du trenger BÅDE aggregat OG de underliggende radene.",
+      },
+      {
+        navn: "Med eksplisitt JOIN til orders",
+        kode: "SELECT o.id AS order_id, SUM(oi.quantity * oi.price) AS total\nFROM orders o\nJOIN order_items oi ON oi.order_id = o.id\nGROUP BY o.id;",
+        kommentar:
+          "Tar med orders-tabellen selv om det ikke trengs for resultatet. Nyttig hvis du senere vil legge til ordrer UTEN linjer (LEFT JOIN) eller filtrere på orders.status — da slipper du å skrive om hele spørringen.",
+      },
+    ],
     validation: { ignore_order: true, ignore_column_names: true },
     hints: ["SUM(quantity * price)", "GROUP BY order_id"],
     explanation: "Aggregates collapse groups; GROUP BY defines the group.",
@@ -402,6 +430,20 @@ export const PROBLEMS: Problem[] = [
     starter_sql: "-- Write your SQL query here\n",
     solution:
       "SELECT u.name, COUNT(o.id) AS order_count FROM users u LEFT JOIN orders o ON o.user_id = u.id GROUP BY u.name;",
+    altSolutions: [
+      {
+        navn: "Korrelert subquery i SELECT",
+        kode: "SELECT u.name,\n  (SELECT COUNT(*) FROM orders o WHERE o.user_id = u.id) AS order_count\nFROM users u;",
+        kommentar:
+          "Unngår både JOIN og GROUP BY. Lettere å lese for nybegynnere, men kan være tregere på store datasett (en sub-query per rad). Optimizere er ofte gode på å skrive den om til en JOIN, men ikke alltid.",
+      },
+      {
+        navn: "Med COALESCE for å vise 0 eksplisitt",
+        kode: "SELECT u.name, COALESCE(o_count, 0) AS order_count\nFROM users u\nLEFT JOIN (\n  SELECT user_id, COUNT(*) AS o_count FROM orders GROUP BY user_id\n) o ON o.user_id = u.id;",
+        kommentar:
+          "Pre-aggregerer ordrer i en subquery FØRST, så LEFT JOIN. Med COALESCE blir NULL eksplisitt 0. Mer skalerbart enn å GROUP BY etter joinen når orders-tabellen er stor, fordi vi reduserer rader før vi joiner.",
+      },
+    ],
     validation: { ignore_order: true, ignore_column_names: true },
     hints: ["COUNT(o.id), not COUNT(*) — to count NULLs as 0"],
     explanation: "COUNT ignores NULLs, so COUNT(o.id) gives 0 for unmatched left rows.",
@@ -498,6 +540,20 @@ export const PROBLEMS: Problem[] = [
     problem: "Return the total amount across all payments where status = 'paid'.",
     starter_sql: "SELECT SUM(amount) FROM payments WHERE <Condition>;",
     solution: "SELECT SUM(amount) FROM payments WHERE status = 'paid';",
+    altSolutions: [
+      {
+        navn: "Filtered aggregate (SUM med CASE)",
+        kode: "SELECT SUM(CASE WHEN status = 'paid' THEN amount ELSE 0 END) AS total_paid\nFROM payments;",
+        kommentar:
+          "Nyttig mønster når du vil ha FLERE betingede summer i ÉN query — f.eks. total_paid og total_pending side om side. Med bare WHERE måtte du kjørt to spørringer eller en UNION.",
+      },
+      {
+        navn: "FILTER-klausul (PostgreSQL/standard SQL)",
+        kode: "SELECT SUM(amount) FILTER (WHERE status = 'paid') AS total_paid\nFROM payments;",
+        kommentar:
+          "FILTER er den moderne standarden (SQL:2003) for betingede aggregater — mer lesbar enn CASE. SQLite støtter dette fra v3.30 (2019). Foretrekk denne formen der det er tilgjengelig.",
+      },
+    ],
     validation: { ignore_order: true, ignore_column_names: true },
     hints: ["SUM(amount)", "filter to status='paid'"],
     explanation: "WHERE applies before aggregation.",
@@ -621,6 +677,14 @@ export const PROBLEMS: Problem[] = [
     starter_sql: "-- Write your SQL query here\n",
     solution:
       "SELECT AVG(total_qty) FROM (SELECT order_id, SUM(quantity) AS total_qty FROM order_items GROUP BY order_id);",
+    altSolutions: [
+      {
+        navn: "CTE-form (WITH)",
+        kode: "WITH per_order AS (\n  SELECT order_id, SUM(quantity) AS total_qty\n  FROM order_items\n  GROUP BY order_id\n)\nSELECT AVG(total_qty) AS avg_order_size\nFROM per_order;",
+        kommentar:
+          "Funksjonelt identisk med subquery i FROM, men CTE-en gir navngitt mellomsteg som dokumenterer logikken. Foretrekkes i moderne kode — særlig når du har 2+ steg eller vil gjenbruke mellomresultatet flere ganger.",
+      },
+    ],
     validation: { ignore_order: true, ignore_column_names: true },
     hints: ["Subquery first, then AVG"],
     explanation: "Aggregating an aggregated subquery is a common pattern.",
@@ -668,6 +732,14 @@ export const PROBLEMS: Problem[] = [
     problem: "Return products whose price is greater than the average product price.",
     starter_sql: "-- Write your SQL query here\n",
     solution: "SELECT * FROM products WHERE price > (SELECT AVG(price) FROM products);",
+    altSolutions: [
+      {
+        navn: "Window function (uten subquery)",
+        kode: "SELECT id, name, category, price, stock\nFROM (\n  SELECT *, AVG(price) OVER () AS avg_price\n  FROM products\n) sub\nWHERE price > avg_price;",
+        kommentar:
+          "AVG(price) OVER () regner snittet av HELE tabellen og fester det på hver rad. Mer kraftfullt: bytt til OVER(PARTITION BY category) for 'over snittet i sin egen kategori' — uten å endre strukturen. Scalar subquery er kortere her, men window-formen skalerer bedre når kriteriet endrer seg.",
+      },
+    ],
     validation: { ignore_order: true, ignore_column_names: true },
     hints: ["The subquery returns one number"],
     explanation: "Scalar subqueries plug into expressions like a literal.",
@@ -700,6 +772,20 @@ export const PROBLEMS: Problem[] = [
     starter_sql: "-- Write your SQL query here\n",
     solution:
       "SELECT * FROM products p WHERE price = (SELECT MAX(price) FROM products WHERE category = p.category);",
+    altSolutions: [
+      {
+        navn: "Window function (RANK)",
+        kode: "SELECT id, name, category, price, stock\nFROM (\n  SELECT *, RANK() OVER (PARTITION BY category ORDER BY price DESC) AS rk\n  FROM products\n) sub\nWHERE rk = 1;",
+        kommentar:
+          "Window-funksjonen RANK() per kategori gir 1 til de(t) dyreste produktet/produktene. Skalerer bedre enn correlated subquery (én pass over tabellen vs. én subquery per rad). Bytt RANK→DENSE_RANK eller ROW_NUMBER for forskjellig håndtering av likhet.",
+      },
+      {
+        navn: "JOIN mot aggregat-subquery",
+        kode: "SELECT p.*\nFROM products p\nJOIN (\n  SELECT category, MAX(price) AS max_price\n  FROM products\n  GROUP BY category\n) m ON m.category = p.category AND m.max_price = p.price;",
+        kommentar:
+          "Pre-aggreger maks pris per kategori, så join. Mest portabel form — fungerer på alle SQL-dialekter, også de uten window-funksjoner. Ofte raskere enn correlated subquery i praksis.",
+      },
+    ],
     validation: { ignore_order: true, ignore_column_names: true },
     hints: ["Correlate the inner query on category"],
     explanation: "Correlated subqueries reference the outer row.",
@@ -749,6 +835,14 @@ export const PROBLEMS: Problem[] = [
     starter_sql: "-- Write your SQL query here\n",
     solution:
       "SELECT u.name, SUM(p.amount) AS total FROM users u JOIN orders o ON u.id = o.user_id JOIN payments p ON o.id = p.order_id WHERE p.status='paid' GROUP BY u.name ORDER BY total DESC LIMIT 1;",
+    altSolutions: [
+      {
+        navn: "Window function (RANK) — håndterer uavgjort",
+        kode: "WITH per_user AS (\n  SELECT u.name, SUM(p.amount) AS total\n  FROM users u\n  JOIN orders o ON o.user_id = u.id\n  JOIN payments p ON p.order_id = o.id\n  WHERE p.status = 'paid'\n  GROUP BY u.name\n)\nSELECT name, total\nFROM (SELECT *, RANK() OVER (ORDER BY total DESC) AS rk FROM per_user) r\nWHERE rk = 1;",
+        kommentar:
+          "LIMIT 1 kaster bort viktig informasjon hvis to brukere har lik topp-sum — du får én tilfeldig av dem. RANK() = 1 returnerer ALLE som er på topp. Bruk denne formen når 'flere på topp' er semantisk relevant.",
+      },
+    ],
     validation: { ignore_order: false, ignore_column_names: true },
     hints: ["JOIN, filter, group, order desc, limit 1"],
     explanation: "Top-N aggregation: filter, group, order, limit.",
@@ -764,6 +858,20 @@ export const PROBLEMS: Problem[] = [
     problem: "Return user_ids of users who have placed more than one order.",
     starter_sql: "-- Write your SQL query here\n",
     solution: "SELECT user_id FROM orders GROUP BY user_id HAVING COUNT(*) > 1;",
+    altSolutions: [
+      {
+        navn: "Self-join (uten GROUP BY)",
+        kode: "SELECT DISTINCT o1.user_id\nFROM orders o1\nJOIN orders o2 ON o1.user_id = o2.user_id AND o1.id < o2.id;",
+        kommentar:
+          "Bevis at brukeren har ≥2 ordrer ved å finne to ulike ordrer (id < id) for samme bruker. Fungerer, men er O(n²) i orders-tabellen — mye tregere enn GROUP BY + HAVING for noe så enkelt. Tar med for å vise det er flere veier til samme svar.",
+      },
+      {
+        navn: "EXISTS i WHERE",
+        kode: "SELECT DISTINCT user_id\nFROM orders o1\nWHERE EXISTS (\n  SELECT 1 FROM orders o2\n  WHERE o2.user_id = o1.user_id AND o2.id <> o1.id\n);",
+        kommentar:
+          "EXISTS bekrefter at det finnes en ANNEN ordre med samme user_id. Idiomatisk når du ikke trenger telling, bare 'finnes minst to'. HAVING-formen er fortsatt enklest når kravet er nøyaktig 'mer enn N'.",
+      },
+    ],
     validation: { ignore_order: true, ignore_column_names: true },
     hints: ["GROUP BY user_id", "HAVING COUNT(*) > 1"],
     explanation: "HAVING filters groups by their aggregate value.",
@@ -781,6 +889,20 @@ export const PROBLEMS: Problem[] = [
     starter_sql: "-- Write your SQL query here\n",
     solution:
       "SELECT p.name, SUM(oi.quantity) AS total_sold FROM products p JOIN order_items oi ON oi.product_id = p.id GROUP BY p.name ORDER BY total_sold DESC LIMIT 1;",
+    altSolutions: [
+      {
+        navn: "Subquery med MAX",
+        kode: "SELECT p.name, SUM(oi.quantity) AS total_sold\nFROM products p\nJOIN order_items oi ON oi.product_id = p.id\nGROUP BY p.name\nHAVING SUM(oi.quantity) = (\n  SELECT MAX(s) FROM (\n    SELECT SUM(quantity) AS s FROM order_items GROUP BY product_id\n  )\n);",
+        kommentar:
+          "Mer ordrik enn LIMIT 1, men returnerer ALLE produkter med høyeste salg (ikke bare ett tilfeldig hvis uavgjort). Klassisk SQL uten window-funksjoner.",
+      },
+      {
+        navn: "Window function (ROW_NUMBER)",
+        kode: "SELECT name, total_sold FROM (\n  SELECT p.name,\n    SUM(oi.quantity) AS total_sold,\n    ROW_NUMBER() OVER (ORDER BY SUM(oi.quantity) DESC) AS rn\n  FROM products p\n  JOIN order_items oi ON oi.product_id = p.id\n  GROUP BY p.name\n) ranked\nWHERE rn = 1;",
+        kommentar:
+          "ROW_NUMBER() i samme spørring som GROUP BY — window beregnes ETTER aggregering. Funksjonelt lik LIMIT 1 (én rad selv ved uavgjort), men mer fleksibel: bytt til RANK for alle på topp, eller WHERE rn <= 3 for topp-3.",
+      },
+    ],
     validation: { ignore_order: false, ignore_column_names: true },
     hints: ["JOIN, SUM(quantity), order desc, limit 1"],
     explanation: "Same Top-N pattern, applied to product sales.",
@@ -1782,11 +1904,13 @@ export const PROBLEMS: Problem[] = [
       "SELECT id, user_id, created_at,\n  ROW_NUMBER() OVER (PARTITION BY <Column> ORDER BY <Column>) AS rn\nFROM <TableName>;",
     solution:
       "SELECT id, user_id, created_at, ROW_NUMBER() OVER (PARTITION BY user_id ORDER BY created_at) AS rn FROM orders;",
-    validation: { ignore_order: true, ignore_column_names: true },
-    hints: [
-      "PARTITION BY deler radene inn i grupper — én gruppe per user_id her",
-      "ORDER BY inni OVER bestemmer rekkefølgen rn telles i — uavhengig av yttre ORDER BY",
-      "ROW_NUMBER() gir alltid unike heltall 1, 2, 3 ... innen hver partisjon",
+    altSolutions: [
+      {
+        navn: "Correlated subquery (pre-window era)",
+        kode: "SELECT o.id, o.user_id, o.created_at,\n  (SELECT COUNT(*) FROM orders o2\n   WHERE o2.user_id = o.user_id AND o2.created_at <= o.created_at) AS rn\nFROM orders o;",
+        kommentar:
+          "Slik måtte du gjøre det FØR window-funksjoner (SQL-89). Tell antall tidligere ordrer i samme partisjon. Korrekt, men O(n²) — kjøres for hver rad. Window-versjonen er O(n log n) og MYE raskere på store data.",
+      },
     ],
     explanation:
       "Window-funksjoner som ROW_NUMBER lar deg legge til rangering eller andre per-gruppe-beregninger uten å kollapse radene slik GROUP BY gjør — du beholder hver original rad og får et nytt felt på siden. PARTITION BY definerer 'gruppen' funksjonen jobber innenfor, og ORDER BY inni OVER bestemmer rekkefølgen. Klassisk bruk: 'finn nyeste ordre per kunde' (filtrer på rn = 1) eller 'topp 3 produkter per kategori'.",
@@ -1828,6 +1952,14 @@ export const PROBLEMS: Problem[] = [
       "WITH ordre_totaler AS (\n  SELECT o.id, o.created_at, SUM(oi.quantity * oi.price) AS total\n  FROM orders o JOIN order_items oi ON oi.order_id = o.id\n  GROUP BY o.id, o.created_at\n)\nSELECT id, created_at, total,\n  total - LAG(<Column>) OVER (ORDER BY <Column>) AS diff_fra_forrige\nFROM ordre_totaler;",
     solution:
       "WITH ordre_totaler AS (SELECT o.id, o.created_at, SUM(oi.quantity * oi.price) AS total FROM orders o JOIN order_items oi ON oi.order_id = o.id GROUP BY o.id, o.created_at) SELECT id, created_at, total, total - LAG(total) OVER (ORDER BY created_at) AS diff_fra_forrige FROM ordre_totaler;",
+    altSolutions: [
+      {
+        navn: "Self-join på row-number (uten LAG)",
+        kode: "WITH numbered AS (\n  SELECT o.id, o.created_at,\n    SUM(oi.quantity * oi.price) AS total,\n    ROW_NUMBER() OVER (ORDER BY o.created_at) AS rn\n  FROM orders o JOIN order_items oi ON oi.order_id = o.id\n  GROUP BY o.id, o.created_at\n)\nSELECT a.id, a.created_at, a.total,\n  a.total - b.total AS diff_fra_forrige\nFROM numbered a\nLEFT JOIN numbered b ON b.rn = a.rn - 1;",
+        kommentar:
+          "Klassisk self-join-mønster: nummerer radene, så join hver rad mot raden med ett lavere nummer. LAG gjør det samme i én funksjon. Lærerikt å vite hva LAG egentlig gjør — men i praksis: bruk LAG.",
+      },
+    ],
     validation: { ignore_order: true, ignore_column_names: true },
     hints: [
       "LAG(total) OVER (ORDER BY created_at) gir total fra raden rett før i den sorterte rekkefølgen",

@@ -10,6 +10,7 @@ import { ProfileButton } from "@/components/ProfileButton";
 const HUBS: { label: string; to: string }[] = [
   { label: "Lær", to: "/lar" },
   { label: "Øv", to: "/ov" },
+  { label: "Predict", to: "/predict" },
   { label: "Spor", to: "/spor" },
   { label: "Mini-kurs", to: "/mini-kurs" },
   { label: "Eksamen", to: "/eksamen" },

@@ -45,6 +45,9 @@ import {
   Search,
   Loader2,
   Copy,
+  ChevronDown,
+  ChevronUp,
+  GitCompare,
 } from "lucide-react";
 import { format as formatSql } from "sql-formatter";
 
@@ -844,19 +847,28 @@ function ProblemWorkspace({
             <div className="shrink-0 overflow-y-auto min-h-[200px] lg:max-h-[40%]">
               <div className="bg-card/30 h-full">
                 {verdict === "correct" && (
-                  <div className="flex items-start gap-3 px-5 py-3 border-b border-success/40 bg-success/10">
-                    <Check className="h-5 w-5 text-success shrink-0 mt-0.5" />
-                    <div className="flex-1">
-                      <div className="font-semibold text-success">Correct!</div>
-                      <p className="text-xs text-foreground/80 mt-1">{problem.explanation}</p>
+                  <>
+                    <div className="flex items-start gap-3 px-5 py-3 border-b border-success/40 bg-success/10">
+                      <Check className="h-5 w-5 text-success shrink-0 mt-0.5" />
+                      <div className="flex-1">
+                        <div className="font-semibold text-success">Correct!</div>
+                        <p className="text-xs text-foreground/80 mt-1">{problem.explanation}</p>
+                      </div>
+                      {position && position.current < position.total && (
+                        <Button size="sm" onClick={onNext} className="shrink-0">
+                          Next
+                          <ChevronRight className="h-4 w-4 ml-1" />
+                        </Button>
+                      )}
                     </div>
-                    {position && position.current < position.total && (
-                      <Button size="sm" onClick={onNext} className="shrink-0">
-                        Next
-                        <ChevronRight className="h-4 w-4 ml-1" />
-                      </Button>
+                    {problem.altSolutions && problem.altSolutions.length > 0 && (
+                      <SolutionComparison
+                        userSql={sql}
+                        canonical={problem.solution}
+                        alternatives={problem.altSolutions}
+                      />
                     )}
-                  </div>
+                  </>
                 )}
                 {verdict === "wrong" && (
                   <div className="flex items-start gap-3 px-5 py-3 border-b border-destructive/40 bg-destructive/10">
@@ -983,6 +995,151 @@ function ProblemWorkspace({
     </section>
     </TooltipProvider>
   );
+}
+
+/**
+ * Vises etter at en SQL-løsning er bekreftet riktig. Sammenligner brukerens
+ * løsning med 1-2 kuraterte alternative referanse-løsninger, hver med en
+ * pedagogisk kommentar om når man bør foretrekke den formen.
+ */
+function SolutionComparison({
+  userSql,
+  canonical,
+  alternatives,
+}: {
+  userSql: string;
+  canonical: string;
+  alternatives: NonNullable<Problem["altSolutions"]>;
+}) {
+  const [open, setOpen] = useState(true);
+  const [openIdx, setOpenIdx] = useState<number | null>(0);
+  const [copiedIdx, setCopiedIdx] = useState<number | null>(null);
+
+  function copyAlt(code: string, idx: number) {
+    if (typeof navigator === "undefined" || !navigator.clipboard) return;
+    navigator.clipboard.writeText(code).then(() => {
+      setCopiedIdx(idx);
+      setTimeout(() => setCopiedIdx(null), 1500);
+    });
+  }
+
+  return (
+    <div className="border-b border-border bg-card/30">
+      <button
+        type="button"
+        onClick={() => setOpen((o) => !o)}
+        className="flex items-center justify-between w-full px-5 py-2 text-left hover:bg-accent/30 transition-colors"
+      >
+        <div className="flex items-center gap-2">
+          <GitCompare className="h-4 w-4 text-brand" />
+          <span className="font-semibold text-sm">
+            Sammenlign med andre løsninger
+          </span>
+          <Badge variant="secondary" className="text-[10px]">
+            {alternatives.length} alternativ
+            {alternatives.length === 1 ? "" : "er"}
+          </Badge>
+        </div>
+        {open ? (
+          <ChevronUp className="h-4 w-4 text-muted-foreground" />
+        ) : (
+          <ChevronDown className="h-4 w-4 text-muted-foreground" />
+        )}
+      </button>
+
+      {open && (
+        <div className="px-5 pb-4 space-y-3">
+          {/* Brukerens løsning vs. den kanoniske — kort sammenligning hvis de er ulike. */}
+          {normalizeSql(userSql) !== normalizeSql(canonical) && (
+            <div className="rounded-md border border-border bg-background/50 p-3">
+              <div className="text-[11px] uppercase tracking-wide text-muted-foreground font-semibold mb-1">
+                Din løsning vs. fasit
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs font-mono">
+                <div>
+                  <div className="text-[10px] text-muted-foreground mb-1">DU SKREV</div>
+                  <pre className="bg-[#1e1e1e] rounded p-2 overflow-auto border border-border whitespace-pre-wrap">
+                    {userSql.trim()}
+                  </pre>
+                </div>
+                <div>
+                  <div className="text-[10px] text-muted-foreground mb-1">FASIT</div>
+                  <pre className="bg-[#1e1e1e] rounded p-2 overflow-auto border border-border whitespace-pre-wrap">
+                    {canonical.trim()}
+                  </pre>
+                </div>
+              </div>
+              <p className="mt-2 text-[11px] text-muted-foreground">
+                Begge produserer riktig resultat — bare litt ulik formulering.
+              </p>
+            </div>
+          )}
+
+          {/* Listen av alternative løsninger, hver collapsible. */}
+          {alternatives.map((alt, i) => {
+            const isOpen = openIdx === i;
+            return (
+              <div
+                key={i}
+                className="rounded-md border border-border bg-background/50 overflow-hidden"
+              >
+                <button
+                  type="button"
+                  onClick={() => setOpenIdx(isOpen ? null : i)}
+                  className="flex items-center justify-between w-full px-3 py-2 text-left hover:bg-accent/30 transition-colors"
+                >
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] tabular-nums text-muted-foreground font-mono">
+                      #{i + 1}
+                    </span>
+                    <span className="font-medium text-sm">{alt.navn}</span>
+                  </div>
+                  {isOpen ? (
+                    <ChevronUp className="h-3.5 w-3.5 text-muted-foreground" />
+                  ) : (
+                    <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />
+                  )}
+                </button>
+                {isOpen && (
+                  <div className="px-3 pb-3 space-y-2">
+                    <div className="relative">
+                      <pre className="rounded bg-[#1e1e1e] p-3 pr-10 text-xs font-mono text-foreground/90 overflow-auto border border-border whitespace-pre">
+                        {alt.kode}
+                      </pre>
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        onClick={() => copyAlt(alt.kode, i)}
+                        className="absolute top-1 right-1 h-7 w-7"
+                        aria-label={copiedIdx === i ? "Kopiert!" : "Kopier"}
+                      >
+                        {copiedIdx === i ? (
+                          <Check className="h-3.5 w-3.5 text-success" />
+                        ) : (
+                          <Copy className="h-3.5 w-3.5" />
+                        )}
+                      </Button>
+                    </div>
+                    <p className="text-xs text-foreground/80 leading-relaxed">
+                      <span className="font-semibold text-brand">Hvorfor: </span>
+                      {alt.kommentar}
+                    </p>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/** Veldig grov normalisering for å sjekke om to SQL-strenger er "samme":
+ *  fjern alle whitespace + lowercase. Brukt KUN for å avgjøre om vi skal vise
+ *  "din løsning vs. fasit"-blokken (sparer rotete UI når brukeren skrev fasiten). */
+function normalizeSql(sql: string): string {
+  return sql.replace(/\s+/g, "").replace(/;$/g, "").toLowerCase();
 }
 
 function BottomTab({
