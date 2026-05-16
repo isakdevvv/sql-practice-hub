@@ -1,4 +1,4 @@
-import { Dte2602EvalueringPage } from "@/components/stack/dte2602-evaluering-metoder/Dte2602EvalueringPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "Train/val/test, k-fold, stratifisering, metrikker (precision/recall/F1/ROC-AUC, RMSE/R²), confusion matrix, grid/random search, lekkasje.",
   prerequisites: [],
-  Component: Dte2602EvalueringPage,
+  Component: lazy(() => import("@/components/stack/dte2602-evaluering-metoder/Dte2602EvalueringPage").then((m) => ({ default: m.Dte2602EvalueringPage }))),
 };

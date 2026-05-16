@@ -1,4 +1,4 @@
-import { HtmlJinjaPage } from "@/components/stack/html-jinja/HtmlJinjaPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "HTML-skjelett, semantiske elementer, CSS-kobling, Jinja-arv (extends/block/include/import), kontrollflyt og sikkerhet.",
   prerequisites: [],
-  Component: HtmlJinjaPage,
+  Component: lazy(() => import("@/components/stack/html-jinja/HtmlJinjaPage").then((m) => ({ default: m.HtmlJinjaPage }))),
 };

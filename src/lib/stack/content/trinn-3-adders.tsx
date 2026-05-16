@@ -1,4 +1,4 @@
-import { Trinn3AddersPage } from "@/components/stack/trinn-3-adders/Trinn3AddersPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -10,5 +10,5 @@ export const content: TrinnContent = {
   status: "ready",
   shortDescription: "Half-adder, full-adder, og hvordan én bit lagres i en flip-flop.",
   prerequisites: [],
-  Component: Trinn3AddersPage,
+  Component: lazy(() => import("@/components/stack/trinn-3-adders/Trinn3AddersPage").then((m) => ({ default: m.Trinn3AddersPage }))),
 };

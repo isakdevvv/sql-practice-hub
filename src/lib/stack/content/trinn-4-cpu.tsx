@@ -1,4 +1,4 @@
-import { Trinn4CpuPage } from "@/components/stack/trinn-4-cpu/Trinn4CpuPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -10,5 +10,5 @@ export const content: TrinnContent = {
   status: "ready",
   shortDescription: "PC, IR, ALU, registerfil. Én instruksjon, én syklus.",
   prerequisites: [],
-  Component: Trinn4CpuPage,
+  Component: lazy(() => import("@/components/stack/trinn-4-cpu/Trinn4CpuPage").then((m) => ({ default: m.Trinn4CpuPage }))),
 };

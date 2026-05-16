@@ -1,4 +1,4 @@
-import { ProgrammeringsbokerPage } from "@/components/stack/programmeringsboker/ProgrammeringsbokerPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "20 bøker kuratert for hele DTE-bachelor i 3 bølger. Bølge 1 (10 hovedbøker), bølge 2 (5 spesialister: Crafting Interpreters, Database Internals, ML Systems, Grokking Algorithms, Refactoring), bølge 3 (5 gratis-tunge: HPBN, Google SRE, Goodfellow DL, Sutton & Barto RL, Fluent Python). 9 av 20 er gratis.",
   prerequisites: [],
-  Component: ProgrammeringsbokerPage,
+  Component: lazy(() => import("@/components/stack/programmeringsboker/ProgrammeringsbokerPage").then((m) => ({ default: m.ProgrammeringsbokerPage }))),
 };

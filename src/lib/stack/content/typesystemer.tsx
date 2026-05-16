@@ -1,4 +1,4 @@
-import { TypesystemerPage } from "@/components/stack/typesystemer/TypesystemerPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "Static vs dynamic, generics, variance (co/contra/invariant), sum types, narrowing, phantom & dependent types.",
   prerequisites: [],
-  Component: TypesystemerPage,
+  Component: lazy(() => import("@/components/stack/typesystemer/TypesystemerPage").then((m) => ({ default: m.TypesystemerPage }))),
 };

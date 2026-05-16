@@ -1,4 +1,4 @@
-import { MdpBellmanPage } from "@/components/stack/dte2501-mdp-bellman/MdpBellmanPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "Regnedrill for Bellman-likningen, Value Iteration og Policy Iteration. Steg-for-steg på 2-state MDP og 3×3 grid. Sutton & Barto kap. 3-4.",
   prerequisites: [],
-  Component: MdpBellmanPage,
+  Component: lazy(() => import("@/components/stack/dte2501-mdp-bellman/MdpBellmanPage").then((m) => ({ default: m.MdpBellmanPage }))),
 };

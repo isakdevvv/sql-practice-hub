@@ -1,4 +1,4 @@
-import { Tek1501Hub } from "@/components/stack/tek-1501/Tek1501Hub";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "Fire moduler som dekker hele TEK-1501-pensumet: deskriptiv statistikk, sannsynlighet og kombinatorikk, sannsynlighetsfordelinger, og statistisk inferens med regresjon.",
   prerequisites: [],
-  Component: Tek1501Hub,
+  Component: lazy(() => import("@/components/stack/tek-1501/Tek1501Hub").then((m) => ({ default: m.Tek1501Hub }))),
 };

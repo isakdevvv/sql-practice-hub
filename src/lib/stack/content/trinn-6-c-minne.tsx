@@ -1,4 +1,4 @@
-import { Trinn6CMinnePage } from "@/components/stack/trinn-6-c-minne/Trinn6CMinnePage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -10,5 +10,5 @@ export const content: TrinnContent = {
   status: "ready",
   shortDescription: "Stack vs heap, hex-dumps, en char-array er bare bytes.",
   prerequisites: [],
-  Component: Trinn6CMinnePage,
+  Component: lazy(() => import("@/components/stack/trinn-6-c-minne/Trinn6CMinnePage").then((m) => ({ default: m.Trinn6CMinnePage }))),
 };

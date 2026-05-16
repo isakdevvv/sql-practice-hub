@@ -1,4 +1,4 @@
-import { InniRuterPage } from "@/components/stack/dte2507-inni-ruter/InniRuterPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "Input port, switch fabric og output port. Via memory / via bus / via crossbar. Head-of-Line blocking med Karol-grensen 58%, og bufferbloat — «buffering is like salt».",
   prerequisites: [],
-  Component: InniRuterPage,
+  Component: lazy(() => import("@/components/stack/dte2507-inni-ruter/InniRuterPage").then((m) => ({ default: m.InniRuterPage }))),
 };

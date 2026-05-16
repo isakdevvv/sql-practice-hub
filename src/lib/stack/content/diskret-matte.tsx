@@ -1,4 +1,4 @@
-import { DiskretMattePage } from "@/components/stack/diskret-matte/DiskretMattePage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "Logikk, mengder, funksjoner, kombinatorikk, induksjon, grafer, modulær aritmetikk. MIT 6.042 i komprimert form.",
   prerequisites: [],
-  Component: DiskretMattePage,
+  Component: lazy(() => import("@/components/stack/diskret-matte/DiskretMattePage").then((m) => ({ default: m.DiskretMattePage }))),
 };

@@ -1,4 +1,4 @@
-import { AspnetWebapiPage } from "@/components/stack/aspnet-webapi/AspnetWebapiPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "ControllerBase, HTTP-verb-attributter, action results, attribute routing, CORS.",
   prerequisites: [{ slug: "csharp-grunnlag", title: "C# språk-grunnlag" }],
-  Component: AspnetWebapiPage,
+  Component: lazy(() => import("@/components/stack/aspnet-webapi/AspnetWebapiPage").then((m) => ({ default: m.AspnetWebapiPage }))),
 };

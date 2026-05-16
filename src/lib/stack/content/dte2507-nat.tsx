@@ -1,4 +1,4 @@
-import { Dte2507NatPage } from "@/components/stack/dte2507-nat/Dte2507NatPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -14,5 +14,5 @@ export const content: TrinnContent = {
     { slug: "dte2507-subnetting", title: "Subnetting / CIDR" },
     { slug: "dte2507-inni-ruter", title: "Inni ruteren — IP-forwarding" },
   ],
-  Component: Dte2507NatPage,
+  Component: lazy(() => import("@/components/stack/dte2507-nat/Dte2507NatPage").then((m) => ({ default: m.Dte2507NatPage }))),
 };

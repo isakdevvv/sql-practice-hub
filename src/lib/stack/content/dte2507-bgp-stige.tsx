@@ -1,4 +1,4 @@
-import { BgpLadderPage } from "@/components/stack/dte2507-bgp-stige/BgpLadderPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "BGPs fire-stegs filterstige LOCAL_PREF → AS_PATH → hot potato → BGP-ID, med interaktiv simulator over fire konkurrerende ruter. Slider for LOCAL_PREF vrir policy. Kurose Ch 5.4.3.",
   prerequisites: [],
-  Component: BgpLadderPage,
+  Component: lazy(() => import("@/components/stack/dte2507-bgp-stige/BgpLadderPage").then((m) => ({ default: m.BgpLadderPage }))),
 };

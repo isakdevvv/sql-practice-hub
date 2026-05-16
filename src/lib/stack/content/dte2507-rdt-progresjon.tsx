@@ -1,4 +1,4 @@
-import { RdtProgresjonPage } from "@/components/stack/dte2507-rdt-progresjon/RdtProgresjonPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "Kurose & Ross sitt flaggskip-eksempel: hver versjon legger til ETT verktøy mot ETT problem. FSM-diagrammer, ACK/NAK, sekvensnummer, timer — og til slutt stop-and-wait sin elendige 0.000266 utnyttelse på 1 Gbps coast-to-coast.",
   prerequisites: [],
-  Component: RdtProgresjonPage,
+  Component: lazy(() => import("@/components/stack/dte2507-rdt-progresjon/RdtProgresjonPage").then((m) => ({ default: m.RdtProgresjonPage }))),
 };

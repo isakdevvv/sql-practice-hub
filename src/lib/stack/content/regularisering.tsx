@@ -1,4 +1,4 @@
-import { RegulariseringPage } from "@/components/stack/regularisering/RegulariseringPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "Dropout, batch normalization, weight decay, early stopping, data augmentation.",
   prerequisites: [],
-  Component: RegulariseringPage,
+  Component: lazy(() => import("@/components/stack/regularisering/RegulariseringPage").then((m) => ({ default: m.RegulariseringPage }))),
 };

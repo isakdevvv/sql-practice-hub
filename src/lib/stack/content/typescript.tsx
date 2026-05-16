@@ -1,4 +1,4 @@
-import { TypescriptPage } from "@/components/stack/typescript/TypescriptPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -13,5 +13,5 @@ export const content: TrinnContent = {
   prerequisites: [
     { slug: "javascript-grunnlag", title: "JavaScript-grunnlag" },
   ],
-  Component: TypescriptPage,
+  Component: lazy(() => import("@/components/stack/typescript/TypescriptPage").then((m) => ({ default: m.TypescriptPage }))),
 };

@@ -1,4 +1,4 @@
-import { ApiDeployPage } from "@/components/stack/api-deploy/ApiDeployPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "Docker, env/secrets, healthchecks, GitHub Actions, blue-green/canary, logs/metrics/traces, runbooks.",
   prerequisites: [],
-  Component: ApiDeployPage,
+  Component: lazy(() => import("@/components/stack/api-deploy/ApiDeployPage").then((m) => ({ default: m.ApiDeployPage }))),
 };

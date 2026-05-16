@@ -1,4 +1,4 @@
-import { MathFoundationsHub } from "@/components/stack/math-foundations/MathFoundationsHub";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "Hub for matematisk grunnlag: diskret matte, sannsynlighet, linær algebra. Prerekvisitt for algoritmer og ML.",
   prerequisites: [],
-  Component: MathFoundationsHub,
+  Component: lazy(() => import("@/components/stack/math-foundations/MathFoundationsHub").then((m) => ({ default: m.MathFoundationsHub }))),
 };

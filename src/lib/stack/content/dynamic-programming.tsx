@@ -1,4 +1,4 @@
-import { DynamicProgrammingPage } from "@/components/stack/dynamic-programming/DynamicProgrammingPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "Overlapping subproblems + optimal substructure. Memoisering vs tabulering. Fibonacci, knapsack, LCS, coin change, edit distance.",
   prerequisites: [],
-  Component: DynamicProgrammingPage,
+  Component: lazy(() => import("@/components/stack/dynamic-programming/DynamicProgrammingPage").then((m) => ({ default: m.DynamicProgrammingPage }))),
 };

@@ -1,4 +1,4 @@
-import { SorteringPage } from "@/components/stack/sortering/SorteringPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "Bubble, selection, insertion (O(n²)) + mergesort, quicksort, heapsort (O(n log n)). Stabilitet, in-place, beste/verste.",
   prerequisites: [],
-  Component: SorteringPage,
+  Component: lazy(() => import("@/components/stack/sortering/SorteringPage").then((m) => ({ default: m.SorteringPage }))),
 };

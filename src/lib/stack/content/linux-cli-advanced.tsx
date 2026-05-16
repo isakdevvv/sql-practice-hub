@@ -1,4 +1,4 @@
-import { LinuxCliAdvancedPage } from "@/components/stack/linux-cli-advanced/LinuxCliAdvancedPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "sed, awk, find, xargs, jq, grep -E/-P, strace, lsof, ss, systemctl, journalctl og bash-skript-mønstre.",
   prerequisites: [],
-  Component: LinuxCliAdvancedPage,
+  Component: lazy(() => import("@/components/stack/linux-cli-advanced/LinuxCliAdvancedPage").then((m) => ({ default: m.LinuxCliAdvancedPage }))),
 };

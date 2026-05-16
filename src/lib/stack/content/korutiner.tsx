@@ -1,4 +1,4 @@
-import { KorutinerPage } from "@/components/stack/korutiner/KorutinerPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "suspend, launch/async, viewModelScope/lifecycleScope, Dispatchers (Main/IO/Default), structured concurrency.",
   prerequisites: [],
-  Component: KorutinerPage,
+  Component: lazy(() => import("@/components/stack/korutiner/KorutinerPage").then((m) => ({ default: m.KorutinerPage }))),
 };

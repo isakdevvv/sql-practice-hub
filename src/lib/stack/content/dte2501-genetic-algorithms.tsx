@@ -1,4 +1,4 @@
-import { GeneticPage } from "@/components/stack/dte2501-ml/GeneticPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "GA-operatorer (seleksjon, crossover, mutasjon). Particle Swarm Optimization og Ant Colony Optimization.",
   prerequisites: [],
-  Component: GeneticPage,
+  Component: lazy(() => import("@/components/stack/dte2501-ml/GeneticPage").then((m) => ({ default: m.GeneticPage }))),
 };

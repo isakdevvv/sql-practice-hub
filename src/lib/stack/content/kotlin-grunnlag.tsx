@@ -1,4 +1,4 @@
-import { KotlinGrunnlagPage } from "@/components/stack/kotlin-grunnlag/KotlinGrunnlagPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "val vs var, null safety (?, !!, ?.), data classes, lambdas, scope-funksjoner og collections.",
   prerequisites: [],
-  Component: KotlinGrunnlagPage,
+  Component: lazy(() => import("@/components/stack/kotlin-grunnlag/KotlinGrunnlagPage").then((m) => ({ default: m.KotlinGrunnlagPage }))),
 };

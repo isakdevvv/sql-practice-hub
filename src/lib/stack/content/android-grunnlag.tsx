@@ -1,4 +1,4 @@
-import { AndroidGrunnlagPage } from "@/components/stack/android-grunnlag/AndroidGrunnlagPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "Activity-livssyklus, Fragment-livssyklus, AndroidManifest, Gradle, resources/qualifiers og view binding.",
   prerequisites: [],
-  Component: AndroidGrunnlagPage,
+  Component: lazy(() => import("@/components/stack/android-grunnlag/AndroidGrunnlagPage").then((m) => ({ default: m.AndroidGrunnlagPage }))),
 };

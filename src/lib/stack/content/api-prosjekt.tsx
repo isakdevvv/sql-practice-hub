@@ -1,4 +1,4 @@
-import { ApiProsjektHub } from "@/components/stack/api-prosjekt/ApiProsjektHub";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "Fem mini-kurs: planlegging, arkitektur, kontrakt, testing, deploy — for et komplett API.",
   prerequisites: [],
-  Component: ApiProsjektHub,
+  Component: lazy(() => import("@/components/stack/api-prosjekt/ApiProsjektHub").then((m) => ({ default: m.ApiProsjektHub }))),
 };

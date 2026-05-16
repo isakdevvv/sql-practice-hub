@@ -1,4 +1,4 @@
-import { PacketSchedulingPage } from "@/components/stack/dte2507-packet-scheduling/PacketSchedulingPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "Fire køprinsipper side-ved-side på samme input-strøm. WFQ med vekter (w1=3, w2=1) viser hvordan båndbredde fordeles. Drag-oppgave for å plotte departures, knyttet til net neutrality.",
   prerequisites: [],
-  Component: PacketSchedulingPage,
+  Component: lazy(() => import("@/components/stack/dte2507-packet-scheduling/PacketSchedulingPage").then((m) => ({ default: m.PacketSchedulingPage }))),
 };

@@ -1,4 +1,4 @@
-import { PlanleggingPage } from "@/components/stack/planlegging/PlanleggingPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "STRIPS-handlinger med preconditions/effects. Forward (progression) og backward (regression) planning.",
   prerequisites: [],
-  Component: PlanleggingPage,
+  Component: lazy(() => import("@/components/stack/planlegging/PlanleggingPage").then((m) => ({ default: m.PlanleggingPage }))),
 };

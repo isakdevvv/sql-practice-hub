@@ -1,4 +1,4 @@
-import { AspnetMvcPage } from "@/components/stack/aspnet-mvc/AspnetMvcPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "Model/View/Controller, Razor, routing, model binding, validation, layouts.",
   prerequisites: [{ slug: "csharp-grunnlag", title: "C# språk-grunnlag" }],
-  Component: AspnetMvcPage,
+  Component: lazy(() => import("@/components/stack/aspnet-mvc/AspnetMvcPage").then((m) => ({ default: m.AspnetMvcPage }))),
 };

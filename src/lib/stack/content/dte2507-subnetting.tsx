@@ -1,4 +1,4 @@
-import { SubnettingPage } from "@/components/stack/dte2507-subnetting/SubnettingPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "CIDR, subnet-maske, network/broadcast/usable, VLSM. Live-kalkulator med binær visning og en VLSM-trener med fri-form input.",
   prerequisites: [],
-  Component: SubnettingPage,
+  Component: lazy(() => import("@/components/stack/dte2507-subnetting/SubnettingPage").then((m) => ({ default: m.SubnettingPage }))),
 };

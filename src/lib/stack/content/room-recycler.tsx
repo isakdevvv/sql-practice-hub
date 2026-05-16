@@ -1,4 +1,4 @@
-import { RoomRecyclerPage } from "@/components/stack/room-recycler/RoomRecyclerPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "Room (Entity/DAO/Database) og RecyclerView (Adapter/ViewHolder/DiffUtil) — Android sin standard for data og lister.",
   prerequisites: [],
-  Component: RoomRecyclerPage,
+  Component: lazy(() => import("@/components/stack/room-recycler/RoomRecyclerPage").then((m) => ({ default: m.RoomRecyclerPage }))),
 };

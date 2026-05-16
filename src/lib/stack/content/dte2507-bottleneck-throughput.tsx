@@ -1,4 +1,4 @@
-import { BottleneckThroughputPage } from "@/components/stack/dte2507-bottleneck-throughput/BottleneckThroughputPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "End-to-end throughput = min(R_i). Interaktiv flaskehals-simulator med R_server/R_core/R_client. Hvorfor speedtest gir det den gir og hvor flaskehalsen sitter i 2024.",
   prerequisites: [],
-  Component: BottleneckThroughputPage,
+  Component: lazy(() => import("@/components/stack/dte2507-bottleneck-throughput/BottleneckThroughputPage").then((m) => ({ default: m.BottleneckThroughputPage }))),
 };

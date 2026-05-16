@@ -1,4 +1,4 @@
-import { BanditsPage } from "@/components/stack/dte2501-bandits/BanditsPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "Bandit-problemet, action-value methods, ε-greedy, optimistic initial values, UCB1, Thompson sampling og regret. Sutton & Barto kap. 2.",
   prerequisites: [],
-  Component: BanditsPage,
+  Component: lazy(() => import("@/components/stack/dte2501-bandits/BanditsPage").then((m) => ({ default: m.BanditsPage }))),
 };

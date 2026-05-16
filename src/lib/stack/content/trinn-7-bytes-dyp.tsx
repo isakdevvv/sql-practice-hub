@@ -1,4 +1,4 @@
-import { Trinn7BytesDypPage } from "@/components/stack/trinn-7-bytes-dyp/Trinn7BytesDypPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -10,5 +10,5 @@ export const content: TrinnContent = {
   status: "ready",
   shortDescription: "Endianness, multi-byte encodings, og hvordan bytes blir til tall.",
   prerequisites: [],
-  Component: Trinn7BytesDypPage,
+  Component: lazy(() => import("@/components/stack/trinn-7-bytes-dyp/Trinn7BytesDypPage").then((m) => ({ default: m.Trinn7BytesDypPage }))),
 };

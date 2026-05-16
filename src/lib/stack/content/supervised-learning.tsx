@@ -1,4 +1,4 @@
-import { SupervisedPage } from "@/components/stack/supervised-learning/SupervisedPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "Lineær/logistisk regresjon, kNN, decision tree, ensembles (RF, gradient boosting), SVM. Algoritme-valg.",
   prerequisites: [],
-  Component: SupervisedPage,
+  Component: lazy(() => import("@/components/stack/supervised-learning/SupervisedPage").then((m) => ({ default: m.SupervisedPage }))),
 };

@@ -1,4 +1,4 @@
-import { OsiTcpipPage } from "@/components/stack/osi-tcpip/OsiTcpipPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "Fem lag fra applikasjon ned til fysisk, encapsulation, og hvilken protokoll bor hvor.",
   prerequisites: [],
-  Component: OsiTcpipPage,
+  Component: lazy(() => import("@/components/stack/osi-tcpip/OsiTcpipPage").then((m) => ({ default: m.OsiTcpipPage }))),
 };

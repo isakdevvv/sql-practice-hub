@@ -1,4 +1,4 @@
-import { RegresjonPage } from "@/components/stack/dte2501-ml/RegresjonPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "Lineær og polynom-regresjon. MSE/MAE, R²/RMSE, regularisering (Ridge/Lasso), overfitting.",
   prerequisites: [],
-  Component: RegresjonPage,
+  Component: lazy(() => import("@/components/stack/dte2501-ml/RegresjonPage").then((m) => ({ default: m.RegresjonPage }))),
 };

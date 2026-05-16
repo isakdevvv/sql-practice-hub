@@ -1,4 +1,4 @@
-import { Dte2802Hub } from "@/components/stack/dte-2802/Dte2802Hub";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "Fem mini-kurs som dekker DTE-2802: C#, ASP.NET MVC, Web API, EF Core og Blazor.",
   prerequisites: [],
-  Component: Dte2802Hub,
+  Component: lazy(() => import("@/components/stack/dte-2802/Dte2802Hub").then((m) => ({ default: m.Dte2802Hub }))),
 };

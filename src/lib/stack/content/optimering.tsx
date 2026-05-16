@@ -1,4 +1,4 @@
-import { OptimeringPage } from "@/components/stack/optimering/OptimeringPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "SGD vs momentum vs Adam, learning rate schedules, gradient clipping — slik konvergerer modellen.",
   prerequisites: [],
-  Component: OptimeringPage,
+  Component: lazy(() => import("@/components/stack/optimering/OptimeringPage").then((m) => ({ default: m.OptimeringPage }))),
 };

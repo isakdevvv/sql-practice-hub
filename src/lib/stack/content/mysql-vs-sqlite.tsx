@@ -1,4 +1,4 @@
-import { MysqlVsSqlitePage } from "@/components/stack/mysql-vs-sqlite/MysqlVsSqlitePage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "Eksamen-pensum bruker MySQL (dte_2509). Plattformen kjører SQLite. Slik mapper du DDL og tilkobling mellom dem — pluss vanlige feller.",
   prerequisites: [],
-  Component: MysqlVsSqlitePage,
+  Component: lazy(() => import("@/components/stack/mysql-vs-sqlite/MysqlVsSqlitePage").then((m) => ({ default: m.MysqlVsSqlitePage }))),
 };

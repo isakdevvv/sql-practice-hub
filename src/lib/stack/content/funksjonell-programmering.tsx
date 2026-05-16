@@ -1,4 +1,4 @@
-import { FunksjonellProgrammeringPage } from "@/components/stack/funksjonell-programmering/FunksjonellProgrammeringPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "Pure functions, immutability, higher-order, map/filter/reduce, currying, lazy evaluation, Maybe/Result.",
   prerequisites: [],
-  Component: FunksjonellProgrammeringPage,
+  Component: lazy(() => import("@/components/stack/funksjonell-programmering/FunksjonellProgrammeringPage").then((m) => ({ default: m.FunksjonellProgrammeringPage }))),
 };

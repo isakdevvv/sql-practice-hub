@@ -1,4 +1,4 @@
-import { SocketProgrammeringPage } from "@/components/stack/dte2507-socket-programmering/SocketProgrammeringPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "Server- og klient-skjeletter for TCP og UDP. Concurrent server via threading og asyncio. SSL/TLS-wrapping. Vanlige feil: TIME_WAIT, ConnectionResetError. 15+ kjorbare oppgaver via socket-shim.",
   prerequisites: [],
-  Component: SocketProgrammeringPage,
+  Component: lazy(() => import("@/components/stack/dte2507-socket-programmering/SocketProgrammeringPage").then((m) => ({ default: m.SocketProgrammeringPage }))),
 };

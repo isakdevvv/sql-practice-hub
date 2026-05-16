@@ -1,4 +1,4 @@
-import { Trinn10FlaskDypPage } from "@/components/stack/trinn-10-flask-dyp/Trinn10FlaskDypPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -10,5 +10,5 @@ export const content: TrinnContent = {
   status: "ready",
   shortDescription: "WSGI, app.run() sin socket-loop, hvordan request blir til response.",
   prerequisites: [],
-  Component: Trinn10FlaskDypPage,
+  Component: lazy(() => import("@/components/stack/trinn-10-flask-dyp/Trinn10FlaskDypPage").then((m) => ({ default: m.Trinn10FlaskDypPage }))),
 };

@@ -1,4 +1,4 @@
-import { CspPage } from "@/components/stack/csp/CspPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "CSP-formulering, backtracking, AC-3, forward checking, MRV/LCV-heuristikker.",
   prerequisites: [],
-  Component: CspPage,
+  Component: lazy(() => import("@/components/stack/csp/CspPage").then((m) => ({ default: m.CspPage }))),
 };

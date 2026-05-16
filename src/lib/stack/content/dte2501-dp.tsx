@@ -1,4 +1,4 @@
-import { DpPage } from "@/components/stack/dte2501-ml/DpPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "Optimal substructure + overlapping subproblems. Memoization vs tabulation. Held-Karp DP for TSP.",
   prerequisites: [],
-  Component: DpPage,
+  Component: lazy(() => import("@/components/stack/dte2501-ml/DpPage").then((m) => ({ default: m.DpPage }))),
 };

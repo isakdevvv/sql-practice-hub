@@ -1,4 +1,4 @@
-import { AlgoritmerHub } from "@/components/stack/algoritmer/AlgoritmerHub";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "Ni mini-kurs som dekker hele DTE-2511-pensum: rekursjon, sortering, lenkede strukturer, trær, hashing og grafer.",
   prerequisites: [],
-  Component: AlgoritmerHub,
+  Component: lazy(() => import("@/components/stack/algoritmer/AlgoritmerHub").then((m) => ({ default: m.AlgoritmerHub }))),
 };

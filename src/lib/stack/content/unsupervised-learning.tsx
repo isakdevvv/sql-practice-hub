@@ -1,4 +1,4 @@
-import { UnsupervisedPage } from "@/components/stack/unsupervised-learning/UnsupervisedPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "k-means, elbow + silhouette, hierarchical klustering, PCA, anomalydeteksjon.",
   prerequisites: [],
-  Component: UnsupervisedPage,
+  Component: lazy(() => import("@/components/stack/unsupervised-learning/UnsupervisedPage").then((m) => ({ default: m.UnsupervisedPage }))),
 };

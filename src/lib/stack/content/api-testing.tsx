@@ -1,4 +1,4 @@
-import { ApiTestingPage } from "@/components/stack/api-testing/ApiTestingPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "Test-pyramiden. Unit, integration, contract, E2E. Fixtures, mocks, fakes. Snapshot- og property-tester.",
   prerequisites: [],
-  Component: ApiTestingPage,
+  Component: lazy(() => import("@/components/stack/api-testing/ApiTestingPage").then((m) => ({ default: m.ApiTestingPage }))),
 };

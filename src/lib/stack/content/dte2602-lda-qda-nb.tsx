@@ -1,4 +1,4 @@
-import { LdaQdaNbPage } from "@/components/stack/dte2602-lda-qda-nb/LdaQdaNbPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "Generative klassifikatorer: Bayes-teorem, LDA (lineær grense, felles Σ), QDA (kvadratisk, ulik Σ) og Naive Bayes (uavhengige features). Decision boundaries side-by-side.",
   prerequisites: [],
-  Component: LdaQdaNbPage,
+  Component: lazy(() => import("@/components/stack/dte2602-lda-qda-nb/LdaQdaNbPage").then((m) => ({ default: m.LdaQdaNbPage }))),
 };

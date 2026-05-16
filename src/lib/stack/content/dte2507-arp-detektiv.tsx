@@ -1,4 +1,4 @@
-import { ArpDetektivPage } from "@/components/stack/dte2507-arp-detektiv/ArpDetektivPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "ARP forklart med Kurose-metaforen (MAC = personnummer, IP = postadresse). Quiz over tre scenarier — same-subnett, cross-subnett (fig. 6.19), og selve ARP-broadcasten — pluss ARP-cache og spoofing.",
   prerequisites: [],
-  Component: ArpDetektivPage,
+  Component: lazy(() => import("@/components/stack/dte2507-arp-detektiv/ArpDetektivPage").then((m) => ({ default: m.ArpDetektivPage }))),
 };

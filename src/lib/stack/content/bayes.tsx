@@ -1,4 +1,4 @@
-import { BayesPage } from "@/components/stack/bayes/BayesPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "Bayes' teorem med worked example, naive Bayes-klassifikator og betinget uavhengighet.",
   prerequisites: [],
-  Component: BayesPage,
+  Component: lazy(() => import("@/components/stack/bayes/BayesPage").then((m) => ({ default: m.BayesPage }))),
 };

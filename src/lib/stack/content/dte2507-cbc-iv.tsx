@@ -1,4 +1,4 @@
-import { CbcIvPage } from "@/components/stack/dte2507-cbc-iv/CbcIvPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "ECB-lekkasje: deterministic block cipher lekker mønstre (pingvinen). CBC: hver blokk XOR-es med forrige cipher-blokk + tilfeldig IV først. Interaktiv ECB↔CBC-visualisering på samme melding.",
   prerequisites: [],
-  Component: CbcIvPage,
+  Component: lazy(() => import("@/components/stack/dte2507-cbc-iv/CbcIvPage").then((m) => ({ default: m.CbcIvPage }))),
 };

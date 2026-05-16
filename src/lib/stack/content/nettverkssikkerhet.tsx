@@ -1,4 +1,4 @@
-import { NettverkssikkerhetPage } from "@/components/stack/nettverkssikkerhet/NettverkssikkerhetPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "Forsvarsdyp, stateful brannmur, NAT, IDS vs IPS, vanlige nettverksangrep, web-server-sjekkliste.",
   prerequisites: [],
-  Component: NettverkssikkerhetPage,
+  Component: lazy(() => import("@/components/stack/nettverkssikkerhet/NettverkssikkerhetPage").then((m) => ({ default: m.NettverkssikkerhetPage }))),
 };

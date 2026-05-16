@@ -1,4 +1,4 @@
-import { UmlPage } from "@/components/stack/uml/UmlPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "Use case, klasse, sekvens, aktivitet. Når du tegner hva, og hvor mye er nok.",
   prerequisites: [],
-  Component: UmlPage,
+  Component: lazy(() => import("@/components/stack/uml/UmlPage").then((m) => ({ default: m.UmlPage }))),
 };

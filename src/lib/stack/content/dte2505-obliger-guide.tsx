@@ -1,4 +1,4 @@
-import { Dte2505ObligerGuidePage } from "@/components/stack/dte2505-obliger-guide/Dte2505ObligerGuidePage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "Steg-for-steg guide gjennom de 8 obligene i DTE-2505: VM, Linux-grunnlag, brukere, rettigheter, prosesser, scripting, pakker og tjenester.",
   prerequisites: [],
-  Component: Dte2505ObligerGuidePage,
+  Component: lazy(() => import("@/components/stack/dte2505-obliger-guide/Dte2505ObligerGuidePage").then((m) => ({ default: m.Dte2505ObligerGuidePage }))),
 };

@@ -1,4 +1,4 @@
-import { Dte2507DhcpPage } from "@/components/stack/dte2507-dhcp/Dte2507DhcpPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "Hvordan en helt fersk klient (uten IP) får tildelt nettverkskonfigurasjon: Discover → Offer → Request → Ack. Interaktiv 4-pakkers simulator, lease-tabell på server-siden, og drill på hvorfor alle fire pakkene MÅ være broadcast.",
   prerequisites: [],
-  Component: Dte2507DhcpPage,
+  Component: lazy(() => import("@/components/stack/dte2507-dhcp/Dte2507DhcpPage").then((m) => ({ default: m.Dte2507DhcpPage }))),
 };

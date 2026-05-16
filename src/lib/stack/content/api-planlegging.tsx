@@ -1,4 +1,4 @@
-import { ApiPlanleggingPage } from "@/components/stack/api-planlegging/ApiPlanleggingPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "Interessenter, FR/NFR, MVP, brukerhistorier for APIer, MoSCoW/RICE, scope-kontroll, spikes.",
   prerequisites: [],
-  Component: ApiPlanleggingPage,
+  Component: lazy(() => import("@/components/stack/api-planlegging/ApiPlanleggingPage").then((m) => ({ default: m.ApiPlanleggingPage }))),
 };

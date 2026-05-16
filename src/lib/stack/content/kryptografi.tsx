@@ -1,4 +1,4 @@
-import { KryptografiPage } from "@/components/stack/kryptografi/KryptografiPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "Symmetrisk vs asymmetrisk, hash vs MAC, digital signatur, PKI og sertifikater. CIA-trekanten.",
   prerequisites: [],
-  Component: KryptografiPage,
+  Component: lazy(() => import("@/components/stack/kryptografi/KryptografiPage").then((m) => ({ default: m.KryptografiPage }))),
 };

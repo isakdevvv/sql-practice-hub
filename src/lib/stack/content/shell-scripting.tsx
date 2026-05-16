@@ -1,4 +1,4 @@
-import { ShellScriptingPage } from "@/components/stack/shell-scripting/ShellScriptingPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "Bash-skript: variabler, if/while/for, pipe/redirect, exit-koder, og vanlige drift-skript med cron.",
   prerequisites: [],
-  Component: ShellScriptingPage,
+  Component: lazy(() => import("@/components/stack/shell-scripting/ShellScriptingPage").then((m) => ({ default: m.ShellScriptingPage }))),
 };

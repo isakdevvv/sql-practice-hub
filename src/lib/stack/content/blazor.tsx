@@ -1,4 +1,4 @@
-import { BlazorPage } from "@/components/stack/blazor/BlazorPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "Komponenter, @code-blokker, parametere, event binding, EditForm + validation.",
   prerequisites: [{ slug: "csharp-grunnlag", title: "C# språk-grunnlag" }],
-  Component: BlazorPage,
+  Component: lazy(() => import("@/components/stack/blazor/BlazorPage").then((m) => ({ default: m.BlazorPage }))),
 };

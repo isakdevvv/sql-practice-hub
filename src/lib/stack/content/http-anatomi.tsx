@@ -1,4 +1,4 @@
-import { HttpAnatomiPage } from "@/components/stack/http-anatomi/HttpAnatomiPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -10,5 +10,5 @@ export const content: TrinnContent = {
   status: "ready",
   shortDescription: "Hva er en HTTP-melding? Headers, body, statuskoder, cookies.",
   prerequisites: [{ slug: "bytes-encoding", title: "Bytes & encoding" }],
-  Component: HttpAnatomiPage,
+  Component: lazy(() => import("@/components/stack/http-anatomi/HttpAnatomiPage").then((m) => ({ default: m.HttpAnatomiPage }))),
 };

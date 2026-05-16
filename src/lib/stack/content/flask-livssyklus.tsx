@@ -1,4 +1,4 @@
-import { FlaskLifecyclePage } from "@/components/stack/flask-livssyklus/FlaskLifecyclePage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -13,5 +13,5 @@ export const content: TrinnContent = {
     { slug: "bytes-encoding", title: "Bytes & encoding" },
     { slug: "tcp-sockets", title: "TCP & sockets (kort)" },
   ],
-  Component: FlaskLifecyclePage,
+  Component: lazy(() => import("@/components/stack/flask-livssyklus/FlaskLifecyclePage").then((m) => ({ default: m.FlaskLifecyclePage }))),
 };

@@ -1,4 +1,4 @@
-import { Dte2602BiasVariansPage } from "@/components/stack/dte2602-bias-varians/Dte2602BiasVariansPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "E[(ŷ-y)²]=bias²+var+støy, læringskurver, Ridge (L2) og Lasso (L1). Slider: polynom-grad og Lasso-path.",
   prerequisites: [],
-  Component: Dte2602BiasVariansPage,
+  Component: lazy(() => import("@/components/stack/dte2602-bias-varians/Dte2602BiasVariansPage").then((m) => ({ default: m.Dte2602BiasVariansPage }))),
 };

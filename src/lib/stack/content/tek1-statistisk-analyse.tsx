@@ -1,4 +1,4 @@
-import { Tek1StatistiskAnalysePage } from "@/components/stack/tek1-statistisk-analyse/Tek1StatistiskAnalysePage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "Estimatorer, konfidensintervaller, hypotesetesting (z-, t-, kji-kvadrat), korrelasjon, og lineær regresjon med minste kvadraters metode.",
   prerequisites: [],
-  Component: Tek1StatistiskAnalysePage,
+  Component: lazy(() => import("@/components/stack/tek1-statistisk-analyse/Tek1StatistiskAnalysePage").then((m) => ({ default: m.Tek1StatistiskAnalysePage }))),
 };

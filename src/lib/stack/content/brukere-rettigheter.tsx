@@ -1,4 +1,4 @@
-import { BrukereRettigheterPage } from "@/components/stack/brukere-rettigheter/BrukereRettigheterPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "Flerbrukersystem i praksis: useradd, sudo vs su, /etc/passwd-felter, ACL, SELinux/AppArmor.",
   prerequisites: [],
-  Component: BrukereRettigheterPage,
+  Component: lazy(() => import("@/components/stack/brukere-rettigheter/BrukereRettigheterPage").then((m) => ({ default: m.BrukereRettigheterPage }))),
 };

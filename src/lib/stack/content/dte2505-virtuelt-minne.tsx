@@ -1,4 +1,4 @@
-import { VirtueltMinnePage } from "@/components/stack/dte2505-virtuelt-minne/VirtueltMinnePage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "OSTEP kap. 15–22. VPN, PFN, offset, page-tabell, TLB, page faults, demand paging. Replacement: FIFO, LRU, Clock, optimal. Interaktiv adresseoversetter.",
   prerequisites: [],
-  Component: VirtueltMinnePage,
+  Component: lazy(() => import("@/components/stack/dte2505-virtuelt-minne/VirtueltMinnePage").then((m) => ({ default: m.VirtueltMinnePage }))),
 };

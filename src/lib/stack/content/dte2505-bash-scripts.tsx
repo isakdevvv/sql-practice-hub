@@ -1,4 +1,4 @@
-import { BashScriptsPage } from "@/components/stack/dte2505-bash-scripts/BashScriptsPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "Variabler, sitering, if/then/fi, for/while, $@/$#/$?, funksjoner, pipes og omdirigering. Sandkasse med mock-FS.",
   prerequisites: [],
-  Component: BashScriptsPage,
+  Component: lazy(() => import("@/components/stack/dte2505-bash-scripts/BashScriptsPage").then((m) => ({ default: m.BashScriptsPage }))),
 };

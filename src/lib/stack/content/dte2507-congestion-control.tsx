@@ -1,4 +1,4 @@
-import { CongestionControlPage } from "@/components/stack/dte2507-congestion-control/CongestionControlPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "Slow start, AIMD, Tahoe/Reno/Cubic/BBR. Interaktiv cwnd-simulator med pakketap-trigger og side-ved-side-sammenligning av alle tre algoritmer.",
   prerequisites: [],
-  Component: CongestionControlPage,
+  Component: lazy(() => import("@/components/stack/dte2507-congestion-control/CongestionControlPage").then((m) => ({ default: m.CongestionControlPage }))),
 };

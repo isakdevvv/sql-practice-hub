@@ -1,4 +1,4 @@
-import { VirtualiseringPage } from "@/components/stack/virtualisering/VirtualiseringPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "Hypervisor type 1/2, VM vs container, Docker-basics, snapshots og bruksområder.",
   prerequisites: [],
-  Component: VirtualiseringPage,
+  Component: lazy(() => import("@/components/stack/virtualisering/VirtualiseringPage").then((m) => ({ default: m.VirtualiseringPage }))),
 };

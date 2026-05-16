@@ -1,4 +1,4 @@
-import { SannsynlighetPage } from "@/components/stack/sannsynlighet/SannsynlighetPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "Aksiomer, Bayes, forventning, varians, fordelinger (Bernoulli/binomial/normal/Poisson), CLT, hypotesetest.",
   prerequisites: [],
-  Component: SannsynlighetPage,
+  Component: lazy(() => import("@/components/stack/sannsynlighet/SannsynlighetPage").then((m) => ({ default: m.SannsynlighetPage }))),
 };

@@ -1,4 +1,4 @@
-import { NormaliseringPage } from "@/components/stack/normalisering/NormaliseringPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "Fra rotete tabell til 3NF: anomalier, FD-er, partiell og transitiv avhengighet — med ett gjennomgående eksempel.",
   prerequisites: [],
-  Component: NormaliseringPage,
+  Component: lazy(() => import("@/components/stack/normalisering/NormaliseringPage").then((m) => ({ default: m.NormaliseringPage }))),
 };

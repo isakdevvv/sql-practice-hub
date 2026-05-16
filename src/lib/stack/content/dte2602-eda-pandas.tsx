@@ -1,4 +1,4 @@
-import { Dte2602EdaPandasPage } from "@/components/stack/dte2602-eda-pandas/Dte2602EdaPandasPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "df.info(), describe(), histogrammer, korrelasjonsmatrise, pairplot, missing data. Hands-on med CSV-drop.",
   prerequisites: [],
-  Component: Dte2602EdaPandasPage,
+  Component: lazy(() => import("@/components/stack/dte2602-eda-pandas/Dte2602EdaPandasPage").then((m) => ({ default: m.Dte2602EdaPandasPage }))),
 };

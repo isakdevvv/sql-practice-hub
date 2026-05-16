@@ -1,4 +1,4 @@
-import { HuskelappPage } from "@/components/stack/huskelapp/HuskelappPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "Interaktiv hurtigreferanse: SELECT, JOIN, GROUP BY, NULL, DDL — alt på én side.",
   prerequisites: [],
-  Component: HuskelappPage,
+  Component: lazy(() => import("@/components/stack/huskelapp/HuskelappPage").then((m) => ({ default: m.HuskelappPage }))),
 };

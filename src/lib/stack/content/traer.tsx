@@ -1,4 +1,4 @@
-import { TraerPage } from "@/components/stack/traer/TraerPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "Binærtre, BST (insert/søk/slett), traversering, AVL-balansering, heap som array, BST vs hash.",
   prerequisites: [],
-  Component: TraerPage,
+  Component: lazy(() => import("@/components/stack/traer/TraerPage").then((m) => ({ default: m.TraerPage }))),
 };

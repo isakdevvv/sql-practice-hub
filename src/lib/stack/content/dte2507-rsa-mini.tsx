@@ -1,4 +1,4 @@
-import { RsaMiniPage } from "@/components/stack/dte2507-rsa-mini/RsaMiniPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "Klikk gjennom p, q, n, φ, e, d. Krypter «HI» tegn for tegn med små primtall. Signering vs kryptering, hybrid krypto.",
   prerequisites: [],
-  Component: RsaMiniPage,
+  Component: lazy(() => import("@/components/stack/dte2507-rsa-mini/RsaMiniPage").then((m) => ({ default: m.RsaMiniPage }))),
 };

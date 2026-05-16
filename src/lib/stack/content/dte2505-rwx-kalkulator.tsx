@@ -1,4 +1,4 @@
-import { RwxKalkulatorPage } from "@/components/stack/dte2505-rwx-kalkulator/RwxKalkulatorPage";
+import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
@@ -11,5 +11,5 @@ export const content: TrinnContent = {
   shortDescription:
     "Klikk 9 bits, se oktal + ls-streng live. Reverser oktal til rettigheter. Symbolsk chmod, umask, setuid/setgid/sticky.",
   prerequisites: [],
-  Component: RwxKalkulatorPage,
+  Component: lazy(() => import("@/components/stack/dte2505-rwx-kalkulator/RwxKalkulatorPage").then((m) => ({ default: m.RwxKalkulatorPage }))),
 };
