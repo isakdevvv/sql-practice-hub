@@ -3,13 +3,21 @@ import { HardDrive } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
 import { InodeDiagram } from "./InodeDiagram";
+import { FreeBlockBitmap } from "./FreeBlockBitmap";
+import { PathResolution } from "./PathResolution";
+import { LinkTypes } from "./LinkTypes";
+import { JournalingAnimator } from "./JournalingAnimator";
 
 const STEPS = [
   { title: "Hva er en inode?", anchor: "inode" },
   { title: "Inode-strukturen i ext4", anchor: "struktur" },
   { title: "Direkte / indirekte pointers (visuelt)", anchor: "pointers" },
+  { title: "Free-block bitmap & fragmentering", anchor: "bitmap" },
+  { title: "Path-resolution: inode-for-inode", anchor: "path" },
+  { title: "Hard link vs symbolic link", anchor: "links" },
   { title: "FAT vs ext4", anchor: "fat-vs-ext4" },
   { title: "Journaling i ext4", anchor: "journal" },
+  { title: "Journal-animator (krasj-eksperiment)", anchor: "journal-anim" },
   { title: "Mount-points og VFS", anchor: "vfs" },
   { title: "Konkrete syscalls", anchor: "syscalls" },
   { title: "Eksamen-quick-ref", anchor: "eksamen" },
@@ -185,7 +193,61 @@ Sum                                  ≈        4 TiB`}</pre>
           </p>
         </Section>
 
-        <Section number="4" id="fat-vs-ext4" title="FAT vs ext4 — to filosofier">
+        <Section
+          number="4"
+          id="bitmap"
+          title="Free-block bitmap & fragmentering"
+        >
+          <p className="text-sm text-muted-foreground mb-3">
+            Inoden vet hvilke blokker som tilhører <em>én</em> fil — men
+            hvordan vet filsystemet hvilke blokker som er <em>ledige</em>?
+            Svaret er en{" "}
+            <strong className="text-foreground">free-block bitmap</strong>:
+            én bit per disk-blokk. 0 = ledig, 1 = brukt. For et 1 TB
+            disk-volum med 4&nbsp;KiB blokker blir bitmapet ~32 MiB — lite
+            nok til å holde i RAM.
+          </p>
+          <p className="text-sm text-muted-foreground mb-3">
+            Når du oppretter en fil må allokatoren finne et hull stort nok.
+            Strategien påvirker både hastighet på selve søket og hvor mye
+            fragmentering du ender med over tid. Eksperimentér:
+          </p>
+          <FreeBlockBitmap />
+        </Section>
+
+        <Section
+          number="5"
+          id="path"
+          title="Path-resolution: hvordan kernel finner filen"
+        >
+          <p className="text-sm text-muted-foreground mb-3">
+            Når en applikasjon kaller{" "}
+            <code className="font-mono">open("/home/isak/docs/file.txt")</code>
+            , må kjernen oversette path-strengen til en inode. Det skjer
+            komponent-for-komponent: starter i root-inoden, slår opp neste
+            navn i directoryen, leser den nye inoden, gjentar. Hvert steg
+            koster minst to disk-leser med kald cache — én for
+            directory-data, én for ny inode. Klikk gjennom stegene:
+          </p>
+          <PathResolution />
+        </Section>
+
+        <Section
+          number="6"
+          id="links"
+          title="Hard link vs symbolic link — to navn, to filosofier"
+        >
+          <p className="text-sm text-muted-foreground mb-3">
+            En <em>hard link</em> er bare en ekstra directory-entry som
+            peker på samme inode-nummer som en eksisterende fil. En{" "}
+            <em>symbolic link</em> er en helt egen inode med type "symlink"
+            som inneholder en path-streng. Forskjellen blir tydeligst når
+            du sletter originalen eller endrer permissions:
+          </p>
+          <LinkTypes />
+        </Section>
+
+        <Section number="7" id="fat-vs-ext4" title="FAT vs ext4 — to filosofier">
           <div className="grid sm:grid-cols-2 gap-3 mb-3">
             <div className="rounded-xl border border-border bg-card p-4">
               <div className="text-xs uppercase tracking-wider text-brand font-semibold mb-2">
@@ -278,7 +340,7 @@ dir "rapport.txt" → 1310732`}</pre>
           </div>
         </Section>
 
-        <Section number="5" id="journal" title="Journaling i ext4 — write-ahead log">
+        <Section number="8" id="journal" title="Journaling i ext4 — write-ahead log">
           <p className="text-sm text-muted-foreground mb-3">
             En filoperasjon endrer ofte flere blokker (inode + bitmap +
             datablokk). Hvis strømmen går mellom dem, sitter du igjen med
@@ -326,7 +388,28 @@ Hvis crash mellom 3 og 5: journal har commit → replay.`}</pre>
           </p>
         </Section>
 
-        <Section number="6" id="vfs" title="Mount-points og VFS-laget">
+        <Section
+          number="9"
+          id="journal-anim"
+          title="Journal-animator — krasj-eksperiment"
+        >
+          <p className="text-sm text-muted-foreground mb-3">
+            Tekstforklaringen over er en god start, men intuisjonen for{" "}
+            <em>hvorfor</em> det fungerer kommer først når du selv kan
+            stoppe disken midt i en transaksjon. Simulatoren under lar deg
+            kjøre en operasjon steg-for-steg, trykke <strong>Krasj!</strong>{" "}
+            når som helst, og se hva som skjer ved reboot:
+          </p>
+          <JournalingAnimator />
+          <p className="text-xs text-muted-foreground mt-3">
+            <strong className="text-foreground">Prøv:</strong> bytt til
+            "uten journal" og trykk Krasj etter meta-skrivet. Sammenlign
+            med "ordered" → samme krasj-punkt gir replay og konsistent
+            filsystem. Det er hele poenget.
+          </p>
+        </Section>
+
+        <Section number="10" id="vfs" title="Mount-points og VFS-laget">
           <p className="text-sm text-muted-foreground mb-3">
             Linux har dusinvis av filsystemer (ext4, xfs, btrfs, FAT, NFS,
             tmpfs, procfs ...). Felles for dem: <strong>VFS</strong> (Virtual File System).
@@ -378,7 +461,7 @@ tmpfs          tmpfs  7,7G  2,1M  7,7G   1% /run
           </p>
         </Section>
 
-        <Section number="7" id="syscalls" title="Konkrete syscalls">
+        <Section number="11" id="syscalls" title="Konkrete syscalls">
           <div className="grid sm:grid-cols-2 gap-3">
             <div className="rounded-xl border border-border bg-card p-4">
               <div className="text-xs uppercase tracking-wider text-brand font-semibold mb-2">
@@ -416,7 +499,7 @@ printf("links: %lu\\n",
           </div>
         </Section>
 
-        <Section number="8" id="eksamen" title="Eksamen-quick-ref">
+        <Section number="12" id="eksamen" title="Eksamen-quick-ref">
           <ul className="text-sm text-muted-foreground list-disc pl-5 space-y-2">
             <li>
               <strong className="text-foreground">Inode ≠ filnavn.</strong>{" "}
