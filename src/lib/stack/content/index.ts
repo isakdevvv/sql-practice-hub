@@ -63,6 +63,7 @@ import { content as brukereRettigheter } from "./brukere-rettigheter";
 import { content as virtualisering } from "./virtualisering";
 import { content as dte2505ObligerGuide } from "./dte2505-obliger-guide";
 import { content as dte2505SchedulingDrill } from "./dte2505-scheduling-drill";
+import { content as dte2505ThreadState } from "./dte2505-thread-state";
 import { content as dte2505VirtueltMinne } from "./dte2505-virtuelt-minne";
 import { content as dte2505Konkurrens } from "./dte2505-konkurrens";
 import { content as dte2505BashScripts } from "./dte2505-bash-scripts";
@@ -229,7 +230,7 @@ export const TRINN: TrinnContent[] = [
   flaskLivssyklus, pythonDrill, httpAnatomi,
   dte2505, osHistorikk, osGrunnlag, linuxBruk, shellScripting, brukereRettigheter, virtualisering,
   dte2505ObligerGuide,
-  dte2505SchedulingDrill, dte2505VirtueltMinne, dte2505Konkurrens,
+  dte2505SchedulingDrill, dte2505ThreadState, dte2505VirtueltMinne, dte2505Konkurrens,
   dte2505BashScripts, dte2505Obliger, dte2505ProsesserSignaler, dte2505RwxKalkulator,
   dte2505ThreadVsProsess, dte2505Kontekstbytte,
   trinn1, trinn2, trinn3, trinn4, trinn5, trinn6, trinn7, trinn8, trinn9, trinn10,
