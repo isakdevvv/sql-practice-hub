@@ -6092,6 +6092,7726 @@ sjekk("klasse=" in output, True, "viz nevner klasse=")
 };
 
 
+const MINIMAX_ALFABETA: MiniCourse = {
+  id: "minimax-alfabeta",
+  slug: "minimax-alfabeta",
+  title: "Minimax + alfa-beta pruning fra null",
+  blurb:
+    "Bygg en tic-tac-toe-AI som aldri taper. Brettrep og terminal-sjekk → naiv minimax → returnér beste trekk → alfa-beta-pruning (mål nodereduksjonen selv) → heuristisk evaluering for depth-limited søk → spill mot AI-en. Dette er AIMA-kapittel 5 gjort til kode du selv skriver.",
+  estimertTid: "60–75 min",
+  fag: ["DTE-2501", "Klassisk AI", "Spillsøk"],
+  color: "purple",
+  rekkefolge: 20,
+  lessons: [
+    // ============ LEKSJON 1 ===========================================
+    {
+      id: "01-brett-og-terminal",
+      title: "1. Brettrepresentasjon og terminal-sjekk",
+      narrative:
+        "Før vi kan søke i et spilltre, må vi kunne svare på tre spørsmål om enhver posisjon:\n\n1. **Hvem har vunnet (om noen)?** — terminal-test.\n2. **Hvilke trekk er lovlige nå?** — successor-funksjon.\n3. **Hvordan ser brettet ut etter et trekk?** — neste-state-funksjon.\n\nVi representerer tic-tac-toe-brettet som en **tuple av 9 strenger**: `\"X\"`, `\"O\"`, eller `\".\"` (tom). Cellene er nummerert slik:\n\n```\n0 | 1 | 2\n---------\n3 | 4 | 5\n---------\n6 | 7 | 8\n```\n\n**Hvorfor tuple og ikke liste?** Tuples er immutable og hashbare — det betyr at vi senere kan cache resultater per brett uten å bekymre oss for at noen muterer dem under føttene våre. En liste hadde feilet i et `dict`.\n\n**Din oppgave** — to funksjoner:\n\n- `winner(board)` returnerer `\"X\"` hvis X har tre på rad, `\"O\"` hvis O har det, `\"draw\"` hvis brettet er fullt uten vinner, og `None` ellers (spillet pågår).\n- `legal_moves(board, player)` returnerer en liste av `(idx, nytt_brett)` — én entry per tom celle, der `idx` er hvor `player` plasseres og `nytt_brett` er den resulterende posisjonen.\n\nLISTE-konstanten `LINES` er allerede definert med alle 8 vinnende linjer (3 rader, 3 kolonner, 2 diagonaler).",
+      files: {
+        "spill.py": `# Alle 8 vinnerlinjer: rader, kolonner, diagonaler.
+LINES = [
+    (0, 1, 2), (3, 4, 5), (6, 7, 8),  # rader
+    (0, 3, 6), (1, 4, 7), (2, 5, 8),  # kolonner
+    (0, 4, 8), (2, 4, 6),             # diagonaler
+]
+
+
+def winner(board):
+    """Returner "X", "O", "draw", eller None."""
+    # === DIN OPPGAVE ===
+    # 1. For hver (a, b, c) i LINES:
+    #      hvis board[a] == board[b] == board[c] og board[a] != ".":
+    #          returner board[a]
+    # 2. Hvis "." ikke finnes i brettet: returner "draw"
+    # 3. Ellers: returner None  (spillet pågår)
+    return None
+
+
+def legal_moves(board, player):
+    """Returner liste av (idx, nytt_brett) for hvert lovlig trekk."""
+    # === DIN OPPGAVE ===
+    # For hver i fra 0 til 8:
+    #   hvis board[i] == "."
+    #     lag en kopi av brettet med player i posisjon i
+    #     (tip: ny = list(board); ny[i] = player; tuple(ny))
+    #     legg til (i, ny_tuple) i resultatet
+    return []
+
+
+def sjekk(faktisk, forventet, navn):
+    if faktisk == forventet:
+        print(f"OK   {navn}")
+    else:
+        print(f"FEIL {navn}: fikk {faktisk!r}, forventet {forventet!r}")
+
+
+tomt = (".", ".", ".", ".", ".", ".", ".", ".", ".")
+sjekk(winner(tomt), None, "tomt brett: ingen vinner")
+
+x_rad = ("X", "X", "X", ".", ".", ".", ".", ".", ".")
+sjekk(winner(x_rad), "X", "X vinner topp-raden")
+
+o_diag = ("O", ".", ".", ".", "O", ".", ".", ".", "O")
+sjekk(winner(o_diag), "O", "O vinner diagonalen")
+
+fullt_uavgjort = ("X", "O", "X", "X", "O", "O", "O", "X", "X")
+sjekk(winner(fullt_uavgjort), "draw", "fullt brett uten 3-pa-rad er draw")
+
+moves = legal_moves(tomt, "X")
+sjekk(len(moves), 9, "9 lovlige trekk fra tomt brett")
+forste = ("X", ".", ".", ".", ".", ".", ".", ".", ".")
+sjekk(moves[0][1] if moves else None, forste, "forste trekk plasserer X i celle 0")
+
+ett_x = ("X", ".", ".", ".", ".", ".", ".", ".", ".")
+sjekk(len(legal_moves(ett_x, "O")), 8, "8 lovlige trekk etter ett X")
+`,
+      },
+      defaultFile: "spill.py",
+      editable: ["spill.py"],
+      run: { kind: "python-script", entry: "spill.py" },
+      verifications: [
+        { label: "Tomt brett: ingen vinner", check: { kind: "output-contains", needle: "OK   tomt brett: ingen vinner" } },
+        { label: "Tre på rad oppdages (X)", check: { kind: "output-contains", needle: "OK   X vinner topp-raden" } },
+        { label: "Diagonal-vinst oppdages (O)", check: { kind: "output-contains", needle: "OK   O vinner diagonalen" } },
+        { label: "Fullt brett uten vinner = draw", check: { kind: "output-contains", needle: "OK   fullt brett uten 3-pa-rad er draw" } },
+        { label: "legal_moves teller riktig antall fra tomt brett", check: { kind: "output-contains", needle: "OK   9 lovlige trekk fra tomt brett" } },
+        { label: "legal_moves bygger nytt brett korrekt", check: { kind: "output-contains", needle: "OK   forste trekk plasserer X i celle 0" } },
+        { label: "legal_moves hopper over fylte celler", check: { kind: "output-contains", needle: "OK   8 lovlige trekk etter ett X" } },
+      ],
+      hint:
+        "def winner(board):\n    for (a, b, c) in LINES:\n        if board[a] == board[b] == board[c] and board[a] != \".\":\n            return board[a]\n    if \".\" not in board:\n        return \"draw\"\n    return None\n\ndef legal_moves(board, player):\n    out = []\n    for i in range(9):\n        if board[i] == \".\":\n            ny = list(board)\n            ny[i] = player\n            out.append((i, tuple(ny)))\n    return out",
+    },
+
+    // ============ LEKSJON 2 ===========================================
+    {
+      id: "02-naiv-minimax",
+      title: "2. Naiv minimax (full søk)",
+      narrative:
+        "Nå skal vi bygge selve **minimax**-algoritmen. Idéen er forbløffende enkel:\n\n- X er **maximizer**: vil ha så høy score som mulig (+1 = X vinner).\n- O er **minimizer**: vil ha så lav score som mulig (-1 = O vinner).\n- Draw = 0.\n\nAlgoritmen sier: **utforsk hele spilletreet rekursivt**. Ved hver intern node:\n- Hvis det er X sin tur, ta maks av alle barn-scorer.\n- Hvis det er O sin tur, ta min av alle barn-scorer.\n- Ved en terminal-node, returnér +1 / -1 / 0.\n\n**Hvorfor virker det?** Fordi vi antar at motstanderen spiller optimalt. Når X vurderer et trekk, regner X med at O vil svare med det trekket som er VERST mulig for X. Dette gir et minimum-garantert utfall.\n\nMatematisk er dette en perfekt søkealgoritme — den gir alltid optimalt spill — men den må utforske **hele** treet. For tic-tac-toe er det 549 946 noder fra tomt brett. For sjakk er det rundt 10⁴⁰. Vi løser skalérings­problemet i leksjon 4.\n\n**Din oppgave:** Implementér `minimax(board, player)` → returner score. Bruk `winner()` og `legal_moves()` fra leksjon 1 (er ferdig-implementert øverst). Bruk `other(p)` til å bytte spiller.",
+      files: {
+        "spill.py": `LINES = [
+    (0, 1, 2), (3, 4, 5), (6, 7, 8),
+    (0, 3, 6), (1, 4, 7), (2, 5, 8),
+    (0, 4, 8), (2, 4, 6),
+]
+
+
+def winner(board):
+    for (a, b, c) in LINES:
+        if board[a] == board[b] == board[c] and board[a] != ".":
+            return board[a]
+    if "." not in board:
+        return "draw"
+    return None
+
+
+def legal_moves(board, player):
+    out = []
+    for i in range(9):
+        if board[i] == ".":
+            ny = list(board)
+            ny[i] = player
+            out.append((i, tuple(ny)))
+    return out
+
+
+def other(p):
+    return "O" if p == "X" else "X"
+
+
+def minimax(board, player):
+    """Returner score: +1 hvis X vinner med optimalt spill, -1 for O, 0 for draw."""
+    # === DIN OPPGAVE ===
+    # 1. Sjekk terminal-state med winner(board):
+    #      "X" -> 1, "O" -> -1, "draw" -> 0
+    # 2. Hvis player == "X":
+    #      best = -10 (start veldig lavt)
+    #      for hvert lovlig trekk: rekursjon, oppdater best = max(best, score)
+    #      returner best
+    #    Ellers (player == "O"):
+    #      best = 10
+    #      for hvert lovlig trekk: rekursjon, oppdater best = min(best, score)
+    #      returner best
+    return 0
+
+
+def sjekk(faktisk, forventet, navn):
+    if faktisk == forventet:
+        print(f"OK   {navn}")
+    else:
+        print(f"FEIL {navn}: fikk {faktisk!r}, forventet {forventet!r}")
+
+
+# X kan vinne i ett trekk (legg i celle 2):
+# X X .
+# O O .
+# . . .
+nesten_vunnet = ("X", "X", ".", "O", "O", ".", ".", ".", ".")
+sjekk(minimax(nesten_vunnet, "X"), 1, "X vinner fra nesten-vunnet posisjon")
+
+# O kan vinne i ett trekk (legg i celle 2):
+# O O .
+# X X .
+# . . .
+o_kan_vinne = ("O", "O", ".", "X", "X", ".", ".", ".", ".")
+sjekk(minimax(o_kan_vinne, "O"), -1, "O vinner fra nesten-vunnet posisjon")
+
+# Tvunget draw: brett der ingen kan vinne
+tvang_draw = ("X", "O", "X", "X", "O", "O", "O", "X", ".")
+sjekk(minimax(tvang_draw, "X"), 0, "fullt-nesten brett: draw")
+
+# Optimalt spill fra tomt brett gir alltid draw
+tomt = (".", ".", ".", ".", ".", ".", ".", ".", ".")
+sjekk(minimax(tomt, "X"), 0, "optimalt spill fra tomt brett er draw")
+`,
+      },
+      defaultFile: "spill.py",
+      editable: ["spill.py"],
+      run: { kind: "python-script", entry: "spill.py" },
+      verifications: [
+        { label: "X finner vinnende trekk", check: { kind: "output-contains", needle: "OK   X vinner fra nesten-vunnet posisjon" } },
+        { label: "O finner vinnende trekk", check: { kind: "output-contains", needle: "OK   O vinner fra nesten-vunnet posisjon" } },
+        { label: "Tvunget uavgjort returnerer 0", check: { kind: "output-contains", needle: "OK   fullt-nesten brett: draw" } },
+        { label: "Tomt brett gir draw under optimalt spill", check: { kind: "output-contains", needle: "OK   optimalt spill fra tomt brett er draw" } },
+      ],
+      hint:
+        "w = winner(board)\nif w == \"X\": return 1\nif w == \"O\": return -1\nif w == \"draw\": return 0\nif player == \"X\":\n    best = -10\n    for (_, ny) in legal_moves(board, player):\n        v = minimax(ny, other(player))\n        if v > best: best = v\n    return best\nelse:\n    best = 10\n    for (_, ny) in legal_moves(board, player):\n        v = minimax(ny, other(player))\n        if v < best: best = v\n    return best",
+    },
+
+    // ============ LEKSJON 3 ===========================================
+    {
+      id: "03-beste-trekk",
+      title: "3. Returnér beste trekk (ikke bare score)",
+      narrative:
+        "`minimax()` forteller oss hva **resultatet** blir hvis begge spiller optimalt. Men en AI som faktisk skal spille trenger noe annet: **hvilket trekk skal jeg gjøre nå?**\n\nMønsteret er enkelt: kjør minimax for hvert lovlig trekk fra rot-noden, og velg trekket som ga den beste scoren (max for X, min for O). Funksjonen returnerer **indeksen** av cellen (0–8), ikke selve scoren.\n\nDette splittes ofte i to funksjoner i AI-litteratur — `value()` returnerer score, `best_action()` returnerer trekket. Vi følger samme oppdeling: `minimax()` fra forrige leksjon gir score, og `best_move()` velger den beste handlingen.\n\n**Din oppgave:** Implementér `best_move(board, player)` → returner indeks (0–8) av beste trekk.\n\n**Edge case:** Hvis flere trekk gir samme score, returnér den **første** du finner (gjør tester deterministiske).",
+      files: {
+        "spill.py": `LINES = [
+    (0, 1, 2), (3, 4, 5), (6, 7, 8),
+    (0, 3, 6), (1, 4, 7), (2, 5, 8),
+    (0, 4, 8), (2, 4, 6),
+]
+
+
+def winner(board):
+    for (a, b, c) in LINES:
+        if board[a] == board[b] == board[c] and board[a] != ".":
+            return board[a]
+    if "." not in board:
+        return "draw"
+    return None
+
+
+def legal_moves(board, player):
+    out = []
+    for i in range(9):
+        if board[i] == ".":
+            ny = list(board)
+            ny[i] = player
+            out.append((i, tuple(ny)))
+    return out
+
+
+def other(p):
+    return "O" if p == "X" else "X"
+
+
+def minimax(board, player):
+    w = winner(board)
+    if w == "X": return 1
+    if w == "O": return -1
+    if w == "draw": return 0
+    if player == "X":
+        best = -10
+        for (_, ny) in legal_moves(board, player):
+            v = minimax(ny, other(player))
+            if v > best: best = v
+        return best
+    else:
+        best = 10
+        for (_, ny) in legal_moves(board, player):
+            v = minimax(ny, other(player))
+            if v < best: best = v
+        return best
+
+
+def best_move(board, player):
+    """Returner indeks (0-8) av beste trekk for player."""
+    # === DIN OPPGAVE ===
+    # 1. Initialiser best_idx = -1
+    # 2. Hvis player == "X": best_score = -10, vi vil maksimere
+    #    Ellers:             best_score = 10,  vi vil minimere
+    # 3. For hver (i, ny_brett) i legal_moves(board, player):
+    #      score = minimax(ny_brett, other(player))
+    #      hvis (X og score > best_score) eller (O og score < best_score):
+    #          oppdater best_score og best_idx
+    # 4. Returner best_idx
+    return -1
+
+
+def sjekk(faktisk, forventet, navn):
+    if faktisk == forventet:
+        print(f"OK   {navn}")
+    else:
+        print(f"FEIL {navn}: fikk {faktisk!r}, forventet {forventet!r}")
+
+
+# X X . / O O . / . . .  -> X velger 2 og vinner
+vinn_for_x = ("X", "X", ".", "O", "O", ".", ".", ".", ".")
+sjekk(best_move(vinn_for_x, "X"), 2, "X tar vinnende trekk pa celle 2")
+
+# X X . / . . . / . . .  -> O ma blokkere pa 2
+trussel_mot_o = ("X", "X", ".", ".", ".", ".", ".", ".", ".")
+# Merk: her er O sin tur, og X truer med a vinne pa 2.
+sjekk(best_move(trussel_mot_o, "O"), 2, "O blokkerer X sin trussel pa celle 2")
+
+# O O . / X . . / . . .  -> X ma blokkere pa 2
+trussel_mot_x = ("O", "O", ".", "X", ".", ".", ".", ".", ".")
+sjekk(best_move(trussel_mot_x, "X"), 2, "X blokkerer O sin trussel pa celle 2")
+
+# Bare ett trekk igjen
+en_igjen = ("X", "O", "X", "X", "O", "O", "O", "X", ".")
+sjekk(best_move(en_igjen, "X"), 8, "best_move finner det eneste lovlige trekket")
+`,
+      },
+      defaultFile: "spill.py",
+      editable: ["spill.py"],
+      run: { kind: "python-script", entry: "spill.py" },
+      verifications: [
+        { label: "X velger vinnende trekk", check: { kind: "output-contains", needle: "OK   X tar vinnende trekk pa celle 2" } },
+        { label: "O blokkerer motstanders trussel", check: { kind: "output-contains", needle: "OK   O blokkerer X sin trussel pa celle 2" } },
+        { label: "X blokkerer motstanders trussel", check: { kind: "output-contains", needle: "OK   X blokkerer O sin trussel pa celle 2" } },
+        { label: "Håndterer brett med ett trekk igjen", check: { kind: "output-contains", needle: "OK   best_move finner det eneste lovlige trekket" } },
+      ],
+      hint:
+        "best_idx = -1\nif player == \"X\":\n    best_score = -10\n    for (i, ny) in legal_moves(board, player):\n        s = minimax(ny, other(player))\n        if s > best_score:\n            best_score = s\n            best_idx = i\nelse:\n    best_score = 10\n    for (i, ny) in legal_moves(board, player):\n        s = minimax(ny, other(player))\n        if s < best_score:\n            best_score = s\n            best_idx = i\nreturn best_idx",
+    },
+
+    // ============ LEKSJON 4 ===========================================
+    {
+      id: "04-alfa-beta",
+      title: "4. Alfa-beta pruning",
+      narrative:
+        "Naiv minimax utforsker **hele** spilletreet. For tic-tac-toe fra tomt brett: ca 550 000 noder. For et brett 3 trekk inn: ca 900. Kan vi gjøre det smartere?\n\n**Alfa-beta pruning** sier: noen grener trenger vi aldri å utforske, fordi vi allerede vet at de aldri kan endre svaret.\n\nIntuisjonen — anta vi er X og vurderer to trekk A og B:\n- Trekk A returnerer score 0 (draw) etter full søk.\n- Vi begynner å utforske trekk B. Det første barn-trekket O kan svare med gir -1 (O vinner).\n- Da vet vi: O kommer til å velge MINST -1 fra B. Vi som X vil aldri velge B over A (som ga 0). Resten av B-treet er irrelevant. **Cut.**\n\nFormelt holder vi to verdier under rekursjonen:\n- `alpha` = beste score X kan garantere så langt (oppdateres på max-noder).\n- `beta` = beste score O kan garantere så langt (oppdateres på min-noder).\n\nNår `alpha >= beta`: avbryt. Den ene siden vil aldri tillate at vi når denne grenen.\n\n**Din oppgave:** Implementér `alphabeta(board, player, alpha, beta)`. Tell utforskede noder i `counter[\"ab\"]` og sammenlign med naiv `counter[\"naiv\"]`. For det delvis fylte test-brettet skal alfa-beta gi rundt **3x færre** noder enn naiv.",
+      files: {
+        "spill.py": `LINES = [
+    (0, 1, 2), (3, 4, 5), (6, 7, 8),
+    (0, 3, 6), (1, 4, 7), (2, 5, 8),
+    (0, 4, 8), (2, 4, 6),
+]
+
+
+def winner(board):
+    for (a, b, c) in LINES:
+        if board[a] == board[b] == board[c] and board[a] != ".":
+            return board[a]
+    if "." not in board:
+        return "draw"
+    return None
+
+
+def legal_moves(board, player):
+    out = []
+    for i in range(9):
+        if board[i] == ".":
+            ny = list(board)
+            ny[i] = player
+            out.append((i, tuple(ny)))
+    return out
+
+
+def other(p):
+    return "O" if p == "X" else "X"
+
+
+counter = {"naiv": 0, "ab": 0}
+
+
+def minimax(board, player):
+    """Naiv minimax. Vi teller noder i counter["naiv"]."""
+    counter["naiv"] += 1
+    w = winner(board)
+    if w == "X": return 1
+    if w == "O": return -1
+    if w == "draw": return 0
+    if player == "X":
+        best = -10
+        for (_, ny) in legal_moves(board, player):
+            v = minimax(ny, other(player))
+            if v > best: best = v
+        return best
+    else:
+        best = 10
+        for (_, ny) in legal_moves(board, player):
+            v = minimax(ny, other(player))
+            if v < best: best = v
+        return best
+
+
+def alphabeta(board, player, alpha, beta):
+    """Minimax med alfa-beta pruning. Tell noder i counter["ab"]."""
+    counter["ab"] += 1
+    # === DIN OPPGAVE ===
+    # 1. Sjekk terminal-state akkurat som i minimax (returner 1/-1/0).
+    # 2. Hvis player == "X" (maximizer):
+    #      v = -10
+    #      for hvert lovlig trekk (_, ny):
+    #          v = max(v, alphabeta(ny, other(player), alpha, beta))
+    #          hvis v >= beta:  returner v  # beta-cutoff
+    #          alpha = max(alpha, v)
+    #      returner v
+    # 3. Ellers (minimizer):
+    #      v = 10
+    #      for hvert lovlig trekk:
+    #          v = min(v, alphabeta(ny, other(player), alpha, beta))
+    #          hvis v <= alpha: returner v  # alfa-cutoff
+    #          beta = min(beta, v)
+    #      returner v
+    return 0
+
+
+def sjekk(faktisk, forventet, navn):
+    if faktisk == forventet:
+        print(f"OK   {navn}")
+    else:
+        print(f"FEIL {navn}: fikk {faktisk!r}, forventet {forventet!r}")
+
+
+# Delvis fylt brett (3 trekk inn). Sammenligning blir tydelig her uten at
+# Pyodide bremser ned i full-tree-soket (som har 549k noder).
+# X . O
+# . X .
+# . . .
+brett = ("X", ".", "O",
+         ".", "X", ".",
+         ".", ".", ".")
+
+counter["naiv"] = 0
+score_naiv = minimax(brett, "O")
+
+counter["ab"] = 0
+score_ab = alphabeta(brett, "O", -10, 10)
+
+print(f"naiv minimax: {counter['naiv']} noder")
+print(f"alfa-beta:    {counter['ab']} noder")
+print(f"reduksjon:    {counter['naiv'] - counter['ab']} noder spart")
+
+sjekk(score_naiv, score_ab, "samme score: alfa-beta endrer ikke svaret")
+sjekk(counter["ab"] < counter["naiv"], True, "alfa-beta utforsker faerre noder")
+sjekk(counter["ab"] * 2 < counter["naiv"], True, "alfa-beta er minst 2x raskere")
+`,
+      },
+      defaultFile: "spill.py",
+      editable: ["spill.py"],
+      run: { kind: "python-script", entry: "spill.py" },
+      verifications: [
+        { label: "Alfa-beta gir samme svar som naiv minimax", check: { kind: "output-contains", needle: "OK   samme score: alfa-beta endrer ikke svaret" } },
+        { label: "Pruning kutter faktisk noder bort", check: { kind: "output-contains", needle: "OK   alfa-beta utforsker faerre noder" } },
+        { label: "Reduksjonen er signifikant (minst 2x)", check: { kind: "output-contains", needle: "OK   alfa-beta er minst 2x raskere" } },
+      ],
+      hint:
+        "w = winner(board)\nif w == \"X\": return 1\nif w == \"O\": return -1\nif w == \"draw\": return 0\nif player == \"X\":\n    v = -10\n    for (_, ny) in legal_moves(board, player):\n        v = max(v, alphabeta(ny, other(player), alpha, beta))\n        if v >= beta: return v\n        alpha = max(alpha, v)\n    return v\nelse:\n    v = 10\n    for (_, ny) in legal_moves(board, player):\n        v = min(v, alphabeta(ny, other(player), alpha, beta))\n        if v <= alpha: return v\n        beta = min(beta, v)\n    return v",
+    },
+
+    // ============ LEKSJON 5 ===========================================
+    {
+      id: "05-heuristisk-evaluering",
+      title: "5. Heuristisk evaluering for depth-limited søk",
+      narrative:
+        "Tic-tac-toe har et lite spilletre — vi kan søke til løvnodene (terminal states) i hver posisjon. Men sjakk har ~10⁴⁰ noder; vi kommer aldri til løvnodene. Vi må **stoppe søket** ved en gitt dybde og **gjette** verdien av posisjonen vi står i.\n\nDet er det en **heuristisk evaluator** gjør. Den tar en ikke-terminal posisjon og returnerer et estimat av hvor god den er for X (positiv = bra for X, negativ = bra for O).\n\nFor tic-tac-toe kan vi bruke en enkel heuristikk: **antall \"åpne 2-på-rader\"**.\n- En åpen 2-på-rad for X: en vinnerlinje med 2 X-er og 1 tom celle (umiddelbar trussel).\n- `evaluate(board) = open_twos(X) - open_twos(O)`.\n\nKombinert med dybde-begrenset minimax kan vi nå analysere mye større spill — vi bytter eksakthet mot fart.\n\n**Din oppgave** — to funksjoner:\n1. `count_open_twos(board, player)` — tell linjer med nøyaktig 2 av `player`s markører + 1 tom celle.\n2. `evaluate(board)` — returner +100 hvis X har vunnet, -100 hvis O har, 0 hvis draw, ellers `count_open_twos(\"X\") - count_open_twos(\"O\")`.\n\n`minimax_depth()` er ferdig-implementert — bruker `evaluate()` på løv-nodene OG når `depth == 0`.",
+      files: {
+        "spill.py": `LINES = [
+    (0, 1, 2), (3, 4, 5), (6, 7, 8),
+    (0, 3, 6), (1, 4, 7), (2, 5, 8),
+    (0, 4, 8), (2, 4, 6),
+]
+
+
+def winner(board):
+    for (a, b, c) in LINES:
+        if board[a] == board[b] == board[c] and board[a] != ".":
+            return board[a]
+    if "." not in board:
+        return "draw"
+    return None
+
+
+def legal_moves(board, player):
+    out = []
+    for i in range(9):
+        if board[i] == ".":
+            ny = list(board)
+            ny[i] = player
+            out.append((i, tuple(ny)))
+    return out
+
+
+def other(p):
+    return "O" if p == "X" else "X"
+
+
+def count_open_twos(board, player):
+    """Antall vinnerlinjer med 2 av playerens markorer + 1 tom celle."""
+    # === DIN OPPGAVE ===
+    # For hver (a, b, c) i LINES:
+    #   celler = [board[a], board[b], board[c]]
+    #   hvis celler.count(player) == 2 og celler.count(".") == 1:
+    #     telleren oker med 1
+    # Returner telleren.
+    return 0
+
+
+def evaluate(board):
+    """Heuristisk score for ikke-terminale brett.
+
+    Terminal:
+      - X har vunnet -> +100
+      - O har vunnet -> -100
+      - draw         ->  0
+    Ellers: count_open_twos(X) - count_open_twos(O)
+    """
+    # === DIN OPPGAVE ===
+    # Sjekk winner(board) forst. Returner 100 / -100 / 0 ved terminal.
+    # Ellers: count_open_twos(board, "X") - count_open_twos(board, "O")
+    return 0
+
+
+def minimax_depth(board, player, depth):
+    """Minimax med max-dybde. Bruker evaluate() ved depth==0 eller terminal."""
+    w = winner(board)
+    if w is not None or depth == 0:
+        return evaluate(board)
+    if player == "X":
+        best = -1000
+        for (_, ny) in legal_moves(board, player):
+            v = minimax_depth(ny, other(player), depth - 1)
+            if v > best: best = v
+        return best
+    else:
+        best = 1000
+        for (_, ny) in legal_moves(board, player):
+            v = minimax_depth(ny, other(player), depth - 1)
+            if v < best: best = v
+        return best
+
+
+def sjekk(faktisk, forventet, navn):
+    if faktisk == forventet:
+        print(f"OK   {navn}")
+    else:
+        print(f"FEIL {navn}: fikk {faktisk!r}, forventet {forventet!r}")
+
+
+# X X . / . . . / . . . -> X har 1 apen 2-rad (topp-raden)
+b1 = ("X", "X", ".", ".", ".", ".", ".", ".", ".")
+sjekk(count_open_twos(b1, "X"), 1, "X har 1 apen 2-rad i topp-raden")
+sjekk(count_open_twos(b1, "O"), 0, "O har 0 apne 2-rader")
+sjekk(evaluate(b1), 1, "evaluate gir +1 for X-fordel")
+
+# X har vunnet
+b2 = ("X", "X", "X", ".", ".", ".", ".", ".", ".")
+sjekk(evaluate(b2), 100, "evaluate gir +100 nar X har vunnet")
+
+# O har 1 trussel, X har 0
+b3 = ("O", "O", ".", "X", ".", ".", ".", ".", ".")
+sjekk(evaluate(b3), -1, "evaluate gir -1 nar O har 1 mer trussel")
+
+# Depth-limited minimax: dybde 2 fra tomt brett -> ingen vinner enda
+tomt = (".", ".", ".", ".", ".", ".", ".", ".", ".")
+sjekk(minimax_depth(tomt, "X", 2), 0, "depth=2 fra tomt brett gir 0")
+`,
+      },
+      defaultFile: "spill.py",
+      editable: ["spill.py"],
+      run: { kind: "python-script", entry: "spill.py" },
+      verifications: [
+        { label: "count_open_twos teller X-trusler riktig", check: { kind: "output-contains", needle: "OK   X har 1 apen 2-rad i topp-raden" } },
+        { label: "count_open_twos teller O-trusler riktig", check: { kind: "output-contains", needle: "OK   O har 0 apne 2-rader" } },
+        { label: "evaluate gir X-fordel som positiv", check: { kind: "output-contains", needle: "OK   evaluate gir +1 for X-fordel" } },
+        { label: "evaluate gir +100 for X-vinst", check: { kind: "output-contains", needle: "OK   evaluate gir +100 nar X har vunnet" } },
+        { label: "evaluate gir negativ for O-fordel", check: { kind: "output-contains", needle: "OK   evaluate gir -1 nar O har 1 mer trussel" } },
+        { label: "Depth-limited minimax kjorer pa evaluate()", check: { kind: "output-contains", needle: "OK   depth=2 fra tomt brett gir 0" } },
+      ],
+      hint:
+        "def count_open_twos(board, player):\n    count = 0\n    for (a, b, c) in LINES:\n        celler = [board[a], board[b], board[c]]\n        if celler.count(player) == 2 and celler.count(\".\") == 1:\n            count += 1\n    return count\n\ndef evaluate(board):\n    w = winner(board)\n    if w == \"X\": return 100\n    if w == \"O\": return -100\n    if w == \"draw\": return 0\n    return count_open_twos(board, \"X\") - count_open_twos(board, \"O\")",
+    },
+
+    // ============ LEKSJON 6 ===========================================
+    {
+      id: "06-spill-mot-ai",
+      title: "6. Spill mot AI-en (full demo)",
+      narrative:
+        "Tid for å se hele systemet i aksjon. Vi har bygget:\n\n- Brettrepresentasjon og terminal-sjekk (leksjon 1)\n- Naiv minimax (leksjon 2)\n- Beste-trekk-velger (leksjon 3)\n- Alfa-beta pruning (leksjon 4)\n- Heuristisk evaluering (leksjon 5)\n\nNå koblet sammen: en `play_game()`-funksjon som lar to AI-er — begge med alfa-beta — spille en hel runde mot hverandre, ASCII-printer brettet underveis, og verifiserer det klassiske resultatet: **optimalt spill i tic-tac-toe ender alltid uavgjort**.\n\nDet er et nydelig teorem: hvis begge spillerne spiller perfekt, kan ingen tvinge fram en vinst. Tic-tac-toe er \"løst\" akkurat sånn.\n\nAll infrastruktur fra leksjon 1–4 er ferdig-implementert øverst. **Din oppgave** er bare `play_game()`:\n- Start med tomt brett, X til trekk.\n- Loop til winner returnerer noe annet enn None:\n  - Velg trekk med `best_move()`.\n  - Plasser markøren på brettet.\n  - Print posisjonen med `print_board()`.\n  - Bytt spiller.\n- Returner `(winner_string, antall_trekk)`.\n\nVi tester at AI vs AI alltid blir draw, og at AI-en finner vinnerne / blokkerer trusler i tre nøkkel-scenarier.",
+      files: {
+        "spill.py": `LINES = [
+    (0, 1, 2), (3, 4, 5), (6, 7, 8),
+    (0, 3, 6), (1, 4, 7), (2, 5, 8),
+    (0, 4, 8), (2, 4, 6),
+]
+
+
+def winner(board):
+    for (a, b, c) in LINES:
+        if board[a] == board[b] == board[c] and board[a] != ".":
+            return board[a]
+    if "." not in board:
+        return "draw"
+    return None
+
+
+def legal_moves(board, player):
+    out = []
+    for i in range(9):
+        if board[i] == ".":
+            ny = list(board)
+            ny[i] = player
+            out.append((i, tuple(ny)))
+    return out
+
+
+def other(p):
+    return "O" if p == "X" else "X"
+
+
+def alphabeta(board, player, alpha, beta):
+    w = winner(board)
+    if w == "X": return 1
+    if w == "O": return -1
+    if w == "draw": return 0
+    if player == "X":
+        v = -10
+        for (_, ny) in legal_moves(board, player):
+            v = max(v, alphabeta(ny, other(player), alpha, beta))
+            if v >= beta: return v
+            alpha = max(alpha, v)
+        return v
+    else:
+        v = 10
+        for (_, ny) in legal_moves(board, player):
+            v = min(v, alphabeta(ny, other(player), alpha, beta))
+            if v <= alpha: return v
+            beta = min(beta, v)
+        return v
+
+
+def best_move(board, player):
+    best_idx = -1
+    if player == "X":
+        best_score = -10
+        for (i, ny) in legal_moves(board, player):
+            s = alphabeta(ny, other(player), -10, 10)
+            if s > best_score:
+                best_score = s
+                best_idx = i
+    else:
+        best_score = 10
+        for (i, ny) in legal_moves(board, player):
+            s = alphabeta(ny, other(player), -10, 10)
+            if s < best_score:
+                best_score = s
+                best_idx = i
+    return best_idx
+
+
+def print_board(board):
+    rows = []
+    for r in range(3):
+        rows.append(" " + " | ".join(board[r * 3:r * 3 + 3]))
+    print("\\n---+---+---\\n".join(rows))
+    print()
+
+
+def play_game():
+    """Spill AI vs AI med alfa-beta. Returner (vinner_streng, antall_trekk)."""
+    # === DIN OPPGAVE ===
+    # 1. Start: board = (".",) * 9, player = "X", trekk_nr = 0
+    # 2. Loop sa lenge winner(board) is None:
+    #      idx = best_move(board, player)
+    #      lag nytt brett med player i posisjon idx (list -> sett -> tuple)
+    #      print_board(nytt brett)
+    #      trekk_nr += 1, player = other(player)
+    # 3. Returner (winner(board), trekk_nr)
+    return ("draw", 0)
+
+
+def sjekk(faktisk, forventet, navn):
+    if faktisk == forventet:
+        print(f"OK   {navn}")
+    else:
+        print(f"FEIL {navn}: fikk {faktisk!r}, forventet {forventet!r}")
+
+
+print("=== AI vs AI ===")
+resultat, antall = play_game()
+print(f"Resultat: {resultat}, etter {antall} trekk")
+
+sjekk(resultat, "draw", "AI vs AI ender alltid uavgjort")
+sjekk(antall, 9, "alle 9 ruter fylles ved optimalt spill")
+
+# AI som O skal blokkere truende vinst
+trussel_X = ("X", "X", ".", ".", "O", ".", ".", ".", ".")
+sjekk(best_move(trussel_X, "O"), 2, "AI(O) blokkerer X-X-tom-trussel")
+
+# AI som X skal ta vinnende trekk
+vinn_X = ("X", "X", ".", "O", "O", ".", ".", ".", ".")
+sjekk(best_move(vinn_X, "X"), 2, "AI(X) tar vinnende trekk")
+
+# AI som O skal blokkere truende posisjon
+# X har X i 0 og 4 -> tvunget til a forsvare
+diag_trussel = ("X", ".", ".", ".", "X", ".", ".", ".", ".")
+o_svar = best_move(diag_trussel, "O")
+ny_brett = list(diag_trussel)
+ny_brett[o_svar] = "O"
+# Etter O sitt forsvar skal X ikke kunne vinne i ett trekk:
+neste_X = best_move(tuple(ny_brett), "X")
+test_brett = list(ny_brett)
+test_brett[neste_X] = "X"
+sjekk(winner(tuple(test_brett)), None, "O sitt forsvar hindrer X i a vinne i ett trekk")
+`,
+      },
+      defaultFile: "spill.py",
+      editable: ["spill.py"],
+      run: { kind: "python-script", entry: "spill.py" },
+      verifications: [
+        { label: "AI vs AI ender alltid uavgjort", check: { kind: "output-contains", needle: "OK   AI vs AI ender alltid uavgjort" } },
+        { label: "Alle 9 ruter fylles ved optimalt spill", check: { kind: "output-contains", needle: "OK   alle 9 ruter fylles ved optimalt spill" } },
+        { label: "AI(O) blokkerer umiddelbar trussel", check: { kind: "output-contains", needle: "OK   AI(O) blokkerer X-X-tom-trussel" } },
+        { label: "AI(X) tar vinnende trekk når tilgjengelig", check: { kind: "output-contains", needle: "OK   AI(X) tar vinnende trekk" } },
+        { label: "AI forsvarer mot diagonal-trussel", check: { kind: "output-contains", needle: "OK   O sitt forsvar hindrer X i a vinne i ett trekk" } },
+      ],
+      hint:
+        "board = (\".\",) * 9\nplayer = \"X\"\ntrekk_nr = 0\nwhile winner(board) is None:\n    idx = best_move(board, player)\n    ny = list(board)\n    ny[idx] = player\n    board = tuple(ny)\n    print_board(board)\n    trekk_nr += 1\n    player = other(player)\nreturn (winner(board), trekk_nr)",
+    },
+  ],
+};
+
+const STRIPS_PLANLEGGER: MiniCourse = {
+  id: "strips-planlegger",
+  slug: "strips-planlegger",
+  title: "STRIPS-planlegger fra null",
+  blurb:
+    "Bygg en klassisk STRIPS-planlegger steg for steg. State som mengde av literals, actions med precondition/add/del, forward search (BFS), enkle heuristikker, A* og til slutt et lite logistikk-domene som rutes med samme motor. Studenten skriver hver kjernekomponent selv og sammenligner søkestrategiene på samme problem.",
+  estimertTid: "70–90 min",
+  fag: ["DTE-2501", "Klassisk AI", "Planlegging"],
+  color: "purple",
+  rekkefolge: 30,
+  lessons: [
+    // ============ LEKSJON 1 ===========================================
+    {
+      id: "01-state-og-action",
+      title: "1. State, action og operator-representasjon",
+      narrative:
+        "En **STRIPS-planlegger** er en søke-algoritme som ikke jobber på tall eller posisjoner, men på *symbolske fakta om verden*. Den tenker mer som et menneske enn som en sjakkmotor.\n\nTo grunnbegreper:\n\n- **State** er en mengde positive literals. En blokk-verden med A oppå B på bordet ser slik ut: `{\"on(A, table)\", \"on(B, table)\", \"clear(A)\", \"clear(B)\"}`. Alt vi ikke ser, antas å være usant (\"closed-world assumption\").\n- **Action** har et navn, et sett **preconditions** (literals som må holde for at action er anvendelig), et sett **add_effects** (literals som blir sanne etterpå) og et sett **del_effects** (literals som blir usanne).\n\n**Hvorfor sett?** Rekkefølge betyr ingenting — kun *hvilke* fakta som er sanne. Bruker vi `frozenset` blir state hashbar og kan brukes i visited-sett i søk.\n\n**Din oppgave:** Skriv to funksjoner.\n- `applicable(action, state)` — er alle preconditions oppfylt i state?\n- `apply(action, state)` — gi ny state ved å fjerne del_effects og legge til add_effects.\n\nMatematisk: `apply(a, s) = (s - del(a)) ∪ add(a)`.",
+      files: {
+        "strips.py": "class Action:\n    \"\"\"En STRIPS-action: navn + preconditions + add_effects + del_effects.\"\"\"\n    def __init__(self, name, preconditions, add_effects, del_effects):\n        self.name = name\n        self.preconditions = frozenset(preconditions)\n        self.add_effects = frozenset(add_effects)\n        self.del_effects = frozenset(del_effects)\n\n    def __repr__(self):\n        return self.name\n\n\n# === DIN OPPGAVE 1 ===\ndef applicable(action, state):\n    \"\"\"True hvis alle action.preconditions er i state.\"\"\"\n    # Hint: bruk .issubset() på frozenset.\n    pass\n\n\n# === DIN OPPGAVE 2 ===\ndef apply(action, state):\n    \"\"\"Returner ny state: (state - del_effects) | add_effects.\n    state kommer som frozenset eller set; returner gjerne frozenset.\n    \"\"\"\n    pass\n\n\n# === Blocks-world: A og B på bordet, begge clear ===\nstate0 = frozenset({\n    \"on(A, table)\",\n    \"on(B, table)\",\n    \"clear(A)\",\n    \"clear(B)\",\n})\n\n# Action: stable B oppe på A.\nstack_B_on_A = Action(\n    name=\"stack(B, A)\",\n    preconditions={\"clear(A)\", \"clear(B)\", \"on(B, table)\"},\n    add_effects={\"on(B, A)\"},\n    del_effects={\"on(B, table)\", \"clear(A)\"},\n)\n\n# Action: unstack B fra A (motsatt).\nunstack_B_from_A = Action(\n    name=\"unstack(B, A)\",\n    preconditions={\"on(B, A)\", \"clear(B)\"},\n    add_effects={\"on(B, table)\", \"clear(A)\"},\n    del_effects={\"on(B, A)\"},\n)\n\n\ndef sjekk(faktisk, forventet, navn):\n    if faktisk == forventet:\n        print(f\"OK   {navn}\")\n    else:\n        print(f\"FEIL {navn}: fikk {faktisk!r}, forventet {forventet!r}\")\n\n\n# applicable: i start-state er stack(B, A) lovlig\nsjekk(applicable(stack_B_on_A, state0), True, \"stack lovlig i start\")\n\n# unstack derimot krever on(B, A) — som ikke er sant ennaa\nsjekk(applicable(unstack_B_from_A, state0), False, \"unstack ulovlig i start\")\n\n# Etter apply: B er pa A, og A er ikke lenger clear\nstate1 = apply(stack_B_on_A, state0)\nsjekk(\"on(B, A)\" in state1, True, \"apply legger til on(B,A)\")\nsjekk(\"on(B, table)\" in state1, False, \"apply fjerner on(B,table)\")\nsjekk(\"clear(A)\" in state1, False, \"apply fjerner clear(A)\")\nsjekk(\"clear(B)\" in state1, True, \"apply rorer ikke clear(B)\")\n\n# Na er unstack lovlig\nsjekk(applicable(unstack_B_from_A, state1), True, \"unstack lovlig etter stack\")\n\n# Sjekk reversibilitet: stack -> unstack gir tilbake start\nstate2 = apply(unstack_B_from_A, state1)\nsjekk(state2 == state0, True, \"unstack reverserer stack\")\n",
+      },
+      defaultFile: "strips.py",
+      editable: ["strips.py"],
+      run: { kind: "python-script", entry: "strips.py" },
+      verifications: [
+        {
+          label: "applicable() godtar lovlig action",
+          check: { kind: "output-contains", needle: "OK   stack lovlig i start" },
+        },
+        {
+          label: "applicable() avviser action uten oppfylt precondition",
+          check: { kind: "output-contains", needle: "OK   unstack ulovlig i start" },
+        },
+        {
+          label: "apply() legger til add_effects",
+          check: { kind: "output-contains", needle: "OK   apply legger til on(B,A)" },
+        },
+        {
+          label: "apply() fjerner del_effects",
+          check: { kind: "output-contains", needle: "OK   apply fjerner on(B,table)" },
+        },
+        {
+          label: "apply() rører ikke literals utenfor add/del",
+          check: { kind: "output-contains", needle: "OK   apply rorer ikke clear(B)" },
+        },
+        {
+          label: "stack + unstack reverserer hverandre",
+          check: { kind: "output-contains", needle: "OK   unstack reverserer stack" },
+        },
+      ],
+      hint:
+        "def applicable(action, state):\n    return action.preconditions.issubset(state)\n\ndef apply(action, state):\n    return (frozenset(state) - action.del_effects) | action.add_effects",
+    },
+
+    // ============ LEKSJON 2 ===========================================
+    {
+      id: "02-bfs-forward-search",
+      title: "2. Goal-test og enkel forward search (BFS)",
+      narrative:
+        "Nå har vi `applicable` og `apply`. Da er en planlegger nesten gratis: planlegging = grafsøk der **noder er states** og **kanter er actions**.\n\nGoal-testen er ikke equality — målet er en **delvis spesifikasjon**: \"jeg vil bare at `on(C, B)` skal være sant. Resten bryr jeg meg ikke om.\" Det uttrykkes som `goal.issubset(state)`.\n\nVi starter med **breadth-first search (BFS)**:\n\n1. Køen inneholder `(state, plan-så-langt)`.\n2. Trekk neste state ut, sjekk om målet er nådd.\n3. Ellers: for hver lovlige action, beregn ny state, og put `(ny_state, plan + [action])` i køen.\n4. Bruk et `visited`-sett på states så vi ikke utforsker samme state to ganger.\n\n**Hvorfor BFS først?** Den finner den korteste planen (færrest steg), uten heuristikker. Bra utgangspunkt og bra sammenligningsgrunnlag.\n\n**Din oppgave:** Skriv `plan_bfs(initial, goal, actions)` som returnerer listen av action-navn, eller `None` hvis ingen plan finnes.",
+      files: {
+        "strips.py": "from collections import deque\n\n\nclass Action:\n    def __init__(self, name, preconditions, add_effects, del_effects):\n        self.name = name\n        self.preconditions = frozenset(preconditions)\n        self.add_effects = frozenset(add_effects)\n        self.del_effects = frozenset(del_effects)\n    def __repr__(self):\n        return self.name\n\n\ndef applicable(action, state):\n    return action.preconditions.issubset(state)\n\n\ndef apply(action, state):\n    return (frozenset(state) - action.del_effects) | action.add_effects\n\n\n# === DIN OPPGAVE ===\ndef plan_bfs(initial, goal, actions):\n    \"\"\"Returner liste av action-navn fra initial til en state der goal er oppfylt.\n    Returner None hvis ingen plan finnes.\n    Bruk frozenset(state), en deque-ko, og et visited-sett.\n    Goal-test: goal.issubset(state).\n    \"\"\"\n    pass\n\n\n# ===== Blocks-world: 3 blokker A, B, C =====\n# Start: alle på bordet, alle clear. Mål: C oppe på B oppe på A.\nblokker = [\"A\", \"B\", \"C\"]\n\ninitial = set()\nfor b in blokker:\n    initial.add(f\"on({b}, table)\")\n    initial.add(f\"clear({b})\")\n\ngoal = {\"on(B, A)\", \"on(C, B)\"}\n\n\n# Hjelpefunksjon: generer alle move-actions for 3 blokker.\ndef lag_move_actions(blokker):\n    actions = []\n    plasser = list(blokker) + [\"table\"]\n    for b in blokker:\n        for src in plasser:\n            for dst in plasser:\n                if b == src or b == dst or src == dst:\n                    continue\n                if dst == \"table\":\n                    pre = {f\"on({b}, {src})\", f\"clear({b})\"}\n                    add = {f\"on({b}, table)\", f\"clear({src})\"}\n                    dele = {f\"on({b}, {src})\"}\n                else:\n                    pre = {f\"on({b}, {src})\", f\"clear({b})\", f\"clear({dst})\"}\n                    add = {f\"on({b}, {dst})\"}\n                    dele = {f\"on({b}, {src})\", f\"clear({dst})\"}\n                    if src != \"table\":\n                        add = add | {f\"clear({src})\"}\n                actions.append(Action(f\"move({b},{src}->{dst})\", pre, add, dele))\n    return actions\n\n\nactions = lag_move_actions(blokker)\nprint(f\"Antall mulige actions: {len(actions)}\")\n\nplan = plan_bfs(initial, goal, actions)\nprint(f\"Plan: {plan}\")\n\n\ndef simuler(plan, initial, actions):\n    if plan is None:\n        return None\n    by_name = {a.name: a for a in actions}\n    s = frozenset(initial)\n    for navn in plan:\n        a = by_name[navn]\n        if not applicable(a, s):\n            return None\n        s = apply(a, s)\n    return s\n\n\nresultat = simuler(plan, initial, actions)\n\n\ndef sjekk(faktisk, forventet, navn):\n    if faktisk == forventet:\n        print(f\"OK   {navn}\")\n    else:\n        print(f\"FEIL {navn}: fikk {faktisk!r}, forventet {forventet!r}\")\n\n\nsjekk(plan is not None, True, \"plan_bfs fant en plan\")\nsjekk(resultat is not None and goal.issubset(resultat), True, \"sluttstate oppfyller goal\")\n# Den korteste planen for 3-tarn er 2 steg (stable B på A, deretter C på B).\nsjekk(plan is not None and len(plan) == 2, True, \"BFS fant minimal plan (2 steg)\")\n# Tomt mål: planen skal være tom liste, ikke None.\nsjekk(plan_bfs(initial, set(), actions), [], \"tomt mal gir tom plan\")\n",
+      },
+      defaultFile: "strips.py",
+      editable: ["strips.py"],
+      run: { kind: "python-script", entry: "strips.py" },
+      verifications: [
+        {
+          label: "plan_bfs() finner en plan",
+          check: { kind: "output-contains", needle: "OK   plan_bfs fant en plan" },
+        },
+        {
+          label: "Sluttstate oppfyller goal (subset-test)",
+          check: { kind: "output-contains", needle: "OK   sluttstate oppfyller goal" },
+        },
+        {
+          label: "BFS finner minimal plan (2 steg for 3-tårn)",
+          check: { kind: "output-contains", needle: "OK   BFS fant minimal plan (2 steg)" },
+        },
+        {
+          label: "Tomt mål returnerer tom plan",
+          check: { kind: "output-contains", needle: "OK   tomt mal gir tom plan" },
+        },
+      ],
+      hint:
+        "def plan_bfs(initial, goal, actions):\n    initial = frozenset(initial)\n    goal = frozenset(goal)\n    if goal.issubset(initial):\n        return []\n    visited = {initial}\n    kø = deque([(initial, [])])\n    while kø:\n        state, plan = kø.popleft()\n        for a in actions:\n            if applicable(a, state):\n                ny = apply(a, state)\n                if ny in visited:\n                    continue\n                if goal.issubset(ny):\n                    return plan + [a.name]\n                visited.add(ny)\n                kø.append((ny, plan + [a.name]))\n    return None",
+    },
+
+    // ============ LEKSJON 3 ===========================================
+    {
+      id: "03-heuristikk-greedy",
+      title: "3. Heuristikker: greedy med count-of-unsatisfied-goals",
+      narrative:
+        "BFS er korrekt og finner optimale planer, men den utforsker dumt. På et 4-blokk-problem utforsker BFS titalls states; en god heuristikk kan kutte det dramatisk.\n\nDen enkleste planlegger-heuristikken er **antallet usatisfied goal-literals**:\n\n```python\ndef h(state, goal):\n    return len(goal - state)\n```\n\nEr alle mål-literals oppfylt, gir den 0 (vi er i mål). Mangler 3, gir den 3. Den er ikke alltid admissibel (kan overestimere), men den er rask og veldig nyttig.\n\n**Greedy best-first search** velger neste state utelukkende basert på `h`. Den ignorerer hvor lang planen er så langt (g). Det gjør den rask, men kan gi suboptimale planer — og i verste fall sykler den (vi unngår det med visited).\n\n**Din oppgave:**\n- Skriv `h_count(state, goal)`.\n- Skriv `plan_greedy(initial, goal, actions, h)` med en priority-kø (heapq).\n\nSammenlign så node-tellingen med BFS på samme problem (4 blokker, tårn av høyde 4). Greedy bør utforske dramatisk færre noder.",
+      files: {
+        "strips.py": "from collections import deque\nfrom heapq import heappush, heappop\n\n\nclass Action:\n    def __init__(self, name, preconditions, add_effects, del_effects):\n        self.name = name\n        self.preconditions = frozenset(preconditions)\n        self.add_effects = frozenset(add_effects)\n        self.del_effects = frozenset(del_effects)\n    def __repr__(self):\n        return self.name\n\n\ndef applicable(action, state):\n    return action.preconditions.issubset(state)\n\n\ndef apply(action, state):\n    return (frozenset(state) - action.del_effects) | action.add_effects\n\n\n# === DIN OPPGAVE 1: tell antall usatisfied goal-literals ===\ndef h_count(state, goal):\n    \"\"\"Returner antall literals i goal som ikke er i state.\"\"\"\n    pass\n\n\n# === DIN OPPGAVE 2: greedy best-first search ===\ndef plan_greedy(initial, goal, actions, h):\n    \"\"\"Returner (plan, antall_noder_utforsket).\n    Plan er liste av action-navn (eller None hvis ingen finnes).\n    Bruk heapq som prioritetsko, prioritert kun pa h(state, goal).\n    NB: heapq trenger en tie-breaker fordi state er frozenset (ikke ordnet) -\n    bruk en monotont okende teller.\n    \"\"\"\n    pass\n\n\n# ===== Felles BFS for sammenligning =====\ndef plan_bfs(initial, goal, actions):\n    initial = frozenset(initial)\n    goal = frozenset(goal)\n    if goal.issubset(initial):\n        return [], 0\n    visited = {initial}\n    kø = deque([(initial, [])])\n    noder = 0\n    while kø:\n        state, plan = kø.popleft()\n        noder += 1\n        for a in actions:\n            if applicable(a, state):\n                ny = apply(a, state)\n                if ny in visited:\n                    continue\n                if goal.issubset(ny):\n                    return plan + [a.name], noder\n                visited.add(ny)\n                kø.append((ny, plan + [a.name]))\n    return None, noder\n\n\n# ===== Problem: 4 blokker, mål B-på-A, C-på-B, D-på-C =====\nblokker = [\"A\", \"B\", \"C\", \"D\"]\n\ninitial = set()\nfor b in blokker:\n    initial.add(f\"on({b}, table)\")\n    initial.add(f\"clear({b})\")\n\ngoal = {\"on(B, A)\", \"on(C, B)\", \"on(D, C)\"}\n\n\ndef lag_move_actions(blokker):\n    actions = []\n    plasser = list(blokker) + [\"table\"]\n    for b in blokker:\n        for src in plasser:\n            for dst in plasser:\n                if b == src or b == dst or src == dst:\n                    continue\n                if dst == \"table\":\n                    pre = {f\"on({b}, {src})\", f\"clear({b})\"}\n                    add = {f\"on({b}, table)\", f\"clear({src})\"}\n                    dele = {f\"on({b}, {src})\"}\n                else:\n                    pre = {f\"on({b}, {src})\", f\"clear({b})\", f\"clear({dst})\"}\n                    add = {f\"on({b}, {dst})\"}\n                    dele = {f\"on({b}, {src})\", f\"clear({dst})\"}\n                    if src != \"table\":\n                        add = add | {f\"clear({src})\"}\n                actions.append(Action(f\"move({b},{src}->{dst})\", pre, add, dele))\n    return actions\n\n\nactions = lag_move_actions(blokker)\n\nbfs_plan, bfs_n = plan_bfs(initial, goal, actions)\ngreedy_plan, greedy_n = plan_greedy(initial, goal, actions, h_count)\n\nprint(f\"BFS:    {bfs_n} noder, plan-lengde {len(bfs_plan) if bfs_plan else '-'}\")\nprint(f\"GREEDY: {greedy_n} noder, plan-lengde {len(greedy_plan) if greedy_plan else '-'}\")\n\n\ndef sjekk(faktisk, forventet, navn):\n    if faktisk == forventet:\n        print(f\"OK   {navn}\")\n    else:\n        print(f\"FEIL {navn}: fikk {faktisk!r}, forventet {forventet!r}\")\n\n\nsjekk(h_count(frozenset(initial), frozenset(goal)), 3, \"h_count teller 3 manglende ved start\")\nsjekk(h_count(frozenset(goal), frozenset(goal)), 0, \"h_count = 0 i mal\")\nsjekk(greedy_plan is not None, True, \"greedy fant en plan\")\nsjekk(greedy_n < bfs_n, True, \"greedy utforsker faerre noder enn BFS\")\n",
+      },
+      defaultFile: "strips.py",
+      editable: ["strips.py"],
+      run: { kind: "python-script", entry: "strips.py" },
+      verifications: [
+        {
+          label: "h_count teller manglende literals",
+          check: { kind: "output-contains", needle: "OK   h_count teller 3 manglende ved start" },
+        },
+        {
+          label: "h_count = 0 når mål er nådd",
+          check: { kind: "output-contains", needle: "OK   h_count = 0 i mal" },
+        },
+        {
+          label: "Greedy finner en plan",
+          check: { kind: "output-contains", needle: "OK   greedy fant en plan" },
+        },
+        {
+          label: "Greedy utforsker færre noder enn BFS",
+          check: { kind: "output-contains", needle: "OK   greedy utforsker faerre noder enn BFS" },
+        },
+      ],
+      hint:
+        "def h_count(state, goal):\n    return len(frozenset(goal) - frozenset(state))\n\ndef plan_greedy(initial, goal, actions, h):\n    initial = frozenset(initial)\n    goal = frozenset(goal)\n    if goal.issubset(initial):\n        return [], 0\n    teller = 0\n    frontier = [(h(initial, goal), teller, initial, [])]\n    visited = {initial}\n    noder = 0\n    while frontier:\n        _, _, state, plan = heappop(frontier)\n        noder += 1\n        for a in actions:\n            if applicable(a, state):\n                ny = apply(a, state)\n                if ny in visited:\n                    continue\n                visited.add(ny)\n                if goal.issubset(ny):\n                    return plan + [a.name], noder\n                teller += 1\n                heappush(frontier, (h(ny, goal), teller, ny, plan + [a.name]))\n    return None, noder",
+    },
+
+    // ============ LEKSJON 4 ===========================================
+    {
+      id: "04-astar",
+      title: "4. A*-søk: kombiner g (kostnad) og h (heuristikk)",
+      narrative:
+        "Greedy er rask, men ignorerer hvor lang planen blir. BFS er optimal, men ignorerer alt vi vet om målet. **A\\* kombinerer begge:**\n\n```\nf(state) = g(state) + h(state, goal)\n```\n\n- `g` = antall steg fra initial til nåværende state (planlengde så langt).\n- `h` = vår estimerte avstand fra state til mål.\n\nVi prioriterer states med minst `f`. Hvis `h` er **admissibel** (aldri overestimerer den faktiske avstanden), garanterer A* optimal plan — som BFS — men utforsker langt færre noder.\n\nVår `h_count` er ikke streng admissibel for alle domener, men den er en kjent nyttig planlegger-heuristikk og A* finner ofte samme optimum som BFS.\n\n**Implementasjons-detaljer som gjør A* tricky:**\n\n1. **Re-opening:** Hvis vi finner en bedre vei (lavere g) til en state vi allerede har popget, må vi vurdere den på nytt. Hold en `g_score`-dict og hopp over noder hvor vi alt har sett en bedre vei.\n2. **Tie-breaker:** Som i greedy må vi gi heapq noe ordnet å sammenligne — bruk en monotont økende teller.\n\n**Din oppgave:** Implementér `plan_astar(initial, goal, actions, h)` så den returnerer (plan, noder_utforsket). Test at den finner samme plan-lengde som BFS, men med færre noder.",
+      files: {
+        "strips.py": "from collections import deque\nfrom heapq import heappush, heappop\n\n\nclass Action:\n    def __init__(self, name, preconditions, add_effects, del_effects):\n        self.name = name\n        self.preconditions = frozenset(preconditions)\n        self.add_effects = frozenset(add_effects)\n        self.del_effects = frozenset(del_effects)\n    def __repr__(self):\n        return self.name\n\n\ndef applicable(action, state):\n    return action.preconditions.issubset(state)\n\n\ndef apply(action, state):\n    return (frozenset(state) - action.del_effects) | action.add_effects\n\n\ndef h_count(state, goal):\n    return len(frozenset(goal) - frozenset(state))\n\n\n# === DIN OPPGAVE: A*-soek ===\ndef plan_astar(initial, goal, actions, h):\n    \"\"\"Returner (plan, antall_noder_utforsket).\n    f(state) = g(state) + h(state, goal).\n    Bruk heapq, en monotont okende tie-breaker, og en g_score-dict for\n    a oppdage bedre veier til allerede sette states.\n    \"\"\"\n    pass\n\n\n# ===== BFS for sammenligning =====\ndef plan_bfs(initial, goal, actions):\n    initial = frozenset(initial)\n    goal = frozenset(goal)\n    if goal.issubset(initial):\n        return [], 0\n    visited = {initial}\n    kø = deque([(initial, [])])\n    noder = 0\n    while kø:\n        state, plan = kø.popleft()\n        noder += 1\n        for a in actions:\n            if applicable(a, state):\n                ny = apply(a, state)\n                if ny in visited:\n                    continue\n                if goal.issubset(ny):\n                    return plan + [a.name], noder\n                visited.add(ny)\n                kø.append((ny, plan + [a.name]))\n    return None, noder\n\n\n# ===== Problem: 4 blokker, tarn-mal =====\nblokker = [\"A\", \"B\", \"C\", \"D\"]\n\ninitial = set()\nfor b in blokker:\n    initial.add(f\"on({b}, table)\")\n    initial.add(f\"clear({b})\")\n\ngoal = {\"on(B, A)\", \"on(C, B)\", \"on(D, C)\"}\n\n\ndef lag_move_actions(blokker):\n    actions = []\n    plasser = list(blokker) + [\"table\"]\n    for b in blokker:\n        for src in plasser:\n            for dst in plasser:\n                if b == src or b == dst or src == dst:\n                    continue\n                if dst == \"table\":\n                    pre = {f\"on({b}, {src})\", f\"clear({b})\"}\n                    add = {f\"on({b}, table)\", f\"clear({src})\"}\n                    dele = {f\"on({b}, {src})\"}\n                else:\n                    pre = {f\"on({b}, {src})\", f\"clear({b})\", f\"clear({dst})\"}\n                    add = {f\"on({b}, {dst})\"}\n                    dele = {f\"on({b}, {src})\", f\"clear({dst})\"}\n                    if src != \"table\":\n                        add = add | {f\"clear({src})\"}\n                actions.append(Action(f\"move({b},{src}->{dst})\", pre, add, dele))\n    return actions\n\n\nactions = lag_move_actions(blokker)\n\nbfs_plan, bfs_n = plan_bfs(initial, goal, actions)\nastar_plan, astar_n = plan_astar(initial, goal, actions, h_count)\n\nprint(f\"BFS: {bfs_n} noder, plan-lengde {len(bfs_plan) if bfs_plan else '-'}\")\nprint(f\"A*:  {astar_n} noder, plan-lengde {len(astar_plan) if astar_plan else '-'}\")\n\n\ndef sjekk(faktisk, forventet, navn):\n    if faktisk == forventet:\n        print(f\"OK   {navn}\")\n    else:\n        print(f\"FEIL {navn}: fikk {faktisk!r}, forventet {forventet!r}\")\n\n\nsjekk(astar_plan is not None, True, \"A-stjerne fant en plan\")\nsjekk(astar_plan is not None and len(astar_plan) == len(bfs_plan), True, \"A-stjerne samme lengde som BFS\")\nsjekk(astar_n < bfs_n, True, \"A-stjerne utforsker faerre noder enn BFS\")\n",
+      },
+      defaultFile: "strips.py",
+      editable: ["strips.py"],
+      run: { kind: "python-script", entry: "strips.py" },
+      verifications: [
+        {
+          label: "A* finner en plan",
+          check: { kind: "output-contains", needle: "OK   A-stjerne fant en plan" },
+        },
+        {
+          label: "A* finner samme plan-lengde som BFS (optimalt)",
+          check: { kind: "output-contains", needle: "OK   A-stjerne samme lengde som BFS" },
+        },
+        {
+          label: "A* utforsker færre noder enn BFS",
+          check: { kind: "output-contains", needle: "OK   A-stjerne utforsker faerre noder enn BFS" },
+        },
+      ],
+      hint:
+        "def plan_astar(initial, goal, actions, h):\n    initial = frozenset(initial)\n    goal = frozenset(goal)\n    if goal.issubset(initial):\n        return [], 0\n    teller = 0\n    frontier = [(h(initial, goal), 0, teller, initial, [])]\n    g_score = {initial: 0}\n    noder = 0\n    while frontier:\n        f, g, _, state, plan = heappop(frontier)\n        if g > g_score.get(state, float('inf')):\n            continue\n        noder += 1\n        if goal.issubset(state):\n            return plan, noder\n        for a in actions:\n            if applicable(a, state):\n                ny = apply(a, state)\n                ny_g = g + 1\n                if ny_g >= g_score.get(ny, float('inf')):\n                    continue\n                g_score[ny] = ny_g\n                teller += 1\n                heappush(frontier, (ny_g + h(ny, goal), ny_g, teller, ny, plan + [a.name]))\n    return None, noder",
+    },
+
+    // ============ LEKSJON 5 ===========================================
+    {
+      id: "05-logistikk-domene",
+      title: "5. Et rikere domene: logistikk (move, load, unload)",
+      narrative:
+        "Til slutt: bytt domene. Samme motor — A* med h_count fra leksjon 4 — løser et helt nytt problem hvis vi bare beskriver det som STRIPS.\n\n**Logistikk-verden:**\n- En **truck** står i én by om gangen — fakta `truck_at(by)`.\n- En **pakke** kan ligge i en by — `at(pakke, by)` — eller i trucken — `in_truck(pakke)`.\n- **Actions:**\n  - `move(b1, b2)`: krever `truck_at(b1)`, gir `truck_at(b2)`, fjerner `truck_at(b1)`. Bare lovlig mellom byer som er naboer.\n  - `load(p, b)`: krever `truck_at(b)` og `at(p, b)`. Gir `in_truck(p)`, fjerner `at(p, b)`.\n  - `unload(p, b)`: krever `truck_at(b)` og `in_truck(p)`. Gir `at(p, b)`, fjerner `in_truck(p)`.\n\nVi bygger Norges-ruten Tromsø ↔ Bodø ↔ Oslo (nabolag-restriksjon, ikke direkte-flighter). En pakke skal fra Tromsø til Oslo. Forventet plan:\n\n1. load(P1, Tromsø)\n2. move(Tromsø → Bodø)\n3. move(Bodø → Oslo)\n4. unload(P1, Oslo)\n\nFire steg. Samme A* finner det fra h_count alene.\n\n**Din oppgave:** Skriv `lag_actions(byer, pakker, naboer)` som genererer ALLE lovlige `move`, `load` og `unload`-actions for det gitte domenet. `naboer` er en liste av `(by1, by2)` — toveis. Bruk så A* fra leksjon 4 (gitt for deg) til å løse problemet.",
+      files: {
+        "strips.py": "from heapq import heappush, heappop\n\n\nclass Action:\n    def __init__(self, name, preconditions, add_effects, del_effects):\n        self.name = name\n        self.preconditions = frozenset(preconditions)\n        self.add_effects = frozenset(add_effects)\n        self.del_effects = frozenset(del_effects)\n    def __repr__(self):\n        return self.name\n\n\ndef applicable(action, state):\n    return action.preconditions.issubset(state)\n\n\ndef apply(action, state):\n    return (frozenset(state) - action.del_effects) | action.add_effects\n\n\ndef h_count(state, goal):\n    return len(frozenset(goal) - frozenset(state))\n\n\ndef plan_astar(initial, goal, actions, h):\n    initial = frozenset(initial)\n    goal = frozenset(goal)\n    if goal.issubset(initial):\n        return [], 0\n    teller = 0\n    frontier = [(h(initial, goal), 0, teller, initial, [])]\n    g_score = {initial: 0}\n    noder = 0\n    while frontier:\n        f, g, _, state, plan = heappop(frontier)\n        if g > g_score.get(state, float(\"inf\")):\n            continue\n        noder += 1\n        if goal.issubset(state):\n            return plan, noder\n        for a in actions:\n            if applicable(a, state):\n                ny = apply(a, state)\n                ny_g = g + 1\n                if ny_g >= g_score.get(ny, float(\"inf\")):\n                    continue\n                g_score[ny] = ny_g\n                teller += 1\n                heappush(frontier, (ny_g + h(ny, goal), ny_g, teller, ny, plan + [a.name]))\n    return None, noder\n\n\n# === DIN OPPGAVE ===\ndef lag_actions(byer, pakker, naboer):\n    \"\"\"Returner liste av alle lovlige Action-objekter for logistikk-domenet.\n\n    naboer: liste av (by1, by2)-tuples som er forbundet TOVEIS.\n      F.eks. [(\"Tromsoe\", \"Bodoe\"), (\"Bodoe\", \"Oslo\")] gir 4 move-actions.\n\n    Lag:\n    - move(b1, b2) for hver (b1, b2) som er naboer (begge retninger).\n      Navn: f\"move({b1}->{b2})\"\n    - load(p, b) for hver pakke p og by b.\n      Navn: f\"load({p}, {b})\"\n    - unload(p, b) for hver pakke p og by b.\n      Navn: f\"unload({p}, {b})\"\n    \"\"\"\n    pass\n\n\n# ===== Norges-ruta: Tromsoe -> Bodoe -> Oslo =====\nbyer = [\"Tromsoe\", \"Bodoe\", \"Oslo\"]\npakker = [\"P1\"]\nnaboer = [(\"Tromsoe\", \"Bodoe\"), (\"Bodoe\", \"Oslo\")]\n\ninitial = {\"truck_at(Tromsoe)\", \"at(P1, Tromsoe)\"}\ngoal = {\"at(P1, Oslo)\"}\n\nactions = lag_actions(byer, pakker, naboer)\nplan, noder = plan_astar(initial, goal, actions, h_count)\n\nprint(f\"Antall actions generert: {len(actions) if actions else 0}\")\nprint(f\"Plan: {plan}\")\nprint(f\"Noder utforsket: {noder}\")\n\n\ndef sjekk(faktisk, forventet, navn):\n    if faktisk == forventet:\n        print(f\"OK   {navn}\")\n    else:\n        print(f\"FEIL {navn}: fikk {faktisk!r}, forventet {forventet!r}\")\n\n\n# Forventet antall actions: 4 move (2 naboer toveis) + 3 load (1 pakke x 3 byer) + 3 unload = 10\nsjekk(actions is not None and len(actions) == 10, True, \"lag_actions genererer 10 actions\")\nsjekk(plan is not None, True, \"A-stjerne fant plan i logistikk\")\nsjekk(plan is not None and len(plan) == 4, True, \"plan er 4 steg (load-move-move-unload)\")\nsjekk(plan is not None and plan[0] == \"load(P1, Tromsoe)\", True, \"forste steg er load i Tromsoe\")\nsjekk(plan is not None and plan[-1] == \"unload(P1, Oslo)\", True, \"siste steg er unload i Oslo\")\n# Negativ test: mål om aa flytte pakke til en by som ikke er nåbar er likevel løsbart via to move.\n# Sjekk at vi ikke kan flytte direkte (ingen move(Tromsoe->Oslo) i actions-listen).\ndirekte = [a for a in actions if a.name == \"move(Tromsoe->Oslo)\"]\nsjekk(len(direkte), 0, \"ingen direkte Tromsoe->Oslo (kun naboer)\")\n",
+      },
+      defaultFile: "strips.py",
+      editable: ["strips.py"],
+      run: { kind: "python-script", entry: "strips.py" },
+      verifications: [
+        {
+          label: "lag_actions() genererer riktig antall actions (10)",
+          check: { kind: "output-contains", needle: "OK   lag_actions genererer 10 actions" },
+        },
+        {
+          label: "A* finner en plan i logistikk-domenet",
+          check: { kind: "output-contains", needle: "OK   A-stjerne fant plan i logistikk" },
+        },
+        {
+          label: "Plan har 4 steg: load-move-move-unload",
+          check: { kind: "output-contains", needle: "OK   plan er 4 steg (load-move-move-unload)" },
+        },
+        {
+          label: "Første steg er load(P1, Tromsoe)",
+          check: { kind: "output-contains", needle: "OK   forste steg er load i Tromsoe" },
+        },
+        {
+          label: "Siste steg er unload(P1, Oslo)",
+          check: { kind: "output-contains", needle: "OK   siste steg er unload i Oslo" },
+        },
+        {
+          label: "Bare nabo-moves genereres (ingen direkte Tromsø-Oslo)",
+          check: { kind: "output-contains", needle: "OK   ingen direkte Tromsoe->Oslo (kun naboer)" },
+        },
+      ],
+      hint:
+        "def lag_actions(byer, pakker, naboer):\n    actions = []\n    kanter = set()\n    for a, b in naboer:\n        kanter.add((a, b))\n        kanter.add((b, a))\n    for b1, b2 in kanter:\n        pre = {f\"truck_at({b1})\"}\n        add = {f\"truck_at({b2})\"}\n        dele = {f\"truck_at({b1})\"}\n        actions.append(Action(f\"move({b1}->{b2})\", pre, add, dele))\n    for p in pakker:\n        for b in byer:\n            pre = {f\"truck_at({b})\", f\"at({p}, {b})\"}\n            add = {f\"in_truck({p})\"}\n            dele = {f\"at({p}, {b})\"}\n            actions.append(Action(f\"load({p}, {b})\", pre, add, dele))\n    for p in pakker:\n        for b in byer:\n            pre = {f\"truck_at({b})\", f\"in_truck({p})\"}\n            add = {f\"at({p}, {b})\"}\n            dele = {f\"in_truck({p})\"}\n            actions.append(Action(f\"unload({p}, {b})\", pre, add, dele))\n    return actions",
+    },
+  ],
+};
+
+const BAYES_NETT: MiniCourse = {
+  id: "bayes-nett",
+  slug: "bayes-nett",
+  title: "Bayes-nett: konstruksjon og variable elimination",
+  blurb:
+    "Bygg et Bayes-nett fra null — joint distribution → CPT-er → naiv enumeration-inferens → faktorer og pointwise produkt → variable elimination → d-separasjon. Vi bruker det klassiske Burglar/Earthquake/Alarm/JohnCalls/MaryCalls-nettet og verifiserer den berømte posterioren P(Burglar | begge ringer) ~ 0.284.",
+  estimertTid: "75–90 min",
+  fag: ["DTE-2501", "Klassisk AI", "Probabilistisk resonnering"],
+  color: "purple",
+  rekkefolge: 40,
+  lessons: [
+    // ============ LEKSJON 1 ===========================================
+    {
+      id: "01-joint",
+      title: "1. Joint distribution og marginalisering",
+      narrative:
+        "En **joint distribution** P(X1, X2, ..., Xn) gir sannsynligheten for hver kombinasjon av variabel-verdier. Med fire binære variabler (Cloudy, Sprinkler, Rain, WetGrass) får vi 2^4 = **16 rader**. Hver rad er én verden, og alle sammen summer til 1.\n\nFra jointen kan vi i prinsippet svare på *hvilket som helst* sannsynlighetsspørsmål. Vil du vite P(Rain=True)? Da summerer du alle rader der Rain=True. Dette kalles **marginalisering** — vi 'summer ut' variabler vi ikke bryr oss om.\n\n**Problem:** med n binære variabler vokser jointen som 2^n. 30 variabler = 1 milliard rader. Derfor finnes Bayes-nett: en *kompakt* representasjon som utnytter betinget uavhengighet. Men vi starter med jointen for å bygge intuisjonen.\n\n**Din oppgave:** Implementér `marginalize(joint, vars_order, var)` som summer ut én variabel og returnerer den nye, mindre jointen pluss den oppdaterte variabel-rekkefølgen.",
+      files: {
+        "joint.py": `# Joint distribution som dict: tuple(verdier) -> sannsynlighet.
+# Variabel-rekkefølge i tuplen er gitt av VARS-listen.
+
+VARS = ["Cloudy", "Sprinkler", "Rain", "WetGrass"]
+
+# En eksempel-joint (ikke ekte modell — bare normaliserte tall til testen).
+def _bygg_joint():
+    from itertools import product
+    raw = {}
+    total = 0.0
+    for c, s, r, w in product([True, False], repeat=4):
+        p = 0.05
+        if c and s and r and w: p = 0.10
+        if c and not s and r and w: p = 0.12
+        if not c and s and not r and not w: p = 0.08
+        raw[(c, s, r, w)] = p
+        total += p
+    return {k: v / total for k, v in raw.items()}
+
+
+joint = _bygg_joint()
+
+
+# === DIN OPPGAVE ===
+# Summer ut variabel "var" fra joint. Returner (ny_joint, ny_vars_order).
+#   - finn indeksen til var i vars_order
+#   - for hver (key, p) i joint:
+#       lag ny key uten den indeksen
+#       ny_joint[new_key] += p   (summer over alle verdier av var)
+def marginalize(joint, vars_order, var):
+    pass
+
+
+def naer(a, b, tol=1e-9):
+    return abs(a - b) < tol
+
+
+def sjekk(faktisk, forventet, navn):
+    if faktisk == forventet:
+        print(f"OK   {navn}")
+    else:
+        print(f"FEIL {navn}: fikk {faktisk!r}, forventet {forventet!r}")
+
+
+# Sjekk 1: full joint summer til 1
+sjekk(naer(sum(joint.values()), 1.0), True, "joint summer til 1")
+
+# Sjekk 2: marginalisering reduserer antall rader fra 16 til 8
+j_uten_C, vars_uten_C = marginalize(joint, VARS, "Cloudy")
+sjekk(len(j_uten_C), 8, "marginalisering halverer antall rader")
+sjekk(vars_uten_C, ["Sprinkler", "Rain", "WetGrass"], "Cloudy fjernet fra vars-listen")
+
+# Sjekk 3: ny joint summer fortsatt til 1
+sjekk(naer(sum(j_uten_C.values()), 1.0), True, "marginalisering bevarer total-masse")
+
+# Sjekk 4: kontrollsum mot manuell beregning for ett spesifikt utfall.
+# P(S=T, R=T, W=T) = P(C=T,S=T,R=T,W=T) + P(C=F,S=T,R=T,W=T)
+forventet_STT = joint[(True, True, True, True)] + joint[(False, True, True, True)]
+faktisk_STT = j_uten_C[(True, True, True)]
+sjekk(naer(faktisk_STT, forventet_STT), True, "marginalisert verdi matcher manuell sum")
+`,
+      },
+      defaultFile: "joint.py",
+      editable: ["joint.py"],
+      run: { kind: "python-script", entry: "joint.py" },
+      verifications: [
+        {
+          label: "Joint distribution summer til 1",
+          check: { kind: "output-contains", needle: "OK   joint summer til 1" },
+        },
+        {
+          label: "Marginalisering halverer antall rader",
+          check: { kind: "output-contains", needle: "OK   marginalisering halverer antall rader" },
+        },
+        {
+          label: "Variabel fjernes fra vars-listen",
+          check: { kind: "output-contains", needle: "OK   Cloudy fjernet fra vars-listen" },
+        },
+        {
+          label: "Total sannsynlighet bevares",
+          check: { kind: "output-contains", needle: "OK   marginalisering bevarer total-masse" },
+        },
+        {
+          label: "Marginalisert sannsynlighet matcher manuell sum",
+          check: { kind: "output-contains", needle: "OK   marginalisert verdi matcher manuell sum" },
+        },
+      ],
+      hint:
+        "def marginalize(joint, vars_order, var):\n    idx = vars_order.index(var)\n    new_vars = [v for v in vars_order if v != var]\n    new_joint = {}\n    for k, p in joint.items():\n        new_k = tuple(k[i] for i in range(len(k)) if i != idx)\n        new_joint[new_k] = new_joint.get(new_k, 0.0) + p\n    return new_joint, new_vars",
+    },
+
+    // ============ LEKSJON 2 ===========================================
+    {
+      id: "02-bayesnet-cpt",
+      title: "2. Bayes-nett-struktur og CPT-er",
+      narrative:
+        "Et **Bayes-nett** er en kompakt representasjon av en joint distribution. Det består av:\n\n1. En **DAG** (directed acyclic graph) der hver node er en variabel.\n2. En **CPT (Conditional Probability Table)** for hver node: P(node | foreldre).\n\nKjede-regelen for Bayes-nett: P(X1, ..., Xn) = produkt over i av P(Xi | foreldre(Xi)). I stedet for 2^n verdier trenger vi bare summen av CPT-størrelsene — eksponentielt mindre når strukturen er sparsom.\n\nVi bygger det klassiske AIMA-nettet (Russell og Norvig, kap. 14):\n\n- **Burglar** (B) og **Earthquake** (E) er rot-noder.\n- **Alarm** (A) avhenger av begge.\n- **JohnCalls** (J) og **MaryCalls** (M) avhenger av Alarm.\n\nMed binære variabler trenger Alarm 2^2 = 4 rader (én per kombinasjon av foreldre), John og Mary trenger 2 rader hver. Vi lagrer bare **P(node = True | foreldre)** — P(False) er 1 minus det.\n\n**Din oppgave:** Implementér `BayesNet.cpt(node, parent_values)` som returnerer P(node = True | parents = parent_values). `parent_values` er en dict.",
+      files: {
+        "bayesnet.py": `class BayesNet:
+    def __init__(self):
+        self.nodes = []              # rekkefølge (topologisk)
+        self.parents = {}            # node -> liste av foreldre
+        self.cpts = {}               # node -> dict(tuple(parent_vals) -> P(node=True | parents))
+
+    def add(self, node, parents, table):
+        """Legg til en node med foreldre og CPT.
+        table: dict tuple(parent_values) -> P(node = True | parents).
+        For en rot-node er parents=[] og nøkkelen er ()."""
+        self.nodes.append(node)
+        self.parents[node] = list(parents)
+        self.cpts[node] = dict(table)
+
+    # === DIN OPPGAVE ===
+    # Returner P(node = True | parent_values).
+    # parent_values: dict {forelder-navn: True/False, ...}
+    # Hent ut verdiene i samme rekkefølge som self.parents[node], lag tuple,
+    # og slå opp i self.cpts[node].
+    def cpt(self, node, parent_values):
+        pass
+
+
+# Bygg AIMA-nettet
+net = BayesNet()
+net.add("Burglar",    [],                      {(): 0.001})
+net.add("Earthquake", [],                      {(): 0.002})
+net.add("Alarm",      ["Burglar", "Earthquake"], {
+    (True,  True):  0.95,
+    (True,  False): 0.94,
+    (False, True):  0.29,
+    (False, False): 0.001,
+})
+net.add("JohnCalls",  ["Alarm"], {(True,): 0.90, (False,): 0.05})
+net.add("MaryCalls",  ["Alarm"], {(True,): 0.70, (False,): 0.01})
+
+
+def naer(a, b, tol=1e-9):
+    return abs(a - b) < tol
+
+
+def sjekk(faktisk, forventet, navn):
+    if faktisk == forventet:
+        print(f"OK   {navn}")
+    else:
+        print(f"FEIL {navn}: fikk {faktisk!r}, forventet {forventet!r}")
+
+
+# Rot-noder
+sjekk(naer(net.cpt("Burglar", {}), 0.001), True, "P(Burglar=True) hentes korrekt")
+sjekk(naer(net.cpt("Earthquake", {}), 0.002), True, "P(Earthquake=True) hentes korrekt")
+
+# Alarm med begge foreldre
+sjekk(naer(net.cpt("Alarm", {"Burglar": True, "Earthquake": False}), 0.94), True,
+      "P(Alarm | B=T, E=F) = 0.94")
+sjekk(naer(net.cpt("Alarm", {"Burglar": False, "Earthquake": False}), 0.001), True,
+      "P(Alarm | B=F, E=F) = 0.001")
+
+# Mary og John med én forelder
+sjekk(naer(net.cpt("JohnCalls", {"Alarm": True}), 0.90), True,
+      "P(JohnCalls | Alarm) = 0.90")
+sjekk(naer(net.cpt("MaryCalls", {"Alarm": False}), 0.01), True,
+      "P(MaryCalls | not Alarm) = 0.01")
+`,
+      },
+      defaultFile: "bayesnet.py",
+      editable: ["bayesnet.py"],
+      run: { kind: "python-script", entry: "bayesnet.py" },
+      verifications: [
+        {
+          label: "P(Burglar=True) returneres riktig",
+          check: { kind: "output-contains", needle: "OK   P(Burglar=True) hentes korrekt" },
+        },
+        {
+          label: "P(Earthquake=True) returneres riktig",
+          check: { kind: "output-contains", needle: "OK   P(Earthquake=True) hentes korrekt" },
+        },
+        {
+          label: "P(Alarm | B=T, E=F) slås opp riktig",
+          check: { kind: "output-contains", needle: "OK   P(Alarm | B=T, E=F) = 0.94" },
+        },
+        {
+          label: "P(Alarm | B=F, E=F) slås opp riktig",
+          check: { kind: "output-contains", needle: "OK   P(Alarm | B=F, E=F) = 0.001" },
+        },
+        {
+          label: "P(JohnCalls | Alarm) slås opp riktig",
+          check: { kind: "output-contains", needle: "OK   P(JohnCalls | Alarm) = 0.90" },
+        },
+        {
+          label: "P(MaryCalls | not Alarm) slås opp riktig",
+          check: { kind: "output-contains", needle: "OK   P(MaryCalls | not Alarm) = 0.01" },
+        },
+      ],
+      hint:
+        "def cpt(self, node, parent_values):\n    key = tuple(parent_values[p] for p in self.parents[node])\n    return self.cpts[node][key]",
+    },
+
+    // ============ LEKSJON 3 ===========================================
+    {
+      id: "03-enumeration",
+      title: "3. Inferens ved enumeration",
+      narrative:
+        "Nå skal vi svare på det berømte spørsmålet: **Hvis både John og Mary ringer, hva er sannsynligheten for innbrudd?**\n\nFormelt: P(Burglar | JohnCalls=True, MaryCalls=True).\n\nKjernen i enumeration-inferens er Bayes' regel + marginalisering:\n\nP(X | e) = alpha * sum over y av P(X, e, y)\n\nder y er alle kombinasjoner av skjulte variabler (her: Earthquake og Alarm), og alpha = 1 / P(e) er en normaliseringskonstant.\n\nVi rekursivt itererer over alle variabler i topologisk rekkefølge:\n- Hvis variabelen er i evidence eller spørsmålet: bruk den faste verdien, multipliser inn CPT.\n- Hvis ikke: summer over begge verdier (True og False).\n\nDet klassiske AIMA-svaret er **P(Burglar | JC, MC) ~ 0.284**. Naturlig — selv om begge ringer er det fortsatt 71% sjanse for at det IKKE er innbrudd (basisraten 0.001 trekker hardt ned).\n\n**Din oppgave:** Implementér `enumerate_all(vars, evidence, net)` — kjernen i rekursjonen.",
+      files: {
+        "enum.py": `class BayesNet:
+    def __init__(self):
+        self.nodes = []
+        self.parents = {}
+        self.cpts = {}
+
+    def add(self, node, parents, table):
+        self.nodes.append(node)
+        self.parents[node] = list(parents)
+        self.cpts[node] = dict(table)
+
+    def cpt(self, node, parent_values):
+        key = tuple(parent_values[p] for p in self.parents[node])
+        return self.cpts[node][key]
+
+    def p(self, node, value, full_assignment):
+        """P(node = value | parents). full_assignment må inneholde alle foreldre."""
+        p_true = self.cpt(node, full_assignment)
+        return p_true if value else 1.0 - p_true
+
+
+def enumerate_ask(X, evidence, net):
+    """P(X | evidence) — returner dict X-verdi -> sannsynlighet."""
+    Q = {}
+    for x in [True, False]:
+        e_ext = dict(evidence)
+        e_ext[X] = x
+        Q[x] = enumerate_all(net.nodes, e_ext, net)
+    s = Q[True] + Q[False]
+    return {k: v / s for k, v in Q.items()}
+
+
+# === DIN OPPGAVE ===
+# Rekursivt: ta første variabel Y i vars.
+#   - hvis Y er i evidence: P(Y=evidence[Y] | parents) * enumerate_all(resten, evidence, net)
+#   - ellers: summer over Y=True og Y=False, ekstender evidence i hvert kall
+# Basis: tom vars-liste -> returner 1.0
+def enumerate_all(vars, evidence, net):
+    pass
+
+
+# Bygg AIMA-nettet
+net = BayesNet()
+net.add("Burglar",    [],                      {(): 0.001})
+net.add("Earthquake", [],                      {(): 0.002})
+net.add("Alarm",      ["Burglar", "Earthquake"], {
+    (True,  True):  0.95,
+    (True,  False): 0.94,
+    (False, True):  0.29,
+    (False, False): 0.001,
+})
+net.add("JohnCalls",  ["Alarm"], {(True,): 0.90, (False,): 0.05})
+net.add("MaryCalls",  ["Alarm"], {(True,): 0.70, (False,): 0.01})
+
+
+posterior = enumerate_ask("Burglar", {"JohnCalls": True, "MaryCalls": True}, net)
+print(f"P(Burglar=True | JC, MC) = {posterior[True]:.6f}")
+print(f"P(Burglar=False | JC, MC) = {posterior[False]:.6f}")
+
+
+def naer(a, b, tol=1e-4):
+    return abs(a - b) < tol
+
+
+def sjekk(faktisk, forventet, navn):
+    if faktisk == forventet:
+        print(f"OK   {navn}")
+    else:
+        print(f"FEIL {navn}: fikk {faktisk!r}, forventet {forventet!r}")
+
+
+# AIMA-fasit: 0.2841718...
+sjekk(naer(posterior[True], 0.2842), True, "P(Burglar | begge ringer) ~ 0.284")
+sjekk(naer(posterior[True] + posterior[False], 1.0), True, "posterior summer til 1")
+
+# Sanity: hvis ingen ringer, skal P(Burglar) være ~ basisraten 0.001
+post_blank = enumerate_ask("Burglar", {}, net)
+sjekk(naer(post_blank[True], 0.001), True, "uten evidens er P(Burglar) ~ basisrate")
+
+# Sanity: hvis kun John ringer (kun ett vitne), posterior ligger ~0.016
+post_john = enumerate_ask("Burglar", {"JohnCalls": True}, net)
+sjekk(post_john[True] < posterior[True], True, "kun John gir lavere posterior enn begge")
+`,
+      },
+      defaultFile: "enum.py",
+      editable: ["enum.py"],
+      run: { kind: "python-script", entry: "enum.py" },
+      verifications: [
+        {
+          label: "P(Burglar | begge ringer) gir AIMA-svaret ~0.284",
+          check: { kind: "output-contains", needle: "OK   P(Burglar | begge ringer) ~ 0.284" },
+        },
+        {
+          label: "Posterior summer til 1 (normalisering)",
+          check: { kind: "output-contains", needle: "OK   posterior summer til 1" },
+        },
+        {
+          label: "Uten evidens er posterior lik basisraten",
+          check: { kind: "output-contains", needle: "OK   uten evidens er P(Burglar) ~ basisrate" },
+        },
+        {
+          label: "Færre vitner gir lavere posterior",
+          check: { kind: "output-contains", needle: "OK   kun John gir lavere posterior enn begge" },
+        },
+      ],
+      hint:
+        "def enumerate_all(vars, evidence, net):\n    if not vars:\n        return 1.0\n    Y = vars[0]\n    rest = vars[1:]\n    if Y in evidence:\n        return net.p(Y, evidence[Y], evidence) * enumerate_all(rest, evidence, net)\n    else:\n        total = 0.0\n        for y in [True, False]:\n            e_ext = dict(evidence)\n            e_ext[Y] = y\n            total += net.p(Y, y, e_ext) * enumerate_all(rest, e_ext, net)\n        return total",
+    },
+
+    // ============ LEKSJON 4 ===========================================
+    {
+      id: "04-faktorer",
+      title: "4. Faktorer og pointwise produkt",
+      narrative:
+        "Enumeration er korrekt, men gjentar mye arbeid. For et større nett blir det fort uoverkommelig.\n\nFor å gjøre noe smartere trenger vi en mer fleksibel byggekloss: **faktoren**. En faktor er en tabell som mapper assignment-tupler til tall — som en CPT, men uten noe krav om at det skal være en sannsynlighet (kan godt være 0.42 * 0.7 = 0.294).\n\nEksempel: en faktor over (X, Y) er en tabell med 4 rader for binære variabler. Kombinasjons-operasjonen er **pointwise produkt**: f1 multiplisert med f2 gir en ny faktor over union av variablene, der hver rad er produktet av matchende rader i de to.\n\nKonkret: hvis f1 har variabler [X] med rader (T)=0.6, (F)=0.4 og f2 har variabler [X, Y] med fire rader, så får f1*f2 variabler [X, Y] og hver verdi er f1[(x,)] * f2[(x, y)].\n\nDette er kjernen i variable elimination, som vi bygger i neste leksjon.\n\n**Din oppgave:** Implementér `pointwise_product(f1, f2)`. Tips: bruk `itertools.product([True, False], repeat=len(new_vars))` for å iterere over alle assignment-tupler.",
+      files: {
+        "faktor.py": `from itertools import product
+
+
+class Factor:
+    def __init__(self, vars, table):
+        """vars: liste av variabel-navn. table: dict tuple(verdier i samme rekkefølge) -> tall."""
+        self.vars = list(vars)
+        self.table = dict(table)
+
+    def __repr__(self):
+        return f"Factor({self.vars})"
+
+
+# === DIN OPPGAVE ===
+# Kombiner to faktorer ved punktvis multiplikasjon.
+# Steg:
+#   1. new_vars = f1.vars ++ (de variabler fra f2 som ikke er i f1)
+#   2. for hver kombinasjon assign over [True, False]^len(new_vars):
+#        val_map = {var: verdi for var, verdi in zip(new_vars, assign)}
+#        nøkkel1 = tuple(val_map[v] for v in f1.vars)
+#        nøkkel2 = tuple(val_map[v] for v in f2.vars)
+#        new_table[assign] = f1.table[nøkkel1] * f2.table[nøkkel2]
+def pointwise_product(f1, f2):
+    pass
+
+
+def naer(a, b, tol=1e-9):
+    return abs(a - b) < tol
+
+
+def sjekk(faktisk, forventet, navn):
+    if faktisk == forventet:
+        print(f"OK   {navn}")
+    else:
+        print(f"FEIL {navn}: fikk {faktisk!r}, forventet {forventet!r}")
+
+
+# Test 1: f over [X], g over [X] -> produkt over [X] (samme variabler)
+fa = Factor(["X"], {(True,): 0.6, (False,): 0.4})
+fb = Factor(["X"], {(True,): 0.5, (False,): 0.5})
+prod1 = pointwise_product(fa, fb)
+sjekk(set(prod1.vars), {"X"}, "produkt av samme-var beholder samme variabler")
+sjekk(naer(prod1.table[(True,)], 0.30), True, "produkt: 0.6 * 0.5 = 0.30")
+
+# Test 2: faktor over [X] vs [X, Y] -> produkt over [X, Y]
+fc = Factor(["X"], {(True,): 0.6, (False,): 0.4})
+fd = Factor(["X", "Y"], {
+    (True,  True):  0.7, (True,  False): 0.3,
+    (False, True):  0.2, (False, False): 0.8,
+})
+prod2 = pointwise_product(fc, fd)
+sjekk(set(prod2.vars), {"X", "Y"}, "produkt av [X] og [X,Y] gir [X,Y]")
+
+# Verdi-sjekk: P(X=T) * P(Y=T|X=T) = 0.6 * 0.7 = 0.42
+# Vi må finne riktig nøkkel uavhengig av rekkefølge i prod2.vars
+def hent(f, val_map):
+    return f.table[tuple(val_map[v] for v in f.vars)]
+
+sjekk(naer(hent(prod2, {"X": True,  "Y": True}),  0.42), True, "0.6 * 0.7 = 0.42")
+sjekk(naer(hent(prod2, {"X": True,  "Y": False}), 0.18), True, "0.6 * 0.3 = 0.18")
+sjekk(naer(hent(prod2, {"X": False, "Y": True}),  0.08), True, "0.4 * 0.2 = 0.08")
+sjekk(naer(hent(prod2, {"X": False, "Y": False}), 0.32), True, "0.4 * 0.8 = 0.32")
+
+# Test 3: hvis vi summer alle rader når f1 og f2 begge er marginale sannsynligheter
+# over uavhengige variabler, må summen være 1.
+fe = Factor(["A"], {(True,): 0.3, (False,): 0.7})
+fg = Factor(["B"], {(True,): 0.2, (False,): 0.8})
+prod3 = pointwise_product(fe, fg)
+sjekk(naer(sum(prod3.table.values()), 1.0), True, "produkt av uavhengige marginaler summer til 1")
+`,
+      },
+      defaultFile: "faktor.py",
+      editable: ["faktor.py"],
+      run: { kind: "python-script", entry: "faktor.py" },
+      verifications: [
+        {
+          label: "Produkt av faktor med seg selv beholder samme variabler",
+          check: { kind: "output-contains", needle: "OK   produkt av samme-var beholder samme variabler" },
+        },
+        {
+          label: "Skalar-multiplikasjon: 0.6 * 0.5 = 0.30",
+          check: { kind: "output-contains", needle: "OK   produkt: 0.6 * 0.5 = 0.30" },
+        },
+        {
+          label: "Variabel-union: [X] x [X,Y] gir [X,Y]",
+          check: { kind: "output-contains", needle: "OK   produkt av [X] og [X,Y] gir [X,Y]" },
+        },
+        {
+          label: "Rad-for-rad multiplikasjon: 0.6 * 0.7 = 0.42",
+          check: { kind: "output-contains", needle: "OK   0.6 * 0.7 = 0.42" },
+        },
+        {
+          label: "Rad-for-rad multiplikasjon: 0.4 * 0.8 = 0.32",
+          check: { kind: "output-contains", needle: "OK   0.4 * 0.8 = 0.32" },
+        },
+        {
+          label: "Produkt av uavhengige marginaler summer til 1",
+          check: { kind: "output-contains", needle: "OK   produkt av uavhengige marginaler summer til 1" },
+        },
+      ],
+      hint:
+        "def pointwise_product(f1, f2):\n    new_vars = list(f1.vars) + [v for v in f2.vars if v not in f1.vars]\n    new_table = {}\n    for assign in product([True, False], repeat=len(new_vars)):\n        val_map = dict(zip(new_vars, assign))\n        k1 = tuple(val_map[v] for v in f1.vars)\n        k2 = tuple(val_map[v] for v in f2.vars)\n        new_table[assign] = f1.table[k1] * f2.table[k2]\n    return Factor(new_vars, new_table)",
+    },
+
+    // ============ LEKSJON 5 ===========================================
+    {
+      id: "05-variable-elimination",
+      title: "5. Variable elimination",
+      narrative:
+        "**Variable elimination (VE)** er den smarte versjonen av enumeration. I stedet for å iterere over alle 2^n verdier av skjulte variabler, jobber vi med faktorer og eliminerer én skjult variabel om gangen.\n\nAlgoritmen:\n\n1. Lag én faktor for hver CPT (multiplier inn evidence ved å filtrere bort rader som strider).\n2. For hver skjult variabel H:\n   - Multipliser sammen alle faktorer som har H i scope (pointwise produkt).\n   - Summer ut H fra det produktet (kalt **sum-out**).\n   - Erstatt de gamle faktorene med den nye, mindre faktoren.\n3. Til slutt: multipliser sammen alle resterende faktorer og normaliser.\n\nVinninga er at vi aldri jobber med jointen som helhet — bare små lokale faktorer. På større nett er VE eksponentielt raskere enn enumeration.\n\nVi har gitt deg `restrict` (filtrer på evidence), `pointwise_product` (fra forrige leksjon) og `normalize`. Du skal skrive `sum_out(var, factor)` og `variable_elimination(X, evidence, net)`.\n\n**Din oppgave:** to funksjoner. `sum_out` fjerner én variabel ved å summere over begge verdier. `variable_elimination` orkesterer hele algoritmen.",
+      files: {
+        "ve.py": `from itertools import product
+
+
+class BayesNet:
+    def __init__(self):
+        self.nodes = []
+        self.parents = {}
+        self.cpts = {}
+
+    def add(self, node, parents, table):
+        self.nodes.append(node)
+        self.parents[node] = list(parents)
+        self.cpts[node] = dict(table)
+
+
+class Factor:
+    def __init__(self, vars, table):
+        self.vars = list(vars)
+        self.table = dict(table)
+
+
+def cpt_to_factor(net, node):
+    """CPT for node -> Factor med variabler [foreldre..., node]."""
+    vars = list(net.parents[node]) + [node]
+    table = {}
+    for assign in product([True, False], repeat=len(net.parents[node])):
+        p_true = net.cpts[node][assign]
+        table[tuple(list(assign) + [True])]  = p_true
+        table[tuple(list(assign) + [False])] = 1.0 - p_true
+    return Factor(vars, table)
+
+
+def pointwise_product(f1, f2):
+    new_vars = list(f1.vars) + [v for v in f2.vars if v not in f1.vars]
+    new_table = {}
+    for assign in product([True, False], repeat=len(new_vars)):
+        val_map = dict(zip(new_vars, assign))
+        k1 = tuple(val_map[v] for v in f1.vars)
+        k2 = tuple(val_map[v] for v in f2.vars)
+        new_table[assign] = f1.table[k1] * f2.table[k2]
+    return Factor(new_vars, new_table)
+
+
+def restrict(factor, var, value):
+    """Bruk evidence: behold bare rader hvor var=value, fjern var fra scope."""
+    new_vars = [v for v in factor.vars if v != var]
+    idx = factor.vars.index(var)
+    new_table = {}
+    for k, v in factor.table.items():
+        if k[idx] == value:
+            new_k = tuple(k[i] for i in range(len(k)) if i != idx)
+            new_table[new_k] = v
+    return Factor(new_vars, new_table)
+
+
+def normalize(factor):
+    s = sum(factor.table.values())
+    return Factor(factor.vars, {k: v / s for k, v in factor.table.items()})
+
+
+# === DIN OPPGAVE 1 ===
+# Fjern variabel "var" fra faktoren ved å summere over [True, False].
+# Resultatet har én færre variabel.
+#   - new_vars = factor.vars uten "var"
+#   - idx = factor.vars.index(var)
+#   - for hver assign over [True, False]^len(new_vars):
+#       summer factor.table[(...med var=True...)] + factor.table[(...med var=False...)]
+def sum_out(var, factor):
+    pass
+
+
+# === DIN OPPGAVE 2 ===
+# Variable elimination:
+#   1. Lag faktor per node, restriker hver med evidence
+#   2. For hver skjult variabel h (alle bortsett fra X og evidence):
+#        - samle alle faktorer som har h i scope
+#        - multipliser dem sammen
+#        - sum_out h
+#        - erstatt de samlede faktorene med den nye
+#   3. Multipliser resterende, normaliser, returner dict X-verdi -> p
+def variable_elimination(X, evidence, net):
+    pass
+
+
+# Bygg AIMA-nettet
+net = BayesNet()
+net.add("Burglar",    [],                      {(): 0.001})
+net.add("Earthquake", [],                      {(): 0.002})
+net.add("Alarm",      ["Burglar", "Earthquake"], {
+    (True,  True):  0.95,
+    (True,  False): 0.94,
+    (False, True):  0.29,
+    (False, False): 0.001,
+})
+net.add("JohnCalls",  ["Alarm"], {(True,): 0.90, (False,): 0.05})
+net.add("MaryCalls",  ["Alarm"], {(True,): 0.70, (False,): 0.01})
+
+
+post = variable_elimination("Burglar", {"JohnCalls": True, "MaryCalls": True}, net)
+print(f"VE P(Burglar=True | JC, MC)  = {post[True]:.6f}")
+print(f"VE P(Burglar=False | JC, MC) = {post[False]:.6f}")
+
+
+def naer(a, b, tol=1e-4):
+    return abs(a - b) < tol
+
+
+def sjekk(faktisk, forventet, navn):
+    if faktisk == forventet:
+        print(f"OK   {navn}")
+    else:
+        print(f"FEIL {navn}: fikk {faktisk!r}, forventet {forventet!r}")
+
+
+# VE skal gi samme svar som enumeration: ~0.2842
+sjekk(naer(post[True], 0.2842), True, "VE matcher AIMA-svaret ~0.284")
+sjekk(naer(post[True] + post[False], 1.0), True, "VE-posterior summer til 1")
+
+# Sjekk uten evidens
+post_blank = variable_elimination("Burglar", {}, net)
+sjekk(naer(post_blank[True], 0.001), True, "VE uten evidens gir basisrate")
+
+# Sjekk sum_out alene: sum_out("Y", f) på f([X,Y] -> {(T,T)=0.42,(T,F)=0.18,(F,T)=0.08,(F,F)=0.32})
+# må gi [X] -> {(T,)=0.60, (F,)=0.40}
+test_f = Factor(["X", "Y"], {
+    (True,  True):  0.42, (True,  False): 0.18,
+    (False, True):  0.08, (False, False): 0.32,
+})
+res = sum_out("Y", test_f)
+sjekk(res.vars, ["X"], "sum_out fjerner riktig variabel fra scope")
+sjekk(naer(res.table[(True,)], 0.60), True, "sum_out: 0.42 + 0.18 = 0.60")
+sjekk(naer(res.table[(False,)], 0.40), True, "sum_out: 0.08 + 0.32 = 0.40")
+`,
+      },
+      defaultFile: "ve.py",
+      editable: ["ve.py"],
+      run: { kind: "python-script", entry: "ve.py" },
+      verifications: [
+        {
+          label: "VE gir samme AIMA-svar som enumeration (~0.284)",
+          check: { kind: "output-contains", needle: "OK   VE matcher AIMA-svaret ~0.284" },
+        },
+        {
+          label: "VE-posterior summer til 1",
+          check: { kind: "output-contains", needle: "OK   VE-posterior summer til 1" },
+        },
+        {
+          label: "VE uten evidens reduserer til basisraten",
+          check: { kind: "output-contains", needle: "OK   VE uten evidens gir basisrate" },
+        },
+        {
+          label: "sum_out fjerner riktig variabel",
+          check: { kind: "output-contains", needle: "OK   sum_out fjerner riktig variabel fra scope" },
+        },
+        {
+          label: "sum_out summerer rader korrekt: 0.42 + 0.18 = 0.60",
+          check: { kind: "output-contains", needle: "OK   sum_out: 0.42 + 0.18 = 0.60" },
+        },
+      ],
+      hint:
+        "def sum_out(var, factor):\n    new_vars = [v for v in factor.vars if v != var]\n    idx = factor.vars.index(var)\n    new_table = {}\n    for assign in product([True, False], repeat=len(new_vars)):\n        total = 0.0\n        for v in [True, False]:\n            full = list(assign)\n            full.insert(idx, v)\n            total += factor.table[tuple(full)]\n        new_table[assign] = total\n    return Factor(new_vars, new_table)\n\n\ndef variable_elimination(X, evidence, net):\n    factors = []\n    for node in net.nodes:\n        f = cpt_to_factor(net, node)\n        for ev_var, ev_val in evidence.items():\n            if ev_var in f.vars:\n                f = restrict(f, ev_var, ev_val)\n        factors.append(f)\n    hidden = [v for v in net.nodes if v != X and v not in evidence]\n    for h in hidden:\n        involved = [f for f in factors if h in f.vars]\n        rest     = [f for f in factors if h not in f.vars]\n        if not involved:\n            continue\n        prod = involved[0]\n        for f in involved[1:]:\n            prod = pointwise_product(prod, f)\n        prod = sum_out(h, prod)\n        factors = rest + [prod]\n    result = factors[0]\n    for f in factors[1:]:\n        result = pointwise_product(result, f)\n    result = normalize(result)\n    return {k[0]: v for k, v in result.table.items()}",
+    },
+
+    // ============ LEKSJON 6 ===========================================
+    {
+      id: "06-dseparasjon",
+      title: "6. D-separasjon — betinget uavhengighet",
+      narrative:
+        "Det fineste med Bayes-nett er at strukturen direkte forteller oss hvilke uavhengighets-relasjoner som holder. Verktøyet heter **d-separasjon**.\n\nTo noder X og Y er **d-separated** gitt evidence E hvis ALLE stier mellom dem er **blokkert**. En sti er blokkert hvis det finnes en mellom-node Z på stien slik at:\n\n- **Kjede** (A -> Z -> B) eller **diverging** (A <- Z -> B): blokkert hvis Z er i E (vi har observert mellomstedet).\n- **Collider** (A -> Z <- B): blokkert hvis Z OG alle dens etterkommere er UTENFOR E. Observerer du en collider eller noe nedstrøms, *åpnes* stien — det er den famøse 'explaining away'-effekten.\n\nEksempler fra Burglar-nettet:\n\n- **E og J uten evidens:** sti E -> A -> J er en åpen kjede -> IKKE d-separert.\n- **E og J gitt {A}:** kjeden blokkeres -> d-separert.\n- **B og E uten evidens:** sti B -> A <- E er en collider, ingen observasjon -> blokkert, så d-separert.\n- **B og E gitt {A}:** colliden er observert -> stien åpnes, ikke lenger d-separert.\n\nVi har gitt deg `ancestors(...)`-helper. Du skal implementere `d_separated(x, y, evidence, parents, children)` ved en BFS som markerer hvilke stier som er aktive.\n\n**Din oppgave:** Implementér d-separasjon-sjekken etter Bayes-ball-/reachable-algoritmen. Detaljene står i koden.",
+      files: {
+        "dsep.py": `# DAG-en til AIMA-nettet
+parents = {
+    "Burglar":     [],
+    "Earthquake":  [],
+    "Alarm":       ["Burglar", "Earthquake"],
+    "JohnCalls":   ["Alarm"],
+    "MaryCalls":   ["Alarm"],
+}
+nodes = list(parents.keys())
+children = {n: [] for n in nodes}
+for n, ps in parents.items():
+    for p in ps:
+        children[p].append(n)
+
+
+def ancestors(node_set, parents):
+    """Returner mengden av alle forfedre (inkl. selv) til nodene i node_set."""
+    result = set(node_set)
+    changed = True
+    while changed:
+        changed = False
+        for n in list(result):
+            for p in parents[n]:
+                if p not in result:
+                    result.add(p)
+                    changed = True
+    return result
+
+
+# === DIN OPPGAVE ===
+# Implementér d-separasjon ved BFS over (node, retning)-tilstander.
+# Retning "up" betyr at vi kom inn i node fra et BARN. Retning "down" fra en FORELDER.
+#
+# Algoritmen (Bayes-ball / Geiger-Verma):
+#   1. ev_anc = ancestors(evidence, parents)
+#   2. frontier = [(x, "up"), (x, "down")]; visited = sett
+#   3. mens frontier ikke er tom:
+#        pop (node, d)
+#        hvis (node, d) allerede besøkt: hopp
+#        marker som besøkt
+#        hvis node == y og node != x: returner False (de er IKKE d-separated)
+#
+#        hvis d == "up":  (kom fra et barn)
+#          hvis node IKKE er i evidence:
+#            for hver forelder p: legg til (p, "up")
+#            for hvert barn  c: legg til (c, "down")  -- diverging
+#
+#        hvis d == "down":  (kom fra en forelder)
+#          hvis node IKKE er i evidence:
+#            for hvert barn c: legg til (c, "down")   -- kjede
+#          hvis node ER i ev_anc:  (collider observert eller har observert etterkommer)
+#            for hver forelder p: legg til (p, "up")
+#
+#   4. y ble aldri nådd -> returner True
+def d_separated(x, y, evidence, parents, children):
+    pass
+
+
+def sjekk(faktisk, forventet, navn):
+    if faktisk == forventet:
+        print(f"OK   {navn}")
+    else:
+        print(f"FEIL {navn}: fikk {faktisk!r}, forventet {forventet!r}")
+
+
+# Klassiske d-sep-spørsmål for Burglar-nettet:
+sjekk(d_separated("Earthquake", "JohnCalls", set(), parents, children), False,
+      "E og J UTEN evidens er IKKE d-separated (kjede)")
+
+sjekk(d_separated("Earthquake", "JohnCalls", {"Alarm"}, parents, children), True,
+      "E og J GITT Alarm ER d-separated (kjede blokkeres)")
+
+sjekk(d_separated("Burglar", "Earthquake", set(), parents, children), True,
+      "B og E uten evidens ER d-separated (collider lukket)")
+
+sjekk(d_separated("Burglar", "Earthquake", {"Alarm"}, parents, children), False,
+      "B og E gitt Alarm er IKKE d-separated (collider observert -> explaining away)")
+
+sjekk(d_separated("JohnCalls", "MaryCalls", set(), parents, children), False,
+      "John og Mary uten evidens er IKKE d-separated (delt forfar)")
+
+sjekk(d_separated("JohnCalls", "MaryCalls", {"Alarm"}, parents, children), True,
+      "John og Mary GITT Alarm ER d-separated")
+`,
+      },
+      defaultFile: "dsep.py",
+      editable: ["dsep.py"],
+      run: { kind: "python-script", entry: "dsep.py" },
+      verifications: [
+        {
+          label: "E og J uten evidens: ikke d-separert (kjede)",
+          check: { kind: "output-contains", needle: "OK   E og J UTEN evidens er IKKE d-separated" },
+        },
+        {
+          label: "E og J gitt Alarm: d-separert (kjede blokkeres)",
+          check: { kind: "output-contains", needle: "OK   E og J GITT Alarm ER d-separated" },
+        },
+        {
+          label: "B og E uten evidens: d-separert (collider lukket)",
+          check: { kind: "output-contains", needle: "OK   B og E uten evidens ER d-separated" },
+        },
+        {
+          label: "B og E gitt Alarm: collider observert -> explaining away",
+          check: { kind: "output-contains", needle: "OK   B og E gitt Alarm er IKKE d-separated" },
+        },
+        {
+          label: "John og Mary uten evidens: delt forfar => avhengige",
+          check: { kind: "output-contains", needle: "OK   John og Mary uten evidens er IKKE d-separated" },
+        },
+        {
+          label: "John og Mary gitt Alarm: d-separert",
+          check: { kind: "output-contains", needle: "OK   John og Mary GITT Alarm ER d-separated" },
+        },
+      ],
+      hint:
+        "def d_separated(x, y, evidence, parents, children):\n    ev = set(evidence)\n    ev_anc = ancestors(ev, parents)\n    visited = set()\n    frontier = [(x, \"up\"), (x, \"down\")]\n    while frontier:\n        node, d = frontier.pop()\n        if (node, d) in visited:\n            continue\n        visited.add((node, d))\n        if node == y and node != x:\n            return False\n        if d == \"up\":\n            if node not in ev:\n                for p in parents[node]:\n                    frontier.append((p, \"up\"))\n                for c in children[node]:\n                    frontier.append((c, \"down\"))\n        else:\n            if node not in ev:\n                for c in children[node]:\n                    frontier.append((c, \"down\"))\n            if node in ev_anc:\n                for p in parents[node]:\n                    frontier.append((p, \"up\"))\n    return True",
+    },
+  ],
+};
+
+const MDP_QLEARNING: MiniCourse = {
+  id: "mdp-qlearning",
+  slug: "mdp-qlearning",
+  title: "MDP og Q-learning fra null",
+  blurb:
+    "Bygg en stokastisk GridWorld og en agent som lærer å navigere den — først ved å regne ut optimale verdier med full kunnskap (value iteration og policy iteration), så ved ren prøving og feiling uten å vite hvordan verdenen virker (Q-learning og SARSA). Avslutt med cliff-walking-eksempelet som viser hvorfor on-policy og off-policy lærer ulike strategier.",
+  estimertTid: "75–90 min",
+  fag: ["DTE-2501", "Klassisk AI", "Reinforcement learning"],
+  color: "purple",
+  rekkefolge: 50,
+  lessons: [
+    // ============ LEKSJON 1 ===========================================
+    {
+      id: "01-mdp-grid",
+      title: "1. MDP-strukturen og GridWorld",
+      narrative:
+        "En **Markov Decision Process (MDP)** er det matematiske skjelettet under all reinforcement learning. Den har fem deler:\n\n1. **S** — mengden av tilstander.\n2. **A** — mengden av handlinger.\n3. **T(s, a, s')** — sannsynligheten for å havne i s' når du gjør a fra s.\n4. **R(s, a, s')** — belønningen for overgangen.\n5. **gamma** — diskonteringsfaktor (0 ≤ gamma ≤ 1) som vekter framtidige belønninger.\n\nMarkov-egenskapen sier at fremtiden bare avhenger av nåværende tilstand — fortidens vei dit spiller ingen rolle.\n\n**GridWorld 4×3** (AIMA-figur 17.1) er den klassiske test-MDP-en. Et 4-bredt-3-høyt grid med koordinater (x, y), y=0 nederst. Mål-tilstand +1 ved (3, 2). Felle -1 ved (3, 1). En vegg ved (1, 1) — agenten kan ikke stå der. Handlinger {N, S, E, W} er **stokastiske**: 80% sjanse for å gå i intendert retning, 10% til hver side. Hvis du støter mot vegg eller kant: du blir stående. Hver overgang til en ikke-terminal-tilstand gir belønning -0.04 (\"living cost\"); +1 ved mål, -1 ved felle.\n\n**Hvorfor stokastisk?** Reelle verdener er støyete. En robot som prøver å gå nord glir av og til vestover. En policy som ignorerer det, fungerer dårlig i virkeligheten.\n\n**Din oppgave:** Implementér `transitions(s, a)` som returnerer en liste av `(prob, next_state, reward)`-tripler. Bruk hjelpefunksjonen `move(s, a)` som allerede er gitt — den håndterer vegg/kant ved å returnere s uendret.",
+      files: {
+        "gridworld.py": `# GridWorld 4x3 (AIMA fig 17.1)
+COLS, ROWS = 4, 3
+WALL = (1, 1)
+PLUS = (3, 2)
+MINUS = (3, 1)
+LIVING = -0.04
+TERMINALS = {PLUS, MINUS}
+ACTIONS = ["N", "S", "E", "W"]
+DELTAS = {"N": (0, 1), "S": (0, -1), "E": (1, 0), "W": (-1, 0)}
+# For en gitt intendert handling: hva er de to "perpendikulere" sklirelningene?
+PERP = {"N": ["W", "E"], "S": ["E", "W"], "E": ["N", "S"], "W": ["S", "N"]}
+
+
+def all_states():
+    return [(x, y) for x in range(COLS) for y in range(ROWS) if (x, y) != WALL]
+
+
+def move(s, a):
+    """Forsøk steget. Treffer vegg eller kant => bli stående."""
+    dx, dy = DELTAS[a]
+    nx, ny = s[0] + dx, s[1] + dy
+    if 0 <= nx < COLS and 0 <= ny < ROWS and (nx, ny) != WALL:
+        return (nx, ny)
+    return s
+
+
+def reward_for_entering(s):
+    if s == PLUS:
+        return 1.0
+    if s == MINUS:
+        return -1.0
+    return LIVING
+
+
+def transitions(s, a):
+    """Returner liste av (prob, next_state, reward).
+
+    Terminal-tilstander har en selv-loop med prob 1.0 og reward 0.
+    Ikke-terminal: 0.8 sannsynlighet for intendert retning,
+    0.1 for hver av de to perpendikulere. Slå sammen utfall som
+    havner i samme next_state.
+    """
+    # === DIN OPPGAVE ===
+    # Hvis s in TERMINALS: returner [(1.0, s, 0.0)]
+    # Ellers:
+    #   intended = move(s, a)
+    #   left     = move(s, PERP[a][0])
+    #   right    = move(s, PERP[a][1])
+    #   Bygg en dict ns -> prob ved å summere 0.8/0.1/0.1.
+    #   Returner [(p, ns, reward_for_entering(ns)) for ns, p in dict.items()]
+    return []
+
+
+# ============ TESTER ============
+def sjekk(faktisk, forventet, navn):
+    if faktisk == forventet:
+        print(f"OK   {navn}")
+    else:
+        print(f"FEIL {navn}: fikk {faktisk!r}, forventet {forventet!r}")
+
+
+def sjekk_nær(faktisk, forventet, navn, tol=1e-9):
+    if faktisk is None:
+        print(f"FEIL {navn}: fikk None")
+        return
+    if abs(faktisk - forventet) < tol:
+        print(f"OK   {navn}")
+    else:
+        print(f"FEIL {navn}: fikk {faktisk!r}, forventet {forventet!r}")
+
+
+# Terminal: selv-loop
+ts = transitions(PLUS, "N")
+sjekk(len(ts), 1, "terminal returnerer ett utfall")
+if ts:
+    p, ns, r = ts[0]
+    sjekk_nær(p, 1.0, "terminal: prob = 1.0")
+    sjekk(ns, PLUS, "terminal: blir stående")
+    sjekk_nær(r, 0.0, "terminal: reward = 0")
+
+# Fra (0, 0), N: 0.8 -> (0, 1), 0.1 -> (0, 0) (vest, kant), 0.1 -> (1, 0) (øst)
+ts00N = transitions((0, 0), "N")
+prob_sum = sum(p for p, _, _ in ts00N)
+sjekk_nær(prob_sum, 1.0, "fra (0,0) N: prob-er summer til 1.0")
+prob_by_ns = {ns: p for p, ns, _ in ts00N}
+sjekk_nær(prob_by_ns.get((0, 1), 0.0), 0.8, "fra (0,0) N: 0.8 til (0,1)")
+sjekk_nær(prob_by_ns.get((0, 0), 0.0), 0.1, "fra (0,0) N: 0.1 blir stående (kant W)")
+sjekk_nær(prob_by_ns.get((1, 0), 0.0), 0.1, "fra (0,0) N: 0.1 til (1,0)")
+
+# Fra (2, 2), E: prøver østover mot +1-cellen (3, 2). Sjekk overgang.
+ts22E = transitions((2, 2), "E")
+prob_by_ns_22 = {ns: p for p, ns, _ in ts22E}
+sjekk_nær(prob_by_ns_22.get((3, 2), 0.0), 0.8, "fra (2,2) E: 0.8 til mål (3,2)")
+# Hvilken reward har overgangen til (3, 2)?
+for p, ns, r in ts22E:
+    if ns == (3, 2):
+        sjekk_nær(r, 1.0, "fra (2,2) E: reward = +1 ved å treffe målet")
+        break
+
+# Fra (0, 0), E: 0.8 -> (1, 0); 0.1 N -> (0, 1); 0.1 S -> (0, 0).
+ts00E = transitions((0, 0), "E")
+prob_by_ns_E = {ns: p for p, ns, _ in ts00E}
+sjekk_nær(prob_by_ns_E.get((1, 0), 0.0), 0.8, "fra (0,0) E: 0.8 til (1,0)")
+sjekk_nær(prob_by_ns_E.get((0, 1), 0.0), 0.1, "fra (0,0) E: 0.1 til (0,1) (N-skliing)")
+sjekk_nær(prob_by_ns_E.get((0, 0), 0.0), 0.1, "fra (0,0) E: 0.1 blir stående (S-kant)")
+`,
+      },
+      defaultFile: "gridworld.py",
+      editable: ["gridworld.py"],
+      run: { kind: "python-script", entry: "gridworld.py" },
+      verifications: [
+        { label: "Terminal har én selv-loop", check: { kind: "output-contains", needle: "OK   terminal returnerer ett utfall" } },
+        { label: "Terminal: prob 1.0", check: { kind: "output-contains", needle: "OK   terminal: prob = 1.0" } },
+        { label: "Terminal: next_state = seg selv", check: { kind: "output-contains", needle: "OK   terminal: blir stående" } },
+        { label: "Terminal: reward 0", check: { kind: "output-contains", needle: "OK   terminal: reward = 0" } },
+        { label: "Sannsynlighetene summer til 1", check: { kind: "output-contains", needle: "OK   fra (0,0) N: prob-er summer til 1.0" } },
+        { label: "80% i intendert retning", check: { kind: "output-contains", needle: "OK   fra (0,0) N: 0.8 til (0,1)" } },
+        { label: "10% sklir vestover (kant)", check: { kind: "output-contains", needle: "OK   fra (0,0) N: 0.1 blir stående (kant W)" } },
+        { label: "10% sklir østover", check: { kind: "output-contains", needle: "OK   fra (0,0) N: 0.1 til (1,0)" } },
+        { label: "Overgang til mål gir +1", check: { kind: "output-contains", needle: "OK   fra (2,2) E: reward = +1 ved å treffe målet" } },
+      ],
+      hint:
+        "if s in TERMINALS:\n    return [(1.0, s, 0.0)]\nintended = move(s, a)\nleft = move(s, PERP[a][0])\nright = move(s, PERP[a][1])\nbucket = {}\nfor p, ns in [(0.8, intended), (0.1, left), (0.1, right)]:\n    bucket[ns] = bucket.get(ns, 0.0) + p\nreturn [(p, ns, reward_for_entering(ns)) for ns, p in bucket.items()]",
+    },
+
+    // ============ LEKSJON 2 ===========================================
+    {
+      id: "02-value-iteration",
+      title: "2. Value iteration: Bellmans optimal-ligning",
+      narrative:
+        "Hva er den beste oppførselen i en MDP? Vi definerer **V*(s)** som forventet diskontert framtidig belønning hvis vi spiller optimalt fra s. **Bellmans optimal-ligning** sier at V* tilfredsstiller:\n\n```\nV*(s) = max_a  sum_{s'} T(s, a, s') * ( R(s, a, s') + gamma * V*(s') )\n```\n\nLes den slik: \"den beste verdien i s er den handlingen som maksimerer forventet umiddelbar belønning pluss diskontert verdi av neste tilstand\". Det er et fastpunkt: en verdifunksjon som ER optimal er konsistent med denne ligningen.\n\n**Value iteration** finner V* ved å bruke ligningen som en oppdaterings-regel. Start med V_0 = 0. Beregn V_{k+1}(s) som høyresiden av Bellman, basert på V_k. Gjenta. Det kan vises at avstanden mellom V_k og V* krymper med faktor gamma per iterasjon — så vi konvergerer eksponentielt.\n\nStopp-kriterium: når `max_s |V_{k+1}(s) - V_k(s)| < tol`.\n\n**Hvorfor gamma < 1?** Diskontering modellerer både utålmodighet og usikkerhet om fremtiden. For uendelige episoder gjør gamma summen konvergent. For endelige episoder er det ikke strengt nødvendig, men gjør optimaliseringen veloppdragen.\n\n**Din oppgave:** Implementér `value_iteration(gamma, tol)` som returnerer dict-en V*. Terminal-tilstander skal beholde V = 0 — all belønningen kommer FRA overgangen INN i dem, ikke ut av dem.",
+      files: {
+        "vi.py": `# Gjenbruk MDP-koden fra leksjon 1 (ferdig utfylt her)
+COLS, ROWS = 4, 3
+WALL = (1, 1)
+PLUS = (3, 2)
+MINUS = (3, 1)
+LIVING = -0.04
+TERMINALS = {PLUS, MINUS}
+ACTIONS = ["N", "S", "E", "W"]
+DELTAS = {"N": (0, 1), "S": (0, -1), "E": (1, 0), "W": (-1, 0)}
+PERP = {"N": ["W", "E"], "S": ["E", "W"], "E": ["N", "S"], "W": ["S", "N"]}
+
+
+def all_states():
+    return [(x, y) for x in range(COLS) for y in range(ROWS) if (x, y) != WALL]
+
+
+def move(s, a):
+    dx, dy = DELTAS[a]
+    nx, ny = s[0] + dx, s[1] + dy
+    if 0 <= nx < COLS and 0 <= ny < ROWS and (nx, ny) != WALL:
+        return (nx, ny)
+    return s
+
+
+def reward_for_entering(s):
+    return 1.0 if s == PLUS else (-1.0 if s == MINUS else LIVING)
+
+
+def transitions(s, a):
+    if s in TERMINALS:
+        return [(1.0, s, 0.0)]
+    bucket = {}
+    for p, ns in [(0.8, move(s, a)), (0.1, move(s, PERP[a][0])), (0.1, move(s, PERP[a][1]))]:
+        bucket[ns] = bucket.get(ns, 0.0) + p
+    return [(p, ns, reward_for_entering(ns)) for ns, p in bucket.items()]
+
+
+def value_iteration(gamma=0.9, tol=1e-6, max_iter=1000):
+    """Returner dict V* over alle ikke-vegg-tilstander.
+
+    Terminal-tilstander: V(s) = 0 (belønningen kommer fra å GÅ INN i dem).
+    """
+    V = {s: 0.0 for s in all_states()}
+    # === DIN OPPGAVE ===
+    # Iterer max_iter ganger:
+    #   delta = 0
+    #   new_V = kopi av V
+    #   For hver s i all_states():
+    #       hvis s in TERMINALS: new_V[s] = 0.0; continue
+    #       For hver a i ACTIONS: regn Q(s,a) = sum_(p, ns, r) p * (r + gamma * V[ns])
+    #       new_V[s] = max over a
+    #       oppdater delta = max(delta, |new_V[s] - V[s]|)
+    #   V = new_V
+    #   hvis delta < tol: break
+    return V
+
+
+# ============ TESTER ============
+V = value_iteration(gamma=0.9)
+print("V*:")
+for y in range(ROWS - 1, -1, -1):
+    for x in range(COLS):
+        s = (x, y)
+        if s == WALL:
+            print(f"{'WALL':>8}", end=" ")
+        else:
+            print(f"{V[s]:8.3f}", end=" ")
+    print()
+
+
+def sjekk_innenfor(faktisk, lo, hi, navn):
+    if faktisk is None:
+        print(f"FEIL {navn}: fikk None")
+        return
+    if lo <= faktisk <= hi:
+        print(f"OK   {navn}")
+    else:
+        print(f"FEIL {navn}: fikk {faktisk!r}, ikke i [{lo}, {hi}]")
+
+
+def sjekk_nær(faktisk, forventet, navn, tol=0.02):
+    if faktisk is None:
+        print(f"FEIL {navn}: fikk None")
+        return
+    if abs(faktisk - forventet) < tol:
+        print(f"OK   {navn}")
+    else:
+        print(f"FEIL {navn}: fikk {faktisk!r}, forventet {forventet!r}")
+
+
+# AIMA-referansetall ved gamma=0.9: V*((0,0)) ca 0.37, V*((2,2)) ca 0.93.
+sjekk_nær(V[(0, 0)], 0.374, "V*((0,0)) ca 0.37")
+sjekk_nær(V[(2, 2)], 0.928, "V*((2,2)) ca 0.93 (ett steg fra +1)")
+sjekk_nær(V[(0, 2)], 0.610, "V*((0,2)) ca 0.61")
+print("OK   V*((0,0)) < V*((0,1)) (lenger fra mål)" if V[(0, 0)] < V[(0, 1)] else f"FEIL V*((0,0)) skulle være < V*((0,1))")
+sjekk_innenfor(V[(2, 0)], 0.0, 0.5, "V*((2,0)) liten (nær -1-feller)")
+
+# Terminal-verdier skal være 0
+print(f"OK   terminal V=0 ved +1" if V[PLUS] == 0.0 else f"FEIL terminal V skal være 0 ved +1, fikk {V[PLUS]}")
+print(f"OK   terminal V=0 ved -1" if V[MINUS] == 0.0 else f"FEIL terminal V skal være 0 ved -1, fikk {V[MINUS]}")
+`,
+      },
+      defaultFile: "vi.py",
+      editable: ["vi.py"],
+      run: { kind: "python-script", entry: "vi.py" },
+      verifications: [
+        { label: "V*((0,0)) konvergerer til AIMA-tall", check: { kind: "output-contains", needle: "OK   V*((0,0)) ca 0.37" } },
+        { label: "V*((2,2)) er nær 1 (ett steg fra mål)", check: { kind: "output-contains", needle: "OK   V*((2,2)) ca 0.93 (ett steg fra +1)" } },
+        { label: "V*((0,2)) er omtrent 0.61", check: { kind: "output-contains", needle: "OK   V*((0,2)) ca 0.61" } },
+        { label: "Tilstander nær -1-fellen har lav verdi", check: { kind: "output-contains", needle: "OK   V*((2,0)) liten (nær -1-feller)" } },
+        { label: "Terminal-tilstand +1 har V=0", check: { kind: "output-contains", needle: "OK   terminal V=0 ved +1" } },
+        { label: "Terminal-tilstand -1 har V=0", check: { kind: "output-contains", needle: "OK   terminal V=0 ved -1" } },
+      ],
+      hint:
+        "for it in range(max_iter):\n    delta = 0.0\n    new_V = dict(V)\n    for s in all_states():\n        if s in TERMINALS:\n            new_V[s] = 0.0\n            continue\n        best = -float('inf')\n        for a in ACTIONS:\n            q = sum(p * (r + gamma * V[ns]) for p, ns, r in transitions(s, a))\n            if q > best:\n                best = q\n        new_V[s] = best\n        delta = max(delta, abs(new_V[s] - V[s]))\n    V = new_V\n    if delta < tol:\n        break\nreturn V",
+    },
+
+    // ============ LEKSJON 3 ===========================================
+    {
+      id: "03-policy-extract",
+      title: "3. Ekstrahere policy fra verdiene",
+      narrative:
+        "V*(s) forteller hvor BRA hver tilstand er. Men vi vil egentlig vite hva agenten skal GJØRE der. Det er **policy-en** pi(s): en handling for hver tilstand.\n\n**Ekstraksjons-regel:** velg handlingen som maksimerer den forventede verdien av neste-tilstand:\n\n```\npi*(s) = argmax_a  sum_{s'} T(s, a, s') * ( R(s, a, s') + gamma * V*(s') )\n```\n\nDette uttrykket inni argmax-en kalles **Q*(s, a)** — den optimale handlings-verdi-funksjonen. Vi tar bare den handlingen med høyest Q i hver tilstand.\n\n**Hvorfor er dette greedy-ekstraktet OPTIMAL?** Fordi V* er definert via Bellmans optimal-ligning, og argmax-en der ER nettopp policy-handlingen. Bellman-fastpunktet og greedy-mhp-V* er to sider av samme sak.\n\n**ASCII-visualisering:** vi vil se policy-en som et grid med piler: `^` (N), `v` (S), `>` (E), `<` (W). Mål-cellen vises som `+`, felle som `-`, vegg som `#`.\n\n**Din oppgave:** Implementér `optimal_policy(V, gamma)`. For hver ikke-terminal-tilstand: regn ut Q for hver handling, returner argmax. Test verifiserer:\n- Policy ved (2, 2) er E (ett steg øst → mål).\n- Policy ved (3, 0) — den \"farlige\" cellen rett under -1 — er W (gå vekk fra fellen, ikke N).\n- Policy unngår fellen.",
+      files: {
+        "policy.py": `# Ferdig MDP-kode fra leksjon 1 og 2
+COLS, ROWS = 4, 3
+WALL = (1, 1)
+PLUS = (3, 2)
+MINUS = (3, 1)
+LIVING = -0.04
+TERMINALS = {PLUS, MINUS}
+ACTIONS = ["N", "S", "E", "W"]
+DELTAS = {"N": (0, 1), "S": (0, -1), "E": (1, 0), "W": (-1, 0)}
+PERP = {"N": ["W", "E"], "S": ["E", "W"], "E": ["N", "S"], "W": ["S", "N"]}
+ARROWS = {"N": "^", "S": "v", "E": ">", "W": "<"}
+
+
+def all_states():
+    return [(x, y) for x in range(COLS) for y in range(ROWS) if (x, y) != WALL]
+
+
+def move(s, a):
+    dx, dy = DELTAS[a]
+    nx, ny = s[0] + dx, s[1] + dy
+    if 0 <= nx < COLS and 0 <= ny < ROWS and (nx, ny) != WALL:
+        return (nx, ny)
+    return s
+
+
+def reward_for_entering(s):
+    return 1.0 if s == PLUS else (-1.0 if s == MINUS else LIVING)
+
+
+def transitions(s, a):
+    if s in TERMINALS:
+        return [(1.0, s, 0.0)]
+    bucket = {}
+    for p, ns in [(0.8, move(s, a)), (0.1, move(s, PERP[a][0])), (0.1, move(s, PERP[a][1]))]:
+        bucket[ns] = bucket.get(ns, 0.0) + p
+    return [(p, ns, reward_for_entering(ns)) for ns, p in bucket.items()]
+
+
+def value_iteration(gamma=0.9, tol=1e-6, max_iter=1000):
+    V = {s: 0.0 for s in all_states()}
+    for _ in range(max_iter):
+        delta = 0.0
+        new_V = dict(V)
+        for s in all_states():
+            if s in TERMINALS:
+                new_V[s] = 0.0
+                continue
+            best = -float("inf")
+            for a in ACTIONS:
+                q = sum(p * (r + gamma * V[ns]) for p, ns, r in transitions(s, a))
+                if q > best:
+                    best = q
+            new_V[s] = best
+            delta = max(delta, abs(new_V[s] - V[s]))
+        V = new_V
+        if delta < tol:
+            break
+    return V
+
+
+def optimal_policy(V, gamma=0.9):
+    """Returner dict pi: state -> action for alle ikke-terminale tilstander."""
+    pi = {}
+    # === DIN OPPGAVE ===
+    # For hver s i all_states():
+    #   hvis s in TERMINALS: hopp over
+    #   ellers: pi[s] = argmax_a sum_(p, ns, r) p * (r + gamma * V[ns])
+    return pi
+
+
+def print_policy(pi):
+    for y in range(ROWS - 1, -1, -1):
+        for x in range(COLS):
+            s = (x, y)
+            if s == WALL:
+                ch = "#"
+            elif s == PLUS:
+                ch = "+"
+            elif s == MINUS:
+                ch = "-"
+            else:
+                ch = ARROWS[pi[s]]
+            print(ch, end=" ")
+        print()
+
+
+# ============ TESTER ============
+V = value_iteration(gamma=0.9)
+pi = optimal_policy(V, gamma=0.9)
+print("Optimal policy:")
+print_policy(pi)
+
+
+def sjekk(faktisk, forventet, navn):
+    if faktisk == forventet:
+        print(f"OK   {navn}")
+    else:
+        print(f"FEIL {navn}: fikk {faktisk!r}, forventet {forventet!r}")
+
+
+# Disse posisjonene har én tydelig optimal handling:
+sjekk(pi.get((2, 2)), "E", "pi((2,2)) = E (ett steg til mål)")
+sjekk(pi.get((0, 2)), "E", "pi((0,2)) = E (toppraden, gå mot målet)")
+sjekk(pi.get((1, 2)), "E", "pi((1,2)) = E (fortsett mot målet)")
+# (3, 0) er rett under -1-fellen. Optimal handling er W (vekk fra fellen),
+# ikke N (som ville sklidd 10% inn i fellen).
+sjekk(pi.get((3, 0)), "W", "pi((3,0)) = W (unngå -1-fellen)")
+# Terminaler skal IKKE være i policy-en
+sjekk(PLUS in pi, False, "terminal +1 ikke i policy")
+sjekk(MINUS in pi, False, "terminal -1 ikke i policy")
+`,
+      },
+      defaultFile: "policy.py",
+      editable: ["policy.py"],
+      run: { kind: "python-script", entry: "policy.py" },
+      verifications: [
+        { label: "Policy ved (2,2) er E", check: { kind: "output-contains", needle: "OK   pi((2,2)) = E (ett steg til mål)" } },
+        { label: "Toppraden går østover", check: { kind: "output-contains", needle: "OK   pi((0,2)) = E (toppraden, gå mot målet)" } },
+        { label: "Policy fortsetter østover", check: { kind: "output-contains", needle: "OK   pi((1,2)) = E (fortsett mot målet)" } },
+        { label: "Policy unngår -1-fellen ved (3,0)", check: { kind: "output-contains", needle: "OK   pi((3,0)) = W (unngå -1-fellen)" } },
+        { label: "Terminaler er ikke i policy", check: { kind: "output-contains", needle: "OK   terminal +1 ikke i policy" } },
+      ],
+      hint:
+        "for s in all_states():\n    if s in TERMINALS:\n        continue\n    best_a, best_q = None, -float('inf')\n    for a in ACTIONS:\n        q = sum(p * (r + gamma * V[ns]) for p, ns, r in transitions(s, a))\n        if q > best_q:\n            best_q, best_a = q, a\n    pi[s] = best_a\nreturn pi",
+    },
+
+    // ============ LEKSJON 4 ===========================================
+    {
+      id: "04-policy-iteration",
+      title: "4. Policy iteration",
+      narrative:
+        "**Value iteration** flytter på V-er. **Policy iteration** flytter på selve policy-en og ofte i færre iterasjoner. Den veksler mellom to steg:\n\n1. **Policy evaluation** — gitt en policy pi, regn ut V_pi (verdien hvis du følger pi). Dette er Bellman UTEN max — bare den handlingen pi velger:\n\n   ```\n   V_pi(s) = sum_{s'} T(s, pi(s), s') * ( R(s, pi(s), s') + gamma * V_pi(s') )\n   ```\n\n   Vi løser dette iterativt (samme stil som VI, men med faste handlinger).\n\n2. **Policy improvement** — gjør pi greedy mot V_pi:\n\n   ```\n   pi_ny(s) = argmax_a sum_{s'} T(s,a,s') * (R(s,a,s') + gamma * V_pi(s'))\n   ```\n\nGjenta til policy-en ikke endrer seg. Da har du fastpunkt og dermed optimal pi.\n\n**Hvorfor færre iterasjoner?** VI flytter små marginale skritt på V-er; PI gjør store hopp ved å fullføre evaluation før improvement. Hver iterasjon er dyrere, men det går ofte raskere totalt — og den terminerer EKSAKT (fordi det fins endelig mange policy-er).\n\nVi starter med en tilfeldig policy (alle N). Det vil ta noen runder før den når optimal.\n\n**Din oppgave:** Implementér `policy_iteration(gamma, eval_iter)`. Returner `(pi, V, antall_runder)`. Sjekk at policy-en er identisk med den fra VI.",
+      files: {
+        "pi.py": `# Ferdig MDP-kode
+COLS, ROWS = 4, 3
+WALL = (1, 1)
+PLUS = (3, 2)
+MINUS = (3, 1)
+LIVING = -0.04
+TERMINALS = {PLUS, MINUS}
+ACTIONS = ["N", "S", "E", "W"]
+DELTAS = {"N": (0, 1), "S": (0, -1), "E": (1, 0), "W": (-1, 0)}
+PERP = {"N": ["W", "E"], "S": ["E", "W"], "E": ["N", "S"], "W": ["S", "N"]}
+
+
+def all_states():
+    return [(x, y) for x in range(COLS) for y in range(ROWS) if (x, y) != WALL]
+
+
+def move(s, a):
+    dx, dy = DELTAS[a]
+    nx, ny = s[0] + dx, s[1] + dy
+    if 0 <= nx < COLS and 0 <= ny < ROWS and (nx, ny) != WALL:
+        return (nx, ny)
+    return s
+
+
+def reward_for_entering(s):
+    return 1.0 if s == PLUS else (-1.0 if s == MINUS else LIVING)
+
+
+def transitions(s, a):
+    if s in TERMINALS:
+        return [(1.0, s, 0.0)]
+    bucket = {}
+    for p, ns in [(0.8, move(s, a)), (0.1, move(s, PERP[a][0])), (0.1, move(s, PERP[a][1]))]:
+        bucket[ns] = bucket.get(ns, 0.0) + p
+    return [(p, ns, reward_for_entering(ns)) for ns, p in bucket.items()]
+
+
+def value_iteration(gamma=0.9, tol=1e-8, max_iter=2000):
+    """Brukes som referanse — vi sjekker at PI gir samme policy."""
+    V = {s: 0.0 for s in all_states()}
+    for _ in range(max_iter):
+        delta = 0.0
+        new_V = dict(V)
+        for s in all_states():
+            if s in TERMINALS:
+                new_V[s] = 0.0
+                continue
+            best = -float("inf")
+            for a in ACTIONS:
+                q = sum(p * (r + gamma * V[ns]) for p, ns, r in transitions(s, a))
+                if q > best:
+                    best = q
+            new_V[s] = best
+            delta = max(delta, abs(new_V[s] - V[s]))
+        V = new_V
+        if delta < tol:
+            break
+    return V
+
+
+def vi_policy(V, gamma=0.9):
+    pi = {}
+    for s in all_states():
+        if s in TERMINALS:
+            continue
+        pi[s] = max(ACTIONS, key=lambda a: sum(p * (r + gamma * V[ns]) for p, ns, r in transitions(s, a)))
+    return pi
+
+
+# ============ DIN OPPGAVE ============
+def policy_eval(pi, gamma=0.9, iters=100):
+    """Iterativ policy evaluation: fastpunktiterasjon med fast pi."""
+    V = {s: 0.0 for s in all_states()}
+    for _ in range(iters):
+        new_V = dict(V)
+        for s in all_states():
+            if s in TERMINALS:
+                new_V[s] = 0.0
+                continue
+            a = pi[s]
+            new_V[s] = sum(p * (r + gamma * V[ns]) for p, ns, r in transitions(s, a))
+        V = new_V
+    return V
+
+
+def policy_iteration(gamma=0.9, eval_iter=100):
+    """Returner (pi, V, antall_runder)."""
+    # Start med tilfeldig policy: alle nord
+    pi = {s: "N" for s in all_states() if s not in TERMINALS}
+    runder = 0
+    # === DIN OPPGAVE ===
+    # while True:
+    #   runder += 1
+    #   V = policy_eval(pi, gamma, eval_iter)
+    #   stable = True
+    #   for s in alle ikke-terminale stater:
+    #       gammel = pi[s]
+    #       pi[s] = argmax_a sum_(p,ns,r) p * (r + gamma * V[ns])
+    #       hvis pi[s] != gammel: stable = False
+    #   hvis stable: break
+    # return pi, V, runder
+    return pi, {}, runder
+
+
+# ============ TESTER ============
+pi_pi, V_pi, runder = policy_iteration(gamma=0.9, eval_iter=200)
+V_vi = value_iteration(gamma=0.9)
+pi_vi = vi_policy(V_vi, gamma=0.9)
+
+print(f"Policy iteration konvergerte i {runder} runder.")
+
+
+def sjekk(faktisk, forventet, navn):
+    if faktisk == forventet:
+        print(f"OK   {navn}")
+    else:
+        print(f"FEIL {navn}: fikk {faktisk!r}, forventet {forventet!r}")
+
+
+def sjekk_innenfor(faktisk, lo, hi, navn):
+    if faktisk is None:
+        print(f"FEIL {navn}: fikk None")
+        return
+    if lo <= faktisk <= hi:
+        print(f"OK   {navn}")
+    else:
+        print(f"FEIL {navn}: fikk {faktisk!r}, ikke i [{lo}, {hi}]")
+
+
+# PI skal gi samme policy som VI
+sjekk(pi_pi.get((2, 2)), pi_vi.get((2, 2)), "PI og VI gir samme handling ved (2,2)")
+sjekk(pi_pi.get((0, 2)), pi_vi.get((0, 2)), "PI og VI gir samme handling ved (0,2)")
+sjekk(pi_pi.get((3, 0)), pi_vi.get((3, 0)), "PI og VI gir samme handling ved (3,0)")
+sjekk(pi_pi.get((0, 0)), pi_vi.get((0, 0)), "PI og VI gir samme handling ved start (0,0)")
+# Antall runder skal være rimelig lite (typisk 3-7 for dette grid-et)
+sjekk_innenfor(runder, 1, 20, "PI konvergerte i et rimelig antall runder")
+`,
+      },
+      defaultFile: "pi.py",
+      editable: ["pi.py"],
+      run: { kind: "python-script", entry: "pi.py" },
+      verifications: [
+        { label: "PI matcher VI ved (2,2)", check: { kind: "output-contains", needle: "OK   PI og VI gir samme handling ved (2,2)" } },
+        { label: "PI matcher VI ved (0,2)", check: { kind: "output-contains", needle: "OK   PI og VI gir samme handling ved (0,2)" } },
+        { label: "PI matcher VI ved (3,0)", check: { kind: "output-contains", needle: "OK   PI og VI gir samme handling ved (3,0)" } },
+        { label: "PI matcher VI ved start (0,0)", check: { kind: "output-contains", needle: "OK   PI og VI gir samme handling ved start (0,0)" } },
+        { label: "PI konvergerer raskt", check: { kind: "output-contains", needle: "OK   PI konvergerte i et rimelig antall runder" } },
+      ],
+      hint:
+        "while True:\n    runder += 1\n    V = policy_eval(pi, gamma, eval_iter)\n    stable = True\n    for s in all_states():\n        if s in TERMINALS:\n            continue\n        gammel = pi[s]\n        pi[s] = max(ACTIONS, key=lambda a: sum(p * (r + gamma * V[ns]) for p, ns, r in transitions(s, a)))\n        if pi[s] != gammel:\n            stable = False\n    if stable:\n        break\nreturn pi, V, runder",
+    },
+
+    // ============ LEKSJON 5 ===========================================
+    {
+      id: "05-q-learning",
+      title: "5. Q-learning: model-free RL",
+      narrative:
+        "Frem til nå har vi visst T og R perfekt. Det er **planlegging**, ikke læring. Reinforcement learning gir agenten en mye hardere oppgave: lær uten å ha tilgang til T eller R. Agenten ser bare (state, action, reward, next_state)-overganger fra opplevelse — og må gjette resten.\n\n**Q-learning** bygger en tabell Q(s, a) som tilnærmer Q*(s, a). Oppdaterings-regelen er en **temporal difference** (TD)-formel:\n\n```\nQ(s, a) <- Q(s, a) + alpha * ( r + gamma * max_a' Q(s', a') - Q(s, a) )\n```\n\nLes uttrykket i parentes: \"hva vi nettopp observerte (r + gamma * beste-fremtidige-Q) MINUS hva tabellen sa (Q(s, a))\". Det er feilen — TD-feilen. Vi nudger tabellen alpha-andelen i retning sannheten.\n\n**Off-policy:** Q-learning bruker max over neste-handlinger i oppdateringen, uavhengig av hva agenten faktisk gjorde. Den lærer alltid den OPTIMALE policy-en, selv om den utforsker dårligere.\n\n**Epsilon-greedy:** under trening velger agenten en tilfeldig handling med sannsynlighet epsilon, ellers argmax Q. Dette balanserer **utforskning** (lære noe nytt) og **utnyttelse** (få belønning).\n\nVi bruker `random.seed(42)` for reproduserbarhet — uten den varierer resultatene fra kjøring til kjøring.\n\n**Din oppgave:** Implementér `q_learning(episodes, alpha, gamma, epsilon)`. Etter 5000 episoder skal greedy-policy-en fra Q ligne den fra value iteration på de viktigste cellene.",
+      files: {
+        "qlearn.py": `import random
+
+# ============ MDP-SIMULATOR (model-free interface) ============
+# Agenten ser bare step(s, a) -> (next_state, reward, done)
+COLS, ROWS = 4, 3
+WALL = (1, 1)
+PLUS = (3, 2)
+MINUS = (3, 1)
+LIVING = -0.04
+START = (0, 0)
+TERMINALS = {PLUS, MINUS}
+ACTIONS = ["N", "S", "E", "W"]
+DELTAS = {"N": (0, 1), "S": (0, -1), "E": (1, 0), "W": (-1, 0)}
+PERP = {"N": ["W", "E"], "S": ["E", "W"], "E": ["N", "S"], "W": ["S", "N"]}
+
+
+def all_states():
+    return [(x, y) for x in range(COLS) for y in range(ROWS) if (x, y) != WALL]
+
+
+def move(s, a):
+    dx, dy = DELTAS[a]
+    nx, ny = s[0] + dx, s[1] + dy
+    if 0 <= nx < COLS and 0 <= ny < ROWS and (nx, ny) != WALL:
+        return (nx, ny)
+    return s
+
+
+def reward_for_entering(s):
+    return 1.0 if s == PLUS else (-1.0 if s == MINUS else LIVING)
+
+
+def step(s, a):
+    """Stokastisk steg: 80% intendert, 10% hver perpendikulær. Agenten ser kun resultatet."""
+    if s in TERMINALS:
+        return s, 0.0, True
+    r = random.random()
+    if r < 0.8:
+        chosen = a
+    elif r < 0.9:
+        chosen = PERP[a][0]
+    else:
+        chosen = PERP[a][1]
+    ns = move(s, chosen)
+    return ns, reward_for_entering(ns), ns in TERMINALS
+
+
+# ============ DIN OPPGAVE ============
+def q_learning(episodes, alpha=0.1, gamma=0.9, epsilon=0.1, max_steps=200):
+    """Returner Q-tabell etter trening.
+
+    For hver episode:
+      s = START
+      gjenta inntil terminal eller max_steps:
+        epsilon-greedy velg a fra Q[s, *]
+        ns, r, done = step(s, a)
+        beste_neste = 0 hvis ns terminal, ellers max_a Q[(ns, a)]
+        Q[(s, a)] += alpha * (r + gamma * beste_neste - Q[(s, a)])
+        s = ns
+    """
+    Q = {(s, a): 0.0 for s in all_states() for a in ACTIONS}
+    # === DIN OPPGAVE ===
+    # Implementér løkken over episodes som beskrevet.
+    return Q
+
+
+def greedy_policy(Q):
+    pi = {}
+    for s in all_states():
+        if s in TERMINALS:
+            continue
+        pi[s] = max(ACTIONS, key=lambda a: Q[(s, a)])
+    return pi
+
+
+# ============ TESTER ============
+random.seed(42)
+Q = q_learning(episodes=5000, alpha=0.1, gamma=0.9, epsilon=0.1)
+pi = greedy_policy(Q)
+
+print("Lært greedy-policy:")
+ARROWS = {"N": "^", "S": "v", "E": ">", "W": "<"}
+for y in range(ROWS - 1, -1, -1):
+    for x in range(COLS):
+        s = (x, y)
+        if s == WALL:
+            ch = "#"
+        elif s == PLUS:
+            ch = "+"
+        elif s == MINUS:
+            ch = "-"
+        else:
+            ch = ARROWS[pi[s]]
+        print(ch, end=" ")
+    print()
+
+
+def sjekk(faktisk, forventet, navn):
+    if faktisk == forventet:
+        print(f"OK   {navn}")
+    else:
+        print(f"FEIL {navn}: fikk {faktisk!r}, forventet {forventet!r}")
+
+
+# Q har lært noe — sjekk at noen viktige Q-verdier er positive
+def sjekk_større(faktisk, terskel, navn):
+    if faktisk > terskel:
+        print(f"OK   {navn}")
+    else:
+        print(f"FEIL {navn}: fikk {faktisk}, ikke > {terskel}")
+
+
+# (2, 2) er ett steg fra +1. Q((2,2), E) bør være høyt (nær 1).
+sjekk_større(Q[((2, 2), "E")], 0.7, "Q((2,2), E) > 0.7 (ett steg fra mål)")
+# Policy ved (2, 2) skal være E
+sjekk(pi.get((2, 2)), "E", "lært pi((2,2)) = E")
+# Policy ved (0, 2) skal være E (gå mot målet langs topp)
+sjekk(pi.get((0, 2)), "E", "lært pi((0,2)) = E")
+# Policy ved (1, 2) skal være E
+sjekk(pi.get((1, 2)), "E", "lært pi((1,2)) = E")
+`,
+      },
+      defaultFile: "qlearn.py",
+      editable: ["qlearn.py"],
+      run: { kind: "python-script", entry: "qlearn.py" },
+      verifications: [
+        { label: "Q-verdi nær mål er høy", check: { kind: "output-contains", needle: "OK   Q((2,2), E) > 0.7 (ett steg fra mål)" } },
+        { label: "Lært policy: pi((2,2)) = E", check: { kind: "output-contains", needle: "OK   lært pi((2,2)) = E" } },
+        { label: "Lært policy: pi((0,2)) = E", check: { kind: "output-contains", needle: "OK   lært pi((0,2)) = E" } },
+        { label: "Lært policy: pi((1,2)) = E", check: { kind: "output-contains", needle: "OK   lært pi((1,2)) = E" } },
+      ],
+      hint:
+        "for ep in range(episodes):\n    s = START\n    for _ in range(max_steps):\n        if s in TERMINALS:\n            break\n        if random.random() < epsilon:\n            a = random.choice(ACTIONS)\n        else:\n            a = max(ACTIONS, key=lambda act: Q[(s, act)])\n        ns, r, done = step(s, a)\n        best_next = 0.0 if ns in TERMINALS else max(Q[(ns, act)] for act in ACTIONS)\n        Q[(s, a)] = Q[(s, a)] + alpha * (r + gamma * best_next - Q[(s, a)])\n        s = ns\n        if done:\n            break\nreturn Q",
+    },
+
+    // ============ LEKSJON 6 ===========================================
+    {
+      id: "06-eps-greedy",
+      title: "6. Epsilon-greedy: utforskning vs utnyttelse",
+      narrative:
+        "Hvilken epsilon skal du velge? Det er den mest fundamentale tradeoffen i RL:\n\n- **Lav epsilon** (nesten ren utnyttelse): agenten holder seg til det den TROR er best. Hvis den initielle gjettingen er feil, blir den sittende fast i en suboptimal policy. Den utforsker aldri nok til å finne bedre alternativer.\n- **Høy epsilon** (mye utforskning): agenten gjør tilfeldige ting hele tiden. Den oppdager kanskje gode strategier, men UTNYTTER dem aldri — så total-belønningen lider.\n\nDe to ekstremene har et søtt sted i mellom. På vårt grid er 0.1 vanligvis fint.\n\nFor å se det konkret skal vi måle **gjennomsnittlig total-reward per episode** for tre verdier av epsilon. Etter trening evaluerer vi GREEDY (ingen epsilon) policy-en fra hver konfigurasjon for å se hvor god den ble.\n\n**Læringskurver i ASCII:** vi bucketter episodene i 10 bins og printer gjennomsnittlig reward som stjerner. Større stjerner = bedre.\n\n**Din oppgave:** Implementér `evaluate_policy(Q, episodes)` som kjører agenten i ren-greedy modus (ingen epsilon) og returnerer gjennomsnittlig sum-reward. Bruk denne til å sammenligne ulike epsilon-verdier.\n\nForventede observasjoner:\n- epsilon=0.01 og 0.1 lærer ofte rimelige policy-er. epsilon=0.1 er typisk best.\n- epsilon=0.5 lærer kanskje en OK policy, men den lave snitt-rewarden under trening viser at agenten kaster bort tid på tilfeldighet.",
+      files: {
+        "eps.py": `import random
+
+COLS, ROWS = 4, 3
+WALL = (1, 1)
+PLUS = (3, 2)
+MINUS = (3, 1)
+LIVING = -0.04
+START = (0, 0)
+TERMINALS = {PLUS, MINUS}
+ACTIONS = ["N", "S", "E", "W"]
+DELTAS = {"N": (0, 1), "S": (0, -1), "E": (1, 0), "W": (-1, 0)}
+PERP = {"N": ["W", "E"], "S": ["E", "W"], "E": ["N", "S"], "W": ["S", "N"]}
+
+
+def all_states():
+    return [(x, y) for x in range(COLS) for y in range(ROWS) if (x, y) != WALL]
+
+
+def move(s, a):
+    dx, dy = DELTAS[a]
+    nx, ny = s[0] + dx, s[1] + dy
+    if 0 <= nx < COLS and 0 <= ny < ROWS and (nx, ny) != WALL:
+        return (nx, ny)
+    return s
+
+
+def reward_for_entering(s):
+    return 1.0 if s == PLUS else (-1.0 if s == MINUS else LIVING)
+
+
+def step(s, a):
+    if s in TERMINALS:
+        return s, 0.0, True
+    r = random.random()
+    if r < 0.8:
+        chosen = a
+    elif r < 0.9:
+        chosen = PERP[a][0]
+    else:
+        chosen = PERP[a][1]
+    ns = move(s, chosen)
+    return ns, reward_for_entering(ns), ns in TERMINALS
+
+
+def q_learning_traced(episodes, alpha=0.1, gamma=0.9, epsilon=0.1, max_steps=200):
+    """Q-learning som returnerer Q OG en liste over total-reward per episode."""
+    Q = {(s, a): 0.0 for s in all_states() for a in ACTIONS}
+    rewards = []
+    for ep in range(episodes):
+        s = START
+        total = 0.0
+        for _ in range(max_steps):
+            if s in TERMINALS:
+                break
+            if random.random() < epsilon:
+                a = random.choice(ACTIONS)
+            else:
+                a = max(ACTIONS, key=lambda act: Q[(s, act)])
+            ns, r, done = step(s, a)
+            total += r
+            best_next = 0.0 if ns in TERMINALS else max(Q[(ns, act)] for act in ACTIONS)
+            Q[(s, a)] = Q[(s, a)] + alpha * (r + gamma * best_next - Q[(s, a)])
+            s = ns
+            if done:
+                break
+        rewards.append(total)
+    return Q, rewards
+
+
+# ============ DIN OPPGAVE ============
+def evaluate_policy(Q, episodes=200, max_steps=200):
+    """Kjør agenten i ren-greedy modus (ingen epsilon). Returner snitt sum-reward per episode."""
+    # === DIN OPPGAVE ===
+    # For hver episode:
+    #   s = START, total = 0
+    #   gjenta inntil terminal eller max_steps:
+    #     a = argmax_a Q[(s, a)]
+    #     ns, r, done = step(s, a)
+    #     total += r
+    #     s = ns
+    #   samle total
+    # Returner snittet.
+    return 0.0
+
+
+# ============ TESTER ============
+def kjør(epsilon, episodes=1500):
+    random.seed(42)
+    Q, rewards = q_learning_traced(episodes, alpha=0.1, gamma=0.9, epsilon=epsilon)
+    eval_score = evaluate_policy(Q, episodes=200)
+    return Q, rewards, eval_score
+
+
+print("Læringskurver (gjennomsnitt per 150-episode-bin):")
+print()
+for eps in [0.01, 0.1, 0.5]:
+    _, rewards, _ = kjør(eps)
+    print(f"epsilon = {eps}:")
+    bin_size = len(rewards) // 10
+    for i in range(10):
+        bucket = rewards[i * bin_size:(i + 1) * bin_size]
+        snitt = sum(bucket) / len(bucket) if bucket else 0.0
+        stars_count = max(0, min(40, int((snitt + 1.0) * 25)))
+        print(f"  {i*bin_size:4d}..{(i+1)*bin_size-1:4d}: {snitt:+.3f}  {'*' * stars_count}")
+    print()
+
+print("Greedy-evaluering av lærte policy-er:")
+print(f"{'epsilon':>10}  {'snitt-reward (greedy)':>22}")
+score_by_eps = {}
+for eps in [0.01, 0.1, 0.5]:
+    _, _, score = kjør(eps)
+    score_by_eps[eps] = score
+    print(f"{eps:>10}  {score:>22.3f}")
+
+
+def sjekk(faktisk, forventet, navn):
+    if faktisk == forventet:
+        print(f"OK   {navn}")
+    else:
+        print(f"FEIL {navn}: fikk {faktisk!r}, forventet {forventet!r}")
+
+
+def sjekk_større(faktisk, terskel, navn):
+    if faktisk > terskel:
+        print(f"OK   {navn}")
+    else:
+        print(f"FEIL {navn}: fikk {faktisk}, ikke > {terskel}")
+
+
+# Greedy-evaluert policy med epsilon=0.1 skal nå målet (positiv snitt-reward)
+sjekk_større(score_by_eps[0.1], 0.5, "epsilon=0.1 lærer policy med snitt-reward > 0.5")
+sjekk_større(score_by_eps[0.01], 0.0, "epsilon=0.01 evalueringen er bedre enn null")
+# epsilon=0.5 skal IKKE være best i greedy-evaluering — den tilfeldige utforskningen
+# senker treningskvaliteten. Vi sjekker at 0.1 er BEDRE eller LIK 0.5.
+if score_by_eps[0.1] >= score_by_eps[0.5] - 0.05:
+    print("OK   epsilon=0.1 er minst like god som 0.5 i greedy-evaluering")
+else:
+    print(f"FEIL eps=0.1 ({score_by_eps[0.1]:.3f}) skulle slå 0.5 ({score_by_eps[0.5]:.3f})")
+`,
+      },
+      defaultFile: "eps.py",
+      editable: ["eps.py"],
+      run: { kind: "python-script", entry: "eps.py" },
+      verifications: [
+        { label: "Lært policy ved epsilon=0.1 lykkes (snitt > 0.5)", check: { kind: "output-contains", needle: "OK   epsilon=0.1 lærer policy med snitt-reward > 0.5" } },
+        { label: "Selv epsilon=0.01 lærer noe nyttig", check: { kind: "output-contains", needle: "OK   epsilon=0.01 evalueringen er bedre enn null" } },
+        { label: "Moderat utforskning slår høy utforskning", check: { kind: "output-contains", needle: "OK   epsilon=0.1 er minst like god som 0.5 i greedy-evaluering" } },
+      ],
+      hint:
+        "totals = []\nfor _ in range(episodes):\n    s = START\n    total = 0.0\n    for _ in range(max_steps):\n        if s in TERMINALS:\n            break\n        a = max(ACTIONS, key=lambda act: Q[(s, act)])\n        ns, r, done = step(s, a)\n        total += r\n        s = ns\n        if done:\n            break\n    totals.append(total)\nreturn sum(totals) / len(totals)",
+    },
+
+    // ============ LEKSJON 7 ===========================================
+    {
+      id: "07-sarsa-cliff",
+      title: "7. SARSA vs Q-learning på cliff-walking",
+      narrative:
+        "**SARSA** er en TD-algoritme i samme familie som Q-learning, men med én avgjørende forskjell. Oppdateringen bruker den NESTE FAKTISKE handlingen, ikke max:\n\n```\nQ(s, a) <- Q(s, a) + alpha * ( r + gamma * Q(s', a') - Q(s, a) )\n```\n\nDet gjør SARSA **on-policy** — den lærer verdien av den policy-en den faktisk følger (inkludert epsilon-utforskningen). Q-learning er **off-policy**: den lærer verdien av den OPTIMALE policy-en, uavhengig av hvor mye den utforsker.\n\n**Cliff-walking** (Sutton & Barto kap. 6) er det klassiske eksempelet som viser forskjellen. Grid: 12 kolonner × 4 rader. Start ved (0, 0), mål ved (11, 0). Hele bunnraden mellom dem — celler (1,0) til (10,0) — er et **stup**: -100 reward og teleport tilbake til start. Ellers -1 per steg.\n\nOptimal under PERFEKT spilling: gå langs kanten på rad 1 (12 steg, -12 reward). Men med epsilon-utforskning kan en glipp inn i stupet koste -100. Q-learning IGNORERER denne risikoen (off-policy: regner som om vi alltid spiller greedy), så den lærer å gå langs kanten. SARSA TAR INN risikoen (on-policy: medregner at vi noen ganger gjør tilfeldige trekk), så den lærer en tryggere vei lenger fra stupet — gjerne via y=2 eller y=3.\n\nDet pedagogiske poenget: \"optimalt\" avhenger av om vi sammenligner med ren-greedy spilling (Q-learning) eller med den faktiske blanding av exploit+explore (SARSA).\n\n**Din oppgave:** Implementér `sarsa(episodes, alpha, gamma, epsilon)`. Strukturen er HELT lik Q-learning, men du må velge `a'` FØR du oppdaterer, og bruke `Q[(ns, na)]` istedenfor max.",
+      files: {
+        "sarsa.py": `import random
+
+# ============ CLIFF-WALKING WORLD ============
+COLS, ROWS = 12, 4
+START = (0, 0)
+GOAL = (11, 0)
+CLIFF = {(x, 0) for x in range(1, 11)}
+ACTIONS = ["N", "S", "E", "W"]
+DELTAS = {"N": (0, 1), "S": (0, -1), "E": (1, 0), "W": (-1, 0)}
+
+
+def all_states():
+    return [(x, y) for x in range(COLS) for y in range(ROWS)]
+
+
+def step(s, a):
+    """Deterministisk steg i cliff-world. Tråkk i stup => -100 og teleport til start."""
+    if s == GOAL:
+        return s, 0.0, True
+    dx, dy = DELTAS[a]
+    nx, ny = s[0] + dx, s[1] + dy
+    if not (0 <= nx < COLS and 0 <= ny < ROWS):
+        nx, ny = s  # bli stående mot vegg
+    ns = (nx, ny)
+    if ns in CLIFF:
+        return START, -100.0, False
+    if ns == GOAL:
+        return ns, -1.0, True
+    return ns, -1.0, False
+
+
+def epsilon_greedy(Q, s, epsilon):
+    if random.random() < epsilon:
+        return random.choice(ACTIONS)
+    return max(ACTIONS, key=lambda a: Q[(s, a)])
+
+
+def q_learning(episodes, alpha=0.1, gamma=1.0, epsilon=0.1, max_steps=500):
+    """Standard Q-learning. Beholdt som referanse — IKKE rør."""
+    Q = {(s, a): 0.0 for s in all_states() for a in ACTIONS}
+    for _ in range(episodes):
+        s = START
+        for _ in range(max_steps):
+            if s == GOAL:
+                break
+            a = epsilon_greedy(Q, s, epsilon)
+            ns, r, done = step(s, a)
+            best_next = 0.0 if ns == GOAL else max(Q[(ns, act)] for act in ACTIONS)
+            Q[(s, a)] = Q[(s, a)] + alpha * (r + gamma * best_next - Q[(s, a)])
+            s = ns
+            if done:
+                break
+    return Q
+
+
+# ============ DIN OPPGAVE ============
+def sarsa(episodes, alpha=0.1, gamma=1.0, epsilon=0.1, max_steps=500):
+    """On-policy SARSA. Forskjell fra Q-learning:
+       - velg neste handling a' FØR oppdatering (med epsilon-greedy)
+       - bruk Q[(s', a')] istedenfor max_a Q[(s', a)] i oppdateringen
+    """
+    Q = {(s, a): 0.0 for s in all_states() for a in ACTIONS}
+    # === DIN OPPGAVE ===
+    # For hver episode:
+    #   s = START
+    #   a = epsilon_greedy(Q, s, epsilon)
+    #   gjenta inntil ferdig eller max_steps:
+    #     ns, r, done = step(s, a)
+    #     na = epsilon_greedy(Q, ns, epsilon) hvis ns != GOAL else None
+    #     next_q = 0.0 hvis ns == GOAL else Q[(ns, na)]
+    #     Q[(s, a)] += alpha * (r + gamma * next_q - Q[(s, a)])
+    #     s, a = ns, na
+    #     break hvis done
+    return Q
+
+
+def greedy_path(Q, max_len=50):
+    s = START
+    path = [s]
+    for _ in range(max_len):
+        if s == GOAL:
+            break
+        a = max(ACTIONS, key=lambda act: Q[(s, act)])
+        ns, _, done = step(s, a)
+        path.append(ns)
+        s = ns
+        if done:
+            break
+    return path
+
+
+# ============ TESTER ============
+random.seed(42)
+Q_ql = q_learning(episodes=500, alpha=0.1, gamma=1.0, epsilon=0.1)
+random.seed(42)
+Q_sa = sarsa(episodes=500, alpha=0.1, gamma=1.0, epsilon=0.1)
+
+path_ql = greedy_path(Q_ql)
+path_sa = greedy_path(Q_sa)
+
+print(f"Q-learning sti-lengde: {len(path_ql)}")
+print(f"  sti: {path_ql}")
+print(f"SARSA sti-lengde: {len(path_sa)}")
+print(f"  sti: {path_sa}")
+
+CLIFF_ADJ = {(x, 1) for x in range(1, 11)}  # rader 1 over stupet
+
+
+def cliff_adj_count(path):
+    return sum(1 for s in path if s in CLIFF_ADJ)
+
+
+ql_adj = cliff_adj_count(path_ql)
+sa_adj = cliff_adj_count(path_sa)
+print(f"Q-learning kantceller besøkt: {ql_adj}")
+print(f"SARSA kantceller besøkt:      {sa_adj}")
+
+
+def sjekk(faktisk, forventet, navn):
+    if faktisk == forventet:
+        print(f"OK   {navn}")
+    else:
+        print(f"FEIL {navn}: fikk {faktisk!r}, forventet {forventet!r}")
+
+
+def sjekk_større_eller_lik(faktisk, terskel, navn):
+    if faktisk >= terskel:
+        print(f"OK   {navn}")
+    else:
+        print(f"FEIL {navn}: fikk {faktisk}, ikke >= {terskel}")
+
+
+# Begge må faktisk nå målet
+sjekk(path_ql[-1], GOAL, "Q-learning når målet")
+sjekk(path_sa[-1], GOAL, "SARSA når målet")
+# Q-learning bør hugge kanten (mange celler i rad 1 like over stupet)
+sjekk_større_eller_lik(ql_adj, 5, "Q-learning lærer den korteste, kantnære stien (>=5 kantceller)")
+# SARSA bør gå tryggere — færre celler på rad 1
+if sa_adj < ql_adj:
+    print("OK   SARSA velger en tryggere sti enn Q-learning")
+else:
+    print(f"FEIL SARSA-stien skulle være tryggere; ql_adj={ql_adj}, sa_adj={sa_adj}")
+`,
+      },
+      defaultFile: "sarsa.py",
+      editable: ["sarsa.py"],
+      run: { kind: "python-script", entry: "sarsa.py" },
+      verifications: [
+        { label: "Q-learning når målet", check: { kind: "output-contains", needle: "OK   Q-learning når målet" } },
+        { label: "SARSA når målet", check: { kind: "output-contains", needle: "OK   SARSA når målet" } },
+        { label: "Q-learning lærer kantvei", check: { kind: "output-contains", needle: "OK   Q-learning lærer den korteste, kantnære stien" } },
+        { label: "SARSA velger tryggere vei", check: { kind: "output-contains", needle: "OK   SARSA velger en tryggere sti enn Q-learning" } },
+      ],
+      hint:
+        "for _ in range(episodes):\n    s = START\n    a = epsilon_greedy(Q, s, epsilon)\n    for _ in range(max_steps):\n        ns, r, done = step(s, a)\n        if ns == GOAL:\n            Q[(s, a)] = Q[(s, a)] + alpha * (r + gamma * 0.0 - Q[(s, a)])\n            break\n        na = epsilon_greedy(Q, ns, epsilon)\n        Q[(s, a)] = Q[(s, a)] + alpha * (r + gamma * Q[(ns, na)] - Q[(s, a)])\n        s, a = ns, na\n        if done:\n            break\nreturn Q",
+    },
+  ],
+};
+
+const SYNC_SEMAFOR_MUTEX: MiniCourse = {
+  id: "sync-semafor-mutex",
+  slug: "sync-semafor-mutex",
+  title: "Semaforer og mutex: konkurrens fra null",
+  blurb:
+    "Bygg synkroniserings-primitiver i Python. Start med en delt teller som råtner under race condition, fiks den med en mutex, generaliser til semaforer, løs producer/consumer med bounded buffer, deretter reader-writer — og avslutt med test-and-set, hardware-primitivet hele tårnet hviler på. All trådning simuleres manuelt med .step() så hvert race er deterministisk og synlig.",
+  estimertTid: "60–80 min",
+  fag: ["DTE-2505", "Operativsystem", "Synkronisering"],
+  color: "warning",
+  rekkefolge: 40,
+  lessons: [
+    // ============ LEKSJON 1 ===========================================
+    {
+      id: "01-race-condition",
+      title: "1. Race condition i en delt teller",
+      narrative:
+        "Når to tråder deler én variabel og begge skriver til den, kan oppdateringer **forsvinne**. Det er en race condition, og den er stedet hele synkroniserings-pensum begynner.\n\nVi simulerer trådene manuelt — Pyodide har ingen ekte threading, og vi vil uansett ha deterministisk kontroll. Hver tråd skal inkrementere en delt teller 1000 ganger. Inkrement er ikke ett steg på CPU-en, men tre:\n\n```\nload   temp = counter.value\nadd    temp = temp + 1\nstore  counter.value = temp\n```\n\nVår `Thread.step()` utfører nøyaktig ETT av disse tre stegene per kall. En interleaved-scheduler bestemmer hvilken tråd som får neste tick. Hvis vi veksler mellom tråd A og B mellom load og store, kan begge lese samme `value`, hver gang til samme `temp+1`, og skrive samme nye verdi — den andre oppdateringen er **tapt**.\n\n**Din oppgave:**\n\n1. Fyll inn `Thread.step()` slik at den utfører neste mikro-steg (L → A → S → L → …) og inkrementerer `iter`-telleren når S er fullført.\n2. Implementér `run_interleaved(threads, pattern)` som rullerer indekser fra `pattern` til alle tråder er ferdige.\n\nNår testen kjører den aggressive [0,1]-patternen, skal du se at sluttverdien er < 2000.",
+      files: {
+        "race.py": `class SharedCounter:
+    def __init__(self):
+        self.value = 0
+
+
+class Thread:
+    """Simulert tråd. Hvert .step() utfører ÉN av tre mikro-operasjoner:
+       phase "L" : temp = counter.value
+       phase "A" : temp = temp + 1
+       phase "S" : counter.value = temp
+    Etter S har vi fullført ett inkrement; iter += 1, og phase = "L" igjen.
+    """
+    def __init__(self, name, counter, n):
+        self.name = name
+        self.counter = counter
+        self.n = n
+        self.iter = 0
+        self.phase = "L"
+        self.temp = 0
+
+    def step(self):
+        """Utfør neste mikro-steg. Returner True hvis tråden hadde arbeid."""
+        if self.iter >= self.n:
+            return False
+        # === DIN OPPGAVE ===
+        # if self.phase == "L":
+        #     self.temp = self.counter.value
+        #     self.phase = "A"
+        # elif self.phase == "A":
+        #     self.temp = self.temp + 1
+        #     self.phase = "S"
+        # elif self.phase == "S":
+        #     self.counter.value = self.temp
+        #     self.phase = "L"
+        #     self.iter += 1
+        # return True
+        pass
+
+    def done(self):
+        return self.iter >= self.n and self.phase == "L"
+
+
+def run_interleaved(threads, pattern, max_loops=10_000_000):
+    """Kjør trådene i rekkefølgen pattern (liste av indekser, gjentas).
+    Hopp over tråder som er done. Avslutt når alle er done.
+    """
+    # === DIN OPPGAVE ===
+    # i = 0
+    # safety = 0
+    # while any(not t.done() for t in threads):
+    #     idx = pattern[i % len(pattern)]
+    #     if not threads[idx].done():
+    #         threads[idx].step()
+    #     i += 1
+    #     safety += 1
+    #     if safety > max_loops:
+    #         raise RuntimeError("safety: scheduler henger")
+    pass
+
+
+def sjekk(faktisk, forventet, navn):
+    if faktisk == forventet:
+        print(f"OK   {navn}")
+    else:
+        print(f"FEIL {navn}: fikk {faktisk!r}, forventet {forventet!r}")
+
+
+# Sanity 1: én tråd alene, kjør n=3 — verdi skal bli 3 og tråd skal være done
+c = SharedCounter()
+t = Thread("X", c, 3)
+for _ in range(9):
+    t.step()
+sjekk(t.done(), True, "tråd ferdig etter n*3 steg")
+sjekk(c.value, 3, "verdi=3 når tråd kjører alene n=3")
+
+# Sanity 2: aggressiv interleave [0, 1] skaper race condition
+c = SharedCounter()
+t1 = Thread("A", c, 1000)
+t2 = Thread("B", c, 1000)
+run_interleaved([t1, t2], [0, 1])
+print(f"Aggressiv interleave [0,1] sluttverdi: {c.value} (forventet < 2000)")
+sjekk(c.value <= 2000, True, "race-verdi er aldri hoyere enn 2000")
+sjekk(c.value < 2000, True, "aggressiv interleave gir race < 2000")
+
+# Sanity 3: sekvensiell pattern [0,0,0, 1,1,1, ...] gir 2000 fordi A
+# fullfører ett helt inkrement før B starter sitt
+c = SharedCounter()
+t1 = Thread("A", c, 1000)
+t2 = Thread("B", c, 1000)
+run_interleaved([t1, t2], [0, 0, 0, 1, 1, 1])
+sjekk(c.value, 2000, "sekvensiell (L-A-S per traad) gir 2000")
+`,
+      },
+      defaultFile: "race.py",
+      editable: ["race.py"],
+      run: { kind: "python-script", entry: "race.py" },
+      verifications: [
+        { label: "Tråd fullføres etter n*3 mikro-steg", check: { kind: "output-contains", needle: "OK   tråd ferdig etter n*3 steg" } },
+        { label: "Single-thread n=3 gir verdi 3", check: { kind: "output-contains", needle: "OK   verdi=3 når tråd kjører alene n=3" } },
+        { label: "Race-verdi overstiger aldri 2000", check: { kind: "output-contains", needle: "OK   race-verdi er aldri hoyere enn 2000" } },
+        { label: "Aggressiv interleave skaper race (< 2000)", check: { kind: "output-contains", needle: "OK   aggressiv interleave gir race < 2000" } },
+        { label: "Sekvensiell pattern gir korrekt 2000", check: { kind: "output-contains", needle: "OK   sekvensiell (L-A-S per traad) gir 2000" } },
+      ],
+      hint:
+        "def step(self):\n    if self.iter >= self.n:\n        return False\n    if self.phase == \"L\":\n        self.temp = self.counter.value\n        self.phase = \"A\"\n    elif self.phase == \"A\":\n        self.temp = self.temp + 1\n        self.phase = \"S\"\n    elif self.phase == \"S\":\n        self.counter.value = self.temp\n        self.phase = \"L\"\n        self.iter += 1\n    return True\n\ndef run_interleaved(threads, pattern, max_loops=10_000_000):\n    i = 0; safety = 0\n    while any(not t.done() for t in threads):\n        idx = pattern[i % len(pattern)]\n        if not threads[idx].done():\n            threads[idx].step()\n        i += 1; safety += 1\n        if safety > max_loops:\n            raise RuntimeError(\"safety\")",
+    },
+
+    // ============ LEKSJON 2 ===========================================
+    {
+      id: "02-mutex-lock",
+      title: "2. Lock/mutex som beskytter kritisk seksjon",
+      narrative:
+        "Race condition fra leksjon 1 oppsto fordi load → add → store ikke var **atomisk**: scheduleren kunne stikke inn mellom stegene. Løsningen er en **mutex** (mutual exclusion) — en lås som maks én tråd kan holde av gangen.\n\nReglene er enkle:\n\n- `lock.acquire(who)` blokkerer (her: returnerer False) hvis noen andre holder den.\n- `lock.release(who)` slipper låsen — bare innehaveren kan gjøre det.\n- Kritisk seksjon (load → add → store) plasseres MELLOM acquire og release.\n\nVi simulerer fortsatt manuelt: en tråd som ikke får låsen, sitter i `try_lock`-tilstanden og spinner. Når den får låsen, går den gjennom load → add → store → unlock, deretter tilbake til try_lock for neste iterasjon.\n\n**Din oppgave:**\n\n1. Implementér `Lock.try_acquire(who)` og `Lock.release(who)`.\n2. Fyll inn `LockedThread.step()` så den følger tilstandsmaskinen: `try_lock → load → add → store → unlock → (loop til iter==n)`.\n\nMed lås skal totalen ALLTID være 2000 — uansett pattern.",
+      files: {
+        "mutex.py": `class SharedCounter:
+    def __init__(self):
+        self.value = 0
+
+
+class Lock:
+    """Mutex. held_by = None (ledig) eller navn på trad som holder."""
+    def __init__(self):
+        self.held_by = None
+
+    def try_acquire(self, who):
+        """Returner True hvis vi fikk laasen, False ellers."""
+        # === DIN OPPGAVE ===
+        # if self.held_by is None:
+        #     self.held_by = who
+        #     return True
+        # return False
+        pass
+
+    def release(self, who):
+        """Slipp laasen. Kun innehaver kan slippe."""
+        # === DIN OPPGAVE ===
+        # if self.held_by != who:
+        #     raise RuntimeError("kun innehaver kan slippe")
+        # self.held_by = None
+        pass
+
+
+class LockedThread:
+    """Tilstandsmaskin: try_lock -> load -> add -> store -> unlock."""
+    def __init__(self, name, counter, lock, n):
+        self.name = name
+        self.counter = counter
+        self.lock = lock
+        self.n = n
+        self.iter = 0
+        self.state = "try_lock"
+        self.temp = 0
+
+    def step(self):
+        if self.state == "done":
+            return False
+        # === DIN OPPGAVE: state-maskinen ===
+        # if self.state == "try_lock":
+        #     if self.lock.try_acquire(self.name):
+        #         self.state = "load"
+        #     return True
+        # if self.state == "load":
+        #     self.temp = self.counter.value
+        #     self.state = "add"
+        #     return True
+        # if self.state == "add":
+        #     self.temp += 1
+        #     self.state = "store"
+        #     return True
+        # if self.state == "store":
+        #     self.counter.value = self.temp
+        #     self.state = "unlock"
+        #     return True
+        # if self.state == "unlock":
+        #     self.lock.release(self.name)
+        #     self.iter += 1
+        #     if self.iter >= self.n:
+        #         self.state = "done"
+        #     else:
+        #         self.state = "try_lock"
+        #     return True
+        pass
+
+    def done(self):
+        return self.state == "done"
+
+
+def run_rr(threads, max_loops=10_000_000):
+    """Round-robin scheduler — én step per tråd hver runde."""
+    i = 0
+    while any(not t.done() for t in threads):
+        threads[i % len(threads)].step()
+        i += 1
+        if i > max_loops:
+            raise RuntimeError("safety")
+
+
+def sjekk(faktisk, forventet, navn):
+    if faktisk == forventet:
+        print(f"OK   {navn}")
+    else:
+        print(f"FEIL {navn}: fikk {faktisk!r}, forventet {forventet!r}")
+
+
+# Lock-mekanikk
+lock = Lock()
+sjekk(lock.try_acquire("A"), True, "A faar laasen")
+sjekk(lock.try_acquire("B"), False, "B blokkeres mens A holder")
+lock.release("A")
+sjekk(lock.try_acquire("B"), True, "B faar laasen etter A slipper")
+lock.release("B")
+sjekk(lock.held_by, None, "ledig etter siste release")
+
+# 2 traader x 1000 = 2000 med RR-scheduler
+c = SharedCounter()
+lock = Lock()
+threads = [LockedThread("A", c, lock, 1000), LockedThread("B", c, lock, 1000)]
+run_rr(threads)
+sjekk(c.value, 2000, "2 traader x 1000 = 2000 med mutex")
+
+# 3 traader x 500 = 1500
+c = SharedCounter()
+lock = Lock()
+threads = [LockedThread("A", c, lock, 500), LockedThread("B", c, lock, 500), LockedThread("C", c, lock, 500)]
+run_rr(threads)
+sjekk(c.value, 1500, "3 traader x 500 = 1500 med mutex")
+`,
+      },
+      defaultFile: "mutex.py",
+      editable: ["mutex.py"],
+      run: { kind: "python-script", entry: "mutex.py" },
+      verifications: [
+        { label: "Acquire lykkes for første tråd", check: { kind: "output-contains", needle: "OK   A faar laasen" } },
+        { label: "Andre tråd blokkeres mens første holder", check: { kind: "output-contains", needle: "OK   B blokkeres mens A holder" } },
+        { label: "Etter release kan ny tråd ta låsen", check: { kind: "output-contains", needle: "OK   B faar laasen etter A slipper" } },
+        { label: "Lås er ledig etter siste release", check: { kind: "output-contains", needle: "OK   ledig etter siste release" } },
+        { label: "2 tråder * 1000 inkrementer gir nøyaktig 2000", check: { kind: "output-contains", needle: "OK   2 traader x 1000 = 2000 med mutex" } },
+        { label: "3 tråder * 500 inkrementer gir nøyaktig 1500", check: { kind: "output-contains", needle: "OK   3 traader x 500 = 1500 med mutex" } },
+      ],
+      hint:
+        "def try_acquire(self, who):\n    if self.held_by is None:\n        self.held_by = who\n        return True\n    return False\n\ndef release(self, who):\n    if self.held_by != who:\n        raise RuntimeError(\"kun innehaver kan slippe\")\n    self.held_by = None\n\ndef step(self):\n    if self.state == \"done\":\n        return False\n    if self.state == \"try_lock\":\n        if self.lock.try_acquire(self.name):\n            self.state = \"load\"\n        return True\n    if self.state == \"load\":\n        self.temp = self.counter.value\n        self.state = \"add\"; return True\n    if self.state == \"add\":\n        self.temp += 1\n        self.state = \"store\"; return True\n    if self.state == \"store\":\n        self.counter.value = self.temp\n        self.state = \"unlock\"; return True\n    if self.state == \"unlock\":\n        self.lock.release(self.name)\n        self.iter += 1\n        self.state = \"done\" if self.iter >= self.n else \"try_lock\"\n        return True",
+    },
+
+    // ============ LEKSJON 3 ===========================================
+    {
+      id: "03-semaphore-pool",
+      title: "3. Semafor med teller — ressurspool",
+      narrative:
+        "En **semafor** er en mutex generalisert til N samtidige innehavere. Internt er den bare et heltall:\n\n- `Semaphore(initial=3)` starter med 3 «tilgjengelige tillatelser».\n- `acquire()` decrementerer (eller blokkerer hvis 0).\n- `release()` incrementerer.\n\nMutex er bare `Semaphore(1)`. Men kraften kommer når du setter initial > 1 — for eksempel: en database tåler maks 3 samtidige forbindelser, eller en parkeringsplass har 3 plasser.\n\nVi simulerer 5 «kunder» som hver vil bruke en ressurs i noen ticks. Med `Semaphore(3)` skal aldri mer enn 3 holde ressursen samtidig — de øvrige må vente i `wait`-tilstand.\n\n**Din oppgave:**\n\n1. Implementér `Semaphore.try_acquire()` (decrement hvis > 0, returner True; ellers False) og `Semaphore.release()` (increment).\n2. Fyll inn `PoolUser.step()` med tilstands-overgangene `wait → in_use → done`. I `in_use` decrementerer du `remaining_work`; når den når 0, gi tilbake tillatelsen og gå til `done`.",
+      files: {
+        "semaphore.py": `class Semaphore:
+    """Telle-semafor. count = antall ledige tillatelser."""
+    def __init__(self, initial):
+        self.count = initial
+
+    def try_acquire(self):
+        # === DIN OPPGAVE ===
+        # if self.count > 0:
+        #     self.count -= 1
+        #     return True
+        # return False
+        pass
+
+    def release(self):
+        # === DIN OPPGAVE ===
+        # self.count += 1
+        pass
+
+
+class PoolUser:
+    """Kunde som vil bruke ressurs i work_ticks ticks."""
+    def __init__(self, name, sem, work_ticks):
+        self.name = name
+        self.sem = sem
+        self.work_ticks = work_ticks
+        self.remaining_work = work_ticks
+        self.state = "wait"
+        self.held = False
+
+    def step(self):
+        if self.state == "done":
+            return False
+        # === DIN OPPGAVE ===
+        # if self.state == "wait":
+        #     if self.sem.try_acquire():
+        #         self.state = "in_use"
+        #         self.held = True
+        #     return True
+        # if self.state == "in_use":
+        #     self.remaining_work -= 1
+        #     if self.remaining_work <= 0:
+        #         self.sem.release()
+        #         self.held = False
+        #         self.state = "done"
+        #     return True
+        pass
+
+    def done(self):
+        return self.state == "done"
+
+
+def sjekk(faktisk, forventet, navn):
+    if faktisk == forventet:
+        print(f"OK   {navn}")
+    else:
+        print(f"FEIL {navn}: fikk {faktisk!r}, forventet {forventet!r}")
+
+
+# Semafor-mekanikk
+s = Semaphore(2)
+sjekk(s.try_acquire(), True, "tillatelse 1 av 2 OK")
+sjekk(s.try_acquire(), True, "tillatelse 2 av 2 OK")
+sjekk(s.try_acquire(), False, "tredje acquire blokkeres")
+s.release()
+sjekk(s.try_acquire(), True, "ny acquire OK etter release")
+
+# Pool-test: 5 kunder, ressurs-pool = 3, work=4 ticks hver
+sem = Semaphore(3)
+users = [PoolUser(f"K{i}", sem, work_ticks=4) for i in range(5)]
+max_concurrent = 0
+i = 0
+while any(not u.done() for u in users):
+    users[i % 5].step()
+    held = sum(1 for u in users if u.held)
+    if held > max_concurrent:
+        max_concurrent = held
+    i += 1
+    if i > 100000:
+        raise RuntimeError("safety")
+
+sjekk(max_concurrent <= 3, True, "aldri mer enn 3 samtidige holdere")
+sjekk(max_concurrent, 3, "vi naadde 3 samtidige holdere")
+sjekk(sem.count, 3, "semafor tilbake til 3 etter alle")
+sjekk(all(u.done() for u in users), True, "alle 5 kunder fullfoert")
+print(f"max samtidige holdere observert: {max_concurrent}")
+`,
+      },
+      defaultFile: "semaphore.py",
+      editable: ["semaphore.py"],
+      run: { kind: "python-script", entry: "semaphore.py" },
+      verifications: [
+        { label: "Første acquire dekrementerer til 1", check: { kind: "output-contains", needle: "OK   tillatelse 1 av 2 OK" } },
+        { label: "Andre acquire bruker siste tillatelse", check: { kind: "output-contains", needle: "OK   tillatelse 2 av 2 OK" } },
+        { label: "Tredje acquire blokkeres når count=0", check: { kind: "output-contains", needle: "OK   tredje acquire blokkeres" } },
+        { label: "Release frigjør slot for ny acquire", check: { kind: "output-contains", needle: "OK   ny acquire OK etter release" } },
+        { label: "Samtidige holdere overstiger aldri kapasiteten", check: { kind: "output-contains", needle: "OK   aldri mer enn 3 samtidige holdere" } },
+        { label: "Vi når faktisk maks-kapasiteten 3", check: { kind: "output-contains", needle: "OK   vi naadde 3 samtidige holdere" } },
+        { label: "Semafor returnerer til startverdi etter bruk", check: { kind: "output-contains", needle: "OK   semafor tilbake til 3 etter alle" } },
+      ],
+      hint:
+        "def try_acquire(self):\n    if self.count > 0:\n        self.count -= 1\n        return True\n    return False\n\ndef release(self):\n    self.count += 1\n\ndef step(self):\n    if self.state == \"done\":\n        return False\n    if self.state == \"wait\":\n        if self.sem.try_acquire():\n            self.state = \"in_use\"; self.held = True\n        return True\n    if self.state == \"in_use\":\n        self.remaining_work -= 1\n        if self.remaining_work <= 0:\n            self.sem.release(); self.held = False; self.state = \"done\"\n        return True",
+    },
+
+    // ============ LEKSJON 4 ===========================================
+    {
+      id: "04-producer-consumer",
+      title: "4. Producer/consumer med bounded buffer",
+      narrative:
+        "Klassikeren. En **producer** legger varer i en buffer; en **consumer** plukker dem ut. Bufferet har kapasitet N — producer må vente når det er fullt, consumer må vente når det er tomt.\n\nLøsningen bruker TO semaforer:\n\n- `empty = Semaphore(N)` — antall ledige slots (starter på N)\n- `full = Semaphore(0)` — antall fylte slots (starter på 0)\n\nProducer-løkken: `empty.acquire(); put(x); full.release()`. Den blokkerer på `empty` når bufferet er fullt.\n\nConsumer-løkken: `full.acquire(); get(); empty.release()`. Den blokkerer på `full` når bufferet er tomt.\n\nSemafor-paret invarianer: `empty.count + full.count + (varer-under-transport) = N`. Bufferet kan aldri overstige N eller gå under 0.\n\n**Din oppgave:** Fyll inn `Producer.step()` (tilstander `wait_empty → put`) og `Consumer.step()` (`wait_full → get`). Verifiseringen sjekker at bufferet aldri overskrider 3.",
+      files: {
+        "pc.py": `class Semaphore:
+    def __init__(self, initial):
+        self.count = initial
+
+    def try_acquire(self):
+        if self.count > 0:
+            self.count -= 1
+            return True
+        return False
+
+    def release(self):
+        self.count += 1
+
+
+class BoundedBuffer:
+    def __init__(self, capacity):
+        self.capacity = capacity
+        self.items = []
+
+    def put(self, x):
+        self.items.append(x)
+
+    def get(self):
+        return self.items.pop(0)
+
+    def size(self):
+        return len(self.items)
+
+
+class Producer:
+    """wait_empty -> put -> wait_empty (loop) -> done."""
+    def __init__(self, name, buffer, empty_sem, full_sem, n):
+        self.name = name
+        self.buffer = buffer
+        self.empty = empty_sem
+        self.full = full_sem
+        self.n = n
+        self.produced = 0
+        self.state = "wait_empty"
+
+    def step(self):
+        if self.state == "done":
+            return False
+        # === DIN OPPGAVE ===
+        # if self.state == "wait_empty":
+        #     if self.empty.try_acquire():
+        #         self.state = "put"
+        #     return True
+        # if self.state == "put":
+        #     self.buffer.put(f"{self.name}-{self.produced}")
+        #     self.full.release()
+        #     self.produced += 1
+        #     if self.produced >= self.n:
+        #         self.state = "done"
+        #     else:
+        #         self.state = "wait_empty"
+        #     return True
+        pass
+
+    def done(self):
+        return self.state == "done"
+
+
+class Consumer:
+    """wait_full -> get -> wait_full (loop) -> done."""
+    def __init__(self, name, buffer, empty_sem, full_sem, n):
+        self.name = name
+        self.buffer = buffer
+        self.empty = empty_sem
+        self.full = full_sem
+        self.n = n
+        self.consumed = 0
+        self.state = "wait_full"
+        self.taken = []
+
+    def step(self):
+        if self.state == "done":
+            return False
+        # === DIN OPPGAVE ===
+        # if self.state == "wait_full":
+        #     if self.full.try_acquire():
+        #         self.state = "get"
+        #     return True
+        # if self.state == "get":
+        #     x = self.buffer.get()
+        #     self.taken.append(x)
+        #     self.empty.release()
+        #     self.consumed += 1
+        #     if self.consumed >= self.n:
+        #         self.state = "done"
+        #     else:
+        #         self.state = "wait_full"
+        #     return True
+        pass
+
+    def done(self):
+        return self.state == "done"
+
+
+def sjekk(faktisk, forventet, navn):
+    if faktisk == forventet:
+        print(f"OK   {navn}")
+    else:
+        print(f"FEIL {navn}: fikk {faktisk!r}, forventet {forventet!r}")
+
+
+# Test 1: 6 varer gjennom buffer med kapasitet 3
+buf = BoundedBuffer(3)
+empty = Semaphore(3)
+full = Semaphore(0)
+prod = Producer("P", buf, empty, full, 6)
+cons = Consumer("C", buf, empty, full, 6)
+
+# Pattern: gi producer 2 steg for hvert consumer-steg, slik at bufferet vokser
+max_size = 0
+i = 0
+while not (prod.done() and cons.done()):
+    pick = i % 3
+    if pick < 2 and not prod.done():
+        prod.step()
+    elif not cons.done():
+        cons.step()
+    elif not prod.done():
+        prod.step()
+    sz = buf.size()
+    if sz > max_size:
+        max_size = sz
+    i += 1
+    if i > 100000:
+        raise RuntimeError("safety")
+
+sjekk(prod.done(), True, "producer ferdig")
+sjekk(cons.done(), True, "consumer ferdig")
+sjekk(max_size <= 3, True, "buffer overskrider aldri kapasiteten 3")
+sjekk(buf.size(), 0, "buffer er tom til slutt")
+sjekk(len(cons.taken), 6, "consumer tok alle 6 varer")
+sjekk(empty.count, 3, "empty-semafor tilbake til 3")
+sjekk(full.count, 0, "full-semafor tilbake til 0")
+print(f"max buffer-size observert: {max_size}")
+print(f"items tatt: {cons.taken}")
+
+# Test 2: kjør bare producer — den maa BLOKKERES naar buffer = 3
+buf = BoundedBuffer(3)
+empty = Semaphore(3)
+full = Semaphore(0)
+prod = Producer("P", buf, empty, full, 5)
+for _ in range(30):
+    prod.step()
+sjekk(buf.size(), 3, "producer fylte til kapasitet")
+sjekk(prod.done(), False, "producer ikke ferdig — blokkert paa empty")
+sjekk(prod.state, "wait_empty", "producer staar i wait_empty")
+
+# Test 3: kjør bare consumer paa tomt buffer — blokkeres paa full=0
+buf = BoundedBuffer(3)
+empty = Semaphore(3)
+full = Semaphore(0)
+cons = Consumer("C", buf, empty, full, 3)
+for _ in range(30):
+    cons.step()
+sjekk(cons.consumed, 0, "consumer fikk null varer fra tomt buffer")
+sjekk(cons.state, "wait_full", "consumer staar i wait_full")
+`,
+      },
+      defaultFile: "pc.py",
+      editable: ["pc.py"],
+      run: { kind: "python-script", entry: "pc.py" },
+      verifications: [
+        { label: "Producer fullfører alle 6 varer", check: { kind: "output-contains", needle: "OK   producer ferdig" } },
+        { label: "Consumer fullfører alle 6 varer", check: { kind: "output-contains", needle: "OK   consumer ferdig" } },
+        { label: "Buffer overskrider aldri kapasitet 3", check: { kind: "output-contains", needle: "OK   buffer overskrider aldri kapasiteten 3" } },
+        { label: "Buffer tom til slutt (alle plukket)", check: { kind: "output-contains", needle: "OK   buffer er tom til slutt" } },
+        { label: "Consumer mottok alle 6 producer-varer", check: { kind: "output-contains", needle: "OK   consumer tok alle 6 varer" } },
+        { label: "Semaforer returnerer til startverdier", check: { kind: "output-contains", needle: "OK   empty-semafor tilbake til 3" } },
+        { label: "Producer blokkeres når buffer er fullt", check: { kind: "output-contains", needle: "OK   producer fylte til kapasitet" } },
+        { label: "Consumer blokkeres på tomt buffer", check: { kind: "output-contains", needle: "OK   consumer fikk null varer fra tomt buffer" } },
+      ],
+      hint:
+        "def step(self):  # Producer\n    if self.state == \"done\": return False\n    if self.state == \"wait_empty\":\n        if self.empty.try_acquire():\n            self.state = \"put\"\n        return True\n    if self.state == \"put\":\n        self.buffer.put(f\"{self.name}-{self.produced}\")\n        self.full.release()\n        self.produced += 1\n        self.state = \"done\" if self.produced >= self.n else \"wait_empty\"\n        return True\n\ndef step(self):  # Consumer\n    if self.state == \"done\": return False\n    if self.state == \"wait_full\":\n        if self.full.try_acquire():\n            self.state = \"get\"\n        return True\n    if self.state == \"get\":\n        x = self.buffer.get()\n        self.taken.append(x)\n        self.empty.release()\n        self.consumed += 1\n        self.state = \"done\" if self.consumed >= self.n else \"wait_full\"\n        return True",
+    },
+
+    // ============ LEKSJON 5 ===========================================
+    {
+      id: "05-reader-writer",
+      title: "5. Reader/writer-problemet",
+      narrative:
+        "En **delt ressurs** der mange tråder vil lese og noen vil skrive. Lesing kan skje parallelt — flere readers samtidig er trygt. Men skriving må være **eksklusiv**: ingen andre readers eller writers kan røre ressursen mens en writer er aktiv.\n\nEn klassisk implementasjon bruker en `reader_count` + en simulert mutex på selve count-oppdateringen:\n\n- `acquire_read()`: hvis writer aktiv → blokker. Ellers inkrementer reader_count.\n- `release_read()`: dekrementer reader_count.\n- `acquire_write()`: hvis writer aktiv ELLER reader_count > 0 → blokker. Ellers sett writer_active = True.\n- `release_write()`: writer_active = False.\n\nDenne varianten er «reader-preference» — så lenge én reader leser, kommer alltid en ny reader inn før en ventende writer. (Writer-preference og fair fungerer også, men holder oss til den enkleste her.)\n\n**Din oppgave:** Implementér `RWLock`-metodene under. Sjekkene tester at 3 readers kan slippe inn samtidig, at en writer blokkeres mens de leser, og at writer slipper inn først når siste reader er borte.",
+      files: {
+        "rw.py": `class RWLock:
+    def __init__(self):
+        self.reader_count = 0
+        self.writer_active = False
+
+    def try_acquire_read(self):
+        """Slipp inn hvis ingen writer er aktiv."""
+        # === DIN OPPGAVE ===
+        # if self.writer_active:
+        #     return False
+        # self.reader_count += 1
+        # return True
+        pass
+
+    def release_read(self):
+        # === DIN OPPGAVE ===
+        # self.reader_count -= 1
+        pass
+
+    def try_acquire_write(self):
+        """Eksklusiv: kun hvis ingen reader OG ingen writer."""
+        # === DIN OPPGAVE ===
+        # if self.writer_active:
+        #     return False
+        # if self.reader_count > 0:
+        #     return False
+        # self.writer_active = True
+        # return True
+        pass
+
+    def release_write(self):
+        # === DIN OPPGAVE ===
+        # self.writer_active = False
+        pass
+
+
+def sjekk(faktisk, forventet, navn):
+    if faktisk == forventet:
+        print(f"OK   {navn}")
+    else:
+        print(f"FEIL {navn}: fikk {faktisk!r}, forventet {forventet!r}")
+
+
+rw = RWLock()
+
+# Scenario 1: 3 readers samtidig
+sjekk(rw.try_acquire_read(), True, "reader 1 slipper inn")
+sjekk(rw.try_acquire_read(), True, "reader 2 slipper inn")
+sjekk(rw.try_acquire_read(), True, "reader 3 slipper inn")
+sjekk(rw.reader_count, 3, "3 readers samtidig")
+
+# Scenario 2: writer blokkert mens readers leser
+sjekk(rw.try_acquire_write(), False, "writer blokkert av readers")
+
+# Scenario 3: alle readers slipper, writer kommer inn
+rw.release_read()
+rw.release_read()
+sjekk(rw.try_acquire_write(), False, "writer blokkert mens 1 reader igjen")
+rw.release_read()
+sjekk(rw.reader_count, 0, "alle readers ferdig")
+sjekk(rw.try_acquire_write(), True, "writer slipper inn etter siste reader")
+
+# Scenario 4: ny reader blokkert mens writer aktiv
+sjekk(rw.try_acquire_read(), False, "reader blokkert mens writer aktiv")
+sjekk(rw.try_acquire_write(), False, "annen writer blokkert mens writer aktiv")
+
+# Scenario 5: writer slipper, reader kommer inn
+rw.release_write()
+sjekk(rw.writer_active, False, "writer sluppet")
+sjekk(rw.try_acquire_read(), True, "reader slipper inn etter writer")
+`,
+      },
+      defaultFile: "rw.py",
+      editable: ["rw.py"],
+      run: { kind: "python-script", entry: "rw.py" },
+      verifications: [
+        { label: "Reader 1 slipper inn på tom lås", check: { kind: "output-contains", needle: "OK   reader 1 slipper inn" } },
+        { label: "Reader 2 slipper inn parallelt", check: { kind: "output-contains", needle: "OK   reader 2 slipper inn" } },
+        { label: "Reader 3 slipper inn parallelt", check: { kind: "output-contains", needle: "OK   reader 3 slipper inn" } },
+        { label: "Writer blokkeres mens readers leser", check: { kind: "output-contains", needle: "OK   writer blokkert av readers" } },
+        { label: "Writer fortsatt blokkert med 1 reader igjen", check: { kind: "output-contains", needle: "OK   writer blokkert mens 1 reader igjen" } },
+        { label: "Writer slipper inn etter siste reader", check: { kind: "output-contains", needle: "OK   writer slipper inn etter siste reader" } },
+        { label: "Reader blokkeres mens writer aktiv", check: { kind: "output-contains", needle: "OK   reader blokkert mens writer aktiv" } },
+        { label: "Annen writer blokkeres (eksklusivitet)", check: { kind: "output-contains", needle: "OK   annen writer blokkert mens writer aktiv" } },
+        { label: "Reader slipper inn etter writer slipper", check: { kind: "output-contains", needle: "OK   reader slipper inn etter writer" } },
+      ],
+      hint:
+        "def try_acquire_read(self):\n    if self.writer_active:\n        return False\n    self.reader_count += 1\n    return True\n\ndef release_read(self):\n    self.reader_count -= 1\n\ndef try_acquire_write(self):\n    if self.writer_active or self.reader_count > 0:\n        return False\n    self.writer_active = True\n    return True\n\ndef release_write(self):\n    self.writer_active = False",
+    },
+
+    // ============ LEKSJON 6 ===========================================
+    {
+      id: "06-test-and-set",
+      title: "6. Test-and-set: hvordan mutex egentlig er implementert",
+      narrative:
+        "Vi har laget Lock, Semaphore og RWLock — men det er én ting vi har snyltet på: **selve laasen leser og skriver atomisk**. Hvis to tråder sjekker `held_by is None` samtidig før noen rekker å sette den, kan begge tro at de fikk låsen. Hva beskytter låsen?\n\nSvaret er hardware. CPU-er har et atomisk **test-and-set**-instruksjon:\n\n```\nTAS(addr) := { old = *addr; *addr = True; return old; }   atomisk\n```\n\nLeser den gamle verdien OG setter til True i ÉN udelelig operasjon. Ingen tråd kan skyte inn mellom les og skriv.\n\nDen enkleste mutex bygges som **spin-lock** med TAS:\n\n```\nacquire:  while test_and_set(flag): pass    # spinn til du ser False (=ledig)\nrelease:  clear(flag)                       # sett False\n```\n\nNaiv variant — `if not flag: flag = True` — er IKKE trygg. Det er to operasjoner (read, write) med plass for race condition mellom.\n\n**Din oppgave:**\n\n1. Implementér `AtomicFlag.test_and_set()` (returner gammel verdi, sett til True).\n2. Fyll inn `SpinLockThread.step()` med tilstandsmaskinen: `tas → load → add → store → clear` (spinner i tas til den får låsen).\n\n2 tråder x 500 inkrementer skal gi nøyaktig 1000 — fordi TAS-spinlock er en ekte mutex.",
+      files: {
+        "tas.py": `class AtomicFlag:
+    """Hardware-primitivet: test_and_set er ATOMISK
+       (les + skriv = ett udelelig steg).
+    """
+    def __init__(self):
+        self.value = False
+
+    def test_and_set(self):
+        """Returner gammel verdi. Sett til True. ATOMISK."""
+        # === DIN OPPGAVE ===
+        # old = self.value
+        # self.value = True
+        # return old
+        pass
+
+    def clear(self):
+        self.value = False
+
+
+class SpinLockThread:
+    """Bruker TAS-spinlock til aa beskytte teller.
+       Tilstander: tas (spinner) -> load -> add -> store -> clear -> (loop)
+    """
+    def __init__(self, name, flag, shared, n):
+        self.name = name
+        self.flag = flag
+        self.shared = shared
+        self.n = n
+        self.iter = 0
+        self.state = "tas"
+        self.temp = 0
+
+    def step(self):
+        if self.state == "done":
+            return False
+        # === DIN OPPGAVE ===
+        # if self.state == "tas":
+        #     old = self.flag.test_and_set()
+        #     if old is False:  # vi fikk laasen
+        #         self.state = "load"
+        #     # else: spinn videre (forblir i "tas")
+        #     return True
+        # if self.state == "load":
+        #     self.temp = self.shared["x"]
+        #     self.state = "add"; return True
+        # if self.state == "add":
+        #     self.temp += 1
+        #     self.state = "store"; return True
+        # if self.state == "store":
+        #     self.shared["x"] = self.temp
+        #     self.state = "clear"; return True
+        # if self.state == "clear":
+        #     self.flag.clear()
+        #     self.iter += 1
+        #     self.state = "done" if self.iter >= self.n else "tas"
+        #     return True
+        pass
+
+    def done(self):
+        return self.state == "done"
+
+
+def sjekk(faktisk, forventet, navn):
+    if faktisk == forventet:
+        print(f"OK   {navn}")
+    else:
+        print(f"FEIL {navn}: fikk {faktisk!r}, forventet {forventet!r}")
+
+
+# Test 1: TAS-mekanikk
+f = AtomicFlag()
+sjekk(f.test_and_set(), False, "foerste TAS returnerer False (var ledig)")
+sjekk(f.value, True, "flag satt til True etter foerste TAS")
+sjekk(f.test_and_set(), True, "andre TAS returnerer True (allerede tatt)")
+sjekk(f.value, True, "flag fortsatt True")
+f.clear()
+sjekk(f.value, False, "clear setter False")
+
+# Test 2: TAS-spinlock beskytter delt teller
+flag = AtomicFlag()
+shared = {"x": 0}
+threads = [SpinLockThread("A", flag, shared, 500), SpinLockThread("B", flag, shared, 500)]
+i = 0
+while any(not t.done() for t in threads):
+    threads[i % 2].step()
+    i += 1
+    if i > 1_000_000:
+        raise RuntimeError("safety")
+sjekk(shared["x"], 1000, "TAS-spinlock gir korrekt 1000")
+sjekk(flag.value, False, "flag sluppet til slutt")
+
+# Test 3: 3 traader x 300 = 900
+flag = AtomicFlag()
+shared = {"x": 0}
+threads = [SpinLockThread(n, flag, shared, 300) for n in ("A", "B", "C")]
+i = 0
+while any(not t.done() for t in threads):
+    threads[i % 3].step()
+    i += 1
+    if i > 1_000_000:
+        raise RuntimeError("safety")
+sjekk(shared["x"], 900, "3 traader x 300 = 900 med TAS-spinlock")
+`,
+      },
+      defaultFile: "tas.py",
+      editable: ["tas.py"],
+      run: { kind: "python-script", entry: "tas.py" },
+      verifications: [
+        { label: "Første TAS returnerer gammel False", check: { kind: "output-contains", needle: "OK   foerste TAS returnerer False (var ledig)" } },
+        { label: "Flag settes til True av TAS", check: { kind: "output-contains", needle: "OK   flag satt til True etter foerste TAS" } },
+        { label: "Andre TAS returnerer True (allerede tatt)", check: { kind: "output-contains", needle: "OK   andre TAS returnerer True (allerede tatt)" } },
+        { label: "clear() setter flagget til False", check: { kind: "output-contains", needle: "OK   clear setter False" } },
+        { label: "TAS-spinlock beskytter 2 tråder × 500 = 1000", check: { kind: "output-contains", needle: "OK   TAS-spinlock gir korrekt 1000" } },
+        { label: "Spinlock slippes etter siste tråd", check: { kind: "output-contains", needle: "OK   flag sluppet til slutt" } },
+        { label: "TAS-spinlock skalerer til 3 tråder", check: { kind: "output-contains", needle: "OK   3 traader x 300 = 900 med TAS-spinlock" } },
+      ],
+      hint:
+        "def test_and_set(self):\n    old = self.value\n    self.value = True\n    return old\n\ndef step(self):\n    if self.state == \"done\": return False\n    if self.state == \"tas\":\n        old = self.flag.test_and_set()\n        if old is False:\n            self.state = \"load\"\n        return True\n    if self.state == \"load\":\n        self.temp = self.shared[\"x\"]; self.state = \"add\"; return True\n    if self.state == \"add\":\n        self.temp += 1; self.state = \"store\"; return True\n    if self.state == \"store\":\n        self.shared[\"x\"] = self.temp; self.state = \"clear\"; return True\n    if self.state == \"clear\":\n        self.flag.clear()\n        self.iter += 1\n        self.state = \"done\" if self.iter >= self.n else \"tas\"\n        return True",
+    },
+  ],
+};
+
+const DEADLOCK_BANKERS: MiniCourse = {
+  id: "deadlock-bankers",
+  slug: "deadlock-bankers",
+  title: "Deadlock-deteksjon og bankers algoritme",
+  blurb:
+    "Bygg deadlock-håndteringen i et OS fra null. Først en resource allocation graph der du finner sykler. Så multi-instance deteksjon der vektorer av ressurser strømmer fritt mellom prosesser. Deretter bankers algoritme — først safety-sjekk, så request-grant — og til slutt en recovery-strategi som finner minste sett prosesser å avbryte for å bryte alle sykler.",
+  estimertTid: "60–75 min",
+  fag: ["DTE-2505", "Operativsystem", "Deadlock"],
+  color: "warning",
+  rekkefolge: 50,
+  lessons: [
+    // ============ LEKSJON 1 ===========================================
+    {
+      id: "01-rag-coffman",
+      title: "1. Resource allocation graph og Coffman-betingelsene",
+      narrative:
+        "Deadlock oppstår når et sett prosesser sitter fast og venter på hverandre i en sirkel. Coffman (1971) viste at fire betingelser må alle holde samtidig for at deadlock skal være mulig:\n\n1. **Mutual exclusion** — en ressurs kan kun holdes av én prosess om gangen.\n2. **Hold and wait** — en prosess holder ressurser mens den venter på nye.\n3. **No preemption** — ressurser tas ikke fra en prosess; de må frigis frivillig.\n4. **Sirkulær venting** — det finnes en sirkel P1 → R1 → P2 → R2 → ... → P1.\n\nDe tre første er strukturelle (hvordan systemet er bygget). Den fjerde er den vi kan oppdage i øyeblikket — og vi gjør det med en **resource allocation graph** (RAG):\n\n- **Noder:** prosesser (P1, P2, ...) og ressurser (R1, R2, ...).\n- **Held-edge:** ressurs → prosess (\"R1 holdes av P2\").\n- **Request-edge:** prosess → ressurs (\"P1 ber om R1\").\n\nMed kun én instans per ressurstype: **sirkel i grafen = deadlock**. Vi finner sirkler med DFS og tre-farging (WHITE/GRAY/BLACK). Hvis DFS treffer en GRAY-node, har vi en bak-kant — altså en sirkel.\n\n**Din oppgave:** Bygg `ResourceGraph` med `add_edge(src, dst)` og `has_cycle()` (DFS, tre-farging).",
+      files: {
+        "deadlock.py": `class ResourceGraph:
+    """Rettet graf med prosess- og ressurs-noder.
+
+    Konvensjon for kanter:
+      add_edge("R1", "P2")  betyr "R1 holdes av P2"   (R -> P)
+      add_edge("P1", "R1")  betyr "P1 ber om R1"      (P -> R)
+    """
+
+    def __init__(self):
+        self.edges = {}  # node -> list[node]
+
+    def add_node(self, name):
+        if name not in self.edges:
+            self.edges[name] = []
+
+    def add_edge(self, src, dst):
+        # === DIN OPPGAVE ===
+        # Sørg for at både src og dst er noder i grafen,
+        # og legg dst til i self.edges[src] (unngå duplikater).
+        pass
+
+    def has_cycle(self):
+        # === DIN OPPGAVE ===
+        # DFS med tre farger: WHITE=0 (urørt), GRAY=1 (på stack), BLACK=2 (ferdig).
+        # Bak-kant til en GRAY-node = sirkel funnet.
+        # Returner True/False.
+        return False
+
+
+def sjekk(faktisk, forventet, navn):
+    if faktisk == forventet:
+        print(f"OK   {navn}")
+    else:
+        print(f"FEIL {navn}: fikk {faktisk!r}, forventet {forventet!r}")
+
+
+# Test 1: sirkulær venting P1 -> R1 -> P2 -> R2 -> P1
+g = ResourceGraph()
+g.add_edge("P1", "R1")  # P1 ber om R1
+g.add_edge("R1", "P2")  # R1 holdes av P2
+g.add_edge("P2", "R2")  # P2 ber om R2
+g.add_edge("R2", "P1")  # R2 holdes av P1
+sjekk(g.has_cycle(), True, "sirkel detektert i 2-prosess deadlock")
+
+# Test 2: kjede uten sirkel — P1 venter, men ingen venter på P1.
+g2 = ResourceGraph()
+g2.add_edge("P1", "R1")
+g2.add_edge("R1", "P2")
+g2.add_edge("P2", "R2")
+# Ingen kant tilbake til P1 — R2 holdes ikke av noen.
+sjekk(g2.has_cycle(), False, "ingen sirkel i ren kjede")
+
+# Test 3: lengre sirkel — 3 prosesser, 3 ressurser
+g3 = ResourceGraph()
+for i in range(3):
+    g3.add_edge(f"P{i+1}", f"R{i+1}")
+    g3.add_edge(f"R{i+1}", f"P{((i+1) % 3) + 1}")
+sjekk(g3.has_cycle(), True, "sirkel detektert i 3-prosess sirkel")
+
+# Test 4: add_edge skal ikke duplikere
+g4 = ResourceGraph()
+g4.add_edge("A", "B")
+g4.add_edge("A", "B")
+sjekk(len(g4.edges["A"]), 1, "add_edge ignorerer duplikat")
+`,
+      },
+      defaultFile: "deadlock.py",
+      editable: ["deadlock.py"],
+      run: { kind: "python-script", entry: "deadlock.py" },
+      verifications: [
+        { label: "Detekterer sirkel mellom 2 prosesser", check: { kind: "output-contains", needle: "OK   sirkel detektert i 2-prosess deadlock" } },
+        { label: "Ingen falsk-positiv for ren kjede", check: { kind: "output-contains", needle: "OK   ingen sirkel i ren kjede" } },
+        { label: "Detekterer lengre sirkel (3 prosesser)", check: { kind: "output-contains", needle: "OK   sirkel detektert i 3-prosess sirkel" } },
+        { label: "add_edge dedupliserer parallelle kanter", check: { kind: "output-contains", needle: "OK   add_edge ignorerer duplikat" } },
+      ],
+      hint:
+        "def add_edge(self, src, dst):\n    self.add_node(src)\n    self.add_node(dst)\n    if dst not in self.edges[src]:\n        self.edges[src].append(dst)\n\ndef has_cycle(self):\n    WHITE, GRAY, BLACK = 0, 1, 2\n    color = {n: WHITE for n in self.edges}\n    def dfs(n):\n        color[n] = GRAY\n        for nb in self.edges.get(n, []):\n            if color[nb] == GRAY:\n                return True\n            if color[nb] == WHITE and dfs(nb):\n                return True\n        color[n] = BLACK\n        return False\n    for n in list(self.edges.keys()):\n        if color[n] == WHITE and dfs(n):\n            return True\n    return False",
+    },
+
+    // ============ LEKSJON 2 ===========================================
+    {
+      id: "02-detection-multi-instance",
+      title: "2. Deteksjon med multi-instance ressurser",
+      narrative:
+        "RAG-tilnærmingen fra leksjon 1 dekker bare en-instans-ressurser. I virkelige OS har vi ofte flere instanser av samme ressurstype: 4 skrivere, 3 minneblokker, 12 fil-deskriptorer. Da er sirkel-i-graf hverken nødvendig eller tilstrekkelig for deadlock — vi må telle.\n\nVi bruker tre vektorer/matriser i stedet:\n\n- **Available[m]** — ledige instanser per ressurstype (m typer).\n- **Allocation[n][m]** — hvor mye prosess i holder av type j.\n- **Request[n][m]** — hvor mye prosess i venter på akkurat nå.\n\nAlgoritmen er en simulering av \"hvem kan fullføre\":\n\n```\nwork = Available\nfinish[i] = (Allocation[i] er nullvektor)   # prosesser som ikke holder noe\ngjenta:\n  finn en prosess i der finish[i] er False OG Request[i] <= work\n  hvis funnet: work += Allocation[i]; finish[i] = True\n  ellers: stopp\nprosesser med finish[i] == False er deadlocked\n```\n\nNøkkelinnsikt: hvis ingen kan komme videre med dagens `work`, er de gjenstående i en sykel av venting og frigjør aldri ressursene sine.\n\n**Din oppgave:** Implementér `detect_deadlock(available, allocation, request)` som returnerer en sortert liste av indekser til deadlockede prosesser (tom liste hvis ingen deadlock).",
+      files: {
+        "deadlock.py": `def detect_deadlock(available, allocation, request):
+    """Multi-instance deadlock-deteksjon.
+
+    Argumenter:
+      available: liste[int] av lengde m (antall ressurstyper)
+      allocation: liste[liste[int]] med n rader, m kolonner
+      request:    liste[liste[int]] med n rader, m kolonner
+
+    Returner: sortert liste av indekser til prosesser som er deadlocked.
+    """
+    n = len(allocation)
+    m = len(available)
+    work = list(available)
+    # === DIN OPPGAVE ===
+    # 1. Initialisér finish[i] = True hvis prosess i ikke holder noe
+    #    (allocation[i] er nullvektor) — slike prosesser er ikke deadlocked.
+    # 2. Gjenta:
+    #      finn en finish[i] == False der request[i][j] <= work[j] for alle j
+    #      hvis funnet: work += allocation[i], finish[i] = True
+    #      ellers: bryt
+    # 3. Returner sortert liste av i der finish[i] == False
+    finish = [False] * n
+    return []
+
+
+def sjekk(faktisk, forventet, navn):
+    if faktisk == forventet:
+        print(f"OK   {navn}")
+    else:
+        print(f"FEIL {navn}: fikk {faktisk!r}, forventet {forventet!r}")
+
+
+# Test 1: klassisk Silberschatz "no deadlock"-eksempel
+# 5 prosesser, 3 ressurstyper, available = (0,0,0)
+available = [0, 0, 0]
+allocation = [
+    [0, 1, 0],
+    [2, 0, 0],
+    [3, 0, 3],
+    [2, 1, 1],
+    [0, 0, 2],
+]
+request = [
+    [0, 0, 0],
+    [2, 0, 2],
+    [0, 0, 0],
+    [1, 0, 0],
+    [0, 0, 2],
+]
+sjekk(detect_deadlock(available, allocation, request), [], "Silberschatz: ingen deadlock")
+
+# Test 2: endre P2.request fra (0,0,0) til (0,0,1) — nå sulter alle som trenger C
+request2 = [
+    [0, 0, 0],
+    [2, 0, 2],
+    [0, 0, 1],
+    [1, 0, 0],
+    [0, 0, 2],
+]
+sjekk(detect_deadlock(available, allocation, request2), [1, 2, 3, 4], "deadlock i {P1,P2,P3,P4}")
+
+# Test 3: enkelt 2-prosess deadlock — begge ber om ressursen den andre holder
+# 2 ressurstyper (R0, R1), 1 instans hver, available = (0, 0)
+avail3 = [0, 0]
+alloc3 = [
+    [1, 0],   # P0 holder R0
+    [0, 1],   # P1 holder R1
+]
+req3 = [
+    [0, 1],   # P0 ber om R1
+    [1, 0],   # P1 ber om R0
+]
+sjekk(detect_deadlock(avail3, alloc3, req3), [0, 1], "2-prosess klassisk deadlock")
+
+# Test 4: alle prosesser har null-allocation — kan aldri være deadlock
+avail4 = [5, 5]
+alloc4 = [[0, 0], [0, 0]]
+req4 = [[10, 10], [10, 10]]  # de venter på umulig forespørsel, men holder ingenting
+sjekk(detect_deadlock(avail4, alloc4, req4), [], "tomme prosesser er ikke deadlocked")
+`,
+      },
+      defaultFile: "deadlock.py",
+      editable: ["deadlock.py"],
+      run: { kind: "python-script", entry: "deadlock.py" },
+      verifications: [
+        { label: "Silberschatz: ingen deadlock identifisert", check: { kind: "output-contains", needle: "OK   Silberschatz: ingen deadlock" } },
+        { label: "Detekterer flertall-prosess deadlock korrekt", check: { kind: "output-contains", needle: "OK   deadlock i {P1,P2,P3,P4}" } },
+        { label: "2-prosess klassisk deadlock detektert", check: { kind: "output-contains", needle: "OK   2-prosess klassisk deadlock" } },
+        { label: "Prosesser uten allocation regnes ikke som deadlocked", check: { kind: "output-contains", needle: "OK   tomme prosesser er ikke deadlocked" } },
+      ],
+      hint:
+        "n = len(allocation); m = len(available)\nwork = list(available)\nfinish = [all(allocation[i][j] == 0 for j in range(m)) for i in range(n)]\nwhile True:\n    progressed = False\n    for i in range(n):\n        if not finish[i] and all(request[i][j] <= work[j] for j in range(m)):\n            for j in range(m):\n                work[j] += allocation[i][j]\n            finish[i] = True\n            progressed = True\n    if not progressed:\n        break\nreturn sorted(i for i, f in enumerate(finish) if not f)",
+    },
+
+    // ============ LEKSJON 3 ===========================================
+    {
+      id: "03-bankers-safety",
+      title: "3. Bankers algoritme — safety-check",
+      narrative:
+        "Deteksjon kjører i ettertid: når deadlock først har skjedd, finner vi ut hvem som sitter fast. **Bankers algoritme** er et forsøk på å unngå deadlock i utgangspunktet, ved å aldri tildele ressurser hvis det kan føre til en farlig tilstand.\n\nForskjellen fra deteksjon er **max claim**: hver prosess deklarerer på forhånd hvor mye den TOTALT kan komme til å trenge. Vi sjekker ikke om dagens request er rimelig — vi sjekker om systemet ville være safe selv hvis hver prosess plutselig ba om alt den noensinne kan trenge.\n\n- **Need[i][j] = Max[i][j] - Allocation[i][j]** — det prosessen MAKS kan komme til å be om i tillegg.\n- En tilstand er **safe** hvis det finnes en sekvens av prosesser slik at hver kan fullføre (med dagens Available + det som frigjøres av tidligere) selv om de ber om hele Need-en sin.\n\nAlgoritmen er identisk med deteksjon, men med `Need` i stedet for `Request`:\n\n```\nwork = Available\nfinish = [False, False, ...]\ngjenta:\n  finn i der finish[i] == False og Need[i] <= work\n  ja: work += Allocation[i]; finish[i] = True\n  nei: bryt\nsafe hvis alle finish[i] == True\n```\n\nReturner også **safe sequence** — rekkefølgen prosessene kunne fullføres i. Det er bevisstøtten for at staten er safe.\n\n**Din oppgave:** `is_safe(available, max_claim, allocation) -> (bool, list[int])`.",
+      files: {
+        "bankers.py": `def is_safe(available, max_claim, allocation):
+    """Bankers safety-check.
+
+    Returner (safe, sequence). sequence er rekkefolgen prosesser kunne
+    fullfore i, eller listen som ble bygget for fant ikke (delvis).
+    """
+    n = len(allocation)
+    m = len(available)
+    # === DIN OPPGAVE ===
+    # 1. Bygg need[i][j] = max_claim[i][j] - allocation[i][j].
+    # 2. work = kopi av available; finish = [False] * n; safe_seq = [].
+    # 3. Loop: finn finish[i]==False der need[i][j] <= work[j] for alle j.
+    #    Hvis funnet: work += allocation[i], finish[i] = True, safe_seq.append(i).
+    #    Hvis ingen i ble funnet i en hel runde: bryt.
+    # 4. Returner (all(finish), safe_seq).
+    return (False, [])
+
+
+def sjekk(faktisk, forventet, navn):
+    if faktisk == forventet:
+        print(f"OK   {navn}")
+    else:
+        print(f"FEIL {navn}: fikk {faktisk!r}, forventet {forventet!r}")
+
+
+# Test 1: klassisk Tanenbaum/Silberschatz-eksempel
+# 5 prosesser, 3 ressurstyper (A, B, C), 10/5/7 instanser totalt
+# Available = (3, 3, 2)
+available = [3, 3, 2]
+allocation = [
+    [0, 1, 0],   # P0
+    [2, 0, 0],   # P1
+    [3, 0, 2],   # P2
+    [2, 1, 1],   # P3
+    [0, 0, 2],   # P4
+]
+max_claim = [
+    [7, 5, 3],
+    [3, 2, 2],
+    [9, 0, 2],
+    [2, 2, 2],
+    [4, 3, 3],
+]
+safe, seq = is_safe(available, max_claim, allocation)
+sjekk(safe, True, "Tanenbaum: safe state")
+sjekk(seq, [1, 3, 4, 0, 2], "safe sequence P1, P3, P4, P0, P2")
+
+# Test 2: gjor det unsafe — gi P0 to ekstra instanser av B fra available
+# available = (3, 1, 2), alloc P0 = (0, 3, 0). Need P0 = (7, 2, 3).
+# Need P1 = (1,2,2). work=(3,1,2): P1 trenger B=2>1. Stuck.
+# Need P3 = (0,1,1). OK. work += (2,1,1) = (5,2,3).
+# Need P1 = (1,2,2) OK. work += (2,0,0) = (7,2,3).
+# Need P4 = (4,3,1). B=3>2. Stuck.
+# Need P0 = (7,2,3). OK. work += (0,3,0) = (7,5,3).
+# Need P4 = (4,3,1) OK. work += (0,0,2)=(7,5,5). Need P2 = (6,0,0) OK. Alle fullforer.
+# Aha, fortsatt safe. La oss heller flytte slik at det blir tydelig unsafe.
+# Reduser available[A] til 0: available=(0,3,2). Nei, vi maa bruke nye verdier.
+# Bruk i stedet: max_claim[P4][A] = 5 (uendret), men allocate P4 = (2, 0, 2).
+# Sum A blir 0+2+3+2+2=9 (max 10), available[A] = 1. need[P4][A]=3. work=(1,3,2):
+# P1 need (1,2,2) OK -> work=(3,3,2). P3 need (0,1,1) OK -> work=(5,4,3).
+# P4 need (3,3,1): A=3 OK -> work=(7,4,5). P0 need (7,4,3) OK -> (7,5,5). P2 need (6,0,0) OK. Safe.
+# La oss heller bruke et helt nytt eksempel for unsafe:
+# 2 prosesser, 1 type. Available=0. Max P0=2, alloc P0=1, need P0=1.
+# Max P1=2, alloc P1=1, need P1=1. Begge trenger 1, ingen har — UNSAFE.
+unsafe_avail = [0]
+unsafe_alloc = [[1], [1]]
+unsafe_max = [[2], [2]]
+unsafe_ok, _ = is_safe(unsafe_avail, unsafe_max, unsafe_alloc)
+sjekk(unsafe_ok, False, "unsafe: begge trenger 1, ingen tilgjengelig")
+
+# Test 3: triviell safe — alle prosesser kan fullfore med dagens available
+triv_avail = [10]
+triv_alloc = [[0], [0]]
+triv_max = [[5], [5]]
+triv_ok, triv_seq = is_safe(triv_avail, triv_max, triv_alloc)
+sjekk(triv_ok, True, "triviell: rikelig available")
+sjekk(triv_seq, [0, 1], "ferdig-i-rekkefolge naar begge er like")
+`,
+      },
+      defaultFile: "bankers.py",
+      editable: ["bankers.py"],
+      run: { kind: "python-script", entry: "bankers.py" },
+      verifications: [
+        { label: "Tanenbaum-eksempel detekteres som safe", check: { kind: "output-contains", needle: "OK   Tanenbaum: safe state" } },
+        { label: "Korrekt safe sequence [1, 3, 4, 0, 2]", check: { kind: "output-contains", needle: "OK   safe sequence P1, P3, P4, P0, P2" } },
+        { label: "Unsafe state identifiseres riktig", check: { kind: "output-contains", needle: "OK   unsafe: begge trenger 1, ingen tilgjengelig" } },
+        { label: "Triviell rikelig-ressurs er safe", check: { kind: "output-contains", needle: "OK   triviell: rikelig available" } },
+        { label: "Konsistent rekkefølge for like prosesser", check: { kind: "output-contains", needle: "OK   ferdig-i-rekkefolge naar begge er like" } },
+      ],
+      hint:
+        "n = len(allocation); m = len(available)\nneed = [[max_claim[i][j] - allocation[i][j] for j in range(m)] for i in range(n)]\nwork = list(available)\nfinish = [False] * n\nsafe_seq = []\nwhile True:\n    progressed = False\n    for i in range(n):\n        if not finish[i] and all(need[i][j] <= work[j] for j in range(m)):\n            for j in range(m):\n                work[j] += allocation[i][j]\n            finish[i] = True\n            safe_seq.append(i)\n            progressed = True\n            break  # restart slik at vi prefererer lavest-indeks-foerst per runde\n    if not progressed:\n        break\nreturn (all(finish), safe_seq)",
+    },
+
+    // ============ LEKSJON 4 ===========================================
+    {
+      id: "04-bankers-request",
+      title: "4. Bankers algoritme — request-grant med tilbakerulling",
+      narrative:
+        "Safety-check er bare halve algoritmen. Bankers brukes til **å avgjøre om en tildeling er trygg å gjennomføre**: en prosess kommer med en request, vi prøver tildelingen midlertidig, sjekker safety, og enten committer eller ruller tilbake.\n\nAlgoritmen for `request_resources(pid, request, ...)`:\n\n1. **Sanity 1:** `request[j] <= Need[pid][j]` for alle j. Ellers feilmelding — prosessen ba om mer enn den noen gang sa den ville trenge.\n2. **Sanity 2:** `request[j] <= Available[j]` for alle j. Ellers: ressursene er ikke tilgjengelige akkurat nå — blokker (i ekte OS: prosessen suspenders).\n3. **Tentativ tildeling:** lag kopier av Available og Allocation, gjør tildelingen i kopiene.\n4. **Safety-sjekk** på den hypotetiske tilstanden.\n5. Hvis safe → commit (i denne sandkassen returnerer vi bare `True`). Hvis unsafe → forkast kopiene og returner `False` med begrunnelse.\n\nLegg merke til at en `False` her ikke betyr at tildelingen ville skapt deadlock akkurat nå — det betyr at det ville etterlatt systemet i en tilstand der deadlock er **mulig** hvis verste fall inntreffer. Bankers er konservativ av design.\n\n**Din oppgave:** Implementér `request_resources(pid, request, available, max_claim, allocation) -> (granted: bool, melding: str)`. Du kan bruke `is_safe` fra forrige leksjon — den er gjenbruksklart i fila.",
+      files: {
+        "bankers.py": `def is_safe(available, max_claim, allocation):
+    """Gjenbruk fra leksjon 3."""
+    n = len(allocation)
+    m = len(available)
+    need = [[max_claim[i][j] - allocation[i][j] for j in range(m)] for i in range(n)]
+    work = list(available)
+    finish = [False] * n
+    safe_seq = []
+    while True:
+        progressed = False
+        for i in range(n):
+            if not finish[i] and all(need[i][j] <= work[j] for j in range(m)):
+                for j in range(m):
+                    work[j] += allocation[i][j]
+                finish[i] = True
+                safe_seq.append(i)
+                progressed = True
+                break
+        if not progressed:
+            break
+    return all(finish), safe_seq
+
+
+def request_resources(pid, request, available, max_claim, allocation):
+    """Forsoek aa innvilge en request fra prosess pid.
+
+    Returner (granted, melding).
+      granted=True : "granted"
+      granted=False: feilmelding ("over need", "ikke tilgjengelig", eller "unsafe")
+    """
+    m = len(available)
+    # === DIN OPPGAVE ===
+    # 1. need = max_claim[pid] - allocation[pid]
+    # 2. Hvis request[j] > need[j] for noen j: return (False, "request overstiger max-claim (need)")
+    # 3. Hvis request[j] > available[j] for noen j: return (False, "ikke nok tilgjengelig akkurat nå")
+    # 4. Lag kopier: new_available[j] = available[j] - request[j]
+    #    new_allocation[pid][j] = allocation[pid][j] + request[j]  (kopier hele matrisen!)
+    # 5. Kjor is_safe(new_available, max_claim, new_allocation).
+    #    Hvis safe -> return (True, "granted")
+    #    Hvis unsafe -> return (False, "ville etterlatt systemet i unsafe state — denied")
+    return (False, "ikke implementert")
+
+
+def sjekk(faktisk, forventet, navn):
+    if faktisk == forventet:
+        print(f"OK   {navn}")
+    else:
+        print(f"FEIL {navn}: fikk {faktisk!r}, forventet {forventet!r}")
+
+
+# Sett opp Tanenbaum/Silberschatz-eksemplet pa nytt
+available = [3, 3, 2]
+allocation = [
+    [0, 1, 0],
+    [2, 0, 0],
+    [3, 0, 2],
+    [2, 1, 1],
+    [0, 0, 2],
+]
+max_claim = [
+    [7, 5, 3],
+    [3, 2, 2],
+    [9, 0, 2],
+    [2, 2, 2],
+    [4, 3, 3],
+]
+
+# Test 1: P1 ber om (1, 0, 2). Klassisk svar fra Silberschatz: GRANTED.
+g1, m1 = request_resources(1, [1, 0, 2], available, max_claim, allocation)
+sjekk(g1, True, "P1's request (1,0,2) granted")
+
+# Test 2: simuler at vi har commitet test 1.
+# avail = (2, 3, 0), alloc P1 = (3, 0, 2).
+# Naa proever P0 (0, 2, 0). Klassisk svar: DENIED (unsafe).
+avail_after = [2, 3, 0]
+alloc_after = [r[:] for r in allocation]
+alloc_after[1] = [3, 0, 2]
+g2, m2 = request_resources(0, [0, 2, 0], avail_after, max_claim, alloc_after)
+sjekk(g2, False, "P0's request (0,2,0) denied (ville bli unsafe)")
+sjekk("unsafe" in m2, True, "feilmelding nevner unsafe")
+
+# Test 3: P0 ber om (10, 0, 0) — over max-claim (Max[P0]=7, alloc=0, need=7).
+g3, m3 = request_resources(0, [10, 0, 0], available, max_claim, allocation)
+sjekk(g3, False, "P0's request (10,0,0) avvist umiddelbart")
+sjekk("max-claim" in m3 or "need" in m3.lower(), True, "feilmelding nevner max-claim")
+
+# Test 4: P4 ber om (3, 3, 0) — overstiger available (3, 3, 2) paa A og B?
+# need P4 = (4, 3, 1). request (3, 3, 0) <= need OK. available (3, 3, 2). request (3,3,0) OK paa avail.
+# Vi maa lage en sak der available er for liten. P3 ber om (2, 2, 2) — need P3 = (0, 1, 1).
+# request (2,2,2) overstiger need[B]=1. Vil bli avvist paa need-sjekken — ikke det vi tester her.
+# Konstruér i stedet en sak der request <= need men > available:
+# P4 trenger (4,3,1). available naa er (3,3,2). request (4, 0, 0): need[A]=4 OK, men avail[A]=3.
+g4, m4 = request_resources(4, [4, 0, 0], available, max_claim, allocation)
+sjekk(g4, False, "P4's request (4,0,0) avvist — overstiger available")
+sjekk("tilgjengelig" in m4.lower(), True, "feilmelding nevner tilgjengelig")
+`,
+      },
+      defaultFile: "bankers.py",
+      editable: ["bankers.py"],
+      run: { kind: "python-script", entry: "bankers.py" },
+      verifications: [
+        { label: "Klassisk granted-eksempel godkjennes", check: { kind: "output-contains", needle: "OK   P1's request (1,0,2) granted" } },
+        { label: "Klassisk denied-eksempel avvises (unsafe)", check: { kind: "output-contains", needle: "OK   P0's request (0,2,0) denied (ville bli unsafe)" } },
+        { label: "Feilmelding for unsafe forklarer hvorfor", check: { kind: "output-contains", needle: "OK   feilmelding nevner unsafe" } },
+        { label: "Request over max-claim avvises umiddelbart", check: { kind: "output-contains", needle: "OK   P0's request (10,0,0) avvist umiddelbart" } },
+        { label: "Feilmelding nevner max-claim", check: { kind: "output-contains", needle: "OK   feilmelding nevner max-claim" } },
+        { label: "Request over tilgjengelig avvises", check: { kind: "output-contains", needle: "OK   P4's request (4,0,0) avvist — overstiger available" } },
+        { label: "Feilmelding nevner tilgjengelig", check: { kind: "output-contains", needle: "OK   feilmelding nevner tilgjengelig" } },
+      ],
+      hint:
+        "need = [max_claim[pid][j] - allocation[pid][j] for j in range(m)]\nif any(request[j] > need[j] for j in range(m)):\n    return (False, \"request overstiger max-claim (need)\")\nif any(request[j] > available[j] for j in range(m)):\n    return (False, \"ikke nok tilgjengelig akkurat nå\")\nnew_available = [available[j] - request[j] for j in range(m)]\nnew_allocation = [row[:] for row in allocation]\nfor j in range(m):\n    new_allocation[pid][j] += request[j]\nsafe, _ = is_safe(new_available, max_claim, new_allocation)\nif safe:\n    return (True, \"granted\")\nreturn (False, \"ville etterlatt systemet i unsafe state — denied\")",
+    },
+
+    // ============ LEKSJON 5 ===========================================
+    {
+      id: "05-recovery",
+      title: "5. Recovery — minste sett prosesser å avbryte",
+      narrative:
+        "Bankers algoritme er avoidance — den hindrer at deadlock noensinne oppstår. Men hvis OS-et har valgt deteksjon i stedet (billigere i runtime), må vi rydde opp etter at deadlock har skjedd. To klassiske recovery-strategier:\n\n1. **Process termination** — abort én eller flere deadlockede prosesser, frigjør ressursene deres. Variant a: abort alle deadlockede (brutalt, men enkelt). Variant b: abort én om gangen, sjekk etter hver om deadlock er borte (kostbart, men sparer prosesser).\n2. **Resource preemption** — ta ressursen midlertidig fra én prosess (rollback til en checkpoint) og gi den til en annen. Krever støtte for rollback i prosessen.\n\nVi implementerer **minimum termination**: gitt et deadlock, finn det minste settet prosesser man kan abortere slik at de gjenstående ikke lenger er deadlocked. Strategien er greedy enumeration over delmengder i økende størrelse — for små lab-eksempler er det helt OK. (I praksis bruker OS-et heuristikker basert på prioritet, kjøretid og ressurser holdt.)\n\nAbort av prosess i betyr:\n\n- `Available += Allocation[i]`\n- `Allocation[i] = 0`\n- `Request[i] = 0`\n\nSå sjekker vi om resten fortsatt er deadlocket.\n\n**Din oppgave:** Implementér `minimum_abort_set(available, allocation, request)` som returnerer en `set[int]` — det minste settet prosesser hvis abort eliminerer all deadlock. Returner tom mengde hvis ingen deadlock.",
+      files: {
+        "recovery.py": `from itertools import combinations
+
+
+def detect_deadlock(available, allocation, request):
+    """Gjenbruk fra leksjon 2."""
+    n = len(allocation)
+    m = len(available)
+    work = list(available)
+    finish = [all(allocation[i][j] == 0 for j in range(m)) for i in range(n)]
+    while True:
+        progressed = False
+        for i in range(n):
+            if not finish[i] and all(request[i][j] <= work[j] for j in range(m)):
+                for j in range(m):
+                    work[j] += allocation[i][j]
+                finish[i] = True
+                progressed = True
+        if not progressed:
+            break
+    return sorted(i for i, f in enumerate(finish) if not f)
+
+
+def minimum_abort_set(available, allocation, request):
+    """Finn minste sett prosesser som maa abortes for aa bryte all deadlock.
+
+    Strategi: enumerér delmengder av deadlockede prosesser i ökende størrelse.
+    For hver kandidat: simuler abort (frigi alloc, fjern request), kjør
+    detect_deadlock paa nytt. Hvis ingen gjenværende deadlock — returner kandidaten.
+    """
+    # === DIN OPPGAVE ===
+    # 1. dl = detect_deadlock(available, allocation, request)
+    # 2. Hvis dl er tom: return set()
+    # 3. For size i 1..len(dl):
+    #      for combo i combinations(dl, size):
+    #        simuler abort av prosessene i combo:
+    #          new_avail = list(available); new_alloc = deep copy; new_req = deep copy
+    #          for hver p i combo:
+    #            new_avail += allocation[p]; new_alloc[p] = nullvektor; new_req[p] = nullvektor
+    #        sjekk: remaining = detect_deadlock(new_avail, new_alloc, new_req)
+    #          (remaining vil aldri inneholde p in combo siden de naa har alloc=0)
+    #        hvis remaining er tom: return set(combo)
+    # 4. Worst case: return set(dl)
+    return set()
+
+
+def sjekk(faktisk, forventet, navn):
+    if faktisk == forventet:
+        print(f"OK   {navn}")
+    else:
+        print(f"FEIL {navn}: fikk {faktisk!r}, forventet {forventet!r}")
+
+
+# Test 1: ingen deadlock — minimum abort er tom mengde
+avail0 = [5, 5]
+alloc0 = [[1, 0], [0, 1]]
+req0 = [[0, 0], [0, 0]]
+sjekk(minimum_abort_set(avail0, alloc0, req0), set(), "ingen deadlock -> tom mengde")
+
+# Test 2: 2-prosess deadlock — abort av én holder
+avail1 = [0, 0]
+alloc1 = [
+    [1, 0],
+    [0, 1],
+]
+req1 = [
+    [0, 1],
+    [1, 0],
+]
+ab = minimum_abort_set(avail1, alloc1, req1)
+sjekk(len(ab), 1, "2-prosess: abort av én er nok")
+sjekk(ab.issubset({0, 1}), True, "abort-prosessen er en av de to")
+
+# Test 3: konstruert sak der KUN spesifikk prosess er nok
+# 3 prosesser, 1 ressurstype, available = 0
+# P0: holder 3, ber om 0  -> ikke deadlocked (men i deteksjons-init: P0 har alloc>0 men req=0 -> kan fullfore med work=0 siden 0<=0)
+# Faktisk: P0 har request 0 <= work=0, sa P0 fullfor foerst, frigjor 3. Da kan resten fullfore.
+# Det blir ingen deadlock. La oss konstruere annerledes.
+#
+# 3 prosesser, 2 ressurstyper. Available=(0,0).
+# P0: alloc=(0,2), req=(1,0)  trenger A, holder B
+# P1: alloc=(2,0), req=(0,1)  trenger B, holder A — kontra P0
+# P2: alloc=(0,1), req=(1,0)  trenger A, holder B
+#
+# Sykel mellom P0 og P1. P2 venter ogsa pa A.
+# Abort P0 alene: frigjor (0,2). work=(0,2).
+#   P1 req (0,1) <= (0,2) OK -> work=(2,2). P2 req (1,0) <= (2,2) OK. Loest.
+# Abort P1 alene: frigjor (2,0). work=(2,0).
+#   P0 req (1,0) <= (2,0) OK -> work=(2,2). P2 req (1,0) OK. Loest.
+# Abort P2 alene: frigjor (0,1). work=(0,1).
+#   P0 req (1,0): A=0 stuck. P1 req (0,1) <= (0,1) OK -> work=(2,1). P0 req (1,0) OK -> work=(2,3). Loest!
+# Alle tre virker som singletons. Hmm, vi trenger en sak med entydig svar.
+#
+# La oss konstruere:
+# Available=(0,)
+# P0: alloc=(5,), req=(1,)
+# P1: alloc=(0,), req=(1,)
+# P2: alloc=(0,), req=(1,)
+# work=0. P1: req 1>0 stuck. P2: stuck. P0: req 1>0 stuck. Alle stuck.
+# Init finish: P1 og P2 har alloc=0 -> finish=True. Bare P0 er "deadlocked".
+# Hmm, men da er ikke det egentlig deadlock, bare P0 staar stille fordi
+# alle andre ikke frigjor noe. Faktisk korrekt: P0 holder 5 og ber om 1
+# men ingen kan frigjøre A. P0 alene staar fast.
+ab2 = minimum_abort_set([0], [[5], [0], [0]], [[1], [1], [1]])
+sjekk(ab2, {0}, "kun P0 maa aborteres (P1, P2 holder ingenting)")
+`,
+      },
+      defaultFile: "recovery.py",
+      editable: ["recovery.py"],
+      run: { kind: "python-script", entry: "recovery.py" },
+      verifications: [
+        { label: "Ingen deadlock gir tom abort-mengde", check: { kind: "output-contains", needle: "OK   ingen deadlock -> tom mengde" } },
+        { label: "2-prosess deadlock løses med abort av én", check: { kind: "output-contains", needle: "OK   2-prosess: abort av én er nok" } },
+        { label: "Abortert prosess er en av de deadlockede", check: { kind: "output-contains", needle: "OK   abort-prosessen er en av de to" } },
+        { label: "Identifiserer entydig minste abort-sett", check: { kind: "output-contains", needle: "OK   kun P0 maa aborteres (P1, P2 holder ingenting)" } },
+      ],
+      hint:
+        "dl = detect_deadlock(available, allocation, request)\nif not dl:\n    return set()\nm = len(available)\nfor size in range(1, len(dl) + 1):\n    for combo in combinations(dl, size):\n        new_avail = list(available)\n        new_alloc = [row[:] for row in allocation]\n        new_req = [row[:] for row in request]\n        for p in combo:\n            for j in range(m):\n                new_avail[j] += new_alloc[p][j]\n                new_alloc[p][j] = 0\n                new_req[p][j] = 0\n        remaining = detect_deadlock(new_avail, new_alloc, new_req)\n        if not remaining:\n            return set(combo)\nreturn set(dl)",
+    },
+  ],
+};
+
+const IPC_PIPES_QUEUES: MiniCourse = {
+  id: "ipc-pipes-queues",
+  slug: "ipc-pipes-queues",
+  title: "Inter-Process Communication (IPC) fra null",
+  blurb:
+    "Bygg de fem IPC-mekanismene operativsystemet tilbyr: anonymous pipes, named pipes, message queues, shared memory + lock, og Unix-domene sockets. Hver leksjon bygger en bit fra grunnen og demonstrerer hvorfor mekanismen finnes — fra rene byte-strømmer til strukturerte meldinger til request/response over sockets.",
+  estimertTid: "60–80 min",
+  fag: ["DTE-2505", "Operativsystem", "IPC"],
+  color: "warning",
+  rekkefolge: 60,
+  lessons: [
+    // ============ LEKSJON 1 ===========================================
+    {
+      id: "01-anonymous-pipe",
+      title: "1. Anonymous pipe: FIFO byte-stream",
+      narrative:
+        "En **anonym pipe** er den enkleste IPC-mekanismen i Unix: en endimensjonal byte-strøm fra en skriver til en leser. Det er ingen meldingsgrenser — pipen er bare bytes på rekke. Den klassiske bruken er shell-pipelining: `ls | wc -l` der ls-prosessens stdout er den ene enden av en pipe og wc's stdin er den andre.\n\nTo egenskaper definerer pipens semantikk:\n\n- **FIFO** — det første som skrives er det første som leses.\n- **Begrenset buffer + blokking** — kernel allokerer en fast buffer (typisk 64 KB på Linux). Når writeren forsøker å skrive mer enn det er plass til, blokkerer den til en leser tar litt. Når leseren forsøker å lese fra en tom buffer, blokkerer den til writeren legger inn noe. Dette er den naturlige flow-controllen i pipen.\n\nVi simulerer blokking deterministisk: en `pending_write` lagrer bytes som ikke fikk plass, og en `pending_read` lagrer hvor mange bytes leseren fortsatt mangler. `step()` forsøker å fullføre alle ventende operasjoner.\n\n**Din oppgave:**\n\n1. Implementér `write(data)`: skriv så mange bytes som det er plass til, lagre resten i `pending_write`. Returner antall bytes som ble lagret nå.\n2. Implementér `read(n)`: ta opp til n bytes fra bufferen. Hvis bufferen er tom for n, lagre `pending_read = mangel` og `read_result` så fortsatt-bytes kan plukkes opp av `step()`.\n3. Implementér `step()`: fullfør ventende write hvis det er plass, og ventende read hvis det er bytes.",
+      files: {
+        "pipe.py": `from collections import deque
+
+
+class Pipe:
+    """Anonym pipe: FIFO byte-stream med begrenset buffer.
+
+    write(bytes) blokkerer hvis det ikke er plass.
+    read(n) blokkerer hvis bufferen er tom.
+    Vi simulerer blokking ved at write/read kan henge i "pending"-state,
+    og pipe.step() forsoker a fullfore ventende operasjoner.
+    """
+
+    def __init__(self, capacity):
+        self.capacity = capacity
+        self.buffer = deque()
+        self.pending_write = None  # bytes som ikke fikk plass
+        self.pending_read = None   # int: hvor mange bytes leseren fortsatt mangler
+        self.read_result = None    # akkumulert resultat av sist begynte read
+
+    def write(self, data):
+        """Forsok a skrive data. Returner hvor mange bytes som ble lagret nå."""
+        # === DIN OPPGAVE ===
+        # plass = self.capacity - len(self.buffer)
+        # skrev = min(plass, len(data))
+        # for b in data[:skrev]: self.buffer.append(b)
+        # rest = data[skrev:]
+        # if rest: self.pending_write = rest
+        # return skrev
+        pass
+
+    def read(self, n):
+        """Forsok a lese n bytes. Hvis bufferen er tom for n, lagre rest i pending_read.
+        Returner bytes hvis vi fikk ALT, ellers None."""
+        # === DIN OPPGAVE ===
+        # ut = bytes()
+        # while self.buffer and len(ut) < n:
+        #     ut += bytes([self.buffer.popleft()])
+        # if len(ut) < n:
+        #     self.pending_read = n - len(ut)
+        #     self.read_result = ut
+        #     return None
+        # return ut
+        pass
+
+    def step(self):
+        """Ett "tidssteg": fullfor ventende write hvis det er plass,
+        og ventende read hvis det er bytes."""
+        # === DIN OPPGAVE ===
+        # Pending write: prov a flytte data fra self.pending_write inn i bufferen.
+        # Pending read: prov a hente flere bytes fra bufferen inn i self.read_result.
+        pass
+
+
+def sjekk(faktisk, forventet, navn):
+    if faktisk == forventet:
+        print(f"OK   {navn}")
+    else:
+        print(f"FEIL {navn}: fikk {faktisk!r}, forventet {forventet!r}")
+
+
+# --- Test 1: enkel skriv 100 + les 100 (100-byte buffer) ---
+p = Pipe(capacity=100)
+data = bytes(range(100))
+sjekk(p.write(data), 100, "skrev 100 bytes")
+sjekk(p.pending_write, None, "ingen pending write")
+sjekk(p.read(100), data, "leste tilbake samme 100 bytes")
+
+# --- Test 2: writer blokkerer nar buffer er full (skriv 150 i 100-buffer) ---
+p2 = Pipe(capacity=100)
+big = bytes(range(150))
+sjekk(p2.write(big), 100, "blocking write: 100 av 150 skrev seg")
+sjekk(p2.pending_write is not None, True, "resten er pending")
+sjekk(len(p2.pending_write), 50, "50 bytes star i pending")
+
+# Leseren henter 100 -> det frigjor plass for de neste 50.
+sjekk(p2.read(100), big[:100], "leste de forste 100 bytes")
+p2.step()
+sjekk(p2.pending_write, None, "pending write fullfort etter step")
+sjekk(p2.read(50), big[100:], "leste de siste 50 bytes")
+
+# --- Test 3: reader blokkerer nar pipen er tom ---
+p3 = Pipe(capacity=10)
+sjekk(p3.read(5), None, "blocking read: returner None nar tom")
+sjekk(p3.pending_read, 5, "5 bytes pending read")
+p3.write(b"hei")
+p3.step()
+sjekk(p3.pending_read, 2, "etter 3 bytes write: 2 fortsatt pending")
+p3.write(b"jo")
+p3.step()
+sjekk(p3.pending_read, None, "alle 5 lest")
+sjekk(p3.read_result, b"heijo", "samlet read-resultat er heijo")
+`,
+      },
+      defaultFile: "pipe.py",
+      editable: ["pipe.py"],
+      run: { kind: "python-script", entry: "pipe.py" },
+      verifications: [
+        { label: "write 100 bytes lykkes", check: { kind: "output-contains", needle: "OK   skrev 100 bytes" } },
+        { label: "read 100 returnerer samme bytes (FIFO)", check: { kind: "output-contains", needle: "OK   leste tilbake samme 100 bytes" } },
+        { label: "write 150 i 100-buffer fyller buffer", check: { kind: "output-contains", needle: "OK   blocking write: 100 av 150 skrev seg" } },
+        { label: "Resten av write blir pending", check: { kind: "output-contains", needle: "OK   50 bytes star i pending" } },
+        { label: "step() flusher pending write etter read", check: { kind: "output-contains", needle: "OK   pending write fullfort etter step" } },
+        { label: "Read pa tom pipe returnerer None (blokker)", check: { kind: "output-contains", needle: "OK   blocking read: returner None nar tom" } },
+        { label: "Pending read fullfores etter delvise writes", check: { kind: "output-contains", needle: "OK   alle 5 lest" } },
+        { label: "Akkumulert read-resultat er korrekt", check: { kind: "output-contains", needle: "OK   samlet read-resultat er heijo" } },
+      ],
+      hint:
+        "def write(self, data):\n    plass = self.capacity - len(self.buffer)\n    skrev = min(plass, len(data))\n    for b in data[:skrev]:\n        self.buffer.append(b)\n    rest = data[skrev:]\n    if rest:\n        self.pending_write = rest\n    return skrev\n\ndef read(self, n):\n    ut = bytes()\n    while self.buffer and len(ut) < n:\n        ut += bytes([self.buffer.popleft()])\n    if len(ut) < n:\n        self.pending_read = n - len(ut)\n        self.read_result = ut\n        return None\n    return ut\n\ndef step(self):\n    if self.pending_write is not None:\n        plass = self.capacity - len(self.buffer)\n        data = self.pending_write\n        skrev = min(plass, len(data))\n        for b in data[:skrev]:\n            self.buffer.append(b)\n        rest = data[skrev:]\n        self.pending_write = rest if rest else None\n    if self.pending_read is not None:\n        tatt = bytes()\n        while self.buffer and len(tatt) < self.pending_read:\n            tatt += bytes([self.buffer.popleft()])\n        self.read_result = (self.read_result or bytes()) + tatt\n        self.pending_read -= len(tatt)\n        if self.pending_read <= 0:\n            self.pending_read = None",
+    },
+
+    // ============ LEKSJON 2 ===========================================
+    {
+      id: "02-named-pipe",
+      title: "2. Named pipe (FIFO): kommunikasjon via navn",
+      narrative:
+        "Anonymous pipes har en alvorlig begrensning: **bare prosesser i samme prosess-familie kan dele en**. Den klassiske bruken er `pipe()` + `fork()` — barneprosessen arver pipe-deskriptoren. To helt urelaterte prosesser kan ikke finne hverandres anonymous pipe.\n\n**Named pipes** (også kalt FIFOs i Unix) løser dette ved å gi pipen et **navn i filsystemet**, typisk `/tmp/min-fifo`. Hvilken som helst prosess som vet navnet kan åpne pipen — som om den var en fil — og lese eller skrive. Bakom kulissene er det fortsatt en pipe-buffer i kernel, ikke en ekte fil på disk; navnet er bare en katalogpost som peker på pipen.\n\nVi modellerer dette med en **`NamedPipeRegistry`** — en class-level dict fra navn til Pipe-objekt. `open(navn)` slår opp i registry og oppretter pipen hvis den ikke finnes; så får to urelaterte prosesser tilgang til samme objekt ved å bare kjenne navnet.\n\n**Din oppgave:**\n\n1. Implementér `NamedPipeRegistry.open(navn, capacity=100)` slik at samme navn alltid returnerer samme Pipe-objekt (singleton per navn).\n2. Implementér `NamedPipeRegistry.unlink(navn)` som fjerner navnet fra registry (analogt med `rm /tmp/min-fifo`).\n3. Skriv `Producer.run()` som åpner pipen `/tmp/fifo-data`, skriver `b\"melding-fra-A\"`, og er ferdig. Skriv `Consumer.run()` som åpner samme navn og leser 13 bytes.",
+      files: {
+        "namedpipe.py": `from collections import deque
+
+
+class Pipe:
+    """Den samme pipen som i leksjon 1, kort gjengitt."""
+    def __init__(self, capacity):
+        self.capacity = capacity
+        self.buffer = deque()
+
+    def write(self, data):
+        plass = self.capacity - len(self.buffer)
+        skrev = min(plass, len(data))
+        for b in data[:skrev]:
+            self.buffer.append(b)
+        return skrev
+
+    def read(self, n):
+        ut = bytes()
+        while self.buffer and len(ut) < n:
+            ut += bytes([self.buffer.popleft()])
+        return ut
+
+
+class NamedPipeRegistry:
+    """Filsystem-mock: navn -> Pipe-objekt. To prosesser som apner samme
+    navn far samme objekt — det er nettopp poenget med named pipes."""
+    _pipes = {}
+
+    @classmethod
+    def open(cls, navn, capacity=100):
+        # === DIN OPPGAVE ===
+        # Hvis navn ikke finnes: opprett ny Pipe(capacity) og lagre i _pipes.
+        # Returner den eksisterende/nye pipen.
+        pass
+
+    @classmethod
+    def unlink(cls, navn):
+        # === DIN OPPGAVE ===
+        # Fjern navnet fra _pipes hvis det finnes. Ikke feil om det mangler.
+        pass
+
+    @classmethod
+    def clear(cls):
+        cls._pipes = {}
+
+
+class Producer:
+    """En "prosess" som skriver til en named pipe."""
+    def __init__(self, pipe_navn, melding):
+        self.pipe_navn = pipe_navn
+        self.melding = melding
+
+    def run(self):
+        # === DIN OPPGAVE ===
+        # Apne pipen ved navn, skriv self.melding.
+        pass
+
+
+class Consumer:
+    """En urelatert "prosess" — den vet bare navnet."""
+    def __init__(self, pipe_navn, antall):
+        self.pipe_navn = pipe_navn
+        self.antall = antall
+        self.mottatt = None
+
+    def run(self):
+        # === DIN OPPGAVE ===
+        # Apne pipen ved navn, les self.antall bytes, lagre i self.mottatt.
+        pass
+
+
+def sjekk(faktisk, forventet, navn):
+    if faktisk == forventet:
+        print(f"OK   {navn}")
+    else:
+        print(f"FEIL {navn}: fikk {faktisk!r}, forventet {forventet!r}")
+
+
+NamedPipeRegistry.clear()
+
+# --- Test 1: samme navn -> samme pipe-objekt (singleton-property) ---
+a = NamedPipeRegistry.open("/tmp/fifo")
+b = NamedPipeRegistry.open("/tmp/fifo")
+sjekk(a is b, True, "to open av samme navn gir samme objekt")
+
+# --- Test 2: ulike navn -> ulike pipes ---
+c = NamedPipeRegistry.open("/tmp/annen-fifo")
+sjekk(a is not c, True, "ulike navn gir ulike pipes")
+
+# --- Test 3: Producer og Consumer urelaterte, samme navn ---
+NamedPipeRegistry.clear()
+prod = Producer("/tmp/fifo-data", b"melding-fra-A")
+cons = Consumer("/tmp/fifo-data", 13)
+
+prod.run()
+# Pipen overlever selv om Producer er "ferdig" — registry holder den.
+cons.run()
+sjekk(cons.mottatt, b"melding-fra-A", "Consumer leste hele meldingen")
+
+# --- Test 4: unlink fjerner navnet, men ikke pipen vi alt holder ---
+existing = NamedPipeRegistry.open("/tmp/midlertidig")
+existing.write(b"data")
+NamedPipeRegistry.unlink("/tmp/midlertidig")
+ny = NamedPipeRegistry.open("/tmp/midlertidig")
+sjekk(ny is existing, False, "etter unlink: ny open gir frisk pipe")
+sjekk(len(ny.buffer), 0, "den friske pipen er tom")
+
+# unlink av ikke-eksisterende navn skal ikke krasje
+NamedPipeRegistry.unlink("/tmp/aldri-fantes")
+print("OK   unlink ukjent navn krasjer ikke")
+`,
+      },
+      defaultFile: "namedpipe.py",
+      editable: ["namedpipe.py"],
+      run: { kind: "python-script", entry: "namedpipe.py" },
+      verifications: [
+        { label: "Samme navn returnerer samme pipe-objekt", check: { kind: "output-contains", needle: "OK   to open av samme navn gir samme objekt" } },
+        { label: "Ulike navn gir ulike pipes", check: { kind: "output-contains", needle: "OK   ulike navn gir ulike pipes" } },
+        { label: "Urelaterte prosesser kan kommunisere via navn", check: { kind: "output-contains", needle: "OK   Consumer leste hele meldingen" } },
+        { label: "unlink frigjor navnet", check: { kind: "output-contains", needle: "OK   etter unlink: ny open gir frisk pipe" } },
+        { label: "unlink av ukjent navn er trygt", check: { kind: "output-contains", needle: "OK   unlink ukjent navn krasjer ikke" } },
+      ],
+      hint:
+        "@classmethod\ndef open(cls, navn, capacity=100):\n    if navn not in cls._pipes:\n        cls._pipes[navn] = Pipe(capacity)\n    return cls._pipes[navn]\n\n@classmethod\ndef unlink(cls, navn):\n    cls._pipes.pop(navn, None)\n\n# Producer.run:\ndef run(self):\n    p = NamedPipeRegistry.open(self.pipe_navn)\n    p.write(self.melding)\n\n# Consumer.run:\ndef run(self):\n    p = NamedPipeRegistry.open(self.pipe_navn)\n    self.mottatt = p.read(self.antall)",
+    },
+
+    // ============ LEKSJON 3 ===========================================
+    {
+      id: "03-message-queue",
+      title: "3. Message queue: strukturerte meldinger, ikke bytes",
+      narrative:
+        "Pipes er **byte-strømmer** — det er ingen meldingsgrenser. Hvis prosess A skriver `b\"hei\"` og `b\"verden\"`, og prosess B leser 11 bytes, får B `b\"heiverden\"` uten å vite hvor den ene meldingen sluttet og den neste begynte. Applikasjonen må selv definere et rammeformat (lengde-prefiks, terminator, e.l.).\n\n**Message queues** løser dette ved å bevare meldingsgrensene: hver `send` legger ett objekt i køen, og `receive` returnerer ett objekt. I tillegg har klassiske SysV-meldingskøer et **type-felt** på hver melding, og leseren kan **filtrere på type** — `receive(msg_type=2)` returnerer bare meldinger som har type 2 (FIFO blant disse). Dette er hvordan en server kan multiplekse forespørsler på én kø.\n\n**Din oppgave:**\n\n1. `send(msg)`: legg `msg` (en dict, må ha `\"msg_type\"`-felt) bakerst i køen.\n2. `receive(msg_type=None)`: hvis `msg_type` er None, returner og fjern første melding. Hvis satt, returner og fjern første melding med matchende type. Returner `None` hvis ingen matcher.",
+      files: {
+        "msgqueue.py": `class MessageQueue:
+    """Bevarer meldingsgrenser og stotter type-basert filtrering."""
+
+    def __init__(self):
+        self.meldinger = []
+
+    def send(self, msg):
+        """Legg meldingen bak i kø. msg er en dict med minst "msg_type"."""
+        # === DIN OPPGAVE ===
+        pass
+
+    def receive(self, msg_type=None):
+        """Hvis msg_type er None: returner og fjern forste melding.
+        Hvis satt: returner og fjern forste melding med matchende type.
+        Returner None hvis ingen passende."""
+        # === DIN OPPGAVE ===
+        pass
+
+    def __len__(self):
+        return len(self.meldinger)
+
+
+def sjekk(faktisk, forventet, navn):
+    if faktisk == forventet:
+        print(f"OK   {navn}")
+    else:
+        print(f"FEIL {navn}: fikk {faktisk!r}, forventet {forventet!r}")
+
+
+# --- Test 1: send og motta i FIFO-orden ---
+q = MessageQueue()
+q.send({"msg_type": 1, "data": "forste"})
+q.send({"msg_type": 1, "data": "andre"})
+q.send({"msg_type": 1, "data": "tredje"})
+sjekk(len(q), 3, "tre meldinger i kø")
+sjekk(q.receive()["data"], "forste", "FIFO: forste melding ut først")
+sjekk(q.receive()["data"], "andre", "FIFO: andre melding ut neste")
+sjekk(len(q), 1, "to fjernet, en igjen")
+
+# --- Test 2: selektiv mottak pa msg_type ---
+q2 = MessageQueue()
+q2.send({"msg_type": 1, "data": "loggmelding-1"})
+q2.send({"msg_type": 2, "data": "kommando-A"})
+q2.send({"msg_type": 1, "data": "loggmelding-2"})
+q2.send({"msg_type": 2, "data": "kommando-B"})
+q2.send({"msg_type": 3, "data": "feilmelding"})
+
+# Hent type 2 (kommandoer) — skal komme i FIFO blant type-2.
+sjekk(q2.receive(msg_type=2)["data"], "kommando-A", "type=2: forste kommando")
+sjekk(q2.receive(msg_type=2)["data"], "kommando-B", "type=2: andre kommando")
+sjekk(q2.receive(msg_type=2), None, "type=2: ingen flere kommandoer")
+
+# Type 1 (logging) er fortsatt intakt og i orden.
+sjekk(q2.receive(msg_type=1)["data"], "loggmelding-1", "type=1 fortsatt FIFO")
+sjekk(q2.receive(msg_type=1)["data"], "loggmelding-2", "type=1 nr 2 FIFO")
+
+# Type 3 (errors) ligger igjen.
+sjekk(len(q2), 1, "kun feilmelding igjen")
+sjekk(q2.receive()["data"], "feilmelding", "uten filter henter neste i kø")
+
+# --- Test 3: receive pa tom kø returnerer None ---
+tom = MessageQueue()
+sjekk(tom.receive(), None, "tom kø: receive gir None")
+sjekk(tom.receive(msg_type=5), None, "tom kø: filtrert receive gir None")
+`,
+      },
+      defaultFile: "msgqueue.py",
+      editable: ["msgqueue.py"],
+      run: { kind: "python-script", entry: "msgqueue.py" },
+      verifications: [
+        { label: "FIFO-orden ivaretas", check: { kind: "output-contains", needle: "OK   FIFO: forste melding ut først" } },
+        { label: "Lengde-telling stemmer", check: { kind: "output-contains", needle: "OK   tre meldinger i kø" } },
+        { label: "Selektiv mottak pa msg_type=2", check: { kind: "output-contains", needle: "OK   type=2: forste kommando" } },
+        { label: "Andre kommando hentes etter forste", check: { kind: "output-contains", needle: "OK   type=2: andre kommando" } },
+        { label: "Ingen flere av type 2 returnerer None", check: { kind: "output-contains", needle: "OK   type=2: ingen flere kommandoer" } },
+        { label: "Type 1 er uberort av type-2-mottakene", check: { kind: "output-contains", needle: "OK   type=1 fortsatt FIFO" } },
+        { label: "Tom kø returnerer None", check: { kind: "output-contains", needle: "OK   tom kø: receive gir None" } },
+      ],
+      hint:
+        "def send(self, msg):\n    self.meldinger.append(msg)\n\ndef receive(self, msg_type=None):\n    if msg_type is None:\n        if not self.meldinger:\n            return None\n        return self.meldinger.pop(0)\n    for i, m in enumerate(self.meldinger):\n        if m.get(\"msg_type\") == msg_type:\n            return self.meldinger.pop(i)\n    return None",
+    },
+
+    // ============ LEKSJON 4 ===========================================
+    {
+      id: "04-shared-memory-lock",
+      title: "4. Shared memory + synkronisering: race og fiksen",
+      narrative:
+        "Pipes og message queues kopierer data — sender skriver, mottaker leser, ferdig. Det er trygt, men ineffektivt for store dataobjekter. **Shared memory** er IPC-mekanismen som *ikke* kopierer: et minneområde mappes inn i adresseromet til flere prosesser, og de leser/skriver direkte i samme bytes.\n\nDette er ekstremt raskt, men prisen er at du **selv må synkronisere** — kjernel beskytter deg ikke lenger. Den klassiske feilen: to prosesser inkrementerer en delt teller. Hver inkrement er egentlig tre operasjoner: les, regn ut +1, skriv tilbake. Hvis scheduleren bytter mellom prosesser midt i sekvensen, kan begge lese den samme verdien og skrive +1 — og en inkrement er borte. Dette er en **race condition**.\n\nFiksen er en **mutex/lock**: før kritisk seksjon, kall `acquire`; etterpå, `release`. Hvis en annen prosess holder låsen, blokkerer du.\n\nVi simulerer det ved at hver prosess utfører ett mikro-steg om gangen (`read`, `compute`, `write`) i en round-robin loop. Uten lock blir interleavingen ødeleggende; med lock må prosessen ha eksklusiv tilgang gjennom hele sekvensen.\n\n**Din oppgave:**\n\n1. `SharedMemory.attach(navn)`: returner samme dict-objekt for samme navn (singleton).\n2. `Lock.acquire(eier)`: hvis ingen eier, sett `eier`, returner True. Ellers returner False (ikke blokker — vi simulerer dette ved at prosessen ikke får gjort progresjon).\n3. `Lock.release(eier)`: frigi låsen kun hvis kalleren er nåværende eier.\n4. `Process.step()`: implementér den 3-fasede syklusen read → compute → write, og hvis prosessen har en lock, må den holde låsen gjennom hele syklusen.",
+      files: {
+        "shmem.py": `class SharedMemory:
+    """Et navngitt delt segment — flere "prosesser" leser/skriver samme dict."""
+    _segments = {}
+
+    @classmethod
+    def attach(cls, navn):
+        # === DIN OPPGAVE ===
+        # Hvis navn ikke finnes, opprett {"value": 0} og lagre.
+        # Returner segmentet.
+        pass
+
+    @classmethod
+    def reset(cls):
+        cls._segments = {}
+
+
+class Lock:
+    """Primitiv mutex — eid av en bestemt eier eller fri."""
+
+    def __init__(self):
+        self.eier = None
+
+    def acquire(self, eier):
+        # === DIN OPPGAVE ===
+        # Hvis self.eier er None: sett self.eier = eier; returner True.
+        # Ellers: returner False (prosessen far ikke gjort noe na).
+        pass
+
+    def release(self, eier):
+        # === DIN OPPGAVE ===
+        # Frigi kun hvis kalleren er navarende eier.
+        pass
+
+
+class Process:
+    """Utforer en increment-loop ett mikro-steg om gangen.
+    Faser: read -> compute -> write -> (telle ned iterasjon)."""
+
+    def __init__(self, pid, iterasjoner, seg, lock=None):
+        self.pid = pid
+        self.iter_igjen = iterasjoner
+        self.seg = seg
+        self.lock = lock
+        self.phase = "read"
+        self.local = 0
+
+    def is_done(self):
+        return self.iter_igjen == 0
+
+    def step(self):
+        if self.is_done():
+            return
+        # === DIN OPPGAVE ===
+        # 1. Hvis self.lock er satt og vi ikke eier den: forsok acquire(self.pid).
+        #    Hvis ikke vi far den: return (blokkert).
+        # 2. Hvis phase == "read": self.local = self.seg["value"]; phase = "compute".
+        # 3. Elif phase == "compute": self.local += 1; phase = "write".
+        # 4. Elif phase == "write":
+        #      self.seg["value"] = self.local
+        #      self.phase = "read"
+        #      self.iter_igjen -= 1
+        #      hvis lock: self.lock.release(self.pid)
+        pass
+
+
+def kjor_interleaved(processes):
+    """Round-robin scheduler: stepper alle prosesser pa rundgang til ferdig."""
+    while any(not p.is_done() for p in processes):
+        for p in processes:
+            p.step()
+
+
+def sjekk(faktisk, forventet, navn):
+    if faktisk == forventet:
+        print(f"OK   {navn}")
+    else:
+        print(f"FEIL {navn}: fikk {faktisk!r}, forventet {forventet!r}")
+
+
+# --- Test 1: shared memory er virkelig delt mellom attach ---
+SharedMemory.reset()
+a = SharedMemory.attach("teller")
+b = SharedMemory.attach("teller")
+a["value"] = 42
+sjekk(b["value"], 42, "to attach til samme navn deler segmentet")
+
+# --- Test 2: UTEN lock -> race condition gir tap ---
+SharedMemory.reset()
+seg = SharedMemory.attach("teller")
+p1 = Process(pid=1, iterasjoner=1000, seg=seg)
+p2 = Process(pid=2, iterasjoner=1000, seg=seg)
+kjor_interleaved([p1, p2])
+verdi_uten_lock = seg["value"]
+print(f"Uten lock: {verdi_uten_lock} (forventet 2000 hvis ingen race)")
+sjekk(verdi_uten_lock < 2000, True, "uten lock: race tap (verdi < 2000)")
+
+# --- Test 3: MED lock -> alle inkrementer registrert ---
+SharedMemory.reset()
+seg2 = SharedMemory.attach("teller")
+lock = Lock()
+p3 = Process(pid=3, iterasjoner=1000, seg=seg2, lock=lock)
+p4 = Process(pid=4, iterasjoner=1000, seg=seg2, lock=lock)
+kjor_interleaved([p3, p4])
+sjekk(seg2["value"], 2000, "med lock: alle inkrementer registrert")
+
+# --- Test 4: lock-eierskap ---
+l = Lock()
+sjekk(l.acquire("A"), True, "A far lock som er fri")
+sjekk(l.acquire("B"), False, "B nektes lock som A holder")
+l.release("B")  # skal ikke frigi (B er ikke eier)
+sjekk(l.eier, "A", "release fra ikke-eier ignoreres")
+l.release("A")
+sjekk(l.eier, None, "release fra eier frigir")
+sjekk(l.acquire("B"), True, "B far lock etter frigjoring")
+`,
+      },
+      defaultFile: "shmem.py",
+      editable: ["shmem.py"],
+      run: { kind: "python-script", entry: "shmem.py" },
+      verifications: [
+        { label: "Shared memory er delt mellom attach-kall", check: { kind: "output-contains", needle: "OK   to attach til samme navn deler segmentet" } },
+        { label: "Race condition uten lock gir tap", check: { kind: "output-contains", needle: "OK   uten lock: race tap (verdi < 2000)" } },
+        { label: "Lock fikser racen — alle inkrementer registreres", check: { kind: "output-contains", needle: "OK   med lock: alle inkrementer registrert" } },
+        { label: "Lock kan eies av kun en om gangen", check: { kind: "output-contains", needle: "OK   B nektes lock som A holder" } },
+        { label: "Release fra ikke-eier er en no-op", check: { kind: "output-contains", needle: "OK   release fra ikke-eier ignoreres" } },
+        { label: "Eier kan frigi og noen andre far lock", check: { kind: "output-contains", needle: "OK   B far lock etter frigjoring" } },
+      ],
+      hint:
+        "# SharedMemory.attach:\n@classmethod\ndef attach(cls, navn):\n    if navn not in cls._segments:\n        cls._segments[navn] = {\"value\": 0}\n    return cls._segments[navn]\n\n# Lock:\ndef acquire(self, eier):\n    if self.eier is None:\n        self.eier = eier\n        return True\n    return False\n\ndef release(self, eier):\n    if self.eier == eier:\n        self.eier = None\n\n# Process.step:\ndef step(self):\n    if self.is_done():\n        return\n    if self.lock is not None and self.lock.eier != self.pid:\n        if not self.lock.acquire(self.pid):\n            return\n    if self.phase == \"read\":\n        self.local = self.seg[\"value\"]\n        self.phase = \"compute\"\n    elif self.phase == \"compute\":\n        self.local += 1\n        self.phase = \"write\"\n    elif self.phase == \"write\":\n        self.seg[\"value\"] = self.local\n        self.phase = \"read\"\n        self.iter_igjen -= 1\n        if self.lock is not None:\n            self.lock.release(self.pid)",
+    },
+
+    // ============ LEKSJON 5 ===========================================
+    {
+      id: "05-unix-socket",
+      title: "5. Unix-domene sockets: request/response",
+      narrative:
+        "Pipes, FIFOs og message queues er alle **én-veis** eller kø-orienterte. For request/response — der klient sender en forespørsel og forventer et svar tilbake — er **sockets** den naturlige abstraksjonen. Unix-domene sockets bruker en filsystem-sti som adresse (`/tmp/echo.sock`), mens TCP-sockets bruker `(host, port)`; API-et er identisk, så koden du skriver mot Unix-sockets fungerer (nesten) uendret over nettverk.\n\nKjernekonseptet er **lytt og kobl**. Server-siden gjør:\n\n1. `bind(path)` — reserver adressen.\n2. `listen()` — gå i lyttetilstand.\n3. `accept()` — vent på en innkommende tilkobling, returner en *ny* socket dedikert til den klienten. Lyttesocket-en lever videre og kan akseptere flere.\n\nKlient-siden gjør `connect(path)`. Etter at `accept` paret dem, har vi et bi-direksjonelt rør: `send`/`recv` virker begge veier.\n\nVi modellerer kanalen med et `Connection`-objekt som har én rx-buffer for hver side. Når klient sender, havner bytes i `server_rx`, og omvendt. Det gir oss en deterministisk simulering uten ekte sockets eller threading.\n\n**Din oppgave:**\n\n1. `bind(path)`: registrer denne socket-en i `SocketRegistry` under `path`.\n2. `connect(path)`: slå opp lyttesocketen og legg deg selv i dens `backlog`.\n3. `accept()`: pop første ventende klient fra backlog, lag et nytt `Connection`-objekt, koble klient og en ny server-side socket til samme kanal. Returner server-siden. Returner `None` hvis backlog er tom.\n4. `send(data)` / `recv(n)`: skriv/les fra riktig side av Connection-objektet (klient skriver til `server_rx`, server skriver til `client_rx`).",
+      files: {
+        "socket.py": `from collections import deque
+
+
+class SocketRegistry:
+    """Filsystem-mock: path -> bundet UnixSocket i lyttetilstand."""
+    _bound = {}
+
+    @classmethod
+    def bind(cls, path, sock):
+        if path in cls._bound:
+            raise OSError(f"Address already in use: {path}")
+        cls._bound[path] = sock
+
+    @classmethod
+    def lookup(cls, path):
+        return cls._bound.get(path)
+
+    @classmethod
+    def clear(cls):
+        cls._bound = {}
+
+
+class Connection:
+    """Bi-direksjonell kanal — en rx-buffer pa hver side."""
+    def __init__(self):
+        self.server_rx = deque()   # det server-siden leser
+        self.client_rx = deque()   # det klient-siden leser
+
+
+class UnixSocket:
+    """En socket. Tilstander:
+       - "idle" (frisk)
+       - "listening" (etter bind + listen)
+       - "connected" (etter connect/accept)
+    """
+
+    def __init__(self):
+        self.state = "idle"
+        self.path = None
+        self.backlog = deque()   # ventende connect-forespørsler (kun for listener)
+        self.conn = None
+        self.side = None          # "server" eller "client"
+
+    def bind(self, path):
+        # === DIN OPPGAVE ===
+        # Registrer i SocketRegistry og lagre path.
+        pass
+
+    def listen(self):
+        if self.path is None:
+            raise OSError("listen() krever bind() forst")
+        self.state = "listening"
+
+    def accept(self):
+        """Returner ny server-side-socket koblet til ventende klient,
+        eller None hvis backlog er tom."""
+        if self.state != "listening":
+            raise OSError("accept krever listen-state")
+        # === DIN OPPGAVE ===
+        # if not self.backlog: return None
+        # client_sock = self.backlog.popleft()
+        # conn = Connection()
+        # server_side = UnixSocket()
+        # server_side.state = "connected"
+        # server_side.conn = conn
+        # server_side.side = "server"
+        # client_sock.state = "connected"
+        # client_sock.conn = conn
+        # client_sock.side = "client"
+        # return server_side
+        pass
+
+    def connect(self, path):
+        listener = SocketRegistry.lookup(path)
+        if listener is None or listener.state != "listening":
+            raise ConnectionRefusedError(path)
+        # === DIN OPPGAVE ===
+        # Legg deg selv (self) bak i listenerens backlog.
+        # Tilstand settes til "connected" av motsatt sides accept().
+        pass
+
+    def send(self, data):
+        if self.state != "connected":
+            raise OSError("send krever tilkoblet socket")
+        # === DIN OPPGAVE ===
+        # Klient skriver til server_rx; server skriver til client_rx.
+        # Returner antall bytes sendt.
+        pass
+
+    def recv(self, n):
+        if self.state != "connected":
+            raise OSError("recv krever tilkoblet socket")
+        # === DIN OPPGAVE ===
+        # Klient leser fra client_rx; server leser fra server_rx.
+        # Returner opp til n bytes (det som ligger der nå).
+        pass
+
+
+def sjekk(faktisk, forventet, navn):
+    if faktisk == forventet:
+        print(f"OK   {navn}")
+    else:
+        print(f"FEIL {navn}: fikk {faktisk!r}, forventet {forventet!r}")
+
+
+SocketRegistry.clear()
+
+# --- Test 1: bind + listen + accept-konstruksjon ---
+server = UnixSocket()
+server.bind("/tmp/echo.sock")
+server.listen()
+
+klient = UnixSocket()
+klient.connect("/tmp/echo.sock")
+sjekk(len(server.backlog), 1, "klient er i serverens backlog etter connect")
+
+server_side = server.accept()
+sjekk(server_side is not None, True, "accept returnerer en ny socket")
+sjekk(klient.state, "connected", "klient er tilkoblet etter accept")
+sjekk(server_side.side, "server", "server_side har riktig rolle")
+
+# --- Test 2: ekte echo-server: klient sender "hei", server speiler tilbake ---
+klient.send(b"hei")
+mottatt = server_side.recv(100)
+sjekk(mottatt, b"hei", "server leste hei")
+server_side.send(mottatt)
+ekko = klient.recv(100)
+sjekk(ekko, b"hei", "klient fikk echo tilbake")
+
+# --- Test 3: connect til ukjent path gir ConnectionRefusedError ---
+fant_feil = False
+try:
+    UnixSocket().connect("/tmp/finnes-ikke")
+except ConnectionRefusedError:
+    fant_feil = True
+sjekk(fant_feil, True, "connect til ukjent path gir ConnectionRefused")
+
+# --- Test 4: server haandterer to klienter uavhengig ---
+k2 = UnixSocket()
+k2.connect("/tmp/echo.sock")
+server_side2 = server.accept()
+k2.send(b"verden")
+sjekk(server_side2.recv(100), b"verden", "klient 2 har sin egen kanal")
+
+# Forrige par paavirkes ikke.
+klient.send(b"runde-2")
+sjekk(server_side.recv(100), b"runde-2", "klient 1 sin kanal er uberorta")
+
+# --- Test 5: bind to ganger til samme path gir OSError ---
+fant = False
+try:
+    annen = UnixSocket()
+    annen.bind("/tmp/echo.sock")
+except OSError:
+    fant = True
+sjekk(fant, True, "dobbel bind krasjer med OSError")
+`,
+      },
+      defaultFile: "socket.py",
+      editable: ["socket.py"],
+      run: { kind: "python-script", entry: "socket.py" },
+      verifications: [
+        { label: "bind + listen + connect bygger kobling", check: { kind: "output-contains", needle: "OK   klient er i serverens backlog etter connect" } },
+        { label: "accept gir ny socket koblet til klient", check: { kind: "output-contains", needle: "OK   accept returnerer en ny socket" } },
+        { label: "Klient blir tilkoblet etter accept", check: { kind: "output-contains", needle: "OK   klient er tilkoblet etter accept" } },
+        { label: "Echo: server mottar klientens bytes", check: { kind: "output-contains", needle: "OK   server leste hei" } },
+        { label: "Echo: klient mottar svar fra server", check: { kind: "output-contains", needle: "OK   klient fikk echo tilbake" } },
+        { label: "connect til ukjent path feiler", check: { kind: "output-contains", needle: "OK   connect til ukjent path gir ConnectionRefused" } },
+        { label: "Flere klienter har uavhengige kanaler", check: { kind: "output-contains", needle: "OK   klient 2 har sin egen kanal" } },
+        { label: "Dobbel bind feiler med OSError", check: { kind: "output-contains", needle: "OK   dobbel bind krasjer med OSError" } },
+      ],
+      hint:
+        "def bind(self, path):\n    SocketRegistry.bind(path, self)\n    self.path = path\n\ndef accept(self):\n    if self.state != \"listening\":\n        raise OSError(\"accept krever listen-state\")\n    if not self.backlog:\n        return None\n    client_sock = self.backlog.popleft()\n    conn = Connection()\n    server_side = UnixSocket()\n    server_side.state = \"connected\"\n    server_side.conn = conn\n    server_side.side = \"server\"\n    client_sock.state = \"connected\"\n    client_sock.conn = conn\n    client_sock.side = \"client\"\n    return server_side\n\ndef connect(self, path):\n    listener = SocketRegistry.lookup(path)\n    if listener is None or listener.state != \"listening\":\n        raise ConnectionRefusedError(path)\n    listener.backlog.append(self)\n\ndef send(self, data):\n    if self.state != \"connected\":\n        raise OSError(\"send krever tilkoblet socket\")\n    if self.side == \"client\":\n        self.conn.server_rx.extend(data)\n    else:\n        self.conn.client_rx.extend(data)\n    return len(data)\n\ndef recv(self, n):\n    if self.state != \"connected\":\n        raise OSError(\"recv krever tilkoblet socket\")\n    kilde = self.conn.client_rx if self.side == \"client\" else self.conn.server_rx\n    ut = bytes()\n    while kilde and len(ut) < n:\n        ut += bytes([kilde.popleft()])\n    return ut",
+    },
+  ],
+};
+
+const CLT_SAMPLING: MiniCourse = {
+  id: "clt-sampling",
+  slug: "clt-sampling",
+  title: "Sentralgrense-teoremet + sampling distributions",
+  blurb:
+    "Bygg sentralgrense-teoremet (CLT) fra null — start med en bimodal populasjon, ta tusenvis av samples, og se hvordan sampling distribution av mean blir normalfordelt selv om populasjonen IKKE er det. Endre med standardfeil-formelen, konfidensintervaller, og en titt på når n er for liten.",
+  estimertTid: "60–75 min",
+  fag: ["TEK-1501", "Statistikk", "Sentralgrense"],
+  color: "success",
+  rekkefolge: 10,
+  lessons: [
+    // ============ LEKSJON 1 ===========================================
+    {
+      id: "01-populasjon-vs-sample",
+      title: "1. Populasjon vs sample: hva er fordelingen din?",
+      narrative:
+        "Før vi snakker om CLT må vi være knivskarpe på forskjellen mellom **populasjon** og **sample** (utvalg).\n\n- **Populasjon**: ALLE objektene vi bryr oss om — for eksempel høyden til samtlige voksne på øya. Populasjonens gjennomsnitt (`mu`) og standardavvik (`sigma`) er deterministiske, kjente størrelser hvis vi kunne måle alle.\n- **Sample**: et utdrag av populasjonen — n målinger plukket ut (forhåpentligvis tilfeldig). Sample-statistikker (`x̄`, `s`) er TILFELDIGE — de varierer fra utvalg til utvalg.\n\nFor å bygge intuisjon trenger vi en konkret populasjon. Vi simulerer en **bimodal** populasjon — for eksempel høyden til en blandet befolkning av to grupper (kortere kvinner rundt 150 cm, lengre menn rundt 185 cm). Dette er bevisst IKKE normalfordelt: histogrammet har TO topper med en dal i midten. Det er det vi får mye av CLT-magien fra senere.\n\n**Din oppgave:** implementér `mean(values)` og `std(values)` (populasjons-std, deler på n — ikke n-1). Disse er fundamentet for alt som kommer.",
+      files: {
+        "clt.py": `import random
+import math
+
+# Bygg populasjonen deterministisk - bimodal blanding av to grupper.
+def bygg_populasjon():
+    rng = random.Random(2026)
+    pop = []
+    for _ in range(10000):
+        if rng.random() < 0.5:
+            pop.append(rng.gauss(150, 6))   # gruppe A
+        else:
+            pop.append(rng.gauss(185, 6))   # gruppe B
+    return tuple(pop)
+
+POPULATION = bygg_populasjon()
+
+
+def mean(values):
+    "Aritmetisk gjennomsnitt: sum / antall."
+    # === DIN OPPGAVE ===
+    # Returner sum(values) / len(values)
+    pass
+
+
+def std(values):
+    "Populasjons-standardavvik: kvadratroten av gjennomsnittlig kvadrert avvik fra mean."
+    # === DIN OPPGAVE ===
+    # 1. m = mean(values)
+    # 2. var = gjennomsnittet av (v - m)**2 over alle v
+    # 3. returner math.sqrt(var)
+    pass
+
+
+def ascii_histogram(values, num_buckets=20, width=40, label=""):
+    "Print ascii-histogram. Bucket verdier i num_buckets like brede intervaller."
+    lo = min(values)
+    hi = max(values)
+    if hi == lo:
+        print("(alle verdier like)")
+        return
+    bucket_size = (hi - lo) / num_buckets
+    counts = [0] * num_buckets
+    for v in values:
+        idx = int((v - lo) / bucket_size)
+        if idx == num_buckets:
+            idx = num_buckets - 1
+        counts[idx] += 1
+    max_count = max(counts) if max(counts) > 0 else 1
+    if label:
+        print(label)
+    for i, c in enumerate(counts):
+        bin_start = lo + i * bucket_size
+        bars = int(width * c / max_count)
+        print(f"  {bin_start:7.2f} | {'*' * bars} ({c})")
+
+
+def sjekk_naer(faktisk, forventet, navn, toleranse=0.5):
+    if faktisk is None:
+        print(f"FEIL {navn}: fikk None (ikke implementert?)")
+        return
+    if abs(faktisk - forventet) < toleranse:
+        print(f"OK   {navn}")
+    else:
+        print(f"FEIL {navn}: fikk {faktisk!r}, forventet ca {forventet!r}")
+
+
+# Test mean
+sjekk_naer(mean([1.0, 2.0, 3.0]), 2.0, "mean av [1,2,3] er 2", toleranse=1e-9)
+sjekk_naer(mean([5.0, 5.0, 5.0, 5.0]), 5.0, "mean av konstanter er den konstanten", toleranse=1e-9)
+
+# Test std
+sjekk_naer(std([5.0, 5.0, 5.0]), 0.0, "std av konstanter er 0", toleranse=1e-9)
+# var([1,2,3,4,5]) = ((4+1+0+1+4)/5) = 2.0, std = sqrt(2) ~= 1.4142
+sjekk_naer(std([1.0, 2.0, 3.0, 4.0, 5.0]), math.sqrt(2.0), "std av [1..5] er sqrt(2)", toleranse=1e-6)
+
+# Populasjons-statistikker
+if mean(POPULATION) is None or std(POPULATION) is None:
+    print("FEIL: mean/std ikke implementert - kan ikke teste populasjon")
+else:
+    mu = mean(POPULATION)
+    sigma = std(POPULATION)
+    print(f"\\nPopulasjons-mean = {mu:.4f}")
+    print(f"Populasjons-std  = {sigma:.4f}")
+
+    if 165 < mu < 170:
+        print("OK   populasjons-mean ligger mellom de to klyngene (~167)")
+    else:
+        print(f"FEIL: mu={mu}")
+
+    if 17 < sigma < 20:
+        print("OK   populasjons-std er ca 18 (stor pga to klynger)")
+    else:
+        print(f"FEIL: sigma={sigma}")
+
+    ascii_histogram(POPULATION, num_buckets=20, width=40,
+                    label="\\nPOPULASJON (skal vaere bimodal - to topper med dal):")
+
+    # Sjekk at populasjonen IKKE er normal - midten skal ha mindre tetthet enn endene
+    lo, hi = min(POPULATION), max(POPULATION)
+    bs = (hi - lo) / 20
+    counts = [0] * 20
+    for v in POPULATION:
+        idx = int((v - lo) / bs)
+        if idx == 20:
+            idx = 19
+        counts[idx] += 1
+    midt_snitt = (counts[9] + counts[10]) / 2
+    max_count = max(counts)
+    if midt_snitt < max_count * 0.5:
+        print("OK   populasjonen er IKKE normalfordelt (tydelig dipp i midten)")
+    else:
+        print(f"FEIL: forventet bimodal, midt_snitt={midt_snitt} vs max={max_count}")
+`,
+      },
+      defaultFile: "clt.py",
+      editable: ["clt.py"],
+      run: { kind: "python-script", entry: "clt.py" },
+      verifications: [
+        { label: "mean regnes riktig", check: { kind: "output-contains", needle: "OK   mean av [1,2,3] er 2" } },
+        { label: "mean av konstanter", check: { kind: "output-contains", needle: "OK   mean av konstanter er den konstanten" } },
+        { label: "std av konstanter er 0", check: { kind: "output-contains", needle: "OK   std av konstanter er 0" } },
+        { label: "std av [1..5] er sqrt(2)", check: { kind: "output-contains", needle: "OK   std av [1..5] er sqrt(2)" } },
+        { label: "Populasjons-mean ligger mellom klyngene", check: { kind: "output-contains", needle: "OK   populasjons-mean ligger mellom de to klyngene" } },
+        { label: "Populasjons-std er ca 18", check: { kind: "output-contains", needle: "OK   populasjons-std er ca 18" } },
+        { label: "Populasjonen er bimodal (ikke normal)", check: { kind: "output-contains", needle: "OK   populasjonen er IKKE normalfordelt" } },
+      ],
+      hint:
+        "def mean(values):\n    return sum(values) / len(values)\n\ndef std(values):\n    m = mean(values)\n    var = sum((v - m) ** 2 for v in values) / len(values)\n    return math.sqrt(var)",
+    },
+
+    // ============ LEKSJON 2 ===========================================
+    {
+      id: "02-en-sample",
+      title: "2. Én sample, ett sample-mean",
+      narrative:
+        "Nå tar vi vårt FØRSTE sample fra populasjonen. Vi har 10000 verdier i populasjonen, men i virkeligheten ville vi sjelden måle alle — ofte måler vi bare n=30 eller så.\n\n`sample(population, n, seed)` returnerer et tilfeldig utvalg av størrelse n, **med erstatning** (vi kan tilfeldigvis trekke samme verdi to ganger — det er greit her, og det er nødvendig for at teorien skal være ren). For reproduserbarhet bruker vi en `random.Random(seed)`-instans i stedet for den globale `random`-modulen.\n\nViktig observasjon: sample-mean er **nær** populasjons-mean (167.24), men ikke eksakt. Trekk et nytt sample, du får et nytt sample-mean. Trekk 1000 ganger, du får 1000 forskjellige verdier. Det er DENNE variasjonen som blir hovedtema i neste leksjon — sampling distribution.\n\n**Din oppgave:** implementér `sample(population, n, seed)` med `random.Random(seed).choices(population, k=n)`. Implementér `sample_mean(population, n, seed)` som returnerer mean av samplet.",
+      files: {
+        "clt.py": `import random
+import math
+
+
+def bygg_populasjon():
+    rng = random.Random(2026)
+    pop = []
+    for _ in range(10000):
+        if rng.random() < 0.5:
+            pop.append(rng.gauss(150, 6))
+        else:
+            pop.append(rng.gauss(185, 6))
+    return tuple(pop)
+
+POPULATION = bygg_populasjon()
+
+
+def mean(values):
+    return sum(values) / len(values)
+
+
+def std(values):
+    m = mean(values)
+    return math.sqrt(sum((v - m) ** 2 for v in values) / len(values))
+
+
+def sample(population, n, seed):
+    "Trekk n verdier med erstatning. Bruk random.Random(seed) for reproduserbarhet."
+    # === DIN OPPGAVE ===
+    # rng = random.Random(seed)
+    # returner rng.choices(population, k=n)
+    pass
+
+
+def sample_mean(population, n, seed):
+    "Returner mean av ett sample av storrelse n."
+    # === DIN OPPGAVE ===
+    # 1. Hent et sample med sample(population, n, seed)
+    # 2. Returner mean(sample)
+    pass
+
+
+POP_MEAN = mean(POPULATION)
+POP_STD = std(POPULATION)
+print(f"Populasjon: mean={POP_MEAN:.4f}, std={POP_STD:.4f}\\n")
+
+# Test sample
+s1 = sample(POPULATION, 30, seed=1)
+if s1 is None:
+    print("FEIL sample: ikke implementert")
+else:
+    if len(s1) == 30:
+        print("OK   sample returnerer riktig antall verdier (n=30)")
+    else:
+        print(f"FEIL: len(sample)={len(s1)}")
+
+    # alle verdiene maa komme fra populasjonen
+    pop_set = set(POPULATION)
+    if all(v in pop_set for v in s1):
+        print("OK   sample-verdier kommer fra populasjonen")
+    else:
+        print("FEIL: sample inneholder verdier utenfor populasjonen")
+
+    # Reproduserbart med samme seed
+    s1_igjen = sample(POPULATION, 30, seed=1)
+    if list(s1) == list(s1_igjen):
+        print("OK   samme seed gir samme sample")
+    else:
+        print("FEIL: samme seed gir ulike samples")
+
+    # Annet seed -> annet sample
+    s2 = sample(POPULATION, 30, seed=2)
+    if list(s1) != list(s2):
+        print("OK   ulik seed gir ulike samples")
+
+# Test sample_mean
+m1 = sample_mean(POPULATION, 30, seed=1)
+if m1 is None:
+    print("FEIL sample_mean: ikke implementert")
+else:
+    print(f"\\nSample-mean (n=30, seed=1) = {m1:.4f}")
+    print(f"Avstand fra populasjons-mean: {abs(m1 - POP_MEAN):.4f}")
+
+    # Sample-mean fra n=30 fra denne populasjonen burde vaere innenfor +-10 av sann mean
+    if abs(m1 - POP_MEAN) < 10:
+        print("OK   sample-mean er rimelig naer populasjons-mean (men ikke eksakt)")
+    else:
+        print(f"FEIL: sample-mean for langt unna: {m1}")
+
+    # Sample-mean varierer med seed
+    means_med_ulike_seeds = [sample_mean(POPULATION, 30, seed=s) for s in range(10)]
+    unike = len(set(means_med_ulike_seeds))
+    if unike >= 9:
+        print(f"OK   sample-mean varierer med seed ({unike}/10 unike verdier)")
+    else:
+        print(f"FEIL: forventet variasjon, men fikk bare {unike} unike means")
+`,
+      },
+      defaultFile: "clt.py",
+      editable: ["clt.py"],
+      run: { kind: "python-script", entry: "clt.py" },
+      verifications: [
+        { label: "sample returnerer n verdier", check: { kind: "output-contains", needle: "OK   sample returnerer riktig antall verdier" } },
+        { label: "sample-verdier kommer fra populasjonen", check: { kind: "output-contains", needle: "OK   sample-verdier kommer fra populasjonen" } },
+        { label: "Samme seed gir samme sample", check: { kind: "output-contains", needle: "OK   samme seed gir samme sample" } },
+        { label: "Ulik seed gir ulike samples", check: { kind: "output-contains", needle: "OK   ulik seed gir ulike samples" } },
+        { label: "Sample-mean er naer (men ikke lik) populasjons-mean", check: { kind: "output-contains", needle: "OK   sample-mean er rimelig naer" } },
+        { label: "Sample-mean varierer mellom samples", check: { kind: "output-contains", needle: "OK   sample-mean varierer med seed" } },
+      ],
+      hint:
+        "def sample(population, n, seed):\n    rng = random.Random(seed)\n    return rng.choices(population, k=n)\n\ndef sample_mean(population, n, seed):\n    return mean(sample(population, n, seed))",
+    },
+
+    // ============ LEKSJON 3 ===========================================
+    {
+      id: "03-sampling-distribution",
+      title: "3. Sampling distribution: kjernen i CLT",
+      narrative:
+        "Nå når kjernen i hele kurset. Vi tok ETT sample-mean i forrige leksjon — men hva skjer hvis vi tar 1000 samples, regner mean av hvert, og ser på fordelingen av disse 1000 mean-verdiene?\n\nDette kalles **sampling distribution of the mean**. Det er en helt egen fordeling — IKKE fordelingen av rå data, men fordelingen av sample-statistikker.\n\n**Sentralgrenseteoremet** (CLT) sier:\n\n> Uansett hvilken form populasjonen har, vil sampling distribution of the mean (av mange samples av størrelse n) nærme seg en **normalfordeling** ettersom n blir stor — med gjennomsnitt `mu` og standardavvik `sigma/sqrt(n)`.\n\nDette er en av de mest forbløffende setningene i hele statistikken. Populasjonen vår er BIMODAL (to topper, dal i midten). Likevel: hvis vi tar mange samples av størrelse n=30 og histogrammerer mean-verdiene, ser vi en pen klokkekurve som er **normalfordelt rundt populasjons-mean**.\n\n**Din oppgave:** implementér `sampling_distribution(population, n, num_samples, seed)` som tar `num_samples` (typisk 1000) ulike samples av størrelse `n`, regner mean for hvert, og returnerer listen. Bruk én delt `rng = random.Random(seed)` for ALLE samples (ikke ny rng per sample — det blir ikke uavhengig).",
+      files: {
+        "clt.py": `import random
+import math
+
+
+def bygg_populasjon():
+    rng = random.Random(2026)
+    pop = []
+    for _ in range(10000):
+        if rng.random() < 0.5:
+            pop.append(rng.gauss(150, 6))
+        else:
+            pop.append(rng.gauss(185, 6))
+    return tuple(pop)
+
+POPULATION = bygg_populasjon()
+
+
+def mean(values):
+    return sum(values) / len(values)
+
+
+def std(values):
+    m = mean(values)
+    return math.sqrt(sum((v - m) ** 2 for v in values) / len(values))
+
+
+def sampling_distribution(population, n, num_samples, seed=42):
+    "Returner liste av num_samples sample-means, hvert beregnet fra et tilfeldig sample av storrelse n."
+    # === DIN OPPGAVE ===
+    # rng = random.Random(seed)
+    # means = []
+    # gjenta num_samples ganger:
+    #     s = rng.choices(population, k=n)
+    #     means.append(sum(s) / n)
+    # returner means
+    pass
+
+
+def ascii_histogram(values, num_buckets=20, width=40, label=""):
+    lo = min(values)
+    hi = max(values)
+    if hi == lo:
+        print("(alle verdier like)")
+        return
+    bucket_size = (hi - lo) / num_buckets
+    counts = [0] * num_buckets
+    for v in values:
+        idx = int((v - lo) / bucket_size)
+        if idx == num_buckets:
+            idx = num_buckets - 1
+        counts[idx] += 1
+    max_count = max(counts) if max(counts) > 0 else 1
+    if label:
+        print(label)
+    for i, c in enumerate(counts):
+        bin_start = lo + i * bucket_size
+        bars = int(width * c / max_count)
+        print(f"  {bin_start:7.2f} | {'*' * bars} ({c})")
+
+
+POP_MEAN = mean(POPULATION)
+POP_STD = std(POPULATION)
+print(f"Populasjon: mean={POP_MEAN:.4f}, std={POP_STD:.4f} (BIMODAL)\\n")
+
+means = sampling_distribution(POPULATION, n=30, num_samples=1000, seed=42)
+if means is None:
+    print("FEIL sampling_distribution: ikke implementert")
+else:
+    print(f"Sampling distribution: n=30, num_samples={len(means)}")
+
+    if len(means) == 1000:
+        print("OK   sampling_distribution returnerer num_samples elementer")
+    else:
+        print(f"FEIL: lengde={len(means)}, forventet 1000")
+
+    sd_mean = mean(means)
+    sd_std = std(means)
+    print(f"  mean of means = {sd_mean:.4f}  (forventet ca {POP_MEAN:.4f})")
+    print(f"  std of means  = {sd_std:.4f}  (forventet ca {POP_STD / math.sqrt(30):.4f})")
+
+    # Test: mean of means er naer populasjons-mean
+    if abs(sd_mean - POP_MEAN) < 1.0:
+        print("OK   mean of sample means er naer populasjons-mean")
+    else:
+        print(f"FEIL: avstand={abs(sd_mean - POP_MEAN)}")
+
+    # Test: std of means er naer sigma/sqrt(n) (innenfor 15%)
+    teor_se = POP_STD / math.sqrt(30)
+    rel_err = abs(sd_std - teor_se) / teor_se
+    if rel_err < 0.15:
+        print(f"OK   std of sample means matcher sigma/sqrt(n) (rel-err={rel_err*100:.2f}%)")
+    else:
+        print(f"FEIL: rel_err={rel_err*100}%")
+
+    ascii_histogram(means, num_buckets=20, width=40,
+                    label="\\nSAMPLING DISTRIBUTION av mean (n=30):")
+
+    # Test: histogrammet skal vaere unimodalt og symmetrisk (i sterk kontrast til den bimodale populasjonen)
+    lo, hi = min(means), max(means)
+    bs = (hi - lo) / 20
+    counts = [0] * 20
+    for v in means:
+        idx = int((v - lo) / bs)
+        if idx == 20:
+            idx = 19
+        counts[idx] += 1
+    # Midten skal vaere DER toppen er - i motsetning til populasjonen
+    mid_avg = (counts[8] + counts[9] + counts[10] + counts[11]) / 4
+    max_count = max(counts)
+    if mid_avg >= max_count * 0.6:
+        print("OK   sampling distribution er unimodal (klokkeform - CLT virker!)")
+    else:
+        print(f"FEIL: mid_avg={mid_avg} vs max={max_count}")
+
+    # Bonus: midt-pukken er ikke ved 150 eller 185 (populasjons-topper), men ved 167 (populasjons-mean)
+    peak_bin_start = lo + bs * counts.index(max(counts))
+    if 165 < peak_bin_start < 170:
+        print(f"OK   toppen er ved ~167 (mu), IKKE ved 150 eller 185 (populasjons-topper)")
+`,
+      },
+      defaultFile: "clt.py",
+      editable: ["clt.py"],
+      run: { kind: "python-script", entry: "clt.py" },
+      verifications: [
+        { label: "Returnerer num_samples mean-verdier", check: { kind: "output-contains", needle: "OK   sampling_distribution returnerer num_samples elementer" } },
+        { label: "Mean of sample means er naer populasjons-mean", check: { kind: "output-contains", needle: "OK   mean of sample means er naer populasjons-mean" } },
+        { label: "Std of sample means matcher sigma/sqrt(n)", check: { kind: "output-contains", needle: "OK   std of sample means matcher sigma/sqrt(n)" } },
+        { label: "Sampling distribution er unimodal (klokkeform - CLT!)", check: { kind: "output-contains", needle: "OK   sampling distribution er unimodal" } },
+        { label: "Toppen er ved mu, ikke ved populasjons-topper", check: { kind: "output-contains", needle: "OK   toppen er ved ~167" } },
+      ],
+      hint:
+        "def sampling_distribution(population, n, num_samples, seed=42):\n    rng = random.Random(seed)\n    means = []\n    for _ in range(num_samples):\n        s = rng.choices(population, k=n)\n        means.append(sum(s) / n)\n    return means",
+    },
+
+    // ============ LEKSJON 4 ===========================================
+    {
+      id: "04-standardfeil",
+      title: "4. SE = sigma / sqrt(n): standardfeil-formelen",
+      narrative:
+        "Sampling distribution har sin egen std — vi kaller den **standardfeilen** (SE, standard error of the mean). Det er IKKE samme som populasjonens std.\n\nCLT gir oss en eksakt formel: **`SE = sigma / sqrt(n)`**.\n\nLes den nøye:\n- Når n vokser, går SE ned. Større sample => mindre usikkerhet om mean.\n- Forholdet er **kvadratrot**: for å halvere SE må vi FIREDOBLE n. Ikke doble. (Derfor er det dyrt å være veldig presis.)\n- SE bestemmes av populasjonen (`sigma`) — vi velger BARE n.\n\nVi skal verifisere dette empirisk: kjør `sampling_distribution` for ulike n, regn empirisk std av mean-verdiene, og sammenlign med teoretisk SE.\n\nMerk: med n=10 fra en bimodal populasjon kan empirisk SE avvike litt fra formelen (CLT-konvergens er ikke perfekt for liten n med ikke-normal populasjon). Men selv da skal det være innenfor 10% i de fleste tilfeller.\n\n**Din oppgave:** implementér `empirisk_se(population, n, num_samples=1000, seed=42)` som returnerer `std` av sampling-distribution-mean-listen.",
+      files: {
+        "clt.py": `import random
+import math
+
+
+def bygg_populasjon():
+    rng = random.Random(2026)
+    pop = []
+    for _ in range(10000):
+        if rng.random() < 0.5:
+            pop.append(rng.gauss(150, 6))
+        else:
+            pop.append(rng.gauss(185, 6))
+    return tuple(pop)
+
+POPULATION = bygg_populasjon()
+
+
+def mean(values):
+    return sum(values) / len(values)
+
+
+def std(values):
+    m = mean(values)
+    return math.sqrt(sum((v - m) ** 2 for v in values) / len(values))
+
+
+def sampling_distribution(population, n, num_samples, seed=42):
+    rng = random.Random(seed)
+    means = []
+    for _ in range(num_samples):
+        s = rng.choices(population, k=n)
+        means.append(sum(s) / n)
+    return means
+
+
+def empirisk_se(population, n, num_samples=1000, seed=42):
+    "Empirisk standardfeil = std av sample-means fra sampling distribution."
+    # === DIN OPPGAVE ===
+    # 1. Hent listen av mean-verdier med sampling_distribution(...)
+    # 2. Returner std() av denne listen
+    pass
+
+
+POP_STD = std(POPULATION)
+print(f"Populasjons-sigma = {POP_STD:.4f}\\n")
+
+# Tabell over empirisk vs teoretisk SE
+print(f"{'n':>5} | {'empirisk SE':>13} | {'sigma/sqrt(n)':>14} | {'rel-err':>10}")
+print("-" * 55)
+ses = {}
+for n in [10, 30, 100, 500]:
+    emp = empirisk_se(POPULATION, n, num_samples=1000, seed=42)
+    if emp is None:
+        print(f"FEIL empirisk_se(n={n}): ikke implementert")
+        break
+    ses[n] = emp
+    teor = POP_STD / math.sqrt(n)
+    rel = abs(emp - teor) / teor
+    print(f"{n:>5} | {emp:>13.4f} | {teor:>14.4f} | {rel*100:>9.2f}%")
+
+if len(ses) == 4:
+    # Test 1: empirisk SE for n=100 er innenfor 10% av teoretisk
+    teor_100 = POP_STD / math.sqrt(100)
+    rel_100 = abs(ses[100] - teor_100) / teor_100
+    if rel_100 < 0.1:
+        print(f"\\nOK   empirisk SE for n=100 er innenfor 10% av sigma/sqrt(n)")
+    else:
+        print(f"FEIL: rel_100={rel_100*100}%")
+
+    # Test 2: SE faller monotont naar n oker (kvadratrot-loven)
+    if ses[10] > ses[30] > ses[100] > ses[500]:
+        print("OK   standardfeil faller monotont naar n oker")
+    else:
+        print(f"FEIL: ses ikke monotont synkende: {ses}")
+
+    # Test 3: empirisk ratio SE(10)/SE(40) ~ sqrt(40/10) = 2
+    se10 = empirisk_se(POPULATION, 10, num_samples=1000, seed=42)
+    se40 = empirisk_se(POPULATION, 40, num_samples=1000, seed=42)
+    ratio = se10 / se40
+    if abs(ratio - 2.0) < 0.3:
+        print(f"OK   firedobling av n halverer SE (ratio={ratio:.2f}, forventet 2.0)")
+    else:
+        print(f"FEIL: ratio={ratio}")
+
+    # Test 4: SE for n=500 er minst 5x mindre enn SE for n=10
+    if ses[10] / ses[500] > 5:
+        print(f"OK   SE for n=500 er minst 5x mindre enn for n=10 (ratio={ses[10]/ses[500]:.2f})")
+`,
+      },
+      defaultFile: "clt.py",
+      editable: ["clt.py"],
+      run: { kind: "python-script", entry: "clt.py" },
+      verifications: [
+        { label: "Empirisk SE for n=100 matcher sigma/sqrt(n) innenfor 10%", check: { kind: "output-contains", needle: "OK   empirisk SE for n=100 er innenfor 10%" } },
+        { label: "SE faller monotont naar n oker", check: { kind: "output-contains", needle: "OK   standardfeil faller monotont" } },
+        { label: "Firedobling av n halverer SE (kvadratrot-loven)", check: { kind: "output-contains", needle: "OK   firedobling av n halverer SE" } },
+        { label: "SE for n=500 er minst 5x mindre enn for n=10", check: { kind: "output-contains", needle: "OK   SE for n=500 er minst 5x mindre" } },
+      ],
+      hint:
+        "def empirisk_se(population, n, num_samples=1000, seed=42):\n    means = sampling_distribution(population, n, num_samples, seed)\n    return std(means)",
+    },
+
+    // ============ LEKSJON 5 ===========================================
+    {
+      id: "05-konfidensintervall",
+      title: "5. 95% konfidensintervall: hvor sikker er du paa mean?",
+      narrative:
+        "Du tar ETT sample og regner ETT sample-mean. Men du vet det er litt usikkerhet. Et **konfidensintervall** (KI) gir deg et intervall som SANSYNLIGVIS inneholder den sanne populasjons-meanen.\n\nFor 95% KI med kjent populasjons-sigma:\n\n```\nKI = [x_bar - 1.96 * SE, x_bar + 1.96 * SE]\n```\n\nhvor `SE = sigma / sqrt(n)` (fra forrige leksjon). Tallet 1.96 kommer fra normalfordelingens 97.5-prosentil — 95% av massen ligger innenfor +- 1.96 standardavvik fra mean.\n\n**Hva BETYR 95%?** Det er ikke at det er 95% sjanse for at sann mean ligger i akkurat dette intervallet. Den tolkningen er feil. Den riktige er: hvis du lager 1000 KIer fra 1000 ulike samples, vil ca 950 av dem inneholde sann mean. Konfidensen handler om PROSEDYREN, ikke om en enkelt KI.\n\nVi tester dette empirisk. Lag 1000 KI fra 1000 ulike samples (alle av størrelse n=50). Tell hvor mange som inneholder sann populasjons-mean. Tallet skal være mellom 930 og 970.\n\n**Din oppgave:** implementér `confidence_interval(sample, sigma, conf=0.95)` som returnerer `(lo, hi)`. Bruk `z = 1.96` for `conf=0.95`. Skriv som om det er det eneste støttede konfidensnivået (vi blir komplekse senere).",
+      files: {
+        "clt.py": `import random
+import math
+
+
+def bygg_populasjon():
+    rng = random.Random(2026)
+    pop = []
+    for _ in range(10000):
+        if rng.random() < 0.5:
+            pop.append(rng.gauss(150, 6))
+        else:
+            pop.append(rng.gauss(185, 6))
+    return tuple(pop)
+
+POPULATION = bygg_populasjon()
+
+
+def mean(values):
+    return sum(values) / len(values)
+
+
+def std(values):
+    m = mean(values)
+    return math.sqrt(sum((v - m) ** 2 for v in values) / len(values))
+
+
+def confidence_interval(sample, sigma, conf=0.95):
+    "Bygg KI for mean med kjent populasjons-sigma. Z=1.96 for 95%."
+    # === DIN OPPGAVE ===
+    # 1. n = len(sample)
+    # 2. x_bar = mean(sample)
+    # 3. SE = sigma / sqrt(n)
+    # 4. z = 1.96   (anta conf=0.95)
+    # 5. Returner (x_bar - z * SE, x_bar + z * SE)
+    pass
+
+
+POP_MEAN = mean(POPULATION)
+POP_STD = std(POPULATION)
+print(f"Sann populasjons-mean = {POP_MEAN:.4f}")
+print(f"Populasjons-sigma     = {POP_STD:.4f}\\n")
+
+# Et konkret eksempel
+rng = random.Random(123)
+s_demo = rng.choices(POPULATION, k=50)
+ki_demo = confidence_interval(s_demo, sigma=POP_STD, conf=0.95)
+if ki_demo is None:
+    print("FEIL confidence_interval: ikke implementert")
+else:
+    lo, hi = ki_demo
+    bredde = hi - lo
+    print(f"Eksempel-KI (n=50, seed=123): ({lo:.4f}, {hi:.4f})")
+    print(f"  bredde = {bredde:.4f}")
+    print(f"  inneholder sann mean {POP_MEAN:.4f}? {lo <= POP_MEAN <= hi}")
+
+    # Forventet bredde: 2 * 1.96 * sigma / sqrt(50)
+    forventet_bredde = 2 * 1.96 * POP_STD / math.sqrt(50)
+    if abs(bredde - forventet_bredde) < 0.01:
+        print(f"OK   KI-bredde matcher 2*1.96*sigma/sqrt(n) = {forventet_bredde:.4f}")
+    else:
+        print(f"FEIL: bredde={bredde}, forventet {forventet_bredde}")
+
+    # Coverage-test: 1000 KI, tell hvor mange som inneholder sann mean
+    rng2 = random.Random(42)
+    n_per_sample = 50
+    n_samples = 1000
+    treff = 0
+    for _ in range(n_samples):
+        s = rng2.choices(POPULATION, k=n_per_sample)
+        l, h = confidence_interval(s, sigma=POP_STD, conf=0.95)
+        if l <= POP_MEAN <= h:
+            treff += 1
+    coverage = treff / n_samples
+    print(f"\\nCoverage-test: {treff}/{n_samples} KI inneholder sann mean ({coverage*100:.1f}%)")
+
+    if 0.93 <= coverage <= 0.97:
+        print(f"OK   ca 95% av KI-ene inneholder sann mean (akseptabelt 93-97%)")
+    else:
+        print(f"FEIL: coverage={coverage*100:.1f}% (forventet 93-97%)")
+
+    # Sanity: kortere KI med stoerre n
+    s_stor = random.Random(7).choices(POPULATION, k=500)
+    l_stor, h_stor = confidence_interval(s_stor, sigma=POP_STD, conf=0.95)
+    bredde_stor = h_stor - l_stor
+    print(f"\\nKI for n=500: bredde = {bredde_stor:.4f}  (forventet ca {bredde / math.sqrt(10):.4f})")
+    if bredde_stor < bredde / 2:
+        print("OK   KI for n=500 er minst halvparten saa bred som KI for n=50")
+`,
+      },
+      defaultFile: "clt.py",
+      editable: ["clt.py"],
+      run: { kind: "python-script", entry: "clt.py" },
+      verifications: [
+        { label: "KI-bredde matcher 2*1.96*sigma/sqrt(n)", check: { kind: "output-contains", needle: "OK   KI-bredde matcher 2*1.96*sigma/sqrt(n)" } },
+        { label: "Ca 95% av KI-ene inneholder sann mean", check: { kind: "output-contains", needle: "OK   ca 95% av KI-ene inneholder sann mean" } },
+        { label: "Stoerre n gir smalere KI", check: { kind: "output-contains", needle: "OK   KI for n=500 er minst halvparten" } },
+      ],
+      hint:
+        "def confidence_interval(sample, sigma, conf=0.95):\n    n = len(sample)\n    x_bar = sum(sample) / n\n    se = sigma / math.sqrt(n)\n    z = 1.96   # 95%\n    return (x_bar - z * se, x_bar + z * se)",
+    },
+
+    // ============ LEKSJON 6 ===========================================
+    {
+      id: "06-liten-n-t-fordeling",
+      title: "6. Naar n er for liten: t-fordeling-glimt",
+      narrative:
+        "CLT er en **grenseverdi-setning**: jo større n, jo mer perfekt blir normalfordelings-tilnærmingen. For n=100 fra en bimodal populasjon ser sampling distribution ut som en lærebok-klokke. Men hva med n=5?\n\nFor små samples blir sampling distribution fortsatt unimodal, men:\n- **Tykkere haler** (heavier tails) — flere ekstreme verdier enn en perfekt normal har.\n- **Lavere midt-pukk** — i forhold til halene.\n- Spesielt: hvis vi må ESTIMERE sigma fra samplet (vi kjenner sjelden sann sigma!), blir variabiliteten enda høyere.\n\nDette er kjernen i hvorfor statistikere bruker **Student's t-fordeling** for små samples. T-fordelingen ligner normalfordelingen, men har tykkere haler — så et 95% KI med t-fordeling blir BREDERE enn med normal. Når n vokser, konvergerer t mot normal (de er identiske i grensen).\n\nI denne leksjonen gjør vi den enkle observasjonen kvantitativt: vi sammenligner sampling distribution for n=5 og n=100. Begge ser visuelt bell-formet ut, men n=5-versjonen har mye større spredning — eksakt sqrt(20) = 4.47 ganger større, per `SE = sigma / sqrt(n)`-formelen.\n\nKodemessig hopper vi over t-tabellen — fokuset er på intuisjon, ikke kalkulasjon.\n\n**Din oppgave:** implementér `sammenlign_spredning(population, n_smaa, n_stor, num_samples=2000, seed=42)` som returnerer tuppelet `(spread_smaa, spread_stor, ratio)` der `spread_X = std av sampling_distribution(population, n=X, ...)` og `ratio = spread_smaa / spread_stor`.",
+      files: {
+        "clt.py": `import random
+import math
+
+
+def bygg_populasjon():
+    rng = random.Random(2026)
+    pop = []
+    for _ in range(10000):
+        if rng.random() < 0.5:
+            pop.append(rng.gauss(150, 6))
+        else:
+            pop.append(rng.gauss(185, 6))
+    return tuple(pop)
+
+POPULATION = bygg_populasjon()
+
+
+def mean(values):
+    return sum(values) / len(values)
+
+
+def std(values):
+    m = mean(values)
+    return math.sqrt(sum((v - m) ** 2 for v in values) / len(values))
+
+
+def sampling_distribution(population, n, num_samples, seed=42):
+    rng = random.Random(seed)
+    means = []
+    for _ in range(num_samples):
+        s = rng.choices(population, k=n)
+        means.append(sum(s) / n)
+    return means
+
+
+def ascii_histogram(values, num_buckets=20, width=25, label=""):
+    lo = min(values)
+    hi = max(values)
+    if hi == lo:
+        print("(alle verdier like)")
+        return
+    bucket_size = (hi - lo) / num_buckets
+    counts = [0] * num_buckets
+    for v in values:
+        idx = int((v - lo) / bucket_size)
+        if idx == num_buckets:
+            idx = num_buckets - 1
+        counts[idx] += 1
+    max_count = max(counts) if max(counts) > 0 else 1
+    if label:
+        print(label)
+    for i, c in enumerate(counts):
+        bin_start = lo + i * bucket_size
+        bars = int(width * c / max_count)
+        print(f"  {bin_start:7.2f} | {'*' * bars} ({c})")
+
+
+def sammenlign_spredning(population, n_smaa, n_stor, num_samples=2000, seed=42):
+    "Returner (spread_smaa, spread_stor, ratio) der ratio = spread_smaa / spread_stor."
+    # === DIN OPPGAVE ===
+    # 1. means_smaa = sampling_distribution(population, n_smaa, num_samples, seed)
+    # 2. means_stor = sampling_distribution(population, n_stor, num_samples, seed + 1)
+    #    (annet seed for uavhengighet)
+    # 3. spread_smaa = std(means_smaa)
+    # 4. spread_stor = std(means_stor)
+    # 5. ratio = spread_smaa / spread_stor
+    # 6. Returner (spread_smaa, spread_stor, ratio)
+    pass
+
+
+POP_MEAN = mean(POPULATION)
+POP_STD = std(POPULATION)
+print(f"Populasjon: mean={POP_MEAN:.4f}, sigma={POP_STD:.4f}\\n")
+
+res = sammenlign_spredning(POPULATION, n_smaa=5, n_stor=100, num_samples=2000, seed=42)
+if res is None:
+    print("FEIL sammenlign_spredning: ikke implementert")
+else:
+    spread_smaa, spread_stor, ratio = res
+    print(f"Spread av sampling distribution:")
+    print(f"  n=5:    {spread_smaa:.4f}  (teoretisk SE = {POP_STD / math.sqrt(5):.4f})")
+    print(f"  n=100:  {spread_stor:.4f}  (teoretisk SE = {POP_STD / math.sqrt(100):.4f})")
+    print(f"  ratio = {ratio:.4f}  (forventet sqrt(100/5) = {math.sqrt(100/5):.4f})")
+
+    # Test 1: spread for n=5 er klart stoerre enn for n=100
+    if spread_smaa > spread_stor * 4:
+        print("OK   spread for n=5 er minst 4x stoerre enn for n=100")
+    else:
+        print(f"FEIL: spread_smaa={spread_smaa}, spread_stor={spread_stor}")
+
+    # Test 2: ratio matcher sqrt(n_stor/n_smaa) innenfor 15%
+    teor_ratio = math.sqrt(100 / 5)
+    rel = abs(ratio - teor_ratio) / teor_ratio
+    if rel < 0.15:
+        print(f"OK   ratio matcher sqrt(n_stor/n_smaa) (rel-err={rel*100:.2f}%)")
+    else:
+        print(f"FEIL: rel={rel*100}%")
+
+    # Test 3: spread_stor matcher sigma/sqrt(100) (innenfor 10%)
+    teor_stor = POP_STD / 10
+    rel_stor = abs(spread_stor - teor_stor) / teor_stor
+    if rel_stor < 0.1:
+        print(f"OK   spread for n=100 matcher sigma/sqrt(n)")
+
+    # Histogrammer (gir studenten lov til aa SE forskjellen)
+    means_smaa = sampling_distribution(POPULATION, 5, 2000, seed=42)
+    means_stor = sampling_distribution(POPULATION, 100, 2000, seed=43)
+    ascii_histogram(means_smaa, num_buckets=20, width=25,
+                    label="\\nSAMPLING DISTRIBUTION n=5 (bred - haler kan vaere tykkere):")
+    ascii_histogram(means_stor, num_buckets=20, width=25,
+                    label="\\nSAMPLING DISTRIBUTION n=100 (mye smalere - klassisk normal):")
+
+    print("\\n--- INTUISJON ---")
+    print("For sma n (under ca 30) er CLT-konvergensen ikke perfekt.")
+    print("Sampling distribution kan ha tykkere haler enn normalfordelingen.")
+    print("Derfor bruker statistikere TI-fordelingen for sma samples - den har")
+    print("tykkere haler innebygd, og gir riktig dekning paa 95% KI.")
+`,
+      },
+      defaultFile: "clt.py",
+      editable: ["clt.py"],
+      run: { kind: "python-script", entry: "clt.py" },
+      verifications: [
+        { label: "Spread for n=5 er minst 4x stoerre enn for n=100", check: { kind: "output-contains", needle: "OK   spread for n=5 er minst 4x stoerre" } },
+        { label: "Ratio matcher sqrt(n_stor/n_smaa)", check: { kind: "output-contains", needle: "OK   ratio matcher sqrt(n_stor/n_smaa)" } },
+        { label: "Spread for n=100 matcher sigma/sqrt(n)", check: { kind: "output-contains", needle: "OK   spread for n=100 matcher sigma/sqrt(n)" } },
+      ],
+      hint:
+        "def sammenlign_spredning(population, n_smaa, n_stor, num_samples=2000, seed=42):\n    means_smaa = sampling_distribution(population, n_smaa, num_samples, seed)\n    means_stor = sampling_distribution(population, n_stor, num_samples, seed + 1)\n    spread_smaa = std(means_smaa)\n    spread_stor = std(means_stor)\n    ratio = spread_smaa / spread_stor\n    return (spread_smaa, spread_stor, ratio)",
+    },
+  ],
+};
+
+const MULTI_REGRESJON: MiniCourse = {
+  id: "multi-regresjon",
+  slug: "multi-regresjon",
+  title: "Multiple regresjon med residual-diagnostikk",
+  blurb:
+    "Bygg multiple regresjon fra null i pure Python — design-matrise, normalligning med egen matrise-invers, predikajoner og residualer, R^2 og adjusted R^2, ASCII residual-plot for diagnostikk, og VIF for multikollinaritet. Du ser HVORDAN matrise-operasjonene fungerer i stedet for at numpy gjør jobben.",
+  estimertTid: "75–90 min",
+  fag: ["TEK-1501", "Statistikk", "Regresjon"],
+  color: "success",
+  rekkefolge: 20,
+  lessons: [
+    // ============ LEKSJON 1 ===========================================
+    {
+      id: "01-design-matrise",
+      title: "1. Fra simpel til multiple: design-matrise X",
+      narrative:
+        "I simpel lineær regresjon hadde vi én forklaringsvariabel: ``y = b0 + b1*x + ε``. Multiple regresjon utvider dette til vilkårlig mange:\n\n```\ny = β0 + β1*x1 + β2*x2 + ... + βk*xk + ε\n```\n\nFor å gjøre matematikken pen — og for å regne effektivt — pakker vi alle k features og intercept inn i en **design-matrise** X. Hver rad er én observasjon, hver kolonne er én feature. Den første kolonnen er konstant 1 (for intercept β0); det er ikke en feature i ekte forstand, bare et knep så formelen ``ŷ = X·β`` også inkluderer β0.\n\nMed n observasjoner og k features har X dimensjon ``n × (k+1)``.\n\nEksempel med 3 observasjoner og 2 features (x1, x2):\n\n```\nX = [[1, x1[0], x2[0]],\n     [1, x1[1], x2[1]],\n     [1, x1[2], x2[2]]]\n```\n\nDenne strukturen er fundamental — alle senere leksjoner forutsetter at du kan bygge X riktig.\n\n**Din oppgave:** implementér ``build_design_matrix(features)`` der ``features`` er en liste av lister (én liste per feature). Returnér en n × (k+1)-matrise (liste av lister) med intercept-kolonne av 1-er som første kolonne.",
+      files: {
+        "main.py": `def build_design_matrix(features):
+    """features = [x1_liste, x2_liste, ...]. Returnér n x (k+1) matrise med intercept-kolonne."""
+    # === DIN OPPGAVE ===
+    # n = len(features[0])
+    # k = len(features)
+    # For hver rad i (0 til n-1): [1.0, features[0][i], features[1][i], ..., features[k-1][i]]
+    pass
+
+
+def sjekk(faktisk, forventet, navn):
+    if faktisk == forventet:
+        print(f"OK   {navn}")
+    else:
+        print(f"FEIL {navn}: fikk {faktisk!r}, forventet {forventet!r}")
+
+
+# Test 1: 2 features, 3 observasjoner
+x1 = [10.0, 20.0, 30.0]
+x2 = [1.5, 2.5, 3.5]
+X = build_design_matrix([x1, x2])
+forventet = [[1.0, 10.0, 1.5], [1.0, 20.0, 2.5], [1.0, 30.0, 3.5]]
+sjekk(X, forventet, "X har riktig form for 2 features")
+
+# Test 2: 1 feature alene (simpel regresjon-grensetilfelle)
+X2 = build_design_matrix([[5.0, 6.0]])
+sjekk(X2, [[1.0, 5.0], [1.0, 6.0]], "X med 1 feature gir 2 kolonner (intercept + feature)")
+
+# Test 3: 3 features
+a = [1.0, 2.0]
+b = [3.0, 4.0]
+c = [5.0, 6.0]
+X3 = build_design_matrix([a, b, c])
+sjekk(X3, [[1.0, 1.0, 3.0, 5.0], [1.0, 2.0, 4.0, 6.0]], "X med 3 features har 4 kolonner")
+
+# Test 4: antall rader = antall observasjoner
+X4 = build_design_matrix([[1.0, 2.0, 3.0, 4.0, 5.0]])
+if X4 is not None and len(X4) == 5:
+    print("OK   antall rader matcher antall observasjoner")
+else:
+    print(f"FEIL antall rader: fikk {len(X4) if X4 else None}, forventet 5")
+
+# Test 5: forste kolonne er alltid 1.0
+X5 = build_design_matrix([[100.0, 200.0]])
+if X5 is not None and all(row[0] == 1.0 for row in X5):
+    print("OK   intercept-kolonnen er alltid 1.0")
+else:
+    print(f"FEIL intercept-kolonne: {X5}")
+`,
+      },
+      defaultFile: "main.py",
+      editable: ["main.py"],
+      run: { kind: "python-script", entry: "main.py" },
+      verifications: [
+        { label: "X har riktig form for 2 features", check: { kind: "output-contains", needle: "OK   X har riktig form for 2 features" } },
+        { label: "X med 1 feature gir 2 kolonner", check: { kind: "output-contains", needle: "OK   X med 1 feature gir 2 kolonner" } },
+        { label: "X med 3 features har 4 kolonner", check: { kind: "output-contains", needle: "OK   X med 3 features har 4 kolonner" } },
+        { label: "Antall rader matcher antall observasjoner", check: { kind: "output-contains", needle: "OK   antall rader matcher antall observasjoner" } },
+        { label: "Intercept-kolonnen er alltid 1.0", check: { kind: "output-contains", needle: "OK   intercept-kolonnen er alltid 1.0" } },
+      ],
+      hint:
+        "def build_design_matrix(features):\n    n = len(features[0])\n    k = len(features)\n    return [[1.0] + [features[j][i] for j in range(k)] for i in range(n)]",
+    },
+
+    // ============ LEKSJON 2 ===========================================
+    {
+      id: "02-normalligning",
+      title: "2. Normalligningen: β = (X'X)^-1 X'y",
+      narrative:
+        "Vi vil finne β-vektoren som minimerer ``sum (y_i - ŷ_i)^2``. Med kalkulus på matrise-form (sett gradienten = 0) får man den lukkede løsningen — **normalligningen**:\n\n```\nβ = (X'X)^-1 X'y\n```\n\nHer er ``X'`` (X-transpose) en (k+1)×n matrise, ``X'X`` er en (k+1)×(k+1) kvadratisk matrise, og ``X'X)^-1`` er dens invers. Resultatet er en vektor med k+1 elementer: intercept først, så koeffisienter for hver feature.\n\n**Hvorfor lære dette manuelt?** I praksis bruker du ``numpy.linalg.solve(X.T @ X, X.T @ y)`` (eller direkte ``numpy.linalg.lstsq``). Men formelen FORSVINNER ikke. Du skal forstå hva som skjer når du leser modellsammendraget: intercept og k koeffisienter kommer fra denne lukkede løsningen, og hvis ``X'X`` er nær singular (multikollinaritet), blir koeffisientene ustabile. Det forklarer leksjon 6.\n\n**Din oppgave:** implementér tre hjelpefunksjoner — ``transpose(M)``, ``matmul(A, B)``, ``inverse(M)`` med Gauss-Jordan — og deretter ``normal_equation(X, y)``. Vi gir også ``matvec(A, v)`` som er enkelt nok at vi bare har den ferdig. Bruk DEM, ikke numpy.",
+      files: {
+        "main.py": `def transpose(M):
+    """Returner M-transpose (bytter rader og kolonner)."""
+    # === DIN OPPGAVE ===
+    # rows = len(M); cols = len(M[0])
+    # Returner liste med cols rader, hver rad har rows elementer.
+    pass
+
+
+def matmul(A, B):
+    """Matrise-multiplikasjon: A (n x m) ganget med B (m x p) = (n x p)."""
+    # === DIN OPPGAVE ===
+    # n = len(A); m = len(A[0]); p = len(B[0])
+    # C[i][j] = sum(A[i][k] * B[k][j] for k in range(m))
+    pass
+
+
+def matvec(A, v):
+    """Matrise-vektor: A (n x m) ganget med v (lengde m) = vektor med lengde n."""
+    return [sum(A[i][j] * v[j] for j in range(len(v))) for i in range(len(A))]
+
+
+def inverse(M):
+    """Gauss-Jordan invers for kvadratisk n x n matrise.
+    Augmentér [M | I], bruk rad-operasjoner til M blir I, så er hoyre halvdel inversen."""
+    # === DIN OPPGAVE ===
+    # 1. n = len(M)
+    # 2. A = [row[:] + [1.0 if i==j else 0.0 for j in range(n)] for i, row in enumerate(M)]
+    # 3. For hver kolonne i i 0..n-1:
+    #      - Pivot: bytt om rader sa A[i][i] har storst |verdi|. Hvis 0 -> singular.
+    #      - Skalér rad i sa A[i][i] = 1.
+    #      - Eliminer kolonne i fra alle andre rader (A[r] -= A[r][i] * A[i]).
+    # 4. Returner hoyre halvdel: [row[n:] for row in A].
+    pass
+
+
+def build_design_matrix(features):
+    n = len(features[0])
+    k = len(features)
+    return [[1.0] + [features[j][i] for j in range(k)] for i in range(n)]
+
+
+def normal_equation(X, y):
+    """beta = (X'X)^-1 X'y. Returner liste med k+1 elementer."""
+    # === DIN OPPGAVE ===
+    # Xt = transpose(X)
+    # XtX = matmul(Xt, X)
+    # XtX_inv = inverse(XtX)
+    # Xty = matvec(Xt, y)
+    # return matvec(XtX_inv, Xty)
+    pass
+
+
+def sjekk_nær(faktisk, forventet, navn, tol=1e-6):
+    if faktisk is None:
+        print(f"FEIL {navn}: fikk None")
+        return
+    if abs(faktisk - forventet) < tol:
+        print(f"OK   {navn}")
+    else:
+        print(f"FEIL {navn}: fikk {faktisk!r}, forventet {forventet!r}")
+
+
+# Test transpose
+T = transpose([[1, 2, 3], [4, 5, 6]])
+if T == [[1, 4], [2, 5], [3, 6]]:
+    print("OK   transpose 2x3 -> 3x2")
+else:
+    print(f"FEIL transpose: fikk {T}")
+
+# Test matmul: 2x3 * 3x2 = 2x2
+P = matmul([[1, 2, 3], [4, 5, 6]], [[7, 8], [9, 10], [11, 12]])
+if P == [[58, 64], [139, 154]]:
+    print("OK   matmul 2x3 * 3x2")
+else:
+    print(f"FEIL matmul: fikk {P}")
+
+# Test inverse: en 2x2 vi vet svaret pa
+# [[4, 7], [2, 6]]^-1 = [[0.6, -0.7], [-0.2, 0.4]]
+inv = inverse([[4.0, 7.0], [2.0, 6.0]])
+if inv is not None:
+    sjekk_nær(inv[0][0], 0.6, "inverse [0][0]")
+    sjekk_nær(inv[0][1], -0.7, "inverse [0][1]")
+    sjekk_nær(inv[1][0], -0.2, "inverse [1][0]")
+    sjekk_nær(inv[1][1], 0.4, "inverse [1][1]")
+
+# Test normal_equation: kjent eksakt-svar
+# y = 1 + 2*x1 + 3*x2 (uten stoy) -> beta skal bli [1, 2, 3]
+x1 = [1.0, 2.0, 3.0, 4.0, 5.0]
+x2 = [2.0, 1.0, 4.0, 3.0, 5.0]
+y = [1 + 2 * a + 3 * b for a, b in zip(x1, x2)]
+X = build_design_matrix([x1, x2])
+beta = normal_equation(X, y)
+if beta is None:
+    print("FEIL normal_equation: ikke implementert")
+else:
+    print(f"beta = {beta}")
+    sjekk_nær(beta[0], 1.0, "normalligning intercept = 1", tol=1e-5)
+    sjekk_nær(beta[1], 2.0, "normalligning beta1 = 2",   tol=1e-5)
+    sjekk_nær(beta[2], 3.0, "normalligning beta2 = 3",   tol=1e-5)
+
+# I praksis ville vi brukt numpy.linalg.solve(X.T @ X, X.T @ y).
+# Forskjellen: numerisk stabilitet og hastighet, men formelen er den samme.
+`,
+      },
+      defaultFile: "main.py",
+      editable: ["main.py"],
+      run: { kind: "python-script", entry: "main.py" },
+      verifications: [
+        { label: "transpose bytter rader og kolonner", check: { kind: "output-contains", needle: "OK   transpose 2x3 -> 3x2" } },
+        { label: "matmul regner riktig 2x3 ganger 3x2", check: { kind: "output-contains", needle: "OK   matmul 2x3 * 3x2" } },
+        { label: "inverse regner riktig [0][0] og [0][1]", check: { kind: "output-contains", needle: "OK   inverse [0][0]" } },
+        { label: "inverse regner riktig [1][0] og [1][1]", check: { kind: "output-contains", needle: "OK   inverse [1][1]" } },
+        { label: "normalligning gir riktig intercept", check: { kind: "output-contains", needle: "OK   normalligning intercept = 1" } },
+        { label: "normalligning gir riktig beta1", check: { kind: "output-contains", needle: "OK   normalligning beta1 = 2" } },
+        { label: "normalligning gir riktig beta2", check: { kind: "output-contains", needle: "OK   normalligning beta2 = 3" } },
+      ],
+      hint:
+        "def transpose(M):\n    rows = len(M); cols = len(M[0])\n    return [[M[i][j] for i in range(rows)] for j in range(cols)]\n\ndef matmul(A, B):\n    n = len(A); m = len(A[0]); p = len(B[0])\n    return [[sum(A[i][k] * B[k][j] for k in range(m)) for j in range(p)] for i in range(n)]\n\ndef inverse(M):\n    n = len(M)\n    A = [row[:] + [1.0 if i == j else 0.0 for j in range(n)] for i, row in enumerate(M)]\n    for i in range(n):\n        max_row = max(range(i, n), key=lambda r: abs(A[r][i]))\n        if abs(A[max_row][i]) < 1e-12:\n            raise ValueError(\"Singular\")\n        A[i], A[max_row] = A[max_row], A[i]\n        pivot = A[i][i]\n        for j in range(2 * n):\n            A[i][j] /= pivot\n        for r in range(n):\n            if r == i:\n                continue\n            factor = A[r][i]\n            for j in range(2 * n):\n                A[r][j] -= factor * A[i][j]\n    return [row[n:] for row in A]\n\ndef normal_equation(X, y):\n    Xt = transpose(X)\n    return matvec(inverse(matmul(Xt, X)), matvec(Xt, y))",
+    },
+
+    // ============ LEKSJON 3 ===========================================
+    {
+      id: "03-predikt-residualer",
+      title: "3. Predikajoner og residualer",
+      narrative:
+        "Med β estimert kan vi predikere: ``ŷ = X · β``. For hver rad i X er prediksjonen ``β0 + β1*x1 + β2*x2 + ...``. Det er bare matrise-vektor-produkt.\n\n**Residualen** for observasjon i er differansen mellom hva vi observerte og hva modellen sier:\n\n```\nr_i = y_i - ŷ_i\n```\n\nResidualene er datapunktene som er IGJEN etter at modellen har forklart hva den kan. Hele diagnostikken (leksjon 5) handler om å lese mønstre i residualene — for det er der det modellen *ikke* fanger opp dukker opp.\n\n**Egenskap ved OLS (ordinary least squares):** når modellen inneholder intercept, vil ``sum(r_i) = 0`` eksakt. Dette er ikke et tilfeldighet — det er ligningen for β0 (intercept-kolonnen er konstant 1, så summen av residualer ganget med 1 må være null for at gradienten skal være null). Dette gir oss en gratis sanity-test for implementasjonen vår.\n\n**Din oppgave:** implementér ``predict(X, beta)`` og ``residuals(y, y_pred)``.",
+      files: {
+        "main.py": `def transpose(M):
+    return [[M[i][j] for i in range(len(M))] for j in range(len(M[0]))]
+
+
+def matmul(A, B):
+    n = len(A); m = len(A[0]); p = len(B[0])
+    return [[sum(A[i][k] * B[k][j] for k in range(m)) for j in range(p)] for i in range(n)]
+
+
+def matvec(A, v):
+    return [sum(A[i][j] * v[j] for j in range(len(v))) for i in range(len(A))]
+
+
+def inverse(M):
+    n = len(M)
+    A = [row[:] + [1.0 if i == j else 0.0 for j in range(n)] for i, row in enumerate(M)]
+    for i in range(n):
+        max_row = max(range(i, n), key=lambda r: abs(A[r][i]))
+        if abs(A[max_row][i]) < 1e-12:
+            raise ValueError("Singular")
+        A[i], A[max_row] = A[max_row], A[i]
+        pivot = A[i][i]
+        for j in range(2 * n):
+            A[i][j] /= pivot
+        for r in range(n):
+            if r == i:
+                continue
+            factor = A[r][i]
+            for j in range(2 * n):
+                A[r][j] -= factor * A[i][j]
+    return [row[n:] for row in A]
+
+
+def build_design_matrix(features):
+    n = len(features[0])
+    k = len(features)
+    return [[1.0] + [features[j][i] for j in range(k)] for i in range(n)]
+
+
+def normal_equation(X, y):
+    Xt = transpose(X)
+    return matvec(inverse(matmul(Xt, X)), matvec(Xt, y))
+
+
+def predict(X, beta):
+    """y_pred = X . beta. Returner liste med n predikajoner."""
+    # === DIN OPPGAVE ===
+    # Returner matvec(X, beta).
+    pass
+
+
+def residuals(y, y_pred):
+    """r_i = y_i - y_pred_i. Returner liste med n residualer."""
+    # === DIN OPPGAVE ===
+    # Returner [y[i] - y_pred[i] for i in range(len(y))].
+    pass
+
+
+def sjekk_nær(faktisk, forventet, navn, tol=1e-6):
+    if abs(faktisk - forventet) < tol:
+        print(f"OK   {navn}")
+    else:
+        print(f"FEIL {navn}: fikk {faktisk!r}, forventet {forventet!r}")
+
+
+# Eksakt datasett: y = 5 + 2*x1 - x2
+x1 = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0]
+x2 = [0.0, 1.0, 0.5, 2.0, 1.5, 3.0]
+y = [5 + 2 * a - b for a, b in zip(x1, x2)]
+X = build_design_matrix([x1, x2])
+beta = normal_equation(X, y)
+y_pred = predict(X, beta)
+
+if y_pred is None:
+    print("FEIL predict: ikke implementert")
+else:
+    print(f"y      = {[round(v, 2) for v in y]}")
+    print(f"y_pred = {[round(v, 2) for v in y_pred]}")
+    # Pa eksakt data skal y_pred = y
+    max_diff = max(abs(y[i] - y_pred[i]) for i in range(len(y)))
+    if max_diff < 1e-6:
+        print("OK   predikajoner matcher y eksakt pa eksakt data")
+    else:
+        print(f"FEIL predikajoner avviker (max diff = {max_diff})")
+
+resid = residuals(y, y_pred) if y_pred else None
+if resid is None:
+    print("FEIL residuals: ikke implementert")
+else:
+    print(f"residualer = {[round(r, 6) for r in resid]}")
+    # Pa eksakt data skal alle residualer vaere nesten 0
+    max_r = max(abs(r) for r in resid)
+    if max_r < 1e-6:
+        print("OK   alle residualer er nesten null pa eksakt data")
+
+# Med stoy: sum(residualer) skal fortsatt vaere nær 0 (intercept-egenskap ved OLS)
+import random
+rng = random.Random(42)
+y_støy = [5 + 2 * a - b + rng.gauss(0, 0.2) for a, b in zip(x1, x2)]
+beta_støy = normal_equation(X, y_støy)
+pred_støy = predict(X, beta_støy)
+resid_støy = residuals(y_støy, pred_støy)
+sum_r = sum(resid_støy)
+print(f"sum(residualer) ved stoy = {sum_r:.2e}")
+sjekk_nær(sum_r, 0.0, "sum av residualer er ~0 (OLS-egenskap)", tol=1e-9)
+`,
+      },
+      defaultFile: "main.py",
+      editable: ["main.py"],
+      run: { kind: "python-script", entry: "main.py" },
+      verifications: [
+        { label: "predict matcher y eksakt pa eksakt data", check: { kind: "output-contains", needle: "OK   predikajoner matcher y eksakt" } },
+        { label: "Alle residualer er nesten null pa eksakt data", check: { kind: "output-contains", needle: "OK   alle residualer er nesten null" } },
+        { label: "Sum av residualer er ~0 (OLS-egenskap)", check: { kind: "output-contains", needle: "OK   sum av residualer er ~0" } },
+      ],
+      hint:
+        "def predict(X, beta):\n    return matvec(X, beta)\n\ndef residuals(y, y_pred):\n    return [y[i] - y_pred[i] for i in range(len(y))]",
+    },
+
+    // ============ LEKSJON 4 ===========================================
+    {
+      id: "04-r2-adjusted",
+      title: "4. R^2, adjusted R^2 og overfit-fellen",
+      narrative:
+        "**R^2** (forklart varians) er det mest brukte modell-tilpasningsmaalet:\n\n```\nR^2 = 1 - SS_res / SS_tot\nSS_res = sum (y_i - y_pred_i)^2\nSS_tot = sum (y_i - mean(y))^2\n```\n\nR^2 = 1 betyr modellen forklarer all variasjon. R^2 = 0 betyr modellen er like ille som å bare gjette gjennomsnittet. (Du kan også få NEGATIV R^2 hvis modellen er VERRE enn gjennomsnittet — men ikke fra OLS på treningsdata.)\n\n**Problemet med R^2:** den øker MONOTONT når du legger til flere features, selv helt irrelevante. En feature som er ren støy vil ved ren tilfeldighet forklare litt av variasjonen i y. R^2 belønner deg for å overfitte.\n\n**Adjusted R^2** straffer for antall features:\n\n```\nadj R^2 = 1 - (1 - R^2) * (n - 1) / (n - k - 1)\n```\n\nHer er n antall observasjoner og k antall features (uten intercept). Hvis du legger til en feature som ikke gir reell forklaringskraft, vil ``n - k - 1`` minke fortere enn ``1 - R^2`` minker, og adjusted R^2 GÅR NED. Det er signalet ditt om at den nye featuren ikke er verdt det.\n\nI denne leksjonen genererer vi y fra én ekte feature, deretter tilpasser tre modeller med 1, 2 og 3 features (de to siste er ren støy). Du vil se R^2 stige monotont, men adj R^2 synke — eksakt det vi vil at den skal gjøre.\n\n**Din oppgave:** implementér ``r_squared(y, y_pred)`` og ``adjusted_r_squared(y, y_pred, k)``.",
+      files: {
+        "main.py": `import random
+
+
+def transpose(M):
+    return [[M[i][j] for i in range(len(M))] for j in range(len(M[0]))]
+
+
+def matmul(A, B):
+    n = len(A); m = len(A[0]); p = len(B[0])
+    return [[sum(A[i][k] * B[k][j] for k in range(m)) for j in range(p)] for i in range(n)]
+
+
+def matvec(A, v):
+    return [sum(A[i][j] * v[j] for j in range(len(v))) for i in range(len(A))]
+
+
+def inverse(M):
+    n = len(M)
+    A = [row[:] + [1.0 if i == j else 0.0 for j in range(n)] for i, row in enumerate(M)]
+    for i in range(n):
+        max_row = max(range(i, n), key=lambda r: abs(A[r][i]))
+        if abs(A[max_row][i]) < 1e-12:
+            raise ValueError("Singular")
+        A[i], A[max_row] = A[max_row], A[i]
+        pivot = A[i][i]
+        for j in range(2 * n):
+            A[i][j] /= pivot
+        for r in range(n):
+            if r == i:
+                continue
+            factor = A[r][i]
+            for j in range(2 * n):
+                A[r][j] -= factor * A[i][j]
+    return [row[n:] for row in A]
+
+
+def build_design_matrix(features):
+    n = len(features[0])
+    k = len(features)
+    return [[1.0] + [features[j][i] for j in range(k)] for i in range(n)]
+
+
+def normal_equation(X, y):
+    Xt = transpose(X)
+    return matvec(inverse(matmul(Xt, X)), matvec(Xt, y))
+
+
+def predict(X, beta):
+    return matvec(X, beta)
+
+
+def mean(xs):
+    return sum(xs) / len(xs)
+
+
+def r_squared(y, y_pred):
+    """1 - SS_res / SS_tot."""
+    # === DIN OPPGAVE ===
+    # y_mean = mean(y)
+    # ss_res = sum((y[i] - y_pred[i]) ** 2 for i in range(len(y)))
+    # ss_tot = sum((y[i] - y_mean) ** 2 for i in range(len(y)))
+    # Returner 1 - ss_res / ss_tot.
+    pass
+
+
+def adjusted_r_squared(y, y_pred, k):
+    """1 - (1 - R^2) * (n - 1) / (n - k - 1)."""
+    # === DIN OPPGAVE ===
+    # n = len(y)
+    # r2 = r_squared(y, y_pred)
+    # Returner 1 - (1 - r2) * (n - 1) / (n - k - 1).
+    pass
+
+
+# Genererer data: y = 1 + 2*x1 + stoy. Bare x1 er ekte; x2 og x3 er hvit stoy.
+rng = random.Random(42)
+n = 30
+x1 = [rng.gauss(0, 1) for _ in range(n)]
+x2_støy = [rng.gauss(0, 1) for _ in range(n)]
+x3_støy = [rng.gauss(0, 1) for _ in range(n)]
+y = [1 + 2 * x + rng.gauss(0, 0.5) for x in x1]
+
+
+def fit_og_rapporter(features, navn, k):
+    X = build_design_matrix(features)
+    beta = normal_equation(X, y)
+    pred = predict(X, beta)
+    r2 = r_squared(y, pred)
+    adj = adjusted_r_squared(y, pred, k)
+    print(f"  {navn:<20s} R^2 = {r2:.4f}, adj R^2 = {adj:.4f}")
+    return r2, adj
+
+
+print("Modeller med okende antall features:")
+r2_1, adj_1 = fit_og_rapporter([x1],                              "modell A (x1)",         k=1)
+r2_2, adj_2 = fit_og_rapporter([x1, x2_støy],                    "modell B (+ stoy)",     k=2)
+r2_3, adj_3 = fit_og_rapporter([x1, x2_støy, x3_støy],          "modell C (+ 2 stoy)",   k=3)
+
+# Test 1: R^2 oker monotont (eller likt) nar vi legger til features
+if r2_1 <= r2_2 <= r2_3:
+    print("OK   R^2 oker monotont nar vi legger til features")
+else:
+    print(f"FEIL R^2 ikke monotont: {r2_1}, {r2_2}, {r2_3}")
+
+# Test 2: adjusted R^2 SYNKER nar vi legger til irrelevante features
+if adj_1 > adj_2 > adj_3:
+    print("OK   adjusted R^2 synker nar irrelevante features legges til")
+else:
+    print(f"FEIL adj R^2 forventet monotont synkende, fikk: {adj_1}, {adj_2}, {adj_3}")
+
+# Test 3: pa eksakt data skal R^2 vaere 1.0
+y_eksakt = [1 + 2 * x for x in x1]
+X1 = build_design_matrix([x1])
+beta_e = normal_equation(X1, y_eksakt)
+pred_e = predict(X1, beta_e)
+r2_e = r_squared(y_eksakt, pred_e)
+print(f"R^2 pa eksakt data: {r2_e:.6f}")
+if r2_e > 0.9999:
+    print("OK   R^2 = 1 pa eksakt data")
+else:
+    print(f"FEIL forventet R^2 = 1, fikk {r2_e}")
+`,
+      },
+      defaultFile: "main.py",
+      editable: ["main.py"],
+      run: { kind: "python-script", entry: "main.py" },
+      verifications: [
+        { label: "R^2 oker monotont nar features legges til", check: { kind: "output-contains", needle: "OK   R^2 oker monotont" } },
+        { label: "Adjusted R^2 synker ved irrelevante features", check: { kind: "output-contains", needle: "OK   adjusted R^2 synker" } },
+        { label: "R^2 = 1 pa eksakt data", check: { kind: "output-contains", needle: "OK   R^2 = 1 pa eksakt data" } },
+      ],
+      hint:
+        "def r_squared(y, y_pred):\n    y_mean = mean(y)\n    ss_res = sum((y[i] - y_pred[i]) ** 2 for i in range(len(y)))\n    ss_tot = sum((yi - y_mean) ** 2 for yi in y)\n    return 1 - ss_res / ss_tot\n\ndef adjusted_r_squared(y, y_pred, k):\n    n = len(y)\n    r2 = r_squared(y, y_pred)\n    return 1 - (1 - r2) * (n - 1) / (n - k - 1)",
+    },
+
+    // ============ LEKSJON 5 ===========================================
+    {
+      id: "05-residual-plot",
+      title: "5. Residual-plot: les mønstre i resten",
+      narrative:
+        "Når en multiple regresjon viser høy R^2 betyr det BARE at modellen forklarer mye av variansen i treningsdataene. Det sier ikke at modellen er RIKTIG. To modeller med samme R^2 kan ha radikalt forskjellige residual-mønstre — og residual-mønsteret avslører hva som er galt.\n\nKlassisk diagnostikk: plott residualer (y-akse) mot predikajoner (x-akse). Tre mønstre du må kjenne igjen:\n\n**A) Tilfeldig spredt rundt 0** — modellen er bra. Residualer er hvit støy.\n\n**B) Trakt-form** (varians vokser fra venstre til høyre, eller motsatt) — **heteroskedastisitet**. Modellens prediksjons-feil avhenger av prediksjonens størrelse. OLS-koeffisientene er fortsatt unbiased, men standard errors er feil → t-tester og konfidensintervaller lyver. Fiks: log-transformér y, eller bruk vektet minste kvadraters metode.\n\n**C) Systematisk kurve** (smile- eller frown-form) — modellen mangler en ikke-lineær term. Du har antatt linearitet, men det sanne forholdet er kvadratisk eller mer. Fiks: legg til x^2 eller log(x) som ny feature.\n\nI denne leksjonen lager du en enkel ASCII residual-plotter. Vi konstruerer deretter tre datasett som GIR forutsigbart hver av de tre mønstrene, og programmet sjekker både at plot-funksjonen virker OG at residual-varians-mønstrene er som forventet.\n\n**Din oppgave:** implementér ``residual_plot(y_pred, residuals, width=40, height=11)`` som returnerer en streng — en ASCII-scatter med ``*`` for punkter, ``-`` for midt-linja (residual = 0). Bruk doble anførsler i docstrings.",
+      files: {
+        "main.py": `import random
+
+
+def mean(xs):
+    return sum(xs) / len(xs)
+
+
+def transpose(M):
+    return [[M[i][j] for i in range(len(M))] for j in range(len(M[0]))]
+
+
+def matmul(A, B):
+    n = len(A); m = len(A[0]); p = len(B[0])
+    return [[sum(A[i][k] * B[k][j] for k in range(m)) for j in range(p)] for i in range(n)]
+
+
+def matvec(A, v):
+    return [sum(A[i][j] * v[j] for j in range(len(v))) for i in range(len(A))]
+
+
+def inverse(M):
+    n = len(M)
+    A = [row[:] + [1.0 if i == j else 0.0 for j in range(n)] for i, row in enumerate(M)]
+    for i in range(n):
+        max_row = max(range(i, n), key=lambda r: abs(A[r][i]))
+        if abs(A[max_row][i]) < 1e-12:
+            raise ValueError("Singular")
+        A[i], A[max_row] = A[max_row], A[i]
+        pivot = A[i][i]
+        for j in range(2 * n):
+            A[i][j] /= pivot
+        for r in range(n):
+            if r == i:
+                continue
+            factor = A[r][i]
+            for j in range(2 * n):
+                A[r][j] -= factor * A[i][j]
+    return [row[n:] for row in A]
+
+
+def build_design_matrix(features):
+    n = len(features[0])
+    k = len(features)
+    return [[1.0] + [features[j][i] for j in range(k)] for i in range(n)]
+
+
+def normal_equation(X, y):
+    Xt = transpose(X)
+    return matvec(inverse(matmul(Xt, X)), matvec(Xt, y))
+
+
+def predict(X, beta):
+    return matvec(X, beta)
+
+
+def residuals(y, y_pred):
+    return [y[i] - y_pred[i] for i in range(len(y))]
+
+
+def residual_plot(y_pred, residuals_list, width=40, height=11):
+    """ASCII scatter: residualer paa y-akse, predikajoner paa x-akse.
+    Returner streng med height rader, hver width tegn bred.
+    Midtraden viser y=0-linja med tegnet "-"."""
+    # === DIN OPPGAVE ===
+    # 1. Hent max_r = max(abs(r) for r in residuals_list). Default til 1 hvis 0.
+    # 2. min_p = min(y_pred); span_p = max(y_pred) - min_p (default 1 hvis 0).
+    # 3. Lag grid: liste av height rader, hver er liste av width " "-tegn.
+    # 4. midrow = height // 2.
+    # 5. For hver (x, r) i zip(y_pred, residuals_list):
+    #      col = int((x - min_p) / span_p * (width - 1))
+    #      row = int(midrow - (r / max_r) * midrow)
+    #      Klamp row og col inn i [0, height-1] / [0, width-1].
+    #      grid[row][col] = "*".
+    # 6. Tegn midt-linja: for hver c i 0..width-1, hvis grid[midrow][c] == " ": grid[midrow][c] = "-".
+    # 7. Returner "\\n".join("".join(row) for row in grid).
+    pass
+
+
+def half_variance(values_x, values_r):
+    """Hjelper: returner (var_venstre_halvdel, var_hoyre_halvdel) basert paa x."""
+    n = len(values_x)
+    sorted_pairs = sorted(zip(values_x, values_r))
+    half = n // 2
+    venstre = [r for _, r in sorted_pairs[:half]]
+    hoyre   = [r for _, r in sorted_pairs[half:]]
+    def var(xs):
+        if not xs:
+            return 0.0
+        m = mean(xs)
+        return sum((x - m) ** 2 for x in xs) / len(xs)
+    return var(venstre), var(hoyre)
+
+
+# ============================================================
+# Plotsanity: plot-funksjonen returnerer streng med riktig form
+# ============================================================
+y_pred_test = [1.0, 2.0, 3.0, 4.0, 5.0]
+resid_test  = [0.5, -0.5, 0.0, 0.3, -0.3]
+plot = residual_plot(y_pred_test, resid_test, width=20, height=7)
+if plot is None:
+    print("FEIL residual_plot returnerte None")
+else:
+    print("Plot (test):")
+    print(plot)
+    linjer = plot.split("\\n")
+    if len(linjer) == 7 and all(len(l) == 20 for l in linjer):
+        print("OK   plot har riktig dimensjon (7 rader, 20 kolonner)")
+    else:
+        print(f"FEIL plot-dimensjon: {len(linjer)} rader, lengder {[len(l) for l in linjer]}")
+    if "*" in plot:
+        print("OK   plot inneholder * for datapunkter")
+    if "-" in plot:
+        print("OK   plot inneholder - for midt-linja")
+
+
+# ============================================================
+# Tre mønstre: programmet sjekker varians-mønstrene
+# ============================================================
+
+rng = random.Random(42)
+
+# A) Tilfeldig: konstant varians, ingen trend
+xs_A = [i * 0.5 for i in range(30)]
+resid_A = [rng.gauss(0, 1.0) for _ in range(30)]
+var_v_A, var_h_A = half_variance(xs_A, resid_A)
+print(f"\\nA) Tilfeldig:  var venstre = {var_v_A:.3f}, var hoyre = {var_h_A:.3f}")
+if 0.3 < var_v_A < 3.0 and 0.3 < var_h_A < 3.0 and max(var_v_A, var_h_A) / max(min(var_v_A, var_h_A), 0.001) < 3.0:
+    print("OK   monster A: tilfeldig (likt varians-niva)")
+else:
+    print(f"FEIL: ikke balansert varians")
+
+# B) Trakt: varians vokser med predikert
+xs_B = [i * 0.5 for i in range(30)]
+resid_B = [rng.gauss(0, 0.1 + i * 0.3) for i in range(30)]
+var_v_B, var_h_B = half_variance(xs_B, resid_B)
+print(f"B) Trakt:      var venstre = {var_v_B:.3f}, var hoyre = {var_h_B:.3f}")
+if var_h_B > 5 * var_v_B:
+    print("OK   monster B: heteroskedastisitet (varians vokser mye)")
+else:
+    print(f"FEIL: forventet h>>v, fikk h={var_h_B}, v={var_v_B}")
+
+# C) Systematisk kurve: residual = ((i - 14.5)/14.5)^2 * 10 - 3 -> u-form
+xs_C = [i * 0.5 for i in range(30)]
+resid_C = [((i - 14.5) / 14.5) ** 2 * 10 - 3 for i in range(30)]
+# Sjekk: gjennomsnitt av residualer i venstre + hoyre halvdel er positivt,
+# gjennomsnitt i midten er negativt -> u-form
+n = len(xs_C)
+left = resid_C[: n // 3]
+mid = resid_C[n // 3 : 2 * n // 3]
+right = resid_C[2 * n // 3 :]
+m_l, m_m, m_r = mean(left), mean(mid), mean(right)
+print(f"C) Kurve:      mean venstre={m_l:.2f}, midten={m_m:.2f}, hoyre={m_r:.2f}")
+if m_l > 0 and m_m < 0 and m_r > 0:
+    print("OK   monster C: systematisk u-form i residualene")
+else:
+    print(f"FEIL forventet pos/neg/pos, fikk {m_l}, {m_m}, {m_r}")
+
+# Vis ogsa plot for monster C som demo
+if plot is not None:
+    print("\\nMonster C visualisert:")
+    print(residual_plot(xs_C, resid_C, width=40, height=11))
+`,
+      },
+      defaultFile: "main.py",
+      editable: ["main.py"],
+      run: { kind: "python-script", entry: "main.py" },
+      verifications: [
+        { label: "Plot har riktig dimensjon", check: { kind: "output-contains", needle: "OK   plot har riktig dimensjon" } },
+        { label: "Plot inneholder * for datapunkter", check: { kind: "output-contains", needle: "OK   plot inneholder * for datapunkter" } },
+        { label: "Plot tegner midt-linje med -", check: { kind: "output-contains", needle: "OK   plot inneholder - for midt-linja" } },
+        { label: "Monster A: tilfeldig spredning", check: { kind: "output-contains", needle: "OK   monster A: tilfeldig" } },
+        { label: "Monster B: heteroskedastisitet (trakt)", check: { kind: "output-contains", needle: "OK   monster B: heteroskedastisitet" } },
+        { label: "Monster C: systematisk u-form", check: { kind: "output-contains", needle: "OK   monster C: systematisk u-form" } },
+      ],
+      hint:
+        "def residual_plot(y_pred, residuals_list, width=40, height=11):\n    if not residuals_list:\n        return \"\"\n    max_r = max(abs(r) for r in residuals_list)\n    if max_r == 0:\n        max_r = 1.0\n    min_p = min(y_pred)\n    max_p = max(y_pred)\n    span_p = max_p - min_p if max_p > min_p else 1.0\n    grid = [[\" \"] * width for _ in range(height)]\n    midrow = height // 2\n    for x, r in zip(y_pred, residuals_list):\n        col = int((x - min_p) / span_p * (width - 1))\n        row = int(midrow - (r / max_r) * midrow)\n        row = max(0, min(height - 1, row))\n        col = max(0, min(width - 1, col))\n        grid[row][col] = \"*\"\n    for c in range(width):\n        if grid[midrow][c] == \" \":\n            grid[midrow][c] = \"-\"\n    return \"\\n\".join(\"\".join(row) for row in grid)",
+    },
+
+    // ============ LEKSJON 6 ===========================================
+    {
+      id: "06-vif-multikollinaritet",
+      title: "6. Multikollinaritet og VIF",
+      narrative:
+        "Hva skjer hvis to features måler nesten det samme — f.eks. høyde i cm og høyde i tommer? Eller mer realistisk: alder og antall år i utdanning, eller inntekt og formue? Da er ``X'X`` nær singular, og inversen — som vi trenger for normalligningen — eksploderer. Resultatet: β-estimatene blir ekstremt sensitive til små endringer i dataene. Du kan trene to ganger på nesten samme data og få helt forskjellige koeffisienter. Modellen prediker fortsatt OK, men koeffisientene er ubrukelige til tolkning.\n\nDette heter **multikollinaritet**.\n\nEnkleste test: ``correlation(x_i, x_j)``. Hvis to features har korrelasjon > 0.9, er du i trøbbel. Men korrelasjon er bare parvis — hva hvis x1 ≈ x2 + x3? Da kan ingen parvis korrelasjon være høy, men de er likevel kollinære.\n\n**VIF (Variance Inflation Factor)** fanger dette. For feature i:\n\n1. Regnér regresjon der x_i er TARGET, og alle andre features er prediktorer.\n2. La R_i^2 være R^2 fra DEN regresjonen.\n3. ``VIF_i = 1 / (1 - R_i^2)``.\n\nIntuisjon: hvis R_i^2 er nær 1, betyr det at x_i er nesten fullstendig forklart av de andre. Da blir VIF kjempestor. Tommelfingerregel: VIF > 5 er bekymringsfullt, VIF > 10 er problematisk. VIF = 1 betyr ingen kollinaritet (R_i^2 = 0).\n\nI denne leksjonen bygger vi to syntetiske datasett: ett der ``x2 = 2*x1 + støy`` (sterkt kollinært), og ett der alle features er uavhengige hvit støy. Du bekrefter at korrelasjons-deteksjonen og VIF gir forutsigbart høye/lave verdier.\n\n**Din oppgave:** implementér ``correlation(a, b)`` og ``vif(features, idx)``. ``vif`` skal bruke ``normal_equation`` på ``features[idx]`` som y og de andre features som X.",
+      files: {
+        "main.py": `import random
+
+
+def mean(xs):
+    return sum(xs) / len(xs)
+
+
+def variance(xs):
+    m = mean(xs)
+    return sum((x - m) ** 2 for x in xs) / len(xs)
+
+
+def transpose(M):
+    return [[M[i][j] for i in range(len(M))] for j in range(len(M[0]))]
+
+
+def matmul(A, B):
+    n = len(A); m = len(A[0]); p = len(B[0])
+    return [[sum(A[i][k] * B[k][j] for k in range(m)) for j in range(p)] for i in range(n)]
+
+
+def matvec(A, v):
+    return [sum(A[i][j] * v[j] for j in range(len(v))) for i in range(len(A))]
+
+
+def inverse(M):
+    n = len(M)
+    A = [row[:] + [1.0 if i == j else 0.0 for j in range(n)] for i, row in enumerate(M)]
+    for i in range(n):
+        max_row = max(range(i, n), key=lambda r: abs(A[r][i]))
+        if abs(A[max_row][i]) < 1e-12:
+            raise ValueError("Singular")
+        A[i], A[max_row] = A[max_row], A[i]
+        pivot = A[i][i]
+        for j in range(2 * n):
+            A[i][j] /= pivot
+        for r in range(n):
+            if r == i:
+                continue
+            factor = A[r][i]
+            for j in range(2 * n):
+                A[r][j] -= factor * A[i][j]
+    return [row[n:] for row in A]
+
+
+def build_design_matrix(features):
+    n = len(features[0])
+    k = len(features)
+    return [[1.0] + [features[j][i] for j in range(k)] for i in range(n)]
+
+
+def normal_equation(X, y):
+    Xt = transpose(X)
+    return matvec(inverse(matmul(Xt, X)), matvec(Xt, y))
+
+
+def predict(X, beta):
+    return matvec(X, beta)
+
+
+def r_squared(y, y_pred):
+    y_mean = mean(y)
+    ss_res = sum((y[i] - y_pred[i]) ** 2 for i in range(len(y)))
+    ss_tot = sum((yi - y_mean) ** 2 for yi in y)
+    if ss_tot == 0:
+        return 0.0
+    return 1 - ss_res / ss_tot
+
+
+def correlation(a, b):
+    """Pearson-korrelasjon mellom to lister med samme lengde."""
+    # === DIN OPPGAVE ===
+    # m_a = mean(a); m_b = mean(b)
+    # cov = sum((a[i] - m_a) * (b[i] - m_b) for i in range(len(a))) / len(a)
+    # sd_a = sqrt(variance(a)); sd_b = sqrt(variance(b))
+    # Returner cov / (sd_a * sd_b). Pass paa division by zero (returner 0.0).
+    pass
+
+
+def vif(features, idx):
+    """VIF for features[idx]. Regn regresjon mot de andre features, returner 1/(1-R^2)."""
+    # === DIN OPPGAVE ===
+    # target = features[idx]
+    # andre = [features[j] for j in range(len(features)) if j != idx]
+    # X = build_design_matrix(andre)
+    # beta = normal_equation(X, target)
+    # pred = predict(X, beta)
+    # r2 = r_squared(target, pred)
+    # Returner float("inf") hvis r2 >= 1, ellers 1.0 / (1.0 - r2).
+    pass
+
+
+def sjekk_nær(faktisk, forventet, navn, tol=1e-3):
+    if abs(faktisk - forventet) < tol:
+        print(f"OK   {navn}")
+    else:
+        print(f"FEIL {navn}: fikk {faktisk!r}, forventet {forventet!r}")
+
+
+# Sett opp: x2 = 2*x1 + liten stoy (sterkt kollinaert), x3 uavhengig
+rng = random.Random(42)
+n = 50
+x1 = [rng.gauss(0, 1) for _ in range(n)]
+x2 = [2 * x + rng.gauss(0, 0.1) for x in x1]
+x3 = [rng.gauss(0, 1) for _ in range(n)]
+
+cor_12 = correlation(x1, x2)
+cor_13 = correlation(x1, x3)
+print(f"corr(x1, x2) = {cor_12:.4f}  (forventet naer 1)")
+print(f"corr(x1, x3) = {cor_13:.4f}  (forventet naer 0)")
+
+if cor_12 is not None and cor_12 > 0.95:
+    print("OK   correlation oppdager sterk kollinaritet (corr > 0.95)")
+else:
+    print(f"FEIL corr(x1,x2) = {cor_12}, forventet > 0.95")
+
+if cor_13 is not None and abs(cor_13) < 0.3:
+    print("OK   correlation oppdager uavhengighet (|corr| < 0.3)")
+else:
+    print(f"FEIL corr(x1,x3) = {cor_13}, forventet |.| < 0.3")
+
+# VIF: x1 og x2 burde ha hoy VIF, x3 burde ha lav
+features = [x1, x2, x3]
+vif_x1 = vif(features, 0)
+vif_x2 = vif(features, 1)
+vif_x3 = vif(features, 2)
+print(f"VIF(x1) = {vif_x1:.2f}  (forventet > 10)")
+print(f"VIF(x2) = {vif_x2:.2f}  (forventet > 10)")
+print(f"VIF(x3) = {vif_x3:.2f}  (forventet naer 1)")
+
+if vif_x1 is not None and vif_x1 > 10:
+    print("OK   VIF(x1) > 10 (multikollinaritet oppdaget)")
+else:
+    print(f"FEIL VIF(x1) = {vif_x1}, forventet > 10")
+
+if vif_x2 is not None and vif_x2 > 10:
+    print("OK   VIF(x2) > 10 (multikollinaritet oppdaget)")
+else:
+    print(f"FEIL VIF(x2) = {vif_x2}, forventet > 10")
+
+if vif_x3 is not None and vif_x3 < 2:
+    print("OK   VIF(x3) naer 1 (uavhengig feature)")
+else:
+    print(f"FEIL VIF(x3) = {vif_x3}, forventet < 2")
+
+# Test 2: uavhengige features skal ha VIF naer 1
+x1b = [rng.gauss(0, 1) for _ in range(n)]
+x2b = [rng.gauss(0, 1) for _ in range(n)]
+x3b = [rng.gauss(0, 1) for _ in range(n)]
+fb = [x1b, x2b, x3b]
+vifs_uavh = [vif(fb, i) for i in range(3)]
+print(f"VIF for tre uavhengige: {[f'{v:.2f}' for v in vifs_uavh]}")
+if all(v is not None and v < 2 for v in vifs_uavh):
+    print("OK   alle uavhengige features har VIF < 2")
+else:
+    print(f"FEIL noen VIF for uavhengige > 2")
+`,
+      },
+      defaultFile: "main.py",
+      editable: ["main.py"],
+      run: { kind: "python-script", entry: "main.py" },
+      verifications: [
+        { label: "correlation oppdager sterk kollinaritet", check: { kind: "output-contains", needle: "OK   correlation oppdager sterk kollinaritet" } },
+        { label: "correlation oppdager uavhengighet", check: { kind: "output-contains", needle: "OK   correlation oppdager uavhengighet" } },
+        { label: "VIF(x1) > 10 ved kollinaritet", check: { kind: "output-contains", needle: "OK   VIF(x1) > 10" } },
+        { label: "VIF(x2) > 10 ved kollinaritet", check: { kind: "output-contains", needle: "OK   VIF(x2) > 10" } },
+        { label: "VIF naer 1 for uavhengig feature", check: { kind: "output-contains", needle: "OK   VIF(x3) naer 1" } },
+        { label: "Alle uavhengige features har VIF < 2", check: { kind: "output-contains", needle: "OK   alle uavhengige features har VIF < 2" } },
+      ],
+      hint:
+        "def correlation(a, b):\n    n = len(a)\n    m_a = mean(a); m_b = mean(b)\n    cov = sum((a[i] - m_a) * (b[i] - m_b) for i in range(n)) / n\n    sd_a = variance(a) ** 0.5\n    sd_b = variance(b) ** 0.5\n    if sd_a == 0 or sd_b == 0:\n        return 0.0\n    return cov / (sd_a * sd_b)\n\ndef vif(features, idx):\n    target = features[idx]\n    andre = [features[j] for j in range(len(features)) if j != idx]\n    X = build_design_matrix(andre)\n    beta = normal_equation(X, target)\n    pred = predict(X, beta)\n    r2 = r_squared(target, pred)\n    if r2 >= 1.0:\n        return float(\"inf\")\n    return 1.0 / (1.0 - r2)",
+    },
+  ],
+};
+
+const HYPERPARAMETER_TUNING: MiniCourse = {
+  id: "hyperparameter-tuning",
+  slug: "hyperparameter-tuning",
+  title: "Hyperparameter-tuning fra null",
+  blurb:
+    "Lær å velge modell-parametere systematisk — fra naivt train/test-split, via K-fold cross-validation, grid search og random search, til den smarte three-way-split-en som hindrer at du \"overfitter til validation-settet\". Bygges på k-NN-klassifikator du selv implementerer. Pure Python, ingen sklearn.",
+  estimertTid: "60–75 min",
+  fag: ["DTE-2602", "Maskinlæring", "Modellvalg"],
+  color: "purple",
+  rekkefolge: 30,
+  lessons: [
+    // ============ LEKSJON 1 ===========================================
+    {
+      id: "01-train-test-split",
+      title: "1. Train/test-split som baseline",
+      narrative:
+        "Du har trent en modell. Hvor god er den? Hvis du måler på de samme dataene du trente på, fusker du — modellen kan ha **memorert** treningssettet uten å ha lært noe generelt. Standard-løsningen er **train/test-split**: hold tilbake en del av data (typisk 20%) som modellen aldri ser under trening, og bruk de tilbakeholdte til å måle ytelsen.\n\n**k-NN-klassifikatoren** har én hyperparameter: `k`, antall naboer som stemmer. Når `k=1` overfitter modellen (kopiere nærmeste nabo, også støy). Når `k` er for stor, jevnes klasseskillet ut og modellen underfitter. Et sted i mellom ligger det beste valget — men hva er \"i mellom\" for ditt datasett?\n\nDenne leksjonen lager et 2D-datasett med to klasser (Gauss-skyer med overlapp), splitter 80/20, og rapporterer test-accuracy for `k` i [1, 3, 5, 7, 9]. Du finner beste `k` ved å se på tallene.\n\n**Din oppgave:**\n\n1. Implementér `train_test_split(X, y, test_frac=0.2, seed=42)` som returnerer fire lister: `X_train, X_test, y_train, y_test`. Bruk `random.Random(seed)` for å shuffle indekser før du splitter.\n2. Implementér `knn_predict(x_query, X_train, y_train, k)` som returnerer flertallsklassen blant de `k` nærmeste naboene (euklidsk avstand).\n3. Implementér `accuracy(X_test, y_test, X_train, y_train, k)` — andel riktige.",
+      files: {
+        "knn.py": `import math
+import random
+from collections import Counter
+
+
+# === Datasett: 50 punkter, 2 klasser, Gauss-skyer med overlapp ===
+random.seed(1)
+X = []
+y = []
+for _ in range(25):
+    X.append([random.gauss(0, 1.7), random.gauss(0, 1.7)])
+    y.append(0)
+for _ in range(25):
+    X.append([random.gauss(1.5, 1.7), random.gauss(1.5, 1.7)])
+    y.append(1)
+
+
+def train_test_split(X, y, test_frac=0.2, seed=42):
+    """Shuffle (med seed) og del i train/test. Returnér (X_train, X_test, y_train, y_test)."""
+    # === DIN OPPGAVE ===
+    # 1. idx = list(range(len(X)))
+    # 2. rng = random.Random(seed); rng.shuffle(idx)
+    # 3. n_test = int(len(X) * test_frac)
+    # 4. test_idx = idx[:n_test]; train_idx = idx[n_test:]
+    # 5. Returnér de fire listene i riktig rekkefølge.
+    return [], [], [], []
+
+
+def euclidean(a, b):
+    return math.sqrt(sum((ai - bi) ** 2 for ai, bi in zip(a, b)))
+
+
+def knn_predict(x_query, X_train, y_train, k=3):
+    """Returnér flertallsklassen blant k nærmeste naboer."""
+    # === DIN OPPGAVE ===
+    # 1. Lag liste med (avstand, label) for hver (X_train[i], y_train[i]).
+    # 2. Sorter på avstand.
+    # 3. Ta k første labels.
+    # 4. Returnér mest vanlige label med Counter.most_common(1).
+    return 0
+
+
+def accuracy(X_test, y_test, X_train, y_train, k=3):
+    """Andel av X_test der knn_predict treffer y_test."""
+    # === DIN OPPGAVE ===
+    # Tell hvor mange knn_predict-prediksjoner som matcher y_test. Returnér andel.
+    return 0.0
+
+
+def sjekk(faktisk, forventet, navn):
+    if faktisk == forventet:
+        print(f"OK   {navn}")
+    else:
+        print(f"FEIL {navn}: fikk {faktisk!r}, forventet {forventet!r}")
+
+
+def sjekk_naer(faktisk, forventet, navn, eps=1e-6):
+    if abs(faktisk - forventet) < eps:
+        print(f"OK   {navn}")
+    else:
+        print(f"FEIL {navn}: fikk {faktisk!r}, forventet {forventet!r}")
+
+
+# Test split-størrelser
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_frac=0.2, seed=42)
+sjekk(len(X_train), 40, "train har 40 punkter")
+sjekk(len(X_test), 10, "test har 10 punkter")
+sjekk(len(y_train), 40, "y_train har 40 labels")
+sjekk(len(y_test), 10, "y_test har 10 labels")
+
+# Kjør k-NN for k i [1, 3, 5, 7, 9]
+print()
+print("Test-accuracy for ulike k:")
+accs = {}
+for k in [1, 3, 5, 7, 9]:
+    accs[k] = accuracy(X_test, y_test, X_train, y_train, k)
+    print(f"  k={k}: acc={accs[k]:.4f}")
+
+# Beste k på dette datasettet er k=3 (acc=0.8)
+sjekk_naer(accs[1], 0.7, "k=1 gir 0.7")
+sjekk_naer(accs[3], 0.8, "k=3 gir 0.8")
+sjekk_naer(accs[5], 0.7, "k=5 gir 0.7")
+
+# Beste k
+best_k = max(accs, key=accs.get)
+sjekk(best_k, 3, "beste k er 3")
+`,
+      },
+      defaultFile: "knn.py",
+      editable: ["knn.py"],
+      run: { kind: "python-script", entry: "knn.py" },
+      verifications: [
+        {
+          label: "train_test_split deler riktig (40 train, 10 test)",
+          check: { kind: "output-contains", needle: "OK   train har 40 punkter" },
+        },
+        {
+          label: "y_train og y_test har riktig størrelse",
+          check: { kind: "output-contains", needle: "OK   y_test har 10 labels" },
+        },
+        {
+          label: "k=1 gir test-accuracy 0.7",
+          check: { kind: "output-contains", needle: "OK   k=1 gir 0.7" },
+        },
+        {
+          label: "k=3 gir test-accuracy 0.8 (best på dette splittet)",
+          check: { kind: "output-contains", needle: "OK   k=3 gir 0.8" },
+        },
+        {
+          label: "Beste k identifisert som 3",
+          check: { kind: "output-contains", needle: "OK   beste k er 3" },
+        },
+      ],
+      hint:
+        "def train_test_split(X, y, test_frac=0.2, seed=42):\n    idx = list(range(len(X)))\n    rng = random.Random(seed)\n    rng.shuffle(idx)\n    n_test = int(len(X) * test_frac)\n    test_idx = idx[:n_test]\n    train_idx = idx[n_test:]\n    X_train = [X[i] for i in train_idx]\n    y_train = [y[i] for i in train_idx]\n    X_test = [X[i] for i in test_idx]\n    y_test = [y[i] for i in test_idx]\n    return X_train, X_test, y_train, y_test\n\ndef knn_predict(x_query, X_train, y_train, k=3):\n    dists = [(euclidean(x_query, X_train[i]), y_train[i]) for i in range(len(X_train))]\n    dists.sort(key=lambda t: t[0])\n    nearest = [lbl for _, lbl in dists[:k]]\n    return Counter(nearest).most_common(1)[0][0]\n\ndef accuracy(X_test, y_test, X_train, y_train, k=3):\n    correct = sum(1 for xq, yt in zip(X_test, y_test) if knn_predict(xq, X_train, y_train, k) == yt)\n    return correct / len(X_test)",
+    },
+
+    // ============ LEKSJON 2 ===========================================
+    {
+      id: "02-kfold-cv",
+      title: "2. K-fold cross-validation",
+      narrative:
+        "Forrige leksjon ga oss ett tall: \"k=3 har test-accuracy 0.8 på dette splittet.\" Men hva om splittet var heldig? Skift seed til 43 — kanskje testene treffer en annen tilfeldig delmengde, og k=5 vinner. Vi har egentlig **ett enkelt eksperiment**, og estimatet av accuracy har stor varians når test-settet er bare 10 punkter.\n\n**K-fold cross-validation** løser dette: del data i K like deler (\"folds\"), tren på K-1 av dem og test på den siste. Gjenta K ganger, med en ny fold som test hver gang. Til slutt har du **K accuracies** — gjennomsnitt og standardavvik gir et mye mer robust estimat.\n\nFor 50 datapunkter og K=5: hver fold har 10 punkter. Vi trener 5 ganger på 40 og tester på 10 hver gang. Alle datapunkter brukes til test akkurat én gang, og til trening fire ganger.\n\n**Hvorfor mer robust?** Variansen av et gjennomsnitt over K uavhengige målinger er 1/K av variansen til ett enkelt mål. Du får en bredere prøve av datasettets variabilitet.\n\n**Din oppgave:**\n\n1. Implementér `kfold(n, k=5, seed=42)` som returnerer en liste av `(train_idx, test_idx)`-par, der indeksene er disjunkte og hver indeks havner i nøyaktig ett test-sett.\n2. Implementér `cross_val_score(X, y, params, k=5, seed=42)` som returnerer en liste med K accuracies pluss `mean(scores)` og `std(scores)`.",
+      files: {
+        "knn.py": `import math
+import random
+from collections import Counter
+
+
+random.seed(1)
+X = []
+y = []
+for _ in range(25):
+    X.append([random.gauss(0, 1.7), random.gauss(0, 1.7)])
+    y.append(0)
+for _ in range(25):
+    X.append([random.gauss(1.5, 1.7), random.gauss(1.5, 1.7)])
+    y.append(1)
+
+
+def euclidean(a, b):
+    return math.sqrt(sum((ai - bi) ** 2 for ai, bi in zip(a, b)))
+
+
+def knn_predict(x_query, X_train, y_train, k=3):
+    dists = [(euclidean(x_query, X_train[i]), y_train[i]) for i in range(len(X_train))]
+    dists.sort(key=lambda t: t[0])
+    nearest = [lbl for _, lbl in dists[:k]]
+    return Counter(nearest).most_common(1)[0][0]
+
+
+def kfold(n, k=5, seed=42):
+    """Returnér liste av (train_idx, test_idx) for K folds.
+
+    Shuffles indices med seed, deler i k like deler. Siste fold tar evt. resterende.
+    """
+    # === DIN OPPGAVE ===
+    # 1. idx = list(range(n)); rng = random.Random(seed); rng.shuffle(idx)
+    # 2. fold_size = n // k
+    # 3. For i in range(k):
+    #       start = i * fold_size
+    #       end = (i + 1) * fold_size if i < k - 1 else n
+    #       test_idx = idx[start:end]
+    #       train_idx = idx[:start] + idx[end:]
+    #       Legg til (train_idx, test_idx).
+    # 4. Returnér listen.
+    return []
+
+
+def mean(xs):
+    return sum(xs) / len(xs)
+
+
+def std(xs):
+    """Populasjons-standardavvik."""
+    m = mean(xs)
+    return math.sqrt(sum((x - m) ** 2 for x in xs) / len(xs))
+
+
+def cross_val_score(X, y, params, k=5, seed=42):
+    """Returnér (scores_liste, mean, std) over k folds.
+
+    params er dict, f.eks. {"k": 3}. Sendes som **params til knn_predict.
+    """
+    # === DIN OPPGAVE ===
+    # 1. scores = []
+    # 2. For (train_idx, test_idx) in kfold(len(X), k=k, seed=seed):
+    #       X_tr = [X[i] for i in train_idx]; y_tr = [y[i] for i in train_idx]
+    #       X_te = [X[i] for i in test_idx]; y_te = [y[i] for i in test_idx]
+    #       correct = sum(1 for xq, yt in zip(X_te, y_te) if knn_predict(xq, X_tr, y_tr, **params) == yt)
+    #       scores.append(correct / len(X_te))
+    # 3. Returnér (scores, mean(scores), std(scores))
+    return [], 0.0, 0.0
+
+
+def sjekk(faktisk, forventet, navn):
+    if faktisk == forventet:
+        print(f"OK   {navn}")
+    else:
+        print(f"FEIL {navn}: fikk {faktisk!r}, forventet {forventet!r}")
+
+
+def sjekk_naer(faktisk, forventet, navn, eps=1e-6):
+    if abs(faktisk - forventet) < eps:
+        print(f"OK   {navn}")
+    else:
+        print(f"FEIL {navn}: fikk {faktisk!r}, forventet {forventet!r}")
+
+
+# Test kfold
+folds = kfold(50, k=5, seed=42)
+sjekk(len(folds), 5, "kfold returnerer 5 folds")
+
+# Hver fold har ca. 10 test-indekser og 40 train-indekser
+sjekk(len(folds[0][1]), 10, "fold 0 test har 10 punkter")
+sjekk(len(folds[0][0]), 40, "fold 0 train har 40 punkter")
+
+# Disjunkthet: alle test-indekser samlet er nettopp {0..49}
+all_test = []
+for _, ti in folds:
+    all_test.extend(ti)
+sjekk(sorted(all_test), list(range(50)), "test-indekser dekker 0..49 uten dupletter")
+
+# Tren/test-grupper innen én fold er disjunkte
+tr0, te0 = folds[0]
+sjekk(len(set(tr0) & set(te0)), 0, "train og test i fold 0 er disjunkte")
+
+# Test cross_val_score
+print()
+print("CV scores for ulike k:")
+for kv in [1, 3, 5, 7, 9]:
+    scores, m, s = cross_val_score(X, y, {"k": kv}, k=5, seed=42)
+    print(f"  k={kv}: scores={[round(x, 2) for x in scores]}, mean={m:.4f}, std={s:.4f}")
+
+# Sjekk at k=3 fortsatt vinner (eller er en av de beste) over CV
+scores_3, m3, s3 = cross_val_score(X, y, {"k": 3}, k=5, seed=42)
+sjekk(len(scores_3), 5, "k=3 CV har 5 scores")
+sjekk_naer(m3, 0.64, "k=3 CV-mean er 0.64")
+sjekk(0.0 < s3 < 0.3, True, "k=3 CV-std er rimelig (0 < s < 0.3)")
+`,
+      },
+      defaultFile: "knn.py",
+      editable: ["knn.py"],
+      run: { kind: "python-script", entry: "knn.py" },
+      verifications: [
+        {
+          label: "kfold returnerer 5 folds",
+          check: { kind: "output-contains", needle: "OK   kfold returnerer 5 folds" },
+        },
+        {
+          label: "Hver fold har 10 test / 40 train punkter",
+          check: { kind: "output-contains", needle: "OK   fold 0 test har 10 punkter" },
+        },
+        {
+          label: "Test-indekser dekker hele datasettet uten dupletter",
+          check: { kind: "output-contains", needle: "OK   test-indekser dekker 0..49 uten dupletter" },
+        },
+        {
+          label: "Train og test i samme fold er disjunkte",
+          check: { kind: "output-contains", needle: "OK   train og test i fold 0 er disjunkte" },
+        },
+        {
+          label: "cross_val_score returnerer 5 individuelle scores",
+          check: { kind: "output-contains", needle: "OK   k=3 CV har 5 scores" },
+        },
+        {
+          label: "CV-mean for k=3 er ca. 0.64",
+          check: { kind: "output-contains", needle: "OK   k=3 CV-mean er 0.64" },
+        },
+      ],
+      hint:
+        "def kfold(n, k=5, seed=42):\n    idx = list(range(n))\n    rng = random.Random(seed)\n    rng.shuffle(idx)\n    fold_size = n // k\n    folds = []\n    for i in range(k):\n        start = i * fold_size\n        end = (i + 1) * fold_size if i < k - 1 else n\n        test_idx = idx[start:end]\n        train_idx = idx[:start] + idx[end:]\n        folds.append((train_idx, test_idx))\n    return folds\n\ndef cross_val_score(X, y, params, k=5, seed=42):\n    scores = []\n    for train_idx, test_idx in kfold(len(X), k=k, seed=seed):\n        X_tr = [X[i] for i in train_idx]\n        y_tr = [y[i] for i in train_idx]\n        X_te = [X[i] for i in test_idx]\n        y_te = [y[i] for i in test_idx]\n        correct = sum(1 for xq, yt in zip(X_te, y_te) if knn_predict(xq, X_tr, y_tr, **params) == yt)\n        scores.append(correct / len(X_te))\n    return scores, mean(scores), std(scores)",
+    },
+
+    // ============ LEKSJON 3 ===========================================
+    {
+      id: "03-grid-search",
+      title: "3. Grid search",
+      narrative:
+        "Vi vil prøve mange hyperparameter-kombinasjoner samtidig — ikke bare `k`, men også **avstandsmål** (`euclidean` vs `manhattan`). \"Grid search\" betyr: gi en dict som spesifiserer hva som skal prøves for hver parameter, generér ALLE kombinasjoner (kartesisk produkt), kjør CV på hver, returnér beste.\n\n```\nparam_grid = {\n    \"k\":        [1, 3, 5, 7, 9],\n    \"distance\": [\"euclidean\", \"manhattan\"]\n}\n# -> 5 * 2 = 10 kombinasjoner totalt\n```\n\n**Hvorfor cartesian product, ikke parallell-iterasjon?** Vi vet ikke om beste `k` er det samme for euklidsk og manhattan-avstand. Bare ved å prøve alle kombinasjoner kan vi være sikre på at vi finner beste totalt.\n\n**Hvor stor blir gridet?** Multiplikativt. Med 3 parametere og 5 verdier hver blir det 125. Det er greit. Med 6 parametere og 10 verdier hver er det 1 million — for mye. Da bruker vi random search (neste leksjon).\n\n**Din oppgave:**\n\n1. Utvid `knn_predict` til å støtte `distance=\"euclidean\"` eller `distance=\"manhattan\"` via en DIST_FNS-dict (allerede skrevet).\n2. Implementér `grid_search(X, y, param_grid, k=5, seed=42)`. Returnér `(best_params, best_score, all_results)` der `all_results` er en liste `[(params, mean_cv_score), ...]`.\n\n**Tips:** generér alle kombinasjoner ved å starte med `[{}]` og iterativt utvide:\n\n```\ncombos = [{}]\nfor key, values in param_grid.items():\n    combos = [{**c, key: v} for c in combos for v in values]\n```",
+      files: {
+        "knn.py": `import math
+import random
+from collections import Counter
+
+
+random.seed(1)
+X = []
+y = []
+for _ in range(25):
+    X.append([random.gauss(0, 1.7), random.gauss(0, 1.7)])
+    y.append(0)
+for _ in range(25):
+    X.append([random.gauss(1.5, 1.7), random.gauss(1.5, 1.7)])
+    y.append(1)
+
+
+def euclidean(a, b):
+    return math.sqrt(sum((ai - bi) ** 2 for ai, bi in zip(a, b)))
+
+
+def manhattan(a, b):
+    return sum(abs(ai - bi) for ai, bi in zip(a, b))
+
+
+DIST_FNS = {"euclidean": euclidean, "manhattan": manhattan}
+
+
+def knn_predict(x_query, X_train, y_train, k=3, distance="euclidean"):
+    dist_fn = DIST_FNS[distance]
+    dists = [(dist_fn(x_query, X_train[i]), y_train[i]) for i in range(len(X_train))]
+    dists.sort(key=lambda t: t[0])
+    nearest = [lbl for _, lbl in dists[:k]]
+    return Counter(nearest).most_common(1)[0][0]
+
+
+def kfold(n, k=5, seed=42):
+    idx = list(range(n))
+    rng = random.Random(seed)
+    rng.shuffle(idx)
+    fold_size = n // k
+    folds = []
+    for i in range(k):
+        start = i * fold_size
+        end = (i + 1) * fold_size if i < k - 1 else n
+        folds.append((idx[:start] + idx[end:], idx[start:end]))
+    return folds
+
+
+def mean(xs):
+    return sum(xs) / len(xs)
+
+
+def cross_val_score(X, y, params, k=5, seed=42):
+    scores = []
+    for train_idx, test_idx in kfold(len(X), k=k, seed=seed):
+        X_tr = [X[i] for i in train_idx]
+        y_tr = [y[i] for i in train_idx]
+        X_te = [X[i] for i in test_idx]
+        y_te = [y[i] for i in test_idx]
+        correct = sum(1 for xq, yt in zip(X_te, y_te) if knn_predict(xq, X_tr, y_tr, **params) == yt)
+        scores.append(correct / len(X_te))
+    return mean(scores)
+
+
+def grid_search(X, y, param_grid, k=5, seed=42):
+    """Prøv alle kombinasjoner av param_grid. Returnér (best_params, best_score, all_results).
+
+    all_results = [({...params}, mean_cv_score), ...] for hver kombinasjon.
+    """
+    # === DIN OPPGAVE ===
+    # 1. Generér alle kombinasjoner (cartesian product) av param_grid.
+    #    Start med [{}], for hver (key, values): combos = [{**c, key: v} for c in combos for v in values]
+    # 2. For hver combo: kjør cross_val_score, lagre (combo, score) i all_results.
+    # 3. Finn (combo, score) med høyest score. Returnér (best_params, best_score, all_results).
+    return None, -1.0, []
+
+
+def sjekk(faktisk, forventet, navn):
+    if faktisk == forventet:
+        print(f"OK   {navn}")
+    else:
+        print(f"FEIL {navn}: fikk {faktisk!r}, forventet {forventet!r}")
+
+
+def sjekk_naer(faktisk, forventet, navn, eps=1e-6):
+    if abs(faktisk - forventet) < eps:
+        print(f"OK   {navn}")
+    else:
+        print(f"FEIL {navn}: fikk {faktisk!r}, forventet {forventet!r}")
+
+
+param_grid = {"k": [1, 3, 5, 7, 9], "distance": ["euclidean", "manhattan"]}
+best_params, best_score, results = grid_search(X, y, param_grid, k=5, seed=42)
+
+# Skal være 10 kombinasjoner totalt
+sjekk(len(results), 10, "grid har 10 kombinasjoner")
+
+print()
+print("Grid search-resultater (sortert beste først):")
+for p, s in sorted(results, key=lambda t: -t[1]):
+    print(f"  {p}: {s:.4f}")
+
+# Beste skal være k=3, manhattan med score 0.66
+sjekk(best_params is not None, True, "fant beste parametere")
+sjekk(best_params["k"], 3, "beste k er 3")
+sjekk(best_params["distance"], "manhattan", "beste distance er manhattan")
+sjekk_naer(best_score, 0.66, "beste CV-score er 0.66")
+`,
+      },
+      defaultFile: "knn.py",
+      editable: ["knn.py"],
+      run: { kind: "python-script", entry: "knn.py" },
+      verifications: [
+        {
+          label: "Grid genererer 10 kombinasjoner (5 k × 2 distance)",
+          check: { kind: "output-contains", needle: "OK   grid har 10 kombinasjoner" },
+        },
+        {
+          label: "Grid search returnerer best_params",
+          check: { kind: "output-contains", needle: "OK   fant beste parametere" },
+        },
+        {
+          label: "Beste k er 3 (samme som leksjon 1)",
+          check: { kind: "output-contains", needle: "OK   beste k er 3" },
+        },
+        {
+          label: "Beste avstandsmål er manhattan",
+          check: { kind: "output-contains", needle: "OK   beste distance er manhattan" },
+        },
+        {
+          label: "Beste CV-score er 0.66",
+          check: { kind: "output-contains", needle: "OK   beste CV-score er 0.66" },
+        },
+      ],
+      hint:
+        "def grid_search(X, y, param_grid, k=5, seed=42):\n    combos = [{}]\n    for key, values in param_grid.items():\n        combos = [{**c, key: v} for c in combos for v in values]\n    all_results = []\n    best_params = None\n    best_score = -1.0\n    for params in combos:\n        score = cross_val_score(X, y, params, k=k, seed=seed)\n        all_results.append((params, score))\n        if score > best_score:\n            best_score = score\n            best_params = params\n    return best_params, best_score, all_results",
+    },
+
+    // ============ LEKSJON 4 ===========================================
+    {
+      id: "04-random-search",
+      title: "4. Random search",
+      narrative:
+        "Grid search blir uhåndterlig fort. Med 6 parametere og 10 verdier hver er det 1 000 000 kombinasjoner. Selv om hver CV-kjøring er rask, blir totalen umulig.\n\n**Random search** sampler tilfeldig N kombinasjoner i stedet for å prøve ALLE. Studier (Bergstra & Bengio 2012) viser at hvis bare noen få parametere faktisk har stor effekt, finner random search nesten alltid like god — eller bedre — løsning med en brøkdel av kostnaden. Grunnen: random search dekker FLERE verdier av hver enkelt parameter med N samples enn et grid med samme totalkostnad.\n\n**Algoritmen:**\n\n```\nfor _ in range(n_iter):\n    sample én tilfeldig kombinasjon\n    kjør CV\n    hold på beste\n```\n\nVi bygger ut gridet ved å legge til flere verdier av `k`, slik at random search faktisk har et større rom å utforske enn forrige leksjon. Med en brøkdel av kombinasjonene (n_iter=10 vs 16 i et fullt grid) skal vi se at random fortsatt finner k=3 som beste.\n\n**Din oppgave:** implementér `random_search(X, y, param_distributions, n_iter=10, k=5, seed=42)`. Bruk `random.Random(seed)` for reproduserbarhet. Returnér `(best_params, best_score, n_tried)` der `n_tried` er antall UNIKE kombinasjoner faktisk testet (kan være < `n_iter` hvis duplikater samples).",
+      files: {
+        "knn.py": `import math
+import random
+from collections import Counter
+
+
+random.seed(1)
+X = []
+y = []
+for _ in range(25):
+    X.append([random.gauss(0, 1.7), random.gauss(0, 1.7)])
+    y.append(0)
+for _ in range(25):
+    X.append([random.gauss(1.5, 1.7), random.gauss(1.5, 1.7)])
+    y.append(1)
+
+
+def euclidean(a, b):
+    return math.sqrt(sum((ai - bi) ** 2 for ai, bi in zip(a, b)))
+
+
+def manhattan(a, b):
+    return sum(abs(ai - bi) for ai, bi in zip(a, b))
+
+
+DIST_FNS = {"euclidean": euclidean, "manhattan": manhattan}
+
+
+def knn_predict(x_query, X_train, y_train, k=3, distance="euclidean"):
+    dist_fn = DIST_FNS[distance]
+    dists = [(dist_fn(x_query, X_train[i]), y_train[i]) for i in range(len(X_train))]
+    dists.sort(key=lambda t: t[0])
+    nearest = [lbl for _, lbl in dists[:k]]
+    return Counter(nearest).most_common(1)[0][0]
+
+
+def kfold(n, k=5, seed=42):
+    idx = list(range(n))
+    rng = random.Random(seed)
+    rng.shuffle(idx)
+    fold_size = n // k
+    folds = []
+    for i in range(k):
+        start = i * fold_size
+        end = (i + 1) * fold_size if i < k - 1 else n
+        folds.append((idx[:start] + idx[end:], idx[start:end]))
+    return folds
+
+
+def mean(xs):
+    return sum(xs) / len(xs)
+
+
+def cross_val_score(X, y, params, k=5, seed=42):
+    scores = []
+    for train_idx, test_idx in kfold(len(X), k=k, seed=seed):
+        X_tr = [X[i] for i in train_idx]
+        y_tr = [y[i] for i in train_idx]
+        X_te = [X[i] for i in test_idx]
+        y_te = [y[i] for i in test_idx]
+        correct = sum(1 for xq, yt in zip(X_te, y_te) if knn_predict(xq, X_tr, y_tr, **params) == yt)
+        scores.append(correct / len(X_te))
+    return mean(scores)
+
+
+def random_search(X, y, param_distributions, n_iter=10, k=5, seed=42):
+    """Sample n_iter tilfeldige kombinasjoner. Returnér (best_params, best_score, n_unique_tried)."""
+    # === DIN OPPGAVE ===
+    # 1. rng = random.Random(seed)
+    # 2. tried = set(); best_params = None; best_score = -1.0
+    # 3. For _ in range(n_iter):
+    #       params = {key: rng.choice(choices) for key, choices in param_distributions.items()}
+    #       fingeravtrykk = tuple(sorted(params.items()))
+    #       hvis i tried: continue
+    #       legg til tried, kjør CV, oppdater beste hvis høyere score.
+    # 4. Returnér (best_params, best_score, len(tried))
+    return None, -1.0, 0
+
+
+def sjekk(faktisk, forventet, navn):
+    if faktisk == forventet:
+        print(f"OK   {navn}")
+    else:
+        print(f"FEIL {navn}: fikk {faktisk!r}, forventet {forventet!r}")
+
+
+def sjekk_naer(faktisk, forventet, navn, eps=1e-6):
+    if abs(faktisk - forventet) < eps:
+        print(f"OK   {navn}")
+    else:
+        print(f"FEIL {navn}: fikk {faktisk!r}, forventet {forventet!r}")
+
+
+# Et større parameter-rom: 8 k-verdier * 2 distances = 16 kombinasjoner
+param_dist = {
+    "k": [1, 3, 5, 7, 9, 11, 13, 15],
+    "distance": ["euclidean", "manhattan"],
+}
+
+# Random search med 10 iter (vs et fullt grid som ville trengt 16)
+best_params, best_score, n_tried = random_search(X, y, param_dist, n_iter=10, k=5, seed=42)
+
+print(f"Random search: {n_tried} unike kombinasjoner testet (av 10 iter, av 16 mulige)")
+print(f"Beste: {best_params}, score: {best_score:.4f}")
+
+sjekk(best_params is not None, True, "fant beste parametere")
+sjekk(n_tried <= 10, True, "n_tried <= n_iter")
+sjekk(n_tried >= 5, True, "n_tried er ikke trivielt lite")
+
+# Med seed=42 finner random search k=3, euclidean med score 0.64 — bare litt
+# lavere enn grid sitt beste (k=3, manhattan, 0.66), men med færre kombinasjoner.
+sjekk(best_params["k"], 3, "beste k er fortsatt 3")
+sjekk(best_score >= 0.62, True, "best_score er minst 0.62 (nær grid sitt 0.66)")
+`,
+      },
+      defaultFile: "knn.py",
+      editable: ["knn.py"],
+      run: { kind: "python-script", entry: "knn.py" },
+      verifications: [
+        {
+          label: "Random search returnerer beste parametere",
+          check: { kind: "output-contains", needle: "OK   fant beste parametere" },
+        },
+        {
+          label: "n_tried er <= n_iter",
+          check: { kind: "output-contains", needle: "OK   n_tried <= n_iter" },
+        },
+        {
+          label: "n_tried er ikke trivielt lite",
+          check: { kind: "output-contains", needle: "OK   n_tried er ikke trivielt lite" },
+        },
+        {
+          label: "Random search finner k=3 (samme som grid)",
+          check: { kind: "output-contains", needle: "OK   beste k er fortsatt 3" },
+        },
+        {
+          label: "Random search-score er nær grid sin (>= 0.62)",
+          check: { kind: "output-contains", needle: "OK   best_score er minst 0.62" },
+        },
+      ],
+      hint:
+        "def random_search(X, y, param_distributions, n_iter=10, k=5, seed=42):\n    rng = random.Random(seed)\n    tried = set()\n    best_params = None\n    best_score = -1.0\n    for _ in range(n_iter):\n        params = {key: rng.choice(choices) for key, choices in param_distributions.items()}\n        fp = tuple(sorted(params.items()))\n        if fp in tried:\n            continue\n        tried.add(fp)\n        score = cross_val_score(X, y, params, k=k, seed=seed)\n        if score > best_score:\n            best_score = score\n            best_params = params\n    return best_params, best_score, len(tried)",
+    },
+
+    // ============ LEKSJON 5 ===========================================
+    {
+      id: "05-three-way-split",
+      title: "5. Three-way-split: ikke overfit til validation-settet",
+      narrative:
+        "Her er en innsikt som overrasker nybegynnere: hvis du tuner mot validation-settet 1000 ganger og velger beste, har du **overfittet til validation-settet**. Validation-score-en din overestimerer den ekte ytelsen.\n\n**Hvorfor?** Hver gang du sammenligner mot val-settet og holder på vinneren, gjør du implisitt en \"trening\" på val-settet — du lar dets særegenheter påvirke hvilken modell du velger. Etter 1000 tunings finner du en kombinasjon som tilfeldig passer godt med akkurat dette val-settet, og du ekstrapolerer falskt at den er like god generelt.\n\n**Demonstrasjonen er drepende:** lag et datasett der labels er **rene tilfeldige** (uten signal). Sann sannsynlighet for riktig prediksjon er 0.5. Sample 1000 \"modeller\" (ulike seeds som genererer ulike tilfeldige prediksjoner), velg beste på val. Du finner én som tilfeldig får 0.85 på val. Men på et fersk test-sett er den 0.5 — eller verre.\n\n**Løsningen:** del data i TRE: train (tren modellen), val (tun hyperparametere), test (siste, urørte sett — sjekk én gang helt på slutten). Test-settet ser modellen aldri, ikke en gang gjennom hyperparameter-jakt. Da blir test-score et ærlig estimat av out-of-sample-ytelse.\n\n**Din oppgave:**\n\n1. Implementér `three_way_split(X, y, val_frac=0.2, test_frac=0.2, seed=42)` som returnerer 6 lister: `X_train, X_val, X_test, y_train, y_val, y_test`.\n2. Kjør \"tilfeldig hyperparameter-jakt\" på et signal-fritt datasett: 1000 ulike `seed_modell`-verdier som hver gir en tilfeldig prediktor. Velg beste på val. Sammenlign val-score (oppblåst) med test-score (ærlig).",
+      files: {
+        "split.py": `import math
+import random
+from collections import Counter
+
+
+# === Signal-fritt datasett: labels er helt tilfeldige (sann acc = 0.5) ===
+random.seed(7)
+n = 100
+X = [[random.gauss(0, 1)] for _ in range(n)]
+y = [random.randint(0, 1) for _ in range(n)]
+
+
+def three_way_split(X, y, val_frac=0.2, test_frac=0.2, seed=42):
+    """Del i train (resten), val (val_frac) og test (test_frac).
+
+    Returnér (X_train, X_val, X_test, y_train, y_val, y_test).
+    """
+    # === DIN OPPGAVE ===
+    # 1. idx = list(range(len(X))); rng = random.Random(seed); rng.shuffle(idx)
+    # 2. n_test = int(len(X) * test_frac); n_val = int(len(X) * val_frac)
+    # 3. test_idx = idx[:n_test]
+    #    val_idx = idx[n_test:n_test + n_val]
+    #    train_idx = idx[n_test + n_val:]
+    # 4. Returnér seks lister i riktig rekkefølge.
+    return [], [], [], [], [], []
+
+
+def random_predictor(seed_modell, x_query):
+    """En 'modell' som bare returnerer 0 eller 1 basert på seed + input."""
+    rng = random.Random(seed_modell + hash(tuple(x_query)))
+    return rng.randint(0, 1)
+
+
+def accuracy(seed_modell, X_eval, y_eval):
+    correct = sum(1 for xq, yt in zip(X_eval, y_eval) if random_predictor(seed_modell, xq) == yt)
+    return correct / len(X_eval)
+
+
+def sjekk(faktisk, forventet, navn):
+    if faktisk == forventet:
+        print(f"OK   {navn}")
+    else:
+        print(f"FEIL {navn}: fikk {faktisk!r}, forventet {forventet!r}")
+
+
+def sjekk_naer(faktisk, forventet, navn, eps=1e-6):
+    if abs(faktisk - forventet) < eps:
+        print(f"OK   {navn}")
+    else:
+        print(f"FEIL {navn}: fikk {faktisk!r}, forventet {forventet!r}")
+
+
+# Test three_way_split
+X_train, X_val, X_test, y_train, y_val, y_test = three_way_split(
+    X, y, val_frac=0.2, test_frac=0.2, seed=42
+)
+sjekk(len(X_train), 60, "train har 60 punkter")
+sjekk(len(X_val), 20, "val har 20 punkter")
+sjekk(len(X_test), 20, "test har 20 punkter")
+
+# Disjunkthet: ingen overlapp mellom de tre split-ene
+train_set = {tuple(p) for p in X_train}
+val_set = {tuple(p) for p in X_val}
+test_set = {tuple(p) for p in X_test}
+sjekk(len(train_set & val_set), 0, "train og val er disjunkte")
+sjekk(len(train_set & test_set), 0, "train og test er disjunkte")
+sjekk(len(val_set & test_set), 0, "val og test er disjunkte")
+
+# === Demonstrasjon: overfitting til val-settet ===
+# Sample 1000 'modeller', velg den som scorer høyest på val.
+best_val = -1.0
+best_seed = None
+for s in range(1000):
+    v = accuracy(s, X_val, y_val)
+    if v > best_val:
+        best_val = v
+        best_seed = s
+
+# Score vinneren på det FERSKE test-settet.
+test_score = accuracy(best_seed, X_test, y_test)
+
+print()
+print(f"Beste val-accuracy etter 1000 tilfeldige tunings: {best_val:.4f}")
+print(f"Den samme modellens test-accuracy:               {test_score:.4f}")
+print(f"(Sann accuracy er 0.5 — labels er random!)")
+
+# Val skal være OPPBLÅST (langt over 0.5) fordi vi har 'overfittet' til val.
+sjekk(best_val >= 0.75, True, "val-score er oppblåst (>= 0.75)")
+
+# Test skal være mye lavere (rundt 0.5, kanskje under).
+sjekk(test_score <= 0.6, True, "test-score er ærlig (~0.5, ikke oppblåst)")
+
+# Gapet (best_val - test_score) skal være stort — det er bevis på overfitting.
+gap = best_val - test_score
+sjekk(gap >= 0.2, True, "gap mellom val og test er stort (>= 0.2)")
+`,
+      },
+      defaultFile: "split.py",
+      editable: ["split.py"],
+      run: { kind: "python-script", entry: "split.py" },
+      verifications: [
+        {
+          label: "three_way_split deler i 60 train / 20 val / 20 test",
+          check: { kind: "output-contains", needle: "OK   train har 60 punkter" },
+        },
+        {
+          label: "Val-settet har 20 punkter",
+          check: { kind: "output-contains", needle: "OK   val har 20 punkter" },
+        },
+        {
+          label: "Test-settet har 20 punkter",
+          check: { kind: "output-contains", needle: "OK   test har 20 punkter" },
+        },
+        {
+          label: "Train og val er disjunkte",
+          check: { kind: "output-contains", needle: "OK   train og val er disjunkte" },
+        },
+        {
+          label: "Val og test er disjunkte",
+          check: { kind: "output-contains", needle: "OK   val og test er disjunkte" },
+        },
+        {
+          label: "Val-score er oppblåst etter 1000 tunings (overfittet)",
+          check: { kind: "output-contains", needle: "OK   val-score er oppblåst" },
+        },
+        {
+          label: "Test-score er ærlig (~0.5, ikke oppblåst)",
+          check: { kind: "output-contains", needle: "OK   test-score er ærlig" },
+        },
+        {
+          label: "Gap mellom val og test demonstrerer overfitting til val",
+          check: { kind: "output-contains", needle: "OK   gap mellom val og test er stort" },
+        },
+      ],
+      hint:
+        "def three_way_split(X, y, val_frac=0.2, test_frac=0.2, seed=42):\n    idx = list(range(len(X)))\n    rng = random.Random(seed)\n    rng.shuffle(idx)\n    n_test = int(len(X) * test_frac)\n    n_val = int(len(X) * val_frac)\n    test_idx = idx[:n_test]\n    val_idx = idx[n_test:n_test + n_val]\n    train_idx = idx[n_test + n_val:]\n    X_train = [X[i] for i in train_idx]\n    y_train = [y[i] for i in train_idx]\n    X_val = [X[i] for i in val_idx]\n    y_val = [y[i] for i in val_idx]\n    X_test = [X[i] for i in test_idx]\n    y_test = [y[i] for i in test_idx]\n    return X_train, X_val, X_test, y_train, y_val, y_test",
+    },
+  ],
+};
+
+const FEATURE_ENGINEERING: MiniCourse = {
+  id: "feature-engineering",
+  slug: "feature-engineering",
+  title: "Feature engineering og preprocessing pipeline",
+  blurb:
+    "Modeller blir bare så gode som dataene du gir dem. Bygg de seks viktigste preprocessing-stegene fra null: håndtering av manglende verdier, z-score-standardisering med riktig fit/transform-split, min-max-scaling, one-hot encoding av kategoriske features, polynomial features for ikke-lineære sammenhenger, og til slutt en Pipeline-klasse som chain-er alt sammen og forhindrer data leakage automatisk.",
+  estimertTid: "60–75 min",
+  fag: ["DTE-2602", "Maskinlæring", "Preprocessing"],
+  color: "purple",
+  rekkefolge: 40,
+  lessons: [
+    // ============ LEKSJON 1 ===========================================
+    {
+      id: "01-manglende-verdier",
+      title: "1. Manglende verdier: drop, mean og median imputation",
+      narrative:
+        "Ekte datasett er nesten alltid \"skitne\". Folk lar felter stå tomme, sensorer faller ut, joins gir NULL. I Python representerer vi en manglende verdi som `None`. Problem: de fleste ML-modeller knekker hvis du gir dem `None` — `w * None + b` er en feilmelding.\n\nDu har **tre vanlige strategier**:\n\n1. **Drop rows.** Fjern alle rader som har minst én manglende verdi. Enkelt, men du kaster bort signal hvis du har mye missing.\n2. **Mean imputation.** Erstatt `None` i en kolonne med gjennomsnittet av de kjente verdiene i samme kolonne. Bevarer alle rader; reduserer varians litt.\n3. **Median imputation.** Som over, men bruk median. Mer robust mot outliers.\n\nValget er en avveining: er manglende data tilfeldig (drop er trygt) eller systematisk (drop introduserer bias)? Er kolonnen normalfordelt (mean OK) eller skjev/outlier-tung (median bedre)?\n\n**Datasett:** 12 rader med to kolonner (id, måling). Tre måling-verdier er `None`.\n\n**Din oppgave:** implementér de tre funksjonene. Hver returnerer en NY liste (ikke muter input).",
+      files: {
+        "preprocess.py": `# 12 rader, kolonne 1 har tre None-verdier (rad-indeks 2, 5, 9)
+rows = [
+    [1, 10.0],
+    [2, 20.0],
+    [3, None],
+    [4, 40.0],
+    [5, 50.0],
+    [6, None],
+    [7, 70.0],
+    [8, 80.0],
+    [9, 90.0],
+    [10, None],
+    [11, 110.0],
+    [12, 120.0],
+]
+
+
+def drop_rows_with_nan(rows):
+    """Returnér en ny liste uten rader som inneholder None."""
+    # === DIN OPPGAVE ===
+    # Returnér [row for row in rows if alle felt != None]
+    return []
+
+
+def mean_of(values):
+    """Hjelpefunksjon. Returner gjennomsnitt, eller 0 hvis tom."""
+    return sum(values) / len(values) if values else 0.0
+
+
+def median_of(values):
+    """Hjelpefunksjon. Returner median, eller 0 hvis tom."""
+    s = sorted(values)
+    n = len(s)
+    if n == 0:
+        return 0.0
+    if n % 2 == 1:
+        return s[n // 2]
+    return (s[n // 2 - 1] + s[n // 2]) / 2
+
+
+def impute_mean(rows, column_idx):
+    """Erstatt None i kolonne column_idx med kolonne-gjennomsnittet."""
+    # === DIN OPPGAVE ===
+    # 1. Samle alle ikke-None verdier i kolonne column_idx.
+    # 2. m = mean_of(verdier)
+    # 3. For hver rad: hvis rad[column_idx] er None, sett den til m.
+    # 4. Returner en ny liste (kopier hver rad med list(row) eller row[:]).
+    return []
+
+
+def impute_median(rows, column_idx):
+    """Som impute_mean, men med median."""
+    # === DIN OPPGAVE ===
+    # Samme struktur, men bruk median_of i stedet.
+    return []
+
+
+def sjekk(faktisk, forventet, navn):
+    if faktisk == forventet:
+        print(f"OK   {navn}")
+    else:
+        print(f"FEIL {navn}: fikk {faktisk!r}, forventet {forventet!r}")
+
+
+def sjekk_naer(faktisk, forventet, navn, eps=1e-9):
+    if faktisk is None:
+        print(f"FEIL {navn}: fikk None")
+        return
+    if abs(faktisk - forventet) < eps:
+        print(f"OK   {navn}")
+    else:
+        print(f"FEIL {navn}: fikk {faktisk!r}, forventet {forventet!r}")
+
+
+# Drop
+droppet = drop_rows_with_nan(rows)
+sjekk(len(droppet), 9, "drop fjerner 3 av 12 rader")
+sjekk(droppet[0], [1, 10.0], "drop bevarer første gyldige rad")
+
+# Mean imputation
+# 9 ikke-None verdier: 10, 20, 40, 50, 70, 80, 90, 110, 120 -> sum 590, mean 65.555...
+imp_mean = impute_mean(rows, 1)
+sjekk(len(imp_mean), 12, "mean-imputation beholder alle 12 rader")
+forventet_mean = (10 + 20 + 40 + 50 + 70 + 80 + 90 + 110 + 120) / 9
+sjekk_naer(imp_mean[2][1], forventet_mean, "rad 2 fikk kolonne-mean")
+sjekk_naer(imp_mean[5][1], forventet_mean, "rad 5 fikk kolonne-mean")
+sjekk_naer(imp_mean[9][1], forventet_mean, "rad 9 fikk kolonne-mean")
+sjekk(imp_mean[0][1], 10.0, "kjent verdi er uendret av mean-imputation")
+
+# Median imputation
+# Sortert: [10,20,40,50,70,80,90,110,120] -> middelelement 70
+imp_med = impute_median(rows, 1)
+sjekk(imp_med[2][1], 70.0, "rad 2 fikk kolonne-median (70)")
+sjekk(imp_med[5][1], 70.0, "rad 5 fikk kolonne-median (70)")
+
+# Input ikke mutert
+sjekk(rows[2][1], None, "input-listen er ikke mutert")
+`,
+      },
+      defaultFile: "preprocess.py",
+      editable: ["preprocess.py"],
+      run: { kind: "python-script", entry: "preprocess.py" },
+      verifications: [
+        {
+          label: "drop_rows_with_nan fjerner riktig antall rader",
+          check: { kind: "output-contains", needle: "OK   drop fjerner 3 av 12 rader" },
+        },
+        {
+          label: "drop bevarer rader uten None",
+          check: { kind: "output-contains", needle: "OK   drop bevarer første gyldige rad" },
+        },
+        {
+          label: "mean-imputation beholder alle rader",
+          check: { kind: "output-contains", needle: "OK   mean-imputation beholder alle 12 rader" },
+        },
+        {
+          label: "mean-imputation bruker riktig gjennomsnitt",
+          check: { kind: "output-contains", needle: "OK   rad 2 fikk kolonne-mean" },
+        },
+        {
+          label: "median-imputation bruker riktig median",
+          check: { kind: "output-contains", needle: "OK   rad 2 fikk kolonne-median (70)" },
+        },
+        {
+          label: "Kjente verdier endres ikke",
+          check: { kind: "output-contains", needle: "OK   kjent verdi er uendret av mean-imputation" },
+        },
+        {
+          label: "Input-listen mutleres ikke",
+          check: { kind: "output-contains", needle: "OK   input-listen er ikke mutert" },
+        },
+      ],
+      hint:
+        "def drop_rows_with_nan(rows):\n    return [row for row in rows if all(v is not None for v in row)]\n\ndef impute_mean(rows, column_idx):\n    kjente = [row[column_idx] for row in rows if row[column_idx] is not None]\n    m = mean_of(kjente)\n    out = []\n    for row in rows:\n        ny = list(row)\n        if ny[column_idx] is None:\n            ny[column_idx] = m\n        out.append(ny)\n    return out\n\ndef impute_median(rows, column_idx):\n    kjente = [row[column_idx] for row in rows if row[column_idx] is not None]\n    m = median_of(kjente)\n    out = []\n    for row in rows:\n        ny = list(row)\n        if ny[column_idx] is None:\n            ny[column_idx] = m\n        out.append(ny)\n    return out",
+    },
+
+    // ============ LEKSJON 2 ===========================================
+    {
+      id: "02-standardisering",
+      title: "2. Standardisering (z-score) med fit/transform",
+      narrative:
+        "Ulike features lever på ulike skalaer. Alder er kanskje 20–80, inntekt er 200000–900000. En lineær modell som måler avstander (eller en gradient descent som tar samme læringsrate i alle retninger) blir totalt dominert av inntekten — den har ~10000x større tall.\n\n**Standardisering (z-score)** løser dette:\n\n```\nz = (x - mean) / std\n```\n\nEtter transformasjon har hver kolonne mean ≈ 0 og std ≈ 1. Inntekt og alder er nå sammenlignbare.\n\n**Kritisk: fit på train, transform på begge.**\n\nMellomliggende statistikk (mean og std) skal beregnes BARE fra treningssettet. Når du transformerer testsettet, bruker du de SAMME tallene — du fitter ikke på nytt. Hvorfor? Hvis du fitter på testen, har modellen i praksis sett testen før evalueringen. Det er **data leakage**, og du måler ikke ekte generalisering lenger.\n\nDette mønsteret — `fit` lagrer statistikk, `transform` bruker den — er sklearns standard og det du må venne deg til.\n\n**Din oppgave:** implementér klassen `Standardizer` med `.fit(X)` (lagrer mean og std per kolonne) og `.transform(X)` (bruker lagrede stats). `X` er en liste av rader; hver rad er en liste av tall.",
+      files: {
+        "standardize.py": `import math
+
+
+def mean(xs):
+    return sum(xs) / len(xs)
+
+
+def std(xs):
+    m = mean(xs)
+    var = sum((x - m) ** 2 for x in xs) / len(xs)
+    return math.sqrt(var)
+
+
+class Standardizer:
+    """Lagrer mean + std per kolonne fra fit. transform bruker lagrede stats."""
+
+    def __init__(self):
+        self.means = None
+        self.stds = None
+
+    def fit(self, X):
+        """Beregn og lagre mean og std for hver kolonne. Returnér self."""
+        # === DIN OPPGAVE ===
+        # n_cols = len(X[0])
+        # self.means = []
+        # self.stds = []
+        # For hver j i 0..n_cols:
+        #     kol = [row[j] for row in X]
+        #     self.means.append(mean(kol))
+        #     self.stds.append(std(kol))
+        # return self
+        return self
+
+    def transform(self, X):
+        """Returnér ny matrise med (v - mean[j]) / std[j] per element."""
+        # === DIN OPPGAVE ===
+        # For hver rad: lag ny rad med standardiserte verdier.
+        # Hvis std[j] == 0, bruk 1 for å unngå deling-på-null.
+        return []
+
+
+def sjekk_naer(faktisk, forventet, navn, eps=1e-6):
+    if abs(faktisk - forventet) < eps:
+        print(f"OK   {navn}")
+    else:
+        print(f"FEIL {navn}: fikk {faktisk!r}, forventet {forventet!r}")
+
+
+# Treningssett: alder + inntekt-i-tusen
+X_train = [
+    [25, 300],
+    [30, 400],
+    [35, 500],
+    [40, 600],
+    [45, 700],
+    [50, 800],
+]
+
+# Testsett (skal IKKE påvirke fit)
+X_test = [
+    [28, 350],
+    [38, 550],
+    [48, 750],
+]
+
+st = Standardizer()
+st.fit(X_train)
+
+# Etter fit skal mean av kolonne 0 være 37.5
+sjekk_naer(st.means[0], 37.5, "fit lagrer mean for kolonne 0")
+sjekk_naer(st.means[1], 550.0, "fit lagrer mean for kolonne 1")
+
+# Transform trening: kolonne-mean av z-verdier skal være 0
+X_train_z = st.transform(X_train)
+kol0_mean = mean([row[0] for row in X_train_z])
+kol1_mean = mean([row[1] for row in X_train_z])
+sjekk_naer(kol0_mean, 0.0, "trenings-mean av kolonne 0 er 0 etter transform")
+sjekk_naer(kol1_mean, 0.0, "trenings-mean av kolonne 1 er 0 etter transform")
+
+# Trenings-std skal være 1
+kol0_std = std([row[0] for row in X_train_z])
+sjekk_naer(kol0_std, 1.0, "trenings-std av kolonne 0 er 1 etter transform")
+
+# Test transformeres med TRAIN-stats (ikke nye stats fra test!)
+X_test_z = st.transform(X_test)
+forventet = (28 - 37.5) / std([25, 30, 35, 40, 45, 50])
+sjekk_naer(X_test_z[0][0], forventet, "test bruker train-stats (ingen leakage)")
+`,
+      },
+      defaultFile: "standardize.py",
+      editable: ["standardize.py"],
+      run: { kind: "python-script", entry: "standardize.py" },
+      verifications: [
+        {
+          label: "fit lagrer mean per kolonne",
+          check: { kind: "output-contains", needle: "OK   fit lagrer mean for kolonne 0" },
+        },
+        {
+          label: "fit lagrer mean for andre kolonne",
+          check: { kind: "output-contains", needle: "OK   fit lagrer mean for kolonne 1" },
+        },
+        {
+          label: "Trenings-mean er 0 etter transform",
+          check: { kind: "output-contains", needle: "OK   trenings-mean av kolonne 0 er 0 etter transform" },
+        },
+        {
+          label: "Trenings-std er 1 etter transform",
+          check: { kind: "output-contains", needle: "OK   trenings-std av kolonne 0 er 1 etter transform" },
+        },
+        {
+          label: "Test bruker train-stats (forhindrer data leakage)",
+          check: { kind: "output-contains", needle: "OK   test bruker train-stats" },
+        },
+      ],
+      hint:
+        "def fit(self, X):\n    n_cols = len(X[0])\n    self.means = []\n    self.stds = []\n    for j in range(n_cols):\n        kol = [row[j] for row in X]\n        self.means.append(mean(kol))\n        self.stds.append(std(kol))\n    return self\n\ndef transform(self, X):\n    out = []\n    for row in X:\n        ny = []\n        for j, v in enumerate(row):\n            s = self.stds[j] if self.stds[j] > 0 else 1.0\n            ny.append((v - self.means[j]) / s)\n        out.append(ny)\n    return out",
+    },
+
+    // ============ LEKSJON 3 ===========================================
+    {
+      id: "03-minmax",
+      title: "3. Min-max scaling og når man velger hva",
+      narrative:
+        "**Min-max scaling** skalerer hver kolonne lineært til intervallet `[0, 1]`:\n\n```\nx_scaled = (x - min) / (max - min)\n```\n\nMin-verdien går til 0, max-verdien går til 1, alt mellom interpoleres lineært. Forskjellen fra z-score er filosofisk:\n\n- **Z-score** sentrerer rundt 0, krymper med std. Bra hvis dataene er ca. normalfordelte og du vil bevare retningen av outliers.\n- **Min-max** legger alt eksakt mellom 0 og 1. Bra hvis du trenger en kjent skala (f.eks. nevrale nett som forventer input i [0,1]) — men én ekstrem outlier presser alle andre verdier mot 0 eller 1.\n\n**Eksperiment i denne leksjonen:** vi har et datasett der én outlier ligger 1000x lenger ute enn resten. Etter min-max blir alt utenom outlieren klemt inn i et bittelite område nær 0. Z-score håndterer dette bedre fordi mean og std er mindre sensitive til én ekstrem.\n\n**Din oppgave:** implementér `MinMaxScaler` med samme `.fit/.transform`-API som forrige leksjon.",
+      files: {
+        "minmax.py": `class MinMaxScaler:
+    """Skaler hver kolonne til [0, 1] basert på fit-settets min og max."""
+
+    def __init__(self):
+        self.mins = None
+        self.maxs = None
+
+    def fit(self, X):
+        # === DIN OPPGAVE ===
+        # For hver kolonne j: lagre min og max av kolonnen i X.
+        # Returnér self.
+        return self
+
+    def transform(self, X):
+        # === DIN OPPGAVE ===
+        # For hver verdi: (v - min[j]) / (max[j] - min[j]).
+        # Hvis max == min: skriv 0.
+        return []
+
+
+def sjekk_naer(faktisk, forventet, navn, eps=1e-6):
+    if abs(faktisk - forventet) < eps:
+        print(f"OK   {navn}")
+    else:
+        print(f"FEIL {navn}: fikk {faktisk!r}, forventet {forventet!r}")
+
+
+# Sjekk: normalt datasett
+X_normal = [[1.0], [2.0], [3.0], [4.0], [5.0]]
+mm = MinMaxScaler()
+mm.fit(X_normal)
+out_normal = mm.transform(X_normal)
+
+sjekk_naer(out_normal[0][0], 0.0, "min skaleres til 0")
+sjekk_naer(out_normal[-1][0], 1.0, "max skaleres til 1")
+sjekk_naer(out_normal[2][0], 0.5, "midten skaleres til 0.5")
+
+# Sjekk: hva skjer med outlier?
+# Normaldata 1-5, men én outlier på 1000.
+X_outlier = [[1.0], [2.0], [3.0], [4.0], [5.0], [1000.0]]
+mm2 = MinMaxScaler()
+mm2.fit(X_outlier)
+out_outlier = mm2.transform(X_outlier)
+
+# Alle "normale" punkter klemmes mot 0
+# (5 - 1) / (1000 - 1) ≈ 0.004
+sjekk_naer(out_outlier[4][0], 4 / 999, "normalverdiene klemmes mot 0 av outlier")
+sjekk_naer(out_outlier[5][0], 1.0, "outlier sitter på 1.0")
+print("OK   outlier-sensitivitet demonstrert")
+`,
+      },
+      defaultFile: "minmax.py",
+      editable: ["minmax.py"],
+      run: { kind: "python-script", entry: "minmax.py" },
+      verifications: [
+        {
+          label: "Min-verdien skaleres til 0",
+          check: { kind: "output-contains", needle: "OK   min skaleres til 0" },
+        },
+        {
+          label: "Max-verdien skaleres til 1",
+          check: { kind: "output-contains", needle: "OK   max skaleres til 1" },
+        },
+        {
+          label: "Mellomverdier interpoleres lineært",
+          check: { kind: "output-contains", needle: "OK   midten skaleres til 0.5" },
+        },
+        {
+          label: "Outlier-følsomhet er synliggjort",
+          check: { kind: "output-contains", needle: "OK   normalverdiene klemmes mot 0 av outlier" },
+        },
+        {
+          label: "Outlier sitter på 1.0",
+          check: { kind: "output-contains", needle: "OK   outlier sitter på 1.0" },
+        },
+      ],
+      hint:
+        "def fit(self, X):\n    n_cols = len(X[0])\n    self.mins = [min(row[j] for row in X) for j in range(n_cols)]\n    self.maxs = [max(row[j] for row in X) for j in range(n_cols)]\n    return self\n\ndef transform(self, X):\n    out = []\n    for row in X:\n        ny = []\n        for j, v in enumerate(row):\n            rng = self.maxs[j] - self.mins[j]\n            ny.append(0.0 if rng == 0 else (v - self.mins[j]) / rng)\n        out.append(ny)\n    return out",
+    },
+
+    // ============ LEKSJON 4 ===========================================
+    {
+      id: "04-onehot",
+      title: "4. One-hot encoding av kategoriske features",
+      narrative:
+        "Lineær regresjon kan ikke spise `farge = \"rød\"`. Den trenger tall. Naiv løsning: gi hver kategori et heltall (rød=0, grønn=1, blå=2). Problem: modellen tror nå at \"blå er dobbelt så mye som grønn\" — vi har påtvunget en ordning som ikke finnes.\n\n**One-hot encoding** løser det. Hver kategori får sin egen binære kolonne:\n\n```\nfarge=rød   ->  [1, 0, 0]\nfarge=grønn ->  [0, 1, 0]\nfarge=blå   ->  [0, 0, 1]\n```\n\nNå er kategoriene likestilte; modellen kan lære én vekt per kategori uten å påtvinge ordning.\n\n**Pris å betale:** dimensjonalitet eksploderer. Hvis en kolonne har 100 unike verdier (f.eks. postnummer), får du 100 nye kolonner. For tree-baserte modeller er det ofte bedre å beholde label-encoding; for lineære modeller og nevrale nett er one-hot standard.\n\n**Din oppgave:** implementér `one_hot(values, categories)`. `values` er listen som skal kodes. `categories` er rekkefølgen kategoriene skal ha i output. Returnér en matrise (liste av lister): én rad per verdi, en kolonne per kategori, der eksakt én kolonne er 1.",
+      files: {
+        "onehot.py": `def one_hot(values, categories):
+    """Konverter en liste kategoriske verdier til en matrise med 0/1."""
+    # === DIN OPPGAVE ===
+    # For hver v i values: lag en liste der posisjon i = 1 hvis categories[i] == v, 0 ellers.
+    # Returnér matrisen.
+    return []
+
+
+def sjekk(faktisk, forventet, navn):
+    if faktisk == forventet:
+        print(f"OK   {navn}")
+    else:
+        print(f"FEIL {navn}: fikk {faktisk!r}, forventet {forventet!r}")
+
+
+# 6 verdier, 3 kategorier
+farger = ["rød", "grønn", "blå", "rød", "grønn", "blå"]
+oh = one_hot(farger, ["rød", "grønn", "blå"])
+
+sjekk(len(oh), 6, "output har 6 rader (en per verdi)")
+sjekk(len(oh[0]) if oh else 0, 3, "output har 3 kolonner (en per kategori)")
+sjekk(oh[0], [1, 0, 0], "rød kodes som [1,0,0]")
+sjekk(oh[1], [0, 1, 0], "grønn kodes som [0,1,0]")
+sjekk(oh[2], [0, 0, 1], "blå kodes som [0,0,1]")
+sjekk(oh[3], [1, 0, 0], "rød kodes likt hver gang")
+
+# Demonstrer at hver rad har eksakt én 1-er
+alle_summer_til_1 = all(sum(row) == 1 for row in oh)
+if alle_summer_til_1:
+    print("OK   hver rad summerer til 1 (eksakt en kategori aktiv)")
+else:
+    print("FEIL ikke alle rader summerer til 1")
+
+# Vis HVORFOR vi trenger one-hot for lineær modell:
+# Naivt: rød=0, grønn=1, blå=2. Modellen y = w*kategori antar lineær trend.
+# Det er feil hvis y faktisk varierer fritt over kategoriene.
+print("Naiv koding paatvinger ordning. One-hot likestiller kategorier.")
+`,
+      },
+      defaultFile: "onehot.py",
+      editable: ["onehot.py"],
+      run: { kind: "python-script", entry: "onehot.py" },
+      verifications: [
+        {
+          label: "Output har riktig antall rader",
+          check: { kind: "output-contains", needle: "OK   output har 6 rader (en per verdi)" },
+        },
+        {
+          label: "Output har én kolonne per kategori",
+          check: { kind: "output-contains", needle: "OK   output har 3 kolonner (en per kategori)" },
+        },
+        {
+          label: "Første kategori kodes som [1,0,0]",
+          check: { kind: "output-contains", needle: "OK   rød kodes som [1,0,0]" },
+        },
+        {
+          label: "Andre kategori kodes som [0,1,0]",
+          check: { kind: "output-contains", needle: "OK   grønn kodes som [0,1,0]" },
+        },
+        {
+          label: "Tredje kategori kodes som [0,0,1]",
+          check: { kind: "output-contains", needle: "OK   blå kodes som [0,0,1]" },
+        },
+        {
+          label: "Eksakt én kategori aktiv per rad",
+          check: { kind: "output-contains", needle: "OK   hver rad summerer til 1" },
+        },
+      ],
+      hint:
+        "def one_hot(values, categories):\n    out = []\n    for v in values:\n        rad = [1 if v == cat else 0 for cat in categories]\n        out.append(rad)\n    return out",
+    },
+
+    // ============ LEKSJON 5 ===========================================
+    {
+      id: "05-polynomial",
+      title: "5. Polynomial features og feature interaction",
+      narrative:
+        "Lineær regresjon er kraftig, men begrenset til lineære sammenhenger. Hva hvis den ekte funksjonen er en parabel `y = x^2`? En rett linje vil bomme — uansett hvor lenge du tuner.\n\n**Triks:** la modellen forbli lineær, men gi den TRANSFORMERTE features. Hvis du gir den `x` OG `x^2` som inputs, kan lineær regresjon lære vektene `(0, 1)` og rekonstruere `y = x^2` eksakt.\n\nFor to features `x1, x2` og degree=2 lager `polynomial_features` denne utvidelsen:\n\n```\n[1, x1, x2, x1^2, x1*x2, x2^2]\n```\n\n- `1` er bias-leddet (alltid med).\n- `x1, x2` er de originale.\n- `x1^2, x2^2` lar modellen fange kvadratiske mønstre.\n- `x1*x2` er en **interaksjons-feature** — fanger \"effekten av x1 avhenger av x2\".\n\nKostnad: dimensjonalitet vokser raskt. For `d` features og degree `p` får du O(d^p) nye features. I praksis nøyer man seg med degree=2 eller 3.\n\n**Din oppgave:** implementér `polynomial_features(X, degree=2)` for det spesifikke tilfellet 2 features, degree 2. Output skal være 6 kolonner per rad, i rekkefølgen `[1, x1, x2, x1^2, x1*x2, x2^2]`.",
+      files: {
+        "polynomial.py": `def polynomial_features(X, degree=2):
+    """Utvid hver 2-feature-rad til 6 polynomielle features."""
+    # === DIN OPPGAVE ===
+    # For hver rad [x1, x2]:
+    #     ny rad = [1.0, x1, x2, x1*x1, x1*x2, x2*x2]
+    # Returnér matrisen.
+    return []
+
+
+def sjekk(faktisk, forventet, navn):
+    if faktisk == forventet:
+        print(f"OK   {navn}")
+    else:
+        print(f"FEIL {navn}: fikk {faktisk!r}, forventet {forventet!r}")
+
+
+# Grunntest: 2 features -> 6 kolonner
+X = [[1.0, 2.0], [3.0, 4.0]]
+pf = polynomial_features(X, degree=2)
+sjekk(len(pf), 2, "polynomial bevarer rad-antall")
+sjekk(len(pf[0]) if pf else 0, 6, "polynomial: 2 features med degree 2 -> 6 kolonner")
+sjekk(pf[0], [1.0, 1.0, 2.0, 1.0, 2.0, 4.0], "rad 1 utvides korrekt")
+sjekk(pf[1], [1.0, 3.0, 4.0, 9.0, 12.0, 16.0], "rad 2 utvides korrekt")
+
+# Demonstrér at lineær regresjon nå kan fange parabel
+# Sann modell: y = 1 + 0*x1 + 0*x2 + 2*x1^2 + 0*x1*x2 + 0*x2^2 = 1 + 2*x1^2
+# Med poly-features kan en vektor [1, 0, 0, 2, 0, 0] gjenkjenne dette eksakt.
+sann_w = [1.0, 0.0, 0.0, 2.0, 0.0, 0.0]
+y_pred_rad1 = sum(w * f for w, f in zip(sann_w, pf[0]))
+y_pred_rad2 = sum(w * f for w, f in zip(sann_w, pf[1]))
+
+# For X = [1, 2]: y = 1 + 2*1 = 3
+# For X = [3, 4]: y = 1 + 2*9 = 19
+sjekk(y_pred_rad1, 3.0, "lineær fit på poly fanger y = 1 + 2*x1^2 (rad 1)")
+sjekk(y_pred_rad2, 19.0, "lineær fit på poly fanger parabel (rad 2)")
+`,
+      },
+      defaultFile: "polynomial.py",
+      editable: ["polynomial.py"],
+      run: { kind: "python-script", entry: "polynomial.py" },
+      verifications: [
+        {
+          label: "Antall rader bevares",
+          check: { kind: "output-contains", needle: "OK   polynomial bevarer rad-antall" },
+        },
+        {
+          label: "Output har 6 kolonner",
+          check: { kind: "output-contains", needle: "OK   polynomial: 2 features med degree 2 -> 6 kolonner" },
+        },
+        {
+          label: "Rad utvides i riktig rekkefølge",
+          check: { kind: "output-contains", needle: "OK   rad 1 utvides korrekt" },
+        },
+        {
+          label: "Andre rad utvides korrekt",
+          check: { kind: "output-contains", needle: "OK   rad 2 utvides korrekt" },
+        },
+        {
+          label: "Lineær modell over poly-features fanger parabel",
+          check: { kind: "output-contains", needle: "OK   lineær fit på poly fanger parabel (rad 2)" },
+        },
+      ],
+      hint:
+        "def polynomial_features(X, degree=2):\n    out = []\n    for row in X:\n        x1, x2 = row[0], row[1]\n        out.append([1.0, x1, x2, x1 * x1, x1 * x2, x2 * x2])\n    return out",
+    },
+
+    // ============ LEKSJON 6 ===========================================
+    {
+      id: "06-pipeline",
+      title: "6. Bygg en Pipeline — alt sammen, leakage-fritt",
+      narrative:
+        "Du har nå byggeklossene. Et reelt ML-prosjekt trenger dem alle i sekvens: først håndter manglende verdier, så standardisér, så lag polynomielle features. Hvis du gjør det manuelt for trening, må du HUSKE å gjøre eksakt det samme for test — med samme lagrede statistikk. Glipper du, lekker du data eller knekker prediksjonen.\n\n**Pipeline-mønsteret** automatiserer dette. En `Pipeline` er en sekvens av transformere som hver har `.fit()` og `.transform()`. Pipeline-en eksponerer det samme API-et:\n\n- `Pipeline.fit(X_train)` kaller fit-then-transform på hver transformator i rekkefølge. Output fra steg 1 mates inn i steg 2.\n- `Pipeline.transform(X)` kaller transform (IKKE fit) på hver i rekkefølge.\n\n**Hvorfor dette forhindrer leakage:** etter `pipeline.fit(X_train)` er ALLE statistikker frosne. Når du senere kjører `pipeline.transform(X_test)`, brukes nøyaktig de samme tallene. Det er strukturelt umulig å fitte på testen ved et uhell.\n\n**Datasett:** trening med None-verdier (krever imputer), test uten None (samme pipeline brukes likevel).\n\n**Din oppgave:** implementér `Pipeline`. De tre byggeklossene (`MeanImputer`, `Standardizer`, `PolynomialFeatures`) er allerede gitt. Du må kun skrive `Pipeline.fit` og `Pipeline.transform`.",
+      files: {
+        "pipeline.py": `import math
+
+
+def mean(xs):
+    return sum(xs) / len(xs) if xs else 0.0
+
+
+def std(xs):
+    if not xs:
+        return 0.0
+    m = mean(xs)
+    var = sum((x - m) ** 2 for x in xs) / len(xs)
+    return math.sqrt(var)
+
+
+class MeanImputer:
+    def __init__(self):
+        self.means = None
+
+    def fit(self, X):
+        n_cols = len(X[0])
+        self.means = []
+        for j in range(n_cols):
+            kjente = [row[j] for row in X if row[j] is not None]
+            self.means.append(mean(kjente))
+        return self
+
+    def transform(self, X):
+        out = []
+        for row in X:
+            ny = [self.means[j] if v is None else v for j, v in enumerate(row)]
+            out.append(ny)
+        return out
+
+
+class Standardizer:
+    def __init__(self):
+        self.means = None
+        self.stds = None
+
+    def fit(self, X):
+        n_cols = len(X[0])
+        self.means = [mean([row[j] for row in X]) for j in range(n_cols)]
+        self.stds = [std([row[j] for row in X]) for j in range(n_cols)]
+        return self
+
+    def transform(self, X):
+        out = []
+        for row in X:
+            ny = []
+            for j, v in enumerate(row):
+                s = self.stds[j] if self.stds[j] > 0 else 1.0
+                ny.append((v - self.means[j]) / s)
+            out.append(ny)
+        return out
+
+
+class PolynomialFeatures:
+    def __init__(self, degree=2):
+        self.degree = degree
+
+    def fit(self, X):
+        # Stateless — ingenting å lagre
+        return self
+
+    def transform(self, X):
+        out = []
+        for row in X:
+            x1, x2 = row[0], row[1]
+            out.append([1.0, x1, x2, x1 * x1, x1 * x2, x2 * x2])
+        return out
+
+
+class Pipeline:
+    """Chain av transformere. fit kaller fit + transform i rekkefølge."""
+
+    def __init__(self, steps):
+        self.steps = steps
+
+    def fit(self, X):
+        """fit-and-transform gjennom hvert steg. Returnér self."""
+        # === DIN OPPGAVE ===
+        # current = X
+        # For hvert steg:
+        #     steg.fit(current)
+        #     current = steg.transform(current)
+        # return self
+        return self
+
+    def transform(self, X):
+        """Kjør bare transform gjennom hvert steg, i rekkefølge."""
+        # === DIN OPPGAVE ===
+        # current = X
+        # For hvert steg: current = steg.transform(current)
+        # return current
+        return X
+
+
+def sjekk(faktisk, forventet, navn):
+    if faktisk == forventet:
+        print(f"OK   {navn}")
+    else:
+        print(f"FEIL {navn}: fikk {faktisk!r}, forventet {forventet!r}")
+
+
+def sjekk_naer(faktisk, forventet, navn, eps=1e-6):
+    if abs(faktisk - forventet) < eps:
+        print(f"OK   {navn}")
+    else:
+        print(f"FEIL {navn}: fikk {faktisk!r}, forventet {forventet!r}")
+
+
+# Trening med None-verdier; test uten
+X_train = [
+    [1.0, 10.0],
+    [2.0, None],
+    [3.0, 30.0],
+    [None, 40.0],
+    [5.0, 50.0],
+]
+X_test = [
+    [2.5, 25.0],
+    [4.0, 45.0],
+]
+
+pipe = Pipeline([MeanImputer(), Standardizer(), PolynomialFeatures(degree=2)])
+pipe.fit(X_train)
+
+# Imputer-stats skal være lagret fra X_train (over ikke-None verdier)
+forventet_kol0 = (1 + 2 + 3 + 5) / 4
+forventet_kol1 = (10 + 30 + 40 + 50) / 4
+sjekk_naer(pipe.steps[0].means[0], forventet_kol0,
+           "imputer.means[0] beregnet fra train")
+sjekk_naer(pipe.steps[0].means[1], forventet_kol1,
+           "imputer.means[1] beregnet fra train")
+
+# Standardizer skal være fittet på IMPUTED train (etter MeanImputer.transform)
+# Vi reproduserer:
+X_train_imputed = pipe.steps[0].transform(X_train)
+forventet_std_mean0 = mean([row[0] for row in X_train_imputed])
+sjekk_naer(pipe.steps[1].means[0], forventet_std_mean0,
+           "standardizer fittet på imputed train")
+
+# Transform på test skal kjøre alle tre steg og returnere 2 rader, 6 kolonner
+X_test_out = pipe.transform(X_test)
+sjekk(len(X_test_out), 2, "pipeline.transform gir 2 rader for test")
+sjekk(len(X_test_out[0]) if X_test_out else 0, 6,
+      "pipeline gir 6 kolonner (etter polynomial)")
+sjekk_naer(X_test_out[0][0], 1.0, "polynomial-konstanten 1 ligger på posisjon 0")
+
+# Demonstrer leakage-beskyttelse:
+# Hvis vi (feil) hadde fittet på test, ville imputer.means endret seg.
+# Vi viser at de IKKE har endret seg etter transform(X_test):
+sjekk_naer(pipe.steps[0].means[0], forventet_kol0,
+           "imputer-stats uendret etter test-transform")
+print("OK   pipeline forhindrer data leakage strukturelt")
+`,
+      },
+      defaultFile: "pipeline.py",
+      editable: ["pipeline.py"],
+      run: { kind: "python-script", entry: "pipeline.py" },
+      verifications: [
+        {
+          label: "Imputer lagrer mean per kolonne",
+          check: { kind: "output-contains", needle: "OK   imputer.means[0] beregnet fra train" },
+        },
+        {
+          label: "Standardizer fittes på output fra imputer",
+          check: { kind: "output-contains", needle: "OK   standardizer fittet på imputed train" },
+        },
+        {
+          label: "Pipeline gir riktig rad-antall på test",
+          check: { kind: "output-contains", needle: "OK   pipeline.transform gir 2 rader for test" },
+        },
+        {
+          label: "Pipeline gir 6 kolonner (poly degree 2 over 2 features)",
+          check: { kind: "output-contains", needle: "OK   pipeline gir 6 kolonner (etter polynomial)" },
+        },
+        {
+          label: "Konstant-leddet 1 ligger først",
+          check: { kind: "output-contains", needle: "OK   polynomial-konstanten 1 ligger på posisjon 0" },
+        },
+        {
+          label: "Statistikkene er uendret etter test-transform (ingen leakage)",
+          check: { kind: "output-contains", needle: "OK   imputer-stats uendret etter test-transform" },
+        },
+        {
+          label: "Pipeline forhindrer data leakage strukturelt",
+          check: { kind: "output-contains", needle: "OK   pipeline forhindrer data leakage strukturelt" },
+        },
+      ],
+      hint:
+        "def fit(self, X):\n    current = X\n    for steg in self.steps:\n        steg.fit(current)\n        current = steg.transform(current)\n    return self\n\ndef transform(self, X):\n    current = X\n    for steg in self.steps:\n        current = steg.transform(current)\n    return current",
+    },
+  ],
+};
+
 export const MINI_COURSES: readonly MiniCourse[] = [
   FLASK_FRA_NULL,
   BYGG_MINI_SHELL,
@@ -6103,6 +13823,17 @@ export const MINI_COURSES: readonly MiniCourse[] = [
   FREE_LIST_MALLOC,
   LINREG_GD,
   DECISION_TREE,
+  MINIMAX_ALFABETA,
+  STRIPS_PLANLEGGER,
+  BAYES_NETT,
+  MDP_QLEARNING,
+  SYNC_SEMAFOR_MUTEX,
+  DEADLOCK_BANKERS,
+  IPC_PIPES_QUEUES,
+  CLT_SAMPLING,
+  MULTI_REGRESJON,
+  HYPERPARAMETER_TUNING,
+  FEATURE_ENGINEERING,
 ];
 
 export function getMiniCourse(slug: string): MiniCourse | undefined {
