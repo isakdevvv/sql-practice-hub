@@ -6,6 +6,12 @@ import {
   ProporsjonsCalculator,
   TwoProporsjonsCalculator,
 } from "./ProporsjonsCalculator";
+import { ProportionCiVisualizer } from "./ProportionCiVisualizer";
+import { OneProportionZtest } from "./OneProportionZtest";
+import { TwoProportionComparison } from "./TwoProportionComparison";
+import { SampleSizeCalculator } from "./SampleSizeCalculator";
+import { ChiSquareGoodnessOfFit } from "./ChiSquareGoodnessOfFit";
+import { ProportionMatchQuiz } from "./ProportionMatchQuiz";
 
 export function Tek1ProporsjonerPage() {
   return (
@@ -99,6 +105,19 @@ export function Tek1ProporsjonerPage() {
         </section>
 
         <section className="mb-10">
+          <h2 className="text-xl font-semibold mb-3">
+            3b. Wald vs Wilson vs Clopper-Pearson — visualisering
+          </h2>
+          <ProportionCiVisualizer />
+          <p className="text-xs text-muted-foreground mt-3">
+            Clopper-Pearson er <em>eksakt</em> — beregnet direkte fra
+            binomial-fordelingen — og garanterer at dekningsgraden er minst
+            konfidensnivået. Den er konservativ (bredere CI), men trygg ved
+            ekstreme <Tex>{"\\hat{p}"}</Tex>.
+          </p>
+        </section>
+
+        <section className="mb-10">
           <h2 className="text-xl font-semibold mb-3">4. Test av én proporsjon</h2>
           <div className="rounded-xl border border-border bg-card p-5 space-y-3 text-sm">
             <p>
@@ -123,6 +142,20 @@ export function Tek1ProporsjonerPage() {
               p-verdi <Tex>{"\\approx 0.157"}</Tex>.
             </p>
           </div>
+        </section>
+
+        <section className="mb-10">
+          <h2 className="text-xl font-semibold mb-3">
+            4b. Interaktiv: 1-prop z-test og null-fordelingen
+          </h2>
+          <OneProportionZtest />
+          <p className="text-xs text-muted-foreground mt-3">
+            Den blå kurven er null-fordelingen{" "}
+            <Tex>{"N(p_0, \\sqrt{p_0(1-p_0)/n})"}</Tex>. Skygge = avvisningsområde
+            ved α = 0.05. Rød prikk = observert <Tex>{"\\hat{p}"}</Tex>. Skru n
+            opp — SE krymper og samme avstand fra <Tex>{"p_0"}</Tex> blir
+            statistisk signifikant (power øker).
+          </p>
         </section>
 
         <section className="mb-10">
@@ -151,6 +184,18 @@ export function Tek1ProporsjonerPage() {
         </section>
 
         <section className="mb-10">
+          <h2 className="text-xl font-semibold mb-3">
+            6b. Visualisering — to grupper med error bars
+          </h2>
+          <TwoProportionComparison />
+          <p className="text-xs text-muted-foreground mt-3">
+            Forhåndsdefinerte scenarier: vaksine-effektivitet, A/B-test,
+            kjønnsfordeling. Husk: <strong>KI bruker unpooled SE</strong> mens{" "}
+            <strong>z-testen bruker pooled SE</strong>.
+          </p>
+        </section>
+
+        <section className="mb-10">
           <h2 className="text-xl font-semibold mb-3">7. Sample size-planlegging</h2>
           <div className="rounded-xl border border-border bg-card p-5 space-y-3 text-sm">
             <p>
@@ -171,6 +216,19 @@ export function Tek1ProporsjonerPage() {
             <TexBlock>{"n = \\frac{1.96^2 \\cdot 0.25}{0.03^2} \\approx 1067"}</TexBlock>
             <p>Derfor har politiske gallup-spørreundersøkelser typisk ~1000 respondenter.</p>
           </div>
+        </section>
+
+        <section className="mb-10">
+          <h2 className="text-xl font-semibold mb-3">
+            7b. Interaktiv: sample-size-kalkulator
+          </h2>
+          <SampleSizeCalculator />
+          <p className="text-xs text-muted-foreground mt-3">
+            Tre brukseksempler innebygget: meningsmåling (E = 3 %), medisinsk
+            studie (E = 5 %), QA-inspeksjon (E = 1 %). Bytt til{" "}
+            <em>To proporsjoner</em>-modus for å planlegge en A/B-test eller
+            klinisk studie der du sammenligner to grupper.
+          </p>
         </section>
 
         <section className="mb-10">
@@ -213,6 +271,32 @@ export function Tek1ProporsjonerPage() {
               binomial-exakt eller mer data.
             </div>
           </div>
+        </section>
+
+        <section className="mb-10">
+          <h2 className="text-xl font-semibold mb-3">
+            9b. Chi-square goodness-of-fit
+          </h2>
+          <div className="rounded-xl border border-border bg-card p-5 space-y-3 text-sm mb-3">
+            <p>
+              Når du har <strong>flere enn to kategorier</strong> (multinomial)
+              og vil teste om dataene følger en gitt fordeling, bruker du{" "}
+              <Tex>{"\\chi^2"}</Tex>-goodness-of-fit:
+            </p>
+            <TexBlock>{"\\chi^2 = \\sum_{i=1}^{k} \\frac{(O_i - E_i)^2}{E_i} \\;\\sim\\; \\chi^2_{k-1} \\text{ under } H_0"}</TexBlock>
+            <p className="text-xs text-muted-foreground">
+              Krav: alle <Tex>{"E_i \\geq 5"}</Tex> for at chi-kvadrat-approks
+              skal være rimelig. Hvis brutt: slå sammen små kategorier.
+            </p>
+          </div>
+          <ChiSquareGoodnessOfFit />
+        </section>
+
+        <section className="mb-10">
+          <h2 className="text-xl font-semibold mb-3">
+            9c. Hvilken test passer? — match-quiz
+          </h2>
+          <ProportionMatchQuiz />
         </section>
 
         <section className="mb-10">
