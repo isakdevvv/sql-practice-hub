@@ -187,6 +187,7 @@ import { content as dte2507BgpStige } from "./dte2507-bgp-stige";
 import { content as dte2507FraChecksumTilHmac } from "./dte2507-fra-checksum-til-hmac";
 import { content as dte2507CbcIv } from "./dte2507-cbc-iv";
 import { content as dte2507StatefulFirewall } from "./dte2507-stateful-firewall";
+import { content as dte2507BrannmurPakkeflyt } from "./dte2507-brannmur-pakkeflyt";
 import { content as dte2507IdsSnort } from "./dte2507-ids-snort";
 import { content as dte2507DayInTheLife } from "./dte2507-day-in-the-life";
 import { content as dte2507Dhcp } from "./dte2507-dhcp";
@@ -278,6 +279,8 @@ export const TRINN: TrinnContent[] = [
   dte2507Http2Hol, dte2507WebCachingMatte,
   // DTE-2507 — Kurose Ch 8 sikkerhet
   dte2507FraChecksumTilHmac, dte2507CbcIv, dte2507StatefulFirewall, dte2507IdsSnort,
+  // DTE-2507 — Brannmur pakkeflyt (visualizer-lesjon: 4 interaktive verktøy)
+  dte2507BrannmurPakkeflyt,
   // TEK-1501 — utvidelser
   tek1RegresjonDiagnostikk,
   // DTE-2507 — Kurose Ch 5 utdypning
