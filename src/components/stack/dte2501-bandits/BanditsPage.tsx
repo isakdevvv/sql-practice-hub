@@ -3,17 +3,27 @@ import { Lightbulb, Sparkles, ArrowLeft, AlertTriangle } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
 import { BanditsSim } from "./BanditsSim";
+import { StrategyComparisonSim } from "./StrategyComparisonSim";
+import { RegretBoundsViz } from "./RegretBoundsViz";
+import { ExploreExploitTradeoffViz } from "./ExploreExploitTradeoffViz";
+import { ContextualBanditDemo } from "./ContextualBanditDemo";
+import { BanditsScenarioQuiz } from "./BanditsScenarioQuiz";
 import { Tex, TexBlock } from "@/components/Tex";
 
 const STEPS = [
   { title: "Bandit-problemet", anchor: "intro" },
   { title: "Action-value Q(a)", anchor: "qa" },
   { title: "Explore vs exploit", anchor: "tradeoff" },
+  { title: "Tradeoff-sandbox", anchor: "tradeoff-sandbox" },
   { title: "ε-greedy", anchor: "egreedy" },
   { title: "Optimistic initial values", anchor: "optimistic" },
   { title: "UCB1", anchor: "ucb" },
   { title: "Thompson sampling", anchor: "thompson" },
+  { title: "Strategi-sammenligning", anchor: "compare" },
   { title: "Regret som metrikk", anchor: "regret" },
+  { title: "Regret-bounds — teori vs empiri", anchor: "regret-bounds" },
+  { title: "Contextual bandits", anchor: "contextual" },
+  { title: "Scenario-quiz", anchor: "scenario-quiz" },
   { title: "Eksamen-typiske spørsmål", anchor: "exam" },
 ];
 
@@ -127,6 +137,19 @@ export function BanditsPage() {
           </div>
         </section>
 
+        <section id="tradeoff-sandbox" className="mb-10">
+          <h2 className="text-xl font-semibold mb-3">
+            3b. Tradeoff-sandbox — du er agenten
+          </h2>
+          <p className="text-sm text-muted-foreground mb-3">
+            Før vi formaliserer strategier: prøv selv. Med 50 trekk må du
+            balansere utforskning og utnytting <em>uten</em> en algoritme.
+            Skifter du modus til «infinite horizon» ser du hvorfor
+            asymptotisk optimalitet kan være viktigere enn rask konvergens.
+          </p>
+          <ExploreExploitTradeoffViz />
+        </section>
+
         <section id="egreedy" className="mb-10">
           <h2 className="text-xl font-semibold mb-3">4. ε-greedy</h2>
           <div className="rounded-xl border border-border bg-card p-5 space-y-3 text-sm">
@@ -238,6 +261,19 @@ export function BanditsPage() {
           </div>
         </section>
 
+        <section id="compare" className="mb-10">
+          <h2 className="text-xl font-semibold mb-3">
+            7b. Strategi-sammenligning — alle 5 side ved side
+          </h2>
+          <p className="text-sm text-muted-foreground mb-3">
+            Samme problem, samme støy-sekvens (paired comparison), 5
+            strategier. Heatmappen viser hvilken arm hver strategi favoriserer
+            over tid — du ser greedy låse seg, ε-greedy fortsette å rote,
+            UCB/Thompson konvergere mot beste arm.
+          </p>
+          <StrategyComparisonSim />
+        </section>
+
         <section id="regret" className="mb-10">
           <h2 className="text-xl font-semibold mb-3">8. Regret som metrikk</h2>
           <div className="rounded-xl border border-border bg-card p-5 space-y-3 text-sm">
@@ -293,6 +329,65 @@ export function BanditsPage() {
           <div className="mt-4">
             <BanditsSim />
           </div>
+        </section>
+
+        <section id="regret-bounds" className="mb-10">
+          <h2 className="text-xl font-semibold mb-3">
+            8b. Regret-bounds — empirisk vs teoretisk
+          </h2>
+          <p className="text-sm text-muted-foreground mb-3">
+            For UCB/Thompson har vi <Tex>{"O(\\log T)"}</Tex>-bounds. For fast
+            ε-greedy er regret <Tex>{"\\Theta(T)"}</Tex> — lineær. Her plottes
+            empirisk mean over 5 runs (variansbånd) mot teoretisk øvre bound.
+          </p>
+          <RegretBoundsViz />
+        </section>
+
+        <section id="contextual" className="mb-10">
+          <h2 className="text-xl font-semibold mb-3">
+            9. Contextual bandits — personalisering
+          </h2>
+          <div className="rounded-xl border border-border bg-card p-5 space-y-3 text-sm mb-3">
+            <p>
+              I praksis har vi ofte ekstra informasjon om hver request — bruker-
+              features, tidspunkt, location. <strong>Contextual bandit</strong>{" "}
+              utvider bandit-rammeverket: beste arm avhenger av context{" "}
+              <Tex>{"x_t"}</Tex>. Vi lærer en policy{" "}
+              <Tex>{"\\pi(a \\mid x)"}</Tex>, ikke bare en statisk preferanse.
+            </p>
+            <ul className="list-disc pl-5 space-y-0.5 text-xs text-muted-foreground">
+              <li>
+                <strong>LinUCB:</strong> antar lineær reward{" "}
+                <Tex>{"\\mathbb{E}[R \\mid a, x] = \\theta_a^\\top x"}</Tex>,
+                kjører UCB på prediksjonen.
+              </li>
+              <li>
+                <strong>Contextual Thompson:</strong> Bayesian lineær regresjon
+                per arm, sample <Tex>{"\\tilde\\theta_a"}</Tex> fra posterior.
+              </li>
+              <li>
+                Brukes i nyhetsanbefaling, ad-targeting, anbefalingssystemer,
+                personalisert medisin.
+              </li>
+            </ul>
+            <p className="text-xs text-muted-foreground">
+              Bro til full RL: contextual bandit = MDP der hvert state er
+              terminalt etter ett valg (ingen overganger).
+            </p>
+          </div>
+          <ContextualBanditDemo />
+        </section>
+
+        <section id="scenario-quiz" className="mb-10">
+          <h2 className="text-xl font-semibold mb-3">
+            10. Hvilken algoritme for hvilket problem?
+          </h2>
+          <p className="text-sm text-muted-foreground mb-3">
+            6 realistiske scenarier. Match riktig verktøy — det er ikke alltid
+            UCB eller Thompson. Noen ganger er svaret «bruk ikke bandit i det
+            hele tatt».
+          </p>
+          <BanditsScenarioQuiz />
         </section>
 
         <section id="exam" className="mb-10">
