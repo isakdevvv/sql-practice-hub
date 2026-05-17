@@ -20,6 +20,14 @@ export interface CurriculumPhase {
   slugs: readonly string[];
   /** University analogs — for «hvor lærer de dette ellers?». */
   analog?: string;
+  /** Andre faser denne fasen direkte bygger på (id-er). Brukes til
+   *  "Bygger på"-callout og avhengighet-grafen. Tomt for fundamenter. */
+  dependsOn?: readonly string[];
+  /** Hvilket lag denne fasen tilhører i stack-diagrammet. */
+  layer?: "matematikk" | "hardware" | "system" | "data" | "ai" | "produkt" | "spesialisering";
+  /** Kort 1-linje hva-er-dette for stack-diagrammet (annerledes enn `why`
+   *  som er pedagogisk-hvorfor). */
+  shortSummary?: string;
 }
 
 export const PHASES: readonly CurriculumPhase[] = [
@@ -30,6 +38,9 @@ export const PHASES: readonly CurriculumPhase[] = [
     why:
       "Prerekvisitt for ML og algoritmer. Diskret matte for CS, sannsynlighet for ML, linær algebra for nevrale nett og PCA.",
     analog: "MIT 6.042 · Stanford CS 109 · Khan Academy LinAlg",
+    dependsOn: [],
+    layer: "matematikk",
+    shortSummary: "Diskret matte, sannsynlighet, linær algebra",
     slugs: [
       "math-foundations",
       "diskret-matte",
@@ -46,6 +57,9 @@ export const PHASES: readonly CurriculumPhase[] = [
     why:
       "Før noe annet: bygg opp en datamaskin fra transistorer. Du kan ikke forstå performance, OS eller minne uten å vite hva som faktisk skjer under abstraksjonene.",
     analog: "MIT 6.004 · CMU 15-213 · ETH Digital Design",
+    dependsOn: [],
+    layer: "hardware",
+    shortSummary: "Transistor → NAND → adder → CPU → assembly → C → bytes",
     slugs: [
       "trinn-1-transistor",
       "trinn-2-nand-porter",
@@ -65,6 +79,9 @@ export const PHASES: readonly CurriculumPhase[] = [
     why:
       "Når du kan kjøre kode, MÅ du vite hvordan den skalerer. Big-O er språket alt annet bruker. Datastrukturer er byggesteinene for både OS, DB og ML.",
     analog: "MIT 6.006 · Stanford CS 161 · CMU 15-451",
+    dependsOn: ["hardware"],
+    layer: "system",
+    shortSummary: "Big-O, rekursjon, trær, grafer, DP",
     slugs: [
       "algoritmer",
       "big-o",
@@ -84,6 +101,9 @@ export const PHASES: readonly CurriculumPhase[] = [
     why:
       "Før du skalerer kode, lær prinsipper som gjør den robust: pure functions, immutability, sum types, generics. Disse er grunnlaget for moderne språk og bibliotek.",
     analog: "MIT 6.821 · Stanford CS 242 · CMU 15-150",
+    dependsOn: ["algoritmer"],
+    layer: "system",
+    shortSummary: "Pure functions, sum types, generics",
     slugs: ["funksjonell-programmering", "typesystemer"],
   },
   {
@@ -93,6 +113,9 @@ export const PHASES: readonly CurriculumPhase[] = [
     why:
       "OS er det første store steget i abstraksjon over hardware. Du må kunne prosesser, minne, filsystem og syscalls før du kan resonnere om performance eller sikkerhet.",
     analog: "MIT 6.S081 · Stanford CS 110 · CMU 15-410",
+    dependsOn: ["hardware", "algoritmer"],
+    layer: "system",
+    shortSummary: "Prosesser, minne, syscalls, scheduling, virtualisering",
     slugs: [
       "dte-2505",
       "os-historikk",
@@ -124,6 +147,9 @@ export const PHASES: readonly CurriculumPhase[] = [
     why:
       "OS lar én maskin gjøre noe. Nettverk lar flere snakke sammen. Kryptografi sikrer at de snakker uten avlytting. Hele moderne software bygger på dette.",
     analog: "MIT 6.829 · Stanford CS 144 · CMU 15-441",
+    dependsOn: ["os"],
+    layer: "system",
+    shortSummary: "OSI/TCP-IP, sockets, TLS, ruting, sikkerhet",
     slugs: [
       "dte-2507",
       "osi-tcpip",
@@ -171,6 +197,9 @@ export const PHASES: readonly CurriculumPhase[] = [
     why:
       "Persistent state er der applikasjoner faktisk lever. Relasjonsmodellen + SQL er den varigste abstraksjonen i hele faget — over 50 år og fremdeles dominerende.",
     analog: "MIT 6.830 · Stanford CS 245 · CMU 15-445",
+    dependsOn: ["algoritmer", "os"],
+    layer: "data",
+    shortSummary: "ER, normalisering, indekser, transaksjoner, SQL",
     slugs: [
       "er-mapping",
       "normalisering",
@@ -191,6 +220,9 @@ export const PHASES: readonly CurriculumPhase[] = [
     why:
       "Web er hvor alt møtes: nettverk + OS + DB + UI. HTTP er den vanligste protokollen for å lage produkter. Lær request-flyten før du legger på frameworks.",
     analog: "Stanford CS 142 · MIT 6.170 · ulike web-emner",
+    dependsOn: ["os", "nettverk", "database"],
+    layer: "produkt",
+    shortSummary: "HTTP, HTML/CSS/JS, Flask, FastAPI, React",
     slugs: [
       "http-anatomi",
       "html-jinja",
@@ -216,6 +248,9 @@ export const PHASES: readonly CurriculumPhase[] = [
     why:
       "Før nevrale nett kom intelligensen fra eksplisitt søk og logikk. R&N-pensum er fortsatt fundamentet. Mange «moderne» AI-løsninger er fremdeles søk eller CSP.",
     analog: "MIT 6.034 · Stanford CS 221 · CMU 15-381",
+    dependsOn: ["algoritmer", "math"],
+    layer: "ai",
+    shortSummary: "Søk, CSP, logikk, planlegging, Bayes",
     slugs: [
       "dte-2501",
       "sok-algoritmer",
@@ -232,6 +267,9 @@ export const PHASES: readonly CurriculumPhase[] = [
     why:
       "ML er funksjonstilnærming fra data. Krever statistikk-grunnlag (forventes prerekvisitt) + algoritmer. Lær rammeverket FØR du henter dype nett.",
     analog: "MIT 6.036 · Stanford CS 229 · CMU 10-301",
+    dependsOn: ["math", "algoritmer", "ai-klassisk"],
+    layer: "ai",
+    shortSummary: "k-NN, k-Means, PCA, ensemble, RL, GA/PSO",
     slugs: [
       "dte-2602",
       "ml-grunnlag",
@@ -265,6 +303,9 @@ export const PHASES: readonly CurriculumPhase[] = [
     why:
       "Konvolusjon, backprop dypt, regularisering, optimere. Bygger på ML-grunnlaget men krever vesentlig matematisk modenhet.",
     analog: "Stanford CS 231N · MIT 6.S191 · CMU 11-785",
+    dependsOn: ["ml"],
+    layer: "ai",
+    shortSummary: "Backprop dypt, CNN, regularisering, PyTorch",
     slugs: [
       "dte-2502",
       "backprop-dyp",
@@ -281,6 +322,9 @@ export const PHASES: readonly CurriculumPhase[] = [
     why:
       "Kode alene er ikke produkt. Smidig metodikk, krav, UML og prosjekt-praksis er det som skiller en jr.dev fra noen som kan levere. Industri-fokusert.",
     analog: "MIT 6.170/6.171 · Stanford CS 194 · CMU 17-313",
+    dependsOn: ["web"],
+    layer: "produkt",
+    shortSummary: "Smidig, brukerhistorier, UML, prosjekt-praksis",
     slugs: [
       "dte-2604",
       "su-metodikker",
@@ -296,6 +340,9 @@ export const PHASES: readonly CurriculumPhase[] = [
     why:
       "Spesialisering: hvordan bygge og deploye et komplett API. Arkitektur, kontrakt, testing, observability, CI/CD. Industriens beste praksis i ett kurs.",
     analog: "Industri-fokusert — ingen direkte universitetsanalog",
+    dependsOn: ["web", "systemutvikling"],
+    layer: "produkt",
+    shortSummary: "API-design, kontrakt, testing, CI/CD, observability",
     slugs: [
       "api-prosjekt",
       "api-planlegging",
@@ -312,6 +359,9 @@ export const PHASES: readonly CurriculumPhase[] = [
     why:
       "Git-dyp, Docker, og avansert Linux-CLI er fundamentet for moderne deploy- og samarbeids-flyt. Disse verktøyene brukes i ALLE jobber.",
     analog: "Industri-fokusert — sjelden eget kurs på universitet",
+    dependsOn: ["os", "nettverk"],
+    layer: "produkt",
+    shortSummary: "Git-dyp, Docker, Linux CLI advanced",
     slugs: ["git-dyp", "docker", "dockerfile-builder", "linux-cli-advanced"],
   },
   {
@@ -321,6 +371,9 @@ export const PHASES: readonly CurriculumPhase[] = [
     why:
       "Spor for de som vil lage mobile apper. Bygger på OS + algoritmer + nettverk + DB. Kotlin er moderne JVM-språk; Android er Linux-OS-en på telefon.",
     analog: "Stanford CS 193A · CMU 05-499",
+    dependsOn: ["web", "os", "database"],
+    layer: "spesialisering",
+    shortSummary: "Kotlin, Android, MVVM, Room, Retrofit",
     slugs: [
       "dte-2603",
       "kotlin-grunnlag",
@@ -338,6 +391,9 @@ export const PHASES: readonly CurriculumPhase[] = [
     why:
       "Spor for de som vil bygge bedriftssystemer. Microsoft-stacken er dominerende i finans, helse og offentlig sektor. ASP.NET + EF + Blazor.",
     analog: "Industri-fokusert (Microsoft-stack)",
+    dependsOn: ["web", "database"],
+    layer: "spesialisering",
+    shortSummary: "C#, ASP.NET MVC/API, EF Core, Blazor",
     slugs: [
       "dte-2802",
       "csharp-grunnlag",
@@ -353,6 +409,9 @@ export const PHASES: readonly CurriculumPhase[] = [
     title: "Eksamens-drill & repetisjon",
     why:
       "Når du har gått gjennom hele løypa: drill det viktigste til det sitter. Spaced repetition og hands-on eksamens-trening.",
+    dependsOn: [],
+    layer: "produkt",
+    shortSummary: "Spaced repetition, eksamens-trening",
     slugs: ["python-drill"],
   },
 ];
@@ -378,4 +437,37 @@ const SLUG_TO_PHASE = new Map<string, CurriculumPhase>(
 
 export function phaseOfSlug(slug: string): CurriculumPhase | null {
   return SLUG_TO_PHASE.get(slug) ?? null;
+}
+
+/** Map fra fase-id til faser som direkte avhenger av den.
+ *  Brukes til "Åpner opp"-callout (omvendt av dependsOn). */
+const REVERSE_DEPS = (() => {
+  const map = new Map<string, string[]>();
+  for (const p of PHASES) {
+    for (const dep of p.dependsOn ?? []) {
+      const list = map.get(dep) ?? [];
+      list.push(p.id);
+      map.set(dep, list);
+    }
+  }
+  return map;
+})();
+
+/** Faser som direkte bygger på denne fasen. Returnerer faser i num-rekkefølge. */
+export function phasesUnlockedBy(phaseId: string): CurriculumPhase[] {
+  const ids = REVERSE_DEPS.get(phaseId) ?? [];
+  return ids
+    .map((id) => PHASES.find((p) => p.id === id))
+    .filter((p): p is CurriculumPhase => !!p)
+    .sort((a, b) => a.num - b.num);
+}
+
+/** Faser som denne fasen direkte bygger på. */
+export function phasesDependedOnBy(phaseId: string): CurriculumPhase[] {
+  const phase = PHASES.find((p) => p.id === phaseId);
+  if (!phase) return [];
+  return (phase.dependsOn ?? [])
+    .map((id) => PHASES.find((p) => p.id === id))
+    .filter((p): p is CurriculumPhase => !!p)
+    .sort((a, b) => a.num - b.num);
 }
