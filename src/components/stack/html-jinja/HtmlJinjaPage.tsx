@@ -2,6 +2,10 @@ import { Link } from "@tanstack/react-router";
 import { ArrowRight, Lightbulb } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
+import { HtmlSandbox } from "./HtmlSandbox";
+import { JinjaTemplateRunner } from "./JinjaTemplateRunner";
+import { FormBuilder } from "./FormBuilder";
+import { AccessibilityChecker } from "./AccessibilityChecker";
 
 // Course page covering HTML structure, semantic elements, CSS basics and Jinja.
 // Hands-on drills live in /drag (HTML, CSS, Jinja topics).
@@ -121,6 +125,14 @@ export function HtmlJinjaPage() {
             <li><code>&lt;head&gt;</code> — metadata (vises ikke direkte): tittel, CSS, viewport</li>
             <li><code>&lt;body&gt;</code> — det som vises i nettleseren</li>
           </ul>
+          <HtmlSandbox
+            title="Prøv: lek med taggene"
+            hint="Endre <h1> til <h2>, eller legg til <p>, <strong>, <em>. Endringen rendres live til høyre."
+            height={180}
+            initial={`<h1>Hei verden</h1>
+<p>Dette er <strong>en setning</strong> med <em>litt vekt</em>.</p>
+<p>Prøv å bytt h1 til h2, eller legg til en ny &lt;p&gt;.</p>`}
+          />
         </section>
 
         {/* 2. Semantiske elementer */}
@@ -170,6 +182,24 @@ export function HtmlJinjaPage() {
   <footer><p>© 2026</p></footer>
 </body>`}</pre>
           </div>
+          <AccessibilityChecker
+            title="Hvordan skjermleseren leser markupen"
+            hint="Bytt <header> til <div>, eller fjern alt fra <img>. Se hvordan a11y-treet og issue-listen forandres."
+            initial={`<header>
+  <h1>Min blogg</h1>
+  <nav>
+    <a href="/">Hjem</a>
+    <a href="/om">Om</a>
+  </nav>
+</header>
+<main>
+  <article>
+    <h2>Et innlegg</h2>
+    <p>Tekst om noe spennende.</p>
+    <img src="/bilde.jpg" alt="Solnedgang over fjell">
+  </article>
+</main>`}
+          />
         </section>
 
         {/* 3. Lister */}
@@ -201,6 +231,22 @@ export function HtmlJinjaPage() {
             Navigasjon bør pakkes som <code>&lt;nav&gt;&gt;&lt;ul&gt;&lt;li&gt;</code> —
             det er det skjermlesere forventer.
           </p>
+          <HtmlSandbox
+            title="Prøv: bytt ul til ol"
+            hint="Endre <ul> til <ol> og se kulene bli til 1, 2, 3. Eller nest en <ul> inni en <li>."
+            height={160}
+            initial={`<h3>Handleliste</h3>
+<ul>
+  <li>Melk</li>
+  <li>Brød
+    <ul>
+      <li>Loff</li>
+      <li>Grovbrød</li>
+    </ul>
+  </li>
+  <li>Egg</li>
+</ul>`}
+          />
         </section>
 
         {/* 4. Skjema */}
@@ -235,6 +281,7 @@ export function HtmlJinjaPage() {
               serversiden.
             </li>
           </ul>
+          <FormBuilder />
         </section>
 
         {/* 5. CSS-kobling */}
@@ -339,6 +386,34 @@ nav a { text-decoration: none; }`}</pre>
   </ul>
 {% endblock %}`}</pre>
           </div>
+
+          <JinjaTemplateRunner
+            title="Prøv: kjør template-en med dine egne data"
+            hint="Endre listen i context, eller bytt {% for %} til {% if %}. Filtre som virker: upper, lower, capitalize, length, default, join, reverse."
+            initialTemplate={`<h1>{{ tittel | upper }}</h1>
+
+<ul>
+  {% for kunde in kunder %}
+    <li>{{ kunde.navn }} — {{ kunde.epost | lower }}</li>
+  {% else %}
+    <li><em>Ingen kunder ennå.</em></li>
+  {% endfor %}
+</ul>
+
+{% if kunder | length > 2 %}
+  <p>Vi har {{ kunder | length }} kunder!</p>
+{% else %}
+  <p>Trenger flere kunder.</p>
+{% endif %}`}
+            initialContext={`{
+  "tittel": "Kundeliste",
+  "kunder": [
+    { "navn": "Ada Lovelace", "epost": "Ada@Example.NO" },
+    { "navn": "Grace Hopper", "epost": "Grace@example.com" },
+    { "navn": "Linus Torvalds", "epost": "linus@kernel.org" }
+  ]
+}`}
+          />
         </section>
 
         {/* 6.5 Bootstrap */}
