@@ -1960,11 +1960,835 @@ kjor_scenario()
   ],
 };
 
+// ============================================================================
+// CSP-SOLVER: KART, N-QUEENS OG SUDOKU — 6 leksjoner som bygger en generell
+// Constraint Satisfaction Problem-løser fra null. Vi starter med rep av et
+// CSP (variabler, domener, binære constraints), implementerer backtracking,
+// legger på MRV-heuristikk og forward checking, og avslutter med to klassiske
+// anvendelser: N-queens og Sudoku — samme algoritme løser alle tre problemer.
+//
+// Pedagogisk vinkel for DTE-2501: gjør AIMA-kapittel 6 til kjørbar kode.
+// Studenten oppdager selv at "samme solver, ulik problem-formulering".
+// Runner: python-script (pure Python, ingen avhengigheter).
+// ============================================================================
+
+const CSP_SUDOKU: MiniCourse = {
+  id: "csp-sudoku",
+  slug: "csp-sudoku",
+  title: "CSP-solver: kart, N-queens og Sudoku",
+  blurb:
+    "Bygg en generell CSP-løser i Python — variabler, domener og constraints → backtracking → MRV-heuristikk → forward checking. Avslutt med å formulere N-queens og 4×4 Sudoku som CSP-er og løse dem med samme solver. Dette er AIMA-kapittel 6 gjort til kode du selv skriver.",
+  estimertTid: "60–75 min",
+  fag: ["DTE-2501", "Klassisk AI", "Constraint satisfaction"],
+  color: "purple",
+  lessons: [
+    // ============ LEKSJON 1 ===========================================
+    {
+      id: "01-csp-struct",
+      title: "1. CSP-strukturen og konsistens-sjekk",
+      narrative:
+        "Et **CSP (Constraint Satisfaction Problem)** har tre deler:\n\n1. **Variabler** — det vi skal tilordne verdier til (`Norge`, `Sverige`, ...).\n2. **Domener** — lovlige verdier per variabel (`{rød, grønn, blå}`).\n3. **Constraints** — relasjoner mellom variabler som må holde (`naboer må ha ulik farge`).\n\nSudoku, kart-fargelegging og N-queens er alle CSP-er — samme algoritme løser alle tre. Det vi gjør i dag bygger fundamentet.\n\nVi representerer hver constraint som en trippel `(var1, var2, fn)` der `fn(verdi1, verdi2)` returnerer `True` hvis paret er gyldig. Det kalles **binære constraints**.\n\n**Din oppgave:** Implementér `is_consistent(var, value, assignment)` — kjernen i hele CSP-maskineriet. Den skal returnere `True` hvis det å tildele `var = value` ikke bryter noen constraint mot variabler som allerede har fått verdi.\n\nTeknikk: iterer over alle constraints. For hver `(v1, v2, fn)`:\n- Hvis `var == v1` og `v2` er i assignment: sjekk `fn(value, assignment[v2])`.\n- Hvis `var == v2` og `v1` er i assignment: sjekk `fn(assignment[v1], value)`.\n- Ellers: constraint involverer ikke `var` — hopp over.",
+      files: {
+        "csp.py": `class CSP:
+    def __init__(self, variables, domains, constraints):
+        """
+        variables:  liste av variabelnavn
+        domains:    dict var -> liste av lovlige verdier
+        constraints: liste av (var1, var2, fn) der fn(a, b) -> bool
+        """
+        self.variables = variables
+        self.domains = domains
+        self.constraints = constraints
+
+    def is_consistent(self, var, value, assignment):
+        """True hvis assignment ∪ {var: value} ikke bryter noen constraint."""
+        # === DIN OPPGAVE ===
+        # For hver (v1, v2, fn) i self.constraints:
+        #   - hvis var == v1 og v2 in assignment: sjekk fn(value, assignment[v2])
+        #   - hvis var == v2 og v1 in assignment: sjekk fn(assignment[v1], value)
+        # Returner False ved første brudd, ellers True til slutt.
+        return True
+
+
+# === Test: kart-fargelegging av Norden ===
+ulik = lambda a, b: a != b
+csp = CSP(
+    variables=["Norge", "Sverige", "Finland", "Russland"],
+    domains={
+        "Norge": ["rød", "grønn", "blå"],
+        "Sverige": ["rød", "grønn", "blå"],
+        "Finland": ["rød", "grønn", "blå"],
+        "Russland": ["rød", "grønn", "blå"],
+    },
+    constraints=[
+        ("Norge", "Sverige", ulik),
+        ("Sverige", "Finland", ulik),
+        ("Finland", "Russland", ulik),
+        ("Norge", "Finland", ulik),  # møtes på toppen
+        # Russland og Norge er IKKE naboer i denne modellen.
+    ],
+)
+
+
+def sjekk(faktisk, forventet, navn):
+    if faktisk == forventet:
+        print(f"OK   {navn}")
+    else:
+        print(f"FEIL {navn}: fikk {faktisk!r}, forventet {forventet!r}")
+
+
+# Tom tilordning — alt er konsistent
+sjekk(csp.is_consistent("Norge", "rød", {}), True, "tom assignment: alt OK")
+
+# Norge=rød: Sverige=rød bryter (de er naboer)
+sjekk(csp.is_consistent("Sverige", "rød", {"Norge": "rød"}), False, "samme farge på naboer bryter")
+
+# Norge=rød: Sverige=grønn er OK
+sjekk(csp.is_consistent("Sverige", "grønn", {"Norge": "rød"}), True, "ulike farger på naboer OK")
+
+# Russland og Norge er ikke naboer — samme farge er greit
+sjekk(csp.is_consistent("Russland", "rød", {"Norge": "rød"}), True, "ikke-naboer kan dele farge")
+`,
+      },
+      defaultFile: "csp.py",
+      editable: ["csp.py"],
+      run: { kind: "python-script", entry: "csp.py" },
+      verifications: [
+        {
+          label: "Tom assignment: alle verdier konsistente",
+          check: { kind: "output-contains", needle: "OK   tom assignment: alt OK" },
+        },
+        {
+          label: "Naboer med samme farge avvises",
+          check: { kind: "output-contains", needle: "OK   samme farge på naboer bryter" },
+        },
+        {
+          label: "Naboer med ulike farger godtas",
+          check: { kind: "output-contains", needle: "OK   ulike farger på naboer OK" },
+        },
+        {
+          label: "Variabler uten constraint ignoreres",
+          check: { kind: "output-contains", needle: "OK   ikke-naboer kan dele farge" },
+        },
+      ],
+      hint:
+        "for (v1, v2, fn) in self.constraints:\n    if var == v1 and v2 in assignment:\n        if not fn(value, assignment[v2]):\n            return False\n    if var == v2 and v1 in assignment:\n        if not fn(assignment[v1], value):\n            return False\nreturn True",
+    },
+
+    // ============ LEKSJON 2 ===========================================
+    {
+      id: "02-backtrack",
+      title: "2. Backtracking-søk",
+      narrative:
+        "**Backtracking** er kjernen i alle CSP-løsere. Pseudokoden er pinlig enkel:\n\n```\nsolve(assignment):\n  hvis alle variabler er tilordnet: returner assignment\n  velg en uassignet variabel\n  for hver verdi i variabelens domene:\n    hvis konsistent: prøv den, og solve rekursivt\n    hvis svaret ikke er None: returner det\n    ellers: backtrack (fjern verdien, prøv neste)\n  returner None  # ingen verdi virket\n```\n\nDet er bare en `for`-løkke med rekursjon. Magien er at den utforsker hele tre-søket uten å rote.\n\nVi har lagt til en `noder`-teller på CSP-klassen så vi kan måle hvor mye arbeid algoritmen gjør.\n\n**Din oppgave:** Implementér `backtrack(csp, assignment)`. Inkrement `csp.noder` ved hver rekursivt kall (det er én utforsket node i søketreet).",
+      files: {
+        "csp.py": `class CSP:
+    def __init__(self, variables, domains, constraints):
+        self.variables = variables
+        self.domains = domains
+        self.constraints = constraints
+        self.noder = 0  # ny: teller utforskede søke-noder
+
+    def is_consistent(self, var, value, assignment):
+        for (v1, v2, fn) in self.constraints:
+            if var == v1 and v2 in assignment:
+                if not fn(value, assignment[v2]):
+                    return False
+            if var == v2 and v1 in assignment:
+                if not fn(assignment[v1], value):
+                    return False
+        return True
+
+
+def backtrack(csp, assignment):
+    """Returner et komplett assignment, eller None hvis ingen finnes."""
+    # === DIN OPPGAVE ===
+    # 1. Inkrement csp.noder
+    # 2. Hvis len(assignment) == len(csp.variables): returner dict(assignment)
+    # 3. Velg første uassignerte variabel
+    # 4. For hver value i csp.domains[var]:
+    #    - hvis csp.is_consistent(var, value, assignment):
+    #         assignment[var] = value
+    #         resultat = backtrack(csp, assignment)
+    #         hvis resultat != None: returner resultat
+    #         ellers: del assignment[var]  (backtrack)
+    # 5. Returner None
+    pass
+
+
+# Samme kart som leksjon 1
+ulik = lambda a, b: a != b
+csp = CSP(
+    variables=["Norge", "Sverige", "Finland", "Russland"],
+    domains={
+        "Norge": ["rød", "grønn", "blå"],
+        "Sverige": ["rød", "grønn", "blå"],
+        "Finland": ["rød", "grønn", "blå"],
+        "Russland": ["rød", "grønn", "blå"],
+    },
+    constraints=[
+        ("Norge", "Sverige", ulik),
+        ("Sverige", "Finland", ulik),
+        ("Finland", "Russland", ulik),
+        ("Norge", "Finland", ulik),
+    ],
+)
+
+løsning = backtrack(csp, {})
+print(f"Løsning: {løsning}")
+print(f"Antall noder utforsket: {csp.noder}")
+
+
+def er_gyldig(løs, csp):
+    if løs is None or len(løs) != len(csp.variables):
+        return False
+    for (v1, v2, fn) in csp.constraints:
+        if v1 in løs and v2 in løs:
+            if not fn(løs[v1], løs[v2]):
+                return False
+    return True
+
+
+def sjekk(faktisk, forventet, navn):
+    if faktisk == forventet:
+        print(f"OK   {navn}")
+    else:
+        print(f"FEIL {navn}: fikk {faktisk!r}, forventet {forventet!r}")
+
+
+sjekk(løsning is not None, True, "fant en løsning")
+sjekk(er_gyldig(løsning, csp), True, "løsning oppfyller alle constraints")
+sjekk(csp.noder > 0, True, "noder ble talt under søk")
+`,
+      },
+      defaultFile: "csp.py",
+      editable: ["csp.py"],
+      run: { kind: "python-script", entry: "csp.py" },
+      verifications: [
+        {
+          label: "Backtracking fant en løsning",
+          check: { kind: "output-contains", needle: "OK   fant en løsning" },
+        },
+        {
+          label: "Løsningen oppfyller alle constraints",
+          check: { kind: "output-contains", needle: "OK   løsning oppfyller alle constraints" },
+        },
+        {
+          label: "Noder ble talt under søket",
+          check: { kind: "output-contains", needle: "OK   noder ble talt under søk" },
+        },
+      ],
+      hint:
+        "def backtrack(csp, assignment):\n    csp.noder += 1\n    if len(assignment) == len(csp.variables):\n        return dict(assignment)\n    var = next(v for v in csp.variables if v not in assignment)\n    for value in csp.domains[var]:\n        if csp.is_consistent(var, value, assignment):\n            assignment[var] = value\n            result = backtrack(csp, assignment)\n            if result is not None:\n                return result\n            del assignment[var]\n    return None",
+    },
+
+    // ============ LEKSJON 3 ===========================================
+    {
+      id: "03-mrv",
+      title: "3. MRV-heuristikk (Minimum Remaining Values)",
+      narrative:
+        "Naiv backtracking velger neste variabel i listerekkefølge. Det er ofte tilfeldig — og dårlig.\n\n**MRV (Minimum Remaining Values)** velger den mest *skvisete* variabelen først: den som har færrest gjenværende lovlige verdier. Intuisjon: hvis en variabel bare har 1 verdi igjen, må du jo prøve den. Hvis det viser seg å ikke fungere, oppdager du det med MINIMALT bygge-arbeid.\n\nFor å gjøre `backtrack` heuristikk-vennlig sender vi inn `select_var` som en funksjon-parameter — strategi-mønster.\n\nVi prøver to strategier på samme problem (Australia kart-fargelegging, 7 regioner, 3 farger) og sammenligner antall utforskede noder:\n\n```\nvelg_første(csp, assignment) → første ledige variabel i listen\nvelg_mrv(csp, assignment)    → variabel med færrest LOVLIGE verdier nå\n```\n\n«Lovlig verdi» = en verdi som ville passere `is_consistent` mot nåværende assignment.\n\n**Din oppgave:** Implementér `velg_mrv(csp, assignment)`.",
+      files: {
+        "csp.py": `class CSP:
+    def __init__(self, variables, domains, constraints):
+        self.variables = variables
+        self.domains = domains
+        self.constraints = constraints
+        self.noder = 0
+
+    def is_consistent(self, var, value, assignment):
+        for (v1, v2, fn) in self.constraints:
+            if var == v1 and v2 in assignment:
+                if not fn(value, assignment[v2]):
+                    return False
+            if var == v2 and v1 in assignment:
+                if not fn(assignment[v1], value):
+                    return False
+        return True
+
+
+def backtrack(csp, assignment, select_var):
+    csp.noder += 1
+    if len(assignment) == len(csp.variables):
+        return dict(assignment)
+    var = select_var(csp, assignment)
+    for value in csp.domains[var]:
+        if csp.is_consistent(var, value, assignment):
+            assignment[var] = value
+            result = backtrack(csp, assignment, select_var)
+            if result is not None:
+                return result
+            del assignment[var]
+    return None
+
+
+def velg_første(csp, assignment):
+    """Naiv strategi: velg første uassignet variabel."""
+    for v in csp.variables:
+        if v not in assignment:
+            return v
+
+
+# === DIN OPPGAVE ===
+# MRV: returner den uassignerte variabelen med færrest LOVLIGE verdier
+# (verdier som ville passere csp.is_consistent mot nåværende assignment).
+def velg_mrv(csp, assignment):
+    pass
+
+
+def _bygg_australia():
+    ulik = lambda a, b: a != b
+    regioner = ["WA", "NT", "Q", "NSW", "V", "SA", "T"]
+    return CSP(
+        variables=regioner,
+        domains={v: ["rød", "grønn", "blå"] for v in regioner},
+        constraints=[
+            ("WA", "NT", ulik), ("WA", "SA", ulik),
+            ("NT", "Q", ulik), ("NT", "SA", ulik),
+            ("Q", "NSW", ulik), ("Q", "SA", ulik),
+            ("NSW", "V", ulik), ("NSW", "SA", ulik),
+            ("V", "SA", ulik),
+            # T (Tasmania) er en øy — ingen constraints
+        ],
+    )
+
+
+csp_naiv = _bygg_australia()
+csp_mrv = _bygg_australia()
+
+løsn_naiv = backtrack(csp_naiv, {}, velg_første)
+løsn_mrv = backtrack(csp_mrv, {}, velg_mrv)
+
+print(f"Naiv: {csp_naiv.noder} noder, løsning: {løsn_naiv}")
+print(f"MRV:  {csp_mrv.noder} noder, løsning: {løsn_mrv}")
+
+
+def er_gyldig(løs, csp):
+    if løs is None or len(løs) != len(csp.variables):
+        return False
+    for (v1, v2, fn) in csp.constraints:
+        if v1 in løs and v2 in løs and not fn(løs[v1], løs[v2]):
+            return False
+    return True
+
+
+def sjekk(faktisk, forventet, navn):
+    if faktisk == forventet:
+        print(f"OK   {navn}")
+    else:
+        print(f"FEIL {navn}: fikk {faktisk!r}, forventet {forventet!r}")
+
+
+sjekk(er_gyldig(løsn_mrv, csp_mrv), True, "MRV finner gyldig løsning")
+sjekk(csp_mrv.noder <= csp_naiv.noder, True, "MRV bruker færre eller like mange noder")
+sjekk(løsn_mrv is not None and løsn_mrv.get("T") in ["rød", "grønn", "blå"], True, "Tasmania får en farge selv om den ikke har constraints")
+`,
+      },
+      defaultFile: "csp.py",
+      editable: ["csp.py"],
+      run: { kind: "python-script", entry: "csp.py" },
+      verifications: [
+        {
+          label: "MRV produserer gyldig løsning på Australia-kartet",
+          check: { kind: "output-contains", needle: "OK   MRV finner gyldig løsning" },
+        },
+        {
+          label: "MRV bruker færre eller like mange noder som naiv",
+          check: { kind: "output-contains", needle: "OK   MRV bruker færre eller like mange noder" },
+        },
+        {
+          label: "Variabler uten constraints (Tasmania) håndteres",
+          check: { kind: "output-contains", needle: "OK   Tasmania får en farge" },
+        },
+      ],
+      hint:
+        "def velg_mrv(csp, assignment):\n    uassigned = [v for v in csp.variables if v not in assignment]\n    def lovlige(v):\n        return sum(1 for val in csp.domains[v]\n                   if csp.is_consistent(v, val, assignment))\n    return min(uassigned, key=lovlige)",
+    },
+
+    // ============ LEKSJON 4 ===========================================
+    {
+      id: "04-forward-check",
+      title: "4. Forward checking — propager constraints framover",
+      narrative:
+        "MRV gjør oss flinkere til å *velge* — men vi sjekker fortsatt bare bakover. **Forward checking** ser FRAMOVER: rett etter at vi tilordner `var = value`, fjerner vi alle nå-inkonsistente verdier fra naboenes domener. Hvis et domene blir tomt, har vi truffet en dead end UTEN å gå dypere i rekursjonen.\n\nDette er en form for **constraint propagation** — vi sprer effekten av valg vårt utover i nettverket før vi prøver neste variabel.\n\nNB: Forward checking endrer `csp.domains` dynamisk under søket. Vi MÅ huske hva vi fjernet, så vi kan **reversere** når vi backtracker. Mønster: `propagate()` returnerer en liste over `(nabo, fjernet_verdi)`-par, og caller restaurerer dem hvis svaret er None.\n\n**Din oppgave:** Implementér `propagate(csp, var, value)`. For hver constraint som involverer `var`, fjern verdier fra naboens domene som ikke har støtte gitt at `var = value`. Returner listen av fjernede par.",
+      files: {
+        "csp.py": `class CSP:
+    def __init__(self, variables, domains, constraints):
+        self.variables = variables
+        self.domains = domains
+        self.constraints = constraints
+        self.noder = 0
+
+    def is_consistent(self, var, value, assignment):
+        for (v1, v2, fn) in self.constraints:
+            if var == v1 and v2 in assignment:
+                if not fn(value, assignment[v2]):
+                    return False
+            if var == v2 and v1 in assignment:
+                if not fn(assignment[v1], value):
+                    return False
+        return True
+
+
+# === DIN OPPGAVE ===
+# Etter tilordningen var=value: fjern alle inkonsistente verdier fra
+# naboers domener. Returner liste av (nabo, fjernet_verdi)-par så caller
+# kan restaurere ved backtrack.
+def propagate(csp, var, value, assignment):
+    removed = []
+    # For hver (v1, v2, fn) i csp.constraints:
+    #   bestem hvilken er naboen (motsatt av var)
+    #   hvis naboen IKKE er i assignment:
+    #     for hver val i list(csp.domains[nabo]):
+    #       hvis ikke fn(value, val) -- husk å sjekke rekkefølge!
+    #         csp.domains[nabo].remove(val)
+    #         removed.append((nabo, val))
+    return removed
+
+
+def backtrack_fc(csp, assignment):
+    """Backtracking med forward checking."""
+    csp.noder += 1
+    if len(assignment) == len(csp.variables):
+        return dict(assignment)
+
+    var = next(v for v in csp.variables if v not in assignment)
+
+    for value in list(csp.domains[var]):
+        if not csp.is_consistent(var, value, assignment):
+            continue
+        assignment[var] = value
+        removed = propagate(csp, var, value, assignment)
+
+        # Sjekk om noen uassigned domener ble tomme
+        tomt_domene = any(
+            len(csp.domains[v]) == 0
+            for v in csp.variables
+            if v not in assignment
+        )
+        if not tomt_domene:
+            result = backtrack_fc(csp, assignment)
+            if result is not None:
+                return result
+
+        # Restore (alltid)
+        for (v, val) in removed:
+            csp.domains[v].append(val)
+        del assignment[var]
+
+    return None
+
+
+# Test på Australia
+ulik = lambda a, b: a != b
+regioner = ["WA", "NT", "Q", "NSW", "V", "SA", "T"]
+csp = CSP(
+    variables=regioner,
+    domains={v: ["rød", "grønn", "blå"] for v in regioner},
+    constraints=[
+        ("WA", "NT", ulik), ("WA", "SA", ulik),
+        ("NT", "Q", ulik), ("NT", "SA", ulik),
+        ("Q", "NSW", ulik), ("Q", "SA", ulik),
+        ("NSW", "V", ulik), ("NSW", "SA", ulik),
+        ("V", "SA", ulik),
+    ],
+)
+
+løsning = backtrack_fc(csp, {})
+print(f"Løsning: {løsning}")
+print(f"Noder utforsket med FC: {csp.noder}")
+
+
+def er_gyldig(løs, csp):
+    if løs is None or len(løs) != len(csp.variables):
+        return False
+    for (v1, v2, fn) in csp.constraints:
+        if v1 in løs and v2 in løs and not fn(løs[v1], løs[v2]):
+            return False
+    return True
+
+
+def sjekk(faktisk, forventet, navn):
+    if faktisk == forventet:
+        print(f"OK   {navn}")
+    else:
+        print(f"FEIL {navn}: fikk {faktisk!r}, forventet {forventet!r}")
+
+
+sjekk(er_gyldig(løsning, csp), True, "FC finner gyldig løsning")
+# Etter at hele søket er ferdig OG restaurert, skal domenene være intakte:
+sjekk(len(csp.domains["WA"]), 3, "WA-domenet er restaurert til 3 verdier")
+sjekk(len(csp.domains["T"]), 3, "Tasmania-domenet er fortsatt 3 verdier")
+
+# Direkte test av propagate
+csp2 = CSP(
+    variables=["A", "B"],
+    domains={"A": [1, 2, 3], "B": [1, 2, 3]},
+    constraints=[("A", "B", ulik)],
+)
+fjernet = propagate(csp2, "A", 2, {"A": 2})
+sjekk(2 not in csp2.domains["B"], True, "propagate fjernet inkonsistent verdi fra nabo")
+sjekk(("B", 2) in fjernet, True, "fjerning ble registrert i return-listen")
+`,
+      },
+      defaultFile: "csp.py",
+      editable: ["csp.py"],
+      run: { kind: "python-script", entry: "csp.py" },
+      verifications: [
+        {
+          label: "Forward checking finner gyldig løsning",
+          check: { kind: "output-contains", needle: "OK   FC finner gyldig løsning" },
+        },
+        {
+          label: "Domener er restaurert etter søket",
+          check: { kind: "output-contains", needle: "OK   WA-domenet er restaurert til 3 verdier" },
+        },
+        {
+          label: "Tasmania (ingen constraint) bevart",
+          check: { kind: "output-contains", needle: "OK   Tasmania-domenet er fortsatt 3 verdier" },
+        },
+        {
+          label: "propagate fjerner inkonsistent verdi fra nabo",
+          check: { kind: "output-contains", needle: "OK   propagate fjernet inkonsistent verdi fra nabo" },
+        },
+        {
+          label: "propagate returnerer korrekt liste av fjernede par",
+          check: { kind: "output-contains", needle: "OK   fjerning ble registrert i return-listen" },
+        },
+      ],
+      hint:
+        "def propagate(csp, var, value, assignment):\n    removed = []\n    for (v1, v2, fn) in csp.constraints:\n        if v1 == var and v2 not in assignment:\n            for val in list(csp.domains[v2]):\n                if not fn(value, val):\n                    csp.domains[v2].remove(val)\n                    removed.append((v2, val))\n        elif v2 == var and v1 not in assignment:\n            for val in list(csp.domains[v1]):\n                if not fn(val, value):\n                    csp.domains[v1].remove(val)\n                    removed.append((v1, val))\n    return removed",
+    },
+
+    // ============ LEKSJON 5 ===========================================
+    {
+      id: "05-n-queens",
+      title: "5. N-queens som CSP",
+      narrative:
+        "Nå har vi en generell CSP-solver. Tid for å se at den løser ulike problemer **uten endringer i selve algoritmen** — bare i problem-formuleringen.\n\n**N-queens:** plasser N dronninger på et N×N brett så ingen to truer hverandre (samme rad, kolonne eller diagonal).\n\nSmart formulering: la `Qi` = kolonnen der dronningen i rad `i` står. Da er det automatisk én dronning per rad — vi slipper den constraint-en.\n\nGjenstår to constraints, for hvert par av rader `(i, j)` med `i < j`:\n\n- Ulik kolonne: `Qi != Qj`\n- Ulik diagonal: `|Qi - Qj| != |i - j|`\n\n**Din oppgave:** Implementér `bygg_queens(N)` som returnerer en `CSP`-instans for N-queens. Bruk eksisterende `backtrack_fc` til å løse den.\n\n**Lambda-fellen:** når du lager constraint-funksjoner i en løkke, må du binde løkke-variablene som default-argumenter — ellers fanger lambdaene den samme variabelen. Eksempel: `lambda a, b, di=i, dj=j: ...`.",
+      files: {
+        "csp.py": `class CSP:
+    def __init__(self, variables, domains, constraints):
+        self.variables = variables
+        self.domains = domains
+        self.constraints = constraints
+        self.noder = 0
+
+    def is_consistent(self, var, value, assignment):
+        for (v1, v2, fn) in self.constraints:
+            if var == v1 and v2 in assignment:
+                if not fn(value, assignment[v2]):
+                    return False
+            if var == v2 and v1 in assignment:
+                if not fn(assignment[v1], value):
+                    return False
+        return True
+
+
+def propagate(csp, var, value, assignment):
+    removed = []
+    for (v1, v2, fn) in csp.constraints:
+        if v1 == var and v2 not in assignment:
+            for val in list(csp.domains[v2]):
+                if not fn(value, val):
+                    csp.domains[v2].remove(val)
+                    removed.append((v2, val))
+        elif v2 == var and v1 not in assignment:
+            for val in list(csp.domains[v1]):
+                if not fn(val, value):
+                    csp.domains[v1].remove(val)
+                    removed.append((v1, val))
+    return removed
+
+
+def backtrack_fc(csp, assignment):
+    csp.noder += 1
+    if len(assignment) == len(csp.variables):
+        return dict(assignment)
+    var = next(v for v in csp.variables if v not in assignment)
+    for value in list(csp.domains[var]):
+        if not csp.is_consistent(var, value, assignment):
+            continue
+        assignment[var] = value
+        removed = propagate(csp, var, value, assignment)
+        tomt = any(len(csp.domains[v]) == 0 for v in csp.variables if v not in assignment)
+        if not tomt:
+            result = backtrack_fc(csp, assignment)
+            if result is not None:
+                return result
+        for (v, val) in removed:
+            csp.domains[v].append(val)
+        del assignment[var]
+    return None
+
+
+# === DIN OPPGAVE ===
+# Returner en CSP for N-queens.
+#   - variables: ["Q0", "Q1", ..., f"Q{N-1}"]
+#   - domains:   hver Qi har lovlige kolonner [0, 1, ..., N-1]
+#   - constraints: for hvert par (i, j) med i < j, legg til:
+#         ulik kolonne: a != b
+#         ulik diagonal: abs(a - b) != abs(i - j)
+#   HUSK lambda-fellen: bind i og j som default-argumenter.
+def bygg_queens(N):
+    pass
+
+
+def tegn_brett(løsning, N):
+    """Tegn brettet med Q for dronning, . for tom."""
+    if løsning is None:
+        return "(ingen løsning)"
+    linjer = []
+    for i in range(N):
+        kol = løsning[f"Q{i}"]
+        rad = ["Q" if c == kol else "." for c in range(N)]
+        linjer.append(" ".join(rad))
+    return "\\n".join(linjer)
+
+
+# Løs 4-queens
+csp4 = bygg_queens(4)
+løs4 = backtrack_fc(csp4, {})
+print("4-queens løsning:")
+print(tegn_brett(løs4, 4))
+print(f"Noder: {csp4.noder}")
+
+
+def er_gyldig_queens(løs, N):
+    if løs is None or len(løs) != N:
+        return False
+    for i in range(N):
+        for j in range(i + 1, N):
+            a, b = løs[f"Q{i}"], løs[f"Q{j}"]
+            if a == b:
+                return False
+            if abs(a - b) == abs(i - j):
+                return False
+    return True
+
+
+def sjekk(faktisk, forventet, navn):
+    if faktisk == forventet:
+        print(f"OK   {navn}")
+    else:
+        print(f"FEIL {navn}: fikk {faktisk!r}, forventet {forventet!r}")
+
+
+sjekk(er_gyldig_queens(løs4, 4), True, "4-queens-løsning er gyldig")
+
+# Test også 6-queens
+csp6 = bygg_queens(6)
+løs6 = backtrack_fc(csp6, {})
+sjekk(er_gyldig_queens(løs6, 6), True, "6-queens-løsning er også gyldig")
+sjekk(løs6 is not None, True, "samme solver klarer ulike N")
+`,
+      },
+      defaultFile: "csp.py",
+      editable: ["csp.py"],
+      run: { kind: "python-script", entry: "csp.py" },
+      verifications: [
+        {
+          label: "4-queens har en gyldig løsning",
+          check: { kind: "output-contains", needle: "OK   4-queens-løsning er gyldig" },
+        },
+        {
+          label: "Samme bygg_queens fungerer for 6×6",
+          check: { kind: "output-contains", needle: "OK   6-queens-løsning er også gyldig" },
+        },
+        {
+          label: "Solver håndterer N=6 uten endringer",
+          check: { kind: "output-contains", needle: "OK   samme solver klarer ulike N" },
+        },
+      ],
+      hint:
+        "def bygg_queens(N):\n    variables = [f'Q{i}' for i in range(N)]\n    domains = {v: list(range(N)) for v in variables}\n    constraints = []\n    for i in range(N):\n        for j in range(i + 1, N):\n            constraints.append((\n                f'Q{i}', f'Q{j}',\n                lambda a, b, di=i, dj=j: a != b and abs(a - b) != abs(di - dj),\n            ))\n    return CSP(variables, domains, constraints)",
+    },
+
+    // ============ LEKSJON 6 ===========================================
+    {
+      id: "06-sudoku",
+      title: "6. Sudoku (4×4) som CSP",
+      narrative:
+        "Tid for hovedretten. **Sudoku** er den klassiske CSP-applikasjonen.\n\nEt 4×4 mini-sudoku har:\n\n- **16 variabler** — én per celle, navngitt `(rad, kol)` med `rad, kol ∈ {0,1,2,3}`.\n- **Domener** — `{1, 2, 3, 4}` for tomme celler, og en énverdi-liste `[given]` for forhåndsutfylte celler.\n- **Constraints** — ulik verdi for hvert par av celler i samme rad, samme kolonne, eller samme 2×2 blokk.\n\n«Blokk» i et 4×4 sudoku er én av fire 2×2 ruter:\n\n```\n[0,1] [0,1] | [2,3] [2,3]\n[0,1] [0,1] | [2,3] [2,3]\n------------+------------\n[0,1] [0,1] | [2,3] [2,3]\n[0,1] [0,1] | [2,3] [2,3]\n```\n\nFormalt: to celler `(r1, c1)` og `(r2, c2)` er i samme blokk hvis `r1 // 2 == r2 // 2` OG `c1 // 2 == c2 // 2`.\n\n**Din oppgave:** Implementér `bygg_sudoku(grid)` der `grid` er en 4×4 matrise med `0` for tomme celler og verdi `1-4` for fastsatte.\n\nGenerer constraints kun for distinkte par `(r1,c1) < (r2,c2)` slik at vi unngår duplikater.",
+      files: {
+        "csp.py": `class CSP:
+    def __init__(self, variables, domains, constraints):
+        self.variables = variables
+        self.domains = domains
+        self.constraints = constraints
+        self.noder = 0
+
+    def is_consistent(self, var, value, assignment):
+        for (v1, v2, fn) in self.constraints:
+            if var == v1 and v2 in assignment:
+                if not fn(value, assignment[v2]):
+                    return False
+            if var == v2 and v1 in assignment:
+                if not fn(assignment[v1], value):
+                    return False
+        return True
+
+
+def propagate(csp, var, value, assignment):
+    removed = []
+    for (v1, v2, fn) in csp.constraints:
+        if v1 == var and v2 not in assignment:
+            for val in list(csp.domains[v2]):
+                if not fn(value, val):
+                    csp.domains[v2].remove(val)
+                    removed.append((v2, val))
+        elif v2 == var and v1 not in assignment:
+            for val in list(csp.domains[v1]):
+                if not fn(val, value):
+                    csp.domains[v1].remove(val)
+                    removed.append((v1, val))
+    return removed
+
+
+def backtrack_fc(csp, assignment):
+    csp.noder += 1
+    if len(assignment) == len(csp.variables):
+        return dict(assignment)
+    var = next(v for v in csp.variables if v not in assignment)
+    for value in list(csp.domains[var]):
+        if not csp.is_consistent(var, value, assignment):
+            continue
+        assignment[var] = value
+        removed = propagate(csp, var, value, assignment)
+        tomt = any(len(csp.domains[v]) == 0 for v in csp.variables if v not in assignment)
+        if not tomt:
+            result = backtrack_fc(csp, assignment)
+            if result is not None:
+                return result
+        for (v, val) in removed:
+            csp.domains[v].append(val)
+        del assignment[var]
+    return None
+
+
+ulik = lambda a, b: a != b
+
+
+# === DIN OPPGAVE ===
+# grid: 4x4 matrise med 0 for tom, 1-4 for given.
+# Returner CSP med:
+#   variables: alle (r, c) for r in 0..3, c in 0..3
+#   domains:   [1,2,3,4] for tomme, [grid[r][c]] for given
+#   constraints: for hvert par av distinkte celler i samme rad, kolonne,
+#                eller 2×2 blokk: ulik verdi
+def bygg_sudoku(grid):
+    pass
+
+
+def tegn_sudoku(løs):
+    if løs is None:
+        return "(ingen løsning)"
+    linjer = []
+    for r in range(4):
+        rad = [str(løs[(r, c)]) for c in range(4)]
+        linjer.append(" ".join(rad[:2]) + " | " + " ".join(rad[2:]))
+        if r == 1:
+            linjer.append("-" * 9)
+    return "\\n".join(linjer)
+
+
+# Konkret 4x4-puzzle (0 = tom)
+puzzle = [
+    [1, 0, 0, 4],
+    [0, 0, 1, 0],
+    [0, 2, 0, 0],
+    [3, 0, 0, 2],
+]
+
+print("Puzzle:")
+for r in puzzle:
+    print(" ", r)
+
+csp = bygg_sudoku(puzzle)
+løsning = backtrack_fc(csp, {})
+
+print()
+print("Løsning:")
+print(tegn_sudoku(løsning))
+print(f"Noder utforsket: {csp.noder}")
+
+
+def er_gyldig_sudoku(løs):
+    if løs is None:
+        return False
+    # Hver rad må ha {1,2,3,4}
+    for r in range(4):
+        rad_verdier = sorted(løs[(r, c)] for c in range(4))
+        if rad_verdier != [1, 2, 3, 4]:
+            return False
+    # Hver kolonne må ha {1,2,3,4}
+    for c in range(4):
+        kol_verdier = sorted(løs[(r, c)] for r in range(4))
+        if kol_verdier != [1, 2, 3, 4]:
+            return False
+    # Hver 2x2 blokk
+    for br in range(2):
+        for bc in range(2):
+            blokk_verdier = sorted(
+                løs[(br * 2 + dr, bc * 2 + dc)]
+                for dr in range(2) for dc in range(2)
+            )
+            if blokk_verdier != [1, 2, 3, 4]:
+                return False
+    return True
+
+
+def respekterer_givens(løs, grid):
+    if løs is None:
+        return False
+    for r in range(4):
+        for c in range(4):
+            if grid[r][c] != 0 and løs[(r, c)] != grid[r][c]:
+                return False
+    return True
+
+
+def sjekk(faktisk, forventet, navn):
+    if faktisk == forventet:
+        print(f"OK   {navn}")
+    else:
+        print(f"FEIL {navn}: fikk {faktisk!r}, forventet {forventet!r}")
+
+
+sjekk(løsning is not None, True, "Sudoku løst")
+sjekk(er_gyldig_sudoku(løsning), True, "alle rader/kolonner/blokker er {1,2,3,4}")
+sjekk(respekterer_givens(løsning, puzzle), True, "given-tall er bevart")
+`,
+      },
+      defaultFile: "csp.py",
+      editable: ["csp.py"],
+      run: { kind: "python-script", entry: "csp.py" },
+      verifications: [
+        {
+          label: "Sudoku-puzzelet ble løst",
+          check: { kind: "output-contains", needle: "OK   Sudoku løst" },
+        },
+        {
+          label: "Hver rad, kolonne og blokk har {1,2,3,4}",
+          check: { kind: "output-contains", needle: "OK   alle rader/kolonner/blokker er {1,2,3,4}" },
+        },
+        {
+          label: "Forhåndsutfylte tall (givens) er bevart",
+          check: { kind: "output-contains", needle: "OK   given-tall er bevart" },
+        },
+      ],
+      hint:
+        "def bygg_sudoku(grid):\n    celler = [(r, c) for r in range(4) for c in range(4)]\n    domains = {}\n    for (r, c) in celler:\n        if grid[r][c] == 0:\n            domains[(r, c)] = [1, 2, 3, 4]\n        else:\n            domains[(r, c)] = [grid[r][c]]\n    constraints = []\n    for i, a in enumerate(celler):\n        for b in celler[i + 1:]:\n            (r1, c1), (r2, c2) = a, b\n            samme_rad = r1 == r2\n            samme_kol = c1 == c2\n            samme_blokk = (r1 // 2 == r2 // 2) and (c1 // 2 == c2 // 2)\n            if samme_rad or samme_kol or samme_blokk:\n                constraints.append((a, b, ulik))\n    return CSP(celler, domains, constraints)",
+    },
+  ],
+};
+
 export const MINI_COURSES: readonly MiniCourse[] = [
   FLASK_FRA_NULL,
   BYGG_MINI_SHELL,
   UTLEIEAPP_FRA_NULL,
   TCP_STATE_MACHINE,
+  CSP_SUDOKU,
 ];
 
 export function getMiniCourse(slug: string): MiniCourse | undefined {
