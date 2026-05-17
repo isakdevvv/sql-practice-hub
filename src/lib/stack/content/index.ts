@@ -209,6 +209,7 @@ import { content as youtubeKanaler } from "./youtube-kanaler";
 import { content as moocBibliotek } from "./mooc-bibliotek";
 import { content as tek1DistribusjonsPlotter } from "./tek1-distribusjons-plotter";
 import { content as tek1PVerdiKalkulator } from "./tek1-p-verdi-kalkulator";
+import { content as tek1InferensSampling } from "./tek1-inferens-sampling";
 import { content as dte2602LineaerRegresjon } from "./dte2602-lineaer-regresjon";
 import { content as dte2602RocCurvePlotter } from "./dte2602-roc-curve-plotter";
 import { content as dockerfileBuilder } from "./dockerfile-builder";
@@ -316,7 +317,7 @@ export const TRINN: TrinnContent[] = [
   // MOOC-bibliotek (gratis universitetskurs)
   moocBibliotek,
   // Interaktive verktøy — eksamensforberedelse
-  tek1DistribusjonsPlotter, tek1PVerdiKalkulator,
+  tek1DistribusjonsPlotter, tek1PVerdiKalkulator, tek1InferensSampling,
   dte2602LineaerRegresjon, dte2602RocCurvePlotter,
   // Dockerfile Builder — DevOps-kodegenerator
   dockerfileBuilder,

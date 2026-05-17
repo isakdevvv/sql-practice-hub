@@ -599,6 +599,14 @@ export const VISUALIZERS: VizEntry[] = [
     route: "/stack/tek1-bootstrap",
     tags: ["bootstrap", "resampling", "konfidensintervall", "tek1"],
   },
+  {
+    id: "sampling-dist",
+    title: "Sampling-distribution — CLT, CI, t-test, p-verdi",
+    blurb: "Fem simulatorer: CLT live, 100 CI-er, Welch t-test, p-verdi-fordeling, test-quiz.",
+    category: "statistikk",
+    route: "/stack/tek1-inferens-sampling",
+    tags: ["sampling", "clt", "konfidensintervall", "t-test", "p-verdi", "power", "type i", "type ii", "inferens", "tek1"],
+  },
 
   // ──── SIKKERHET & KRYPTO ──────────────────────────────────────────────
   {
@@ -781,9 +789,10 @@ const RELATED: Record<string, string[]> = {
   gmm: ["supervised", "bandits"],
 
   // Statistikk
-  sannsynlighet: ["anova", "supervised", "bootstrap"],
-  anova: ["sannsynlighet", "supervised", "cv-splits"],
-  bootstrap: ["sannsynlighet", "anova"],
+  sannsynlighet: ["anova", "supervised", "bootstrap", "sampling-dist"],
+  anova: ["sannsynlighet", "supervised", "cv-splits", "sampling-dist"],
+  bootstrap: ["sannsynlighet", "anova", "sampling-dist"],
+  "sampling-dist": ["bootstrap", "sannsynlighet", "anova"],
 
   // Krypto
   "krypto-progresjon": ["aes-gcm", "cbc-iv", "bits-dyp", "tls-handshake-lab"],
