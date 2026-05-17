@@ -9,6 +9,7 @@ import { content as webAngrep } from "./web-angrep";
 import { content as subqueries } from "./subqueries";
 import { content as nokler } from "./nokler";
 import { content as transaksjoner } from "./transaksjoner";
+import { content as txIsolation } from "./tx-isolation";
 import { content as indekser } from "./indekser";
 import { content as queryOptimisering } from "./query-optimisering";
 import { content as algoritmer } from "./algoritmer";
@@ -227,7 +228,7 @@ import type { TrinnContent } from "../types";
 export const TRINN: TrinnContent[] = [
   bytesEncoding, tcpSockets, huskelapp, erMapping, normalisering, htmlJinja, sikkerhet,
   subqueries, nokler, mysqlVsSqlite,
-  transaksjoner, indekser, queryOptimisering,
+  transaksjoner, txIsolation, indekser, queryOptimisering,
   algoritmer, bigO, rekursjon, sortering, lenkedeStrukturer,
   dte2507, osiTcpip, transportlag, kryptografi, tls, nettverkssikkerhet,
   dte2507Wireshark, dte2507Socket, dte2507Brannmur,
