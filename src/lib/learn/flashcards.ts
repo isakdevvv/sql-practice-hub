@@ -12,6 +12,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Hva er en database?",
     answer:
       "Et system for å lagre, organisere og hente data på en strukturert måte. Data lagres i tabeller med tydelig struktur framfor i filer eller regneark.",
+    visual: "db-database-icon",
   },
   {
     id: "c-tabell",
@@ -19,6 +20,7 @@ export const FLASHCARDS: FlashCard[] = [
     topic: "Grunnbegrep",
     question: "Hva er en tabell?",
     answer: "Data organisert i rader og kolonner. Én tabell representerer typisk én entitet, f.eks. Kunde eller Utleie.",
+    visual: "db-table-anatomy",
   },
   {
     id: "c-rad",
@@ -26,6 +28,7 @@ export const FLASHCARDS: FlashCard[] = [
     topic: "Grunnbegrep",
     question: "Hva er en rad?",
     answer: "Én registrering i en tabell — for eksempel én konkret kunde.",
+    visual: "db-table-anatomy",
   },
   {
     id: "c-kolonne",
@@ -33,6 +36,7 @@ export const FLASHCARDS: FlashCard[] = [
     topic: "Grunnbegrep",
     question: "Hva er en kolonne?",
     answer: "Et felt eller en egenskap i tabellen. F.eks. Navn, KundeNr, Pris.",
+    visual: "db-table-anatomy",
   },
   {
     id: "c-pk",
@@ -41,6 +45,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Hva er en primærnøkkel?",
     answer:
       "En unik identifikator for hver rad i en tabell. Verdien må være unik og kan ikke være NULL.",
+    visual: "db-pk-fk-arrow",
   },
   {
     id: "c-fk",
@@ -49,6 +54,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Hva er en fremmednøkkel?",
     answer:
       "En kolonne som peker til primærnøkkelen i en annen tabell. Brukes for å koble tabeller sammen.",
+    visual: "db-pk-fk-arrow",
   },
   {
     id: "c-pk-vs-fk",
@@ -57,6 +63,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Forskjell på primærnøkkel og fremmednøkkel?",
     answer:
       "Primærnøkkel identifiserer hver rad unikt i sin egen tabell. Fremmednøkkel peker til en primærnøkkel i en annen tabell og brukes for å koble tabeller.",
+    visual: "db-pk-fk-arrow",
   },
   {
     id: "c-relasjon",
@@ -74,6 +81,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Hvordan løses en mange-til-mange-relasjon?",
     answer:
       "Med en koblingstabell som inneholder fremmednøkler til begge tabeller. F.eks. StudentKurs som kobler Student og Kurs.",
+    visual: "db-mn-junction",
   },
   {
     id: "c-kard",
@@ -91,6 +99,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Hva betyr referanseintegritet?",
     answer:
       "At koblinger mellom tabeller alltid er gyldige. En utleie kan ikke peke til en kunde som ikke finnes.",
+    visual: "db-ref-integrity",
   },
   {
     id: "c-redundans",
@@ -99,6 +108,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Hva er redundans?",
     answer:
       "Dobbeltlagring av data. Gir større databaser, mer plassbruk og høyere risiko for inkonsistente data.",
+    visual: "db-redundancy",
   },
   {
     id: "c-norm-1",
@@ -107,6 +117,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Hva er 1NF?",
     answer:
       "Alle verdier skal være atomiske — ingen lister eller repeterende grupper i én kolonne. Hvert felt inneholder én verdi.",
+    visual: "db-1nf-violation",
   },
   {
     id: "c-norm-2",
@@ -115,6 +126,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Hva er 2NF?",
     answer:
       "Tabellen er i 1NF, og alle ikke-nøkkelattributter avhenger av HELE primærnøkkelen — viktig ved sammensatte nøkler.",
+    visual: "db-2nf-split",
   },
   {
     id: "c-norm-3",
@@ -123,6 +135,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Hva er 3NF?",
     answer:
       "Tabellen er i 2NF og har ingen transitive avhengigheter. Et ikke-nøkkelfelt skal ikke avhenge av et annet ikke-nøkkelfelt.",
+    visual: "db-3nf-transitive",
   },
   {
     id: "c-norm-trans",
@@ -766,6 +779,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Hva er en funksjonell avhengighet (FD)?",
     answer:
       "En regel `X → Y` som sier at verdien til X bestemmer Y entydig. Eks: `kundeNr → navn` — gitt et kundenummer er det bare ett mulig navn.",
+    visual: "db-fd-graph",
   },
   {
     id: "c-norm-determinant",
@@ -774,6 +788,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Hva er en determinant?",
     answer:
       "Venstresiden i en funksjonell avhengighet (X i `X → Y`). Det er feltet (eller kombinasjonen) som «bestemmer» et annet felt.",
+    visual: "db-fd-graph",
   },
   {
     id: "c-norm-partiell",
@@ -782,6 +797,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Hva er en partiell avhengighet?",
     answer:
       "Et ikke-nøkkelfelt avhenger bare av DEL av en sammensatt primærnøkkel. Eks: PK=(ordreNr, prodNr), men prodNavn avhenger bare av prodNr. Brytes i 2NF.",
+    visual: "db-2nf-split",
   },
   {
     id: "c-norm-kandidat",
@@ -790,6 +806,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Hva er en kandidatnøkkel?",
     answer:
       "Den minste kombinasjonen av felter som identifiserer hver rad unikt. En tabell kan ha flere kandidatnøkler — én av dem velges som primærnøkkel.",
+    visual: "db-super-candidate-pk",
   },
   {
     id: "c-norm-bcnf",
@@ -798,6 +815,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Hva er BCNF?",
     answer:
       "Boyce-Codd Normalform — strengere enn 3NF. Krever at ALLE determinanter (X i X → Y) skal være kandidatnøkler. Fjerner sjeldne anomalier 3NF kan slippe gjennom.",
+    visual: "db-bcnf",
   },
   {
     id: "c-norm-anomali",
@@ -806,6 +824,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Hva er innsettings-, oppdaterings- og slettings-anomalier?",
     answer:
       "Innsetting: kan ikke legge til ny info uten en annen rad (f.eks. nytt fag uten student). Oppdatering: må endre samme verdi mange steder. Sletting: mister utilsiktet info ved sletting av siste rad. Normalisering fjerner disse.",
+    visual: "db-anomalies",
   },
   {
     id: "c-norm-denorm",
@@ -814,6 +833,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Hva er denormalisering, og når brukes det?",
     answer:
       "Bevisst å bryte normalformer for å unngå dyre JOIN-er. Brukes i lese-tunge analyse-databaser (data warehouses), aldri i OLTP-systemer der data oppdateres ofte.",
+    visual: "db-denormalization",
   },
 
   // ============= ER-MODELL =============
@@ -824,6 +844,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Hva er forskjellen på en entitet og en attributt?",
     answer:
       "Entitet = «ting» vi vil lagre data om (KUNDE, ORDRE) — blir tabell. Attributt = egenskap ved entiteten (navn, dato, pris) — blir kolonne. I diagrammet: rektangel = entitet, oval/i boksen = attributt.",
+    visual: "db-er-entity-attr",
   },
   {
     id: "c-er-svak",
@@ -832,6 +853,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Hva er en svak entitet?",
     answer:
       "En entitet som ikke kan eksistere uten en eier. Eks: ORDRELINJE finnes bare gjennom en ORDRE. PK = (FK til eier + eget delvis ID), og FK-en er NOT NULL.",
+    visual: "db-er-weak",
   },
   {
     id: "c-er-deltakelse",
@@ -840,6 +862,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Hva betyr total vs. partiell deltakelse?",
     answer:
       "Total (heltrukken / `|` innerst): hver forekomst MÅ delta i relasjonen — gir NOT NULL på FK. Partiell (`O` innerst): kan ha 0 — FK kan være NULL.",
+    visual: "db-er-participation",
   },
   {
     id: "c-er-flerverdi",
@@ -848,6 +871,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Hvordan mappes et flerverdi-attributt?",
     answer:
       "Det blir EGEN tabell. Eks: en person kan ha flere telefonnumre → tabell Telefon(pid, nummer) med FK til Person. Du legger ALDRI flere verdier i én kolonne — det bryter 1NF.",
+    visual: "db-er-multivalued",
   },
   {
     id: "c-er-sammensatt",
@@ -856,6 +880,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Hva er et sammensatt attributt?",
     answer:
       "Et attributt som naturlig består av flere deler — f.eks. adresse (gate, postnr, sted). Mappes til flere kolonner i samme tabell, ikke til egen tabell.",
+    visual: "db-er-composite-attr",
   },
   {
     id: "c-er-fk-side",
@@ -864,6 +889,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "På hvilken side legges fremmednøkkelen i 1:N?",
     answer:
       "På MANGE-siden. Huskeregel: «FK-en bor på mange-siden». Eks: 1 kunde → mange bestillinger → kundeNr legges i Bestilling.",
+    visual: "db-fk-many-side",
   },
   {
     id: "c-er-symbol-min-max",
@@ -880,6 +906,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Hvor lagres relasjons-attributter i M:N?",
     answer:
       "I koblingstabellen. Eks: Student tar Fag M:N med «semester» — semester ligger i TAR(sid, fkode, semester), ikke i Student eller Fag.",
+    visual: "db-mn-relation-attr",
   },
   {
     id: "c-er-rekursiv",
@@ -888,6 +915,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Hva er en rekursiv relasjon?",
     answer:
       "En entitet som har relasjon til seg selv. Eks: ANSATT har leder som også er ANSATT — løses med en FK-kolonne lederNr som peker tilbake til ansattNr i samme tabell.",
+    visual: "db-recursive-relation",
   },
 
   // ============= KAPITTEL 6 — RELASJONSMODELLEN =============
@@ -898,6 +926,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Hva er en 'relasjon' i relasjonsmodellen?",
     answer:
       "Det formelle navnet på en tabell. En relasjon er et sett av tupler (rader) over et bestemt skjema (kolonner med datatyper). 'Relasjon' refererer altså til tabellen, ikke til relasjonene mellom tabeller.",
+    visual: "db-tuple-attribute",
   },
   {
     id: "c-rm-tuppel",
@@ -906,6 +935,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Hva er et tuppel og en attributt?",
     answer:
       "Tuppel = én rad (én registrering). Attributt = én kolonne (én egenskap, med navn og datatype/domene).",
+    visual: "db-tuple-attribute",
   },
   {
     id: "c-rm-domene",
@@ -914,6 +944,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Hva er et domene?",
     answer:
       "Settet av lovlige verdier en attributt kan ha. F.eks. Alder ∈ INTEGER 0..150, Kjønn ∈ {'M','K'}. Datatype + eventuelle skranker (CHECK) avgrenser domenet.",
+    visual: "db-domain-filter",
   },
   {
     id: "c-rm-superkey",
@@ -922,6 +953,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Hva er en supernøkkel?",
     answer:
       "Et sett med attributter som identifiserer hver rad entydig. Kan inneholde 'overflødige' attributter — alle utvidelser av en kandidatnøkkel er supernøkler.",
+    visual: "db-super-candidate-pk",
   },
   {
     id: "c-rm-kandidatnokkel",
@@ -930,6 +962,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Hva er en kandidatnøkkel?",
     answer:
       "En minimal supernøkkel — entydig, men hvor ingen ekte delmengde lenger er entydig. En tabell kan ha flere kandidatnøkler; én av dem velges som primærnøkkel, resten markeres som UNIQUE.",
+    visual: "db-super-candidate-pk",
   },
   {
     id: "c-rm-entitetsintegritet",
@@ -937,6 +970,7 @@ export const FLASHCARDS: FlashCard[] = [
     topic: "Integritet",
     question: "Hva sier entitetsintegritet?",
     answer: "Ingen del av primærnøkkelen kan være NULL. PK-kolonner må alltid ha verdi.",
+    visual: "db-entity-integrity",
   },
   {
     id: "c-rm-referanseintegritet",
@@ -945,6 +979,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Hva sier referanseintegritet?",
     answer:
       "En fremmednøkkelverdi må enten være NULL eller peke til en eksisterende rad i den refererte tabellen. Du kan ikke peke på noe som ikke finnes.",
+    visual: "db-ref-integrity",
   },
   {
     id: "c-rm-domeneintegritet",
@@ -953,6 +988,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Hva er domeneintegritet?",
     answer:
       "Hver attributtverdi må ligge innenfor sitt domene (riktig datatype, NOT NULL der det er krevd, CHECK-skranker overholdt).",
+    visual: "db-domain-filter",
   },
   {
     id: "c-rm-alg-select",
@@ -961,6 +997,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Relasjonsalgebra: σ (seleksjon) tilsvarer hvilken SQL-klausul?",
     answer:
       "WHERE. σ_pris>100(Produkt) ≡ SELECT * FROM Produkt WHERE pris > 100. Velger ut RADER som matcher betingelsen.",
+    visual: "db-alg-selection",
   },
   {
     id: "c-rm-alg-project",
@@ -969,6 +1006,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Relasjonsalgebra: π (projeksjon) tilsvarer hva i SQL?",
     answer:
       "Kolonneliste i SELECT (med implisitt DISTINCT — algebra fjerner duplikater). π_navn,pris(Produkt) ≡ SELECT DISTINCT navn, pris FROM Produkt.",
+    visual: "db-alg-projection",
   },
   {
     id: "c-rm-alg-join",
@@ -977,6 +1015,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Relasjonsalgebra: ⋈ (natural join / theta-join)?",
     answer:
       "Kobler to relasjoner. Natural join (⋈) matcher på alle felles attributtnavn. Theta-join (⋈_θ) er ekvivalent med JOIN ... ON θ. SQL: INNER JOIN.",
+    visual: "db-alg-join",
   },
   {
     id: "c-rm-alg-set",
@@ -985,6 +1024,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Forskjell på UNION, INTERSECT og EXCEPT/MINUS?",
     answer:
       "UNION = rader som finnes i A eller B. INTERSECT = rader i begge. EXCEPT (SQL Server) / MINUS (Oracle) = rader i A som IKKE finnes i B. Begge inputs må ha samme skjema.",
+    visual: "db-alg-set-ops",
   },
   {
     id: "c-rm-alg-cross",
@@ -993,6 +1033,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Hva er kartesisk produkt (×)?",
     answer:
       "Hver rad i A kombinert med hver rad i B. |A|·|B| rader. SQL: CROSS JOIN, eller JOIN uten ON. Sjelden ønsket — som regel resultat av en glemt join-betingelse.",
+    visual: "db-alg-cross-product",
   },
 
   // ============= KAPITTEL 9 — FILER OG INDEKSER =============
