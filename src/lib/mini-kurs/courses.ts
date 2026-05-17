@@ -4170,6 +4170,597 @@ for navn, kjor in [("FCFS", run_fcfs), ("RR", lambda p: run_rr(p, kvantum=3)),
   ],
 };
 
+// ============================================================================
+// FREE-LIST MALLOC FRA NULL — 5 leksjoner som bygger en bibliotek-malloc/free
+// fra grunnen av. Studenten lærer heap-modellen (bare-bones alloc), free,
+// coalescing av tilstøtende free-blokker, plassering-strategier (first-fit /
+// best-fit), og avslutter med en konkret fragmentering-demo som viser hvorfor
+// disse mekanismene er nødvendige i ekte allokatorer.
+// ============================================================================
+
+const FREE_LIST_MALLOC: MiniCourse = {
+  id: "free-list-malloc",
+  slug: "free-list-malloc",
+  title: "Free-list malloc fra null",
+  blurb:
+    "Skriv din egen malloc i Python. Start med en flat liste av (start, size, free)-blokker, legg på free(), så coalescing av nabo-blokker, deretter first-fit vs best-fit, og se hvordan ekstern fragmentering oppstår — og hva som demper den. Samme mønster som glibc bruker, bare uten C-pekerne.",
+  estimertTid: "50–65 min",
+  fag: ["DTE-2505", "Operativsystem", "Minnehåndtering"],
+  color: "warning",
+  rekkefolge: 30,
+  lessons: [
+    // ============ LEKSJON 1 ===========================================
+    {
+      id: "01-heap-modell",
+      title: "1. Heap-modellen + bare-bones alloc",
+      narrative:
+        "En allokator (`malloc` i C, `new` i C++) får en stor sammenhengende region minne fra OS-en — **heapen** — og deler den ut i biter etter behov. Inne i heapen holder allokatoren en bokføring: hvilke biter er **brukt** og hvilke er **frie**.\n\nVi modellerer det med en sortert liste av `Block`-objekter. Hver block har tre felter:\n\n- `start` — offset inn i heapen (i bytes)\n- `size` — hvor mange bytes\n- `free` — `True` hvis ledig, `False` hvis utdelt\n\nVed start har heapen ÉN block: hele regionen, fri.\n\n**Alloc-algoritmen (første pass):**\n\n1. Gå gjennom blokkene og finn første som er `free` og har `size >= n`.\n2. Hvis blokken er nøyaktig `n` bytes: marker den `free = False`. Ferdig.\n3. Hvis blokken er større: **split** den i to. Den første delen blir `n` bytes brukt; resten blir en ny fri block bak.\n4. Returner `start`-adressen til den brukte delen.\n\nDette kalles ofte **first-fit**: vi tar første passende blokk og deler hvis den er for stor.\n\n**Din oppgave:** Fyll inn `Heap.__init__(total_size)` og `Heap.alloc(n)`. Returnér start-adressen, eller `None` hvis det ikke er plass.",
+      files: {
+        "malloc.py": `class Block:
+    def __init__(self, start, size, free=True):
+        self.start = start
+        self.size = size
+        self.free = free
+
+    def __repr__(self):
+        flag = "F" if self.free else "U"
+        return f"Block({self.start}..{self.start + self.size - 1}, {flag})"
+
+
+class Heap:
+    def __init__(self, total_size):
+        # === DIN OPPGAVE ===
+        # Lag self.blocks som en liste med ÉN fri block som dekker
+        # hele regionen [0, total_size). Lagre også total_size.
+        pass
+
+    def alloc(self, n):
+        # === DIN OPPGAVE ===
+        # 1. Finn første block der b.free og b.size >= n (first-fit).
+        # 2. Hvis ingen finnes: returner None.
+        # 3. Hvis b.size == n: sett b.free = False, returner b.start.
+        # 4. Ellers: split. Erstatt b med to blocks:
+        #      brukt = Block(b.start, n, free=False)
+        #      rest  = Block(b.start + n, b.size - n, free=True)
+        #    Bruk self.blocks[i:i+1] = [brukt, rest] for å sette inn paret.
+        # 5. Returner brukt.start.
+        return None
+
+
+def sjekk(faktisk, forventet, navn):
+    if faktisk == forventet:
+        print(f"OK   {navn}")
+    else:
+        print(f"FEIL {navn}: fikk {faktisk!r}, forventet {forventet!r}")
+
+
+# Heapen starter med én stor fri block
+h = Heap(100)
+sjekk(len(h.blocks), 1, "ny heap har 1 block")
+sjekk(h.blocks[0].size, 100, "ny block dekker hele regionen")
+sjekk(h.blocks[0].free, True, "ny block er fri")
+
+# alloc(10) splitter: [U 0..9][F 10..99]
+addr1 = h.alloc(10)
+sjekk(addr1, 0, "første alloc gir adresse 0")
+sjekk(len(h.blocks), 2, "etter alloc har vi 2 blocks (1 brukt + 1 fri rest)")
+
+# alloc(20) splitter resten: [U 0..9][U 10..29][F 30..99]
+addr2 = h.alloc(20)
+sjekk(addr2, 10, "andre alloc starter rett bak første")
+
+# alloc(5): [U 0..9][U 10..29][U 30..34][F 35..99]
+addr3 = h.alloc(5)
+sjekk(addr3, 30, "tredje alloc fortsetter sekvensielt")
+sjekk(len(h.blocks), 4, "3 brukt + 1 fri rest = 4 blocks")
+
+# alloc av noe som ikke passer
+addr4 = h.alloc(200)
+sjekk(addr4, None, "for stor alloc returnerer None")
+
+# Vis heapen
+print("Layout:", h.blocks)
+`,
+      },
+      defaultFile: "malloc.py",
+      editable: ["malloc.py"],
+      run: { kind: "python-script", entry: "malloc.py" },
+      verifications: [
+        { label: "Ny heap har 1 fri block", check: { kind: "output-contains", needle: "OK   ny heap har 1 block" } },
+        { label: "Første block dekker hele regionen", check: { kind: "output-contains", needle: "OK   ny block dekker hele regionen" } },
+        { label: "Første alloc returnerer adresse 0", check: { kind: "output-contains", needle: "OK   første alloc gir adresse 0" } },
+        { label: "Alloc splitter den frie blokken", check: { kind: "output-contains", needle: "OK   etter alloc har vi 2 blocks (1 brukt + 1 fri rest)" } },
+        { label: "Etterfølgende allocs fortsetter sekvensielt", check: { kind: "output-contains", needle: "OK   andre alloc starter rett bak første" } },
+        { label: "3 allocs gir 4 blocks (3 brukt + 1 fri rest)", check: { kind: "output-contains", needle: "OK   3 brukt + 1 fri rest = 4 blocks" } },
+        { label: "For stor alloc returnerer None", check: { kind: "output-contains", needle: "OK   for stor alloc returnerer None" } },
+      ],
+      hint:
+        "def __init__(self, total_size):\n    self.total_size = total_size\n    self.blocks = [Block(0, total_size, free=True)]\n\ndef alloc(self, n):\n    for i, b in enumerate(self.blocks):\n        if b.free and b.size >= n:\n            if b.size == n:\n                b.free = False\n                return b.start\n            brukt = Block(b.start, n, free=False)\n            rest = Block(b.start + n, b.size - n, free=True)\n            self.blocks[i:i+1] = [brukt, rest]\n            return brukt.start\n    return None",
+    },
+
+    // ============ LEKSJON 2 ===========================================
+    {
+      id: "02-free",
+      title: "2. free() — gi minnet tilbake",
+      narrative:
+        "En allokator som bare deler ut og aldri tar tilbake er ubrukelig — etter et par minutter er heapen oppbrukt. **free(addr)** sin jobb er motsatt av alloc: den finner blokken som starter på `addr` og setter den `free = True`.\n\nDet er enklere enn alloc. Vi bytter ikke noe i layouten — vi flipper bare et flagg. Studenten vil oppdage at heapen nå har **hull** (ekstern fragmentering): mellom brukte blokker ligger frie blokker som ikke kan vokse. Det er problemet vi løser i neste leksjon.\n\n**Din oppgave:** Implementér `Heap.free(addr)`:\n\n1. Gå gjennom blokkene. Finn den som har `b.start == addr` OG `b.free == False`.\n2. Sett `b.free = True`. Returnér `True`.\n3. Hvis ingen block matcher (f.eks. ugyldig adresse): returnér `False`.\n\nViktig: vi slår IKKE sammen nabo-blokker enda — det er leksjon 3.",
+      files: {
+        "malloc.py": `class Block:
+    def __init__(self, start, size, free=True):
+        self.start = start
+        self.size = size
+        self.free = free
+
+    def __repr__(self):
+        flag = "F" if self.free else "U"
+        return f"Block({self.start}..{self.start + self.size - 1}, {flag})"
+
+
+class Heap:
+    def __init__(self, total_size):
+        self.total_size = total_size
+        self.blocks = [Block(0, total_size, free=True)]
+
+    def alloc(self, n):
+        for i, b in enumerate(self.blocks):
+            if b.free and b.size >= n:
+                if b.size == n:
+                    b.free = False
+                    return b.start
+                brukt = Block(b.start, n, free=False)
+                rest = Block(b.start + n, b.size - n, free=True)
+                self.blocks[i:i+1] = [brukt, rest]
+                return brukt.start
+        return None
+
+    def free(self, addr):
+        # === DIN OPPGAVE ===
+        # Finn block med b.start == addr og b.free == False.
+        # Sett b.free = True og returner True.
+        # Hvis ingen match: returner False.
+        # IKKE coalesce enda — vi vil SE hullene.
+        return False
+
+
+def sjekk(faktisk, forventet, navn):
+    if faktisk == forventet:
+        print(f"OK   {navn}")
+    else:
+        print(f"FEIL {navn}: fikk {faktisk!r}, forventet {forventet!r}")
+
+
+# Alloker 3 blokker
+h = Heap(100)
+a = h.alloc(20)   # 0..19
+b = h.alloc(30)   # 20..49
+c = h.alloc(15)   # 50..64
+print("Etter 3 allocs:", h.blocks)
+sjekk(sum(1 for bl in h.blocks if not bl.free), 3, "3 blokker er brukt")
+
+# Free midten — det skal lage et hull
+ok = h.free(b)
+sjekk(ok, True, "free returnerer True ved gyldig addr")
+print("Etter free midten:", h.blocks)
+
+# Midten er fri, men nabofarvann er fortsatt brukt
+midt = next(bl for bl in h.blocks if bl.start == b)
+sjekk(midt.free, True, "midten er nå fri")
+sjekk(h.blocks[0].free, False, "venstre nabo fortsatt brukt")
+sjekk(h.blocks[2].free, False, "høyre nabo fortsatt brukt")
+
+# Antall blokker er uendret (vi har IKKE coalesced)
+sjekk(len(h.blocks), 4, "antall blocks uendret (ingen coalescing)")
+
+# Free med ugyldig addr returnerer False
+sjekk(h.free(999), False, "ugyldig addr gir False")
+
+# Dobbel-free (allerede fri) er også False
+sjekk(h.free(b), False, "dobbel-free gir False")
+`,
+      },
+      defaultFile: "malloc.py",
+      editable: ["malloc.py"],
+      run: { kind: "python-script", entry: "malloc.py" },
+      verifications: [
+        { label: "3 blokker er brukt etter 3 allocs", check: { kind: "output-contains", needle: "OK   3 blokker er brukt" } },
+        { label: "free returnerer True ved gyldig adresse", check: { kind: "output-contains", needle: "OK   free returnerer True ved gyldig addr" } },
+        { label: "Midten blir fri etter free", check: { kind: "output-contains", needle: "OK   midten er nå fri" } },
+        { label: "Venstre nabo er fortsatt brukt (hull synlig)", check: { kind: "output-contains", needle: "OK   venstre nabo fortsatt brukt" } },
+        { label: "Høyre nabo er fortsatt brukt (hull synlig)", check: { kind: "output-contains", needle: "OK   høyre nabo fortsatt brukt" } },
+        { label: "Layout uendret (4 blocks fortsatt)", check: { kind: "output-contains", needle: "OK   antall blocks uendret (ingen coalescing)" } },
+        { label: "Ugyldig adresse returnerer False", check: { kind: "output-contains", needle: "OK   ugyldig addr gir False" } },
+        { label: "Dobbel-free returnerer False", check: { kind: "output-contains", needle: "OK   dobbel-free gir False" } },
+      ],
+      hint:
+        "def free(self, addr):\n    for b in self.blocks:\n        if b.start == addr and not b.free:\n            b.free = True\n            return True\n    return False",
+    },
+
+    // ============ LEKSJON 3 ===========================================
+    {
+      id: "03-coalescing",
+      title: "3. Coalescing — slå sammen tilstøtende free-blokker",
+      narrative:
+        "Etter mange alloc/free-runder ender heapen opp med mange små frie blokker mellom brukte. Det heter **ekstern fragmentering**: total fri minne kan være rikelig, men ingen sammenhengende blokk er stor nok til en stor alloc.\n\nMotgiften er **coalescing** (på norsk: sammenslåing). Når en block frigjøres, sjekker vi om naboene også er frie — i så fall slår vi dem sammen til én større fri block.\n\nAlgoritmen er enkel siden vi holder `blocks`-listen sortert etter `start`:\n\n```\ni = 0\nmens i < len(blocks) - 1:\n    a = blocks[i]\n    b = blocks[i+1]\n    hvis a.free og b.free:\n        a.size += b.size       # absorber b inn i a\n        del blocks[i+1]\n        # ikke øk i — kanskje neste også er fri\n    ellers:\n        i += 1\n```\n\nVi kaller `_coalesce()` på slutten av `free()`. Resultat: fri minne forblir så stort og sammenhengende som mulig.\n\n**Din oppgave:** Implementér `_coalesce()` og kall den i `free()`. Etter en kjede av frees skal du se at heapen kollapser tilbake til ÉN stor fri block.",
+      files: {
+        "malloc.py": `class Block:
+    def __init__(self, start, size, free=True):
+        self.start = start
+        self.size = size
+        self.free = free
+
+    def __repr__(self):
+        flag = "F" if self.free else "U"
+        return f"Block({self.start}..{self.start + self.size - 1}, {flag})"
+
+
+class Heap:
+    def __init__(self, total_size):
+        self.total_size = total_size
+        self.blocks = [Block(0, total_size, free=True)]
+
+    def alloc(self, n):
+        for i, b in enumerate(self.blocks):
+            if b.free and b.size >= n:
+                if b.size == n:
+                    b.free = False
+                    return b.start
+                brukt = Block(b.start, n, free=False)
+                rest = Block(b.start + n, b.size - n, free=True)
+                self.blocks[i:i+1] = [brukt, rest]
+                return brukt.start
+        return None
+
+    def free(self, addr):
+        for b in self.blocks:
+            if b.start == addr and not b.free:
+                b.free = True
+                self._coalesce()
+                return True
+        return False
+
+    def _coalesce(self):
+        # === DIN OPPGAVE ===
+        # Iterer fra venstre. Hvis blocks[i] og blocks[i+1] BEGGE er frie,
+        # absorber blocks[i+1] inn i blocks[i] (legg sammen size, slett i+1).
+        # Ikke øk i etter en merge — kanskje den nye naboen også er fri.
+        # Stopp når i når nest-siste indeks.
+        pass
+
+
+def sjekk(faktisk, forventet, navn):
+    if faktisk == forventet:
+        print(f"OK   {navn}")
+    else:
+        print(f"FEIL {navn}: fikk {faktisk!r}, forventet {forventet!r}")
+
+
+# Alloker 3 blokker
+h = Heap(100)
+a = h.alloc(20)
+b = h.alloc(30)
+c = h.alloc(15)
+# Layout: [U 0..19][U 20..49][U 50..64][F 65..99]
+sjekk(len(h.blocks), 4, "start: 3 brukt + 1 fri rest = 4 blocks")
+
+# Free midten først — naboene er fortsatt brukt, så ingen merge skjer
+h.free(b)
+sjekk(len(h.blocks), 4, "free midt: ingen merge (begge naboene brukt)")
+
+# Free a — nå er a og b naboer og begge frie → de merger
+h.free(a)
+print("Etter free a + b:", h.blocks)
+sjekk(len(h.blocks), 3, "free a: a+b merget → 3 blocks")
+# Den merged blokken dekker 0..49 (50 bytes)
+merged = h.blocks[0]
+sjekk(merged.start, 0, "merged block starter på 0")
+sjekk(merged.size, 50, "merged block er 20+30 = 50 bytes")
+sjekk(merged.free, True, "merged block er fri")
+
+# Free c — nå merger den med både venstre (50 bytes) og høyre (35 bytes rest)
+h.free(c)
+print("Etter free c:", h.blocks)
+sjekk(len(h.blocks), 1, "etter alle frees: 1 stor block")
+sjekk(h.blocks[0].size, 100, "den merged blokken dekker hele heapen")
+sjekk(h.blocks[0].free, True, "og er fri")
+
+# Sanity: ny heap, ulike rekkefølger gir samme resultat
+h2 = Heap(60)
+x = h2.alloc(10); y = h2.alloc(20); z = h2.alloc(10)
+h2.free(z); h2.free(y); h2.free(x)
+sjekk(len(h2.blocks), 1, "frees i omvendt rekkefølge gir også 1 block")
+sjekk(h2.blocks[0].size, 60, "og dekker hele heapen")
+`,
+      },
+      defaultFile: "malloc.py",
+      editable: ["malloc.py"],
+      run: { kind: "python-script", entry: "malloc.py" },
+      verifications: [
+        { label: "Start: 4 blocks (3 brukt + 1 rest)", check: { kind: "output-contains", needle: "OK   start: 3 brukt + 1 fri rest = 4 blocks" } },
+        { label: "Free med begge naboene brukt → ingen merge", check: { kind: "output-contains", needle: "OK   free midt: ingen merge (begge naboene brukt)" } },
+        { label: "Free nabo til fri block → merge", check: { kind: "output-contains", needle: "OK   free a: a+b merget → 3 blocks" } },
+        { label: "Merged block har riktig størrelse", check: { kind: "output-contains", needle: "OK   merged block er 20+30 = 50 bytes" } },
+        { label: "Etter alle frees: 1 stor block", check: { kind: "output-contains", needle: "OK   etter alle frees: 1 stor block" } },
+        { label: "Merged block dekker hele heapen", check: { kind: "output-contains", needle: "OK   den merged blokken dekker hele heapen" } },
+        { label: "Frees i omvendt rekkefølge gir også 1 block", check: { kind: "output-contains", needle: "OK   frees i omvendt rekkefølge gir også 1 block" } },
+      ],
+      hint:
+        "def _coalesce(self):\n    i = 0\n    while i < len(self.blocks) - 1:\n        a = self.blocks[i]\n        b = self.blocks[i + 1]\n        if a.free and b.free:\n            a.size += b.size\n            del self.blocks[i + 1]\n            # ikke øk i — kanskje neste også er fri\n        else:\n            i += 1",
+    },
+
+    // ============ LEKSJON 4 ===========================================
+    {
+      id: "04-first-fit-vs-best-fit",
+      title: "4. First-fit vs best-fit",
+      narrative:
+        "Når flere frie blokker er store nok til en alloc, må allokatoren velge **en**. Det er en design-knapp med målbare konsekvenser:\n\n- **first-fit:** ta den første som passer. Rask (stopper tidlig i lista), men kan etterlate seg mange små rester foran i heapen.\n- **best-fit:** velg den minste blokken som passer. Skåner store blokker, men er tregere (må scanne alt) og lager flere ørsmå rester som er praktisk umulige å gjenbruke.\n- **worst-fit:** velg den største (sjeldent brukt — sløser store blokker raskt).\n\nIngen vinner alltid. glibc bruker en variant av best-fit (segregated free lists), jemalloc bruker bucketed first-fit. Avveiningen avhenger av workload.\n\n**Din oppgave:** Utvid `alloc(n, strategy=\"first-fit\")` til å støtte `\"best-fit\"`. Algoritmen:\n\n1. Bygg liste av kandidater: alle `(i, b)`-par der `b.free` og `b.size >= n`.\n2. Hvis tom: returnér `None`.\n3. first-fit: ta første kandidat. best-fit: `min(kandidater, key=lambda ib: ib[1].size)`.\n4. Resten (split eller eksakt match) er som før.",
+      files: {
+        "malloc.py": `class Block:
+    def __init__(self, start, size, free=True):
+        self.start = start
+        self.size = size
+        self.free = free
+
+    def __repr__(self):
+        flag = "F" if self.free else "U"
+        return f"Block({self.start}..{self.start + self.size - 1}, {flag})"
+
+
+class Heap:
+    def __init__(self, total_size):
+        self.total_size = total_size
+        self.blocks = [Block(0, total_size, free=True)]
+
+    def alloc(self, n, strategy="first-fit"):
+        # === DIN OPPGAVE ===
+        # 1. kandidater = [(i, b) for i, b in enumerate(self.blocks)
+        #                  if b.free and b.size >= n]
+        # 2. Hvis tom: return None.
+        # 3. Hvis strategy == "first-fit": velg kandidater[0].
+        #    Hvis strategy == "best-fit":  velg min på b.size.
+        # 4. Split eller eksakt match som før. Returnér brukt.start.
+        return None
+
+    def free(self, addr):
+        for b in self.blocks:
+            if b.start == addr and not b.free:
+                b.free = True
+                self._coalesce()
+                return True
+        return False
+
+    def _coalesce(self):
+        i = 0
+        while i < len(self.blocks) - 1:
+            a = self.blocks[i]
+            b = self.blocks[i + 1]
+            if a.free and b.free:
+                a.size += b.size
+                del self.blocks[i + 1]
+            else:
+                i += 1
+
+    def free_sizes(self):
+        return [b.size for b in self.blocks if b.free]
+
+
+def sjekk(faktisk, forventet, navn):
+    if faktisk == forventet:
+        print(f"OK   {navn}")
+    else:
+        print(f"FEIL {navn}: fikk {faktisk!r}, forventet {forventet!r}")
+
+
+def lag_heap_med_tre_frie(strategi=None):
+    """Lag heap med 3 frie blocks av størrelse 100, 50 og 200,
+    adskilt av to ør-små brukte blokker (5 bytes hver) så coalesce
+    ikke slår dem sammen igjen når vi frigjør."""
+    h = Heap(360)
+    # 5 sekvensielle allocs: 100, 5, 50, 5, 200
+    a = h.alloc(100)   # 0..99
+    s1 = h.alloc(5)    # 100..104  (sperre — forblir brukt)
+    b = h.alloc(50)    # 105..154
+    s2 = h.alloc(5)    # 155..159  (sperre — forblir brukt)
+    c = h.alloc(200)   # 160..359
+    # Frigjør a, b, c → tre adskilte frie blocks
+    h.free(a); h.free(b); h.free(c)
+    return h
+
+
+# Bekreft layout
+h_kontroll = lag_heap_med_tre_frie()
+sjekk(h_kontroll.free_sizes(), [100, 50, 200], "tre frie blocks 100/50/200 oppsett OK")
+
+# --- first-fit ---
+h_ff = lag_heap_med_tre_frie()
+addr_ff = h_ff.alloc(30, strategy="first-fit")
+sjekk(addr_ff, 0, "first-fit alloc(30) tar fra 100-blokken (adresse 0)")
+sjekk(h_ff.free_sizes(), [70, 50, 200], "first-fit etterlater 70/50/200")
+
+# --- best-fit ---
+h_bf = lag_heap_med_tre_frie()
+addr_bf = h_bf.alloc(30, strategy="best-fit")
+sjekk(addr_bf, 105, "best-fit alloc(30) tar fra 50-blokken (adresse 105)")
+sjekk(h_bf.free_sizes(), [100, 20, 200], "best-fit etterlater 100/20/200")
+
+# --- eksakt match foretrekker minst eksakt? ---
+# Hvis det finnes en eksakt match, både first-fit og best-fit tar den.
+h_ex = lag_heap_med_tre_frie()
+addr_ex = h_ex.alloc(50, strategy="best-fit")
+sjekk(addr_ex, 105, "best-fit foretrekker eksakt 50-match")
+sjekk(h_ex.free_sizes(), [100, 200], "etter eksakt match: bare 100 og 200 igjen")
+
+# --- ingen passer ---
+h_no = lag_heap_med_tre_frie()
+sjekk(h_no.alloc(500, strategy="first-fit"), None, "ingen passende → None (first-fit)")
+sjekk(h_no.alloc(500, strategy="best-fit"), None, "ingen passende → None (best-fit)")
+`,
+      },
+      defaultFile: "malloc.py",
+      editable: ["malloc.py"],
+      run: { kind: "python-script", entry: "malloc.py" },
+      verifications: [
+        { label: "Oppsett: tre frie blocks 100/50/200", check: { kind: "output-contains", needle: "OK   tre frie blocks 100/50/200 oppsett OK" } },
+        { label: "first-fit velger første passende (100-blokken)", check: { kind: "output-contains", needle: "OK   first-fit alloc(30) tar fra 100-blokken (adresse 0)" } },
+        { label: "first-fit etterlater 70/50/200", check: { kind: "output-contains", needle: "OK   first-fit etterlater 70/50/200" } },
+        { label: "best-fit velger minste passende (50-blokken)", check: { kind: "output-contains", needle: "OK   best-fit alloc(30) tar fra 50-blokken (adresse 105)" } },
+        { label: "best-fit etterlater 100/20/200", check: { kind: "output-contains", needle: "OK   best-fit etterlater 100/20/200" } },
+        { label: "Eksakt match foretrekkes av best-fit", check: { kind: "output-contains", needle: "OK   best-fit foretrekker eksakt 50-match" } },
+        { label: "Ingen passende block → None (begge strategier)", check: { kind: "output-contains", needle: "OK   ingen passende → None (best-fit)" } },
+      ],
+      hint:
+        "def alloc(self, n, strategy=\"first-fit\"):\n    kandidater = [(i, b) for i, b in enumerate(self.blocks)\n                  if b.free and b.size >= n]\n    if not kandidater:\n        return None\n    if strategy == \"first-fit\":\n        i, b = kandidater[0]\n    elif strategy == \"best-fit\":\n        i, b = min(kandidater, key=lambda ib: ib[1].size)\n    else:\n        return None\n    if b.size == n:\n        b.free = False\n        return b.start\n    brukt = Block(b.start, n, free=False)\n    rest = Block(b.start + n, b.size - n, free=True)\n    self.blocks[i:i+1] = [brukt, rest]\n    return brukt.start",
+    },
+
+    // ============ LEKSJON 5 ===========================================
+    {
+      id: "05-fragmentering",
+      title: "5. Fragmentering-demo + sammenligning",
+      narrative:
+        "Nå har du alle byggeklossene: alloc med to strategier, free, og coalescing. Tid for å SE hvorfor disse mekanismene er viktige.\n\nVi kjører en realistisk workload — en blanding av alloc og free i ulike størrelser — gjennom **to** allokatorer:\n\n- **Med coalescing** (det du har bygget)\n- **Uten coalescing** (en degenerasjon vi simulerer ved et flagg)\n\nMåling: antall frie blokker etter workload. Færre frie blokker betyr at minnet er bedre konsolidert — fri-listen er kortere, og fremtidige store allocs har større sjanse for å passe.\n\n**Din oppgave:** Implementér `kjor_workload(coalesce_pa)` som:\n\n1. Lager `Heap(300)` med flag `coalesce_enabled = coalesce_pa`.\n2. Allokerer 5 blokker à 40 bytes (i rekkefølge). Lagre adressene.\n3. Frigjør blokk index 0, 1, og 3 (det skaper to nabopar 0+1 som er kandidater for merge, og en enkeltstående 3).\n4. Returnerer antall frie blokker via `h.num_free_blocks()`.\n\nFinalresultat: uten coalescing er det 4 frie blocks (3 fri + 1 trailing rest). Med coalescing er det 3 (0+1 merget til én + 3 + rest).",
+      files: {
+        "malloc.py": `class Block:
+    def __init__(self, start, size, free=True):
+        self.start = start
+        self.size = size
+        self.free = free
+
+    def __repr__(self):
+        flag = "F" if self.free else "U"
+        return f"Block({self.start}..{self.start + self.size - 1}, {flag})"
+
+
+class Heap:
+    def __init__(self, total_size, coalesce_enabled=True):
+        self.total_size = total_size
+        self.coalesce_enabled = coalesce_enabled
+        self.blocks = [Block(0, total_size, free=True)]
+
+    def alloc(self, n, strategy="first-fit"):
+        kandidater = [(i, b) for i, b in enumerate(self.blocks)
+                      if b.free and b.size >= n]
+        if not kandidater:
+            return None
+        if strategy == "first-fit":
+            i, b = kandidater[0]
+        elif strategy == "best-fit":
+            i, b = min(kandidater, key=lambda ib: ib[1].size)
+        else:
+            return None
+        if b.size == n:
+            b.free = False
+            return b.start
+        brukt = Block(b.start, n, free=False)
+        rest = Block(b.start + n, b.size - n, free=True)
+        self.blocks[i:i+1] = [brukt, rest]
+        return brukt.start
+
+    def free(self, addr):
+        for b in self.blocks:
+            if b.start == addr and not b.free:
+                b.free = True
+                if self.coalesce_enabled:
+                    self._coalesce()
+                return True
+        return False
+
+    def _coalesce(self):
+        i = 0
+        while i < len(self.blocks) - 1:
+            a = self.blocks[i]
+            b = self.blocks[i + 1]
+            if a.free and b.free:
+                a.size += b.size
+                del self.blocks[i + 1]
+            else:
+                i += 1
+
+    def num_free_blocks(self):
+        return sum(1 for b in self.blocks if b.free)
+
+    def total_free(self):
+        return sum(b.size for b in self.blocks if b.free)
+
+    def largest_free(self):
+        return max((b.size for b in self.blocks if b.free), default=0)
+
+
+# === DIN OPPGAVE ===
+def kjor_workload(coalesce_pa):
+    """Kjør samme workload, returnér antall frie blokker.
+    Steg:
+      1. h = Heap(300, coalesce_enabled=coalesce_pa)
+      2. addrs = [h.alloc(40) for _ in range(5)]
+      3. h.free(addrs[0]); h.free(addrs[1]); h.free(addrs[3])
+      4. return h.num_free_blocks()
+    """
+    return -1
+
+
+def sjekk(faktisk, forventet, navn):
+    if faktisk == forventet:
+        print(f"OK   {navn}")
+    else:
+        print(f"FEIL {navn}: fikk {faktisk!r}, forventet {forventet!r}")
+
+
+# Kjør med og uten coalescing
+uten = kjor_workload(False)
+med = kjor_workload(True)
+
+print(f"Uten coalescing: {uten} frie blocks")
+print(f"Med coalescing:  {med} frie blocks")
+print(f"Reduksjon takket være coalescing: {uten - med} block(s)")
+
+# Test: uten coalescing får vi 4 frie blocks (3 individuelle + trailing rest 100)
+sjekk(uten, 4, "uten coalescing: 4 frie blocks (fragmentert)")
+# Med coalescing: blokk 0 og 1 merger til én → 3 frie blocks
+sjekk(med, 3, "med coalescing: 3 frie blocks (nabopar merget)")
+sjekk(uten > med, True, "coalescing reduserer fri-list-lengden")
+
+# Mer realistisk sammenligning: first-fit vs best-fit etter mange ops
+def realistisk(strategi):
+    """20 ops på Heap(1000) med coalescing alltid på.
+    Tell antall frie blocks og største fri block til slutt."""
+    h = Heap(1000, coalesce_enabled=True)
+    addrs = []
+    # 10 allocs av ulik størrelse
+    for n in [50, 80, 30, 100, 40, 60, 20, 70, 90, 25]:
+        addrs.append(h.alloc(n, strategy=strategi))
+    # Free annenhver (skaper hull)
+    for i in [1, 3, 5, 7, 9]:
+        h.free(addrs[i])
+    # Nye allocs som må gjenbruke hullene
+    for n in [25, 35, 45, 15]:
+        h.alloc(n, strategy=strategi)
+    return h.num_free_blocks(), h.largest_free()
+
+
+ff_frie, ff_storst = realistisk("first-fit")
+bf_frie, bf_storst = realistisk("best-fit")
+print(f"first-fit etter realistisk workload: {ff_frie} frie blocks, største = {ff_storst}")
+print(f"best-fit  etter realistisk workload: {bf_frie} frie blocks, største = {bf_storst}")
+
+# Begge skal fullføre uten None-allocs
+sjekk(ff_storst > 0, True, "first-fit etterlater minst én fri block")
+sjekk(bf_storst > 0, True, "best-fit etterlater minst én fri block")
+`,
+      },
+      defaultFile: "malloc.py",
+      editable: ["malloc.py"],
+      run: { kind: "python-script", entry: "malloc.py" },
+      verifications: [
+        { label: "Uten coalescing: 4 frie blocks", check: { kind: "output-contains", needle: "OK   uten coalescing: 4 frie blocks (fragmentert)" } },
+        { label: "Med coalescing: 3 frie blocks (merge skjedde)", check: { kind: "output-contains", needle: "OK   med coalescing: 3 frie blocks (nabopar merget)" } },
+        { label: "Coalescing reduserer fri-list-lengden", check: { kind: "output-contains", needle: "OK   coalescing reduserer fri-list-lengden" } },
+        { label: "first-fit fullfører realistisk workload", check: { kind: "output-contains", needle: "OK   first-fit etterlater minst én fri block" } },
+        { label: "best-fit fullfører realistisk workload", check: { kind: "output-contains", needle: "OK   best-fit etterlater minst én fri block" } },
+      ],
+      hint:
+        "def kjor_workload(coalesce_pa):\n    h = Heap(300, coalesce_enabled=coalesce_pa)\n    addrs = [h.alloc(40) for _ in range(5)]\n    h.free(addrs[0])\n    h.free(addrs[1])\n    h.free(addrs[3])\n    return h.num_free_blocks()",
+    },
+  ],
+};
+
 export const MINI_COURSES: readonly MiniCourse[] = [
   FLASK_FRA_NULL,
   BYGG_MINI_SHELL,
@@ -4178,6 +4769,7 @@ export const MINI_COURSES: readonly MiniCourse[] = [
   CSP_SUDOKU,
   DNS_RESOLVER,
   PROSESS_SCHEDULER,
+  FREE_LIST_MALLOC,
 ];
 
 export function getMiniCourse(slug: string): MiniCourse | undefined {
