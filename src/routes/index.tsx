@@ -22,21 +22,21 @@ import {
   ArrowRight,
   Sparkles,
   Database,
-  TerminalSquare,
-  Code2,
-  Cpu,
-  BookOpen,
-  Boxes,
-  KeyboardMusic,
-  Apple,
   Compass,
-  FolderTree,
   Pin,
   PinOff,
   Clock,
   Lightbulb,
   Brain,
+  CalendarClock,
+  Flame,
+  Wrench,
+  Map as MapIcon,
 } from "lucide-react";
+import {
+  examUrgency,
+  formatDaysUntil,
+} from "@/lib/subjects/examDate";
 import {
   getTopRecommendation,
   type Recommendation,
@@ -67,108 +67,27 @@ export const Route = createFileRoute("/")({
   component: LandingPage,
 });
 
-type Verktoy = {
-  href:
-    | "/practice"
-    | "/python"
-    | "/drag"
-    | "/cards"
-    | "/prosjekt"
-    | "/eksamen"
-    | "/git-drill"
-    | "/venv-drill"
-    | "/mac-drill"
-    | "/spor"
-    | "/mini-kurs"
-    | "/drill"
-    | "/stack/$slug";
-  navn: string;
-  blurb: string;
-  Icon: typeof Database;
-  slug?: string;
-};
+// VERKTOY-listen er fjernet — "Hopp rett inn i øvelse"-griden er flyttet
+// til /lar (Verktøy-siden) etter meny-forenkling. Her viser vi bare
+// en lenke til den siden.
 
-const VERKTOY: Verktoy[] = [
-  {
-    href: "/spor",
-    navn: "Læringsspor",
-    blurb: "5 curerte stier — Flask, backend, React, FastAPI, data-ingeniør. Velg framework, få rekkefølge.",
-    Icon: Compass,
-  },
-  {
-    href: "/mini-kurs",
-    navn: "Mini-kurs (sandkasse)",
-    blurb: "Bygg ekte prosjekter trinn for trinn. Filer, mapper, editor, kjør-knapp i nettleseren.",
-    Icon: FolderTree,
-  },
-  {
-    href: "/drill",
-    navn: "Drill-hub",
-    blurb: "16 interaktive drills på tvers av fag — søk, filter på fag, og lokal progress-tracking.",
-    Icon: Dumbbell,
-  },
-  {
-    href: "/practice",
-    navn: "SQL Practice",
-    blurb: "300+ SQL-oppgaver med ekte SQLite i nettleseren.",
-    Icon: Database,
-  },
-  {
-    href: "/python",
-    navn: "Python-øvelser",
-    blurb: "70+ Flask/MySQL/auth-oppgaver i Pyodide.",
-    Icon: Code2,
-  },
-  {
-    href: "/drag",
-    navn: "Drag-oppgaver",
-    blurb: "500+ fyll-inn, match og rekkefølge-oppgaver.",
-    Icon: KeyboardMusic,
-  },
-  {
-    href: "/cards",
-    navn: "Flashcards",
-    blurb: "200+ kort for drillbar repetisjon.",
-    Icon: BookOpen,
-  },
-  {
-    href: "/prosjekt",
-    navn: "Flask-prosjekt",
-    blurb: "Bygg en hel nettbutikk i 11 trinn.",
-    Icon: Boxes,
-  },
-  {
-    href: "/eksamen",
-    navn: "Eksamen",
-    blurb: "Hub: tidsbasert trening, prosjekt, og eksamens-trinn fra alle fag.",
-    Icon: GraduationCap,
-  },
-  {
-    href: "/git-drill",
-    navn: "Git-drill",
-    blurb: "Øv git-kommandoer i en simulert terminal.",
-    Icon: TerminalSquare,
-  },
-  {
-    href: "/venv-drill",
-    navn: "Venv-drill",
-    blurb: "Øv Python venv og pip i en simulert terminal.",
-    Icon: TerminalSquare,
-  },
-  {
-    href: "/mac-drill",
-    navn: "Mac-automatisering",
-    blurb: "AppleScript, Shortcuts, Automator og terminal-automatisering — tutorials + øvelser.",
-    Icon: Apple,
-  },
-  {
-    href: "/stack/$slug",
-    slug: "laereplan",
-    navn: "Læreplan",
-    blurb: "Total oversikt over alt læringsstoff.",
-    Icon: Cpu,
-  },
-];
+// Stil-klasser for eksamen-pillen. Matcher det /mine-fag bruker så
+// urgens-fargene er like på begge sider.
+function examPillClasses(
+  u: "past" | "urgent" | "soon" | "later" | "no-date",
+): string {
+  switch (u) {
+    case "urgent":
+      return "bg-rose-500/10 text-rose-700 dark:text-rose-300 border-rose-500/40";
+    case "soon":
+      return "bg-amber-500/10 text-amber-700 dark:text-amber-300 border-amber-500/40";
+    case "later":
+      return "bg-brand/10 text-brand border-brand/30";
+    case "no-date":
+    case "past":
+      return "bg-muted text-muted-foreground border-border";
+  }
+}
 
 function LandingPage() {
   const navigate = useNavigate();
@@ -194,6 +113,17 @@ function LandingPage() {
     () => (lastVisited ? SUBJECT_BY_SLUG[lastVisited.slug] ?? null : null),
     [lastVisited],
   );
+
+  // Nærmeste fremtidige eksamen — prioriter pinnede fag, ellers alle.
+  // Brukes til top-banneret rett under hero. Speiler logikken på /mine-fag.
+  const nextExam = useMemo(() => {
+    const pool = pinnedSubjects.length > 0 ? pinnedSubjects : null;
+    const candidates = (pool ?? Object.values(SUBJECT_BY_SLUG))
+      .map((s) => ({ subject: s, u: examUrgency(EXAM_META[s.slug]?.eksamen) }))
+      .filter((x) => x.u.days != null && x.u.days >= 0)
+      .sort((a, b) => (a.u.days ?? 0) - (b.u.days ?? 0));
+    return candidates[0] ?? null;
+  }, [pinnedSubjects]);
 
   const totals = useMemo(
     () => ({
@@ -239,11 +169,8 @@ function LandingPage() {
     setAppMode(mode);
   }
 
-  function scrollToCatalog() {
-    document
-      .getElementById("alle-fag")
-      ?.scrollIntoView({ behavior: "smooth", block: "start" });
-  }
+  // scrollToCatalog er fjernet: "Alle fag"-sektor-griden er flyttet til /mine-fag.
+  // Tomme pinned-fag-states peker direkte til /mine-fag i stedet.
 
   return (
     <div className="min-h-screen bg-background">
@@ -413,40 +340,78 @@ function LandingPage() {
           </div>
         </section>
 
-        {/* Start her — 3-veis velger for nye brukere */}
+        {/* Eksamen-banner — viser nærmeste fremtidige eksamen blant pinnede fag.
+            Speiler banneret på /mine-fag så urgensen synes fra hjemmesiden også. */}
+        {nextExam && nextExam.u.days != null && (
+          <section className="container mx-auto px-4 pt-8 max-w-5xl">
+            <Link
+              to="/stack/$slug"
+              params={{ slug: nextExam.subject.slug }}
+              className={`group flex items-center gap-3 rounded-xl border-2 px-4 py-3.5 transition-colors hover:border-foreground/40 ${examPillClasses(nextExam.u.urgency)}`}
+            >
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-background/60">
+                {nextExam.u.urgency === "urgent" ? (
+                  <Flame className="h-4.5 w-4.5" />
+                ) : (
+                  <CalendarClock className="h-4.5 w-4.5" />
+                )}
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="text-[10px] font-bold uppercase tracking-wider opacity-80 mb-0.5">
+                  Neste eksamen
+                </div>
+                <div className="text-sm font-semibold truncate">
+                  {nextExam.subject.code} — {nextExam.subject.navn}
+                </div>
+              </div>
+              <div className="text-right shrink-0">
+                <div className="text-base font-bold tabular-nums leading-none">
+                  {formatDaysUntil(nextExam.u.days)}
+                </div>
+                <div className="text-[10px] opacity-80 mt-1">
+                  {EXAM_META[nextExam.subject.slug]?.eksamen}
+                </div>
+              </div>
+              <ArrowRight className="h-4 w-4 shrink-0 opacity-70 group-hover:translate-x-0.5 transition-transform" />
+            </Link>
+          </section>
+        )}
+
+        {/* Start her — 3 hovedveier som speiler topp-menyen */}
         <section className="container mx-auto px-4 pt-10 max-w-5xl">
           <div className="mb-5 text-center">
             <span className="text-[10px] font-bold uppercase tracking-wider text-brand">
-              Start her
+              Hvor vil du?
             </span>
             <h2 className="mt-1 text-2xl font-bold tracking-tight">
-              Hva vil du gjøre i dag?
+              Tre veier inn
             </h2>
             <p className="mt-1 text-sm text-muted-foreground">
-              Tre vanlige veier inn — velg den som passer deg nå.
+              Mine fag for dine emner. Verktøy for sandbox, drills og oppslag.
+              Læreplan for hele stien fra transistor til Flask.
             </p>
           </div>
           <div className="grid sm:grid-cols-3 gap-3">
             <StartCard
               to="/mine-fag"
               icon={<Compass className="h-5 w-5" />}
-              eyebrow="Jeg har et fag"
-              title="Jeg skal bestå et fag"
-              body="Pin fagene du tar i «Mine fag» og bruk modul-oversikten + eksamens-trinn for hvert kurs."
+              eyebrow="Mine fag"
+              title="Fagene jeg tar"
+              body="Pin fagene du har eksamen i, fortsett der du slapp, og se nedtelling til neste eksamen."
+            />
+            <StartCard
+              to="/lar"
+              icon={<Wrench className="h-5 w-5" />}
+              eyebrow="Verktøy"
+              title="Sandbox, drills & oppslag"
+              body="SQL-sandbox, predict-trener, JOIN-trening, drag-oppgaver, flashcards, AI-tutor og skill-tre — alt utenom fagene."
             />
             <StartCard
               to="/spor"
-              icon={<FolderTree className="h-5 w-5" />}
-              eyebrow="Jeg vil bygge"
-              title="Bygge noe konkret"
-              body="Curerte læringsspor: Flask, backend, React, FastAPI, data-ingeniør. Velg framework, få rekkefølge."
-            />
-            <StartCard
-              to="/practice"
-              icon={<Dumbbell className="h-5 w-5" />}
-              eyebrow="Jeg vil øve"
-              title="Bare øve på SQL"
-              body="300+ SQL-oppgaver med ekte SQLite i nettleseren — hopp rett inn, ingen oppsett."
+              icon={<MapIcon className="h-5 w-5" />}
+              eyebrow="Læreplan"
+              title="Hele stien"
+              body="Curerte spor (Flask, backend, React, FastAPI, data) og lineær curriculum fra transistor til deploy."
             />
           </div>
         </section>
@@ -561,11 +526,13 @@ function LandingPage() {
               <div className="rounded-xl border border-dashed border-border bg-background/60 p-8 text-center">
                 <Pin className="mx-auto h-8 w-8 text-muted-foreground/60 mb-3" />
                 <p className="text-sm text-muted-foreground mb-4">
-                  Du har ingen fag pinnet ennå. Bla nedover, finn fagene du tar nå, og trykk
+                  Du har ingen fag pinnet ennå. Gå til Mine fag, finn fagene du tar nå, og trykk
                   på pin-ikonet — så ligger de her neste gang.
                 </p>
-                <Button onClick={scrollToCatalog} size="sm">
-                  Se alle fag <ArrowRight className="h-3.5 w-3.5 ml-1" />
+                <Button asChild size="sm">
+                  <Link to="/mine-fag">
+                    Se alle fag <ArrowRight className="h-3.5 w-3.5 ml-1" />
+                  </Link>
                 </Button>
               </div>
             ) : (
@@ -624,136 +591,58 @@ function LandingPage() {
           </div>
         </section>
 
-        {/* Sektor-grid */}
-        <section id="alle-fag" className="container mx-auto px-4 py-14 max-w-6xl scroll-mt-16">
-          <div className="mb-8 text-center">
-            <h2 className="text-3xl font-bold tracking-tight">Alle fag</h2>
-            <p className="mt-2 text-muted-foreground">
-              Hver kursside har modul-oversikt, mini-kurs og direkte tilgang til
-              øvingsmateriale. Trykk på pin-ikonet for å lagre faget i «Mine fag».
-            </p>
-          </div>
-
-          <div className="space-y-10">
-            {SEKTORER.map((sektor) => (
-              <div key={sektor.navn}>
-                <div className="mb-4">
-                  <h3 className="text-lg font-semibold text-foreground">{sektor.navn}</h3>
-                  <p className="text-sm text-muted-foreground">{sektor.beskrivelse}</p>
+        {/* Bunn-CTA — link til /mine-fag og /lar siden duplikatene er fjernet */}
+        <section className="container mx-auto px-4 py-14 max-w-5xl">
+          <div className="grid sm:grid-cols-2 gap-3">
+            <Link
+              to="/mine-fag"
+              className="group rounded-xl border border-border bg-card hover:border-brand/40 p-5 transition-colors flex items-center gap-3"
+            >
+              <Compass className="h-5 w-5 text-brand shrink-0" />
+              <div className="flex-1 min-w-0">
+                <div className="font-semibold text-foreground">
+                  Se alle fag og pin det du tar
                 </div>
-                <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                  {sektor.subjects.map((s) => {
-                    const Icon = s.Icon;
-                    const pinned = pinnedSlugs.includes(s.slug);
-                    return (
-                      <div
-                        key={s.slug}
-                        className="group relative rounded-xl border border-border bg-card hover:border-brand/40 p-5 transition-colors overflow-hidden"
-                      >
-                        <div
-                          className={`absolute inset-0 -z-10 opacity-0 group-hover:opacity-100 transition-opacity bg-gradient-to-br ${sektor.accent}`}
-                        />
-                        <PinButton slug={s.slug} pinned={pinned} />
-                        <Link
-                          to="/stack/$slug"
-                          params={{ slug: s.slug }}
-                          className="block"
-                        >
-                          <div className="flex items-center gap-2 mb-2 pr-8">
-                            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-brand/10">
-                              <Icon className="h-4 w-4 text-brand" />
-                            </div>
-                            <span className="text-[10px] font-semibold text-brand uppercase tracking-wider">
-                              {s.code}
-                            </span>
-                          </div>
-                          <h4 className="font-semibold text-foreground leading-tight mb-2">
-                            {s.navn}
-                          </h4>
-                          <p className="text-sm text-muted-foreground leading-relaxed">
-                            {s.blurb}
-                          </p>
-                          <div className="mt-3 flex items-center text-xs text-muted-foreground group-hover:text-foreground transition-colors">
-                            Åpne kursside
-                            <ArrowRight className="h-3.5 w-3.5 ml-1 group-hover:translate-x-0.5 transition-transform" />
-                          </div>
-                        </Link>
-                      </div>
-                    );
-                  })}
+                <div className="text-xs text-muted-foreground mt-0.5">
+                  10 UiT-emner gruppert i sektorer
                 </div>
               </div>
-            ))}
+              <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-foreground group-hover:translate-x-0.5 transition-all shrink-0" />
+            </Link>
+            <Link
+              to="/lar"
+              className="group rounded-xl border border-border bg-card hover:border-brand/40 p-5 transition-colors flex items-center gap-3"
+            >
+              <Wrench className="h-5 w-5 text-brand shrink-0" />
+              <div className="flex-1 min-w-0">
+                <div className="font-semibold text-foreground">
+                  19 verktøy i én oversikt
+                </div>
+                <div className="text-xs text-muted-foreground mt-0.5">
+                  Sandbox, drills, oppslag, AI-tutor
+                </div>
+              </div>
+              <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-foreground group-hover:translate-x-0.5 transition-all shrink-0" />
+            </Link>
           </div>
-        </section>
 
-        {/* Verktøy-grid */}
-        <section className="border-t border-border bg-card/30">
-          <div className="container mx-auto px-4 py-14 max-w-6xl">
-            <div className="mb-8 text-center">
-              <h2 className="text-2xl font-bold tracking-tight">Hopp rett inn i øvelse</h2>
-              <p className="mt-2 text-sm text-muted-foreground">
-                Verktøy som virker uavhengig av faget du jobber med.
-              </p>
+          {/* Vanlige SQL-temaer — beholdt fra forrige versjon, fortsatt nyttig */}
+          <div className="mt-10">
+            <div className="text-[10px] uppercase tracking-wider text-muted-foreground mb-2 text-center">
+              Vanligste SQL-temaer
             </div>
-            <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-3">
-              {VERKTOY.map((v) => {
-                const Icon = v.Icon;
-                const inner = (
-                  <>
-                    <div className="flex items-center gap-2 mb-2">
-                      <Icon className="h-4 w-4 text-brand" />
-                      <h3 className="font-semibold text-foreground leading-tight text-sm">
-                        {v.navn}
-                      </h3>
-                    </div>
-                    <p className="text-xs text-muted-foreground leading-relaxed">
-                      {v.blurb}
-                    </p>
-                  </>
-                );
-                if (v.href === "/stack/$slug" && v.slug) {
-                  return (
-                    <Link
-                      key={v.navn}
-                      to="/stack/$slug"
-                      params={{ slug: v.slug }}
-                      className="group rounded-xl border border-border bg-background hover:border-brand/40 p-4 transition-colors block"
-                    >
-                      {inner}
-                    </Link>
-                  );
-                }
-                return (
-                  <Link
-                    key={v.navn}
-                    to={v.href as "/practice" | "/python" | "/drag" | "/cards" | "/prosjekt" | "/eksamen" | "/git-drill" | "/venv-drill" | "/mac-drill" | "/spor" | "/mini-kurs" | "/drill"}
-                    className="group rounded-xl border border-border bg-background hover:border-brand/40 p-4 transition-colors block"
-                  >
-                    {inner}
-                  </Link>
-                );
-              })}
-            </div>
-
-            {/* Vanlige eksamenstemaer */}
-            <div className="mt-10">
-              <div className="text-[10px] uppercase tracking-wider text-muted-foreground mb-2 text-center">
-                Vanligste SQL-temaer
-              </div>
-              <div className="flex flex-wrap gap-1.5 justify-center">
-                {topTopics.map(([t, n]) => (
-                  <Link
-                    key={t}
-                    to="/practice"
-                    search={{ topic: t }}
-                    className="rounded-full border border-border bg-card px-2.5 py-0.5 text-xs text-foreground/90 hover:border-brand/60 hover:bg-brand/10"
-                    title={`${n} oppgaver`}
-                  >
-                    {t} <span className="text-muted-foreground">({n})</span>
-                  </Link>
-                ))}
-              </div>
+            <div className="flex flex-wrap gap-1.5 justify-center">
+              {topTopics.map(([t, n]) => (
+                <Link
+                  key={t}
+                  to="/practice"
+                  search={{ topic: t }}
+                  className="rounded-full border border-border bg-card px-2.5 py-0.5 text-xs text-foreground/90 hover:border-brand/60 hover:bg-brand/10"
+                  title={`${n} oppgaver`}
+                >
+                  {t} <span className="text-muted-foreground">({n})</span>
+                </Link>
+              ))}
             </div>
           </div>
         </section>
