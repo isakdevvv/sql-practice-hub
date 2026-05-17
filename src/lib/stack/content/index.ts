@@ -212,6 +212,7 @@ import { content as dockerfileBuilder } from "./dockerfile-builder";
 import { content as mlPipelineBuilder } from "./ml-pipeline-builder";
 import { content as sqlSchemaBuilder } from "./sql-schema-builder";
 import { content as microkernelArkitektur } from "./microkernel-arkitektur";
+import { content as dte2505IoManagement } from "./dte2505-io-management";
 import type { TrinnContent } from "../types";
 
 export const TRINN: TrinnContent[] = [
@@ -318,6 +319,8 @@ export const TRINN: TrinnContent[] = [
   sqlSchemaBuilder,
   // DTE-2505 — microkernel vs monolitt splittskjerm-simulator (O'Gorman kap. 1.7)
   microkernelArkitektur,
+  // DTE-2505 — I/O management (O'Gorman kap. 4 / OSTEP kap. 36–37)
+  dte2505IoManagement,
 ];
 
 import { curriculumIndexOf } from "../curriculum";
