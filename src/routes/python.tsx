@@ -498,9 +498,10 @@ function PythonPage() {
           })}
         </div>
 
-        <div className="grid lg:grid-cols-[260px_1fr] gap-4">
-          {/* Sidebar: exercise list */}
-          <aside className="space-y-1">
+        <div className="grid lg:grid-cols-[260px_1fr] gap-4 lg:items-start">
+          {/* Sidebar: exercise list. Sticky med viewport-høyde på desktop så
+              man kan scrolle gjennom 308 oppgaver uten at resten av siden følger med. */}
+          <aside className="space-y-1 lg:sticky lg:top-16 lg:max-h-[calc(100vh-5rem)] lg:overflow-y-auto lg:pr-2">
             <div className="flex items-center justify-between mb-2">
               <div className="text-xs uppercase tracking-wider text-muted-foreground">
                 Oppgaver ({Object.keys(progress.solved).length}/{PY_EXERCISES.length})
