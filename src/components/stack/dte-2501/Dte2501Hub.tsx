@@ -99,6 +99,14 @@ const LABS: Lab[] = [
     taggar: ["oversikt", "konsept"],
   },
   {
+    slug: "ai-historie",
+    title: "AI-historie — Turing til transformers",
+    blurb:
+      "Interaktiv tidslinje gjennom 8 epoker (1950→i dag). 14 nøkkelmomenter, paradigme-skift-graf, AI-vinter-analyse og 8-spørsmåls quiz.",
+    Icon: ScrollText,
+    taggar: ["historie", "tidslinje", "konsept"],
+  },
+  {
     slug: "ai-etikk",
     title: "AI-etikk — bias, fairness, scenario-sandbox",
     blurb:
