@@ -625,6 +625,14 @@ export const VISUALIZERS: VizEntry[] = [
     route: "/stack/dte2507-cbc-iv",
     tags: ["cbc", "iv", "blokkmodus", "padding oracle", "dte2507"],
   },
+  {
+    id: "tls-handshake-lab",
+    title: "TLS 1.3 handshake-lab — animator + MITM-modus",
+    blurb: "5-fase handshake-animator, cert-kjede-validator, MITM-simulator og cipher-suite-sammenligning.",
+    category: "sikkerhet",
+    route: "/stack/dte2507-tls-handshake-lab",
+    tags: ["tls", "tls 1.3", "handshake", "ecdhe", "hkdf", "mitm", "sertifikat", "x509", "ocsp", "certificate transparency", "pinning", "cipher suite", "aead", "forward secrecy", "dte2507"],
+  },
 
   // ──── PYTHON ──────────────────────────────────────────────────────────
   {
@@ -778,9 +786,10 @@ const RELATED: Record<string, string[]> = {
   bootstrap: ["sannsynlighet", "anova"],
 
   // Krypto
-  "krypto-progresjon": ["aes-gcm", "cbc-iv", "bits-dyp"],
-  "aes-gcm": ["krypto-progresjon", "cbc-iv"],
-  "cbc-iv": ["krypto-progresjon", "aes-gcm"],
+  "krypto-progresjon": ["aes-gcm", "cbc-iv", "bits-dyp", "tls-handshake-lab"],
+  "aes-gcm": ["krypto-progresjon", "cbc-iv", "tls-handshake-lab"],
+  "cbc-iv": ["krypto-progresjon", "aes-gcm", "tls-handshake-lab"],
+  "tls-handshake-lab": ["krypto-progresjon", "aes-gcm", "cbc-iv", "transportlag"],
   "ids-snort": ["krypto-progresjon", "nat"],
 
   // Python / matte

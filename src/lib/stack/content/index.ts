@@ -26,6 +26,7 @@ import { content as dte2507Socket } from "./dte2507-socket-programmering";
 import { content as dte2507Brannmur } from "./dte2507-brannmur-vlan";
 import { content as dte2507Subnetting } from "./dte2507-subnetting";
 import { content as dte2507TlsHandshake } from "./dte2507-tls-handshake";
+import { content as dte2507TlsHandshakeLab } from "./dte2507-tls-handshake-lab";
 import { content as dte2507PaketDekoding } from "./dte2507-paket-dekoding";
 import { content as dte2507RsaMini } from "./dte2507-rsa-mini";
 import { content as dte2507Praksis } from "./dte2507-praksis";
@@ -225,7 +226,7 @@ export const TRINN: TrinnContent[] = [
   algoritmer, bigO, rekursjon, sortering, lenkedeStrukturer,
   dte2507, osiTcpip, transportlag, kryptografi, tls, nettverkssikkerhet,
   dte2507Wireshark, dte2507Socket, dte2507Brannmur,
-  dte2507Subnetting, dte2507TlsHandshake, dte2507PaketDekoding, dte2507RsaMini, dte2507Praksis,
+  dte2507Subnetting, dte2507TlsHandshake, dte2507TlsHandshakeLab, dte2507PaketDekoding, dte2507RsaMini, dte2507Praksis,
   dte2507Congestion, dte2507Ruting, dte2507DnsDyp,
   dte2507InniRuter, dte2507PacketScheduling,
   dte2507CrcKalkulator, dte2507AlohaKasino, dte2507ArpDetektiv, dte2507SwitchSelfLearning,
