@@ -52,6 +52,7 @@ import { Route as StackSlugRouteImport } from './routes/stack.$slug'
 import { Route as SporSlugRouteImport } from './routes/spor.$slug'
 import { Route as PythonVisualizerRouteImport } from './routes/python_.visualizer'
 import { Route as PythonKjerneRouteImport } from './routes/python_.kjerne'
+import { Route as PythonComprehensionsRouteImport } from './routes/python_.comprehensions'
 import { Route as PythonChar91_figuresChar93RouteImport } from './routes/python_.[_figures]'
 import { Route as ProsjektMlSlugRouteImport } from './routes/prosjekt-ml.$slug'
 import { Route as PortfolioDte2602SlugRouteImport } from './routes/portfolio-dte2602.$slug'
@@ -283,6 +284,11 @@ const PythonKjerneRoute = PythonKjerneRouteImport.update({
   path: '/python/kjerne',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PythonComprehensionsRoute = PythonComprehensionsRouteImport.update({
+  id: '/python_/comprehensions',
+  path: '/python/comprehensions',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PythonChar91_figuresChar93Route =
   PythonChar91_figuresChar93RouteImport.update({
     id: '/python_/_figures',
@@ -404,6 +410,7 @@ export interface FileRoutesByFullPath {
   '/portfolio-dte2602/$slug': typeof PortfolioDte2602SlugRoute
   '/prosjekt-ml/$slug': typeof ProsjektMlSlugRoute
   '/python/_figures': typeof PythonChar91_figuresChar93Route
+  '/python/comprehensions': typeof PythonComprehensionsRoute
   '/python/kjerne': typeof PythonKjerneRoute
   '/python/visualizer': typeof PythonVisualizerRoute
   '/spor/$slug': typeof SporSlugRoute
@@ -458,6 +465,7 @@ export interface FileRoutesByTo {
   '/portfolio-dte2602/$slug': typeof PortfolioDte2602SlugRoute
   '/prosjekt-ml/$slug': typeof ProsjektMlSlugRoute
   '/python/_figures': typeof PythonChar91_figuresChar93Route
+  '/python/comprehensions': typeof PythonComprehensionsRoute
   '/python/kjerne': typeof PythonKjerneRoute
   '/python/visualizer': typeof PythonVisualizerRoute
   '/spor/$slug': typeof SporSlugRoute
@@ -519,6 +527,7 @@ export interface FileRoutesById {
   '/portfolio-dte2602/$slug': typeof PortfolioDte2602SlugRoute
   '/prosjekt-ml/$slug': typeof ProsjektMlSlugRoute
   '/python_/_figures': typeof PythonChar91_figuresChar93Route
+  '/python_/comprehensions': typeof PythonComprehensionsRoute
   '/python_/kjerne': typeof PythonKjerneRoute
   '/python_/visualizer': typeof PythonVisualizerRoute
   '/spor/$slug': typeof SporSlugRoute
@@ -581,6 +590,7 @@ export interface FileRouteTypes {
     | '/portfolio-dte2602/$slug'
     | '/prosjekt-ml/$slug'
     | '/python/_figures'
+    | '/python/comprehensions'
     | '/python/kjerne'
     | '/python/visualizer'
     | '/spor/$slug'
@@ -635,6 +645,7 @@ export interface FileRouteTypes {
     | '/portfolio-dte2602/$slug'
     | '/prosjekt-ml/$slug'
     | '/python/_figures'
+    | '/python/comprehensions'
     | '/python/kjerne'
     | '/python/visualizer'
     | '/spor/$slug'
@@ -695,6 +706,7 @@ export interface FileRouteTypes {
     | '/portfolio-dte2602/$slug'
     | '/prosjekt-ml/$slug'
     | '/python_/_figures'
+    | '/python_/comprehensions'
     | '/python_/kjerne'
     | '/python_/visualizer'
     | '/spor/$slug'
@@ -753,6 +765,7 @@ export interface RootRouteChildren {
   PortfolioDte2602SlugRoute: typeof PortfolioDte2602SlugRoute
   ProsjektMlSlugRoute: typeof ProsjektMlSlugRoute
   PythonChar91_figuresChar93Route: typeof PythonChar91_figuresChar93Route
+  PythonComprehensionsRoute: typeof PythonComprehensionsRoute
   PythonKjerneRoute: typeof PythonKjerneRoute
   PythonVisualizerRoute: typeof PythonVisualizerRoute
   PythonIdeNrRoute: typeof PythonIdeNrRoute
@@ -1063,6 +1076,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PythonKjerneRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/python_/comprehensions': {
+      id: '/python_/comprehensions'
+      path: '/python/comprehensions'
+      fullPath: '/python/comprehensions'
+      preLoaderRoute: typeof PythonComprehensionsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/python_/_figures': {
       id: '/python_/_figures'
       path: '/python/_figures'
@@ -1300,6 +1320,7 @@ const rootRouteChildren: RootRouteChildren = {
   PortfolioDte2602SlugRoute: PortfolioDte2602SlugRoute,
   ProsjektMlSlugRoute: ProsjektMlSlugRoute,
   PythonChar91_figuresChar93Route: PythonChar91_figuresChar93Route,
+  PythonComprehensionsRoute: PythonComprehensionsRoute,
   PythonKjerneRoute: PythonKjerneRoute,
   PythonVisualizerRoute: PythonVisualizerRoute,
   PythonIdeNrRoute: PythonIdeNrRoute,

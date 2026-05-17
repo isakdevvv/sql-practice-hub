@@ -2545,3 +2545,443 @@ export const ComprehensionDesugar: FC = () => (
     </Caption>
   </figure>
 );
+
+/* =====================================================================
+ * COMPREHENSIONS — dedikert figur-pakke (anatomi, trace, gotchas)
+ * Brukt på /python/kjerne/comprehensions og i kapittel-sidene.
+ * ===================================================================*/
+
+/** Anatomi av en list-comp: hver del med farget boks og pil ned til labelen. */
+export const ListCompAnatomy: FC = () => (
+  <figure className="my-4">
+    <svg viewBox="0 0 420 170" className="w-full max-w-xl mx-auto text-foreground">
+      <text x={10} y={16} className="text-[11px] fill-current font-semibold">Anatomi: hvilken del gjør hva?</text>
+      {/* outer brackets */}
+      <text x={14} y={56} className="text-[18px] fill-current font-mono">[</text>
+      <text x={406} y={56} className="text-[18px] fill-current font-mono">]</text>
+      {/* parts with colored backgrounds */}
+      <rect x={26} y={38} width={70} height={26} fill="color-mix(in oklch, var(--brand) 22%, transparent)" stroke={STROKE} rx={3} />
+      <text x={61} y={56} textAnchor="middle" className="text-[12px] fill-current font-mono">x * x</text>
+
+      <rect x={104} y={38} width={140} height={26} fill="color-mix(in oklch, var(--success) 20%, transparent)" stroke={STROKE} rx={3} />
+      <text x={174} y={56} textAnchor="middle" className="text-[12px] fill-current font-mono">for x in tall</text>
+
+      <rect x={252} y={38} width={144} height={26} fill="color-mix(in oklch, var(--warning) 22%, transparent)" stroke={STROKE} rx={3} />
+      <text x={324} y={56} textAnchor="middle" className="text-[12px] fill-current font-mono">if x % 2 == 0</text>
+
+      {/* arrows down + labels */}
+      <line x1={61} y1={70} x2={61} y2={92} stroke={STROKE} markerEnd="url(#arr-anat)" />
+      <text x={61} y={108} textAnchor="middle" className="text-[10px] fill-current font-semibold">Uttrykk</text>
+      <text x={61} y={122} textAnchor="middle" className="text-[9px] fill-current opacity-75">hva vi samler</text>
+
+      <line x1={174} y1={70} x2={174} y2={92} stroke={STROKE} markerEnd="url(#arr-anat)" />
+      <text x={174} y={108} textAnchor="middle" className="text-[10px] fill-current font-semibold">For-del</text>
+      <text x={174} y={122} textAnchor="middle" className="text-[9px] fill-current opacity-75">hva vi går gjennom</text>
+
+      <line x1={324} y1={70} x2={324} y2={92} stroke={STROKE} markerEnd="url(#arr-anat)" />
+      <text x={324} y={108} textAnchor="middle" className="text-[10px] fill-current font-semibold">Filter</text>
+      <text x={324} y={122} textAnchor="middle" className="text-[9px] fill-current opacity-75">valgfritt — dropp x</text>
+
+      {/* reading order */}
+      <text x={10} y={150} className="text-[10px] fill-current opacity-80 font-semibold">Lesemåte:</text>
+      <text x={64} y={150} className="text-[10px] fill-current opacity-80">2 «for x in tall»  →  3 «if x % 2 == 0»  →  1 «x * x»</text>
+      <text x={10} y={163} className="text-[9px] fill-current opacity-60">— først finn elementene, så filtrer, så regn ut det vi samler.</text>
+
+      <defs>
+        <marker id="arr-anat" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor" />
+        </marker>
+      </defs>
+    </svg>
+    <Caption>Tre faste deler — uttrykk, for-del, filter — alltid i den rekkefølgen i kildekoden, men <em>lest</em> i motsatt rekkefølge.</Caption>
+  </figure>
+);
+
+/** Trace gjennom <code>[x*x for x in [1,2,3,4]]</code> — viser x, x*x og result for hver iterasjon. */
+export const ListCompTrace: FC = () => (
+  <figure className="my-4">
+    <svg viewBox="0 0 420 230" className="w-full max-w-xl mx-auto text-foreground">
+      <text x={10} y={16} className="text-[11px] fill-current font-semibold">Trace: <tspan className="font-mono">[x*x for x in [1, 2, 3, 4]]</tspan></text>
+
+      {/* table header */}
+      <line x1={10} y1={30} x2={410} y2={30} stroke={STROKE} opacity={0.4} />
+      <text x={20} y={44} className="text-[10px] fill-current opacity-70">iter</text>
+      <text x={70} y={44} className="text-[10px] fill-current opacity-70">x</text>
+      <text x={130} y={44} className="text-[10px] fill-current opacity-70">uttrykk x*x</text>
+      <text x={245} y={44} className="text-[10px] fill-current opacity-70">result etter append</text>
+      <line x1={10} y1={50} x2={410} y2={50} stroke={STROKE} opacity={0.4} />
+
+      {/* rows */}
+      {[
+        { i: 1, x: 1, sq: 1,  res: "[1]" },
+        { i: 2, x: 2, sq: 4,  res: "[1, 4]" },
+        { i: 3, x: 3, sq: 9,  res: "[1, 4, 9]" },
+        { i: 4, x: 4, sq: 16, res: "[1, 4, 9, 16]" },
+      ].map((r, k) => {
+        const y = 70 + k * 28;
+        return (
+          <g key={k}>
+            <rect x={10} y={y - 14} width={400} height={22}
+              fill={k % 2 === 0 ? "color-mix(in oklch, var(--muted) 18%, transparent)" : "transparent"} />
+            <text x={20} y={y} className="text-[11px] fill-current font-mono">{r.i}</text>
+            <rect x={62} y={y - 12} width={28} height={18} fill="color-mix(in oklch, var(--brand) 22%, transparent)" stroke={STROKE} rx={2} />
+            <text x={76} y={y} textAnchor="middle" className="text-[11px] fill-current font-mono">{r.x}</text>
+            <rect x={130} y={y - 12} width={48} height={18} fill="color-mix(in oklch, var(--success) 20%, transparent)" stroke={STROKE} rx={2} />
+            <text x={154} y={y} textAnchor="middle" className="text-[11px] fill-current font-mono">{r.sq}</text>
+            <text x={245} y={y} className="text-[11px] fill-current font-mono">{r.res}</text>
+          </g>
+        );
+      })}
+
+      <line x1={10} y1={186} x2={410} y2={186} stroke={STROKE} opacity={0.4} />
+      <text x={10} y={206} className="text-[10px] fill-current opacity-80">
+        Etter løkken: <tspan className="font-mono font-semibold">result = [1, 4, 9, 16]</tspan> ← dette er det list-comp returnerer.
+      </text>
+      <text x={10} y={220} className="text-[9px] fill-current opacity-60">x finnes ikke utenfor comp — den lekker IKKE til ytre scope (i Python 3).</text>
+    </svg>
+    <Caption>Hver rad er én iterasjon. Boksene viser hvilken verdi <code>x</code> har og hva <code>x*x</code> blir.</Caption>
+  </figure>
+);
+
+/** Nested comp: viser at ytterste for-del varierer SAKTEST. */
+export const NestedCompOrder: FC = () => (
+  <figure className="my-4">
+    <svg viewBox="0 0 420 260" className="w-full max-w-xl mx-auto text-foreground">
+      <text x={10} y={16} className="text-[11px] fill-current font-semibold">Nested: <tspan className="font-mono">[(f, s) for f in farger for s in storrelser]</tspan></text>
+
+      {/* The comp with parts highlighted */}
+      <rect x={10} y={28} width={400} height={28} fill="color-mix(in oklch, var(--muted) 14%, transparent)" stroke={STROKE} rx={3} />
+      <text x={20} y={48} className="text-[12px] fill-current font-mono">[ (f, s)  </text>
+      <tspan></tspan>
+      <text x={100} y={48} className="text-[12px] fill-current font-mono">
+        <tspan fill="color-mix(in oklch, var(--brand) 70%, currentColor)">for f in farger</tspan>
+        <tspan fill="currentColor">  </tspan>
+        <tspan fill="color-mix(in oklch, var(--warning) 80%, currentColor)">for s in storrelser</tspan>
+        <tspan> ]</tspan>
+      </text>
+      <text x={20} y={70} className="text-[9px] fill-current opacity-70">↑ ytterste (varieres saktest)</text>
+      <text x={228} y={70} className="text-[9px] fill-current opacity-70">↑ innerste (varieres raskest)</text>
+
+      {/* Iteration grid: rød × {S,M,L}, blå × {S,M,L} */}
+      <text x={10} y={102} className="text-[10px] fill-current font-semibold">Iterasjons-rekkefølge (innerste går rundt for hver verdi av ytterste):</text>
+
+      {[
+        { f: "rød", s: "S", i: 1 },
+        { f: "rød", s: "M", i: 2 },
+        { f: "rød", s: "L", i: 3 },
+        { f: "blå", s: "S", i: 4 },
+        { f: "blå", s: "M", i: 5 },
+        { f: "blå", s: "L", i: 6 },
+      ].map((r, k) => {
+        const y = 120 + k * 20;
+        const ytter = k < 3 ? "rød" : "blå";
+        const ytterColor = k < 3 ? "var(--destructive)" : "var(--brand)";
+        return (
+          <g key={k}>
+            <text x={10} y={y + 4} className="text-[10px] fill-current opacity-60 font-mono">{r.i}.</text>
+            <rect x={32} y={y - 9} width={42} height={16} fill={`color-mix(in oklch, ${ytterColor} 25%, transparent)`} stroke={STROKE} rx={2} />
+            <text x={53} y={y + 4} textAnchor="middle" className="text-[10px] fill-current font-mono">{ytter}</text>
+            <text x={84} y={y + 4} className="text-[10px] fill-current opacity-60">×</text>
+            <rect x={100} y={y - 9} width={24} height={16} fill="color-mix(in oklch, var(--warning) 25%, transparent)" stroke={STROKE} rx={2} />
+            <text x={112} y={y + 4} textAnchor="middle" className="text-[10px] fill-current font-mono">{r.s}</text>
+            <text x={134} y={y + 4} className="text-[10px] fill-current opacity-70">→</text>
+            <text x={154} y={y + 4} className="text-[10px] fill-current font-mono">({r.f}, {r.s})</text>
+          </g>
+        );
+      })}
+
+      <text x={10} y={252} className="text-[9px] fill-current opacity-70">Mnemonic: skriv de to for-delene i SAMME rekkefølge som om du brettet ut til 2 vanlige løkker.</text>
+    </svg>
+    <Caption>Ytterste for-del er den ytre løkken — innerste varieres helt rundt for hver verdi den får.</Caption>
+  </figure>
+);
+
+/** Dict-comp shape: viser {key: value for ...} med farge på key vs value. */
+export const DictCompShape: FC = () => (
+  <figure className="my-4">
+    <svg viewBox="0 0 420 180" className="w-full max-w-xl mx-auto text-foreground">
+      <text x={10} y={16} className="text-[11px] fill-current font-semibold">Dict-comp: <tspan className="font-mono">{`{`}p["navn"]: p["alder"] for p in personer{`}`}</tspan></text>
+
+      {/* Highlighted code */}
+      <rect x={10} y={28} width={400} height={30} fill="color-mix(in oklch, var(--muted) 14%, transparent)" stroke={STROKE} rx={3} />
+      <text x={20} y={48} className="text-[12px] fill-current font-mono">{`{ `}</text>
+      <rect x={32} y={32} width={68} height={22} fill="color-mix(in oklch, var(--brand) 22%, transparent)" stroke={STROKE} rx={2} />
+      <text x={66} y={48} textAnchor="middle" className="text-[11px] fill-current font-mono">p["navn"]</text>
+      <text x={104} y={48} className="text-[12px] fill-current font-mono">:</text>
+      <rect x={114} y={32} width={70} height={22} fill="color-mix(in oklch, var(--success) 22%, transparent)" stroke={STROKE} rx={2} />
+      <text x={149} y={48} textAnchor="middle" className="text-[11px] fill-current font-mono">p["alder"]</text>
+      <text x={194} y={48} className="text-[12px] fill-current font-mono">for p in personer {`}`}</text>
+
+      {/* Labels */}
+      <line x1={66} y1={58} x2={66} y2={76} stroke={STROKE} markerEnd="url(#arr-dc)" />
+      <text x={66} y={92} textAnchor="middle" className="text-[10px] fill-current font-semibold">nøkkel</text>
+      <line x1={149} y1={58} x2={149} y2={76} stroke={STROKE} markerEnd="url(#arr-dc)" />
+      <text x={149} y={92} textAnchor="middle" className="text-[10px] fill-current font-semibold">verdi</text>
+
+      {/* Resulting dict */}
+      <text x={10} y={120} className="text-[10px] fill-current opacity-80">Resulterende dict:</text>
+      <rect x={10} y={128} width={400} height={36} fill="color-mix(in oklch, var(--success) 12%, transparent)" stroke={STROKE} rx={3} />
+      <text x={20} y={150} className="text-[11px] fill-current font-mono">{`{ "Ola": 30,   "Kari": 25,   "Per": 40 }`}</text>
+
+      <defs>
+        <marker id="arr-dc" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor" />
+        </marker>
+      </defs>
+    </svg>
+    <Caption>Krøllparenteser <strong>med kolon</strong> = dict. <strong>Uten kolon</strong> = set. Pass på — én tegn skiller dem.</Caption>
+  </figure>
+);
+
+/** Set-comp: viser at duplikater fjernes automatisk. */
+export const SetCompUnique: FC = () => (
+  <figure className="my-4">
+    <svg viewBox="0 0 420 210" className="w-full max-w-xl mx-auto text-foreground">
+      <text x={10} y={16} className="text-[11px] fill-current font-semibold">Set-comp: <tspan className="font-mono">{`{`}c for c in "hello"{`}`}</tspan></text>
+
+      {/* Iteration row */}
+      <text x={10} y={42} className="text-[10px] fill-current opacity-80">Iterér over "hello":</text>
+      {"hello".split("").map((c, k) => (
+        <g key={k}>
+          <rect x={130 + k * 36} y={28} width={28} height={22}
+            fill="color-mix(in oklch, var(--brand) 22%, transparent)" stroke={STROKE} rx={2} />
+          <text x={144 + k * 36} y={44} textAnchor="middle" className="text-[12px] fill-current font-mono">{c}</text>
+        </g>
+      ))}
+
+      {/* Arrow down */}
+      <line x1={205} y1={58} x2={205} y2={86} stroke={STROKE} markerEnd="url(#arr-set)" />
+      <text x={215} y={76} className="text-[9px] fill-current opacity-70">"prøv å legg til"</text>
+
+      {/* Set grows over time */}
+      <text x={10} y={104} className="text-[10px] fill-current opacity-80">Set etter hvert tegn:</text>
+      {[
+        { c: "h", set: "{h}",       added: true  },
+        { c: "e", set: "{h, e}",    added: true  },
+        { c: "l", set: "{h, e, l}", added: true  },
+        { c: "l", set: "{h, e, l}", added: false },
+        { c: "o", set: "{h, e, l, o}", added: true },
+      ].map((step, k) => {
+        const y = 124 + k * 16;
+        return (
+          <g key={k}>
+            <text x={20} y={y} className="text-[10px] fill-current opacity-60 font-mono">{k + 1}.</text>
+            <text x={40} y={y} className="text-[10px] fill-current font-mono">{step.c} →</text>
+            <text x={88} y={y} className="text-[10px] fill-current font-mono">{step.set}</text>
+            <text x={250} y={y}
+              className={`text-[9px] fill-current font-semibold ${step.added ? "" : "opacity-60"}`}
+              fill={step.added ? "color-mix(in oklch, var(--success) 80%, currentColor)" : "color-mix(in oklch, var(--warning) 80%, currentColor)"}>
+              {step.added ? "lagt til" : "ignorert (allerede der)"}
+            </text>
+          </g>
+        );
+      })}
+
+      <defs>
+        <marker id="arr-set" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor" />
+        </marker>
+      </defs>
+    </svg>
+    <Caption>Settet sjekker selv om elementet allerede er der — duplikater forsvinner stille.</Caption>
+  </figure>
+);
+
+/** Tuple-trick: viser at (x for x in xs) er en generator, ikke en tuple. */
+export const TupleCompTrick: FC = () => (
+  <figure className="my-4">
+    <svg viewBox="0 0 420 220" className="w-full max-w-xl mx-auto text-foreground">
+      <text x={10} y={16} className="text-[11px] fill-current font-semibold">Den skjulte fellen: det finnes INGEN tuple-comp</text>
+
+      {/* WRONG path */}
+      <rect x={10} y={28} width={400} height={62} fill="color-mix(in oklch, var(--destructive) 12%, transparent)" stroke={STROKE} rx={3} />
+      <text x={20} y={46} className="text-[10px] fill-current opacity-80 font-semibold">Du tenker: «runde parenteser = tuple, så...»</text>
+      <text x={20} y={66} className="text-[13px] fill-current font-mono">t = (x * x for x in range(5))</text>
+      <text x={20} y={82} className="text-[10px] fill-current font-mono">type(t)</text>
+      <text x={120} y={82} className="text-[10px] fill-current font-mono">→</text>
+      <text x={140} y={82} className="text-[11px] fill-current font-mono font-semibold"
+        fill="color-mix(in oklch, var(--destructive) 90%, currentColor)">
+        &lt;class 'generator'&gt;
+      </text>
+
+      {/* Arrow */}
+      <text x={210} y={108} textAnchor="middle" className="text-[11px] fill-current font-semibold">Riktig:</text>
+
+      {/* RIGHT path */}
+      <rect x={10} y={118} width={400} height={62} fill="color-mix(in oklch, var(--success) 14%, transparent)" stroke={STROKE} rx={3} />
+      <text x={20} y={136} className="text-[10px] fill-current opacity-80 font-semibold">Pakk gen-expr-en inn med tuple(...):</text>
+      <text x={20} y={156} className="text-[13px] fill-current font-mono">t = tuple(x * x for x in range(5))</text>
+      <text x={20} y={172} className="text-[10px] fill-current font-mono">type(t)</text>
+      <text x={120} y={172} className="text-[10px] fill-current font-mono">→</text>
+      <text x={140} y={172} className="text-[11px] fill-current font-mono font-semibold"
+        fill="color-mix(in oklch, var(--success) 90%, currentColor)">
+        &lt;class 'tuple'&gt;
+      </text>
+
+      <text x={10} y={200} className="text-[9px] fill-current opacity-70">
+        Samme trick funker for andre: <tspan className="font-mono">list(...)</tspan>, <tspan className="font-mono">set(...)</tspan>, <tspan className="font-mono">sum(...)</tspan> — alle godtar gen-expr direkte.
+      </text>
+      <text x={10} y={214} className="text-[9px] fill-current opacity-70">
+        (List og dict har egen comp-syntaks med <tspan className="font-mono">[ ]</tspan> / <tspan className="font-mono">{`{:}`}</tspan> — tuple har ikke.)
+      </text>
+    </svg>
+    <Caption>Runde parenteser rundt en comp lager en <em>generator</em>. For tuple — bruk <code>tuple(...)</code> rundt.</Caption>
+  </figure>
+);
+
+/** Ternary vs filter: viser at de gjør forskjellig ting (filter dropper, ternary erstatter). */
+export const TernaryVsFilter: FC = () => (
+  <figure className="my-4">
+    <svg viewBox="0 0 420 240" className="w-full max-w-xl mx-auto text-foreground">
+      <text x={10} y={16} className="text-[11px] fill-current font-semibold">if FØR for = ternary (erstatt)  ·  if ETTER for = filter (dropp)</text>
+
+      {/* Common input */}
+      <text x={10} y={38} className="text-[10px] fill-current opacity-80">Input:</text>
+      <text x={55} y={38} className="text-[11px] fill-current font-mono">[-3, -1, 0, 2, 5]</text>
+
+      {/* TERNARY column */}
+      <rect x={10} y={50} width={195} height={170} fill="color-mix(in oklch, var(--brand) 10%, transparent)" stroke={STROKE} rx={3} />
+      <text x={20} y={68} className="text-[10px] fill-current font-semibold">Ternary (uttrykk):</text>
+      <text x={20} y={86} className="text-[11px] fill-current font-mono">[x if x &gt; 0 else 0</text>
+      <text x={20} y={102} className="text-[11px] fill-current font-mono"> for x in tall]</text>
+      <text x={20} y={124} className="text-[9px] fill-current opacity-70">Beholder ALLE elementer.</text>
+      <text x={20} y={138} className="text-[9px] fill-current opacity-70">x ≤ 0 → 0, ellers x.</text>
+      <text x={20} y={170} className="text-[10px] fill-current">Result:</text>
+      <text x={20} y={188} className="text-[11px] fill-current font-mono font-semibold"
+        fill="color-mix(in oklch, var(--brand) 90%, currentColor)">
+        [0, 0, 0, 2, 5]
+      </text>
+      <text x={20} y={208} className="text-[9px] fill-current opacity-60">samme lengde (5)</text>
+
+      {/* FILTER column */}
+      <rect x={215} y={50} width={195} height={170} fill="color-mix(in oklch, var(--warning) 10%, transparent)" stroke={STROKE} rx={3} />
+      <text x={225} y={68} className="text-[10px] fill-current font-semibold">Filter (etter for):</text>
+      <text x={225} y={86} className="text-[11px] fill-current font-mono">[x for x in tall</text>
+      <text x={225} y={102} className="text-[11px] fill-current font-mono"> if x &gt; 0]</text>
+      <text x={225} y={124} className="text-[9px] fill-current opacity-70">Dropper x ≤ 0 helt.</text>
+      <text x={225} y={138} className="text-[9px] fill-current opacity-70">Bare positive består.</text>
+      <text x={225} y={170} className="text-[10px] fill-current">Result:</text>
+      <text x={225} y={188} className="text-[11px] fill-current font-mono font-semibold"
+        fill="color-mix(in oklch, var(--warning) 90%, currentColor)">
+        [2, 5]
+      </text>
+      <text x={225} y={208} className="text-[9px] fill-current opacity-60">kortere (2 av 5)</text>
+
+      <text x={10} y={236} className="text-[9px] fill-current opacity-70">Regel: hvis if står FØR for → uttrykksdel (erstatt). Hvis if står ETTER for → filter (dropp).</text>
+    </svg>
+    <Caption>Posisjonen til <code>if</code> bestemmer betydningen — én plassering, totalt forskjellig effekt.</Caption>
+  </figure>
+);
+
+/** Gen-expr lazy: viser minneforskjellen mellom list-comp og gen-expr. */
+export const GenExprLazy: FC = () => (
+  <figure className="my-4">
+    <svg viewBox="0 0 420 240" className="w-full max-w-xl mx-auto text-foreground">
+      <text x={10} y={16} className="text-[11px] fill-current font-semibold">List-comp vs generator-expression — minne</text>
+
+      {/* List-comp box */}
+      <rect x={10} y={28} width={400} height={86} fill="color-mix(in oklch, var(--destructive) 10%, transparent)" stroke={STROKE} rx={3} />
+      <text x={20} y={46} className="text-[10px] fill-current font-semibold">List-comp: bygger HELE listen i minnet før noe brukes</text>
+      <text x={20} y={64} className="text-[11px] fill-current font-mono">lst = [x*x for x in range(1_000_000)]</text>
+
+      {/* Memory bar (large) */}
+      <rect x={20} y={76} width={380} height={20} fill="color-mix(in oklch, var(--destructive) 35%, transparent)" stroke={STROKE} />
+      {Array.from({ length: 24 }).map((_, k) => (
+        <rect key={k} x={22 + k * 16} y={78} width={12} height={16} fill="color-mix(in oklch, var(--destructive) 50%, transparent)" />
+      ))}
+      <text x={210} y={108} textAnchor="middle" className="text-[9px] fill-current opacity-80">~ 8 MB i RAM (alle 1M tall samtidig)</text>
+
+      {/* Gen-expr box */}
+      <rect x={10} y={128} width={400} height={86} fill="color-mix(in oklch, var(--success) 12%, transparent)" stroke={STROKE} rx={3} />
+      <text x={20} y={146} className="text-[10px] fill-current font-semibold">Gen-expr: produserer ett tall om gangen, glemmer det med en gang</text>
+      <text x={20} y={164} className="text-[11px] fill-current font-mono">gen = (x*x for x in range(1_000_000))</text>
+
+      {/* Memory bar (tiny) */}
+      <rect x={20} y={176} width={380} height={20} fill="color-mix(in oklch, var(--muted) 30%, transparent)" stroke={STROKE} />
+      <rect x={22} y={178} width={12} height={16} fill="color-mix(in oklch, var(--success) 50%, transparent)" />
+      <text x={210} y={208} textAnchor="middle" className="text-[9px] fill-current opacity-80">~ 200 B (én pekere + state, uansett hvor stor input er)</text>
+
+      <text x={10} y={232} className="text-[9px] fill-current opacity-70">Bytt <tspan className="font-mono">[ ]</tspan> med <tspan className="font-mono">( )</tspan> = list-comp blir gen-expr. Bra når output mates direkte til sum/max/any/all.</text>
+    </svg>
+    <Caption>Lazy = lat: gen-expr beregner ingenting før noen ber. Minneforskjellen kan være flere størrelsesordener.</Caption>
+  </figure>
+);
+
+/** Walrus i comprehension: viser at uttrykket regnes én gang. */
+export const WalrusInComp: FC = () => (
+  <figure className="my-4">
+    <svg viewBox="0 0 420 240" className="w-full max-w-xl mx-auto text-foreground">
+      <text x={10} y={16} className="text-[11px] fill-current font-semibold">Walrus <tspan className="font-mono">(s := slow_score(x))</tspan> — regn én gang, bruk to steder</text>
+
+      {/* WITHOUT walrus */}
+      <rect x={10} y={28} width={400} height={84} fill="color-mix(in oklch, var(--destructive) 10%, transparent)" stroke={STROKE} rx={3} />
+      <text x={20} y={46} className="text-[10px] fill-current font-semibold">Uten walrus — slow_score(x) kalles TO ganger per x:</text>
+      <text x={20} y={66} className="text-[11px] fill-current font-mono">[(x, slow_score(x)) for x in xs if slow_score(x) &gt; 10]</text>
+      {/* underline both calls */}
+      <line x1={48} y1={70} x2={130} y2={70} stroke="color-mix(in oklch, var(--destructive) 70%, currentColor)" strokeWidth={2} />
+      <line x1={208} y1={70} x2={290} y2={70} stroke="color-mix(in oklch, var(--destructive) 70%, currentColor)" strokeWidth={2} />
+      <text x={20} y={94} className="text-[9px] fill-current opacity-80">↑ regnes for HVER kandidat, og igjen for hver godkjent — 2× treig.</text>
+
+      {/* WITH walrus */}
+      <rect x={10} y={126} width={400} height={84} fill="color-mix(in oklch, var(--success) 14%, transparent)" stroke={STROKE} rx={3} />
+      <text x={20} y={144} className="text-[10px] fill-current font-semibold">Med walrus — lagre i s, bruk s overalt:</text>
+      <text x={20} y={164} className="text-[11px] fill-current font-mono">[(x, s) for x in xs if (s := slow_score(x)) &gt; 10]</text>
+      {/* highlight walrus */}
+      <rect x={180} y={152} width={150} height={16} fill="color-mix(in oklch, var(--brand) 18%, transparent)" stroke="color-mix(in oklch, var(--brand) 70%, currentColor)" rx={2} opacity={0.7} />
+      <text x={180} y={185} className="text-[9px] fill-current opacity-80">slow_score regnes 1× per x; verdien lagres i s; (x, s) kan bruke s.</text>
+
+      <text x={10} y={232} className="text-[9px] fill-current opacity-70">Walrus = navngitt sideeffekt i et uttrykk. Krever Python 3.8+.</text>
+    </svg>
+    <Caption>Walrus-operatoren binder en variabel <em>inni</em> et uttrykk — sparer dobbeltarbeid i filter+uttrykk.</Caption>
+  </figure>
+);
+
+/** Late binding-fellen: viser at alle lambdas peker på SAMME i. */
+export const LateBindingTrap: FC = () => (
+  <figure className="my-4">
+    <svg viewBox="0 0 420 270" className="w-full max-w-xl mx-auto text-foreground">
+      <text x={10} y={16} className="text-[11px] fill-current font-semibold">Late binding-fellen: hva er <tspan className="font-mono">[f() for f in [lambda: i for i in range(5)]]</tspan>?</text>
+
+      {/* The lambdas, drawn as boxes with arrows to a SHARED i */}
+      <text x={10} y={42} className="text-[10px] fill-current opacity-80">Etter løkken: 5 lambdas, alle peker på samme variabel <tspan className="font-mono font-semibold">i</tspan>:</text>
+
+      {[0, 1, 2, 3, 4].map((k) => {
+        const x = 20 + k * 78;
+        return (
+          <g key={k}>
+            <rect x={x} y={58} width={68} height={26}
+              fill="color-mix(in oklch, var(--brand) 16%, transparent)" stroke={STROKE} rx={3} />
+            <text x={x + 34} y={75} textAnchor="middle" className="text-[10px] fill-current font-mono">lambda: i</text>
+            {/* arrow down to the shared i */}
+            <line x1={x + 34} y1={86} x2={x + 34} y2={130} stroke={STROKE} strokeDasharray="3 2" markerEnd="url(#arr-lb)" />
+          </g>
+        );
+      })}
+
+      {/* The shared i box */}
+      <rect x={140} y={134} width={140} height={32} fill="color-mix(in oklch, var(--destructive) 22%, transparent)" stroke={STROKE} strokeWidth={2} rx={4} />
+      <text x={210} y={150} textAnchor="middle" className="text-[12px] fill-current font-mono font-semibold">i = 4</text>
+      <text x={210} y={162} textAnchor="middle" className="text-[9px] fill-current opacity-80">(siste verdi etter løkken)</text>
+
+      {/* Result */}
+      <text x={10} y={196} className="text-[10px] fill-current font-semibold">Når vi kaller hver lambda etterpå:</text>
+      <text x={10} y={214} className="text-[11px] fill-current font-mono">[f() for f in fs]</text>
+      <text x={150} y={214} className="text-[11px] fill-current font-mono">→</text>
+      <text x={170} y={214} className="text-[12px] fill-current font-mono font-semibold"
+        fill="color-mix(in oklch, var(--destructive) 90%, currentColor)">
+        [4, 4, 4, 4, 4]
+      </text>
+
+      {/* Fix */}
+      <text x={10} y={244} className="text-[10px] fill-current font-semibold">Fix: bind verdien ved definisjonstid med default-arg:</text>
+      <text x={10} y={262} className="text-[11px] fill-current font-mono">[lambda i=i: i for i in range(5)]  →  [0, 1, 2, 3, 4]</text>
+
+      <defs>
+        <marker id="arr-lb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor" />
+        </marker>
+      </defs>
+    </svg>
+    <Caption>Lambdas fanger <em>variabelen</em>, ikke <em>verdien</em>. Default-argumenter evalueres ved definisjon — derfor trikset virker.</Caption>
+  </figure>
+);
