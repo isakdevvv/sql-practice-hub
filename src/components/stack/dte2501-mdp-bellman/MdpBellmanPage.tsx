@@ -3,6 +3,12 @@ import { Lightbulb, Calculator, ArrowLeft } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
 import { BellmanDrillSim } from "./BellmanDrillSim";
+import { GridworldSim } from "./GridworldSim";
+import { ValueIterationAnimator } from "./ValueIterationAnimator";
+import { PolicyIterationAnimator } from "./PolicyIterationAnimator";
+import { GammaEffectExplorer } from "./GammaEffectExplorer";
+import { NoisyEnvironmentDemo } from "./NoisyEnvironmentDemo";
+import { MdpMatchQuiz } from "./MdpMatchQuiz";
 import { Tex, TexBlock } from "@/components/Tex";
 
 const STEPS = [
@@ -14,6 +20,12 @@ const STEPS = [
   { title: "VI vs PI — når hva", anchor: "compare" },
   { title: "Konvergens-garanti", anchor: "convergence" },
   { title: "Regnedrill (interaktivt)", anchor: "drill" },
+  { title: "Gridworld-lekeplass", anchor: "gridworld" },
+  { title: "VI-animator", anchor: "vi-anim" },
+  { title: "PI-animator vs VI", anchor: "pi-anim" },
+  { title: "γ-effekt: myopic vs far-sighted", anchor: "gamma-eff" },
+  { title: "Stokastiske overganger", anchor: "noisy" },
+  { title: "Scenario-match", anchor: "scenario-match" },
   { title: "Eksamen-typiske spørsmål", anchor: "exam" },
 ];
 
@@ -290,8 +302,73 @@ V^π(B) = R(B,stay,B) + γ V^π(B)       (likn 2)
           <BellmanDrillSim />
         </section>
 
+        <section id="gridworld" className="mb-10">
+          <h2 className="text-xl font-semibold mb-3">9. Konfigurerbar gridworld</h2>
+          <p className="text-sm text-muted-foreground mb-4">
+            Plasser terminale tilstander, vegger og start. Juster γ, step-reward
+            og noise. Verdier vises som tall og heatmap; policy som piler.
+            Bruk dette som lekeplass før du går videre til de fokuserte
+            simulatorene under.
+          </p>
+          <GridworldSim />
+        </section>
+
+        <section id="vi-anim" className="mb-10">
+          <h2 className="text-xl font-semibold mb-3">10. Value Iteration — animert</h2>
+          <p className="text-sm text-muted-foreground mb-4">
+            Steg-for-steg backup. Den rødt markerte cellen er den som endret
+            seg mest i siste runde. Konvergens-grafen viser{" "}
+            <Tex>{"\\max_s |V_{k+1}(s) - V_k(s)|"}</Tex> — observer den
+            eksponentielle nedgangen (Banach-kontraksjon i sup-norm med rate γ).
+          </p>
+          <ValueIterationAnimator />
+        </section>
+
+        <section id="pi-anim" className="mb-10">
+          <h2 className="text-xl font-semibold mb-3">11. Policy Iteration vs Value Iteration</h2>
+          <p className="text-sm text-muted-foreground mb-4">
+            To-fase: full eksakt policy-evaluering så improvement. Tabellen
+            viser antall eval-sweeps og policy-endringer per ytre runde.
+            Kortet under sammenligner totale backups med VI på <em>samme</em>{" "}
+            problem — PI gjør færre ytre iterasjoner, men hver iterasjon
+            koster mer.
+          </p>
+          <PolicyIterationAnimator />
+        </section>
+
+        <section id="gamma-eff" className="mb-10">
+          <h2 className="text-xl font-semibold mb-3">12. γ-effekt: myopic vs far-sighted</h2>
+          <p className="text-sm text-muted-foreground mb-4">
+            Samme gridworld, ulike γ. Se hvordan policy går fra grådig
+            (γ liten) til konservativt langtids-planleggende (γ stor).
+            Verdiene "sprer seg" lengre fra terminaler når γ → 1.
+          </p>
+          <GammaEffectExplorer />
+        </section>
+
+        <section id="noisy" className="mb-10">
+          <h2 className="text-xl font-semibold mb-3">13. Stokastiske overganger</h2>
+          <p className="text-sm text-muted-foreground mb-4">
+            Russell &amp; Norvig 4×3-grid. Med 0% noise er kortest vei optimal.
+            Med 40% noise blir "veggpressing" optimal — gå mot en vegg så
+            glide-handlingen ikke kan skade. Klassisk demo av hvorfor MDP-modellering
+            trenger sannsynligheter, ikke bare belønninger.
+          </p>
+          <NoisyEnvironmentDemo />
+        </section>
+
+        <section id="scenario-match" className="mb-10">
+          <h2 className="text-xl font-semibold mb-3">14. Match scenario → MDP-konsept</h2>
+          <p className="text-sm text-muted-foreground mb-4">
+            6 reelle problemer fra varelagerlogistikk til helsevesen.
+            Velg hvilket MDP-konsept (γ-valg, VI vs PI, stokastisk vs
+            deterministisk modellering) som passer.
+          </p>
+          <MdpMatchQuiz />
+        </section>
+
         <section id="exam" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">9. Eksamen-typiske spørsmål</h2>
+          <h2 className="text-xl font-semibold mb-3">15. Eksamen-typiske spørsmål</h2>
           <ul className="space-y-2 text-sm text-muted-foreground list-disc pl-5">
             <li>
               <strong className="text-foreground">«Skriv Bellman-likningen for V^π.»</strong>{" "}
