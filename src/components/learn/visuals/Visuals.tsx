@@ -8,6 +8,8 @@ import type { FC } from "react";
 import { STAT_FORD_VISUALS } from "./StatFordVisuals";
 import { STAT_MODELL_VISUALS } from "./StatModellVisuals";
 
+import { ML_ALG_VISUALS } from "./MlAlgVisuals";
+
 const STROKE = "currentColor";
 
 // ============= MEMORY HIERARCHY (HDD/SSD/RAM) =============
@@ -722,6 +724,7 @@ export const VISUALS: Record<string, FC> = {
   "relationship-kinds": RelationshipKinds,
   ...STAT_FORD_VISUALS,
   ...STAT_MODELL_VISUALS,
+  ...ML_ALG_VISUALS,
 };
 
 export type VisualKey = keyof typeof VISUALS;
