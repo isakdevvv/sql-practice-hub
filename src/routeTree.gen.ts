@@ -33,6 +33,7 @@ import { Route as ExamRouteImport } from './routes/exam'
 import { Route as ErTegnerRouteImport } from './routes/er-tegner'
 import { Route as EksamenRouteImport } from './routes/eksamen'
 import { Route as DragRouteImport } from './routes/drag'
+import { Route as DiagnoseRouteImport } from './routes/diagnose'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as CardsRouteImport } from './routes/cards'
 import { Route as IndexRouteImport } from './routes/index'
@@ -178,6 +179,11 @@ const DragRoute = DragRouteImport.update({
   path: '/drag',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DiagnoseRoute = DiagnoseRouteImport.update({
+  id: '/diagnose',
+  path: '/diagnose',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DashboardRoute = DashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
@@ -304,6 +310,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/cards': typeof CardsRoute
   '/dashboard': typeof DashboardRoute
+  '/diagnose': typeof DiagnoseRoute
   '/drag': typeof DragRoute
   '/eksamen': typeof EksamenRouteWithChildren
   '/er-tegner': typeof ErTegnerRoute
@@ -354,6 +361,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/cards': typeof CardsRoute
   '/dashboard': typeof DashboardRoute
+  '/diagnose': typeof DiagnoseRoute
   '/drag': typeof DragRoute
   '/er-tegner': typeof ErTegnerRoute
   '/exam': typeof ExamRoute
@@ -400,6 +408,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/cards': typeof CardsRoute
   '/dashboard': typeof DashboardRoute
+  '/diagnose': typeof DiagnoseRoute
   '/drag': typeof DragRoute
   '/eksamen': typeof EksamenRouteWithChildren
   '/er-tegner': typeof ErTegnerRoute
@@ -452,6 +461,7 @@ export interface FileRouteTypes {
     | '/'
     | '/cards'
     | '/dashboard'
+    | '/diagnose'
     | '/drag'
     | '/eksamen'
     | '/er-tegner'
@@ -502,6 +512,7 @@ export interface FileRouteTypes {
     | '/'
     | '/cards'
     | '/dashboard'
+    | '/diagnose'
     | '/drag'
     | '/er-tegner'
     | '/exam'
@@ -547,6 +558,7 @@ export interface FileRouteTypes {
     | '/'
     | '/cards'
     | '/dashboard'
+    | '/diagnose'
     | '/drag'
     | '/eksamen'
     | '/er-tegner'
@@ -598,6 +610,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   CardsRoute: typeof CardsRoute
   DashboardRoute: typeof DashboardRoute
+  DiagnoseRoute: typeof DiagnoseRoute
   DragRoute: typeof DragRoute
   EksamenRoute: typeof EksamenRouteWithChildren
   ErTegnerRoute: typeof ErTegnerRoute
@@ -803,6 +816,13 @@ declare module '@tanstack/react-router' {
       path: '/drag'
       fullPath: '/drag'
       preLoaderRoute: typeof DragRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/diagnose': {
+      id: '/diagnose'
+      path: '/diagnose'
+      fullPath: '/diagnose'
+      preLoaderRoute: typeof DiagnoseRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/dashboard': {
@@ -1045,6 +1065,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CardsRoute: CardsRoute,
   DashboardRoute: DashboardRoute,
+  DiagnoseRoute: DiagnoseRoute,
   DragRoute: DragRoute,
   EksamenRoute: EksamenRouteWithChildren,
   ErTegnerRoute: ErTegnerRoute,
