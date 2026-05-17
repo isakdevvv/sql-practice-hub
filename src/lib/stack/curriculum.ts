@@ -264,6 +264,7 @@ export const PHASES: readonly CurriculumPhase[] = [
       "logisk-resonnering",
       "planlegging",
       "bayes",
+      "ai-etikk",
     ],
   },
   {

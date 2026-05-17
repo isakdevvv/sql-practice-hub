@@ -30,6 +30,7 @@ import {
   Brain,
   ScrollText,
   Map,
+  Scale,
 } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { LearningPath } from "@/components/stack/LearningPath";
@@ -96,6 +97,14 @@ const LABS: Lab[] = [
       "Visualisert kart over hvordan symbolic AI, statistical ML, RL og metaheuristikk henger sammen.",
     Icon: Map,
     taggar: ["oversikt", "konsept"],
+  },
+  {
+    slug: "ai-etikk",
+    title: "AI-etikk — bias, fairness, scenario-sandbox",
+    blurb:
+      "Generer treningsdata, se bias lekke inn. Regn fairness-metrikker live. 6 case-studies (COMPAS, Amazon, Obermeyer, Gender Shades, kreditt, PredPol) + GDPR-checker + quiz.",
+    Icon: Scale,
+    taggar: ["etikk", "fairness", "GDPR"],
   },
 ];
 
@@ -311,6 +320,11 @@ const EXAM_TOPICS: ExamTopic[] = [
       { slug: "planlegging", label: "Planlegging" },
       { slug: "bayes", label: "Bayes" },
     ],
+  },
+  {
+    topic: "Etikk",
+    Icon: Scale,
+    slugs: [{ slug: "ai-etikk", label: "Bias, fairness, GDPR" }],
   },
 ];
 

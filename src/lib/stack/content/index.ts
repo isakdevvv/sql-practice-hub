@@ -223,6 +223,7 @@ import { content as dte2505IoManagement } from "./dte2505-io-management";
 import { content as authFlows } from "./auth-flows";
 import { content as httpStatuskoder } from "./http-statuskoder";
 import { content as backupStrategier } from "./backup-strategier";
+import { content as aiEtikk } from "./ai-etikk";
 import type { TrinnContent } from "../types";
 
 export const TRINN: TrinnContent[] = [
@@ -341,6 +342,8 @@ export const TRINN: TrinnContent[] = [
   webAngrep,
   // Backup-strategier — full/inc/diff/GFS + recovery-animator + tradeoff-matrix + quiz
   backupStrategier,
+  // AI-etikk — interaktiv lesjon (bias-sandbox, fairness-kalkulator, GDPR-checker, 6 case-studies, etikk-quiz)
+  aiEtikk,
 ];
 
 import { curriculumIndexOf } from "../curriculum";
