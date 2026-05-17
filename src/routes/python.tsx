@@ -380,6 +380,13 @@ function PythonPage() {
               Python kjerne — pre-eksamen cheat sheet
             </Link>
             <Link
+              to="/python/comprehensions"
+              className="inline-flex items-center gap-1 rounded-md border border-brand/60 bg-brand/10 px-2.5 py-1 hover:bg-brand/20 transition-colors text-brand font-medium"
+            >
+              <BookOpen className="h-3 w-3" />
+              Comprehensions-kurs — fra null til ekspert
+            </Link>
+            <Link
               to="/python/kap"
               className="inline-flex items-center gap-1 rounded-md border border-border bg-card px-2.5 py-1 hover:bg-accent hover:text-foreground transition-colors text-muted-foreground"
             >
