@@ -10,6 +10,34 @@ import { VisualizerSkeleton } from "@/components/visualizer-shell";
 const AnovaVisualizer = lazy(() =>
   import("./AnovaVisualizer").then((m) => ({ default: m.AnovaVisualizer })),
 );
+const FDistributionExplorer = lazy(() =>
+  import("./FDistributionExplorer").then((m) => ({
+    default: m.FDistributionExplorer,
+  })),
+);
+const OneWayAnovaSandbox = lazy(() =>
+  import("./OneWayAnovaSandbox").then((m) => ({
+    default: m.OneWayAnovaSandbox,
+  })),
+);
+const PostHocTukeyVisualizer = lazy(() =>
+  import("./PostHocTukeyVisualizer").then((m) => ({
+    default: m.PostHocTukeyVisualizer,
+  })),
+);
+const TwoWayAnovaViz = lazy(() =>
+  import("./TwoWayAnovaViz").then((m) => ({ default: m.TwoWayAnovaViz })),
+);
+const AnovaAssumptionsCheck = lazy(() =>
+  import("./AnovaAssumptionsCheck").then((m) => ({
+    default: m.AnovaAssumptionsCheck,
+  })),
+);
+const AnovaScenarioQuiz = lazy(() =>
+  import("./AnovaScenarioQuiz").then((m) => ({
+    default: m.AnovaScenarioQuiz,
+  })),
+);
 
 export function Tek1AnovaPage() {
   return (
@@ -259,6 +287,104 @@ from statsmodels.stats.multicomp import pairwise_tukeyhsd
 labels = ['A']*6 + ['B']*6 + ['C']*6
 data = np.concatenate([A, B, C])
 print(pairwise_tukeyhsd(data, labels, alpha=0.05))`}</pre>
+        </section>
+
+        {/* ============== DYBDE-SEKSJON ============== */}
+        <div className="mt-12 mb-6 border-t border-border pt-6">
+          <div className="text-xs uppercase tracking-wider text-brand font-semibold mb-1">
+            Dybde-modul
+          </div>
+          <h2 className="text-2xl font-bold tracking-tight">
+            Gå dypere: F-fordeling, post-hoc, to-veis, antagelser
+          </h2>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Pensum-kjernen er over. Disse 6 simulatorene tar tak i de
+            vanskeligere flashcard-temaene én etter én — egne moduler for
+            F-fordelings-formen, drag-og-slipp ANOVA, Tukey vs Bonferroni,
+            to-veis interaksjon, antagelses-sjekk og en scenario-quiz.
+          </p>
+        </div>
+
+        <section className="mb-10">
+          <h3 className="text-lg font-semibold mb-2">
+            9. F-fordelingen i dybden
+          </h3>
+          <p className="text-sm text-muted-foreground mb-3">
+            Tre moduser: hvordan endrer fordelingen seg når{" "}
+            <Tex>{"df_1"}</Tex> og <Tex>{"df_2"}</Tex> vokser, hvor lander en
+            F-observasjon i halen, og hva er <em>power</em> (1−β) for en gitt
+            effektstørrelse?
+          </p>
+          <Suspense fallback={<VisualizerSkeleton />}>
+            <FDistributionExplorer />
+          </Suspense>
+        </section>
+
+        <section className="mb-10">
+          <h3 className="text-lg font-semibold mb-2">
+            10. En-faktors sandkasse — dra punktene
+          </h3>
+          <p className="text-sm text-muted-foreground mb-3">
+            Dra observasjonene opp/ned eller bytt gruppe. SS-dekomponering,
+            F-statistikk og p-verdi oppdateres live.
+          </p>
+          <Suspense fallback={<VisualizerSkeleton />}>
+            <OneWayAnovaSandbox />
+          </Suspense>
+        </section>
+
+        <section className="mb-10">
+          <h3 className="text-lg font-semibold mb-2">
+            11. Post-hoc: Tukey HSD vs Bonferroni vs ukorrigert
+          </h3>
+          <p className="text-sm text-muted-foreground mb-3">
+            Etter en signifikant ANOVA — hvilke par er forskjellige? Se hvordan
+            ukorrigerte tester finner flere «signifikante» par enn Tukey og
+            Bonferroni — og hvorfor det er en falsk seier.
+          </p>
+          <Suspense fallback={<VisualizerSkeleton />}>
+            <PostHocTukeyVisualizer />
+          </Suspense>
+        </section>
+
+        <section className="mb-10">
+          <h3 className="text-lg font-semibold mb-2">
+            12. To-veis ANOVA og interaksjon
+          </h3>
+          <p className="text-sm text-muted-foreground mb-3">
+            Dose × kjønn-design. Parallelle linjer i interaksjons-plot betyr
+            ingen interaksjon — krysser de, avhenger effekten av dose av kjønn.
+          </p>
+          <Suspense fallback={<VisualizerSkeleton />}>
+            <TwoWayAnovaViz />
+          </Suspense>
+        </section>
+
+        <section className="mb-10">
+          <h3 className="text-lg font-semibold mb-2">
+            13. Antagelser — normalitet, lik varians, uavhengighet
+          </h3>
+          <p className="text-sm text-muted-foreground mb-3">
+            Q-Q plot per gruppe, residual vs fitted, Levene's test, og
+            sekvensplot for uavhengighet. Hver scenario foreslår alternativ
+            test hvis antagelsen brytes.
+          </p>
+          <Suspense fallback={<VisualizerSkeleton />}>
+            <AnovaAssumptionsCheck />
+          </Suspense>
+        </section>
+
+        <section className="mb-10">
+          <h3 className="text-lg font-semibold mb-2">
+            14. Scenario-quiz: velg riktig test
+          </h3>
+          <p className="text-sm text-muted-foreground mb-3">
+            8 use-cases (medisinsk dose, A/B/C-reklame, lager-temperatur,
+            inntekt, repeated-measures osv.) — velg test og post-hoc.
+          </p>
+          <Suspense fallback={<VisualizerSkeleton />}>
+            <AnovaScenarioQuiz />
+          </Suspense>
         </section>
 
         <div className="mt-10 rounded-xl border border-border bg-card p-5 text-sm">
