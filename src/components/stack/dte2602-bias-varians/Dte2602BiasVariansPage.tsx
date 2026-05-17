@@ -1,10 +1,11 @@
 import { useMemo, useState } from "react";
 import { Link } from "@tanstack/react-router";
-import {Lightbulb, ArrowLeft } from "lucide-react";
+import { Lightbulb, ArrowLeft } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
 import { BiasVariansDartboard } from "./BiasVariansDartboard";
 import { GradientDescentSurface } from "./GradientDescentSurface";
+import { BiasVariansVisualizer } from "./BiasVariansVisualizer";
 
 const STEPS = [
   { title: "Bias-varians-tradeoff — definisjonen", anchor: "def" },
@@ -31,16 +32,17 @@ export function Dte2602BiasVariansPage() {
           </h1>
           <p className="mt-3 text-muted-foreground">
             Hvorfor blir noen modeller dårligere når du gir dem mer fleksibilitet?
-            Bias-varians-dekomposisjonen er den teoretiske forklaringen. Ridge og
-            Lasso er de praktiske verktøyene for å håndtere den.
+            Bias-varians-dekomposisjonen er den teoretiske forklaringen. Ridge og Lasso er de
+            praktiske verktøyene for å håndtere den.
           </p>
           <div className="mt-4 rounded-lg border border-brand/30 bg-brand/5 p-4 flex items-start gap-3">
             <Lightbulb className="h-4 w-4 text-brand mt-0.5 shrink-0" />
             <div className="text-sm">
               <span className="font-medium">Hands-on:</span>{" "}
-              <Link to="/python" className="text-brand hover:underline">/python</Link>{" "}
-              har øvelser som plotter læringskurver og kjører Ridge/Lasso på samme
-              datasett.
+              <Link to="/python" className="text-brand hover:underline">
+                /python
+              </Link>{" "}
+              har øvelser som plotter læringskurver og kjører Ridge/Lasso på samme datasett.
             </div>
           </div>
         </div>
@@ -49,8 +51,8 @@ export function Dte2602BiasVariansPage() {
 
         <Section number="1" id="def" title="Bias-varians-tradeoff — definisjonen">
           <p className="text-sm text-foreground mb-3">
-            For et hvilket som helst datapunkt x kan vi dekomponere forventet
-            kvadratisk feil til tre ledd:
+            For et hvilket som helst datapunkt x kan vi dekomponere forventet kvadratisk feil til
+            tre ledd:
           </p>
           <pre className="rounded-xl border border-border bg-card p-4 font-mono text-xs overflow-x-auto whitespace-pre">{`E[(ŷ - y)²]  =  Bias(ŷ)²  +  Var(ŷ)  +  σ²
                   └────────┘    └────┘     └──┘
@@ -61,38 +63,45 @@ export function Dte2602BiasVariansPage() {
 `}</pre>
           <ul className="text-sm text-muted-foreground space-y-2 list-disc pl-5 mt-3">
             <li>
-              <strong>Bias høy:</strong> modellen er for stiv (underfitter). Lineær
-              regresjon på ikke-lineær data.
+              <strong>Bias høy:</strong> modellen er for stiv (underfitter). Lineær regresjon på
+              ikke-lineær data.
             </li>
             <li>
-              <strong>Varians høy:</strong> modellen er for fleksibel (overfitter).
-              Ett dypt beslutningstre.
+              <strong>Varians høy:</strong> modellen er for fleksibel (overfitter). Ett dypt
+              beslutningstre.
             </li>
             <li>
               <strong>σ²:</strong> irreduserbar støy. Du kan aldri komme under denne.
             </li>
           </ul>
           <p className="text-sm text-muted-foreground mt-3">
-            Når du øker modellkompleksitet faller bias og varians stiger. Sweet spot
-            ligger et sted i midten.
+            Når du øker modellkompleksitet faller bias og varians stiger. Sweet spot ligger et sted
+            i midten.
           </p>
+          <div className="mt-4">
+            <p className="text-sm text-muted-foreground mb-2">
+              Den interaktive utforskeren under viser fire angrepsvinkler — bytt mellom fanene for å
+              se dekomposisjonen fra ulike kanter. Hver fane svarer til en seksjon lenger nede på
+              siden.
+            </p>
+            <BiasVariansVisualizer defaultMode="darts" />
+          </div>
         </Section>
 
         <Section number="2" id="dart" title="Dartboard-intuisjon (interaktiv)">
           <p className="text-sm text-muted-foreground mb-3">
             Tenk på treningen som dart-kast mot en blink (= sann modell). Hvert kast er
-            <em> én modell trent på et nytt treningssett</em>. Bias = hvor langt
-            gjennomsnittet bommer fra blink. Varians = hvor mye kastene spriker fra
-            hverandre. Skru på sliderne — pilenes mønster oppfører seg som de fire
-            klassiske scenariene fra Géron.
+            <em> én modell trent på et nytt treningssett</em>. Bias = hvor langt gjennomsnittet
+            bommer fra blink. Varians = hvor mye kastene spriker fra hverandre. Skru på sliderne —
+            pilenes mønster oppfører seg som de fire klassiske scenariene fra Géron.
           </p>
           <BiasVariansDartboard />
         </Section>
 
         <Section number="3" id="kurver" title="Læringskurver">
           <p className="text-sm text-muted-foreground mb-3">
-            Plot trenings- og validerings-feil som funksjon av treningssett-størrelse.
-            Mønstrene avslører om du har bias-problem eller varians-problem:
+            Plot trenings- og validerings-feil som funksjon av treningssett-størrelse. Mønstrene
+            avslører om du har bias-problem eller varians-problem:
           </p>
           <div className="grid sm:grid-cols-2 gap-3">
             <div className="rounded-xl border border-border bg-card p-4">
@@ -100,8 +109,8 @@ export function Dte2602BiasVariansPage() {
                 Høy bias (underfit)
               </div>
               <p className="text-xs text-muted-foreground">
-                Begge kurver konvergerer høyt opp og er nær hverandre. Mer data
-                hjelper ikke — du må bytte til en mer fleksibel modell.
+                Begge kurver konvergerer høyt opp og er nær hverandre. Mer data hjelper ikke — du må
+                bytte til en mer fleksibel modell.
               </p>
             </div>
             <div className="rounded-xl border border-border bg-card p-4">
@@ -109,8 +118,8 @@ export function Dte2602BiasVariansPage() {
                 Høy varians (overfit)
               </div>
               <p className="text-xs text-muted-foreground">
-                Train-feil er lav, val-feil er høy, og det er et stort gap. Mer
-                data eller regularisering vil hjelpe.
+                Train-feil er lav, val-feil er høy, og det er et stort gap. Mer data eller
+                regularisering vil hjelpe.
               </p>
             </div>
           </div>
@@ -121,19 +130,33 @@ sizes, train_scores, val_scores = learning_curve(
     train_sizes=np.linspace(0.1, 1.0, 10),
     scoring="neg_mean_squared_error",
 )`}</pre>
+          <div className="mt-4">
+            <p className="text-sm text-muted-foreground mb-2">
+              <strong>Visualisering:</strong> sliderr modell-kompleksitet og se trening-MSE og
+              test-MSE samtidig. Pulserende grønn ring markerer optimal kompleksitet.
+            </p>
+            <BiasVariansVisualizer defaultMode="curves" />
+          </div>
+          <div className="mt-4">
+            <p className="text-sm text-muted-foreground mb-2">
+              <strong>Sample-størrelse-effekt:</strong> samme polynom-fit, men n vokser. 5
+              replikat-fits krymper sammen — det er variansen som faller (bias blir uendret).
+            </p>
+            <BiasVariansVisualizer defaultMode="sample-size" />
+          </div>
         </Section>
 
         <Section number="4" id="ridge" title="Regularisering — Ridge (L2)">
           <p className="text-sm text-muted-foreground mb-3">
-            Ridge legger til en straff på <em>kvadratisk sum av koeffisienter</em>{" "}
-            til tap-funksjonen:
+            Ridge legger til en straff på <em>kvadratisk sum av koeffisienter</em> til
+            tap-funksjonen:
           </p>
           <pre className="rounded-xl border border-border bg-card p-4 font-mono text-xs overflow-x-auto whitespace-pre">{`L(β) = Σ(y_i - ŷ_i)²  +  α · Σ β_j²
        └──────────┘     └──────┘
         normal MSE      L2-penalty`}</pre>
           <p className="text-sm text-muted-foreground mt-3">
-            Større α (alpha) → strengere straff → mindre koeffisienter → enklere
-            modell. Ridge skrumper alle koeffisienter mot 0, men aldri helt.
+            Større α (alpha) → strengere straff → mindre koeffisienter → enklere modell. Ridge
+            skrumper alle koeffisienter mot 0, men aldri helt.
           </p>
           <pre className="rounded-xl border border-border bg-card p-4 font-mono text-xs overflow-x-auto whitespace-pre mt-3">{`from sklearn.linear_model import RidgeCV
 
@@ -150,9 +173,8 @@ print(ridge.alpha_)        # beste α valgt av CV`}</pre>
                               └─────────┘
                               L1-penalty`}</pre>
           <p className="text-sm text-muted-foreground mt-3">
-            Kritisk forskjell fra Ridge: L1-formen har «hjørner» på aksene. Dette
-            tvinger noen koeffisienter <em>helt</em> til 0 — Lasso gjør automatisk
-            feature selection.
+            Kritisk forskjell fra Ridge: L1-formen har «hjørner» på aksene. Dette tvinger noen
+            koeffisienter <em>helt</em> til 0 — Lasso gjør automatisk feature selection.
           </p>
           <pre className="rounded-xl border border-border bg-card p-4 font-mono text-xs overflow-x-auto whitespace-pre mt-3">{`from sklearn.linear_model import LassoCV
 
@@ -173,55 +195,68 @@ print((lasso.coef_ != 0).sum(), "features valgt")`}</pre>
               <tbody>
                 <tr className="border-t border-border">
                   <td className="px-4 py-3 font-mono">Mange features, få relevante</td>
-                  <td className="px-4 py-3 text-muted-foreground">Lasso — skyver irrelevante til 0.</td>
+                  <td className="px-4 py-3 text-muted-foreground">
+                    Lasso — skyver irrelevante til 0.
+                  </td>
                 </tr>
                 <tr className="border-t border-border">
                   <td className="px-4 py-3 font-mono">Korrelerte features</td>
-                  <td className="px-4 py-3 text-muted-foreground">Ridge — fordeler vekten jevnt på begge.</td>
+                  <td className="px-4 py-3 text-muted-foreground">
+                    Ridge — fordeler vekten jevnt på begge.
+                  </td>
                 </tr>
                 <tr className="border-t border-border">
                   <td className="px-4 py-3 font-mono">Vet ikke / vil ha begge</td>
-                  <td className="px-4 py-3 text-muted-foreground">ElasticNet — blanding av L1 + L2.</td>
+                  <td className="px-4 py-3 text-muted-foreground">
+                    ElasticNet — blanding av L1 + L2.
+                  </td>
                 </tr>
                 <tr className="border-t border-border">
                   <td className="px-4 py-3 font-mono">Standardvalg</td>
-                  <td className="px-4 py-3 text-muted-foreground">Ridge — stabil, alltid løsbar.</td>
+                  <td className="px-4 py-3 text-muted-foreground">
+                    Ridge — stabil, alltid løsbar.
+                  </td>
                 </tr>
               </tbody>
             </table>
           </div>
           <p className="text-xs text-muted-foreground mt-3">
-            <strong>Husk:</strong> begge krever skalerte features. Ellers straffes
-            features med stor skala urettferdig.
+            <strong>Husk:</strong> begge krever skalerte features. Ellers straffes features med stor
+            skala urettferdig.
           </p>
         </Section>
 
         <Section number="7" id="poly" title="Interaktiv: slider for polynom-grad">
           <p className="text-sm text-muted-foreground mb-3">
-            Drag slideren for å øke polynom-graden. Treningsfeil faller monotont,
-            men test-feil danner en U: optimal grad ligger der test-feilen er minst.
+            Drag slideren for å øke polynom-graden. Treningsfeil faller monotont, men test-feil
+            danner en U: optimal grad ligger der test-feilen er minst.
           </p>
           <PolynomialComplexityDemo />
+          <p className="text-sm text-muted-foreground mt-4 mb-2">
+            <strong>Varians-visualisering:</strong> samme polynom-grad, men 3 bootstrap-fits tegnet
+            oppå hverandre. Spredningen mellom dem ER variansen visuelt — og tallene Bias², Varians,
+            Sum oppdateres live.
+          </p>
+          <BiasVariansVisualizer defaultMode="polynomial" />
         </Section>
 
         <Section number="8" id="lasso-vis" title="Interaktiv: Lasso skyver koeffisienter mot 0">
           <p className="text-sm text-muted-foreground mb-3">
-            8 features, varierende α. Når α øker mot høyre, ser du at Lasso slår
-            ut features én for én — koeffisienter går helt til 0:
+            8 features, varierende α. Når α øker mot høyre, ser du at Lasso slår ut features én for
+            én — koeffisienter går helt til 0:
           </p>
           <LassoPathDemo />
         </Section>
 
         <Section number="9" id="gd" title="Gradient descent på loss-flate">
           <p className="text-sm text-muted-foreground mb-3">
-            Modellen treningen din kjører — den følger gradienten nedover loss-flata.
-            Her er flata kvadratisk og langstrakt (vanskelig retning). Klikk i flata
-            for å sette startpunkt. Dra på lærings-rate og momentum og se hvordan
-            banen endres.
+            Modellen treningen din kjører — den følger gradienten nedover loss-flata. Her er flata
+            kvadratisk og langstrakt (vanskelig retning). Klikk i flata for å sette startpunkt. Dra
+            på lærings-rate og momentum og se hvordan banen endres.
           </p>
           <GradientDescentSurface />
         </Section>
-              <div className="mt-6">
+        <div className="mt-6">
           <Link
             to="/stack/$slug"
             params={{ slug: "dte-2602" }}
@@ -231,7 +266,7 @@ print((lasso.coef_ != 0).sum(), "features valgt")`}</pre>
             Tilbake til DTE-2602-hub
           </Link>
         </div>
-</div>
+      </div>
     </StackPageShell>
   );
 }
@@ -377,7 +412,10 @@ function PolynomialComplexityDemo() {
           {/* Fit */}
           <path
             d={curve
-              .map(([x, y], i) => `${i === 0 ? "M" : "L"} ${sx(x)} ${sy(Math.max(yMin, Math.min(yMax, y)))}`)
+              .map(
+                ([x, y], i) =>
+                  `${i === 0 ? "M" : "L"} ${sx(x)} ${sy(Math.max(yMin, Math.min(yMax, y)))}`,
+              )
               .join(" ")}
             fill="none"
             stroke="#3b82f6"
@@ -400,8 +438,9 @@ function PolynomialComplexityDemo() {
         </div>
       </div>
       <p className="text-xs text-muted-foreground mt-3">
-        Stiplet grønn = sann funksjon (sin x). Blå = polynom-fit. Røde prikker = treningsdata.
-        Vri opp graden og se hvordan kurven begynner å vrenge seg gjennom alle prikker — men feilen mot sann sin øker.
+        Stiplet grønn = sann funksjon (sin x). Blå = polynom-fit. Røde prikker = treningsdata. Vri
+        opp graden og se hvordan kurven begynner å vrenge seg gjennom alle prikker — men feilen mot
+        sann sin øker.
       </p>
     </div>
   );
@@ -409,7 +448,16 @@ function PolynomialComplexityDemo() {
 
 /* ---------- Visual: Lasso path ---------- */
 
-const FEATURE_NAMES = ["alder", "BMI", "blodtrykk", "kolesterol", "puls", "vekt", "trening", "støy"];
+const FEATURE_NAMES = [
+  "alder",
+  "BMI",
+  "blodtrykk",
+  "kolesterol",
+  "puls",
+  "vekt",
+  "trening",
+  "støy",
+];
 const TRUE_COEFS = [0.8, 0.6, 0.4, 0.0, 0.2, 0.0, 0.5, 0.0];
 
 function lassoPathSimulated(alpha: number): number[] {
@@ -432,7 +480,9 @@ function LassoPathDemo() {
   return (
     <div className="rounded-xl border border-border bg-card p-5">
       <div className="flex items-center gap-3 mb-3">
-        <label className="text-xs text-muted-foreground">α (regularisering): {alpha.toFixed(2)}</label>
+        <label className="text-xs text-muted-foreground">
+          α (regularisering): {alpha.toFixed(2)}
+        </label>
         <input
           type="range"
           min={0}
@@ -484,9 +534,8 @@ function LassoPathDemo() {
         </svg>
       </div>
       <p className="text-xs text-muted-foreground mt-3">
-        Stiplet grå bar betyr β = 0 — Lasso har droppet kolonnen. Ved store α
-        står du igjen med bare 1–2 features. Lav α → alle features beholder
-        noe vekt (lik Ridge).
+        Stiplet grå bar betyr β = 0 — Lasso har droppet kolonnen. Ved store α står du igjen med bare
+        1–2 features. Lav α → alle features beholder noe vekt (lik Ridge).
       </p>
     </div>
   );
