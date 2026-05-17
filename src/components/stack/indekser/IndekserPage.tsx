@@ -9,7 +9,39 @@ import { VisualizerSkeleton } from "@/components/visualizer-shell";
 import { IndeksDrill } from "@/components/stack/indekser/IndeksDrill";
 
 const IndexVisualizer = lazy(() =>
-  import("@/components/stack/indekser/IndexVisualizer").then((m) => ({ default: m.IndexVisualizer })),
+  import("@/components/stack/indekser/IndexVisualizer").then((m) => ({
+    default: m.IndexVisualizer,
+  })),
+);
+const BTreeInsertAnimator = lazy(() =>
+  import("@/components/stack/indekser/BTreeInsertAnimator").then((m) => ({
+    default: m.BTreeInsertAnimator,
+  })),
+);
+const IndexTypeComparison = lazy(() =>
+  import("@/components/stack/indekser/IndexTypeComparison").then((m) => ({
+    default: m.IndexTypeComparison,
+  })),
+);
+const CompositeIndexExperiment = lazy(() =>
+  import("@/components/stack/indekser/CompositeIndexExperiment").then((m) => ({
+    default: m.CompositeIndexExperiment,
+  })),
+);
+const QueryPlanExplainer = lazy(() =>
+  import("@/components/stack/indekser/QueryPlanExplainer").then((m) => ({
+    default: m.QueryPlanExplainer,
+  })),
+);
+const IndexTradeOffMatrix = lazy(() =>
+  import("@/components/stack/indekser/IndexTradeOffMatrix").then((m) => ({
+    default: m.IndexTradeOffMatrix,
+  })),
+);
+const IndexDecisionQuiz = lazy(() =>
+  import("@/components/stack/indekser/IndexDecisionQuiz").then((m) => ({
+    default: m.IndexDecisionQuiz,
+  })),
 );
 
 // Course on indexes: B-tree, hash, covering, composite, when indexes
@@ -20,11 +52,17 @@ const STEPS = [
   { title: "Prøv selv — velg riktig indeks", anchor: "drill" },
   { title: "Hva er en indeks egentlig?", anchor: "hva" },
   { title: "B-tree-indekser — struktur", anchor: "btree" },
+  { title: "B-tree — bygg fra bunnen (insert/split/merge)", anchor: "btree-build" },
   { title: "Hash-indeks — punkt-oppslag", anchor: "hash" },
+  { title: "Indeks-typer side-om-side", anchor: "typer" },
   { title: "Composite-indeks — kolonnerekkefølge", anchor: "composite" },
+  { title: "Composite-eksperiment — leftmost-prefix", anchor: "composite-lab" },
   { title: "Covering index", anchor: "covering" },
   { title: "Når indeksen IKKE brukes", anchor: "ikke-brukt" },
+  { title: "Query plan — hvordan optimisten velger", anchor: "queryplan" },
   { title: "Trade-off: lese vs skrive", anchor: "tradeoff" },
+  { title: "Trade-off-matrise (heatmap)", anchor: "tradeoff-matrix" },
+  { title: "Quiz: velg riktig indeks-strategi", anchor: "quiz" },
 ];
 
 type IkkeBrukt = { mønster: string; hvorfor: string; eksempel: string };
@@ -53,8 +91,7 @@ CREATE INDEX i ON Bruker (LOWER(epost));`,
   },
   {
     mønster: "Aritmetikk på kolonnen",
-    hvorfor:
-      "Samme problem som funksjoner — DB-en kan ikke regne baklengs gjennom indeksen.",
+    hvorfor: "Samme problem som funksjoner — DB-en kan ikke regne baklengs gjennom indeksen.",
     eksempel: `-- IKKE indeks
 WHERE saldo + 100 > 1000
 
@@ -111,10 +148,9 @@ export function IndekserPage() {
             </div>
           </div>
           <p className="mt-3 text-muted-foreground">
-            En indeks er en sekundær datastruktur som lar DB-en hoppe direkte til de
-            radene du leter etter, i stedet for å lese tabellen rad for rad. Riktig
-            brukt: O(log n) i stedet for O(n). Feil brukt: bortkastet plass og
-            tregere skriving.
+            En indeks er en sekundær datastruktur som lar DB-en hoppe direkte til de radene du leter
+            etter, i stedet for å lese tabellen rad for rad. Riktig brukt: O(log n) i stedet for
+            O(n). Feil brukt: bortkastet plass og tregere skriving.
           </p>
           <div className="mt-4 rounded-lg border border-brand/30 bg-brand/5 p-4 flex items-start gap-3">
             <Lightbulb className="h-4 w-4 text-brand mt-0.5 shrink-0" />
@@ -123,8 +159,8 @@ export function IndekserPage() {
               <Link to="/drag" className="text-brand hover:underline">
                 drag-oppgavene
               </Link>{" "}
-              har et sett under «Indekser» — B-tree vs hash, kolonnerekkefølge,
-              covering index, og når indeksen IKKE blir brukt.
+              har et sett under «Indekser» — B-tree vs hash, kolonnerekkefølge, covering index, og
+              når indeksen IKKE blir brukt.
             </div>
           </div>
         </div>
@@ -135,9 +171,9 @@ export function IndekserPage() {
         <section id="viz" className="mb-10">
           <h2 className="text-xl font-semibold mb-3">Visualisering — kjør indeks i praksis</h2>
           <p className="text-sm text-muted-foreground mb-4">
-            Tre interaktive moduser: traversér et B-tree (order 4) ned til ønsket nøkkel og
-            tell sammenligninger; sammenlign seq scan mot index scan på en 100-rads tabell;
-            og se hvorfor en composite-indeks (a, b) hjelper for{" "}
+            Tre interaktive moduser: traversér et B-tree (order 4) ned til ønsket nøkkel og tell
+            sammenligninger; sammenlign seq scan mot index scan på en 100-rads tabell; og se hvorfor
+            en composite-indeks (a, b) hjelper for{" "}
             <code className="font-mono">WHERE a=? AND b=?</code> men ikke for{" "}
             <code className="font-mono">WHERE b=?</code>.
           </p>
@@ -153,10 +189,10 @@ export function IndekserPage() {
         <section id="hva" className="mb-10">
           <h2 className="text-xl font-semibold mb-3">Hva er en indeks egentlig?</h2>
           <p className="text-sm text-muted-foreground mb-3">
-            Tenk på en bok: bakerst ligger stikkordsregisteret. Du finner «syre» på
-            side 217 uten å lese boka. En DB-indeks er en sortert kopi av én eller
-            flere kolonner, der hver verdi peker til radens fysiske plassering i
-            tabellen. Primærnøkkelen er nesten alltid indeks automatisk.
+            Tenk på en bok: bakerst ligger stikkordsregisteret. Du finner «syre» på side 217 uten å
+            lese boka. En DB-indeks er en sortert kopi av én eller flere kolonner, der hver verdi
+            peker til radens fysiske plassering i tabellen. Primærnøkkelen er nesten alltid indeks
+            automatisk.
           </p>
           <pre className="font-mono text-xs overflow-x-auto whitespace-pre rounded bg-background border border-border p-3">{`-- Opprett indeks
 CREATE INDEX idx_kunde_navn ON Kunde (navn);
@@ -170,9 +206,8 @@ DROP INDEX idx_kunde_navn;
 -- Liste indekser (Postgres)
 SELECT indexname, tablename FROM pg_indexes WHERE tablename = 'kunde';`}</pre>
           <div className="mt-3 rounded-lg border border-amber-500/30 bg-amber-500/5 p-4 text-sm">
-            <strong>Hvor henter du gevinsten?</strong> WHERE-filter, JOIN-betingelser,
-            ORDER BY og GROUP BY på indekserte kolonner. ALDRI i SELECT-lista — der
-            hjelper ikke en indeks.
+            <strong>Hvor henter du gevinsten?</strong> WHERE-filter, JOIN-betingelser, ORDER BY og
+            GROUP BY på indekserte kolonner. ALDRI i SELECT-lista — der hjelper ikke en indeks.
           </div>
         </section>
 
@@ -180,10 +215,9 @@ SELECT indexname, tablename FROM pg_indexes WHERE tablename = 'kunde';`}</pre>
         <section id="btree" className="mb-10">
           <h2 className="text-xl font-semibold mb-3">B-tree — default-indeksen</h2>
           <p className="text-sm text-muted-foreground mb-3">
-            B-tree (balansert tre) er hva du får når du skriver{" "}
-            <code>CREATE INDEX</code> uten å spesifisere noe annet. Hver node holder
-            mange sorterte nøkler (typisk hundrevis), så treet blir bredt og grunt —
-            tre-fire nivåer rekker for milliarder av rader. Søketid:{" "}
+            B-tree (balansert tre) er hva du får når du skriver <code>CREATE INDEX</code> uten å
+            spesifisere noe annet. Hver node holder mange sorterte nøkler (typisk hundrevis), så
+            treet blir bredt og grunt — tre-fire nivåer rekker for milliarder av rader. Søketid:{" "}
             <code>O(log n)</code>.
           </p>
           <div className="rounded-xl border border-border bg-card p-5 mb-4">
@@ -201,24 +235,39 @@ SELECT indexname, tablename FROM pg_indexes WHERE tablename = 'kunde';`}</pre>
    leaves er lenket → rekke-scan (range scan) er rask`}</pre>
           </div>
           <p className="text-sm text-muted-foreground mb-3">
-            Et balansert tre vil si: alle blader er på samme dybde. Når en node blir
-            full, splittes den (og en nøkkel «pushes opp»). Slettinger kan trigge
-            merge. Disse er DB-ens jobb — du skriver bare INSERT/UPDATE/DELETE.
+            Et balansert tre vil si: alle blader er på samme dybde. Når en node blir full, splittes
+            den (og en nøkkel «pushes opp»). Slettinger kan trigge merge. Disse er DB-ens jobb — du
+            skriver bare INSERT/UPDATE/DELETE.
           </p>
           <p className="text-sm text-muted-foreground">
-            <strong>B-tree er bra på:</strong> likhet, range (BETWEEN, &lt;, &gt;),
-            ORDER BY på indeks-kolonnen, og prefix-LIKE (<code>'Hans%'</code>).
+            <strong>B-tree er bra på:</strong> likhet, range (BETWEEN, &lt;, &gt;), ORDER BY på
+            indeks-kolonnen, og prefix-LIKE (<code>'Hans%'</code>).
           </p>
+        </section>
+
+        {/* B-tree build-from-scratch */}
+        <section id="btree-build" className="mb-10">
+          <h2 className="text-xl font-semibold mb-3">
+            B-tree — bygg fra bunnen (insert, split, merge)
+          </h2>
+          <p className="text-sm text-muted-foreground mb-4">
+            Sett inn nøkler én etter én og se hva som faktisk skjer. Når en node blir full, splittes
+            den og medianen bobler opp. Treet vokser i bredden lenge før det vokser i høyden —
+            derfor er det grunt selv for milliarder av rader. Eksperimentér med ulik order m (3–7)
+            for å se hvordan kapasitet og fyll-grad endrer seg.
+          </p>
+          <Suspense fallback={<VisualizerSkeleton />}>
+            <BTreeInsertAnimator />
+          </Suspense>
         </section>
 
         {/* Hash */}
         <section id="hash" className="mb-10">
           <h2 className="text-xl font-semibold mb-3">Hash-indeks — bare likhet, men lynraskt</h2>
           <p className="text-sm text-muted-foreground mb-3">
-            Hash-indeks lagrer <code>hash(verdi) → radpeker</code>. Oppslag er{" "}
-            <code>O(1)</code> i snitt — raskere enn B-tree for ren likhet. Men: kan
-            IKKE brukes til range (BETWEEN, &lt;), IKKE til ORDER BY, IKKE til
-            prefix-LIKE.
+            Hash-indeks lagrer <code>hash(verdi) → radpeker</code>. Oppslag er <code>O(1)</code> i
+            snitt — raskere enn B-tree for ren likhet. Men: kan IKKE brukes til range (BETWEEN,
+            &lt;), IKKE til ORDER BY, IKKE til prefix-LIKE.
           </p>
           <pre className="font-mono text-xs overflow-x-auto whitespace-pre rounded bg-background border border-border p-3">{`-- Postgres: krever USING hash
 CREATE INDEX idx_kunde_epost_hash ON Kunde USING hash (epost);
@@ -230,10 +279,25 @@ SELECT * FROM Kunde WHERE epost = 'kari@b.no';
 SELECT * FROM Kunde WHERE epost > 'k';
 SELECT * FROM Kunde ORDER BY epost;`}</pre>
           <div className="mt-3 rounded-lg border border-amber-500/30 bg-amber-500/5 p-4 text-sm">
-            I praksis er B-tree default fordi den dekker både likhet og range. Hash
-            brukes mest i in-memory caches og i spesielle DB-er. MySQL/InnoDB har
-            ingen brukerstyrt hash-indeks i det hele tatt.
+            I praksis er B-tree default fordi den dekker både likhet og range. Hash brukes mest i
+            in-memory caches og i spesielle DB-er. MySQL/InnoDB har ingen brukerstyrt hash-indeks i
+            det hele tatt.
           </div>
+        </section>
+
+        {/* Indeks-typer side-om-side */}
+        <section id="typer" className="mb-10">
+          <h2 className="text-xl font-semibold mb-3">
+            Indeks-typer side-om-side — samme query, fire planer
+          </h2>
+          <p className="text-sm text-muted-foreground mb-4">
+            Velg en query (likhet, range, prefiks) og se hvordan ingen indeks, B-tree, hash og
+            bitmap håndterer den. Animasjonen viser hvilke disk-pages som faktisk leses, og hvorfor
+            hash bommer på range mens bitmap blomstrer på lav-kardinalitet.
+          </p>
+          <Suspense fallback={<VisualizerSkeleton />}>
+            <IndexTypeComparison />
+          </Suspense>
         </section>
 
         {/* Composite */}
@@ -242,10 +306,9 @@ SELECT * FROM Kunde ORDER BY epost;`}</pre>
             Composite-indeks — kolonnerekkefølgen er kritisk
           </h2>
           <p className="text-sm text-muted-foreground mb-3">
-            En composite-indeks (flere kolonner) lagrer rader sortert på første
-            kolonne, så på andre innen samme første-verdi, osv. Tenk på telefonkatalog:
-            sortert på etternavn, så fornavn. Du kan finne alle «Hansen», men ikke
-            alle «Kari» direkte.
+            En composite-indeks (flere kolonner) lagrer rader sortert på første kolonne, så på andre
+            innen samme første-verdi, osv. Tenk på telefonkatalog: sortert på etternavn, så fornavn.
+            Du kan finne alle «Hansen», men ikke alle «Kari» direkte.
           </p>
           <pre className="font-mono text-xs overflow-x-auto whitespace-pre rounded bg-background border border-border p-3">{`CREATE INDEX idx_ordre_kdato ON Ordre (kundenr, dato);
 
@@ -258,21 +321,35 @@ WHERE kundenr = 5 AND dato > '2026-01-01' ORDER BY dato
 WHERE dato = '2026-05-12'
 ORDER BY dato`}</pre>
           <p className="mt-3 text-sm text-muted-foreground">
-            <strong>Regel:</strong> sett den mest selektive (færrest like verdier)
-            eller den hyppigst filtrerte kolonnen først — så lenge spørringen din
-            faktisk filtrerer på den. Hvis du nesten alltid filtrerer på{" "}
-            <code>kundenr</code>, må <code>kundenr</code> stå først.
+            <strong>Regel:</strong> sett den mest selektive (færrest like verdier) eller den
+            hyppigst filtrerte kolonnen først — så lenge spørringen din faktisk filtrerer på den.
+            Hvis du nesten alltid filtrerer på <code>kundenr</code>, må <code>kundenr</code> stå
+            først.
           </p>
+        </section>
+
+        {/* Composite-eksperiment */}
+        <section id="composite-lab" className="mb-10">
+          <h2 className="text-xl font-semibold mb-3">
+            Composite-laboratoriet — leftmost-prefix og covered queries
+          </h2>
+          <p className="text-sm text-muted-foreground mb-4">
+            Tre indekser på samme tabell. Velg en WHERE-klausul og SELECT-kolonner — se hvilke
+            indekser kan brukes, hvor langt venstre-prefiks matcher, og om spørringen blir "covered"
+            (Index Only Scan, ingen heap-fetch).
+          </p>
+          <Suspense fallback={<VisualizerSkeleton />}>
+            <CompositeIndexExperiment />
+          </Suspense>
         </section>
 
         {/* Covering */}
         <section id="covering" className="mb-10">
           <h2 className="text-xl font-semibold mb-3">Covering index — slipp tabell-oppslaget</h2>
           <p className="text-sm text-muted-foreground mb-3">
-            Vanligvis finner DB-en raden i indeksen, så går den til tabellen for å
-            hente flere kolonner. En <em>covering index</em> inneholder ALLE kolonnene
-            spørringen trenger, så DB-en svarer rett fra indeksen. Kalles også{" "}
-            <em>index-only scan</em>.
+            Vanligvis finner DB-en raden i indeksen, så går den til tabellen for å hente flere
+            kolonner. En <em>covering index</em> inneholder ALLE kolonnene spørringen trenger, så
+            DB-en svarer rett fra indeksen. Kalles også <em>index-only scan</em>.
           </p>
           <pre className="font-mono text-xs overflow-x-auto whitespace-pre rounded bg-background border border-border p-3">{`-- Spørring vi vil dekke
 SELECT kundenr, dato, total FROM Ordre WHERE kundenr = 5;
@@ -288,8 +365,8 @@ CREATE INDEX idx_kn_full ON Ordre (kundenr, dato, total);
 -- Postgres-syntaks for "include uten å sortere på det":
 CREATE INDEX idx_kn_inc ON Ordre (kundenr) INCLUDE (dato, total);`}</pre>
           <p className="mt-3 text-sm text-muted-foreground">
-            Trade-off: indeksen blir større. Hvis du legger til kolonner du sjelden
-            henter, betaler du write-cost uten å hente gevinst på lesing.
+            Trade-off: indeksen blir større. Hvis du legger til kolonner du sjelden henter, betaler
+            du write-cost uten å hente gevinst på lesing.
           </p>
         </section>
 
@@ -297,12 +374,15 @@ CREATE INDEX idx_kn_inc ON Ordre (kundenr) INCLUDE (dato, total);`}</pre>
         <section id="ikke-brukt" className="mb-10">
           <h2 className="text-xl font-semibold mb-3">Når indeksen IKKE blir brukt</h2>
           <p className="text-sm text-muted-foreground mb-4">
-            Du opprettet indeksen, men EXPLAIN viser{" "}
-            <code>Seq Scan</code>. Klassiske grunner — disse er nesten alltid pensum:
+            Du opprettet indeksen, men EXPLAIN viser <code>Seq Scan</code>. Klassiske grunner —
+            disse er nesten alltid pensum:
           </p>
           <div className="space-y-3">
             {IKKE_BRUKT.map((p) => (
-              <div key={p.mønster} className="rounded-xl border border-amber-500/40 bg-amber-500/5 p-4">
+              <div
+                key={p.mønster}
+                className="rounded-xl border border-amber-500/40 bg-amber-500/5 p-4"
+              >
                 <div className="flex items-center gap-2 mb-2">
                   <AlertTriangle className="h-4 w-4 text-amber-700 dark:text-amber-400" />
                   <h3 className="font-semibold text-sm">{p.mønster}</h3>
@@ -316,14 +396,28 @@ CREATE INDEX idx_kn_inc ON Ordre (kundenr) INCLUDE (dato, total);`}</pre>
           </div>
         </section>
 
+        {/* Query plan explainer */}
+        <section id="queryplan" className="mb-10">
+          <h2 className="text-xl font-semibold mb-3">
+            Query Plan — hvordan optimisten faktisk velger
+          </h2>
+          <p className="text-sm text-muted-foreground mb-4">
+            Optimisten estimerer kost for hver mulig plan og velger den billigste. Toggle indekser
+            av/på og se hvordan valget skifter mellom Seq Scan, Index Scan, Bitmap Heap Scan og
+            Index Only Scan. Forenklet kost-modell som speiler EXPLAIN-output fra Postgres/MySQL.
+          </p>
+          <Suspense fallback={<VisualizerSkeleton />}>
+            <QueryPlanExplainer />
+          </Suspense>
+        </section>
+
         {/* Trade-off */}
         <section id="tradeoff" className="mb-10">
           <h2 className="text-xl font-semibold mb-3">Trade-off: indeks koster ved skriving</h2>
           <p className="text-sm text-muted-foreground mb-3">
-            Hver indeks må oppdateres ved hver INSERT, UPDATE som rører
-            indekskolonnen, og DELETE. Plassen på disk øker også. En tabell med åtte
-            indekser har omtrent 8x skrive-cost på INSERT vs en tabell med null
-            indekser.
+            Hver indeks må oppdateres ved hver INSERT, UPDATE som rører indekskolonnen, og DELETE.
+            Plassen på disk øker også. En tabell med åtte indekser har omtrent 8x skrive-cost på
+            INSERT vs en tabell med null indekser.
           </p>
           <div className="grid sm:grid-cols-2 gap-4">
             <div className="rounded-xl border border-success/40 bg-success/5 p-5">
@@ -363,6 +457,31 @@ SELECT * FROM Ordre WHERE kundenr = 5 AND dato > '2026-01-01';
 -- Execution Time: 0.067 ms`}</pre>
         </section>
 
+        {/* Trade-off heatmap */}
+        <section id="tradeoff-matrix" className="mb-10">
+          <h2 className="text-xl font-semibold mb-3">Trade-off-matrise — strategi vs metrikk</h2>
+          <p className="text-sm text-muted-foreground mb-4">
+            5 vanlige indeks-strategier scoret på lese-hastighet, skrive-hastighet, lagring og
+            vedlikehold. Klikk en celle for å se konkret tradeoff. Bruk dette som et opslagstabell
+            når du designer indeksstrategi for et nytt system.
+          </p>
+          <Suspense fallback={<VisualizerSkeleton />}>
+            <IndexTradeOffMatrix />
+          </Suspense>
+        </section>
+
+        {/* Quiz */}
+        <section id="quiz" className="mb-10">
+          <h2 className="text-xl font-semibold mb-3">Test deg selv: 8 indeks-scenarier</h2>
+          <p className="text-sm text-muted-foreground mb-4">
+            OLAP, OLTP, leftmost-prefix-feller, covered queries, lav-kardinalitet, funksjons-felter
+            — match riktig indeksstrategi til hver case.
+          </p>
+          <Suspense fallback={<VisualizerSkeleton />}>
+            <IndexDecisionQuiz />
+          </Suspense>
+        </section>
+
         {/* CTA */}
         <div className="mt-10 rounded-xl border border-border bg-card p-5 text-sm">
           <h2 className="font-semibold mb-2">Neste steg</h2>
@@ -371,8 +490,7 @@ SELECT * FROM Ordre WHERE kundenr = 5 AND dato > '2026-01-01';
               <Link to="/drag" className="text-brand hover:underline">
                 Drag-oppgaver
               </Link>{" "}
-              under «Indekser» — kolonnerekkefølge, covering, og når indeksen
-              droppes.
+              under «Indekser» — kolonnerekkefølge, covering, og når indeksen droppes.
             </li>
             <li>
               <Link
