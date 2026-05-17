@@ -4,6 +4,7 @@ import { PROBLEMS } from "@/lib/problems/data";
 import { PY_EXERCISES } from "@/lib/python/exercises";
 import { GIT_SCENARIOS } from "@/lib/git/scenarios";
 import { VENV_SCENARIOS } from "@/lib/venv/scenarios";
+import { DRILLS } from "@/lib/learn/drills";
 
 export const Route = createFileRoute("/ov")({
   head: () => ({
@@ -41,6 +42,13 @@ function OvHub() {
         </div>
 
         <div className="grid sm:grid-cols-2 gap-3">
+          <HubCard
+            href="/drill"
+            title="Drill-hub"
+            badge={`${DRILLS.length} drills`}
+            body="Alle interaktive drill-øvinger samlet på ett sted — søk, fag-filter og lokal progress."
+            prominent
+          />
           <HubCard
             href="/practice"
             title="SQL-oppgaver"
