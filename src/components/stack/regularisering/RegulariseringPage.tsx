@@ -2,6 +2,10 @@ import { Link } from "@tanstack/react-router";
 import { Lightbulb } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
+import { DropoutVisualizer } from "./DropoutVisualizer";
+import { OverfittingPlot } from "./OverfittingPlot";
+import { WeightDecayLandscape } from "./WeightDecayLandscape";
+import { DataAugDemo } from "./DataAugDemo";
 
 const STEPS = [
   { title: "Hvorfor regularisere?", anchor: "hvorfor" },
@@ -75,6 +79,15 @@ Regulariserings-strategi:
   6. Early stopping — stopp før val-loss stiger.
   7. Data augmentation — generér «nye» eksempler.`}</pre>
           </div>
+
+          <div className="mt-4">
+            <div className="text-xs text-muted-foreground mb-2">
+              <strong className="text-foreground">Sim:</strong> dra på kapasitet og
+              weight decay, slå på/av early stopping. Se hvordan gapet mellom train
+              og val flytter seg.
+            </div>
+            <OverfittingPlot />
+          </div>
         </section>
 
         <section id="dropout" className="mb-10">
@@ -108,6 +121,15 @@ Anbefalt:
   - 0.2–0.5 i FC. Mindre (0.1–0.2) i conv.
   - IKKE etter siste lag før softmax.
   - Slå av ved evaluering: model.eval() — PyTorch gjør det selv.`}</pre>
+          </div>
+
+          <div className="mt-4">
+            <div className="text-xs text-muted-foreground mb-2">
+              <strong className="text-foreground">Sim:</strong> bytt mellom trening
+              og inferens. Se dropout-masken resample mens du holder p fast — og hvor
+              fort co-adaptasjon oppstår uten den.
+            </div>
+            <DropoutVisualizer />
           </div>
         </section>
 
@@ -175,6 +197,15 @@ L1 (sparsity) vs L2 (smooth):
 
 Merk: AdamW separerer weight decay fra gradient-oppdateringen
        og er ofte bedre enn Adam + weight_decay direkte.`}</pre>
+          </div>
+
+          <div className="mt-4">
+            <div className="text-xs text-muted-foreground mb-2">
+              <strong className="text-foreground">Sim:</strong> bytt mellom L1, L2 og
+              ingen regularisering. Se hvordan L1-romben på akse-hjørnene tvinger
+              vekter til 0 (sparsity) mens L2 bare krymper alle proporsjonalt.
+            </div>
+            <WeightDecayLandscape />
           </div>
         </section>
 
@@ -254,6 +285,15 @@ Avanserte:
   - Mixup: blande to bilder + labels.
   - CutMix: lim inn et patch fra ett bilde i et annet.
   - AutoAugment: lær augmenterings-policy automatisk.`}</pre>
+          </div>
+
+          <div className="mt-4">
+            <div className="text-xs text-muted-foreground mb-2">
+              <strong className="text-foreground">Sim:</strong> slå transforms av/på
+              og resample. Originalbildet har label "katt"; alle 8 varianter til
+              høyre er <em>nye treningseksempler</em> med samme label.
+            </div>
+            <DataAugDemo />
           </div>
         </section>
 
