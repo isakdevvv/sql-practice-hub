@@ -300,7 +300,7 @@ export const PHASES: readonly CurriculumPhase[] = [
     why:
       "Git-dyp, Docker, og avansert Linux-CLI er fundamentet for moderne deploy- og samarbeids-flyt. Disse verktøyene brukes i ALLE jobber.",
     analog: "Industri-fokusert — sjelden eget kurs på universitet",
-    slugs: ["git-dyp", "docker", "linux-cli-advanced"],
+    slugs: ["git-dyp", "docker", "dockerfile-builder", "linux-cli-advanced"],
   },
   {
     num: 12,
