@@ -6,6 +6,8 @@
 
 import type { FC } from "react";
 
+import { ML_ALG_VISUALS } from "./MlAlgVisuals";
+
 const STROKE = "currentColor";
 
 // ============= MEMORY HIERARCHY (HDD/SSD/RAM) =============
@@ -718,6 +720,7 @@ export const VISUALS: Record<string, FC> = {
   "session-flow": SessionFlow,
   "index-vs-scan": IndexVsScan,
   "relationship-kinds": RelationshipKinds,
+  ...ML_ALG_VISUALS,
 };
 
 export type VisualKey = keyof typeof VISUALS;

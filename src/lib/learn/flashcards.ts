@@ -2684,6 +2684,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Standard kapittel-struktur i en ML-mappe-rapport?",
     answer:
       "1. Sammendrag, 2. Innledning (problemstilling + suksesskriterium), 3. Data (kilde + størrelse + begrensninger), 4. EDA (3-5 figurer + tolkning), 5. Metode (algoritmer + hyperparam-søk), 6. Resultater (metrikker + confusion matrix), 7. Diskusjon (begrensninger + etikk), 8. Konklusjon, 9. Referanser.",
+    visual: "ml-pipeline",
   },
   {
     id: "c-dte2602p-mappe-kode-droftning",
@@ -3835,6 +3836,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Objektiv-funksjon for k-Means?",
     answer:
       "J = Σᵢ ‖xᵢ − μ_{c(i)}‖² — Within-Cluster Sum of Squares (WCSS / inertia). k-Means minimerer dette grådig ved skiftende assign/update-steg.",
+    visual: "ml-kmeans-steps",
   },
   {
     id: "dte2501-c-bellman",
@@ -3843,6 +3845,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Bellman-likningen for optimal value V*?",
     answer:
       "V*(s) = max_a Σ_s' P(s'|s,a) · [R(s,a,s') + γ V*(s')]. Verdien i s er forventet umiddelbar belønning + diskontert verdi av neste tilstand, optimalt valg av handling.",
+    visual: "ml-bellman-backup",
   },
   {
     id: "dte2501-c-qlearn-update",
@@ -3851,6 +3854,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Q-learning-oppdateringen?",
     answer:
       "Q(s,a) ← Q(s,a) + α · [r + γ · max_a' Q(s',a') − Q(s,a)]. α er læringsrate, leddet i hakeparentesen er TD-feilen.",
+    visual: "ml-qlearning-update",
   },
   {
     id: "dte2501-c-tfidf",
@@ -3867,6 +3871,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Formel for cosine similarity mellom vektorer x og y?",
     answer:
       "cos(x,y) = (x · y) / (‖x‖ · ‖y‖). Ligger i [−1,1], for TF-IDF i [0,1]. For L2-normaliserte vektorer reduseres det til x · y.",
+    visual: "ml-cosine-sim",
   },
   {
     id: "dte2501-c-knn-dist",
@@ -3875,6 +3880,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Euklidsk vs Manhattan-avstand?",
     answer:
       "Euklidsk: √(Σ(xᵢ−yᵢ)²) — rett linje (Minkowski p=2). Manhattan: Σ|xᵢ−yᵢ| — bymønster (Minkowski p=1). Manhattan er mer robust mot uteliggere.",
+    visual: "ml-knn-boundary",
   },
   {
     id: "dte2501-c-pca-evr",
@@ -3883,6 +3889,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Hva er explained variance ratio i PCA?",
     answer:
       "EVR_i = λ_i / Σⱼ λⱼ — andelen av total varians forklart av prinsipalkomponent i. Velg k slik at kumulert EVR ≥ 0.95.",
+    visual: "ml-pca-projection",
   },
   {
     id: "dte2501-c-pso",
@@ -3907,6 +3914,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Hva er responsibility γᵢₖ i EM for GMM?",
     answer:
       "γᵢₖ = πₖ·N(xᵢ|μₖ,Σₖ) / Σⱼ πⱼ·N(xᵢ|μⱼ,Σⱼ). Posterior sannsynlighet for at xᵢ tilhører komponent k — soft assignment.",
+    visual: "ml-em-gmm",
   },
   {
     id: "dte2501-c-held-karp",
@@ -3925,6 +3933,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Bagging vs boosting — hovedforskjell?",
     answer:
       "Bagging trener mange modeller PARALLELT på bootstrap-sampler og reduserer variance. Boosting trener modeller SEKVENSIELT der hver retter feilene fra forrige, og reduserer bias.",
+    visual: "ml-bagging-vs-boosting",
   },
   {
     id: "dte2501-c-hard-vs-soft",
@@ -3933,6 +3942,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Hard vs soft assignment i clustering?",
     answer:
       "Hard: hvert x tilhører ett cluster fullt ut (k-Means, argmin avstand). Soft: hvert x har sannsynlighetsfordeling over alle k komponenter (GMM, γᵢₖ).",
+    visual: "ml-em-gmm",
   },
   {
     id: "dte2501-c-pca-vs-kmeans",
@@ -3949,6 +3959,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Hvorfor kalles k-NN lazy learning?",
     answer:
       "Fordi den ikke lærer en eksplisitt modell ved trening — bare lagrer datasettet. All beregning skjer ved prediksjon (sammenligning mot alle N treningseksempler).",
+    visual: "ml-knn-boundary",
   },
   {
     id: "dte2501-c-scale-knn",
@@ -3997,6 +4008,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Bias-variance dekomponering — kort.",
     answer:
       "E[(ŷ−y)²] = Bias² + Variance + støy. Bias = feilantakelser. Variance = ustabilitet mellom treningssett. Bagging ↓variance, boosting ↓bias.",
+    visual: "ml-bias-variance",
   },
   {
     id: "dte2501-c-mdp-markov",
@@ -4095,6 +4107,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Value Iteration — algoritmen i 3 setninger.",
     answer:
       "1) Initialiser V(s)=0. 2) For hver iter: V_{k+1}(s) = max_a Σ_s' P(s'|s,a)·[R + γV_k(s')]. 3) Stopp når ‖V_{k+1}−V_k‖<ε. Hent π*(s) = argmax_a Q*.",
+    visual: "ml-value-iter-sweep",
   },
   {
     id: "dte2501-c-pi-steps",
@@ -4111,6 +4124,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Hovedloopen i en genetisk algoritme?",
     answer:
       "1) Initialiser populasjon. 2) Evaluer fitness. 3) Seleksjon. 4) Crossover. 5) Mutasjon. 6) Erstatt (med elitisme). Gjenta inntil maks generasjoner eller konvergens.",
+    visual: "ml-ga-crossover",
   },
   {
     id: "dte2501-c-kmeans-steps",
@@ -4119,6 +4133,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "k-Means (Lloyd's) — algoritmen.",
     answer:
       "1) Init k senter (k-means++). 2) ASSIGN: hvert x til nærmeste senter. 3) UPDATE: hvert senter til snitt av sine punkter. 4) Repeter 2-3 til ingen punkt skifter cluster.",
+    visual: "ml-kmeans-steps",
   },
   {
     id: "dte2501-c-knn-predict",
@@ -4127,6 +4142,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "k-NN prediksjon — stegene?",
     answer:
       "1) Beregn dist(x_query, xᵢ) for alle i. 2) Sorter, behold de k minste. 3) Klassifisering: majoritetsstemme. Regresjon: snitt (evt. vektet med 1/dist).",
+    visual: "ml-knn-boundary",
   },
   {
     id: "dte2501-c-adaboost-steps",
@@ -4151,6 +4167,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "PCA-pipeline — fra X til Z?",
     answer:
       "1) Mean-centre (og evt. standardiser). 2) Beregn Σ = X̃ᵀX̃/(N−1). 3) Egenvektor-dekomp: Σv = λv. 4) Sorter λ avtagende, velg k største. 5) Z = X̃·V_k.",
+    visual: "ml-pca-projection",
   },
   {
     id: "dte2501-c-aco-loop",
@@ -4191,6 +4208,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "One-point crossover — beskriv.",
     answer:
       "Velg et cut-point i kromosomet. Barn 1 = forelder A før cut + forelder B etter cut. Barn 2 = motsatt. Bevarer sammenheng på lokale gen-blokker.",
+    visual: "ml-ga-crossover",
   },
   {
     id: "dte2501-c-aic-bic",
@@ -4255,6 +4273,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Hva er overfitting — i én setning?",
     answer:
       "Modellen lærer treningsdataens støy istedenfor underliggende mønster — høy trenings-accuracy, lav test-accuracy. Symptom på for høy variance / for kompleks modell.",
+    visual: "ml-overfitting",
   },
   {
     id: "dte2501-c-mse-vs-r2",
@@ -4766,6 +4785,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Hva er minimax-algoritmen?",
     answer:
       "Rekursiv algoritme for 2-spiller zero-sum-spill med perfekt info. MAX-noder velger argmax over barneverdier; MIN-noder velger argmin. Optimal mot rasjonell motstander.",
+    visual: "ml-minimax-tree",
   },
   {
     id: "c-dte2501-minimax-recur",
@@ -4774,6 +4794,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Skriv minimax-rekursjonen for V(s).",
     answer:
       "minimax(s) = UTILITY(s) hvis terminal; ellers max_a minimax(RESULT(s,a)) hvis MAX, ellers min_a minimax(RESULT(s,a)) hvis MIN.",
+    visual: "ml-minimax-tree",
   },
   {
     id: "c-dte2501-minimax-complex",
@@ -4790,6 +4811,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Når kan alpha-beta klippe en gren?",
     answer:
       "Når α ≥ β. α = beste verdi MAX har garantert seg langs stien, β = beste verdi MIN har garantert seg. Hvis α ≥ β kan grenen aldri velges av en rasjonell motstander.",
+    visual: "ml-alphabeta-prune",
   },
   {
     id: "c-dte2501-alphabeta-speedup",
@@ -4798,6 +4820,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Hva er gevinsten av alpha-beta pruning?",
     answer:
       "Med tilfeldig trekk-rekkefølge: O(b^{3m/4}). Med perfekt rekkefølge (beste trekk først): O(b^{m/2}) — vi kan søke dobbelt så dypt på samme tid. Optimaliteten beholdes.",
+    visual: "ml-alphabeta-prune",
   },
   {
     id: "c-dte2501-eval-fn",
@@ -4850,6 +4873,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Hva er et K-armet bandit-problem?",
     answer:
       "K armer, hver gir tilfeldig belønning fra ukjent distribusjon med snitt q*(a). Vi velger ett trekk per tidssteg, observerer belønningen. Mål: maksimer kumulativ belønning over T trekk. Ingen state — ren explore vs exploit.",
+    visual: "ml-bandit-arms",
   },
   {
     id: "c-dte2501-bandit-q",
@@ -4866,6 +4890,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "ε-greedy-strategien?",
     answer:
       "Med p=1−ε velg argmax_a Q_t(a) (exploit). Med p=ε velg tilfeldig arm (explore). Fast ε gir lineær regret; ε-decay (f.eks. εₜ ∝ 1/t) gir O(ln T).",
+    visual: "ml-bandit-epsilon-vs-ucb",
   },
   {
     id: "c-dte2501-bandit-ucb",
@@ -4874,6 +4899,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "UCB1-formel?",
     answer:
       "A_t = argmax_a [Q_t(a) + c·√(ln t / N_t(a))]. Første ledd er exploit (gjennomsnitt), andre er explore (bonus til sjeldent prøvde armer). Oppnår O(ln T) regret — optimal.",
+    visual: "ml-bandit-epsilon-vs-ucb",
   },
   {
     id: "c-dte2501-bandit-optimistic",
@@ -4898,6 +4924,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Hva er regret i bandit-problemet?",
     answer:
       "L_T = T·q*(a*) − E[Σ R_t]. Forventet tap mot oracle som alltid velger beste arm. Pur grådig og fast-ε gir Θ(T). UCB1 og Thompson gir O(ln T) — logaritmisk og optimalt.",
+    visual: "ml-bandit-regret",
   },
   {
     id: "c-dte2501-bandit-vs-rl",
@@ -4926,6 +4953,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Hva er MDP-tuppelen?",
     answer:
       "(S, A, P, R, γ). S = states, A = actions, P(s'|s,a) = transition probability, R(s,a,s') = reward, γ ∈ [0,1) = discount factor. Markov-egenskap: framtiden avhenger bare av nåtid.",
+    visual: "ml-mdp-grid-policy",
   },
   {
     id: "c-dte2501-bellman-pi",
@@ -4934,6 +4962,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Bellman-konsistens for V^π?",
     answer:
       "V^π(s) = Σ_a π(a|s) Σ_{s'} P(s'|s,a)·[R(s,a,s') + γ·V^π(s')]. Lineær i V — kan løses direkte med O(|S|³) for endelig |S|.",
+    visual: "ml-bellman-backup",
   },
   {
     id: "c-dte2501-bellman-star",
@@ -4942,6 +4971,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Bellman optimality for V*?",
     answer:
       "V*(s) = max_a Σ_{s'} P(s'|s,a)·[R(s,a,s') + γ·V*(s')]. Ikke-lineær pga max — kan ikke løses direkte, må iterere. Optimal policy: π*(s) = argmax_a samme uttrykk.",
+    visual: "ml-bellman-backup",
   },
   {
     id: "c-dte2501-vi-update",
@@ -4950,6 +4980,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Value Iteration-oppdatering?",
     answer:
       "V_{k+1}(s) ← max_a Σ_{s'} P(s'|s,a)·[R + γ·V_k(s')]. Sweep over alle s, mål Δ = max_s |V_{k+1} − V_k|. Stopp når Δ < θ. Per-iterasjon: O(|S|²·|A|).",
+    visual: "ml-value-iter-sweep",
   },
   {
     id: "c-dte2501-pi-cycle",
