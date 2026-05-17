@@ -47,7 +47,12 @@ export function CssLivePreview(props: Props) {
     return props.css.replaceAll("{{value}}", values[picked]);
   }, [props.css, hasToggle, values, picked]);
 
-  const srcdoc = useMemo(() => buildSrcdoc(props.html, css), [props.html, css]);
+  const html = useMemo(() => {
+    if (!hasToggle || !values) return props.html;
+    return props.html.replaceAll("{{value}}", values[picked]);
+  }, [props.html, hasToggle, values, picked]);
+
+  const srcdoc = useMemo(() => buildSrcdoc(html, css), [html, css]);
 
   return (
     <div className="rounded-xl border border-border bg-card overflow-hidden my-4">
