@@ -278,9 +278,9 @@ export const PY_CATEGORIES: readonly PyCategory[] = [
   },
   {
     id: "dte2511",
-    label: "DTE-2511 Videregående prog.",
+    label: "DTE-2511 — Filer & OOP",
     description:
-      "Filer & exceptions, OOP/arv, pickle, datetime, sets — Liang-baserte oppgaver med full walkthrough.",
+      "Python-siden av DTE-2511 (Algoritmer og datastrukturer): filer & exceptions, OOP/arv, pickle, datetime, sets. Liang-baserte oppgaver med full walkthrough. Algoritmer-/datastruktur-delen ligger som drill-emne.",
     topics: [
       "DTE-2511 — Filer & exceptions",
       "DTE-2511 — Dictionary fra fil",
