@@ -6,6 +6,7 @@
 
 import type { FC } from "react";
 import { STAT_FORD_VISUALS } from "./StatFordVisuals";
+import { STAT_MODELL_VISUALS } from "./StatModellVisuals";
 
 const STROKE = "currentColor";
 
@@ -720,6 +721,7 @@ export const VISUALS: Record<string, FC> = {
   "index-vs-scan": IndexVsScan,
   "relationship-kinds": RelationshipKinds,
   ...STAT_FORD_VISUALS,
+  ...STAT_MODELL_VISUALS,
 };
 
 export type VisualKey = keyof typeof VISUALS;

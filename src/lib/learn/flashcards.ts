@@ -3137,6 +3137,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Pearson-korrelasjon r — formel og verdier?",
     answer:
       "r = Σ(xᵢ−x̄)(yᵢ−ȳ) / √(Σ(xᵢ−x̄)²·Σ(yᵢ−ȳ)²). r ∈ [−1, +1]. r = 0 → ingen LINEÆR sammenheng (men kan ha ikke-lineær). Husk: korrelasjon ≠ kausalitet.",
+    visual: "stat-mod-pearson-r",
   },
   {
     id: "c-tek1-regression-line",
@@ -3145,6 +3146,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Minste kvadraters metode — koeffisienter?",
     answer:
       "β̂₁ = Σ(xᵢ−x̄)(yᵢ−ȳ) / Σ(xᵢ−x̄)² = r·(s_y/s_x). β̂₀ = ȳ − β̂₁·x̄. Linjen går alltid gjennom (x̄, ȳ). Minimerer Σ(yᵢ − ŷᵢ)².",
+    visual: "stat-mod-ols-fit",
   },
   {
     id: "c-tek1-r-squared",
@@ -3153,6 +3155,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Hva er R², og hvordan tolkes det?",
     answer:
       "R² = 1 − SS_res/SS_tot ∈ [0, 1]. Andel av variasjonen i Y som forklares av modellen. I enkel lineær regresjon: R² = r². R² = 0.72 → 72 % av Y's varians forklares av X.",
+    visual: "stat-mod-r-squared",
   },
   {
     id: "c-tek1-residual",
@@ -3161,6 +3164,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Hva er residualer, og hva skal du sjekke i residual-plot?",
     answer:
       "Residual eᵢ = yᵢ − ŷᵢ. Plot residualer mot x: tilfeldighet = modell passer. Trakt = heteroskedastisitet (ulik varians). Krumning = ikke-lineær sammenheng — prøv polynomisk eller log-transform.",
+    visual: "stat-mod-residual-patterns",
   },
   {
     id: "c-tek1-corr-causation",
@@ -3169,6 +3173,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Korrelasjon vs. kausalitet?",
     answer:
       "Sterk korrelasjon betyr ikke at den ene forårsaker den andre. Eks: Iskremsalg og drukninger korrelerer (begge øker om sommeren), men iskrem forårsaker ikke drukning. Kausalitet krever eksperiment eller streng kausal modell.",
+    visual: "stat-mod-corr-vs-causation",
   },
 
   // ============= DTE-2505: LINUX-GRUNNLAG =============
@@ -4576,6 +4581,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Hva er ANOVA, og når bruker du den?",
     answer:
       "Analysis of variance — én test som sammenligner snittet i 3+ grupper. H₀: μ₁ = μ₂ = … = μₖ. Brukes når du har én kategorisk faktor (gruppe) og kontinuerlig respons. Unngår oppblåst familywise error fra mange parvise t-tester.",
+    visual: "stat-mod-anova-between-within",
   },
   {
     id: "c-tek1-anova-fwer",
@@ -4584,6 +4590,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Hvorfor ikke bare gjøre alle parvise t-tester?",
     answer:
       "FWER = 1 − (1 − α)^m. Med 4 grupper er m = 6 par. Ved α = 0.05 blir P(minst én falsk forkasting) ≈ 0.265 — over 26 %. ANOVA gir én samlet test med kontrollert α.",
+    visual: "stat-mod-fwer",
   },
   {
     id: "c-tek1-anova-f-formel",
@@ -4592,6 +4599,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Hvordan beregnes F-statistikken?",
     answer:
       "F = MS_between / MS_within = (SS_between / (k−1)) / (SS_within / (N−k)). Stor F ⇒ gruppemiddelene skiller seg fra grand mean mer enn restspredningen kan forklare.",
+    visual: "stat-mod-f-dist",
   },
   {
     id: "c-tek1-anova-ss-id",
@@ -4600,6 +4608,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Hva er SS-dekomponering i ettveis ANOVA?",
     answer:
       "SS_total = SS_between + SS_within. SS_between = Σnᵢ(x̄ᵢ − x̄..)². SS_within = ΣΣ(xᵢⱼ − x̄ᵢ)². Identiteten er at all variasjon enten ligger mellom gruppene eller innen dem.",
+    visual: "stat-mod-anova-ss-decomp",
   },
   {
     id: "c-tek1-anova-df",
@@ -4731,6 +4740,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Hva er sigmoid-funksjonen?",
     answer:
       "σ(z) = 1 / (1 + e^{-z}). Mapper R → (0, 1). σ(0) = 0.5, σ(∞) = 1, σ(-∞) = 0. Symmetrisk: σ(-z) = 1 − σ(z). Derivert: σ'(z) = σ(z)(1 − σ(z)). Brukes for å konvertere lineær score til sannsynlighet.",
+    visual: "stat-mod-sigmoid",
   },
   {
     id: "c-dte2602-lr-logit",
@@ -4763,6 +4773,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Hva er tap-funksjonen i logistisk regresjon?",
     answer:
       "Negativ log-likelihood = log-loss = binær cross-entropy: L = −(1/n) Σ [yᵢ log p̂ᵢ + (1−yᵢ) log(1 − p̂ᵢ)]. Konveks i β ⇒ ingen lokale minima. Ingen lukket form — krever iterasjon (Newton/IRLS eller GD).",
+    visual: "stat-mod-log-loss",
   },
   {
     id: "c-dte2602-lr-gradient",
@@ -4779,6 +4790,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Hva er softmax og hvordan generaliserer den sigmoid?",
     answer:
       "Softmax: P(y=k|x) = e^{βₖx} / Σⱼ e^{βⱼx}. Brukes for K-klasse-klassifikasjon. Reduserer til sigmoid når K=2. Loss blir kategorisk cross-entropy. I sklearn: LogisticRegression(multi_class='multinomial').",
+    visual: "stat-mod-softmax",
   },
   {
     id: "c-dte2602-lr-class-imbalance",
@@ -4787,6 +4799,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Hvordan håndterer du sterkt ubalanserte klasser?",
     answer:
       "1) class_weight='balanced' i sklearn (omvendt-frekvens-vekting i loss). 2) SMOTE eller oversampling av minoritetsklasse (kun i trenings-sett). 3) Senk beslutnings-terskel fra 0.5 — velg via ROC eller PR-kurve. Bytt fra accuracy til precision/recall/F1.",
+    visual: "stat-mod-class-imbalance",
   },
   {
     id: "c-dte2602-lr-perfect-separation",
@@ -4795,6 +4808,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Hva er 'perfekt separasjon' og hvorfor er det et problem?",
     answer:
       "Hvis klassene er lineært separerbare, divergerer MLE — vektene går mot ±∞ for å presse σ til 0 eller 1. L2-regularisering (default i sklearn med C=1) hindrer dette. Slå AV reg kun med god grunn.",
+    visual: "stat-mod-perfect-separation",
   },
   {
     id: "c-dte2602-lr-scale",
@@ -5056,6 +5070,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Forskjell på generativ og diskriminativ klassifikator?",
     answer:
       "Diskriminativ (logistisk, SVM, tre) modellerer P(y|x) direkte. Generativ (LDA, QDA, Naive Bayes, GMM) modellerer P(x|y) og P(y), og bruker Bayes-teoremet for å regne ut P(y|x). Generative kan også generere syntetiske samples.",
+    visual: "stat-mod-generative-vs-discr",
   },
   {
     id: "c-dte2602-bayes-classifier",
@@ -5065,6 +5080,7 @@ export const FLASHCARDS: FlashCard[] = [
     answer:
       "ŷ = argmax_k P(y=k|x). Den velger klassen med høyest posterior. Bayes-klassifikatoren har lavest mulig feilrate (Bayes-feilen) — alle ekte klassifikatorer prøver å tilnærme den.",
     code: "P(y=k|x) = π_k · f_k(x) / Σ_l π_l · f_l(x)",
+    visual: "stat-mod-bayes-classifier",
   },
   {
     id: "c-dte2602-lda-antakelse",
@@ -5073,6 +5089,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Hvilke antakelser gjør LDA?",
     answer:
       "1) Hver klasse er multivariat normalfordelt. 2) Alle klassene deler SAMME kovariansmatrise Σ. Konsekvens: beslutningsgrensa blir lineær (hyperplan). Få parametre ⇒ lav varians, men risiko for bias.",
+    visual: "stat-mod-lda-boundary",
   },
   {
     id: "c-dte2602-qda-antakelse",
@@ -5081,6 +5098,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Hva er forskjellen mellom LDA og QDA?",
     answer:
       "QDA tillater ULIK kovariansmatrise per klasse Σ_k. Det gir kvadratisk beslutningsgrense (ellipser, hyperbler). Lavere bias enn LDA, men høyere varians: vi må estimere K kovariansmatriser i stedet for én.",
+    visual: "stat-mod-qda-boundary",
   },
   {
     id: "c-dte2602-nb-uavhengighet",
@@ -5089,6 +5107,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Hva er kjerneantakelsen i Naive Bayes?",
     answer:
       "Features er BETINGET UAVHENGIGE gitt klassen: P(x|y=k) = Π_j P(x_j|y=k). Antakelsen er nesten alltid usann, men reduserer parametertall fra Kp(p+1)/2 (QDA) til 2pK — gjør modellen robust på lite data og høy dimensjon.",
+    visual: "stat-mod-nb-independence",
   },
   {
     id: "c-dte2602-nb-tekst",
@@ -5114,6 +5133,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Når LDA over QDA?",
     answer:
       "LDA: lite data per klasse, du tror klassene har lik 'form' (samme spredning), eller du vil ha en stabil/tolkbar grense. QDA: mye data per klasse OG klart ulik spredning. På små n bommer QDA fordi den estimerer for mange parametre.",
+    visual: "stat-mod-lda-vs-qda",
   },
   {
     id: "c-dte2602-nb-varianter",
@@ -5133,6 +5153,7 @@ export const FLASHCARDS: FlashCard[] = [
     answer:
       "CV_(k) = (1/k) Σ MSE_i, der MSE_i er feilen på fold i når modellen er trent på de andre k−1 foldene. Hvert datapunkt havner i test nøyaktig én gang.",
     code: "CV_(k) = (1/k) · Σ MSE_i",
+    visual: "stat-mod-kfold",
   },
   {
     id: "c-dte2602-cv-loocv",
@@ -5141,6 +5162,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Fordeler og ulemper med LOOCV?",
     answer:
       "Fordel: praktisk talt null bias (hver modell ser n−1 samples). Deterministisk (ingen shuffle). Ulempe: n treninger ⇒ dyrt. Estimater er sterkt KORRELERT (hver modell ser nesten samme data), så snittet har HØYERE varians enn 10-fold ofte.",
+    visual: "stat-mod-loocv",
   },
   {
     id: "c-dte2602-cv-validset",
@@ -5158,6 +5180,7 @@ export const FLASHCARDS: FlashCard[] = [
     answer:
       "Ved klassifikasjon med ubalansert data. Vanlig KFold kan ved uflaks gi folder med 0 % minoritetsklasse ⇒ scoren blir uberegnelig. Stratified bevarer klassebalansen i hver fold. cross_val_score med cv=int (heltall) gjør dette automatisk for klassifikatorer.",
     code: "StratifiedKFold(n_splits=5, shuffle=True, random_state=42)",
+    visual: "stat-mod-stratified",
   },
   {
     id: "c-dte2602-cv-group",
@@ -5166,6 +5189,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Når trenger du GroupKFold?",
     answer:
       "Når observasjoner er korrelerte i grupper (samme pasient med 10 målinger, samme bruker med 100 events). Hvis samme gruppe havner i både train og val, lekker gruppe-spesifikke mønstre. GroupKFold sikrer at hver gruppe ligger helt på én side.",
+    visual: "stat-mod-group-kfold",
   },
   {
     id: "c-dte2602-cv-ts",
@@ -5175,6 +5199,7 @@ export const FLASHCARDS: FlashCard[] = [
     answer:
       "Vanlig k-fold kan tilfeldigvis trene på framtiden og teste på fortida — det er fasit-lekkasje (en klassifikator i produksjon kan ikke se framtiden). TimeSeriesSplit lar train alltid være FØR test-vinduet kronologisk.",
     code: "TimeSeriesSplit(n_splits=5)",
+    visual: "stat-mod-time-series-split",
   },
   {
     id: "c-dte2602-cv-bias-var",
@@ -5183,6 +5208,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Hvordan endrer bias og varians seg med k?",
     answer:
       "Lav k (2-3): hver modell trent på lite data ⇒ HØY BIAS, men foldene overlapper lite ⇒ LAV VARIANS. Høy k (n=LOOCV): lav bias (mye trening), men sterk korrelasjon mellom modellene ⇒ HØY VARIANS. Sweet spot: k=5 eller k=10 (ISLP).",
+    visual: "stat-mod-cv-bias-var",
   },
   {
     id: "c-dte2602-cv-pipeline",
@@ -5191,6 +5217,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Hvorfor må preprocessing inn i Pipeline før CV?",
     answer:
       "Hvis du fit-transformer (skaler/imputer) på X FØR cross_val_score, lærer skaleren mean/std fra val-folden — datalekkasje, scoren blir kunstig god. Pakk preprocessing + modell i Pipeline; sklearn re-fit-er da inne i hver fold.",
+    visual: "stat-mod-cv-leakage",
   },
   {
     id: "c-dte2602-cv-leak",
@@ -5209,6 +5236,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Hva er de 4 antakelsene for OLS?",
     answer:
       "1) Linearitet (sann sammenheng lineær). 2) Uavhengige feil ε_i. 3) Homoskedastisitet (konstant varians σ²). 4) Normalfordelte residualer. Når brudd: koeffisientene kan fortsatt være forventningsrette, men SE og p-verdier blir feil.",
+    visual: "stat-mod-ols-assumptions",
   },
   {
     id: "c-tek1-residual",
@@ -5218,6 +5246,7 @@ export const FLASHCARDS: FlashCard[] = [
     answer:
       "Residual e_i = y_i − ŷ_i. Plot e mot ŷ: bra mønster er random sky rundt 0, samme spredning. Kurve i plottet ⇒ ikke-linearitet. Trakt ⇒ heteroskedastisitet. Enkelt ekstrempunkt ⇒ outlier.",
     code: "e_i = y_i − ŷ_i",
+    visual: "stat-mod-residual-patterns",
   },
   {
     id: "c-tek1-hetero",
@@ -5226,6 +5255,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Hva er heteroskedastisitet og hvordan ser du det?",
     answer:
       "Varians i residualene endrer seg med ŷ — typisk trakt-form i residualplott. Estimat β̂ er fortsatt forventningsrett, men SE er feil ⇒ KI for smale, p-verdier for små. Fiks: log-transform y, weighted least squares, eller robuste 'sandwich'-SE (HC3).",
+    visual: "stat-mod-hetero",
   },
   {
     id: "c-tek1-qq",
@@ -5235,6 +5265,7 @@ export const FLASHCARDS: FlashCard[] = [
     answer:
       "Sorterte residualer mot teoretiske kvantiler fra N(0,1). Punktene skal følge diagonalen hvis residualene er normalfordelte. S-form ⇒ tunge/lette haler. Krumning ⇒ skjevhet. Enkeltpunkter langt unna ⇒ outliers.",
     code: "scipy.stats.probplot(residuals, dist='norm')",
+    visual: "stat-mod-qq",
   },
   {
     id: "c-tek1-cook",
@@ -5252,6 +5283,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Forskjell på outlier, leverage og influence?",
     answer:
       "Outlier: stor residual (langt fra linja i y-retning). Leverage: uvanlig x (langt fra x̄), stor h_ii. Influence: punkter som faktisk drar β̂ — krever BÅDE outlier OG høy leverage. Cook's D fanger nettopp influence.",
+    visual: "stat-mod-outlier-leverage",
   },
   {
     id: "c-tek1-r2-vs-r2adj",
@@ -5261,6 +5293,7 @@ export const FLASHCARDS: FlashCard[] = [
     answer:
       "R² = 1 − SSE/SST måler hvor mye variasjon modellen forklarer, MEN stiger alltid når man legger til en prediktor (selv om den er støy). R²_adj = 1 − (1−R²) · (n−1)/(n−p−1) straffer ekstra prediktorer. Bruk adj for å sammenligne modeller med ulikt antall prediktorer.",
     code: "R²_adj = 1 − (1−R²) · (n−1)/(n−p−1)",
+    visual: "stat-mod-r2-vs-adj",
   },
   {
     id: "c-tek1-r2-lyver",
@@ -5277,6 +5310,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Hva er VIF og hvorfor sjekker du det?",
     answer:
       "Variance Inflation Factor: VIF_j = 1/(1 − R_j²) der R_j² er fra regresjon av x_j mot alle andre prediktorer. Måler hvor mye SE for β̂_j er oppblåst pga multikollinearitet. VIF > 5 bekymring, > 10 alvorlig. Fiks: drop én korrelert, kombiner, eller bruk Ridge.",
+    visual: "stat-mod-multicollinearity",
   },
 
   // ============= DISKRET MATTE (dm-fc-*) =============
