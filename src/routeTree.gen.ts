@@ -50,6 +50,7 @@ import { Route as PythonChar91_figuresChar93RouteImport } from './routes/python_
 import { Route as ProsjektMlSlugRouteImport } from './routes/prosjekt-ml.$slug'
 import { Route as PortfolioDte2602SlugRouteImport } from './routes/portfolio-dte2602.$slug'
 import { Route as MiniKursSlugRouteImport } from './routes/mini-kurs.$slug'
+import { Route as KarriereKodeLesningRouteImport } from './routes/karriere.kode-lesning'
 import { Route as EksamenTreningRouteImport } from './routes/eksamen.trening'
 import { Route as Dte2507PcapRouteImport } from './routes/dte2507.pcap'
 import { Route as Dte2505ShellDrillRouteImport } from './routes/dte2505.shell-drill'
@@ -264,6 +265,11 @@ const MiniKursSlugRoute = MiniKursSlugRouteImport.update({
   path: '/$slug',
   getParentRoute: () => MiniKursRoute,
 } as any)
+const KarriereKodeLesningRoute = KarriereKodeLesningRouteImport.update({
+  id: '/karriere/kode-lesning',
+  path: '/karriere/kode-lesning',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const EksamenTreningRoute = EksamenTreningRouteImport.update({
   id: '/trening',
   path: '/trening',
@@ -332,6 +338,7 @@ export interface FileRoutesByFullPath {
   '/dte2505/shell-drill': typeof Dte2505ShellDrillRoute
   '/dte2507/pcap': typeof Dte2507PcapRoute
   '/eksamen/trening': typeof EksamenTreningRoute
+  '/karriere/kode-lesning': typeof KarriereKodeLesningRoute
   '/mini-kurs/$slug': typeof MiniKursSlugRoute
   '/portfolio-dte2602/$slug': typeof PortfolioDte2602SlugRoute
   '/prosjekt-ml/$slug': typeof ProsjektMlSlugRoute
@@ -377,6 +384,7 @@ export interface FileRoutesByTo {
   '/dte2505/shell-drill': typeof Dte2505ShellDrillRoute
   '/dte2507/pcap': typeof Dte2507PcapRoute
   '/eksamen/trening': typeof EksamenTreningRoute
+  '/karriere/kode-lesning': typeof KarriereKodeLesningRoute
   '/mini-kurs/$slug': typeof MiniKursSlugRoute
   '/portfolio-dte2602/$slug': typeof PortfolioDte2602SlugRoute
   '/prosjekt-ml/$slug': typeof ProsjektMlSlugRoute
@@ -428,6 +436,7 @@ export interface FileRoutesById {
   '/dte2505/shell-drill': typeof Dte2505ShellDrillRoute
   '/dte2507/pcap': typeof Dte2507PcapRoute
   '/eksamen/trening': typeof EksamenTreningRoute
+  '/karriere/kode-lesning': typeof KarriereKodeLesningRoute
   '/mini-kurs/$slug': typeof MiniKursSlugRoute
   '/portfolio-dte2602/$slug': typeof PortfolioDte2602SlugRoute
   '/prosjekt-ml/$slug': typeof ProsjektMlSlugRoute
@@ -480,6 +489,7 @@ export interface FileRouteTypes {
     | '/dte2505/shell-drill'
     | '/dte2507/pcap'
     | '/eksamen/trening'
+    | '/karriere/kode-lesning'
     | '/mini-kurs/$slug'
     | '/portfolio-dte2602/$slug'
     | '/prosjekt-ml/$slug'
@@ -525,6 +535,7 @@ export interface FileRouteTypes {
     | '/dte2505/shell-drill'
     | '/dte2507/pcap'
     | '/eksamen/trening'
+    | '/karriere/kode-lesning'
     | '/mini-kurs/$slug'
     | '/portfolio-dte2602/$slug'
     | '/prosjekt-ml/$slug'
@@ -575,6 +586,7 @@ export interface FileRouteTypes {
     | '/dte2505/shell-drill'
     | '/dte2507/pcap'
     | '/eksamen/trening'
+    | '/karriere/kode-lesning'
     | '/mini-kurs/$slug'
     | '/portfolio-dte2602/$slug'
     | '/prosjekt-ml/$slug'
@@ -625,6 +637,7 @@ export interface RootRouteChildren {
   DrillChar91_demoChar93Route: typeof DrillChar91_demoChar93Route
   Dte2505ShellDrillRoute: typeof Dte2505ShellDrillRoute
   Dte2507PcapRoute: typeof Dte2507PcapRoute
+  KarriereKodeLesningRoute: typeof KarriereKodeLesningRoute
   PortfolioDte2602SlugRoute: typeof PortfolioDte2602SlugRoute
   ProsjektMlSlugRoute: typeof ProsjektMlSlugRoute
   PythonChar91_figuresChar93Route: typeof PythonChar91_figuresChar93Route
@@ -924,6 +937,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MiniKursSlugRouteImport
       parentRoute: typeof MiniKursRoute
     }
+    '/karriere/kode-lesning': {
+      id: '/karriere/kode-lesning'
+      path: '/karriere/kode-lesning'
+      fullPath: '/karriere/kode-lesning'
+      preLoaderRoute: typeof KarriereKodeLesningRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/eksamen/trening': {
       id: '/eksamen/trening'
       path: '/trening'
@@ -1072,6 +1092,7 @@ const rootRouteChildren: RootRouteChildren = {
   DrillChar91_demoChar93Route: DrillChar91_demoChar93Route,
   Dte2505ShellDrillRoute: Dte2505ShellDrillRoute,
   Dte2507PcapRoute: Dte2507PcapRoute,
+  KarriereKodeLesningRoute: KarriereKodeLesningRoute,
   PortfolioDte2602SlugRoute: PortfolioDte2602SlugRoute,
   ProsjektMlSlugRoute: ProsjektMlSlugRoute,
   PythonChar91_figuresChar93Route: PythonChar91_figuresChar93Route,
