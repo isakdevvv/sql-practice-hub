@@ -8,11 +8,18 @@
 export type RunMode =
   /** Kjør entry-filen som vanlig Python-script. Capture stdout. */
   | { kind: "python-script"; entry: string }
-  /** Mount Flask-app fra entry-fil og send testede HTTP-requests. */
+  /** Mount Flask-app fra entry-fil og send testede HTTP-requests.
+   *  followRedirects: hvis true, følges 30x-redirects før respons returneres.
+   *  Default false for å vise statuskoder klart i undervisning. */
   | {
       kind: "flask-test-client";
       entry: string;
-      requests: { method: "GET" | "POST"; path: string; body?: string }[];
+      requests: {
+        method: "GET" | "POST";
+        path: string;
+        body?: string;
+        followRedirects?: boolean;
+      }[];
     }
   /** Render HTML-fil i iframe (med inline CSS/JS via srcdoc). */
   | { kind: "html-preview"; entry: string };
