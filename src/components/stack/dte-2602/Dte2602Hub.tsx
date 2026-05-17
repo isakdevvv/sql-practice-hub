@@ -25,6 +25,10 @@ import { StackPageShell } from "@/components/stack/StackPageShell";
 import { LearningPath } from "@/components/stack/LearningPath";
 import { MlPipelineFlow } from "./MlPipelineFlow";
 import { Mermaid } from "@/components/Mermaid";
+import {
+  HubStartCta,
+  ModulStatusBadge,
+} from "@/components/stack/HubShared";
 
 const ML_PIPELINE_CHART = `graph LR
   A[Radata] --> B[EDA]
@@ -226,6 +230,13 @@ export function Dte2602Hub() {
           </p>
         </div>
 
+        <HubStartCta
+          startSlug="ml-grunnlag"
+          startSubtitle="Start med ML-grunnlaget, så EDA, preprocessing og videre gjennom hele pipelinen."
+          jumpHref="#moduler"
+          jumpSubtitle="Velg blant 16 mini-kurs — fra trær og ROC til etikk og mappe-mal."
+        />
+
         <section className="mb-10">
           <LearningPath
             fag="DTE-2602"
@@ -308,7 +319,7 @@ export function Dte2602Hub() {
           </div>
         </section>
 
-        <section className="mb-10">
+        <section id="moduler" className="mb-10 scroll-mt-20">
           <h2 className="text-xl font-semibold mb-3">Mini-kurs</h2>
           <div className="grid sm:grid-cols-2 gap-3">
             {COURSES.map((c) => {
@@ -335,6 +346,7 @@ export function Dte2602Hub() {
                   <div className="flex items-center gap-2 mb-2">
                     <Icon className="h-4 w-4 text-brand" />
                     <h3 className="font-semibold text-foreground leading-tight">{c.title}</h3>
+                    <ModulStatusBadge trinnSlugs={[c.slug]} />
                   </div>
                   <p className="text-sm text-muted-foreground leading-relaxed">{c.shortDescription}</p>
                   <div className="mt-3 flex items-center text-xs text-muted-foreground group-hover:text-foreground transition-colors">

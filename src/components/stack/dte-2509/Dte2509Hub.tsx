@@ -14,6 +14,11 @@ import {
   Lightbulb,
 } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
+import {
+  HubStartCta,
+  ModulStatusBadge,
+  ModulProgressBar,
+} from "@/components/stack/HubShared";
 
 type Modul = {
   nr: string;
@@ -204,8 +209,13 @@ export function Dte2509Hub() {
           </div>
         </div>
 
+        <HubStartCta
+          startSlug={MODULER[0].trinn[0].slug}
+          startSubtitle="Modul 1: HTML/CSS og Git. Følg seks moduler i rekkefølge frem til web-sikkerhet."
+        />
+
         {/* Modul-grid */}
-        <section className="mb-12">
+        <section id="moduler" className="mb-12 scroll-mt-20">
           <h2 className="text-xl font-semibold mb-1">Modul for modul</h2>
           <p className="text-xs text-muted-foreground mb-5">
             Strukturen følger den offisielle UiT-pensum-skjemaet fra DTE-2509-26V-repoet.
@@ -213,6 +223,7 @@ export function Dte2509Hub() {
           <div className="space-y-5">
             {MODULER.map((m) => {
               const Icon = m.Icon;
+              const slugs = m.trinn.map((t) => t.slug);
               return (
                 <div
                   key={m.nr}
@@ -228,6 +239,7 @@ export function Dte2509Hub() {
                           MODUL {m.nr}
                         </span>
                         <span className="text-xs text-muted-foreground">· {m.uke}</span>
+                        <ModulStatusBadge trinnSlugs={slugs} />
                       </div>
                       <h3 className="text-base font-semibold text-foreground">
                         {m.tittel}
@@ -255,6 +267,7 @@ export function Dte2509Hub() {
                       </Link>
                     ))}
                   </div>
+                  <ModulProgressBar trinnSlugs={slugs} />
                 </div>
               );
             })}
