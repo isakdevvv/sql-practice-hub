@@ -3,15 +3,25 @@ import {Lightbulb, ArrowLeft } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
 import { Tex, TexBlock } from "@/components/Tex";
+import { InteractiveDistributionPlayground } from "./InteractiveDistributionPlayground";
+import { OutlierImpactDemo } from "./OutlierImpactDemo";
+import { SkewnessKurtosisViz } from "./SkewnessKurtosisViz";
+import { ChartChoiceDecisionTree } from "./ChartChoiceDecisionTree";
+import { DescriptiveStatsQuiz } from "./DescriptiveStatsQuiz";
 
 const STEPS = [
   { title: "Hvorfor deskriptiv statistikk?", anchor: "motivasjon" },
   { title: "Sentralmål — gjennomsnitt, median, modus", anchor: "sentral" },
+  { title: "Playground: dra punktene, se statistikkene", anchor: "playground" },
   { title: "Kvartiler og persentiler", anchor: "kvartiler" },
   { title: "Spredningsmål — varians, std, IQR", anchor: "spredning" },
+  { title: "Outlier-effekten: mean vs median", anchor: "outliers" },
+  { title: "Skjevhet og kurtose", anchor: "skewness" },
   { title: "Visualisering — histogram, boksplott, scatter", anchor: "visual" },
+  { title: "Velg riktig diagram", anchor: "chart-choice" },
   { title: "Når bruke hva?", anchor: "naar" },
   { title: "Eksamen-feller", anchor: "feller" },
+  { title: "Anvendt: quiz", anchor: "quiz" },
 ];
 
 export function Tek1DeskriptivPage() {
@@ -123,8 +133,28 @@ export function Tek1DeskriptivPage() {
           </div>
         </section>
 
+        <section id="playground" className="mb-10">
+          <h2 className="text-xl font-semibold mb-3">
+            3. Playground — dra punktene, se statistikkene live
+          </h2>
+          <p className="text-sm text-muted-foreground mb-4">
+            Det enkleste måten å bygge intuisjon er å manipulere dataene
+            direkte. Dra hvert punkt langs x-aksen og observer hvordan{" "}
+            <em>hver</em> deskriptiv statistikk reagerer. Bytt til histogram
+            for å se formen, eller til boksplott for å se 5-tallsoppsummeringen.
+          </p>
+          <InteractiveDistributionPlayground />
+          <div className="mt-3 text-xs text-muted-foreground">
+            Prøv: dra ett punkt langt til høyre. Se hvor mye{" "}
+            <span className="text-emerald-500 font-medium">mean</span> flytter
+            seg sammenlignet med{" "}
+            <span className="text-amber-500 font-medium">median</span>. Klem
+            alle punktene sammen og se std krympe.
+          </div>
+        </section>
+
         <section id="kvartiler" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">3. Kvartiler og persentiler</h2>
+          <h2 className="text-xl font-semibold mb-3">4. Kvartiler og persentiler</h2>
           <p className="text-sm text-muted-foreground mb-4">
             Generaliseringen av median: del datasettet i fire like deler.
           </p>
@@ -158,7 +188,7 @@ IQR (Interkvartilbredde) = Q3 - Q1
         </section>
 
         <section id="spredning" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">4. Spredningsmål</h2>
+          <h2 className="text-xl font-semibold mb-3">5. Spredningsmål</h2>
           <p className="text-sm text-muted-foreground mb-4">
             «Hvor mye varierer dataene rundt sentralmålet?» Tre vanlige svar.
           </p>
@@ -210,8 +240,36 @@ IQR (Interkvartilbredde) = Q3 - Q1
           </div>
         </section>
 
+        <section id="outliers" className="mb-10">
+          <h2 className="text-xl font-semibold mb-3">
+            6. Outlier-effekten — hvorfor median er robust og mean ikke
+          </h2>
+          <p className="text-sm text-muted-foreground mb-4">
+            Vi starter med en symmetrisk N(50, 5²)-fordeling. Klikk &quot;+ outlier&quot;
+            og se hva som skjer med hver av de fire metrikkene. <em>Mean</em> og{" "}
+            <em>std</em> flytter seg dramatisk; <em>median</em> og <em>IQR</em>{" "}
+            knapt. Det er denne forskjellen som gjør at vi sier{" "}
+            &quot;median er robust&quot;.
+          </p>
+          <OutlierImpactDemo />
+        </section>
+
+        <section id="skewness" className="mb-10">
+          <h2 className="text-xl font-semibold mb-3">
+            7. Skjevhet (skewness) og halevekt (kurtosis)
+          </h2>
+          <p className="text-sm text-muted-foreground mb-4">
+            <strong>Skewness</strong> måler om fordelingen lener mot venstre eller
+            høyre. <strong>Kurtosis</strong> (excess) måler om halene er tunge
+            (mange ekstremverdier) eller lette sammenlignet med en normalfordeling.
+            Bla mellom de fire forhåndsdefinerte fordelingene, eller bruk slideren
+            til å morfe en symmetrisk fordeling gradvis mot høyre-skjev.
+          </p>
+          <SkewnessKurtosisViz />
+        </section>
+
         <section id="visual" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">5. Visualisering</h2>
+          <h2 className="text-xl font-semibold mb-3">8. Visualisering</h2>
           <p className="text-sm text-muted-foreground mb-4">
             Tall sammenfatter, men bilder avslører. Disse er obligatoriske å
             kjenne.
@@ -262,8 +320,20 @@ Antall:   3      8     12      6      1
           </div>
         </section>
 
+        <section id="chart-choice" className="mb-10">
+          <h2 className="text-xl font-semibold mb-3">
+            9. Velg riktig diagram — guidet beslutningstre
+          </h2>
+          <p className="text-sm text-muted-foreground mb-4">
+            Tre spørsmål, ett anbefalt diagram. Klikk gjennom og lær mønsteret —
+            datatype → antall variabler → budskap. Du vil finne at hvert valg
+            har en kanonisk visualisering.
+          </p>
+          <ChartChoiceDecisionTree />
+        </section>
+
         <section id="naar" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">6. Når bruke hva?</h2>
+          <h2 className="text-xl font-semibold mb-3">10. Når bruke hva?</h2>
           <div className="overflow-x-auto rounded-lg border border-border">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
@@ -319,7 +389,7 @@ Antall:   3      8     12      6      1
         </section>
 
         <section id="feller" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">7. Eksamen-feller</h2>
+          <h2 className="text-xl font-semibold mb-3">11. Eksamen-feller</h2>
           <div className="space-y-3 text-sm">
             <div className="rounded-lg border border-amber-500/30 bg-amber-500/5 p-4">
               <strong>n vs. n−1 i nevner.</strong> For stikkprøve-varians bruker
@@ -341,6 +411,18 @@ Antall:   3      8     12      6      1
               Sturges' formel <Tex>{"\\lceil \\log_2(n) + 1 \\rceil"}</Tex>.
             </div>
           </div>
+        </section>
+
+        <section id="quiz" className="mb-10">
+          <h2 className="text-xl font-semibold mb-3">
+            12. Anvendt: hvilken statistikk i hvilket scenario?
+          </h2>
+          <p className="text-sm text-muted-foreground mb-4">
+            Åtte realistiske scenarier. For hver: hvilket sentralmål, hvilken
+            visualisering, hvordan rapportere? Velg svar, og les forklaringen
+            etterpå. Sikt mot 7/8 før du går videre.
+          </p>
+          <DescriptiveStatsQuiz />
         </section>
 
         <div className="mt-10 rounded-xl border border-border bg-card p-5 text-sm">
