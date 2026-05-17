@@ -3,13 +3,19 @@ import { Layers } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
 import { StackDiagram } from "./StackDiagram";
+import { HypervisorTypeComparison } from "./HypervisorTypeComparison";
+import { VmVsContainer } from "./VmVsContainer";
+import { SyscallFlowDiagram } from "./SyscallFlowDiagram";
 
 const STEPS = [
   { title: "Hva betyr virtualisering?", anchor: "intro" },
   { title: "Type 1 vs Type 2 hypervisor", anchor: "typer" },
+  { title: "Hypervisor-simulator (interaktiv)", anchor: "hyp-sim" },
   { title: "VM-eksempler (KVM, VirtualBox, VMware)", anchor: "vms" },
   { title: "Containere — namespaces + cgroups", anchor: "containere" },
   { title: "Sammenligning: VM vs container", anchor: "sammenligning" },
+  { title: "VM vs container — kjør, krasj, escape", anchor: "vm-vs-ct" },
+  { title: "Syscall-flyt gjennom alle tre", anchor: "syscall-flow" },
   { title: "Når velge hva?", anchor: "valg" },
   { title: "Eksamen-quick-ref", anchor: "eksamen" },
 ];
@@ -139,7 +145,21 @@ export function VirtualiseringPage() {
           </p>
         </Section>
 
-        <Section number="3" id="vms" title="VM-eksempler i praksis">
+        <Section
+          number="3"
+          id="hyp-sim"
+          title="Hypervisor-simulator — kjør et syscall i begge"
+        >
+          <p className="text-sm text-muted-foreground mb-3">
+            Det er én ting å lese at type-2 har «litt mer overhead». Det er
+            noe annet å se den ene VMEXIT-en bli til tre når host-OS blir et
+            ekstra lag. Trykk på <em>Kjør disk-read i begge</em> og tell ring-
+            byttene:
+          </p>
+          <HypervisorTypeComparison />
+        </Section>
+
+        <Section number="4" id="vms" title="VM-eksempler i praksis">
           <div className="grid sm:grid-cols-3 gap-3">
             <div className="rounded-xl border border-border bg-card p-4">
               <div className="text-xs uppercase tracking-wider text-brand font-semibold mb-2">
@@ -182,7 +202,7 @@ VBoxManage createvm \\
         </Section>
 
         <Section
-          number="4"
+          number="5"
           id="containere"
           title="Containere — namespaces + cgroups"
         >
@@ -254,7 +274,7 @@ runc          ─ den lille C-binæren som faktisk gjør clone()
         </Section>
 
         <Section
-          number="5"
+          number="6"
           id="sammenligning"
           title="VM vs container — visuelt og i tabell"
         >
@@ -319,7 +339,38 @@ runc          ─ den lille C-binæren som faktisk gjør clone()
           </div>
         </Section>
 
-        <Section number="6" id="valg" title="Når velge VM, når container?">
+        <Section
+          number="7"
+          id="vm-vs-ct"
+          title="VM vs container — kjør, krasj, escape"
+        >
+          <p className="text-sm text-muted-foreground mb-3">
+            Tabellen forteller deg <em>at</em> VM bruker mer RAM og at
+            containere har svakere isolasjon. Simulatoren under viser{" "}
+            <em>hva som faktisk skjer</em> når du starter mange instanser,
+            trigger en kernel-bug eller prøver å bryte ut. Legg merke til at
+            «kernel-bug» er asymmetrisk: VM-en taper én instans, containerne
+            taper alle.
+          </p>
+          <VmVsContainer />
+        </Section>
+
+        <Section
+          number="8"
+          id="syscall-flow"
+          title="Syscall-flyt: native vs VM vs container"
+        >
+          <p className="text-sm text-muted-foreground mb-3">
+            Når en app kjører <code className="font-mono">write(fd, buf, len)</code>,
+            er det enormt ulikt hva som skjer under panseret avhengig av om
+            den kjører bare-metal, i en VM eller i en container. Klikk på et
+            steg for å zoome inn på hvilken kode/CPU-instruksjon som faktisk
+            kjører der.
+          </p>
+          <SyscallFlowDiagram />
+        </Section>
+
+        <Section number="9" id="valg" title="Når velge VM, når container?">
           <div className="grid sm:grid-cols-2 gap-3">
             <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/5 p-4">
               <div className="text-xs uppercase tracking-wider text-emerald-600 dark:text-emerald-400 font-semibold mb-2">
@@ -352,7 +403,7 @@ runc          ─ den lille C-binæren som faktisk gjør clone()
           </p>
         </Section>
 
-        <Section number="7" id="eksamen" title="Eksamen-quick-ref">
+        <Section number="10" id="eksamen" title="Eksamen-quick-ref">
           <ul className="text-sm text-muted-foreground list-disc pl-5 space-y-2">
             <li>
               <strong className="text-foreground">Type 1 = bare-metal, Type 2 = hosted.</strong>{" "}
