@@ -520,6 +520,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Forskjell på GET og POST?",
     answer:
       "GET henter data og bør ikke endre serverstate (data i URL). POST sender data til serveren (data i request body) og brukes ved login, registrering, opprett.",
+    visual: "net-http-methods",
   },
   {
     id: "c-200",
@@ -584,6 +585,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Hva betyr 2xx-klassen?",
     answer:
       "Successful — requesten ble forstått, akseptert og behandlet. Typiske medlemmer: 200 OK, 201 Created, 204 No Content. Server sier «alt gikk bra, her er svaret».",
+    visual: "net-status-classes",
   },
   {
     id: "c-3xx-klasse",
@@ -592,6 +594,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Hva betyr 3xx-klassen?",
     answer:
       "Redirection — klienten må gjøre noe mer (typisk følge en ny URL). Typiske medlemmer: 301 Moved Permanently, 302 Found, 304 Not Modified. Etter en redirect følger nettleseren Location-headeren automatisk.",
+    visual: "net-status-classes",
   },
   {
     id: "c-4xx-klasse",
@@ -600,6 +603,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Hva betyr 4xx-klassen?",
     answer:
       "Client error — feilen ligger hos klienten/brukeren. Typiske medlemmer: 400 Bad Request, 401 Unauthorized, 403 Forbidden, 404 Not Found, 405 Method Not Allowed. Server klandrer ikke seg selv.",
+    visual: "net-status-classes",
   },
   {
     id: "c-5xx-klasse",
@@ -608,6 +612,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Hva betyr 5xx-klassen?",
     answer:
       "Server error — server klarte ikke å oppfylle en ellers gyldig request. Typiske medlemmer: 500 Internal Server Error, 502 Bad Gateway, 503 Service Unavailable. På 500 må du som utvikler fikse koden.",
+    visual: "net-status-classes",
   },
   {
     id: "c-post-suksess-status",
@@ -617,6 +622,7 @@ export const FLASHCARDS: FlashCard[] = [
       "Hvilken statuskode er normal etter en vellykket POST som lager noe nytt?",
     answer:
       "201 Created — ny ressurs er opprettet. Server kan også svare med en Location-header som peker på den nye ressursen. (200 OK er også OK hvis du ikke spesifikt opprettet noe.)",
+    visual: "net-status-classes",
   },
   {
     id: "c-api",
@@ -652,6 +658,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Authentication vs. Authorization?",
     answer:
       "Authentication: HVEM er du? (innlogging). Authorization: HVA har du lov til? (tilgangskontroll, roller).",
+    visual: "sec-authn-vs-authz",
   },
   {
     id: "c-sqli",
@@ -660,6 +667,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Hva er SQL Injection?",
     answer:
       "Et angrep der ondsinnet SQL injiseres via inputfelter. Kan lese/slette data, omgå login. Beskytt med prepared statements — ALDRI strengkonkatenering.",
+    visual: "sec-sqli-trace",
   },
   {
     id: "c-xss",
@@ -668,6 +676,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Hva er XSS?",
     answer:
       "Cross Site Scripting — ondsinnet JavaScript injisert i en nettside. Kan stjele cookies/sessions. Jinja2 escaper output automatisk; vær forsiktig med |safe.",
+    visual: "sec-xss-types",
   },
   {
     id: "c-csrf",
@@ -676,6 +685,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Hva er CSRF?",
     answer:
       "Cross Site Request Forgery — bruker lures til å sende request fra en annen side. Beskytt med CSRF-tokens (Flask-WTF gjør det automatisk).",
+    visual: "sec-csrf-flow",
   },
   {
     id: "c-csrf-token",
@@ -684,6 +694,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Hva er et CSRF-token?",
     answer:
       "Et hemmelig token som genereres per session og legges som skjult felt i forms. Serveren sjekker at tokenet matcher — hvis ikke, avvises requesten.",
+    visual: "sec-csrf-flow",
   },
   {
     id: "c-https",
@@ -692,6 +703,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Hvorfor HTTPS framfor HTTP?",
     answer:
       "HTTPS krypterer trafikken (TLS) — beskytter passord, sessions og data mot avlytting og manipulering.",
+    visual: "net-tls-handshake",
   },
   {
     id: "c-debug-prod",
@@ -708,6 +720,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Hva er OWASP Top 10?",
     answer:
       "En liste over de vanligste og alvorligste sikkerhetshullene i webapplikasjoner — Injection, Broken Access Control, Misconfiguration osv.",
+    visual: "sec-owasp-top10",
   },
 
   // ============= PRAKTISK =============
@@ -1199,6 +1212,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Hvilke HTTP-metoder er idempotente, og hva betyr det?",
     answer:
       "Idempotent betyr at samme request kan sendes flere ganger uten ny effekt. GET, PUT og DELETE er idempotente; POST og PATCH er det ikke. To identiske PUT-er gir samme tilstand, mens to POST-er typisk lager to ressurser.",
+    visual: "net-http-methods",
   },
   {
     id: "c-http-4xx-5xx",
@@ -1207,6 +1221,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Forskjellen på 4xx og 5xx — hvem har skylden?",
     answer:
       "4xx = klientfeil: requesten er feil (404 Not Found, 401 Unauthorized, 400 Bad Request). 5xx = serverfeil: serveren klarer ikke håndtere en gyldig request (500 Internal Server Error, 503 Service Unavailable). Logg 5xx aggressivt — de er vanligvis bug i koden din.",
+    visual: "net-status-classes",
   },
   {
     id: "c-http-rest-rpc",
@@ -1224,6 +1239,7 @@ export const FLASHCARDS: FlashCard[] = [
     answer:
       "Cache-Control bestemmer hvor lenge og hvor (browser, CDN) en respons kan caches (f.eks. max-age=3600). ETag er en versjons-hash på ressursen — klienten sender den i If-None-Match, og serveren svarer 304 Not Modified hvis innholdet er uendret. Sparer båndbredde.",
     code: "Cache-Control: public, max-age=3600\nETag: \"v3-abc123\"",
+    visual: "net-cache-etag",
   },
 
   {
@@ -1233,6 +1249,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Hvor bør en JWT lagres på klientsiden?",
     answer:
       "I en HttpOnly + Secure + SameSite cookie — JavaScript kan ikke lese den, så XSS kan ikke stjele tokenet. localStorage er enklere, men hvilket som helst injisert script kan lese det. Ulempen med cookies er CSRF, som må håndteres separat (SameSite=Lax/Strict eller CSRF-token).",
+    visual: "sec-jwt-three-parts",
   },
   {
     id: "c-sec-csrf-vs-xss",
@@ -1241,6 +1258,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Forskjellen på CSRF og XSS?",
     answer:
       "XSS = angriper kjører eget JS i ditt domene (stjeler data, gjør hva som helst som brukeren). CSRF = angriperens side får nettleseren din til å sende en autentisert request til en annen side du er logget på. XSS bryter siden; CSRF utnytter at du er logget inn et annet sted.",
+    visual: "sec-csrf-flow",
   },
   {
     id: "c-sec-bcrypt",
@@ -1250,6 +1268,7 @@ export const FLASHCARDS: FlashCard[] = [
     answer:
       "bcrypt er bevisst treg og inkluderer salt — det gjør brute-force og rainbow tables upraktisk. sha256 er designet for å være rask, så en GPU kan teste milliarder av kandidater per sekund. Bruk bcrypt, argon2 eller scrypt — aldri rå sha/md5.",
     code: "from werkzeug.security import generate_password_hash\nhash = generate_password_hash(pw)  # bruker pbkdf2/scrypt",
+    visual: "sec-password-hash",
   },
   {
     id: "c-sec-sop-cors",
@@ -1258,6 +1277,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Hva er Same-Origin Policy, og hva er CORS sin rolle?",
     answer:
       "Same-Origin Policy forbyr JS på ett origin (protokoll+host+port) fra å lese responsen fra et annet. CORS er serverens måte å eksplisitt åpne for det — via Access-Control-Allow-Origin-headeren. Uten CORS kan ikke browser-JS på app.no lese fra api.no.",
+    visual: "net-same-origin",
   },
   {
     id: "c-sec-sqli-prepared",
@@ -1707,6 +1727,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Forskjell på PUT og PATCH?",
     answer:
       "PUT erstatter hele ressursen — du sender hele objektet. PATCH oppdaterer DELER av ressursen — du sender bare feltene som skal endres. PUT må være idempotent; PATCH er det vanligvis også, men ikke garantert.",
+    visual: "net-http-methods",
   },
   {
     id: "c-cookies",
@@ -1715,6 +1736,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Hva er cookies, og hvordan skiller de seg fra sessions?",
     answer:
       "Cookies er små data lagret i nettleseren og sendes med hver request. Sessions ligger på serveren — cookien inneholder bare en session-ID som server slår opp. Sett HttpOnly + Secure + SameSite=Lax på session-cookies for å hindre XSS- og CSRF-angrep.",
+    visual: "net-cookie-flow",
   },
   {
     id: "c-postman",
@@ -1739,6 +1761,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Hva forteller `Content-Type`-headeren?",
     answer:
       "Hvilket dataformat body-en har. Vanlige: text/html (HTML-side), application/json (JSON-API), application/x-www-form-urlencoded (vanlig form), multipart/form-data (form med filopplasting). Klienten/serveren bruker dette til å parse innholdet riktig.",
+    visual: "net-http-anatomy",
   },
 
   // ============= DATATYPER (kap. 1) =============
@@ -1961,6 +1984,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "TLS 1.3-handshake — 4 hoved-meldinger?",
     answer:
       "1) Client Hello (SNI, ciphers, key share). 2) Server Hello + Certificate + Finished (alt etter Server Hello er kryptert). 3) Client Finished. 4) Application Data. Total: 1 RTT.",
+    visual: "net-tls-handshake",
   },
   {
     id: "c-tls-12-vs-13",
@@ -1969,6 +1993,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "TLS 1.2 vs 1.3 — to konkrete forskjeller?",
     answer:
       "(1) Handshake: 2 RTT i 1.2 vs 1 RTT i 1.3. (2) Sertifikatet er klartekst i 1.2, kryptert i 1.3 (skjules etter Server Hello). 1.3 fjerner ogsa alle utdaterte ciphers — bare AEAD-suites igjen.",
+    visual: "net-tls-handshake",
   },
   {
     id: "c-tls-cert-validation",
@@ -1977,6 +2002,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Hva sjekkes i sertifikat-validering?",
     answer:
       "(1) Signatur-kjede opp til en betrodd Root CA i klientens trust store. (2) Gyldighetsdato (Not Before / Not After). (3) CN/SAN matcher server-navnet vi spurte etter. Alle tre ma passe.",
+    visual: "sec-cert-chain",
   },
   {
     id: "c-tls-sni-leak",
@@ -2011,6 +2037,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Stateless vs stateful brannmur — kjernen?",
     answer:
       "Stateless sjekker hver pakke isolert (IP, port, flagg) — du ma ha eksplisitt regel for utgaaende OG inngaaende. Stateful holder en connection-tabell og slipper automatisk gjennom retur-trafikk pa eksisterende tilkoblinger. Moderne FW-er (iptables, pfSense) er stateful.",
+    visual: "sec-firewall",
   },
   {
     id: "c-fw-drop-vs-reject",
@@ -2077,6 +2104,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Symmetrisk vs asymmetrisk kryptering?",
     answer:
       "Symmetrisk: én delt nokkel (AES, ChaCha20). Rask, men hvordan dele nokkelen sikkert? Asymmetrisk: nokkelpar — public for kryptering / verifisering, private for dekryptering / signering (RSA, ECC). Treg, men loser nokkel-deling. TLS bruker asymmetrisk for handshake, symmetrisk for application data.",
+    visual: "sec-sym-vs-asym",
   },
   {
     id: "c-crypto-hash-vs-hmac",
@@ -2101,6 +2129,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Hva er PKI?",
     answer:
       "Public Key Infrastructure: et hierarki av Certificate Authorities (CAs) som signerer sertifikater. Et sertifikat binder en public key til en identitet (domene-navn). Klienter har en trust store med Root CA-er; sertifikater valideres ved a folge signatur-kjeden opp dit.",
+    visual: "sec-cert-chain",
   },
   {
     id: "c-crypto-aead",
@@ -2125,6 +2154,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Hvordan lagre passord (kort)?",
     answer:
       "ALDRI klartekst. ALDRI bare SHA-256 (GPU brute-forces det). Bruk en slow KDF: bcrypt, argon2, scrypt. Disse er bevisst trege (millisekunder) og bruker per-bruker salt. argon2id er anbefalt valg fra OWASP.",
+    visual: "sec-password-hash",
   },
 
   // ============= DTE-2507 deep-dive: 25 nye =============
@@ -2197,6 +2227,7 @@ export const FLASHCARDS: FlashCard[] = [
     topic: "DTE-2507",
     question: "Forskjell på symmetrisk og asymmetrisk kryptering?",
     answer: "Symmetrisk: én delt nøkkel, raskt (AES). Asymmetrisk: nøkkelpar (public/private), tregt men løser nøkkelutveksling og signering (RSA, ECDH).",
+    visual: "sec-sym-vs-asym",
   },
   {
     id: "c2507d-hash-vs-mac",
@@ -2211,6 +2242,7 @@ export const FLASHCARDS: FlashCard[] = [
     topic: "DTE-2507",
     question: "Hva er et X.509-sertifikat?",
     answer: "Et standardformat for å signere en public key. Inneholder: subject (domene), public key, utsteder (CA), gyldighetstid, signaturalgoritme, og selve signaturen fra CA-en.",
+    visual: "sec-cert-chain",
   },
   {
     id: "c2507d-arp-uten-ruter",
@@ -2260,6 +2292,7 @@ export const FLASHCARDS: FlashCard[] = [
     topic: "DTE-2507",
     question: "Hva er OWASP Top 10?",
     answer: "Liste over de 10 vanligste websårbarhetene. 2021-versjonen: Broken Access Control, Cryptographic Failures, Injection, Insecure Design, Security Misconfiguration, Vulnerable Components, Identification/Auth Failures, Software/Data Integrity, Logging, SSRF.",
+    visual: "sec-owasp-top10",
   },
   {
     id: "c2507d-firewall-stateful",
@@ -2267,6 +2300,7 @@ export const FLASHCARDS: FlashCard[] = [
     topic: "DTE-2507",
     question: "Forskjell på stateless og stateful brannmur?",
     answer: "Stateless: vurder hver pakke isolert mot reglene. Enkelt men mangler kontekst - kan ikke automatisk slippe svar inn på utgående tilkoblinger. Stateful holder en tilkoblings-tabell og kan si «slipp inn fordi denne er svar på etablert connection».",
+    visual: "sec-firewall",
   },
   {
     id: "c2507d-ids-vs-ips",

@@ -5,6 +5,7 @@
 // data engineer would expect to see in a textbook or whiteboard.
 
 import type { FC } from "react";
+import { NET_SEC_VISUALS } from "./NetSecVisuals";
 
 const STROKE = "currentColor";
 
@@ -718,6 +719,7 @@ export const VISUALS: Record<string, FC> = {
   "session-flow": SessionFlow,
   "index-vs-scan": IndexVsScan,
   "relationship-kinds": RelationshipKinds,
+  ...NET_SEC_VISUALS,
 };
 
 export type VisualKey = keyof typeof VISUALS;
