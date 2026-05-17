@@ -704,6 +704,41 @@ export const RelationshipKinds: FC = () => (
   </figure>
 );
 
+// ============= HTTP STATUSKODE-KLASSER (kvadrant) =============
+// Mnemonic-figur for 1xx/2xx/3xx/4xx/5xx — fargene følger den samme paletten
+// som beslutningstre-lesjonen på /stack/http-statuskoder. Brukerne ser
+// klassen som matrisetil, og under får hver klasse en kort linje + eksempler.
+const HttpStatusClassesQuadrant: FC = () => {
+  const ROWS: { code: string; label: string; tone: string; examples: string }[] = [
+    { code: "1xx", label: "Informasjonelt", tone: "border-violet-500/40 bg-violet-500/10 text-violet-500", examples: "100 Continue · 101 Switching Protocols" },
+    { code: "2xx", label: "Suksess", tone: "border-emerald-500/40 bg-emerald-500/10 text-emerald-500", examples: "200 OK · 201 Created · 204 No Content" },
+    { code: "3xx", label: "Redirect / cache", tone: "border-sky-500/40 bg-sky-500/10 text-sky-500", examples: "301 Moved · 302 Found · 304 Not Modified" },
+    { code: "4xx", label: "Klientfeil", tone: "border-amber-500/40 bg-amber-500/10 text-amber-500", examples: "400 · 401 · 403 · 404 · 409 · 422 · 429" },
+    { code: "5xx", label: "Serverfeil", tone: "border-red-500/40 bg-red-500/10 text-red-500", examples: "500 · 502 · 503 · 504" },
+  ];
+  return (
+    <figure className="my-3">
+      <div className="space-y-1.5">
+        {ROWS.map((r) => (
+          <div
+            key={r.code}
+            className={`rounded border px-3 py-2 flex items-baseline gap-3 ${r.tone}`}
+          >
+            <div className="font-mono font-bold text-base w-12 shrink-0">{r.code}</div>
+            <div className="text-xs">
+              <div className="font-semibold text-foreground">{r.label}</div>
+              <div className="text-[10px] text-muted-foreground font-mono">{r.examples}</div>
+            </div>
+          </div>
+        ))}
+      </div>
+      <figcaption className="text-center text-[11px] text-muted-foreground mt-2">
+        Fem-klasse-rammeverket for alle HTTP-statuskoder. Klassen plukker du i fingeren — koden plukker du av flyten.
+      </figcaption>
+    </figure>
+  );
+};
+
 // ============= REGISTRY =============
 export const VISUALS: Record<string, FC> = {
   "memory-hierarchy": MemoryHierarchy,
@@ -730,6 +765,7 @@ export const VISUALS: Record<string, FC> = {
   ...DB_MODELL_VISUALS,
   ...SQL_EXEC_VISUALS,
   ...NET_SEC_VISUALS,
+  "http-status-classes-quadrant": HttpStatusClassesQuadrant,
 };
 
 export type VisualKey = keyof typeof VISUALS;

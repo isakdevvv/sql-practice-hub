@@ -161,6 +161,7 @@ export const PHASES: readonly CurriculumPhase[] = [
       "dte2507-ids-snort",
       "dte2507-day-in-the-life",
       "dte2507-dhcp",
+      "http-statuskoder",
     ],
   },
   {

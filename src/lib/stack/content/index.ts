@@ -214,6 +214,7 @@ import { content as sqlSchemaBuilder } from "./sql-schema-builder";
 import { content as microkernelArkitektur } from "./microkernel-arkitektur";
 import { content as dte2505IoManagement } from "./dte2505-io-management";
 import { content as authFlows } from "./auth-flows";
+import { content as httpStatuskoder } from "./http-statuskoder";
 import type { TrinnContent } from "../types";
 
 export const TRINN: TrinnContent[] = [
@@ -324,6 +325,8 @@ export const TRINN: TrinnContent[] = [
   dte2505IoManagement,
   // Auth flows — Session vs JWT vs OAuth side ved side
   authFlows,
+  // HTTP statuskoder — interaktiv lesjon (beslutningstre + response-builder + flow + quiz)
+  httpStatuskoder,
 ];
 
 import { curriculumIndexOf } from "../curriculum";
