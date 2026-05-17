@@ -2,16 +2,24 @@ import { Link } from "@tanstack/react-router";
 import {Lightbulb, ArrowLeft } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
+import { SocketLifecycleViz } from "./SocketLifecycleViz";
+import { TcpVsUdpFlow } from "./TcpVsUdpFlow";
+import { BlockingVsNonblocking } from "./BlockingVsNonblocking";
+import { PortBindingViz } from "./PortBindingViz";
 
 const STEPS = [
   { title: "Hva en socket er", anchor: "intro" },
+  { title: "Socket-livssyklus (interaktiv)", anchor: "lifecycle" },
   { title: "TCP-server-skjelett", anchor: "tcp-server" },
   { title: "TCP-klient-skjelett", anchor: "tcp-klient" },
   { title: "UDP — sendto / recvfrom", anchor: "udp" },
+  { title: "TCP vs UDP — leveranse-sim", anchor: "tcp-vs-udp" },
   { title: "Concurrent server — threading", anchor: "threading" },
+  { title: "Blocking vs non-blocking", anchor: "blocking" },
   { title: "select og asyncio", anchor: "async" },
   { title: "SSL / TLS-wrapping", anchor: "tls" },
   { title: "Vanlige feil og fallgruver", anchor: "feil" },
+  { title: "Port-binding & kernel-routing", anchor: "port-binding" },
   { title: "Praksis — kjorbare oppgaver", anchor: "praksis" },
 ];
 
@@ -70,8 +78,18 @@ maskinen. Veldig brukte:
           </div>
         </section>
 
+        <section id="lifecycle" className="mb-10">
+          <h2 className="text-xl font-semibold mb-3">2. Socket-livssyklus (interaktiv)</h2>
+          <p className="text-sm text-muted-foreground mb-4">
+            Før du leser koden under: kjør gjennom hva som faktisk skjer i kernel
+            for hvert API-kall. Lytte-socketen, accept()-socketen, handshake-pakkene
+            og TIME_WAIT — alt på ett bilde.
+          </p>
+          <SocketLifecycleViz />
+        </section>
+
         <section id="tcp-server" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">2. TCP-server-skjelett</h2>
+          <h2 className="text-xl font-semibold mb-3">3. TCP-server-skjelett</h2>
           <p className="text-sm text-muted-foreground mb-4">
             Server-loop-en har alltid samme fem skritt: socket → bind → listen
             → accept → recv/send. Kjor det utenat.
@@ -112,7 +130,7 @@ while True:
         </section>
 
         <section id="tcp-klient" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">3. TCP-klient-skjelett</h2>
+          <h2 className="text-xl font-semibold mb-3">4. TCP-klient-skjelett</h2>
           <p className="text-sm text-muted-foreground mb-4">
             Klient-koden er enklere: socket → connect → send/recv → close.
           </p>
@@ -142,7 +160,7 @@ print(response.decode("utf-8", errors="replace"))`}</pre>
         </section>
 
         <section id="udp" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">4. UDP — sendto / recvfrom</h2>
+          <h2 className="text-xl font-semibold mb-3">5. UDP — sendto / recvfrom</h2>
           <p className="text-sm text-muted-foreground mb-4">
             UDP har ingen tilkobling — hver pakke er selvstendig. Ikke{" "}
             <code>accept()</code>, ikke <code>connect()</code> (kan brukes, men
@@ -172,8 +190,17 @@ print("Server-tid:", data)`}</pre>
           </p>
         </section>
 
+        <section id="tcp-vs-udp" className="mb-10">
+          <h2 className="text-xl font-semibold mb-3">6. TCP vs UDP — leveranse-sim</h2>
+          <p className="text-sm text-muted-foreground mb-4">
+            Samme 6-pakkes melding sendes parallelt via TCP og UDP gjennom en lossy kanal.
+            Se hvilken som tåler tap, og hvilken som lar deg betale prisen.
+          </p>
+          <TcpVsUdpFlow />
+        </section>
+
         <section id="threading" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">5. Concurrent server — threading</h2>
+          <h2 className="text-xl font-semibold mb-3">7. Concurrent server — threading</h2>
           <p className="text-sm text-muted-foreground mb-4">
             En naiv server bare aksepterer ÉN klient om gangen. Vil du betjene
             flere parallelt, mater du hver tilkobling i en egen trad:
@@ -204,8 +231,18 @@ while True:
           </p>
         </section>
 
+        <section id="blocking" className="mb-10">
+          <h2 className="text-xl font-semibold mb-3">8. Blocking vs non-blocking</h2>
+          <p className="text-sm text-muted-foreground mb-4">
+            <code>recv()</code> i default-modus blokkerer hele tråden til data ankommer.
+            Etter <code>setblocking(False)</code> kaster det <code>BlockingIOError</code>{" "}
+            (EAGAIN) når intet venter — og tråden kan gjøre annet i mellomtiden.
+          </p>
+          <BlockingVsNonblocking />
+        </section>
+
         <section id="async" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">6. select og asyncio</h2>
+          <h2 className="text-xl font-semibold mb-3">9. select og asyncio</h2>
           <p className="text-sm text-muted-foreground mb-4">
             <code>select()</code> tar en liste sockets og forteller deg hvilke
             som er klare for I/O — så du slipper aa blokkere paa én av dem mens
@@ -252,7 +289,7 @@ asyncio.run(main())`}</pre>
         </section>
 
         <section id="tls" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">7. SSL / TLS-wrapping</h2>
+          <h2 className="text-xl font-semibold mb-3">10. SSL / TLS-wrapping</h2>
           <p className="text-sm text-muted-foreground mb-4">
             TLS legges OPPÅ en TCP-socket. Python-modulen <code>ssl</code> tar
             en raw socket og returnerer en wrapped variant som kjorer
@@ -295,7 +332,7 @@ while True:
         </section>
 
         <section id="feil" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">8. Vanlige feil og fallgruver</h2>
+          <h2 className="text-xl font-semibold mb-3">11. Vanlige feil og fallgruver</h2>
           <div className="space-y-3">
             <div className="rounded-lg border border-border bg-card p-4 text-sm">
               <h3 className="font-semibold mb-1">«Address already in use»</h3>
@@ -333,8 +370,17 @@ while True:
           </div>
         </section>
 
+        <section id="port-binding" className="mb-10">
+          <h2 className="text-xl font-semibold mb-3">12. Port-binding &amp; kernel-routing</h2>
+          <p className="text-sm text-muted-foreground mb-4">
+            Hvorfor <code>EADDRINUSE</code>? Hvorfor kan to prosesser ha port 53 (DNS) i fred?
+            Lek med kernel-port-tabellen — prøv å binde og se hvilke kombinasjoner som er lovlige.
+          </p>
+          <PortBindingViz />
+        </section>
+
         <section id="praksis" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">9. Praksis — kjorbare oppgaver</h2>
+          <h2 className="text-xl font-semibold mb-3">13. Praksis — kjorbare oppgaver</h2>
           <p className="text-sm text-muted-foreground mb-4">
             15 oppgaver under <Link to="/python" className="text-brand hover:underline">/python</Link>{" "}
             med topic «Sockets» — alt fra echo-server til HTTP-klient via raw
