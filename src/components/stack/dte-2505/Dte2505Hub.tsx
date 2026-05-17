@@ -127,6 +127,13 @@ const LABS: Lab[] = [
     taggar: ["I/O", "OSTEP 36"],
   },
   {
+    slug: "dte2505-lagring",
+    title: "Lagringsmedier — HDD, SSD, NVMe (dyp)",
+    blurb: "HDD-fysikk (seek+rot), NAND-celler (SLC/MLC/TLC/QLC), erase-before-write, wear leveling, TRIM. 7 viz + drill.",
+    Icon: HardDrive,
+    taggar: ["lagring", "fysikk"],
+  },
+  {
     slug: "dte2505-virtualisering",
     title: "Virtualisering vs containere (dyp)",
     blurb: "Hypervisor type-1 vs type-2 (KVM/VMware), containere via namespaces+cgroups, isolasjon-overhead-sammenligning.",
@@ -253,6 +260,14 @@ const EXAM_TOPICS: ExamTopic[] = [
       { slug: "brukere-rettigheter", label: "rwx" },
       { slug: "dte2505-spesialbits", label: "setuid/setgid/sticky" },
       { slug: "dte2505-rwx-kalkulator", label: "rwx-kalkulator" },
+    ],
+  },
+  {
+    topic: "Lagringsmedier",
+    Icon: HardDrive,
+    slugs: [
+      { slug: "dte2505-lagring", label: "HDD/SSD/NVMe-fysikk (dyp)" },
+      { slug: "dte2505-io-management", label: "Disk-scheduling i I/O-stack" },
     ],
   },
   {

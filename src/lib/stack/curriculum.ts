@@ -140,6 +140,7 @@ export const PHASES: readonly CurriculumPhase[] = [
       "dte2505-ipc",
       "microkernel-arkitektur",
       "dte2505-io-management",
+      "dte2505-lagring",
     ],
   },
   {
