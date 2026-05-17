@@ -15,6 +15,11 @@ import {
 } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { LearningPath } from "@/components/stack/LearningPath";
+import {
+  HubStartCta,
+  ModulStatusBadge,
+  ModulProgressBar,
+} from "@/components/stack/HubShared";
 
 type Modul = {
   nr: string;
@@ -231,6 +236,11 @@ export function Tek1501Hub() {
           </div>
         </div>
 
+        <HubStartCta
+          startSlug={MODULER[0].trinn[0].slug}
+          startSubtitle="Modul 1: deskriptiv statistikk. Bygg deg gjennom sannsynlighet, fordelinger og inferens."
+        />
+
         <section className="mb-12">
           <LearningPath
             fag="TEK-1501"
@@ -274,7 +284,7 @@ export function Tek1501Hub() {
           />
         </section>
 
-        <section className="mb-12">
+        <section id="moduler" className="mb-12 scroll-mt-20">
           <h2 className="text-xl font-semibold mb-1">Modul for modul</h2>
           <p className="text-xs text-muted-foreground mb-5">
             Strukturen foelger UiT-emnebeskrivelsen for TEK-1501. Pedagogisk
@@ -283,6 +293,7 @@ export function Tek1501Hub() {
           <div className="space-y-5">
             {MODULER.map((m) => {
               const Icon = m.Icon;
+              const slugs = m.trinn.map((t) => t.slug);
               return (
                 <div
                   key={m.nr}
@@ -300,6 +311,7 @@ export function Tek1501Hub() {
                         <span className="text-xs text-muted-foreground">
                           · {m.uke}
                         </span>
+                        <ModulStatusBadge trinnSlugs={slugs} />
                       </div>
                       <h3 className="text-base font-semibold text-foreground">
                         {m.tittel}
@@ -329,6 +341,7 @@ export function Tek1501Hub() {
                       </Link>
                     ))}
                   </div>
+                  <ModulProgressBar trinnSlugs={slugs} />
                 </div>
               );
             })}

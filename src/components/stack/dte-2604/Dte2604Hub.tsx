@@ -1,6 +1,10 @@
 import { Link } from "@tanstack/react-router";
 import { ArrowRight, Users, ListChecks, Boxes, GitMerge, Workflow, GitBranch, Lightbulb } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
+import {
+  HubStartCta,
+  ModulStatusBadge,
+} from "@/components/stack/HubShared";
 
 type Practice = {
   href: string;
@@ -88,6 +92,13 @@ export function Dte2604Hub() {
           </p>
         </div>
 
+        <HubStartCta
+          startSlug="su-metodikker"
+          startSubtitle="Start med metodikkene (Scrum/Kanban/XP), så brukerhistorier, UML, og praksis i gruppe."
+          jumpHref="#moduler"
+          jumpSubtitle="Fire mini-kurs: metodikker, brukerhistorier, UML, prosjekt-praksis."
+        />
+
         <section className="mb-10">
           <h2 className="text-xl font-semibold mb-3">Smidig på 30 sekunder — cheatsheet</h2>
           <p className="text-sm text-muted-foreground mb-4">
@@ -119,7 +130,7 @@ export function Dte2604Hub() {
           </p>
         </section>
 
-        <section className="mb-10">
+        <section id="moduler" className="mb-10 scroll-mt-20">
           <h2 className="text-xl font-semibold mb-3">Mini-kurs</h2>
           <div className="grid sm:grid-cols-2 gap-3">
             {COURSES.map((c) => {
@@ -146,6 +157,7 @@ export function Dte2604Hub() {
                   <div className="flex items-center gap-2 mb-2">
                     <Icon className="h-4 w-4 text-brand" />
                     <h3 className="font-semibold text-foreground leading-tight">{c.title}</h3>
+                    <ModulStatusBadge trinnSlugs={[c.slug]} />
                   </div>
                   <p className="text-sm text-muted-foreground leading-relaxed">{c.shortDescription}</p>
                   <div className="mt-3 flex items-center text-xs text-muted-foreground group-hover:text-foreground transition-colors">

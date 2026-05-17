@@ -12,6 +12,10 @@ import {
   Lightbulb,
 } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
+import {
+  HubStartCta,
+  ModulStatusBadge,
+} from "@/components/stack/HubShared";
 
 type Practice = {
   href: string;
@@ -116,6 +120,13 @@ export function Dte2603Hub() {
           </p>
         </div>
 
+        <HubStartCta
+          startSlug="kotlin-grunnlag"
+          startSubtitle="Start med Kotlin-språket, så Android-livssyklus og MVVM. Korutiner, Room og Retrofit på toppen."
+          jumpHref="#moduler"
+          jumpSubtitle="Seks mini-kurs: Kotlin, Android, MVVM, korutiner, Room/RecyclerView, Retrofit."
+        />
+
         <section className="mb-10">
           <h2 className="text-xl font-semibold mb-3">Lagene i en Android-app</h2>
           <p className="text-sm text-muted-foreground mb-4">
@@ -211,7 +222,7 @@ tall.filter { it > 2 }.map { it * 10 }     // → [30, 40]`}</pre>
           </div>
         </section>
 
-        <section className="mb-10">
+        <section id="moduler" className="mb-10 scroll-mt-20">
           <h2 className="text-xl font-semibold mb-3">Mini-kurs</h2>
           <div className="grid sm:grid-cols-2 gap-3">
             {COURSES.map((c) => {
@@ -247,6 +258,7 @@ tall.filter { it > 2 }.map { it * 10 }     // → [30, 40]`}</pre>
                     <h3 className="font-semibold text-foreground leading-tight">
                       {c.title}
                     </h3>
+                    <ModulStatusBadge trinnSlugs={[c.slug]} />
                   </div>
                   <p className="text-sm text-muted-foreground leading-relaxed">
                     {c.shortDescription}

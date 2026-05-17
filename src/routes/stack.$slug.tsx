@@ -1,6 +1,7 @@
 import { createFileRoute, notFound } from "@tanstack/react-router";
 import { Suspense, useEffect } from "react";
 import { getTrinnBySlug } from "@/lib/stack/content";
+import { markTrinnSeen } from "@/lib/stack/moduleProgress";
 import { recordVisit } from "@/lib/userSubjects";
 import { SiteHeader } from "@/components/SiteHeader";
 
@@ -29,6 +30,7 @@ function TrinnPage() {
   const trinn = getTrinnBySlug(slug);
   useEffect(() => {
     if (COURSE_SLUGS.has(slug)) recordVisit(slug);
+    markTrinnSeen(slug);
   }, [slug]);
   if (!trinn) return null;
   const Component = trinn.Component;

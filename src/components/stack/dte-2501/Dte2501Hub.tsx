@@ -24,6 +24,10 @@ import {
   Calculator,
 } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
+import {
+  HubStartCta,
+  ModulStatusBadge,
+} from "@/components/stack/HubShared";
 import { LearningPath } from "@/components/stack/LearningPath";
 
 type Practice = {
@@ -256,6 +260,7 @@ function CourseCard({ c }: { c: Course }) {
       <div className="flex items-center gap-2 mb-2">
         <Icon className="h-4 w-4 text-brand" />
         <h3 className="font-semibold text-foreground leading-tight">{c.title}</h3>
+        <ModulStatusBadge trinnSlugs={[c.slug]} />
       </div>
       <p className="text-sm text-muted-foreground leading-relaxed">{c.shortDescription}</p>
       <div className="mt-3 flex items-center text-xs text-muted-foreground group-hover:text-foreground transition-colors">
@@ -288,6 +293,13 @@ export function Dte2501Hub() {
             å lese.
           </p>
         </div>
+
+        <HubStartCta
+          startSlug="dte2501-knn"
+          startSubtitle="Start med k-NN på det moderne ML-sporet, så regresjon og k-Means. Klassisk AI er supplement."
+          jumpHref="#moduler"
+          jumpSubtitle="Hopp til ML-sporet eller klassisk AI-sporet — 25+ mini-kurs totalt."
+        />
 
         <section className="mb-10">
           <LearningPath
@@ -422,7 +434,7 @@ export function Dte2501Hub() {
           </p>
         </section>
 
-        <section className="mb-10">
+        <section id="moduler" className="mb-10 scroll-mt-20">
           <h2 className="text-xl font-semibold mb-1">Moderne ML-spor</h2>
           <p className="text-xs text-muted-foreground mb-4">
             Eksamenspensumet. Bygger videre på DTE-2602.
