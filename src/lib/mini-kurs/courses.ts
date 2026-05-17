@@ -1199,7 +1199,773 @@ app = create_app()
   ],
 };
 
-export const MINI_COURSES: readonly MiniCourse[] = [FLASK_FRA_NULL, BYGG_MINI_SHELL, UTLEIEAPP_FRA_NULL];
+// ============================================================================
+// TCP-STATE-MACHINE SIMULATOR — 7 leksjoner som bygger TCP-tilstandsmaskinen
+// fra null. Studenten implementerer hver overgang i diagrammet fra DTE-2507-
+// forelesningen som én if-gren i transition(). Dekker 3-veis handshake (begge
+// sider), tap + retransmit, dataoverføring med SEQ/ACK, og 4-veis close.
+//
+// Runner: python-script (pure Python, ingen socket-import — alt simuleres med
+// objektmetoder så det kjører i Pyodide uten avhengigheter).
+// ============================================================================
+
+const TCP_STATE_MACHINE: MiniCourse = {
+  id: "tcp-state-machine",
+  slug: "tcp-state-machine",
+  title: "TCP-state-machine fra null",
+  blurb:
+    "Bygg TCP-tilstandsmaskinen i Python — fra CLOSED → SYN_SENT → ESTABLISHED → FIN_WAIT → TIME_WAIT. Hver pil i diagrammet fra forelesningen blir én if-gren. Du implementerer 3-veis handshake (klient + server), tap og retransmit, dataoverføring med SEQ/ACK, og 4-veis close — og ender opp med å kjøre et helt scenario som printer sekvensdiagram.",
+  estimertTid: "45–60 min",
+  fag: ["DTE-2507", "Nettverk", "TCP/IP"],
+  color: "success",
+  lessons: [
+    // ============ LEKSJON 1 ===========================================
+    {
+      id: "01-state-enum",
+      title: "1. Tilstands-enum og første overgang",
+      narrative:
+        "TCP er en **tilstandsmaskin**. En tilkobling er alltid i én av 11 navngitte tilstander (CLOSED, LISTEN, SYN_SENT, SYN_RCVD, ESTABLISHED, FIN_WAIT_1, FIN_WAIT_2, CLOSE_WAIT, LAST_ACK, TIME_WAIT, CLOSING). En **hendelse** — `active_open`, `recv_syn`, `recv_ack`, `close`, `timeout` — får tilstanden til å skifte.\n\nDiagrammet fra forelesningen viser hver overgang som en pil med form `event / action`. F.eks. `LISTEN → SYN_RCVD` ved `recv_syn / send SYN-ACK`. Hver pil blir én if-gren i `transition()`.\n\n**Din oppgave:** Implementér ÉN overgang — den aller første. Når `state == CLOSED` og hendelsen er `\"active_open\"` (klienten ber om å åpne en tilkobling):\n\n1. Sett `self.state = State.SYN_SENT`\n2. Legg `\"SYN\"` til `self.sendt`-listen\n\n`State`-enumet og resten av strukturen er gitt — du fyller bare inn én if-blokk.",
+      files: {
+        "tcp.py": `from enum import Enum
+
+
+class State(Enum):
+    CLOSED = "CLOSED"
+    LISTEN = "LISTEN"
+    SYN_SENT = "SYN_SENT"
+    SYN_RCVD = "SYN_RCVD"
+    ESTABLISHED = "ESTABLISHED"
+    FIN_WAIT_1 = "FIN_WAIT_1"
+    FIN_WAIT_2 = "FIN_WAIT_2"
+    CLOSE_WAIT = "CLOSE_WAIT"
+    LAST_ACK = "LAST_ACK"
+    TIME_WAIT = "TIME_WAIT"
+    CLOSING = "CLOSING"
+
+
+class TcpConnection:
+    def __init__(self, navn):
+        self.navn = navn
+        self.state = State.CLOSED
+        self.sendt = []  # log av segmenter vi har sendt
+
+    def transition(self, event):
+        """Én overgang per kall — en if-gren per pil i diagrammet."""
+        # === DIN OPPGAVE ===
+        # CLOSED + "active_open" → SYN_SENT / send "SYN"
+        pass
+
+
+# Test
+def sjekk(faktisk, forventet, navn):
+    if faktisk == forventet:
+        print(f"OK   {navn}")
+    else:
+        print(f"FEIL {navn}: fikk {faktisk!r}, forventet {forventet!r}")
+
+
+c = TcpConnection("klient")
+sjekk(c.state, State.CLOSED, "starter i CLOSED")
+
+c.transition("active_open")
+sjekk(c.state, State.SYN_SENT, "active_open → SYN_SENT")
+sjekk(c.sendt, ["SYN"], "SYN ble sendt")
+`,
+      },
+      defaultFile: "tcp.py",
+      editable: ["tcp.py"],
+      run: { kind: "python-script", entry: "tcp.py" },
+      verifications: [
+        {
+          label: "Tilkoblingen starter i CLOSED",
+          check: { kind: "output-contains", needle: "OK   starter i CLOSED" },
+        },
+        {
+          label: "active_open går til SYN_SENT",
+          check: { kind: "output-contains", needle: "OK   active_open → SYN_SENT" },
+        },
+        {
+          label: "SYN-segmentet legges i sendt-listen",
+          check: { kind: "output-contains", needle: "OK   SYN ble sendt" },
+        },
+      ],
+      hint:
+        'if self.state == State.CLOSED and event == "active_open":\n    self.state = State.SYN_SENT\n    self.sendt.append("SYN")',
+    },
+
+    // ============ LEKSJON 2 ===========================================
+    {
+      id: "02-client-handshake",
+      title: "2. Fullfør klientens 3-veis handshake",
+      narrative:
+        "Klienten har sendt SYN og er nå i SYN_SENT. Den venter på at serveren skal svare med **SYN-ACK** — to flagg i ett segment som sier «ja, jeg vil koble til, og jeg bekrefter din SYN».\n\nNår SYN-ACK ankommer gjør klienten to ting:\n\n1. Sender en ren **ACK** tilbake (bekreftelse på SYN-ACK-en)\n2. Går til ESTABLISHED — tilkoblingen er åpen\n\nHele handshaken fra klientens side:\n\n```\n  CLOSED ─ active_open / send SYN ─→ SYN_SENT\n  SYN_SENT ─ recv_syn_ack / send ACK ─→ ESTABLISHED\n```\n\n**Din oppgave:** Legg til ÉN ny if-gren i `transition()`: `SYN_SENT + \"recv_syn_ack\"` → `ESTABLISHED`, og send `\"ACK\"`. Behold overgangen fra leksjon 1.",
+      files: {
+        "tcp.py": `from enum import Enum
+
+
+class State(Enum):
+    CLOSED = "CLOSED"
+    LISTEN = "LISTEN"
+    SYN_SENT = "SYN_SENT"
+    SYN_RCVD = "SYN_RCVD"
+    ESTABLISHED = "ESTABLISHED"
+    FIN_WAIT_1 = "FIN_WAIT_1"
+    FIN_WAIT_2 = "FIN_WAIT_2"
+    CLOSE_WAIT = "CLOSE_WAIT"
+    LAST_ACK = "LAST_ACK"
+    TIME_WAIT = "TIME_WAIT"
+    CLOSING = "CLOSING"
+
+
+class TcpConnection:
+    def __init__(self, navn):
+        self.navn = navn
+        self.state = State.CLOSED
+        self.sendt = []
+
+    def transition(self, event):
+        # Beholder leksjon 1:
+        if self.state == State.CLOSED and event == "active_open":
+            self.state = State.SYN_SENT
+            self.sendt.append("SYN")
+            return
+
+        # === DIN OPPGAVE ===
+        # SYN_SENT + "recv_syn_ack" → ESTABLISHED / send "ACK"
+
+
+def sjekk(faktisk, forventet, navn):
+    if faktisk == forventet:
+        print(f"OK   {navn}")
+    else:
+        print(f"FEIL {navn}: fikk {faktisk!r}, forventet {forventet!r}")
+
+
+c = TcpConnection("klient")
+c.transition("active_open")
+c.transition("recv_syn_ack")
+
+sjekk(c.state, State.ESTABLISHED, "tilkoblingen er etablert")
+sjekk(c.sendt, ["SYN", "ACK"], "hele handshake-loggen er [SYN, ACK]")
+`,
+      },
+      defaultFile: "tcp.py",
+      editable: ["tcp.py"],
+      run: { kind: "python-script", entry: "tcp.py" },
+      verifications: [
+        {
+          label: "Klienten ender i ESTABLISHED",
+          check: { kind: "output-contains", needle: "OK   tilkoblingen er etablert" },
+        },
+        {
+          label: "Sendte segmenter er [SYN, ACK]",
+          check: { kind: "output-contains", needle: "OK   hele handshake-loggen er [SYN, ACK]" },
+        },
+      ],
+      hint:
+        'if self.state == State.SYN_SENT and event == "recv_syn_ack":\n    self.state = State.ESTABLISHED\n    self.sendt.append("ACK")\n    return',
+    },
+
+    // ============ LEKSJON 3 ===========================================
+    {
+      id: "03-server-handshake",
+      title: "3. Server-sidens handshake (passive open)",
+      narrative:
+        "Serveren begynner i CLOSED, men i stedet for `active_open` kaller den `passive_open` (i ekte kode: `socket.listen()`). Det tar den til **LISTEN**, hvor den venter passivt på innkommende SYN-er.\n\nNår en SYN ankommer går serveren til **SYN_RCVD** og svarer med SYN-ACK. Når klientens siste ACK kommer, går serveren til ESTABLISHED.\n\n```\n  CLOSED   ─ passive_open                ─→ LISTEN\n  LISTEN   ─ recv_syn      / send SYN-ACK ─→ SYN_RCVD\n  SYN_RCVD ─ recv_ack                    ─→ ESTABLISHED\n```\n\nLegg merke til at LISTEN-overgangen IKKE har en handling — serveren sitter bare og venter. Ingen segmenter sendes ut.\n\n**Din oppgave:** Legg til de tre nye if-grenene over.",
+      files: {
+        "tcp.py": `from enum import Enum
+
+
+class State(Enum):
+    CLOSED = "CLOSED"
+    LISTEN = "LISTEN"
+    SYN_SENT = "SYN_SENT"
+    SYN_RCVD = "SYN_RCVD"
+    ESTABLISHED = "ESTABLISHED"
+    FIN_WAIT_1 = "FIN_WAIT_1"
+    FIN_WAIT_2 = "FIN_WAIT_2"
+    CLOSE_WAIT = "CLOSE_WAIT"
+    LAST_ACK = "LAST_ACK"
+    TIME_WAIT = "TIME_WAIT"
+    CLOSING = "CLOSING"
+
+
+class TcpConnection:
+    def __init__(self, navn):
+        self.navn = navn
+        self.state = State.CLOSED
+        self.sendt = []
+
+    def transition(self, event):
+        # Klient-grener fra leksjon 1 og 2:
+        if self.state == State.CLOSED and event == "active_open":
+            self.state = State.SYN_SENT
+            self.sendt.append("SYN")
+            return
+        if self.state == State.SYN_SENT and event == "recv_syn_ack":
+            self.state = State.ESTABLISHED
+            self.sendt.append("ACK")
+            return
+
+        # === DIN OPPGAVE: tre nye grener ===
+        # 1) CLOSED   + "passive_open" → LISTEN (ingen send)
+        # 2) LISTEN   + "recv_syn"     → SYN_RCVD / send "SYN-ACK"
+        # 3) SYN_RCVD + "recv_ack"     → ESTABLISHED (ingen send)
+
+
+def sjekk(faktisk, forventet, navn):
+    if faktisk == forventet:
+        print(f"OK   {navn}")
+    else:
+        print(f"FEIL {navn}: fikk {faktisk!r}, forventet {forventet!r}")
+
+
+s = TcpConnection("server")
+s.transition("passive_open")
+sjekk(s.state, State.LISTEN, "passive_open → LISTEN")
+sjekk(s.sendt, [], "LISTEN sender ingenting")
+
+s.transition("recv_syn")
+sjekk(s.state, State.SYN_RCVD, "recv_syn → SYN_RCVD")
+sjekk(s.sendt, ["SYN-ACK"], "server sender SYN-ACK")
+
+s.transition("recv_ack")
+sjekk(s.state, State.ESTABLISHED, "recv_ack → ESTABLISHED (server)")
+`,
+      },
+      defaultFile: "tcp.py",
+      editable: ["tcp.py"],
+      run: { kind: "python-script", entry: "tcp.py" },
+      verifications: [
+        {
+          label: "passive_open tar serveren til LISTEN",
+          check: { kind: "output-contains", needle: "OK   passive_open → LISTEN" },
+        },
+        {
+          label: "Server i LISTEN sender ikke noe",
+          check: { kind: "output-contains", needle: "OK   LISTEN sender ingenting" },
+        },
+        {
+          label: "recv_syn flytter serveren til SYN_RCVD",
+          check: { kind: "output-contains", needle: "OK   recv_syn → SYN_RCVD" },
+        },
+        {
+          label: "Server sender SYN-ACK",
+          check: { kind: "output-contains", needle: "OK   server sender SYN-ACK" },
+        },
+        {
+          label: "Etter klientens ACK er serveren ESTABLISHED",
+          check: { kind: "output-contains", needle: "OK   recv_ack → ESTABLISHED (server)" },
+        },
+      ],
+      hint:
+        'if self.state == State.CLOSED and event == "passive_open":\n    self.state = State.LISTEN\n    return\nif self.state == State.LISTEN and event == "recv_syn":\n    self.state = State.SYN_RCVD\n    self.sendt.append("SYN-ACK")\n    return\nif self.state == State.SYN_RCVD and event == "recv_ack":\n    self.state = State.ESTABLISHED\n    return',
+    },
+
+    // ============ LEKSJON 4 ===========================================
+    {
+      id: "04-retransmit",
+      title: "4. Tap og retransmit i SYN_SENT",
+      narrative:
+        "Internett er ikke pålitelig — en SYN kan forsvinne på veien. Klienten sitter i SYN_SENT og venter, men ingen SYN-ACK kommer.\n\nEtter en **timeout** retransmitterer klienten SYN-en. Etter 3 forsøk uten svar gir den opp og går tilbake til CLOSED.\n\n```\n  SYN_SENT + timeout (retries < 3) → SYN_SENT / send \"SYN\" (igjen)\n  SYN_SENT + timeout (retries ≥ 3) → CLOSED   / (gi opp)\n```\n\nLegg merke til at vi **blir i samme state** ved første timeout — bare loggen og telleren endres. Det er en helt gyldig overgang (selv-loop på diagrammet).\n\nVi har lagt til `self.retries = 0` i `__init__`. Din jobb: implementér timeout-grenen så telleren økes for hvert forsøk, og etter den 3. (når `retries == 3`) går vi til CLOSED uten å sende.\n\n**Tips:** Inkrement først, deretter sjekk. Bruk én if-gren med en intern verdi-sjekk.",
+      files: {
+        "tcp.py": `from enum import Enum
+
+
+class State(Enum):
+    CLOSED = "CLOSED"
+    LISTEN = "LISTEN"
+    SYN_SENT = "SYN_SENT"
+    SYN_RCVD = "SYN_RCVD"
+    ESTABLISHED = "ESTABLISHED"
+    FIN_WAIT_1 = "FIN_WAIT_1"
+    FIN_WAIT_2 = "FIN_WAIT_2"
+    CLOSE_WAIT = "CLOSE_WAIT"
+    LAST_ACK = "LAST_ACK"
+    TIME_WAIT = "TIME_WAIT"
+    CLOSING = "CLOSING"
+
+
+MAX_RETRIES = 3
+
+
+class TcpConnection:
+    def __init__(self, navn):
+        self.navn = navn
+        self.state = State.CLOSED
+        self.sendt = []
+        self.retries = 0
+
+    def transition(self, event):
+        if self.state == State.CLOSED and event == "active_open":
+            self.state = State.SYN_SENT
+            self.sendt.append("SYN")
+            return
+        if self.state == State.SYN_SENT and event == "recv_syn_ack":
+            self.state = State.ESTABLISHED
+            self.sendt.append("ACK")
+            return
+
+        # === DIN OPPGAVE ===
+        # SYN_SENT + "timeout":
+        #   - hvis self.retries < MAX_RETRIES: behold state, send "SYN" igjen,
+        #     og inkrement self.retries.
+        #   - ellers (retries >= MAX_RETRIES): gå til CLOSED, ikke send noe.
+
+
+def sjekk(faktisk, forventet, navn):
+    if faktisk == forventet:
+        print(f"OK   {navn}")
+    else:
+        print(f"FEIL {navn}: fikk {faktisk!r}, forventet {forventet!r}")
+
+
+c = TcpConnection("klient")
+c.transition("active_open")
+sjekk(c.sendt, ["SYN"], "første SYN sendt")
+
+c.transition("timeout")
+sjekk(c.state, State.SYN_SENT, "etter 1. timeout: fortsatt SYN_SENT")
+sjekk(c.sendt, ["SYN", "SYN"], "SYN retransmittert (forsøk 2)")
+sjekk(c.retries, 1, "retries = 1")
+
+c.transition("timeout")
+c.transition("timeout")
+sjekk(c.retries, 3, "retries = 3 etter tre timeouts")
+sjekk(c.sendt, ["SYN", "SYN", "SYN", "SYN"], "SYN sendt totalt 4 ganger")
+
+c.transition("timeout")  # nå skal vi gi opp
+sjekk(c.state, State.CLOSED, "etter 4. timeout: tilbake til CLOSED")
+`,
+      },
+      defaultFile: "tcp.py",
+      editable: ["tcp.py"],
+      run: { kind: "python-script", entry: "tcp.py" },
+      verifications: [
+        {
+          label: "Første SYN sendes umiddelbart",
+          check: { kind: "output-contains", needle: "OK   første SYN sendt" },
+        },
+        {
+          label: "Klienten blir i SYN_SENT etter første timeout",
+          check: { kind: "output-contains", needle: "OK   etter 1. timeout: fortsatt SYN_SENT" },
+        },
+        {
+          label: "Retries-telleren økes til 1",
+          check: { kind: "output-contains", needle: "OK   retries = 1" },
+        },
+        {
+          label: "Etter tre timeouts er retries = 3",
+          check: { kind: "output-contains", needle: "OK   retries = 3 etter tre timeouts" },
+        },
+        {
+          label: "Klienten gir opp og går til CLOSED",
+          check: { kind: "output-contains", needle: "OK   etter 4. timeout: tilbake til CLOSED" },
+        },
+      ],
+      hint:
+        'if self.state == State.SYN_SENT and event == "timeout":\n    if self.retries < MAX_RETRIES:\n        self.sendt.append("SYN")\n        self.retries += 1\n    else:\n        self.state = State.CLOSED\n    return',
+    },
+
+    // ============ LEKSJON 5 ===========================================
+    {
+      id: "05-data-seq",
+      title: "5. Datafase: SEQ-nummer og ACK",
+      narrative:
+        "I ESTABLISHED-state flyter data. Hvert segment har et **sekvensnummer (SEQ)** som peker på første byte i payload. Mottakeren svarer med en **ACK** som er nummeret på neste byte den forventer — altså `seq + len(payload)`.\n\nI ekte TCP starter SEQ med en tilfeldig ISN (Initial Sequence Number). Vi setter `self.seq = 1000` for forutsigbare tester.\n\n```\n  ESTABLISHED + send_data(payload) → ESTABLISHED / send \"Data(seq=X,len=Y)\"\n                                                   self.seq += len(payload)\n```\n\n**Din oppgave:** Implementér metoden `send_data(payload)`:\n\n1. Sjekk at vi er i ESTABLISHED (hvis ikke, returner stille — TCP nekter å sende data utenfor ESTABLISHED).\n2. Legg `f\"Data(seq={self.seq},len={len(payload)})\"` til `self.sendt`.\n3. Inkrement `self.seq` med `len(payload)`.",
+      files: {
+        "tcp.py": `from enum import Enum
+
+
+class State(Enum):
+    CLOSED = "CLOSED"
+    LISTEN = "LISTEN"
+    SYN_SENT = "SYN_SENT"
+    SYN_RCVD = "SYN_RCVD"
+    ESTABLISHED = "ESTABLISHED"
+    FIN_WAIT_1 = "FIN_WAIT_1"
+    FIN_WAIT_2 = "FIN_WAIT_2"
+    CLOSE_WAIT = "CLOSE_WAIT"
+    LAST_ACK = "LAST_ACK"
+    TIME_WAIT = "TIME_WAIT"
+    CLOSING = "CLOSING"
+
+
+class TcpConnection:
+    def __init__(self, navn):
+        self.navn = navn
+        self.state = State.CLOSED
+        self.sendt = []
+        self.seq = 1000  # forenklet ISN
+
+    def transition(self, event):
+        if self.state == State.CLOSED and event == "active_open":
+            self.state = State.SYN_SENT
+            self.sendt.append("SYN")
+            return
+        if self.state == State.SYN_SENT and event == "recv_syn_ack":
+            self.state = State.ESTABLISHED
+            self.sendt.append("ACK")
+            return
+
+    def send_data(self, payload):
+        """Send data — kun lov i ESTABLISHED-state."""
+        # === DIN OPPGAVE ===
+        # 1. Returner stille hvis self.state != State.ESTABLISHED
+        # 2. Append f"Data(seq={self.seq},len={len(payload)})" til self.sendt
+        # 3. Øk self.seq med len(payload)
+        pass
+
+
+def sjekk(faktisk, forventet, navn):
+    if faktisk == forventet:
+        print(f"OK   {navn}")
+    else:
+        print(f"FEIL {navn}: fikk {faktisk!r}, forventet {forventet!r}")
+
+
+# Forsøk å sende data FØR handshake — skal feile stille
+c = TcpConnection("klient")
+c.send_data("hei")
+sjekk(c.sendt, [], "send_data utenfor ESTABLISHED ignoreres")
+
+# Etabler tilkobling
+c.transition("active_open")
+c.transition("recv_syn_ack")
+
+# Send tre segmenter
+c.send_data("hei")           # 3 bytes
+c.send_data("verden!")       # 7 bytes
+c.send_data("siste segment") # 14 bytes
+
+# Etter handshake er SYN og ACK i loggen (de teller ikke i SEQ).
+# Datasegmentene skal være de siste 3.
+data_segmenter = [s for s in c.sendt if s.startswith("Data")]
+
+sjekk(data_segmenter[0], "Data(seq=1000,len=3)", "første dataseg: seq=1000")
+sjekk(data_segmenter[1], "Data(seq=1003,len=7)", "andre: seq=1003 (1000+3)")
+sjekk(data_segmenter[2], "Data(seq=1010,len=14)", "tredje: seq=1010 (1003+7)")
+sjekk(c.seq, 1024, "endelig seq = 1024 (1010+14)")
+`,
+      },
+      defaultFile: "tcp.py",
+      editable: ["tcp.py"],
+      run: { kind: "python-script", entry: "tcp.py" },
+      verifications: [
+        {
+          label: "send_data nektes utenfor ESTABLISHED",
+          check: { kind: "output-contains", needle: "OK   send_data utenfor ESTABLISHED ignoreres" },
+        },
+        {
+          label: "Første datasegment har seq = 1000",
+          check: { kind: "output-contains", needle: "OK   første dataseg: seq=1000" },
+        },
+        {
+          label: "SEQ øker med len(payload) — andre seg har seq = 1003",
+          check: { kind: "output-contains", needle: "OK   andre: seq=1003 (1000+3)" },
+        },
+        {
+          label: "Tredje segment fortsetter teller: seq = 1010",
+          check: { kind: "output-contains", needle: "OK   tredje: seq=1010 (1003+7)" },
+        },
+        {
+          label: "Endelig SEQ etter alle tre segmenter = 1024",
+          check: { kind: "output-contains", needle: "OK   endelig seq = 1024 (1010+14)" },
+        },
+      ],
+      hint:
+        'def send_data(self, payload):\n    if self.state != State.ESTABLISHED:\n        return\n    self.sendt.append(f"Data(seq={self.seq},len={len(payload)})")\n    self.seq += len(payload)',
+    },
+
+    // ============ LEKSJON 6 ===========================================
+    {
+      id: "06-close-handshake",
+      title: "6. 4-veis close og TIME_WAIT",
+      narrative:
+        "TCP-lukking er **asymmetrisk** — hver side må lukke sin retning uavhengig. Det gir oss 4 segmenter (FIN, ACK, FIN, ACK) i stedet for 3 som ved åpning.\n\nSiden som lukker først (aktiv close) går gjennom denne sekvensen:\n\n```\n  ESTABLISHED + close      / send FIN ─→ FIN_WAIT_1\n  FIN_WAIT_1  + recv_ack              ─→ FIN_WAIT_2\n  FIN_WAIT_2  + recv_fin   / send ACK ─→ TIME_WAIT\n  TIME_WAIT   + timeout               ─→ CLOSED\n```\n\n**Hvorfor TIME_WAIT?** Når vi sender den siste ACK-en og går rett til CLOSED, og den ACK-en blir mistet, vil den andre siden retransmittere FIN — men vi har glemt tilkoblingen og svarer med RST. Det er stygt. TIME_WAIT (i ekte TCP: 2 × MSL ≈ 60 s) holder oss «levende» lenge nok til å håndtere en eventuell retransmittert FIN.\n\n**Din oppgave:** Implementér de fire nye if-grenene over.",
+      files: {
+        "tcp.py": `from enum import Enum
+
+
+class State(Enum):
+    CLOSED = "CLOSED"
+    LISTEN = "LISTEN"
+    SYN_SENT = "SYN_SENT"
+    SYN_RCVD = "SYN_RCVD"
+    ESTABLISHED = "ESTABLISHED"
+    FIN_WAIT_1 = "FIN_WAIT_1"
+    FIN_WAIT_2 = "FIN_WAIT_2"
+    CLOSE_WAIT = "CLOSE_WAIT"
+    LAST_ACK = "LAST_ACK"
+    TIME_WAIT = "TIME_WAIT"
+    CLOSING = "CLOSING"
+
+
+class TcpConnection:
+    def __init__(self, navn):
+        self.navn = navn
+        self.state = State.CLOSED
+        self.sendt = []
+
+    def transition(self, event):
+        if self.state == State.CLOSED and event == "active_open":
+            self.state = State.SYN_SENT
+            self.sendt.append("SYN")
+            return
+        if self.state == State.SYN_SENT and event == "recv_syn_ack":
+            self.state = State.ESTABLISHED
+            self.sendt.append("ACK")
+            return
+
+        # === DIN OPPGAVE: fire nye grener ===
+        # 1) ESTABLISHED + "close"    → FIN_WAIT_1  / send "FIN"
+        # 2) FIN_WAIT_1  + "recv_ack" → FIN_WAIT_2  (ingen send)
+        # 3) FIN_WAIT_2  + "recv_fin" → TIME_WAIT   / send "ACK"
+        # 4) TIME_WAIT   + "timeout"  → CLOSED      (ingen send)
+
+
+def sjekk(faktisk, forventet, navn):
+    if faktisk == forventet:
+        print(f"OK   {navn}")
+    else:
+        print(f"FEIL {navn}: fikk {faktisk!r}, forventet {forventet!r}")
+
+
+c = TcpConnection("klient")
+c.transition("active_open")
+c.transition("recv_syn_ack")
+# Nå er vi i ESTABLISHED. Start aktiv close.
+
+c.transition("close")
+sjekk(c.state, State.FIN_WAIT_1, "close → FIN_WAIT_1")
+sjekk(c.sendt[-1], "FIN", "FIN ble sendt")
+
+c.transition("recv_ack")
+sjekk(c.state, State.FIN_WAIT_2, "recv_ack → FIN_WAIT_2")
+
+c.transition("recv_fin")
+sjekk(c.state, State.TIME_WAIT, "recv_fin → TIME_WAIT")
+sjekk(c.sendt[-1], "ACK", "siste ACK ble sendt")
+
+c.transition("timeout")
+sjekk(c.state, State.CLOSED, "TIME_WAIT-timeout → CLOSED")
+`,
+      },
+      defaultFile: "tcp.py",
+      editable: ["tcp.py"],
+      run: { kind: "python-script", entry: "tcp.py" },
+      verifications: [
+        {
+          label: "close tar oss til FIN_WAIT_1 og sender FIN",
+          check: { kind: "output-contains", needle: "OK   close → FIN_WAIT_1" },
+        },
+        {
+          label: "FIN er det siste segmentet etter close",
+          check: { kind: "output-contains", needle: "OK   FIN ble sendt" },
+        },
+        {
+          label: "ACK på vår FIN tar oss til FIN_WAIT_2",
+          check: { kind: "output-contains", needle: "OK   recv_ack → FIN_WAIT_2" },
+        },
+        {
+          label: "Server-FIN tar oss til TIME_WAIT",
+          check: { kind: "output-contains", needle: "OK   recv_fin → TIME_WAIT" },
+        },
+        {
+          label: "Vi ACK-er server-FIN-en",
+          check: { kind: "output-contains", needle: "OK   siste ACK ble sendt" },
+        },
+        {
+          label: "TIME_WAIT-timeout går til CLOSED",
+          check: { kind: "output-contains", needle: "OK   TIME_WAIT-timeout → CLOSED" },
+        },
+      ],
+      hint:
+        'if self.state == State.ESTABLISHED and event == "close":\n    self.state = State.FIN_WAIT_1\n    self.sendt.append("FIN")\n    return\nif self.state == State.FIN_WAIT_1 and event == "recv_ack":\n    self.state = State.FIN_WAIT_2\n    return\nif self.state == State.FIN_WAIT_2 and event == "recv_fin":\n    self.state = State.TIME_WAIT\n    self.sendt.append("ACK")\n    return\nif self.state == State.TIME_WAIT and event == "timeout":\n    self.state = State.CLOSED\n    return',
+    },
+
+    // ============ LEKSJON 7 ===========================================
+    {
+      id: "07-scenario-diagram",
+      title: "7. Helt scenario med sekvensdiagram",
+      narrative:
+        "Du har nå alle overgangene. La oss kjøre et fullt scenario: klient og server koordinerer, åpner tilkobling, utveksler data, og lukker — og vi printer et ASCII-sekvensdiagram av hvert segment som flyter mellom dem.\n\nScenarioet er allerede skrevet (`kjor_scenario`-funksjonen mater hendelser inn i begge `TcpConnection`-objektene). Din eneste oppgave er å implementere hjelperen `tegn_pil(avsender, mottaker, segment)` som returnerer én linje med diagrammet:\n\n- Avsender = `\"klient\"`: `\"  klient ──[ SYN ]──> server\"`\n- Avsender = `\"server\"`: `\"  klient <──[ SYN-ACK ]── server\"`\n\nFormat: 2 mellomrom inn, deretter `klient`, så pil med `[ segment ]`, så `server` — med pilens retning avhengig av avsenderen.",
+      files: {
+        "tcp.py": `from enum import Enum
+
+
+class State(Enum):
+    CLOSED = "CLOSED"
+    LISTEN = "LISTEN"
+    SYN_SENT = "SYN_SENT"
+    SYN_RCVD = "SYN_RCVD"
+    ESTABLISHED = "ESTABLISHED"
+    FIN_WAIT_1 = "FIN_WAIT_1"
+    FIN_WAIT_2 = "FIN_WAIT_2"
+    CLOSE_WAIT = "CLOSE_WAIT"
+    LAST_ACK = "LAST_ACK"
+    TIME_WAIT = "TIME_WAIT"
+    CLOSING = "CLOSING"
+
+
+class TcpConnection:
+    """Komplett tilstandsmaskin fra leksjon 1-6. Du har bygd alt dette."""
+
+    def __init__(self, navn):
+        self.navn = navn
+        self.state = State.CLOSED
+        self.sendt = []
+
+    def transition(self, event):
+        s, e = self.state, event
+        # Åpning — klient
+        if s == State.CLOSED and e == "active_open":
+            self.state = State.SYN_SENT; self.sendt.append("SYN"); return "SYN"
+        if s == State.SYN_SENT and e == "recv_syn_ack":
+            self.state = State.ESTABLISHED; self.sendt.append("ACK"); return "ACK"
+        # Åpning — server
+        if s == State.CLOSED and e == "passive_open":
+            self.state = State.LISTEN; return None
+        if s == State.LISTEN and e == "recv_syn":
+            self.state = State.SYN_RCVD; self.sendt.append("SYN-ACK"); return "SYN-ACK"
+        if s == State.SYN_RCVD and e == "recv_ack":
+            self.state = State.ESTABLISHED; return None
+        # Lukking — aktiv side
+        if s == State.ESTABLISHED and e == "close":
+            self.state = State.FIN_WAIT_1; self.sendt.append("FIN"); return "FIN"
+        if s == State.FIN_WAIT_1 and e == "recv_ack":
+            self.state = State.FIN_WAIT_2; return None
+        if s == State.FIN_WAIT_2 and e == "recv_fin":
+            self.state = State.TIME_WAIT; self.sendt.append("ACK"); return "ACK"
+        if s == State.TIME_WAIT and e == "timeout":
+            self.state = State.CLOSED; return None
+        # Lukking — passiv side
+        if s == State.ESTABLISHED and e == "recv_fin":
+            self.state = State.CLOSE_WAIT; self.sendt.append("ACK"); return "ACK"
+        if s == State.CLOSE_WAIT and e == "close":
+            self.state = State.LAST_ACK; self.sendt.append("FIN"); return "FIN"
+        if s == State.LAST_ACK and e == "recv_ack":
+            self.state = State.CLOSED; return None
+        return None
+
+
+# === DIN OPPGAVE ===
+# Returner ÉN linje for sekvensdiagrammet.
+# Eksempel-output (eksakt format!):
+#   "  klient ──[ SYN ]──> server"
+#   "  klient <──[ SYN-ACK ]── server"
+def tegn_pil(avsender, mottaker, segment):
+    pass
+
+
+def kjor_scenario():
+    klient = TcpConnection("klient")
+    server = TcpConnection("server")
+
+    # (avsender_handling_event, mottaker_handling_event)
+    # Hver tuple: vi kjører avsenderens event, fanger segmentet,
+    # og kjører mottakerens event basert på hva som kom.
+    print("=== TCP-tilkobling fra A til Å ===")
+    print()
+    print("  KLIENT                                  SERVER")
+    print("    |                                       |")
+
+    # Server starter i LISTEN
+    server.transition("passive_open")
+
+    # 1. Klient sender SYN
+    seg = klient.transition("active_open")
+    if seg:
+        print(tegn_pil("klient", "server", seg))
+    server.transition("recv_syn")
+
+    # 2. Server sender SYN-ACK
+    seg = server.sendt[-1] if server.sendt else None
+    if seg:
+        print(tegn_pil("server", "klient", seg))
+    klient.transition("recv_syn_ack")
+
+    # 3. Klient sender ACK (siste i handshake)
+    seg = klient.sendt[-1]
+    print(tegn_pil("klient", "server", seg))
+    server.transition("recv_ack")
+
+    print("    |   *** ESTABLISHED ***                 |")
+
+    # 4. Klient lukker
+    seg = klient.transition("close")
+    if seg:
+        print(tegn_pil("klient", "server", seg))
+
+    print("    |                                       |")
+    print(f"=== Slutt: klient i {klient.state.value} ===")
+
+
+# Test
+def sjekk(faktisk, forventet, navn):
+    if faktisk == forventet:
+        print(f"OK   {navn}")
+    else:
+        print(f"FEIL {navn}: fikk {faktisk!r}, forventet {forventet!r}")
+
+
+sjekk(
+    tegn_pil("klient", "server", "SYN"),
+    "  klient ──[ SYN ]──> server",
+    "klient→server-pil",
+)
+sjekk(
+    tegn_pil("server", "klient", "SYN-ACK"),
+    "  klient <──[ SYN-ACK ]── server",
+    "server→klient-pil",
+)
+sjekk(
+    tegn_pil("klient", "server", "FIN"),
+    "  klient ──[ FIN ]──> server",
+    "FIN er også klient→server",
+)
+
+print()
+kjor_scenario()
+`,
+      },
+      defaultFile: "tcp.py",
+      editable: ["tcp.py"],
+      run: { kind: "python-script", entry: "tcp.py" },
+      verifications: [
+        {
+          label: "klient → server tegnes med høyrepil",
+          check: { kind: "output-contains", needle: "OK   klient→server-pil" },
+        },
+        {
+          label: "server → klient tegnes med venstrepil",
+          check: { kind: "output-contains", needle: "OK   server→klient-pil" },
+        },
+        {
+          label: "Samme funksjon håndterer alle segment-typer",
+          check: { kind: "output-contains", needle: "OK   FIN er også klient→server" },
+        },
+        {
+          label: "Sekvensdiagrammet skrives ut",
+          check: { kind: "output-contains", needle: "*** ESTABLISHED ***" },
+        },
+        {
+          label: "Scenarioet ender med klient i FIN_WAIT_1 (har sendt FIN)",
+          check: { kind: "output-contains", needle: "Slutt: klient i FIN_WAIT_1" },
+        },
+      ],
+      hint:
+        'def tegn_pil(avsender, mottaker, segment):\n    if avsender == "klient":\n        return f"  klient ──[ {segment} ]──> server"\n    else:\n        return f"  klient <──[ {segment} ]── server"',
+    },
+  ],
+};
+
+export const MINI_COURSES: readonly MiniCourse[] = [
+  FLASK_FRA_NULL,
+  BYGG_MINI_SHELL,
+  UTLEIEAPP_FRA_NULL,
+  TCP_STATE_MACHINE,
+];
 
 export function getMiniCourse(slug: string): MiniCourse | undefined {
   return MINI_COURSES.find((c) => c.slug === slug);
