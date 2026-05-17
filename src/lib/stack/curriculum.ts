@@ -196,6 +196,7 @@ export const PHASES: readonly CurriculumPhase[] = [
       "flask-livssyklus",
       "trinn-10-flask-dyp",
       "flask-app-builder",
+      "fastapi-app-builder",
       "fastapi-grunnlag",
     ],
   },

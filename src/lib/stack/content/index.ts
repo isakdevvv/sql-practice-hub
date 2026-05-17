@@ -184,6 +184,7 @@ import { content as dte2507IdsSnort } from "./dte2507-ids-snort";
 import { content as dte2507DayInTheLife } from "./dte2507-day-in-the-life";
 import { content as dte2507Dhcp } from "./dte2507-dhcp";
 import { content as flaskAppBuilder } from "./flask-app-builder";
+import { content as fastapiAppBuilder } from "./fastapi-app-builder";
 import { content as fastapiGrunnlag } from "./fastapi-grunnlag";
 import { content as dte2507Nat } from "./dte2507-nat";
 import { content as dte2602Svm } from "./dte2602-svm";
@@ -268,6 +269,8 @@ export const TRINN: TrinnContent[] = [
   dte2507Dhcp,
   // Flask App Builder — interaktiv kodegenerator
   flaskAppBuilder,
+  // FastAPI App Builder — interaktiv kodegenerator (speilbilde av Flask-versjonen)
+  fastapiAppBuilder,
   // FastAPI grunnlag
   fastapiGrunnlag,
   // DTE-2507 — NAT (Kurose 4.3.4)
