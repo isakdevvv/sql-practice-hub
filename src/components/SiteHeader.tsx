@@ -4,6 +4,8 @@ import { Search, Menu, X, Sparkles } from "lucide-react";
 import { searchEntries, type SearchEntry, type SearchKind } from "@/lib/search";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { ProfileButton } from "@/components/ProfileButton";
+import { XpBar } from "@/components/XpBar";
+import { XpToast } from "@/components/XpToast";
 
 // 6 hubs. Spor og Mini-kurs lagt til i fase A-IA-fix —
 // før dette var de kun oppdagelig via globalt søk.
@@ -78,9 +80,11 @@ export function SiteHeader() {
           <Sparkles className="h-4 w-4" />
         </a>
 
+        <XpBar />
         <ProfileButton />
         <ThemeToggle />
       </div>
+      <XpToast />
 
       {/* Mobil-meny dropdown — vises kun når mobileOpen og under md */}
       {mobileOpen && (
