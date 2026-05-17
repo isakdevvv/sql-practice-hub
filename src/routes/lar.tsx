@@ -6,11 +6,11 @@ import { PROBLEMS } from "@/lib/problems/data";
 export const Route = createFileRoute("/lar")({
   head: () => ({
     meta: [
-      { title: "Lær — kurs, konsepter og hele stacken" },
+      { title: "Læringsmoduser — velg format" },
       {
         name: "description",
         content:
-          "Tre veier inn i pensum: stegvis kurs, frittstående konsept-forklaringer, og dypdykk fra bytes til Flask.",
+          "Velg læringsformat: stegvis kurs, frittstående konsept-forklaringer, eller dypdykk fra bytes til Flask. Fag-listen ligger på /mine-fag.",
       },
     ],
   }),
@@ -27,17 +27,22 @@ function LarHub() {
       <main className="container mx-auto px-4 py-12 max-w-4xl">
         <div className="mb-10">
           <div className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-3 py-1 text-xs text-muted-foreground mb-4">
-            Hub
+            Læringsmoduser
           </div>
           <h1 className="text-4xl font-bold tracking-tight">
-            Lær —{" "}
+            Læringsmoduser —{" "}
             <span className="bg-gradient-to-r from-brand to-success bg-clip-text text-transparent">
-              tre veier inn i pensum
+              velg format
             </span>
           </h1>
           <p className="mt-4 text-muted-foreground max-w-2xl">
-            Velg det som passer der du er nå. Følg en stegvis sti, slå opp ett konsept, eller gå
-            dypt under panseret. Du kan hoppe mellom dem når som helst.
+            Hva slags læringsformat passer deg nå? Stegvis kurs, frittstående konsepter, eller
+            dypdykk under panseret. Du kan hoppe mellom dem når som helst. Leter du etter
+            fagene dine? Se{" "}
+            <Link to="/mine-fag" className="text-brand hover:underline">
+              Mine fag
+            </Link>
+            .
           </p>
         </div>
 
