@@ -72,6 +72,7 @@ function PythonPage() {
   /** Grupper de filtrerte oppgavene per kategori — for sidebar-seksjoner. */
   const groupedExercises = useMemo(() => {
     const groups: Record<PyCategoryId, typeof PY_EXERCISES> = {
+      "py-core": [],
       web: [],
       "db-data": [],
       "api-sec": [],

@@ -15,6 +15,12 @@ export const PY_LEVEL_NAMES: Record<PyLevel, string> = {
 
 /** Map fra topic → level. Lar oss legge til level uten å touche hver oppgave. */
 export const PY_TOPIC_LEVEL: Record<string, PyLevel> = {
+  // Python kjerne — språkfeatures (uavhengig av web/DB/nettverk)
+  "Comprehensions — list": 0,
+  "Comprehensions — filter & transform": 1,
+  "Comprehensions — dict & set": 1,
+  "Comprehensions — nested": 2,
+  "Comprehensions — avansert": 3,
   "MySQL connector": 0,
   "Flask routing": 0,
   "Flask + Jinja": 1,
@@ -105,6 +111,7 @@ export function levelOf(ex: { level?: PyLevel; topic: string }): PyLevel {
  * spesialisert.
  */
 export type PyCategoryId =
+  | "py-core"
   | "web"
   | "db-data"
   | "api-sec"
@@ -125,6 +132,18 @@ export interface PyCategory {
 }
 
 export const PY_CATEGORIES: readonly PyCategory[] = [
+  {
+    id: "py-core",
+    label: "Python kjerne",
+    description: "Pure-Python språkfeatures — comprehensions (list/dict/set/generator), lazy eval, unpacking.",
+    topics: [
+      "Comprehensions — list",
+      "Comprehensions — filter & transform",
+      "Comprehensions — dict & set",
+      "Comprehensions — nested",
+      "Comprehensions — avansert",
+    ],
+  },
   {
     id: "web",
     label: "Web & Flask",
