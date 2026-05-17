@@ -13,11 +13,12 @@ import {
   importFromJson,
   type Progress,
 } from "@/lib/progress/storage";
-import { Flame, Trophy, Target, Zap, Download, Upload, Brain } from "lucide-react";
+import { Flame, Trophy, Target, Zap, Download, Upload, Brain, Sparkles, ArrowRight } from "lucide-react";
 import { flashcardFsrs } from "@/lib/learn/fsrs";
 import { dragFsrs } from "@/lib/learn/dragProgress";
 import { joinFsrs } from "@/lib/learn/joinProgress";
 import { problemFsrs } from "@/lib/progress/storage";
+import { getRecommendations, type Recommendation } from "@/lib/skill-tree/recommender";
 
 function countDue(): number {
   if (typeof window === "undefined") return 0;
@@ -44,10 +45,14 @@ function DashboardPage() {
   const [progress, setProgress] = useState<Progress | null>(null);
   const [dueCount, setDueCount] = useState(0);
   const [importMsg, setImportMsg] = useState<{ kind: "ok" | "err"; text: string } | null>(null);
+  const [recommendations, setRecommendations] = useState<Recommendation[]>([]);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   useEffect(() => {
     setProgress(loadProgress());
     setDueCount(countDue());
+    // Anbefalinger leses fra ferdighets-tre-recommender (skill-tree/recommender).
+    // Topp 3 vises på dashboard; siden /skill-tre viser inntil 5.
+    setRecommendations(getRecommendations(3));
   }, []);
 
   function handleImportClick() {
@@ -154,6 +159,35 @@ function DashboardPage() {
           </div>
           <span className="text-2xl font-bold text-brand tabular-nums">{dueCount}</span>
         </Link>
+
+        {/* Anbefalt neste — topp 3 fra ferdighets-tre-recommender.
+            Lagt til som NY seksjon mellom Due-banner og Stats for å unngå
+            konflikt med andre agenter som jobber i denne filen. */}
+        {recommendations.length > 0 && (
+          <section className="mt-6">
+            <div className="flex items-baseline gap-2 mb-3">
+              <Sparkles className="h-4 w-4 text-brand" />
+              <h2 className="font-semibold text-sm">Anbefalt neste</h2>
+              <span className="text-xs text-muted-foreground">
+                · fra ferdighets-treet
+              </span>
+              <Link
+                to="/skill-tre"
+                className="ml-auto text-xs text-brand hover:underline"
+              >
+                Se hele treet →
+              </Link>
+            </div>
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
+              {recommendations.map((r, i) => (
+                <RecommendationCard
+                  key={`${r.type}-${r.skillId ?? i}`}
+                  rec={r}
+                />
+              ))}
+            </div>
+          </section>
+        )}
 
         {/* Stats */}
         <div className="mt-6 grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -266,6 +300,37 @@ function DashboardPage() {
           </Link>
         </div>
       </main>
+    </div>
+  );
+}
+
+function RecommendationCard({ rec }: { rec: Recommendation }) {
+  const eyebrow =
+    rec.type === "diagnose-first"
+      ? "Start her"
+      : rec.type === "next-unlock"
+        ? "Klar for læring"
+        : rec.type === "rusty-review"
+          ? "Frisk opp"
+          : "Sjekk nivå";
+  return (
+    <div className="rounded-xl border border-border bg-card p-4 flex flex-col">
+      <div className="text-[10px] font-bold uppercase tracking-wider text-brand mb-1">
+        {eyebrow}
+      </div>
+      <div className="font-semibold text-sm leading-tight mb-1.5">
+        {rec.title}
+      </div>
+      <p className="text-xs text-muted-foreground leading-relaxed flex-1 mb-3">
+        {rec.reason}
+      </p>
+      <a
+        href={rec.cta.to}
+        className="inline-flex items-center justify-center rounded-md bg-brand text-brand-foreground text-xs font-medium px-3 py-1.5 hover:bg-brand/90 transition-colors"
+      >
+        {rec.cta.label}
+        <ArrowRight className="h-3 w-3 ml-1.5" />
+      </a>
     </div>
   );
 }

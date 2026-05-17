@@ -12,6 +12,7 @@ const HUBS: { label: string; to: string }[] = [
   { label: "Øv", to: "/ov" },
   { label: "Predict", to: "/predict" },
   { label: "Spor", to: "/spor" },
+  { label: "Skill-tre", to: "/skill-tre" },
   { label: "Mini-kurs", to: "/mini-kurs" },
   { label: "Eksamen", to: "/eksamen" },
   { label: "Du", to: "/dashboard" },

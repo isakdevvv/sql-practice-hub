@@ -14,6 +14,7 @@ import { Route as VisualiseringerRouteImport } from './routes/visualiseringer'
 import { Route as VenvDrillRouteImport } from './routes/venv-drill'
 import { Route as StackRouteImport } from './routes/stack'
 import { Route as SporRouteImport } from './routes/spor'
+import { Route as SkillTreRouteImport } from './routes/skill-tre'
 import { Route as RepetisjonRouteImport } from './routes/repetisjon'
 import { Route as PythonRouteImport } from './routes/python'
 import { Route as ProsjektRouteImport } from './routes/prosjekt'
@@ -33,6 +34,7 @@ import { Route as ExamRouteImport } from './routes/exam'
 import { Route as ErTegnerRouteImport } from './routes/er-tegner'
 import { Route as EksamenRouteImport } from './routes/eksamen'
 import { Route as DragRouteImport } from './routes/drag'
+import { Route as DiagnoseRouteImport } from './routes/diagnose'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as CardsRouteImport } from './routes/cards'
 import { Route as IndexRouteImport } from './routes/index'
@@ -81,6 +83,11 @@ const StackRoute = StackRouteImport.update({
 const SporRoute = SporRouteImport.update({
   id: '/spor',
   path: '/spor',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SkillTreRoute = SkillTreRouteImport.update({
+  id: '/skill-tre',
+  path: '/skill-tre',
   getParentRoute: () => rootRouteImport,
 } as any)
 const RepetisjonRoute = RepetisjonRouteImport.update({
@@ -176,6 +183,11 @@ const EksamenRoute = EksamenRouteImport.update({
 const DragRoute = DragRouteImport.update({
   id: '/drag',
   path: '/drag',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DiagnoseRoute = DiagnoseRouteImport.update({
+  id: '/diagnose',
+  path: '/diagnose',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DashboardRoute = DashboardRouteImport.update({
@@ -304,6 +316,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/cards': typeof CardsRoute
   '/dashboard': typeof DashboardRoute
+  '/diagnose': typeof DiagnoseRoute
   '/drag': typeof DragRoute
   '/eksamen': typeof EksamenRouteWithChildren
   '/er-tegner': typeof ErTegnerRoute
@@ -323,6 +336,7 @@ export interface FileRoutesByFullPath {
   '/prosjekt': typeof ProsjektRoute
   '/python': typeof PythonRoute
   '/repetisjon': typeof RepetisjonRoute
+  '/skill-tre': typeof SkillTreRoute
   '/spor': typeof SporRouteWithChildren
   '/stack': typeof StackRouteWithChildren
   '/venv-drill': typeof VenvDrillRoute
@@ -354,6 +368,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/cards': typeof CardsRoute
   '/dashboard': typeof DashboardRoute
+  '/diagnose': typeof DiagnoseRoute
   '/drag': typeof DragRoute
   '/er-tegner': typeof ErTegnerRoute
   '/exam': typeof ExamRoute
@@ -371,6 +386,7 @@ export interface FileRoutesByTo {
   '/prosjekt': typeof ProsjektRoute
   '/python': typeof PythonRoute
   '/repetisjon': typeof RepetisjonRoute
+  '/skill-tre': typeof SkillTreRoute
   '/venv-drill': typeof VenvDrillRoute
   '/visualiseringer': typeof VisualiseringerRoute
   '/drill/_demo': typeof DrillChar91_demoChar93Route
@@ -400,6 +416,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/cards': typeof CardsRoute
   '/dashboard': typeof DashboardRoute
+  '/diagnose': typeof DiagnoseRoute
   '/drag': typeof DragRoute
   '/eksamen': typeof EksamenRouteWithChildren
   '/er-tegner': typeof ErTegnerRoute
@@ -419,6 +436,7 @@ export interface FileRoutesById {
   '/prosjekt': typeof ProsjektRoute
   '/python': typeof PythonRoute
   '/repetisjon': typeof RepetisjonRoute
+  '/skill-tre': typeof SkillTreRoute
   '/spor': typeof SporRouteWithChildren
   '/stack': typeof StackRouteWithChildren
   '/venv-drill': typeof VenvDrillRoute
@@ -452,6 +470,7 @@ export interface FileRouteTypes {
     | '/'
     | '/cards'
     | '/dashboard'
+    | '/diagnose'
     | '/drag'
     | '/eksamen'
     | '/er-tegner'
@@ -471,6 +490,7 @@ export interface FileRouteTypes {
     | '/prosjekt'
     | '/python'
     | '/repetisjon'
+    | '/skill-tre'
     | '/spor'
     | '/stack'
     | '/venv-drill'
@@ -502,6 +522,7 @@ export interface FileRouteTypes {
     | '/'
     | '/cards'
     | '/dashboard'
+    | '/diagnose'
     | '/drag'
     | '/er-tegner'
     | '/exam'
@@ -519,6 +540,7 @@ export interface FileRouteTypes {
     | '/prosjekt'
     | '/python'
     | '/repetisjon'
+    | '/skill-tre'
     | '/venv-drill'
     | '/visualiseringer'
     | '/drill/_demo'
@@ -547,6 +569,7 @@ export interface FileRouteTypes {
     | '/'
     | '/cards'
     | '/dashboard'
+    | '/diagnose'
     | '/drag'
     | '/eksamen'
     | '/er-tegner'
@@ -566,6 +589,7 @@ export interface FileRouteTypes {
     | '/prosjekt'
     | '/python'
     | '/repetisjon'
+    | '/skill-tre'
     | '/spor'
     | '/stack'
     | '/venv-drill'
@@ -598,6 +622,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   CardsRoute: typeof CardsRoute
   DashboardRoute: typeof DashboardRoute
+  DiagnoseRoute: typeof DiagnoseRoute
   DragRoute: typeof DragRoute
   EksamenRoute: typeof EksamenRouteWithChildren
   ErTegnerRoute: typeof ErTegnerRoute
@@ -617,6 +642,7 @@ export interface RootRouteChildren {
   ProsjektRoute: typeof ProsjektRoute
   PythonRoute: typeof PythonRoute
   RepetisjonRoute: typeof RepetisjonRoute
+  SkillTreRoute: typeof SkillTreRoute
   SporRoute: typeof SporRouteWithChildren
   StackRoute: typeof StackRouteWithChildren
   VenvDrillRoute: typeof VenvDrillRoute
@@ -670,6 +696,13 @@ declare module '@tanstack/react-router' {
       path: '/spor'
       fullPath: '/spor'
       preLoaderRoute: typeof SporRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/skill-tre': {
+      id: '/skill-tre'
+      path: '/skill-tre'
+      fullPath: '/skill-tre'
+      preLoaderRoute: typeof SkillTreRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/repetisjon': {
@@ -803,6 +836,13 @@ declare module '@tanstack/react-router' {
       path: '/drag'
       fullPath: '/drag'
       preLoaderRoute: typeof DragRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/diagnose': {
+      id: '/diagnose'
+      path: '/diagnose'
+      fullPath: '/diagnose'
+      preLoaderRoute: typeof DiagnoseRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/dashboard': {
@@ -1045,6 +1085,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CardsRoute: CardsRoute,
   DashboardRoute: DashboardRoute,
+  DiagnoseRoute: DiagnoseRoute,
   DragRoute: DragRoute,
   EksamenRoute: EksamenRouteWithChildren,
   ErTegnerRoute: ErTegnerRoute,
@@ -1064,6 +1105,7 @@ const rootRouteChildren: RootRouteChildren = {
   ProsjektRoute: ProsjektRoute,
   PythonRoute: PythonRoute,
   RepetisjonRoute: RepetisjonRoute,
+  SkillTreRoute: SkillTreRoute,
   SporRoute: SporRouteWithChildren,
   StackRoute: StackRouteWithChildren,
   VenvDrillRoute: VenvDrillRoute,
