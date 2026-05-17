@@ -158,6 +158,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Hva gjør SELECT *?",
     answer: "Henter alle kolonner fra tabellen. Uten WHERE returneres alle rader.",
     code: "SELECT * FROM kunde;",
+    visual: "sql-exec-select-star",
   },
   {
     id: "c-where-having",
@@ -166,6 +167,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Forskjell på WHERE og HAVING?",
     answer:
       "WHERE filtrerer rader FØR gruppering. HAVING filtrerer GRUPPER etter GROUP BY. Aggregater som COUNT/SUM kan bare brukes i HAVING (eller SELECT).",
+    visual: "sql-exec-where-vs-having",
   },
   {
     id: "c-isnull",
@@ -174,6 +176,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Hvorfor virker ikke `WHERE x = NULL`?",
     answer:
       "NULL er ikke en vanlig verdi — det betyr 'ukjent'. Sammenligning med = NULL gir alltid UKJENT, aldri sant. Bruk `IS NULL` eller `IS NOT NULL`.",
+    visual: "sql-exec-null-tritri",
   },
   {
     id: "c-orderby",
@@ -182,6 +185,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Hva gjør ORDER BY ... DESC?",
     answer: "Sorterer resultatet synkende (høyeste først). ASC er standard og betyr stigende.",
     code: "SELECT * FROM utleie ORDER BY pris DESC;",
+    visual: "sql-exec-order-by",
   },
   {
     id: "c-groupby",
@@ -191,6 +195,7 @@ export const FLASHCARDS: FlashCard[] = [
     answer:
       "Grupperer rader som har samme verdi i én eller flere kolonner. Brukes sammen med aggregater (COUNT, SUM, AVG, MIN, MAX) for å regne per gruppe.",
     code: "SELECT deptno, COUNT(*) FROM emp GROUP BY deptno;",
+    visual: "sql-exec-group-by-anatomy",
   },
   {
     id: "c-distinct",
@@ -199,6 +204,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Hva gjør DISTINCT?",
     answer: "Fjerner duplikater fra resultatet — viser hver unik kombinasjon av valgte kolonner én gang.",
     code: "SELECT DISTINCT category FROM products;",
+    visual: "sql-exec-distinct",
   },
   {
     id: "c-like",
@@ -207,6 +213,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Hva betyr `%` i LIKE?",
     answer:
       "% står for vilkårlig antall tegn. 'A%' = starter med A. '%sen' = slutter på sen. '%ann%' = inneholder ann.",
+    visual: "sql-exec-like-wildcards",
   },
   {
     id: "c-between",
@@ -215,6 +222,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Er BETWEEN inklusiv eller eksklusiv?",
     answer:
       "Inklusiv. `BETWEEN 100 AND 500` tar med både 100 og 500.",
+    visual: "sql-exec-between",
   },
   {
     id: "c-in",
@@ -224,6 +232,7 @@ export const FLASHCARDS: FlashCard[] = [
     answer:
       "Sjekker om en verdi finnes i en gitt liste — kortform for flere OR-uttrykk.",
     code: "WHERE kundenr IN (1, 2, 5)",
+    visual: "sql-exec-in",
   },
   {
     id: "c-count-star",
@@ -232,6 +241,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Hva er forskjellen på COUNT(*) og COUNT(kolonne)?",
     answer:
       "COUNT(*) teller alle rader. COUNT(kolonne) teller bare rader hvor kolonnen ikke er NULL.",
+    visual: "sql-exec-count-star",
   },
   {
     id: "c-inner-join",
@@ -258,6 +268,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Hva er RIGHT JOIN?",
     answer:
       "Tar med ALLE rader fra høyre tabell. Hvis venstre side ikke matcher, fylles de venstre kolonnene med NULL. Sjelden brukt — kan alltid skrives om som LEFT JOIN ved å bytte tabellrekkefølge.",
+    visual: "sql-exec-right-join-swap",
   },
   {
     id: "c-full-join",
@@ -275,6 +286,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Hva er CROSS JOIN?",
     answer:
       "Kartesisk produkt — alle kombinasjoner av rader. Resultat = venstre.rows × høyre.rows. Brukes sjelden direkte.",
+    visual: "sql-exec-cross-join",
   },
   {
     id: "c-subquery",
@@ -284,6 +296,7 @@ export const FLASHCARDS: FlashCard[] = [
     answer:
       "En SELECT-spørring inni en annen spørring. Den indre kjøres først og resultatet brukes av den ytre — ofte i WHERE med IN/EXISTS.",
     code: "SELECT * FROM kunde\nWHERE kundenr IN (SELECT kundenr FROM utleie);",
+    visual: "sql-exec-subquery",
   },
   {
     id: "c-insert",
@@ -292,6 +305,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Hva er syntaksen for INSERT?",
     answer: "INSERT INTO tabell (kolonne1, kolonne2) VALUES (verdi1, verdi2);",
     code: "INSERT INTO kunde (kundenr, navn)\nVALUES (1003, 'Per');",
+    visual: "sql-exec-insert-before-after",
   },
   {
     id: "c-update",
@@ -301,6 +315,7 @@ export const FLASHCARDS: FlashCard[] = [
     answer:
       "Å glemme WHERE — da oppdateres ALLE rader i tabellen. Test alltid SELECT med samme WHERE først.",
     code: "UPDATE kunde SET fornavn = 'Pål'\nWHERE kundenr = 1003;",
+    visual: "sql-exec-update-where-trap",
   },
   {
     id: "c-delete",
@@ -309,6 +324,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Hva skjer hvis du glemmer WHERE i DELETE?",
     answer:
       "Alle rader i tabellen slettes. Bruk transaksjon (START TRANSACTION → ROLLBACK ved feil) når du er usikker.",
+    visual: "sql-exec-delete-where-trap",
   },
   {
     id: "c-eval-order",
@@ -335,6 +351,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Hva er et view?",
     answer:
       "En virtuell tabell basert på en SELECT-spørring. Lagres som definisjon, ikke data — kjøres på nytt når man spør den. Bra for å kapsle inn kompleks logikk.",
+    visual: "sql-exec-view",
   },
   {
     id: "c-transaction",
@@ -343,6 +360,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Hva er en transaksjon?",
     answer:
       "En gruppe operasjoner som behandles som én enhet. Enten lykkes alt (COMMIT), eller alt rulles tilbake (ROLLBACK). Følger ACID.",
+    visual: "sql-exec-transaction",
   },
   {
     id: "c-acid",
@@ -359,6 +377,7 @@ export const FLASHCARDS: FlashCard[] = [
     topic: "Transaksjoner",
     question: "Hva gjør COMMIT?",
     answer: "Lagrer endringene i transaksjonen permanent.",
+    visual: "sql-exec-commit-vs-rollback",
   },
   {
     id: "c-rollback",
@@ -366,6 +385,7 @@ export const FLASHCARDS: FlashCard[] = [
     topic: "Transaksjoner",
     question: "Hva gjør ROLLBACK?",
     answer: "Angrer alle endringer i transaksjonen — som om de aldri skjedde.",
+    visual: "sql-exec-commit-vs-rollback",
   },
 
   // ============= FLASK =============
@@ -1109,6 +1129,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Hva gjør COMMIT og ROLLBACK?",
     answer:
       "COMMIT bekrefter alle endringer i transaksjonen. ROLLBACK forkaster alt og bringer databasen tilbake til tilstanden før BEGIN. Til sammen håndhever de atomisitet.",
+    visual: "sql-exec-commit-vs-rollback",
   },
   {
     id: "c-tx-savepoint",
@@ -1117,6 +1138,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Hva er et SAVEPOINT?",
     answer:
       "Et merke inni en transaksjon. ROLLBACK TO savepoint ruller tilbake til merket uten å avbryte hele transaksjonen — nyttig for nestede operasjoner.",
+    visual: "sql-exec-transaction",
   },
   {
     id: "c-tx-dirty-read",
@@ -1750,6 +1772,7 @@ export const FLASHCARDS: FlashCard[] = [
     answer:
       "For heltall — ID-er (KundeNr), antall, status-koder. INT i MySQL er 4 bytes (~2 mrd). For svært store tall, bruk BIGINT. Typisk kombinert med AUTO_INCREMENT for primærnøkler.",
     code: "KundeNr INT AUTO_INCREMENT PRIMARY KEY",
+    visual: "sql-exec-datatypes-overview",
   },
   {
     id: "c-dt-varchar",
@@ -1758,6 +1781,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "VARCHAR(50) vs TEXT?",
     answer:
       "VARCHAR(n) har en maksimal lengde — bra for korte felt som navn, e-post, telefonnummer. TEXT er for lange tekster (kommentarer, artikler) — kan ikke ha standard-verdi i samme grad og kan ikke indekseres i sin helhet.",
+    visual: "sql-exec-varchar-vs-text",
   },
   {
     id: "c-dt-date",
@@ -1766,6 +1790,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Forskjell på DATE, DATETIME og TIMESTAMP?",
     answer:
       "DATE = bare dato (YYYY-MM-DD). DATETIME = dato + tid (YYYY-MM-DD HH:MM:SS). TIMESTAMP = dato + tid med tidssone-håndtering, men begrenset rekkevidde (1970–2038). Bruk DATETIME for fremtidige datoer.",
+    visual: "sql-exec-date-types",
   },
   {
     id: "c-dt-decimal",
@@ -1775,6 +1800,7 @@ export const FLASHCARDS: FlashCard[] = [
     answer:
       "FLOAT/DOUBLE bruker binær representasjon og kan ikke lagre 0.10 eksakt — du får avrundingsfeil. DECIMAL(10,2) er eksakt og lagrer alltid riktig. Regelen: bruk DECIMAL for penger, FLOAT bare for vitenskapelige målinger.",
     code: "Pris DECIMAL(10,2)  -- opp til 99 999 999.99",
+    visual: "sql-exec-decimal-vs-float",
   },
   {
     id: "c-dt-not-null",
@@ -1784,6 +1810,7 @@ export const FLASHCARDS: FlashCard[] = [
     answer:
       "NOT NULL betyr at kolonnen ALDRI kan være NULL — INSERT uten verdi feiler. DEFAULT setter en automatisk verdi hvis ingen oppgis. Sammen lager de robuste skjemaer der dataene ikke kan havne i en udefinert tilstand.",
     code: "Status VARCHAR(20) NOT NULL DEFAULT 'aktiv',\nOpprettet DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP",
+    visual: "sql-exec-not-null-default",
   },
 
   // ============= DTE-2507 — Datakomm =============

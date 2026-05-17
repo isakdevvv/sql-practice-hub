@@ -5,6 +5,7 @@
 // data engineer would expect to see in a textbook or whiteboard.
 
 import type { FC } from "react";
+import { SQL_EXEC_VISUALS } from "./SqlExecVisuals";
 
 const STROKE = "currentColor";
 
@@ -718,6 +719,7 @@ export const VISUALS: Record<string, FC> = {
   "session-flow": SessionFlow,
   "index-vs-scan": IndexVsScan,
   "relationship-kinds": RelationshipKinds,
+  ...SQL_EXEC_VISUALS,
 };
 
 export type VisualKey = keyof typeof VISUALS;
