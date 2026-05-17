@@ -5,7 +5,51 @@
 
 import { getPyodide } from "@/lib/python/pyodideLoader";
 import { ensureFlask } from "@/components/stack/flask-livssyklus/flaskRunner";
+import { MYSQL_SHIM_SOURCE } from "@/lib/python/mysqlShim";
 import type { RunMode, Lesson, VerifyCheck } from "./types";
+
+let mysqlShimRegistered = false;
+let flaskExtrasInstalled = false;
+let flaskExtrasInstalling: Promise<void> | null = null;
+
+/** Make the `mysql.connector` shim available so utleieapp-style kode kjører. */
+async function ensureMysqlShim(): Promise<void> {
+  if (mysqlShimRegistered) return;
+  const py = await getPyodide();
+  py.globals.set("__mini_mysql_shim__", MYSQL_SHIM_SOURCE);
+  await py.runPythonAsync(`
+import sys, types
+if "mysql.connector" not in sys.modules:
+    _mysql_pkg = types.ModuleType("mysql")
+    _connector = types.ModuleType("mysql.connector")
+    exec(__mini_mysql_shim__, _connector.__dict__)
+    _mysql_pkg.connector = _connector
+    sys.modules["mysql"] = _mysql_pkg
+    sys.modules["mysql.connector"] = _connector
+`);
+  mysqlShimRegistered = true;
+}
+
+/** Installer Flask-Login og Flask-WTF via micropip (begge er pure-Python). */
+async function ensureFlaskExtras(): Promise<void> {
+  if (flaskExtrasInstalled) return;
+  if (flaskExtrasInstalling) return flaskExtrasInstalling;
+  flaskExtrasInstalling = (async () => {
+    const py = await getPyodide();
+    await py.runPythonAsync(`
+import micropip
+# Begge er pure-Python wheels, så micropip klarer dem fint.
+# WTForms blir trukket inn automatisk som Flask-WTF-avhengighet.
+await micropip.install(["flask-login", "flask-wtf", "email_validator"])
+`);
+    flaskExtrasInstalled = true;
+  })();
+  try {
+    await flaskExtrasInstalling;
+  } finally {
+    flaskExtrasInstalling = null;
+  }
+}
 
 export interface RunResult {
   ok: boolean;
@@ -57,10 +101,13 @@ export async function runProject(
   const py = await getPyodide();
 
   if (mode.kind === "python-script") {
+    await ensureMysqlShim();
     return runPythonScript(py, mode.entry);
   }
   if (mode.kind === "flask-test-client") {
     await ensureFlask();
+    await ensureFlaskExtras();
+    await ensureMysqlShim();
     return runFlaskTestClient(py, mode.entry, mode.requests);
   }
   if (mode.kind === "html-preview") {
@@ -99,7 +146,12 @@ __output__ = __buf__.getvalue()
 async function runFlaskTestClient(
   py: any,
   entry: string,
-  requests: { method: "GET" | "POST"; path: string; body?: string }[],
+  requests: {
+    method: "GET" | "POST";
+    path: string;
+    body?: string;
+    followRedirects?: boolean;
+  }[],
 ): Promise<RunResult> {
   try {
     py.globals.set("__entry_path__", `${PROJECT_ROOT}/${entry}`);
@@ -110,7 +162,26 @@ import types as _types
 # Pyodide mangler _multiprocessing — flaskRunner.ts allerede stubbed det
 if "_multiprocessing" not in sys.modules:
     sys.modules["_multiprocessing"] = _types.ModuleType("_multiprocessing")
+# Tøm caching av alle våre prosjekt-moduler så filendringer faktisk slår inn
+# mellom kjøringer. Vi beholder stdlib + flask/wtforms/mysql.connector osv.
+_PROJECT_PREFIXES = ("app", "auth", "kunder", "utstyr", "utleie", "statistikk", "models", "forms", "db", "config", "routes")
+for _modname in list(sys.modules.keys()):
+    _top = _modname.split(".", 1)[0]
+    if _top in _PROJECT_PREFIXES:
+        del sys.modules[_modname]
+# Sørg for at prosjekt-stien er først i sys.path
+sys.path = [p for p in sys.path if p != "${PROJECT_ROOT}"]
 sys.path.insert(0, "${PROJECT_ROOT}")
+
+# Tøm in-memory SQLite-DB-er som mysql.connector-shim holder oppe — gjør
+# at hver "kjør"-runde starter med blanke tabeller.
+try:
+    import mysql.connector as _mc
+    if hasattr(_mc, "reset_database"):
+        for _name in list(getattr(_mc, "_dbs", {}).keys()):
+            _mc.reset_database(_name)
+except Exception:
+    pass
 
 # Jinja2 må finne templates/-mappa relativ til appen.
 # Flask bruker app.template_folder = "templates" som default; vi setter
@@ -137,7 +208,7 @@ for req in json.loads(__requests_json__):
         path=req["path"],
         data=body or None,
         headers=headers,
-        follow_redirects=False,
+        follow_redirects=bool(req.get("followRedirects", False)),
     )
     try:
         body_text = resp.get_data(as_text=True)
