@@ -377,7 +377,7 @@ function LandingPage() {
           </section>
         )}
 
-        {/* Start her — 3 hovedveier som speiler topp-menyen */}
+        {/* Start her — Læreplan som hovedkort, Mine fag og Verktøy som mindre kort under */}
         <section className="container mx-auto px-4 pt-10 max-w-5xl">
           <div className="mb-5 text-center">
             <span className="text-[10px] font-bold uppercase tracking-wider text-brand">
@@ -387,31 +387,58 @@ function LandingPage() {
               Tre veier inn
             </h2>
             <p className="mt-1 text-sm text-muted-foreground">
+              Hele læreplanen er det største — 14 faser fra transistor til Flask.
               Mine fag for dine emner. Verktøy for sandbox, drills og oppslag.
-              Læreplan for hele stien fra transistor til Flask.
             </p>
           </div>
-          <div className="grid sm:grid-cols-3 gap-3">
+
+          {/* Læreplan — hovedkort, full bredde */}
+          <Link
+            to="/stack/$slug"
+            params={{ slug: "laereplan" }}
+            className="group relative block rounded-2xl border-2 border-brand/50 bg-gradient-to-br from-brand/10 via-card to-success/5 hover:border-brand p-6 sm:p-8 mb-3 transition-all hover:shadow-lg hover:shadow-brand/10"
+          >
+            <div className="absolute top-3 right-3 hidden sm:inline-flex items-center gap-1 rounded-full bg-brand text-brand-foreground px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider">
+              Start her
+            </div>
+            <div className="flex items-center gap-3 mb-3">
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-brand/15 text-brand">
+                <MapIcon className="h-6 w-6" />
+              </div>
+              <div className="text-[10px] font-bold uppercase tracking-wider text-brand">
+                Læreplan — hele stien
+              </div>
+            </div>
+            <h3 className="text-xl sm:text-2xl font-bold text-foreground leading-tight mb-2">
+              Fra transistor til deploy — 14 faser
+            </h3>
+            <p className="text-sm text-muted-foreground leading-relaxed mb-4 max-w-2xl">
+              Hele plattformen organisert som en sti fra digitalelektronikk og
+              CPU-arkitektur opp gjennom syscalls, nettverk, web og deploy. 100+
+              trinn med anbefalt rekkefølge og fremgang per fase. Bygd på struktur
+              fra MIT 6.*, Stanford CS, CMU 15.* og ETH.
+            </p>
+            <div className="flex items-center text-sm text-brand font-semibold">
+              Åpne hele læreplanen
+              <ArrowRight className="h-4 w-4 ml-1.5 group-hover:translate-x-0.5 transition-transform" />
+            </div>
+          </Link>
+
+          {/* Mine fag + Verktøy — mindre kort under */}
+          <div className="grid sm:grid-cols-2 gap-3">
             <StartCard
               to="/mine-fag"
               icon={<Compass className="h-5 w-5" />}
               eyebrow="Mine fag"
               title="Fagene jeg tar"
-              body="Pin fagene du har eksamen i, fortsett der du slapp, og se nedtelling til neste eksamen."
+              body="Pin emnene dine, fortsett der du slapp, se nedtelling til neste eksamen."
             />
             <StartCard
               to="/lar"
               icon={<Wrench className="h-5 w-5" />}
               eyebrow="Verktøy"
               title="Sandbox, drills & oppslag"
-              body="SQL-sandbox, predict-trener, JOIN-trening, drag-oppgaver, flashcards, AI-tutor og skill-tre — alt utenom fagene."
-            />
-            <StartCard
-              to="/spor"
-              icon={<MapIcon className="h-5 w-5" />}
-              eyebrow="Læreplan"
-              title="Hele stien"
-              body="Curerte spor (Flask, backend, React, FastAPI, data) og lineær curriculum fra transistor til deploy."
+              body="SQL-sandbox, predict, JOIN-trening, drag, flashcards, AI-tutor — alt utenom fagene."
             />
           </div>
         </section>
