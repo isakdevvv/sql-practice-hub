@@ -11,19 +11,49 @@ import { VisualizerSkeleton } from "@/components/visualizer-shell";
 const LogRegVisualizer = lazy(() =>
   import("./LogRegVisualizer").then((m) => ({ default: m.LogRegVisualizer })),
 );
+const SigmoidIntuitionViz = lazy(() =>
+  import("./SigmoidIntuitionViz").then((m) => ({ default: m.SigmoidIntuitionViz })),
+);
+const DecisionBoundaryWithLogReg = lazy(() =>
+  import("./DecisionBoundaryWithLogReg").then((m) => ({
+    default: m.DecisionBoundaryWithLogReg,
+  })),
+);
+const LossLandscapeViz = lazy(() =>
+  import("./LossLandscapeViz").then((m) => ({ default: m.LossLandscapeViz })),
+);
+const RocCurveAndAucCalc = lazy(() =>
+  import("./RocCurveAndAucCalc").then((m) => ({ default: m.RocCurveAndAucCalc })),
+);
+const MulticlassSoftmaxViz = lazy(() =>
+  import("./MulticlassSoftmaxViz").then((m) => ({ default: m.MulticlassSoftmaxViz })),
+);
+const CalibrationPlot = lazy(() =>
+  import("./CalibrationPlot").then((m) => ({ default: m.CalibrationPlot })),
+);
+const LogRegMatchQuiz = lazy(() =>
+  import("./LogRegMatchQuiz").then((m) => ({ default: m.LogRegMatchQuiz })),
+);
 
 const STEPS = [
   { title: "Visualisering — sigmoid, beslutningsgrense og GD", anchor: "visualisering" },
   { title: "Hvorfor ikke bare lineær regresjon?", anchor: "hvorfor" },
   { title: "Sigmoid og log-odds", anchor: "sigmoid" },
+  { title: "Sigmoid-intuisjon: tre plotter samtidig", anchor: "sigmoid-intuition" },
   { title: "Sigmoid-leken", anchor: "sigmoidlek" },
   { title: "Tolkning av koeffisienter (odds-ratio)", anchor: "odds" },
   { title: "MLE og log-loss", anchor: "mle" },
+  { title: "Log-loss-landskap + gradient descent demo", anchor: "loss-landscape" },
   { title: "Gradient descent på log-loss", anchor: "gd" },
   { title: "Live trening", anchor: "trening" },
+  { title: "2D-grense og terskel-justering", anchor: "boundary-2d" },
+  { title: "ROC, AUC og terskel-effekt", anchor: "roc-auc" },
   { title: "Multinomial logistisk regresjon (softmax)", anchor: "softmax" },
+  { title: "Multiclass interaktivt: softmax vs OvR", anchor: "multiclass-viz" },
+  { title: "Sannsynlighets-kalibrering", anchor: "calibration" },
   { title: "Class imbalance og class-weights", anchor: "imbalance" },
   { title: "Eksamen-feller", anchor: "feller" },
+  { title: "Match: use-cases → innstillinger", anchor: "match-quiz" },
   { title: "Python — sklearn på iris", anchor: "sklearn" },
 ];
 
@@ -135,13 +165,30 @@ export function LogistiskRegresjonPage() {
           </div>
         </section>
 
+        <section id="sigmoid-intuition" className="mb-10">
+          <h2 className="text-xl font-semibold mb-3">
+            3. Sigmoid-intuisjon: tre plotter samtidig
+          </h2>
+          <p className="text-sm text-muted-foreground mb-3">
+            Den lineære logit, sigmoid og log-odds-baklengs er tre vinkler på{" "}
+            <em>samme</em> modell. Skyv på <Tex>{"\\beta_0"}</Tex> og{" "}
+            <Tex>{"\\beta_1"}</Tex> samtidig — se hvordan endring i intercept
+            forskyver 50%-grensa, og endring i slope strammer sigmoiden. Odds-ratio{" "}
+            <Tex>{"e^{\\beta_1}"}</Tex> er den samme tolkningen overalt på
+            x-aksen.
+          </p>
+          <Suspense fallback={<VisualizerSkeleton />}>
+            <SigmoidIntuitionViz />
+          </Suspense>
+        </section>
+
         <section id="sigmoidlek" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">3. Sigmoid-leken</h2>
+          <h2 className="text-xl font-semibold mb-3">4. Sigmoid-leken</h2>
           <SigmoidVisual />
         </section>
 
         <section id="odds" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">4. Tolkning av koeffisienter (odds-ratio)</h2>
+          <h2 className="text-xl font-semibold mb-3">5. Tolkning av koeffisienter (odds-ratio)</h2>
           <div className="rounded-xl border border-border bg-card p-5 space-y-3 text-sm">
             <p>
               Hvis <Tex>{"x_j"}</Tex> øker med 1 (alt annet likt), endrer
@@ -170,7 +217,7 @@ export function LogistiskRegresjonPage() {
         </section>
 
         <section id="mle" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">5. MLE og log-loss</h2>
+          <h2 className="text-xl font-semibold mb-3">6. MLE og log-loss</h2>
           <div className="rounded-xl border border-border bg-card p-5 space-y-3 text-sm">
             <p>
               Vi finner <Tex>{"\\boldsymbol\\beta"}</Tex> ved{" "}
@@ -200,8 +247,24 @@ export function LogistiskRegresjonPage() {
           </div>
         </section>
 
+        <section id="loss-landscape" className="mb-10">
+          <h2 className="text-xl font-semibold mb-3">
+            7. Log-loss-landskap + gradient descent demo
+          </h2>
+          <p className="text-sm text-muted-foreground mb-3">
+            Først: dra prediksjons-slideren og se hvordan log-loss eksploderer
+            mot uendelig når du er <em>sikker og feil</em>, mens MSE stopper på
+            1. Det er hovedgrunnen til at logistisk regresjon optimerer log-loss
+            og ikke MSE. Deretter: kjør gradient descent på 5 punkter steg-for-steg
+            og se hvordan vektene oppdateres.
+          </p>
+          <Suspense fallback={<VisualizerSkeleton />}>
+            <LossLandscapeViz />
+          </Suspense>
+        </section>
+
         <section id="gd" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">6. Gradient descent på log-loss</h2>
+          <h2 className="text-xl font-semibold mb-3">8. Gradient descent på log-loss</h2>
           <div className="rounded-xl border border-border bg-card p-5 space-y-3 text-sm">
             <p>
               Gradienten av cross-entropy er overraskende enkel takket være at{" "}
@@ -222,7 +285,7 @@ export function LogistiskRegresjonPage() {
         </section>
 
         <section id="trening" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">7. Live trening</h2>
+          <h2 className="text-xl font-semibold mb-3">9. Live trening</h2>
           <LogisticRegressionSim />
           <p className="text-xs text-muted-foreground mt-3">
             Skru opp lærings-rate til ~1.5 — modellen kan oscillere. Skru opp
@@ -232,8 +295,42 @@ export function LogistiskRegresjonPage() {
           </p>
         </section>
 
+        <section id="boundary-2d" className="mb-10">
+          <h2 className="text-xl font-semibold mb-3">
+            10. 2D-grense og terskel-justering
+          </h2>
+          <p className="text-sm text-muted-foreground mb-3">
+            Logistisk regresjon i 2D: grensa er alltid en linje (lineær i
+            feature-rommet). Dra punkter eller legg til nye — modellen refittes
+            automatisk. Drei terskel-slideren fra 0.5 til 0.2 og se hvordan
+            grensa flytter seg, og hvordan TPR/FPR endres samtidig.
+            Konturene 10%/50%/90% er parallelle linjer — det er signaturen til
+            en lineær modell.
+          </p>
+          <Suspense fallback={<VisualizerSkeleton />}>
+            <DecisionBoundaryWithLogReg />
+          </Suspense>
+        </section>
+
+        <section id="roc-auc" className="mb-10">
+          <h2 className="text-xl font-semibold mb-3">
+            11. ROC, AUC og terskel-effekt
+          </h2>
+          <p className="text-sm text-muted-foreground mb-3">
+            Hver mulig terskel gir én (FPR, TPR)-prikk. ROC-kurven er sporet
+            etter alle terskler; AUC er hele arealet under. Slide terskelen og
+            se hvordan du beveger deg <em>langs</em> kurven — det er en avveiing
+            mellom recall og presisjon, ikke en «modell-forbedring». Bytt til
+            sammenligning-modus for å se «god», «middels» og «random» side om
+            side.
+          </p>
+          <Suspense fallback={<VisualizerSkeleton />}>
+            <RocCurveAndAucCalc />
+          </Suspense>
+        </section>
+
         <section id="softmax" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">8. Multinomial logistisk regresjon (softmax)</h2>
+          <h2 className="text-xl font-semibold mb-3">12. Multinomial logistisk regresjon (softmax)</h2>
           <div className="rounded-xl border border-border bg-card p-5 space-y-3 text-sm">
             <p>
               Med <Tex>{"K"}</Tex> klasser (iris: setosa/versicolor/virginica)
@@ -253,8 +350,42 @@ export function LogistiskRegresjonPage() {
           </div>
         </section>
 
+        <section id="multiclass-viz" className="mb-10">
+          <h2 className="text-xl font-semibold mb-3">
+            13. Multiclass interaktivt: softmax vs one-vs-rest
+          </h2>
+          <p className="text-sm text-muted-foreground mb-3">
+            Tre klasser, 2D. Modellen estimeres på nytt hver gang du legger til
+            eller flytter et punkt. Bytt mellom softmax og OvR — observer at
+            softmax-sannsynlighetene summerer til 1 (sammenkoblet via samme
+            normaliseringsledd), mens OvR gir tre uavhengige binær-modeller hvor
+            summen ikke trenger å være 1. Decision boundaries er fortsatt
+            <em> stykkevis lineære</em>.
+          </p>
+          <Suspense fallback={<VisualizerSkeleton />}>
+            <MulticlassSoftmaxViz />
+          </Suspense>
+        </section>
+
+        <section id="calibration" className="mb-10">
+          <h2 className="text-xl font-semibold mb-3">
+            14. Sannsynlighets-kalibrering
+          </h2>
+          <p className="text-sm text-muted-foreground mb-3">
+            En modell er <em>kalibrert</em> hvis blant alle prediksjoner
+            «p̂ = 70 %» er omtrent 70 % faktisk positive. Slik en plott er ofte
+            mer ærlig enn AUC: en høy-AUC-modell kan likevel være håpløst
+            overkonfident. Slå på «for sikker»-knappen for å se hva tre vanlige
+            kalibreringsmetoder (rå, Platt-scaling, isotonisk regresjon) gjør
+            med kurven.
+          </p>
+          <Suspense fallback={<VisualizerSkeleton />}>
+            <CalibrationPlot />
+          </Suspense>
+        </section>
+
         <section id="imbalance" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">9. Class imbalance og class-weights</h2>
+          <h2 className="text-xl font-semibold mb-3">15. Class imbalance og class-weights</h2>
           <div className="rounded-xl border border-border bg-card p-5 space-y-3 text-sm">
             <p>
               Når en klasse er sjelden (typisk 5 % positive — fraud, sjeldne
@@ -285,7 +416,7 @@ export function LogistiskRegresjonPage() {
         </section>
 
         <section id="feller" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">10. Eksamen-feller</h2>
+          <h2 className="text-xl font-semibold mb-3">16. Eksamen-feller</h2>
           <div className="space-y-3 text-sm">
             <div className="rounded-lg border border-amber-500/30 bg-amber-500/5 p-4">
               <strong>Skaler features.</strong> Gradient descent konvergerer
@@ -315,8 +446,22 @@ export function LogistiskRegresjonPage() {
           </div>
         </section>
 
+        <section id="match-quiz" className="mb-10">
+          <h2 className="text-xl font-semibold mb-3">
+            17. Match: use-cases → riktige innstillinger
+          </h2>
+          <p className="text-sm text-muted-foreground mb-3">
+            6 realistiske scenarier. Hvilke innstillinger passer? Det kan være
+            mer enn én riktig per scenario — velg alle, og sjekk svar for å se
+            begrunnelse.
+          </p>
+          <Suspense fallback={<VisualizerSkeleton />}>
+            <LogRegMatchQuiz />
+          </Suspense>
+        </section>
+
         <section id="sklearn" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">11. Python — sklearn på iris</h2>
+          <h2 className="text-xl font-semibold mb-3">18. Python — sklearn på iris</h2>
           <pre className="rounded-xl border border-border bg-card p-4 font-mono text-xs overflow-x-auto whitespace-pre">{`from sklearn.datasets import load_iris
 from sklearn.linear_model import LogisticRegression
 from sklearn.preprocessing import StandardScaler
