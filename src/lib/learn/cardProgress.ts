@@ -1,7 +1,10 @@
 // Lightweight localStorage-backed tracking for flashcard self-grading.
 // Stores per-card "known" or "unknown" state plus simple deck stats.
 
+import { awardXP } from "@/lib/progress/xp";
+
 const KEY = "sql-practice-cards-v1";
+const XP_PER_CARD = 2;
 
 export interface CardProgress {
   known: Record<string, true>;
@@ -30,10 +33,17 @@ function save(p: CardProgress) {
 
 export function markKnown(id: string): CardProgress {
   const p = loadCardProgress();
+  const wasNew = !p.known[id];
   p.known[id] = true;
   delete p.unknown[id];
   p.lastSeen[id] = new Date().toISOString();
   save(p);
+  // Award unified XP only on the first time a card flips to known.
+  // The dedup-key in xp.ts also gates this, but we avoid the call when
+  // we already know it's a repeat to keep the storage write count down.
+  if (wasNew) {
+    awardXP("card", `card-${id}`, XP_PER_CARD);
+  }
   return p;
 }
 
