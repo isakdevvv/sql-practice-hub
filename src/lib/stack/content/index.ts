@@ -164,6 +164,7 @@ import { content as dte2501MdpBellman } from "./dte2501-mdp-bellman";
 import { content as dte2501KMeansVisualizer } from "./dte2501-kmeans-visualizer";
 import { content as dte2501PcaVisualizer } from "./dte2501-pca-visualizer";
 import { content as dte2501AiParadigmerKart } from "./dte2501-ai-paradigmer-kart";
+import { content as aiHistorie } from "./ai-historie";
 import { content as dte2501PsoVisualizer } from "./dte2501-pso-visualizer";
 import { content as tek1501 } from "./tek-1501";
 import { content as tek1Deskriptiv } from "./tek1-deskriptiv";
@@ -273,6 +274,8 @@ export const TRINN: TrinnContent[] = [
   dte2501KMeansVisualizer, dte2501PcaVisualizer, dte2501PsoVisualizer,
   // DTE-2501 — intro: AI-paradigmer kart (Grokking AI kap. 1)
   dte2501AiParadigmerKart,
+  // DTE-2501 / DTE-2602 — AI-historie interaktiv tidslinje (Turing → transformers)
+  aiHistorie,
   // TEK-1501 — statistikk
   tek1501, tek1Deskriptiv, tek1Sannsynlighet, tek1Fordelinger,
   tek1StatistiskAnalyse, tek1Kombinatorikk, tek1DiskreteFordelinger,

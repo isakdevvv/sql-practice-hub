@@ -260,6 +260,7 @@ export const PHASES: readonly CurriculumPhase[] = [
     shortSummary: "Søk, CSP, logikk, planlegging, Bayes",
     slugs: [
       "dte-2501",
+      "ai-historie",
       "sok-algoritmer",
       "csp",
       "logisk-resonnering",
