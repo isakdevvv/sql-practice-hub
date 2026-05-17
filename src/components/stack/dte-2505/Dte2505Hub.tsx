@@ -13,6 +13,7 @@ import {
   Activity,
   MemoryStick,
   Lock,
+  Layers,
 } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { LearningPath } from "@/components/stack/LearningPath";
@@ -124,6 +125,14 @@ const COURSES: Course[] = [
     shortDescription:
       "OSTEP kap. 28–33. Race conditions, mutex, condition variables, semaforer. Coffmans fire deadlock-betingelser, dining philosophers, RAG-detektor.",
     Icon: Lock,
+    status: "ready",
+  },
+  {
+    slug: "dte2505-thread-vs-prosess",
+    title: "Thread vs prosess — minne-modell",
+    shortDescription:
+      "O'Gorman kap. 2.3 + 2.6. Animert minne-layout for fork() vs pthread_create(), COW-markører, 4 prosesser vs 4 tråder side-ved-side, race-condition-demo med mutex, ps -eLf drag-til-kategori.",
+    Icon: Layers,
     status: "ready",
   },
 ];
