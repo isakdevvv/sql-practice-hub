@@ -211,6 +211,7 @@ import { content as tek1DistribusjonsPlotter } from "./tek1-distribusjons-plotte
 import { content as tek1PVerdiKalkulator } from "./tek1-p-verdi-kalkulator";
 import { content as tek1InferensSampling } from "./tek1-inferens-sampling";
 import { content as dte2602LineaerRegresjon } from "./dte2602-lineaer-regresjon";
+import { content as dte2602RegresjonDiagnostikk } from "./dte2602-regresjon-diagnostikk";
 import { content as dte2602RocCurvePlotter } from "./dte2602-roc-curve-plotter";
 import { content as dockerfileBuilder } from "./dockerfile-builder";
 import { content as mlPipelineBuilder } from "./ml-pipeline-builder";
@@ -318,7 +319,7 @@ export const TRINN: TrinnContent[] = [
   moocBibliotek,
   // Interaktive verktøy — eksamensforberedelse
   tek1DistribusjonsPlotter, tek1PVerdiKalkulator, tek1InferensSampling,
-  dte2602LineaerRegresjon, dte2602RocCurvePlotter,
+  dte2602LineaerRegresjon, dte2602RegresjonDiagnostikk, dte2602RocCurvePlotter,
   // Dockerfile Builder — DevOps-kodegenerator
   dockerfileBuilder,
   // DTE-2602 — ML Pipeline Builder (interaktiv kodegenerator)
