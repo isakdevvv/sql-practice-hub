@@ -11,6 +11,8 @@ import {
   Trash2,
   Lightbulb,
   MousePointerClick,
+  Database,
+  TableProperties,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -38,6 +40,21 @@ type Table = {
   note?: string;
   /** Kolonner som er duplisert-rødt-markert i før-tabellen. */
   problem?: string[];
+};
+
+/** En SQL-spørring + resultatet den produserer fra de normaliserte tabellene.
+ *  Brukes til å vise at ingen data går tapt — du henter samme info via JOIN. */
+type JoinDemo = {
+  /** Klartekst-overskrift over query-boksen. */
+  tittel: string;
+  /** Multi-line SQL-spørring, formatert klar til visning. */
+  sql: string;
+  /** Kolonnenavn i resultatraden. */
+  resultKolonner: string[];
+  /** Rader i resultatet — bevisst valgt så den matcher FØR-tabellen. */
+  resultRader: (string | number)[][];
+  /** Kort linje under resultatet — forklarer hvorfor dette beviser noe. */
+  poeng: string;
 };
 
 const MODES: { id: Mode; label: string; sub: string }[] = [
@@ -107,10 +124,31 @@ const UNORM_ROWS: (string | number)[][] = [
 // Mode-spesifikke før/etter-konfigurasjoner
 // --------------------------------------------------------------------------
 
-function buildModeData(mode: Mode): { for: Table[]; etter: Table[] } {
+function buildModeData(mode: Mode): {
+  for: Table[];
+  etter: Table[];
+  join?: JoinDemo;
+} {
   switch (mode) {
     case "u-1nf":
       return {
+        join: {
+          tittel: "Hent samme info tilbake via JOIN",
+          sql: `SELECT k.kundeNr,
+       k.kundeNavn,
+       GROUP_CONCAT(t.nummer, ', ') AS telefoner
+FROM   Kunde   k
+LEFT JOIN Telefon t ON t.kundeNr = k.kundeNr
+GROUP BY k.kundeNr, k.kundeNavn;`,
+          resultKolonner: ["kundeNr", "kundeNavn", "telefoner"],
+          resultRader: [
+            [42, "Anne Holm", "22 11 33, 99 88 77"],
+            [43, "Bjørn Ås", "76 12 88"],
+            [44, "Cathrine Lie", "55 12 12, 91 33 22, 22 99 88"],
+          ],
+          poeng:
+            "Resultatet er identisk med FØR-tabellen — men nå er hver telefon en ekte verdi som kan indekseres, sjekkes med UNIQUE og joines mot.",
+        },
         for: [
           {
             navn: "Kunde (unormalisert)",
@@ -168,6 +206,25 @@ function buildModeData(mode: Mode): { for: Table[]; etter: Table[] } {
 
     case "1-2nf":
       return {
+        join: {
+          tittel: "Hent samme info tilbake via JOIN",
+          sql: `SELECT ol.ordreNr,
+       ol.prodNr,
+       ol.antall,
+       p.prodNavn,
+       p.prodPris
+FROM   OrdreLinje ol
+JOIN   Produkt    p  ON p.prodNr = ol.prodNr;`,
+          resultKolonner: ["ordreNr", "prodNr", "antall", "prodNavn", "prodPris"],
+          resultRader: [
+            [1001, 50, 2, "Te", 49],
+            [1001, 51, 1, "Kaffe", 89],
+            [1002, 50, 3, "Te", 49],
+            [1003, 52, 1, "Sukker", 19],
+          ],
+          poeng:
+            "Samme rader som FØR. Men 'Te = 49' lagres nå i ÉN celle i Produkt — ikke duplisert på hver ordrelinje.",
+        },
         for: [
           {
             navn: "OrdreLinje (1NF, sammensatt PK)",
@@ -228,6 +285,24 @@ function buildModeData(mode: Mode): { for: Table[]; etter: Table[] } {
 
     case "2-3nf":
       return {
+        join: {
+          tittel: "Hent samme info tilbake via JOIN",
+          sql: `SELECT a.empId,
+       a.navn,
+       a.deptId,
+       d.deptNavn
+FROM   Ansatt   a
+JOIN   Avdeling d ON d.deptId = a.deptId;`,
+          resultKolonner: ["empId", "navn", "deptId", "deptNavn"],
+          resultRader: [
+            [1, "Anne", 10, "Salg"],
+            [2, "Bjørn", 10, "Salg"],
+            [3, "Cathrine", 20, "Utvikling"],
+            [4, "Dan", 20, "Utvikling"],
+          ],
+          poeng:
+            "Samme svar — men 'Salg' og 'Utvikling' lagres bare ÉN gang. Endrer Salg navn til Marked? UPDATE rammer 1 rad, ikke 2.",
+        },
         for: [
           {
             navn: "Ansatt (2NF, men transitiv)",
@@ -285,6 +360,23 @@ function buildModeData(mode: Mode): { for: Table[]; etter: Table[] } {
 
     case "3-bcnf":
       return {
+        join: {
+          tittel: "Hent samme info tilbake via JOIN",
+          sql: `SELECT v.student,
+       vd.fag,
+       v.veileder
+FROM   Veiledning v
+JOIN   Veileder   vd ON vd.veileder = v.veileder;`,
+          resultKolonner: ["student", "fag", "veileder"],
+          resultRader: [
+            ["Anne", "DB", "Olsen"],
+            ["Bjørn", "DB", "Olsen"],
+            ["Anne", "Algo", "Hansen"],
+            ["Cathrine", "DB", "Pedersen"],
+          ],
+          poeng:
+            "Samme tabell — men nå er det umulig å registrere 'Olsen underviser Algo'. Skjemaet håndhever regelen «én veileder, ett fag».",
+        },
         for: [
           {
             navn: "Veiledning (3NF, ikke BCNF)",
@@ -439,7 +531,7 @@ function BeforeAfter({
   showAfter,
   onToggle,
 }: {
-  data: { for: Table[]; etter: Table[] };
+  data: { for: Table[]; etter: Table[]; join?: JoinDemo };
   showAfter: boolean;
   onToggle: () => void;
 }) {
@@ -533,6 +625,97 @@ function BeforeAfter({
           </div>
         </div>
       </div>
+
+      {data.join && (
+        <JoinResultPanel join={data.join} visible={showAfter} />
+      )}
+    </div>
+  );
+}
+
+// --------------------------------------------------------------------------
+// JOIN-rekonstruksjon: vis at samme info kan hentes via SQL — ingen data tapt
+// --------------------------------------------------------------------------
+
+function JoinResultPanel({
+  join,
+  visible,
+}: {
+  join: JoinDemo;
+  visible: boolean;
+}) {
+  return (
+    <div
+      className={cn(
+        "mt-4 rounded-xl border-2 p-3 transition-all duration-500",
+        visible
+          ? "border-brand/40 bg-brand/5 opacity-100"
+          : "border-border bg-muted/20 opacity-50",
+      )}
+    >
+      <div className="flex items-center gap-2 mb-3 text-[10px] uppercase tracking-wider text-brand font-semibold">
+        <Database className="h-3.5 w-3.5" />
+        {join.tittel}
+      </div>
+
+      <div className="grid lg:grid-cols-2 gap-3">
+        {/* SQL-spørringen */}
+        <div className="rounded-lg border border-border bg-card p-3 min-w-0">
+          <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold mb-2 flex items-center gap-1.5">
+            <span className="font-mono text-brand">SQL</span>
+            <span>—</span>
+            <span>JOIN mot de nye tabellene</span>
+          </div>
+          <pre className="text-[11px] font-mono leading-relaxed whitespace-pre overflow-x-auto text-foreground">
+            {join.sql}
+          </pre>
+        </div>
+
+        {/* Resultat-tabell */}
+        <div className="rounded-lg border border-border bg-card p-3">
+          <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold mb-2 flex items-center gap-1.5">
+            <TableProperties className="h-3 w-3" />
+            Resultat — samme rader som FØR
+          </div>
+          <div className="overflow-x-auto">
+            <table className="text-[11px] font-mono w-full">
+              <thead className="bg-muted/40">
+                <tr>
+                  {join.resultKolonner.map((c) => (
+                    <th
+                      key={c}
+                      className="px-2 py-1.5 text-left border-b border-border whitespace-nowrap"
+                    >
+                      {c}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {join.resultRader.map((rad, ri) => (
+                  <tr
+                    key={ri}
+                    className="border-b border-border/60 last:border-b-0"
+                  >
+                    {rad.map((celle, ci) => (
+                      <td key={ci} className="px-2 py-1 whitespace-nowrap">
+                        {celle === null || celle === undefined
+                          ? "—"
+                          : String(celle)}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <p className="mt-3 text-[11px] text-foreground/80 italic flex items-start gap-1.5">
+        <CheckCircle2 className="h-3.5 w-3.5 text-success shrink-0 mt-0.5" />
+        <span>{join.poeng}</span>
+      </p>
     </div>
   );
 }
