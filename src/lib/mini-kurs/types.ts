@@ -59,9 +59,17 @@ export interface MiniCourse {
   blurb: string;
   /** Estimert tidsbruk for hele kurset. */
   estimertTid: string;
-  /** Hvilke fag dette kurset støtter. */
+  /** Hvilke fag dette kurset støtter. Første element regnes som primær-fag og
+   *  brukes til gruppering på /mini-kurs-indeksen. */
   fag: string[];
   /** Tier-fargekode for kort på listen. */
   color: "brand" | "success" | "warning" | "purple";
+  /** Slugs av andre mini-kurs som bør tas FØR dette. Brukes av indeks-siden
+   *  til topologisk sortering så pensum-løypen blir riktig. F.eks. et kurs
+   *  om Flask-utvidelser har `forutsetninger: ["flask-fra-null"]`. */
+  forutsetninger?: string[];
+  /** Anbefalt sortering innen samme fag når topologisk rekkefølge ikke gir
+   *  én entydig løype. Lavere = tidligere. Default 100 (alfabetisk fallback). */
+  rekkefolge?: number;
   lessons: Lesson[];
 }
