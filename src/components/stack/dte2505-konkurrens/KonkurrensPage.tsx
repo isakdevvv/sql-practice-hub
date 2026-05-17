@@ -5,6 +5,7 @@ import { CourseOutline } from "@/components/stack/CourseOutline";
 import { DeadlockGraph } from "./DeadlockGraph";
 import { ConcurrencyTimeline } from "./ConcurrencyTimeline";
 import { ProducerConsumerSim } from "./ProducerConsumerSim";
+import { KonkurrensVisualizer } from "./KonkurrensVisualizer";
 
 const STEPS = [
   { title: "Race conditions", anchor: "race" },
@@ -32,17 +33,18 @@ export function KonkurrensPage() {
             Concurrency — låser, semaforer og deadlock
           </h1>
           <p className="mt-3 text-muted-foreground leading-relaxed">
-            Flere tråder deler minne for å gå raskere — men nå kan to tråder lese,
-            endre og skrive samme variabel uten å koordinere. Resultatet: race
-            conditions. Hele lærdomsfeltet rundt mutexer, condition variables og
-            semaforer handler om å gjenoppfinne <em>atomicitet</em> og{" "}
-            <em>rekkefølge</em> oppå asynkron utførelse.
+            Flere tråder deler minne for å gå raskere — men nå kan to tråder lese, endre og skrive
+            samme variabel uten å koordinere. Resultatet: race conditions. Hele lærdomsfeltet rundt
+            mutexer, condition variables og semaforer handler om å gjenoppfinne <em>atomicitet</em>{" "}
+            og <em>rekkefølge</em> oppå asynkron utførelse.
           </p>
           <div className="mt-4 rounded-lg border border-brand/30 bg-brand/5 p-4 flex items-start gap-3">
             <Lightbulb className="h-4 w-4 text-brand mt-0.5 shrink-0" />
             <div className="text-sm">
               <span className="font-medium">Hands-on:</span>{" "}
-              <a href="#drill" className="text-brand hover:underline">ressurs-allokeringsgrafen</a>{" "}
+              <a href="#drill" className="text-brand hover:underline">
+                ressurs-allokeringsgrafen
+              </a>{" "}
               lengre ned. Tre scenarier, deadlock-detektor med sirkel-merking.
             </div>
           </div>
@@ -52,8 +54,8 @@ export function KonkurrensPage() {
 
         <Section number="1" id="race" title="Race conditions — kanonisk eksempel">
           <p className="text-sm text-muted-foreground mb-3">
-            To tråder øker samme teller en million ganger hver. Hvorfor blir
-            slutt-tallet ikke 2 millioner?
+            To tråder øker samme teller en million ganger hver. Hvorfor blir slutt-tallet ikke 2
+            millioner?
           </p>
           <div className="rounded-xl border border-border bg-card p-4 mb-3">
             <pre className="font-mono text-xs overflow-x-auto whitespace-pre">{`// Tråd A og B kjører dette parallelt:
@@ -69,17 +71,23 @@ mov [counter], eax     // 3. lagre
 // Da går teller bare opp med 1 i stedet for 2.`}</pre>
           </div>
           <p className="text-xs text-muted-foreground mb-4">
-            <strong>Kritisk seksjon:</strong> koden mellom load og store er en
-            kritisk seksjon. Det må kjøre <em>atomisk</em> — som om ingen andre
-            tråder kunne se den halvferdige tilstanden. Det er det låser gir oss.
+            <strong>Kritisk seksjon:</strong> koden mellom load og store er en kritisk seksjon. Det
+            må kjøre <em>atomisk</em> — som om ingen andre tråder kunne se den halvferdige
+            tilstanden. Det er det låser gir oss.
           </p>
           <p className="text-sm text-muted-foreground mb-3">
-            <strong>Prøv selv:</strong> Hver tråd kjører tre instruksjoner.
-            Flytt på rekkefølgen og se den delte counteren oppdatere live. Slå{" "}
-            <em>Lås på</em> og merk hvordan operasjoner i den andre tråden
-            blokkeres.
+            <strong>Prøv selv:</strong> Hver tråd kjører tre instruksjoner. Flytt på rekkefølgen og
+            se den delte counteren oppdatere live. Slå <em>Lås på</em> og merk hvordan operasjoner i
+            den andre tråden blokkeres.
           </p>
           <ConcurrencyTimeline />
+          <p className="text-sm text-muted-foreground mt-6 mb-3">
+            <strong>Vil du se hva som skjer med flere iterasjoner?</strong> Under er samme idé i
+            fire moduser — race, mutex, dining philosophers og bounded buffer. Start med «Race
+            condition»-tabben og klikk T1/T2 i ulike rekkefølger; counter skal være 10, men ender
+            ofte lavere.
+          </p>
+          <KonkurrensVisualizer defaultMode="race" />
         </Section>
 
         <Section number="2" id="mutex" title="Mutex / lock — gjensidig utelukkelse">
@@ -111,19 +119,23 @@ while (test_and_set(m) == 1)
             </div>
           </div>
           <p className="text-xs text-muted-foreground mt-3">
-            <strong>Spinlock vs. blocking:</strong> spinlock = «sjekk i loop til
-            den er ledig» — bra for korte kritiske seksjoner. Blocking mutex =
-            «legg meg til side, vekk meg når låsen er ledig» — bra for lange.
-            Linux <code className="font-mono">pthread_mutex</code> er adaptiv: spinner
-            litt før den blokkerer.
+            <strong>Spinlock vs. blocking:</strong> spinlock = «sjekk i loop til den er ledig» — bra
+            for korte kritiske seksjoner. Blocking mutex = «legg meg til side, vekk meg når låsen er
+            ledig» — bra for lange. Linux <code className="font-mono">pthread_mutex</code> er
+            adaptiv: spinner litt før den blokkerer.
           </p>
+          <p className="text-sm text-muted-foreground mt-5 mb-3">
+            <strong>Prøv selv:</strong> Mutex-tabben i visualizeren under viser samme to tråder, men
+            nå med lock/unlock rundt kritisk seksjon. Trykk Auto — du ser at den ene tråden spinner
+            mens den andre eier låsen, og counter ender alltid på 10.
+          </p>
+          <KonkurrensVisualizer defaultMode="mutex" />
         </Section>
 
         <Section number="3" id="cv" title="Condition variables — wait/signal">
           <p className="text-sm text-muted-foreground mb-3">
-            Mutex hindrer to tråder fra å være i seksjonen samtidig. Condition variables
-            lar tråder <em>vente på at en betingelse blir sann</em> — typisk i
-            producer-consumer.
+            Mutex hindrer to tråder fra å være i seksjonen samtidig. Condition variables lar tråder{" "}
+            <em>vente på at en betingelse blir sann</em> — typisk i producer-consumer.
           </p>
           <div className="rounded-xl border border-border bg-card p-4">
             <pre className="font-mono text-xs overflow-x-auto whitespace-pre">{`// Producer-consumer med begrenset buffer
@@ -147,18 +159,21 @@ consumer():
   unlock(m)`}</pre>
           </div>
           <p className="text-xs text-muted-foreground mt-3">
-            <strong>Hvorfor <code className="font-mono">while</code> og ikke <code className="font-mono">if</code>?</strong>{" "}
-            Spurious wakeups + flere consumers. Når tråden våkner, kan en annen ha
-            «stjålet» elementet. Sjekk alltid betingelsen på nytt.
+            <strong>
+              Hvorfor <code className="font-mono">while</code> og ikke{" "}
+              <code className="font-mono">if</code>?
+            </strong>{" "}
+            Spurious wakeups + flere consumers. Når tråden våkner, kan en annen ha «stjålet»
+            elementet. Sjekk alltid betingelsen på nytt.
           </p>
         </Section>
 
         <Section number="4" id="sem" title="Semaforer — Dijkstra (1965)">
           <p className="text-sm text-muted-foreground mb-3">
             En semafor er en teller med to atomiske operasjoner:{" "}
-            <code className="font-mono">wait()</code> (også P/down) som dekrementerer og
-            blokkerer hvis &lt;0, og <code className="font-mono">post()</code> (V/up) som
-            inkrementerer og vekker én ventende.
+            <code className="font-mono">wait()</code> (også P/down) som dekrementerer og blokkerer
+            hvis &lt;0, og <code className="font-mono">post()</code> (V/up) som inkrementerer og
+            vekker én ventende.
           </p>
           <div className="grid sm:grid-cols-2 gap-3">
             <div className="rounded-xl border border-border bg-card p-4">
@@ -189,19 +204,21 @@ worker():
           </div>
         </Section>
 
-        <Section
-          number="5"
-          id="pc"
-          title="Producer-consumer — bounded buffer med semaforer"
-        >
+        <Section number="5" id="pc" title="Producer-consumer — bounded buffer med semaforer">
           <p className="text-sm text-muted-foreground mb-3">
-            Klassikeren: to producers og to consumers deler et buffer på 10
-            slots. Tre semaforer beskytter både plass-telling og lås. Skru av
-            «Bruk semaforer» og kjør noen steg — bufferet overflower eller
-            underflower og du får rødt utropstegn. Skru på igjen, reset, og se
-            hvordan empty/full holder counterene i sjakk.
+            Klassikeren: to producers og to consumers deler et buffer på 10 slots. Tre semaforer
+            beskytter både plass-telling og lås. Skru av «Bruk semaforer» og kjør noen steg —
+            bufferet overflower eller underflower og du får rødt utropstegn. Skru på igjen, reset,
+            og se hvordan empty/full holder counterene i sjakk.
           </p>
           <ProducerConsumerSim />
+          <p className="text-sm text-muted-foreground mt-5 mb-3">
+            <strong>Enklere variant:</strong> visualizeren under viser én producer og én consumer
+            med justerbare hastigheter. Når producer går mye raskere enn consumer fylles buffer og
+            producer blokkeres på <code className="font-mono">empty=0</code>. Omvendt blokkeres
+            consumer på <code className="font-mono">full=0</code>.
+          </p>
+          <KonkurrensVisualizer defaultMode="producer-consumer" />
         </Section>
 
         <Section number="6" id="bugs" title="Klassiske concurrency-bugs (Lu et al. 2008)">
@@ -217,16 +234,15 @@ worker():
                 <tr className="border-t border-border">
                   <td className="px-3 py-2 font-mono text-brand">Atomicity</td>
                   <td className="px-3 py-2 text-muted-foreground">
-                    Kode som forventes å være udelelig blir avbrutt. Eks: en if-test
-                    og handling som ikke står sammen i samme låste blokk. ~65 % av
-                    bugs i studien.
+                    Kode som forventes å være udelelig blir avbrutt. Eks: en if-test og handling som
+                    ikke står sammen i samme låste blokk. ~65 % av bugs i studien.
                   </td>
                 </tr>
                 <tr className="border-t border-border">
                   <td className="px-3 py-2 font-mono text-brand">Order</td>
                   <td className="px-3 py-2 text-muted-foreground">
-                    Tråd B antar at A allerede er ferdig, men ingen synkronisering
-                    sørger for det. Klassisk i init-kode. Løses med condition vars.
+                    Tråd B antar at A allerede er ferdig, men ingen synkronisering sørger for det.
+                    Klassisk i init-kode. Løses med condition vars.
                   </td>
                 </tr>
                 <tr className="border-t border-border">
@@ -238,15 +254,15 @@ worker():
                 <tr className="border-t border-border">
                   <td className="px-3 py-2 font-mono text-brand">Livelock</td>
                   <td className="px-3 py-2 text-muted-foreground">
-                    Tråder kjører, men kommer ingen vei — de bare reagerer på
-                    hverandre. To høflige folk i en dør.
+                    Tråder kjører, men kommer ingen vei — de bare reagerer på hverandre. To høflige
+                    folk i en dør.
                   </td>
                 </tr>
                 <tr className="border-t border-border">
                   <td className="px-3 py-2 font-mono text-brand">Starvation</td>
                   <td className="px-3 py-2 text-muted-foreground">
-                    En tråd kommer aldri til, fordi andre stadig blir prioritert.
-                    Løses med fair-låser eller prioritets-løft.
+                    En tråd kommer aldri til, fordi andre stadig blir prioritert. Løses med
+                    fair-låser eller prioritets-løft.
                   </td>
                 </tr>
               </tbody>
@@ -256,8 +272,8 @@ worker():
 
         <Section number="7" id="coffman" title="Deadlock — Coffmans fire betingelser">
           <p className="text-sm text-muted-foreground mb-3">
-            Deadlock kan KUN oppstå hvis ALLE fire betingelsene er sanne samtidig.
-            Bryt én og deadlocken er umulig.
+            Deadlock kan KUN oppstå hvis ALLE fire betingelsene er sanne samtidig. Bryt én og
+            deadlocken er umulig.
           </p>
           <div className="grid sm:grid-cols-2 gap-3">
             <CoffmanCard
@@ -282,16 +298,15 @@ worker():
             />
           </div>
           <p className="mt-3 text-xs text-muted-foreground">
-            <strong>Praktisk strategi:</strong> bryt #4. Gi hver lås et ID-nummer.
-            Krev at all kode tar låser i stigende rekkefølge. Da kan det aldri
-            oppstå en sirkel — beviselig.
+            <strong>Praktisk strategi:</strong> bryt #4. Gi hver lås et ID-nummer. Krev at all kode
+            tar låser i stigende rekkefølge. Da kan det aldri oppstå en sirkel — beviselig.
           </p>
         </Section>
 
         <Section number="8" id="dp" title="Dining philosophers — illustrerer alt">
           <p className="text-sm text-muted-foreground mb-3">
-            Fem filosofer rundt et bord, fem gafler mellom dem. Hver må ha begge
-            sine gafler for å spise.
+            Fem filosofer rundt et bord, fem gafler mellom dem. Hver må ha begge sine gafler for å
+            spise.
           </p>
           <div className="grid sm:grid-cols-2 gap-3">
             <div className="rounded-xl border border-rose-500/30 bg-rose-500/5 p-4">
@@ -307,8 +322,7 @@ worker():
     unlock(fork[(i+1) % 5])
     unlock(fork[i])`}</pre>
               <p className="text-xs text-muted-foreground mt-2">
-                Hvis alle tar venstre gaffel samtidig → ingen kan ta høyre →
-                deadlock.
+                Hvis alle tar venstre gaffel samtidig → ingen kan ta høyre → deadlock.
               </p>
             </div>
             <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/5 p-4">
@@ -332,6 +346,13 @@ worker():
               </p>
             </div>
           </div>
+          <p className="text-sm text-muted-foreground mt-5 mb-3">
+            <strong>Prøv selv:</strong> Fire filosofer rundt et bord. Trykk Auto med
+            «Naiv»-strategien — alle tar venstre gaffel, ingen får høyre, og simuleringen stopper i
+            deadlock. Bytt til «Asymmetri» og restart — P3 tar høyre først, sirkelen brytes, alle
+            får spise.
+          </p>
+          <KonkurrensVisualizer defaultMode="deadlock" />
         </Section>
 
         <Section number="9" id="kode" title="pthread og Python — samme idé">
@@ -377,23 +398,22 @@ print(counter)  # 2_000_000`}</pre>
             </div>
           </div>
           <p className="text-xs text-muted-foreground mt-3">
-            <strong>GIL-merknad:</strong> Pythons Global Interpreter Lock gjør at
-            bare én tråd kjører Python-bytekode om gangen. Race-conditions er
-            fortsatt mulig (mellom bytekode-instruksjoner), så låser trengs
-            uansett. CPU-bundne ting → bruk <code className="font-mono">multiprocessing</code>.
+            <strong>GIL-merknad:</strong> Pythons Global Interpreter Lock gjør at bare én tråd
+            kjører Python-bytekode om gangen. Race-conditions er fortsatt mulig (mellom
+            bytekode-instruksjoner), så låser trengs uansett. CPU-bundne ting → bruk{" "}
+            <code className="font-mono">multiprocessing</code>.
           </p>
         </Section>
 
         <Section number="10" id="drill" title="Interaktiv: ressurs-allokeringsgraf">
           <p className="text-sm text-muted-foreground mb-3">
-            En ressurs-allokeringsgraf har sirkler (prosesser) og firkanter
-            (ressurser). En kant <em>R → P</em> betyr «R holdes av P». En kant{" "}
-            <em>P → R</em> betyr «P ber om R». En sirkel i grafen = deadlock (når
-            hver ressurs har én instans).
+            En ressurs-allokeringsgraf har sirkler (prosesser) og firkanter (ressurser). En kant{" "}
+            <em>R → P</em> betyr «R holdes av P». En kant <em>P → R</em> betyr «P ber om R». En
+            sirkel i grafen = deadlock (når hver ressurs har én instans).
           </p>
           <p className="text-sm text-muted-foreground mb-3">
-            Klikk «Sjekk for deadlock». Sirkel-noder blir rosa. Fjern en kant for å
-            bryte sirkelen og se hvilken Coffman-betingelse som da brytes.
+            Klikk «Sjekk for deadlock». Sirkel-noder blir rosa. Fjern en kant for å bryte sirkelen
+            og se hvilken Coffman-betingelse som da brytes.
           </p>
           <DeadlockGraph />
         </Section>
@@ -401,28 +421,32 @@ print(counter)  # 2_000_000`}</pre>
         <Section number="11" id="feller" title="Eksamen-feller">
           <ul className="text-sm text-muted-foreground list-disc pl-5 space-y-2">
             <li>
-              <strong className="text-foreground">«Mutex løser alt».</strong>{" "}
-              Mutex hindrer to tråder samtidig, men ikke at de ser inkonsistente
-              data hvis du holder låsen for kort. Hele transaksjonen må være under
-              samme lås.
+              <strong className="text-foreground">«Mutex løser alt».</strong> Mutex hindrer to
+              tråder samtidig, men ikke at de ser inkonsistente data hvis du holder låsen for kort.
+              Hele transaksjonen må være under samme lås.
             </li>
             <li>
-              <strong className="text-foreground">Glemte at deadlock krever ALLE fire Coffman-betingelser.</strong>{" "}
+              <strong className="text-foreground">
+                Glemte at deadlock krever ALLE fire Coffman-betingelser.
+              </strong>{" "}
               Bryt én → ingen deadlock. Ikke nødvendig å bryte alle.
             </li>
             <li>
-              <strong className="text-foreground">Race condition ≠ deadlock.</strong>{" "}
-              Race = utfallet avhenger av tråd-rekkefølge. Deadlock = ingen
-              tråder gjør fremgang. Kan ha en uten den andre.
+              <strong className="text-foreground">Race condition ≠ deadlock.</strong> Race =
+              utfallet avhenger av tråd-rekkefølge. Deadlock = ingen tråder gjør fremgang. Kan ha en
+              uten den andre.
             </li>
             <li>
-              <strong className="text-foreground">Bruker <code className="font-mono">if</code> i stedet for <code className="font-mono">while</code> rundt cond.wait.</strong>{" "}
+              <strong className="text-foreground">
+                Bruker <code className="font-mono">if</code> i stedet for{" "}
+                <code className="font-mono">while</code> rundt cond.wait.
+              </strong>{" "}
               Bug — spurious wakeups og flere consumers. Alltid loop.
             </li>
             <li>
-              <strong className="text-foreground">Semafor med startverdi 1 = mutex?</strong>{" "}
-              Nesten, men: en mutex har eier (kan bare unlockes av samme tråd).
-              Semafor har ikke eier. Brukes feil → enkelt å lage bugs.
+              <strong className="text-foreground">Semafor med startverdi 1 = mutex?</strong> Nesten,
+              men: en mutex har eier (kan bare unlockes av samme tråd). Semafor har ikke eier.
+              Brukes feil → enkelt å lage bugs.
             </li>
           </ul>
         </Section>
@@ -431,8 +455,8 @@ print(counter)  # 2_000_000`}</pre>
           <h2 className="font-semibold mb-2">Videre lesing</h2>
           <ul className="space-y-1.5 text-muted-foreground list-disc pl-5">
             <li>
-              OSTEP kap. 28 (Locks), 29 (Lock-based DS), 30 (CV), 31 (Semaphores), 32
-              (Bugs), 33 (Event-based) —{" "}
+              OSTEP kap. 28 (Locks), 29 (Lock-based DS), 30 (CV), 31 (Semaphores), 32 (Bugs), 33
+              (Event-based) —{" "}
               <a
                 href="https://pages.cs.wisc.edu/~remzi/OSTEP/"
                 className="text-brand hover:underline"
@@ -440,22 +464,33 @@ print(counter)  # 2_000_000`}</pre>
                 rel="noreferrer"
               >
                 gratis hos UW Madison
-              </a>.
+              </a>
+              .
             </li>
             <li>
-              <Link to="/stack/$slug" params={{ slug: "dte2505-scheduling-drill" }} className="text-brand hover:underline">
+              <Link
+                to="/stack/$slug"
+                params={{ slug: "dte2505-scheduling-drill" }}
+                className="text-brand hover:underline"
+              >
                 CPU-scheduling
               </Link>{" "}
               — første halvdel av OSTEP.
             </li>
             <li>
-              <Link to="/stack/$slug" params={{ slug: "dte2505-virtuelt-minne" }} className="text-brand hover:underline">
+              <Link
+                to="/stack/$slug"
+                params={{ slug: "dte2505-virtuelt-minne" }}
+                className="text-brand hover:underline"
+              >
                 Virtuelt minne &amp; paging
               </Link>{" "}
               — andre halvdel.
             </li>
             <li>
-              <Link to="/cards" className="text-brand hover:underline">Flashcards</Link>{" "}
+              <Link to="/cards" className="text-brand hover:underline">
+                Flashcards
+              </Link>{" "}
               — drill Coffman, mutex vs. semafor, klassiske bugs.
             </li>
           </ul>
@@ -486,20 +521,10 @@ function Section({
   );
 }
 
-function CoffmanCard({
-  title,
-  text,
-  fix,
-}: {
-  title: string;
-  text: string;
-  fix: string;
-}) {
+function CoffmanCard({ title, text, fix }: { title: string; text: string; fix: string }) {
   return (
     <div className="rounded-xl border border-border bg-card p-4">
-      <div className="text-xs uppercase tracking-wider text-brand font-semibold mb-2">
-        {title}
-      </div>
+      <div className="text-xs uppercase tracking-wider text-brand font-semibold mb-2">{title}</div>
       <p className="text-sm text-foreground mb-2">{text}</p>
       <p className="text-xs text-muted-foreground">
         <strong className="text-foreground">Å bryte:</strong> {fix}
