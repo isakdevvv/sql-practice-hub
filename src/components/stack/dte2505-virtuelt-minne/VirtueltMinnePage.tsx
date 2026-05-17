@@ -8,11 +8,13 @@ import { CacheHierarchy } from "./CacheHierarchy";
 import { MemoryLayout } from "./MemoryLayout";
 import { PageReplacementSim } from "./PageReplacementSim";
 import { InodeStructure } from "./InodeStructure";
+import { VirtueltMinneVisualizer } from "./VirtueltMinneVisualizer";
 
 const STEPS = [
   { title: "Hvorfor virtuelt minne", anchor: "hvorfor" },
   { title: "Pages, frames, page table", anchor: "pages" },
   { title: "Adresseoversettelse", anchor: "oversett" },
+  { title: "Visualisering: oversettelse, TLB & fault", anchor: "vmem-viz" },
   { title: "Page-table-strukturer", anchor: "strukturer" },
   { title: "TLB — cachen for oversettelser", anchor: "tlb" },
   { title: "Cache-hierarkiet (interaktiv)", anchor: "cache" },
@@ -158,6 +160,30 @@ PA = 7 * 4096 + 0x123
    = 0x7000 + 0x123
    = 0x7123`}</pre>
           </div>
+        </Section>
+
+        <Section number="3b" id="vmem-viz" title="Visualisering — fire moduser steg for steg">
+          <p className="text-sm text-muted-foreground mb-3">
+            Her er hele oversettelses-maskineriet animert. Fire moduser i samme komponent:
+            single-level adresseoversettelse (med to eksempler), multi-level page-table walk (32-bit
+            VA → L1 → L2 → PFN), TLB-hit vs TLB-miss (~1 cycle vs ~100 cycles), og en full page
+            fault-syklus med LRU-eviction og swap-disk. Bruk Play eller Neste, og scrub fram og
+            tilbake på tidslinjen.
+          </p>
+          <VirtueltMinneVisualizer />
+          <p className="mt-3 text-xs text-muted-foreground">
+            <strong>Tips:</strong> Bytt mellom modusene i topp-baren. Hver modus har sin egen
+            pre-computet trace, så Reset starter alltid på steg 1. Resten av seksjonene under
+            referer tilbake hit — særlig{" "}
+            <a href="#tlb" className="text-brand hover:underline">
+              §5 TLB
+            </a>{" "}
+            og{" "}
+            <a href="#faults" className="text-brand hover:underline">
+              §8 Page faults
+            </a>
+            .
+          </p>
         </Section>
 
         <Section number="4" id="strukturer" title="Page-table-strukturer">
@@ -368,11 +394,10 @@ PA = 7 * 4096 + 0x123
           title="Page-replacement-simulator — kjør algoritmene side om side"
         >
           <p className="text-sm text-muted-foreground mb-3">
-            Skriv en reference string, velg antall frames, og bytt mellom FIFO,
-            LRU, Clock og Optimal. Tabellen viser frame-innholdet ved hvert
-            steg, og søylediagrammet sammenligner total faults. Belady-insetten
-            nederst varierer frame-tallet 3-5 og avslører om reference-strengen
-            din viser <em>Beladys anomali</em> for FIFO.
+            Skriv en reference string, velg antall frames, og bytt mellom FIFO, LRU, Clock og
+            Optimal. Tabellen viser frame-innholdet ved hvert steg, og søylediagrammet sammenligner
+            total faults. Belady-insetten nederst varierer frame-tallet 3-5 og avslører om
+            reference-strengen din viser <em>Beladys anomali</em> for FIFO.
           </p>
           <PageReplacementSim />
         </Section>
@@ -397,17 +422,12 @@ PA = 7 * 4096 + 0x123
           </p>
         </Section>
 
-        <Section
-          number="12"
-          id="inode"
-          title="Inode-struktur — direkte, indirect, double, triple"
-        >
+        <Section number="12" id="inode" title="Inode-struktur — direkte, indirect, double, triple">
           <p className="text-sm text-muted-foreground mb-3">
-            Page-tabellen mapper virtuelle adresser til frames. Filsystemet har
-            sin egen indirection-struktur: <strong>inoden</strong>. Hver fil har
-            en inode med 12 direkte blokk-pekere + én indirect + én
-            double-indirect + én triple-indirect. Dra sliderne for å se hvilke
-            pekere som faktisk tas i bruk for en gitt filstørrelse, og les av
+            Page-tabellen mapper virtuelle adresser til frames. Filsystemet har sin egen
+            indirection-struktur: <strong>inoden</strong>. Hver fil har en inode med 12 direkte
+            blokk-pekere + én indirect + én double-indirect + én triple-indirect. Dra sliderne for å
+            se hvilke pekere som faktisk tas i bruk for en gitt filstørrelse, og les av
             maks-størrelsen for 4 KB-blokker og 32-bit-pekere.
           </p>
           <InodeStructure />
