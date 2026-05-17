@@ -1176,4 +1176,282 @@ print("OK")
       },
     ],
   },
+
+  // =================================================================
+  // DTE-2511 INNLEVERING — Tuple, set og dict comprehensions
+  // (de 6 konkrete eksemplene fra innleveringen, 1. mars 2026)
+  // =================================================================
+  {
+    id: "py-comp-31-tuple-squares",
+    topic: "Comprehensions — tuple",
+    level: 1,
+    title: "Tuple: kvadrater 0–5",
+    description:
+      "Tuple har INGEN egen comprehension-syntaks — `(x for x in xs)` lager en GENERATOR, ikke en tuple. Vi pakker derfor gen-expr-en inn med `tuple(...)`.\n\nSkriv om for-løkken som bygger en tuple av kvadrater 0²..5² med += til ÉN linje med `tuple(<gen-expr>)`.",
+    requires: [],
+    starter: `# === DEN LANGE VEIEN (for-løkke + += på tuple) ===
+result_lang = ()
+for i in range(6):
+    result_lang += (i**2,)
+print("Lang:", result_lang)
+
+# === DIN OPPGAVE ===
+# Skriv det samme som ÉN linje. Husk: tuple(<uttrykk> for <var> in <iterable>).
+result = ...
+
+print("Kort:", result)
+assert isinstance(result, tuple), f"Forventet tuple, fikk {type(result).__name__}"
+assert result == (0, 1, 4, 9, 16, 25), f"Forventet (0, 1, 4, 9, 16, 25), fikk {result}"
+print("OK")
+`,
+    solution: `result_lang = ()
+for i in range(6):
+    result_lang += (i**2,)
+print("Lang:", result_lang)
+
+result = tuple(i**2 for i in range(6))
+
+print("Kort:", result)
+assert isinstance(result, tuple)
+assert result == (0, 1, 4, 9, 16, 25)
+print("OK")
+`,
+    hints: [
+      "Det er ingen tuple-comp i Python — bare gen-expr inni tuple().",
+      "Gen-expr: `(i**2 for i in range(6))`. Pakk inn: `tuple(i**2 for i in range(6))`.",
+      "Hvis du bare skriver `(i**2 for i in range(6))` får du en generator-object, ikke en tuple — derfor må `tuple(...)` rundt.",
+    ],
+    docs: [
+      {
+        title: "Python docs — Generator Expressions",
+        url: "https://docs.python.org/3/reference/expressions.html#generator-expressions",
+        note: "`(x for x in ...)` lager en generator. For å materialisere som tuple: `tuple(...)`. For liste: `list(...)`.",
+      },
+    ],
+  },
+
+  {
+    id: "py-comp-32-tuple-pairs",
+    topic: "Comprehensions — tuple",
+    level: 2,
+    title: "Tuple av (tall, kvadrat)-par for partall",
+    description:
+      "Bygg en tuple der hvert element er en tuple `(tall, kvadrat)` for hvert partall fra 0 til 10. Kombinerer tre ting: gen-expr → tuple-konverter, transformasjon til par, og filter på partall via `range`-step.",
+    requires: [],
+    starter: `# === DEN LANGE VEIEN ===
+result_lang = ()
+for i in range(0, 11, 2):
+    result_lang += ((i, i**2),)
+print("Lang:", result_lang)
+
+# === DIN OPPGAVE ===
+# tuple(<uttrykk> for i in range(0, 11, 2)) — uttrykket skal være en tuple (i, i**2).
+result = ...
+
+print("Kort:", result)
+assert isinstance(result, tuple)
+assert result == ((0, 0), (2, 4), (4, 16), (6, 36), (8, 64), (10, 100)), f"Fikk {result}"
+print("OK")
+`,
+    solution: `result_lang = ()
+for i in range(0, 11, 2):
+    result_lang += ((i, i**2),)
+print("Lang:", result_lang)
+
+result = tuple((i, i**2) for i in range(0, 11, 2))
+
+print("Kort:", result)
+assert isinstance(result, tuple)
+assert result == ((0, 0), (2, 4), (4, 16), (6, 36), (8, 64), (10, 100))
+print("OK")
+`,
+    hints: [
+      "`range(0, 11, 2)` gir 0, 2, 4, 6, 8, 10 — partallene t.o.m. 10.",
+      "Uttrykket er en tuple: `(i, i**2)`. Parenteser rundt PARET er nødvendig.",
+      "Hele: `tuple((i, i**2) for i in range(0, 11, 2))`.",
+    ],
+  },
+
+  {
+    id: "py-comp-33-set-letters",
+    topic: "Comprehensions — dict & set",
+    level: 0,
+    title: "Set: unike bokstaver i et ord",
+    description:
+      "Set-comprehensions har samme syntaks som list-comp men med krøllparenteser: `{<uttrykk> for <var> in <iter>}`. Bygg et set av de unike bokstavene i ordet `\"hello\"`.",
+    requires: [],
+    starter: `# === DEN LANGE VEIEN ===
+word = "hello"
+result_lang = set()
+for char in word:
+    result_lang.add(char)
+print("Lang:", sorted(result_lang))
+
+# === DIN OPPGAVE ===
+# {<uttrykk> for <var> in <iter>} — gir et set automatisk.
+result = ...
+
+print("Kort:", sorted(result))
+assert isinstance(result, set), f"Forventet set, fikk {type(result).__name__}"
+assert result == {"h", "e", "l", "o"}, f"Fikk {result}"
+print("OK")
+`,
+    solution: `word = "hello"
+result_lang = set()
+for char in word:
+    result_lang.add(char)
+print("Lang:", sorted(result_lang))
+
+result = {char for char in word}
+
+print("Kort:", sorted(result))
+assert isinstance(result, set)
+assert result == {"h", "e", "l", "o"}
+print("OK")
+`,
+    hints: [
+      "Krøllparenteser uten kolon = set-comp. (Med kolon ville det vært dict-comp.)",
+      "Uttrykket er bare `char`. Iterabel: ordet `word`.",
+      "`{char for char in word}`. Duplikater fjernes automatisk fordi det er et set.",
+    ],
+  },
+
+  {
+    id: "py-comp-34-set-word-lengths",
+    topic: "Comprehensions — dict & set",
+    level: 1,
+    title: "Set: lengder på ord som starter med 'a' eller 'b'",
+    description:
+      "Set-comp med filter. Hent lengden på hvert ord som starter med `a` eller `b`, samle som set (duplikater fjernes).",
+    requires: [],
+    starter: `words = ["apple", "apricot", "banana", "cat", "blueberry", "dog"]
+
+# === DEN LANGE VEIEN ===
+result_lang = set()
+for w in words:
+    if w[0] in ["a", "b"]:
+        result_lang.add(len(w))
+print("Lang:", sorted(result_lang))
+
+# === DIN OPPGAVE ===
+# {<uttrykk> for <var> in <iter> if <vilkår>}
+result = ...
+
+print("Kort:", sorted(result))
+assert isinstance(result, set)
+# apple=5, apricot=7, banana=6, blueberry=9 -> {5, 7, 6, 9}
+assert result == {5, 6, 7, 9}, f"Fikk {result}"
+print("OK")
+`,
+    solution: `words = ["apple", "apricot", "banana", "cat", "blueberry", "dog"]
+
+result_lang = set()
+for w in words:
+    if w[0] in ["a", "b"]:
+        result_lang.add(len(w))
+print("Lang:", sorted(result_lang))
+
+result = {len(w) for w in words if w[0] in ("a", "b")}
+
+print("Kort:", sorted(result))
+assert isinstance(result, set)
+assert result == {5, 6, 7, 9}
+print("OK")
+`,
+    hints: [
+      "Uttrykk: `len(w)`. Iterabel: `words`. Filter: `if w[0] in ('a', 'b')` (eller `if w[0] == 'a' or w[0] == 'b'`).",
+      "Bedre stil: bruk `w.startswith(('a', 'b'))` — også gyldig her.",
+      "Hele: `{len(w) for w in words if w[0] in ('a', 'b')}`. Settet fjerner duplikater (cat har 3 men er filtrert bort).",
+    ],
+  },
+
+  {
+    id: "py-comp-35-dict-squares",
+    topic: "Comprehensions — dict & set",
+    level: 0,
+    title: "Dict: {tall: kvadrat} for 0–4",
+    description:
+      "Klassisk dict-comp: bygg en oppslagstabell fra `i` til `i²`. Mønster: `{<nøkkel>: <verdi> for <var> in <iter>}`.",
+    requires: [],
+    starter: `# === DEN LANGE VEIEN ===
+result_lang = {}
+for i in range(5):
+    result_lang[i] = i**2
+print("Lang:", result_lang)
+
+# === DIN OPPGAVE ===
+# {<nøkkel>: <verdi> for i in range(5)}
+result = ...
+
+print("Kort:", result)
+assert isinstance(result, dict)
+assert result == {0: 0, 1: 1, 2: 4, 3: 9, 4: 16}, f"Fikk {result}"
+print("OK")
+`,
+    solution: `result_lang = {}
+for i in range(5):
+    result_lang[i] = i**2
+print("Lang:", result_lang)
+
+result = {i: i**2 for i in range(5)}
+
+print("Kort:", result)
+assert isinstance(result, dict)
+assert result == {0: 0, 1: 1, 2: 4, 3: 9, 4: 16}
+print("OK")
+`,
+    hints: [
+      "Krøllparenteser MED kolon = dict-comp.",
+      "Nøkkel: `i`. Verdi: `i**2`.",
+      "`{i: i**2 for i in range(5)}`.",
+    ],
+  },
+
+  {
+    id: "py-comp-36-dict-long-words",
+    topic: "Comprehensions — dict & set",
+    level: 1,
+    title: "Dict: {ord: lengde} for ord lengre enn 3",
+    description:
+      "Dict-comp med filter. Bygg en oppslagstabell `ord → lengde` for kun de ordene som har mer enn 3 tegn.",
+    requires: [],
+    starter: `words = ["apple", "cat", "banana", "dog", "elephant", "ox"]
+
+# === DEN LANGE VEIEN ===
+result_lang = {}
+for w in words:
+    if len(w) > 3:
+        result_lang[w] = len(w)
+print("Lang:", result_lang)
+
+# === DIN OPPGAVE ===
+# {<nøkkel>: <verdi> for <var> in <iter> if <vilkår>}
+result = ...
+
+print("Kort:", result)
+assert isinstance(result, dict)
+assert result == {"apple": 5, "banana": 6, "elephant": 8}, f"Fikk {result}"
+print("OK")
+`,
+    solution: `words = ["apple", "cat", "banana", "dog", "elephant", "ox"]
+
+result_lang = {}
+for w in words:
+    if len(w) > 3:
+        result_lang[w] = len(w)
+print("Lang:", result_lang)
+
+result = {w: len(w) for w in words if len(w) > 3}
+
+print("Kort:", result)
+assert isinstance(result, dict)
+assert result == {"apple": 5, "banana": 6, "elephant": 8}
+print("OK")
+`,
+    hints: [
+      "Nøkkel: `w`. Verdi: `len(w)`. Filter: `if len(w) > 3`.",
+      "`{w: len(w) for w in words if len(w) > 3}`.",
+      "Hvis du finner at du regner `len(w)` to ganger per ord — bruk walrus: `{w: n for w in words if (n := len(w)) > 3}`.",
+    ],
+  },
 ];
