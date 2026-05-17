@@ -13,13 +13,24 @@ import { useEffect, useMemo, useState } from "react";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SKILLS, type FagOmrade, type SkillId } from "@/lib/skill-tree/skills";
 import { estimateAllSkills, getNextUnlocked } from "@/lib/skill-tree/engine";
+import { computeOmradeProgress } from "@/lib/skill-tree/courseProgress";
 import { SkillGraph } from "@/components/skill-tree/SkillGraph";
 import { SkillSidePanel } from "@/components/skill-tree/SkillSidePanel";
 import { SkillLegend } from "@/components/skill-tree/SkillLegend";
 import { SkillFilterBar } from "@/components/skill-tree/SkillFilterBar";
 import { SkillListMobile } from "@/components/skill-tree/SkillListMobile";
 
+interface SkillTreSearch {
+  omrade?: FagOmrade;
+}
+
 export const Route = createFileRoute("/skill-tre")({
+  validateSearch: (search: Record<string, unknown>): SkillTreSearch => ({
+    omrade:
+      typeof search.omrade === "string"
+        ? (search.omrade as FagOmrade)
+        : undefined,
+  }),
   head: () => ({
     meta: [
       { title: "Skill-tre — SQL Sandbox" },
@@ -47,17 +58,26 @@ function useIsMobile() {
 
 function SkillTrePage() {
   const isMobile = useIsMobile();
+  const search = Route.useSearch();
 
-  const [filterOmrade, setFilterOmrade] = useState<FagOmrade | null>(null);
+  const [filterOmrade, setFilterOmrade] = useState<FagOmrade | null>(
+    search.omrade ?? null,
+  );
   const [onlyUnlocked, setOnlyUnlocked] = useState(false);
   const [onlyRusty, setOnlyRusty] = useState(false);
   const [selectedId, setSelectedId] = useState<SkillId | null>(null);
+
+  // Hold filteret synkront når brukeren navigerer hit fra et "Mine spor"-kort
+  useEffect(() => {
+    if (search.omrade) setFilterOmrade(search.omrade);
+  }, [search.omrade]);
 
   const estimates = useMemo(() => estimateAllSkills(SKILLS), []);
   const nextUnlocked = useMemo(
     () => new Set(getNextUnlocked(SKILLS, estimates)),
     [estimates],
   );
+  const progressByOmrade = useMemo(() => computeOmradeProgress(), []);
 
   // Hvilke fag-områder finnes faktisk i datasettet — slik at filterbar/legend
   // bare viser relevante chips
@@ -106,6 +126,7 @@ function SkillTrePage() {
         onlyRusty={onlyRusty}
         setOnlyRusty={setOnlyRusty}
         totalSynlige={visibleSkills.length}
+        progressByOmrade={progressByOmrade}
       />
 
       <div className="flex min-h-0 flex-1">

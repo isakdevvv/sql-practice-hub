@@ -6,6 +6,7 @@ import type { FagOmrade } from "@/lib/skill-tree/skills";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { OMRADE_FARGE, OMRADE_LABEL } from "./SkillGraph";
+import type { OmradeProgress } from "@/lib/skill-tree/courseProgress";
 
 export interface SkillFilterBarProps {
   omrader: FagOmrade[];
@@ -16,6 +17,7 @@ export interface SkillFilterBarProps {
   onlyRusty: boolean;
   setOnlyRusty: (v: boolean) => void;
   totalSynlige: number;
+  progressByOmrade?: Map<FagOmrade, OmradeProgress>;
 }
 
 export function SkillFilterBar(props: SkillFilterBarProps) {
@@ -29,22 +31,30 @@ export function SkillFilterBar(props: SkillFilterBarProps) {
       >
         Alle
       </Button>
-      {props.omrader.map((o) => (
-        <Button
-          key={o}
-          size="sm"
-          variant={props.filterOmrade === o ? "default" : "outline"}
-          onClick={() => props.setFilterOmrade(o)}
-          className="gap-1.5"
-        >
-          <span
-            className="inline-block h-2.5 w-2.5 rounded-full"
-            style={{ backgroundColor: OMRADE_FARGE[o] }}
-            aria-hidden
-          />
-          {OMRADE_LABEL[o]}
-        </Button>
-      ))}
+      {props.omrader.map((o) => {
+        const pct = props.progressByOmrade?.get(o)?.percent;
+        return (
+          <Button
+            key={o}
+            size="sm"
+            variant={props.filterOmrade === o ? "default" : "outline"}
+            onClick={() => props.setFilterOmrade(o)}
+            className="gap-1.5"
+          >
+            <span
+              className="inline-block h-2.5 w-2.5 rounded-full"
+              style={{ backgroundColor: OMRADE_FARGE[o] }}
+              aria-hidden
+            />
+            {OMRADE_LABEL[o]}
+            {pct !== undefined && (
+              <span className="ml-0.5 rounded-sm bg-foreground/10 px-1 text-[10px] font-medium tabular-nums">
+                {pct} %
+              </span>
+            )}
+          </Button>
+        );
+      })}
       <span className="mx-2 h-5 w-px bg-border" />
       <Button
         size="sm"
