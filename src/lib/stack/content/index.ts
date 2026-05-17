@@ -203,6 +203,7 @@ import { content as dte2602RocCurvePlotter } from "./dte2602-roc-curve-plotter";
 import { content as dockerfileBuilder } from "./dockerfile-builder";
 import { content as mlPipelineBuilder } from "./ml-pipeline-builder";
 import { content as sqlSchemaBuilder } from "./sql-schema-builder";
+import { content as microkernelArkitektur } from "./microkernel-arkitektur";
 import type { TrinnContent } from "../types";
 
 export const TRINN: TrinnContent[] = [
@@ -302,6 +303,8 @@ export const TRINN: TrinnContent[] = [
   mlPipelineBuilder,
   // SQL Schema Builder — interaktiv DDL-generator (database-blokken)
   sqlSchemaBuilder,
+  // DTE-2505 — microkernel vs monolitt splittskjerm-simulator (O'Gorman kap. 1.7)
+  microkernelArkitektur,
 ];
 
 import { curriculumIndexOf } from "../curriculum";
