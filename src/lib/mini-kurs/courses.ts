@@ -2783,12 +2783,794 @@ sjekk(respekterer_givens(løsning, puzzle), True, "given-tall er bevart")
   ],
 };
 
+// ============================================================================
+// DNS-RESOLVER FRA NULL — 6 leksjoner som bygger en rekursiv DNS-resolver.
+// Starter med record-strukturen, bygger en autoritativ nameserver, kobler
+// flere sammen i et hierarki (root → TLD → autoritativ), implementerer
+// rekursiv resolusjon, legger på TTL-cache, demonstrerer cache-poisoning
+// med transaction-ID-mitigering, og avslutter med å integrere alt i en
+// CachedResolver.
+//
+// Pedagogisk vinkel for DTE-2507: gjør DNS-protokollen fra forelesningen
+// til kode studenten selv skriver. Spoofing-leksjonen viser HVORFOR
+// transaction-ID-randomization og kildeport-randomization finnes.
+// Runner: python-script (pure Python, ingen sockets — alt simuleres).
+// ============================================================================
+
+const DNS_RESOLVER: MiniCourse = {
+  id: "dns-resolver",
+  slug: "dns-resolver",
+  title: "DNS-resolver fra null",
+  blurb:
+    "Bygg en rekursiv DNS-resolver i Python — fra record-strukturen, gjennom hierarkiet (root → TLD → autoritativ), til TTL-cache og spoofing-angrep. Hver leksjon legger ett konsept til, og du ender opp med en cached resolver som demonstrerer hvorfor transaction-ID-randomization eksisterer.",
+  estimertTid: "55–70 min",
+  fag: ["DTE-2507", "Nettverk", "DNS"],
+  color: "success",
+  lessons: [
+    // ============ LEKSJON 1 ===========================================
+    {
+      id: "01-records",
+      title: "1. DNS-records og en enkel nameserver",
+      narrative:
+        "DNS er ikke ett system — det er millioner av nameservere som koordinerer. Hver server kjenner sin egen **sone** (et avgrenset domene-tre) og lagrer **records** for den sonen.\n\nVanlige record-typer:\n\n- `A` — navn → IPv4-adresse\n- `NS` — sone → autoritativ nameserver (delegasjon)\n- `CNAME` — alias → kanonisk navn\n- `MX` — domene → mail-server\n\nVi modellerer en record som `(name, type, value, ttl)`. En `NameServer` er bare en liste av records pluss en query-metode.\n\n**Din oppgave:** Implementér `NameServer.query(name, type)` som returnerer alle records hvor BÅDE name OG type matcher eksakt. Dette er kjernen — hver autoritativ DNS-server gjør i bunn og grunn bare dette.",
+      files: {
+        "dns.py": `class Record:
+    def __init__(self, name, type, value, ttl=3600):
+        self.name = name
+        self.type = type
+        self.value = value
+        self.ttl = ttl
+
+    def __repr__(self):
+        return f"Record({self.name}, {self.type}, {self.value})"
+
+    def __eq__(self, other):
+        return (
+            isinstance(other, Record)
+            and self.name == other.name
+            and self.type == other.type
+            and self.value == other.value
+        )
+
+
+class NameServer:
+    def __init__(self, navn):
+        self.navn = navn
+        self.records = []
+
+    def add(self, record):
+        self.records.append(record)
+
+    def query(self, name, type):
+        """Returner alle records med matchende name OG type."""
+        # === DIN OPPGAVE ===
+        # Iterer self.records og returner de som matcher.
+        pass
+
+
+# === Test: autoritativ server for example.com ===
+auth = NameServer("ns.example.com")
+auth.add(Record("example.com", "A", "93.184.216.34"))
+auth.add(Record("www.example.com", "A", "93.184.216.34"))
+auth.add(Record("mail.example.com", "A", "93.184.216.35"))
+auth.add(Record("example.com", "MX", "mail.example.com"))
+
+
+def sjekk(faktisk, forventet, navn):
+    if faktisk == forventet:
+        print(f"OK   {navn}")
+    else:
+        print(f"FEIL {navn}: fikk {faktisk!r}, forventet {forventet!r}")
+
+
+# Eksakt match
+svar = auth.query("www.example.com", "A")
+sjekk(len(svar), 1, "www.example.com har én A-record")
+sjekk(svar[0].value, "93.184.216.34", "verdi er korrekt IP")
+
+# Type-filter virker
+svar = auth.query("example.com", "MX")
+sjekk(len(svar), 1, "MX-query treffer kun MX-record")
+sjekk(svar[0].value, "mail.example.com", "MX peker på mailserver")
+
+# Tom for ukjent navn
+sjekk(auth.query("ukjent.example.com", "A"), [], "ukjent navn → tom liste")
+
+# Tom for feil type
+sjekk(auth.query("www.example.com", "MX"), [], "feil type → tom liste")
+`,
+      },
+      defaultFile: "dns.py",
+      editable: ["dns.py"],
+      run: { kind: "python-script", entry: "dns.py" },
+      verifications: [
+        {
+          label: "Eksakt navn-match returnerer record",
+          check: { kind: "output-contains", needle: "OK   www.example.com har én A-record" },
+        },
+        {
+          label: "Verdien hentes ut korrekt",
+          check: { kind: "output-contains", needle: "OK   verdi er korrekt IP" },
+        },
+        {
+          label: "Type-filter virker (MX vs A)",
+          check: { kind: "output-contains", needle: "OK   MX-query treffer kun MX-record" },
+        },
+        {
+          label: "Ukjent navn returnerer tom liste",
+          check: { kind: "output-contains", needle: "OK   ukjent navn → tom liste" },
+        },
+        {
+          label: "Feil type returnerer tom liste",
+          check: { kind: "output-contains", needle: "OK   feil type → tom liste" },
+        },
+      ],
+      hint:
+        "def query(self, name, type):\n    return [r for r in self.records\n            if r.name == name and r.type == type]",
+    },
+
+    // ============ LEKSJON 2 ===========================================
+    {
+      id: "02-delegation",
+      title: "2. Hierarkiet: root → TLD → autoritativ",
+      narrative:
+        "Ingen enkelt nameserver kjenner hele DNS. Hierarkiet fungerer slik:\n\n- **Root-servere** kjenner bare TLD-ene (`com`, `org`, `no`, ...).\n- **TLD-servere** kjenner registrerte domener under sin TLD (`com` kjenner `example.com`, `google.com`, ...).\n- **Autoritative servere** kjenner sitt eget domene.\n\nNår du spør root om `www.example.com`, svarer den ikke 'jeg vet ikke' — den **delegerer**: «spør com-serveren». Det er en NS-record: `com → ns.com`.\n\nFor at dette skal funke trenger vi `find_delegation(name)`: gitt et navn, finn NS-records for nærmeste *foreldre*-sone serveren har delegasjon for.\n\n**Eksempel:** `root.find_delegation('www.example.com')` → NS-record for `com` (ikke for `www.example.com` eller `example.com` — root vet ikke om dem).\n\n**Din oppgave:** Implementér `find_delegation`. Bryt navnet ned i suffikser fra lengst til kortest: `www.example.com → example.com → com`. For hvert suffix, sjekk om vi har en NS-record. Returner FØRSTE treff (lengste matchende suffix).",
+      files: {
+        "dns.py": `class Record:
+    def __init__(self, name, type, value, ttl=3600):
+        self.name = name
+        self.type = type
+        self.value = value
+        self.ttl = ttl
+
+    def __repr__(self):
+        return f"Record({self.name}, {self.type}, {self.value})"
+
+
+class NameServer:
+    def __init__(self, navn):
+        self.navn = navn
+        self.records = []
+
+    def add(self, record):
+        self.records.append(record)
+
+    def query(self, name, type):
+        return [r for r in self.records if r.name == name and r.type == type]
+
+    def find_delegation(self, name):
+        """Returner NS-records for nærmeste suffix av name som vi har delegasjon for."""
+        # === DIN OPPGAVE ===
+        # Eksempel: name = "www.example.com"
+        #   Prøv "www.example.com" — har vi NS for det? Hvis ja: returner.
+        #   Prøv "example.com" — har vi NS for det? Hvis ja: returner.
+        #   Prøv "com" — har vi NS for det? Hvis ja: returner.
+        # Returner [] hvis ingen suffix treffer.
+        #
+        # Tips: name.split(".") gir delene; kombiner stadig færre.
+        return []
+
+
+# === Bygg et lite DNS-hierarki ===
+root = NameServer("root")
+root.add(Record("com", "NS", "ns.com"))
+root.add(Record("ns.com", "A", "192.5.6.30"))   # glue record
+root.add(Record("no", "NS", "ns.no"))
+root.add(Record("ns.no", "A", "194.0.21.1"))
+
+com = NameServer("ns.com")
+com.add(Record("example.com", "NS", "ns.example.com"))
+com.add(Record("ns.example.com", "A", "199.43.135.53"))
+
+ex = NameServer("ns.example.com")
+ex.add(Record("www.example.com", "A", "93.184.216.34"))
+
+
+def sjekk(faktisk, forventet, navn):
+    if faktisk == forventet:
+        print(f"OK   {navn}")
+    else:
+        print(f"FEIL {navn}: fikk {faktisk!r}, forventet {forventet!r}")
+
+
+# Root delegerer www.example.com til com-serveren
+deleg = root.find_delegation("www.example.com")
+sjekk(len(deleg), 1, "root delegerer www.example.com til én sone")
+sjekk(deleg[0].name, "com", "root deleger til 'com' (ikke 'example.com')")
+sjekk(deleg[0].value, "ns.com", "NS peker på ns.com")
+
+# com-serveren delegerer videre til example.com
+deleg = com.find_delegation("www.example.com")
+sjekk(deleg[0].name, "example.com", "com deleger til 'example.com' (lengste match)")
+
+# Autoritativ server har INGEN delegasjon for sine egne records
+sjekk(ex.find_delegation("www.example.com"), [], "autoritativ har ingen videre delegasjon")
+
+# Helt ukjent TLD
+sjekk(root.find_delegation("noe.org"), [], "ukjent TLD → tom liste")
+`,
+      },
+      defaultFile: "dns.py",
+      editable: ["dns.py"],
+      run: { kind: "python-script", entry: "dns.py" },
+      verifications: [
+        {
+          label: "Root delegerer ned i hierarkiet",
+          check: { kind: "output-contains", needle: "OK   root delegerer www.example.com til én sone" },
+        },
+        {
+          label: "Delegasjonen peker på riktig sone",
+          check: { kind: "output-contains", needle: "OK   root deleger til 'com' (ikke 'example.com')" },
+        },
+        {
+          label: "NS-recorden peker på riktig nameserver",
+          check: { kind: "output-contains", needle: "OK   NS peker på ns.com" },
+        },
+        {
+          label: "Lengste matchende suffix vinner",
+          check: { kind: "output-contains", needle: "OK   com deleger til 'example.com' (lengste match)" },
+        },
+        {
+          label: "Autoritativ server uten delegasjon returnerer tom",
+          check: { kind: "output-contains", needle: "OK   autoritativ har ingen videre delegasjon" },
+        },
+        {
+          label: "Ukjente TLD-er returnerer tom",
+          check: { kind: "output-contains", needle: "OK   ukjent TLD → tom liste" },
+        },
+      ],
+      hint:
+        'def find_delegation(self, name):\n    deler = name.split(".")\n    # Prøv lengste suffix først: hele navnet, deretter dropp ett ledd om gangen\n    for i in range(len(deler)):\n        suffix = ".".join(deler[i:])\n        ns = self.query(suffix, "NS")\n        if ns:\n            return ns\n    return []',
+    },
+
+    // ============ LEKSJON 3 ===========================================
+    {
+      id: "03-recursive-resolver",
+      title: "3. Rekursiv resolver med trace",
+      narrative:
+        "Når din PC spør Googles DNS (8.8.8.8) etter `www.example.com`, gjør den en **rekursiv resolusjon** for deg:\n\n1. Spør en root-server — får «spør com».\n2. Spør com-serveren — får «spør ns.example.com på 199.43.135.53».\n3. Spør 199.43.135.53 — får svaret: A → 93.184.216.34.\n\nDette er Internett som kommer til live — én lokal query nøster opp hele kjeden.\n\n**Algoritmen:**\n\n```\nnåværende = root_ip\nrepeat (med max 10 hopp):\n    server = ip_til_server[nåværende]\n    hvis server.query(name, type) gir svar: returner\n    delegasjon = server.find_delegation(name)\n    hvis tom: returner None  # NXDOMAIN\n    ns_navn = delegasjon[0].value\n    glue = server.query(ns_navn, 'A')   # NS-ens IP («glue record»)\n    nåværende = glue[0].value\n```\n\nVi bygger også opp en **trace**-liste som logger hvert hopp — det er det `dig +trace` skriver ut i Linux.\n\n**Din oppgave:** Implementér `resolve(name, type, root_ip, ip_til_server)`. Returner `(record_eller_None, trace_liste)`.",
+      files: {
+        "dns.py": `class Record:
+    def __init__(self, name, type, value, ttl=3600):
+        self.name = name
+        self.type = type
+        self.value = value
+        self.ttl = ttl
+
+    def __repr__(self):
+        return f"Record({self.name}, {self.type}, {self.value})"
+
+
+class NameServer:
+    def __init__(self, navn):
+        self.navn = navn
+        self.records = []
+
+    def add(self, record):
+        self.records.append(record)
+
+    def query(self, name, type):
+        return [r for r in self.records if r.name == name and r.type == type]
+
+    def find_delegation(self, name):
+        deler = name.split(".")
+        for i in range(len(deler)):
+            suffix = ".".join(deler[i:])
+            ns = self.query(suffix, "NS")
+            if ns:
+                return ns
+        return []
+
+
+def resolve(name, type, root_ip, ip_til_server):
+    """Rekursiv DNS-resolusjon. Returner (record, trace) eller (None, trace)."""
+    trace = []
+    # === DIN OPPGAVE ===
+    # nåværende = root_ip
+    # for _ in range(10):
+    #     server = ip_til_server[nåværende]
+    #     trace.append(f"Spør {server.navn} om {name} ({type})")
+    #     svar = server.query(name, type)
+    #     if svar:
+    #         trace.append(f"  → svar: {svar[0].value}")
+    #         return svar[0], trace
+    #     deleg = server.find_delegation(name)
+    #     if not deleg:
+    #         trace.append("  → NXDOMAIN")
+    #         return None, trace
+    #     ns_navn = deleg[0].value
+    #     glue = server.query(ns_navn, "A")
+    #     if not glue:
+    #         trace.append(f"  → mangler glue for {ns_navn}")
+    #         return None, trace
+    #     trace.append(f"  → referral til {ns_navn} ({glue[0].value})")
+    #     nåværende = glue[0].value
+    # return None, trace + ["  → for mange hopp"]
+    return None, trace
+
+
+# === Bygg hierarki ===
+def bygg_hierarki():
+    root = NameServer("root")
+    root.add(Record("com", "NS", "ns.com"))
+    root.add(Record("ns.com", "A", "192.5.6.30"))
+
+    com = NameServer("ns.com")
+    com.add(Record("example.com", "NS", "ns.example.com"))
+    com.add(Record("ns.example.com", "A", "199.43.135.53"))
+
+    ex = NameServer("ns.example.com")
+    ex.add(Record("www.example.com", "A", "93.184.216.34", ttl=300))
+
+    ip_til_server = {
+        "(root)": root,
+        "192.5.6.30": com,
+        "199.43.135.53": ex,
+    }
+    return ip_til_server
+
+
+def sjekk(faktisk, forventet, navn):
+    if faktisk == forventet:
+        print(f"OK   {navn}")
+    else:
+        print(f"FEIL {navn}: fikk {faktisk!r}, forventet {forventet!r}")
+
+
+ip_til_server = bygg_hierarki()
+record, trace = resolve("www.example.com", "A", "(root)", ip_til_server)
+
+print("Trace:")
+for linje in trace:
+    print(" ", linje)
+
+sjekk(record is not None, True, "fant en record")
+sjekk(record.value if record else None, "93.184.216.34", "endelig IP er korrekt")
+sjekk(len(trace) >= 3, True, "trace har minst 3 spørringer (root + com + ex)")
+
+# NXDOMAIN
+record, trace = resolve("finnesikke.com", "A", "(root)", ip_til_server)
+sjekk(record, None, "ukjent navn returnerer None")
+`,
+      },
+      defaultFile: "dns.py",
+      editable: ["dns.py"],
+      run: { kind: "python-script", entry: "dns.py" },
+      verifications: [
+        {
+          label: "Resolver finner den autoritative recorden",
+          check: { kind: "output-contains", needle: "OK   fant en record" },
+        },
+        {
+          label: "Endelig IP er korrekt",
+          check: { kind: "output-contains", needle: "OK   endelig IP er korrekt" },
+        },
+        {
+          label: "Trace logger alle tre nivåer (root → com → ex)",
+          check: { kind: "output-contains", needle: "OK   trace har minst 3 spørringer" },
+        },
+        {
+          label: "Ukjent navn returnerer None (NXDOMAIN)",
+          check: { kind: "output-contains", needle: "OK   ukjent navn returnerer None" },
+        },
+      ],
+      hint:
+        'nåværende = root_ip\nfor _ in range(10):\n    server = ip_til_server[nåværende]\n    trace.append(f"Spør {server.navn} om {name} ({type})")\n    svar = server.query(name, type)\n    if svar:\n        trace.append(f"  → svar: {svar[0].value}")\n        return svar[0], trace\n    deleg = server.find_delegation(name)\n    if not deleg:\n        trace.append("  → NXDOMAIN")\n        return None, trace\n    ns_navn = deleg[0].value\n    glue = server.query(ns_navn, "A")\n    if not glue:\n        return None, trace\n    trace.append(f"  → referral til {ns_navn} ({glue[0].value})")\n    nåværende = glue[0].value\nreturn None, trace',
+    },
+
+    // ============ LEKSJON 4 ===========================================
+    {
+      id: "04-ttl-cache",
+      title: "4. TTL og caching",
+      narrative:
+        "En rekursiv resolver kan ikke spørre root-serveren hver gang noen ber om `google.com` — det ville drept root-serverne. Løsningen er **caching med TTL**.\n\nHver DNS-record har et `ttl` (time-to-live) i sekunder. Resolveren lagrer recorden, men bare så lenge TTL-en sier den er gyldig.\n\nTTL er en kontrakt: «jeg lover at denne mappingen ikke endrer seg på N sekunder». Lave TTL-er gir rask respons på endringer (men mer trafikk); høye TTL-er gir mindre last (men sen propagering).\n\nFor å gjøre testing forutsigbar bruker vi en **simulert klokke** — `now` er et tall vi sender inn manuelt. I produksjon ville det vært `time.time()`.\n\n**Din oppgave:** Implementér `Cache` med:\n\n- `put(record, now)` — lagre recorden med utløp `now + record.ttl`\n- `get(name, type, now)` — returner recorden hvis den finnes OG ikke har utløpt; ellers `None` (og slett utløpte entries)",
+      files: {
+        "dns.py": `class Record:
+    def __init__(self, name, type, value, ttl=3600):
+        self.name = name
+        self.type = type
+        self.value = value
+        self.ttl = ttl
+
+    def __repr__(self):
+        return f"Record({self.name}, {self.type}, {self.value})"
+
+
+class Cache:
+    def __init__(self):
+        self.entries = {}  # (name, type) -> (record, expiry_time)
+
+    def put(self, record, now):
+        """Lagre record med utløpstid = now + record.ttl."""
+        # === DIN OPPGAVE ===
+        pass
+
+    def get(self, name, type, now):
+        """Returner recorden hvis cached og ikke utløpt. Slett hvis utløpt."""
+        # === DIN OPPGAVE ===
+        # 1. Hvis (name, type) ikke i entries: returner None
+        # 2. (rec, exp) = entries[(name, type)]
+        # 3. Hvis now >= exp: del entries[(name, type)]; returner None
+        # 4. Ellers: returner rec
+        return None
+
+
+def sjekk(faktisk, forventet, navn):
+    if faktisk == forventet:
+        print(f"OK   {navn}")
+    else:
+        print(f"FEIL {navn}: fikk {faktisk!r}, forventet {forventet!r}")
+
+
+cache = Cache()
+r = Record("example.com", "A", "93.184.216.34", ttl=60)
+
+# Tom cache
+sjekk(cache.get("example.com", "A", now=100), None, "tom cache gir None")
+
+# Legg inn ved tid 100, TTL 60 → utløp 160
+cache.put(r, now=100)
+
+# Hit innen TTL
+hit = cache.get("example.com", "A", now=120)
+sjekk(hit is not None, True, "cache hit ved t=120 (innen TTL)")
+sjekk(hit.value if hit else None, "93.184.216.34", "riktig record returneres")
+
+# Akkurat før utløp
+sjekk(cache.get("example.com", "A", now=159) is not None, True, "hit ved t=159 (1 sek igjen)")
+
+# Akkurat ved utløp
+sjekk(cache.get("example.com", "A", now=160), None, "utløpt ved t=160 (TTL=0)")
+
+# Etter utløp — recorden er fjernet
+sjekk(cache.get("example.com", "A", now=200), None, "fortsatt None etter utløp")
+sjekk(("example.com", "A") not in cache.entries, True, "utløpt entry ble slettet")
+
+# Annen type → cache miss
+cache.put(Record("example.com", "MX", "mail.example.com", ttl=60), now=100)
+sjekk(cache.get("example.com", "A", now=130), None, "ulik type → miss")
+sjekk(cache.get("example.com", "MX", now=130) is not None, True, "MX-record cached separat")
+`,
+      },
+      defaultFile: "dns.py",
+      editable: ["dns.py"],
+      run: { kind: "python-script", entry: "dns.py" },
+      verifications: [
+        {
+          label: "Tom cache returnerer None",
+          check: { kind: "output-contains", needle: "OK   tom cache gir None" },
+        },
+        {
+          label: "Cache hit innen TTL fungerer",
+          check: { kind: "output-contains", needle: "OK   cache hit ved t=120 (innen TTL)" },
+        },
+        {
+          label: "Riktig record returneres på hit",
+          check: { kind: "output-contains", needle: "OK   riktig record returneres" },
+        },
+        {
+          label: "TTL utløper presist (>= now)",
+          check: { kind: "output-contains", needle: "OK   utløpt ved t=160 (TTL=0)" },
+        },
+        {
+          label: "Utløpt entry slettes fra cachen",
+          check: { kind: "output-contains", needle: "OK   utløpt entry ble slettet" },
+        },
+        {
+          label: "Records av ulik type caches separat",
+          check: { kind: "output-contains", needle: "OK   MX-record cached separat" },
+        },
+      ],
+      hint:
+        "def put(self, record, now):\n    self.entries[(record.name, record.type)] = (record, now + record.ttl)\n\ndef get(self, name, type, now):\n    if (name, type) not in self.entries:\n        return None\n    rec, exp = self.entries[(name, type)]\n    if now >= exp:\n        del self.entries[(name, type)]\n        return None\n    return rec",
+    },
+
+    // ============ LEKSJON 5 ===========================================
+    {
+      id: "05-spoofing",
+      title: "5. DNS-spoofing og transaction-ID-mitigering",
+      narrative:
+        "Den naive cachen aksepterer alle records som kommer inn. Det er en katastrofal sikkerhetsfeil — fordi DNS bruker UDP (ingen handshake), kan **hvem som helst** sende svar.\n\n**Spoofing-angrepet:** Mallory venter til Alice ber om `bank.no`. Hun sender et raskt svar med sin egen IP til Alice' resolver, FØR det ekte svaret kommer. Hvis resolveren aksepterer det første svaret som ankommer, er cachen forgiftet — Alice surfer til 'bank.no' og lander på Mallorys phishing-side.\n\n**Mitigeringen:** transaction ID. Resolveren sender en tilfeldig 16-bits ID med hver query. Bare svar med MATCHENDE ID (og samme navn + type!) aksepteres. En angriper som ikke ser den ekte queryen må gjette — 1 av 65536 sjanse per pakke.\n\nDette er fortsatt ikke nok i praksis (Kaminsky-angrepet, 2008), så moderne resolvere randomiserer også **kildeporten**, og DNSSEC legger på kryptografisk signatur. Men ID-sjekken er minimums-baseline.\n\n**Din oppgave:** Implementér `SecureCache.accept(response_id, record)` slik at recorden KUN lagres hvis `response_id` matcher en pending query OG navnet/typen matcher det vi forventet.",
+      files: {
+        "dns.py": `class Record:
+    def __init__(self, name, type, value, ttl=3600):
+        self.name, self.type, self.value, self.ttl = name, type, value, ttl
+
+    def __repr__(self):
+        return f"Record({self.name}, {self.type}, {self.value})"
+
+
+# === Den sårbare cachen — for demonstrasjon ===
+class VulnerableCache:
+    def __init__(self):
+        self.entries = {}
+
+    def accept(self, record):
+        """Aksepter ALLE records — ingen validering. Klassisk DNS pre-1993."""
+        self.entries[(record.name, record.type)] = record
+
+
+# === Den sikre cachen — din oppgave ===
+class SecureCache:
+    def __init__(self):
+        self.entries = {}
+        self.pending = {}  # query_id -> (name, type) vi forventer svar for
+
+    def send_query(self, query_id, name, type):
+        """Registrer at vi sendte en query med denne ID-en."""
+        self.pending[query_id] = (name, type)
+
+    def accept(self, response_id, record):
+        """Aksepter record KUN hvis response_id matcher pending query
+        OG (record.name, record.type) matcher det vi spurte om."""
+        # === DIN OPPGAVE ===
+        # 1. Sjekk om response_id finnes i self.pending
+        # 2. Sjekk om self.pending[response_id] == (record.name, record.type)
+        # 3. Hvis begge: lagre i self.entries, slett fra pending
+        # 4. Ellers: gjør INGENTING (angrepet faller på gulvet)
+        pass
+
+
+def sjekk(faktisk, forventet, navn):
+    if faktisk == forventet:
+        print(f"OK   {navn}")
+    else:
+        print(f"FEIL {navn}: fikk {faktisk!r}, forventet {forventet!r}")
+
+
+# === Del 1: Demonstrér spoofing av sårbar cache ===
+print("--- Sårbar cache (DNS pre-mitigering) ---")
+vuln = VulnerableCache()
+# Ekte svar fra ekte server
+vuln.accept(Record("bank.no", "A", "10.0.0.1"))
+print(f"Etter ekte svar:    bank.no → {vuln.entries[('bank.no', 'A')].value}")
+
+# ANGRIPER injiserer falskt svar — cachen tar imot
+vuln.accept(Record("bank.no", "A", "6.6.6.6"))
+print(f"Etter spoof-pakke:  bank.no → {vuln.entries[('bank.no', 'A')].value}")
+sjekk(vuln.entries[("bank.no", "A")].value, "6.6.6.6", "sårbar cache forgiftet")
+
+# === Del 2: Sikker cache med transaction-ID-validering ===
+print()
+print("--- Sikker cache (med query-ID-matching) ---")
+sikker = SecureCache()
+sikker.send_query(query_id=42, name="bank.no", type="A")
+
+# Ekte svar med matchende ID
+sikker.accept(response_id=42, record=Record("bank.no", "A", "10.0.0.1"))
+sjekk(("bank.no", "A") in sikker.entries, True, "ekte svar (matching ID) akseptert")
+sjekk(sikker.entries[("bank.no", "A")].value, "10.0.0.1", "riktig IP lagret")
+
+# Angriper sender spoof med GAL ID — avvist
+sikker.accept(response_id=99999, record=Record("bank.no", "A", "6.6.6.6"))
+sjekk(sikker.entries[("bank.no", "A")].value, "10.0.0.1", "spoof med feil ID avvist")
+
+# Ny query — angriper gjetter ID men spør om feil navn
+sikker.send_query(query_id=7, name="github.com", type="A")
+sikker.accept(response_id=7, record=Record("evil.com", "A", "6.6.6.6"))
+sjekk(("evil.com", "A") not in sikker.entries, True, "feil navn med matching ID avvist")
+sjekk(("github.com", "A") not in sikker.entries, True, "ingenting lagret for github.com")
+`,
+      },
+      defaultFile: "dns.py",
+      editable: ["dns.py"],
+      run: { kind: "python-script", entry: "dns.py" },
+      verifications: [
+        {
+          label: "Sårbar cache lar seg forgifte",
+          check: { kind: "output-contains", needle: "OK   sårbar cache forgiftet" },
+        },
+        {
+          label: "Sikker cache aksepterer matching ID",
+          check: { kind: "output-contains", needle: "OK   ekte svar (matching ID) akseptert" },
+        },
+        {
+          label: "Riktig IP lagres",
+          check: { kind: "output-contains", needle: "OK   riktig IP lagret" },
+        },
+        {
+          label: "Spoof med feil ID avvises",
+          check: { kind: "output-contains", needle: "OK   spoof med feil ID avvist" },
+        },
+        {
+          label: "Spoof med matching ID men feil navn avvises",
+          check: { kind: "output-contains", needle: "OK   feil navn med matching ID avvist" },
+        },
+        {
+          label: "Cachen forblir ren etter angrep",
+          check: { kind: "output-contains", needle: "OK   ingenting lagret for github.com" },
+        },
+      ],
+      hint:
+        "def accept(self, response_id, record):\n    if response_id not in self.pending:\n        return\n    if self.pending[response_id] != (record.name, record.type):\n        return\n    self.entries[(record.name, record.type)] = record\n    del self.pending[response_id]",
+    },
+
+    // ============ LEKSJON 6 ===========================================
+    {
+      id: "06-cached-resolver",
+      title: "6. Sett alt sammen: CachedResolver",
+      narrative:
+        "Tid for å pakke det vi har gjort i de fem forrige leksjonene sammen til noe nyttig: en `CachedResolver` som vanlige operativsystemer faktisk implementerer.\n\nLogikken er:\n\n```\nresolve(name, type, now):\n    hit = cache.get(name, type, now)\n    hvis hit: returner (hit, 'CACHE HIT')\n    record = full_rekursiv_resolution(...)   # fra leksjon 3\n    hvis record: cache.put(record, now)\n    returner (record, 'CACHE MISS')\n```\n\nIngen ny algoritmisk innsikt — bare integrasjon. Verdien er at vi nå kan måle hva caching gjør:\n\n- Første spørring → MISS, full rekursjon (mange hopp)\n- Andre spørring innen TTL → HIT (null hopp)\n- Tredje spørring etter TTL → MISS igjen\n\nResolveren er gitt — alt du gjør er å implementere `CachedResolver.resolve(name, type, now)` som integrerer cache + rekursjon.",
+      files: {
+        "dns.py": `class Record:
+    def __init__(self, name, type, value, ttl=3600):
+        self.name, self.type, self.value, self.ttl = name, type, value, ttl
+
+    def __repr__(self):
+        return f"Record({self.name}, {self.type}, {self.value})"
+
+
+class NameServer:
+    def __init__(self, navn):
+        self.navn = navn
+        self.records = []
+
+    def add(self, record):
+        self.records.append(record)
+
+    def query(self, name, type):
+        return [r for r in self.records if r.name == name and r.type == type]
+
+    def find_delegation(self, name):
+        deler = name.split(".")
+        for i in range(len(deler)):
+            suffix = ".".join(deler[i:])
+            ns = self.query(suffix, "NS")
+            if ns:
+                return ns
+        return []
+
+
+class Cache:
+    def __init__(self):
+        self.entries = {}
+
+    def put(self, record, now):
+        self.entries[(record.name, record.type)] = (record, now + record.ttl)
+
+    def get(self, name, type, now):
+        if (name, type) not in self.entries:
+            return None
+        rec, exp = self.entries[(name, type)]
+        if now >= exp:
+            del self.entries[(name, type)]
+            return None
+        return rec
+
+
+def full_resolve(name, type, root_ip, ip_til_server):
+    """Rekursiv DNS-resolution (uten cache) — fra leksjon 3.
+    Returner (record, antall_hopp) eller (None, antall_hopp)."""
+    nåværende = root_ip
+    hopp = 0
+    for _ in range(10):
+        hopp += 1
+        server = ip_til_server[nåværende]
+        svar = server.query(name, type)
+        if svar:
+            return svar[0], hopp
+        deleg = server.find_delegation(name)
+        if not deleg:
+            return None, hopp
+        ns_navn = deleg[0].value
+        glue = server.query(ns_navn, "A")
+        if not glue:
+            return None, hopp
+        nåværende = glue[0].value
+    return None, hopp
+
+
+class CachedResolver:
+    def __init__(self, root_ip, ip_til_server):
+        self.root_ip = root_ip
+        self.ip_til_server = ip_til_server
+        self.cache = Cache()
+
+    def resolve(self, name, type, now):
+        """Returner (record, status) der status er 'HIT' eller 'MISS'."""
+        # === DIN OPPGAVE ===
+        # 1. Sjekk cache: hit = self.cache.get(name, type, now)
+        # 2. Hvis hit: returner (hit, "HIT")
+        # 3. Ellers: record, _ = full_resolve(name, type, self.root_ip, self.ip_til_server)
+        # 4. Hvis record: self.cache.put(record, now)
+        # 5. Returner (record, "MISS")
+        pass
+
+
+# === Sett opp DNS-hierarki ===
+root = NameServer("root")
+root.add(Record("com", "NS", "ns.com"))
+root.add(Record("ns.com", "A", "192.5.6.30"))
+
+com = NameServer("ns.com")
+com.add(Record("example.com", "NS", "ns.example.com"))
+com.add(Record("ns.example.com", "A", "199.43.135.53"))
+
+ex = NameServer("ns.example.com")
+# TTL=60 så vi kan demonstrere utløp
+ex.add(Record("www.example.com", "A", "93.184.216.34", ttl=60))
+
+ip_til_server = {
+    "(root)": root,
+    "192.5.6.30": com,
+    "199.43.135.53": ex,
+}
+
+resolver = CachedResolver("(root)", ip_til_server)
+
+
+def sjekk(faktisk, forventet, navn):
+    if faktisk == forventet:
+        print(f"OK   {navn}")
+    else:
+        print(f"FEIL {navn}: fikk {faktisk!r}, forventet {forventet!r}")
+
+
+# Første spørring → MISS, full rekursjon
+r1, s1 = resolver.resolve("www.example.com", "A", now=1000)
+print(f"t=1000: {s1} → {r1.value if r1 else None}")
+sjekk(s1, "MISS", "første spørring er cache MISS")
+sjekk(r1.value, "93.184.216.34", "fikk korrekt IP fra fullsøk")
+
+# Andre spørring innen TTL (60 sek) → HIT
+r2, s2 = resolver.resolve("www.example.com", "A", now=1030)
+print(f"t=1030: {s2} → {r2.value if r2 else None}")
+sjekk(s2, "HIT", "andre spørring innen TTL er HIT")
+sjekk(r2.value, "93.184.216.34", "cache returnerer samme IP")
+
+# Etter TTL har utløpt → MISS igjen
+r3, s3 = resolver.resolve("www.example.com", "A", now=1100)
+print(f"t=1100: {s3} → {r3.value if r3 else None}")
+sjekk(s3, "MISS", "etter TTL er det MISS igjen")
+
+# Ukjent navn → MISS, ingen record
+r4, s4 = resolver.resolve("nope.com", "A", now=2000)
+sjekk(r4, None, "NXDOMAIN returnerer None")
+sjekk(s4, "MISS", "NXDOMAIN er MISS")
+`,
+      },
+      defaultFile: "dns.py",
+      editable: ["dns.py"],
+      run: { kind: "python-script", entry: "dns.py" },
+      verifications: [
+        {
+          label: "Første spørring er cache MISS",
+          check: { kind: "output-contains", needle: "OK   første spørring er cache MISS" },
+        },
+        {
+          label: "Full rekursjon gir korrekt svar",
+          check: { kind: "output-contains", needle: "OK   fikk korrekt IP fra fullsøk" },
+        },
+        {
+          label: "Andre spørring innen TTL er HIT",
+          check: { kind: "output-contains", needle: "OK   andre spørring innen TTL er HIT" },
+        },
+        {
+          label: "Cache returnerer samme record",
+          check: { kind: "output-contains", needle: "OK   cache returnerer samme IP" },
+        },
+        {
+          label: "Etter TTL er det MISS igjen",
+          check: { kind: "output-contains", needle: "OK   etter TTL er det MISS igjen" },
+        },
+        {
+          label: "NXDOMAIN håndteres riktig",
+          check: { kind: "output-contains", needle: "OK   NXDOMAIN returnerer None" },
+        },
+      ],
+      hint:
+        'def resolve(self, name, type, now):\n    hit = self.cache.get(name, type, now)\n    if hit is not None:\n        return hit, "HIT"\n    record, _ = full_resolve(name, type, self.root_ip, self.ip_til_server)\n    if record is not None:\n        self.cache.put(record, now)\n    return record, "MISS"',
+    },
+  ],
+};
+
 export const MINI_COURSES: readonly MiniCourse[] = [
   FLASK_FRA_NULL,
   BYGG_MINI_SHELL,
   UTLEIEAPP_FRA_NULL,
   TCP_STATE_MACHINE,
   CSP_SUDOKU,
+  DNS_RESOLVER,
 ];
 
 export function getMiniCourse(slug: string): MiniCourse | undefined {
