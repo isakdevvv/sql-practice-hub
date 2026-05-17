@@ -43,6 +43,7 @@ import {
   type Recommendation,
 } from "@/lib/skill-tree/recommender";
 import { hasCompletedDiagnose } from "@/lib/skill-tree/engine";
+import { MineSporPanel } from "@/components/skill-tree/MineSporPanel";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -660,6 +661,11 @@ function LandingPage() {
               </div>
             </Link>
           )}
+        </section>
+
+        {/* Mine spor — progress per fag-område, basert på skill-tre-estimater */}
+        <section className="container mx-auto px-4 pt-8 max-w-5xl">
+          <MineSporPanel />
         </section>
 
         {/* Mine fag — bygges av brukerens egne valg */}

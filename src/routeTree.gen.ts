@@ -26,6 +26,7 @@ import { Route as MiniKursRouteImport } from './routes/mini-kurs'
 import { Route as MacDrillRouteImport } from './routes/mac-drill'
 import { Route as LearnRouteImport } from './routes/learn'
 import { Route as LarRouteImport } from './routes/lar'
+import { Route as LagKursRouteImport } from './routes/lag-kurs'
 import { Route as KursRouteImport } from './routes/kurs'
 import { Route as KonsollRouteImport } from './routes/konsoll'
 import { Route as JoinsRouteImport } from './routes/joins'
@@ -149,6 +150,11 @@ const LearnRoute = LearnRouteImport.update({
 const LarRoute = LarRouteImport.update({
   id: '/lar',
   path: '/lar',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LagKursRoute = LagKursRouteImport.update({
+  id: '/lag-kurs',
+  path: '/lag-kurs',
   getParentRoute: () => rootRouteImport,
 } as any)
 const KursRoute = KursRouteImport.update({
@@ -363,6 +369,7 @@ export interface FileRoutesByFullPath {
   '/joins': typeof JoinsRoute
   '/konsoll': typeof KonsollRoute
   '/kurs': typeof KursRoute
+  '/lag-kurs': typeof LagKursRoute
   '/lar': typeof LarRoute
   '/learn': typeof LearnRoute
   '/mac-drill': typeof MacDrillRoute
@@ -420,6 +427,7 @@ export interface FileRoutesByTo {
   '/joins': typeof JoinsRoute
   '/konsoll': typeof KonsollRoute
   '/kurs': typeof KursRoute
+  '/lag-kurs': typeof LagKursRoute
   '/lar': typeof LarRoute
   '/learn': typeof LearnRoute
   '/mac-drill': typeof MacDrillRoute
@@ -474,6 +482,7 @@ export interface FileRoutesById {
   '/joins': typeof JoinsRoute
   '/konsoll': typeof KonsollRoute
   '/kurs': typeof KursRoute
+  '/lag-kurs': typeof LagKursRoute
   '/lar': typeof LarRoute
   '/learn': typeof LearnRoute
   '/mac-drill': typeof MacDrillRoute
@@ -534,6 +543,7 @@ export interface FileRouteTypes {
     | '/joins'
     | '/konsoll'
     | '/kurs'
+    | '/lag-kurs'
     | '/lar'
     | '/learn'
     | '/mac-drill'
@@ -591,6 +601,7 @@ export interface FileRouteTypes {
     | '/joins'
     | '/konsoll'
     | '/kurs'
+    | '/lag-kurs'
     | '/lar'
     | '/learn'
     | '/mac-drill'
@@ -644,6 +655,7 @@ export interface FileRouteTypes {
     | '/joins'
     | '/konsoll'
     | '/kurs'
+    | '/lag-kurs'
     | '/lar'
     | '/learn'
     | '/mac-drill'
@@ -703,6 +715,7 @@ export interface RootRouteChildren {
   JoinsRoute: typeof JoinsRoute
   KonsollRoute: typeof KonsollRoute
   KursRoute: typeof KursRoute
+  LagKursRoute: typeof LagKursRoute
   LarRoute: typeof LarRoute
   LearnRoute: typeof LearnRoute
   MacDrillRoute: typeof MacDrillRoute
@@ -853,6 +866,13 @@ declare module '@tanstack/react-router' {
       path: '/lar'
       fullPath: '/lar'
       preLoaderRoute: typeof LarRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/lag-kurs': {
+      id: '/lag-kurs'
+      path: '/lag-kurs'
+      fullPath: '/lag-kurs'
+      preLoaderRoute: typeof LagKursRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/kurs': {
@@ -1234,6 +1254,7 @@ const rootRouteChildren: RootRouteChildren = {
   JoinsRoute: JoinsRoute,
   KonsollRoute: KonsollRoute,
   KursRoute: KursRoute,
+  LagKursRoute: LagKursRoute,
   LarRoute: LarRoute,
   LearnRoute: LearnRoute,
   MacDrillRoute: MacDrillRoute,
