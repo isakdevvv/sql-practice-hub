@@ -5,6 +5,7 @@
 // data engineer would expect to see in a textbook or whiteboard.
 
 import type { FC } from "react";
+import { DB_MODELL_VISUALS } from "./DbModellVisuals";
 
 const STROKE = "currentColor";
 
@@ -718,6 +719,7 @@ export const VISUALS: Record<string, FC> = {
   "session-flow": SessionFlow,
   "index-vs-scan": IndexVsScan,
   "relationship-kinds": RelationshipKinds,
+  ...DB_MODELL_VISUALS,
 };
 
 export type VisualKey = keyof typeof VISUALS;
