@@ -3,6 +3,10 @@ import { Lightbulb, ArrowLeft } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { Tex, TexBlock } from "@/components/Tex";
 import { LdaQdaNbBoundaries } from "./LdaQdaNbBoundaries";
+import { DecisionBoundaryViz } from "./DecisionBoundaryViz";
+import { AssumptionExperiment } from "./AssumptionExperiment";
+import { NaiveBayesProbabilityCalc } from "./NaiveBayesProbabilityCalc";
+import { MatchQuiz } from "./MatchQuiz";
 
 export function LdaQdaNbPage() {
   return (
@@ -227,7 +231,58 @@ export function LdaQdaNbPage() {
           <LdaQdaNbBoundaries />
         </Section>
 
-        <Section number="8" title="Python — sklearn på Pima Indians Diabetes">
+        <Section
+          number="8"
+          title="Verksted: bygg dine egne klasser og se boundary bevege seg"
+        >
+          <p className="text-sm text-muted-foreground mb-3">
+            Klikk i feltet for å legge til punkter. Velg hvilken klasse du legger
+            til med fargeknappene. Dra eksisterende punkter for å flytte dem.
+            Modellen reestimerer μₖ, Σₖ og decision boundary live mens du jobber.
+            Skru på «Ellipser» for å se hvilken Gaussian-form hver modell
+            <em> antar</em> klassen følger.
+          </p>
+          <DecisionBoundaryViz />
+        </Section>
+
+        <Section
+          number="9"
+          title="Eksperiment: når vinner hvilken antakelse?"
+        >
+          <p className="text-sm text-muted-foreground mb-3">
+            Fire datasetts-presets med ulik geometri. For hver konfigurasjon
+            trenes alle tre modellene på samme 70 % og testes på samme 30 % —
+            vinneren rammes inn. Bytt seed for ny random split og se at
+            vinneren holder seg.
+          </p>
+          <AssumptionExperiment />
+        </Section>
+
+        <Section
+          number="10"
+          title="Naive Bayes-kalkulator: spam-deteksjon trinn for trinn"
+        >
+          <p className="text-sm text-muted-foreground mb-3">
+            Se hver multiplikasjon i <Tex>{"P(c \\mid x) \\propto P(c) \\cdot \\prod_i P(x_i \\mid c)"}</Tex>.
+            Slå features av og på, juster prior, og skru av Laplace-smoothing
+            for å se hva som skjer når et ord aldri er sett i en klasse.
+          </p>
+          <NaiveBayesProbabilityCalc />
+        </Section>
+
+        <Section
+          number="11"
+          title="Match-quiz: velg modell for hver use-case"
+        >
+          <p className="text-sm text-muted-foreground mb-3">
+            6 caser fra ulike domener. Velg LDA, QDA eller NB og sjekk svar —
+            hver case har en kort begrunnelse for hvorfor det riktige valget er
+            riktig.
+          </p>
+          <MatchQuiz />
+        </Section>
+
+        <Section number="12" title="Python — sklearn på Pima Indians Diabetes">
           <pre className="rounded-xl border border-border bg-card p-4 font-mono text-xs overflow-x-auto whitespace-pre">{`from sklearn.discriminant_analysis import LinearDiscriminantAnalysis, QuadraticDiscriminantAnalysis
 from sklearn.naive_bayes import GaussianNB
 from sklearn.model_selection import cross_val_score
