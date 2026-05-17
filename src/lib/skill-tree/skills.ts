@@ -11,7 +11,31 @@
  * når engine trenger det.
  */
 
-import type { Skill } from "./types";
+import type { FagOmrade, Skill } from "./types";
+
+/**
+ * Fag-områder brukt av diagnose-test og recommender for å gruppere ferdigheter.
+ * Hver `id` matcher FagOmrade i types.ts.
+ */
+export type SkillArea = { id: FagOmrade; navn: string };
+
+export function getAreaTitle(id: FagOmrade): string {
+  return SKILL_AREAS.find((a) => a.id === id)?.navn ?? id;
+}
+
+export const SKILL_AREAS: SkillArea[] = [
+  { id: "math", navn: "Matematikk" },
+  { id: "programming", navn: "Programmering" },
+  { id: "data-structures", navn: "Data-strukturer & algoritmer" },
+  { id: "os", navn: "Operativsystemer" },
+  { id: "networks", navn: "Nettverk" },
+  { id: "databases", navn: "Databaser" },
+  { id: "web", navn: "Web-utvikling" },
+  { id: "ml-classical", navn: "Klassisk ML" },
+  { id: "ml-deep", navn: "Dyplæring" },
+  { id: "security", navn: "Sikkerhet" },
+  { id: "engineering-practice", navn: "Ingeniør-praksis" },
+];
 
 export const SKILLS: Skill[] = [
   // ────────────────────────────────────────────────────────────────────────

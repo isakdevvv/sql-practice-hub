@@ -15,6 +15,7 @@ import { Route as VenvDrillRouteImport } from './routes/venv-drill'
 import { Route as TutorRouteImport } from './routes/tutor'
 import { Route as StackRouteImport } from './routes/stack'
 import { Route as SporRouteImport } from './routes/spor'
+import { Route as SkillTreRouteImport } from './routes/skill-tre'
 import { Route as RepetisjonRouteImport } from './routes/repetisjon'
 import { Route as PythonRouteImport } from './routes/python'
 import { Route as ProsjektRouteImport } from './routes/prosjekt'
@@ -33,7 +34,9 @@ import { Route as GitDrillRouteImport } from './routes/git-drill'
 import { Route as ExamRouteImport } from './routes/exam'
 import { Route as ErTegnerRouteImport } from './routes/er-tegner'
 import { Route as EksamenRouteImport } from './routes/eksamen'
+import { Route as DrillRouteImport } from './routes/drill'
 import { Route as DragRouteImport } from './routes/drag'
+import { Route as DiagnoseRouteImport } from './routes/diagnose'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as CardsRouteImport } from './routes/cards'
 import { Route as IndexRouteImport } from './routes/index'
@@ -51,13 +54,17 @@ import { Route as PythonChar91_figuresChar93RouteImport } from './routes/python_
 import { Route as ProsjektMlSlugRouteImport } from './routes/prosjekt-ml.$slug'
 import { Route as PortfolioDte2602SlugRouteImport } from './routes/portfolio-dte2602.$slug'
 import { Route as MiniKursSlugRouteImport } from './routes/mini-kurs.$slug'
+import { Route as KarriereKodeLesningRouteImport } from './routes/karriere.kode-lesning'
+import { Route as KarriereDebugJaktRouteImport } from './routes/karriere.debug-jakt'
 import { Route as EksamenTreningRouteImport } from './routes/eksamen.trening'
 import { Route as Dte2507PcapRouteImport } from './routes/dte2507.pcap'
 import { Route as Dte2505ShellDrillRouteImport } from './routes/dte2505.shell-drill'
 import { Route as DrillChar91_demoChar93RouteImport } from './routes/drill.[_demo]'
 import { Route as PythonKapIndexRouteImport } from './routes/python_.kap.index'
+import { Route as KarriereDebugJaktIndexRouteImport } from './routes/karriere.debug-jakt.index'
 import { Route as PythonKapNrRouteImport } from './routes/python_.kap.$nr'
 import { Route as PythonIdeNrRouteImport } from './routes/python_.ide.$nr'
+import { Route as KarriereDebugJaktBugIdRouteImport } from './routes/karriere.debug-jakt.$bugId'
 
 const VizLesjonRoute = VizLesjonRouteImport.update({
   id: '/viz-lesjon',
@@ -87,6 +94,11 @@ const StackRoute = StackRouteImport.update({
 const SporRoute = SporRouteImport.update({
   id: '/spor',
   path: '/spor',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SkillTreRoute = SkillTreRouteImport.update({
+  id: '/skill-tre',
+  path: '/skill-tre',
   getParentRoute: () => rootRouteImport,
 } as any)
 const RepetisjonRoute = RepetisjonRouteImport.update({
@@ -179,9 +191,19 @@ const EksamenRoute = EksamenRouteImport.update({
   path: '/eksamen',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DrillRoute = DrillRouteImport.update({
+  id: '/drill',
+  path: '/drill',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DragRoute = DragRouteImport.update({
   id: '/drag',
   path: '/drag',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DiagnoseRoute = DiagnoseRouteImport.update({
+  id: '/diagnose',
+  path: '/diagnose',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DashboardRoute = DashboardRouteImport.update({
@@ -270,6 +292,16 @@ const MiniKursSlugRoute = MiniKursSlugRouteImport.update({
   path: '/$slug',
   getParentRoute: () => MiniKursRoute,
 } as any)
+const KarriereKodeLesningRoute = KarriereKodeLesningRouteImport.update({
+  id: '/karriere/kode-lesning',
+  path: '/karriere/kode-lesning',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const KarriereDebugJaktRoute = KarriereDebugJaktRouteImport.update({
+  id: '/karriere/debug-jakt',
+  path: '/karriere/debug-jakt',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const EksamenTreningRoute = EksamenTreningRouteImport.update({
   id: '/trening',
   path: '/trening',
@@ -286,14 +318,19 @@ const Dte2505ShellDrillRoute = Dte2505ShellDrillRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any)
 const DrillChar91_demoChar93Route = DrillChar91_demoChar93RouteImport.update({
-  id: '/drill/_demo',
-  path: '/drill/_demo',
-  getParentRoute: () => rootRouteImport,
+  id: '/_demo',
+  path: '',
+  getParentRoute: () => DrillRoute,
 } as any)
 const PythonKapIndexRoute = PythonKapIndexRouteImport.update({
   id: '/python_/kap/',
   path: '/python/kap/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const KarriereDebugJaktIndexRoute = KarriereDebugJaktIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => KarriereDebugJaktRoute,
 } as any)
 const PythonKapNrRoute = PythonKapNrRouteImport.update({
   id: '/python_/kap/$nr',
@@ -305,12 +342,19 @@ const PythonIdeNrRoute = PythonIdeNrRouteImport.update({
   path: '/python/ide/$nr',
   getParentRoute: () => rootRouteImport,
 } as any)
+const KarriereDebugJaktBugIdRoute = KarriereDebugJaktBugIdRouteImport.update({
+  id: '/$bugId',
+  path: '/$bugId',
+  getParentRoute: () => KarriereDebugJaktRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/cards': typeof CardsRoute
   '/dashboard': typeof DashboardRoute
+  '/diagnose': typeof DiagnoseRoute
   '/drag': typeof DragRoute
+  '/drill': typeof DrillRouteWithChildren
   '/eksamen': typeof EksamenRouteWithChildren
   '/er-tegner': typeof ErTegnerRoute
   '/exam': typeof ExamRoute
@@ -329,6 +373,7 @@ export interface FileRoutesByFullPath {
   '/prosjekt': typeof ProsjektRoute
   '/python': typeof PythonRoute
   '/repetisjon': typeof RepetisjonRoute
+  '/skill-tre': typeof SkillTreRoute
   '/spor': typeof SporRouteWithChildren
   '/stack': typeof StackRouteWithChildren
   '/tutor': typeof TutorRoute
@@ -339,6 +384,8 @@ export interface FileRoutesByFullPath {
   '/dte2505/shell-drill': typeof Dte2505ShellDrillRoute
   '/dte2507/pcap': typeof Dte2507PcapRoute
   '/eksamen/trening': typeof EksamenTreningRoute
+  '/karriere/debug-jakt': typeof KarriereDebugJaktRouteWithChildren
+  '/karriere/kode-lesning': typeof KarriereKodeLesningRoute
   '/mini-kurs/$slug': typeof MiniKursSlugRoute
   '/portfolio-dte2602/$slug': typeof PortfolioDte2602SlugRoute
   '/prosjekt-ml/$slug': typeof ProsjektMlSlugRoute
@@ -353,15 +400,19 @@ export interface FileRoutesByFullPath {
   '/spor/': typeof SporIndexRoute
   '/stack/': typeof StackIndexRoute
   '/viz-lesjon/': typeof VizLesjonIndexRoute
+  '/karriere/debug-jakt/$bugId': typeof KarriereDebugJaktBugIdRoute
   '/python/ide/$nr': typeof PythonIdeNrRoute
   '/python/kap/$nr': typeof PythonKapNrRoute
+  '/karriere/debug-jakt/': typeof KarriereDebugJaktIndexRoute
   '/python/kap/': typeof PythonKapIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/cards': typeof CardsRoute
   '/dashboard': typeof DashboardRoute
+  '/diagnose': typeof DiagnoseRoute
   '/drag': typeof DragRoute
+  '/drill': typeof DrillRouteWithChildren
   '/er-tegner': typeof ErTegnerRoute
   '/exam': typeof ExamRoute
   '/git-drill': typeof GitDrillRoute
@@ -378,6 +429,7 @@ export interface FileRoutesByTo {
   '/prosjekt': typeof ProsjektRoute
   '/python': typeof PythonRoute
   '/repetisjon': typeof RepetisjonRoute
+  '/skill-tre': typeof SkillTreRoute
   '/tutor': typeof TutorRoute
   '/venv-drill': typeof VenvDrillRoute
   '/visualiseringer': typeof VisualiseringerRoute
@@ -385,6 +437,7 @@ export interface FileRoutesByTo {
   '/dte2505/shell-drill': typeof Dte2505ShellDrillRoute
   '/dte2507/pcap': typeof Dte2507PcapRoute
   '/eksamen/trening': typeof EksamenTreningRoute
+  '/karriere/kode-lesning': typeof KarriereKodeLesningRoute
   '/mini-kurs/$slug': typeof MiniKursSlugRoute
   '/portfolio-dte2602/$slug': typeof PortfolioDte2602SlugRoute
   '/prosjekt-ml/$slug': typeof ProsjektMlSlugRoute
@@ -399,8 +452,10 @@ export interface FileRoutesByTo {
   '/spor': typeof SporIndexRoute
   '/stack': typeof StackIndexRoute
   '/viz-lesjon': typeof VizLesjonIndexRoute
+  '/karriere/debug-jakt/$bugId': typeof KarriereDebugJaktBugIdRoute
   '/python/ide/$nr': typeof PythonIdeNrRoute
   '/python/kap/$nr': typeof PythonKapNrRoute
+  '/karriere/debug-jakt': typeof KarriereDebugJaktIndexRoute
   '/python/kap': typeof PythonKapIndexRoute
 }
 export interface FileRoutesById {
@@ -408,7 +463,9 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/cards': typeof CardsRoute
   '/dashboard': typeof DashboardRoute
+  '/diagnose': typeof DiagnoseRoute
   '/drag': typeof DragRoute
+  '/drill': typeof DrillRouteWithChildren
   '/eksamen': typeof EksamenRouteWithChildren
   '/er-tegner': typeof ErTegnerRoute
   '/exam': typeof ExamRoute
@@ -427,6 +484,7 @@ export interface FileRoutesById {
   '/prosjekt': typeof ProsjektRoute
   '/python': typeof PythonRoute
   '/repetisjon': typeof RepetisjonRoute
+  '/skill-tre': typeof SkillTreRoute
   '/spor': typeof SporRouteWithChildren
   '/stack': typeof StackRouteWithChildren
   '/tutor': typeof TutorRoute
@@ -437,6 +495,8 @@ export interface FileRoutesById {
   '/dte2505/shell-drill': typeof Dte2505ShellDrillRoute
   '/dte2507/pcap': typeof Dte2507PcapRoute
   '/eksamen/trening': typeof EksamenTreningRoute
+  '/karriere/debug-jakt': typeof KarriereDebugJaktRouteWithChildren
+  '/karriere/kode-lesning': typeof KarriereKodeLesningRoute
   '/mini-kurs/$slug': typeof MiniKursSlugRoute
   '/portfolio-dte2602/$slug': typeof PortfolioDte2602SlugRoute
   '/prosjekt-ml/$slug': typeof ProsjektMlSlugRoute
@@ -451,8 +511,10 @@ export interface FileRoutesById {
   '/spor/': typeof SporIndexRoute
   '/stack/': typeof StackIndexRoute
   '/viz-lesjon/': typeof VizLesjonIndexRoute
+  '/karriere/debug-jakt/$bugId': typeof KarriereDebugJaktBugIdRoute
   '/python_/ide/$nr': typeof PythonIdeNrRoute
   '/python_/kap/$nr': typeof PythonKapNrRoute
+  '/karriere/debug-jakt/': typeof KarriereDebugJaktIndexRoute
   '/python_/kap/': typeof PythonKapIndexRoute
 }
 export interface FileRouteTypes {
@@ -461,7 +523,9 @@ export interface FileRouteTypes {
     | '/'
     | '/cards'
     | '/dashboard'
+    | '/diagnose'
     | '/drag'
+    | '/drill'
     | '/eksamen'
     | '/er-tegner'
     | '/exam'
@@ -480,6 +544,7 @@ export interface FileRouteTypes {
     | '/prosjekt'
     | '/python'
     | '/repetisjon'
+    | '/skill-tre'
     | '/spor'
     | '/stack'
     | '/tutor'
@@ -490,6 +555,8 @@ export interface FileRouteTypes {
     | '/dte2505/shell-drill'
     | '/dte2507/pcap'
     | '/eksamen/trening'
+    | '/karriere/debug-jakt'
+    | '/karriere/kode-lesning'
     | '/mini-kurs/$slug'
     | '/portfolio-dte2602/$slug'
     | '/prosjekt-ml/$slug'
@@ -504,15 +571,19 @@ export interface FileRouteTypes {
     | '/spor/'
     | '/stack/'
     | '/viz-lesjon/'
+    | '/karriere/debug-jakt/$bugId'
     | '/python/ide/$nr'
     | '/python/kap/$nr'
+    | '/karriere/debug-jakt/'
     | '/python/kap/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/cards'
     | '/dashboard'
+    | '/diagnose'
     | '/drag'
+    | '/drill'
     | '/er-tegner'
     | '/exam'
     | '/git-drill'
@@ -529,6 +600,7 @@ export interface FileRouteTypes {
     | '/prosjekt'
     | '/python'
     | '/repetisjon'
+    | '/skill-tre'
     | '/tutor'
     | '/venv-drill'
     | '/visualiseringer'
@@ -536,6 +608,7 @@ export interface FileRouteTypes {
     | '/dte2505/shell-drill'
     | '/dte2507/pcap'
     | '/eksamen/trening'
+    | '/karriere/kode-lesning'
     | '/mini-kurs/$slug'
     | '/portfolio-dte2602/$slug'
     | '/prosjekt-ml/$slug'
@@ -550,15 +623,19 @@ export interface FileRouteTypes {
     | '/spor'
     | '/stack'
     | '/viz-lesjon'
+    | '/karriere/debug-jakt/$bugId'
     | '/python/ide/$nr'
     | '/python/kap/$nr'
+    | '/karriere/debug-jakt'
     | '/python/kap'
   id:
     | '__root__'
     | '/'
     | '/cards'
     | '/dashboard'
+    | '/diagnose'
     | '/drag'
+    | '/drill'
     | '/eksamen'
     | '/er-tegner'
     | '/exam'
@@ -577,6 +654,7 @@ export interface FileRouteTypes {
     | '/prosjekt'
     | '/python'
     | '/repetisjon'
+    | '/skill-tre'
     | '/spor'
     | '/stack'
     | '/tutor'
@@ -587,6 +665,8 @@ export interface FileRouteTypes {
     | '/dte2505/shell-drill'
     | '/dte2507/pcap'
     | '/eksamen/trening'
+    | '/karriere/debug-jakt'
+    | '/karriere/kode-lesning'
     | '/mini-kurs/$slug'
     | '/portfolio-dte2602/$slug'
     | '/prosjekt-ml/$slug'
@@ -601,8 +681,10 @@ export interface FileRouteTypes {
     | '/spor/'
     | '/stack/'
     | '/viz-lesjon/'
+    | '/karriere/debug-jakt/$bugId'
     | '/python_/ide/$nr'
     | '/python_/kap/$nr'
+    | '/karriere/debug-jakt/'
     | '/python_/kap/'
   fileRoutesById: FileRoutesById
 }
@@ -610,7 +692,9 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   CardsRoute: typeof CardsRoute
   DashboardRoute: typeof DashboardRoute
+  DiagnoseRoute: typeof DiagnoseRoute
   DragRoute: typeof DragRoute
+  DrillRoute: typeof DrillRouteWithChildren
   EksamenRoute: typeof EksamenRouteWithChildren
   ErTegnerRoute: typeof ErTegnerRoute
   ExamRoute: typeof ExamRoute
@@ -629,15 +713,17 @@ export interface RootRouteChildren {
   ProsjektRoute: typeof ProsjektRoute
   PythonRoute: typeof PythonRoute
   RepetisjonRoute: typeof RepetisjonRoute
+  SkillTreRoute: typeof SkillTreRoute
   SporRoute: typeof SporRouteWithChildren
   StackRoute: typeof StackRouteWithChildren
   TutorRoute: typeof TutorRoute
   VenvDrillRoute: typeof VenvDrillRoute
   VisualiseringerRoute: typeof VisualiseringerRoute
   VizLesjonRoute: typeof VizLesjonRouteWithChildren
-  DrillChar91_demoChar93Route: typeof DrillChar91_demoChar93Route
   Dte2505ShellDrillRoute: typeof Dte2505ShellDrillRoute
   Dte2507PcapRoute: typeof Dte2507PcapRoute
+  KarriereDebugJaktRoute: typeof KarriereDebugJaktRouteWithChildren
+  KarriereKodeLesningRoute: typeof KarriereKodeLesningRoute
   PortfolioDte2602SlugRoute: typeof PortfolioDte2602SlugRoute
   ProsjektMlSlugRoute: typeof ProsjektMlSlugRoute
   PythonChar91_figuresChar93Route: typeof PythonChar91_figuresChar93Route
@@ -690,6 +776,13 @@ declare module '@tanstack/react-router' {
       path: '/spor'
       fullPath: '/spor'
       preLoaderRoute: typeof SporRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/skill-tre': {
+      id: '/skill-tre'
+      path: '/skill-tre'
+      fullPath: '/skill-tre'
+      preLoaderRoute: typeof SkillTreRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/repetisjon': {
@@ -818,11 +911,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EksamenRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/drill': {
+      id: '/drill'
+      path: '/drill'
+      fullPath: '/drill'
+      preLoaderRoute: typeof DrillRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/drag': {
       id: '/drag'
       path: '/drag'
       fullPath: '/drag'
       preLoaderRoute: typeof DragRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/diagnose': {
+      id: '/diagnose'
+      path: '/diagnose'
+      fullPath: '/diagnose'
+      preLoaderRoute: typeof DiagnoseRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/dashboard': {
@@ -944,6 +1051,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MiniKursSlugRouteImport
       parentRoute: typeof MiniKursRoute
     }
+    '/karriere/kode-lesning': {
+      id: '/karriere/kode-lesning'
+      path: '/karriere/kode-lesning'
+      fullPath: '/karriere/kode-lesning'
+      preLoaderRoute: typeof KarriereKodeLesningRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/karriere/debug-jakt': {
+      id: '/karriere/debug-jakt'
+      path: '/karriere/debug-jakt'
+      fullPath: '/karriere/debug-jakt'
+      preLoaderRoute: typeof KarriereDebugJaktRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/eksamen/trening': {
       id: '/eksamen/trening'
       path: '/trening'
@@ -967,10 +1088,10 @@ declare module '@tanstack/react-router' {
     }
     '/drill/_demo': {
       id: '/drill/_demo'
-      path: '/drill/_demo'
+      path: ''
       fullPath: '/drill/_demo'
       preLoaderRoute: typeof DrillChar91_demoChar93RouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof DrillRoute
     }
     '/python_/kap/': {
       id: '/python_/kap/'
@@ -978,6 +1099,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/python/kap/'
       preLoaderRoute: typeof PythonKapIndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/karriere/debug-jakt/': {
+      id: '/karriere/debug-jakt/'
+      path: '/'
+      fullPath: '/karriere/debug-jakt/'
+      preLoaderRoute: typeof KarriereDebugJaktIndexRouteImport
+      parentRoute: typeof KarriereDebugJaktRoute
     }
     '/python_/kap/$nr': {
       id: '/python_/kap/$nr'
@@ -993,8 +1121,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PythonIdeNrRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/karriere/debug-jakt/$bugId': {
+      id: '/karriere/debug-jakt/$bugId'
+      path: '/$bugId'
+      fullPath: '/karriere/debug-jakt/$bugId'
+      preLoaderRoute: typeof KarriereDebugJaktBugIdRouteImport
+      parentRoute: typeof KarriereDebugJaktRoute
+    }
   }
 }
+
+interface DrillRouteChildren {
+  DrillChar91_demoChar93Route: typeof DrillChar91_demoChar93Route
+}
+
+const DrillRouteChildren: DrillRouteChildren = {
+  DrillChar91_demoChar93Route: DrillChar91_demoChar93Route,
+}
+
+const DrillRouteWithChildren = DrillRoute._addFileChildren(DrillRouteChildren)
 
 interface EksamenRouteChildren {
   EksamenTreningRoute: typeof EksamenTreningRoute
@@ -1061,11 +1206,26 @@ const VizLesjonRouteWithChildren = VizLesjonRoute._addFileChildren(
   VizLesjonRouteChildren,
 )
 
+interface KarriereDebugJaktRouteChildren {
+  KarriereDebugJaktBugIdRoute: typeof KarriereDebugJaktBugIdRoute
+  KarriereDebugJaktIndexRoute: typeof KarriereDebugJaktIndexRoute
+}
+
+const KarriereDebugJaktRouteChildren: KarriereDebugJaktRouteChildren = {
+  KarriereDebugJaktBugIdRoute: KarriereDebugJaktBugIdRoute,
+  KarriereDebugJaktIndexRoute: KarriereDebugJaktIndexRoute,
+}
+
+const KarriereDebugJaktRouteWithChildren =
+  KarriereDebugJaktRoute._addFileChildren(KarriereDebugJaktRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CardsRoute: CardsRoute,
   DashboardRoute: DashboardRoute,
+  DiagnoseRoute: DiagnoseRoute,
   DragRoute: DragRoute,
+  DrillRoute: DrillRouteWithChildren,
   EksamenRoute: EksamenRouteWithChildren,
   ErTegnerRoute: ErTegnerRoute,
   ExamRoute: ExamRoute,
@@ -1084,15 +1244,17 @@ const rootRouteChildren: RootRouteChildren = {
   ProsjektRoute: ProsjektRoute,
   PythonRoute: PythonRoute,
   RepetisjonRoute: RepetisjonRoute,
+  SkillTreRoute: SkillTreRoute,
   SporRoute: SporRouteWithChildren,
   StackRoute: StackRouteWithChildren,
   TutorRoute: TutorRoute,
   VenvDrillRoute: VenvDrillRoute,
   VisualiseringerRoute: VisualiseringerRoute,
   VizLesjonRoute: VizLesjonRouteWithChildren,
-  DrillChar91_demoChar93Route: DrillChar91_demoChar93Route,
   Dte2505ShellDrillRoute: Dte2505ShellDrillRoute,
   Dte2507PcapRoute: Dte2507PcapRoute,
+  KarriereDebugJaktRoute: KarriereDebugJaktRouteWithChildren,
+  KarriereKodeLesningRoute: KarriereKodeLesningRoute,
   PortfolioDte2602SlugRoute: PortfolioDte2602SlugRoute,
   ProsjektMlSlugRoute: ProsjektMlSlugRoute,
   PythonChar91_figuresChar93Route: PythonChar91_figuresChar93Route,
