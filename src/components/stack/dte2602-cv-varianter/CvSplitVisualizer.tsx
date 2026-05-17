@@ -1,57 +1,85 @@
 import { useMemo, useState } from "react";
 
-type Mode = "val" | "loocv" | "kfold" | "stratified" | "timeseries";
+type Mode =
+  | "holdout"
+  | "kfold"
+  | "stratified"
+  | "loocv"
+  | "lpo"
+  | "timeseries"
+  | "group";
 
-const N = 20;
+const N = 30;
 
 /** Deterministic class labels (0/1) for stratified mode. */
 const LABELS: number[] = (() => {
-  // 14 of class 0, 6 of class 1 — imbalanced, to make stratification visible.
+  // ~25% class-1
   const out: number[] = [];
   for (let i = 0; i < N; i++) {
-    out.push(i % 4 === 0 ? 1 : 0);
+    out.push(i % 4 === 1 ? 1 : 0);
   }
   return out;
 })();
 
-function makeFolds(mode: Mode): { folds: number[][]; testFor: number[] } {
-  // testFor[i] = which fold has index i as TEST
-  const testFor = new Array(N).fill(-1);
-  let folds: number[][];
+/** Deterministic groups (e.g. patient_id) for group mode — 6 groups of 5 */
+const GROUPS: number[] = Array.from({ length: N }, (_, i) => Math.floor(i / 5));
 
-  if (mode === "val") {
+function makeFolds(
+  mode: Mode,
+  k: number,
+  p: number,
+): { folds: number[][]; testFor: number[] } {
+  const testFor = new Array(N).fill(-1);
+  let folds: number[][] = [];
+
+  if (mode === "holdout") {
     const cutoff = Math.floor(N * 0.8);
     folds = [Array.from({ length: N - cutoff }, (_, i) => cutoff + i)];
     folds[0].forEach((i) => (testFor[i] = 0));
   } else if (mode === "loocv") {
     folds = Array.from({ length: N }, (_, i) => [i]);
     for (let i = 0; i < N; i++) testFor[i] = i;
-  } else if (mode === "kfold") {
-    const k = 5;
-    const size = N / k;
+  } else if (mode === "lpo") {
+    // Leave-P-Out: show first 6 of nCp combinations (combinatorially too many)
     folds = [];
-    for (let f = 0; f < k; f++) {
-      const start = Math.floor(f * size);
-      const end = Math.floor((f + 1) * size);
+    const limit = Math.min(6, Math.floor(N / p));
+    for (let f = 0; f < limit; f++) {
       const fold: number[] = [];
-      for (let i = start; i < end; i++) {
-        fold.push(i);
-        testFor[i] = f;
+      for (let j = 0; j < p; j++) {
+        const idx = (f * p + j) % N;
+        fold.push(idx);
       }
       folds.push(fold);
+      // testFor only stores the first occurrence — for LPO same idx can appear in many folds
+    }
+    folds.forEach((f, fi) => f.forEach((i) => (testFor[i] = fi)));
+  } else if (mode === "kfold") {
+    folds = Array.from({ length: k }, () => []);
+    for (let i = 0; i < N; i++) {
+      folds[i % k].push(i);
+      testFor[i] = i % k;
     }
   } else if (mode === "stratified") {
-    const k = 5;
-    // Distribute class-1 indices evenly across folds, then class-0
+    folds = Array.from({ length: k }, () => []);
     const class1 = LABELS.map((c, i) => (c === 1 ? i : -1)).filter((i) => i >= 0);
     const class0 = LABELS.map((c, i) => (c === 0 ? i : -1)).filter((i) => i >= 0);
-    folds = Array.from({ length: k }, () => [] as number[]);
     class1.forEach((idx, j) => folds[j % k].push(idx));
     class0.forEach((idx, j) => folds[j % k].push(idx));
     folds.forEach((fold, f) => fold.forEach((i) => (testFor[i] = f)));
+  } else if (mode === "group") {
+    folds = Array.from({ length: k }, () => []);
+    const uniqueGroups = Array.from(new Set(GROUPS));
+    uniqueGroups.forEach((g, j) => {
+      const fi = j % k;
+      for (let i = 0; i < N; i++) {
+        if (GROUPS[i] === g) {
+          folds[fi].push(i);
+          testFor[i] = fi;
+        }
+      }
+    });
   } else {
-    // timeseries: progressive splits — fold f tests on chunk f+1
-    const k = 5;
+    // timeseries: expanding window
     const size = Math.floor(N / (k + 1));
     folds = [];
     for (let f = 0; f < k; f++) {
@@ -68,15 +96,16 @@ function makeFolds(mode: Mode): { folds: number[][]; testFor: number[] } {
   return { folds, testFor };
 }
 
-/** Mock per-fold "scores" — deterministic, so layout doesn't bounce. */
+/** Deterministic mock scores. */
 function mockScores(mode: Mode, folds: number[][]): number[] {
-  // Use a deterministic LCG seeded by mode
   const seedFromMode: Record<Mode, number> = {
-    val: 7,
+    holdout: 7,
     loocv: 13,
     kfold: 21,
     stratified: 29,
     timeseries: 41,
+    lpo: 53,
+    group: 67,
   };
   let s = seedFromMode[mode];
   return folds.map(() => {
@@ -88,13 +117,14 @@ function mockScores(mode: Mode, folds: number[][]): number[] {
 
 export function CvSplitVisualizer() {
   const [mode, setMode] = useState<Mode>("kfold");
+  const [k, setK] = useState(5);
+  const [p, setP] = useState(2);
   const [activeFold, setActiveFold] = useState(0);
 
-  const { folds, testFor } = useMemo(() => makeFolds(mode), [mode]);
+  const { folds, testFor } = useMemo(() => makeFolds(mode, k, p), [mode, k, p]);
   const scores = useMemo(() => mockScores(mode, folds), [mode, folds]);
   const mean = scores.reduce((s, v) => s + v, 0) / Math.max(1, scores.length);
 
-  // Cap active fold to available
   const af = Math.min(activeFold, folds.length - 1);
 
   const Pill = ({ m, label }: { m: Mode; label: string }) => (
@@ -113,33 +143,81 @@ export function CvSplitVisualizer() {
     </button>
   );
 
-  // For timeseries: train indices are everything BEFORE this fold's test chunk
   function isInTrain(i: number): boolean {
     if (mode === "timeseries") {
       const testIdxs = folds[af];
       const minTest = Math.min(...testIdxs);
       return i < minTest;
     }
+    if (mode === "lpo") {
+      return !folds[af].includes(i);
+    }
     return testFor[i] !== af;
   }
   function isInTest(i: number): boolean {
+    if (mode === "lpo") return folds[af].includes(i);
     return testFor[i] === af;
   }
 
+  const showK = mode === "kfold" || mode === "stratified" || mode === "group" || mode === "timeseries";
+  const showP = mode === "lpo";
+
   return (
-    <div className="rounded-xl border border-border bg-card p-5" role="region" aria-label="Interaktiv visualisering: Cross-validation splits">
-      <div className="flex flex-wrap items-center gap-2 mb-4">
-        <div className="text-xs text-muted-foreground mr-2">Variant:</div>
-        <Pill m="val" label="Validation 80/20" />
-        <Pill m="loocv" label="LOOCV" />
-        <Pill m="kfold" label="5-fold" />
-        <Pill m="stratified" label="Stratified 5-fold" />
+    <div
+      className="rounded-xl border border-border bg-card p-5"
+      role="region"
+      aria-label="Interaktiv visualisering: Cross-validation splits"
+    >
+      <div className="flex flex-wrap items-center gap-2 mb-3">
+        <div className="text-xs text-muted-foreground mr-2">Strategi:</div>
+        <Pill m="holdout" label="Hold-out 80/20" />
+        <Pill m="kfold" label="k-Fold" />
+        <Pill m="stratified" label="Stratified k-Fold" />
+        <Pill m="loocv" label="Leave-One-Out" />
+        <Pill m="lpo" label="Leave-P-Out" />
         <Pill m="timeseries" label="TimeSeriesSplit" />
+        <Pill m="group" label="Group k-Fold" />
       </div>
 
-      <div className="flex items-center gap-3 mb-3">
-        <label className="text-xs text-muted-foreground whitespace-nowrap">
-          Iterasjon (fold): {af + 1} / {folds.length}
+      <div className="flex flex-wrap items-center gap-3 mb-3">
+        {showK && (
+          <label className="text-xs text-muted-foreground inline-flex items-center gap-2 whitespace-nowrap">
+            k:
+            <select
+              value={k}
+              onChange={(e) => {
+                setK(parseInt(e.target.value));
+                setActiveFold(0);
+              }}
+              className="border border-border bg-background rounded-md px-2 py-1 text-xs font-mono"
+            >
+              <option value={2}>2</option>
+              <option value={3}>3</option>
+              <option value={5}>5</option>
+              <option value={6}>6</option>
+              <option value={10}>10</option>
+            </select>
+          </label>
+        )}
+        {showP && (
+          <label className="text-xs text-muted-foreground inline-flex items-center gap-2 whitespace-nowrap">
+            p:
+            <select
+              value={p}
+              onChange={(e) => {
+                setP(parseInt(e.target.value));
+                setActiveFold(0);
+              }}
+              className="border border-border bg-background rounded-md px-2 py-1 text-xs font-mono"
+            >
+              <option value={2}>2</option>
+              <option value={3}>3</option>
+              <option value={5}>5</option>
+            </select>
+          </label>
+        )}
+        <label className="text-xs text-muted-foreground whitespace-nowrap flex-shrink-0">
+          Iterasjon: {af + 1} / {folds.length}
         </label>
         <input
           type="range"
@@ -147,7 +225,7 @@ export function CvSplitVisualizer() {
           max={Math.max(0, folds.length - 1)}
           value={af}
           onChange={(e) => setActiveFold(parseInt(e.target.value))}
-          className="flex-1"
+          className="flex-1 min-w-[120px]"
           disabled={folds.length <= 1}
         />
       </div>
@@ -166,13 +244,17 @@ export function CvSplitVisualizer() {
               label = "train";
             }
             const classColor = LABELS[i] === 1 ? "ring-2 ring-amber-400" : "";
+            const groupBorder =
+              mode === "group" ? `border-b-2 border-b-sky-500/40` : "";
             return (
               <div
                 key={i}
-                className={`relative h-9 w-9 rounded-md text-[10px] text-white font-mono flex items-center justify-center ${bg} ${classColor}`}
-                title={`index ${i} · klasse ${LABELS[i]} · ${label}`}
+                className={`relative h-9 w-9 rounded-md text-[10px] text-white font-mono flex items-center justify-center ${bg} ${classColor} ${groupBorder}`}
+                title={`idx ${i} · klasse ${LABELS[i]}${
+                  mode === "group" ? ` · gruppe ${GROUPS[i]}` : ""
+                } · ${label}`}
               >
-                {i}
+                {mode === "group" ? GROUPS[i] : i}
               </div>
             );
           })}
@@ -197,6 +279,11 @@ export function CvSplitVisualizer() {
           <span className="inline-block h-3 w-3 rounded-sm ring-2 ring-amber-400 bg-transparent" />
           klasse 1 (minoritet)
         </span>
+        {mode === "group" && (
+          <span className="flex items-center gap-1">
+            <span className="text-[10px] font-mono">tall = gruppe-id (pasient/bruker)</span>
+          </span>
+        )}
       </div>
 
       {/* Fold table */}
@@ -222,7 +309,7 @@ export function CvSplitVisualizer() {
                   }`}
                 >
                   <td className="px-3 py-2 font-mono">{idx + 1}</td>
-                  <td className="px-3 py-2 font-mono text-[10px] truncate max-w-[140px]">
+                  <td className="px-3 py-2 font-mono text-[10px] truncate max-w-[160px]">
                     {f.length > 6
                       ? `[${f.slice(0, 4).join(", ")}, … +${f.length - 4}]`
                       : `[${f.join(", ")}]`}
@@ -245,16 +332,20 @@ export function CvSplitVisualizer() {
       </div>
 
       <p className="text-xs text-muted-foreground mt-3">
-        {mode === "val" &&
+        {mode === "holdout" &&
           "Én test-fold (siste 20 %). Rask, men score-en avhenger sterkt av hvilke punkter som havnet i test."}
         {mode === "loocv" &&
-          "Hver iterasjon tester på ÉN observasjon. n=20 ⇒ 20 train+score-passeringer. Nesten ingen bias, men dyrt og estimater korrelerer."}
+          "Hver iterasjon tester på ÉN observasjon. n=30 ⇒ 30 train+score-passeringer. Nesten ingen bias, men dyrt og estimater korrelerer."}
+        {mode === "lpo" &&
+          `Leave-${p}-Out: hold ut ${p} samples om gangen. Antall kombinasjoner er C(n, p) — vi viser kun de første som demo. Brukes praktisk bare for små n.`}
         {mode === "kfold" &&
-          "Vanlig k-fold (k=5). Hver observasjon havner i test nøyaktig én gang. Trade-off mellom regning (k passeringer) og varians (større k = mer korrelert)."}
+          `Vanlig k-fold (k=${k}). Hver observasjon havner i test nøyaktig én gang. Trade-off mellom regning (k passeringer) og varians (større k = mer korrelert).`}
         {mode === "stratified" &&
-          "Bevarer andel klasse 1 i hver fold — kritisk ved ubalanse. Sammenlign 'andel klasse 1'-kolonnen med vanlig k-fold."}
+          `Stratified k-fold (k=${k}). Bevarer andel klasse 1 i hver fold — kritisk ved ubalanse. Sammenlign 'andel klasse 1'-kolonnen med vanlig k-fold.`}
         {mode === "timeseries" &&
           "Train = alt FØR test-vinduet. Aldri tilbakeover. Den eneste lovlige CV-en for tidsserier."}
+        {mode === "group" &&
+          `Group k-fold (k=${k}). Garanterer at alle samples med samme gruppe-id (pasient/bruker) havner i samme fold — ingen lekkasje mellom train og test.`}
       </p>
     </div>
   );

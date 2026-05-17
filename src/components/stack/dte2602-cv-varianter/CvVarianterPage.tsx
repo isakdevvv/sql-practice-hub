@@ -9,6 +9,27 @@ import { VisualizerSkeleton } from "@/components/visualizer-shell";
 const CvSplitVisualizer = lazy(() =>
   import("./CvSplitVisualizer").then((m) => ({ default: m.CvSplitVisualizer })),
 );
+const CvVarianceComparison = lazy(() =>
+  import("./CvVarianceComparison").then((m) => ({
+    default: m.CvVarianceComparison,
+  })),
+);
+const StratifiedVsNotDemo = lazy(() =>
+  import("./StratifiedVsNotDemo").then((m) => ({
+    default: m.StratifiedVsNotDemo,
+  })),
+);
+const TimeSeriesCvDemo = lazy(() =>
+  import("./TimeSeriesCvDemo").then((m) => ({ default: m.TimeSeriesCvDemo })),
+);
+const NestedCvAnimator = lazy(() =>
+  import("./NestedCvAnimator").then((m) => ({ default: m.NestedCvAnimator })),
+);
+const CvChoiceMatchQuiz = lazy(() =>
+  import("./CvChoiceMatchQuiz").then((m) => ({
+    default: m.CvChoiceMatchQuiz,
+  })),
+);
 
 export function CvVarianterPage() {
   return (
@@ -248,16 +269,86 @@ for tr, te in cv.split(X):
 
         <Section number="9" title="Interaktivt: se hvilke punkter som er train vs test">
           <p className="text-sm text-muted-foreground mb-3">
-            Bytt mellom variantene og dra slideren for å gå gjennom hver
-            iterasjon. Se på den lille tabellen — for vanlig k-fold svinger
-            «andel klasse 1» mellom foldene, men ikke for stratifisert.
+            Bytt mellom alle 7 variantene og dra slideren for å gå gjennom hver
+            iterasjon. Slideren for <code>k</code> endrer fold-strukturen live.
+            For Stratified: sammenlign «andel klasse 1» mellom foldene med
+            vanlig k-fold (skal være stabil). For Group: legg merke til at samme
+            gruppe-id aldri splittes på tvers av folder.
           </p>
           <Suspense fallback={<VisualizerSkeleton />}>
             <CvSplitVisualizer />
           </Suspense>
         </Section>
 
-        <Section number="10" title="Python — sammenlign alle på samme datasett">
+        <Section number="10" title="Eksperiment: hvor stabil er CV-estimatet?">
+          <p className="text-sm text-muted-foreground mb-3">
+            Vi kjører lineær regresjon på et lite (n=20) og stort (n=200)
+            datasett, og sammenligner 2-fold, 5-fold, 10-fold og LOO. For hver
+            variant kjører vi 8 ulike seeds og ser på{" "}
+            <em>variansen i selve CV-snittet</em> — dvs. hvor mye estimatet
+            hopper rundt fra eksperiment til eksperiment. LOO har lav bias men
+            <strong> høyere</strong> estimator-varians fordi modellene er sterkt
+            korrelerte.
+          </p>
+          <Suspense fallback={<VisualizerSkeleton />}>
+            <CvVarianceComparison />
+          </Suspense>
+        </Section>
+
+        <Section number="11" title="Hvorfor stratifisering er kritisk på ubalanse">
+          <p className="text-sm text-muted-foreground mb-3">
+            Datasettet er 36 av klasse A og 4 av klasse B (10 % minoritet).
+            Med vanlig k-fold (særlig stor k) kan en fold tilfeldigvis ende uten
+            klasse B i test — recall blir matematisk udefinert. Stratifisert
+            k-fold tvinger samme klasse-ratio i hver fold. Bytt seed og se
+            kollaps-tilfellene komme og gå for vanlig k-fold, mens stratifisert
+            holder seg stabil.
+          </p>
+          <Suspense fallback={<VisualizerSkeleton />}>
+            <StratifiedVsNotDemo />
+          </Suspense>
+        </Section>
+
+        <Section number="12" title="Tidsserier: lookahead-bias visualisert">
+          <p className="text-sm text-muted-foreground mb-3">
+            100 punkter med trend over tid. Plain k-fold lar modellen «se
+            framtiden» under trening og gir kunstig lav MSE. TimeSeriesSplit
+            (expanding window) og walking forward (sliding) holder rekkefølgen
+            og gir et ærlig estimat. Sammenlign CV-snittet — differansen er den
+            optimistiske biasen plain k-fold introduserer.
+          </p>
+          <Suspense fallback={<VisualizerSkeleton />}>
+            <TimeSeriesCvDemo />
+          </Suspense>
+        </Section>
+
+        <Section number="13" title="Nested CV: ærlig estimat etter hyperparameter-tuning">
+          <p className="text-sm text-muted-foreground mb-3">
+            Når du tuner hyperparametere via CV og rapporterer best_score_, har
+            du brukt samme data til både seleksjon og rapportering — estimatet
+            er optimistisk biased. Nested CV bryter det opp: en{" "}
+            <em>outer</em> 5-fold for ytelse-estimat, og en{" "}
+            <em>inner</em> 3-fold per outer-fold for hyperparameter-søk.
+            Animatoren viser hvordan inner velger λ per outer-fold, og at
+            outer-test-scoren aldri er rørt av seleksjonen.
+          </p>
+          <Suspense fallback={<VisualizerSkeleton />}>
+            <NestedCvAnimator />
+          </Suspense>
+        </Section>
+
+        <Section number="14" title="Quiz: hvilken CV til hvilket problem?">
+          <p className="text-sm text-muted-foreground mb-3">
+            8 reelle scenarier — medisinsk forskning, aksjekurs, spam,
+            longitudinal pasientdata osv. Velg riktig variant og les
+            begrunnelsen. Noen scenarier har flere gode svar.
+          </p>
+          <Suspense fallback={<VisualizerSkeleton />}>
+            <CvChoiceMatchQuiz />
+          </Suspense>
+        </Section>
+
+        <Section number="15" title="Python — sammenlign alle på samme datasett">
           <pre className="rounded-xl border border-border bg-card p-4 font-mono text-xs overflow-x-auto whitespace-pre">{`from sklearn.datasets import load_breast_cancer
 from sklearn.linear_model import LogisticRegression
 from sklearn.preprocessing import StandardScaler
