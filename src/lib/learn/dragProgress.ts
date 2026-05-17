@@ -7,6 +7,7 @@
 // "Due i dag"-repetition queue.
 
 import { createFsrsStore, Rating, type ReviewRating } from "./fsrs";
+import { awardXP } from "@/lib/progress/xp";
 
 const KEY = "sql-practice-drag-v1";
 const XP_PER_SOLVE = 5;
@@ -53,7 +54,12 @@ export function markDragSolved(
   const wasNew = !p.solved[id];
   p.solved[id] = true;
   p.lastSeen[id] = new Date().toISOString();
-  if (wasNew) p.xp += XP_PER_SOLVE;
+  if (wasNew) {
+    p.xp += XP_PER_SOLVE;
+    // Mirror into the unified XP ledger. Dedup-key is per-exercise so
+    // re-solving never double-awards in the unified bookkeeping either.
+    awardXP("drag", `drag-${id}`, XP_PER_SOLVE);
+  }
   save(p);
   // Schedule the next FSRS review for this exercise. We don't fail the save
   // if FSRS throws — solve tracking is the source of truth, scheduling is a

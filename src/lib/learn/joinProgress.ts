@@ -4,8 +4,10 @@
 // "Due i dag"-queue.
 
 import { createFsrsStore, Rating, type ReviewRating } from "./fsrs";
+import { awardXP } from "@/lib/progress/xp";
 
 const KEY = "sql-practice-joins-v1";
+const XP_PER_JOIN = 4;
 
 /** Independent FSRS namespace for JOIN exercises. */
 export const joinFsrs = createFsrsStore("fsrs.joins.v1");
@@ -38,9 +40,15 @@ export function markJoinSolved(
   rating: ReviewRating = Rating.Good,
 ): JoinProgress {
   const p = loadJoinProgress();
+  const wasNew = !p.solved[id];
   p.solved[id] = true;
   p.lastSeen[id] = new Date().toISOString();
   save(p);
+  // Award unified XP only on first solve. Dedup-key in xp.ts also gates
+  // this so re-running awardXP a second time is a no-op.
+  if (wasNew) {
+    awardXP("join", `join-${id}`, XP_PER_JOIN);
+  }
   try {
     joinFsrs.recordReview(id, rating);
   } catch {

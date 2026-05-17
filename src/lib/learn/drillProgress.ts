@@ -18,6 +18,10 @@
 //   serialisere og parse.
 // ---------------------------------------------------------------------------
 
+import { awardXP } from "@/lib/progress/xp";
+
+const XP_PER_STEP = 3;
+
 /** Form av lagret payload. `completed` er null før alle steg er fullført. */
 export type DrillProgress = {
   /** ISO-timestamp for første interaksjon. */
@@ -102,6 +106,17 @@ export function setDrillProgress(id: string, progress: Partial<DrillProgress>): 
       ...progress,
     };
     window.localStorage.setItem(key(id), JSON.stringify(merged));
+
+    // Award unified XP for every step that just crossed from not-done to done.
+    // We award per-step (not per-drill) so partial drill completion still
+    // contributes XP. Dedup-key includes the step index so re-saves at the
+    // same stepsDone never double-award.
+    const prevSteps = existing?.stepsDone ?? 0;
+    if (merged.stepsDone > prevSteps) {
+      for (let step = prevSteps; step < merged.stepsDone; step++) {
+        awardXP("drill", `drill-${id}-step-${step}`, XP_PER_STEP);
+      }
+    }
   } catch {
     // Silent — se docblock over.
   }

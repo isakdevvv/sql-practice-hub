@@ -1,5 +1,6 @@
 import type { Problem } from "../problems/types";
 import { createFsrsStore, Rating, type ReviewRating } from "../learn/fsrs";
+import { awardXP } from "./xp";
 
 const STORAGE_KEY = "sql-practice-progress-v1";
 
@@ -200,6 +201,11 @@ export function recordAttempt(
     xpEarned = Math.round(base);
 
     progress.xp += xpEarned;
+
+    // Feed the unified XP ledger. Dedupe-key is stable per problem so
+    // re-solving (which already gates xpEarned via !prev.solved) cannot
+    // double-award even if this branch were entered twice.
+    awardXP("sql", `problem-${problem.id}`, xpEarned);
 
     progress.attempts[problem.id] = {
       solved: true,
