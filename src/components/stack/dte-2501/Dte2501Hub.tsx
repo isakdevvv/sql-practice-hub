@@ -236,6 +236,14 @@ const ML_COURSES: Course[] = [
     Icon: Axis3D,
     status: "ready",
   },
+  {
+    slug: "dte2501-pso-visualizer",
+    title: "PSO live-sverm",
+    shortDescription:
+      "Partikkelsverm på Rastrigin/Ackley/daler. Juster w, c1, c2 og spread; identifiser hvilken preset er «for høy inertia», «for lav c2» og «balansert».",
+    Icon: Layers,
+    status: "ready",
+  },
 ];
 
 function CourseCard({ c }: { c: Course }) {

@@ -1308,7 +1308,7 @@ export const SKILLS: Skill[] = [
     bloom: "apply",
     prereqs: ["algo-recursion"],
     evidens: {
-      stackSlugs: ["dte2501-genetic-algorithms"],
+      stackSlugs: ["dte2501-genetic-algorithms", "dte2501-pso-visualizer"],
       pyExerciseIds: ["py-dte2501-ga-onemax"],
     },
     estimertTid: "2 t",

@@ -247,6 +247,7 @@ export const PHASES: readonly CurriculumPhase[] = [
       "dte2602-mappe-mal",
       "dte2501-kmeans-visualizer",
       "dte2501-pca-visualizer",
+      "dte2501-pso-visualizer",
       "dte2602-lineaer-regresjon",
       "dte2602-roc-curve-plotter",
       "ml-pipeline-builder",
