@@ -2,6 +2,10 @@ import { Link } from "@tanstack/react-router";
 import { Network } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
+import { PipesSimulator } from "./PipesSimulator";
+import { MessageQueueDemo } from "./MessageQueueDemo";
+import { SharedMemorySim } from "./SharedMemorySim";
+import { IpcMatchQuiz } from "./IpcMatchQuiz";
 
 const STEPS = [
   { title: "Hvorfor IPC?", anchor: "intro" },
@@ -12,6 +16,7 @@ const STEPS = [
   { title: "Message queues", anchor: "mq" },
   { title: "Sammenligningstabell", anchor: "sammenligning" },
   { title: "Eksamen-quick-ref", anchor: "eksamen" },
+  { title: "Test deg selv", anchor: "quiz" },
 ];
 
 export function IpcPage() {
@@ -116,12 +121,13 @@ int main(void) {
     return 0;
 }`}</pre>
           </div>
-          <p className="text-xs text-muted-foreground">
+          <p className="text-xs text-muted-foreground mb-4">
             <strong>Begrensninger:</strong> bare beslektede prosesser
             (forelder/barn/søsken som arver fd-ene), bare én retning per pipe
             (lag to for tovei), buffer er typisk 64&nbsp;KiB — fyller den seg
             opp blokkerer <code className="font-mono">write</code> til noen leser.
           </p>
+          <PipesSimulator />
         </Section>
 
         <Section number="3" id="fifo" title="Navngitte pipes (FIFO)">
@@ -220,13 +226,14 @@ shmdt(p);
 shmctl(id, IPC_RMID, NULL);`}</pre>
             </div>
           </div>
-          <p className="text-xs text-muted-foreground">
+          <p className="text-xs text-muted-foreground mb-4">
             <strong>POSIX vs System V:</strong> POSIX (<code className="font-mono">shm_open</code> + <code className="font-mono">mmap</code>)
             integrerer med fd-baserte syscalls, kan brukes med
             <code className="font-mono"> select</code>/<code className="font-mono">poll</code>, og er foretrukket i ny kode.
             System V (<code className="font-mono">shmget</code> / <code className="font-mono">shmat</code>)
             bruker IPC-keys og er enda i bruk i eldre Unix-software.
           </p>
+          <SharedMemorySim />
         </Section>
 
         <Section number="5" id="sem" title="Semaforer — POSIX og System V">
@@ -338,12 +345,13 @@ ssize_t n = mq_receive(mq, buf, 256, &prio);
 mq_close(mq);
 mq_unlink("/myqueue");`}</pre>
           </div>
-          <p className="text-xs text-muted-foreground mt-3">
+          <p className="text-xs text-muted-foreground mt-3 mb-4">
             <strong>vs pipe/FIFO:</strong> meldingsgrenser bevares (les leser
             akkurat én melding av gangen), prioritet er innebygd, og kø
             overlever selv om alle åpne deskriptorer lukkes. Nyttig for
             løskoblede komponenter — tenk «small embedded message bus».
           </p>
+          <MessageQueueDemo />
         </Section>
 
         <Section number="7" id="sammenligning" title="Sammenligningstabell">
@@ -430,6 +438,14 @@ mq_unlink("/myqueue");`}</pre>
               Shellet kaller <code className="font-mono">pipe()</code>, <code className="font-mono">fork()</code>-er to ganger, og <code className="font-mono">dup2()</code>-er fd-ene til stdin/stdout før <code className="font-mono">execve()</code>. Klassisk eksamensspørsmål.
             </li>
           </ul>
+        </Section>
+
+        <Section number="9" id="quiz" title="Test deg selv">
+          <p className="text-sm text-muted-foreground mb-3">
+            6 use-cases, 6 mekanismer. Velg den som passer best — fasit og
+            begrunnelse vises etter du har levert.
+          </p>
+          <IpcMatchQuiz />
         </Section>
 
         <div className="mt-10 rounded-xl border border-border bg-card p-5 text-sm">
