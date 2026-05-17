@@ -1,8 +1,9 @@
 import { useMemo, useState } from "react";
 import { Link } from "@tanstack/react-router";
-import {Lightbulb, ArrowLeft } from "lucide-react";
+import {Lightbulb, ArrowLeft, Info } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
+import { NotebookCell } from "@/components/stack/NotebookCell";
 
 const STEPS = [
   { title: "Hvorfor preprocessing?", anchor: "hvorfor" },
@@ -40,6 +41,16 @@ export function Dte2602PreprocessingPipelinePage() {
               <code>ColumnTransformer</code> + <code>GridSearchCV</code>.
             </div>
           </div>
+          <div className="mt-3 rounded-lg border border-emerald-500/30 bg-emerald-500/5 p-4 flex items-start gap-3">
+            <Info className="h-4 w-4 text-emerald-400 mt-0.5 shrink-0" />
+            <div className="text-sm">
+              <span className="font-medium">Alle kodeblokker er kjørbare</span> — trykk{" "}
+              <kbd className="px-1.5 py-0.5 rounded border border-border bg-card text-[10px]">Kjør</kbd>{" "}
+              (eller <kbd className="px-1.5 py-0.5 rounded border border-border bg-card text-[10px]">⌘/Ctrl + Enter</kbd>)
+              for å eksekvere i nettleseren. Første kjøring laster Pyodide (~10 MB);
+              etter det er det instant. Rediger koden, eksperimenter, kopier til ditt eget program.
+            </div>
+          </div>
         </div>
 
         <CourseOutline courseId="dte2602-preprocessing-pipeline" steps={STEPS} />
@@ -68,7 +79,13 @@ export function Dte2602PreprocessingPipelinePage() {
         </Section>
 
         <Section number="2" id="scaler" title="StandardScaler — null-snitt, én std.avvik">
-          <pre className="rounded-xl border border-border bg-card p-4 font-mono text-xs overflow-x-auto whitespace-pre">{`from sklearn.preprocessing import StandardScaler
+          <NotebookCell
+            requires={["scikit-learn", "numpy"]}
+            setup={`import numpy as np
+# Lite eksempel-datasett: høyde (cm) og vekt (kg)
+X_train = np.array([[180, 80], [165, 60], [190, 95], [172, 70], [155, 50]])
+X_test  = np.array([[178, 75], [168, 62]])`}
+            code={`from sklearn.preprocessing import StandardScaler
 
 scaler = StandardScaler()
 X_train_scaled = scaler.fit_transform(X_train)
@@ -76,7 +93,18 @@ X_test_scaled  = scaler.transform(X_test)   # <-- bare transform!
 
 # Hva StandardScaler gjør per kolonne:
 #   x_skalert = (x - mean) / std
-# Etter dette: hver kolonne har mean=0, std=1.`}</pre>
+# Etter dette: hver kolonne har mean=0, std=1.
+
+print("Snitt per kolonne (train):", scaler.mean_)
+print("Std per kolonne (train):  ", scaler.scale_)
+print()
+print("X_train_scaled =")
+print(X_train_scaled.round(2))
+print()
+print("Verifiser: snitt ≈ 0, std ≈ 1")
+print("  mean:", X_train_scaled.mean(axis=0).round(3))
+print("  std: ", X_train_scaled.std(axis=0).round(3))`}
+          />
           <p className="text-sm text-muted-foreground mt-3">
             Alternativer: <code>MinMaxScaler</code> (skalerer til [0, 1] — bra
             når du vet at dataen ikke har lange haler),{" "}
@@ -85,14 +113,28 @@ X_test_scaled  = scaler.transform(X_test)   # <-- bare transform!
         </Section>
 
         <Section number="3" id="ohe" title="OneHotEncoder — kategorier til tall">
-          <pre className="rounded-xl border border-border bg-card p-4 font-mono text-xs overflow-x-auto whitespace-pre">{`from sklearn.preprocessing import OneHotEncoder
+          <NotebookCell
+            requires={["scikit-learn", "numpy"]}
+            code={`from sklearn.preprocessing import OneHotEncoder
+import numpy as np
+
+byer = np.array([["Tromsø"], ["Oslo"], ["Bodø"], ["Tromsø"], ["Oslo"]])
 
 ohe = OneHotEncoder(handle_unknown="ignore", sparse_output=False)
-# Input:  ["Tromsø", "Oslo", "Bodø", "Tromsø"]
-# Output: [[0,0,1], [0,1,0], [1,0,0], [0,0,1]]
+kodet = ohe.fit_transform(byer)
+
+print("Kategorier (alfabetisk):", ohe.categories_[0])
+print()
+print("One-hot-matrise:")
+print(kodet)
+print()
+print("Forklart per rad:")
+for by, rad in zip(byer.ravel(), kodet):
+    print(f"  {by:8} → {rad}")
 
 # 'drop="first"' fjerner én kolonne for å unngå
-# multikollinearitet (sum av kolonner = 1 alltid).`}</pre>
+# multikollinearitet (sum av kolonner = 1 alltid).`}
+          />
           <p className="text-sm text-muted-foreground mt-3">
             For ordnede kategorier (low/medium/high) bruk{" "}
             <code>OrdinalEncoder</code>. For kategorier med veldig høy kardinalitet
@@ -101,10 +143,23 @@ ohe = OneHotEncoder(handle_unknown="ignore", sparse_output=False)
         </Section>
 
         <Section number="4" id="ct" title="ColumnTransformer — én pipeline per kolonnetype">
-          <pre className="rounded-xl border border-border bg-card p-4 font-mono text-xs overflow-x-auto whitespace-pre">{`from sklearn.compose import ColumnTransformer
+          <NotebookCell
+            requires={["scikit-learn", "pandas", "numpy"]}
+            code={`import pandas as pd
+import numpy as np
+from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import StandardScaler, OneHotEncoder
 from sklearn.impute import SimpleImputer
 from sklearn.pipeline import Pipeline
+
+# Titanic-aktig miniature
+df = pd.DataFrame({
+    "Age":      [22.0, 38.0, np.nan, 35.0, 28.0, np.nan],
+    "Fare":     [7.25, 71.28, 7.92, 53.10, 8.05, 13.00],
+    "Sex":      ["male", "female", "female", "female", "male", "male"],
+    "Embarked": ["S", "C", "S", "S", None, "Q"],
+})
+print("Input:"); print(df); print()
 
 num_cols = ["Age", "Fare"]
 cat_cols = ["Sex", "Embarked"]
@@ -115,13 +170,20 @@ num_pipe = Pipeline([
 ])
 cat_pipe = Pipeline([
     ("imp", SimpleImputer(strategy="most_frequent")),
-    ("ohe", OneHotEncoder(handle_unknown="ignore")),
+    ("ohe", OneHotEncoder(handle_unknown="ignore", sparse_output=False)),
 ])
 
 prep = ColumnTransformer([
     ("num", num_pipe, num_cols),
     ("cat", cat_pipe, cat_cols),
-])`}</pre>
+])
+
+ut = prep.fit_transform(df)
+kolonner = prep.get_feature_names_out()
+
+print("Etter ColumnTransformer:")
+print(pd.DataFrame(ut, columns=kolonner).round(2))`}
+          />
           <p className="text-sm text-muted-foreground mt-3">
             Resultat: én transformer som tar et helt DataFrame og spytter ut en
             matrise med skalerte numeriske kolonner + one-hot-kodede kategoriske,
@@ -130,16 +192,48 @@ prep = ColumnTransformer([
         </Section>
 
         <Section number="5" id="pipeline" title="Pipeline — limet">
-          <pre className="rounded-xl border border-border bg-card p-4 font-mono text-xs overflow-x-auto whitespace-pre">{`from sklearn.linear_model import LogisticRegression
+          <NotebookCell
+            requires={["scikit-learn", "pandas", "numpy"]}
+            code={`import pandas as pd
+import numpy as np
+from sklearn.compose import ColumnTransformer
+from sklearn.preprocessing import StandardScaler, OneHotEncoder
+from sklearn.impute import SimpleImputer
+from sklearn.linear_model import LogisticRegression
 from sklearn.pipeline import Pipeline
+from sklearn.model_selection import train_test_split
+
+# Minisett der "fare" og "sex" forklarer "survived"
+rng = np.random.default_rng(0)
+n = 200
+df = pd.DataFrame({
+    "Age":      rng.normal(30, 12, n).round(1),
+    "Fare":     rng.exponential(30, n).round(2),
+    "Sex":      rng.choice(["male", "female"], n),
+    "Embarked": rng.choice(["S", "C", "Q"], n),
+})
+y = ((df["Sex"] == "female") & (df["Fare"] > 20)).astype(int)
+
+X_train, X_test, y_train, y_test = train_test_split(
+    df, y, test_size=0.3, random_state=42)
+
+# ColumnTransformer (samme som steg 4)
+prep = ColumnTransformer([
+    ("num", Pipeline([("sc", StandardScaler())]), ["Age", "Fare"]),
+    ("cat", OneHotEncoder(handle_unknown="ignore", sparse_output=False), ["Sex", "Embarked"]),
+])
 
 clf = Pipeline([
-    ("prep", prep),                       # ColumnTransformer fra forrige steg
+    ("prep", prep),
     ("model", LogisticRegression(max_iter=1000)),
 ])
 
 clf.fit(X_train, y_train)        # alle stegene fit-es på train
-y_pred = clf.predict(X_test)      # alle stegene transform-eres på test`}</pre>
+acc = clf.score(X_test, y_test)
+print(f"Test-accuracy: {acc:.3f}")
+print("First 5 predictions:", clf.predict(X_test.head()).tolist())
+print("Modellen kan nå serialiseres med joblib.dump(clf, 'model.pkl')")`}
+          />
           <p className="text-sm text-muted-foreground mt-3">
             <strong>Hvorfor pipeline?</strong> Tre konkrete grunner:
           </p>
@@ -163,15 +257,28 @@ y_pred = clf.predict(X_test)      # alle stegene transform-eres på test`}</pre>
             seg inn i treningen, og test-scoren blir kunstig høy. Den enkleste
             varianten er å skalere hele datasettet før split:
           </p>
-          <div className="grid sm:grid-cols-2 gap-3">
+          <div className="space-y-4">
             <div className="rounded-xl border border-rose-500/40 bg-rose-500/5 p-4">
               <div className="text-xs uppercase tracking-wider text-rose-400 font-semibold mb-2">
-                FEIL — lekker
+                FEIL — lekker (kjør og se for-høy accuracy)
               </div>
-              <pre className="font-mono text-xs overflow-x-auto whitespace-pre">{`scaler = StandardScaler()
-X_scaled = scaler.fit_transform(X)
+              <NotebookCell
+                requires={["scikit-learn", "numpy"]}
+                setup={`from sklearn.datasets import make_classification
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.linear_model import LogisticRegression
+X, y = make_classification(n_samples=100, n_features=10, n_informative=5, random_state=42)`}
+                code={`scaler = StandardScaler()
+X_scaled = scaler.fit_transform(X)   # <-- ser ALLE rader, inkl. test
 X_train, X_test, y_train, y_test = train_test_split(
-    X_scaled, y, test_size=0.2)`}</pre>
+    X_scaled, y, test_size=0.2, random_state=0)
+
+lr = LogisticRegression(max_iter=1000)
+lr.fit(X_train, y_train)
+print(f"Test-accuracy (LEKKER): {lr.score(X_test, y_test):.3f}")
+print("Scaler-en har sett mean/std fra hele datasettet → for høy score.")`}
+              />
               <p className="text-xs text-rose-400/80 mt-2">
                 Scaler-en har sett gjennomsnitt og std fra <em>hele</em> X,
                 inkludert testradene. Test-scoren blir for høy.
@@ -181,15 +288,25 @@ X_train, X_test, y_train, y_test = train_test_split(
               <div className="text-xs uppercase tracking-wider text-emerald-400 font-semibold mb-2">
                 RIKTIG — split først, scaler i pipeline
               </div>
-              <pre className="font-mono text-xs overflow-x-auto whitespace-pre">{`X_train, X_test, y_train, y_test = train_test_split(
-    X, y, test_size=0.2)
+              <NotebookCell
+                requires={["scikit-learn", "numpy"]}
+                setup={`from sklearn.datasets import make_classification
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.linear_model import LogisticRegression
+from sklearn.pipeline import Pipeline
+X, y = make_classification(n_samples=100, n_features=10, n_informative=5, random_state=42)`}
+                code={`X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=0)
 
 clf = Pipeline([
     ("sc", StandardScaler()),
-    ("lr", LogisticRegression()),
+    ("lr", LogisticRegression(max_iter=1000)),
 ])
 clf.fit(X_train, y_train)
-clf.score(X_test, y_test)`}</pre>
+print(f"Test-accuracy (RIKTIG): {clf.score(X_test, y_test):.3f}")
+print("Scaler fit-et KUN på X_train → ærlig estimat.")`}
+              />
               <p className="text-xs text-emerald-400/80 mt-2">
                 Scaler-en lærer parametrene KUN fra X_train.
               </p>
