@@ -13,6 +13,7 @@ import { PY_KUROSE_EXERCISES } from "./exercises-kurose";
 import { PY_FASTAPI_EXERCISES } from "./exercises-fastapi";
 import { PY_DTE2505_UTVIDELSE_EXERCISES } from "./exercises-dte2505-utvidelse";
 import { PY_TEK1_UTVIDELSE_EXERCISES } from "./exercises-tek1-utvidelse";
+import { PY_COMPREHENSION_EXERCISES } from "./exercises-comprehensions";
 
 // All exercises target DAT1000-pensum: Flask, Jinja, MySQL via prepared
 // statements, sessions, login, CSRF, JSON-API, HTTP-statuskoder.
@@ -7462,6 +7463,8 @@ print(f"95% CI = ({ci_low * 100:.1f}%, {ci_high * 100:.1f}%)")
 ];
 
 export const PY_EXERCISES: PyExercise[] = [
+  // Python kjerne — comprehensions (30 progressive øvinger fra null til ekspert).
+  ...PY_COMPREHENSION_EXERCISES,
   ...PY_EXERCISES_BASE,
   ...PY_DTE2602_EXERCISES,
   ...PY_DTE2602_LOGISTISK_EXERCISES,
