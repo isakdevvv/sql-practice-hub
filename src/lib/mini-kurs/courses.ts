@@ -4761,6 +4761,1337 @@ sjekk(bf_storst > 0, True, "best-fit etterlater minst én fri block")
   ],
 };
 
+const LINREG_GD: MiniCourse = {
+  id: "linreg-gd",
+  slug: "linreg-gd",
+  title: "Lineær regresjon med gradient descent fra null",
+  blurb:
+    "Bygg en lineær regresjonsmodell trinn for trinn — fra hypotese-funksjon og MSE-tap, via partielle deriverte, til full trenings-loop. Eksperimentér med læringsrate og se hvordan modellen divergerer hvis du tar for store steg. Avslutt med mini-batch SGD. Dette er kjernen i ALL gradient-basert maskinlæring, skrevet fra null i Python.",
+  estimertTid: "60–75 min",
+  fag: ["DTE-2602", "Maskinlæring", "Supervised learning"],
+  color: "purple",
+  rekkefolge: 10,
+  lessons: [
+    // ============ LEKSJON 1 ===========================================
+    {
+      id: "01-hypotese-mse",
+      title: "1. Hypotese-funksjonen og MSE-tap",
+      narrative:
+        "**Lineær regresjon** antar at sammenhengen mellom input `x` og output `y` er en rett linje:\n\n```\ny = w * x + b\n```\n\n`w` er stigningstallet (vekt), `b` er skjæringspunktet (bias). Hele maskinlæringsoppgaven er: gitt et datasett med par `(x_i, y_i)`, finn de `w` og `b` som best forklarer dataene.\n\nMen hva betyr «best»? Vi trenger et **taps-mål** — en skalar som forteller hvor dårlig modellen er nå. Standard for regresjon er **MSE (Mean Squared Error)**:\n\n```\nMSE = (1/n) * sum_i (y_pred_i - y_i)^2\n```\n\nKvadratet straffer store feil hardere enn små, og er glatt og deriverbar (viktig for senere). MSE er null hvis modellen er perfekt, og positiv ellers.\n\nDatasettet vårt er 10 punkter generert fra `y = 2x - 1` med litt støy. Hvis du klarer å gjette `w=2`, `b=-1`, bør MSE være liten.\n\n**Din oppgave:**\n\n1. Implementér `predict(x, w, b)` — bare `w*x + b`.\n2. Implementér `mse(xs, ys, w, b)` — gjennomsnittlig kvadratfeil over alle par.",
+      files: {
+        "linreg.py": `# Datasett: y = 2x - 1 + litt støy
+xs = [0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0]
+ys = [-1.1057, 0.7905, 3.0906, 4.7435, 7.0215, 8.9194, 10.7348, 13.0045, 14.7225, 16.9602]
+
+
+def predict(x, w, b):
+    """Returner modellens prediksjon for input x gitt vekt w og bias b."""
+    # === DIN OPPGAVE ===
+    # Returner w * x + b
+    pass
+
+
+def mse(xs, ys, w, b):
+    """Mean Squared Error: gjennomsnittlig (prediksjon - sann)^2 over alle par."""
+    # === DIN OPPGAVE ===
+    # n = len(xs)
+    # Summer (predict(x, w, b) - y)^2 for hvert par (x, y), del på n.
+    pass
+
+
+def sjekk_nær(faktisk, forventet, navn, toleranse=1e-6):
+    if faktisk is None:
+        print(f"FEIL {navn}: fikk None (ikke implementert?)")
+        return
+    if abs(faktisk - forventet) < toleranse:
+        print(f"OK   {navn}")
+    else:
+        print(f"FEIL {navn}: fikk {faktisk!r}, forventet {forventet!r}")
+
+
+# Test predict
+sjekk_nær(predict(3.0, 2.0, -1.0), 5.0, "predict: 2*3 - 1 = 5")
+sjekk_nær(predict(0.0, 5.0, 7.0), 7.0, "predict: bias alene ved x=0")
+sjekk_nær(predict(-2.0, 1.5, 1.0), -2.0, "predict: negativ x fungerer")
+
+# Test mse
+# Perfekt modell på et trivielt datasett der y = 2x - 1 eksakt
+perfekt_xs = [0.0, 1.0, 2.0]
+perfekt_ys = [-1.0, 1.0, 3.0]
+sjekk_nær(mse(perfekt_xs, perfekt_ys, 2.0, -1.0), 0.0, "MSE er 0 ved perfekt fit")
+
+# Helt feil modell: w=0, b=0 → prediksjoner er alle 0
+sjekk_nær(mse(perfekt_xs, perfekt_ys, 0.0, 0.0),
+          (1.0 + 1.0 + 9.0) / 3.0,
+          "MSE regner gjennomsnitt av kvadrerte feil")
+
+# På det støyete datasettet med "riktig" w og b skal MSE være liten men > 0
+støy_mse = mse(xs, ys, 2.0, -1.0)
+if støy_mse is None:
+    print("FEIL støy-mse: ikke implementert")
+elif 0.0 < støy_mse < 0.1:
+    print(f"OK   støyete datasett: MSE = {støy_mse:.4f} (liten men positiv)")
+else:
+    print(f"FEIL støy-mse: fikk {støy_mse}, forventet 0 < x < 0.1")
+`,
+      },
+      defaultFile: "linreg.py",
+      editable: ["linreg.py"],
+      run: { kind: "python-script", entry: "linreg.py" },
+      verifications: [
+        { label: "predict: w*x + b regnes riktig", check: { kind: "output-contains", needle: "OK   predict: 2*3 - 1 = 5" } },
+        { label: "predict: bias alene fungerer", check: { kind: "output-contains", needle: "OK   predict: bias alene ved x=0" } },
+        { label: "predict: negative inputs fungerer", check: { kind: "output-contains", needle: "OK   predict: negativ x fungerer" } },
+        { label: "MSE er 0 ved perfekt fit", check: { kind: "output-contains", needle: "OK   MSE er 0 ved perfekt fit" } },
+        { label: "MSE regner gjennomsnitt av kvadrater", check: { kind: "output-contains", needle: "OK   MSE regner gjennomsnitt av kvadrerte feil" } },
+        { label: "MSE er liten men positiv på støyete data", check: { kind: "output-contains", needle: "OK   støyete datasett:" } },
+      ],
+      hint:
+        "def predict(x, w, b):\n    return w * x + b\n\ndef mse(xs, ys, w, b):\n    n = len(xs)\n    return sum((predict(x, w, b) - y) ** 2 for x, y in zip(xs, ys)) / n",
+    },
+
+    // ============ LEKSJON 2 ===========================================
+    {
+      id: "02-gradient",
+      title: "2. Partielle deriverte av MSE",
+      narrative:
+        "MSE forteller hvor dårlig modellen er. For å gjøre den BEDRE, må vi vite hvilken VEI vi skal flytte `w` og `b`. Det er nettopp hva gradienten gir oss: en vektor som peker i retningen hvor MSE øker raskest. Vi går i motsatt retning.\n\nMSE er en funksjon av to variabler: `L(w, b) = (1/n) * sum (w*x_i + b - y_i)^2`. Vi trenger **partielle deriverte**:\n\n```\ndL/dw = (2/n) * sum_i (y_pred_i - y_i) * x_i\ndL/db = (2/n) * sum_i (y_pred_i - y_i)\n```\n\nUtledning (kort): derivér ledd for ledd. Indre ledd `(w*x + b - y)` har derivert `x` mhp `w` og `1` mhp `b`. Kjerneregelen gir faktoren `2*(w*x + b - y)`. Summer over alle par, del på `n`.\n\n**Intuisjon for dL/dw:** hvis modellen ligger for HØYT (`y_pred > y`) for et punkt med stor `x`, vil `(pred - y) * x` være positiv — så `dL/dw` er positiv → vi må MINKE `w`. Hvis modellen ligger for lavt, gradienten blir negativ → vi øker `w`. Perfekt avstemt.\n\n**Sanity:** ved et lineært-perfekt datasett (uten støy) og riktige `w, b` skal begge gradienter være eksakt 0 — vi er på minimumspunktet.\n\n**Din oppgave:** implementér `gradients(xs, ys, w, b)` som returnerer paret `(dw, db)`.",
+      files: {
+        "linreg.py": `# Datasett: y = 2x - 1 + litt støy
+xs = [0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0]
+ys = [-1.1057, 0.7905, 3.0906, 4.7435, 7.0215, 8.9194, 10.7348, 13.0045, 14.7225, 16.9602]
+
+
+def predict(x, w, b):
+    return w * x + b
+
+
+def mse(xs, ys, w, b):
+    n = len(xs)
+    return sum((predict(x, w, b) - y) ** 2 for x, y in zip(xs, ys)) / n
+
+
+def gradients(xs, ys, w, b):
+    """Returner tuppel (dw, db) — partielle deriverte av MSE mhp w og b."""
+    # === DIN OPPGAVE ===
+    # n = len(xs)
+    # dw = (2/n) * sum( (predict(x_i, w, b) - y_i) * x_i ) for alle i
+    # db = (2/n) * sum(  predict(x_i, w, b) - y_i )         for alle i
+    # Returner (dw, db).
+    pass
+
+
+def sjekk_nær(faktisk, forventet, navn, toleranse=1e-6):
+    if faktisk is None:
+        print(f"FEIL {navn}: fikk None")
+        return
+    if abs(faktisk - forventet) < toleranse:
+        print(f"OK   {navn}")
+    else:
+        print(f"FEIL {navn}: fikk {faktisk!r}, forventet {forventet!r}")
+
+
+# Lineært-perfekt datasett: y = 2x - 1 eksakt, ingen støy
+ren_xs = [0.0, 1.0, 2.0, 3.0, 4.0]
+ren_ys = [-1.0, 1.0, 3.0, 5.0, 7.0]
+
+# Ved (w=2, b=-1) skal begge gradienter være eksakt 0
+g = gradients(ren_xs, ren_ys, 2.0, -1.0)
+if g is None:
+    print("FEIL gradient ved minimum: ikke implementert")
+else:
+    dw, db = g
+    sjekk_nær(dw, 0.0, "dw er 0 ved minimum av rent datasett")
+    sjekk_nær(db, 0.0, "db er 0 ved minimum av rent datasett")
+
+# Ved (w=0, b=0) på samme rene datasett: predikerer 0 for alt.
+# y_pred - y = -y = [1, -1, -3, -5, -7]
+# dw = (2/5) * sum((y_pred - y) * x) = (2/5)*(0 + -1 + -6 + -15 + -28) = (2/5)*(-50) = -20
+# db = (2/5) * sum(y_pred - y)        = (2/5)*(1 - 1 - 3 - 5 - 7)      = (2/5)*(-15) = -6
+g0 = gradients(ren_xs, ren_ys, 0.0, 0.0)
+if g0 is None:
+    print("FEIL gradient(0,0): ikke implementert")
+else:
+    dw0, db0 = g0
+    sjekk_nær(dw0, -20.0, "dw ved (0,0) på rent datasett")
+    sjekk_nær(db0, -6.0, "db ved (0,0) på rent datasett")
+
+# På det støyete datasettet skal gradient ved sanne (w, b) være liten men ikke nøyaktig null
+g_støy = gradients(xs, ys, 2.0, -1.0)
+if g_støy is None:
+    print("FEIL gradient(støy): ikke implementert")
+else:
+    dw_s, db_s = g_støy
+    if abs(dw_s) < 2.0 and abs(db_s) < 1.0:
+        print(f"OK   gradient på støyete data nær sanne (w,b): dw={dw_s:.4f}, db={db_s:.4f}")
+    else:
+        print(f"FEIL gradient(støy): forventet liten, fikk dw={dw_s}, db={db_s}")
+`,
+      },
+      defaultFile: "linreg.py",
+      editable: ["linreg.py"],
+      run: { kind: "python-script", entry: "linreg.py" },
+      verifications: [
+        { label: "dw er 0 ved minimum (rent datasett)", check: { kind: "output-contains", needle: "OK   dw er 0 ved minimum av rent datasett" } },
+        { label: "db er 0 ved minimum (rent datasett)", check: { kind: "output-contains", needle: "OK   db er 0 ved minimum av rent datasett" } },
+        { label: "dw ved (0,0) regnes riktig (formel)", check: { kind: "output-contains", needle: "OK   dw ved (0,0) på rent datasett" } },
+        { label: "db ved (0,0) regnes riktig (formel)", check: { kind: "output-contains", needle: "OK   db ved (0,0) på rent datasett" } },
+        { label: "Gradient er liten på støyete data ved sanne (w,b)", check: { kind: "output-contains", needle: "OK   gradient på støyete data nær sanne" } },
+      ],
+      hint:
+        "def gradients(xs, ys, w, b):\n    n = len(xs)\n    dw = (2.0 / n) * sum((predict(x, w, b) - y) * x for x, y in zip(xs, ys))\n    db = (2.0 / n) * sum((predict(x, w, b) - y) for x, y in zip(xs, ys))\n    return dw, db",
+    },
+
+    // ============ LEKSJON 3 ===========================================
+    {
+      id: "03-step",
+      title: "3. Ett oppdaterings-steg",
+      narrative:
+        "Vi har nå alle byggesteinene for **gradient descent**. Kjerneoppdateringen er bedragersk enkel:\n\n```\nw_ny = w - lr * dw\nb_ny = b - lr * db\n```\n\n`lr` (learning rate, læringsrate) er et lite positivt tall som styrer hvor stort skritt vi tar. Vi går i MOTSATT retning av gradienten fordi gradienten peker mot ØKENDE tap; vi vil ned.\n\nTenk det som å rulle ned en kul-skål: gradienten er bakke-vektoren, læringsraten er hvor langt du sklir per tidssteg. For lite → bevegelsen er treg. For stort → du overshooter bunnen og kan ende lenger oppe enn der du startet.\n\nI denne leksjonen gjør vi BARE ETT steg, fra et dårlig utgangspunkt `(w=0, b=0)`. Du skal verifisere at MSE FALLER etter dette ene steget — det er hele begrunnelsen for at gradient descent fungerer.\n\n**Din oppgave:** implementér `step(xs, ys, w, b, lr)` som regner gradient, oppdaterer `w` og `b`, og returnerer det nye paret `(w, b)`.",
+      files: {
+        "linreg.py": `xs = [0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0]
+ys = [-1.1057, 0.7905, 3.0906, 4.7435, 7.0215, 8.9194, 10.7348, 13.0045, 14.7225, 16.9602]
+
+
+def predict(x, w, b):
+    return w * x + b
+
+
+def mse(xs, ys, w, b):
+    n = len(xs)
+    return sum((predict(x, w, b) - y) ** 2 for x, y in zip(xs, ys)) / n
+
+
+def gradients(xs, ys, w, b):
+    n = len(xs)
+    dw = (2.0 / n) * sum((predict(x, w, b) - y) * x for x, y in zip(xs, ys))
+    db = (2.0 / n) * sum((predict(x, w, b) - y) for x, y in zip(xs, ys))
+    return dw, db
+
+
+def step(xs, ys, w, b, lr):
+    """Ett gradient-descent-steg. Returner nye (w, b)."""
+    # === DIN OPPGAVE ===
+    # 1. Hent dw, db = gradients(xs, ys, w, b)
+    # 2. Returner (w - lr * dw, b - lr * db)
+    pass
+
+
+# Start fra dårlige verdier
+w0, b0 = 0.0, 0.0
+loss_før = mse(xs, ys, w0, b0)
+print(f"Før step: w={w0}, b={b0}, loss={loss_før:.4f}")
+
+res = step(xs, ys, w0, b0, lr=0.01)
+if res is None:
+    print("FEIL: step returnerte None")
+else:
+    w1, b1 = res
+    loss_etter = mse(xs, ys, w1, b1)
+    print(f"Etter 1 step (lr=0.01): w={w1:.4f}, b={b1:.4f}, loss={loss_etter:.4f}")
+
+    if loss_etter < loss_før:
+        print("OK   loss går NED etter ett gradient-descent-steg")
+    else:
+        print(f"FEIL: loss økte fra {loss_før} til {loss_etter}")
+
+    # Etter ett steg fra (0,0) i retning av sanne (2, -1) bør w være positiv (vi beveger oss mot 2)
+    if w1 > 0:
+        print("OK   w beveget seg i riktig retning (positiv)")
+    else:
+        print(f"FEIL: w={w1} (forventet > 0)")
+
+    # Ett mer steg — fortsatt nedgang
+    w2, b2 = step(xs, ys, w1, b1, lr=0.01)
+    loss2 = mse(xs, ys, w2, b2)
+    if loss2 < loss_etter:
+        print("OK   loss fortsetter å falle ved andre steg")
+    else:
+        print(f"FEIL: andre steg økte loss")
+`,
+      },
+      defaultFile: "linreg.py",
+      editable: ["linreg.py"],
+      run: { kind: "python-script", entry: "linreg.py" },
+      verifications: [
+        { label: "MSE faller etter ett gradient-descent-steg", check: { kind: "output-contains", needle: "OK   loss går NED etter ett gradient-descent-steg" } },
+        { label: "w beveger seg i riktig retning (mot positiv)", check: { kind: "output-contains", needle: "OK   w beveget seg i riktig retning" } },
+        { label: "MSE fortsetter å falle etter andre steg", check: { kind: "output-contains", needle: "OK   loss fortsetter å falle ved andre steg" } },
+      ],
+      hint:
+        "def step(xs, ys, w, b, lr):\n    dw, db = gradients(xs, ys, w, b)\n    return w - lr * dw, b - lr * db",
+    },
+
+    // ============ LEKSJON 4 ===========================================
+    {
+      id: "04-train",
+      title: "4. Trenings-loopen",
+      narrative:
+        "Ett steg er ikke nok. Vi gjentar mange ganger — det kalles å **trene** modellen. En **epoke** er én pass over hele datasettet. Etter nok epoker konvergerer `(w, b)` mot minimum.\n\nFor å forstå dynamikken lagrer vi `loss_history` — MSE etter hvert steg. Hvis alt går bra er denne strengt synkende (med batch gradient descent uten støy i selve gradient-beregningen, er det matematisk garantert at hvert steg reduserer tapet, så lenge `lr` ikke er for stor).\n\nI denne leksjonen plotter vi også loss-kurven som en grov ascii-graf: hvert tegn er én sample langs x-aksen, antall stjerner er proporsjonal med loss. Du skal se den falle bratt først, så flate ut når modellen nærmer seg minimum.\n\n**Din oppgave:** implementér `train(xs, ys, lr, epochs)`. Start fra `(w=0, b=0)`, gjør `epochs` gradient-steg, og returnér `(w, b, loss_history)`. `loss_history` skal inneholde MSE FØR hvert steg, pluss MSE etter siste steg — totalt `epochs + 1` elementer.",
+      files: {
+        "linreg.py": `xs = [0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0]
+ys = [-1.1057, 0.7905, 3.0906, 4.7435, 7.0215, 8.9194, 10.7348, 13.0045, 14.7225, 16.9602]
+SANN_W = 2.0
+SANN_B = -1.0
+
+
+def predict(x, w, b):
+    return w * x + b
+
+
+def mse(xs, ys, w, b):
+    n = len(xs)
+    return sum((predict(x, w, b) - y) ** 2 for x, y in zip(xs, ys)) / n
+
+
+def gradients(xs, ys, w, b):
+    n = len(xs)
+    dw = (2.0 / n) * sum((predict(x, w, b) - y) * x for x, y in zip(xs, ys))
+    db = (2.0 / n) * sum((predict(x, w, b) - y) for x, y in zip(xs, ys))
+    return dw, db
+
+
+def step(xs, ys, w, b, lr):
+    dw, db = gradients(xs, ys, w, b)
+    return w - lr * dw, b - lr * db
+
+
+def train(xs, ys, lr, epochs):
+    """Returner (w, b, loss_history). loss_history har epochs+1 entries."""
+    # === DIN OPPGAVE ===
+    # w, b = 0.0, 0.0
+    # loss_hist = []
+    # gjenta "epochs" ganger:
+    #     loss_hist.append( mse(xs, ys, w, b) )
+    #     w, b = step(xs, ys, w, b, lr)
+    # loss_hist.append( mse(xs, ys, w, b) )   # final
+    # return w, b, loss_hist
+    pass
+
+
+# Tren
+res = train(xs, ys, lr=0.01, epochs=500)
+if res is None:
+    print("FEIL: train returnerte None")
+else:
+    w, b, hist = res
+    print(f"Etter 500 epoker (lr=0.01): w={w:.4f}, b={b:.4f}")
+    print(f"Initial loss: {hist[0]:.4f}")
+    print(f"Final loss:   {hist[-1]:.6f}")
+    print(f"loss_history-lengde: {len(hist)}")
+
+    # ascii loss-kurve (12 samples evenly spaced)
+    print("\\nLoss-kurve (* = relativ størrelse):")
+    n = len(hist)
+    samples = [hist[int(i * (n - 1) / 11)] for i in range(12)]
+    max_loss = max(samples) if max(samples) > 0 else 1
+    for i, l in enumerate(samples):
+        bars = int(40 * l / max_loss)
+        print(f"  epoke {int(i * (n - 1) / 11):4d}: {'*' * bars}")
+
+    # Test 1: lengde stemmer
+    if len(hist) == 501:
+        print("OK   loss_history har 501 entries (500 epoker + final)")
+    else:
+        print(f"FEIL: lengde = {len(hist)}, forventet 501")
+
+    # Test 2: loss monotont (eller nesten — tillat 1% lokal stigning pga floats)
+    ups = sum(1 for i in range(len(hist) - 1) if hist[i + 1] > hist[i] + 1e-9)
+    if ups == 0:
+        print("OK   loss er strengt synkende gjennom hele treningen")
+    else:
+        print(f"FEIL: loss steg ved {ups} steg")
+
+    # Test 3: konvergens innen 5% av sanne (w, b)
+    err_w = abs(w - SANN_W) / abs(SANN_W)
+    err_b = abs(b - SANN_B) / abs(SANN_B)
+    if err_w < 0.05 and err_b < 0.05:
+        print(f"OK   konvergerte innen 5% (err_w={err_w*100:.2f}%, err_b={err_b*100:.2f}%)")
+    else:
+        print(f"FEIL: ikke konvergert (err_w={err_w*100:.2f}%, err_b={err_b*100:.2f}%)")
+
+    # Test 4: final loss < initial
+    if hist[-1] < hist[0]:
+        print("OK   final loss er mye mindre enn initial loss")
+    else:
+        print("FEIL: ingen forbedring")
+`,
+      },
+      defaultFile: "linreg.py",
+      editable: ["linreg.py"],
+      run: { kind: "python-script", entry: "linreg.py" },
+      verifications: [
+        { label: "loss_history har riktig lengde (epochs + 1)", check: { kind: "output-contains", needle: "OK   loss_history har 501 entries" } },
+        { label: "Loss er monotont synkende", check: { kind: "output-contains", needle: "OK   loss er strengt synkende" } },
+        { label: "Konvergerer innen 5% av sanne (w, b)", check: { kind: "output-contains", needle: "OK   konvergerte innen 5%" } },
+        { label: "Final loss << initial loss", check: { kind: "output-contains", needle: "OK   final loss er mye mindre enn initial" } },
+      ],
+      hint:
+        "def train(xs, ys, lr, epochs):\n    w, b = 0.0, 0.0\n    loss_hist = []\n    for _ in range(epochs):\n        loss_hist.append(mse(xs, ys, w, b))\n        w, b = step(xs, ys, w, b, lr)\n    loss_hist.append(mse(xs, ys, w, b))\n    return w, b, loss_hist",
+    },
+
+    // ============ LEKSJON 5 ===========================================
+    {
+      id: "05-lr-jakt",
+      title: "5. Læringsrate-jakt: når GD divergerer",
+      narrative:
+        "Læringsraten er den eneste hyperparameteren i vår algoritme — men også den farligste. Den styrer hvor stort skritt vi tar i hvert oppdaterings-steg.\n\n- **For liten** (`lr → 0`): konvergerer, men tregt. Du kan trenge millioner av epoker.\n- **Akkurat passe**: rask konvergens.\n- **For stor**: vi overshooter minimum. Hver iterasjon havner LENGER fra minimum. Loss eksploderer mot uendelig — modellen **divergerer**.\n\nDet er ingen formel som gir riktig `lr` for et nytt problem. Du må prøve. I praksis: start med 0.01, kjør 100 epoker, sjekk om loss faller. Hvis den eksploderer, halver. Hvis den faller treg-fjotsete, doble.\n\nDenne leksjonen kjører trenings-loopen med fem ulike `lr`-verdier og rapporterer final loss for hver. Du skal kunne se den **u-formede** ytelses-kurven: middels `lr` er best, ekstremene mislykkes.\n\nViktig fallgruve: for store `lr` kan tallene bli så store at Python kaster `OverflowError`. Vi håndterer det ved `try/except` og marker som DIVERGERT.\n\n**Din oppgave:** implementér `lr_jakt(xs, ys, lr_kandidater, epochs)` som returnerer en dict `{lr: final_loss_eller_None}`. Bruk `None` (i Python) for divergente kjøringer. Definert som: final loss > 10000, eller `math.inf`, eller `math.nan`, eller en `OverflowError`/`ValueError` fra Python.",
+      files: {
+        "linreg.py": `import math
+
+xs = [0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0]
+ys = [-1.1057, 0.7905, 3.0906, 4.7435, 7.0215, 8.9194, 10.7348, 13.0045, 14.7225, 16.9602]
+
+
+def predict(x, w, b):
+    return w * x + b
+
+
+def mse(xs, ys, w, b):
+    n = len(xs)
+    return sum((predict(x, w, b) - y) ** 2 for x, y in zip(xs, ys)) / n
+
+
+def gradients(xs, ys, w, b):
+    n = len(xs)
+    dw = (2.0 / n) * sum((predict(x, w, b) - y) * x for x, y in zip(xs, ys))
+    db = (2.0 / n) * sum((predict(x, w, b) - y) for x, y in zip(xs, ys))
+    return dw, db
+
+
+def step(xs, ys, w, b, lr):
+    dw, db = gradients(xs, ys, w, b)
+    return w - lr * dw, b - lr * db
+
+
+def train_safe(xs, ys, lr, epochs):
+    """Som train, men tåler overflow. Returner (w, b, final_loss eller None)."""
+    w, b = 0.0, 0.0
+    try:
+        for _ in range(epochs):
+            w, b = step(xs, ys, w, b, lr)
+            if not math.isfinite(w) or not math.isfinite(b):
+                return w, b, None
+        loss = mse(xs, ys, w, b)
+        if not math.isfinite(loss) or loss > 10000:
+            return w, b, None
+        return w, b, loss
+    except (OverflowError, ValueError):
+        return w, b, None
+
+
+def lr_jakt(xs, ys, lr_kandidater, epochs):
+    """Kjør train_safe for hver lr og returner dict {lr: final_loss eller None}."""
+    # === DIN OPPGAVE ===
+    # resultat = {}
+    # for lr in lr_kandidater:
+    #     _, _, final = train_safe(xs, ys, lr, epochs)
+    #     resultat[lr] = final
+    # return resultat
+    pass
+
+
+lr_kandidater = [0.0001, 0.01, 0.1, 1.0, 2.0]
+res = lr_jakt(xs, ys, lr_kandidater, epochs=200)
+
+if res is None:
+    print("FEIL: lr_jakt returnerte None")
+else:
+    print("Læringsrate-jakt (200 epoker):")
+    for lr in lr_kandidater:
+        v = res.get(lr)
+        if v is None:
+            print(f"  lr={lr:<8}: DIVERGERT")
+        else:
+            print(f"  lr={lr:<8}: final loss = {v:.6f}")
+
+    # Sjekker
+    # 1) lr=0.0001 skal være MYE høyere enn lr=0.01 (underkonvergent)
+    if res[0.0001] is not None and res[0.01] is not None and res[0.0001] > res[0.01]:
+        print("OK   for lav lr (0.0001) konvergerer tregere enn 0.01")
+    else:
+        print(f"FEIL: forventet 0.0001 > 0.01, fikk {res[0.0001]} vs {res[0.01]}")
+
+    # 2) lr=0.01 skal være rimelig liten (< 1.0)
+    if res[0.01] is not None and res[0.01] < 1.0:
+        print("OK   middels lr (0.01) gir liten final loss")
+    else:
+        print(f"FEIL: lr=0.01 ga {res[0.01]}, forventet < 1.0")
+
+    # 3) Minst én av de store lr-ene skal divergere
+    if res[1.0] is None or res[2.0] is None:
+        print("OK   minst én stor lr (1.0 eller 2.0) divergerer")
+    else:
+        print(f"FEIL: forventet at lr=1.0 eller 2.0 divergerte; fikk {res[1.0]}, {res[2.0]}")
+
+    # 4) lr=0.1 også divergerer på vårt datasett (xs går opp til 9)
+    if res[0.1] is None:
+        print("OK   lr=0.1 divergerer på dette datasettet")
+    else:
+        print(f"OBS  lr=0.1 ga {res[0.1]} (forventet divergens — tolereres)")
+`,
+      },
+      defaultFile: "linreg.py",
+      editable: ["linreg.py"],
+      run: { kind: "python-script", entry: "linreg.py" },
+      verifications: [
+        { label: "For lav lr (0.0001) konvergerer tregere enn 0.01", check: { kind: "output-contains", needle: "OK   for lav lr (0.0001) konvergerer tregere enn 0.01" } },
+        { label: "Middels lr (0.01) gir liten final loss", check: { kind: "output-contains", needle: "OK   middels lr (0.01) gir liten final loss" } },
+        { label: "Stor lr divergerer (eksploderer)", check: { kind: "output-contains", needle: "OK   minst én stor lr" } },
+      ],
+      hint:
+        "def lr_jakt(xs, ys, lr_kandidater, epochs):\n    resultat = {}\n    for lr in lr_kandidater:\n        _, _, final = train_safe(xs, ys, lr, epochs)\n        resultat[lr] = final\n    return resultat",
+    },
+
+    // ============ LEKSJON 6 ===========================================
+    {
+      id: "06-mini-batch",
+      title: "6. Mini-batch gradient descent",
+      narrative:
+        "Hittil har vi brukt **batch gradient descent**: hvert oppdaterings-steg ser på ALLE datapunktene og regner gjennomsnittsgradienten. Det er nøyaktig, men dyrt: med 1 million eksempler venter du på 1 million summer per steg.\n\n**Mini-batch SGD** (Stochastic Gradient Descent) tar i stedet et lite tilfeldig utvalg `K` punkter per steg. Gradienten blir et bråkete estimat, men:\n\n- HVERT steg er K/n ganger billigere.\n- Bråket fungerer som regularisering — gjør det vanskeligere å sette seg fast i flate plataer.\n- I praksis konvergerer SGD til samme `(w, b)` som batch GD, bare med en mer rufsete loss-kurve.\n\nVi bruker `random.Random(seed)` (egen instans, ikke globale `random`) så testen er reproduserbar.\n\n**Det viktige observasjons-punktet:** loss er IKKE lenger strengt synkende. Hvert mini-batch ser litt forskjellig data, så enkelte steg kan tilfeldigvis øke loss. Men trenden er fortsatt nedover.\n\n**Din oppgave:** implementér `train_mini_batch(xs, ys, lr, epochs, batch_size, seed=42)`. Hvert steg: trekk `batch_size` indekser uten erstatning med `rng.sample(range(n), batch_size)`, regn gradient på dette delsettet, oppdater `(w, b)`. Returner `(w, b, loss_history)` der loss_history fortsatt måles på HELE datasettet (så vi kan sammenligne).",
+      files: {
+        "linreg.py": `import random
+
+xs = [0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0]
+ys = [-1.1057, 0.7905, 3.0906, 4.7435, 7.0215, 8.9194, 10.7348, 13.0045, 14.7225, 16.9602]
+SANN_W = 2.0
+SANN_B = -1.0
+
+
+def predict(x, w, b):
+    return w * x + b
+
+
+def mse(xs, ys, w, b):
+    n = len(xs)
+    return sum((predict(x, w, b) - y) ** 2 for x, y in zip(xs, ys)) / n
+
+
+def gradients_subset(xs, ys, idxs, w, b):
+    """Som gradients, men kun over indekser i idxs."""
+    k = len(idxs)
+    dw = (2.0 / k) * sum((predict(xs[i], w, b) - ys[i]) * xs[i] for i in idxs)
+    db = (2.0 / k) * sum((predict(xs[i], w, b) - ys[i]) for i in idxs)
+    return dw, db
+
+
+def train_mini_batch(xs, ys, lr, epochs, batch_size, seed=42):
+    """Returner (w, b, loss_history). loss_history måles på hele datasettet."""
+    # === DIN OPPGAVE ===
+    # rng = random.Random(seed)
+    # w, b = 0.0, 0.0
+    # n = len(xs)
+    # loss_hist = [ mse(xs, ys, w, b) ]
+    # gjenta "epochs" ganger:
+    #     idxs = rng.sample(range(n), batch_size)
+    #     dw, db = gradients_subset(xs, ys, idxs, w, b)
+    #     w -= lr * dw
+    #     b -= lr * db
+    #     loss_hist.append( mse(xs, ys, w, b) )
+    # return w, b, loss_hist
+    pass
+
+
+res = train_mini_batch(xs, ys, lr=0.01, epochs=500, batch_size=4)
+if res is None:
+    print("FEIL: train_mini_batch returnerte None")
+else:
+    w, b, hist = res
+    print(f"Mini-batch (K=4, lr=0.01, 500 epoker): w={w:.4f}, b={b:.4f}")
+    print(f"Initial loss: {hist[0]:.4f}, final loss: {hist[-1]:.6f}")
+
+    # Tell antall steg der loss økte (vi forventer noen — det er hele poenget)
+    ups = sum(1 for i in range(len(hist) - 1) if hist[i + 1] > hist[i])
+    downs = sum(1 for i in range(len(hist) - 1) if hist[i + 1] < hist[i])
+    print(f"Steg der loss økte: {ups}, steg der loss sank: {downs}")
+
+    # Test 1: konvergerer fortsatt nær sanne verdier (lempelig: 10% slack)
+    err_w = abs(w - SANN_W) / abs(SANN_W)
+    err_b = abs(b - SANN_B) / abs(SANN_B)
+    if err_w < 0.1 and err_b < 0.1:
+        print(f"OK   konvergerer til riktig (w, b) innen 10% (err_w={err_w*100:.2f}%)")
+    else:
+        print(f"FEIL: ikke konvergert (err_w={err_w*100:.2f}%, err_b={err_b*100:.2f}%)")
+
+    # Test 2: kurven SKAL være bråkete — minst 50 ups blant 500 steg
+    if ups >= 50:
+        print(f"OK   loss-kurven er noisy ({ups} stigninger blant 500 steg)")
+    else:
+        print(f"FEIL: forventet >=50 stigninger, fikk {ups}")
+
+    # Test 3: trenden er likevel nedover (final << initial)
+    if hist[-1] < hist[0] / 10:
+        print("OK   trenden er klart nedover tross støy")
+    else:
+        print(f"FEIL: forventet final < initial/10")
+
+    # Reproduserbarhet: samme seed skal gi samme resultat
+    res2 = train_mini_batch(xs, ys, lr=0.01, epochs=500, batch_size=4, seed=42)
+    if res2 is not None:
+        w2, b2, _ = res2
+        if abs(w2 - w) < 1e-9 and abs(b2 - b) < 1e-9:
+            print("OK   reproduserbar med samme seed")
+        else:
+            print(f"FEIL: seed=42 ga forskjellige resultater")
+`,
+      },
+      defaultFile: "linreg.py",
+      editable: ["linreg.py"],
+      run: { kind: "python-script", entry: "linreg.py" },
+      verifications: [
+        { label: "Mini-batch konvergerer nær sanne (w, b)", check: { kind: "output-contains", needle: "OK   konvergerer til riktig (w, b) innen 10%" } },
+        { label: "Loss-kurven er noisy (mange lokale stigninger)", check: { kind: "output-contains", needle: "OK   loss-kurven er noisy" } },
+        { label: "Trenden er klart nedover tross støy", check: { kind: "output-contains", needle: "OK   trenden er klart nedover" } },
+        { label: "Reproduserbar med samme seed", check: { kind: "output-contains", needle: "OK   reproduserbar med samme seed" } },
+      ],
+      hint:
+        "def train_mini_batch(xs, ys, lr, epochs, batch_size, seed=42):\n    rng = random.Random(seed)\n    w, b = 0.0, 0.0\n    n = len(xs)\n    loss_hist = [mse(xs, ys, w, b)]\n    for _ in range(epochs):\n        idxs = rng.sample(range(n), batch_size)\n        dw, db = gradients_subset(xs, ys, idxs, w, b)\n        w -= lr * dw\n        b -= lr * db\n        loss_hist.append(mse(xs, ys, w, b))\n    return w, b, loss_hist",
+    },
+  ],
+};
+
+
+const DECISION_TREE: MiniCourse = {
+  id: "decision-tree",
+  slug: "decision-tree",
+  title: "Decision tree fra null",
+  blurb:
+    "Bygg en klassifikasjons-tre-modell trinn for trinn — fra Gini-impurity og vektet split, via finn-beste-split, til rekursiv tre-bygging og ASCII-visualisering. Ingen sklearn; alt er ren Python du selv skriver. Datasett: enkel toy-kundebase (alder, inntekt → kjøper/ikke).",
+  estimertTid: "60–75 min",
+  fag: ["DTE-2602", "Maskinlæring", "Klassifisering"],
+  color: "purple",
+  rekkefolge: 20,
+  lessons: [
+    // ============ LEKSJON 1 ===========================================
+    {
+      id: "01-gini",
+      title: "1. Gini-impurity for en gruppe",
+      narrative:
+        "Et **decision tree** klassifiserer ved å splitte data i renere og renere grupper. \"Renhet\" måles med **Gini-impurity**:\n\n```\ngini(gruppe) = 1 - sum(p_i^2)\n```\n\nder `p_i` er andelen av klasse `i` i gruppen.\n\n**Intuisjon:**\n- Gruppe der alle har samme klasse → `gini = 0` (perfekt ren).\n- 50/50 binær fordeling → `gini = 0.5` (maks rotete).\n- 75/25 → `gini = 0.375` (mer ensartet enn 50/50).\n\nVi vil senere velge splits som gjør gini i barne-gruppene så lav som mulig. Først må vi kunne måle gini for én gruppe.\n\n**Din oppgave:** implementér `gini(labels)`. `labels` er en liste med klasse-tall (f.eks. `[0, 1, 1, 0, 1]`). Returnér gini som flyttall.\n\n**Tips:** `from collections import Counter` gir deg `Counter(labels).values()` → antall per klasse. Andelen er `antall / n`.",
+      files: {
+        "tree.py": `from collections import Counter
+
+
+def gini(labels):
+    """1 - sum(p_i^2) der p_i er andelen av klasse i."""
+    n = len(labels)
+    if n == 0:
+        return 0.0
+    # === DIN OPPGAVE ===
+    # Tell antall per klasse med Counter(labels).
+    # For hver klasse: regn andel = antall / n, og legg andel**2 til en sum.
+    # Returnér 1 - summen.
+    return 0.0
+
+
+def sjekk_naer(faktisk, forventet, navn, eps=1e-9):
+    if abs(faktisk - forventet) < eps:
+        print(f"OK   {navn}")
+    else:
+        print(f"FEIL {navn}: fikk {faktisk!r}, forventet {forventet!r}")
+
+
+# Rent: alle har samme klasse
+sjekk_naer(gini([1, 1, 1, 1]), 0.0, "ren gruppe gir 0")
+
+# 50/50: maks rotete
+sjekk_naer(gini([1, 0, 1, 0]), 0.5, "50/50 gir 0.5")
+
+# 75/25 (= 3 av en, 1 av en annen): 1 - (0.75^2 + 0.25^2) = 0.375
+sjekk_naer(gini([0, 0, 0, 1]), 0.375, "75/25 gir 0.375")
+
+# Tre klasser, ulik fordeling: [0,0,1,1,2] -> andeler 2/5, 2/5, 1/5
+# 1 - (4/25 + 4/25 + 1/25) = 1 - 9/25 = 16/25 = 0.64
+sjekk_naer(gini([0, 0, 1, 1, 2]), 0.64, "tre klasser, 2/2/1")
+
+# Tom gruppe -> 0 (allerede håndtert i stuben)
+sjekk_naer(gini([]), 0.0, "tom gruppe gir 0")
+`,
+      },
+      defaultFile: "tree.py",
+      editable: ["tree.py"],
+      run: { kind: "python-script", entry: "tree.py" },
+      verifications: [
+        {
+          label: "Ren gruppe gir gini = 0",
+          check: { kind: "output-contains", needle: "OK   ren gruppe gir 0" },
+        },
+        {
+          label: "50/50-split gir gini = 0.5",
+          check: { kind: "output-contains", needle: "OK   50/50 gir 0.5" },
+        },
+        {
+          label: "75/25-split gir gini = 0.375",
+          check: { kind: "output-contains", needle: "OK   75/25 gir 0.375" },
+        },
+        {
+          label: "Tre klasser regnes riktig",
+          check: { kind: "output-contains", needle: "OK   tre klasser, 2/2/1" },
+        },
+      ],
+      hint:
+        "n = len(labels)\nif n == 0:\n    return 0.0\nteller = Counter(labels)\nreturn 1.0 - sum((antall / n) ** 2 for antall in teller.values())",
+    },
+
+    // ============ LEKSJON 2 ===========================================
+    {
+      id: "02-weighted-gini",
+      title: "2. Vektet gini etter et split",
+      narrative:
+        "Et **split** deler datasettet i to: en venstre-gruppe `L` og en høyre-gruppe `R`. Vi vil velge splits som gir lav samlet gini — men en stor gruppe teller mer enn en liten. Derfor bruker vi **vektet gini**:\n\n```\nweighted_gini(L, R) = |L|/n * gini(L) + |R|/n * gini(R)\n```\n\nder `n = |L| + |R|`.\n\n**Hvorfor?** Tenk: hvis splittet gir L=99 rotete elementer og R=1 rent element, er det knapt et fremskritt — den vektede gini-en speiler det. En split som gir to like store, rene grupper er ideelt og gir vektet gini = 0.\n\n**Din oppgave:** implementér `weighted_gini(left_labels, right_labels)`. Gjenbruk `gini` fra forrige leksjon — den er allerede definert øverst.",
+      files: {
+        "tree.py": `from collections import Counter
+
+
+def gini(labels):
+    n = len(labels)
+    if n == 0:
+        return 0.0
+    teller = Counter(labels)
+    return 1.0 - sum((antall / n) ** 2 for antall in teller.values())
+
+
+def weighted_gini(left_labels, right_labels):
+    """|L|/n * gini(L) + |R|/n * gini(R)."""
+    # === DIN OPPGAVE ===
+    # n = len(left) + len(right)
+    # Hvis n == 0: returnér 0.0
+    # Ellers: regn vektet sum og returnér.
+    return 0.0
+
+
+def sjekk_naer(faktisk, forventet, navn, eps=1e-9):
+    if abs(faktisk - forventet) < eps:
+        print(f"OK   {navn}")
+    else:
+        print(f"FEIL {navn}: fikk {faktisk!r}, forventet {forventet!r}")
+
+
+# Perfekt split: begge gruppene helt rene
+sjekk_naer(weighted_gini([1, 1, 1], [0, 0, 0]), 0.0, "perfekt split gir 0")
+
+# Begge gruppene like rotete som før split (ingen vinning)
+# L=[1,0], R=[1,0]: gini=0.5 begge, vektet = 0.5
+sjekk_naer(weighted_gini([1, 0], [1, 0]), 0.5, "ingen vinning gir 0.5")
+
+# Ubalansert: L=[1,1,1] (gini=0), R=[0,1] (gini=0.5).
+# Vektet = 3/5 * 0 + 2/5 * 0.5 = 0.2
+sjekk_naer(weighted_gini([1, 1, 1], [0, 1]), 0.2, "ubalansert ren + rotete")
+
+# Tom høyre-gruppe: alt på venstre. Vektet = 1 * gini(L).
+# L=[1,0,1,0] -> gini=0.5, vektet=0.5
+sjekk_naer(weighted_gini([1, 0, 1, 0], []), 0.5, "tom høyregruppe")
+`,
+      },
+      defaultFile: "tree.py",
+      editable: ["tree.py"],
+      run: { kind: "python-script", entry: "tree.py" },
+      verifications: [
+        {
+          label: "Perfekt split (begge rene) gir 0",
+          check: { kind: "output-contains", needle: "OK   perfekt split gir 0" },
+        },
+        {
+          label: "Split uten vinning gir samme gini som før (0.5)",
+          check: { kind: "output-contains", needle: "OK   ingen vinning gir 0.5" },
+        },
+        {
+          label: "Ubalansert split vektes riktig",
+          check: { kind: "output-contains", needle: "OK   ubalansert ren + rotete" },
+        },
+        {
+          label: "Tom høyre-gruppe håndteres",
+          check: { kind: "output-contains", needle: "OK   tom høyregruppe" },
+        },
+      ],
+      hint:
+        "n = len(left_labels) + len(right_labels)\nif n == 0:\n    return 0.0\nreturn (len(left_labels) / n) * gini(left_labels) + (len(right_labels) / n) * gini(right_labels)",
+    },
+
+    // ============ LEKSJON 3 ===========================================
+    {
+      id: "03-best-split-feature",
+      title: "3. Beste split for én feature",
+      narrative:
+        "Nå skal vi prøve alle mulige terskler for én enkelt feature og finne den som gir lavest vektet gini.\n\n**Algoritmen:**\n1. Hent alle unike verdier av feature-en i datasettet, sortert.\n2. For hvert nabopar `(v_i, v_{i+1})`: prøv tersklen `t = (v_i + v_{i+1}) / 2`.\n3. Splitt: venstre = `x[f] < t`, høyre = `x[f] >= t`.\n4. Regn vektet gini. Hold på den tersklen med lavest verdi.\n\n**Hvorfor midt mellom?** Tersklen ligger der ingen punkter er — det gjør prediksjonen entydig for alle treningspunkter. Sklearn gjør det samme.\n\n**Toy-datasett:** `X` er en liste av `[alder, inntekt]`-par. `y` er klasse (1 = kjøper, 0 = ikke). Vi kjøpte når både alder >= 35 OG inntekt >= 500000.\n\n**Din oppgave:** implementér `best_split_for_feature(xs, ys, feature_idx)`. Returnér `(terskel, vektet_gini, andel_til_venstre)` for tersklen som minimerer vektet gini. Returnér `None` hvis ingen split er mulig (alle verdier like).",
+      files: {
+        "tree.py": `from collections import Counter
+
+
+def gini(labels):
+    n = len(labels)
+    if n == 0:
+        return 0.0
+    teller = Counter(labels)
+    return 1.0 - sum((antall / n) ** 2 for antall in teller.values())
+
+
+def weighted_gini(left_labels, right_labels):
+    n = len(left_labels) + len(right_labels)
+    if n == 0:
+        return 0.0
+    return (len(left_labels) / n) * gini(left_labels) + (len(right_labels) / n) * gini(right_labels)
+
+
+def best_split_for_feature(xs, ys, feature_idx):
+    """Returnér (terskel, vektet_gini, andel_venstre) eller None."""
+    # === DIN OPPGAVE ===
+    # 1. verdier = sortert liste av unike x[feature_idx]
+    # 2. Hvis len(verdier) < 2: returnér None
+    # 3. For hver i fra 0 til len(verdier)-2:
+    #       t = (verdier[i] + verdier[i+1]) / 2
+    #       venstre_y = ys hvor xs[j][feature_idx] < t
+    #       høyre_y   = ys hvor xs[j][feature_idx] >= t
+    #       wg = weighted_gini(venstre_y, høyre_y)
+    #       Hold på (t, wg, andel_venstre) hvis wg er lavest så langt.
+    # 4. Returnér beste.
+    return None
+
+
+def sjekk(faktisk, forventet, navn):
+    if faktisk == forventet:
+        print(f"OK   {navn}")
+    else:
+        print(f"FEIL {navn}: fikk {faktisk!r}, forventet {forventet!r}")
+
+
+def sjekk_naer(faktisk, forventet, navn, eps=1e-6):
+    if abs(faktisk - forventet) < eps:
+        print(f"OK   {navn}")
+    else:
+        print(f"FEIL {navn}: fikk {faktisk!r}, forventet {forventet!r}")
+
+
+# Toy: [alder, inntekt] -> kjoper
+X = [
+    [25, 300000],
+    [28, 350000],
+    [30, 600000],
+    [32, 700000],
+    [40, 520000],
+    [45, 600000],
+    [50, 700000],
+    [55, 800000],
+    [38, 350000],
+    [42, 400000],
+]
+y = [0, 0, 0, 0, 1, 1, 1, 1, 0, 0]
+
+# Feature 0 = alder. Beste split bør være rundt 39 (mellom 38 og 40).
+resultat_alder = best_split_for_feature(X, y, 0)
+sjekk(resultat_alder is not None, True, "alder gir en split")
+if resultat_alder is not None:
+    t, wg, frac = resultat_alder
+    sjekk_naer(t, 39.0, "alder-terskel er 39.0")
+    # Med t=39.0: venstre=[25,28,30,32,38] (alle y=0), høyre=[40,45,50,55,42] (4×1, 1×0).
+    # gini(venstre)=0, gini(høyre) = 1 - (0.8^2 + 0.2^2) = 0.32, vektet = 0.5*0 + 0.5*0.32 = 0.16
+    sjekk_naer(wg, 0.16, "alder-split gir 0.16")
+
+# Feature 1 = inntekt. Beste terskel mellom 400000 og 520000.
+# Unike sortert: [300000, 350000, 400000, 520000, 600000, 700000, 800000]
+# Beste terskel her er 460000.
+resultat_inntekt = best_split_for_feature(X, y, 1)
+sjekk(resultat_inntekt is not None, True, "inntekt gir en split")
+if resultat_inntekt is not None:
+    t, wg, frac = resultat_inntekt
+    sjekk_naer(t, 460000.0, "inntekt-terskel er 460000")
+`,
+      },
+      defaultFile: "tree.py",
+      editable: ["tree.py"],
+      run: { kind: "python-script", entry: "tree.py" },
+      verifications: [
+        {
+          label: "Beste alders-terskel funnet (39.0)",
+          check: { kind: "output-contains", needle: "OK   alder-terskel er 39.0" },
+        },
+        {
+          label: "Alder-split har vektet gini 0.16",
+          check: { kind: "output-contains", needle: "OK   alder-split gir 0.16" },
+        },
+        {
+          label: "Beste inntekts-terskel funnet (460000)",
+          check: { kind: "output-contains", needle: "OK   inntekt-terskel er 460000" },
+        },
+      ],
+      hint:
+        "verdier = sorted({x[feature_idx] for x in xs})\nif len(verdier) < 2:\n    return None\nbest = None\nfor i in range(len(verdier) - 1):\n    t = (verdier[i] + verdier[i + 1]) / 2\n    venstre_y = [ys[j] for j, x in enumerate(xs) if x[feature_idx] < t]\n    hoyre_y = [ys[j] for j, x in enumerate(xs) if x[feature_idx] >= t]\n    if not venstre_y or not hoyre_y:\n        continue\n    wg = weighted_gini(venstre_y, hoyre_y)\n    if best is None or wg < best[1]:\n        best = (t, wg, len(venstre_y) / len(xs))\nreturn best",
+    },
+
+    // ============ LEKSJON 4 ===========================================
+    {
+      id: "04-best-split-all",
+      title: "4. Beste split over alle features",
+      narrative:
+        "Nå velger vi den FEATUREN som gir best split — ikke bare den beste tersklen innen én feature.\n\n**Algoritmen:**\n1. For hver feature: kall `best_split_for_feature`.\n2. Sammenlign vektede gini-verdier. Velg den minste.\n3. Returnér `(feature_idx, terskel, vektet_gini)`.\n\nDette er beslutningen treet tar ved hver intern node: \"hvilket spørsmål skal jeg stille for å splitte dataene mest mulig rent?\"\n\nPå toy-datasettet bør alder vinne (vektet gini 0.16) over inntekt (vektet gini høyere).\n\n**Din oppgave:** implementér `best_split(X, ys)`. Returnér `(feature_idx, terskel, gini)`. Returnér `None` hvis ingen feature gir et lovlig split (kan skje hvis alle rader er identiske).",
+      files: {
+        "tree.py": `from collections import Counter
+
+
+def gini(labels):
+    n = len(labels)
+    if n == 0:
+        return 0.0
+    teller = Counter(labels)
+    return 1.0 - sum((antall / n) ** 2 for antall in teller.values())
+
+
+def weighted_gini(left_labels, right_labels):
+    n = len(left_labels) + len(right_labels)
+    if n == 0:
+        return 0.0
+    return (len(left_labels) / n) * gini(left_labels) + (len(right_labels) / n) * gini(right_labels)
+
+
+def best_split_for_feature(xs, ys, feature_idx):
+    verdier = sorted({x[feature_idx] for x in xs})
+    if len(verdier) < 2:
+        return None
+    best = None
+    for i in range(len(verdier) - 1):
+        t = (verdier[i] + verdier[i + 1]) / 2
+        venstre_y = [ys[j] for j, x in enumerate(xs) if x[feature_idx] < t]
+        hoyre_y = [ys[j] for j, x in enumerate(xs) if x[feature_idx] >= t]
+        if not venstre_y or not hoyre_y:
+            continue
+        wg = weighted_gini(venstre_y, hoyre_y)
+        if best is None or wg < best[1]:
+            best = (t, wg, len(venstre_y) / len(xs))
+    return best
+
+
+def best_split(X, ys):
+    """Returnér (feature_idx, terskel, vektet_gini) eller None."""
+    # === DIN OPPGAVE ===
+    # For hver feature_idx i range(len(X[0])):
+    #   resultat = best_split_for_feature(X, ys, feature_idx)
+    #   hvis None: skip.
+    #   Sammenlign resultat[1] (vektet gini). Hold på det laveste.
+    # Returnér (feature_idx, terskel, gini) eller None.
+    return None
+
+
+def sjekk(faktisk, forventet, navn):
+    if faktisk == forventet:
+        print(f"OK   {navn}")
+    else:
+        print(f"FEIL {navn}: fikk {faktisk!r}, forventet {forventet!r}")
+
+
+def sjekk_naer(faktisk, forventet, navn, eps=1e-6):
+    if abs(faktisk - forventet) < eps:
+        print(f"OK   {navn}")
+    else:
+        print(f"FEIL {navn}: fikk {faktisk!r}, forventet {forventet!r}")
+
+
+# Samme toy-datasett som forrige leksjon
+X = [
+    [25, 300000],
+    [28, 350000],
+    [30, 600000],
+    [32, 700000],
+    [40, 520000],
+    [45, 600000],
+    [50, 700000],
+    [55, 800000],
+    [38, 350000],
+    [42, 400000],
+]
+y = [0, 0, 0, 0, 1, 1, 1, 1, 0, 0]
+
+resultat = best_split(X, y)
+sjekk(resultat is not None, True, "fant beste split")
+if resultat is not None:
+    f, t, wg = resultat
+    sjekk(f, 0, "alder vinner over inntekt")
+    sjekk_naer(t, 39.0, "valgt terskel er 39.0")
+    sjekk_naer(wg, 0.16, "valgt vektet gini er 0.16")
+
+# Et opplagt tilfelle: feature 1 har et perfekt split, feature 0 har ingen vinning.
+X2 = [[1, 10], [1, 20], [1, 30], [1, 40]]
+y2 = [0, 0, 1, 1]
+res2 = best_split(X2, y2)
+sjekk(res2 is not None, True, "opplagt tilfelle har split")
+if res2 is not None:
+    f2, t2, wg2 = res2
+    sjekk(f2, 1, "feature 1 velges (alder er konstant)")
+    sjekk_naer(wg2, 0.0, "perfekt rent split")
+`,
+      },
+      defaultFile: "tree.py",
+      editable: ["tree.py"],
+      run: { kind: "python-script", entry: "tree.py" },
+      verifications: [
+        {
+          label: "Alder velges som beste feature (vinner over inntekt)",
+          check: { kind: "output-contains", needle: "OK   alder vinner over inntekt" },
+        },
+        {
+          label: "Beste terskel er 39.0",
+          check: { kind: "output-contains", needle: "OK   valgt terskel er 39.0" },
+        },
+        {
+          label: "Vektet gini for beste split er 0.16",
+          check: { kind: "output-contains", needle: "OK   valgt vektet gini er 0.16" },
+        },
+        {
+          label: "Konstant feature ignoreres riktig",
+          check: { kind: "output-contains", needle: "OK   feature 1 velges (alder er konstant)" },
+        },
+        {
+          label: "Perfekt rent split får gini 0",
+          check: { kind: "output-contains", needle: "OK   perfekt rent split" },
+        },
+      ],
+      hint:
+        "best = None\nfor f in range(len(X[0])):\n    r = best_split_for_feature(X, ys, f)\n    if r is None:\n        continue\n    t, wg, _ = r\n    if best is None or wg < best[2]:\n        best = (f, t, wg)\nreturn best",
+    },
+
+    // ============ LEKSJON 5 ===========================================
+    {
+      id: "05-build-tree",
+      title: "5. Bygg treet rekursivt",
+      narrative:
+        "Et **decision tree** er en rekursiv struktur. Hver node er enten:\n- En **leaf** med en prediksjon (`{\"leaf\": True, \"label\": ...}`)\n- En **intern node** med en split: feature + terskel + venstre- og høyre-undertre.\n\nRekursjonen er nesten ord for ord lik backtracking, bare uten backtrack:\n\n```\nbuild_tree(X, ys, depth):\n  hvis ren ELLER for dyp ELLER for liten:\n      returnér leaf med majoritets-label\n  ellers:\n      f, t, _ = best_split(X, ys)\n      del data etter t\n      returnér intern node med build_tree(venstre) og build_tree(høyre)\n```\n\n**Stopp-kriterier (\"stopping rules\"):**\n- Alle labels er like → leaf (kan ikke bli renere).\n- `depth >= max_depth` → leaf (vi nådde maks-dybden).\n- `len(X) < min_split` → leaf (for lite data å splitte trygt).\n\n**Prediksjon:** traverser ned. Hvis `x[feature] < threshold`, gå venstre; ellers høyre. Stopp ved leaf og returnér `label`.\n\n**Din oppgave:** implementér `build_tree(X, ys, depth, max_depth, min_split)` og `predict(tree, x)`.",
+      files: {
+        "tree.py": `from collections import Counter
+
+
+def gini(labels):
+    n = len(labels)
+    if n == 0:
+        return 0.0
+    teller = Counter(labels)
+    return 1.0 - sum((antall / n) ** 2 for antall in teller.values())
+
+
+def weighted_gini(left_labels, right_labels):
+    n = len(left_labels) + len(right_labels)
+    if n == 0:
+        return 0.0
+    return (len(left_labels) / n) * gini(left_labels) + (len(right_labels) / n) * gini(right_labels)
+
+
+def best_split_for_feature(xs, ys, feature_idx):
+    verdier = sorted({x[feature_idx] for x in xs})
+    if len(verdier) < 2:
+        return None
+    best = None
+    for i in range(len(verdier) - 1):
+        t = (verdier[i] + verdier[i + 1]) / 2
+        venstre_y = [ys[j] for j, x in enumerate(xs) if x[feature_idx] < t]
+        hoyre_y = [ys[j] for j, x in enumerate(xs) if x[feature_idx] >= t]
+        if not venstre_y or not hoyre_y:
+            continue
+        wg = weighted_gini(venstre_y, hoyre_y)
+        if best is None or wg < best[1]:
+            best = (t, wg, len(venstre_y) / len(xs))
+    return best
+
+
+def best_split(X, ys):
+    best = None
+    for f in range(len(X[0])):
+        r = best_split_for_feature(X, ys, f)
+        if r is None:
+            continue
+        t, wg, _ = r
+        if best is None or wg < best[2]:
+            best = (f, t, wg)
+    return best
+
+
+def majoritet(labels):
+    return Counter(labels).most_common(1)[0][0]
+
+
+def build_tree(X, ys, depth=0, max_depth=3, min_split=2):
+    """Bygg et tre rekursivt. Returnér en dict-node."""
+    # === DIN OPPGAVE ===
+    # 1. Stopp-kriterier: hvis len(set(ys)) == 1 OR depth >= max_depth OR len(X) < min_split:
+    #       returnér {"leaf": True, "label": majoritet(ys)}
+    # 2. Ellers: split = best_split(X, ys)
+    #       hvis split is None: returnér leaf med majoritets-label
+    #       ellers: del X og ys i venstre/høyre etter (f, t)
+    #       returnér {"leaf": False, "feature": f, "threshold": t,
+    #                 "left": build_tree(...), "right": build_tree(...)}
+    return {"leaf": True, "label": 0}
+
+
+def predict(tree, x):
+    """Traverser treet. Returnér label."""
+    # === DIN OPPGAVE ===
+    # Hvis tree["leaf"]: returnér tree["label"]
+    # Ellers: hvis x[tree["feature"]] < tree["threshold"]: gå venstre, ellers høyre.
+    return 0
+
+
+def sjekk(faktisk, forventet, navn):
+    if faktisk == forventet:
+        print(f"OK   {navn}")
+    else:
+        print(f"FEIL {navn}: fikk {faktisk!r}, forventet {forventet!r}")
+
+
+# Toy datasett: kjoper = (alder >= 35 AND inntekt >= 500000)
+X = [
+    [25, 300000],
+    [28, 350000],
+    [30, 600000],
+    [32, 700000],
+    [40, 520000],
+    [45, 600000],
+    [50, 700000],
+    [55, 800000],
+    [38, 350000],
+    [42, 400000],
+]
+y = [0, 0, 0, 0, 1, 1, 1, 1, 0, 0]
+
+tre = build_tree(X, y, max_depth=3)
+
+# Treet skal være en intern node (ikke leaf)
+sjekk(tre["leaf"], False, "rota er intern node")
+
+# Sjekk at predict klassifiserer alle treningspunkter riktig
+treff = sum(1 for xi, yi in zip(X, y) if predict(tre, xi) == yi)
+sjekk(treff, 10, "alle 10 treningspunkter klassifiseres riktig")
+
+# Sjekk noen kjente prediksjoner
+sjekk(predict(tre, [25, 300000]), 0, "ung+lav -> ikke kjoper")
+sjekk(predict(tre, [50, 700000]), 1, "eldre+hoy -> kjoper")
+sjekk(predict(tre, [42, 400000]), 0, "eldre+lav -> ikke kjoper")
+sjekk(predict(tre, [30, 700000]), 0, "ung+hoy -> ikke kjoper")
+`,
+      },
+      defaultFile: "tree.py",
+      editable: ["tree.py"],
+      run: { kind: "python-script", entry: "tree.py" },
+      verifications: [
+        {
+          label: "Rota er en intern node (ikke leaf)",
+          check: { kind: "output-contains", needle: "OK   rota er intern node" },
+        },
+        {
+          label: "Alle 10 treningspunkter klassifiseres riktig",
+          check: { kind: "output-contains", needle: "OK   alle 10 treningspunkter klassifiseres riktig" },
+        },
+        {
+          label: "Ung + lav inntekt klassifiseres som ikke-kjøper",
+          check: { kind: "output-contains", needle: "OK   ung+lav -> ikke kjoper" },
+        },
+        {
+          label: "Eldre + høy inntekt klassifiseres som kjøper",
+          check: { kind: "output-contains", needle: "OK   eldre+hoy -> kjoper" },
+        },
+        {
+          label: "Eldre + lav inntekt klassifiseres som ikke-kjøper",
+          check: { kind: "output-contains", needle: "OK   eldre+lav -> ikke kjoper" },
+        },
+        {
+          label: "Ung + høy inntekt klassifiseres som ikke-kjøper",
+          check: { kind: "output-contains", needle: "OK   ung+hoy -> ikke kjoper" },
+        },
+      ],
+      hint:
+        "def build_tree(X, ys, depth=0, max_depth=3, min_split=2):\n    if len(set(ys)) == 1 or depth >= max_depth or len(X) < min_split:\n        return {\"leaf\": True, \"label\": majoritet(ys)}\n    split = best_split(X, ys)\n    if split is None:\n        return {\"leaf\": True, \"label\": majoritet(ys)}\n    f, t, _ = split\n    venstre_X = [x for x in X if x[f] < t]\n    venstre_y = [ys[i] for i, x in enumerate(X) if x[f] < t]\n    hoyre_X = [x for x in X if x[f] >= t]\n    hoyre_y = [ys[i] for i, x in enumerate(X) if x[f] >= t]\n    return {\n        \"leaf\": False,\n        \"feature\": f,\n        \"threshold\": t,\n        \"left\": build_tree(venstre_X, venstre_y, depth + 1, max_depth, min_split),\n        \"right\": build_tree(hoyre_X, hoyre_y, depth + 1, max_depth, min_split),\n    }\n\ndef predict(tree, x):\n    if tree[\"leaf\"]:\n        return tree[\"label\"]\n    if x[tree[\"feature\"]] < tree[\"threshold\"]:\n        return predict(tree[\"left\"], x)\n    return predict(tree[\"right\"], x)",
+    },
+
+    // ============ LEKSJON 6 ===========================================
+    {
+      id: "06-print-tree-depth",
+      title: "6. ASCII-visualisering + max_depth-effekt",
+      narrative:
+        "Et tre er bare en datastruktur, men det er enklere å forstå hva modellen \"tenker\" hvis vi kan **printe** det.\n\nVi vil ha et format som dette:\n\n```\nalder < 39.0?\n  JA:\n    -> klasse=0\n  NEI:\n    inntekt < 460000.0?\n      JA:\n        -> klasse=0\n      NEI:\n        -> klasse=1\n```\n\nDette gjør det også mulig å se **overfit**-faren. Et veldig dypt tre kan ha en leaf for hvert treningspunkt og dermed gi 0 treningsfeil — men da har det \"lært\" støy. Ved å variere `max_depth` kan vi se hvor mye av modellens treffsikkerhet som faktisk er meningsfull struktur.\n\nPå vårt toy-datasett:\n- `max_depth=1`: bare ett split (alder < 39) → noen feilklassifiseringer.\n- `max_depth=2`: alder først, deretter inntekt → 0 feil.\n- `max_depth=3`: like bra som depth=2 (treet stopper på rene noder uansett).\n\n**Din oppgave:** implementér `print_tree(tree, indent=0)` rekursivt. Bruk `FEATURE_NAMES` for å printe navn istedenfor index.",
+      files: {
+        "tree.py": `from collections import Counter
+
+
+def gini(labels):
+    n = len(labels)
+    if n == 0:
+        return 0.0
+    teller = Counter(labels)
+    return 1.0 - sum((antall / n) ** 2 for antall in teller.values())
+
+
+def weighted_gini(left_labels, right_labels):
+    n = len(left_labels) + len(right_labels)
+    if n == 0:
+        return 0.0
+    return (len(left_labels) / n) * gini(left_labels) + (len(right_labels) / n) * gini(right_labels)
+
+
+def best_split_for_feature(xs, ys, feature_idx):
+    verdier = sorted({x[feature_idx] for x in xs})
+    if len(verdier) < 2:
+        return None
+    best = None
+    for i in range(len(verdier) - 1):
+        t = (verdier[i] + verdier[i + 1]) / 2
+        venstre_y = [ys[j] for j, x in enumerate(xs) if x[feature_idx] < t]
+        hoyre_y = [ys[j] for j, x in enumerate(xs) if x[feature_idx] >= t]
+        if not venstre_y or not hoyre_y:
+            continue
+        wg = weighted_gini(venstre_y, hoyre_y)
+        if best is None or wg < best[1]:
+            best = (t, wg, len(venstre_y) / len(xs))
+    return best
+
+
+def best_split(X, ys):
+    best = None
+    for f in range(len(X[0])):
+        r = best_split_for_feature(X, ys, f)
+        if r is None:
+            continue
+        t, wg, _ = r
+        if best is None or wg < best[2]:
+            best = (f, t, wg)
+    return best
+
+
+def majoritet(labels):
+    return Counter(labels).most_common(1)[0][0]
+
+
+def build_tree(X, ys, depth=0, max_depth=3, min_split=2):
+    if len(set(ys)) == 1 or depth >= max_depth or len(X) < min_split:
+        return {"leaf": True, "label": majoritet(ys)}
+    split = best_split(X, ys)
+    if split is None:
+        return {"leaf": True, "label": majoritet(ys)}
+    f, t, _ = split
+    venstre_X = [x for x in X if x[f] < t]
+    venstre_y = [ys[i] for i, x in enumerate(X) if x[f] < t]
+    hoyre_X = [x for x in X if x[f] >= t]
+    hoyre_y = [ys[i] for i, x in enumerate(X) if x[f] >= t]
+    return {
+        "leaf": False, "feature": f, "threshold": t,
+        "left": build_tree(venstre_X, venstre_y, depth + 1, max_depth, min_split),
+        "right": build_tree(hoyre_X, hoyre_y, depth + 1, max_depth, min_split),
+    }
+
+
+def predict(tree, x):
+    if tree["leaf"]:
+        return tree["label"]
+    if x[tree["feature"]] < tree["threshold"]:
+        return predict(tree["left"], x)
+    return predict(tree["right"], x)
+
+
+FEATURE_NAMES = ["alder", "inntekt"]
+
+
+def print_tree(tree, indent=0):
+    """Print treet rekursivt med innrykk."""
+    pad = "  " * indent
+    # === DIN OPPGAVE ===
+    # Hvis leaf: print f"{pad}-> klasse={label}"
+    # Ellers:
+    #   print f"{pad}{FEATURE_NAMES[feature]} < {threshold}?"
+    #   print f"{pad}  JA:"
+    #   print_tree(left, indent + 2)
+    #   print f"{pad}  NEI:"
+    #   print_tree(right, indent + 2)
+    pass
+
+
+def sjekk(faktisk, forventet, navn):
+    if faktisk == forventet:
+        print(f"OK   {navn}")
+    else:
+        print(f"FEIL {navn}: fikk {faktisk!r}, forventet {forventet!r}")
+
+
+# Toy datasett
+X = [
+    [25, 300000],
+    [28, 350000],
+    [30, 600000],
+    [32, 700000],
+    [40, 520000],
+    [45, 600000],
+    [50, 700000],
+    [55, 800000],
+    [38, 350000],
+    [42, 400000],
+]
+y = [0, 0, 0, 0, 1, 1, 1, 1, 0, 0]
+
+
+def treningsfeil(tre, X, y):
+    return sum(1 for xi, yi in zip(X, y) if predict(tre, xi) != yi)
+
+
+# Tren tre for ulike max_depth og print
+for md in [1, 2, 3]:
+    tre = build_tree(X, y, max_depth=md)
+    errs = treningsfeil(tre, X, y)
+    print()
+    print(f"--- max_depth={md} ({errs}/10 treningsfeil) ---")
+    print_tree(tre)
+
+
+# Verifikasjoner
+tre1 = build_tree(X, y, max_depth=1)
+tre2 = build_tree(X, y, max_depth=2)
+tre3 = build_tree(X, y, max_depth=3)
+sjekk(treningsfeil(tre1, X, y), 1, "depth=1 gir 1 treningsfeil")
+sjekk(treningsfeil(tre2, X, y), 0, "depth=2 gir 0 treningsfeil")
+sjekk(treningsfeil(tre3, X, y), 0, "depth=3 gir 0 treningsfeil")
+
+# Print-output må ha både "alder" og "inntekt" når depth=2 (skal forgrene på begge)
+import io, sys
+buf = io.StringIO()
+gammel = sys.stdout
+sys.stdout = buf
+print_tree(tre2)
+sys.stdout = gammel
+output = buf.getvalue()
+sjekk("alder" in output, True, "viz nevner alder")
+sjekk("inntekt" in output, True, "viz nevner inntekt")
+sjekk("klasse=" in output, True, "viz nevner klasse=")
+`,
+      },
+      defaultFile: "tree.py",
+      editable: ["tree.py"],
+      run: { kind: "python-script", entry: "tree.py" },
+      verifications: [
+        {
+          label: "max_depth=1 gir 1 treningsfeil (single split)",
+          check: { kind: "output-contains", needle: "OK   depth=1 gir 1 treningsfeil" },
+        },
+        {
+          label: "max_depth=2 gir 0 treningsfeil",
+          check: { kind: "output-contains", needle: "OK   depth=2 gir 0 treningsfeil" },
+        },
+        {
+          label: "max_depth=3 gir 0 treningsfeil",
+          check: { kind: "output-contains", needle: "OK   depth=3 gir 0 treningsfeil" },
+        },
+        {
+          label: "Visualiseringen nevner 'alder'",
+          check: { kind: "output-contains", needle: "OK   viz nevner alder" },
+        },
+        {
+          label: "Visualiseringen nevner 'inntekt'",
+          check: { kind: "output-contains", needle: "OK   viz nevner inntekt" },
+        },
+        {
+          label: "Visualiseringen viser klasse-etikett ved leaves",
+          check: { kind: "output-contains", needle: "OK   viz nevner klasse=" },
+        },
+      ],
+      hint:
+        "pad = \"  \" * indent\nif tree[\"leaf\"]:\n    print(f\"{pad}-> klasse={tree['label']}\")\nelse:\n    navn = FEATURE_NAMES[tree[\"feature\"]]\n    print(f\"{pad}{navn} < {tree['threshold']}?\")\n    print(f\"{pad}  JA:\")\n    print_tree(tree[\"left\"], indent + 2)\n    print(f\"{pad}  NEI:\")\n    print_tree(tree[\"right\"], indent + 2)",
+    },
+  ],
+};
+
+
 export const MINI_COURSES: readonly MiniCourse[] = [
   FLASK_FRA_NULL,
   BYGG_MINI_SHELL,
@@ -4770,6 +6101,8 @@ export const MINI_COURSES: readonly MiniCourse[] = [
   DNS_RESOLVER,
   PROSESS_SCHEDULER,
   FREE_LIST_MALLOC,
+  LINREG_GD,
+  DECISION_TREE,
 ];
 
 export function getMiniCourse(slug: string): MiniCourse | undefined {
