@@ -13,11 +13,7 @@ import {
   importFromJson,
   type Progress,
 } from "@/lib/progress/storage";
-import { Flame, Trophy, Target, Zap, Download, Upload, Brain, Sparkles, ArrowRight, Clock, CalendarClock } from "lucide-react";
-import { flashcardFsrs } from "@/lib/learn/fsrs";
-import { dragFsrs } from "@/lib/learn/dragProgress";
-import { joinFsrs } from "@/lib/learn/joinProgress";
-import { problemFsrs } from "@/lib/progress/storage";
+import { Flame, Trophy, Target, Zap, Download, Upload, Sparkles, ArrowRight, Clock, CalendarClock } from "lucide-react";
 import { getRecommendations, type Recommendation } from "@/lib/skill-tree/recommender";
 import {
   usePinnedSubjects,
@@ -33,17 +29,6 @@ import {
   formatDaysUntil,
   type ExamUrgency,
 } from "@/lib/subjects/examDate";
-
-function countDue(): number {
-  if (typeof window === "undefined") return 0;
-  const now = Date.now();
-  return (
-    flashcardFsrs.getDueIds(now).length +
-    dragFsrs.getDueIds(now).length +
-    joinFsrs.getDueIds(now).length +
-    problemFsrs.getDueIds(now).length
-  );
-}
 
 export const Route = createFileRoute("/dashboard")({
   head: () => ({
@@ -101,7 +86,6 @@ function urgencyRankForSort(u: ExamUrgency, _days: number | null): number {
 
 function DashboardPage() {
   const [progress, setProgress] = useState<Progress | null>(null);
-  const [dueCount, setDueCount] = useState(0);
   const [importMsg, setImportMsg] = useState<{ kind: "ok" | "err"; text: string } | null>(null);
   const [recommendations, setRecommendations] = useState<Recommendation[]>([]);
   const [visitedCounts, setVisitedCounts] = useState<Record<string, number>>({});
@@ -112,7 +96,6 @@ function DashboardPage() {
 
   useEffect(() => {
     setProgress(loadProgress());
-    setDueCount(countDue());
     setRecommendations(getRecommendations(3));
   }, []);
 
@@ -282,28 +265,7 @@ function DashboardPage() {
           </div>
         )}
 
-        {/* Due i dag — samlet repetisjonskø på tvers av flashcards/drag/JOIN/SQL. */}
-        <Link
-          to="/repetisjon"
-          className="mt-6 flex items-center justify-between gap-4 rounded-xl border border-brand/40 bg-brand/5 hover:bg-brand/10 px-5 py-4 transition-colors"
-        >
-          <div className="flex items-center gap-3">
-            <Brain className="h-6 w-6 text-brand shrink-0" />
-            <div>
-              <div className="font-semibold text-sm">Due i dag</div>
-              <div className="text-xs text-muted-foreground">
-                {dueCount > 0
-                  ? `${dueCount} oppgaver klare for spaced repetition`
-                  : "Ingen ting due akkurat nå — kom igjen senere"}
-              </div>
-            </div>
-          </div>
-          <span className="text-2xl font-bold text-brand tabular-nums">{dueCount}</span>
-        </Link>
-
-        {/* Anbefalt neste — topp 3 fra ferdighets-tre-recommender.
-            Lagt til som NY seksjon mellom Due-banner og Stats for å unngå
-            konflikt med andre agenter som jobber i denne filen. */}
+        {/* Anbefalt neste — topp 3 fra ferdighets-tre-recommender. */}
         {recommendations.length > 0 && (
           <section className="mt-6">
             <div className="flex items-baseline gap-2 mb-3">
