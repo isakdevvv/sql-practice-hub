@@ -2,6 +2,10 @@ import { Link } from "@tanstack/react-router";
 import { Lightbulb, AlertTriangle } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
+import { ObjectModelExplorer } from "./ObjectModelExplorer";
+import { CommitDagBuilder } from "./CommitDagBuilder";
+import { MergeVsRebaseViz } from "./MergeVsRebaseViz";
+import { ReflogTimeline } from "./ReflogTimeline";
 
 const STEPS = [
   { title: "Git internals — objects og refs", anchor: "internals" },
@@ -113,6 +117,14 @@ cat .git/HEAD
             mer mening når du tenker «pek HEAD på en annen commit» heller
             enn «flytt filer».
           </p>
+
+          <div className="mt-5 mb-3">
+            <ObjectModelExplorer />
+          </div>
+
+          <div className="mt-5">
+            <CommitDagBuilder />
+          </div>
         </section>
 
         <section id="stages" className="mb-10">
@@ -195,7 +207,7 @@ git checkout feature && git rebase main
             </table>
           </div>
 
-          <div className="rounded-lg border border-warning/40 bg-warning/5 p-4 flex items-start gap-3">
+          <div className="rounded-lg border border-warning/40 bg-warning/5 p-4 flex items-start gap-3 mb-4">
             <AlertTriangle className="h-4 w-4 text-warning mt-0.5 shrink-0" />
             <div className="text-sm">
               <span className="font-medium">Den gylne regel:</span> ikke rebase
@@ -204,6 +216,8 @@ git checkout feature && git rebase main
               andre tilbake-rebase.
             </div>
           </div>
+
+          <MergeVsRebaseViz />
         </section>
 
         <section id="interactive" className="mb-10">
@@ -354,10 +368,12 @@ git branch reddet HEAD@{1}
 git reflog --all | grep slettet-branch
 git branch slettet-branch <sha>`}</pre>
           </div>
-          <p className="text-xs text-muted-foreground">
+          <p className="text-xs text-muted-foreground mb-4">
             Reflog er lokalt. Det hjelper deg ikke hvis du har force-pushet
             ødeleggende — da må noen andre med en kopi av historikken hjelpe.
           </p>
+
+          <ReflogTimeline />
         </section>
 
         <section id="diverse" className="mb-10">
