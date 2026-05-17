@@ -98,6 +98,27 @@ function filterSkills(props: SkillGraphProps): Skill[] {
   return out;
 }
 
+/**
+ * Lagdelt layout: "start-skills" (uten prereqs i det synlige subsettet) havner
+ * øverst, og pilene peker nedover mot mer avanserte skills. Da ser brukeren
+ * umiddelbart hvilken ende de skal begynne i.
+ */
+function buildLayoutConfig(skills: Skill[]) {
+  const ids = new Set(skills.map((s) => s.id));
+  const roots = skills
+    .filter((s) => !s.prereqs.some((p) => ids.has(p)))
+    .map((s) => s.id);
+  return {
+    name: "breadthfirst",
+    directed: true,
+    roots,
+    padding: 40,
+    spacingFactor: 1.25,
+    animate: false,
+    grid: false,
+  } as const;
+}
+
 export function SkillGraph(props: SkillGraphProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const cyRef = useRef<{ destroy(): void; on?: unknown } | null>(null);
@@ -119,7 +140,7 @@ export function SkillGraph(props: SkillGraphProps) {
         container: containerRef.current,
         elements: buildElements(visibleSkills, props),
         style: buildStyle(),
-        layout: { name: "cose", animate: false, padding: 40 },
+        layout: buildLayoutConfig(visibleSkills),
         wheelSensitivity: 0.3,
         minZoom: 0.2,
         maxZoom: 2.5,
@@ -150,7 +171,7 @@ export function SkillGraph(props: SkillGraphProps) {
     cy.elements().remove();
     cy.add(buildElements(visibleSkills, props));
     cy.style(buildStyle());
-    cy.layout({ name: "cose", animate: false, padding: 40 }).run();
+    cy.layout(buildLayoutConfig(visibleSkills)).run();
   }, [visibleSkills, props.estimates, props.nextUnlocked]);
 
   // Highlight valgt node
