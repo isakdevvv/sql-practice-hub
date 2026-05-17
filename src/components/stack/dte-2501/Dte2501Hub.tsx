@@ -1,4 +1,5 @@
 import { Link } from "@tanstack/react-router";
+import { useMemo } from "react";
 import {
   ArrowRight,
   Search,
@@ -22,147 +23,111 @@ import {
   Swords,
   Dices,
   Calculator,
+  Calendar,
+  PlayCircle,
+  Eye,
+  Wrench,
+  Brain,
+  ScrollText,
+  Map,
 } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
-import {
-  HubStartCta,
-  ModulStatusBadge,
-} from "@/components/stack/HubShared";
 import { LearningPath } from "@/components/stack/LearningPath";
+import { ModulStatusBadge, ModulProgressBar } from "@/components/stack/HubShared";
+import { EXAM_META } from "@/lib/subjects/catalog";
+import { useModulProgress } from "@/lib/stack/moduleProgress";
 
-type Practice = {
-  href: string;
-  Icon: typeof Search;
-  tittel: string;
+type Lab = {
+  slug: string;
+  title: string;
   blurb: string;
+  Icon: typeof Search;
+  taggar: string[];
 };
 
-const PRACTICE: Practice[] = [
+// Interaktive visualiseringer/labs for DTE-2501 — løfter også de tidligere
+// foreldreløse ai-paradigmer-kart og ga-encoding-lab (eksisterte i content-
+// registry, men var ikke synlige fra noen landingsside).
+const LABS: Lab[] = [
   {
-    href: "/drag",
-    Icon: GitBranch,
-    tittel: "Drag-oppgaver",
+    slug: "dte2501-kmeans-visualizer",
+    title: "k-Means live-plot",
     blurb:
-      "Filter på «k-NN», «k-Means», «PCA», «Reinforcement learning», «GA» — spaced-repetisjon av konseptene.",
+      "Velg k, dataset (Iris/blobs/moons), steg ASSIGN/UPDATE eller animer. Inertia-graf per steg.",
+    Icon: Layers,
+    taggar: ["clustering", "unsupervised"],
   },
   {
-    href: "/python",
-    Icon: Code2,
-    tittel: "Python-øvelser",
+    slug: "dte2501-pca-visualizer",
+    title: "PCA interaktiv projeksjon",
     blurb:
-      "Velg topic som starter med «ML —» — k-NN på Iris, k-Means, PCA, Q-learning og knapsack-DP kjører i nettleseren via Pyodide + sklearn.",
+      "Roter aksen selv og se PC1 maksimere varians. Iris/Wine i 2D, explained variance ratio.",
+    Icon: Axis3D,
+    taggar: ["dim-reduksjon"],
   },
   {
-    href: "/cards",
-    Icon: Lightbulb,
-    tittel: "Flashcards",
+    slug: "dte2501-pso-visualizer",
+    title: "PSO live-sverm",
     blurb:
-      "Drillbare kort over k-NN, k-Means, GA, ensemble, RL, NLP og PCA — repetisjon før eksamen.",
+      "Partikkelsverm på Rastrigin/Ackley. Juster w, c1, c2 — identifiser hvilken preset er balansert.",
+    Icon: Sparkles,
+    taggar: ["metaheuristikk", "swarm"],
+  },
+  {
+    slug: "dte2501-ga-encoding-lab",
+    title: "GA-encoding playground",
+    blurb:
+      "Velg encoding (bit-streng, permutasjon, real-valued), se hvordan crossover og mutasjon endrer seg.",
+    Icon: Dna,
+    taggar: ["GA", "encoding"],
+  },
+  {
+    slug: "dte2501-mdp-bellman",
+    title: "MDP-regnedrill — Bellman, VI og PI",
+    blurb:
+      "Regnedrill steg-for-steg på en liten 2-state MDP. Bellman-likning, Value Iteration, Policy Iteration.",
+    Icon: Calculator,
+    taggar: ["RL", "MDP"],
+  },
+  {
+    slug: "dte2501-ai-paradigmer-kart",
+    title: "AI-paradigmer — kart over hele faget",
+    blurb:
+      "Visualisert kart over hvordan symbolic AI, statistical ML, RL og metaheuristikk henger sammen.",
+    Icon: Map,
+    taggar: ["oversikt", "konsept"],
   },
 ];
 
-type Course = {
+type ConceptCourse = {
   slug: string;
   title: string;
   shortDescription: string;
   Icon: typeof Search;
-  status: "ready" | "coming-soon";
 };
 
-// "Klassisk AI"-spor — Russell & Norvig kapitler om søk, CSP, logikk, planlegging
-// og Bayes. Verdifullt for forståelse, men ikke direkte i 2026-eksamen.
-const CLASSIC_COURSES: Course[] = [
-  {
-    slug: "sok-algoritmer",
-    title: "Søkealgoritmer i AI",
-    shortDescription:
-      "BFS, DFS, uniform-cost, iterative deepening, greedy og A*. Heuristikker, admissibility, completeness og optimality.",
-    Icon: Search,
-    status: "ready",
-  },
-  {
-    slug: "csp",
-    title: "Constraint Satisfaction Problems",
-    shortDescription:
-      "CSP-formulering, backtracking, AC-3, forward checking. MRV, degree heuristic og LCV.",
-    Icon: Network,
-    status: "ready",
-  },
-  {
-    slug: "logisk-resonnering",
-    title: "Logisk resonnering",
-    shortDescription:
-      "Propositional logic, sannhetstabeller, modus ponens, resolusjon, og en kort introduksjon til first-order logic.",
-    Icon: BookOpen,
-    status: "ready",
-  },
-  {
-    slug: "planlegging",
-    title: "Planlegging",
-    shortDescription:
-      "STRIPS-handlinger, preconditions/effects. Forward (progression) og backward (regression) planning.",
-    Icon: ClipboardList,
-    status: "ready",
-  },
-  {
-    slug: "bayes",
-    title: "Beslutninger under usikkerhet — Bayes",
-    shortDescription:
-      "Bayes' teorem med gjennomgått eksempel, naive Bayes-klassifikator og betinget uavhengighet.",
-    Icon: Sigma,
-    status: "ready",
-  },
-];
-
-// "Moderne ML"-spor — direkte pensum for DTE-2501 2026-eksamen.
-const ML_COURSES: Course[] = [
+// Moderne ML-spor — direkte eksamenspensum. Brukes til "Anbefalt neste".
+const ML_COURSES: ConceptCourse[] = [
   {
     slug: "dte2501-knn",
     title: "k-Nearest Neighbors",
     shortDescription:
       "Lazy learning, distansemål, bias-variance, k-valg. Klassifikasjon og regresjon med k-NN.",
     Icon: Boxes,
-    status: "ready",
   },
   {
     slug: "dte2501-supervised-regresjon",
     title: "Regresjon — lineær og polynom",
     shortDescription:
-      "MSE, MAE, R², RMSE. Overfitting, regularisering (Ridge/Lasso), polynom-features og bias-variance.",
+      "MSE, MAE, R², RMSE. Overfitting, regularisering (Ridge/Lasso), polynom-features.",
     Icon: TrendingUp,
-    status: "ready",
   },
   {
     slug: "dte2501-kmeans-clustering",
     title: "k-Means clustering",
     shortDescription:
-      "Init → assign → update → konvergens. Elbow, silhouette, og når k-Means feiler (ikke-konvekse klustre).",
+      "Init → assign → update → konvergens. Elbow, silhouette, og når k-Means feiler.",
     Icon: Layers,
-    status: "ready",
-  },
-  {
-    slug: "dte2501-genetic-algorithms",
-    title: "Genetic algorithms, swarm, ACO",
-    shortDescription:
-      "Populasjon, fitness, seleksjon, crossover, mutasjon. PSO og Ant Colony Optimization.",
-    Icon: Dna,
-    status: "ready",
-  },
-  {
-    slug: "dte2501-nlp-intro",
-    title: "Natural Language Processing",
-    shortDescription:
-      "Tokenisering, bag-of-words, TF-IDF, embeddings (Word2Vec/GloVe), tekst-klassifikasjon.",
-    Icon: MessageSquare,
-    status: "ready",
-  },
-  {
-    slug: "dte2501-pca",
-    title: "Principal Component Analysis",
-    shortDescription:
-      "Dimensjonsreduksjon, kovariansmatrise, egenvektorer, forklart varians og scree plot.",
-    Icon: Axis3D,
-    status: "ready",
   },
   {
     slug: "dte2501-gmm",
@@ -170,15 +135,34 @@ const ML_COURSES: Course[] = [
     shortDescription:
       "Mikstur-modeller, EM-algoritmen (E-step + M-step), soft clustering vs k-Means.",
     Icon: Sparkles,
-    status: "ready",
+  },
+  {
+    slug: "dte2501-pca",
+    title: "Principal Component Analysis",
+    shortDescription:
+      "Dimensjonsreduksjon, kovariansmatrise, egenvektorer, forklart varians, scree plot.",
+    Icon: Axis3D,
   },
   {
     slug: "dte2501-ensemble",
     title: "Ensemble — bagging og boosting",
     shortDescription:
-      "Bias-variance dekomponering, bootstrap, random forest, AdaBoost og gradient boosting.",
+      "Bias-variance, bootstrap, random forest, AdaBoost og gradient boosting.",
     Icon: GitMerge,
-    status: "ready",
+  },
+  {
+    slug: "dte2501-nlp-intro",
+    title: "Natural Language Processing",
+    shortDescription:
+      "Tokenisering, bag-of-words, TF-IDF, embeddings (Word2Vec/GloVe), tekst-klassifikasjon.",
+    Icon: MessageSquare,
+  },
+  {
+    slug: "dte2501-genetic-algorithms",
+    title: "Genetic algorithms, swarm, ACO",
+    shortDescription:
+      "Populasjon, fitness, seleksjon, crossover, mutasjon. PSO og Ant Colony Optimization.",
+    Icon: Dna,
   },
   {
     slug: "dte2501-reinforcement",
@@ -186,79 +170,160 @@ const ML_COURSES: Course[] = [
     shortDescription:
       "MDP, Bellman, Value/Policy Iteration. Known vs unknown world, Q-learning intro.",
     Icon: Gamepad2,
-    status: "ready",
   },
   {
     slug: "dte2501-dp",
     title: "Dynamic Programming og TSP",
     shortDescription:
-      "Memoization vs tabulation, Fibonacci, knapsack. Held-Karp DP for Travelling Salesman.",
+      "Memoization vs tabulation, Fibonacci, knapsack, Held-Karp DP for TSP.",
     Icon: InfinityIcon,
-    status: "ready",
   },
   {
     slug: "dte2501-minimax",
-    title: "Minimax og alpha-beta pruning",
+    title: "Minimax og alpha-beta",
     shortDescription:
-      "Adversarial search i 2-spillerspill. Minimax-algoritmen, alpha-beta pruning, evalueringsfunksjoner og quiescence search. AIMA kap. 6.",
+      "Adversarial search i 2-spillerspill. Minimax-algoritmen, alpha-beta pruning.",
     Icon: Swords,
-    status: "ready",
   },
   {
     slug: "dte2501-bandits",
     title: "Multi-armed bandits",
     shortDescription:
-      "Bandit-problemet, action-value Q(a), ε-greedy, optimistic initial values, UCB1, Thompson sampling og regret. Sutton & Barto kap. 2.",
+      "Bandit-problemet, ε-greedy, UCB1, Thompson sampling. Sutton & Barto kap. 2.",
     Icon: Dices,
-    status: "ready",
-  },
-  {
-    slug: "dte2501-mdp-bellman",
-    title: "MDP-regnedrill — Bellman, VI og PI",
-    shortDescription:
-      "Regnedrill for Bellman-likningen, Value Iteration og Policy Iteration på en liten 2-state MDP. Steg-for-steg.",
-    Icon: Calculator,
-    status: "ready",
-  },
-  {
-    slug: "dte2501-kmeans-visualizer",
-    title: "k-Means live-plot",
-    shortDescription:
-      "Interaktiv visualisering: velg k, dataset (Iris/blobs/moons/klikk selv), steg ASSIGN/UPDATE eller animer. Inertia-graf per steg.",
-    Icon: Layers,
-    status: "ready",
-  },
-  {
-    slug: "dte2501-pca-visualizer",
-    title: "PCA interaktiv projeksjon",
-    shortDescription:
-      "Roter selv en akse og se PC1 maksimere varians. Iris/Wine i 2D, projisert på PC1 vs PC1+PC2, explained variance ratio.",
-    Icon: Axis3D,
-    status: "ready",
-  },
-  {
-    slug: "dte2501-pso-visualizer",
-    title: "PSO live-sverm",
-    shortDescription:
-      "Partikkelsverm på Rastrigin/Ackley/daler. Juster w, c1, c2 og spread; identifiser hvilken preset er «for høy inertia», «for lav c2» og «balansert».",
-    Icon: Layers,
-    status: "ready",
   },
 ];
 
-function CourseCard({ c }: { c: Course }) {
+// Klassisk AI-spor — Russell & Norvig. Supplement, ikke direkte i 2026-eksamen.
+const CLASSIC_COURSES: ConceptCourse[] = [
+  {
+    slug: "sok-algoritmer",
+    title: "Søkealgoritmer i AI",
+    shortDescription:
+      "BFS, DFS, uniform-cost, iterative deepening, greedy og A*. Admissibility, optimality.",
+    Icon: Search,
+  },
+  {
+    slug: "csp",
+    title: "Constraint Satisfaction Problems",
+    shortDescription:
+      "CSP, backtracking, AC-3, forward checking. MRV, degree heuristic, LCV.",
+    Icon: Network,
+  },
+  {
+    slug: "logisk-resonnering",
+    title: "Logisk resonnering",
+    shortDescription:
+      "Propositional logic, sannhetstabeller, modus ponens, resolusjon, FOL-intro.",
+    Icon: BookOpen,
+  },
+  {
+    slug: "planlegging",
+    title: "Planlegging",
+    shortDescription:
+      "STRIPS, preconditions/effects, forward (progression), backward (regression).",
+    Icon: ClipboardList,
+  },
+  {
+    slug: "bayes",
+    title: "Beslutninger under usikkerhet — Bayes",
+    shortDescription:
+      "Bayes' teorem, naive Bayes-klassifikator, betinget uavhengighet.",
+    Icon: Sigma,
+  },
+];
+
+type ExamTopic = {
+  topic: string;
+  Icon: typeof Search;
+  slugs: { slug: string; label: string }[];
+};
+
+const EXAM_TOPICS: ExamTopic[] = [
+  {
+    topic: "Supervised — k-NN & regresjon",
+    Icon: TrendingUp,
+    slugs: [
+      { slug: "dte2501-knn", label: "k-NN" },
+      { slug: "dte2501-supervised-regresjon", label: "Regresjon" },
+    ],
+  },
+  {
+    topic: "Unsupervised — clustering",
+    Icon: Layers,
+    slugs: [
+      { slug: "dte2501-kmeans-clustering", label: "k-Means" },
+      { slug: "dte2501-kmeans-visualizer", label: "Live-plot" },
+      { slug: "dte2501-gmm", label: "GMM/EM" },
+    ],
+  },
+  {
+    topic: "Dim.-reduksjon",
+    Icon: Axis3D,
+    slugs: [
+      { slug: "dte2501-pca", label: "PCA-teori" },
+      { slug: "dte2501-pca-visualizer", label: "PCA-projeksjon" },
+    ],
+  },
+  {
+    topic: "Ensemble",
+    Icon: GitMerge,
+    slugs: [{ slug: "dte2501-ensemble", label: "Bagging & boosting" }],
+  },
+  {
+    topic: "NLP",
+    Icon: MessageSquare,
+    slugs: [{ slug: "dte2501-nlp-intro", label: "TF-IDF & embeddings" }],
+  },
+  {
+    topic: "Metaheuristikk",
+    Icon: Dna,
+    slugs: [
+      { slug: "dte2501-genetic-algorithms", label: "GA/PSO/ACO" },
+      { slug: "dte2501-ga-encoding-lab", label: "GA-encoding" },
+      { slug: "dte2501-pso-visualizer", label: "PSO-sverm" },
+    ],
+  },
+  {
+    topic: "RL & MDP",
+    Icon: Gamepad2,
+    slugs: [
+      { slug: "dte2501-reinforcement", label: "VI/PI/Q-learning" },
+      { slug: "dte2501-mdp-bellman", label: "Bellman-drill" },
+      { slug: "dte2501-bandits", label: "Bandits" },
+    ],
+  },
+  {
+    topic: "Adversarial & DP",
+    Icon: Swords,
+    slugs: [
+      { slug: "dte2501-minimax", label: "Minimax" },
+      { slug: "dte2501-dp", label: "DP/TSP" },
+    ],
+  },
+  {
+    topic: "Klassisk AI (supplement)",
+    Icon: BookOpen,
+    slugs: [
+      { slug: "sok-algoritmer", label: "Søk" },
+      { slug: "csp", label: "CSP" },
+      { slug: "logisk-resonnering", label: "Logikk" },
+      { slug: "planlegging", label: "Planlegging" },
+      { slug: "bayes", label: "Bayes" },
+    ],
+  },
+];
+
+const MODE_ANCHORS: { id: string; label: string; Icon: typeof Search }[] = [
+  { id: "les", label: "Les", Icon: BookOpen },
+  { id: "visualiser", label: "Visualiser", Icon: Eye },
+  { id: "ov", label: "Øv", Icon: Wrench },
+  { id: "eksamen", label: "Eksamen", Icon: ScrollText },
+  { id: "tutor", label: "AI-tutor", Icon: Brain },
+];
+
+function CourseCard({ c }: { c: ConceptCourse }) {
   const Icon = c.Icon;
-  if (c.status !== "ready") {
-    return (
-      <div className="rounded-xl border border-border bg-card/30 p-5 opacity-60">
-        <div className="flex items-center gap-2 mb-2">
-          <Icon className="h-4 w-4 text-muted-foreground" />
-          <h3 className="font-semibold text-foreground leading-tight">{c.title}</h3>
-        </div>
-        <p className="text-sm text-muted-foreground leading-relaxed">{c.shortDescription}</p>
-      </div>
-    );
-  }
   return (
     <Link
       to="/stack/$slug"
@@ -270,7 +335,9 @@ function CourseCard({ c }: { c: Course }) {
         <h3 className="font-semibold text-foreground leading-tight">{c.title}</h3>
         <ModulStatusBadge trinnSlugs={[c.slug]} />
       </div>
-      <p className="text-sm text-muted-foreground leading-relaxed">{c.shortDescription}</p>
+      <p className="text-sm text-muted-foreground leading-relaxed">
+        {c.shortDescription}
+      </p>
       <div className="mt-3 flex items-center text-xs text-muted-foreground group-hover:text-foreground transition-colors">
         Åpne
         <ArrowRight className="h-3.5 w-3.5 ml-1 group-hover:translate-x-0.5 transition-transform" />
@@ -280,36 +347,115 @@ function CourseCard({ c }: { c: Course }) {
 }
 
 export function Dte2501Hub() {
+  const meta = EXAM_META["dte-2501"];
+
+  // "Anbefalt neste" og framdrift — bare moderne ML-spor (eksamenspensum).
+  const mlSlugs = useMemo(() => ML_COURSES.map((c) => c.slug), []);
+  const { seen, total } = useModulProgress(mlSlugs);
+  const nextSlug = useNextUnseenSlug(mlSlugs);
+  const nextCourse = useMemo(
+    () => ML_COURSES.find((c) => c.slug === nextSlug) ?? ML_COURSES[0],
+    [nextSlug],
+  );
+  const allDone = total > 0 && seen === total;
+
   return (
     <StackPageShell title="DTE-2501 AI Methods and Applications" group="eksamen">
-      <div className="container mx-auto px-4 py-12 max-w-4xl">
-        <div className="mb-10">
-          <div className="text-xs uppercase tracking-wider text-brand font-semibold mb-2">
-            DTE-2501 · 10 stp · Teknisk spesialisering
+      <div className="container mx-auto px-4 py-10 max-w-4xl">
+        {/* Hero med eksamen-meta */}
+        <div className="mb-8">
+          <div className="flex flex-wrap items-center gap-2 mb-3 text-[11px]">
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-brand/10 text-brand border border-brand/30 px-2.5 py-1 font-semibold">
+              DTE-2501
+            </span>
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-muted text-muted-foreground border border-border px-2.5 py-1">
+              {meta?.stp ?? 10} stp
+            </span>
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-500/10 text-amber-700 dark:text-amber-300 border border-amber-500/30 px-2.5 py-1">
+              <Calendar className="h-3 w-3" />
+              {meta?.eksamen ?? "Hjemmeeksamen + mappe (3t × 2)"}
+            </span>
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-muted text-muted-foreground border border-border px-2.5 py-1">
+              ML + klassisk AI
+            </span>
           </div>
-          <h1 className="text-4xl font-bold tracking-tight">
-            AI Methods and Applications
-          </h1>
+          <h1 className="text-4xl font-bold tracking-tight">AI Methods and Applications</h1>
           <p className="mt-3 text-muted-foreground max-w-2xl">
-            Faget dekker både{" "}
+            Både{" "}
+            <strong className="text-foreground">moderne ML</strong> (k-NN,
+            k-Means, PCA, GMM, ensemble, RL, GA/PSO, NLP, DP) og{" "}
             <strong className="text-foreground">klassisk symbolic AI</strong>{" "}
-            (søk, CSP, logikk, planlegging, Bayes) og{" "}
-            <strong className="text-foreground">moderne ML</strong>{" "}
-            (k-NN, k-Means, PCA, GMM, ensemble, reinforcement learning,
-            genetic algorithms, NLP, dynamic programming). Eksamen er forankret i
-            ML-sporet — det klassiske sporet gir bakgrunn og er fortsatt verdifullt
-            å lese.
+            (søk, CSP, logikk, planlegging, Bayes). Eksamen er ML-forankret —
+            klassisk er supplement. Velg modus under.
           </p>
         </div>
 
-        <HubStartCta
-          startSlug="dte2501-knn"
-          startSubtitle="Start med k-NN på det moderne ML-sporet, så regresjon og k-Means. Klassisk AI er supplement."
-          jumpHref="#moduler"
-          jumpSubtitle="Hopp til ML-sporet eller klassisk AI-sporet — 25+ mini-kurs totalt."
-        />
+        {/* Sticky modus-rad */}
+        <nav
+          aria-label="Velg modus"
+          className="mb-6 sticky top-14 z-20 -mx-4 px-4 py-2 bg-background/85 backdrop-blur border-b border-border"
+        >
+          <div className="flex flex-wrap gap-1.5 text-xs">
+            {MODE_ANCHORS.map((m) => {
+              const Icon = m.Icon;
+              return (
+                <a
+                  key={m.id}
+                  href={`#${m.id}`}
+                  className="inline-flex items-center gap-1.5 rounded-md border border-border bg-card hover:border-brand/50 hover:bg-brand/5 px-2.5 py-1.5 text-foreground transition-colors"
+                >
+                  <Icon className="h-3.5 w-3.5 text-brand" />
+                  {m.label}
+                </a>
+              );
+            })}
+          </div>
+        </nav>
 
-        <section className="mb-10">
+        {/* Anbefalt neste + framdrift */}
+        <div className="mb-10 grid sm:grid-cols-[2fr_1fr] gap-3">
+          <Link
+            to="/stack/$slug"
+            params={{ slug: nextCourse.slug }}
+            className="group rounded-xl border-2 border-brand/40 bg-gradient-to-br from-brand/10 to-success/5 hover:border-brand transition-colors p-5 block"
+          >
+            <div className="flex items-center gap-2 mb-1">
+              <PlayCircle className="h-5 w-5 text-brand" />
+              <div className="text-[10px] uppercase tracking-wider font-semibold text-brand">
+                {allDone ? "Repeter" : seen === 0 ? "Start her" : "Anbefalt neste"}
+              </div>
+            </div>
+            <h3 className="font-semibold text-foreground leading-tight text-lg mt-1">
+              {nextCourse.title}
+            </h3>
+            <p className="text-sm text-muted-foreground leading-snug mt-1">
+              {nextCourse.shortDescription}
+            </p>
+            <div className="mt-3 flex items-center text-xs font-medium text-brand">
+              {seen === 0 ? "Start" : "Fortsett"}
+              <ArrowRight className="h-3.5 w-3.5 ml-1 group-hover:translate-x-0.5 transition-transform" />
+            </div>
+          </Link>
+          <div className="rounded-xl border border-border bg-card p-5">
+            <div className="text-[10px] uppercase tracking-wider font-semibold text-muted-foreground mb-1">
+              Din framdrift (ML-spor)
+            </div>
+            <div className="text-2xl font-semibold tabular-nums">
+              {seen}{" "}
+              <span className="text-muted-foreground text-base font-normal">
+                / {total}
+              </span>
+            </div>
+            <ModulProgressBar trinnSlugs={mlSlugs} />
+            <div className="mt-3 text-[11px] text-muted-foreground">
+              Eksamenspensum. Klassisk AI og labs telles ikke her.
+            </div>
+          </div>
+        </div>
+
+        {/* Læringssti */}
+        <section className="mb-12">
+          <h2 className="text-xl font-semibold mb-3">Læringssti — anbefalt rekkefølge</h2>
           <LearningPath
             fag="DTE-2501"
             forbinder={[
@@ -325,7 +471,7 @@ export function Dte2501Hub() {
                 steps: [
                   { slug: "dte2501-knn", title: "k-NN — nærmeste-nabo", blurb: "Euclidean avstand, valg av k, hvorfor skalering er kritisk." },
                   { slug: "dte2501-supervised-regresjon", title: "Lineær/polynom regresjon", blurb: "Ridge/Lasso — første møte med regularisering." },
-                  { slug: "dte2501-kmeans-clustering", title: "k-Means clustering", blurb: "Lloyd's algoritme, k-means++, albue/silhouette for å velge k." },
+                  { slug: "dte2501-kmeans-clustering", title: "k-Means clustering", blurb: "Lloyd's algoritme, k-means++, albue/silhouette." },
                 ],
               },
               {
@@ -335,24 +481,256 @@ export function Dte2501Hub() {
                 steps: [
                   { slug: "dte2501-gmm", title: "GMM + EM", blurb: "Soft clustering — sannsynligheter i stedet for harde tildelinger." },
                   { slug: "dte2501-pca", title: "PCA — dimensjonsreduksjon", blurb: "Kovariansmatrise, egenvektorer, explained variance ratio." },
-                  { slug: "dte2501-ensemble", title: "Ensembler", blurb: "Bagging (RF) vs Boosting (AdaBoost, GBM) — to ulike måter å kombinere modeller." },
+                  { slug: "dte2501-ensemble", title: "Ensembler", blurb: "Bagging (RF) vs Boosting (AdaBoost, GBM)." },
                   { slug: "dte2501-nlp-intro", title: "NLP & TF-IDF", blurb: "Tokenisering, bag-of-words, TF-IDF, cosine similarity." },
                 ],
               },
               {
                 navn: "Eksamen — beslutninger og optimering",
                 intro:
-                  "Pensumets toppnivå: metaheuristikker (GA/PSO/ACO), reinforcement learning og dynamisk programmering. Disse er ofte stilløftere på eksamen.",
+                  "Pensumets toppnivå: metaheuristikker (GA/PSO/ACO), reinforcement learning og dynamisk programmering.",
                 steps: [
                   { slug: "dte2501-genetic-algorithms", title: "GA, PSO, ACO", blurb: "Bit-strenger, crossover, mutasjon, fitness — og swarm-varianter." },
-                  { slug: "dte2501-reinforcement", title: "MDP, VI, PI, Q-learning", blurb: "Bellman-likning, Value/Policy Iteration, kjent vs ukjent verden." },
-                  { slug: "dte2501-dp", title: "Dynamic Programming", blurb: "TSP via Held-Karp bitmask, knapsack — DP-prinsippet konkretisert." },
+                  { slug: "dte2501-reinforcement", title: "MDP, VI, PI, Q-learning", blurb: "Bellman-likning, Value/Policy Iteration." },
+                  { slug: "dte2501-dp", title: "Dynamic Programming", blurb: "TSP via Held-Karp bitmask, knapsack — DP-prinsippet." },
                 ],
               },
             ]}
           />
         </section>
 
+        {/* === LES === */}
+        <section id="les" className="mb-12 scroll-mt-28">
+          <div className="flex items-center gap-2 mb-2">
+            <BookOpen className="h-5 w-5 text-brand" />
+            <h2 className="text-xl font-semibold">Les — konsept-leksjoner</h2>
+          </div>
+          <p className="text-sm text-muted-foreground mb-4">
+            Forklart-først-format. Moderne ML er eksamenspensum; klassisk AI er
+            supplement.
+          </p>
+          <h3 className="text-sm font-semibold text-foreground mb-3 mt-2">
+            Moderne ML-spor · {ML_COURSES.length} leksjoner
+          </h3>
+          <div className="grid sm:grid-cols-2 gap-3 mb-6">
+            {ML_COURSES.map((c) => (
+              <CourseCard key={c.slug} c={c} />
+            ))}
+          </div>
+          <h3 className="text-sm font-semibold text-foreground mb-3 mt-4">
+            Klassisk AI-spor · {CLASSIC_COURSES.length} leksjoner
+          </h3>
+          <div className="grid sm:grid-cols-2 gap-3">
+            {CLASSIC_COURSES.map((c) => (
+              <CourseCard key={c.slug} c={c} />
+            ))}
+          </div>
+        </section>
+
+        {/* === VISUALISER === */}
+        <section id="visualiser" className="mb-12 scroll-mt-28">
+          <div className="flex items-center gap-2 mb-2">
+            <Eye className="h-5 w-5 text-brand" />
+            <h2 className="text-xl font-semibold">Visualiser & labs</h2>
+            <span className="rounded-full bg-success/10 text-success border border-success/30 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider">
+              {LABS.length} interaktive
+            </span>
+          </div>
+          <p className="text-sm text-muted-foreground mb-4">
+            Klikk-gjennom-simulatorer — det raskeste sporet til å bygge intuisjon
+            for k-Means, PCA, PSO, GA-encoding og MDP-løsning.
+          </p>
+          <div className="grid sm:grid-cols-2 gap-3">
+            {LABS.map((lab) => {
+              const Icon = lab.Icon;
+              return (
+                <Link
+                  key={lab.slug}
+                  to="/stack/$slug"
+                  params={{ slug: lab.slug }}
+                  className="group rounded-xl border border-success/30 bg-success/5 hover:border-success p-5 transition-colors block"
+                >
+                  <div className="flex items-center gap-2 mb-2 flex-wrap">
+                    <Icon className="h-4 w-4 text-success" />
+                    <h3 className="font-semibold text-foreground leading-tight">
+                      {lab.title}
+                    </h3>
+                    <ModulStatusBadge trinnSlugs={[lab.slug]} />
+                  </div>
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    {lab.blurb}
+                  </p>
+                  <div className="mt-3 flex items-center justify-between flex-wrap gap-2">
+                    <div className="flex flex-wrap gap-1">
+                      {lab.taggar.map((t) => (
+                        <span
+                          key={t}
+                          className="text-[10px] rounded bg-muted text-muted-foreground px-1.5 py-0.5"
+                        >
+                          {t}
+                        </span>
+                      ))}
+                    </div>
+                    <span className="inline-flex items-center text-xs text-success font-medium">
+                      Åpne lab
+                      <ArrowRight className="h-3.5 w-3.5 ml-1 group-hover:translate-x-0.5 transition-transform" />
+                    </span>
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+        </section>
+
+        {/* === ØV === */}
+        <section id="ov" className="mb-12 scroll-mt-28">
+          <div className="flex items-center gap-2 mb-2">
+            <Wrench className="h-5 w-5 text-brand" />
+            <h2 className="text-xl font-semibold">Øv — gjør, ikke bare les</h2>
+          </div>
+          <p className="text-sm text-muted-foreground mb-4">
+            Praktisk øving — drag-konseptmatching, Python-oppgaver i nettleseren,
+            og flashcard-repetisjon før eksamen.
+          </p>
+          <div className="grid sm:grid-cols-2 gap-3">
+            <Link
+              to="/python"
+              className="group rounded-xl border border-brand/40 bg-brand/5 hover:border-brand p-5 transition-colors block"
+            >
+              <div className="flex items-center gap-2 mb-2">
+                <Code2 className="h-4 w-4 text-brand" />
+                <h3 className="font-semibold text-foreground leading-tight">
+                  Python-øvelser — sklearn i nettleseren
+                </h3>
+              </div>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                Topic «ML —»: k-NN på Iris, k-Means, PCA, Q-learning og
+                knapsack-DP. Pyodide + scikit-learn kjører lokalt.
+              </p>
+              <div className="mt-3 flex items-center text-xs text-brand font-medium">
+                Åpne
+                <ArrowRight className="h-3.5 w-3.5 ml-1 group-hover:translate-x-0.5 transition-transform" />
+              </div>
+            </Link>
+            <Link
+              to="/drag"
+              className="group rounded-xl border border-border bg-card hover:border-brand/40 p-5 transition-colors block"
+            >
+              <div className="flex items-center gap-2 mb-2">
+                <GitBranch className="h-4 w-4 text-brand" />
+                <h3 className="font-semibold text-foreground leading-tight">
+                  Drag-oppgaver
+                </h3>
+              </div>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                Filter på «k-NN», «k-Means», «PCA», «Reinforcement learning», «GA»
+                for spaced-repetisjon av konseptene.
+              </p>
+              <div className="mt-3 flex items-center text-xs text-muted-foreground group-hover:text-foreground transition-colors">
+                Åpne
+                <ArrowRight className="h-3.5 w-3.5 ml-1 group-hover:translate-x-0.5 transition-transform" />
+              </div>
+            </Link>
+            <Link
+              to="/cards"
+              className="group rounded-xl border border-border bg-card hover:border-brand/40 p-5 transition-colors block"
+            >
+              <div className="flex items-center gap-2 mb-2">
+                <Lightbulb className="h-4 w-4 text-brand" />
+                <h3 className="font-semibold text-foreground leading-tight">
+                  Flashcards
+                </h3>
+              </div>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                Kort over k-NN, k-Means, GA, ensemble, RL, NLP og PCA —
+                repetisjon før eksamen.
+              </p>
+              <div className="mt-3 flex items-center text-xs text-muted-foreground group-hover:text-foreground transition-colors">
+                Åpne
+                <ArrowRight className="h-3.5 w-3.5 ml-1 group-hover:translate-x-0.5 transition-transform" />
+              </div>
+            </Link>
+          </div>
+        </section>
+
+        {/* === EKSAMEN === */}
+        <section id="eksamen" className="mb-12 scroll-mt-28">
+          <div className="flex items-center gap-2 mb-2">
+            <ScrollText className="h-5 w-5 text-brand" />
+            <h2 className="text-xl font-semibold">Eksamen-temaer</h2>
+            <span className="text-[11px] text-muted-foreground">
+              {meta?.eksamen ?? "Hjemmeeksamen + mappe"} · {meta?.stp ?? 10} stp
+            </span>
+          </div>
+          <p className="text-sm text-muted-foreground mb-4">
+            Pensumet gruppert etter metode-familie. Hver kategori har direkte
+            lenker til både konsept-leksjoner og labs.
+          </p>
+          <div className="grid sm:grid-cols-2 gap-3">
+            {EXAM_TOPICS.map((t) => {
+              const Icon = t.Icon;
+              return (
+                <div
+                  key={t.topic}
+                  className="rounded-xl border border-border bg-card p-4"
+                >
+                  <div className="flex items-center gap-2 mb-2">
+                    <Icon className="h-4 w-4 text-brand" />
+                    <h3 className="font-semibold text-foreground text-sm">
+                      {t.topic}
+                    </h3>
+                  </div>
+                  <div className="flex flex-wrap gap-1.5">
+                    {t.slugs.map((s) => (
+                      <Link
+                        key={s.slug}
+                        to="/stack/$slug"
+                        params={{ slug: s.slug }}
+                        className="inline-flex items-center gap-1 rounded-md border border-border bg-background hover:border-brand/50 hover:bg-brand/5 px-2 py-1 text-[11px] text-foreground transition-colors"
+                      >
+                        {s.label}
+                        <ArrowRight className="h-3 w-3 text-muted-foreground" />
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+
+        {/* === AI-TUTOR === */}
+        <section id="tutor" className="mb-12 scroll-mt-28">
+          <a
+            href="/tutor"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group rounded-xl border border-brand/30 bg-gradient-to-br from-brand/10 to-violet-500/5 hover:border-brand p-5 transition-colors flex items-start gap-4"
+          >
+            <div className="shrink-0 rounded-lg bg-brand/15 p-2.5">
+              <Sparkles className="h-5 w-5 text-brand" />
+            </div>
+            <div className="flex-1">
+              <div className="flex items-center gap-2 mb-1">
+                <h2 className="text-lg font-semibold">Spør AI om DTE-2501</h2>
+                <span className="text-[10px] uppercase tracking-wider font-semibold px-1.5 py-0.5 rounded bg-success/15 text-success border border-success/30">
+                  Sjekk forståelse
+                </span>
+              </div>
+              <p className="text-sm text-muted-foreground leading-snug">
+                Få forklart hvorfor PCA velger retningen med størst varians, eller
+                hvordan EM-algoritmen oppdaterer en GMM. Tutoren ser hva du har
+                gjort på faget.
+              </p>
+              <div className="mt-2 flex items-center text-xs font-medium text-brand">
+                Åpne tutor
+                <ArrowRight className="h-3.5 w-3.5 ml-1 group-hover:translate-x-0.5 transition-transform" />
+              </div>
+            </div>
+          </a>
+        </section>
+
+        {/* Pensum-oversikt — referansetabell */}
         <section className="mb-10">
           <h2 className="text-xl font-semibold mb-3">Pensum-oversikt</h2>
           <p className="text-sm text-muted-foreground mb-4">
@@ -441,99 +819,23 @@ export function Dte2501Hub() {
             «Lær fra prøving og feiling» → RL. «Komprimer features» → PCA.
           </p>
         </section>
-
-        <section id="moduler" className="mb-10 scroll-mt-20">
-          <h2 className="text-xl font-semibold mb-1">Moderne ML-spor</h2>
-          <p className="text-xs text-muted-foreground mb-4">
-            Eksamenspensumet. Bygger videre på DTE-2602.
-          </p>
-          <div className="grid sm:grid-cols-2 gap-3">
-            {ML_COURSES.map((c) => (
-              <CourseCard key={c.slug} c={c} />
-            ))}
-          </div>
-        </section>
-
-        <section className="mb-10">
-          <h2 className="text-xl font-semibold mb-1">Klassisk AI-spor</h2>
-          <p className="text-xs text-muted-foreground mb-4">
-            Russell &amp; Norvig-tradisjonen: symbolic AI og resonnering. Bra bakgrunn
-            for konseptuelle eksamensspørsmål om hva AI er.
-          </p>
-          <div className="grid sm:grid-cols-2 gap-3">
-            {CLASSIC_COURSES.map((c) => (
-              <CourseCard key={c.slug} c={c} />
-            ))}
-          </div>
-        </section>
-
-        <section className="mb-10">
-          <h2 className="text-xl font-semibold mb-1">Praktisk øvelse</h2>
-          <p className="text-xs text-muted-foreground mb-5">
-            Stack-leksjonene forklarer teorien. Her øver du selv.
-          </p>
-          <div className="grid sm:grid-cols-2 gap-3">
-            {PRACTICE.map((r) => {
-              const Icon = r.Icon;
-              return (
-                <Link
-                  key={r.href}
-                  to={r.href}
-                  className="group rounded-xl border border-border bg-card hover:border-brand/40 p-5 transition-colors block"
-                >
-                  <div className="flex items-center gap-2 mb-2">
-                    <Icon className="h-4 w-4 text-brand" />
-                    <h3 className="font-semibold text-foreground leading-tight">
-                      {r.tittel}
-                    </h3>
-                  </div>
-                  <p className="text-sm text-muted-foreground leading-relaxed">
-                    {r.blurb}
-                  </p>
-                  <div className="mt-3 flex items-center text-xs text-muted-foreground group-hover:text-foreground transition-colors">
-                    Åpne
-                    <ArrowRight className="h-3.5 w-3.5 ml-1 group-hover:translate-x-0.5 transition-transform" />
-                  </div>
-                </Link>
-              );
-            })}
-          </div>
-        </section>
-
-        <div className="mt-10 rounded-xl border border-border bg-card p-5 text-sm">
-          <h2 className="font-semibold mb-2">Hvor passer dette inn?</h2>
-          <ul className="space-y-1.5 text-muted-foreground list-disc pl-5">
-            <li>
-              <strong className="text-foreground">Drag-oppgaver:</strong> filter på
-              «k-NN», «k-Means», «PCA», «Reinforcement learning» i{" "}
-              <Link to="/drag" className="text-brand hover:underline">/drag</Link>{" "}
-              for spaced-repetisjon av konseptene.
-            </li>
-            <li>
-              <strong className="text-foreground">Python-øvelser:</strong> velg topic
-              som starter med «ML —» i{" "}
-              <Link to="/python" className="text-brand hover:underline">/python</Link>{" "}
-              — k-NN på Iris, k-Means, PCA, Q-learning og knapsack-DP kjører i
-              nettleseren via Pyodide + scikit-learn.
-            </li>
-            <li>
-              <strong className="text-foreground">Forkunnskap:</strong> faget bygger
-              på{" "}
-              <Link to="/stack/$slug" params={{ slug: "dte-2602" }} className="text-brand hover:underline">
-                DTE-2602
-              </Link>{" "}
-              (intro til ML). Hvis du er rusten, gå dit først.
-            </li>
-            <li>
-              <strong className="text-foreground">Lavnivå-grafer (BFS/DFS):</strong> se{" "}
-              <Link to="/stack/$slug" params={{ slug: "algoritmer" }} className="text-brand hover:underline">
-                algoritmer-trinnet
-              </Link>{" "}
-              for selve implementasjonen.
-            </li>
-          </ul>
-        </div>
       </div>
     </StackPageShell>
   );
+}
+
+function useNextUnseenSlug(slugs: string[]): string {
+  const { seen, total } = useModulProgress(slugs);
+  if (typeof window === "undefined" || seen === 0 || seen >= total) {
+    return slugs[0];
+  }
+  try {
+    const raw = window.localStorage.getItem("stack.visited.v1");
+    if (!raw) return slugs[0];
+    const visited = JSON.parse(raw) as Record<string, true>;
+    const next = slugs.find((s) => !visited[s]);
+    return next ?? slugs[0];
+  } catch {
+    return slugs[0];
+  }
 }
