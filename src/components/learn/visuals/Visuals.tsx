@@ -9,6 +9,7 @@ import { STAT_FORD_VISUALS } from "./StatFordVisuals";
 import { STAT_MODELL_VISUALS } from "./StatModellVisuals";
 import { ML_ALG_VISUALS } from "./MlAlgVisuals";
 import { DB_MODELL_VISUALS } from "./DbModellVisuals";
+import { SQL_EXEC_VISUALS } from "./SqlExecVisuals";
 
 const STROKE = "currentColor";
 
@@ -726,6 +727,7 @@ export const VISUALS: Record<string, FC> = {
   ...STAT_MODELL_VISUALS,
   ...ML_ALG_VISUALS,
   ...DB_MODELL_VISUALS,
+  ...SQL_EXEC_VISUALS,
 };
 
 export type VisualKey = keyof typeof VISUALS;
