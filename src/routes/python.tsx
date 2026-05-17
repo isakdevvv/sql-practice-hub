@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { PythonEditor } from "@/components/python/PythonEditor";
 import { VariableInspector } from "@/components/python/VariableInspector";
 import { StepVisualizer } from "@/components/python/StepVisualizer";
+import { WalkthroughPanel } from "@/components/python/WalkthroughPanel";
 import { PY_EXERCISES } from "@/lib/python/exercises";
 import { runScript, runScriptStepwise, runScriptVisual } from "@/lib/python/runner";
 import { loadPyProgress, markPySolved, resetPyProgress, type PyProgress } from "@/lib/python/pyProgress";
@@ -36,6 +37,7 @@ import {
   ExternalLink,
   Compass,
   FolderTree,
+  GraduationCap,
 } from "lucide-react";
 
 export const Route = createFileRoute("/python")({
@@ -80,6 +82,7 @@ function PythonPage() {
       dte2602: [],
       "dte2501-ml": [],
       "dte2505-os": [],
+      dte2511: [],
       "stat-other": [],
     };
     for (const ex of filteredExercises) {
@@ -122,6 +125,9 @@ function PythonPage() {
   const [showHints, setShowHints] = useState(false);
   const [showSolution, setShowSolution] = useState(false);
   const [solutionCopied, setSolutionCopied] = useState(false);
+  // Walkthrough state — only meaningful when exercise.walkthrough exists.
+  const [showWalkthrough, setShowWalkthrough] = useState(false);
+  const [walkthroughIdx, setWalkthroughIdx] = useState(0);
 
   // Progress (XP + solved-set), persistert i localStorage.
   const [progress, setProgress] = useState<PyProgress>(() => loadPyProgress());
@@ -139,6 +145,8 @@ function PythonPage() {
     setStepIdx(0);
     setShowHints(false);
     setShowSolution(false);
+    setShowWalkthrough(false);
+    setWalkthroughIdx(0);
   }, [exercise.id]);
 
   function markCurrentSolved() {
@@ -592,6 +600,23 @@ function PythonPage() {
                   </p>
                 </div>
                 <div className="flex flex-col gap-1.5 shrink-0">
+                  {exercise.walkthrough && exercise.walkthrough.length > 0 && (
+                    <Button
+                      variant={showWalkthrough ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => {
+                        setShowWalkthrough((s) => !s);
+                        if (!showWalkthrough) setWalkthroughIdx(0);
+                      }}
+                      className={cn(
+                        !showWalkthrough &&
+                          "border-brand/60 text-brand hover:bg-brand/10",
+                      )}
+                    >
+                      <GraduationCap className="h-3.5 w-3.5 mr-1.5" />
+                      {showWalkthrough ? "Lukk walkthrough" : "Lær først"}
+                    </Button>
+                  )}
                   {exercise.hints && exercise.hints.length > 0 && (
                     <Button
                       variant="outline"
@@ -655,6 +680,22 @@ function PythonPage() {
                     {exercise.solution}
                   </pre>
                 </div>
+              )}
+
+              {showWalkthrough && exercise.walkthrough && exercise.walkthrough.length > 0 && (
+                <WalkthroughPanel
+                  steps={exercise.walkthrough}
+                  stepIdx={walkthroughIdx}
+                  onPrev={() => setWalkthroughIdx((i) => Math.max(0, i - 1))}
+                  onNext={() =>
+                    setWalkthroughIdx((i) =>
+                      Math.min(exercise.walkthrough!.length - 1, i + 1),
+                    )
+                  }
+                  onJump={(i) => setWalkthroughIdx(i)}
+                  onClose={() => setShowWalkthrough(false)}
+                  onLoadIntoEditor={(c) => setCode(c)}
+                />
               )}
 
               {exercise.docs && exercise.docs.length > 0 && (
