@@ -200,6 +200,7 @@ import { content as tek1PVerdiKalkulator } from "./tek1-p-verdi-kalkulator";
 import { content as dte2602LineaerRegresjon } from "./dte2602-lineaer-regresjon";
 import { content as dte2602RocCurvePlotter } from "./dte2602-roc-curve-plotter";
 import { content as dockerfileBuilder } from "./dockerfile-builder";
+import { content as mlPipelineBuilder } from "./ml-pipeline-builder";
 import type { TrinnContent } from "../types";
 
 export const TRINN: TrinnContent[] = [
@@ -293,6 +294,8 @@ export const TRINN: TrinnContent[] = [
   dte2602LineaerRegresjon, dte2602RocCurvePlotter,
   // Dockerfile Builder — DevOps-kodegenerator
   dockerfileBuilder,
+  // DTE-2602 — ML Pipeline Builder (interaktiv kodegenerator)
+  mlPipelineBuilder,
 ];
 
 import { curriculumIndexOf } from "../curriculum";
