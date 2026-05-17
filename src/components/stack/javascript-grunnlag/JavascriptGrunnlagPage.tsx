@@ -2,6 +2,10 @@ import { Link } from "@tanstack/react-router";
 import { Lightbulb } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
+import { JsRepl } from "./JsRepl";
+import { DomPlayground } from "./DomPlayground";
+import { EventLoopVisualizer } from "./EventLoopVisualizer";
+import { ClosureScopeViz } from "./ClosureScopeViz";
 
 // Course page covering modern JavaScript fundamentals — variables, types,
 // `this`, closures, prototypes/classes, the event loop, and common pitfalls.
@@ -105,6 +109,16 @@ var hade = function() {};`}</pre>
             <li>Blokk-scope ({"{ ... }"}) gjelder bare for <code>let</code>/<code>const</code>.</li>
             <li>«hoisting» betyr at deklarasjoner kjent på toppen av scope-et — initialiseringen flyttes ikke.</li>
           </ul>
+          <JsRepl
+            title="Prøv hoisting selv"
+            initialCode={`// Endre var → let og se hva som skjer
+console.log(a);
+var a = 1;
+
+// Funksjons-deklarasjon hoistes fullt
+hei();
+function hei() { console.log("hei fra hoistet funksjon"); }`}
+          />
         </section>
 
         {/* 2. Typer */}
@@ -154,6 +168,25 @@ let y = x;          // y peker på SAMME objekt
 y.n = 99;
 console.log(x.n);   // 99 (begge peker på samme)`}</pre>
           </div>
+          <JsRepl
+            title="Verdi vs referanse — endre og kjør"
+            initialCode={`// Primitive: kopi
+let a = 1;
+let b = a;
+b = 99;
+console.log("a:", a, "b:", b);
+
+// Objekt: delt referanse
+let x = { n: 1 };
+let y = x;
+y.n = 99;
+console.log("x.n:", x.n, "y.n:", y.n);
+
+// typeof-overraskelser
+console.log(typeof null);     // "object" — bug fra 1995
+console.log(typeof []);       // "object"
+console.log(Array.isArray([])); // true — riktig sjekk`}
+          />
         </section>
 
         {/* 3. this */}
@@ -200,6 +233,25 @@ lukke.hils();                      // undefined`}</pre>
             <code>obj.hils.bind(obj)</code> eller{" "}
             <code>{"() => obj.hils()"}</code>.
           </p>
+          <JsRepl
+            title="Eksperimenter med this"
+            initialCode={`const obj = {
+  navn: "Dora",
+  hils()       { return "Hei " + this.navn; },
+  hilsArrow: () => "Hei " + (this && this.navn),
+};
+
+console.log(obj.hils());        // bundet til obj
+console.log(obj.hilsArrow());   // arrow arver this fra ytre scope
+
+// Mister this når vi løsriver
+const løs = obj.hils;
+try { console.log(løs()); } catch (e) { console.log("feil:", e.message); }
+
+// Fix: bind eller wrap
+const bundet = obj.hils.bind(obj);
+console.log(bundet());`}
+          />
         </section>
 
         {/* 4. Closures */}
@@ -241,6 +293,24 @@ for (let i = 0; i < 3; i++) {
 }
 // Output: 0, 1, 2`}</pre>
           </div>
+          <ClosureScopeViz />
+          <JsRepl
+            title="Bygg din egen closure"
+            initialCode={`function lagBank(saldo) {
+  return {
+    settInn(beløp) { saldo += beløp; return saldo; },
+    taUt(beløp)    { if (beløp > saldo) return "nei"; saldo -= beløp; return saldo; },
+    sjekk()        { return saldo; },
+  };
+}
+
+const konto = lagBank(100);
+console.log(konto.settInn(50));   // 150
+console.log(konto.taUt(200));     // "nei"
+console.log(konto.sjekk());       // 150
+// saldo finnes IKKE som property — bare via metodene
+console.log(konto.saldo);         // undefined`}
+          />
         </section>
 
         {/* 5. Prototyper og klasser */}
@@ -327,6 +397,18 @@ console.log("4");
 // 3: microtask — kjøres etter synkron blokk, FØR timeren
 // 2: task — kjøres etter at microtask-køen er tom`}</pre>
           </div>
+          <EventLoopVisualizer />
+          <JsRepl
+            title="Verifiser selv — hva blir output?"
+            initialCode={`console.log("1");
+setTimeout(() => console.log("2"), 0);
+Promise.resolve().then(() => console.log("3"));
+console.log("4");
+
+// Bonus — bytt ut linjene over med dette:
+// queueMicrotask(() => console.log("MT"));
+// setTimeout(() => console.log("T"), 0);`}
+          />
         </section>
 
         {/* 7. Promise og async/await */}
@@ -382,6 +464,68 @@ const [a, b] = await Promise.all([hent("/a"), hent("/b")]);
 const resultater = await Promise.allSettled([p1, p2, p3]);
 // hver: { status: "fulfilled", value: ... } eller { status: "rejected", reason: ... }`}</pre>
           </div>
+          <JsRepl
+            title="Promise og async/await — eksperimenter"
+            initialCode={`function venta(ms, verdi) {
+  return new Promise(res => setTimeout(() => res(verdi), ms));
+}
+
+async function hovedløp() {
+  console.log("start");
+
+  // Sekvensielt — ca 300ms totalt
+  const a = await venta(150, "A");
+  const b = await venta(150, "B");
+  console.log("sekvensielt:", a, b);
+
+  // Parallelt — ca 150ms totalt
+  const [c, d] = await Promise.all([venta(150, "C"), venta(150, "D")]);
+  console.log("parallelt:", c, d);
+}
+
+hovedløp();
+console.log("denne logges FØR start? (svar: nei — async f kjører sync inntil await)");`}
+            rows={14}
+          />
+          <DomPlayground
+            title="Async i DOM — knapp som henter «data»"
+            height={180}
+            initialHtml={`<button id="hent">Hent bruker</button>
+<div id="ut" style="margin-top: 10px; font-family: monospace; font-size: 12px;"></div>`}
+            initialCss={`button {
+  background: #0ea5e9;
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+}
+button:hover { background: #0284c7; }
+button:disabled { opacity: 0.5; cursor: wait; }
+#ut { color: #0f172a; min-height: 20px; }`}
+            initialJs={`function falskFetch(id) {
+  return new Promise(res => {
+    setTimeout(() => res({ id, navn: "Bruker " + id }), 600);
+  });
+}
+
+const btn = document.getElementById("hent");
+const ut = document.getElementById("ut");
+let teller = 0;
+
+btn.addEventListener("click", async () => {
+  btn.disabled = true;
+  ut.textContent = "henter ...";
+  try {
+    const data = await falskFetch(++teller);
+    ut.textContent = "got: " + JSON.stringify(data);
+    console.log("hentet", data);
+  } finally {
+    btn.disabled = false;
+  }
+});`}
+          />
         </section>
 
         {/* 8. Feller */}
@@ -430,6 +574,29 @@ if (liste) { /* alltid sant — sjekk liste.length isteden */ }`}</pre>
               <li><strong><code>parseInt("08")</code></strong> ble før 0 (oktal-bug). Skriv alltid radix: <code>parseInt(s, 10)</code>.</li>
             </ul>
           </div>
+          <JsRepl
+            title="Sjekk fellene selv"
+            initialCode={`// === vs ==
+console.log(0 == "0");          // ?
+console.log(0 === "0");         // ?
+console.log(null == undefined); // ?
+console.log(null === undefined);// ?
+
+// Truthy/falsy
+console.log(Boolean([]));       // ?
+console.log(Boolean({}));       // ?
+console.log(Boolean("0"));      // ?
+
+// NaN
+console.log(NaN === NaN);                // ?
+console.log(Number.isNaN(NaN));          // ?
+
+// Float-presisjon
+console.log(0.1 + 0.2);                  // ?
+console.log(0.1 + 0.2 === 0.3);          // ?
+console.log(Math.abs(0.1 + 0.2 - 0.3) < 1e-9); // riktig sammenlikning`}
+            rows={14}
+          />
         </section>
 
         {/* Bunn-CTA */}
