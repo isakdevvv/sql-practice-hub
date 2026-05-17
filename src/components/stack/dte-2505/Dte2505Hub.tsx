@@ -119,6 +119,20 @@ const LABS: Lab[] = [
     Icon: Network,
     taggar: ["IPC", "prosesser"],
   },
+  {
+    slug: "dte2505-io-management",
+    title: "I/O management — drivere & DMA",
+    blurb: "Enhetsklasser, driver-stack, polling vs interrupt vs DMA, buffer cache, disk-scheduling. 5 visualizers.",
+    Icon: HardDrive,
+    taggar: ["I/O", "OSTEP 36"],
+  },
+  {
+    slug: "dte2505-virtualisering",
+    title: "Virtualisering vs containere (dyp)",
+    blurb: "Hypervisor type-1 vs type-2 (KVM/VMware), containere via namespaces+cgroups, isolasjon-overhead-sammenligning.",
+    Icon: Server,
+    taggar: ["virtualisering", "containere"],
+  },
 ];
 
 type ConceptCourse = {
@@ -253,7 +267,15 @@ const EXAM_TOPICS: ExamTopic[] = [
   {
     topic: "Virtualisering",
     Icon: Server,
-    slugs: [{ slug: "virtualisering", label: "VM vs container" }],
+    slugs: [
+      { slug: "virtualisering", label: "Konsept" },
+      { slug: "dte2505-virtualisering", label: "Hypervisor & containere (dyp)" },
+    ],
+  },
+  {
+    topic: "I/O & disk",
+    Icon: HardDrive,
+    slugs: [{ slug: "dte2505-io-management", label: "Drivere, DMA & scheduling" }],
   },
 ];
 
@@ -590,6 +612,26 @@ export function Dte2505Hub() {
               </div>
               <p className="text-sm text-muted-foreground leading-relaxed">
                 Tekst-guide gjennom de 8 typiske obligene med sjekklister og feller.
+              </p>
+              <div className="mt-3 flex items-center text-xs text-muted-foreground group-hover:text-foreground transition-colors">
+                Åpne
+                <ArrowRight className="h-3.5 w-3.5 ml-1 group-hover:translate-x-0.5 transition-transform" />
+              </div>
+            </Link>
+            <Link
+              to="/stack/$slug"
+              params={{ slug: "dte2505-obliger" }}
+              className="group rounded-xl border border-border bg-card hover:border-brand/40 p-5 transition-colors block"
+            >
+              <div className="flex items-center gap-2 mb-2">
+                <ClipboardCheck className="h-4 w-4 text-brand" />
+                <h3 className="font-semibold text-foreground leading-tight">
+                  Speil-obliger (5 stk)
+                </h3>
+                <ModulStatusBadge trinnSlugs={["dte2505-obliger"]} />
+              </div>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                Faktiske drill-obliger: installasjon, navigasjon, pakker, rettigheter, bash — steg-svar med auto-sjekk.
               </p>
               <div className="mt-3 flex items-center text-xs text-muted-foreground group-hover:text-foreground transition-colors">
                 Åpne
