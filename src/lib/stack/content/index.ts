@@ -185,6 +185,7 @@ import { content as dte2507DayInTheLife } from "./dte2507-day-in-the-life";
 import { content as dte2507Dhcp } from "./dte2507-dhcp";
 import { content as flaskAppBuilder } from "./flask-app-builder";
 import { content as fastapiGrunnlag } from "./fastapi-grunnlag";
+import { content as restApiBuilder } from "./rest-api-builder";
 import { content as dte2507Nat } from "./dte2507-nat";
 import { content as dte2602Svm } from "./dte2602-svm";
 import { content as dte2505Spesialbits } from "./dte2505-spesialbits";
@@ -270,6 +271,8 @@ export const TRINN: TrinnContent[] = [
   flaskAppBuilder,
   // FastAPI grunnlag
   fastapiGrunnlag,
+  // REST API Builder — interaktiv API-generator (4 frameworks)
+  restApiBuilder,
   // DTE-2507 — NAT (Kurose 4.3.4)
   dte2507Nat,
   // DTE-2602 — SVM (atom A26)
