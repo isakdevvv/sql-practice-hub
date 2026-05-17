@@ -112,7 +112,11 @@ function planSearch(root: BNode, target: number): { steps: SearchStep[]; compari
       continue;
     }
     if (cur.isLeaf) {
-      steps.push({ nodeId: cur.id, kind: "notfound", detail: `nøkkel ${target} finnes ikke i bladet` });
+      steps.push({
+        nodeId: cur.id,
+        kind: "notfound",
+        detail: `nøkkel ${target} finnes ikke i bladet`,
+      });
       return { steps, comparisons };
     }
     const leftKey = i === 0 ? "-∞" : String(cur.keys[i - 1]);
@@ -379,7 +383,11 @@ export function IndexVisualizer() {
   // =====================================================================
 
   return (
-    <div className="rounded-2xl border border-border bg-card overflow-hidden" role="region" aria-label="Interaktiv visualisering: Indekser og B-tree">
+    <div
+      className="rounded-2xl border border-border bg-card overflow-hidden"
+      role="region"
+      aria-label="Interaktiv visualisering: Indekser og B-tree"
+    >
       {/* Topp-bar */}
       <div className="px-4 py-3 border-b border-border bg-muted/30">
         <div className="flex items-center justify-between gap-3 flex-wrap">
@@ -491,8 +499,8 @@ export function IndexVisualizer() {
         {mode === "scan" && (
           <>
             <div className="text-xs text-muted-foreground italic mb-2">
-              Samme spørring (<code className="font-mono">WHERE id = {SCAN_TARGET}</code>),
-              to ulike planer. Telleren viser hvor mange rader DB-en faktisk leser.
+              Samme spørring (<code className="font-mono">WHERE id = {SCAN_TARGET}</code>), to ulike
+              planer. Telleren viser hvor mange rader DB-en faktisk leser.
             </div>
             <div className="flex flex-wrap gap-1.5">
               <OpBtn onClick={() => runScan("seq")} disabled={scanRunning}>
@@ -579,7 +587,11 @@ export function IndexVisualizer() {
 
       {/* Logg */}
       {log.length > 0 && (
-        <div className="px-4 py-3 border-t border-border bg-card" aria-live="polite" aria-atomic="false">
+        <div
+          className="px-4 py-3 border-t border-border bg-card"
+          aria-live="polite"
+          aria-atomic="false"
+        >
           <div className="text-[10px] uppercase tracking-wider text-muted-foreground mb-2">
             Operasjons-logg (nyeste først)
           </div>
@@ -662,8 +674,8 @@ function BTreeView({
           isActive
             ? "hsl(var(--brand))"
             : isVisited
-            ? "hsl(var(--brand) / 0.5)"
-            : "hsl(var(--border))"
+              ? "hsl(var(--brand) / 0.5)"
+              : "hsl(var(--border))"
         }
         strokeWidth={isActive ? 2.5 : 1.5}
         style={{ transition: "stroke 0.25s ease, stroke-width 0.25s ease" }}
@@ -702,9 +714,7 @@ function BTreeView({
         >
           {/* Kanter først */}
           {list.map(({ node }) =>
-            node.isLeaf
-              ? null
-              : node.children.map((c, idx) => renderEdge(node, c, idx)),
+            node.isLeaf ? null : node.children.map((c, idx) => renderEdge(node, c, idx)),
           )}
 
           {/* Noder */}
@@ -727,20 +737,15 @@ function BTreeView({
                     isActive
                       ? "hsl(var(--brand))"
                       : isVisited
-                      ? "hsl(var(--brand) / 0.12)"
-                      : "hsl(var(--card))"
+                        ? "hsl(var(--brand) / 0.12)"
+                        : "hsl(var(--card))"
                   }
-                  stroke={
-                    isActive || isVisited
-                      ? "hsl(var(--brand))"
-                      : "hsl(var(--border))"
-                  }
+                  stroke={isActive || isVisited ? "hsl(var(--brand))" : "hsl(var(--border))"}
                   strokeWidth={isActive ? 2.5 : 1.5}
                   style={{ transition: "fill 0.25s ease, stroke 0.25s ease" }}
                 />
                 {node.keys.map((k, ki) => {
-                  const isTarget =
-                    result === "found" && node.isLeaf && k === target && isActive;
+                  const isTarget = result === "found" && node.isLeaf && k === target && isActive;
                   return (
                     <g key={ki}>
                       {ki > 0 && (
@@ -750,9 +755,7 @@ function BTreeView({
                           x2={startX + ki * keyW - 3}
                           y2={box.cy + box.nodeH / 2 - 4}
                           stroke={
-                            isActive
-                              ? "hsl(var(--brand-foreground) / 0.5)"
-                              : "hsl(var(--border))"
+                            isActive ? "hsl(var(--brand-foreground) / 0.5)" : "hsl(var(--border))"
                           }
                           strokeWidth={1}
                         />
@@ -764,11 +767,7 @@ function BTreeView({
                         fontSize={12}
                         fontFamily="ui-monospace, SFMono-Regular, monospace"
                         fontWeight={isTarget ? 700 : 600}
-                        fill={
-                          isActive
-                            ? "hsl(var(--brand-foreground))"
-                            : "hsl(var(--foreground))"
-                        }
+                        fill={isActive ? "hsl(var(--brand-foreground))" : "hsl(var(--foreground))"}
                         style={{
                           textDecoration: isTarget ? "underline" : undefined,
                         }}
@@ -859,12 +858,12 @@ function ScanView({
                 isHit
                   ? "bg-success/20 border-success text-success font-bold"
                   : isCurrent
-                  ? "bg-brand text-brand-foreground border-brand font-bold"
-                  : isVisited
-                  ? kind === "seq"
-                    ? "bg-amber-500/15 border-amber-500/40"
-                    : "bg-brand/15 border-brand/40 text-brand"
-                  : "bg-card border-border text-muted-foreground"
+                    ? "bg-brand text-brand-foreground border-brand font-bold"
+                    : isVisited
+                      ? kind === "seq"
+                        ? "bg-amber-500/15 border-amber-500/40"
+                        : "bg-brand/15 border-brand/40 text-brand"
+                      : "bg-card border-border text-muted-foreground"
               }`}
               title={`id = ${i}`}
             >
@@ -944,15 +943,15 @@ function CompositeView({
         {mode === "ab" ? (
           <div>
             <strong className="text-brand">Bra:</strong> alle (a={a}, …) ligger ved siden av
-            hverandre i indeksen, og innen dem er b sortert. DB-en navigerer rett til a={a},
-            så til b={b} — ett sammenhengende intervall, typisk én blad-side.
+            hverandre i indeksen, og innen dem er b sortert. DB-en navigerer rett til a={a}, så til
+            b={b} — ett sammenhengende intervall, typisk én blad-side.
           </div>
         ) : (
           <div>
-            <strong className="text-amber-700 dark:text-amber-400">Hjelper IKKE:</strong> b er
-            bare sortert <em>innen</em> samme a. Treff på b={b} sprer seg utover alle a-grupper.
-            DB-en kan ikke hoppe — den må skanne hele indeksen (eller dropper den og kjører Seq
-            Scan på tabellen).
+            <strong className="text-amber-700 dark:text-amber-400">Hjelper IKKE:</strong> b er bare
+            sortert <em>innen</em> samme a. Treff på b={b} sprer seg utover alle a-grupper. DB-en
+            kan ikke hoppe — den må skanne hele indeksen (eller dropper den og kjører Seq Scan på
+            tabellen).
           </div>
         )}
       </div>
