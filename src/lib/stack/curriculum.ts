@@ -209,6 +209,7 @@ export const PHASES: readonly CurriculumPhase[] = [
       "nokler",
       "subqueries",
       "transaksjoner",
+      "tx-isolation",
       "indekser",
       "query-optimisering",
       "mysql-vs-sqlite",

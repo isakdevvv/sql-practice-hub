@@ -386,6 +386,23 @@ export const VISUALIZERS: VizEntry[] = [
     tags: ["acid", "transaction", "isolasjon", "dirty read", "phantom"],
   },
   {
+    id: "tx-isolation",
+    title: "Tx-isolasjon — sandbox med to transaksjoner",
+    blurb:
+      "Velg isolation level, kjør operasjoner manuelt for A og B. Anomalier highlightes; lås-tidslinje og deadlock-deteksjon inkludert.",
+    category: "database",
+    route: "/stack/tx-isolation",
+    tags: [
+      "tx-isolation",
+      "isolation",
+      "dirty read",
+      "phantom read",
+      "lost update",
+      "deadlock",
+      "lock",
+    ],
+  },
+  {
     id: "query-plan",
     title: "Query-planer — joins, kostnad, selektivitet",
     blurb: "Plan-tre med join-typer, selektivitet og kostnadsanslag.",
@@ -746,7 +763,8 @@ const RELATED: Record<string, string[]> = {
   // Database
   indekser: ["traer", "query-plan", "hashing", "transaksjoner"],
   normalisering: ["transaksjoner", "indekser", "query-plan"],
-  transaksjoner: ["normalisering", "scheduling", "process-lifecycle"],
+  transaksjoner: ["tx-isolation", "normalisering", "scheduling", "process-lifecycle"],
+  "tx-isolation": ["transaksjoner", "scheduling", "producer-consumer", "indekser"],
   "query-plan": ["indekser", "traer", "normalisering", "big-o"],
 
   // OS
