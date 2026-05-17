@@ -13,12 +13,26 @@ import {
   importFromJson,
   type Progress,
 } from "@/lib/progress/storage";
-import { Flame, Trophy, Target, Zap, Download, Upload, Brain, Sparkles, ArrowRight } from "lucide-react";
+import { Flame, Trophy, Target, Zap, Download, Upload, Brain, Sparkles, ArrowRight, Clock, CalendarClock } from "lucide-react";
 import { flashcardFsrs } from "@/lib/learn/fsrs";
 import { dragFsrs } from "@/lib/learn/dragProgress";
 import { joinFsrs } from "@/lib/learn/joinProgress";
 import { problemFsrs } from "@/lib/progress/storage";
 import { getRecommendations, type Recommendation } from "@/lib/skill-tree/recommender";
+import {
+  usePinnedSubjects,
+  useLastVisitedSubject,
+} from "@/lib/userSubjects";
+import {
+  EXAM_META,
+  SUBJECT_BY_SLUG,
+  type Subject,
+} from "@/lib/subjects/catalog";
+import {
+  examUrgency,
+  formatDaysUntil,
+  type ExamUrgency,
+} from "@/lib/subjects/examDate";
 
 function countDue(): number {
   if (typeof window === "undefined") return 0;
@@ -34,26 +48,103 @@ function countDue(): number {
 export const Route = createFileRoute("/dashboard")({
   head: () => ({
     meta: [
-      { title: "Dashboard — SQL Sandbox" },
-      { name: "description", content: "Track your SQL practice progress: XP, level, streak, and topic mastery." },
+      { title: "Du — din fremgang og eksamen-oversikt" },
+      {
+        name: "description",
+        content:
+          "Personlig oversikt: dager til hver eksamen, fremgang per pinned fag, anbefalt neste oppgave, XP og topic-mastery.",
+      },
     ],
   }),
   component: DashboardPage,
 });
+
+// "Visited count" per fag-slug — leser samme localStorage som CourseOutline
+// skriver til. Brukes til å vise progresjon på pinned fag.
+const VISITED_PREFIX = "sql-practice-course-visited-v1:";
+
+function loadVisitedCount(slug: string): number {
+  if (typeof window === "undefined") return 0;
+  try {
+    const raw = window.localStorage.getItem(VISITED_PREFIX + slug);
+    if (!raw) return 0;
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed.length : 0;
+  } catch {
+    return 0;
+  }
+}
+
+function urgencyClasses(u: ExamUrgency): string {
+  switch (u) {
+    case "urgent":
+      return "bg-rose-500/10 text-rose-700 dark:text-rose-300 border-rose-500/40";
+    case "soon":
+      return "bg-amber-500/10 text-amber-700 dark:text-amber-300 border-amber-500/40";
+    case "later":
+      return "bg-brand/10 text-brand border-brand/30";
+    case "no-date":
+    case "past":
+      return "bg-muted text-muted-foreground border-border";
+  }
+}
+
+function urgencyRankForSort(u: ExamUrgency, _days: number | null): number {
+  switch (u) {
+    case "urgent": return 0;
+    case "soon": return 1;
+    case "later": return 2;
+    case "no-date": return 3;
+    case "past": return 4;
+  }
+}
 
 function DashboardPage() {
   const [progress, setProgress] = useState<Progress | null>(null);
   const [dueCount, setDueCount] = useState(0);
   const [importMsg, setImportMsg] = useState<{ kind: "ok" | "err"; text: string } | null>(null);
   const [recommendations, setRecommendations] = useState<Recommendation[]>([]);
+  const [visitedCounts, setVisitedCounts] = useState<Record<string, number>>({});
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+  const pinnedSlugs = usePinnedSubjects();
+  const lastVisited = useLastVisitedSubject();
+
   useEffect(() => {
     setProgress(loadProgress());
     setDueCount(countDue());
-    // Anbefalinger leses fra ferdighets-tre-recommender (skill-tree/recommender).
-    // Topp 3 vises på dashboard; siden /skill-tre viser inntil 5.
     setRecommendations(getRecommendations(3));
   }, []);
+
+  // Last visited-counts for pinned fag. Re-leser når pinned-listen endrer seg
+  // (toggleSubject sender custom event som usePinnedSubjects abonnerer på).
+  useEffect(() => {
+    const counts: Record<string, number> = {};
+    for (const slug of pinnedSlugs) {
+      counts[slug] = loadVisitedCount(slug);
+    }
+    setVisitedCounts(counts);
+  }, [pinnedSlugs]);
+
+  // Pinned fag sortert etter eksamen-urgens (samme logikk som /mine-fag og /).
+  const pinnedSubjects = (() => {
+    const subjects = pinnedSlugs
+      .map((slug) => SUBJECT_BY_SLUG[slug])
+      .filter(Boolean);
+    return subjects.slice().sort((a, b) => {
+      const ua = examUrgency(EXAM_META[a.slug]?.eksamen);
+      const ub = examUrgency(EXAM_META[b.slug]?.eksamen);
+      const rankA = urgencyRankForSort(ua.urgency, ua.days);
+      const rankB = urgencyRankForSort(ub.urgency, ub.days);
+      if (rankA !== rankB) return rankA - rankB;
+      if (ua.days != null && ub.days != null) return ua.days - ub.days;
+      return 0;
+    });
+  })();
+
+  const lastVisitedSubject = lastVisited
+    ? SUBJECT_BY_SLUG[lastVisited.slug] ?? null
+    : null;
 
   function handleImportClick() {
     fileInputRef.current?.click();
@@ -105,20 +196,20 @@ function DashboardPage() {
       <main className="container mx-auto px-4 py-10 max-w-5xl">
         <div className="flex items-start justify-between gap-4 flex-wrap">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">Your progress</h1>
+            <h1 className="text-3xl font-bold tracking-tight">Din fremgang</h1>
             <p className="text-sm text-muted-foreground mt-1">
-              Saved locally in your browser. Export to a JSON file to back up or move between
-              devices.
+              Personlig oversikt over fagene dine, nedtelling til eksamen, og total
+              øvings-aktivitet. Alt lagres lokalt — eksportér til JSON for å sikkerhetskopiere.
             </p>
           </div>
           <div className="flex items-center gap-2">
             <Button size="sm" variant="outline" onClick={() => downloadProgressJson()}>
               <Download className="h-3.5 w-3.5 mr-1.5" />
-              Export JSON
+              Eksportér JSON
             </Button>
             <Button size="sm" variant="outline" onClick={handleImportClick}>
               <Upload className="h-3.5 w-3.5 mr-1.5" />
-              Import JSON
+              Importér JSON
             </Button>
             <input
               ref={fileInputRef}
@@ -129,6 +220,56 @@ function DashboardPage() {
             />
           </div>
         </div>
+
+        {/* Fortsett der du slapp */}
+        {lastVisitedSubject && (
+          <Link
+            to="/stack/$slug"
+            params={{ slug: lastVisitedSubject.slug }}
+            className="mt-6 flex items-center gap-3 rounded-xl border-2 border-success/40 bg-success/5 hover:border-success hover:bg-success/10 px-4 py-3.5 transition-colors"
+          >
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-success/15">
+              <Clock className="h-5 w-5 text-success" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="text-[10px] font-bold uppercase tracking-wider text-success mb-0.5">
+                Fortsett der du slapp
+              </div>
+              <div className="text-sm font-semibold text-foreground truncate">
+                {lastVisitedSubject.code} — {lastVisitedSubject.navn}
+              </div>
+            </div>
+            <ArrowRight className="h-5 w-5 text-success shrink-0" />
+          </Link>
+        )}
+
+        {/* Pinned fag — eksamen-tabell sortert etter nærmeste eksamen */}
+        {pinnedSubjects.length > 0 && (
+          <section className="mt-8">
+            <div className="flex items-baseline gap-2 mb-3">
+              <CalendarClock className="h-4 w-4 text-brand" />
+              <h2 className="font-semibold text-sm">Dine eksamener</h2>
+              <span className="text-xs text-muted-foreground">
+                · {pinnedSubjects.length} pinnet, sortert etter nærmeste
+              </span>
+              <Link
+                to="/mine-fag"
+                className="ml-auto text-xs text-brand hover:underline"
+              >
+                Endre pinnede fag →
+              </Link>
+            </div>
+            <div className="space-y-2">
+              {pinnedSubjects.map((s) => (
+                <PinnedExamRow
+                  key={s.slug}
+                  subject={s}
+                  visitedCount={visitedCounts[s.slug] ?? 0}
+                />
+              ))}
+            </div>
+          </section>
+        )}
         {importMsg && (
           <div
             className={`mt-3 rounded-md border px-3 py-2 text-xs ${
@@ -301,6 +442,80 @@ function DashboardPage() {
         </div>
       </main>
     </div>
+  );
+}
+
+/** Én rad i "Dine eksamener"-tabellen. Viser fag-kode, navn, countdown-pille,
+ *  progress-bar over besøkte seksjoner, og lenke til fag-huben. */
+function PinnedExamRow({
+  subject,
+  visitedCount,
+}: {
+  subject: Subject;
+  visitedCount: number;
+}) {
+  const Icon = subject.Icon;
+  const meta = EXAM_META[subject.slug];
+  const u = examUrgency(meta?.eksamen);
+  const urgencyStyle = urgencyClasses(u.urgency);
+  // Bruk visitedCount som en ENKEL approximasjon på progress — vi har ikke en
+  // total-teller per fag bygd inn enda. Mer presis progress finnes på selve
+  // fag-huben.
+  const progressPct = Math.min(100, visitedCount * 5); // grovt: 20 seksjoner = 100%
+  return (
+    <Link
+      to="/stack/$slug"
+      params={{ slug: subject.slug }}
+      className="group flex items-center gap-3 rounded-xl border border-border bg-card hover:border-brand/40 p-3 transition-colors"
+    >
+      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-brand/15">
+        <Icon className="h-4 w-4 text-brand" />
+      </div>
+      <div className="flex-1 min-w-0">
+        <div className="flex items-baseline gap-2 flex-wrap">
+          <span className="text-[10px] font-bold uppercase tracking-wider text-brand">
+            {subject.code}
+          </span>
+          {meta && (
+            <span className="text-[10px] text-muted-foreground">
+              {meta.stp} stp
+            </span>
+          )}
+          {meta?.eksamen && (
+            <span className="text-[10px] text-muted-foreground">
+              · {meta.eksamen}
+            </span>
+          )}
+        </div>
+        <div className="text-sm font-semibold text-foreground truncate mt-0.5">
+          {subject.navn}
+        </div>
+        <div className="mt-1.5 h-1 w-full rounded-full bg-muted overflow-hidden">
+          <div
+            className="h-full bg-success transition-all"
+            style={{ width: `${progressPct}%` }}
+          />
+        </div>
+        <div className="text-[10px] text-muted-foreground mt-0.5 font-mono">
+          {visitedCount > 0 ? `${visitedCount} seksjoner sett` : "Ikke startet"}
+        </div>
+      </div>
+      <div className="shrink-0 text-right flex flex-col items-end gap-1">
+        {u.days != null && u.days >= 0 ? (
+          <span
+            className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[11px] font-semibold tabular-nums ${urgencyStyle}`}
+          >
+            <CalendarClock className="h-3 w-3" />
+            {formatDaysUntil(u.days)}
+          </span>
+        ) : (
+          <span className="text-[10px] text-muted-foreground italic">
+            {u.urgency === "no-date" ? "Mappe/hjemmeeks." : "—"}
+          </span>
+        )}
+        <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-foreground group-hover:translate-x-0.5 transition-all" />
+      </div>
+    </Link>
   );
 }
 
