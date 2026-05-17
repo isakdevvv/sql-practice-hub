@@ -9,6 +9,7 @@ const FLASK_FRA_NULL: MiniCourse = {
   estimertTid: "30–45 min",
   fag: ["DTE-2509", "DAT-1000", "Flask-grunnlag"],
   color: "brand",
+  rekkefolge: 10,
   lessons: [
     // ============ LEKSJON 1 ===========================================
     {
@@ -210,6 +211,7 @@ const BYGG_MINI_SHELL: MiniCourse = {
   estimertTid: "45–60 min",
   fag: ["DTE-2505", "OS-grunnlag", "Shell"],
   color: "warning",
+  rekkefolge: 10,
   lessons: [
     // ============ LEKSJON 1 ===========================================
     {
@@ -476,6 +478,8 @@ const UTLEIEAPP_FRA_NULL: MiniCourse = {
   estimertTid: "90–120 min",
   fag: ["DTE-2509", "DAT-1000", "Flask-prod"],
   color: "purple",
+  forutsetninger: ["flask-fra-null"],
+  rekkefolge: 20,
   lessons: [
     // ============ LEKSJON 1 ===========================================
     {
@@ -1218,6 +1222,7 @@ const TCP_STATE_MACHINE: MiniCourse = {
   estimertTid: "45–60 min",
   fag: ["DTE-2507", "Nettverk", "TCP/IP"],
   color: "success",
+  rekkefolge: 10,
   lessons: [
     // ============ LEKSJON 1 ===========================================
     {
@@ -1981,6 +1986,7 @@ const CSP_SUDOKU: MiniCourse = {
   estimertTid: "60–75 min",
   fag: ["DTE-2501", "Klassisk AI", "Constraint satisfaction"],
   color: "purple",
+  rekkefolge: 10,
   lessons: [
     // ============ LEKSJON 1 ===========================================
     {
@@ -2806,6 +2812,8 @@ const DNS_RESOLVER: MiniCourse = {
   estimertTid: "55–70 min",
   fag: ["DTE-2507", "Nettverk", "DNS"],
   color: "success",
+  forutsetninger: ["tcp-state-machine"],
+  rekkefolge: 20,
   lessons: [
     // ============ LEKSJON 1 ===========================================
     {
@@ -3564,6 +3572,604 @@ sjekk(s4, "MISS", "NXDOMAIN er MISS")
   ],
 };
 
+// ============================================================================
+// PROSESS-SCHEDULER FRA NULL — 6 leksjoner som bygger en OS-prosess-scheduler.
+// Studenten implementerer hver schedulering-algoritme i et felles simulator-
+// rammeverk: FCFS → Round Robin → prioritet (med starvation) → aging-fix →
+// sammenlikning. Insight: hver algoritme er en avveining; ingen er «best».
+//
+// Runner: python-script (pure Python). Ingen multithreading — vi simulerer
+// CPU-ticks med en enkel loop.
+// ============================================================================
+
+const PROSESS_SCHEDULER: MiniCourse = {
+  id: "prosess-scheduler",
+  slug: "prosess-scheduler",
+  title: "Prosess-scheduler fra null",
+  blurb:
+    "Bygg en CPU-scheduler i Python. Start med FCFS, legg på Round Robin med kvantum, deretter prioritet (og se hvordan lav-prioritet sulter), så aging-fixen — og avslutt med en head-to-head-sammenligning. Hver algoritme er en avveining mellom rettferdighet, gjennomstrømning og responstid.",
+  estimertTid: "55–70 min",
+  fag: ["DTE-2505", "Operativsystem", "Scheduling"],
+  color: "warning",
+  rekkefolge: 20,
+  lessons: [
+    // ============ LEKSJON 1 ===========================================
+    {
+      id: "01-process-queue",
+      title: "1. Prosess-objektet og klar-køen",
+      narrative:
+        "En **scheduler** bestemmer hvilken prosess som får CPU-en hvert øyeblikk. For å snakke om det trenger vi et minimalt prosess-objekt:\n\n- `pid` — identifikator\n- `arrival` — når den ankom systemet (tick-tall)\n- `burst` — total CPU-tid den trenger\n- `remaining` — CPU-tid igjen (starter = burst, krymper når den får kjøre)\n- `priority` — lavere tall = høyere prioritet (Unix-konvensjon)\n- `waited` — total ventetid i klar-køen\n- `completed_at` — tick når den ble ferdig\n\n**Klar-køen** (ready queue) er listen av prosesser som venter på CPU. Vi modellerer den som en vanlig liste — `enqueue` legger til bak, `dequeue` tar fra front.\n\n**Din oppgave:**\n\n1. Fyll inn `Process.__init__` slik at felter er satt og `remaining = burst`.\n2. Implementér `enqueue(prosess)` (legg bak) og `dequeue()` (ta fra front, returner prosessen) på `ReadyQueue`.",
+      files: {
+        "scheduler.py": `class Process:
+    def __init__(self, pid, arrival, burst, priority=5):
+        # === DIN OPPGAVE: sett feltene ===
+        # self.pid = pid
+        # self.arrival = arrival
+        # self.burst = burst
+        # self.remaining = burst   # samme som burst i starten
+        # self.priority = priority
+        # self.waited = 0
+        # self.completed_at = None
+        pass
+
+    def is_done(self):
+        return self.remaining <= 0
+
+    def __repr__(self):
+        return f"P{self.pid}"
+
+
+class ReadyQueue:
+    def __init__(self):
+        self.items = []
+
+    def enqueue(self, p):
+        # === DIN OPPGAVE ===
+        pass
+
+    def dequeue(self):
+        # === DIN OPPGAVE: returner og fjern første element ===
+        pass
+
+    def is_empty(self):
+        return len(self.items) == 0
+
+
+def sjekk(faktisk, forventet, navn):
+    if faktisk == forventet:
+        print(f"OK   {navn}")
+    else:
+        print(f"FEIL {navn}: fikk {faktisk!r}, forventet {forventet!r}")
+
+
+# Prosess-felter satt riktig
+p = Process(pid=1, arrival=0, burst=5, priority=3)
+sjekk(p.pid, 1, "pid satt")
+sjekk(p.remaining, 5, "remaining starter = burst")
+sjekk(p.waited, 0, "waited starter på 0")
+sjekk(p.completed_at, None, "completed_at er None")
+sjekk(p.is_done(), False, "ny prosess er ikke done")
+
+# FIFO-orden
+q = ReadyQueue()
+q.enqueue(Process(1, 0, 5))
+q.enqueue(Process(2, 1, 3))
+q.enqueue(Process(3, 2, 2))
+sjekk(q.dequeue().pid, 1, "FIFO: P1 først ut")
+sjekk(q.dequeue().pid, 2, "deretter P2")
+sjekk(q.dequeue().pid, 3, "til slutt P3")
+sjekk(q.is_empty(), True, "køen er tom etter 3 dequeues")
+`,
+      },
+      defaultFile: "scheduler.py",
+      editable: ["scheduler.py"],
+      run: { kind: "python-script", entry: "scheduler.py" },
+      verifications: [
+        { label: "pid er satt", check: { kind: "output-contains", needle: "OK   pid satt" } },
+        { label: "remaining starter = burst", check: { kind: "output-contains", needle: "OK   remaining starter = burst" } },
+        { label: "waited starter på 0", check: { kind: "output-contains", needle: "OK   waited starter på 0" } },
+        { label: "completed_at er None initialt", check: { kind: "output-contains", needle: "OK   completed_at er None" } },
+        { label: "is_done() er False for ny prosess", check: { kind: "output-contains", needle: "OK   ny prosess er ikke done" } },
+        { label: "FIFO-orden: P1 dequeues først", check: { kind: "output-contains", needle: "OK   FIFO: P1 først ut" } },
+        { label: "Køen tømmes riktig", check: { kind: "output-contains", needle: "OK   køen er tom etter 3 dequeues" } },
+      ],
+      hint:
+        "def __init__(self, pid, arrival, burst, priority=5):\n    self.pid = pid\n    self.arrival = arrival\n    self.burst = burst\n    self.remaining = burst\n    self.priority = priority\n    self.waited = 0\n    self.completed_at = None\n\n# ReadyQueue:\ndef enqueue(self, p):\n    self.items.append(p)\n\ndef dequeue(self):\n    return self.items.pop(0)",
+    },
+
+    // ============ LEKSJON 2 ===========================================
+    {
+      id: "02-fcfs",
+      title: "2. FCFS (First-Come First-Served)",
+      narrative:
+        "Det enkleste vi kan tenke oss: kjør prosesser i den rekkefølgen de ankom, fullt ut, én av gangen. Ingen preempting. Det er FCFS.\n\nSimulator-loopen ser slik ut:\n\n```\nfor tick fra 0 og oppover:\n  flytt ankomne prosesser inn i klar-køen\n  hvis køen er tom: idle\n  ellers: pluck én prosess, kjør den ett tick (remaining -= 1)\n  hvis remaining == 0: ferdig\n```\n\n«Pluck én prosess» er stedet algoritmene skiller seg. I FCFS plukker vi alltid prosessen vi har valgt å kjøre (eller velger ny hvis ingen er valgt). Andre prosesser **venter** — vi øker deres `waited`-teller.\n\n**Din oppgave:** Implementér `run_fcfs(processes, max_ticks=100)` som returnerer en log av `(tick, pid)`-par.",
+      files: {
+        "scheduler.py": `class Process:
+    def __init__(self, pid, arrival, burst, priority=5):
+        self.pid = pid
+        self.arrival = arrival
+        self.burst = burst
+        self.remaining = burst
+        self.priority = priority
+        self.waited = 0
+        self.completed_at = None
+
+    def is_done(self):
+        return self.remaining <= 0
+
+    def __repr__(self):
+        return f"P{self.pid}"
+
+
+def run_fcfs(processes, max_ticks=100):
+    """Returner liste av (tick, pid_eller_None_for_idle)."""
+    # Vi muterer prosessene direkte (remaining, waited, completed_at).
+    not_arrived = sorted(processes, key=lambda p: p.arrival)
+    klar = []
+    log = []
+    nåværende = None  # prosessen som kjører nå (None = ingen)
+
+    # === DIN OPPGAVE ===
+    # for tick in range(max_ticks):
+    #     # 1. Flytt ankomster: mens not_arrived og første har arrival <= tick:
+    #     #      pop front, append til klar
+    #     # 2. Hvis nåværende er None og klar er ikke-tom: nåværende = klar.pop(0)
+    #     # 3. Hvis nåværende er None og klar tom: log.append((tick, None)); continue
+    #     # 4. Kjør ett tick:
+    #     #      nåværende.remaining -= 1
+    #     #      log.append((tick, nåværende.pid))
+    #     #      for p in klar: p.waited += 1
+    #     # 5. Hvis nåværende.is_done(): completed_at = tick + 1; nåværende = None
+    #     # 6. Tidlig avbryt hvis alt er ferdig (klar tom, not_arrived tom, nåværende None)
+    return log
+
+
+def gjennomsnitt_venting(processes):
+    if not processes:
+        return 0
+    return sum(p.waited for p in processes) / len(processes)
+
+
+def sjekk(faktisk, forventet, navn):
+    if faktisk == forventet:
+        print(f"OK   {navn}")
+    else:
+        print(f"FEIL {navn}: fikk {faktisk!r}, forventet {forventet!r}")
+
+
+# 3 prosesser ankommer samtidig
+ps = [Process(1, 0, 5), Process(2, 0, 3), Process(3, 0, 2)]
+log = run_fcfs(ps)
+
+# Forventet: P1 kjører tick 0-4, P2 5-7, P3 8-9
+sjekk(log[0], (0, 1), "tick 0 kjører P1")
+sjekk(log[4], (4, 1), "tick 4 fortsatt P1 (siste tick)")
+sjekk(log[5], (5, 2), "tick 5 starter P2")
+sjekk(log[8], (8, 3), "tick 8 starter P3")
+sjekk(log[9], (9, 3), "tick 9 fullfører P3")
+
+# Ventetider
+# P1 venter 0, P2 venter 5, P3 venter 8 → snitt = 13/3 = 4.33
+sjekk(ps[0].waited, 0, "P1 ventet 0")
+sjekk(ps[1].waited, 5, "P2 ventet 5")
+sjekk(ps[2].waited, 8, "P3 ventet 8")
+print(f"Snitt-venting FCFS: {gjennomsnitt_venting(ps):.2f}")
+`,
+      },
+      defaultFile: "scheduler.py",
+      editable: ["scheduler.py"],
+      run: { kind: "python-script", entry: "scheduler.py" },
+      verifications: [
+        { label: "FCFS starter med P1", check: { kind: "output-contains", needle: "OK   tick 0 kjører P1" } },
+        { label: "P1 fullfører før P2 starter", check: { kind: "output-contains", needle: "OK   tick 5 starter P2" } },
+        { label: "P3 kjører til slutt", check: { kind: "output-contains", needle: "OK   tick 9 fullfører P3" } },
+        { label: "P1 venter 0 ticks (kjører først)", check: { kind: "output-contains", needle: "OK   P1 ventet 0" } },
+        { label: "P2 venter mens P1 kjører", check: { kind: "output-contains", needle: "OK   P2 ventet 5" } },
+        { label: "P3 venter mens P1 og P2 kjører", check: { kind: "output-contains", needle: "OK   P3 ventet 8" } },
+      ],
+      hint:
+        "for tick in range(max_ticks):\n    while not_arrived and not_arrived[0].arrival <= tick:\n        klar.append(not_arrived.pop(0))\n    if nåværende is None and klar:\n        nåværende = klar.pop(0)\n    if nåværende is None:\n        if not not_arrived: break\n        log.append((tick, None)); continue\n    nåværende.remaining -= 1\n    log.append((tick, nåværende.pid))\n    for p in klar: p.waited += 1\n    if nåværende.is_done():\n        nåværende.completed_at = tick + 1\n        nåværende = None\nreturn log",
+    },
+
+    // ============ LEKSJON 3 ===========================================
+    {
+      id: "03-round-robin",
+      title: "3. Round Robin med kvantum",
+      narrative:
+        "FCFS er rettferdig i ankomstrekkefølge, men brutalt mot interaktive prosesser: en lang CPU-tung jobb monopoliserer maskinen mens raske jobber sitter og venter.\n\n**Round Robin** løser det: hver prosess får CPU i maks `kvantum` ticks før den blir **preempted** og lagt bak i køen. Da rullerer alle prosesser gjennom CPU-en i raske runder. Quantum = 4 er typisk i Unix.\n\n**Din oppgave:** Implementér `run_rr(processes, kvantum, max_ticks=100)`. Forskjellen fra FCFS er at vi teller hvor mange ticks `nåværende` har kjørt sammenhengende — når den treffer `kvantum` OG ikke er ferdig, settes den **bak** i køen og vi velger en ny.\n\nTips: hold en lokal teller `kjørt_av_nåværende` som nullstilles hver gang vi bytter prosess.",
+      files: {
+        "scheduler.py": `class Process:
+    def __init__(self, pid, arrival, burst, priority=5):
+        self.pid = pid
+        self.arrival = arrival
+        self.burst = burst
+        self.remaining = burst
+        self.priority = priority
+        self.waited = 0
+        self.completed_at = None
+
+    def is_done(self):
+        return self.remaining <= 0
+
+    def __repr__(self):
+        return f"P{self.pid}"
+
+
+def run_rr(processes, kvantum, max_ticks=100):
+    """Round Robin. Preempt naavaerende etter kvantum ticks."""
+    not_arrived = sorted(processes, key=lambda p: p.arrival)
+    klar = []
+    log = []
+    nåværende = None
+    kjørt = 0
+
+    # === DIN OPPGAVE ===
+    # for tick in range(max_ticks):
+    #     # 1. Flytt ankomster inn i klar
+    #     # 2. Hvis ingen nåværende: ta neste fra klar, nullstill kjørt
+    #     # 3. Hvis fortsatt ingen: log idle og continue (eller break hvis alt tomt)
+    #     # 4. Kjør ett tick (remaining -= 1, kjørt += 1, log)
+    #     # 5. Andre i klar venter (waited += 1)
+    #     # 6. Hvis ferdig: completed_at; nåværende = None
+    #     # 7. Ellers hvis kjørt == kvantum og klar er ikke-tom:
+    #     #      preempt: legg nåværende bak i klar, sett nåværende = None
+    #     #    (Hvis kvantum nås men klar er tom, fortsett — ingen å bytte til)
+    return log
+
+
+def gjennomsnitt_venting(ps):
+    return sum(p.waited for p in ps) / len(ps) if ps else 0
+
+
+def sjekk(faktisk, forventet, navn):
+    print(f"OK   {navn}" if faktisk == forventet else f"FEIL {navn}: fikk {faktisk!r}, forventet {forventet!r}")
+
+
+# Tre prosesser, kvantum 2
+ps = [Process(1, 0, 5), Process(2, 0, 3), Process(3, 0, 2)]
+log = run_rr(ps, kvantum=2)
+
+# Forventet rotasjon (kvantum 2):
+# tick 0-1: P1 (rem 5→3)
+# tick 2-3: P2 (rem 3→1)
+# tick 4-5: P3 (rem 2→0, done)
+# tick 6-7: P1 (rem 3→1)
+# tick 8:   P2 (rem 1→0, done)
+# tick 9:   P1 (rem 1→0, done)
+sjekk(log[0][1], 1, "tick 0: P1")
+sjekk(log[2][1], 2, "tick 2: byttet til P2")
+sjekk(log[4][1], 3, "tick 4: byttet til P3")
+sjekk(log[6][1], 1, "tick 6: tilbake til P1")
+
+# Sjekk at alle ble ferdig
+sjekk(ps[0].is_done(), True, "P1 ferdig")
+sjekk(ps[1].is_done(), True, "P2 ferdig")
+sjekk(ps[2].is_done(), True, "P3 ferdig")
+
+# Vis at RR gjør P3 (kortest) ferdig før P1 — fairness-gevinsten
+sjekk(ps[2].completed_at < ps[0].completed_at, True, "P3 (kort jobb) ferdig før P1 (lang jobb)")
+
+print(f"Snitt-venting RR(q=2): {gjennomsnitt_venting(ps):.2f}")
+`,
+      },
+      defaultFile: "scheduler.py",
+      editable: ["scheduler.py"],
+      run: { kind: "python-script", entry: "scheduler.py" },
+      verifications: [
+        { label: "Tick 0 kjører P1", check: { kind: "output-contains", needle: "OK   tick 0: P1" } },
+        { label: "Preempted etter 2 ticks til P2", check: { kind: "output-contains", needle: "OK   tick 2: byttet til P2" } },
+        { label: "Roterer til P3 etter neste kvantum", check: { kind: "output-contains", needle: "OK   tick 4: byttet til P3" } },
+        { label: "Roterer tilbake til P1", check: { kind: "output-contains", needle: "OK   tick 6: tilbake til P1" } },
+        { label: "Alle prosesser fullføres", check: { kind: "output-contains", needle: "OK   P3 ferdig" } },
+        { label: "Korte jobber fullfører før lange (fairness)", check: { kind: "output-contains", needle: "OK   P3 (kort jobb) ferdig før P1 (lang jobb)" } },
+      ],
+      hint:
+        "for tick in range(max_ticks):\n    while not_arrived and not_arrived[0].arrival <= tick:\n        klar.append(not_arrived.pop(0))\n    if nåværende is None and klar:\n        nåværende = klar.pop(0)\n        kjørt = 0\n    if nåværende is None:\n        if not not_arrived: break\n        log.append((tick, None)); continue\n    nåværende.remaining -= 1\n    kjørt += 1\n    log.append((tick, nåværende.pid))\n    for p in klar: p.waited += 1\n    if nåværende.is_done():\n        nåværende.completed_at = tick + 1\n        nåværende = None\n    elif kjørt == kvantum and klar:\n        klar.append(nåværende)\n        nåværende = None",
+    },
+
+    // ============ LEKSJON 4 ===========================================
+    {
+      id: "04-priority-starvation",
+      title: "4. Prioritetsscheduling (og starvation)",
+      narrative:
+        "Alle prosesser er ikke like viktige. En backup-jobb i bakgrunnen burde vike for en interaktiv prosess. **Prioritetsscheduling** velger alltid prosessen med høyest prioritet (lavest tall i Unix-konvensjonen) fra klar-køen.\n\nMen det har en skygge-side: **starvation**. Hvis det stadig kommer høy-prioritet-prosesser, vil en lav-prioritet-prosess kanskje *aldri* få CPU.\n\nVi demonstrerer dette med en lav-prioritet-prosess (P3, prio 9) som ankommer på tick 0 — men nye høy-prioritet-prosesser (prio 1) ankommer på tick 2 og 4. P3 sulter.\n\n**Din oppgave:** Implementér `run_priority(processes, max_ticks=20)`. Ved hvert valg fra klar-køen, plukk prosessen med lavest priority-tall (ikke nødvendigvis front). Ingen preempting innen samme prosess.",
+      files: {
+        "scheduler.py": `class Process:
+    def __init__(self, pid, arrival, burst, priority=5):
+        self.pid = pid
+        self.arrival = arrival
+        self.burst = burst
+        self.remaining = burst
+        self.priority = priority
+        self.waited = 0
+        self.completed_at = None
+
+    def is_done(self):
+        return self.remaining <= 0
+
+    def __repr__(self):
+        return f"P{self.pid}"
+
+
+def run_priority(processes, max_ticks=20):
+    """Velg alltid prosessen med LAVEST priority-tall fra klar-køen."""
+    not_arrived = sorted(processes, key=lambda p: p.arrival)
+    klar = []
+    log = []
+    nåværende = None
+
+    # === DIN OPPGAVE ===
+    # Som FCFS, MEN ved valg fra klar plukker vi prosessen med
+    # min(priority). Bruk klar.remove(p) for å fjerne den valgte.
+    return log
+
+
+def sjekk(faktisk, forventet, navn):
+    print(f"OK   {navn}" if faktisk == forventet else f"FEIL {navn}: fikk {faktisk!r}, forventet {forventet!r}")
+
+
+# Demo: P3 har lav prioritet og ankommer først, men sulter
+ps = [
+    Process(pid=3, arrival=0, burst=4, priority=9),  # lav prio (sultende)
+    Process(pid=1, arrival=2, burst=3, priority=1),  # høy prio
+    Process(pid=2, arrival=4, burst=3, priority=1),  # høy prio
+]
+log = run_priority(ps, max_ticks=15)
+
+# Tick 0-1: bare P3 i køen → den kjører
+sjekk(log[0][1], 3, "tick 0: P3 kjører (eneste i kø)")
+sjekk(log[1][1], 3, "tick 1: P3 fortsatt")
+
+# Tick 2: P1 ankommer (prio 1) — preempting skjer IKKE her
+# fordi nåværende er P3 og ingen preempting i denne enkle versjonen.
+# Men når P3 er ferdig velger vi P1 fremfor å gå tilbake til seg selv.
+# Faktisk: i denne enkle versjonen kjører P3 ferdig (4 ticks: 0-3),
+# deretter P1 (tick 4-6), så P2 (tick 7-9).
+
+# La oss heller demonstrere med samme starttidspunkt:
+ps2 = [
+    Process(pid=10, arrival=0, burst=3, priority=9),  # lav prio
+    Process(pid=20, arrival=0, burst=3, priority=1),  # høy prio
+    Process(pid=30, arrival=0, burst=3, priority=5),  # medium prio
+]
+log2 = run_priority(ps2, max_ticks=15)
+
+# Forventet: P20 (prio 1) først, så P30 (prio 5), så P10 (prio 9)
+sjekk(log2[0][1], 20, "samme arrival: høyeste prio (P20) først")
+sjekk(log2[3][1], 30, "deretter P30 (medium prio)")
+sjekk(log2[6][1], 10, "P10 sist (lavest prio)")
+
+# Vis starvation: P10 ventet 6 ticks selv om den var i køen fra start
+sjekk(ps2[0].waited, 6, "P10 ventet 6 ticks (svekket av prio)")
+sjekk(ps2[1].waited, 0, "P20 ventet 0 (kjørte umiddelbart)")
+`,
+      },
+      defaultFile: "scheduler.py",
+      editable: ["scheduler.py"],
+      run: { kind: "python-script", entry: "scheduler.py" },
+      verifications: [
+        { label: "Eneste prosess i kø kjøres", check: { kind: "output-contains", needle: "OK   tick 0: P3 kjører (eneste i kø)" } },
+        { label: "Høyeste prioritet velges først", check: { kind: "output-contains", needle: "OK   samme arrival: høyeste prio (P20) først" } },
+        { label: "Medium prioritet kjøres deretter", check: { kind: "output-contains", needle: "OK   deretter P30 (medium prio)" } },
+        { label: "Lav prioritet kjøres sist", check: { kind: "output-contains", needle: "OK   P10 sist (lavest prio)" } },
+        { label: "Lav-prio prosess ventet mens andre kjørte", check: { kind: "output-contains", needle: "OK   P10 ventet 6 ticks (svekket av prio)" } },
+        { label: "Høy-prio prosess fikk kjøre umiddelbart", check: { kind: "output-contains", needle: "OK   P20 ventet 0 (kjørte umiddelbart)" } },
+      ],
+      hint:
+        "for tick in range(max_ticks):\n    while not_arrived and not_arrived[0].arrival <= tick:\n        klar.append(not_arrived.pop(0))\n    if nåværende is None and klar:\n        nåværende = min(klar, key=lambda p: p.priority)\n        klar.remove(nåværende)\n    if nåværende is None:\n        if not not_arrived: break\n        log.append((tick, None)); continue\n    nåværende.remaining -= 1\n    log.append((tick, nåværende.pid))\n    for p in klar: p.waited += 1\n    if nåværende.is_done():\n        nåværende.completed_at = tick + 1\n        nåværende = None\nreturn log",
+    },
+
+    // ============ LEKSJON 5 ===========================================
+    {
+      id: "05-aging",
+      title: "5. Aging — fairness-fix for starvation",
+      narrative:
+        "Starvation-problemet løses med **aging**: jo lengre en prosess venter, jo høyere blir dens effektive prioritet. Etter nok ventetid får selv lav-prio-prosessen kjøre.\n\nEnkel formel: `effektiv_prio = priority - waited // ALDER`. Når waited øker, synker effektiv_prio (lavere tall = høyere prio). ALDER = 4 betyr at hver 4. tick i kø reduserer effektiv_prio med 1.\n\n**Din oppgave:** Implementér `run_aging(processes, alder=4, max_ticks=20)`. Bruk samme struktur som `run_priority`, men ved valg bruker du `effektiv_prio = p.priority - p.waited // alder` i stedet for `p.priority`.\n\nResultat: P10 (prio 9) sulter ikke lenger — etter ~16 ticks venting blir den effektive prioriteten 9 - 16//4 = 5, og den blir konkurransedyktig.",
+      files: {
+        "scheduler.py": `class Process:
+    def __init__(self, pid, arrival, burst, priority=5):
+        self.pid = pid
+        self.arrival = arrival
+        self.burst = burst
+        self.remaining = burst
+        self.priority = priority
+        self.waited = 0
+        self.completed_at = None
+
+    def is_done(self):
+        return self.remaining <= 0
+
+
+def run_aging(processes, alder=4, max_ticks=30):
+    """Prioritetsscheduling med aging: effektiv_prio = priority - waited // alder."""
+    not_arrived = sorted(processes, key=lambda p: p.arrival)
+    klar = []
+    log = []
+    nåværende = None
+
+    # === DIN OPPGAVE ===
+    # Som run_priority, men ved valg fra klar:
+    #   def effektiv(p): return p.priority - p.waited // alder
+    #   nåværende = min(klar, key=effektiv)
+    return log
+
+
+def sjekk(faktisk, forventet, navn):
+    print(f"OK   {navn}" if faktisk == forventet else f"FEIL {navn}: fikk {faktisk!r}, forventet {forventet!r}")
+
+
+# Strømming av høy-prio-jobber — utfordrer aging
+# P_low: prio 9, ankommer tick 0
+# P_high*: prio 1, ankommer tick 0, 1, 2, 3, 4, 5, 6, 7 — én pr tick
+P_low = Process(pid=99, arrival=0, burst=2, priority=9)
+P_highs = [Process(pid=i+1, arrival=i, burst=1, priority=1) for i in range(8)]
+
+log = run_aging([P_low] + P_highs, alder=4, max_ticks=30)
+
+# Uten aging hadde P99 aldri kjørt før alle høy-prio var ferdig (tick 8).
+# Med aging blir P99s effektive prio etter 4 ticks venting: 9 - 4//4 = 8.
+# Etter 8 ticks: 9 - 2 = 7. Etter 16 ticks: 9 - 4 = 5.
+# Når effektiv_prio matcher noen i køen, kan P99 vinne.
+sjekk(P_low.completed_at is not None, True, "P_low (sultende) fullføres med aging")
+sjekk(P_low.completed_at <= 30, True, "P_low ferdig innen max_ticks")
+
+print(f"P_low fullført på tick {P_low.completed_at}")
+print(f"P_low ventet {P_low.waited} ticks før den fikk kjøre")
+`,
+      },
+      defaultFile: "scheduler.py",
+      editable: ["scheduler.py"],
+      run: { kind: "python-script", entry: "scheduler.py" },
+      verifications: [
+        { label: "P_low fullføres takket være aging", check: { kind: "output-contains", needle: "OK   P_low (sultende) fullføres med aging" } },
+        { label: "P_low ferdig før max_ticks", check: { kind: "output-contains", needle: "OK   P_low ferdig innen max_ticks" } },
+      ],
+      hint:
+        "for tick in range(max_ticks):\n    while not_arrived and not_arrived[0].arrival <= tick:\n        klar.append(not_arrived.pop(0))\n    if nåværende is None and klar:\n        nåværende = min(klar, key=lambda p: p.priority - p.waited // alder)\n        klar.remove(nåværende)\n    if nåværende is None:\n        if not not_arrived: break\n        log.append((tick, None)); continue\n    nåværende.remaining -= 1\n    log.append((tick, nåværende.pid))\n    for p in klar: p.waited += 1\n    if nåværende.is_done():\n        nåværende.completed_at = tick + 1\n        nåværende = None\nreturn log",
+    },
+
+    // ============ LEKSJON 6 ===========================================
+    {
+      id: "06-compare",
+      title: "6. Head-to-head: hvilken algoritme vinner?",
+      narrative:
+        "Du har nå fire schedulere: FCFS, RR, prioritet, og aging-prioritet. Spørsmålet er: **hvilken er best?**\n\nSvaret er at det kommer an på hva du måler. Vi kjører samme workload gjennom alle fire og rapporterer:\n\n- **Snitt-venting** — hvor lenge ventet prosesser i køen (lavere er bedre)\n- **Total tid** — siste completion (lavere er bedre = bedre gjennomstrømning)\n- **Sulting** — antall prosesser som aldri ble ferdig (lavere er bedre)\n\nWorkloaden: 5 prosesser, blanding av lange/korte og høy/lav prioritet.\n\n**Din oppgave:** Implementér `sammenlign(navn_til_runner)` som tar en dict med navn → runner-funksjon, kjører alle på en fersk kopi av workloaden, og printer tabell. Funksjonene har ulik signatur:\n\n- FCFS: `run_fcfs(processes)`\n- RR: `lambda ps: run_rr(ps, kvantum=3)`\n- Prio: `run_priority(processes)`\n- Aging: `lambda ps: run_aging(ps, alder=3)`\n\nDu får hjelpefunksjoner `kopier_workload()` og `metrikker(processes, log)`.",
+      files: {
+        "scheduler.py": `import copy
+
+
+class Process:
+    def __init__(self, pid, arrival, burst, priority=5):
+        self.pid = pid
+        self.arrival = arrival
+        self.burst = burst
+        self.remaining = burst
+        self.priority = priority
+        self.waited = 0
+        self.completed_at = None
+
+    def is_done(self):
+        return self.remaining <= 0
+
+
+# === Alle fire algoritmer (gjenbruk fra leksjon 2-5) ===
+
+def run_fcfs(ps, max_ticks=100):
+    na = sorted(ps, key=lambda p: p.arrival); klar = []; log = []; n = None
+    for tick in range(max_ticks):
+        while na and na[0].arrival <= tick: klar.append(na.pop(0))
+        if n is None and klar: n = klar.pop(0)
+        if n is None:
+            if not na: break
+            log.append((tick, None)); continue
+        n.remaining -= 1; log.append((tick, n.pid))
+        for p in klar: p.waited += 1
+        if n.is_done(): n.completed_at = tick + 1; n = None
+    return log
+
+
+def run_rr(ps, kvantum=3, max_ticks=100):
+    na = sorted(ps, key=lambda p: p.arrival); klar = []; log = []; n = None; kjørt = 0
+    for tick in range(max_ticks):
+        while na and na[0].arrival <= tick: klar.append(na.pop(0))
+        if n is None and klar: n = klar.pop(0); kjørt = 0
+        if n is None:
+            if not na: break
+            log.append((tick, None)); continue
+        n.remaining -= 1; kjørt += 1; log.append((tick, n.pid))
+        for p in klar: p.waited += 1
+        if n.is_done(): n.completed_at = tick + 1; n = None
+        elif kjørt == kvantum and klar: klar.append(n); n = None
+    return log
+
+
+def run_priority(ps, max_ticks=100):
+    na = sorted(ps, key=lambda p: p.arrival); klar = []; log = []; n = None
+    for tick in range(max_ticks):
+        while na and na[0].arrival <= tick: klar.append(na.pop(0))
+        if n is None and klar:
+            n = min(klar, key=lambda p: p.priority); klar.remove(n)
+        if n is None:
+            if not na: break
+            log.append((tick, None)); continue
+        n.remaining -= 1; log.append((tick, n.pid))
+        for p in klar: p.waited += 1
+        if n.is_done(): n.completed_at = tick + 1; n = None
+    return log
+
+
+def run_aging(ps, alder=3, max_ticks=100):
+    na = sorted(ps, key=lambda p: p.arrival); klar = []; log = []; n = None
+    for tick in range(max_ticks):
+        while na and na[0].arrival <= tick: klar.append(na.pop(0))
+        if n is None and klar:
+            n = min(klar, key=lambda p: p.priority - p.waited // alder); klar.remove(n)
+        if n is None:
+            if not na: break
+            log.append((tick, None)); continue
+        n.remaining -= 1; log.append((tick, n.pid))
+        for p in klar: p.waited += 1
+        if n.is_done(): n.completed_at = tick + 1; n = None
+    return log
+
+
+# === Workload + helpers ===
+
+def workload():
+    return [
+        Process(pid=1, arrival=0, burst=6, priority=3),   # lang, medium prio
+        Process(pid=2, arrival=1, burst=2, priority=1),   # kort, høy prio
+        Process(pid=3, arrival=2, burst=8, priority=9),   # lang, lav prio
+        Process(pid=4, arrival=3, burst=3, priority=5),   # medium
+        Process(pid=5, arrival=4, burst=1, priority=2),   # superkort, høy prio
+    ]
+
+
+def metrikker(ps, log):
+    snitt = sum(p.waited for p in ps) / len(ps)
+    fullfort = [p for p in ps if p.completed_at is not None]
+    total = max((p.completed_at for p in fullfort), default=0)
+    sultne = len(ps) - len(fullfort)
+    return snitt, total, sultne
+
+
+# === DIN OPPGAVE ===
+# Lag en funksjon sammenlign() som kjører alle fire på fersk workload
+# og printer tabell. Bruk copy.deepcopy(workload()) for hver kjøring.
+def sammenlign():
+    pass
+
+
+def sjekk(faktisk, forventet, navn):
+    print(f"OK   {navn}" if faktisk == forventet else f"FEIL {navn}: fikk {faktisk!r}, forventet {forventet!r}")
+
+
+sammenlign()
+
+# Kontroll: kjør hver separat og verifiser at de ALLE fullfører alle 5
+for navn, kjor in [("FCFS", run_fcfs), ("RR", lambda p: run_rr(p, kvantum=3)),
+                   ("Prio", run_priority), ("Aging", lambda p: run_aging(p, alder=3))]:
+    ps = workload()
+    kjor(ps)
+    fullfort = sum(1 for p in ps if p.completed_at is not None)
+    sjekk(fullfort, 5, f"{navn} fullførte alle 5 prosesser")
+`,
+      },
+      defaultFile: "scheduler.py",
+      editable: ["scheduler.py"],
+      run: { kind: "python-script", entry: "scheduler.py" },
+      verifications: [
+        { label: "FCFS fullfører alle 5 prosesser", check: { kind: "output-contains", needle: "OK   FCFS fullførte alle 5 prosesser" } },
+        { label: "Round Robin fullfører alle 5", check: { kind: "output-contains", needle: "OK   RR fullførte alle 5 prosesser" } },
+        { label: "Prioritet fullfører alle 5 (ingen evig starvation her)", check: { kind: "output-contains", needle: "OK   Prio fullførte alle 5 prosesser" } },
+        { label: "Aging fullfører alle 5", check: { kind: "output-contains", needle: "OK   Aging fullførte alle 5 prosesser" } },
+      ],
+      hint:
+        "def sammenlign():\n    runners = {\n        'FCFS':  run_fcfs,\n        'RR(q=3)': lambda p: run_rr(p, kvantum=3),\n        'Prio':  run_priority,\n        'Aging': lambda p: run_aging(p, alder=3),\n    }\n    print(f\"{'Algoritme':<10} {'Snitt-vent':>11} {'Total tid':>10} {'Sultne':>7}\")\n    print('-' * 42)\n    for navn, kjor in runners.items():\n        ps = workload()\n        log = kjor(ps)\n        snitt, total, sultne = metrikker(ps, log)\n        print(f'{navn:<10} {snitt:>11.2f} {total:>10} {sultne:>7}')",
+    },
+  ],
+};
+
 export const MINI_COURSES: readonly MiniCourse[] = [
   FLASK_FRA_NULL,
   BYGG_MINI_SHELL,
@@ -3571,6 +4177,7 @@ export const MINI_COURSES: readonly MiniCourse[] = [
   TCP_STATE_MACHINE,
   CSP_SUDOKU,
   DNS_RESOLVER,
+  PROSESS_SCHEDULER,
 ];
 
 export function getMiniCourse(slug: string): MiniCourse | undefined {
