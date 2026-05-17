@@ -158,6 +158,7 @@ export const PHASES: readonly CurriculumPhase[] = [
       "dte2507-fra-checksum-til-hmac",
       "dte2507-cbc-iv",
       "dte2507-stateful-firewall",
+      "dte2507-brannmur-pakkeflyt",
       "dte2507-ids-snort",
       "dte2507-day-in-the-life",
       "dte2507-dhcp",

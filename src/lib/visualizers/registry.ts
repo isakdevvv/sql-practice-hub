@@ -335,6 +335,38 @@ export const VISUALIZERS: VizEntry[] = [
     route: "/stack/dte2507-ids-snort",
     tags: ["ids", "snort", "deteksjon", "regel", "dte2507"],
   },
+  {
+    id: "viz-brannmur-packetflow",
+    title: "Brannmur — pakkeflyt og regelmatching",
+    blurb: "Pakke vandrer gjennom regelliste, første match vinner. Endre rekkefølge, se utfallet skifte.",
+    category: "nettverk",
+    route: "/stack/dte2507-brannmur-pakkeflyt#packet",
+    tags: ["brannmur", "firewall", "iptables", "regelkjede", "allow", "drop", "reject", "default-policy", "dte2507"],
+  },
+  {
+    id: "viz-brannmur-stateful",
+    title: "Stateful conntrack — NEW → ESTABLISHED → CLOSED",
+    blurb: "Connection-tabell, TCP-handshake-state, bryt-modus for forfalsket ACK fra internet.",
+    category: "nettverk",
+    route: "/stack/dte2507-brannmur-pakkeflyt#stateful",
+    tags: ["stateful", "conntrack", "connection tracking", "established", "tcp handshake", "ack flood", "dte2507"],
+  },
+  {
+    id: "viz-brannmur-nat",
+    title: "NAT — src/dst-oversettelse og PAT",
+    blurb: "Intern→ekstern mapping. Scenarier: HTTP, PAT-kollisjon, hairpin, P2P-problem.",
+    category: "nettverk",
+    route: "/stack/dte2507-brannmur-pakkeflyt#nat",
+    tags: ["nat", "pat", "port translation", "hairpin", "p2p", "stun", "dte2507"],
+  },
+  {
+    id: "viz-brannmur-dmz",
+    title: "DMZ-topologi — plasser tjenestene",
+    blurb: "Dra 5 tjenester (web, mail, DB, dokumentstore, AD) i LAN/DMZ/Internet. Valider og se sikkerhetsbrudd.",
+    category: "nettverk",
+    route: "/stack/dte2507-brannmur-pakkeflyt#dmz",
+    tags: ["dmz", "topologi", "sone", "least privilege", "defense in depth", "dte2507"],
+  },
 
   // ──── DATABASE ────────────────────────────────────────────────────────
   {
