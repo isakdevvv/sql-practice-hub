@@ -2,6 +2,10 @@ import { useState, useMemo } from "react";
 import { Link } from "@tanstack/react-router";
 import {Lightbulb, ArrowLeft } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
+import { PermutationVsCombinationTree } from "./PermutationVsCombinationTree";
+import { PascalsTriangleViz } from "./PascalsTriangleViz";
+import { UrnModelSimulator } from "./UrnModelSimulator";
+import { CombinatoricsMatchQuiz } from "./CombinatoricsMatchQuiz";
 
 function fact(n: number): number {
   if (n < 0 || !Number.isFinite(n)) return NaN;
@@ -318,6 +322,34 @@ Forholdet:  C(n,k) = P(n,k) / k!
 
         <section className="mb-10">
           <h2 className="text-xl font-semibold mb-3">
+            2b. Tre-utfoldelse: P(n,r) vs C(n,r) visuelt
+          </h2>
+          <p className="text-sm text-muted-foreground mb-3">
+            Velg <em>elementer</em> og <em>antall som velges</em>, og toggle
+            mellom permutasjoner og kombinasjoner. Hvert blad i treet er én
+            mulig sekvens. I kombinasjons-modus gråes duplikat-ordninger ut —
+            de er samme utvalg, bare i annen rekkefølge. Det visualiserer
+            <strong> C(n,r) = P(n,r) / r! </strong>.
+          </p>
+          <PermutationVsCombinationTree />
+        </section>
+
+        <section className="mb-10">
+          <h2 className="text-xl font-semibold mb-3">
+            2c. Pascal-trekanten — C(n,k) som geometri
+          </h2>
+          <p className="text-sm text-muted-foreground mb-3">
+            Hvert tall i trekanten er en binomialkoeffisient. Klikk en celle
+            for å se formelen, eller bygg en sti fra toppen — antall mulige
+            stier til en celle er <em>nettopp</em> C(n,k). Bytt til
+            symmetri-modus for å se at C(n,k) = C(n, n−k), og prøv farge-modus
+            for å se Sierpiński-fraktalen som faller ut av paritet.
+          </p>
+          <PascalsTriangleViz />
+        </section>
+
+        <section className="mb-10">
+          <h2 className="text-xl font-semibold mb-3">
             3. Med eller uten tilbakelegging
           </h2>
           <p className="text-sm text-muted-foreground mb-3">
@@ -340,6 +372,19 @@ Konkret: 20 enheter, 5 defekte. Trekk 3, P(alle defekte)?
   Med tilbakelegging:  (5/20)³ = 0.015625`}</pre>
           </div>
           <TrekkSimulator />
+
+          <div className="mt-6">
+            <h3 className="text-base font-semibold mb-2">
+              Urnemodell — binomial vs hypergeometrisk side ved side
+            </h3>
+            <p className="text-sm text-muted-foreground mb-3">
+              Samme parametere, to fordelinger. Med tilbakelegging er hvert
+              trekk uavhengig (binomial). Uten tilbakelegging endrer
+              sannsynligheten seg fra trekk til trekk (hypergeometrisk). Bytt
+              til <em>Sammenlign</em>-modus for å se hvor mye de avviker.
+            </p>
+            <UrnModelSimulator />
+          </div>
         </section>
 
         <section className="mb-10">
@@ -399,6 +444,19 @@ For 6 rette:
               C(n,k) = C(n, n−k). Velg det som gir minst regning.
             </div>
           </div>
+        </section>
+
+        <section className="mb-10">
+          <h2 className="text-xl font-semibold mb-3">
+            7. Sjekk forståelsen — hvilken formel hører hjemme?
+          </h2>
+          <p className="text-sm text-muted-foreground mb-3">
+            8 praktiske scenarier — match hver til riktig telle-formel. Tenk
+            først: <em>spiller rekkefølgen rolle?</em> Er det <em>med eller
+            uten tilbakelegging?</em> Skal vi <em>partisjonere</em> n elementer
+            i flere grupper?
+          </p>
+          <CombinatoricsMatchQuiz />
         </section>
 
         <div className="mt-10 rounded-xl border border-border bg-card p-5 text-sm">
