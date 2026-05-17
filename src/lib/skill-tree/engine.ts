@@ -359,6 +359,15 @@ export function seedFromDiagnose(
   invalidateCache();
 }
 
+/** Returnerer true hvis brukeren har minst ett seed-entry — dvs. har tatt
+ *  diagnose-pretesten. Brukes av recommender for å vite om vi skal vise
+ *  "ta diagnose først"-kort eller faktiske skill-anbefalinger. */
+export function hasCompletedDiagnose(): boolean {
+  if (typeof window === "undefined") return false;
+  const seed = readSeed();
+  return Object.keys(seed).length > 0;
+}
+
 /** Eksponert hovedsakelig for tester / reset-knapper. */
 export function clearSeed(): void {
   if (typeof window === "undefined") return;

@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { SiteHeader } from "@/components/SiteHeader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -36,7 +36,13 @@ import {
   Pin,
   PinOff,
   Clock,
+  Lightbulb,
 } from "lucide-react";
+import {
+  getTopRecommendation,
+  type Recommendation,
+} from "@/lib/skill-tree/recommender";
+import { hasCompletedDiagnose } from "@/lib/skill-tree/engine";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -321,6 +327,14 @@ function LandingPage() {
   const pinnedSlugs = usePinnedSubjects();
   const lastVisited = useLastVisitedSubject();
   const [query, setQuery] = useState("");
+  // Ferdighets-tre-anbefaling — kun klient-side fordi engine leser localStorage.
+  // Når diagnose er tatt: vis topp-anbefaling. Ellers: CTA til /diagnose.
+  const [topRec, setTopRec] = useState<Recommendation | null>(null);
+  const [diagnosed, setDiagnosed] = useState(false);
+  useEffect(() => {
+    setDiagnosed(hasCompletedDiagnose());
+    setTopRec(getTopRecommendation());
+  }, []);
 
   const pinnedSubjects = useMemo(
     () => pinnedSlugs.map((slug) => SUBJECT_BY_SLUG[slug]).filter(Boolean),
@@ -587,6 +601,65 @@ function LandingPage() {
               body="300+ SQL-oppgaver med ekte SQLite i nettleseren — hopp rett inn, ingen oppsett."
             />
           </div>
+        </section>
+
+        {/* Ferdighets-tre — anbefaling eller diagnose-CTA.
+            Lagt til som NY seksjon etter "Start her" for å unngå konflikt
+            med andre agenter som jobber i denne filen. */}
+        <section className="container mx-auto px-4 pt-8 max-w-5xl">
+          {diagnosed && topRec ? (
+            <div className="rounded-xl border border-brand/40 bg-gradient-to-br from-brand/10 via-card to-card p-5 flex items-start gap-4">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-brand/15 text-brand">
+                <Lightbulb className="h-5 w-5" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="text-[10px] font-bold uppercase tracking-wider text-brand mb-1">
+                  Hva bør jeg lære i dag?
+                </div>
+                <div className="font-semibold text-sm mb-1">{topRec.title}</div>
+                <p className="text-xs text-muted-foreground mb-3">{topRec.reason}</p>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <a
+                    href={topRec.cta.to}
+                    className="inline-flex items-center justify-center rounded-md bg-brand text-brand-foreground text-xs font-medium px-3 py-1.5 hover:bg-brand/90 transition-colors"
+                  >
+                    {topRec.cta.label}
+                    <ArrowRight className="h-3 w-3 ml-1.5" />
+                  </a>
+                  <Link
+                    to="/skill-tre"
+                    className="text-xs text-muted-foreground hover:text-foreground"
+                  >
+                    Se flere anbefalinger →
+                  </Link>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <Link
+              to="/diagnose"
+              className="block rounded-xl border-2 border-dashed border-brand/40 bg-brand/5 hover:bg-brand/10 hover:border-brand/60 p-5 transition-colors"
+            >
+              <div className="flex items-start gap-4">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-brand/15 text-brand">
+                  <Brain className="h-5 w-5" />
+                </div>
+                <div className="flex-1">
+                  <div className="text-[10px] font-bold uppercase tracking-wider text-brand mb-1">
+                    Ny her? Start med diagnose
+                  </div>
+                  <div className="font-semibold text-sm mb-1">
+                    Ta 20-min ferdighets-diagnose
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    Vi kartlegger hva du allerede kan, så du får anbefalinger på
+                    riktig nivå med en gang — istedenfor å gjette deg gjennom.
+                  </p>
+                </div>
+                <ArrowRight className="h-4 w-4 text-brand shrink-0 mt-1" />
+              </div>
+            </Link>
+          )}
         </section>
 
         {/* Mine fag — bygges av brukerens egne valg */}
