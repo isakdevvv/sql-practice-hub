@@ -20,7 +20,14 @@ import {
   PinOff,
   GraduationCap,
   Compass,
+  CalendarClock,
+  Flame,
 } from "lucide-react";
+import {
+  examUrgency,
+  formatDaysUntil,
+  type ExamUrgency,
+} from "@/lib/subjects/examDate";
 
 export const Route = createFileRoute("/mine-fag")({
   head: () => ({
@@ -40,6 +47,55 @@ export const Route = createFileRoute("/mine-fag")({
 // kun her — ingen skriv — så vi kan trygt duplisere konstanten uten å
 // koble oss inn på Agent C sitt eierskap av progress-libben.
 const VISITED_PREFIX = "sql-practice-course-visited-v1:";
+
+// Lavere tall = høyere prioritet i pinned-listen.
+//   urgent (< 30 dager) → 0
+//   soon   (< 90)       → 1
+//   later  (≥ 90)       → 2
+//   no-date (hjemmeeks.) → 3
+//   past               → 4
+function urgencyRank(u: ExamUrgency, days: number | null): number {
+  if (u === "urgent") return 0;
+  if (u === "soon") return 1;
+  if (u === "later") return 2;
+  if (u === "no-date") return 3;
+  // past: sortér eldste sist
+  return 4;
+}
+
+// Tailwind-klasser for countdown-pillen, basert på urgens.
+function urgencyClasses(u: ExamUrgency): {
+  pill: string;
+  iconColor: string;
+} {
+  switch (u) {
+    case "urgent":
+      return {
+        pill: "bg-rose-500/10 text-rose-700 dark:text-rose-300 border-rose-500/40",
+        iconColor: "text-rose-600 dark:text-rose-400",
+      };
+    case "soon":
+      return {
+        pill: "bg-amber-500/10 text-amber-700 dark:text-amber-300 border-amber-500/40",
+        iconColor: "text-amber-600 dark:text-amber-400",
+      };
+    case "later":
+      return {
+        pill: "bg-brand/10 text-brand border-brand/30",
+        iconColor: "text-brand",
+      };
+    case "no-date":
+      return {
+        pill: "bg-muted text-muted-foreground border-border",
+        iconColor: "text-muted-foreground",
+      };
+    case "past":
+      return {
+        pill: "bg-muted text-muted-foreground border-border line-through",
+        iconColor: "text-muted-foreground",
+      };
+  }
+}
 
 /** Antall unike seksjoner brukeren har scrollet til på fagets hub-side
  *  (eller hovedside i stack-routet). Det er det vi har av "fremgang" som
@@ -97,10 +153,35 @@ function MineFagPage() {
   );
   const visited = useVisitedCounts(allSlugs);
 
-  const pinnedSubjects = useMemo(
-    () => pinnedSlugs.map((slug) => SUBJECT_BY_SLUG[slug]).filter(Boolean),
-    [pinnedSlugs],
-  );
+  // Pinned fag sortert etter nærmeste eksamen. Fag uten dato (hjemmeeks./mappe)
+  // og fag med passert eksamen havner sist, men i samme rekkefølge som de ble
+  // pinnet (stabil sort).
+  const pinnedSubjects = useMemo(() => {
+    const subjects = pinnedSlugs
+      .map((slug) => SUBJECT_BY_SLUG[slug])
+      .filter(Boolean);
+    return subjects.slice().sort((a, b) => {
+      const ua = examUrgency(EXAM_META[a.slug]?.eksamen);
+      const ub = examUrgency(EXAM_META[b.slug]?.eksamen);
+      const rankA = urgencyRank(ua.urgency, ua.days);
+      const rankB = urgencyRank(ub.urgency, ub.days);
+      if (rankA !== rankB) return rankA - rankB;
+      // Innen samme tier: sortér på antall dager (færre først)
+      if (ua.days != null && ub.days != null) return ua.days - ub.days;
+      return 0;
+    });
+  }, [pinnedSlugs]);
+
+  // Den nærmeste fremtidige eksamen blant pinnede fag (eller blant alle fag
+  // hvis ingen pinnede har eksamen) — brukes til top-banneret.
+  const nextExam = useMemo(() => {
+    const pool = pinnedSubjects.length > 0 ? pinnedSubjects : null;
+    const candidates = (pool ?? Object.values(SUBJECT_BY_SLUG))
+      .map((s) => ({ subject: s, u: examUrgency(EXAM_META[s.slug]?.eksamen) }))
+      .filter((x) => x.u.days != null && x.u.days >= 0)
+      .sort((a, b) => (a.u.days ?? 0) - (b.u.days ?? 0));
+    return candidates[0] ?? null;
+  }, [pinnedSubjects]);
 
   const lastVisitedSubject = useMemo(
     () => (lastVisited ? SUBJECT_BY_SLUG[lastVisited.slug] ?? null : null),
@@ -157,6 +238,42 @@ function MineFagPage() {
             </div>
           </div>
         </section>
+
+        {/* Neste eksamen-banner */}
+        {nextExam && nextExam.u.days != null && (
+          <section className="container mx-auto px-4 pt-6 max-w-5xl">
+            <Link
+              to="/stack/$slug"
+              params={{ slug: nextExam.subject.slug }}
+              className={`group flex items-center gap-3 rounded-xl border-2 px-4 py-3.5 transition-colors hover:border-foreground/40 ${urgencyClasses(nextExam.u.urgency).pill}`}
+            >
+              <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-background/60 ${urgencyClasses(nextExam.u.urgency).iconColor}`}>
+                {nextExam.u.urgency === "urgent" ? (
+                  <Flame className="h-4.5 w-4.5" />
+                ) : (
+                  <CalendarClock className="h-4.5 w-4.5" />
+                )}
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="text-[10px] font-bold uppercase tracking-wider opacity-80 mb-0.5">
+                  Neste eksamen
+                </div>
+                <div className="text-sm font-semibold truncate">
+                  {nextExam.subject.code} — {nextExam.subject.navn}
+                </div>
+              </div>
+              <div className="text-right shrink-0">
+                <div className="text-base font-bold tabular-nums leading-none">
+                  {formatDaysUntil(nextExam.u.days)}
+                </div>
+                <div className="text-[10px] opacity-80 mt-1">
+                  {EXAM_META[nextExam.subject.slug]?.eksamen}
+                </div>
+              </div>
+              <ArrowRight className="h-4 w-4 shrink-0 opacity-70 group-hover:translate-x-0.5 transition-transform" />
+            </Link>
+          </section>
+        )}
 
         {/* Fortsett der du slapp */}
         {lastVisitedSubject && (
@@ -299,6 +416,8 @@ function PinnedSubjectCard({
   const Icon = subject.Icon;
   const meta = EXAM_META[subject.slug];
   const started = visitedCount > 0;
+  const u = examUrgency(meta?.eksamen);
+  const urgencyStyle = urgencyClasses(u.urgency);
   return (
     <div className="group relative rounded-xl border-2 border-brand/40 bg-gradient-to-br from-brand/5 via-card to-success/5 hover:border-brand p-5 transition-colors shadow-sm hover:shadow-md hover:shadow-brand/10">
       <PinToggleButton slug={subject.slug} pinned={true} />
@@ -323,6 +442,20 @@ function PinnedSubjectCard({
               )}
             </div>
           </div>
+          {/* Countdown-pille i hjørnet — bare hvis vi har en faktisk dato */}
+          {u.days != null && u.days >= 0 && (
+            <span
+              className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] font-semibold tabular-nums shrink-0 ${urgencyStyle.pill}`}
+              title={meta?.eksamen}
+            >
+              {u.urgency === "urgent" ? (
+                <Flame className="h-3 w-3" />
+              ) : (
+                <CalendarClock className="h-3 w-3" />
+              )}
+              {formatDaysUntil(u.days)}
+            </span>
+          )}
         </div>
         <h4 className="font-semibold text-foreground leading-tight mb-1.5">
           {subject.navn}
