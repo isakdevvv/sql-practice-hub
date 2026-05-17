@@ -7,16 +7,18 @@ import { ProfileButton } from "@/components/ProfileButton";
 import { XpBar } from "@/components/XpBar";
 import { XpToast } from "@/components/XpToast";
 
-// 6 hubs. Spor og Mini-kurs lagt til i fase A-IA-fix —
-// før dette var de kun oppdagelig via globalt søk.
-const HUBS: { label: string; to: string }[] = [
-  { label: "Lær", to: "/lar" },
-  { label: "Øv", to: "/ov" },
-  { label: "Predict", to: "/predict" },
-  { label: "Spor", to: "/spor" },
-  { label: "Skill-tre", to: "/skill-tre" },
-  { label: "Mini-kurs", to: "/mini-kurs" },
-  { label: "Eksamen", to: "/eksamen" },
+type HubLink = { label: string; to: string; params?: Record<string, string> };
+
+// 4 menypunkter — forenklet fra 8. Mine fag er hovedinngangen for studenter
+// som vet hvilket emne de jobber med; Verktøy samler frittstående verktøy
+// (sandbox, drills, predict, skill-tre, konsept-oppslag, mini-kurs);
+// Læreplan er den lineære stien fra transistor til Flask.
+// Gamle ruter (/ov, /predict, /spor, /skill-tre, /mini-kurs, /eksamen)
+// er fortsatt nåbare via Verktøy-siden og fag-sidene.
+const HUBS: HubLink[] = [
+  { label: "Mine fag", to: "/mine-fag" },
+  { label: "Verktøy", to: "/lar" },
+  { label: "Læreplan", to: "/stack/$slug", params: { slug: "laereplan" } },
   { label: "Du", to: "/dashboard" },
 ];
 
@@ -47,8 +49,11 @@ export function SiteHeader() {
         <nav className="hidden md:flex items-center gap-1 text-sm shrink-0">
           {HUBS.map((p) => (
             <Link
-              key={p.to}
-              to={p.to}
+              key={p.label}
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              to={p.to as any}
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              params={p.params as any}
               className="rounded-md px-2.5 py-1.5 text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
               activeProps={{ className: "rounded-md px-2.5 py-1.5 text-foreground bg-accent" }}
             >
@@ -92,8 +97,11 @@ export function SiteHeader() {
           <div className="container mx-auto px-4 py-2 flex flex-col gap-0.5">
             {HUBS.map((p) => (
               <Link
-                key={p.to}
-                to={p.to}
+                key={p.label}
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                to={p.to as any}
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                params={p.params as any}
                 onClick={() => setMobileOpen(false)}
                 className="rounded-md px-3 py-2 text-sm text-foreground hover:bg-accent transition-colors"
                 activeProps={{ className: "rounded-md px-3 py-2 text-sm text-foreground bg-accent font-semibold" }}
