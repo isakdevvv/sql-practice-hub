@@ -2727,6 +2727,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Hva er gjennomsnitt (mean)?",
     answer:
       "Summen av alle verdier delt på antall. Formel: x̄ = (1/n) Σ xᵢ. Bruker all informasjon men er sårbar for outliers — én ekstremverdi kan flytte mean kraftig.",
+    visual: "stat-ford-mean-vs-median",
   },
   {
     id: "c-tek1-median",
@@ -2735,6 +2736,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Hva er median, og når foretrekkes den fremfor mean?",
     answer:
       "Median er den midtre verdien i sortert datasett (eller snittet av de to midtre hvis n er partall). Foretrekkes ved skjeve fordelinger eller når det er outliers, fordi median er robust — den påvirkes ikke av ekstreme verdier.",
+    visual: "stat-ford-mean-vs-median",
   },
   {
     id: "c-tek1-modus",
@@ -2751,6 +2753,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Formel for stikkprøve-varians s²?",
     answer:
       "s² = (1/(n−1)) · Σ (xᵢ − x̄)². Vi deler på n−1 (ikke n) — Bessel-korreksjonen — for å få en forventningsrett estimator for σ². I numpy: np.var(x, ddof=1).",
+    visual: "stat-ford-variance-squares",
   },
   {
     id: "c-tek1-std",
@@ -2759,6 +2762,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Hva er standardavvik, og hvorfor brukes det?",
     answer:
       "s = √s² — kvadratroten av varians. Foretrekkes fremfor varians fordi det har samme enhet som dataene (m, sek, kr), så det er lettere å tolke direkte.",
+    visual: "stat-ford-variance-squares",
   },
   {
     id: "c-tek1-iqr",
@@ -2767,6 +2771,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Hva er IQR, og hva forteller det?",
     answer:
       "IQR (Interquartile Range) = Q3 − Q1. Spredningen i de midtre 50 % av dataene. Robust mot outliers — i motsetning til standardavvik. Grunnlaget for boksplottets boks.",
+    visual: "stat-ford-boxplot-anatomy",
   },
   {
     id: "c-tek1-quartiles",
@@ -2775,6 +2780,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Hva er kvartiler (Q1, Q2, Q3)?",
     answer:
       "Verdier som deler datasettet i fire like deler. Q1 = 25-persentilen (25 % av data er ≤ Q1). Q2 = median (50 %). Q3 = 75-persentilen. Sammen med min og max danner de 5-tallsoppsummeringen som boksplott bygges på.",
+    visual: "stat-ford-boxplot-anatomy",
   },
   {
     id: "c-tek1-skewness",
@@ -2783,6 +2789,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Hva er en skjev (skewed) fordeling?",
     answer:
       "En fordeling som IKKE er symmetrisk. Høyrehale-skjev (positiv): lang hale mot høyre, mean > median (eks: inntekt). Venstrehale-skjev (negativ): lang hale mot venstre, mean < median (eks: eksamen-resultater for lett oppgave).",
+    visual: "stat-ford-skewness",
   },
   {
     id: "c-tek1-outlier",
@@ -2791,6 +2798,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Hvordan defineres en outlier (1.5·IQR-regelen)?",
     answer:
       "En observasjon er outlier hvis den er under Q1 − 1.5·IQR eller over Q3 + 1.5·IQR. Tukey-regelen — også grensen for whiskers i boksplott. Verdier utenfor markeres som punkter.",
+    visual: "stat-ford-boxplot-anatomy",
   },
   {
     id: "c-tek1-histogram-bins",
@@ -2799,6 +2807,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Hvor mange bins bør et histogram ha?",
     answer:
       "Tommelfingerregel: bins ≈ √n eller Sturges' formel ⌈log₂ n + 1⌉. For få bins skjuler struktur, for mange viser bare støy. Eksperimenter — målet er å se den underliggende formen.",
+    visual: "stat-ford-histogram-bins",
   },
 
   // Sannsynlighet
@@ -2809,6 +2818,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Kolmogorovs tre sannsynlighets-aksiomer?",
     answer:
       "(1) 0 ≤ P(A) ≤ 1. (2) P(Ω) = 1. (3) P(A ∪ B) = P(A) + P(B) hvis A ∩ B = ∅. All sannsynlighetsteori bygger fra disse tre reglene.",
+    visual: "stat-ford-prob-axioms",
   },
   {
     id: "c-tek1-complement",
@@ -2825,6 +2835,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Inklusjon-eksklusjon for P(A ∪ B)?",
     answer:
       "P(A ∪ B) = P(A) + P(B) − P(A ∩ B). Vi må trekke fra snittet, ellers dobbelt-teller vi overlappet. Hvis A og B er disjunkte er P(A ∩ B) = 0 og formelen forenkles.",
+    visual: "stat-ford-inclusion-exclusion",
   },
   {
     id: "c-tek1-conditional",
@@ -2833,6 +2844,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Definisjon av betinget sannsynlighet P(A | B)?",
     answer:
       "P(A | B) = P(A ∩ B) / P(B), forutsatt P(B) > 0. Tolkning: 'sannsynligheten for A, gitt at B har skjedd'. Snitt over evidence.",
+    visual: "stat-ford-conditional",
   },
   {
     id: "c-tek1-independence",
@@ -2841,6 +2853,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Når er A og B uavhengige?",
     answer:
       "Når P(A ∩ B) = P(A) · P(B). Ekvivalent: P(A | B) = P(A). NB: uavhengig er IKKE det samme som disjunkt — disjunkte hendelser med positiv sannsynlighet er nødvendigvis avhengige.",
+    visual: "stat-ford-independence",
   },
   {
     id: "c-tek1-bayes",
@@ -2849,6 +2862,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Bayes' teorem?",
     answer:
       "P(A | B) = P(B | A) · P(A) / P(B). Snur betingingen: gitt P(B | A), kan vi finne P(A | B). Bruk for diagnostiske tester, kvalitetskontroll, oppdaterte tro etter observasjon.",
+    visual: "stat-ford-bayes-tree",
   },
   {
     id: "c-tek1-total-prob",
@@ -2857,6 +2871,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Total sannsynlighet (med partisjon)?",
     answer:
       "Hvis B₁, ..., Bₙ er en partisjon av Ω: P(A) = Σᵢ P(A | Bᵢ) · P(Bᵢ). Brukes til å beregne P(B) i nevneren av Bayes-formelen — eks: P(test+) = P(test+|syk)·P(syk) + P(test+|frisk)·P(frisk).",
+    visual: "stat-ford-total-prob",
   },
   {
     id: "c-tek1-permutation",
@@ -2865,6 +2880,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Permutasjon-formel P(n, k)?",
     answer:
       "P(n, k) = n! / (n−k)! — antall måter å velge k av n der REKKEFØLGEN teller. Eks: 8 løpere, antall ulike topp-3-rekkefølger = 8·7·6 = 336.",
+    visual: "stat-ford-perm-tree",
   },
   {
     id: "c-tek1-combination",
@@ -2873,6 +2889,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Kombinasjon-formel C(n, k) / 'n velg k'?",
     answer:
       "C(n, k) = n! / (k!(n−k)!) — antall måter å velge k av n der rekkefølgen IKKE teller. Eks: 8 personer, velg 3 til en gruppe = C(8,3) = 56.",
+    visual: "stat-ford-comb-grid",
   },
   {
     id: "c-tek1-perm-vs-comb",
@@ -2881,6 +2898,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Permutasjon eller kombinasjon — hvordan velge?",
     answer:
       "Spør: 'spiller rekkefølgen rolle?'. Hvis JA (pall, kode, rangering) → permutasjon P(n,k). Hvis NEI (komité, utvalg, lottokupong) → kombinasjon C(n,k).",
+    visual: "stat-ford-perm-vs-comb",
   },
 
   // Fordelinger
@@ -2891,6 +2909,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Hva er en stokastisk variabel?",
     answer:
       "En funksjon X: Ω → ℝ som tilordner et tall til hvert utfall. Diskret (tellbart antall verdier) eller kontinuerlig (intervall i ℝ). Beskrives av PMF (diskret) eller PDF (kontinuerlig).",
+    visual: "stat-ford-rv-pmf-pdf",
   },
   {
     id: "c-tek1-expected",
@@ -2899,6 +2918,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Forventning E[X] — formel?",
     answer:
       "Diskret: E[X] = Σ x · p(x). Kontinuerlig: E[X] = ∫ x · f(x) dx. Lineær: E[aX + b] = aE[X] + b, E[X + Y] = E[X] + E[Y] (alltid).",
+    visual: "stat-ford-expected-balance",
   },
   {
     id: "c-tek1-variance-rv",
@@ -2915,6 +2935,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Bernoulli(p) — kjernefakta?",
     answer:
       "Ett forsøk, to utfall: suksess (p) eller fiasko (1−p). E[X] = p, Var(X) = p(1−p). Byggesteinen for binomisk fordeling.",
+    visual: "stat-ford-bernoulli",
   },
   {
     id: "c-tek1-binomial",
@@ -2923,6 +2944,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Binomisk B(n, p) — PMF, E, Var?",
     answer:
       "P(X = k) = C(n,k) · pᵏ · (1−p)ⁿ⁻ᵏ. E[X] = np, Var(X) = np(1−p). Brukes for antall suksesser i n uavhengige forsøk med samme p.",
+    visual: "stat-ford-binomial",
   },
   {
     id: "c-tek1-hypergeom",
@@ -2931,6 +2953,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Hypergeometrisk vs. binomisk?",
     answer:
       "Hypergeometrisk: trekninger UTEN tilbakelegging (P endres for hvert trekk). Binomisk: trekninger MED tilbakelegging eller fra stor populasjon (P konstant). For store N er hypergeometrisk ≈ binomisk.",
+    visual: "stat-ford-hypergeom",
   },
   {
     id: "c-tek1-poisson",
@@ -2939,6 +2962,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Poisson(λ) — PMF og kjernefakta?",
     answer:
       "P(X = k) = e^(−λ) · λᵏ / k!. E[X] = Var(X) = λ. Brukes for antall sjeldne hendelser i fast intervall (kundeankomster, defekter per areal).",
+    visual: "stat-ford-poisson",
   },
   {
     id: "c-tek1-poi-approx-bin",
@@ -2947,6 +2971,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Når kan Poisson tilnærme binomisk?",
     answer:
       "Når n er stor (≥ 30) og p er liten (≤ 0.1), slik at np ≤ 10. Da gjelder B(n, p) ≈ Poi(np). Tilnærmingen er kraftig fordi den krever bare ett parameter (λ) i stedet for to (n, p).",
+    visual: "stat-ford-poisson-vs-binomial",
   },
   {
     id: "c-tek1-uniform",
@@ -2955,6 +2980,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Uniform U(a, b) — PDF, E, Var?",
     answer:
       "f(x) = 1/(b−a) for a ≤ x ≤ b. E[X] = (a+b)/2, Var(X) = (b−a)²/12. Konstant tetthet over intervallet.",
+    visual: "stat-ford-uniform",
   },
   {
     id: "c-tek1-exp",
@@ -2963,6 +2989,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Eksponential Exp(λ) — PDF, E, Var, memoryless?",
     answer:
       "f(x) = λ e^(−λx) for x ≥ 0. E[X] = 1/λ, Var(X) = 1/λ². Memoryless: P(X > s+t | X > s) = P(X > t). Brukes for tid mellom Poisson-hendelser, levetid uten aldring.",
+    visual: "stat-ford-exponential",
   },
   {
     id: "c-tek1-normal",
@@ -2971,6 +2998,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Normal N(μ, σ²) — egenskaper?",
     answer:
       "Klokkeformet, symmetrisk om μ. E[X] = μ, Var(X) = σ². 68/95/99.7-regel: 68 % innen ±1σ, 95 % innen ±2σ (egentlig ±1.96σ), 99.7 % innen ±3σ. Default-modell for målestøy.",
+    visual: "stat-ford-normal",
   },
   {
     id: "c-tek1-standardize",
@@ -2979,6 +3007,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Standardisering — hvordan og hvorfor?",
     answer:
       "Z = (X − μ)/σ ~ N(0,1) når X ~ N(μ, σ²). Hvorfor: med Z kan vi slå opp i én tabell (standardnormaltabellen) uavhengig av μ og σ. P(X ≤ x) = Φ((x−μ)/σ).",
+    visual: "stat-ford-standardize",
   },
   {
     id: "c-tek1-clt",
@@ -2987,6 +3016,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Sentralgrenseteoremet (CLT) — hva sier det?",
     answer:
       "For i.i.d. variabler med E = μ og Var = σ²: X̄ = (1/n) Σ Xᵢ ~ N(μ, σ²/n) tilnærmet for stort n (typisk n ≥ 30). Uavhengig av den underliggende fordelingens form. Grunnlaget for inferens.",
+    visual: "stat-ford-clt",
   },
   {
     id: "c-tek1-chi2",
@@ -2995,6 +3025,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Kji-kvadrat χ²(k) — hva er det?",
     answer:
       "Sum av k uavhengige standardnormaler kvadrert: X = Z₁² + ... + Zₖ². E = k, Var = 2k. Brukes til varians-tester og kji-kvadrat-test for uavhengighet/tilpasning.",
+    visual: "stat-ford-chi2",
   },
   {
     id: "c-tek1-t-dist",
@@ -3003,6 +3034,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Student-t — hvorfor og når?",
     answer:
       "T = (X̄ − μ) / (s/√n) ~ tₙ₋₁. Brukes når σ er ukjent og må estimeres med s. Likner normalfordelingen men har tyngre haler. For n > 30 er tₙ₋₁ ≈ N(0,1).",
+    visual: "stat-ford-t-vs-normal",
   },
 
   // Inferens
@@ -3013,6 +3045,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Forventningsrett (unbiased) estimator?",
     answer:
       "E[θ̂] = θ — estimatoren treffer parameteren I SNITT (ikke nødvendigvis i hver enkelt prøve). x̄ er unbiased for μ. s² (med n−1 i nevner) er unbiased for σ².",
+    visual: "stat-ford-unbiased",
   },
   {
     id: "c-tek1-ci-mu-known",
@@ -3021,6 +3054,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "95 % CI for μ når σ er kjent — formel?",
     answer:
       "x̄ ± 1.96 · σ/√n. Bruk z-kritisk (1.96 for 95 %). For 90 %: z = 1.645. For 99 %: z = 2.576.",
+    visual: "stat-ford-ci-formula",
   },
   {
     id: "c-tek1-ci-mu-unknown",
@@ -3029,6 +3063,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "95 % CI for μ når σ er ukjent — formel?",
     answer:
       "x̄ ± t_(α/2, n−1) · s/√n. Bruk t-kritisk med n−1 frihetsgrader. For n = 12: t_0.025, 11 = 2.201.",
+    visual: "stat-ford-ci-formula",
   },
   {
     id: "c-tek1-ci-interp",
@@ -3037,6 +3072,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Korrekt tolkning av 95 % CI?",
     answer:
       "Hvis vi gjentok eksperimentet mange ganger og konstruerte CI hver gang, ville 95 % av disse intervallene inneholde det sanne μ. IKKE: 'det er 95 % sannsynlig at μ er i [a, b]' (μ er fast, ikke tilfeldig).",
+    visual: "stat-ford-ci-band",
   },
   {
     id: "c-tek1-hypothesis",
@@ -3045,6 +3081,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Strukturen i en hypotesetest?",
     answer:
       "1) Formuler H₀ og H₁. 2) Velg α. 3) Velg teststatistikk med kjent fordeling under H₀. 4) Beregn observert verdi. 5) Sammenlign med kritisk verdi eller p-verdi. 6) Konkluder: p < α → forkast H₀.",
+    visual: "stat-ford-hypothesis-regions",
   },
   {
     id: "c-tek1-type-i-ii",
@@ -3053,6 +3090,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Type I- vs. Type II-feil?",
     answer:
       "Type I (α): forkaste H₀ når den er sann (falsk alarm). Type II (β): beholde H₀ når den er usann (vi misser virkelig effekt). 1 − β = styrke. Trade-off: lavere α → høyere β, mer data reduserer begge.",
+    visual: "stat-ford-type-i-ii",
   },
   {
     id: "c-tek1-p-value",
@@ -3061,6 +3099,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Hva er en p-verdi?",
     answer:
       "Sannsynligheten for å observere en teststatistikk minst så ekstrem som det observerte, GITT at H₀ er sann. Liten p = uvanlig under H₀ = bevis mot H₀. p < α → forkast H₀.",
+    visual: "stat-ford-p-value",
   },
   {
     id: "c-tek1-t-test",
@@ -3069,6 +3108,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "One-sample t-test — teststatistikk?",
     answer:
       "t = (x̄ − μ₀) / (s/√n), med n−1 frihetsgrader. H₀: μ = μ₀. Tosidig: forkast hvis |t| > t_(α/2, n−1). Python: scipy.stats.ttest_1samp(data, μ₀).",
+    visual: "stat-ford-t-test",
   },
   {
     id: "c-tek1-two-sample",
@@ -3077,6 +3117,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Two-sample t-test for to grupper?",
     answer:
       "t = (x̄₁ − x̄₂) / √(sₚ²·(1/n₁ + 1/n₂)) med n₁+n₂−2 frihetsgrader, der sₚ² er pooled varians. Welch's t-test (ulike varianser): annen df-formel. Python: stats.ttest_ind(a, b, equal_var=False).",
+    visual: "stat-ford-two-sample-t",
   },
   {
     id: "c-tek1-chi2-test",
@@ -3085,6 +3126,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Kji-kvadrat-test for uavhengighet?",
     answer:
       "χ² = Σ (O_ij − E_ij)² / E_ij, der E_ij = (rad_total · kol_total) / total. Frihetsgrader = (r−1)(c−1). Forkast H₀ hvis χ² > χ²_(α, df). Forutsetter alle E_ij ≥ 5.",
+    visual: "stat-ford-chi2-test",
   },
 
   // Regresjon
@@ -4608,6 +4650,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Hva er CLT-betingelsen for inferens om én proporsjon?",
     answer:
       "n·p̂ ≥ 10 OG n·(1−p̂) ≥ 10. Da er p̂ tilnærmet normalfordelt og z-baserte CI/tester funker. Hvis brutt: bruk exakt binomial test (Clopper–Pearson-CI) eller Wilson/Agresti-Coull som er robustere.",
+    visual: "stat-ford-prop-sampling",
   },
   {
     id: "c-tek1-prop-wald-feil",
@@ -4616,6 +4659,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Hvorfor er Wald-CI for proporsjon dårlig?",
     answer:
       "Wald: p̂ ± z·√(p̂(1−p̂)/n). Når p̂ er nær 0 eller 1 blir SE for liten, og dekningsgraden kan være mye lavere enn 95 %. Ved p̂ = 0 kollapser CI til ett punkt — meningsløst. Bruk Wilson eller Agresti-Coull i stedet.",
+    visual: "stat-ford-wald-vs-wilson",
   },
   {
     id: "c-tek1-prop-wilson",
@@ -4624,6 +4668,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Hva er Wilson-score-CI og hvorfor er den bedre?",
     answer:
       "CI = (p̂ + z²/(2n) ± z√(p̂(1−p̂)/n + z²/(4n²))) / (1 + z²/n). Asymmetrisk når p̂ er nær 0 eller 1. Holder seg innenfor [0, 1] og har god dekningsgrad selv ved liten n. Default i R's prop.test.",
+    visual: "stat-ford-wald-vs-wilson",
   },
   {
     id: "c-tek1-prop-ac",
@@ -4640,6 +4685,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Test av én proporsjon: z = ?",
     answer:
       "z = (p̂ − p₀) / √(p₀(1−p₀)/n). Viktig: bruk p₀ (ikke p̂) i SE — vi regner under H₀. CLT-sjekk gjøres med n·p₀ ≥ 10 og n(1−p₀) ≥ 10.",
+    visual: "stat-ford-prop-sampling",
   },
   {
     id: "c-tek1-prop-2-pooled-vs-unpooled",
@@ -4648,6 +4694,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Pooled vs unpooled SE for to proporsjoner — hvilken når?",
     answer:
       "KI for p₁ − p₂: bruk UNPOOLED SE (separate p̂ᵢ — vi antar ikke at de er like). Test av H₀: p₁ = p₂: bruk POOLED SE med p̂_pool = (x₁+x₂)/(n₁+n₂) — under H₀ er proporsjonene like, så samme p må estimeres.",
+    visual: "stat-ford-pooled-vs-unpooled",
   },
   {
     id: "c-tek1-prop-sample-size",
@@ -4656,6 +4703,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Hvor stort utvalg trengs for ±3 % margin ved 95 %?",
     answer:
       "n = z² · p̂*(1−p̂*) / E². Konservativt p̂* = 0.5 ⇒ p̂*(1−p̂*) = 0.25. Med z = 1.96, E = 0.03: n = 1.96² · 0.25 / 0.0009 ≈ 1067. Derfor har gallup ~1000 respondenter.",
+    visual: "stat-ford-sample-size",
   },
   {
     id: "c-tek1-prop-exakt",
@@ -4672,6 +4720,7 @@ export const FLASHCARDS: FlashCard[] = [
     question: "Hva er forskjellen på odds-ratio (OR) og relative risk (RR)?",
     answer:
       "RR = p₁ / p₂. OR = (p₁/(1−p₁)) / (p₂/(1−p₂)). Når p er liten (~0.05) er OR ≈ RR. Når p er stor avviker de mye — OR overdriver effekten. Logistisk regresjon gir OR-er, ikke RR-er.",
+    visual: "stat-ford-or-vs-rr",
   },
 
   // ============= DTE-2602: LOGISTISK REGRESJON (10) =============
