@@ -213,6 +213,7 @@ import { content as mlPipelineBuilder } from "./ml-pipeline-builder";
 import { content as sqlSchemaBuilder } from "./sql-schema-builder";
 import { content as microkernelArkitektur } from "./microkernel-arkitektur";
 import { content as dte2505IoManagement } from "./dte2505-io-management";
+import { content as authFlows } from "./auth-flows";
 import type { TrinnContent } from "../types";
 
 export const TRINN: TrinnContent[] = [
@@ -321,6 +322,8 @@ export const TRINN: TrinnContent[] = [
   microkernelArkitektur,
   // DTE-2505 — I/O management (O'Gorman kap. 4 / OSTEP kap. 36–37)
   dte2505IoManagement,
+  // Auth flows — Session vs JWT vs OAuth side ved side
+  authFlows,
 ];
 
 import { curriculumIndexOf } from "../curriculum";
