@@ -32,6 +32,7 @@ import { Route as GitDrillRouteImport } from './routes/git-drill'
 import { Route as ExamRouteImport } from './routes/exam'
 import { Route as ErTegnerRouteImport } from './routes/er-tegner'
 import { Route as EksamenRouteImport } from './routes/eksamen'
+import { Route as DrillRouteImport } from './routes/drill'
 import { Route as DragRouteImport } from './routes/drag'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as CardsRouteImport } from './routes/cards'
@@ -173,6 +174,11 @@ const EksamenRoute = EksamenRouteImport.update({
   path: '/eksamen',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DrillRoute = DrillRouteImport.update({
+  id: '/drill',
+  path: '/drill',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DragRoute = DragRouteImport.update({
   id: '/drag',
   path: '/drag',
@@ -280,9 +286,9 @@ const Dte2505ShellDrillRoute = Dte2505ShellDrillRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any)
 const DrillChar91_demoChar93Route = DrillChar91_demoChar93RouteImport.update({
-  id: '/drill/_demo',
-  path: '/drill/_demo',
-  getParentRoute: () => rootRouteImport,
+  id: '/_demo',
+  path: '',
+  getParentRoute: () => DrillRoute,
 } as any)
 const PythonKapIndexRoute = PythonKapIndexRouteImport.update({
   id: '/python_/kap/',
@@ -305,6 +311,7 @@ export interface FileRoutesByFullPath {
   '/cards': typeof CardsRoute
   '/dashboard': typeof DashboardRoute
   '/drag': typeof DragRoute
+  '/drill': typeof DrillRouteWithChildren
   '/eksamen': typeof EksamenRouteWithChildren
   '/er-tegner': typeof ErTegnerRoute
   '/exam': typeof ExamRoute
@@ -355,6 +362,7 @@ export interface FileRoutesByTo {
   '/cards': typeof CardsRoute
   '/dashboard': typeof DashboardRoute
   '/drag': typeof DragRoute
+  '/drill': typeof DrillRouteWithChildren
   '/er-tegner': typeof ErTegnerRoute
   '/exam': typeof ExamRoute
   '/git-drill': typeof GitDrillRoute
@@ -401,6 +409,7 @@ export interface FileRoutesById {
   '/cards': typeof CardsRoute
   '/dashboard': typeof DashboardRoute
   '/drag': typeof DragRoute
+  '/drill': typeof DrillRouteWithChildren
   '/eksamen': typeof EksamenRouteWithChildren
   '/er-tegner': typeof ErTegnerRoute
   '/exam': typeof ExamRoute
@@ -453,6 +462,7 @@ export interface FileRouteTypes {
     | '/cards'
     | '/dashboard'
     | '/drag'
+    | '/drill'
     | '/eksamen'
     | '/er-tegner'
     | '/exam'
@@ -503,6 +513,7 @@ export interface FileRouteTypes {
     | '/cards'
     | '/dashboard'
     | '/drag'
+    | '/drill'
     | '/er-tegner'
     | '/exam'
     | '/git-drill'
@@ -548,6 +559,7 @@ export interface FileRouteTypes {
     | '/cards'
     | '/dashboard'
     | '/drag'
+    | '/drill'
     | '/eksamen'
     | '/er-tegner'
     | '/exam'
@@ -599,6 +611,7 @@ export interface RootRouteChildren {
   CardsRoute: typeof CardsRoute
   DashboardRoute: typeof DashboardRoute
   DragRoute: typeof DragRoute
+  DrillRoute: typeof DrillRouteWithChildren
   EksamenRoute: typeof EksamenRouteWithChildren
   ErTegnerRoute: typeof ErTegnerRoute
   ExamRoute: typeof ExamRoute
@@ -622,7 +635,6 @@ export interface RootRouteChildren {
   VenvDrillRoute: typeof VenvDrillRoute
   VisualiseringerRoute: typeof VisualiseringerRoute
   VizLesjonRoute: typeof VizLesjonRouteWithChildren
-  DrillChar91_demoChar93Route: typeof DrillChar91_demoChar93Route
   Dte2505ShellDrillRoute: typeof Dte2505ShellDrillRoute
   Dte2507PcapRoute: typeof Dte2507PcapRoute
   PortfolioDte2602SlugRoute: typeof PortfolioDte2602SlugRoute
@@ -798,6 +810,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EksamenRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/drill': {
+      id: '/drill'
+      path: '/drill'
+      fullPath: '/drill'
+      preLoaderRoute: typeof DrillRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/drag': {
       id: '/drag'
       path: '/drag'
@@ -947,10 +966,10 @@ declare module '@tanstack/react-router' {
     }
     '/drill/_demo': {
       id: '/drill/_demo'
-      path: '/drill/_demo'
+      path: ''
       fullPath: '/drill/_demo'
       preLoaderRoute: typeof DrillChar91_demoChar93RouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof DrillRoute
     }
     '/python_/kap/': {
       id: '/python_/kap/'
@@ -975,6 +994,16 @@ declare module '@tanstack/react-router' {
     }
   }
 }
+
+interface DrillRouteChildren {
+  DrillChar91_demoChar93Route: typeof DrillChar91_demoChar93Route
+}
+
+const DrillRouteChildren: DrillRouteChildren = {
+  DrillChar91_demoChar93Route: DrillChar91_demoChar93Route,
+}
+
+const DrillRouteWithChildren = DrillRoute._addFileChildren(DrillRouteChildren)
 
 interface EksamenRouteChildren {
   EksamenTreningRoute: typeof EksamenTreningRoute
@@ -1046,6 +1075,7 @@ const rootRouteChildren: RootRouteChildren = {
   CardsRoute: CardsRoute,
   DashboardRoute: DashboardRoute,
   DragRoute: DragRoute,
+  DrillRoute: DrillRouteWithChildren,
   EksamenRoute: EksamenRouteWithChildren,
   ErTegnerRoute: ErTegnerRoute,
   ExamRoute: ExamRoute,
@@ -1069,7 +1099,6 @@ const rootRouteChildren: RootRouteChildren = {
   VenvDrillRoute: VenvDrillRoute,
   VisualiseringerRoute: VisualiseringerRoute,
   VizLesjonRoute: VizLesjonRouteWithChildren,
-  DrillChar91_demoChar93Route: DrillChar91_demoChar93Route,
   Dte2505ShellDrillRoute: Dte2505ShellDrillRoute,
   Dte2507PcapRoute: Dte2507PcapRoute,
   PortfolioDte2602SlugRoute: PortfolioDte2602SlugRoute,

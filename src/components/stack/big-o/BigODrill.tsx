@@ -201,6 +201,7 @@ export function BigODrill() {
   return (
     <DrillShell
       id="drill"
+      storageId="big-o"
       title="Prøv selv — analyser kompleksiteten"
       intro={
         <>

@@ -153,6 +153,7 @@ export function NormaliseringDrill() {
   return (
     <DrillShell
       id="drill"
+      storageId="normalisering"
       title="Prøv selv — normaliser steg for steg"
       intro={
         <>

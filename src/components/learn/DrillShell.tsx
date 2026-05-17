@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import {
   BookOpen,
   Dumbbell,
@@ -7,8 +7,15 @@ import {
   ChevronRight,
   ChevronLeft,
   Sparkles,
+  X,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import {
+  clearDrillProgress,
+  getDrillProgress,
+  setDrillProgress,
+  type DrillProgress,
+} from "@/lib/learn/drillProgress";
 
 // ---------------------------------------------------------------------------
 // DrillShell — generisk vert for to-modus («Lær først» / «Test deg selv»)
@@ -60,8 +67,23 @@ export type DrillStep = {
 };
 
 export type DrillShellProps = {
-  /** Stabilt id; brukes som section-id og for fremtidig localStorage. */
+  /**
+   * Stabilt id; brukes som section-id (for anker-lenker som `#drill`) og som
+   * default nøkkel for localStorage-progress hvis `storageId` ikke er gitt.
+   *
+   * Mange migrerte drills setter `id="drill"` fordi de er en seksjon nedi
+   * en større side og forventer anker `#drill`. Det betyr at vi MÅ ha en
+   * separat `storageId`-mulighet — uten den ville flere drills dele samme
+   * localStorage-record fordi de alle har `id="drill"`.
+   */
   id: string;
+  /**
+   * Stabilt id KUN for localStorage-progress-record. Sett dette til
+   * drill-registerets `id` (f.eks. `"normalisering"`, `"big-o"`) når
+   * `id`-propen brukes som section-anker. Hvis ikke gitt, faller vi
+   * tilbake til `id`.
+   */
+  storageId?: string;
   /** Stor h2-overskrift over modus-toggle. */
   title: string;
   /** Kort intro vist under tittelen. ReactNode for å støtte inline-formatering. */
@@ -82,6 +104,7 @@ export type DrillShellProps = {
 
 export function DrillShell({
   id,
+  storageId,
   title,
   intro,
   steps,
@@ -89,6 +112,8 @@ export function DrillShell({
   finalTitle = "Ferdig!",
   defaultMode = "learn",
 }: DrillShellProps) {
+  // localStorage-nøkkel — falbacker til section-id hvis caller ikke spesifiserer.
+  const progressKey = storageId ?? id;
   const [mode, setMode] = useState<DrillMode>(defaultMode);
   const [stepIdx, setStepIdx] = useState(0);
 
@@ -100,6 +125,20 @@ export function DrillShell({
   // Resett-token: økes ved «Start på nytt», så enkelte drills kan reagere via
   // useEffect (f.eks. tømme egen lokal state) uten å trenge ekstern API.
   const [resetToken, setResetToken] = useState(0);
+
+  // Persistert progress fra localStorage — leses én gang ved mount og brukes
+  // til (a) "fullført tidligere"-banneret og (b) som referanse for å unngå å
+  // skrive samme record om igjen ved hver render. `null` = ingen record.
+  // Vi leser kun ved mount; oppdateringer skjer via setDrillProgress nedenfor.
+  const [persisted, setPersisted] = useState<DrillProgress | null>(() => {
+    // SSR-safe: getDrillProgress håndterer typeof window === "undefined".
+    return getDrillProgress(progressKey);
+  });
+  // Vi viser "Du har fullført denne tidligere"-banneret kun hvis brukeren
+  // landet på siden med en allerede-fullført record. Banneret skal IKKE
+  // poppe opp på nytt rett etter at brukeren akkurat fullførte sesjonen.
+  const completedAtMount = useRef<boolean>(persisted?.completed != null);
+  const [bannerDismissed, setBannerDismissed] = useState(false);
 
   const learnMode = mode === "learn";
 
@@ -118,6 +157,66 @@ export function DrillShell({
   );
 
   const allDone = effectiveDone.every(Boolean);
+
+  // ----- Persisterer progress til localStorage --------------------------
+  //
+  // Vi skiller bevisst MELLOM "learn"-modus og "drill"-modus:
+  // - I "learn" telles alle steg som done (fasit synes), så hvis vi skrev
+  //   automatisk ville hub-en alltid vise "Fullført" så snart brukeren
+  //   åpnet et drill. Det er pedagogisk feil — fullført skal bety at
+  //   brukeren har testet seg selv. Derfor skriver vi KUN i "drill"-modus,
+  //   og baserer state på `doneFlags` (ikke `effectiveDone`).
+  //
+  // - Første interaksjon (overgangen fra 0 → 1 done-steg) markerer
+  //   `started`. Når alle steg er done, markeres `completed`.
+  //
+  // - Vi bruker doneFlags direkte i deps for å unngå at effekten kjøres
+  //   ved hver mount-bytte av andre states.
+  //
+  // - Hvis brukeren trykker «Start på nytt» nullstilles doneFlags til alt
+  //   false, men persistedet rør vi ikke (det er en separat brukerhandling
+  //   via banneret eller via DrillShell's reset-knapp som vi lar stå urørt
+  //   — det føles riktig at å "starte på nytt" i sesjonen ikke sletter at
+  //   du har fullført drillet tidligere).
+  const drillDoneCount = useMemo(
+    () => (learnMode ? 0 : doneFlags.filter(Boolean).length),
+    [learnMode, doneFlags],
+  );
+  useEffect(() => {
+    if (learnMode) return;
+    if (drillDoneCount === 0) return;
+    const total = steps.length;
+    const isComplete = drillDoneCount === total;
+    const existing = getDrillProgress(progressKey);
+    const next: Partial<DrillProgress> = {
+      stepsDone: drillDoneCount,
+      totalSteps: total,
+    };
+    // Bare sett `started` første gang.
+    if (!existing) next.started = new Date().toISOString();
+    // Bare sett `completed` første gang vi når full.
+    if (isComplete && !existing?.completed) next.completed = new Date().toISOString();
+    setDrillProgress(progressKey, next);
+  }, [progressKey, learnMode, drillDoneCount, steps.length]);
+
+  function dismissCompletedBanner() {
+    setBannerDismissed(true);
+  }
+  function startOverFromBanner() {
+    // Banner-handling: nullstill BÅDE sesjons-state og localStorage-record,
+    // og bytt til "drill"-modus så brukeren faktisk gjør stegene selv.
+    clearDrillProgress(progressKey);
+    setPersisted(null);
+    completedAtMount.current = false;
+    setBannerDismissed(true);
+    setMode("drill");
+    setStepIdx(0);
+    setDoneFlags(steps.map(() => false));
+    setResetToken((t) => t + 1);
+  }
+
+  const showCompletedBanner =
+    completedAtMount.current && !bannerDismissed && persisted?.completed != null;
 
   const canAdvance = useCallback(() => {
     if (learnMode) return true;
@@ -163,6 +262,33 @@ export function DrillShell({
     <section id={id} className="mb-12">
       <h2 className="text-xl font-semibold mb-2">{title}</h2>
       {intro && <div className="text-sm text-muted-foreground mb-4">{intro}</div>}
+
+      {showCompletedBanner && (
+        <div className="mb-4 flex items-start gap-3 rounded-xl border border-success/40 bg-success/5 p-3">
+          <CheckCircle2 className="h-5 w-5 shrink-0 text-success mt-0.5" />
+          <div className="flex-1 text-sm">
+            <strong className="text-success">Du har fullført denne tidligere.</strong>{" "}
+            <span className="text-foreground">
+              Vil du starte på nytt? Det nullstiller framdriften og bytter til «Test deg
+              selv»-modus.
+            </span>
+            <div className="mt-2 flex flex-wrap gap-2">
+              <button
+                onClick={startOverFromBanner}
+                className="inline-flex items-center gap-1.5 rounded-md border border-brand bg-brand/10 px-3 py-1 text-xs font-medium text-brand hover:bg-brand/20"
+              >
+                <RotateCcw className="h-3.5 w-3.5" /> Start på nytt
+              </button>
+              <button
+                onClick={dismissCompletedBanner}
+                className="inline-flex items-center gap-1.5 rounded-md border border-border px-3 py-1 text-xs text-muted-foreground hover:bg-accent"
+              >
+                <X className="h-3.5 w-3.5" /> Behold framdrift
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Modus-toggle */}
       <div

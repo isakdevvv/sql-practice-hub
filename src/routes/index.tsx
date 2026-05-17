@@ -225,6 +225,7 @@ type Verktoy = {
     | "/mac-drill"
     | "/spor"
     | "/mini-kurs"
+    | "/drill"
     | "/stack/$slug";
   navn: string;
   blurb: string;
@@ -244,6 +245,12 @@ const VERKTOY: Verktoy[] = [
     navn: "Mini-kurs (sandkasse)",
     blurb: "Bygg ekte prosjekter trinn for trinn. Filer, mapper, editor, kjør-knapp i nettleseren.",
     Icon: FolderTree,
+  },
+  {
+    href: "/drill",
+    navn: "Drill-hub",
+    blurb: "16 interaktive drills på tvers av fag — søk, filter på fag, og lokal progress-tracking.",
+    Icon: Dumbbell,
   },
   {
     href: "/practice",
@@ -794,7 +801,7 @@ function LandingPage() {
                 return (
                   <Link
                     key={v.navn}
-                    to={v.href as "/practice" | "/python" | "/drag" | "/cards" | "/prosjekt" | "/eksamen" | "/git-drill" | "/venv-drill" | "/mac-drill" | "/spor" | "/mini-kurs"}
+                    to={v.href as "/practice" | "/python" | "/drag" | "/cards" | "/prosjekt" | "/eksamen" | "/git-drill" | "/venv-drill" | "/mac-drill" | "/spor" | "/mini-kurs" | "/drill"}
                     className="group rounded-xl border border-border bg-background hover:border-brand/40 p-4 transition-colors block"
                   >
                     {inner}
