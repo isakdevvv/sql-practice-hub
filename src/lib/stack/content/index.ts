@@ -144,6 +144,7 @@ import { content as dte2501Knn } from "./dte2501-knn";
 import { content as dte2501Regresjon } from "./dte2501-supervised-regresjon";
 import { content as dte2501KMeans } from "./dte2501-kmeans-clustering";
 import { content as dte2501Genetic } from "./dte2501-genetic-algorithms";
+import { content as dte2501GaEncodingLab } from "./dte2501-ga-encoding-lab";
 import { content as dte2501Nlp } from "./dte2501-nlp-intro";
 import { content as dte2501Pca } from "./dte2501-pca";
 import { content as dte2501Gmm } from "./dte2501-gmm";
@@ -246,7 +247,7 @@ export const TRINN: TrinnContent[] = [
   dte2602EdaPandas, dte2602PreprocessingPipeline, dte2602TreesRf,
   dte2602BiasVarians, dte2602EvaluationRoc,
   // DTE-2501 — moderne ML-spor (eksamen-pensum)
-  dte2501Knn, dte2501Regresjon, dte2501KMeans, dte2501Genetic, dte2501Nlp,
+  dte2501Knn, dte2501Regresjon, dte2501KMeans, dte2501Genetic, dte2501GaEncodingLab, dte2501Nlp,
   dte2501Pca, dte2501Gmm, dte2501Ensemble, dte2501Reinforcement, dte2501Dp,
   // DTE-2501 — gap-utfyllere (Sutton & Barto + AIMA)
   dte2501Minimax, dte2501Bandits, dte2501MdpBellman,
