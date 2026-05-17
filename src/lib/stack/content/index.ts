@@ -155,6 +155,7 @@ import { content as dte2501Bandits } from "./dte2501-bandits";
 import { content as dte2501MdpBellman } from "./dte2501-mdp-bellman";
 import { content as dte2501KMeansVisualizer } from "./dte2501-kmeans-visualizer";
 import { content as dte2501PcaVisualizer } from "./dte2501-pca-visualizer";
+import { content as dte2501AiParadigmerKart } from "./dte2501-ai-paradigmer-kart";
 import { content as tek1501 } from "./tek-1501";
 import { content as tek1Deskriptiv } from "./tek1-deskriptiv";
 import { content as tek1Sannsynlighet } from "./tek1-sannsynlighet";
@@ -250,6 +251,8 @@ export const TRINN: TrinnContent[] = [
   dte2501Minimax, dte2501Bandits, dte2501MdpBellman,
   // DTE-2501 — interaktive visualiseringer
   dte2501KMeansVisualizer, dte2501PcaVisualizer,
+  // DTE-2501 — intro: AI-paradigmer kart (Grokking AI kap. 1)
+  dte2501AiParadigmerKart,
   // TEK-1501 — statistikk
   tek1501, tek1Deskriptiv, tek1Sannsynlighet, tek1Fordelinger,
   tek1StatistiskAnalyse, tek1Kombinatorikk, tek1DiskreteFordelinger,
