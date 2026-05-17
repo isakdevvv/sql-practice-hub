@@ -202,6 +202,7 @@ import { content as dte2602LineaerRegresjon } from "./dte2602-lineaer-regresjon"
 import { content as dte2602RocCurvePlotter } from "./dte2602-roc-curve-plotter";
 import { content as dockerfileBuilder } from "./dockerfile-builder";
 import { content as mlPipelineBuilder } from "./ml-pipeline-builder";
+import { content as sqlSchemaBuilder } from "./sql-schema-builder";
 import type { TrinnContent } from "../types";
 
 export const TRINN: TrinnContent[] = [
@@ -299,6 +300,8 @@ export const TRINN: TrinnContent[] = [
   dockerfileBuilder,
   // DTE-2602 — ML Pipeline Builder (interaktiv kodegenerator)
   mlPipelineBuilder,
+  // SQL Schema Builder — interaktiv DDL-generator (database-blokken)
+  sqlSchemaBuilder,
 ];
 
 import { curriculumIndexOf } from "../curriculum";
