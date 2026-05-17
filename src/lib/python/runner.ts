@@ -79,16 +79,31 @@ sys.modules["mysql.connector"] = connector_mod
 
 /** Make the `socket` shim available (replaces stdlib socket inside Pyodide).
  *  Pyodide har ingen ekte sockets — vi installerer en in-process emulator slik
- *  at studenter kan skrive ekte-utseende kode (bind/listen/accept/send/recv). */
+ *  at studenter kan skrive ekte-utseende kode (bind/listen/accept/send/recv).
+ *
+ *  Vi bevarer stdlib-attributter (`_GLOBAL_DEFAULT_TIMEOUT`, `IPPROTO_*`,
+ *  `getaddrinfo`, `gaierror`, …) som baseline, slik at indirekte importer
+ *  (`urllib.request → http.client → socket._GLOBAL_DEFAULT_TIMEOUT`) ikke
+ *  krasjer for elever som bare bruker sklearn/pandas/requests. Shimens egne
+ *  symboler overskriver etterpå. */
 async function ensureSocketShim(): Promise<void> {
   if (socketShimRegistered) return;
   const py = await getPyodide();
   py.globals.set("__socket_shim_source__", SOCKET_SHIM_SOURCE);
   await py.runPythonAsync(`
 import sys, types
+import socket as _real_socket
 socket_mod = types.ModuleType("socket")
+for _attr in dir(_real_socket):
+    if _attr.startswith("__") and _attr.endswith("__"):
+        continue
+    try:
+        setattr(socket_mod, _attr, getattr(_real_socket, _attr))
+    except AttributeError:
+        pass
+if not hasattr(socket_mod, "_GLOBAL_DEFAULT_TIMEOUT"):
+    socket_mod._GLOBAL_DEFAULT_TIMEOUT = object()
 exec(__socket_shim_source__, socket_mod.__dict__)
-# Force replacement — stdlib socket exists in Pyodide but throws on connect.
 sys.modules["socket"] = socket_mod
 `);
   socketShimRegistered = true;
