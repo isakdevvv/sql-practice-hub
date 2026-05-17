@@ -426,7 +426,7 @@ function PredictWorkspace({
             <div className="text-[11px] uppercase tracking-wide text-muted-foreground font-semibold mb-1">
               Kode
             </div>
-            <pre className="rounded-md bg-[#1e1e1e] p-4 text-xs font-mono text-foreground/90 overflow-auto border border-border whitespace-pre">
+            <pre className="rounded-md bg-[#1e1e1e] p-4 text-xs font-mono text-zinc-100 overflow-auto border border-border whitespace-pre">
               {exercise.code}
             </pre>
           </div>
