@@ -118,6 +118,7 @@ import { content as mysqlVsSqlite } from "./mysql-vs-sqlite";
 import { content as mvcMonster } from "./mvc-monster";
 import { content as mathFoundations } from "./math-foundations";
 import { content as diskretMatte } from "./diskret-matte";
+import { content as diskretModAritmetikk } from "./diskret-mod-aritmetikk";
 import { content as sannsynlighet } from "./sannsynlighet";
 import { content as linaerAlgebra } from "./linaer-algebra";
 import { content as gitDyp } from "./git-dyp";
@@ -249,7 +250,7 @@ export const TRINN: TrinnContent[] = [
   apiProsjekt, apiPlanlegging, apiArkitektur, apiKontrakt, apiTesting, apiDeploy,
   dte2603, kotlinGrunnlag, androidGrunnlag, mvvmArkitektur, korutiner, roomRecycler, apiRetrofit,
   mvcMonster,
-  mathFoundations, diskretMatte, sannsynlighet, linaerAlgebra,
+  mathFoundations, diskretMatte, diskretModAritmetikk, sannsynlighet, linaerAlgebra,
   gitDyp, docker, linuxCliAdvanced,
   laereplan,
   funksjonellProgrammering, typesystemer,

@@ -44,6 +44,7 @@ export const PHASES: readonly CurriculumPhase[] = [
     slugs: [
       "math-foundations",
       "diskret-matte",
+      "diskret-mod-aritmetikk",
       "sannsynlighet",
       "linaer-algebra",
       "tek1-distribusjons-plotter",
