@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Search, Menu, X } from "lucide-react";
+import { Search, Menu, X, Sparkles } from "lucide-react";
 import { searchEntries, type SearchEntry, type SearchKind } from "@/lib/search";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { ProfileButton } from "@/components/ProfileButton";
@@ -64,6 +64,18 @@ export function SiteHeader() {
         >
           {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
         </button>
+
+        {/* AI-tutor — åpner i ny tab så pågående oppgavearbeid ikke avbrytes. */}
+        <a
+          href="/tutor"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Spør AI-tutor"
+          title="Spør AI-tutor"
+          className="rounded-md p-2 text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
+        >
+          <Sparkles className="h-4 w-4" />
+        </a>
 
         <ProfileButton />
         <ThemeToggle />
