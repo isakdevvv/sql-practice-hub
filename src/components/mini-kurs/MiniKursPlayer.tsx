@@ -100,16 +100,16 @@ export function MiniKursPlayer({ course }: Props) {
   const allPassed = evaluation && evaluation.passed === evaluation.total;
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3">
       {/* Header med leksjons-progresjon */}
       <div className="flex items-center justify-between gap-2">
-        <div className="flex-1">
+        <div className="flex-1 min-w-0">
           <div className="text-[10px] uppercase tracking-wider text-brand font-semibold mb-0.5">
             Leksjon {lessonIdx + 1} av {course.lessons.length}
           </div>
-          <h2 className="text-lg font-semibold">{lesson.title}</h2>
+          <h2 className="text-base sm:text-lg font-semibold truncate">{lesson.title}</h2>
         </div>
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-1 shrink-0">
           <Button
             variant="outline"
             size="sm"
@@ -129,184 +129,193 @@ export function MiniKursPlayer({ course }: Props) {
         </div>
       </div>
 
-      {/* Narrative */}
-      <div className="rounded-xl border border-border bg-card p-5">
-        <div className="prose prose-sm dark:prose-invert max-w-none whitespace-pre-wrap">
-          {lesson.narrative.split("\n").map((line, i) => (
-            <p key={i} className="text-sm leading-relaxed mb-2 last:mb-0">
-              {renderInline(line)}
-            </p>
-          ))}
-        </div>
-      </div>
-
-      {/* Verifications */}
-      {lesson.verifications.length > 0 && (
-        <div className="rounded-xl border border-border bg-card p-4">
-          <div className="text-[10px] uppercase tracking-wider text-brand font-semibold mb-2">
-            Mål for denne leksjonen
-          </div>
-          <ul className="text-sm space-y-1">
-            {lesson.verifications.map((v, i) => {
-              const detail = evaluation?.details[i];
-              return (
-                <li key={i} className="flex items-start gap-2">
-                  {detail ? (
-                    detail.ok ? (
-                      <Check className="h-4 w-4 text-success mt-0.5 shrink-0" />
-                    ) : (
-                      <X className="h-4 w-4 text-destructive mt-0.5 shrink-0" />
-                    )
-                  ) : (
-                    <span className="h-4 w-4 mt-0.5 shrink-0 rounded border border-muted-foreground/40" />
-                  )}
-                  <span
-                    className={
-                      detail?.ok
-                        ? "text-success line-through"
-                        : "text-foreground"
-                    }
-                  >
-                    {v.label}
-                  </span>
-                </li>
-              );
-            })}
-          </ul>
-        </div>
-      )}
-
-      {/* Editor + file tree side by side */}
-      <div className="rounded-xl border border-border bg-card overflow-hidden">
-        <div className="grid lg:grid-cols-[200px_1fr] min-h-[400px]">
-          {/* File tree */}
-          <aside className="border-b lg:border-b-0 lg:border-r border-border bg-muted/20">
-            <div className="px-3 py-2 border-b border-border bg-muted/40 text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">
-              Prosjekt-mappe
+      {/* 2-kolonne på lg: venstre = tekst/mål/hint, høyre = editor/output.
+          På små skjermer stables alt vertikalt som før. */}
+      <div className="grid gap-3 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:items-start">
+        {/* VENSTRE: narrative + mål + hint */}
+        <div className="space-y-3 lg:max-h-[calc(100vh-200px)] lg:overflow-y-auto lg:pr-1">
+          {/* Narrative */}
+          <div className="rounded-xl border border-border bg-card p-4">
+            <div className="prose prose-sm dark:prose-invert max-w-none whitespace-pre-wrap">
+              {lesson.narrative.split("\n").map((line, i) => (
+                <p key={i} className="text-sm leading-relaxed mb-2 last:mb-0">
+                  {renderInline(line)}
+                </p>
+              ))}
             </div>
-            <FileTree
-              files={files}
-              activeFile={activeFile}
-              editableFiles={lesson.editable}
-              onSelect={setActiveFile}
-            />
-          </aside>
+          </div>
 
-          {/* Editor */}
-          <div className="flex flex-col">
-            <div className="flex items-center gap-2 px-3 py-2 border-b border-border bg-muted/30">
-              <span className="text-xs font-mono">{activeFile}</span>
-              {!isEditable && (
-                <span className="text-[9px] uppercase tracking-wider text-muted-foreground bg-muted/40 rounded px-1.5">
-                  read-only
-                </span>
+          {/* Verifications */}
+          {lesson.verifications.length > 0 && (
+            <div className="rounded-xl border border-border bg-card p-3">
+              <div className="text-[10px] uppercase tracking-wider text-brand font-semibold mb-1.5">
+                Mål for denne leksjonen
+              </div>
+              <ul className="text-sm space-y-1">
+                {lesson.verifications.map((v, i) => {
+                  const detail = evaluation?.details[i];
+                  return (
+                    <li key={i} className="flex items-start gap-2">
+                      {detail ? (
+                        detail.ok ? (
+                          <Check className="h-4 w-4 text-success mt-0.5 shrink-0" />
+                        ) : (
+                          <X className="h-4 w-4 text-destructive mt-0.5 shrink-0" />
+                        )
+                      ) : (
+                        <span className="h-4 w-4 mt-0.5 shrink-0 rounded border border-muted-foreground/40" />
+                      )}
+                      <span
+                        className={
+                          detail?.ok
+                            ? "text-success line-through"
+                            : "text-foreground"
+                        }
+                      >
+                        {v.label}
+                      </span>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          )}
+
+          {/* Hint — alltid synlig i venstre kolonne, ingen scrolling fram og tilbake */}
+          {lesson.hint && (
+            <div className="rounded-xl border border-border bg-card overflow-hidden">
+              <button
+                type="button"
+                onClick={() => setShowHint((s) => !s)}
+                className="w-full flex items-center gap-2 px-3 py-2 text-xs font-semibold text-brand hover:bg-muted/40 transition-colors"
+              >
+                <Lightbulb className="h-3.5 w-3.5" />
+                {showHint ? "Skjul hint" : "Vis hint"}
+              </button>
+              {showHint && (
+                <pre className="text-xs bg-muted/40 border-t border-border p-3 overflow-x-auto whitespace-pre-wrap text-foreground/90">
+                  {lesson.hint}
+                </pre>
               )}
-              <div className="ml-auto flex items-center gap-2">
-                <Button variant="ghost" size="sm" onClick={handleReset} title="Tilbakestill leksjonen">
-                  <RotateCcw className="h-3.5 w-3.5" />
-                </Button>
-                <Button onClick={handleRun} size="sm" disabled={running}>
-                  {running ? (
-                    <>
-                      <Loader2 className="h-3.5 w-3.5 mr-1 animate-spin" />
-                      Kjører...
-                    </>
-                  ) : (
-                    <>
-                      <Play className="h-3.5 w-3.5 mr-1" />
-                      Kjør
-                    </>
+            </div>
+          )}
+        </div>
+
+        {/* HØYRE: editor + output */}
+        <div className="space-y-3 min-w-0">
+          {/* Editor + file tree */}
+          <div className="rounded-xl border border-border bg-card overflow-hidden">
+            <div className="grid sm:grid-cols-[180px_1fr]">
+              {/* File tree */}
+              <aside className="border-b sm:border-b-0 sm:border-r border-border bg-muted/20">
+                <div className="px-3 py-2 border-b border-border bg-muted/40 text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">
+                  Prosjekt-mappe
+                </div>
+                <FileTree
+                  files={files}
+                  activeFile={activeFile}
+                  editableFiles={lesson.editable}
+                  onSelect={setActiveFile}
+                />
+              </aside>
+
+              {/* Editor */}
+              <div className="flex flex-col min-w-0">
+                <div className="flex items-center gap-2 px-3 py-2 border-b border-border bg-muted/30">
+                  <span className="text-xs font-mono truncate">{activeFile}</span>
+                  {!isEditable && (
+                    <span className="text-[9px] uppercase tracking-wider text-muted-foreground bg-muted/40 rounded px-1.5 shrink-0">
+                      read-only
+                    </span>
                   )}
-                </Button>
+                  <div className="ml-auto flex items-center gap-2 shrink-0">
+                    <Button variant="ghost" size="sm" onClick={handleReset} title="Tilbakestill leksjonen">
+                      <RotateCcw className="h-3.5 w-3.5" />
+                    </Button>
+                    <Button onClick={handleRun} size="sm" disabled={running}>
+                      {running ? (
+                        <>
+                          <Loader2 className="h-3.5 w-3.5 mr-1 animate-spin" />
+                          Kjører...
+                        </>
+                      ) : (
+                        <>
+                          <Play className="h-3.5 w-3.5 mr-1" />
+                          Kjør
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                </div>
+                <div className="h-[340px]">
+                  <CodeEditor
+                    key={activeFile}
+                    value={files[activeFile] ?? ""}
+                    onChange={(v) => updateFile(activeFile, v)}
+                    path={activeFile}
+                    readOnly={!isEditable}
+                  />
+                </div>
               </div>
             </div>
-            <div className="h-[400px]">
-              <CodeEditor
-                key={activeFile}
-                value={files[activeFile] ?? ""}
-                onChange={(v) => updateFile(activeFile, v)}
-                path={activeFile}
-                readOnly={!isEditable}
-              />
-            </div>
           </div>
+
+          {/* Output */}
+          {result && (
+            <div className="rounded-xl border border-border bg-card overflow-hidden">
+              <div className="flex items-center gap-2 px-3 py-2 border-b border-border bg-muted/30">
+                <span className="text-xs font-semibold uppercase tracking-wider text-brand">
+                  Output
+                </span>
+                {evaluation && (
+                  <span
+                    className={`text-xs font-mono ${
+                      allPassed ? "text-success" : "text-muted-foreground"
+                    }`}
+                  >
+                    {evaluation.passed} / {evaluation.total} mål bestått
+                  </span>
+                )}
+              </div>
+              {result.error ? (
+                <pre className="text-xs text-destructive p-3 max-h-[200px] overflow-auto whitespace-pre-wrap">
+                  {result.error}
+                </pre>
+              ) : lesson.run.kind === "html-preview" ? (
+                <iframe
+                  srcDoc={result.output}
+                  className="w-full h-[300px] bg-background border-0"
+                  sandbox="allow-scripts"
+                  title="HTML preview"
+                />
+              ) : (
+                <pre className="text-xs p-3 max-h-[200px] overflow-auto whitespace-pre-wrap bg-background">
+                  {result.output || "(ingen output)"}
+                </pre>
+              )}
+            </div>
+          )}
+
+          {/* Neste-knapp når alle mål bestått — på høyre side så den ligger nær Kjør */}
+          {allPassed && lessonIdx < course.lessons.length - 1 && (
+            <div className="rounded-xl border border-success/40 bg-success/5 p-3 flex items-center justify-between gap-2">
+              <span className="text-sm font-semibold text-success">
+                Alle mål bestått!
+              </span>
+              <Button onClick={() => setLessonIdx((i) => i + 1)} size="sm">
+                Neste leksjon <ChevronRight className="h-4 w-4 ml-1" />
+              </Button>
+            </div>
+          )}
+          {allPassed && lessonIdx === course.lessons.length - 1 && (
+            <div className="rounded-xl border border-brand/40 bg-brand/5 p-3 text-center">
+              <span className="text-sm font-semibold text-brand">
+                🎉 Du har fullført hele kurset!
+              </span>
+            </div>
+          )}
         </div>
       </div>
-
-      {/* Output */}
-      {result && (
-        <div className="rounded-xl border border-border bg-card overflow-hidden">
-          <div className="flex items-center gap-2 px-3 py-2 border-b border-border bg-muted/30">
-            <span className="text-xs font-semibold uppercase tracking-wider text-brand">
-              Output
-            </span>
-            {evaluation && (
-              <span
-                className={`text-xs font-mono ${
-                  allPassed ? "text-success" : "text-muted-foreground"
-                }`}
-              >
-                {evaluation.passed} / {evaluation.total} mål bestått
-              </span>
-            )}
-          </div>
-          {result.error ? (
-            <pre className="text-xs text-destructive p-4 overflow-x-auto whitespace-pre-wrap">
-              {result.error}
-            </pre>
-          ) : lesson.run.kind === "html-preview" ? (
-            <iframe
-              srcDoc={result.output}
-              className="w-full h-[400px] bg-background border-0"
-              sandbox="allow-scripts"
-              title="HTML preview"
-            />
-          ) : (
-            <pre className="text-xs p-4 overflow-x-auto whitespace-pre-wrap bg-background">
-              {result.output || "(ingen output)"}
-            </pre>
-          )}
-        </div>
-      )}
-
-      {/* Hint */}
-      {lesson.hint && (
-        <div>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setShowHint((s) => !s)}
-            className="text-xs"
-          >
-            <Lightbulb className="h-3.5 w-3.5 mr-1" />
-            {showHint ? "Skjul hint" : "Vis hint"}
-          </Button>
-          {showHint && (
-            <pre className="mt-2 text-xs bg-muted/40 border border-border rounded-lg p-3 overflow-x-auto">
-              {lesson.hint}
-            </pre>
-          )}
-        </div>
-      )}
-
-      {/* Neste-knapp når alle mål bestått */}
-      {allPassed && lessonIdx < course.lessons.length - 1 && (
-        <div className="rounded-xl border border-success/40 bg-success/5 p-4 flex items-center justify-between">
-          <span className="text-sm font-semibold text-success">
-            Alle mål bestått! Klar for neste leksjon?
-          </span>
-          <Button onClick={() => setLessonIdx((i) => i + 1)} size="sm">
-            Neste leksjon <ChevronRight className="h-4 w-4 ml-1" />
-          </Button>
-        </div>
-      )}
-      {allPassed && lessonIdx === course.lessons.length - 1 && (
-        <div className="rounded-xl border border-brand/40 bg-brand/5 p-4 text-center">
-          <span className="text-sm font-semibold text-brand">
-            🎉 Du har fullført hele kurset!
-          </span>
-        </div>
-      )}
     </div>
   );
 }

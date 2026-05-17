@@ -25,22 +25,20 @@ function MiniKursDetail() {
   return (
     <div className="min-h-screen bg-background">
       <SiteHeader />
-      <main className="container mx-auto px-4 py-8 max-w-5xl">
-        <Link
-          to="/mini-kurs"
-          className="text-sm text-muted-foreground hover:text-foreground mb-3 inline-flex items-center"
-        >
-          <ChevronLeft className="h-4 w-4 mr-1" />
-          Alle mini-kurs
-        </Link>
-
-        <header className="mb-6">
-          <div className="text-xs uppercase tracking-wider text-brand font-semibold mb-1">
+      <main className="container mx-auto px-4 py-4 sm:py-5 max-w-[1400px]">
+        <div className="flex items-baseline gap-3 mb-3 flex-wrap">
+          <Link
+            to="/mini-kurs"
+            className="text-sm text-muted-foreground hover:text-foreground inline-flex items-center"
+          >
+            <ChevronLeft className="h-4 w-4 mr-1" />
+            Alle mini-kurs
+          </Link>
+          <span className="text-xs uppercase tracking-wider text-brand font-semibold">
             Mini-kurs
-          </div>
-          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">{course.title}</h1>
-          <p className="text-sm text-muted-foreground mt-2 leading-relaxed">{course.blurb}</p>
-        </header>
+          </span>
+          <h1 className="text-lg sm:text-xl font-bold tracking-tight">{course.title}</h1>
+        </div>
 
         <MiniKursPlayer course={course} />
       </main>
