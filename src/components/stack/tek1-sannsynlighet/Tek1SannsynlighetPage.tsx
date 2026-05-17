@@ -2,16 +2,26 @@ import { Link } from "@tanstack/react-router";
 import {Lightbulb, ArrowLeft } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
+import { ProbabilityTreeDiagram } from "./ProbabilityTreeDiagram";
+import { BayesUpdater } from "./BayesUpdater";
+import { MontyHallSimulator } from "./MontyHallSimulator";
+import { ConditionalProbabilityGrid } from "./ConditionalProbabilityGrid";
+import { ProbabilityQuiz } from "./ProbabilityQuiz";
 
 const STEPS = [
   { title: "Hvorfor sannsynlighet?", anchor: "motivasjon" },
   { title: "Utfallsrom, hendelser, mengdelære", anchor: "utfallsrom" },
   { title: "Kolmogorovs aksiomer", anchor: "aksiomer" },
   { title: "Betinget sannsynlighet og uavhengighet", anchor: "betinget" },
+  { title: "Interaktivt: betinget sannsynlighet i 100-grid", anchor: "viz-grid" },
   { title: "Bayes' teorem — full walkthrough", anchor: "bayes" },
+  { title: "Interaktivt: Bayes-oppdaterer", anchor: "viz-bayes" },
+  { title: "Interaktivt: tre-diagram med presets", anchor: "viz-tre" },
+  { title: "Interaktivt: Monty Hall-simulator", anchor: "viz-monty" },
   { title: "Kombinatorikk — telle muligheter", anchor: "kombinatorikk" },
   { title: "Trekninger med/uten tilbakelegging", anchor: "trekning" },
   { title: "Eksamen-feller", anchor: "feller" },
+  { title: "Quiz: 10 scenarier (klassiske og kontraintuitive)", anchor: "quiz" },
 ];
 
 export function Tek1SannsynlighetPage() {
@@ -172,6 +182,20 @@ Total sannsynlighet (når B₁..Bₙ er en partisjon av Ω):
           </div>
         </section>
 
+        <section id="viz-grid" className="mb-10">
+          <h2 className="text-xl font-semibold mb-3">
+            4b. Interaktivt — betinget sannsynlighet i 100-grid
+          </h2>
+          <p className="text-sm text-muted-foreground mb-3">
+            100 farger-firkanter = 100 individer fra en populasjon. Hver
+            har to binære attributter (A og B). Tellingene gir deg P(A),
+            P(B), P(A∩B), P(A|B) og P(B|A) direkte. Veksle preset for å se
+            sterk korrelasjon (røyking-kreft), svak korrelasjon (vaksine),
+            og uavhengighet (kontroll).
+          </p>
+          <ConditionalProbabilityGrid />
+        </section>
+
         <section id="bayes" className="mb-10">
           <h2 className="text-xl font-semibold mb-3">5. Bayes' teorem</h2>
           <p className="text-sm text-muted-foreground mb-4">
@@ -236,6 +260,46 @@ Intuisjon: tross "99 % sensitiv" test, en positiv prøve betyr bare
               <li>Sanity-sjekk: er svaret mellom 0 og 1?</li>
             </ol>
           </div>
+        </section>
+
+        <section id="viz-bayes" className="mb-10">
+          <h2 className="text-xl font-semibold mb-3">
+            5b. Interaktivt — Bayes-oppdaterer (positiv prediktiv verdi)
+          </h2>
+          <p className="text-sm text-muted-foreground mb-3">
+            Skyv prevalens, sensitivitet og spesifisitet. P(D|+) — det vi
+            virkelig vil vite — oppdateres live. Skru på «1000-personer»
+            for å se hvorfor svaret blir så mye lavere enn du tror.
+            «To uavhengige tester» viser hvordan konfidensen klatrer når
+            samme prøve gjentas.
+          </p>
+          <BayesUpdater />
+        </section>
+
+        <section id="viz-tre" className="mb-10">
+          <h2 className="text-xl font-semibold mb-3">
+            5c. Interaktivt — tre-diagram for hierarkiske sannsynligheter
+          </h2>
+          <p className="text-sm text-muted-foreground mb-3">
+            Sannsynligheter multipliseres langs grener; blader summerer til
+            1. Velg en preset (medisinsk test, kortstokk, Monty Hall, fødsel)
+            og justér grenene med slidersene. Søsken-summen viser om en
+            gruppe er gyldig (Σ = 1) eller har en glemt utfall (rødt).
+          </p>
+          <ProbabilityTreeDiagram />
+        </section>
+
+        <section id="viz-monty" className="mb-10">
+          <h2 className="text-xl font-semibold mb-3">
+            5d. Interaktivt — Monty Hall-simulator
+          </h2>
+          <p className="text-sm text-muted-foreground mb-3">
+            Bytter du dør eller beholder du? Sannsynlighetstreet viser at
+            BYTTE vinner i (n−1)/n av tilfellene. Monte Carlo med 10 000
+            runder bekrefter resultatet, og 100-dørers-varianten gjør
+            intuisjonen brennende klar.
+          </p>
+          <MontyHallSimulator />
         </section>
 
         <section id="kombinatorikk" className="mb-10">
@@ -362,6 +426,20 @@ Hva med 6 rette (av 7 mulige rette)?
               Hvis nei → kombinasjon.
             </div>
           </div>
+        </section>
+
+        <section id="quiz" className="mb-10">
+          <h2 className="text-xl font-semibold mb-3">
+            9. Quiz — 10 scenarier (klassiske og kontraintuitive)
+          </h2>
+          <p className="text-sm text-muted-foreground mb-3">
+            Eksamen-relevant blanding: komplement, inklusjon-eksklusjon, Bayes
+            med høy og lav prevalens, Boy-Boy-paradokset, taxi-problemet,
+            bursdag-paradokset, og forskjellen mellom permutasjon/kombinasjon
+            og trekninger med/uten tilbakelegging. Hvert spørsmål gir
+            full forklaring etter svar.
+          </p>
+          <ProbabilityQuiz />
         </section>
 
         <div className="mt-10 rounded-xl border border-border bg-card p-5 text-sm">
