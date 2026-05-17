@@ -211,6 +211,7 @@ export const PHASES: readonly CurriculumPhase[] = [
       "query-optimisering",
       "mysql-vs-sqlite",
       "sql-schema-builder",
+      "backup-strategier",
       "huskelapp",
     ],
   },
