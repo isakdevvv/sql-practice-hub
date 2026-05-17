@@ -3,15 +3,24 @@ import {Lightbulb, ArrowLeft } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
 import { Tex, TexBlock } from "@/components/Tex";
+import { DistributionExplorer } from "./DistributionExplorer";
+import { DistributionMatcher } from "./DistributionMatcher";
+import { CltDemonstrator } from "./CltDemonstrator";
+import { DistributionRelationships } from "./DistributionRelationships";
+import { DistributionMatchQuiz } from "./DistributionMatchQuiz";
 
 const STEPS = [
   { title: "Stokastiske variabler — diskret vs. kontinuerlig", anchor: "sv" },
   { title: "Forventning E[X] og varians Var(X)", anchor: "ev" },
   { title: "Diskrete fordelinger", anchor: "diskret" },
   { title: "Kontinuerlige fordelinger", anchor: "kontinuerlig" },
+  { title: "Distribution Explorer — alle 8 live", anchor: "explorer" },
   { title: "Normalfordelingen — standardisering", anchor: "normal" },
-  { title: "Sentralgrenseteoremet (CLT)", anchor: "clt" },
+  { title: "Sentralgrenseteoremet (CLT) + demo", anchor: "clt" },
+  { title: "Relasjonsgraf mellom fordelinger", anchor: "rel" },
   { title: "Fordelings-velgeren", anchor: "velger" },
+  { title: "Distribution Matcher — gjenkjenn fra histogram", anchor: "matcher" },
+  { title: "Quiz: hvilken fordeling passer?", anchor: "quiz" },
   { title: "Eksamen-feller", anchor: "feller" },
 ];
 
@@ -215,8 +224,19 @@ export function Tek1FordelingerPage() {
           </div>
         </section>
 
+        <section id="explorer" className="mb-10">
+          <h2 className="text-xl font-semibold mb-3">5. Distribution Explorer</h2>
+          <p className="text-sm text-muted-foreground mb-4">
+            Alle åtte fordelingene i ett verktøy. Velg én, juster parametrene
+            med sliders, og se PDF/PMF og CDF skifte form live. Sidepanelet
+            viser øyeblikkelig E[X], Var(X), median, mode, skewness og kurtose.
+            Bruk «Trekk 1 000» for å verifisere at empirien følger teorien.
+          </p>
+          <DistributionExplorer />
+        </section>
+
         <section id="normal" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">5. Normalfordelingen — standardisering</h2>
+          <h2 className="text-xl font-semibold mb-3">6. Normalfordelingen — standardisering</h2>
           <p className="text-sm text-muted-foreground mb-4">
             Den viktigste ferdigheten i hele kurset.
           </p>
@@ -237,7 +257,7 @@ export function Tek1FordelingerPage() {
         </section>
 
         <section id="clt" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">6. Sentralgrenseteoremet (CLT)</h2>
+          <h2 className="text-xl font-semibold mb-3">7. Sentralgrenseteoremet (CLT)</h2>
           <p className="text-sm text-muted-foreground mb-4">
             Det viktigste resultatet i kurset. Forklarer hvorfor normal-
             fordelingen er overalt.
@@ -263,10 +283,24 @@ export function Tek1FordelingerPage() {
             <TexBlock>{"z = \\frac{505 - 500}{2.5} = 2.0"}</TexBlock>
             <TexBlock>{"P(\\bar{X} \\geq 505) = 1 - \\Phi(2.0) = 0.0228 \\approx 2.3\\%"}</TexBlock>
           </div>
+          <div className="mt-5">
+            <CltDemonstrator />
+          </div>
+        </section>
+
+        <section id="rel" className="mb-10">
+          <h2 className="text-xl font-semibold mb-3">8. Relasjonsgraf mellom fordelinger</h2>
+          <p className="text-sm text-muted-foreground mb-4">
+            Fordelinger er ikke isolerte. De henger sammen via summer, grenser
+            og ratioer. Klikk på en pil under for å se transformasjons-formelen
+            og en empirisk simulering som bekrefter at venstre-side gir
+            høyre-side.
+          </p>
+          <DistributionRelationships />
         </section>
 
         <section id="velger" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">7. Fordelings-velgeren</h2>
+          <h2 className="text-xl font-semibold mb-3">9. Fordelings-velgeren</h2>
           <p className="text-sm text-muted-foreground mb-4">
             Det viktigste verktøyet på eksamen.
           </p>
@@ -344,8 +378,28 @@ export function Tek1FordelingerPage() {
           </div>
         </section>
 
+        <section id="matcher" className="mb-10">
+          <h2 className="text-xl font-semibold mb-3">10. Distribution Matcher — gjenkjenn fra histogram</h2>
+          <p className="text-sm text-muted-foreground mb-4">
+            Snu om problemet: i stedet for «velg fordelingen som passer
+            scenarioet», får du et ferdig datasett og må gjenkjenne hvilken
+            fordeling det kommer fra. Etter svaret får du log-likelihood og
+            MLE-fit for hver kandidat.
+          </p>
+          <DistributionMatcher />
+        </section>
+
+        <section id="quiz" className="mb-10">
+          <h2 className="text-xl font-semibold mb-3">11. Quiz — hvilken fordeling passer?</h2>
+          <p className="text-sm text-muted-foreground mb-4">
+            Åtte scenarioer fra hverdagen — velg riktig fordeling og les
+            forklaringen. Sjekk hvor godt fordelings-velgeren over har satt seg.
+          </p>
+          <DistributionMatchQuiz />
+        </section>
+
         <section id="feller" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">8. Eksamen-feller</h2>
+          <h2 className="text-xl font-semibold mb-3">12. Eksamen-feller</h2>
           <div className="space-y-3 text-sm">
             <div className="rounded-lg border border-amber-500/30 bg-amber-500/5 p-4">
               <strong>Med eller uten tilbakelegging.</strong> Binomisk antar
