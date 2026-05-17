@@ -755,7 +755,7 @@ function ProblemWorkspace({
                 {showSolution && (
                   <div className="mt-3 space-y-2">
                     <div className="relative">
-                      <pre className="rounded-md bg-[#1e1e1e] p-3 pr-10 text-xs font-mono text-foreground/90 overflow-auto border border-border">
+                      <pre className="rounded-md bg-[#1e1e1e] p-3 pr-10 text-xs font-mono text-zinc-100 overflow-auto border border-border">
                         {problem.solution}
                       </pre>
                       <Button
@@ -1058,13 +1058,13 @@ function SolutionComparison({
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs font-mono">
                 <div>
                   <div className="text-[10px] text-muted-foreground mb-1">DU SKREV</div>
-                  <pre className="bg-[#1e1e1e] rounded p-2 overflow-auto border border-border whitespace-pre-wrap">
+                  <pre className="bg-[#1e1e1e] text-zinc-100 rounded p-2 overflow-auto border border-border whitespace-pre-wrap">
                     {userSql.trim()}
                   </pre>
                 </div>
                 <div>
                   <div className="text-[10px] text-muted-foreground mb-1">FASIT</div>
-                  <pre className="bg-[#1e1e1e] rounded p-2 overflow-auto border border-border whitespace-pre-wrap">
+                  <pre className="bg-[#1e1e1e] text-zinc-100 rounded p-2 overflow-auto border border-border whitespace-pre-wrap">
                     {canonical.trim()}
                   </pre>
                 </div>
@@ -1103,7 +1103,7 @@ function SolutionComparison({
                 {isOpen && (
                   <div className="px-3 pb-3 space-y-2">
                     <div className="relative">
-                      <pre className="rounded bg-[#1e1e1e] p-3 pr-10 text-xs font-mono text-foreground/90 overflow-auto border border-border whitespace-pre">
+                      <pre className="rounded bg-[#1e1e1e] p-3 pr-10 text-xs font-mono text-zinc-100 overflow-auto border border-border whitespace-pre">
                         {alt.kode}
                       </pre>
                       <Button
