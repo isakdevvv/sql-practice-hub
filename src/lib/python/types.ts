@@ -38,6 +38,13 @@ export const PY_TOPIC_LEVEL: Record<string, PyLevel> = {
   "DTE-2505 — Konkurrens": 3,
   "DTE-2505 — Shell": 1,
   "DTE-2505 — Filsystem": 1,
+  // DTE-2511 — Videregående programmering: filer, exceptions, OOP, pickle, datetime
+  "DTE-2511 — Filer & exceptions": 1,
+  "DTE-2511 — Dictionary fra fil": 1,
+  "DTE-2511 — Sets & sammenligning": 2,
+  "DTE-2511 — OOP & arv": 3,
+  "DTE-2511 — OOP & pickle": 3,
+  "DTE-2511 — datetime & logikk": 4,
   // TEK-1501 — utvidelse: z/t/χ²-tester, regresjon fra bunn, bootstrap, power
   "TEK-1501 — z-test": 2,
   "TEK-1501 — t-test": 2,
@@ -121,6 +128,7 @@ export type PyCategoryId =
   | "dte2602"
   | "dte2501-ml"
   | "dte2505-os"
+  | "dte2511"
   | "stat-other";
 
 export interface PyCategory {
@@ -269,6 +277,20 @@ export const PY_CATEGORIES: readonly PyCategory[] = [
     ],
   },
   {
+    id: "dte2511",
+    label: "DTE-2511 Videregående prog.",
+    description:
+      "Filer & exceptions, OOP/arv, pickle, datetime, sets — Liang-baserte oppgaver med full walkthrough.",
+    topics: [
+      "DTE-2511 — Filer & exceptions",
+      "DTE-2511 — Dictionary fra fil",
+      "DTE-2511 — Sets & sammenligning",
+      "DTE-2511 — OOP & arv",
+      "DTE-2511 — OOP & pickle",
+      "DTE-2511 — datetime & logikk",
+    ],
+  },
+  {
     id: "stat-other",
     label: "Statistikk & annet",
     description: "TEK-1501 statistikk og øvrige gaps-emner.",
@@ -319,6 +341,28 @@ export interface PyExercise {
   setup?: string;
   /** Documentation links + snippets shown next to the prompt. */
   docs?: DocRef[];
+  /** Optional guided walkthrough — when present the UI surfaces a "Lær først"-button
+   *  that walks the student through the solution step by step with Norwegian prose
+   *  before they switch to "Test deg selv". Designed for drill-style exercises that
+   *  benefit from teaching the solution first. */
+  walkthrough?: WalkthroughStep[];
+}
+
+/** One step of a guided "Lær først"-walkthrough.
+ *  Each step shows cumulative code that builds the solution incrementally,
+ *  along with a short pedagogical explanation of what changed and why. */
+export interface WalkthroughStep {
+  /** Short label shown as a step pill (e.g. "Sett opp klassen", "Les fila"). */
+  label: string;
+  /** Markdown-lite prose explaining what this step does and why.
+   *  Newlines become paragraph breaks; `backticks` for inline code. */
+  explanation: string;
+  /** Cumulative code AFTER this step — i.e. how the solution looks so far. */
+  code: string;
+  /** Optional 1-indexed line range to highlight (what was just added/changed). */
+  highlight?: { from: number; to: number };
+  /** Optional preview of expected stdout if the snapshot were run. */
+  expectedOutput?: string;
 }
 
 /** A single step in the cumulative "Bygg en nettbutikk"-prosjekt. */
