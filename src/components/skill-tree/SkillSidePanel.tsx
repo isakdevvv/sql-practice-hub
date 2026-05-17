@@ -14,7 +14,7 @@ import { getDependents } from "@/lib/skill-tree/graph";
 import { OMRADE_FARGE, OMRADE_LABEL } from "./SkillGraph";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { X, Clock, Sparkles, Target } from "lucide-react";
+import { X, Clock, Sparkles, Target, Play } from "lucide-react";
 
 const BLOOM_LABEL: Record<BloomNivaa, string> = {
   remember: "Huske",
@@ -31,6 +31,26 @@ const MASTERY_LABEL = {
   kan: "Kan",
   mester: "Mester",
 } as const;
+
+interface PrimaryTarget {
+  href: string;
+  label: string;
+}
+
+function getPrimaryTarget(skill: Skill): PrimaryTarget | null {
+  const ev = skill.evidens;
+  const stack = ev.stackSlugs?.[0];
+  if (stack) return { href: `/stack/${encodeURIComponent(stack)}`, label: "Start modul" };
+  const drag = ev.dragExerciseIds?.[0];
+  if (drag) return { href: `/drag?id=${encodeURIComponent(drag)}`, label: "Start drag-oppgave" };
+  const py = ev.pyExerciseIds?.[0];
+  if (py) return { href: `/python_/ide/${encodeURIComponent(py)}`, label: "Start Python-oppgave" };
+  const sql = ev.sqlProblemIds?.[0];
+  if (sql) return { href: `/practice?id=${encodeURIComponent(sql)}`, label: "Start SQL-oppgave" };
+  const card = ev.flashcardIds?.[0];
+  if (card) return { href: `/cards?id=${encodeURIComponent(card)}`, label: "Start flashcards" };
+  return null;
+}
 
 export interface SkillSidePanelProps {
   skill: Skill;
@@ -78,6 +98,20 @@ export function SkillSidePanel(props: SkillSidePanelProps) {
       </div>
 
       <p className="mb-4 text-sm text-muted-foreground">{skill.blurb}</p>
+
+      {(() => {
+        const target = getPrimaryTarget(skill);
+        if (!target) return null;
+        return (
+          <a
+            href={target.href}
+            className="mb-4 inline-flex w-full items-center justify-center gap-2 rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground shadow-sm transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+          >
+            <Play className="h-4 w-4" />
+            {target.label}
+          </a>
+        );
+      })()}
 
       <div className="mb-4 flex flex-wrap gap-2">
         <Badge variant="secondary" className="gap-1">
