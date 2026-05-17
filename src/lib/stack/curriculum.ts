@@ -95,6 +95,7 @@ export const PHASES: readonly CurriculumPhase[] = [
     analog: "MIT 6.S081 · Stanford CS 110 · CMU 15-410",
     slugs: [
       "dte-2505",
+      "os-historikk",
       "os-grunnlag",
       "linux-bruk",
       "shell-scripting",

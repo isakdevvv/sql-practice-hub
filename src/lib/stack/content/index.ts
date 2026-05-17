@@ -56,6 +56,7 @@ import { content as pythonDrill } from "./python-drill";
 import { content as httpAnatomi } from "./http-anatomi";
 import { content as dte2505 } from "./dte-2505";
 import { content as osGrunnlag } from "./os-grunnlag";
+import { content as osHistorikk } from "./os-historikk";
 import { content as linuxBruk } from "./linux-bruk";
 import { content as shellScripting } from "./shell-scripting";
 import { content as brukereRettigheter } from "./brukere-rettigheter";
@@ -220,7 +221,7 @@ export const TRINN: TrinnContent[] = [
   dte2602, mlGrunnlag, supervisedLearning, unsupervisedLearning, nnIntro,
   dte2501, sokAlgoritmer, csp, logiskResonnering, planlegging, bayes,
   flaskLivssyklus, pythonDrill, httpAnatomi,
-  dte2505, osGrunnlag, linuxBruk, shellScripting, brukereRettigheter, virtualisering,
+  dte2505, osHistorikk, osGrunnlag, linuxBruk, shellScripting, brukereRettigheter, virtualisering,
   dte2505ObligerGuide,
   dte2505SchedulingDrill, dte2505VirtueltMinne, dte2505Konkurrens,
   dte2505BashScripts, dte2505Obliger, dte2505ProsesserSignaler, dte2505RwxKalkulator,
