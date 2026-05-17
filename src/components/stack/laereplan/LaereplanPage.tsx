@@ -16,10 +16,14 @@ import {
   Boxes,
   ArrowDown,
   GitBranch,
+  Pin,
+  MapPin,
+  CalendarClock,
 } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import {
   PHASES,
+  phaseOfSlug,
   phasesDependedOnBy,
   phasesUnlockedBy,
   type CurriculumPhase,
@@ -33,6 +37,9 @@ import {
 } from "@/lib/stack/phaseProgress";
 import { loadDragProgress } from "@/lib/learn/dragProgress";
 import { Mermaid } from "@/components/Mermaid";
+import { usePinnedSubjects } from "@/lib/userSubjects";
+import { EXAM_META, SUBJECT_BY_SLUG } from "@/lib/subjects/catalog";
+import { examUrgency, formatDaysUntil } from "@/lib/subjects/examDate";
 
 // First-principles læreplan med visualisert rød tråd:
 // 1. Stack-diagram (layer-cake) øverst — alle lagene fra matematikk til
@@ -113,11 +120,60 @@ const LAYER_ORDER_BOTTOM_UP: LayerKey[] = [
 export function LaereplanPage() {
   const [progress, setProgress] = useState<PhaseProgress[]>([]);
   const [totalXp, setTotalXp] = useState(0);
+  const pinnedSlugs = usePinnedSubjects();
 
   useEffect(() => {
     setProgress(computeProgress());
     setTotalXp(loadDragProgress().xp);
   }, []);
+
+  // Mapping pinnet fag-slug → fase. Bruker phaseOfSlug fra curriculum.ts som
+  // ser om slug-en finnes i noen phase.slugs-array. Et pinnet fag (DTE-2507)
+  // mapper typisk til én fase (nettverk).
+  const pinnedPhaseEntries = useMemo(() => {
+    const seen = new Map<string, { phaseId: string; subjectSlug: string; subjectCode: string }>();
+    for (const subjectSlug of pinnedSlugs) {
+      const phase = phaseOfSlug(subjectSlug);
+      if (!phase) continue;
+      // Bare første treff per fase — om to fag hører til samme fase vises kun
+      // den mest urgent eksamen-pillen, men begge får pin-badge.
+      if (!seen.has(phase.id)) {
+        const subject = SUBJECT_BY_SLUG[subjectSlug];
+        seen.set(phase.id, {
+          phaseId: phase.id,
+          subjectSlug,
+          subjectCode: subject?.code ?? subjectSlug.toUpperCase(),
+        });
+      }
+    }
+    return seen;
+  }, [pinnedSlugs]);
+
+  const pinnedPhaseIds = useMemo(
+    () => new Set(pinnedPhaseEntries.keys()),
+    [pinnedPhaseEntries],
+  );
+
+  // Liste over pinnede faser med eksamen-urgens, sortert etter nærmeste først.
+  // Brukes til "Du er her"-banneret øverst.
+  const pinnedPhasesWithUrgency = useMemo(() => {
+    return Array.from(pinnedPhaseEntries.values())
+      .map((entry) => {
+        const phase = PHASES.find((p) => p.id === entry.phaseId);
+        const meta = EXAM_META[entry.subjectSlug];
+        const u = examUrgency(meta?.eksamen);
+        return { ...entry, phase, urgency: u, examString: meta?.eksamen };
+      })
+      .filter((x): x is typeof x & { phase: CurriculumPhase } => !!x.phase)
+      .sort((a, b) => {
+        const da = a.urgency.days;
+        const db = b.urgency.days;
+        if (da == null && db == null) return 0;
+        if (da == null) return 1;
+        if (db == null) return -1;
+        return da - db;
+      });
+  }, [pinnedPhaseEntries]);
 
   const recommendedPhase = progress.length > 0 ? recommendNextPhase(progress) : null;
   const recommendedSlug = recommendedPhase
@@ -182,6 +238,64 @@ export function LaereplanPage() {
           </div>
         </div>
 
+        {/* === DU ER HER === */}
+        {pinnedPhasesWithUrgency.length > 0 && (
+          <section className="mb-10">
+            <div className="rounded-xl border-2 border-brand/40 bg-gradient-to-br from-brand/10 via-card to-success/5 p-5">
+              <div className="flex items-center gap-2 mb-3">
+                <MapPin className="h-5 w-5 text-brand" />
+                <h2 className="text-lg font-semibold">Du er her</h2>
+                <span className="text-xs text-muted-foreground">
+                  · basert på pinnede fag
+                </span>
+              </div>
+              <p className="text-sm text-muted-foreground mb-4">
+                Disse fasene er aktive for deg akkurat nå. Klikk for å hoppe rett
+                til fasen i listen under, eller åpne fag-huben fra Mine fag.
+              </p>
+              <div className="grid sm:grid-cols-2 gap-2">
+                {pinnedPhasesWithUrgency.map(({ phase, subjectCode, urgency, examString }) => {
+                  const layer = phase.layer ? LAYER_META[phase.layer] : null;
+                  return (
+                    <a
+                      key={phase.id}
+                      href={`#${phase.id}`}
+                      className={`group rounded-lg border p-3 transition-colors hover:border-brand bg-background/60 ${
+                        layer ? layer.pill : "border-border"
+                      }`}
+                    >
+                      <div className="flex items-center gap-2 mb-1 flex-wrap">
+                        <Pin className="h-3 w-3" />
+                        <span className="text-[10px] font-bold uppercase tracking-wider">
+                          {subjectCode}
+                        </span>
+                        <span className="text-[10px] opacity-70">·</span>
+                        <span className="text-[10px] font-mono opacity-70">
+                          fase {phase.num}
+                        </span>
+                        {urgency.days != null && urgency.days >= 0 && (
+                          <span className="ml-auto inline-flex items-center gap-1 text-[10px] font-semibold tabular-nums">
+                            <CalendarClock className="h-3 w-3" />
+                            {formatDaysUntil(urgency.days)}
+                          </span>
+                        )}
+                      </div>
+                      <div className="text-sm font-semibold text-foreground leading-tight">
+                        {phase.title.split("—")[0].trim()}
+                      </div>
+                      {examString && (
+                        <div className="text-[10px] text-muted-foreground mt-0.5">
+                          📅 {examString}
+                        </div>
+                      )}
+                    </a>
+                  );
+                })}
+              </div>
+            </div>
+          </section>
+        )}
+
         {/* === STACK-DIAGRAM === */}
         <section className="mb-10">
           <div className="flex items-center gap-2 mb-3">
@@ -219,17 +333,29 @@ export function LaereplanPage() {
                       </div>
                     </div>
                     <div className="flex flex-wrap gap-1.5 flex-1">
-                      {phases.map((p) => (
-                        <a
-                          key={p.id}
-                          href={`#${p.id}`}
-                          className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] font-medium transition-colors hover:scale-[1.03] ${meta.pill}`}
-                          title={p.shortSummary}
-                        >
-                          <span className="font-mono opacity-70">{p.num}</span>
-                          {p.title.split("—")[0].trim()}
-                        </a>
-                      ))}
+                      {phases.map((p) => {
+                        const isPinned = pinnedPhaseIds.has(p.id);
+                        return (
+                          <a
+                            key={p.id}
+                            href={`#${p.id}`}
+                            className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] font-medium transition-colors hover:scale-[1.03] ${
+                              isPinned
+                                ? "border-2 border-brand bg-brand/15 text-foreground shadow-sm shadow-brand/20 ring-2 ring-brand/20"
+                                : meta.pill
+                            }`}
+                            title={
+                              isPinned
+                                ? `★ Pinnet · ${p.shortSummary ?? p.title}`
+                                : p.shortSummary
+                            }
+                          >
+                            {isPinned && <Pin className="h-2.5 w-2.5" />}
+                            <span className="font-mono opacity-70">{p.num}</span>
+                            {p.title.split("—")[0].trim()}
+                          </a>
+                        );
+                      })}
                     </div>
                   </div>
                 </div>
@@ -305,6 +431,7 @@ export function LaereplanPage() {
           <div className="space-y-6 relative">
             {PHASES.map((phase) => {
               const p = progress.find((pp) => pp.phase.id === phase.id);
+              const pinnedEntry = pinnedPhaseEntries.get(phase.id);
               return (
                 <PhaseCard
                   key={phase.id}
@@ -312,6 +439,8 @@ export function LaereplanPage() {
                   progress={p}
                   statusOf={statusOf}
                   titleOf={titleOf}
+                  pinnedSubjectCode={pinnedEntry?.subjectCode}
+                  pinnedSubjectSlug={pinnedEntry?.subjectSlug}
                 />
               );
             })}
@@ -374,11 +503,15 @@ function PhaseCard({
   progress,
   statusOf,
   titleOf,
+  pinnedSubjectCode,
+  pinnedSubjectSlug,
 }: {
   phase: CurriculumPhase;
   progress: PhaseProgress | undefined;
   statusOf: (slug: string) => "ready" | "stub" | null;
   titleOf: (slug: string) => string;
+  pinnedSubjectCode?: string;
+  pinnedSubjectSlug?: string;
 }) {
   const slugs = phase.slugs;
   const readyCount = slugs.filter((s) => statusOf(s) === "ready").length;
@@ -390,28 +523,48 @@ function PhaseCard({
   const dependsOn = phasesDependedOnBy(phase.id);
   const unlocks = phasesUnlockedBy(phase.id);
   const layer = phase.layer ? LAYER_META[phase.layer] : null;
+  const isPinned = !!pinnedSubjectSlug;
+  const pinnedExamMeta = pinnedSubjectSlug ? EXAM_META[pinnedSubjectSlug] : undefined;
+  const pinnedUrgency = examUrgency(pinnedExamMeta?.eksamen);
 
   return (
     <section
       id={phase.id}
-      className="relative rounded-xl border border-border bg-card p-5 ml-8 scroll-mt-20"
+      className={`relative rounded-xl border bg-card p-5 ml-8 scroll-mt-20 ${
+        isPinned ? "border-2 border-brand shadow-md shadow-brand/10" : "border-border"
+      }`}
     >
       {/* Node-prikk på den vertikale tråden */}
       <div
         aria-hidden="true"
         className={`absolute -left-[34px] top-6 h-4 w-4 rounded-full border-2 border-background ${
-          percent > 0 ? "bg-success" : "bg-brand"
+          isPinned ? "bg-brand ring-2 ring-brand/30" : percent > 0 ? "bg-success" : "bg-brand"
         } shadow-md`}
       />
 
       <div className="flex items-baseline justify-between gap-3 mb-2 flex-wrap">
-        <h2 className="text-xl font-semibold">
-          <span className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-brand/10 text-brand text-sm font-mono mr-2">
+        <h2 className="text-xl font-semibold flex items-center gap-2 flex-wrap">
+          <span className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-brand/10 text-brand text-sm font-mono">
             {phase.num}
           </span>
           {phase.title}
+          {isPinned && (
+            <span
+              className="inline-flex items-center gap-1 rounded-full bg-brand text-brand-foreground px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider"
+              title={`Pinnet via ${pinnedSubjectCode}`}
+            >
+              <Pin className="h-2.5 w-2.5" />
+              Pinnet · {pinnedSubjectCode}
+            </span>
+          )}
         </h2>
         <div className="flex items-center gap-3 text-xs text-muted-foreground tabular-nums">
+          {isPinned && pinnedUrgency.days != null && pinnedUrgency.days >= 0 && (
+            <span className="inline-flex items-center gap-1 rounded-full border border-brand/40 bg-brand/10 text-brand px-2 py-0.5 text-[10px] font-semibold">
+              <CalendarClock className="h-3 w-3" />
+              {formatDaysUntil(pinnedUrgency.days)}
+            </span>
+          )}
           {layer && (
             <span
               className={`rounded-full border px-2 py-0.5 text-[10px] font-semibold ${layer.pill}`}

@@ -42,6 +42,7 @@ export const PHASES: readonly CurriculumPhase[] = [
     layer: "matematikk",
     shortSummary: "Diskret matte, sannsynlighet, linær algebra",
     slugs: [
+      "tek-1501",
       "math-foundations",
       "diskret-matte",
       "sannsynlighet",
