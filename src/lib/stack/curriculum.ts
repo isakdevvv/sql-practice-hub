@@ -201,6 +201,7 @@ export const PHASES: readonly CurriculumPhase[] = [
       "react-grunnlag",
       "sikkerhet",
       "auth-flows",
+      "web-angrep",
       "mvc-monster",
       "flask-livssyklus",
       "trinn-10-flask-dyp",

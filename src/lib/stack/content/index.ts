@@ -5,6 +5,7 @@ import { content as erMapping } from "./er-mapping";
 import { content as normalisering } from "./normalisering";
 import { content as htmlJinja } from "./html-jinja";
 import { content as sikkerhet } from "./sikkerhet";
+import { content as webAngrep } from "./web-angrep";
 import { content as subqueries } from "./subqueries";
 import { content as nokler } from "./nokler";
 import { content as transaksjoner } from "./transaksjoner";
@@ -331,6 +332,8 @@ export const TRINN: TrinnContent[] = [
   authFlows,
   // HTTP statuskoder — interaktiv lesjon (beslutningstre + response-builder + flow + quiz)
   httpStatuskoder,
+  // Web-angrep — interaktiv sandbox for XSS, CSRF, SQL Injection
+  webAngrep,
 ];
 
 import { curriculumIndexOf } from "../curriculum";
