@@ -198,6 +198,7 @@ export const PHASES: readonly CurriculumPhase[] = [
       "flask-app-builder",
       "fastapi-app-builder",
       "fastapi-grunnlag",
+      "rest-api-builder",
     ],
   },
   {
