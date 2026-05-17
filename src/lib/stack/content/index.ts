@@ -199,6 +199,7 @@ import { content as tek1DistribusjonsPlotter } from "./tek1-distribusjons-plotte
 import { content as tek1PVerdiKalkulator } from "./tek1-p-verdi-kalkulator";
 import { content as dte2602LineaerRegresjon } from "./dte2602-lineaer-regresjon";
 import { content as dte2602RocCurvePlotter } from "./dte2602-roc-curve-plotter";
+import { content as dockerfileBuilder } from "./dockerfile-builder";
 import type { TrinnContent } from "../types";
 
 export const TRINN: TrinnContent[] = [
@@ -290,6 +291,8 @@ export const TRINN: TrinnContent[] = [
   // Interaktive verktøy — eksamensforberedelse
   tek1DistribusjonsPlotter, tek1PVerdiKalkulator,
   dte2602LineaerRegresjon, dte2602RocCurvePlotter,
+  // Dockerfile Builder — DevOps-kodegenerator
+  dockerfileBuilder,
 ];
 
 import { curriculumIndexOf } from "../curriculum";
