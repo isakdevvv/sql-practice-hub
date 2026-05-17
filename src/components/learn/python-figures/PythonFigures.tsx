@@ -2985,3 +2985,1162 @@ export const LateBindingTrap: FC = () => (
     <Caption>Lambdas fanger <em>variabelen</em>, ikke <em>verdien</em>. Default-argumenter evalueres ved definisjon — derfor trikset virker.</Caption>
   </figure>
 );
+
+/* =====================================================================
+ * KAP. 19 — REKURSJON (utvidelse: first-principles)
+ * ===================================================================*/
+
+export const BaseCaseAnatomy: FC = () => (
+  <figure className="my-4">
+    <svg viewBox="0 0 380 200" className="w-full max-w-md mx-auto text-foreground">
+      <text x="10" y="16" className="text-[11px] fill-current font-mono">def fak(n):</text>
+      {/* Base case box */}
+      <rect x="20" y="28" width="340" height="58" fill="color-mix(in oklch, var(--success) 14%, transparent)" stroke={STROKE} />
+      <text x="32" y="46" className="text-[10px] fill-current font-semibold">1 ▸ BASE CASE — stop å forgrene</text>
+      <text x="32" y="62" className="text-[11px] fill-current font-mono">if n == 0:</text>
+      <text x="48" y="78" className="text-[11px] fill-current font-mono">return 1</text>
+      {/* Recursive step box */}
+      <rect x="20" y="98" width="340" height="76" fill="color-mix(in oklch, var(--brand) 14%, transparent)" stroke={STROKE} />
+      <text x="32" y="116" className="text-[10px] fill-current font-semibold">2 ▸ REKURSIVT STEG — reduser problemet</text>
+      <text x="32" y="134" className="text-[11px] fill-current font-mono">return n * fak(n - 1)</text>
+      <text x="32" y="150" className="text-[9px] fill-current opacity-80">↑ samme funksjon ↑ mindre input (n-1, nærmere base)</text>
+      <text x="32" y="164" className="text-[9px] fill-current opacity-80">↑ kombiner: bruk resultatet sammen med n</text>
+    </svg>
+    <Caption>Hver rekursiv funksjon har to deler: når-skal-jeg-stoppe og hvordan-reduserer-jeg. Mangler base case → uendelig dypp → stack overflow.</Caption>
+  </figure>
+);
+
+export const MemoizationCache: FC = () => (
+  <figure className="my-4">
+    <svg viewBox="0 0 380 260" className="w-full max-w-md mx-auto text-foreground">
+      <text x="10" y="16" className="text-[10px] fill-current opacity-80">fib(5) uten cache: 15 kall — eksponentielt</text>
+      {/* fib(5) tree, cached nodes filled with success */}
+      {[
+        { x: 190, y: 36, label: "fib(5)", cached: false },
+        { x: 110, y: 80, label: "fib(4)", cached: false },
+        { x: 270, y: 80, label: "fib(3)", cached: true },
+        { x: 60, y: 124, label: "fib(3)", cached: false },
+        { x: 160, y: 124, label: "fib(2)", cached: true },
+        { x: 220, y: 124, label: "fib(2)", cached: true },
+        { x: 320, y: 124, label: "fib(1)", cached: false },
+        { x: 28, y: 168, label: "fib(2)", cached: false },
+        { x: 92, y: 168, label: "fib(1)", cached: true },
+      ].map((n) => (
+        <g key={`${n.x}-${n.y}-${n.label}`}>
+          <rect
+            x={n.x - 26}
+            y={n.y - 11}
+            width={52}
+            height={22}
+            fill={n.cached ? "color-mix(in oklch, var(--success) 26%, transparent)" : "color-mix(in oklch, var(--brand) 14%, transparent)"}
+            stroke={STROKE}
+            strokeDasharray={n.cached ? "3 2" : undefined}
+          />
+          <text x={n.x} y={n.y + 4} textAnchor="middle" className="text-[10px] fill-current font-mono">{n.label}</text>
+        </g>
+      ))}
+      {[
+        [190, 47, 110, 69],
+        [190, 47, 270, 69],
+        [110, 91, 60, 113],
+        [110, 91, 160, 113],
+        [270, 91, 220, 113],
+        [270, 91, 320, 113],
+        [60, 135, 28, 157],
+        [60, 135, 92, 157],
+      ].map(([x1, y1, x2, y2], i) => (
+        <line key={i} x1={x1} y1={y1} x2={x2} y2={y2} stroke={STROKE} />
+      ))}
+      <rect x="20" y="206" width="14" height="14" fill="color-mix(in oklch, var(--success) 26%, transparent)" stroke={STROKE} strokeDasharray="3 2" />
+      <text x="40" y="218" className="text-[10px] fill-current">cache-hit (regn ikke ut igjen)</text>
+      <text x="20" y="240" className="text-[10px] fill-current opacity-80">Med memoization: O(n) tid, O(n) plass. Eksponentiell → lineær.</text>
+    </svg>
+    <Caption>Stiplede noder gjenbrukes fra et dict. Rekursjon + cache = grunnlaget for dynamic programming.</Caption>
+  </figure>
+);
+
+export const RecursiveVsIterativeCount: FC = () => (
+  <figure className="my-4">
+    <svg viewBox="0 0 380 220" className="w-full max-w-md mx-auto text-foreground">
+      {/* Recursive column */}
+      <text x="10" y="14" className="text-[10px] fill-current font-semibold">REKURSIV — kall-kjede</text>
+      <rect x="10" y="22" width="170" height="170" fill="color-mix(in oklch, var(--brand) 8%, transparent)" stroke={STROKE} />
+      <text x="20" y="40" className="text-[10px] fill-current font-mono">def sum(n):</text>
+      <text x="20" y="54" className="text-[10px] fill-current font-mono">  if n == 0: return 0</text>
+      <text x="20" y="68" className="text-[10px] fill-current font-mono">  return n + sum(n-1)</text>
+      {[
+        "sum(3) → 3 + sum(2)",
+        "sum(2) → 2 + sum(1)",
+        "sum(1) → 1 + sum(0)",
+        "sum(0) → 0",
+        "↑ 3 + 2 + 1 + 0 = 6",
+      ].map((t, i) => (
+        <text key={t} x="20" y={92 + i * 18} className="text-[9px] fill-current font-mono">{t}</text>
+      ))}
+      {/* Iterative column */}
+      <text x="200" y="14" className="text-[10px] fill-current font-semibold">ITERATIV — akkumulator</text>
+      <rect x="200" y="22" width="170" height="170" fill="color-mix(in oklch, var(--success) 8%, transparent)" stroke={STROKE} />
+      <text x="210" y="40" className="text-[10px] fill-current font-mono">def sum(n):</text>
+      <text x="210" y="54" className="text-[10px] fill-current font-mono">  total = 0</text>
+      <text x="210" y="68" className="text-[10px] fill-current font-mono">  for i in range(1, n+1):</text>
+      <text x="210" y="82" className="text-[10px] fill-current font-mono">    total += i</text>
+      <text x="210" y="96" className="text-[10px] fill-current font-mono">  return total</text>
+      {[
+        "i=1: total=1",
+        "i=2: total=3",
+        "i=3: total=6",
+        "return 6",
+      ].map((t, i) => (
+        <text key={t} x="210" y={120 + i * 16} className="text-[9px] fill-current font-mono">{t}</text>
+      ))}
+      <text x="10" y="210" className="text-[10px] fill-current opacity-80">Stack-bruk: rekursiv O(n) rammer · iterativ O(1) lokal variabel.</text>
+    </svg>
+    <Caption>Samme problem, to mentale modeller. Rekursjon bruker stacken som "akkumulator"; en løkke trenger en eksplisitt variabel.</Caption>
+  </figure>
+);
+
+/* =====================================================================
+ * KAP. 21 — SORTERING (utvidelse: first-principles)
+ * ===================================================================*/
+
+export const BigOGrowth: FC = () => (
+  <figure className="my-4">
+    <svg viewBox="0 0 380 240" className="w-full max-w-md mx-auto text-foreground">
+      {/* Header */}
+      {["n", "n log n", "n²", "ratio (n² / n log n)"].map((h, i) => (
+        <g key={h}>
+          <rect x={10 + i * 90} y={10} width={90} height={26} fill="color-mix(in oklch, var(--brand) 18%, transparent)" stroke={STROKE} />
+          <text x={55 + i * 90} y={27} textAnchor="middle" className="text-[10px] fill-current font-mono font-semibold">{h}</text>
+        </g>
+      ))}
+      {/* Rows */}
+      {[
+        ["10", "33", "100", "3×"],
+        ["100", "664", "10 000", "15×"],
+        ["1 000", "9 966", "1 000 000", "100×"],
+        ["10 000", "132 877", "100 000 000", "750×"],
+        ["100 000", "1 660 964", "10 000 000 000", "6 000×"],
+      ].map((row, r) => (
+        <g key={r}>
+          {row.map((cell, c) => (
+            <g key={c}>
+              <rect
+                x={10 + c * 90}
+                y={36 + r * 30}
+                width={90}
+                height={30}
+                fill={c === 2 ? "color-mix(in oklch, var(--destructive) 10%, transparent)" : c === 3 ? "color-mix(in oklch, var(--warning) 12%, transparent)" : "transparent"}
+                stroke={STROKE}
+              />
+              <text
+                x={55 + c * 90}
+                y={56 + r * 30}
+                textAnchor="middle"
+                className="text-[10px] fill-current font-mono"
+              >
+                {cell}
+              </text>
+            </g>
+          ))}
+        </g>
+      ))}
+      <text x={10} y={210} className="text-[10px] fill-current opacity-80">På 100 000 elementer: n log n &lt; 2 mill operasjoner · n² = 10 milliarder.</text>
+      <text x={10} y={226} className="text-[10px] fill-current opacity-80">Det er forskjellen på 1 sekund og 1 dag — på samme maskin.</text>
+    </svg>
+    <Caption>Big-O er ikke abstrakt. Konkrete tall viser hvorfor dataingeniører velger merge/quick (n log n) over boble (n²).</Caption>
+  </figure>
+);
+
+export const MergeSortMerge: FC = () => (
+  <figure className="my-4">
+    <svg viewBox="0 0 380 240" className="w-full max-w-md mx-auto text-foreground">
+      <text x="10" y="16" className="text-[10px] fill-current opacity-80">Merge-trinnet: to sorterte → én sortert. Pekere i, j flytter høyre.</text>
+      {/* Left array */}
+      <text x="10" y="44" className="text-[10px] fill-current">venstre:</text>
+      {[1, 4, 7].map((v, i) => (
+        <g key={i}>
+          <rect x={70 + i * 32} y={30} width={30} height={26} fill="color-mix(in oklch, var(--brand) 14%, transparent)" stroke={STROKE} />
+          <text x={85 + i * 32} y={48} textAnchor="middle" className="text-[11px] fill-current font-mono">{v}</text>
+        </g>
+      ))}
+      <text x={75} y={72} className="text-[9px] fill-current font-semibold" fill="var(--brand)">↑ i=0</text>
+      {/* Right array */}
+      <text x="200" y="44" className="text-[10px] fill-current">høyre:</text>
+      {[2, 3, 8].map((v, i) => (
+        <g key={i}>
+          <rect x={250 + i * 32} y={30} width={30} height={26} fill="color-mix(in oklch, var(--success) 14%, transparent)" stroke={STROKE} />
+          <text x={265 + i * 32} y={48} textAnchor="middle" className="text-[11px] fill-current font-mono">{v}</text>
+        </g>
+      ))}
+      <text x={255} y={72} className="text-[9px] fill-current font-semibold">↑ j=0</text>
+      {/* Comparison + steps */}
+      <text x="10" y="100" className="text-[10px] fill-current font-mono">steg 1: 1 vs 2 → ta 1</text>
+      <text x="10" y="114" className="text-[10px] fill-current font-mono">steg 2: 4 vs 2 → ta 2</text>
+      <text x="10" y="128" className="text-[10px] fill-current font-mono">steg 3: 4 vs 3 → ta 3</text>
+      <text x="10" y="142" className="text-[10px] fill-current font-mono">steg 4: 4 vs 8 → ta 4</text>
+      <text x="10" y="156" className="text-[10px] fill-current font-mono">steg 5: 7 vs 8 → ta 7</text>
+      <text x="10" y="170" className="text-[10px] fill-current font-mono">steg 6: venstre tom → ta 8</text>
+      {/* Result */}
+      <text x="200" y="100" className="text-[10px] fill-current font-semibold">resultat:</text>
+      {[1, 2, 3, 4, 7, 8].map((v, i) => (
+        <g key={i}>
+          <rect x={200 + i * 28} y={110} width={26} height={26} fill="color-mix(in oklch, var(--brand) 22%, transparent)" stroke={STROKE} />
+          <text x={213 + i * 28} y={128} textAnchor="middle" className="text-[11px] fill-current font-mono">{v}</text>
+        </g>
+      ))}
+      <text x="10" y="200" className="text-[10px] fill-current opacity-80">n + m sammenligninger — lineært i totalstørrelsen.</text>
+      <text x="10" y="216" className="text-[10px] fill-current opacity-80">Hele merge sort = log n nivåer × n per nivå = n log n.</text>
+    </svg>
+    <Caption>Merge er bare to pekere som plukker minste tilgjengelig. Hele algoritmen er rekursiv halvering + denne lineære sammenslåingen.</Caption>
+  </figure>
+);
+
+export const StabilityDemo: FC = () => (
+  <figure className="my-4">
+    <svg viewBox="0 0 380 220" className="w-full max-w-md mx-auto text-foreground">
+      <text x="10" y="14" className="text-[10px] fill-current opacity-80">Sorter på alder. Hva skjer med navn som har lik alder?</text>
+      {/* Input */}
+      <text x="10" y="36" className="text-[10px] fill-current font-semibold">input (rekkefølge a→d):</text>
+      {[
+        { n: "Alice", a: 30 },
+        { n: "Bob", a: 25 },
+        { n: "Cara", a: 30 },
+        { n: "Dan", a: 25 },
+      ].map((r, i) => (
+        <g key={r.n}>
+          <rect x={10 + i * 90} y={44} width={80} height={36} fill="color-mix(in oklch, var(--muted) 30%, transparent)" stroke={STROKE} />
+          <text x={50 + i * 90} y={59} textAnchor="middle" className="text-[10px] fill-current font-mono">{r.n}</text>
+          <text x={50 + i * 90} y={73} textAnchor="middle" className="text-[10px] fill-current font-mono opacity-80">a={r.a}</text>
+        </g>
+      ))}
+      {/* Stable result */}
+      <text x="10" y="104" className="text-[10px] fill-current font-semibold">stable sort: bevarer input-rekkefølge ved like nøkler</text>
+      {[
+        { n: "Bob", a: 25, src: 1 },
+        { n: "Dan", a: 25, src: 3 },
+        { n: "Alice", a: 30, src: 0 },
+        { n: "Cara", a: 30, src: 2 },
+      ].map((r, i) => (
+        <g key={r.n}>
+          <rect x={10 + i * 90} y={112} width={80} height={36} fill="color-mix(in oklch, var(--success) 18%, transparent)" stroke={STROKE} />
+          <text x={50 + i * 90} y={127} textAnchor="middle" className="text-[10px] fill-current font-mono">{r.n}</text>
+          <text x={50 + i * 90} y={141} textAnchor="middle" className="text-[10px] fill-current font-mono opacity-80">a={r.a}</text>
+        </g>
+      ))}
+      {/* Unstable result */}
+      <text x="10" y="170" className="text-[10px] fill-current font-semibold">unstable: kan bytte rekkefølge på like nøkler</text>
+      {[
+        { n: "Dan", a: 25 },
+        { n: "Bob", a: 25 },
+        { n: "Cara", a: 30 },
+        { n: "Alice", a: 30 },
+      ].map((r, i) => (
+        <g key={r.n}>
+          <rect x={10 + i * 90} y={178} width={80} height={34} fill="color-mix(in oklch, var(--warning) 18%, transparent)" stroke={STROKE} />
+          <text x={50 + i * 90} y={193} textAnchor="middle" className="text-[10px] fill-current font-mono">{r.n}</text>
+          <text x={50 + i * 90} y={207} textAnchor="middle" className="text-[10px] fill-current font-mono opacity-80">a={r.a}</text>
+        </g>
+      ))}
+    </svg>
+    <Caption>Stabilitet matters når du sorterer multikolonne: sorter først på sekundær-nøkkel, så stabil-sorter på primær — alt blir riktig.</Caption>
+  </figure>
+);
+
+/* =====================================================================
+ * KAP. 22 — LENKEDE LISTER (utvidelse: first-principles)
+ * ===================================================================*/
+
+export const ArrayVsLinkedListMemory: FC = () => (
+  <figure className="my-4">
+    <svg viewBox="0 0 380 280" className="w-full max-w-md mx-auto text-foreground">
+      <text x="10" y="14" className="text-[10px] fill-current font-semibold">ARRAY — kontinuerlige bytes i minnet</text>
+      {[10, 20, 30, 40].map((v, i) => (
+        <g key={i}>
+          <rect x={10 + i * 80} y={22} width={78} height={36} fill="color-mix(in oklch, var(--brand) 16%, transparent)" stroke={STROKE} />
+          <text x={49 + i * 80} y={42} textAnchor="middle" className="text-[11px] fill-current font-mono">{v}</text>
+          <text x={49 + i * 80} y={54} textAnchor="middle" className="text-[8px] fill-current font-mono opacity-70">@{(0x100 + i * 4).toString(16)}</text>
+        </g>
+      ))}
+      <text x={10} y={76} className="text-[9px] fill-current opacity-80">arr[i] = base + i × 4 → konstant lookup O(1). Innsetting midt-i: flytt ALT bakover.</text>
+      {/* Linked list */}
+      <text x="10" y="106" className="text-[10px] fill-current font-semibold">LENKET LISTE — spredte noder, hver med en peker</text>
+      {[
+        { v: 10, addr: "1A0", next: "3F2", x: 10 },
+        { v: 20, addr: "3F2", next: "0E8", x: 100 },
+        { v: 30, addr: "0E8", next: "5C4", x: 190 },
+        { v: 40, addr: "5C4", next: "None", x: 280 },
+      ].map((n, i) => (
+        <g key={i}>
+          <rect x={n.x} y={116} width={86} height={50} fill="color-mix(in oklch, var(--success) 14%, transparent)" stroke={STROKE} />
+          <line x1={n.x + 52} y1={116} x2={n.x + 52} y2={166} stroke={STROKE} strokeDasharray="2 2" />
+          <text x={n.x + 26} y={134} textAnchor="middle" className="text-[11px] fill-current font-mono">{n.v}</text>
+          <text x={n.x + 26} y={148} textAnchor="middle" className="text-[8px] fill-current font-mono opacity-70">@{n.addr}</text>
+          <text x={n.x + 69} y={138} textAnchor="middle" className="text-[8px] fill-current font-mono opacity-70">next</text>
+          <text x={n.x + 69} y={150} textAnchor="middle" className="text-[8px] fill-current font-mono opacity-70">{n.next}</text>
+          {i < 3 && (
+            <line x1={n.x + 86} y1={141} x2={n.x + 100} y2={141} stroke={STROKE} markerEnd="url(#arr-avl)" />
+          )}
+        </g>
+      ))}
+      <text x={10} y={184} className="text-[9px] fill-current opacity-80">For å finne node 3: følg peker fra start → O(n) lookup. Innsetting: bare bytt to pekere → O(1) hvis du har posisjonen.</text>
+      {/* Tradeoff table */}
+      <text x={10} y={210} className="text-[10px] fill-current font-semibold">Tradeoff:</text>
+      <text x={10} y={226} className="text-[10px] fill-current">array · lookup O(1) · innsett midt-i O(n) · cache-vennlig</text>
+      <text x={10} y={242} className="text-[10px] fill-current">lenket · lookup O(n) · innsett etter peker O(1) · spredt i minne</text>
+      <text x={10} y={262} className="text-[9px] fill-current opacity-80">Dataingeniør: lenkede lister er sjelden raskeste valg i Python — mest pedagogisk for å forstå pekere/dynamiske strukturer.</text>
+      <defs>
+        <marker id="arr-avl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor" />
+        </marker>
+      </defs>
+    </svg>
+    <Caption>Forskjellen er minnelayout. Array = tabell i en rekke. Lenket = "kjede" av kapsler som peker på hverandre.</Caption>
+  </figure>
+);
+
+export const QueueEnqueueDequeue: FC = () => (
+  <figure className="my-4">
+    <svg viewBox="0 0 380 280" className="w-full max-w-md mx-auto text-foreground">
+      <text x="10" y="16" className="text-[10px] fill-current font-semibold">FIFO-kø: head fjerner, tail legger til. Pekere oppdateres.</text>
+      {/* Step 1: enqueue A */}
+      <text x="10" y="44" className="text-[10px] fill-current font-mono">1. enqueue(A):</text>
+      <rect x={150} y={32} width={50} height={28} fill="color-mix(in oklch, var(--brand) 18%, transparent)" stroke={STROKE} />
+      <text x={175} y={50} textAnchor="middle" className="text-[11px] fill-current font-mono">A</text>
+      <text x={150} y={72} className="text-[8px] fill-current opacity-80">head=tail=A</text>
+      {/* Step 2: enqueue B */}
+      <text x="10" y="100" className="text-[10px] fill-current font-mono">2. enqueue(B):</text>
+      <rect x={150} y={88} width={50} height={28} fill="color-mix(in oklch, var(--brand) 18%, transparent)" stroke={STROKE} />
+      <text x={175} y={106} textAnchor="middle" className="text-[11px] fill-current font-mono">A</text>
+      <line x1={200} y1={102} x2={216} y2={102} stroke={STROKE} markerEnd="url(#arr-qd)" />
+      <rect x={216} y={88} width={50} height={28} fill="color-mix(in oklch, var(--brand) 18%, transparent)" stroke={STROKE} />
+      <text x={241} y={106} textAnchor="middle" className="text-[11px] fill-current font-mono">B</text>
+      <text x={150} y={128} className="text-[8px] fill-current opacity-80">head=A · tail=B</text>
+      {/* Step 3: enqueue C */}
+      <text x="10" y="156" className="text-[10px] fill-current font-mono">3. enqueue(C):</text>
+      {[
+        { v: "A", x: 150 },
+        { v: "B", x: 216 },
+        { v: "C", x: 282 },
+      ].map((b, i) => (
+        <g key={b.v}>
+          <rect x={b.x} y={144} width={50} height={28} fill="color-mix(in oklch, var(--brand) 18%, transparent)" stroke={STROKE} />
+          <text x={b.x + 25} y={162} textAnchor="middle" className="text-[11px] fill-current font-mono">{b.v}</text>
+          {i < 2 && <line x1={b.x + 50} y1={158} x2={b.x + 66} y2={158} stroke={STROKE} markerEnd="url(#arr-qd)" />}
+        </g>
+      ))}
+      <text x={150} y={184} className="text-[8px] fill-current opacity-80">head=A · tail=C</text>
+      {/* Step 4: dequeue */}
+      <text x="10" y="212" className="text-[10px] fill-current font-mono">4. dequeue() → A</text>
+      {[
+        { v: "B", x: 150 },
+        { v: "C", x: 216 },
+      ].map((b, i) => (
+        <g key={b.v}>
+          <rect x={b.x} y={200} width={50} height={28} fill="color-mix(in oklch, var(--success) 22%, transparent)" stroke={STROKE} />
+          <text x={b.x + 25} y={218} textAnchor="middle" className="text-[11px] fill-current font-mono">{b.v}</text>
+          {i < 1 && <line x1={b.x + 50} y1={214} x2={b.x + 66} y2={214} stroke={STROKE} markerEnd="url(#arr-qd)" />}
+        </g>
+      ))}
+      <text x={150} y={240} className="text-[8px] fill-current opacity-80">head=B · tail=C — A er ute</text>
+      <text x={10} y={266} className="text-[10px] fill-current opacity-80">Begge operasjoner: O(1). Brukes overalt — print-køer, BFS-traversering, web-request-queues.</text>
+      <defs>
+        <marker id="arr-qd" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor" />
+        </marker>
+      </defs>
+    </svg>
+    <Caption>"First In First Out": køen modellerer venterekka. Head-pekeren markerer hvem som tas først, tail markerer slutten.</Caption>
+  </figure>
+);
+
+export const DoublyLinkedListPrevNext: FC = () => (
+  <figure className="my-4">
+    <svg viewBox="0 0 380 200" className="w-full max-w-md mx-auto text-foreground">
+      <text x="10" y="16" className="text-[10px] fill-current opacity-80">Dobbelt-lenket: hver node har BÅDE next og prev. Du kan gå begge veier.</text>
+      {[
+        { v: "10", x: 20 },
+        { v: "20", x: 140 },
+        { v: "30", x: 260 },
+      ].map((n, i) => (
+        <g key={i}>
+          {/* node body 3 cells */}
+          <rect x={n.x} y={50} width={100} height={70} fill="color-mix(in oklch, var(--brand) 14%, transparent)" stroke={STROKE} />
+          <line x1={n.x + 33} y1={50} x2={n.x + 33} y2={120} stroke={STROKE} />
+          <line x1={n.x + 66} y1={50} x2={n.x + 66} y2={120} stroke={STROKE} />
+          <text x={n.x + 16} y={70} textAnchor="middle" className="text-[8px] fill-current font-mono opacity-70">prev</text>
+          <text x={n.x + 49} y={70} textAnchor="middle" className="text-[8px] fill-current font-mono opacity-70">data</text>
+          <text x={n.x + 82} y={70} textAnchor="middle" className="text-[8px] fill-current font-mono opacity-70">next</text>
+          <text x={n.x + 49} y={102} textAnchor="middle" className="text-[12px] fill-current font-mono font-semibold">{n.v}</text>
+          {/* arrows */}
+          {i < 2 && (
+            <>
+              <line x1={n.x + 100} y1={80} x2={n.x + 120} y2={80} stroke={STROKE} markerEnd="url(#arr-dll)" />
+              <line x1={n.x + 120} y1={94} x2={n.x + 100} y2={94} stroke={STROKE} markerEnd="url(#arr-dll)" />
+            </>
+          )}
+        </g>
+      ))}
+      <text x={10} y={150} className="text-[10px] fill-current">Brukstilfeller:</text>
+      <text x={10} y={166} className="text-[10px] fill-current opacity-80">• Undo/redo-stack: gå frem og tilbake gjennom historikken.</text>
+      <text x={10} y={180} className="text-[10px] fill-current opacity-80">• LRU-cache: rask flytting av node til front uten traversering.</text>
+      <text x={10} y={194} className="text-[10px] fill-current opacity-80">• Doble pekere = 2× minne, men sletting av en node tar O(1) selv uten å vite forrige.</text>
+      <defs>
+        <marker id="arr-dll" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor" />
+        </marker>
+      </defs>
+    </svg>
+    <Caption>Dobbelt-lenket liste er trade-off: dobbelt så mye minne per node, men du kan slette en node uten å starte fra head.</Caption>
+  </figure>
+);
+
+/* =====================================================================
+ * KAP. 23 — BST (utvidelse: first-principles)
+ * ===================================================================*/
+
+export const BSTInsertSequence: FC = () => (
+  <figure className="my-4">
+    <svg viewBox="0 0 380 290" className="w-full max-w-md mx-auto text-foreground">
+      <text x="10" y="14" className="text-[10px] fill-current opacity-80">Sett inn 5, 3, 8, 1, 4, 7, 9 ett etter ett. Mindre venstre, større høyre.</text>
+      {/* 7 small subtrees stacked */}
+      {(() => {
+        const stages: { nodes: { v: number; x: number; y: number }[]; edges: number[][] }[] = [
+          { nodes: [{ v: 5, x: 50, y: 40 }], edges: [] },
+          { nodes: [{ v: 5, x: 110, y: 40 }, { v: 3, x: 90, y: 70 }], edges: [[110, 50, 90, 60]] },
+          { nodes: [{ v: 5, x: 170, y: 40 }, { v: 3, x: 150, y: 70 }, { v: 8, x: 190, y: 70 }], edges: [[170, 50, 150, 60], [170, 50, 190, 60]] },
+          { nodes: [{ v: 5, x: 240, y: 40 }, { v: 3, x: 215, y: 70 }, { v: 8, x: 265, y: 70 }, { v: 1, x: 200, y: 100 }], edges: [[240, 50, 215, 60], [240, 50, 265, 60], [215, 80, 200, 90]] },
+          { nodes: [{ v: 5, x: 310, y: 40 }, { v: 3, x: 285, y: 70 }, { v: 8, x: 335, y: 70 }, { v: 1, x: 270, y: 100 }, { v: 4, x: 300, y: 100 }], edges: [[310, 50, 285, 60], [310, 50, 335, 60], [285, 80, 270, 90], [285, 80, 300, 90]] },
+        ];
+        return stages.map((stage, s) => (
+          <g key={s} transform={`translate(${s * 60}, 0)`}>
+            {stage.edges.map(([x1, y1, x2, y2], i) => (
+              <line key={i} x1={x1 - s * 60} y1={y1} x2={x2 - s * 60} y2={y2} stroke={STROKE} />
+            ))}
+            {stage.nodes.map((n) => (
+              <g key={n.v}>
+                <circle cx={n.x - s * 60} cy={n.y} r={11} fill="color-mix(in oklch, var(--brand) 18%, transparent)" stroke={STROKE} />
+                <text x={n.x - s * 60} y={n.y + 4} textAnchor="middle" className="text-[9px] fill-current font-mono">{n.v}</text>
+              </g>
+            ))}
+            <text x={(stage.nodes[stage.nodes.length - 1].v < 10 ? 35 : 30) - s * 60 + 10} y={130} textAnchor="middle" className="text-[9px] fill-current opacity-80">+{stage.nodes[stage.nodes.length - 1].v}</text>
+          </g>
+        ));
+      })()}
+      {/* Final tree after all 7 */}
+      <text x={10} y={158} className="text-[10px] fill-current font-semibold">etter alle 7:</text>
+      {(() => {
+        const cx = 190;
+        const finalNodes = [
+          { v: 5, x: cx, y: 180 },
+          { v: 3, x: cx - 50, y: 215 },
+          { v: 8, x: cx + 50, y: 215 },
+          { v: 1, x: cx - 70, y: 250 },
+          { v: 4, x: cx - 30, y: 250 },
+          { v: 7, x: cx + 30, y: 250 },
+          { v: 9, x: cx + 70, y: 250 },
+        ];
+        const finalEdges = [
+          [cx, 191, cx - 50, 204],
+          [cx, 191, cx + 50, 204],
+          [cx - 50, 226, cx - 70, 239],
+          [cx - 50, 226, cx - 30, 239],
+          [cx + 50, 226, cx + 30, 239],
+          [cx + 50, 226, cx + 70, 239],
+        ];
+        return (
+          <>
+            {finalEdges.map(([x1, y1, x2, y2], i) => (
+              <line key={i} x1={x1} y1={y1} x2={x2} y2={y2} stroke={STROKE} />
+            ))}
+            {finalNodes.map((n) => (
+              <g key={n.v}>
+                <circle cx={n.x} cy={n.y} r={12} fill="color-mix(in oklch, var(--success) 18%, transparent)" stroke={STROKE} />
+                <text x={n.x} y={n.y + 4} textAnchor="middle" className="text-[10px] fill-current font-mono">{n.v}</text>
+              </g>
+            ))}
+          </>
+        );
+      })()}
+      <text x={10} y={282} className="text-[10px] fill-current opacity-80">Innsettings-regel: hvis input &lt; node, gå venstre. Ellers høyre. Stopp når en plass er null.</text>
+    </svg>
+    <Caption>Treet bygges trinn for trinn. Hvert nytt tall finner sin egen plass i et eksisterende delsøk.</Caption>
+  </figure>
+);
+
+export const BSTDeleteCases: FC = () => (
+  <figure className="my-4">
+    <svg viewBox="0 0 380 240" className="w-full max-w-md mx-auto text-foreground">
+      <text x="10" y="14" className="text-[10px] fill-current opacity-80">Sletting har tre tilfeller — kompleksiteten kommer fra tilfelle 3.</text>
+      {/* Case 1: leaf */}
+      <text x={10} y={36} className="text-[10px] fill-current font-semibold">1 ▸ blad: bare fjern</text>
+      {[
+        { v: 5, x: 60, y: 60 },
+        { v: 3, x: 40, y: 90 },
+        { v: 8, x: 80, y: 90 },
+      ].map((n) => (
+        <g key={n.v}>
+          <circle cx={n.x} cy={n.y} r={11} fill={n.v === 8 ? "color-mix(in oklch, var(--destructive) 30%, transparent)" : "color-mix(in oklch, var(--brand) 16%, transparent)"} stroke={STROKE} strokeDasharray={n.v === 8 ? "3 2" : undefined} />
+          <text x={n.x} y={n.y + 4} textAnchor="middle" className="text-[9px] fill-current font-mono">{n.v}</text>
+        </g>
+      ))}
+      <line x1={60} y1={71} x2={40} y2={79} stroke={STROKE} />
+      <line x1={60} y1={71} x2={80} y2={79} stroke={STROKE} strokeDasharray="3 2" />
+      <text x={10} y={122} className="text-[9px] fill-current opacity-80">slett 8 → bare null parent.right</text>
+      {/* Case 2: one child */}
+      <text x={140} y={36} className="text-[10px] fill-current font-semibold">2 ▸ ett barn: lift opp</text>
+      {[
+        { v: 5, x: 190, y: 60 },
+        { v: 8, x: 210, y: 90, mark: "del" },
+        { v: 9, x: 220, y: 120 },
+      ].map((n) => (
+        <g key={n.v}>
+          <circle cx={n.x} cy={n.y} r={11} fill={n.mark === "del" ? "color-mix(in oklch, var(--destructive) 30%, transparent)" : "color-mix(in oklch, var(--brand) 16%, transparent)"} stroke={STROKE} strokeDasharray={n.mark === "del" ? "3 2" : undefined} />
+          <text x={n.x} y={n.y + 4} textAnchor="middle" className="text-[9px] fill-current font-mono">{n.v}</text>
+        </g>
+      ))}
+      <line x1={190} y1={71} x2={210} y2={79} stroke={STROKE} />
+      <line x1={210} y1={101} x2={220} y2={109} stroke={STROKE} />
+      <text x={140} y={144} className="text-[9px] fill-current opacity-80">slett 8 → parent peker direkte på 9</text>
+      {/* Case 3: two children */}
+      <text x={270} y={36} className="text-[10px] fill-current font-semibold">3 ▸ to barn</text>
+      {[
+        { v: 5, x: 320, y: 60, mark: "del" },
+        { v: 3, x: 300, y: 90 },
+        { v: 8, x: 340, y: 90 },
+        { v: 7, x: 325, y: 120, mark: "succ" },
+      ].map((n) => (
+        <g key={n.v}>
+          <circle cx={n.x} cy={n.y} r={11} fill={n.mark === "del" ? "color-mix(in oklch, var(--destructive) 30%, transparent)" : n.mark === "succ" ? "color-mix(in oklch, var(--warning) 30%, transparent)" : "color-mix(in oklch, var(--brand) 16%, transparent)"} stroke={STROKE} strokeDasharray={n.mark === "del" ? "3 2" : undefined} />
+          <text x={n.x} y={n.y + 4} textAnchor="middle" className="text-[9px] fill-current font-mono">{n.v}</text>
+        </g>
+      ))}
+      <line x1={320} y1={71} x2={300} y2={79} stroke={STROKE} />
+      <line x1={320} y1={71} x2={340} y2={79} stroke={STROKE} />
+      <line x1={340} y1={101} x2={325} y2={109} stroke={STROKE} />
+      <text x={270} y={144} className="text-[9px] fill-current opacity-80">finn in-order successor (7),</text>
+      <text x={270} y={156} className="text-[9px] fill-current opacity-80">erstatt verdien 5 → 7,</text>
+      <text x={270} y={168} className="text-[9px] fill-current opacity-80">slett gamle 7 (er nå tilfelle 1 eller 2)</text>
+      <text x={10} y={210} className="text-[10px] fill-current opacity-80">Tilfelle 3 funker fordi in-order successor = minste verdi i høyre delsubtre — den er &gt; alle i venstre subtre, og &lt; alle andre i høyre. Invariantet holdes.</text>
+    </svg>
+    <Caption>De tre slette-tilfellene er bygd opp så invariantet "venstre &lt; rot &lt; høyre" alltid holder etterpå.</Caption>
+  </figure>
+);
+
+export const BSTSkewedVsBalanced: FC = () => (
+  <figure className="my-4">
+    <svg viewBox="0 0 380 240" className="w-full max-w-md mx-auto text-foreground">
+      <text x={10} y={14} className="text-[10px] fill-current opacity-80">Samme tall, ulik innsettingsrekkefølge → ulik forme → ulik kostnad.</text>
+      {/* Skewed */}
+      <text x={10} y={36} className="text-[10px] fill-current font-semibold">Skjev (input 1, 2, 3, 4, 5, 6, 7):</text>
+      {[1, 2, 3, 4, 5, 6, 7].map((v, i) => (
+        <g key={v}>
+          <circle cx={30 + i * 22} cy={60 + i * 16} r={10} fill="color-mix(in oklch, var(--destructive) 18%, transparent)" stroke={STROKE} />
+          <text x={30 + i * 22} y={64 + i * 16} textAnchor="middle" className="text-[9px] fill-current font-mono">{v}</text>
+          {i < 6 && <line x1={30 + i * 22 + 7} y1={60 + i * 16 + 7} x2={30 + (i + 1) * 22 - 7} y2={60 + (i + 1) * 16 - 7} stroke={STROKE} />}
+        </g>
+      ))}
+      <text x={210} y={100} className="text-[10px] fill-current">søk etter 7:</text>
+      <text x={210} y={114} className="text-[10px] fill-current font-mono">7 sammenligninger</text>
+      <text x={210} y={130} className="text-[10px] fill-current font-semibold">→ O(n)</text>
+      <text x={210} y={146} className="text-[9px] fill-current opacity-80">Treet er en lenket liste.</text>
+      {/* Balanced */}
+      <text x={10} y={176} className="text-[10px] fill-current font-semibold">Balansert (input 4, 2, 6, 1, 3, 5, 7):</text>
+      {[
+        { v: 4, x: 80, y: 196 },
+        { v: 2, x: 50, y: 218 },
+        { v: 6, x: 110, y: 218 },
+        { v: 1, x: 35, y: 232 },
+        { v: 3, x: 65, y: 232 },
+        { v: 5, x: 95, y: 232 },
+        { v: 7, x: 125, y: 232 },
+      ].map((n) => (
+        <g key={n.v}>
+          <circle cx={n.x} cy={n.y} r={8} fill="color-mix(in oklch, var(--success) 22%, transparent)" stroke={STROKE} />
+          <text x={n.x} y={n.y + 3} textAnchor="middle" className="text-[8px] fill-current font-mono">{n.v}</text>
+        </g>
+      ))}
+      {[
+        [80, 204, 50, 210],
+        [80, 204, 110, 210],
+        [50, 226, 35, 224],
+        [50, 226, 65, 224],
+        [110, 226, 95, 224],
+        [110, 226, 125, 224],
+      ].map(([x1, y1, x2, y2], i) => (
+        <line key={i} x1={x1} y1={y1} x2={x2} y2={y2} stroke={STROKE} />
+      ))}
+      <text x={210} y={196} className="text-[10px] fill-current">søk etter 7:</text>
+      <text x={210} y={210} className="text-[10px] fill-current font-mono">3 sammenligninger</text>
+      <text x={210} y={226} className="text-[10px] fill-current font-semibold">→ O(log n)</text>
+    </svg>
+    <Caption>BST garanterer ikke log n. Sortert input → degenerert tre. Det er derfor du bruker AVL/red-black i praksis.</Caption>
+  </figure>
+);
+
+/* =====================================================================
+ * KAP. 24 — HASHING (utvidelse: first-principles)
+ * ===================================================================*/
+
+export const HashPipeline: FC = () => (
+  <figure className="my-4">
+    <svg viewBox="0 0 380 260" className="w-full max-w-md mx-auto text-foreground">
+      <text x={10} y={14} className="text-[10px] fill-current opacity-80">Fra streng til bøtte-indeks — fire deterministiske transformasjoner.</text>
+      {/* Step 1: input */}
+      <rect x={10} y={28} width={80} height={42} fill="color-mix(in oklch, var(--brand) 16%, transparent)" stroke={STROKE} />
+      <text x={50} y={42} textAnchor="middle" className="text-[10px] fill-current font-semibold">1. INPUT</text>
+      <text x={50} y={60} textAnchor="middle" className="text-[11px] fill-current font-mono">"alice"</text>
+      <line x1={92} y1={49} x2={108} y2={49} stroke={STROKE} markerEnd="url(#arr-hp)" />
+      {/* Step 2: bytes */}
+      <rect x={110} y={28} width={120} height={42} fill="color-mix(in oklch, var(--brand) 16%, transparent)" stroke={STROKE} />
+      <text x={170} y={42} textAnchor="middle" className="text-[10px] fill-current font-semibold">2. BYTES (ord)</text>
+      <text x={170} y={60} textAnchor="middle" className="text-[10px] fill-current font-mono">97 108 105 99 101</text>
+      <line x1={232} y1={49} x2={248} y2={49} stroke={STROKE} markerEnd="url(#arr-hp)" />
+      {/* Step 3: combine */}
+      <rect x={250} y={28} width={120} height={42} fill="color-mix(in oklch, var(--brand) 16%, transparent)" stroke={STROKE} />
+      <text x={310} y={42} textAnchor="middle" className="text-[10px] fill-current font-semibold">3. KOMBINER</text>
+      <text x={310} y={60} textAnchor="middle" className="text-[10px] fill-current font-mono">h = 482739104</text>
+      {/* Arrow down */}
+      <line x1={310} y1={72} x2={310} y2={90} stroke={STROKE} markerEnd="url(#arr-hp)" />
+      {/* Step 4: modulo */}
+      <rect x={250} y={92} width={120} height={42} fill="color-mix(in oklch, var(--warning) 20%, transparent)" stroke={STROKE} />
+      <text x={310} y={106} textAnchor="middle" className="text-[10px] fill-current font-semibold">4. MODULO m=8</text>
+      <text x={310} y={124} textAnchor="middle" className="text-[10px] fill-current font-mono">h % 8 = 0</text>
+      <line x1={310} y1={136} x2={310} y2={154} stroke={STROKE} markerEnd="url(#arr-hp)" />
+      {/* Buckets */}
+      {Array.from({ length: 8 }).map((_, i) => (
+        <g key={i}>
+          <rect x={10 + i * 45} y={158} width={42} height={30} fill={i === 0 ? "color-mix(in oklch, var(--success) 25%, transparent)" : "color-mix(in oklch, var(--muted) 30%, transparent)"} stroke={STROKE} />
+          <text x={31 + i * 45} y={177} textAnchor="middle" className="text-[10px] fill-current font-mono">{i}</text>
+        </g>
+      ))}
+      <text x={31} y={204} textAnchor="middle" className="text-[10px] fill-current font-mono font-semibold">"alice"</text>
+      <text x={10} y={230} className="text-[10px] fill-current opacity-80">Hver av de fire stegene er deterministisk: samme input → samme bøtte. Det er hele tricket.</text>
+      <text x={10} y={246} className="text-[10px] fill-current opacity-80">Steg 2-3 må fordele forskjellige strenger jevnt. Steg 4 begrenser til faktisk array-størrelse.</text>
+      <defs>
+        <marker id="arr-hp" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor" />
+        </marker>
+      </defs>
+    </svg>
+    <Caption>Hashing er ikke magi: input → tall → modulo → indeks. Python skjuler det bak <code>hash()</code> og dict-implementasjonen.</Caption>
+  </figure>
+);
+
+export const LoadFactorChart: FC = () => (
+  <figure className="my-4">
+    <svg viewBox="0 0 380 220" className="w-full max-w-md mx-auto text-foreground">
+      <text x={10} y={14} className="text-[10px] fill-current opacity-80">Load factor α = elementer / bøtter. Påvirker kollisjons-sjansen direkte.</text>
+      {/* Header */}
+      {["α (fyllgrad)", "kollisjons-prob.", "snittsøk (probing)", "effekt"].map((h, i) => (
+        <g key={h}>
+          <rect x={10 + i * 90} y={28} width={90} height={26} fill="color-mix(in oklch, var(--brand) 18%, transparent)" stroke={STROKE} />
+          <text x={55 + i * 90} y={45} textAnchor="middle" className="text-[10px] fill-current font-mono font-semibold">{h}</text>
+        </g>
+      ))}
+      {[
+        { a: "0.25", p: "~22 %", probes: "1.2", color: "var(--success)", note: "kjapt — mye plass" },
+        { a: "0.50", p: "~39 %", probes: "1.5", color: "var(--success)", note: "godt punkt" },
+        { a: "0.70", p: "~50 %", probes: "2.0", color: "var(--warning)", note: "Python rehash-her" },
+        { a: "0.90", p: "~62 %", probes: "5.5", color: "var(--destructive)", note: "merkbar lag" },
+        { a: "0.99", p: "~63 %", probes: "50+", color: "var(--destructive)", note: "tabellen er ubrukelig" },
+      ].map((row, r) => (
+        <g key={r}>
+          {[row.a, row.p, row.probes, row.note].map((cell, c) => (
+            <g key={c}>
+              <rect
+                x={10 + c * 90}
+                y={54 + r * 28}
+                width={90}
+                height={28}
+                fill={c === 3 ? `color-mix(in oklch, ${row.color} 18%, transparent)` : "transparent"}
+                stroke={STROKE}
+              />
+              <text x={55 + c * 90} y={72 + r * 28} textAnchor="middle" className="text-[10px] fill-current font-mono">{cell}</text>
+            </g>
+          ))}
+        </g>
+      ))}
+      <text x={10} y={210} className="text-[10px] fill-current opacity-80">Python dict bygger om når α &gt; 2/3 — dobler antall bøtter. Det er trade-off: plass for fart.</text>
+    </svg>
+    <Caption>Kollisjons-sjansen vokser ikke-lineært med α. Lærdom: hash-tabeller må holde seg "luftige" for å være raske.</Caption>
+  </figure>
+);
+
+export const ResizeRehash: FC = () => (
+  <figure className="my-4">
+    <svg viewBox="0 0 380 260" className="w-full max-w-md mx-auto text-foreground">
+      <text x={10} y={14} className="text-[10px] fill-current opacity-80">Når load factor passerer terskel: ny tabell 2× så stor, alle elementer re-hashes inn.</text>
+      {/* Old table */}
+      <text x={10} y={36} className="text-[10px] fill-current font-semibold">før (m=4, α=0.75):</text>
+      {[
+        { i: 0, v: "alice", filled: true },
+        { i: 1, v: "", filled: false },
+        { i: 2, v: "bob", filled: true },
+        { i: 3, v: "cara", filled: true },
+      ].map((b) => (
+        <g key={b.i}>
+          <rect x={10 + b.i * 65} y={44} width={62} height={34} fill={b.filled ? "color-mix(in oklch, var(--brand) 20%, transparent)" : "color-mix(in oklch, var(--muted) 25%, transparent)"} stroke={STROKE} />
+          <text x={41 + b.i * 65} y={62} textAnchor="middle" className="text-[10px] fill-current font-mono">{b.v || "—"}</text>
+          <text x={41 + b.i * 65} y={73} textAnchor="middle" className="text-[8px] fill-current font-mono opacity-70">[{b.i}]</text>
+        </g>
+      ))}
+      {/* Arrow down */}
+      <text x={140} y={104} className="text-[10px] fill-current">α &gt; 2/3 → resize!</text>
+      <line x1={190} y1={110} x2={190} y2={130} stroke={STROKE} markerEnd="url(#arr-rr)" />
+      {/* Re-hashing process */}
+      <text x={10} y={140} className="text-[10px] fill-current opacity-80">Hash-funksjonen brukes på nytt med m=8:</text>
+      <text x={10} y={156} className="text-[10px] fill-current font-mono">hash("alice") % 8 = 0   (var 0)</text>
+      <text x={10} y={170} className="text-[10px] fill-current font-mono">hash("bob")   % 8 = 6   (var 2)</text>
+      <text x={10} y={184} className="text-[10px] fill-current font-mono">hash("cara")  % 8 = 3   (var 3)</text>
+      {/* New table */}
+      <text x={10} y={206} className="text-[10px] fill-current font-semibold">etter (m=8, α=0.375):</text>
+      {[
+        { i: 0, v: "alice", filled: true },
+        { i: 1, v: "", filled: false },
+        { i: 2, v: "", filled: false },
+        { i: 3, v: "cara", filled: true },
+        { i: 4, v: "", filled: false },
+        { i: 5, v: "", filled: false },
+        { i: 6, v: "bob", filled: true },
+        { i: 7, v: "", filled: false },
+      ].map((b) => (
+        <g key={b.i}>
+          <rect x={10 + b.i * 45} y={214} width={42} height={34} fill={b.filled ? "color-mix(in oklch, var(--success) 22%, transparent)" : "color-mix(in oklch, var(--muted) 25%, transparent)"} stroke={STROKE} />
+          <text x={31 + b.i * 45} y={232} textAnchor="middle" className="text-[9px] fill-current font-mono">{b.v || "—"}</text>
+          <text x={31 + b.i * 45} y={243} textAnchor="middle" className="text-[8px] fill-current font-mono opacity-70">[{b.i}]</text>
+        </g>
+      ))}
+      <defs>
+        <marker id="arr-rr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor" />
+        </marker>
+      </defs>
+    </svg>
+    <Caption>Resize er O(n), men sjelden. Amortisert kostnad per innsetting forblir O(1).</Caption>
+  </figure>
+);
+
+/* =====================================================================
+ * KAP. 25 — GRAFER DFS/BFS (utvidelse: first-principles)
+ * ===================================================================*/
+
+export const AdjListVsMatrix: FC = () => (
+  <figure className="my-4">
+    <svg viewBox="0 0 380 280" className="w-full max-w-md mx-auto text-foreground">
+      <text x={10} y={14} className="text-[10px] fill-current opacity-80">Samme graf — to lagringsmåter. Valget styrer plass og access-fart.</text>
+      {/* Tiny graph */}
+      <text x={10} y={36} className="text-[10px] fill-current font-semibold">grafen:</text>
+      {[
+        { v: "A", x: 50, y: 70 },
+        { v: "B", x: 110, y: 50 },
+        { v: "C", x: 110, y: 90 },
+        { v: "D", x: 170, y: 70 },
+      ].map((n) => (
+        <g key={n.v}>
+          <circle cx={n.x} cy={n.y} r={12} fill="color-mix(in oklch, var(--brand) 18%, transparent)" stroke={STROKE} />
+          <text x={n.x} y={n.y + 4} textAnchor="middle" className="text-[10px] fill-current font-mono">{n.v}</text>
+        </g>
+      ))}
+      {[
+        [62, 65, 98, 55],
+        [62, 75, 98, 85],
+        [122, 55, 158, 65],
+        [122, 85, 158, 75],
+      ].map(([x1, y1, x2, y2], i) => (
+        <line key={i} x1={x1} y1={y1} x2={x2} y2={y2} stroke={STROKE} />
+      ))}
+      {/* Adj list */}
+      <text x={200} y={36} className="text-[10px] fill-current font-semibold">adj. liste (dict)</text>
+      <text x={200} y={56} className="text-[10px] fill-current font-mono">A: [B, C]</text>
+      <text x={200} y={70} className="text-[10px] fill-current font-mono">B: [A, D]</text>
+      <text x={200} y={84} className="text-[10px] fill-current font-mono">C: [A, D]</text>
+      <text x={200} y={98} className="text-[10px] fill-current font-mono">D: [B, C]</text>
+      {/* Matrix */}
+      <text x={10} y={134} className="text-[10px] fill-current font-semibold">adj. matrise:</text>
+      {["", "A", "B", "C", "D"].map((h, i) => (
+        <g key={h || i}>
+          <rect x={10 + i * 36} y={142} width={36} height={26} fill="color-mix(in oklch, var(--muted) 30%, transparent)" stroke={STROKE} />
+          <text x={28 + i * 36} y={159} textAnchor="middle" className="text-[10px] fill-current font-mono font-semibold">{h}</text>
+        </g>
+      ))}
+      {[
+        { row: "A", vals: [0, 1, 1, 0] },
+        { row: "B", vals: [1, 0, 0, 1] },
+        { row: "C", vals: [1, 0, 0, 1] },
+        { row: "D", vals: [0, 1, 1, 0] },
+      ].map((r, ri) => (
+        <g key={r.row}>
+          <rect x={10} y={168 + ri * 26} width={36} height={26} fill="color-mix(in oklch, var(--muted) 30%, transparent)" stroke={STROKE} />
+          <text x={28} y={185 + ri * 26} textAnchor="middle" className="text-[10px] fill-current font-mono font-semibold">{r.row}</text>
+          {r.vals.map((v, ci) => (
+            <g key={ci}>
+              <rect x={46 + ci * 36} y={168 + ri * 26} width={36} height={26} fill={v ? "color-mix(in oklch, var(--success) 22%, transparent)" : "transparent"} stroke={STROKE} />
+              <text x={64 + ci * 36} y={185 + ri * 26} textAnchor="middle" className="text-[10px] fill-current font-mono">{v}</text>
+            </g>
+          ))}
+        </g>
+      ))}
+      {/* Tradeoff */}
+      <text x={200} y={134} className="text-[10px] fill-current font-semibold">Trade-off:</text>
+      <text x={200} y={148} className="text-[9px] fill-current">liste · plass O(V+E)</text>
+      <text x={200} y={160} className="text-[9px] fill-current">  iterer naboer raskt</text>
+      <text x={200} y={176} className="text-[9px] fill-current">matrise · plass O(V²)</text>
+      <text x={200} y={188} className="text-[9px] fill-current">  test "kant?" i O(1)</text>
+      <text x={200} y={206} className="text-[9px] fill-current opacity-80">Sparse graf → liste.</text>
+      <text x={200} y={218} className="text-[9px] fill-current opacity-80">Tett graf → matrise.</text>
+      <text x={10} y={270} className="text-[10px] fill-current opacity-80">Praksis: nesten alle store grafer er sparse (sosiale nett, websidens linker). Adj. liste er default.</text>
+    </svg>
+    <Caption>Dataingeniør-spørsmål: hvor mange kanter har grafen din i forhold til V²? Det avgjør hvilken representasjon som er riktig.</Caption>
+  </figure>
+);
+
+export const DFSStackEvolution: FC = () => (
+  <figure className="my-4">
+    <svg viewBox="0 0 380 260" className="w-full max-w-md mx-auto text-foreground">
+      <text x={10} y={14} className="text-[10px] fill-current opacity-80">DFS bruker en stack. Hvert steg: pop, marker, push naboer.</text>
+      {/* Mini graph */}
+      {[
+        { v: "A", x: 40, y: 50 },
+        { v: "B", x: 90, y: 30 },
+        { v: "C", x: 90, y: 70 },
+        { v: "D", x: 140, y: 50 },
+      ].map((n) => (
+        <g key={n.v}>
+          <circle cx={n.x} cy={n.y} r={11} fill="color-mix(in oklch, var(--brand) 16%, transparent)" stroke={STROKE} />
+          <text x={n.x} y={n.y + 4} textAnchor="middle" className="text-[9px] fill-current font-mono">{n.v}</text>
+        </g>
+      ))}
+      {[
+        [50, 47, 80, 33],
+        [50, 53, 80, 67],
+        [100, 33, 130, 47],
+        [100, 67, 130, 53],
+      ].map(([x1, y1, x2, y2], i) => (
+        <line key={i} x1={x1} y1={y1} x2={x2} y2={y2} stroke={STROKE} />
+      ))}
+      <text x={10} y={104} className="text-[9px] fill-current opacity-80">start: A</text>
+      {/* Steps table */}
+      {[
+        { step: "0 init", stack: "[A]", visited: "—", popped: "—" },
+        { step: "1", stack: "[B, C]", visited: "A", popped: "A → push B, C" },
+        { step: "2", stack: "[B, D]", visited: "A, C", popped: "C → push D" },
+        { step: "3", stack: "[B]", visited: "A, C, D", popped: "D → ingen nye" },
+        { step: "4", stack: "[]", visited: "A, C, D, B", popped: "B → ingen nye" },
+      ].map((r, ri) => (
+        <g key={ri}>
+          {[r.step, r.stack, r.visited, r.popped].map((cell, ci) => (
+            <g key={ci}>
+              <rect
+                x={ci === 0 ? 10 : ci === 1 ? 50 : ci === 2 ? 120 : 210}
+                y={120 + ri * 24}
+                width={ci === 0 ? 40 : ci === 1 ? 70 : ci === 2 ? 90 : 160}
+                height={24}
+                fill={ri === 0 ? "color-mix(in oklch, var(--muted) 30%, transparent)" : "transparent"}
+                stroke={STROKE}
+              />
+              <text
+                x={ci === 0 ? 30 : ci === 1 ? 85 : ci === 2 ? 165 : 290}
+                y={136 + ri * 24}
+                textAnchor="middle"
+                className="text-[9px] fill-current font-mono"
+              >
+                {cell}
+              </text>
+            </g>
+          ))}
+        </g>
+      ))}
+      <text x={10} y={250} className="text-[10px] fill-current opacity-80">Stacken &lt;-&gt; rekursjonsstacken. DFS er rekursjon over grafen.</text>
+    </svg>
+    <Caption>Hver iterasjon = pop én node, marker som besøkt, push ubesøkte naboer. Stacken styrer rekkefølgen.</Caption>
+  </figure>
+);
+
+export const BFSQueueEvolution: FC = () => (
+  <figure className="my-4">
+    <svg viewBox="0 0 380 260" className="w-full max-w-md mx-auto text-foreground">
+      <text x={10} y={14} className="text-[10px] fill-current opacity-80">BFS bruker en kø. Resultat: noder besøkes i lag — laget = avstanden fra start.</text>
+      {/* Graph with layers */}
+      {[
+        { v: "A", x: 40, y: 50, l: 0 },
+        { v: "B", x: 100, y: 30, l: 1 },
+        { v: "C", x: 100, y: 70, l: 1 },
+        { v: "D", x: 160, y: 30, l: 2 },
+        { v: "E", x: 160, y: 70, l: 2 },
+      ].map((n) => (
+        <g key={n.v}>
+          <circle cx={n.x} cy={n.y} r={11} fill={n.l === 0 ? "color-mix(in oklch, var(--success) 22%, transparent)" : n.l === 1 ? "color-mix(in oklch, var(--brand) 18%, transparent)" : "color-mix(in oklch, var(--warning) 18%, transparent)"} stroke={STROKE} />
+          <text x={n.x} y={n.y + 4} textAnchor="middle" className="text-[9px] fill-current font-mono">{n.v}</text>
+          <text x={n.x} y={n.y + 22} textAnchor="middle" className="text-[8px] fill-current font-mono opacity-70">d={n.l}</text>
+        </g>
+      ))}
+      {[
+        [51, 47, 89, 33],
+        [51, 53, 89, 67],
+        [111, 33, 149, 33],
+        [111, 67, 149, 67],
+      ].map(([x1, y1, x2, y2], i) => (
+        <line key={i} x1={x1} y1={y1} x2={x2} y2={y2} stroke={STROKE} />
+      ))}
+      <text x={210} y={50} className="text-[9px] fill-current">lag 0 = start</text>
+      <text x={210} y={64} className="text-[9px] fill-current">lag 1 = naboer</text>
+      <text x={210} y={78} className="text-[9px] fill-current">lag 2 = nabos naboer</text>
+      {/* Steps */}
+      {[
+        { step: "0", queue: "[A]", visited: "—", dist: "{A:0}" },
+        { step: "1", queue: "[B, C]", visited: "A", dist: "{A:0,B:1,C:1}" },
+        { step: "2", queue: "[C, D]", visited: "A, B", dist: "{...,D:2}" },
+        { step: "3", queue: "[D, E]", visited: "A, B, C", dist: "{...,E:2}" },
+        { step: "4", queue: "[]", visited: "alle", dist: "ferdig" },
+      ].map((r, ri) => (
+        <g key={ri}>
+          {[r.step, r.queue, r.visited, r.dist].map((cell, ci) => (
+            <g key={ci}>
+              <rect
+                x={ci === 0 ? 10 : ci === 1 ? 40 : ci === 2 ? 120 : 210}
+                y={120 + ri * 24}
+                width={ci === 0 ? 30 : ci === 1 ? 80 : ci === 2 ? 90 : 160}
+                height={24}
+                fill={ri === 0 ? "color-mix(in oklch, var(--muted) 30%, transparent)" : "transparent"}
+                stroke={STROKE}
+              />
+              <text
+                x={ci === 0 ? 25 : ci === 1 ? 80 : ci === 2 ? 165 : 290}
+                y={136 + ri * 24}
+                textAnchor="middle"
+                className="text-[9px] fill-current font-mono"
+              >
+                {cell}
+              </text>
+            </g>
+          ))}
+        </g>
+      ))}
+      <text x={10} y={250} className="text-[10px] fill-current opacity-80">Garanti: BFS finner korteste avstand i uvektede grafer.</text>
+    </svg>
+    <Caption>BFS = "lag-for-lag". Køen sørger for at noder behandles i innsettings-rekkefølge.</Caption>
+  </figure>
+);
+
+/* =====================================================================
+ * KAP. 26 — VEKTEDE GRAFER (utvidelse: first-principles)
+ * ===================================================================*/
+
+export const DijkstraStepTable: FC = () => (
+  <figure className="my-4">
+    <svg viewBox="0 0 380 280" className="w-full max-w-md mx-auto text-foreground">
+      <text x={10} y={14} className="text-[10px] fill-current opacity-80">Dijkstra: hold tabell over dist[node]. I hver runde, plukk minste, oppdater naboer.</text>
+      {/* Graph */}
+      {[
+        { v: "A", x: 30, y: 60 },
+        { v: "B", x: 100, y: 40 },
+        { v: "C", x: 100, y: 90 },
+        { v: "D", x: 170, y: 60 },
+      ].map((n) => (
+        <g key={n.v}>
+          <circle cx={n.x} cy={n.y} r={11} fill="color-mix(in oklch, var(--brand) 16%, transparent)" stroke={STROKE} />
+          <text x={n.x} y={n.y + 4} textAnchor="middle" className="text-[10px] fill-current font-mono">{n.v}</text>
+        </g>
+      ))}
+      {[
+        { x1: 40, y1: 56, x2: 90, y2: 42, w: 1, tx: 60, ty: 44 },
+        { x1: 40, y1: 64, x2: 90, y2: 87, w: 4, tx: 60, ty: 80 },
+        { x1: 110, y1: 42, x2: 160, y2: 57, w: 2, tx: 135, ty: 45 },
+        { x1: 110, y1: 87, x2: 160, y2: 64, w: 5, tx: 135, ty: 82 },
+        { x1: 100, y1: 51, x2: 100, y2: 79, w: 1, tx: 110, ty: 67 },
+      ].map((e, i) => (
+        <g key={i}>
+          <line x1={e.x1} y1={e.y1} x2={e.x2} y2={e.y2} stroke={STROKE} />
+          <text x={e.tx} y={e.ty} className="text-[9px] fill-current font-mono opacity-80">{e.w}</text>
+        </g>
+      ))}
+      <text x={200} y={50} className="text-[9px] fill-current">start = A</text>
+      <text x={200} y={62} className="text-[9px] fill-current">mål = D</text>
+      {/* Step table */}
+      {["runde", "A", "B", "C", "D", "valgt"].map((h, i) => (
+        <g key={h}>
+          <rect x={10 + i * 60} y={130} width={60} height={26} fill="color-mix(in oklch, var(--brand) 18%, transparent)" stroke={STROKE} />
+          <text x={40 + i * 60} y={147} textAnchor="middle" className="text-[10px] fill-current font-mono font-semibold">{h}</text>
+        </g>
+      ))}
+      {[
+        { r: "init", row: ["0", "∞", "∞", "∞"], pick: "—" },
+        { r: "1", row: ["0✓", "1", "4", "∞"], pick: "A (0)" },
+        { r: "2", row: ["0✓", "1✓", "2", "3"], pick: "B (1)" },
+        { r: "3", row: ["0✓", "1✓", "2✓", "3"], pick: "C (2)" },
+        { r: "4", row: ["0✓", "1✓", "2✓", "3✓"], pick: "D (3)" },
+      ].map((r, ri) => (
+        <g key={ri}>
+          <rect x={10} y={156 + ri * 24} width={60} height={24} fill="color-mix(in oklch, var(--muted) 30%, transparent)" stroke={STROKE} />
+          <text x={40} y={172 + ri * 24} textAnchor="middle" className="text-[9px] fill-current font-mono">{r.r}</text>
+          {r.row.map((cell, ci) => (
+            <g key={ci}>
+              <rect x={70 + ci * 60} y={156 + ri * 24} width={60} height={24} fill={cell.includes("✓") ? "color-mix(in oklch, var(--success) 18%, transparent)" : "transparent"} stroke={STROKE} />
+              <text x={100 + ci * 60} y={172 + ri * 24} textAnchor="middle" className="text-[9px] fill-current font-mono">{cell}</text>
+            </g>
+          ))}
+          <rect x={310} y={156 + ri * 24} width={60} height={24} fill="transparent" stroke={STROKE} />
+          <text x={340} y={172 + ri * 24} textAnchor="middle" className="text-[9px] fill-current font-mono">{r.pick}</text>
+        </g>
+      ))}
+      <text x={10} y={272} className="text-[10px] fill-current opacity-80">A→B (1) + B→C (1) + C→D (2) = 3. Hver "✓" betyr: vi vet dette er finalverdien for noden.</text>
+    </svg>
+    <Caption>Greedy-prinsippet: nærmeste ubesøkte node sin avstand kan ikke forbedres senere — fordi alle andre veier dit er lengre.</Caption>
+  </figure>
+);
+
+export const PrimEdgeSelection: FC = () => (
+  <figure className="my-4">
+    <svg viewBox="0 0 380 240" className="w-full max-w-md mx-auto text-foreground">
+      <text x={10} y={14} className="text-[10px] fill-current opacity-80">Prim: start fra én node, vokst tre ved alltid å ta billigste kant ut av treet.</text>
+      {/* 4 stages */}
+      {(() => {
+        const stages = [
+          { idx: 0, label: "start: A", inTree: ["A"], edgePick: null as null | [string, string, number] },
+          { idx: 1, label: "+ A–B (1)", inTree: ["A", "B"], edgePick: ["A", "B", 1] as [string, string, number] },
+          { idx: 2, label: "+ B–C (1)", inTree: ["A", "B", "C"], edgePick: ["B", "C", 1] as [string, string, number] },
+          { idx: 3, label: "+ C–D (2)", inTree: ["A", "B", "C", "D"], edgePick: ["C", "D", 2] as [string, string, number] },
+        ];
+        const nodes: Record<string, { x: number; y: number }> = {
+          A: { x: 15, y: 50 },
+          B: { x: 55, y: 30 },
+          C: { x: 55, y: 75 },
+          D: { x: 95, y: 50 },
+        };
+        const edges = [
+          { a: "A", b: "B", w: 1 },
+          { a: "A", b: "C", w: 4 },
+          { a: "B", b: "C", w: 1 },
+          { a: "B", b: "D", w: 5 },
+          { a: "C", b: "D", w: 2 },
+        ];
+        return stages.map((s) => {
+          const dx = s.idx * 95;
+          return (
+            <g key={s.idx} transform={`translate(${dx}, 30)`}>
+              <text x={20} y={0} className="text-[10px] fill-current font-semibold">{s.label}</text>
+              {edges.map((e, ei) => {
+                const inTree = s.inTree.includes(e.a) && s.inTree.includes(e.b);
+                const isPick = s.edgePick && ((s.edgePick[0] === e.a && s.edgePick[1] === e.b) || (s.edgePick[0] === e.b && s.edgePick[1] === e.a));
+                return (
+                  <g key={ei}>
+                    <line
+                      x1={nodes[e.a].x}
+                      y1={nodes[e.a].y}
+                      x2={nodes[e.b].x}
+                      y2={nodes[e.b].y}
+                      stroke={isPick ? "var(--success)" : inTree ? "var(--brand)" : STROKE}
+                      strokeWidth={isPick || inTree ? 2 : 1}
+                      opacity={inTree ? 1 : 0.4}
+                    />
+                    <text
+                      x={(nodes[e.a].x + nodes[e.b].x) / 2}
+                      y={(nodes[e.a].y + nodes[e.b].y) / 2}
+                      className="text-[8px] fill-current font-mono opacity-80"
+                    >
+                      {e.w}
+                    </text>
+                  </g>
+                );
+              })}
+              {Object.entries(nodes).map(([v, p]) => (
+                <g key={v}>
+                  <circle cx={p.x} cy={p.y} r={9} fill={s.inTree.includes(v) ? "color-mix(in oklch, var(--success) 22%, transparent)" : "color-mix(in oklch, var(--muted) 30%, transparent)"} stroke={STROKE} />
+                  <text x={p.x} y={p.y + 3} textAnchor="middle" className="text-[9px] fill-current font-mono">{v}</text>
+                </g>
+              ))}
+            </g>
+          );
+        });
+      })()}
+      <text x={10} y={180} className="text-[10px] fill-current font-semibold">MST-vekt = 1 + 1 + 2 = 4</text>
+      <text x={10} y={196} className="text-[10px] fill-current opacity-80">Hver runde: blant kanter med én node inne og én ute, ta den billigste.</text>
+      <text x={10} y={212} className="text-[10px] fill-current opacity-80">Hvorfor virker det? "Cut property" — billigste kant over et snitt må være med i MST.</text>
+      <text x={10} y={228} className="text-[10px] fill-current opacity-80">Brukstilfeller: nettverksdesign, klynging, layout-algoritmer.</text>
+    </svg>
+    <Caption>Et MST kobler alle noder med minst mulig totalvekt. Prim bygger det greedy — alltid billigste kant ut.</Caption>
+  </figure>
+);
+
+export const KruskalUnionFind: FC = () => (
+  <figure className="my-4">
+    <svg viewBox="0 0 380 260" className="w-full max-w-md mx-auto text-foreground">
+      <text x={10} y={14} className="text-[10px] fill-current opacity-80">Kruskal: sorter alle kanter, ta dem en etter en, hopp over hvis de lager sykel.</text>
+      {/* Edge list */}
+      <text x={10} y={36} className="text-[10px] fill-current font-semibold">sortert kantliste:</text>
+      {[
+        { e: "A–B", w: 1, pick: true },
+        { e: "B–C", w: 1, pick: true },
+        { e: "C–D", w: 2, pick: true },
+        { e: "A–C", w: 4, pick: false, reason: "sykel: A,C allerede koblet" },
+        { e: "B–D", w: 5, pick: false, reason: "sykel" },
+      ].map((r, i) => (
+        <g key={i}>
+          <rect x={10} y={42 + i * 26} width={50} height={24} fill={r.pick ? "color-mix(in oklch, var(--success) 22%, transparent)" : "color-mix(in oklch, var(--destructive) 16%, transparent)"} stroke={STROKE} />
+          <text x={35} y={58 + i * 26} textAnchor="middle" className="text-[10px] fill-current font-mono">{r.e}</text>
+          <rect x={60} y={42 + i * 26} width={30} height={24} fill="transparent" stroke={STROKE} />
+          <text x={75} y={58 + i * 26} textAnchor="middle" className="text-[10px] fill-current font-mono">{r.w}</text>
+          <text x={100} y={58 + i * 26} className="text-[9px] fill-current font-mono">{r.pick ? "✓ ta" : `✗ ${r.reason}`}</text>
+        </g>
+      ))}
+      {/* Union-find evolution */}
+      <text x={10} y={196} className="text-[10px] fill-current font-semibold">union-find (komponenter):</text>
+      {[
+        { stage: "start", sets: "{A} {B} {C} {D}" },
+        { stage: "+ A–B", sets: "{A,B} {C} {D}" },
+        { stage: "+ B–C", sets: "{A,B,C} {D}" },
+        { stage: "+ C–D", sets: "{A,B,C,D}" },
+      ].map((r, i) => (
+        <text key={i} x={10} y={212 + i * 12} className="text-[9px] fill-current font-mono">{r.stage}: {r.sets}</text>
+      ))}
+      <text x={210} y={196} className="text-[10px] fill-current font-semibold">Hvorfor union-find?</text>
+      <text x={210} y={212} className="text-[9px] fill-current">Spør: "ligger A og C i samme</text>
+      <text x={210} y={224} className="text-[9px] fill-current">komponent?" i nesten O(1).</text>
+      <text x={210} y={240} className="text-[9px] fill-current">Sykel ⟺ begge endepunkter</text>
+      <text x={210} y={252} className="text-[9px] fill-current">i samme komponent.</text>
+    </svg>
+    <Caption>Kruskal og Prim gir samme MST, men tenker ulikt: Kruskal sorterer globalt, Prim vokser fra ett punkt. Datavalg avgjør hvilken som er raskest.</Caption>
+  </figure>
+);
+
+export const NegativeWeightTrap: FC = () => (
+  <figure className="my-4">
+    <svg viewBox="0 0 380 240" className="w-full max-w-md mx-auto text-foreground">
+      <text x={10} y={14} className="text-[10px] fill-current opacity-80">Dijkstra "låser" hver node når den plukkes — det gjør at negative kanter kan gi feil svar.</text>
+      {/* Graph: A→B = 2, A→C = 5, B→C = -4 */}
+      {[
+        { v: "A", x: 60, y: 80 },
+        { v: "B", x: 200, y: 50 },
+        { v: "C", x: 200, y: 130 },
+      ].map((n) => (
+        <g key={n.v}>
+          <circle cx={n.x} cy={n.y} r={14} fill="color-mix(in oklch, var(--brand) 16%, transparent)" stroke={STROKE} />
+          <text x={n.x} y={n.y + 4} textAnchor="middle" className="text-[11px] fill-current font-mono">{n.v}</text>
+        </g>
+      ))}
+      <line x1={72} y1={76} x2={186} y2={54} stroke={STROKE} markerEnd="url(#arr-nw)" />
+      <text x={120} y={60} className="text-[10px] fill-current font-mono">2</text>
+      <line x1={72} y1={84} x2={186} y2={126} stroke={STROKE} markerEnd="url(#arr-nw)" />
+      <text x={120} y={120} className="text-[10px] fill-current font-mono">5</text>
+      <line x1={200} y1={64} x2={200} y2={116} stroke={STROKE} markerEnd="url(#arr-nw)" />
+      <text x={210} y={94} className="text-[10px] fill-current font-mono font-semibold" fill="var(--destructive)">−4</text>
+      {/* Dijkstra reasoning */}
+      <text x={10} y={170} className="text-[10px] fill-current font-semibold">Dijkstra:</text>
+      <text x={10} y={184} className="text-[10px] fill-current font-mono">runde 1: plukk B (d=2), lås.</text>
+      <text x={10} y={196} className="text-[10px] fill-current font-mono">runde 2: plukk C (d=5), lås.</text>
+      <text x={10} y={210} className="text-[10px] fill-current font-mono">→ Dijkstra sier C = 5</text>
+      <text x={10} y={228} className="text-[10px] fill-current font-semibold" fill="var(--destructive)">Men: A→B→C = 2 + (−4) = −2!</text>
+      <text x={210} y={170} className="text-[10px] fill-current font-semibold">Riktig algoritme:</text>
+      <text x={210} y={184} className="text-[10px] fill-current">Bellman-Ford</text>
+      <text x={210} y={198} className="text-[9px] fill-current opacity-80">— oppdaterer alle kanter</text>
+      <text x={210} y={210} className="text-[9px] fill-current opacity-80">V−1 ganger, så låser ingenting</text>
+      <text x={210} y={222} className="text-[9px] fill-current opacity-80">før alt har konvergert. O(V·E).</text>
+      <defs>
+        <marker id="arr-nw" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor" />
+        </marker>
+      </defs>
+    </svg>
+    <Caption>Dijkstra forutsetter at "billigere senere" er umulig. Negative kanter bryter den invarianten. Forstå annotasjonen — du velger feil algoritme uten den.</Caption>
+  </figure>
+);

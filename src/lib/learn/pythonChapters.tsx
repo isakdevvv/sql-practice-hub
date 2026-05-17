@@ -847,6 +847,8 @@ export const PYTHON_CHAPTERS: PythonChapter[] = [
           ikke kaller videre, og et <em>rekursivt steg</em> som beveger seg mot
           base case.
         </P>
+        <H2>Anatomi: to deler av samme funksjon</H2>
+        <F.BaseCaseAnatomy />
         <H2>Klassikeren: fakultet</H2>
         <Code>
           {`def fak(n):\n    if n == 0:           # base case\n        return 1\n    return n * fak(n-1)  # rekursivt steg`}
@@ -867,6 +869,16 @@ export const PYTHON_CHAPTERS: PythonChapter[] = [
         <Code>
           {`def fib(n):\n    if n < 2:\n        return n\n    return fib(n-1) + fib(n-2)`}
         </Code>
+        <H2>Memoization — bytt eksponentielt mot lineært</H2>
+        <P>
+          De fleste nodene i fib-treet regner samme verdi flere ganger. Cache
+          resultatet av hvert kall og du har en lineær algoritme — uten å bytte
+          ut rekursjonen.
+        </P>
+        <F.MemoizationCache />
+        <Code>
+          {`from functools import lru_cache\n\n@lru_cache\ndef fib(n):\n    return n if n < 2 else fib(n-1) + fib(n-2)`}
+        </Code>
         <H2>Når rekursjon, når løkke?</H2>
         <P>
           Hvis problemet bryter naturlig ned i mindre versjoner av seg selv —
@@ -874,6 +886,7 @@ export const PYTHON_CHAPTERS: PythonChapter[] = [
           måten. For lineær iterasjon er en løkke gjerne både raskere og enklere
           å lese.
         </P>
+        <F.RecursiveVsIterativeCount />
         <KeyPoints
           items={[
             "Alltid en base case som stopper rekursjonen.",
@@ -898,6 +911,12 @@ export const PYTHON_CHAPTERS: PythonChapter[] = [
           n elementer. De er trege for store datamengder, men gull verdt for å
           forstå hvordan sortering virker.
         </P>
+        <H2>Hvorfor n² er et problem</H2>
+        <P>
+          "Kvadratisk" høres uskyldig ut helt til du regner ut: for 100 000
+          elementer er det 10 milliarder operasjoner.
+        </P>
+        <F.BigOGrowth />
         <H2>Selection sort</H2>
         <P>
           Idé: finn det minste elementet i den usorterte delen, bytt det inn på
@@ -917,6 +936,28 @@ export const PYTHON_CHAPTERS: PythonChapter[] = [
         <Code>
           {`def insertion_sort(a):\n    for i in range(1, len(a)):\n        nå = a[i]\n        j = i - 1\n        while j >= 0 and a[j] > nå:\n            a[j+1] = a[j]   # skyv høyre\n            j -= 1\n        a[j+1] = nå`}
         </Code>
+        <H2>Bygg-opp til O(n log n): merge sort sitt merge-trinn</H2>
+        <P>
+          Selection og insertion bygger på "scan-og-bytt". Merge sort bygger på
+          en helt annen idé — del problemet i to, sorter hver halvdel, slå
+          sammen. Hele algoritmen står og faller på dette merge-trinnet:
+        </P>
+        <F.MergeSortMerge />
+        <Code>
+          {`def merge(venstre, høyre):\n    ut, i, j = [], 0, 0\n    while i < len(venstre) and j < len(høyre):\n        if venstre[i] <= høyre[j]:\n            ut.append(venstre[i]); i += 1\n        else:\n            ut.append(høyre[j]); j += 1\n    return ut + venstre[i:] + høyre[j:]`}
+        </Code>
+        <H2>Stabilitet — viktig når du sorterer multikolonne</H2>
+        <P>
+          En sort er <em>stabil</em> hvis elementer med lik nøkkel beholder sin
+          opprinnelige rekkefølge. Det er kritisk når du sorterer på flere
+          felter etter hverandre.
+        </P>
+        <F.StabilityDemo />
+        <P>
+          Python sin <code>list.sort()</code> og <code>sorted()</code> er
+          stable — derfor kan du sortere på navn først, så på alder, og få
+          riktig resultat.
+        </P>
         <KeyPoints
           items={[
             "Begge er O(n²) i verste fall — ikke bruk på store datamengder.",
@@ -942,6 +983,13 @@ export const PYTHON_CHAPTERS: PythonChapter[] = [
           dynamisk array) er innsetting og fjerning i midten konstant tid.
           Tilgang etter posisjon er derimot O(n).
         </P>
+        <H2>Hvorfor finnes lenkede lister? Minnelayout</H2>
+        <P>
+          Hele forskjellen mellom et array og en lenket liste sitter i hvordan
+          dataene ligger i RAM. Array = naboceller. Lenket = spredt, men hver
+          node vet hvor neste ligger.
+        </P>
+        <F.ArrayVsLinkedListMemory />
         <H2>Strukturen</H2>
         <F.LinkedListSingly />
         <Code>
@@ -971,9 +1019,18 @@ export const PYTHON_CHAPTERS: PythonChapter[] = [
           operasjoner er O(1). Pythons{" "}
           <code>collections.deque</code> implementerer dette ferdig:
         </P>
+        <F.QueueEnqueueDequeue />
         <Code>
           {`from collections import deque\nkø = deque()\nkø.append("Ada")        # bakerst\nkø.append("Bob")\nførst = kø.popleft()    # "Ada" — fremst ut`}
         </Code>
+        <H2>Dobbelt-lenket: gå begge veier</H2>
+        <P>
+          Hvis hver node har både <code>neste</code> og <code>forrige</code>{" "}
+          kan du slette en node uten å ha gått dit fra start. Dette er
+          fundamentet for LRU-cache, undo-historikk, og Pythons egen{" "}
+          <code>deque</code>.
+        </P>
+        <F.DoublyLinkedListPrevNext />
         <KeyPoints
           items={[
             "Node = verdi + peker til neste node.",
@@ -1029,12 +1086,24 @@ export const PYTHON_CHAPTERS: PythonChapter[] = [
         <Code>
           {`def sett_inn(rot, verdi):\n    if rot is None:\n        return Node(verdi)\n    if verdi < rot.verdi:\n        rot.venstre = sett_inn(rot.venstre, verdi)\n    elif verdi > rot.verdi:\n        rot.høyre = sett_inn(rot.høyre, verdi)\n    return rot`}
         </Code>
-        <H2>Balanse</H2>
+        <P>
+          Se hvordan treet bygger seg trinn for trinn — hvert nytt tall finner
+          sin egen plass:
+        </P>
+        <F.BSTInsertSequence />
+        <H2>Sletting — tre tilfeller</H2>
+        <P>
+          Sletting er den vanskelige operasjonen. Tre tilfeller, der det siste
+          krever et lite triks for å bevare BST-invariantet:
+        </P>
+        <F.BSTDeleteCases />
+        <H2>Balanse — det største problemet</H2>
         <P>
           Et BST gir O(log n) bare hvis det er balansert. Setter du inn 1, 2,
           3, 4, 5 i rekkefølge ender du opp med en degenerert «liste» og O(n)
           oppslag. Selv-balanserende varianter (AVL, rød-svart) løser dette.
         </P>
+        <F.BSTSkewedVsBalanced />
         <KeyPoints
           items={[
             "Invariant: venstre subtre < node < høyre subtre.",
@@ -1068,6 +1137,12 @@ export const PYTHON_CHAPTERS: PythonChapter[] = [
           verdien på den indeksen, kan du senere kjøre samme funksjon med samme
           nøkkel og gå rett dit. Ingen leting.
         </P>
+        <H2>Pipeline-en, fra første prinsipper</H2>
+        <P>
+          For en dataingeniør er det viktig å vite hva som faktisk skjer mellom
+          nøkkel og bøtte. Fire deterministiske transformasjoner:
+        </P>
+        <F.HashPipeline />
         <F.HashTableLayout />
         <P>
           Python-objektet <code>dict</code> bruker hashing under panseret. Når
@@ -1135,11 +1210,15 @@ export const PYTHON_CHAPTERS: PythonChapter[] = [
         <P>
           Load factor λ = antall elementer / tabellstørrelse. Når λ blir for
           høy (vanlig terskel: 0.75 for probing, 0.9 for chaining), blir det
-          for mange kollisjoner og oppslag tregner. Løsning: <em>rehash</em> —
-          lag en ny, dobbelt så stor tabell og legg inn alle eksisterende
-          elementer på nytt. Det er O(n), men skjer sjelden, så gjennomsnittlig
-          innsetting forblir O(1).
+          for mange kollisjoner og oppslag tregner.
         </P>
+        <F.LoadFactorChart />
+        <P>
+          Løsning: <em>rehash</em> — lag en ny, dobbelt så stor tabell og legg
+          inn alle eksisterende elementer på nytt. Det er O(n), men skjer
+          sjelden, så gjennomsnittlig innsetting forblir O(1).
+        </P>
+        <F.ResizeRehash />
         <H2>Minimumsoppskrift på __hash__</H2>
         <P>
           Lager du en egen klasse og vil bruke den som dict-nøkkel eller sette
@@ -1199,6 +1278,7 @@ export const PYTHON_CHAPTERS: PythonChapter[] = [
           naboer. Plass: O(V + E). Mest brukt fordi de fleste grafer i praksis
           er <em>sparse</em> (få kanter sammenlignet med V²).
         </P>
+        <F.AdjListVsMatrix />
         <F.GraphAdjacencyList />
         <Code>
           {`# Naboliste som dict-of-lists\ngraf = {\n    "A": ["B", "C", "D"],\n    "B": ["A", "D"],\n    "C": ["A", "D"],\n    "D": ["A", "B", "C"],\n}`}
@@ -1229,6 +1309,11 @@ export const PYTHON_CHAPTERS: PythonChapter[] = [
           For å unngå uendelig løkke i en graf med sykler må vi huske hvilke
           noder vi har besøkt. <code>sett</code> tar den jobben.
         </P>
+        <P>
+          Iterativt med eksplisitt stack — se hvordan stacken utvikler seg ved
+          hvert steg:
+        </P>
+        <F.DFSStackEvolution />
         <H2>Breadth-first search (BFS)</H2>
         <P>
           BFS sprer seg utover lag for lag: først alle naboene til start, så
@@ -1244,6 +1329,11 @@ export const PYTHON_CHAPTERS: PythonChapter[] = [
           Etter en BFS kan du følge <code>forelder[mål]</code> tilbake til
           startnoden og snu lista — det er korteste vei.
         </P>
+        <P>
+          Se hvordan køen utvikler seg lag for lag — lengden på stien fra start
+          tilsvarer laget noden ble besøkt i:
+        </P>
+        <F.BFSQueueEvolution />
         <H2>DFS eller BFS?</H2>
         <P>
           De har samme tidskompleksitet — O(V + E) — så valget handler om hva
@@ -1303,6 +1393,7 @@ export const PYTHON_CHAPTERS: PythonChapter[] = [
           inne.
         </P>
         <F.PrimStep />
+        <F.PrimEdgeSelection />
         <Code>
           {`def prim(graf, start):\n    # graf[u] = [(nabo, vekt), ...]\n    T = {start}\n    tre = []   # kanter i MST\n    total = 0\n\n    while len(T) < len(graf):\n        # finn billigste kant ut av T\n        beste = None\n        for u in T:\n            for v, w in graf[u]:\n                if v not in T:\n                    if beste is None or w < beste[2]:\n                        beste = (u, v, w)\n        u, v, w = beste\n        T.add(v)\n        tre.append((u, v, w))\n        total += w\n    return tre, total`}
         </Code>
@@ -1311,6 +1402,13 @@ export const PYTHON_CHAPTERS: PythonChapter[] = [
           har <code>heapq</code>) for å hente den letteste kanten i O(log E) —
           da blir hele algoritmen O(E log V).
         </P>
+        <H2>Alternativet: Kruskal</H2>
+        <P>
+          Samme MST, helt annen byggeoppskrift. Sorter alle kanter etter vekt,
+          ta dem en etter en, hopp over hvis de lager sykel. Sykel-sjekken er
+          rask hvis du bruker en <em>union-find</em>-struktur.
+        </P>
+        <F.KruskalUnionFind />
         <H2>Dijkstras algoritme for korteste sti</H2>
         <P>
           Veldig lik struktur som Prim, men vi sammenligner ikke vekten på{" "}
@@ -1325,6 +1423,7 @@ export const PYTHON_CHAPTERS: PythonChapter[] = [
           denne noden enn det vi hadde notert. Oppdater i så fall.
         </P>
         <F.DijkstraTable />
+        <F.DijkstraStepTable />
         <Code>
           {`import heapq\n\ndef dijkstra(graf, start):\n    cost = {u: float("inf") for u in graf}\n    cost[start] = 0\n    forelder = {start: None}\n    heap = [(0, start)]   # (cost, node)\n\n    while heap:\n        c, u = heapq.heappop(heap)\n        if c > cost[u]:\n            continue       # gammel oppføring\n        for v, w in graf[u]:\n            ny = c + w\n            if ny < cost[v]:\n                cost[v] = ny\n                forelder[v] = u\n                heapq.heappush(heap, (ny, v))\n    return cost, forelder`}
         </Code>
@@ -1340,6 +1439,7 @@ export const PYTHON_CHAPTERS: PythonChapter[] = [
           tidlig. For grafer som tillater negative kanter trenger du
           Bellman-Ford (utenfor pensum, men greit å vite at det finnes).
         </P>
+        <F.NegativeWeightTrap />
         <H2>Prim vs Dijkstra — ett ords forskjell</H2>
         <P>Begge plukker grådig "neste node" fra V−T. Forskjellen:</P>
         <Code>
