@@ -226,6 +226,12 @@ import { content as authFlows } from "./auth-flows";
 import { content as httpStatuskoder } from "./http-statuskoder";
 import { content as backupStrategier } from "./backup-strategier";
 import { content as aiEtikk } from "./ai-etikk";
+import { content as gradientDescent } from "./gradient-descent";
+import { content as sigmoidViz } from "./sigmoid-viz";
+import { content as radixCountingSort } from "./radix-counting-sort";
+import { content as triesBtrees } from "./tries-btrees";
+import { content as deadlockViz } from "./deadlock-viz";
+import { content as dijkstraViz } from "./dijkstra-viz";
 import type { TrinnContent } from "../types";
 
 export const TRINN: TrinnContent[] = [
@@ -350,6 +356,8 @@ export const TRINN: TrinnContent[] = [
   backupStrategier,
   // AI-etikk — interaktiv lesjon (bias-sandbox, fairness-kalkulator, GDPR-checker, 6 case-studies, etikk-quiz)
   aiEtikk,
+  // Algoritme-gap-utfyllere — frittstående visualiseringer
+  gradientDescent, sigmoidViz, radixCountingSort, triesBtrees, deadlockViz, dijkstraViz,
 ];
 
 import { curriculumIndexOf } from "../curriculum";
