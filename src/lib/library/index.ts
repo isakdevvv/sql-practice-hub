@@ -232,6 +232,15 @@ export const LIBRARY: LibraryItem[] = [
     blurb: "Step gjennom hver visit og relax. Se distance- og prev-tabell live.",
     Icon: Workflow,
   },
+  {
+    slug: "greedy-np-viz",
+    title: "Greedy & NP — approksimasjon",
+    kind: "lek",
+    tags: ["algoritmer", "visualisering"],
+    href: "/stack/greedy-np-viz",
+    blurb: "Set cover, TSP, knapsack greedy vs DP, og P-vs-NP «verifiser vs løs»-demo.",
+    Icon: Target,
+  },
 
   // ───────── LÆR — mini-kurs og lineære løp ─────────
   {

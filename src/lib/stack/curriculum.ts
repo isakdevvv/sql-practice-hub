@@ -97,6 +97,7 @@ export const PHASES: readonly CurriculumPhase[] = [
       "dijkstra-viz",
       "hashing-dypere",
       "dynamic-programming",
+      "greedy-np-viz",
     ],
   },
   {

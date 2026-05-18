@@ -232,6 +232,7 @@ import { content as radixCountingSort } from "./radix-counting-sort";
 import { content as triesBtrees } from "./tries-btrees";
 import { content as deadlockViz } from "./deadlock-viz";
 import { content as dijkstraViz } from "./dijkstra-viz";
+import { content as greedyNpViz } from "./greedy-np-viz";
 import type { TrinnContent } from "../types";
 
 export const TRINN: TrinnContent[] = [
@@ -358,6 +359,8 @@ export const TRINN: TrinnContent[] = [
   aiEtikk,
   // Algoritme-gap-utfyllere — frittstående visualiseringer
   gradientDescent, sigmoidViz, radixCountingSort, triesBtrees, deadlockViz, dijkstraViz,
+  // Grokking Algorithms ch. 10 — Greedy & NP
+  greedyNpViz,
 ];
 
 import { curriculumIndexOf } from "../curriculum";
