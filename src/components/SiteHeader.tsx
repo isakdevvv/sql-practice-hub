@@ -9,17 +9,15 @@ import { XpToast } from "@/components/XpToast";
 
 type HubLink = { label: string; to: string; params?: Record<string, string> };
 
-// 4 menypunkter — forenklet fra 8. Mine fag er hovedinngangen for studenter
-// som vet hvilket emne de jobber med; Verktøy samler frittstående verktøy
-// (sandbox, drills, predict, skill-tre, konsept-oppslag, mini-kurs);
-// Læreplan er den lineære stien fra transistor til Flask.
-// Gamle ruter (/ov, /predict, /spor, /skill-tre, /mini-kurs, /eksamen)
-// er fortsatt nåbare via Verktøy-siden og fag-sidene.
+// Tre primær-tabs. Lek = simulatorer/sandkasser, Lær = mini-kurs,
+// Test = oppgaver/drill/flashcards. /mine-fag er fortsatt tilgjengelig
+// via profil-popoveren for de som vil pinne emner og se eksamen-nedtelling.
+// Gamle ruter (/lar, /stack, /mini-kurs, /eksamen, /practice etc.) lever
+// videre som detalj-sider og åpnes via kort i gridene.
 const HUBS: HubLink[] = [
-  { label: "Mine fag", to: "/mine-fag" },
-  { label: "Verktøy", to: "/lar" },
-  { label: "Læreplan", to: "/stack/$slug", params: { slug: "laereplan" } },
-  { label: "Du", to: "/dashboard" },
+  { label: "Lek", to: "/lek" },
+  { label: "Lær", to: "/laer" },
+  { label: "Test", to: "/test" },
 ];
 
 export function SiteHeader() {

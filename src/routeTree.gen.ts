@@ -13,6 +13,7 @@ import { Route as VizLesjonRouteImport } from './routes/viz-lesjon'
 import { Route as VisualiseringerRouteImport } from './routes/visualiseringer'
 import { Route as VenvDrillRouteImport } from './routes/venv-drill'
 import { Route as TutorRouteImport } from './routes/tutor'
+import { Route as TestRouteImport } from './routes/test'
 import { Route as StackRouteImport } from './routes/stack'
 import { Route as SporRouteImport } from './routes/spor'
 import { Route as SkillTreRouteImport } from './routes/skill-tre'
@@ -26,9 +27,11 @@ import { Route as OvRouteImport } from './routes/ov'
 import { Route as MiniKursRouteImport } from './routes/mini-kurs'
 import { Route as MineFagRouteImport } from './routes/mine-fag'
 import { Route as MacDrillRouteImport } from './routes/mac-drill'
+import { Route as LekRouteImport } from './routes/lek'
 import { Route as LearnRouteImport } from './routes/learn'
 import { Route as LarRouteImport } from './routes/lar'
 import { Route as LagKursRouteImport } from './routes/lag-kurs'
+import { Route as LaerRouteImport } from './routes/laer'
 import { Route as KursRouteImport } from './routes/kurs'
 import { Route as KonsollRouteImport } from './routes/konsoll'
 import { Route as JoinsRouteImport } from './routes/joins'
@@ -88,6 +91,11 @@ const VenvDrillRoute = VenvDrillRouteImport.update({
 const TutorRoute = TutorRouteImport.update({
   id: '/tutor',
   path: '/tutor',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TestRoute = TestRouteImport.update({
+  id: '/test',
+  path: '/test',
   getParentRoute: () => rootRouteImport,
 } as any)
 const StackRoute = StackRouteImport.update({
@@ -155,6 +163,11 @@ const MacDrillRoute = MacDrillRouteImport.update({
   path: '/mac-drill',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LekRoute = LekRouteImport.update({
+  id: '/lek',
+  path: '/lek',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LearnRoute = LearnRouteImport.update({
   id: '/learn',
   path: '/learn',
@@ -168,6 +181,11 @@ const LarRoute = LarRouteImport.update({
 const LagKursRoute = LagKursRouteImport.update({
   id: '/lag-kurs',
   path: '/lag-kurs',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LaerRoute = LaerRouteImport.update({
+  id: '/laer',
+  path: '/laer',
   getParentRoute: () => rootRouteImport,
 } as any)
 const KursRoute = KursRouteImport.update({
@@ -387,9 +405,11 @@ export interface FileRoutesByFullPath {
   '/joins': typeof JoinsRoute
   '/konsoll': typeof KonsollRoute
   '/kurs': typeof KursRoute
+  '/laer': typeof LaerRoute
   '/lag-kurs': typeof LagKursRoute
   '/lar': typeof LarRoute
   '/learn': typeof LearnRoute
+  '/lek': typeof LekRoute
   '/mac-drill': typeof MacDrillRoute
   '/mine-fag': typeof MineFagRoute
   '/mini-kurs': typeof MiniKursRouteWithChildren
@@ -403,6 +423,7 @@ export interface FileRoutesByFullPath {
   '/skill-tre': typeof SkillTreRoute
   '/spor': typeof SporRouteWithChildren
   '/stack': typeof StackRouteWithChildren
+  '/test': typeof TestRoute
   '/tutor': typeof TutorRoute
   '/venv-drill': typeof VenvDrillRoute
   '/visualiseringer': typeof VisualiseringerRoute
@@ -448,9 +469,11 @@ export interface FileRoutesByTo {
   '/joins': typeof JoinsRoute
   '/konsoll': typeof KonsollRoute
   '/kurs': typeof KursRoute
+  '/laer': typeof LaerRoute
   '/lag-kurs': typeof LagKursRoute
   '/lar': typeof LarRoute
   '/learn': typeof LearnRoute
+  '/lek': typeof LekRoute
   '/mac-drill': typeof MacDrillRoute
   '/mine-fag': typeof MineFagRoute
   '/ov': typeof OvRoute
@@ -461,6 +484,7 @@ export interface FileRoutesByTo {
   '/python-notebook': typeof PythonNotebookRoute
   '/repetisjon': typeof RepetisjonRoute
   '/skill-tre': typeof SkillTreRoute
+  '/test': typeof TestRoute
   '/tutor': typeof TutorRoute
   '/venv-drill': typeof VenvDrillRoute
   '/visualiseringer': typeof VisualiseringerRoute
@@ -506,9 +530,11 @@ export interface FileRoutesById {
   '/joins': typeof JoinsRoute
   '/konsoll': typeof KonsollRoute
   '/kurs': typeof KursRoute
+  '/laer': typeof LaerRoute
   '/lag-kurs': typeof LagKursRoute
   '/lar': typeof LarRoute
   '/learn': typeof LearnRoute
+  '/lek': typeof LekRoute
   '/mac-drill': typeof MacDrillRoute
   '/mine-fag': typeof MineFagRoute
   '/mini-kurs': typeof MiniKursRouteWithChildren
@@ -522,6 +548,7 @@ export interface FileRoutesById {
   '/skill-tre': typeof SkillTreRoute
   '/spor': typeof SporRouteWithChildren
   '/stack': typeof StackRouteWithChildren
+  '/test': typeof TestRoute
   '/tutor': typeof TutorRoute
   '/venv-drill': typeof VenvDrillRoute
   '/visualiseringer': typeof VisualiseringerRoute
@@ -570,9 +597,11 @@ export interface FileRouteTypes {
     | '/joins'
     | '/konsoll'
     | '/kurs'
+    | '/laer'
     | '/lag-kurs'
     | '/lar'
     | '/learn'
+    | '/lek'
     | '/mac-drill'
     | '/mine-fag'
     | '/mini-kurs'
@@ -586,6 +615,7 @@ export interface FileRouteTypes {
     | '/skill-tre'
     | '/spor'
     | '/stack'
+    | '/test'
     | '/tutor'
     | '/venv-drill'
     | '/visualiseringer'
@@ -631,9 +661,11 @@ export interface FileRouteTypes {
     | '/joins'
     | '/konsoll'
     | '/kurs'
+    | '/laer'
     | '/lag-kurs'
     | '/lar'
     | '/learn'
+    | '/lek'
     | '/mac-drill'
     | '/mine-fag'
     | '/ov'
@@ -644,6 +676,7 @@ export interface FileRouteTypes {
     | '/python-notebook'
     | '/repetisjon'
     | '/skill-tre'
+    | '/test'
     | '/tutor'
     | '/venv-drill'
     | '/visualiseringer'
@@ -688,9 +721,11 @@ export interface FileRouteTypes {
     | '/joins'
     | '/konsoll'
     | '/kurs'
+    | '/laer'
     | '/lag-kurs'
     | '/lar'
     | '/learn'
+    | '/lek'
     | '/mac-drill'
     | '/mine-fag'
     | '/mini-kurs'
@@ -704,6 +739,7 @@ export interface FileRouteTypes {
     | '/skill-tre'
     | '/spor'
     | '/stack'
+    | '/test'
     | '/tutor'
     | '/venv-drill'
     | '/visualiseringer'
@@ -751,9 +787,11 @@ export interface RootRouteChildren {
   JoinsRoute: typeof JoinsRoute
   KonsollRoute: typeof KonsollRoute
   KursRoute: typeof KursRoute
+  LaerRoute: typeof LaerRoute
   LagKursRoute: typeof LagKursRoute
   LarRoute: typeof LarRoute
   LearnRoute: typeof LearnRoute
+  LekRoute: typeof LekRoute
   MacDrillRoute: typeof MacDrillRoute
   MineFagRoute: typeof MineFagRoute
   MiniKursRoute: typeof MiniKursRouteWithChildren
@@ -767,6 +805,7 @@ export interface RootRouteChildren {
   SkillTreRoute: typeof SkillTreRoute
   SporRoute: typeof SporRouteWithChildren
   StackRoute: typeof StackRouteWithChildren
+  TestRoute: typeof TestRoute
   TutorRoute: typeof TutorRoute
   VenvDrillRoute: typeof VenvDrillRoute
   VisualiseringerRoute: typeof VisualiseringerRoute
@@ -814,6 +853,13 @@ declare module '@tanstack/react-router' {
       path: '/tutor'
       fullPath: '/tutor'
       preLoaderRoute: typeof TutorRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/test': {
+      id: '/test'
+      path: '/test'
+      fullPath: '/test'
+      preLoaderRoute: typeof TestRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/stack': {
@@ -907,6 +953,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MacDrillRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/lek': {
+      id: '/lek'
+      path: '/lek'
+      fullPath: '/lek'
+      preLoaderRoute: typeof LekRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/learn': {
       id: '/learn'
       path: '/learn'
@@ -926,6 +979,13 @@ declare module '@tanstack/react-router' {
       path: '/lag-kurs'
       fullPath: '/lag-kurs'
       preLoaderRoute: typeof LagKursRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/laer': {
+      id: '/laer'
+      path: '/laer'
+      fullPath: '/laer'
+      preLoaderRoute: typeof LaerRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/kurs': {
@@ -1314,9 +1374,11 @@ const rootRouteChildren: RootRouteChildren = {
   JoinsRoute: JoinsRoute,
   KonsollRoute: KonsollRoute,
   KursRoute: KursRoute,
+  LaerRoute: LaerRoute,
   LagKursRoute: LagKursRoute,
   LarRoute: LarRoute,
   LearnRoute: LearnRoute,
+  LekRoute: LekRoute,
   MacDrillRoute: MacDrillRoute,
   MineFagRoute: MineFagRoute,
   MiniKursRoute: MiniKursRouteWithChildren,
@@ -1330,6 +1392,7 @@ const rootRouteChildren: RootRouteChildren = {
   SkillTreRoute: SkillTreRoute,
   SporRoute: SporRouteWithChildren,
   StackRoute: StackRouteWithChildren,
+  TestRoute: TestRoute,
   TutorRoute: TutorRoute,
   VenvDrillRoute: VenvDrillRoute,
   VisualiseringerRoute: VisualiseringerRoute,
