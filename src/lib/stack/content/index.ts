@@ -233,6 +233,7 @@ import { content as triesBtrees } from "./tries-btrees";
 import { content as deadlockViz } from "./deadlock-viz";
 import { content as dijkstraViz } from "./dijkstra-viz";
 import { content as greedyNpViz } from "./greedy-np-viz";
+import { content as probabilisticBigdata } from "./probabilistic-bigdata";
 import type { TrinnContent } from "../types";
 
 export const TRINN: TrinnContent[] = [
@@ -361,6 +362,8 @@ export const TRINN: TrinnContent[] = [
   gradientDescent, sigmoidViz, radixCountingSort, triesBtrees, deadlockViz, dijkstraViz,
   // Grokking Algorithms ch. 10 — Greedy & NP
   greedyNpViz,
+  // Grokking Algorithms ch. 13 — Probabilistiske & storskala
+  probabilisticBigdata,
 ];
 
 import { curriculumIndexOf } from "../curriculum";

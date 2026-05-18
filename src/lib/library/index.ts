@@ -10,6 +10,7 @@ import {
   GitBranch,
   Globe,
   Hammer,
+  Hash,
   Layers,
   LineChart,
   Lock,
@@ -240,6 +241,15 @@ export const LIBRARY: LibraryItem[] = [
     href: "/stack/greedy-np-viz",
     blurb: "Set cover, TSP, knapsack greedy vs DP, og P-vs-NP «verifiser vs løs»-demo.",
     Icon: Target,
+  },
+  {
+    slug: "probabilistic-bigdata",
+    title: "Bloom, HLL, MinHash, SHA, MapReduce",
+    kind: "lek",
+    tags: ["algoritmer", "database", "visualisering"],
+    href: "/stack/probabilistic-bigdata",
+    blurb: "Probabilistiske datastrukturer + storskala-mønstre. Grokking Algorithms kap. 13.",
+    Icon: Hash,
   },
 
   // ───────── LÆR — mini-kurs og lineære løp ─────────
