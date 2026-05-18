@@ -1,12 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
 import { SiteHeader } from "@/components/SiteHeader";
 import { Button } from "@/components/ui/button";
-import { Hash, Sigma, Layers, KeyRound, Workflow, RotateCcw } from "lucide-react";
+import { BookOpen, Hash, Sigma, Layers, KeyRound, Workflow, RotateCcw } from "lucide-react";
 
-type Tab = "bloom" | "hll" | "lsh" | "sha" | "mapreduce";
+type Tab = "intro" | "bloom" | "hll" | "lsh" | "sha" | "mapreduce";
 
 export function ProbabilisticBigDataPage() {
-  const [tab, setTab] = useState<Tab>("bloom");
+  const [tab, setTab] = useState<Tab>("intro");
 
   return (
     <div className="min-h-screen bg-background">
@@ -17,14 +17,16 @@ export function ProbabilisticBigDataPage() {
             Probabilistiske &amp; storskala-algoritmer
           </h1>
           <p className="mt-1 text-sm text-muted-foreground max-w-2xl">
-            Grokking Algorithms kap. 13 — «hvor du går videre». Fem moduler om
-            datastrukturer som er sannsynlige men nesten-riktige (Bloom, HLL,
-            MinHash), og om byggesteinene moderne big-data står på (SHA,
-            MapReduce).
+            Seks trinn. Start på «0. Start her» — der introduseres hver
+            byggestein (hash-funksjon, bitarray, sannsynlighet) som senere
+            moduler bygger på. De fem neste er hands-on.
           </p>
         </header>
 
         <div className="mb-4 flex flex-wrap gap-1.5 border-b border-border">
+          <TabBtn active={tab === "intro"} onClick={() => setTab("intro")} icon={<BookOpen className="h-3.5 w-3.5" />}>
+            0. Start her
+          </TabBtn>
           <TabBtn active={tab === "bloom"} onClick={() => setTab("bloom")} icon={<Hash className="h-3.5 w-3.5" />}>
             1. Bloom
           </TabBtn>
@@ -42,6 +44,7 @@ export function ProbabilisticBigDataPage() {
           </TabBtn>
         </div>
 
+        {tab === "intro" && <IntroModule onPick={setTab} />}
         {tab === "bloom" && <BloomModule />}
         {tab === "hll" && <HllModule />}
         {tab === "lsh" && <LshModule />}
@@ -50,6 +53,124 @@ export function ProbabilisticBigDataPage() {
 
         <Lessons />
       </main>
+    </div>
+  );
+}
+
+function IntroModule({ onPick }: { onPick: (t: Tab) => void }) {
+  return (
+    <div className="space-y-4 text-sm">
+      <div className="rounded-xl border border-border bg-card p-4">
+        <h2 className="text-base font-semibold mb-2">Byggestein-ordbok</h2>
+        <dl className="space-y-3 text-[13px]">
+          <Def term="Hash-funksjon">
+            En funksjon som tar en streng/tall og spytter ut et tilsynelatende
+            tilfeldig tall innenfor et område. Samme input gir alltid samme
+            output. Eksempel: <code>hash("epler") = 42</code>,{" "}
+            <code>hash("bananer") = 7</code>. Brukes til å plassere ting i
+            bøtter, oppdage duplikater og mer.
+          </Def>
+          <Def term="Bitarray">
+            Et fast antall bits (0 eller 1) lagt i rekke. Et bitarray med
+            m = 64 bits bruker 8 bytes minne. Du kan «sette» bit nr. i ved å
+            skrive 1 der, og «sjekke» ved å lese om det er 0 eller 1.
+          </Def>
+          <Def term="Bucket (bøtte)">
+            En liten plass med en indeks. «Hash-funksjon plasserer noe i bucket
+            {" "}<code>h % m</code>» betyr: regn ut hash, ta rest ved deling
+            med m, få et tall mellom 0 og m−1, plasser der.
+          </Def>
+          <Def term="Kardinalitet">
+            Antall <em>unike</em> elementer i en samling. <code>[a, b, a, c, b]</code>{" "}
+            har lengde 5 men kardinalitet 3 (unikt: a, b, c).
+          </Def>
+          <Def term="Sannsynlig / probabilistisk">
+            Algoritmen bruker tilfeldighet og garanterer ikke et perfekt svar,
+            men kommer veldig nær med høy sannsynlighet. Bytter litt
+            nøyaktighet mot massiv plass-besparelse.
+          </Def>
+          <Def term="False positive (falsk positiv)">
+            Algoritmen sier «JA, dette er i settet» når svaret faktisk er nei.
+            Bloom-filter kan ha false positives, men ALDRI false negatives.
+          </Def>
+          <Def term="Jaccard-likhet">
+            Et tall mellom 0 og 1 som måler hvor like to mengder er.{" "}
+            <code>J(A, B) = |A ∩ B| / |A ∪ B|</code>: størrelsen på snittet
+            delt på størrelsen på unionen. Helt like → 1. Helt forskjellige → 0.
+          </Def>
+          <Def term="Shingle (n-gram)">
+            En liten bit av en tekst. 3-shingle av «hund» er{" "}
+            <code>["hun", "und"]</code>: hver 3-bokstavs-sekvens. To
+            dokumenter med mange like shingles likner hverandre.
+          </Def>
+          <Def term="Leading zeros">
+            Antall null-bits i starten av et binærtall. F.eks. binær{" "}
+            <code>00010110</code> har 3 leading zeros. Brukes av HyperLogLog
+            som «hvor uvanlig er denne hashen».
+          </Def>
+          <Def term="Kryptografisk hash (SHA-256)">
+            En spesielt sterk hash-funksjon der: (1) du ikke kan reversere den,
+            (2) det er praktisk umulig å finne to inputs som gir samme output,
+            og (3) endring av én bit input gir helt forskjellig output
+            («avalanche»). SHA-256 gir 256 bits = 32 bytes = 64 hex-tegn.
+          </Def>
+          <Def term="MapReduce">
+            Et mønster for å fordele jobben på mange maskiner: map = bryt opp
+            input i (nøkkel, verdi)-par; shuffle = gruppér per nøkkel; reduce =
+            slå sammen verdier i hver gruppe. Word-count er kanon-eksempelet.
+          </Def>
+          <Def term="m, n, k (i Bloom-formler)">
+            <ul className="list-disc pl-5 mt-1">
+              <li><code>m</code> = antall bits i bitarrayet (større = mindre kollisjon).</li>
+              <li><code>n</code> = antall elementer du har satt inn.</li>
+              <li><code>k</code> = antall hash-funksjoner per element.</li>
+            </ul>
+          </Def>
+        </dl>
+      </div>
+
+      <div className="rounded-xl border border-border bg-card p-4">
+        <h2 className="text-base font-semibold mb-2">Slik bygger modulene på hverandre</h2>
+        <ol className="list-decimal pl-5 space-y-1.5 text-muted-foreground">
+          <li>
+            <strong className="text-foreground">Bloom (1)</strong> — én
+            bit-array + flere hash-funksjoner. Lærer hvordan probabilistiske
+            strukturer funker uten å spore alle elementer.
+          </li>
+          <li>
+            <strong className="text-foreground">HyperLogLog (2)</strong> —
+            samme idé, men i stedet for å sjekke <em>medlemskap</em> teller vi
+            <em>antall unike</em>. Bygger på leading-zeros-trikset.
+          </li>
+          <li>
+            <strong className="text-foreground">MinHash / LSH (3)</strong> —
+            samme «mange hash-funksjoner»-mønster, men for å sammenligne
+            <em>likhet</em> mellom dokumenter (Jaccard).
+          </li>
+          <li>
+            <strong className="text-foreground">SHA (4)</strong> — bytter
+            «random-aktig» hash-funksjon med en kryptografisk sterk. Samme
+            grunnidé, høyere garantier.
+          </li>
+          <li>
+            <strong className="text-foreground">MapReduce (5)</strong> —
+            byggesteinen for storskala batch-prosessering. Lar deg kjøre alt
+            over fra (1) til (4) parallelt over enorme datasett.
+          </li>
+        </ol>
+        <div className="mt-3 flex gap-2">
+          <Button size="sm" onClick={() => onPick("bloom")}>Start på modul 1 →</Button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Def({ term, children }: { term: string; children: React.ReactNode }) {
+  return (
+    <div>
+      <dt className="font-semibold text-foreground">{term}</dt>
+      <dd className="text-muted-foreground mt-0.5">{children}</dd>
     </div>
   );
 }
@@ -159,14 +280,34 @@ function BloomModule() {
 
   return (
     <div className="space-y-4">
+      <div className="rounded-lg border border-border bg-muted/30 p-3 text-xs text-muted-foreground">
+        <strong className="text-foreground">Hva er Bloom-filter?</strong> En
+        rask «har jeg sett denne før?»-sjekk. I stedet for å lagre alle
+        elementer (dyrt), lagrer vi bare en bit-array på m bits.
+        <div className="mt-2">
+          <strong className="text-foreground">Innsetting</strong> av «epler»:
+          regn ut k forskjellige hash-funksjoner. Hver gir et tall mellom 0 og
+          m−1. Sett alle de k bitene til 1.
+        </div>
+        <div className="mt-1">
+          <strong className="text-foreground">Søk</strong> etter «epler»: regn
+          ut de samme k hash-funksjonene. Hvis ALLE k bits er 1 → «sannsynligvis
+          i settet». Hvis EN er 0 → «definitivt ikke i settet».
+        </div>
+        <div className="mt-2">
+          Det er <em>asymmetrisk</em>: ingen falske negativer (et innsatt
+          element vil alltid bli funnet), men noen falske positiver (ulike
+          elementer kan tilfeldigvis treffe samme k bits).
+        </div>
+      </div>
       <div className="rounded-xl border border-border bg-card p-4">
         <div className="grid gap-3 sm:grid-cols-2">
           <div>
-            <label className="text-xs text-muted-foreground">Bitarray-størrelse m: <span className="font-mono font-semibold">{m}</span></label>
+            <label className="text-xs text-muted-foreground">m = bits i bitarray: <span className="font-mono font-semibold">{m}</span></label>
             <input type="range" min={16} max={256} step={8} value={m} onChange={(e) => setM(Number(e.target.value))} className="w-full" />
           </div>
           <div>
-            <label className="text-xs text-muted-foreground">Antall hash-funksjoner k: <span className="font-mono font-semibold">{k}</span></label>
+            <label className="text-xs text-muted-foreground">k = hash-funksjoner per element: <span className="font-mono font-semibold">{k}</span></label>
             <input type="range" min={1} max={10} value={k} onChange={(e) => setK(Number(e.target.value))} className="w-full" />
           </div>
         </div>
@@ -254,21 +395,35 @@ function BloomModule() {
 
       <div className="rounded-xl border border-border bg-card p-3 text-xs grid gap-2 sm:grid-cols-3">
         <div>
-          <div className="text-[10px] uppercase tracking-wider text-muted-foreground">False positive (empirisk)</div>
+          <div className="text-[10px] uppercase tracking-wider text-muted-foreground">FP-rate (empirisk)</div>
           <div className="font-mono text-base">{(fpEmpirical * 100).toFixed(2)}%</div>
-          <div className="text-[10px] text-muted-foreground">1000 random probes</div>
+          <div className="text-[10px] text-muted-foreground">1000 søk på ord vi ikke har satt inn — hvor ofte sier filteret «sannsynligvis JA» feil.</div>
         </div>
         <div>
-          <div className="text-[10px] uppercase tracking-wider text-muted-foreground">False positive (teoretisk)</div>
+          <div className="text-[10px] uppercase tracking-wider text-muted-foreground">FP-rate (formel)</div>
           <div className="font-mono text-base">{(fpTheoretical * 100).toFixed(2)}%</div>
-          <div className="text-[10px] text-muted-foreground font-mono">(1 − e^(−kn/m))^k</div>
+          <div className="text-[10px] text-muted-foreground font-mono mt-1">(1 − e^(−kn/m))^k</div>
+          <div className="text-[10px] text-muted-foreground mt-0.5">
+            Lest: «sjansen for at en tilfeldig bit ER 1 etter n innsettinger,
+            opphøyd i k» (alle k må treffe 1 for false positive).
+          </div>
         </div>
         <div>
           <div className="text-[10px] uppercase tracking-wider text-muted-foreground">Plassbruk</div>
-          <div className="font-mono text-base">{m} bits</div>
-          <div className="text-[10px] text-muted-foreground">≈ {(m / 8).toFixed(0)} bytes for {items.length} ord</div>
+          <div className="font-mono text-base">{m} bits ≈ {(m / 8).toFixed(0)} B</div>
+          <div className="text-[10px] text-muted-foreground">for {items.length} ord. Ekte set ville brukt ~{items.reduce((s, w) => s + w.length, 0)} bytes minimum.</div>
         </div>
       </div>
+
+      <details className="rounded-lg border border-border bg-card p-3 text-xs">
+        <summary className="cursor-pointer font-medium text-foreground">Hvor kommer formelen fra?</summary>
+        <div className="mt-2 space-y-1.5 text-muted-foreground">
+          <p>1. Hver hash-funksjon plukker tilfeldig én bit av m. Sjansen for at en spesifikk bit IKKE blir truffet av én hash er <code>(1 − 1/m)</code>.</p>
+          <p>2. Vi setter inn n elementer, hver bruker k hash-funksjoner = <code>k·n</code> treff total. Sjansen for at en bit IKKE blir truffet av noen er <code>(1 − 1/m)^(kn) ≈ e^(−kn/m)</code> for stor m.</p>
+          <p>3. Sjansen for at en bit ER truffet (er 1) er da <code>1 − e^(−kn/m)</code>.</p>
+          <p>4. For false positive må ALLE k bits være 1 tilfeldigvis: <code>(1 − e^(−kn/m))^k</code>.</p>
+        </div>
+      </details>
     </div>
   );
 }
@@ -334,9 +489,35 @@ function HllModule() {
 
   return (
     <div className="space-y-4">
+      <div className="rounded-lg border border-border bg-muted/30 p-3 text-xs text-muted-foreground space-y-2">
+        <div>
+          <strong className="text-foreground">Hva er HyperLogLog?</strong> En
+          måte å estimere <em>kardinalitet</em> (antall unike elementer) uten å
+          lagre elementene. Bytter litt nøyaktighet mot drastisk mindre minne.
+        </div>
+        <div>
+          <strong className="text-foreground">Intuisjonen — flippe mynter:</strong>
+          {" "}hvis du flipper en mynt mange ganger og ser «kron, kron, kron, kron»
+          (4 ledende kron-er), så har du sannsynligvis flippet ca. <code>2⁴ = 16</code>{" "}
+          ganger totalt. Jo flere kron på rad, jo flere flips. HLL bruker det
+          motsatt: jo flere leading zeros vi har sett i hashene av input, jo
+          flere unike elementer har vi sannsynligvis sett.
+        </div>
+        <div>
+          <strong className="text-foreground">Algoritmen:</strong>
+          <ol className="list-decimal pl-5 mt-1 space-y-0.5">
+            <li>Hash hvert element → 32-bit tall.</li>
+            <li>Bruk de første <code>b</code> bitsene til å velge bucket
+              (av m = 2^b buckets). Resten av bitene er det vi måler.</li>
+            <li>Tell leading zeros i resten. Hvis denne er større enn det
+              bucketen allerede har lagret, oppdater.</li>
+            <li>Helt til slutt: regn ut estimatet basert på alle bucket-verdiene.</li>
+          </ol>
+        </div>
+      </div>
       <div className="rounded-xl border border-border bg-card p-4">
         <label className="text-xs text-muted-foreground">
-          Buckets m = 2^{b} = <span className="font-mono font-semibold">{m}</span>
+          b = bits brukt til bucket-indeks → m = 2^{b} = <span className="font-mono font-semibold">{m}</span> buckets
         </label>
         <input type="range" min={3} max={8} value={b} onChange={(e) => setB(Number(e.target.value))} className="w-full max-w-md" />
 
@@ -394,14 +575,20 @@ function HllModule() {
             {exact === 0 ? "—" : `${(((estimate - exact) / exact) * 100).toFixed(1)}%`}
           </div>
           <div className="text-[10px] text-muted-foreground">
-            Standard-feil ≈ 1.04/√m = {(1.04 / Math.sqrt(m) * 100).toFixed(1)}%
+            Forventet typisk feil: <code>≈ 1.04 / √m = {(1.04 / Math.sqrt(m) * 100).toFixed(1)}%</code>
+          </div>
+          <div className="text-[10px] text-muted-foreground mt-0.5">
+            (Konstanten 1.04 kommer fra matematisk analyse av estimator-variansen. Dobl m → halver feil-margin.)
           </div>
         </div>
       </div>
 
       <div className="text-xs text-muted-foreground rounded-lg border border-border bg-card p-3">
-        Med {m} buckets bruker HLL ≈ {(m * 5) / 8} bytes uansett om vi teller 100 eller 100 millioner unike elementer.
-        Eksakt-telling krever O(n) — HLL bytter et par prosent nøyaktighet mot dramatisk plassbruk-besparelse.
+        Med m = {m} buckets bruker HLL bare ≈ <code>{(m * 5) / 8} bytes</code>{" "}
+        (hver bucket lagrer et lite tall, typisk 5 bits) — uansett om vi teller
+        100 eller 100 millioner unike elementer. Eksakt-telling med Set krever{" "}
+        <code>O(n)</code> minne (alt må lagres). HLL bytter noen prosent
+        nøyaktighet mot dramatisk plass-besparelse.
       </div>
     </div>
   );
@@ -460,6 +647,30 @@ function LshModule() {
 
   return (
     <div className="space-y-4">
+      <div className="rounded-lg border border-border bg-muted/30 p-3 text-xs text-muted-foreground space-y-2">
+        <div>
+          <strong className="text-foreground">Hva er MinHash / LSH?</strong>{" "}
+          En måte å estimere hvor like to dokumenter er, uten å sammenligne dem
+          ord-for-ord. Brukes til plagiat-deteksjon, dedup, anbefalings-systemer.
+        </div>
+        <div>
+          <strong className="text-foreground">Trinn-for-trinn:</strong>
+          <ol className="list-decimal pl-5 mt-1 space-y-0.5">
+            <li>Bryt opp hvert dokument i <em>shingles</em> (n-bokstavs-biter).
+              «hund» med n=3 → <code>["hun", "und"]</code>. Du har nå et SETT
+              av shingles per dokument.</li>
+            <li>Eksakt likhet er Jaccard: <code>|A∩B| / |A∪B|</code>. Hvis A og
+              B har 10 shingles til felles og 15 totalt (union) → 10/15 = 67% like.</li>
+            <li><strong>MinHash-trikset:</strong> for hver av k hash-funksjoner,
+              regn ut hash(s) for hver shingle s i settet, og behold den MINSTE
+              verdien. Det blir én tall per hash. Settets «signatur» er disse k tallene.</li>
+            <li>To dokumenter har samme MinHash-verdi for en gitt hash hvis og
+              bare hvis de deler shingle som tilfeldigvis hashet til det
+              minste tallet. Sjansen for det er nøyaktig Jaccard-likheten!
+              Så % like signatur-celler ≈ Jaccard.</li>
+          </ol>
+        </div>
+      </div>
       <div className="rounded-xl border border-border bg-card p-4 grid gap-3 sm:grid-cols-2">
         <div>
           <label className="text-[10px] uppercase tracking-wider text-muted-foreground">Dokument A</label>
@@ -578,6 +789,33 @@ function ShaModule() {
 
   return (
     <div className="space-y-4">
+      <div className="rounded-lg border border-border bg-muted/30 p-3 text-xs text-muted-foreground space-y-2">
+        <div>
+          <strong className="text-foreground">Hva er en kryptografisk hash?</strong>{" "}
+          En vanlig hash-funksjon (som dem i Bloom/HLL) trenger bare å se
+          tilsynelatende tilfeldig ut. En <em>kryptografisk</em> hash som
+          SHA-256 må også:
+          <ul className="list-disc pl-5 mt-1 space-y-0.5">
+            <li><strong className="text-foreground">Ikke kunne reverseres</strong>{" "}
+              — gitt en hash, umulig å finne en input som gir den.</li>
+            <li><strong className="text-foreground">Kollisjons-resistent</strong>{" "}
+              — praktisk umulig å finne to inputs som gir samme hash.</li>
+            <li><strong className="text-foreground">Avalanche</strong> — endring av
+              én bit input flipper omtrent halvparten av output-bitene
+              uforutsigbart.</li>
+          </ul>
+        </div>
+        <div>
+          <strong className="text-foreground">Test avalanche:</strong> endre én
+          bokstav i input B og se på den uthevete (gule) hex-tegnene under —
+          det er de delene av hashen som har endret seg.
+        </div>
+        <div>
+          <strong className="text-foreground">Hex (heksadesimal):</strong>{" "}
+          en måte å skrive 4 bits per tegn (0–9, a–f). SHA-256 output er 256
+          bits = 64 hex-tegn.
+        </div>
+      </div>
       <div className="rounded-xl border border-border bg-card p-4 grid gap-3 sm:grid-cols-2">
         <div>
           <label className="text-[10px] uppercase tracking-wider text-muted-foreground">Input A</label>
@@ -695,6 +933,31 @@ function MapReduceModule() {
 
   return (
     <div className="space-y-4">
+      <div className="rounded-lg border border-border bg-muted/30 p-3 text-xs text-muted-foreground space-y-2">
+        <div>
+          <strong className="text-foreground">Hva er MapReduce?</strong> Et
+          mønster for å distribuere en stor jobb over mange maskiner. Vi viser
+          her klassikeren <em>word-count</em>: tell antall forekomster av hvert
+          ord.
+        </div>
+        <div>
+          <strong className="text-foreground">Fasene</strong> (klikk knappene i
+          rekkefølge):
+          <ol className="list-decimal pl-5 mt-1 space-y-0.5">
+            <li><strong className="text-foreground">Input:</strong> tekst
+              splittes i 3 like store blokker. Hver blokk får sin egen mapper.</li>
+            <li><strong className="text-foreground">Map:</strong> hver mapper
+              kjører <em>parallelt</em> og emitterer <code>(ord, 1)</code> for
+              hvert ord. «Emittere» = sende videre til neste fase.</li>
+            <li><strong className="text-foreground">Shuffle:</strong> alle{" "}
+              <code>(ord, 1)</code>-par fra ulike mappere grupperes per nøkkel
+              («ord»). Resultatet er <code>(ord, [1, 1, 1, ...])</code>.</li>
+            <li><strong className="text-foreground">Reduce:</strong> for hver
+              nøkkel: slå sammen verdilista. Her: summer 1-erne for å få
+              antallet.</li>
+          </ol>
+        </div>
+      </div>
       <div className="rounded-xl border border-border bg-card p-4">
         <label className="text-[10px] uppercase tracking-wider text-muted-foreground">Input-tekst</label>
         <textarea
