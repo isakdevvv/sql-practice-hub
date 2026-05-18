@@ -1,0 +1,37 @@
+export const TAG_LABELS: Record<string, string> = {
+  statistikk: "Statistikk",
+  sannsyn: "Sannsynlighet",
+  ml: "Maskinlæring",
+  "nevrale-nett": "Nevrale nett",
+  ai: "AI",
+  sql: "SQL",
+  database: "Databaser",
+  web: "Web",
+  flask: "Flask",
+  os: "Operativsystemer",
+  linux: "Linux",
+  nettverk: "Nettverk",
+  krypto: "Kryptografi",
+  sikkerhet: "Sikkerhet",
+  mobil: "Mobil",
+  kotlin: "Kotlin",
+  python: "Python",
+  git: "Git",
+  algoritmer: "Algoritmer",
+  matte: "Matematikk",
+  hardware: "Hardware",
+  historie: "Historie",
+  visualisering: "Visualisering",
+  sandkasse: "Sandkasse",
+  quiz: "Quiz",
+  drill: "Drill",
+  oppgaver: "Oppgaver",
+  kurs: "Mini-kurs",
+  csharp: "C#",
+  blazor: "Blazor",
+  api: "API",
+};
+
+export function tagLabel(tag: string): string {
+  return TAG_LABELS[tag] ?? tag;
+}

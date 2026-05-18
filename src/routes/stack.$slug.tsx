@@ -4,6 +4,7 @@ import { getTrinnBySlug } from "@/lib/stack/content";
 import { markTrinnSeen } from "@/lib/stack/moduleProgress";
 import { recordVisit } from "@/lib/userSubjects";
 import { SiteHeader } from "@/components/SiteHeader";
+import { StackPagerFooter } from "@/components/stack/StackPagerFooter";
 
 const COURSE_SLUGS = new Set([
   "dte-2509",
@@ -37,6 +38,7 @@ function TrinnPage() {
   return (
     <Suspense fallback={<TrinnLoading />}>
       <Component />
+      <StackPagerFooter slug={slug} />
     </Suspense>
   );
 }
