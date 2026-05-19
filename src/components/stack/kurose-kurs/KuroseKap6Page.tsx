@@ -10,8 +10,23 @@ import {
   FolderOpen,
   ExternalLink,
 } from "lucide-react";
+import { SectionPager, type SectionNavItem } from "./SectionPager";
 
 type Tab = "intro" | "6.1" | "6.2" | "6.3" | "6.4" | "6.5" | "6.6" | "6.7" | "6.8";
+
+
+const SECTIONS_6: SectionNavItem[] = [
+  { id: "intro", label: "Start her" },
+  { id: "6.1", label: "6.1 Tjenester" },
+  { id: "6.2", label: "6.2 Feiloppdaging" },
+  { id: "6.3", label: "6.3 Multiple access" },
+  { id: "6.4", label: "6.4 Switched LAN" },
+  { id: "6.5", label: "6.5 Ethernet" },
+  { id: "6.6", label: "6.6 VLAN" },
+  { id: "6.7", label: "6.7 Datasenter" },
+  { id: "6.8", label: "6.8 Oppgaver" },
+];
+const NEXT_CHAPTER_6 = { slug: "kurose-kap-7", title: "Trådløst og mobilt" };
 
 export function KuroseKap6Page() {
   const [tab, setTab] = useState<Tab>("intro");
@@ -77,6 +92,8 @@ export function KuroseKap6Page() {
         {tab === "6.6" && <Section66 />}
         {tab === "6.7" && <Section67 />}
         {tab === "6.8" && <Section68 />}
+
+        <SectionPager tabs={SECTIONS_6} current={tab} onPick={(id) => setTab(id as Tab)} nextChapter={NEXT_CHAPTER_6} />
 
         <ChapterPager
           prev={{ slug: "kurose-kap-5", title: "Nettverkslaget — control-plane" }}

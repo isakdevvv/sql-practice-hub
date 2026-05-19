@@ -10,8 +10,25 @@ import {
   FolderOpen,
   ExternalLink,
 } from "lucide-react";
+import { SectionPager, type SectionNavItem } from "./SectionPager";
 
 type Tab = "intro" | "8.1" | "8.2" | "8.3" | "8.4" | "8.5" | "8.6" | "8.7" | "8.8" | "8.9" | "8.10";
+
+
+const SECTIONS_8: SectionNavItem[] = [
+  { id: "intro", label: "Start her" },
+  { id: "8.1", label: "8.1 Hva er sikkerhet?" },
+  { id: "8.2", label: "8.2 Kryptografi" },
+  { id: "8.3", label: "8.3 Integritet" },
+  { id: "8.4", label: "8.4 Autentisering" },
+  { id: "8.5", label: "8.5 TLS" },
+  { id: "8.6", label: "8.6 IPsec & VPN" },
+  { id: "8.7", label: "8.7 Brannmurer" },
+  { id: "8.8", label: "8.8 IDS & IPS" },
+  { id: "8.9", label: "8.9 Web-angrep" },
+  { id: "8.10", label: "8.10 Oppgaver" },
+];
+const NEXT_CHAPTER_8 = { slug: "kurose-kap-9", title: "Multimedia-nettverk" };
 
 export function KuroseKap8Page() {
   const [tab, setTab] = useState<Tab>("intro");
@@ -86,6 +103,8 @@ export function KuroseKap8Page() {
         {tab === "8.8" && <Section88 />}
         {tab === "8.9" && <Section89 />}
         {tab === "8.10" && <Section810 />}
+
+        <SectionPager tabs={SECTIONS_8} current={tab} onPick={(id) => setTab(id as Tab)} nextChapter={NEXT_CHAPTER_8} />
 
         <ChapterPager
           prev={{ slug: "kurose-kap-7", title: "Trådløst og mobilt" }}
