@@ -105,11 +105,6 @@ export function KuroseKap8Page() {
         {tab === "8.10" && <Section810 />}
 
         <SectionPager tabs={SECTIONS_8} current={tab} onPick={(id) => setTab(id as Tab)} nextChapter={NEXT_CHAPTER_8} />
-
-        <ChapterPager
-          prev={{ slug: "kurose-kap-7", title: "Trådløst og mobilt" }}
-          next={{ slug: "kurose-kap-9", title: "Multimedia-nettverk" }}
-        />
       </main>
     </div>
   );
@@ -1234,57 +1229,6 @@ function RelatedSlugs({ slugs }: { slugs: string[] }) {
   );
 }
 
-function ChapterPager({
-  prev,
-  next,
-}: {
-  prev: { slug: string; title: string } | null;
-  next: { slug: string; title: string } | null;
-}) {
-  return (
-    <nav className="mt-10 grid gap-3 sm:grid-cols-2">
-      {prev ? (
-        <a
-          href={`/stack/${prev.slug}`}
-          className="group flex items-center gap-3 rounded-xl border border-border bg-card p-4 hover:border-brand/60"
-        >
-          <ArrowLeft className="h-4 w-4 text-muted-foreground group-hover:text-brand" />
-          <div>
-            <div className="text-[10px] uppercase tracking-wider text-muted-foreground">
-              Forrige kap.
-            </div>
-            <div className="text-sm font-semibold">{prev.title}</div>
-          </div>
-        </a>
-      ) : (
-        <a
-          href="/stack/kurose-kurs"
-          className="group flex items-center gap-3 rounded-xl border border-border bg-card p-4 hover:border-brand/60"
-        >
-          <FolderOpen className="h-4 w-4 text-muted-foreground group-hover:text-brand" />
-          <div>
-            <div className="text-[10px] uppercase tracking-wider text-muted-foreground">
-              Kurs-oversikt
-            </div>
-            <div className="text-sm font-semibold">Tilbake til Kurose-kurset</div>
-          </div>
-        </a>
-      )}
-      {next && (
-        <a
-          href={`/stack/${next.slug}`}
-          className="group flex items-center gap-3 rounded-xl border border-brand/40 bg-brand/5 p-4 hover:border-brand sm:flex-row-reverse sm:text-right"
-        >
-          <ArrowRight className="h-4 w-4 text-brand group-hover:translate-x-0.5 transition-transform" />
-          <div>
-            <div className="text-[10px] uppercase tracking-wider text-brand/80">Neste kap.</div>
-            <div className="text-sm font-semibold">{next.title}</div>
-          </div>
-        </a>
-      )}
-    </nav>
-  );
-}
 
 // ============================================================
 // SVG-illustrasjoner — alle original-tegnet
