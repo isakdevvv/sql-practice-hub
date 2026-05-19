@@ -126,6 +126,14 @@ const COLOR_LABEL: Record<Step["color"], string> = {
   http: "HTTP",
   data: "HTML",
 };
+// bg-* varianter for legend-prikker (<span>). fill-* virker kun i SVG.
+const BG_CLASS: Record<Step["color"], string> = {
+  dns: "bg-purple-500",
+  tcp: "bg-amber-500",
+  tls: "bg-cyan-500",
+  http: "bg-brand",
+  data: "bg-success",
+};
 
 export function Section11Live() {
   const [stepIdx, setStepIdx] = useState(0);
@@ -402,7 +410,7 @@ function NodeShape({ node }: { node: Node }) {
 }
 
 function LegendDot({ color }: { color: Step["color"] }) {
-  return <span className={`inline-block w-2 h-2 rounded-full ${COLOR_CLASS[color]}`} />;
+  return <span className={`inline-block w-2 h-2 rounded-full ${BG_CLASS[color]}`} />;
 }
 
 function nodeById(id: NodeId): Node {
