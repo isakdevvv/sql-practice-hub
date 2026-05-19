@@ -250,6 +250,16 @@ import { content as gmmVisualizer } from "./gmm-visualizer";
 import { content as svdEigenExplorer } from "./svd-eigen-explorer";
 import { content as universalApproxViz } from "./universal-approx-viz";
 import { content as autoencoderLatentSpace } from "./autoencoder-latent-space";
+import { content as kuroseKurs } from "./kurose-kurs";
+import { content as kuroseKap1 } from "./kurose-kap-1";
+import { content as kuroseKap2 } from "./kurose-kap-2";
+import { content as kuroseKap3 } from "./kurose-kap-3";
+import { content as kuroseKap4 } from "./kurose-kap-4";
+import { content as kuroseKap5 } from "./kurose-kap-5";
+import { content as kuroseKap6 } from "./kurose-kap-6";
+import { content as kuroseKap7 } from "./kurose-kap-7";
+import { content as kuroseKap8 } from "./kurose-kap-8";
+import { content as kuroseKap9 } from "./kurose-kap-9";
 import type { TrinnContent } from "../types";
 
 export const TRINN: TrinnContent[] = [
@@ -398,6 +408,10 @@ export const TRINN: TrinnContent[] = [
   svdEigenExplorer,          // MML kap. 4
   universalApproxViz,        // Nielsen kap. 4
   autoencoderLatentSpace,    // Goodfellow kap. 14
+  // Kurose-kurset — bok-som-kurs (hub + 9 kapitler)
+  kuroseKurs,
+  kuroseKap1, kuroseKap2, kuroseKap3, kuroseKap4, kuroseKap5,
+  kuroseKap6, kuroseKap7, kuroseKap8, kuroseKap9,
 ];
 
 import { curriculumIndexOf } from "../curriculum";
