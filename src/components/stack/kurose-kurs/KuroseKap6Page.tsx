@@ -192,7 +192,8 @@ function Section61() {
         håndtere bit-feil, kollisjoner på delte medier, og det å vite hvem den faktisk snakker med.
       </p>
 
-      <Defs
+      <div className="grid gap-3 lg:grid-cols-2">
+        <Defs
         items={[
           {
             term: "Ramme (frame)",
@@ -224,10 +225,10 @@ function Section61() {
           },
         ]}
       />
-
-      <Illustration caption="Link-laget tar et IP-datagram og pakker det inn med MAC-header + trailer før det går ut på fysisk medium.">
+        <Illustration caption="Link-laget tar et IP-datagram og pakker det inn med MAC-header + trailer før det går ut på fysisk medium.">
         <FrameSvg />
       </Illustration>
+      </div>
 
       <Example title="Eksempel: hvor er link-laget implementert?">
         <p>
@@ -262,7 +263,8 @@ function Section62() {
         det som faktisk brukes i Ethernet.
       </p>
 
-      <Defs
+      <div className="grid gap-3 lg:grid-cols-2">
+        <Defs
         items={[
           {
             term: "Paritets-bit",
@@ -290,10 +292,10 @@ function Section62() {
           },
         ]}
       />
-
-      <Illustration caption="CRC: del databitene + tilhørende r nuller på G; resten er CRC-verdien som henges på.">
+        <Illustration caption="CRC: del databitene + tilhørende r nuller på G; resten er CRC-verdien som henges på.">
         <CrcSvg />
       </Illustration>
+      </div>
 
       <Example title="Eksempel: CRC-3 på bit-strengen 1011">
         <p>
@@ -339,7 +341,8 @@ function Section63() {
         sende når.
       </p>
 
-      <Defs
+      <div className="grid gap-3 lg:grid-cols-2">
+        <Defs
         items={[
           {
             term: "Channel partitioning",
@@ -375,10 +378,10 @@ function Section63() {
           },
         ]}
       />
-
-      <Illustration caption="Pure ALOHA-kollisjon: ramme A overlapper med starten av B. Begge må retransmitteres.">
+        <Illustration caption="Pure ALOHA-kollisjon: ramme A overlapper med starten av B. Begge må retransmitteres.">
         <AlohaSvg />
       </Illustration>
+      </div>
 
       <Example title="Eksempel: hvorfor er slot ALOHA 2× bedre enn pure ALOHA?">
         <p>
@@ -417,7 +420,8 @@ function Section64() {
         gitt MAC-adresse sitter på?
       </p>
 
-      <Defs
+      <div className="grid gap-3 lg:grid-cols-2">
+        <Defs
         items={[
           {
             term: "ARP (Address Resolution Protocol)",
@@ -449,10 +453,10 @@ function Section64() {
           },
         ]}
       />
-
-      <Illustration caption="Switch self-learning: ramme fra MAC X på port 1 lærer switchen at X sitter på port 1.">
+        <Illustration caption="Switch self-learning: ramme fra MAC X på port 1 lærer switchen at X sitter på port 1.">
         <SwitchLearningSvg />
       </Illustration>
+      </div>
 
       <Example title="Eksempel: ARP-spørring fra mobilen din">
         <p>
@@ -495,7 +499,8 @@ function Section65() {
         koaks til 400 Gbps over fiber.
       </p>
 
-      <Defs
+      <div className="grid gap-3 lg:grid-cols-2">
+        <Defs
         items={[
           {
             term: "Preamble",
@@ -531,10 +536,10 @@ function Section65() {
           },
         ]}
       />
-
-      <Illustration caption="Ethernet-ramme: preamble · dst · src · type · payload · CRC. Alle felt har faste posisjoner.">
+        <Illustration caption="Ethernet-ramme: preamble · dst · src · type · payload · CRC. Alle felt har faste posisjoner.">
         <EthernetFrameSvg />
       </Illustration>
+      </div>
 
       <Example title="Eksempel: hva inneholder et 1500-byte Ethernet-ramme egentlig?">
         <ul className="list-disc pl-5">
@@ -571,7 +576,8 @@ function Section66() {
         seg som flere logiske switcher samtidig.
       </p>
 
-      <Defs
+      <div className="grid gap-3 lg:grid-cols-2">
+        <Defs
         items={[
           {
             term: "VLAN (Virtual LAN)",
@@ -603,10 +609,10 @@ function Section66() {
           },
         ]}
       />
-
-      <Illustration caption="Én fysisk switch deles i to VLANer. Trunk-lenken bærer tagget trafikk fra begge.">
+        <Illustration caption="Én fysisk switch deles i to VLANer. Trunk-lenken bærer tagget trafikk fra begge.">
         <VlanSvg />
       </Illustration>
+      </div>
 
       <Example title="Eksempel: 802.1Q-tag detaljert">
         <p>
@@ -646,7 +652,8 @@ function Section67() {
         Moderne datasentre bruker bredere topologier som gir mange parallelle stier.
       </p>
 
-      <Defs
+      <div className="grid gap-3 lg:grid-cols-2">
+        <Defs
         items={[
           {
             term: "Top-of-Rack (ToR) switch",
@@ -678,10 +685,10 @@ function Section67() {
           },
         ]}
       />
-
-      <Illustration caption="Leaf-spine: hver leaf kobles til hver spine. To leaf-switcher kommuniserer alltid via én spine, ECMP fordeler last.">
+        <Illustration caption="Leaf-spine: hver leaf kobles til hver spine. To leaf-switcher kommuniserer alltid via én spine, ECMP fordeler last.">
         <LeafSpineSvg />
       </Illustration>
+      </div>
 
       <Example title="Eksempel: bisection i en 4-leaf, 4-spine topologi">
         <p>

@@ -183,7 +183,8 @@ function Section71() {
         mobilnett er svar på en eller flere av disse problemene.
       </p>
 
-      <Defs
+      <div className="grid gap-3 lg:grid-cols-2">
+        <Defs
         items={[
           {
             term: "Path loss (avstands-svekning)",
@@ -215,10 +216,10 @@ function Section71() {
           },
         ]}
       />
-
-      <Illustration caption="Hidden terminal: A og C hører begge AP, men ikke hverandre. AP får krasjete signaler.">
+        <Illustration caption="Hidden terminal: A og C hører begge AP, men ikke hverandre. AP får krasjete signaler.">
         <HiddenTerminalSvg />
       </Illustration>
+      </div>
 
       <Example title="Eksempel: hvorfor 5 streker plutselig blir 1 strek">
         <p>
@@ -259,7 +260,8 @@ function Section72() {
         gikk tapt og må sendes på nytt.
       </p>
 
-      <Defs
+      <div className="grid gap-3 lg:grid-cols-2">
+        <Defs
         items={[
           {
             term: "CSMA/CA (Carrier Sense Multiple Access with Collision Avoidance)",
@@ -291,10 +293,10 @@ function Section72() {
           },
         ]}
       />
-
-      <Illustration caption="CSMA/CA-sekvens: lytt → DIFS → backoff → send → SIFS → ACK.">
+        <Illustration caption="CSMA/CA-sekvens: lytt → DIFS → backoff → send → SIFS → ACK.">
         <CsmaCaSvg />
       </Illustration>
+      </div>
 
       <Example title="Eksempel: to stationer kjemper om lufta">
         <p>
@@ -336,7 +338,8 @@ function Section73() {
         har blitt smartere.
       </p>
 
-      <Defs
+      <div className="grid gap-3 lg:grid-cols-2">
+        <Defs
         items={[
           {
             term: "Celle",
@@ -368,10 +371,10 @@ function Section73() {
           },
         ]}
       />
-
-      <Illustration caption="Sekskant-mønsteret med fargede frekvens-grupper og kjernens kobling ut på internett.">
+        <Illustration caption="Sekskant-mønsteret med fargede frekvens-grupper og kjernens kobling ut på internett.">
         <CellularTopologySvg />
       </Illustration>
+      </div>
 
       <Example title="Eksempel: en SMS i 2G vs en TikTok-video i 5G">
         <p>
@@ -410,7 +413,8 @@ function Section74() {
         Mobile IP og mobil-kjernens GTP-tunneling gjør.
       </p>
 
-      <Defs
+      <div className="grid gap-3 lg:grid-cols-2">
+        <Defs
         items={[
           {
             term: "Home network",
@@ -442,10 +446,10 @@ function Section74() {
           },
         ]}
       />
-
-      <Illustration caption="Pakkens omvei via home agent og inn-pakking til foreign network.">
+        <Illustration caption="Pakkens omvei via home agent og inn-pakking til foreign network.">
         <MobileIpSvg />
       </Illustration>
+      </div>
 
       <Example title="Eksempel: video-samtale mens du tar bussen">
         <p>
@@ -491,7 +495,8 @@ function Section75() {
         og bruker en koordinert sekvens av målinger, beslutninger og signalerings-meldinger.
       </p>
 
-      <Defs
+      <div className="grid gap-3 lg:grid-cols-2">
+        <Defs
         items={[
           {
             term: "Hard handover (break-before-make)",
@@ -519,10 +524,10 @@ function Section75() {
           },
         ]}
       />
-
-      <Illustration caption="Tidslinje for soft vs hard håndover — overlapp eller gap mellom gammel og ny.">
+        <Illustration caption="Tidslinje for soft vs hard håndover — overlapp eller gap mellom gammel og ny.">
         <HandoverSvg />
       </Illustration>
+      </div>
 
       <Example title="Eksempel: hva 200 ms gap betyr for en samtale">
         <p>
@@ -562,7 +567,8 @@ function Section76() {
         under-utnyttelse av trådløse lenker.
       </p>
 
-      <Defs
+      <div className="grid gap-3 lg:grid-cols-2">
+        <Defs
         items={[
           {
             term: "Bit-feil vs pakketap",
@@ -590,10 +596,10 @@ function Section76() {
           },
         ]}
       />
-
-      <Illustration caption="Kabelmessig: tap = congestion. Radio: tap kan komme fra støy, fading, eller handover — TCP vet ikke forskjellen.">
+        <Illustration caption="Kabelmessig: tap = congestion. Radio: tap kan komme fra støy, fading, eller handover — TCP vet ikke forskjellen.">
         <TcpWirelessSvg />
       </Illustration>
+      </div>
 
       <Example title="Eksempel: hvorfor 4G-laptopen din ikke når nominell hastighet">
         <p>En 4G-lenke annonserer 100 Mbps. Du tester med iperf og får 23 Mbps. Hvorfor?</p>

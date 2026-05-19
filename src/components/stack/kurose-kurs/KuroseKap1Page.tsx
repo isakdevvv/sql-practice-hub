@@ -168,7 +168,8 @@ function Section11() {
         vite om kablene.
       </p>
 
-      <Defs
+      <div className="grid gap-3 lg:grid-cols-2">
+        <Defs
         items={[
           {
             term: "Host (også: end-system)",
@@ -196,10 +197,10 @@ function Section11() {
           },
         ]}
       />
-
-      <Illustration caption="Internett som lag av ISP-er — hosts kobler seg til aksess-ISP, som henger på regional, som henger på tier-1 backbone.">
+        <Illustration caption="Internett som lag av ISP-er — hosts kobler seg til aksess-ISP, som henger på regional, som henger på tier-1 backbone.">
         <IspHierarchySvg />
       </Illustration>
+      </div>
 
       <Example title="Eksempel: hva skjer når du åpner en webside?">
         <ol className="list-decimal pl-5 space-y-1">
@@ -237,7 +238,8 @@ function Section12() {
         som flytter pakker fra et edge-punkt til et annet.
       </p>
 
-      <Defs
+      <div className="grid gap-3 lg:grid-cols-2">
+        <Defs
         items={[
           {
             term: "Aksess-nettverk",
@@ -257,10 +259,10 @@ function Section12() {
           },
         ]}
       />
-
-      <Illustration caption="Edge (rutere innenfor stiplede linjer) håndterer dine pakker; core (rutere mellom) flytter dem.">
+        <Illustration caption="Edge (rutere innenfor stiplede linjer) håndterer dine pakker; core (rutere mellom) flytter dem.">
         <EdgeCoreSvg />
       </Illustration>
+      </div>
 
       <RelatedSlugs slugs={["dte2507-inni-ruter", "dte2507-subnetting"]} />
     </article>
@@ -281,7 +283,8 @@ function Section13() {
         pakke-svitsjing. Forskjellen forklarer mye av hvorfor internett ble billig og fleksibelt.
       </p>
 
-      <Defs
+      <div className="grid gap-3 lg:grid-cols-2">
+        <Defs
         items={[
           {
             term: "Krets-svitsjing",
@@ -305,10 +308,10 @@ function Section13() {
           },
         ]}
       />
-
-      <Illustration caption="Krets-svitsjing reserverer båndbredde langs hele stien; pakke-svitsjing slipper pakker inn på delte lenker.">
+        <Illustration caption="Krets-svitsjing reserverer båndbredde langs hele stien; pakke-svitsjing slipper pakker inn på delte lenker.">
         <CircuitVsPacketSvg />
       </Illustration>
+      </div>
 
       <Example title="Eksempel: pakke vs krets med 35 brukere">
         <p>
@@ -347,7 +350,8 @@ function Section14() {
         forstår hver av dem, kan du peke på hvilken som dominerer i et gitt scenario.
       </p>
 
-      <Defs
+      <div className="grid gap-3 lg:grid-cols-2">
+        <Defs
         items={[
           {
             term: "Prosesserings-forsinkelse (d_proc)",
@@ -375,10 +379,10 @@ function Section14() {
           },
         ]}
       />
-
-      <Illustration caption="De fire kildene til forsinkelse på vei gjennom én ruter.">
+        <Illustration caption="De fire kildene til forsinkelse på vei gjennom én ruter.">
         <DelaySvg />
       </Illustration>
+      </div>
 
       <Example title="Eksempel: end-to-end-forsinkelse Bergen → New York">
         <p>
@@ -423,7 +427,8 @@ function Section15() {
         rett over og rett under.
       </p>
 
-      <Defs
+      <div className="grid gap-3 lg:grid-cols-2">
+        <Defs
         items={[
           {
             term: "Applikasjonslaget",
@@ -455,10 +460,10 @@ function Section15() {
           },
         ]}
       />
-
-      <Illustration caption="Pakkens reise gjennom 5 lag: hver legger sitt eget header.">
+        <Illustration caption="Pakkens reise gjennom 5 lag: hver legger sitt eget header.">
         <EncapsulationSvg />
       </Illustration>
+      </div>
 
       <RelatedSlugs slugs={["osi-tcpip", "transportlag", "tcp-sockets"]} />
     </article>

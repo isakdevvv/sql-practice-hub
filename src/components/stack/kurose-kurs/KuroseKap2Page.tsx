@@ -175,7 +175,8 @@ function Section21() {
         likeverdige (P2P)? Det andre valget er hvilken transport du skal bygge på.
       </p>
 
-      <Defs
+      <div className="grid gap-3 lg:grid-cols-2">
+        <Defs
         items={[
           {
             term: "Klient-server-arkitektur",
@@ -207,10 +208,10 @@ function Section21() {
           },
         ]}
       />
-
-      <Illustration caption="To prosesser snakker via sockets — applikasjonen bryr seg ikke om hvordan transport-laget faktisk leverer dataene.">
+        <Illustration caption="To prosesser snakker via sockets — applikasjonen bryr seg ikke om hvordan transport-laget faktisk leverer dataene.">
         <ProcessSocketSvg />
       </Illustration>
+      </div>
 
       <Example title="Eksempel: hvilken transport passer for hva?">
         <ul className="list-disc pl-5">
@@ -255,7 +256,8 @@ function Section22() {
         multiplekset), HTTP/3 (2022, kjører på QUIC over UDP).
       </p>
 
-      <Defs
+      <div className="grid gap-3 lg:grid-cols-2">
+        <Defs
         items={[
           {
             term: "HTTP request / response",
@@ -287,10 +289,10 @@ function Section22() {
           },
         ]}
       />
-
-      <Illustration caption="Forskjellen mellom seriell HTTP/1.1 og multiplekset HTTP/2 når en side har flere ressurser.">
+        <Illustration caption="Forskjellen mellom seriell HTTP/1.1 og multiplekset HTTP/2 når en side har flere ressurser.">
         <HttpVersionsSvg />
       </Illustration>
+      </div>
 
       <Example title="Eksempel: hvor mange RTT-er bruker en side med 6 ressurser?">
         <p>
@@ -339,7 +341,8 @@ function Section23() {
         kjører trofast for hver eneste request du gjør.
       </p>
 
-      <Defs
+      <div className="grid gap-3 lg:grid-cols-2">
+        <Defs
         items={[
           {
             term: "Hierarkisk navnerom",
@@ -367,10 +370,10 @@ function Section23() {
           },
         ]}
       />
-
-      <Illustration caption="Iterativt DNS-oppslag for www.uit.no fra en lokal resolver — fire trinn, deretter cached.">
+        <Illustration caption="Iterativt DNS-oppslag for www.uit.no fra en lokal resolver — fire trinn, deretter cached.">
         <DnsLookupSvg />
       </Illustration>
+      </div>
 
       <Example title="Eksempel: TTL-trade-off for en stor tjeneste">
         <p>
@@ -415,7 +418,8 @@ function Section24() {
         hvordan man skalerer ved å la deltakerne dele arbeidet.
       </p>
 
-      <Defs
+      <div className="grid gap-3 lg:grid-cols-2">
+        <Defs
         items={[
           {
             term: "SMTP",
@@ -443,10 +447,10 @@ function Section24() {
           },
         ]}
       />
-
-      <Illustration caption="BitTorrent-swarm: ingen sentral server, alle utveksler biter med alle.">
+        <Illustration caption="BitTorrent-swarm: ingen sentral server, alle utveksler biter med alle.">
         <BitTorrentSvg />
       </Illustration>
+      </div>
 
       <Example title="Eksempel: server vs P2P for å distribuere en 10 GB fil til 1000 brukere">
         <p>Server har 100 Mbps opplastings-kapasitet. Hver bruker har 50 Mbps ned og 5 Mbps opp.</p>
@@ -485,7 +489,8 @@ function Section25() {
         (CDN).
       </p>
 
-      <Defs
+      <div className="grid gap-3 lg:grid-cols-2">
+        <Defs
         items={[
           {
             term: "DASH (Dynamic Adaptive Streaming over HTTP)",
@@ -513,10 +518,10 @@ function Section25() {
           },
         ]}
       />
-
-      <Illustration caption="CDN-arkitektur: bruker går til lokal edge, edge spør regional, regional eventuelt origin.">
+        <Illustration caption="CDN-arkitektur: bruker går til lokal edge, edge spør regional, regional eventuelt origin.">
         <CdnSvg />
       </Illustration>
+      </div>
 
       <Example title="Eksempel: DASH-klient som tilpasser seg en flaskehals">
         <p>
@@ -567,7 +572,8 @@ function Section26() {
         UDP.
       </p>
 
-      <Defs
+      <div className="grid gap-3 lg:grid-cols-2">
+        <Defs
         items={[
           {
             term: "Socket",
@@ -595,10 +601,10 @@ function Section26() {
           },
         ]}
       />
-
-      <Illustration caption="TCP-server-loop: accept() lager en ny socket per klient, det opprinnelige fortsetter å lytte.">
+        <Illustration caption="TCP-server-loop: accept() lager en ny socket per klient, det opprinnelige fortsetter å lytte.">
         <SocketLoopSvg />
       </Illustration>
+      </div>
 
       <Example title="Eksempel: et ørlite ekko-server-skjelett i Python (TCP)">
         <pre className="text-[12px] font-mono whitespace-pre-wrap bg-background border border-border rounded p-2">{`import socket

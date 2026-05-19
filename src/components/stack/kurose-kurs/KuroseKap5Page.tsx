@@ -193,7 +193,8 @@ function Section51() {
         jobb. Det finnes to fundamentalt ulike måter å løse den på.
       </p>
 
-      <Defs
+      <div className="grid gap-3 lg:grid-cols-2">
+        <Defs
         items={[
           {
             term: "Data-plane",
@@ -221,10 +222,10 @@ function Section51() {
           },
         ]}
       />
-
-      <Illustration caption="Distribuert control-plane: hver ruter regner selv. SDN control-plane: én controller regner for alle.">
+        <Illustration caption="Distribuert control-plane: hver ruter regner selv. SDN control-plane: én controller regner for alle.">
         <ControlPlaneCompareSvg />
       </Illustration>
+      </div>
 
       <Example title="Eksempel: lenke faller — distribuert vs SDN">
         <p>Lenken mellom R3 og R4 ryker.</p>
@@ -266,7 +267,8 @@ function Section52() {
         ulike svakheter — særlig distance-vector sin count-to-infinity.
       </p>
 
-      <Defs
+      <div className="grid gap-3 lg:grid-cols-2">
+        <Defs
         items={[
           {
             term: "Link-state (LS)",
@@ -298,10 +300,10 @@ function Section52() {
           },
         ]}
       />
-
-      <Illustration caption="Dijkstra på en 5-node graf: i hvert steg legges noden med lavest tentativ avstand inn i shortest-path-treet.">
+        <Illustration caption="Dijkstra på en 5-node graf: i hvert steg legges noden med lavest tentativ avstand inn i shortest-path-treet.">
         <DijkstraSvg />
       </Illustration>
+      </div>
 
       <Example title="Eksempel: count-to-infinity i en 3-ruter-loop">
         <p>
@@ -346,7 +348,8 @@ function Section53() {
         Shortest Path First), en link-state-protokoll basert på Dijkstra.
       </p>
 
-      <Defs
+      <div className="grid gap-3 lg:grid-cols-2">
+        <Defs
         items={[
           {
             term: "Autonomt system (AS)",
@@ -378,10 +381,10 @@ function Section53() {
           },
         ]}
       />
-
-      <Illustration caption="Et AS delt i tre OSPF-areas. Area 0 (backbone) binder area 1 og area 2 via ABR-er.">
+        <Illustration caption="Et AS delt i tre OSPF-areas. Area 0 (backbone) binder area 1 og area 2 via ABR-er.">
         <OspfAreasSvg />
       </Illustration>
+      </div>
 
       <Example title="Eksempel: konvergens i et lite OSPF-AS">
         <p>Et universitets-AS har 8 rutere. Lenken mellom R4 og R5 ryker kl. 12:00:00.</p>
@@ -422,7 +425,8 @@ function Section54() {
         å velge mellom flere mulige stier. BGP er ikke shortest-path — det er policy-basert.
       </p>
 
-      <Defs
+      <div className="grid gap-3 lg:grid-cols-2">
+        <Defs
         items={[
           {
             term: "eBGP vs iBGP",
@@ -454,10 +458,10 @@ function Section54() {
           },
         ]}
       />
-
-      <Illustration caption="To AS-er som peerer, hvert med flere kunder. AS_PATH bygges opp ved hver eBGP-grense.">
+        <Illustration caption="To AS-er som peerer, hvert med flere kunder. AS_PATH bygges opp ved hver eBGP-grense.">
         <BgpTopologySvg />
       </Illustration>
+      </div>
 
       <Example title="Eksempel: AS3 velger mellom 3 stier til 8.8.8.0/24">
         <p>AS3 har lært tre forskjellige stier til prefikset 8.8.8.0/24:</p>
@@ -504,7 +508,8 @@ function Section55() {
         infrastruktur som software.
       </p>
 
-      <Defs
+      <div className="grid gap-3 lg:grid-cols-2">
+        <Defs
         items={[
           {
             term: "SDN-arkitektur",
@@ -536,10 +541,10 @@ function Section55() {
           },
         ]}
       />
-
-      <Illustration caption="OpenFlow-melding fra controller til switch installerer en ny flow-entry. Pakker som matcher får valgt action.">
+        <Illustration caption="OpenFlow-melding fra controller til switch installerer en ny flow-entry. Pakker som matcher får valgt action.">
         <OpenFlowSvg />
       </Illustration>
+      </div>
 
       <Example title="Eksempel: load balancer som SDN-app">
         <p>
@@ -587,7 +592,8 @@ function Section56() {
         og traceroute.
       </p>
 
-      <Defs
+      <div className="grid gap-3 lg:grid-cols-2">
+        <Defs
         items={[
           {
             term: "ICMP-meldinger",
@@ -619,10 +625,10 @@ function Section56() {
           },
         ]}
       />
-
-      <Illustration caption="Traceroute: pakker med TTL 1, 2, 3 trigger Time Exceeded fra hver ruter underveis.">
+        <Illustration caption="Traceroute: pakker med TTL 1, 2, 3 trigger Time Exceeded fra hver ruter underveis.">
         <TracerouteSvg />
       </Illustration>
+      </div>
 
       <Example title="Eksempel: traceroute til uit.no fra hjemmenettet">
         <p className="font-mono text-[12px]">
@@ -667,7 +673,8 @@ function Section57() {
         utvekslingen kalles DORA: Discover, Offer, Request, Acknowledge.
       </p>
 
-      <Defs
+      <div className="grid gap-3 lg:grid-cols-2">
+        <Defs
         items={[
           {
             term: "DHCP-server",
@@ -699,10 +706,10 @@ function Section57() {
           },
         ]}
       />
-
-      <Illustration caption="DORA: fire broadcasts mellom klient og server gir klienten en IP-adresse på under et sekund.">
+        <Illustration caption="DORA: fire broadcasts mellom klient og server gir klienten en IP-adresse på under et sekund.">
         <DhcpDoraSvg />
       </Illustration>
+      </div>
 
       <Example title="Eksempel: kafé-WiFi DHCP-leie">
         <p>Du åpner mobilen på en kafé:</p>
