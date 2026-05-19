@@ -234,6 +234,12 @@ import { content as deadlockViz } from "./deadlock-viz";
 import { content as dijkstraViz } from "./dijkstra-viz";
 import { content as greedyNpViz } from "./greedy-np-viz";
 import { content as probabilisticBigdata } from "./probabilistic-bigdata";
+import { content as trinn0SignalsCodes } from "./trinn-0-signals-codes";
+import { content as dte2501TdQlearning } from "./dte2501-td-qlearning";
+import { content as ridgeLassoRegularizer } from "./ridge-lasso-regularizer";
+import { content as rnnIntro } from "./rnn-intro";
+import { content as dte2505EventLoop } from "./dte2505-event-loop";
+import { content as dte2507OspfDijkstra } from "./dte2507-ospf-dijkstra";
 import type { TrinnContent } from "../types";
 
 export const TRINN: TrinnContent[] = [
@@ -364,6 +370,13 @@ export const TRINN: TrinnContent[] = [
   greedyNpViz,
   // Grokking Algorithms ch. 13 — Probabilistiske & storskala
   probabilisticBigdata,
+  // Tier-1-bok-hull (én topp-prioritert per bok)
+  trinn0SignalsCodes,        // Petzold Code kap. 1-3
+  dte2501TdQlearning,        // Sutton-Barto kap. 6 + AIMA kap. 21
+  ridgeLassoRegularizer,     // Géron kap. 4 + ISLR kap. 6 + MML kap. 7
+  rnnIntro,                  // Goodfellow kap. 10 + Nielsen kap. 6
+  dte2505EventLoop,          // OSTEP kap. 33
+  dte2507OspfDijkstra,       // Kurose kap. 5.3
 ];
 
 import { curriculumIndexOf } from "../curriculum";
