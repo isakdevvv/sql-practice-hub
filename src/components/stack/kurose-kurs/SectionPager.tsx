@@ -68,9 +68,7 @@ export function SectionPager({
         >
           <ArrowRight className="h-4 w-4 shrink-0 text-brand transition-transform group-hover:translate-x-0.5" />
           <div className="min-w-0 flex-1">
-            <div className="text-[10px] uppercase tracking-wider text-brand/80">
-              Neste del
-            </div>
+            <div className="text-[10px] uppercase tracking-wider text-brand/80">Neste del</div>
             <div className="truncate text-sm font-semibold">{nextInChapter.label}</div>
           </div>
         </button>

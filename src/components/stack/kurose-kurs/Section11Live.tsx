@@ -5,14 +5,7 @@ import { Play, Pause, SkipForward, SkipBack, RotateCcw } from "lucide-react";
 // når du åpner vg.no?»-walkthrough. Erstatter den statiske SVG-en og det
 // tekst-baserte eksemplet i den opprinnelige Section11.
 
-type NodeId =
-  | "mobil"
-  | "homeRouter"
-  | "accessIsp"
-  | "ispDns"
-  | "tier1"
-  | "vgIsp"
-  | "vgServer";
+type NodeId = "mobil" | "homeRouter" | "accessIsp" | "ispDns" | "tier1" | "vgIsp" | "vgServer";
 
 type Node = {
   id: NodeId;
@@ -204,7 +197,9 @@ export function Section11Live() {
         {EDGES.map(([a, b], i) => {
           const na = NODES.find((n) => n.id === a)!;
           const nb = NODES.find((n) => n.id === b)!;
-          const isActive = activeEdges.some(([x, y]) => (x === a && y === b) || (x === b && y === a));
+          const isActive = activeEdges.some(
+            ([x, y]) => (x === a && y === b) || (x === b && y === a),
+          );
           return (
             <line
               key={i}
@@ -274,7 +269,11 @@ export function Section11Live() {
           className="inline-flex items-center gap-1 rounded border border-brand/40 bg-brand/10 px-2 py-1 text-xs font-medium hover:bg-brand/20"
         >
           {playing ? <Pause className="h-3 w-3" /> : <Play className="h-3 w-3" />}
-          {playing ? "Pause" : stepIdx === STEPS.length - 1 && pktProgress >= 0.99 ? "Spill av igjen" : "Spill av"}
+          {playing
+            ? "Pause"
+            : stepIdx === STEPS.length - 1 && pktProgress >= 0.99
+              ? "Spill av igjen"
+              : "Spill av"}
         </button>
         <button
           onClick={nextStep}
@@ -333,12 +332,29 @@ function NodeShape({ node }: { node: Node }) {
           className="fill-card stroke-amber-500"
           strokeWidth={2}
         />
-        <rect x={node.x - 9} y={node.y - 17} width={18} height={24} rx={2} className="fill-muted-foreground/20" />
-        <text x={node.x} y={node.y + 38} textAnchor="middle" className="fill-foreground text-[10px] font-semibold">
+        <rect
+          x={node.x - 9}
+          y={node.y - 17}
+          width={18}
+          height={24}
+          rx={2}
+          className="fill-muted-foreground/20"
+        />
+        <text
+          x={node.x}
+          y={node.y + 38}
+          textAnchor="middle"
+          className="fill-foreground text-[10px] font-semibold"
+        >
           {node.label}
         </text>
         {node.sublabel && (
-          <text x={node.x} y={node.y + 50} textAnchor="middle" className="fill-muted-foreground text-[9px]">
+          <text
+            x={node.x}
+            y={node.y + 50}
+            textAnchor="middle"
+            className="fill-muted-foreground text-[9px]"
+          >
             {node.sublabel}
           </text>
         )}
@@ -357,15 +373,49 @@ function NodeShape({ node }: { node: Node }) {
           className="fill-card stroke-success"
           strokeWidth={2}
         />
-        <line x1={node.x - 13} y1={node.y - 14} x2={node.x + 13} y2={node.y - 14} className="stroke-success/50" />
-        <line x1={node.x - 13} y1={node.y - 6} x2={node.x + 13} y2={node.y - 6} className="stroke-success/50" />
-        <line x1={node.x - 13} y1={node.y + 2} x2={node.x + 13} y2={node.y + 2} className="stroke-success/50" />
-        <line x1={node.x - 13} y1={node.y + 10} x2={node.x + 13} y2={node.y + 10} className="stroke-success/50" />
-        <text x={node.x} y={node.y + 38} textAnchor="middle" className="fill-foreground text-[10px] font-semibold">
+        <line
+          x1={node.x - 13}
+          y1={node.y - 14}
+          x2={node.x + 13}
+          y2={node.y - 14}
+          className="stroke-success/50"
+        />
+        <line
+          x1={node.x - 13}
+          y1={node.y - 6}
+          x2={node.x + 13}
+          y2={node.y - 6}
+          className="stroke-success/50"
+        />
+        <line
+          x1={node.x - 13}
+          y1={node.y + 2}
+          x2={node.x + 13}
+          y2={node.y + 2}
+          className="stroke-success/50"
+        />
+        <line
+          x1={node.x - 13}
+          y1={node.y + 10}
+          x2={node.x + 13}
+          y2={node.y + 10}
+          className="stroke-success/50"
+        />
+        <text
+          x={node.x}
+          y={node.y + 38}
+          textAnchor="middle"
+          className="fill-foreground text-[10px] font-semibold"
+        >
           {node.label}
         </text>
         {node.sublabel && (
-          <text x={node.x} y={node.y + 50} textAnchor="middle" className="fill-muted-foreground text-[9px]">
+          <text
+            x={node.x}
+            y={node.y + 50}
+            textAnchor="middle"
+            className="fill-muted-foreground text-[9px]"
+          >
             {node.sublabel}
           </text>
         )}
@@ -375,15 +425,36 @@ function NodeShape({ node }: { node: Node }) {
   if (node.kind === "dns") {
     return (
       <g>
-        <circle cx={node.x} cy={node.y} r={18} className="fill-purple-500/10 stroke-purple-500" strokeWidth={2} />
-        <text x={node.x} y={node.y + 4} textAnchor="middle" className="fill-purple-700 dark:fill-purple-300 text-[10px] font-bold">
+        <circle
+          cx={node.x}
+          cy={node.y}
+          r={18}
+          className="fill-purple-500/10 stroke-purple-500"
+          strokeWidth={2}
+        />
+        <text
+          x={node.x}
+          y={node.y + 4}
+          textAnchor="middle"
+          className="fill-purple-700 dark:fill-purple-300 text-[10px] font-bold"
+        >
           DNS
         </text>
-        <text x={node.x} y={node.y - 28} textAnchor="middle" className="fill-foreground text-[10px] font-semibold">
+        <text
+          x={node.x}
+          y={node.y - 28}
+          textAnchor="middle"
+          className="fill-foreground text-[10px] font-semibold"
+        >
           {node.label}
         </text>
         {node.sublabel && (
-          <text x={node.x} y={node.y - 40} textAnchor="middle" className="fill-muted-foreground text-[9px]">
+          <text
+            x={node.x}
+            y={node.y - 40}
+            textAnchor="middle"
+            className="fill-muted-foreground text-[9px]"
+          >
             {node.sublabel}
           </text>
         )}
@@ -393,15 +464,36 @@ function NodeShape({ node }: { node: Node }) {
   // Router
   return (
     <g>
-      <circle cx={node.x} cy={node.y} r={16} className="fill-card stroke-foreground/60" strokeWidth={2} />
-      <text x={node.x} y={node.y + 4} textAnchor="middle" className="fill-foreground text-[10px] font-bold">
+      <circle
+        cx={node.x}
+        cy={node.y}
+        r={16}
+        className="fill-card stroke-foreground/60"
+        strokeWidth={2}
+      />
+      <text
+        x={node.x}
+        y={node.y + 4}
+        textAnchor="middle"
+        className="fill-foreground text-[10px] font-bold"
+      >
         R
       </text>
-      <text x={node.x} y={node.y + 34} textAnchor="middle" className="fill-foreground text-[10px] font-semibold">
+      <text
+        x={node.x}
+        y={node.y + 34}
+        textAnchor="middle"
+        className="fill-foreground text-[10px] font-semibold"
+      >
         {node.label}
       </text>
       {node.sublabel && (
-        <text x={node.x} y={node.y + 46} textAnchor="middle" className="fill-muted-foreground text-[9px]">
+        <text
+          x={node.x}
+          y={node.y + 46}
+          textAnchor="middle"
+          className="fill-muted-foreground text-[9px]"
+        >
           {node.sublabel}
         </text>
       )}
