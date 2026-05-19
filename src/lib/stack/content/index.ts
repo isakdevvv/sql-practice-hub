@@ -240,6 +240,16 @@ import { content as ridgeLassoRegularizer } from "./ridge-lasso-regularizer";
 import { content as rnnIntro } from "./rnn-intro";
 import { content as dte2505EventLoop } from "./dte2505-event-loop";
 import { content as dte2507OspfDijkstra } from "./dte2507-ospf-dijkstra";
+import { content as dte2505Lfs } from "./dte2505-lfs";
+import { content as dte2505Segmentation } from "./dte2505-segmentation";
+import { content as dte2507WifiCsmaCa } from "./dte2507-wifi-csma-ca";
+import { content as dte2507VoipRtp } from "./dte2507-voip-rtp";
+import { content as dte2501Mcts } from "./dte2501-mcts";
+import { content as dte2501HmmParticle } from "./dte2501-hmm-particle";
+import { content as gmmVisualizer } from "./gmm-visualizer";
+import { content as svdEigenExplorer } from "./svd-eigen-explorer";
+import { content as universalApproxViz } from "./universal-approx-viz";
+import { content as autoencoderLatentSpace } from "./autoencoder-latent-space";
 import type { TrinnContent } from "../types";
 
 export const TRINN: TrinnContent[] = [
@@ -377,6 +387,17 @@ export const TRINN: TrinnContent[] = [
   rnnIntro,                  // Goodfellow kap. 10 + Nielsen kap. 6
   dte2505EventLoop,          // OSTEP kap. 33
   dte2507OspfDijkstra,       // Kurose kap. 5.3
+  // 10 eksamen-bok-hull (topp 2-3 per bok-gruppe)
+  dte2505Lfs,                // OSTEP kap. 43
+  dte2505Segmentation,       // OSTEP kap. 14
+  dte2507WifiCsmaCa,         // Kurose kap. 7.2
+  dte2507VoipRtp,            // Kurose kap. 9
+  dte2501Mcts,               // AIMA kap. 5.4
+  dte2501HmmParticle,        // AIMA kap. 14
+  gmmVisualizer,             // Géron kap. 8 + MML kap. 11
+  svdEigenExplorer,          // MML kap. 4
+  universalApproxViz,        // Nielsen kap. 4
+  autoencoderLatentSpace,    // Goodfellow kap. 14
 ];
 
 import { curriculumIndexOf } from "../curriculum";
