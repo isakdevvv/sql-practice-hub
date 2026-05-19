@@ -35,10 +35,13 @@ function TrinnPage() {
   }, [slug]);
   if (!trinn) return null;
   const Component = trinn.Component;
+  // Kurose-kurs-kapittel-sider har sin egen kompakte SectionPager + breadcrumb
+  // til DTE-2507 i header. Skip global StackPagerFooter for å holde alt på én skjerm.
+  const skipGlobalPager = slug === "kurose-kurs" || slug.startsWith("kurose-kap-");
   return (
     <Suspense fallback={<TrinnLoading />}>
       <Component />
-      <StackPagerFooter slug={slug} />
+      {!skipGlobalPager && <StackPagerFooter slug={slug} />}
     </Suspense>
   );
 }

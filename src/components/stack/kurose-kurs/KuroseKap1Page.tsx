@@ -31,9 +31,10 @@ export function KuroseKap1Page() {
   return (
     <div className="min-h-screen bg-background">
       <SiteHeader />
-      <main className="container mx-auto px-4 py-8 max-w-4xl">
-        <header className="mb-4">
-          <div className="flex items-center gap-2 text-xs text-muted-foreground mb-2">
+      <main className="container mx-auto px-4 py-4 max-w-6xl">
+        <header className="mb-3"><div className="flex items-center gap-2 text-xs text-muted-foreground mb-2">
+            <a href="/stack/dte-2507" className="inline-flex items-center gap-1 hover:text-foreground"><FolderOpen className="h-3 w-3" /> DTE-2507</a>
+            <span>·</span>
             <a
               href="/stack/kurose-kurs"
               className="inline-flex items-center gap-1 hover:text-foreground"
@@ -42,15 +43,9 @@ export function KuroseKap1Page() {
             </a>
             <span>·</span>
             <span>Kapittel 1 av 9</span>
-          </div>
-          <h1 className="text-2xl font-bold tracking-tight">
+          </div><h1 className="text-2xl font-bold tracking-tight">
             Kap. 1 — Internett og nettverks-grunnleggende
-          </h1>
-          <p className="mt-1 text-sm text-muted-foreground max-w-2xl">
-            Vi starter med det grunnleggende: hva er egentlig internett, hva skjer når en pakke
-            beveger seg, og hvorfor deler vi nettet i lag?
-          </p>
-        </header>
+          </h1></header>
 
         <div className="mb-4 flex flex-wrap gap-1.5 border-b border-border">
           <TabBtn active={tab === "intro"} onClick={() => setTab("intro")}>
@@ -115,7 +110,7 @@ function TabBtn({
 
 function Intro({ onPick }: { onPick: (t: Tab) => void }) {
   return (
-    <div className="space-y-4 text-sm">
+    <div className="grid gap-3 sm:grid-cols-2 text-sm">
       <div className="rounded-xl border border-border bg-card p-4">
         <h2 className="text-base font-semibold mb-2 flex items-center gap-2">
           <BookOpen className="h-4 w-4" /> Læringsmål

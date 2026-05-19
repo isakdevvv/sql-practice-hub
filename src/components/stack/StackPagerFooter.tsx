@@ -37,12 +37,12 @@ export function StackPagerFooter({ slug }: { slug: string }) {
   if (!prevTrinn && !nextTrinn && !hub) return null;
 
   return (
-    <footer className="border-t border-border bg-card/30 mt-12">
-      <div className="container mx-auto px-4 py-6 max-w-4xl">
+    <footer className="border-t border-border bg-card/30 mt-6">
+      <div className="container mx-auto px-4 py-3 max-w-4xl">
         {hub && (
           <a
             href={`/stack/${hub.hubSlug}`}
-            className="group mb-4 flex items-center gap-3 rounded-xl border border-brand/30 bg-brand/5 p-4 transition-all hover:border-brand hover:bg-brand/10"
+            className="group mb-3 flex items-center gap-3 rounded-lg border border-brand/30 bg-brand/5 p-2.5 transition-all hover:border-brand hover:bg-brand/10"
           >
             <FolderOpen className="h-4 w-4 shrink-0 text-brand" />
             <div className="min-w-0 flex-1">
@@ -61,7 +61,7 @@ export function StackPagerFooter({ slug }: { slug: string }) {
           {prevTrinn ? (
             <a
               href={`/stack/${prevTrinn.slug}`}
-              className="group flex items-center gap-3 rounded-xl border border-border bg-card p-4 transition-all hover:border-brand/60 hover:shadow-md"
+              className="group flex items-center gap-3 rounded-lg border border-border bg-card p-2.5 transition-all hover:border-brand/60"
             >
               <ArrowLeft className="h-4 w-4 shrink-0 text-muted-foreground group-hover:text-brand transition-colors" />
               <div className="min-w-0 flex-1">
@@ -78,7 +78,7 @@ export function StackPagerFooter({ slug }: { slug: string }) {
           {nextTrinn ? (
             <a
               href={`/stack/${nextTrinn.slug}`}
-              className="group flex items-center gap-3 rounded-xl border border-brand/40 bg-brand/5 p-4 transition-all hover:border-brand hover:bg-brand/10 hover:shadow-md sm:flex-row-reverse sm:text-right"
+              className="group flex items-center gap-3 rounded-lg border border-brand/40 bg-brand/5 p-2.5 transition-all hover:border-brand hover:bg-brand/10 sm:flex-row-reverse sm:text-right"
             >
               <ArrowRight className="h-4 w-4 shrink-0 text-brand transition-transform group-hover:translate-x-0.5" />
               <div className="min-w-0 flex-1">
@@ -87,7 +87,7 @@ export function StackPagerFooter({ slug }: { slug: string }) {
               </div>
             </a>
           ) : (
-            <div className="flex items-center gap-3 rounded-xl border border-success/40 bg-success/5 p-4 sm:flex-row-reverse sm:text-right">
+            <div className="flex items-center gap-3 rounded-lg border border-success/40 bg-success/5 p-2.5 sm:flex-row-reverse sm:text-right">
               <CheckCircle2 className="h-4 w-4 shrink-0 text-success" />
               <div className="min-w-0 flex-1">
                 <div className="text-[10px] uppercase tracking-wider text-success/80">Ferdig</div>
@@ -97,7 +97,7 @@ export function StackPagerFooter({ slug }: { slug: string }) {
           )}
         </div>
 
-        <div className="mt-4 flex flex-wrap items-center justify-between gap-3 text-xs text-muted-foreground">
+        <div className="mt-3 flex flex-wrap items-center justify-between gap-3 text-xs text-muted-foreground">
           <div className="flex flex-wrap gap-3">
             <a
               href={hub ? `/mine-fag#fag-${hub.subject.slug}` : "/mine-fag"}
