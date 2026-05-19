@@ -2,17 +2,8 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { SiteHeader } from "@/components/SiteHeader";
 import { Button } from "@/components/ui/button";
-import {
-  usePinnedSubjects,
-  useLastVisitedSubject,
-  toggleSubject,
-} from "@/lib/userSubjects";
-import {
-  SEKTORER,
-  EXAM_META,
-  SUBJECT_BY_SLUG,
-  type Subject,
-} from "@/lib/subjects/catalog";
+import { usePinnedSubjects, useLastVisitedSubject, toggleSubject } from "@/lib/userSubjects";
+import { SEKTORER, EXAM_META, SUBJECT_BY_SLUG, type Subject } from "@/lib/subjects/catalog";
 import {
   ArrowRight,
   Clock,
@@ -23,11 +14,7 @@ import {
   CalendarClock,
   Flame,
 } from "lucide-react";
-import {
-  examUrgency,
-  formatDaysUntil,
-  type ExamUrgency,
-} from "@/lib/subjects/examDate";
+import { examUrgency, formatDaysUntil, type ExamUrgency } from "@/lib/subjects/examDate";
 
 export const Route = createFileRoute("/mine-fag")({
   head: () => ({
@@ -147,19 +134,14 @@ function MineFagPage() {
   const pinnedSlugs = usePinnedSubjects();
   const lastVisited = useLastVisitedSubject();
 
-  const allSlugs = useMemo(
-    () => SEKTORER.flatMap((s) => s.subjects.map((sub) => sub.slug)),
-    [],
-  );
+  const allSlugs = useMemo(() => SEKTORER.flatMap((s) => s.subjects.map((sub) => sub.slug)), []);
   const visited = useVisitedCounts(allSlugs);
 
   // Pinned fag sortert etter nærmeste eksamen. Fag uten dato (hjemmeeks./mappe)
   // og fag med passert eksamen havner sist, men i samme rekkefølge som de ble
   // pinnet (stabil sort).
   const pinnedSubjects = useMemo(() => {
-    const subjects = pinnedSlugs
-      .map((slug) => SUBJECT_BY_SLUG[slug])
-      .filter(Boolean);
+    const subjects = pinnedSlugs.map((slug) => SUBJECT_BY_SLUG[slug]).filter(Boolean);
     return subjects.slice().sort((a, b) => {
       const ua = examUrgency(EXAM_META[a.slug]?.eksamen);
       const ub = examUrgency(EXAM_META[b.slug]?.eksamen);
@@ -184,7 +166,7 @@ function MineFagPage() {
   }, [pinnedSubjects]);
 
   const lastVisitedSubject = useMemo(
-    () => (lastVisited ? SUBJECT_BY_SLUG[lastVisited.slug] ?? null : null),
+    () => (lastVisited ? (SUBJECT_BY_SLUG[lastVisited.slug] ?? null) : null),
     [lastVisited],
   );
 
@@ -209,24 +191,19 @@ function MineFagPage() {
               </span>
             </h1>
             <p className="mt-3 text-muted-foreground max-w-2xl">
-              Pin fagene du tar i semesteret, så ligger de øverst. Hvert kort
-              lenker rett til kurs-hubben med modul-oversikt og eksamens-trinn.
-              Alt lagres lokalt i nettleseren.
+              Pin fagene du tar i semesteret, så ligger de øverst. Hvert kort lenker rett til
+              kurs-hubben med modul-oversikt og eksamens-trinn. Alt lagres lokalt i nettleseren.
             </p>
 
             <div className="mt-5 flex flex-wrap items-center gap-4 text-sm">
               <div className="flex items-center gap-1.5 text-muted-foreground">
                 <Pin className="h-3.5 w-3.5 text-brand" />
-                <span className="font-semibold text-foreground">
-                  {pinnedSubjects.length}
-                </span>{" "}
+                <span className="font-semibold text-foreground">{pinnedSubjects.length}</span>{" "}
                 pinnet
               </div>
               <div className="text-muted-foreground">
-                <span className="font-semibold text-foreground">
-                  {startedSubjects}
-                </span>{" "}
-                av {totalSubjects} fag startet
+                <span className="font-semibold text-foreground">{startedSubjects}</span> av{" "}
+                {totalSubjects} fag startet
               </div>
               <Link
                 to="/lar"
@@ -247,7 +224,9 @@ function MineFagPage() {
               params={{ slug: nextExam.subject.slug }}
               className={`group flex items-center gap-3 rounded-xl border-2 px-4 py-3.5 transition-colors hover:border-foreground/40 ${urgencyClasses(nextExam.u.urgency).pill}`}
             >
-              <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-background/60 ${urgencyClasses(nextExam.u.urgency).iconColor}`}>
+              <div
+                className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-background/60 ${urgencyClasses(nextExam.u.urgency).iconColor}`}
+              >
                 {nextExam.u.urgency === "urgent" ? (
                   <Flame className="h-4.5 w-4.5" />
                 ) : (
@@ -316,10 +295,7 @@ function MineFagPage() {
               </p>
             </div>
             {pinnedSubjects.length > 0 && (
-              <a
-                href="#alle-fag"
-                className="text-xs text-brand hover:underline"
-              >
+              <a href="#alle-fag" className="text-xs text-brand hover:underline">
                 Pin flere ↓
               </a>
             )}
@@ -329,9 +305,8 @@ function MineFagPage() {
             <div className="rounded-xl border-2 border-dashed border-border bg-card/40 p-8 text-center">
               <Pin className="mx-auto h-10 w-10 text-muted-foreground/60 mb-3" />
               <p className="text-sm text-muted-foreground mb-4 max-w-md mx-auto">
-                Ingen fag pinnet enda. Finn fagene du tar i listen under og
-                trykk pin-ikonet — så ligger de her store og lett tilgjengelige
-                neste gang.
+                Ingen fag pinnet enda. Finn fagene du tar i listen under og trykk pin-ikonet — så
+                ligger de her store og lett tilgjengelige neste gang.
               </p>
               <Button asChild size="sm">
                 <a href="#alle-fag">
@@ -342,26 +317,18 @@ function MineFagPage() {
           ) : (
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
               {pinnedSubjects.map((s) => (
-                <PinnedSubjectCard
-                  key={s.slug}
-                  subject={s}
-                  visitedCount={visited[s.slug] ?? 0}
-                />
+                <PinnedSubjectCard key={s.slug} subject={s} visitedCount={visited[s.slug] ?? 0} />
               ))}
             </div>
           )}
         </section>
 
         {/* Alle fag i sektorer */}
-        <section
-          id="alle-fag"
-          className="container mx-auto px-4 py-14 max-w-6xl scroll-mt-16"
-        >
+        <section id="alle-fag" className="container mx-auto px-4 py-14 max-w-6xl scroll-mt-16">
           <div className="mb-8">
             <h2 className="text-2xl font-bold tracking-tight">Alle fag</h2>
             <p className="text-sm text-muted-foreground mt-1">
-              Trykk pin-ikonet på fag du tar i semesteret — de ligger
-              øverst neste gang.
+              Trykk pin-ikonet på fag du tar i semesteret — de ligger øverst neste gang.
             </p>
           </div>
 
@@ -369,12 +336,8 @@ function MineFagPage() {
             {SEKTORER.map((sektor) => (
               <div key={sektor.navn}>
                 <div className="mb-4">
-                  <h3 className="text-lg font-semibold text-foreground">
-                    {sektor.navn}
-                  </h3>
-                  <p className="text-sm text-muted-foreground">
-                    {sektor.beskrivelse}
-                  </p>
+                  <h3 className="text-lg font-semibold text-foreground">{sektor.navn}</h3>
+                  <p className="text-sm text-muted-foreground">{sektor.beskrivelse}</p>
                 </div>
                 <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
                   {sektor.subjects.map((s) => {
@@ -406,26 +369,19 @@ function MineFagPage() {
 
 /** Stort kort for pinnede fag — øverst på siden. Viser eksamen + STP hvis
  *  faget har EXAM_META, og fremgang-tall. */
-function PinnedSubjectCard({
-  subject,
-  visitedCount,
-}: {
-  subject: Subject;
-  visitedCount: number;
-}) {
+function PinnedSubjectCard({ subject, visitedCount }: { subject: Subject; visitedCount: number }) {
   const Icon = subject.Icon;
   const meta = EXAM_META[subject.slug];
   const started = visitedCount > 0;
   const u = examUrgency(meta?.eksamen);
   const urgencyStyle = urgencyClasses(u.urgency);
   return (
-    <div className="group relative rounded-xl border-2 border-brand/40 bg-gradient-to-br from-brand/5 via-card to-success/5 hover:border-brand p-5 transition-colors shadow-sm hover:shadow-md hover:shadow-brand/10">
+    <div
+      id={`fag-${subject.slug}`}
+      className="group relative rounded-xl border-2 border-brand/40 bg-gradient-to-br from-brand/5 via-card to-success/5 hover:border-brand p-5 transition-colors shadow-sm hover:shadow-md hover:shadow-brand/10 scroll-mt-24 target:border-brand target:ring-2 target:ring-brand/40"
+    >
       <PinToggleButton slug={subject.slug} pinned={true} />
-      <Link
-        to="/stack/$slug"
-        params={{ slug: subject.slug }}
-        className="block"
-      >
+      <Link to="/stack/$slug" params={{ slug: subject.slug }} className="block">
         <div className="flex items-center gap-2 mb-3 pr-8">
           <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-brand/15">
             <Icon className="h-4.5 w-4.5 text-brand" />
@@ -435,11 +391,7 @@ function PinnedSubjectCard({
               <span className="text-[10px] font-bold text-brand uppercase tracking-wider">
                 {subject.code}
               </span>
-              {meta && (
-                <span className="text-[10px] text-muted-foreground">
-                  {meta.stp} stp
-                </span>
-              )}
+              {meta && <span className="text-[10px] text-muted-foreground">{meta.stp} stp</span>}
             </div>
           </div>
           {/* Countdown-pille i hjørnet — bare hvis vi har en faktisk dato */}
@@ -457,9 +409,7 @@ function PinnedSubjectCard({
             </span>
           )}
         </div>
-        <h4 className="font-semibold text-foreground leading-tight mb-1.5">
-          {subject.navn}
-        </h4>
+        <h4 className="font-semibold text-foreground leading-tight mb-1.5">{subject.navn}</h4>
         <p className="text-xs text-muted-foreground leading-relaxed mb-3 line-clamp-3">
           {subject.blurb}
         </p>
@@ -479,9 +429,7 @@ function PinnedSubjectCard({
                 started ? "bg-success" : "bg-muted-foreground/40"
               }`}
             />
-            <span>
-              {started ? `${visitedCount} seksjoner sett` : "Ikke startet"}
-            </span>
+            <span>{started ? `${visitedCount} seksjoner sett` : "Ikke startet"}</span>
           </div>
         )}
       </Link>
@@ -504,7 +452,10 @@ function SubjectCard({
   const Icon = subject.Icon;
   const started = visitedCount > 0;
   return (
-    <div className="group relative rounded-xl border border-border bg-card hover:border-brand/40 p-5 transition-colors overflow-hidden">
+    <div
+      id={`fag-${subject.slug}`}
+      className="group relative rounded-xl border border-border bg-card hover:border-brand/40 p-5 transition-colors overflow-hidden scroll-mt-24 target:border-brand target:ring-2 target:ring-brand/40"
+    >
       <div
         className={`absolute inset-0 -z-10 opacity-0 group-hover:opacity-100 transition-opacity bg-gradient-to-br ${accent}`}
       />
@@ -524,9 +475,7 @@ function SubjectCard({
             />
           )}
         </div>
-        <h4 className="font-semibold text-foreground leading-tight mb-2">
-          {subject.navn}
-        </h4>
+        <h4 className="font-semibold text-foreground leading-tight mb-2">{subject.navn}</h4>
         <p className="text-sm text-muted-foreground leading-relaxed line-clamp-3">
           {subject.blurb}
         </p>
@@ -544,13 +493,7 @@ function SubjectCard({
   );
 }
 
-function PinToggleButton({
-  slug,
-  pinned,
-}: {
-  slug: string;
-  pinned: boolean;
-}) {
+function PinToggleButton({ slug, pinned }: { slug: string; pinned: boolean }) {
   return (
     <button
       type="button"
