@@ -14,14 +14,26 @@ export function RnnIntroPage() {
         <header className="mb-6">
           <h1 className="text-2xl font-bold tracking-tight">RNN-intro — hidden state over tid</h1>
           <p className="mt-1 text-sm text-muted-foreground max-w-2xl">
-            Hvorfor og hvordan nevrale nett kan «huske». Goodfellow kap. 10
-            + intuisjonen fra Nielsen kap. 6. Bygger på nn-intro og backprop-dyp.
+            Hvorfor og hvordan nevrale nett kan «huske». Goodfellow kap. 10 + intuisjonen fra
+            Nielsen kap. 6. Bygger på nn-intro og backprop-dyp.
           </p>
         </header>
 
         <div className="mb-4 flex flex-wrap gap-1.5 border-b border-border">
-          <TabBtn active={tab === "intro"} onClick={() => setTab("intro")} icon={<BookOpen className="h-3.5 w-3.5" />}>0. Start her</TabBtn>
-          <TabBtn active={tab === "live"} onClick={() => setTab("live")} icon={<GitBranch className="h-3.5 w-3.5" />}>1. Hidden state live</TabBtn>
+          <TabBtn
+            active={tab === "intro"}
+            onClick={() => setTab("intro")}
+            icon={<BookOpen className="h-3.5 w-3.5" />}
+          >
+            0. Start her
+          </TabBtn>
+          <TabBtn
+            active={tab === "live"}
+            onClick={() => setTab("live")}
+            icon={<GitBranch className="h-3.5 w-3.5" />}
+          >
+            1. Hidden state live
+          </TabBtn>
         </div>
 
         {tab === "intro" && <Intro onPick={setTab} />}
@@ -33,12 +45,29 @@ export function RnnIntroPage() {
   );
 }
 
-function TabBtn({ children, active, onClick, icon }: any) {
+function TabBtn({
+  children,
+  active,
+  onClick,
+  icon,
+}: {
+  children: React.ReactNode;
+  active: boolean;
+  onClick: () => void;
+  icon?: React.ReactNode;
+}) {
   return (
-    <button onClick={onClick}
+    <button
+      onClick={onClick}
       className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium border-b-2 -mb-px transition-colors ${
-        active ? "border-brand text-foreground" : "border-transparent text-muted-foreground hover:text-foreground"
-      }`}>{icon}{children}</button>
+        active
+          ? "border-brand text-foreground"
+          : "border-transparent text-muted-foreground hover:text-foreground"
+      }`}
+    >
+      {icon}
+      {children}
+    </button>
   );
 }
 
@@ -49,14 +78,13 @@ function Intro({ onPick }: { onPick: (t: Tab) => void }) {
         <h2 className="text-base font-semibold mb-2">Bygger på</h2>
         <ul className="list-disc pl-5 text-muted-foreground space-y-1">
           <li>
-            <strong className="text-foreground">Nevrale nett basics</strong>{" "}
-            (<code>nn-intro</code>): et nevron er <code>output = σ(w·input + b)</code>,
-            σ = aktiverings-funksjon, w = vekter, b = bias.
+            <strong className="text-foreground">Nevrale nett basics</strong> (<code>nn-intro</code>
+            ): et nevron er <code>output = σ(w·input + b)</code>, σ = aktiverings-funksjon, w =
+            vekter, b = bias.
           </li>
           <li>
-            <strong className="text-foreground">Feed-forward</strong>: data flyter
-            forover gjennom lag, ingen tilbakekoblinger. Bra for «klassifiser
-            ett bilde» — men har ingen hukommelse.
+            <strong className="text-foreground">Feed-forward</strong>: data flyter forover gjennom
+            lag, ingen tilbakekoblinger. Bra for «klassifiser ett bilde» — men har ingen hukommelse.
           </li>
         </ul>
       </div>
@@ -64,16 +92,14 @@ function Intro({ onPick }: { onPick: (t: Tab) => void }) {
       <div className="rounded-xl border border-border bg-card p-4">
         <h2 className="text-base font-semibold mb-2">Hvorfor trenger vi hukommelse?</h2>
         <p className="text-muted-foreground">
-          Tenk på setningen «Hunden bjeffer på _____». For å gjette neste ord
-          må vi <em>huske</em> alle tidligere ordene. Et feed-forward nett som
-          bare ser ett ord om gangen vet ingenting. Vi trenger en bro mellom
-          tidsstegene.
+          Tenk på setningen «Hunden bjeffer på _____». For å gjette neste ord må vi <em>huske</em>{" "}
+          alle tidligere ordene. Et feed-forward nett som bare ser ett ord om gangen vet ingenting.
+          Vi trenger en bro mellom tidsstegene.
         </p>
         <p className="text-muted-foreground mt-2">
-          Løsningen: la nettet ha en <em>hidden state</em> — et lite
-          minne-vektor som overføres fra ett tidssteg til neste. Det er
-          kjernen i en <strong className="text-foreground">RNN</strong>{" "}
-          (Recurrent Neural Network).
+          Løsningen: la nettet ha en <em>hidden state</em> — et lite minne-vektor som overføres fra
+          ett tidssteg til neste. Det er kjernen i en{" "}
+          <strong className="text-foreground">RNN</strong> (Recurrent Neural Network).
         </p>
       </div>
 
@@ -81,47 +107,51 @@ function Intro({ onPick }: { onPick: (t: Tab) => void }) {
         <h2 className="text-base font-semibold mb-2">Ordbok</h2>
         <dl className="space-y-2.5 text-[13px]">
           <Def term="Tidssteg t">
-            Ett trinn i en sekvens. For tekst er hvert ord (eller bokstav) ett
-            tidssteg. For lyd er hvert sample. Vi indekserer t = 1, 2, 3, ...
+            Ett trinn i en sekvens. For tekst er hvert ord (eller bokstav) ett tidssteg. For lyd er
+            hvert sample. Vi indekserer t = 1, 2, 3, ...
           </Def>
           <Def term="Input x_t">
-            Det vi mater inn ved tidssteg t. F.eks. det t-te ordet i setningen,
-            kodet som en vektor (one-hot eller embedding).
+            Det vi mater inn ved tidssteg t. F.eks. det t-te ordet i setningen, kodet som en vektor
+            (one-hot eller embedding).
           </Def>
           <Def term="Hidden state h_t">
-            Nettets «minne» ved tidssteg t. En vektor med faste lengder. Den
-            oppdateres ved hvert tidssteg basert på h_{`{t−1}`} og x_t.
+            Nettets «minne» ved tidssteg t. En vektor med faste lengder. Den oppdateres ved hvert
+            tidssteg basert på h_{`{t−1}`} og x_t.
           </Def>
           <Def term="RNN-oppdaterings-regel">
-            <code>h_t = tanh(W_xh·x_t + W_hh·h_{`{t−1}`} + b_h)</code>.{" "}
-            Lest: «den nye hukommelsen er en blanding av (forrige hukommelse) og
-            (ny input), kjørt gjennom en aktivering».
+            <code>h_t = tanh(W_xh·x_t + W_hh·h_{`{t−1}`} + b_h)</code>. Lest: «den nye hukommelsen
+            er en blanding av (forrige hukommelse) og (ny input), kjørt gjennom en aktivering».
           </Def>
           <Def term="W_xh, W_hh, b_h">
             <ul className="list-disc pl-5 mt-1">
-              <li><code>W_xh</code>: vekt-matrise fra input til hidden.</li>
-              <li><code>W_hh</code>: vekt-matrise fra forrige hidden til ny hidden («loopen»).</li>
-              <li><code>b_h</code>: bias-vektor.</li>
+              <li>
+                <code>W_xh</code>: vekt-matrise fra input til hidden.
+              </li>
+              <li>
+                <code>W_hh</code>: vekt-matrise fra forrige hidden til ny hidden («loopen»).
+              </li>
+              <li>
+                <code>b_h</code>: bias-vektor.
+              </li>
             </ul>
-            Disse er like for alle tidssteg — det er det som gjør RNN
-            «recurrent».
+            Disse er like for alle tidssteg — det er det som gjør RNN «recurrent».
           </Def>
           <Def term="Output y_t">
-            Hva vi spår ved tidssteg t. F.eks. neste ord, eller en klassifisering
-            av hele sekvensen.{" "}
+            Hva vi spår ved tidssteg t. F.eks. neste ord, eller en klassifisering av hele sekvensen.{" "}
             <code>y_t = W_hy·h_t + b_y</code>.
           </Def>
           <Def term="Vanishing gradient">
-            Når vi trener RNN over LANGE sekvenser, kan gradientene bli
-            astronomisk små bakover i tid — modellen klarer ikke å lære lange
-            sammenhenger. Det er DET LSTM/GRU prøver å løse (komplett i en
-            senere modul).
+            Når vi trener RNN over LANGE sekvenser, kan gradientene bli astronomisk små bakover i
+            tid — modellen klarer ikke å lære lange sammenhenger. Det er DET LSTM/GRU prøver å løse
+            (komplett i en senere modul).
           </Def>
         </dl>
       </div>
 
       <div className="flex gap-2">
-        <Button size="sm" onClick={() => onPick("live")}>Start på modul 1 →</Button>
+        <Button size="sm" onClick={() => onPick("live")}>
+          Start på modul 1 →
+        </Button>
       </div>
     </div>
   );
@@ -179,48 +209,60 @@ function LiveModule() {
   const [sekvens, setSekvens] = useState("abacab");
   const [t, setT] = useState(0);
 
-  const chars = sekvens.toLowerCase().slice(0, 12).split("");
+  const chars = useMemo(() => sekvens.toLowerCase().slice(0, 12).split(""), [sekvens]);
   const states = useMemo(() => {
     const list: number[][] = [new Array(H_SIZE).fill(0)];
     for (const c of chars) list.push(rnnStep(list[list.length - 1], c));
     return list;
-  }, [sekvens, chars]);
+  }, [chars]);
 
   const cur = states[Math.min(t, states.length - 1)];
 
   return (
     <div className="space-y-4">
       <div className="rounded-lg border border-border bg-muted/30 p-3 text-xs text-muted-foreground">
-        <strong className="text-foreground">Forsøk:</strong> vi har en liten
-        RNN som mater inn bokstaver én etter én. Hidden state er en 6-element
-        vektor som oppdateres ved hvert tidssteg. Vi har valgt vektene
-        manuelt så hver celle har en synlig rolle — i en ekte RNN ville
-        vektene blitt LÆRT, og hver celle hadde fått en mer abstrakt rolle.
+        <strong className="text-foreground">Forsøk:</strong> vi har en liten RNN som mater inn
+        bokstaver én etter én. Hidden state er en 6-element vektor som oppdateres ved hvert
+        tidssteg. Vi har valgt vektene manuelt så hver celle har en synlig rolle — i en ekte RNN
+        ville vektene blitt LÆRT, og hver celle hadde fått en mer abstrakt rolle.
       </div>
 
       <div className="rounded-xl border border-border bg-card p-4">
         <input
           value={sekvens}
-          onChange={(e) => { setSekvens(e.target.value); setT(0); }}
+          onChange={(e) => {
+            setSekvens(e.target.value);
+            setT(0);
+          }}
           maxLength={12}
           className="w-full rounded border border-border bg-background p-2 font-mono text-sm"
           placeholder="abacab"
         />
 
         <div className="mt-3 flex items-center gap-2">
-          <Button size="sm" variant="outline" disabled={t === 0} onClick={() => setT(t - 1)}>← Forrige t</Button>
-          <Button size="sm" disabled={t >= states.length - 1} onClick={() => setT(t + 1)}>Neste t →</Button>
+          <Button size="sm" variant="outline" disabled={t === 0} onClick={() => setT(t - 1)}>
+            ← Forrige t
+          </Button>
+          <Button size="sm" disabled={t >= states.length - 1} onClick={() => setT(t + 1)}>
+            Neste t →
+          </Button>
           <span className="text-xs text-muted-foreground ml-2">t = {t}</span>
         </div>
 
         <div className="mt-4">
-          <div className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1">Sekvens</div>
+          <div className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1">
+            Sekvens
+          </div>
           <div className="flex gap-1">
             {chars.map((c, i) => (
               <div
                 key={i}
                 className={`w-8 h-8 rounded flex items-center justify-center font-mono font-semibold border ${
-                  i === t - 1 ? "border-brand bg-brand/10 text-brand" : i < t ? "border-border bg-card" : "border-dashed border-border text-muted-foreground"
+                  i === t - 1
+                    ? "border-brand bg-brand/10 text-brand"
+                    : i < t
+                      ? "border-border bg-card"
+                      : "border-dashed border-border text-muted-foreground"
                 }`}
               >
                 {c}
@@ -235,7 +277,14 @@ function LiveModule() {
           </div>
           <div className="space-y-1.5">
             {cur.map((v, i) => {
-              const labels = ["teller-a", "teller-b", "teller-c", "sist-var-a", "a−b diff", "lengde"];
+              const labels = [
+                "teller-a",
+                "teller-b",
+                "teller-c",
+                "sist-var-a",
+                "a−b diff",
+                "lengde",
+              ];
               const pct = Math.abs(v) * 100;
               return (
                 <div key={i} className="flex items-center gap-2 text-xs">
@@ -265,7 +314,10 @@ function LiveModule() {
           <li>«sist-var-a» er høy rett etter «a» og avtar når andre bokstaver kommer.</li>
           <li>«lengde» øker monotont — det er en intern tids-teller.</li>
           <li>
-            Alt skjer ved å bare bruke <code>h_t = f(h_<sub>{`{t−1}`}</sub>, x_t)</code>{" "}
+            Alt skjer ved å bare bruke{" "}
+            <code>
+              h_t = f(h_<sub>{`{t−1}`}</sub>, x_t)
+            </code>{" "}
             — samme funksjon hvert tidssteg, det er «recurrence».
           </li>
         </ul>
@@ -280,22 +332,21 @@ function Lessons() {
       <h2 className="text-lg font-semibold">Oppsummering</h2>
       <ul className="list-disc pl-5 space-y-1.5 text-muted-foreground">
         <li>
-          En RNN er bare «samme nevron-funksjon, kjørt på nytt for hver
-          tidssteg, med forrige output som ekstra input». Det er hele trikset.
+          En RNN er bare «samme nevron-funksjon, kjørt på nytt for hver tidssteg, med forrige output
+          som ekstra input». Det er hele trikset.
         </li>
         <li>
-          Trening: vi «brett ut» (unfold) RNN-en til en lang feed-forward kjede
-          og bruker vanlig backprop — kalt <em>Backpropagation Through Time
-          (BPTT)</em>.
+          Trening: vi «brett ut» (unfold) RNN-en til en lang feed-forward kjede og bruker vanlig
+          backprop — kalt <em>Backpropagation Through Time (BPTT)</em>.
         </li>
         <li>
-          Begrensning: gradientene «forsvinner» bakover i tid. Derfor kom
-          LSTM (Hochreiter & Schmidhuber, 1997) og GRU (Cho, 2014) med gates
-          som lar gradienter strømme fritt over lange sekvenser. Senere modul.
+          Begrensning: gradientene «forsvinner» bakover i tid. Derfor kom LSTM (Hochreiter &
+          Schmidhuber, 1997) og GRU (Cho, 2014) med gates som lar gradienter strømme fritt over
+          lange sekvenser. Senere modul.
         </li>
         <li>
-          Moderne tekstmodeller (Transformer) erstatter recurrence med
-          attention — men forståelsen av hidden state er fortsatt fundamentet.
+          Moderne tekstmodeller (Transformer) erstatter recurrence med attention — men forståelsen
+          av hidden state er fortsatt fundamentet.
         </li>
       </ul>
     </section>

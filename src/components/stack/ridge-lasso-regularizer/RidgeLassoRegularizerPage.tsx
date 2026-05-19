@@ -12,17 +12,30 @@ export function RidgeLassoRegularizerPage() {
       <SiteHeader />
       <main className="container mx-auto px-4 py-8 max-w-4xl">
         <header className="mb-6">
-          <h1 className="text-2xl font-bold tracking-tight">Ridge & Lasso — regulariserings-laboratoriet</h1>
+          <h1 className="text-2xl font-bold tracking-tight">
+            Ridge & Lasso — regulariserings-laboratoriet
+          </h1>
           <p className="mt-1 text-sm text-muted-foreground max-w-2xl">
-            Hva skjer med koeffisientene når vi straffer dem? Dra λ-slideren og
-            se Ridge (krymper alt) og Lasso (skyver noen til null) i sanntid.
-            Géron kap. 4, ISLR kap. 6, MML kap. 7.
+            Hva skjer med koeffisientene når vi straffer dem? Dra λ-slideren og se Ridge (krymper
+            alt) og Lasso (skyver noen til null) i sanntid. Géron kap. 4, ISLR kap. 6, MML kap. 7.
           </p>
         </header>
 
         <div className="mb-4 flex flex-wrap gap-1.5 border-b border-border">
-          <TabBtn active={tab === "intro"} onClick={() => setTab("intro")} icon={<BookOpen className="h-3.5 w-3.5" />}>0. Start her</TabBtn>
-          <TabBtn active={tab === "live"} onClick={() => setTab("live")} icon={<LineIcon className="h-3.5 w-3.5" />}>1. λ-slider</TabBtn>
+          <TabBtn
+            active={tab === "intro"}
+            onClick={() => setTab("intro")}
+            icon={<BookOpen className="h-3.5 w-3.5" />}
+          >
+            0. Start her
+          </TabBtn>
+          <TabBtn
+            active={tab === "live"}
+            onClick={() => setTab("live")}
+            icon={<LineIcon className="h-3.5 w-3.5" />}
+          >
+            1. λ-slider
+          </TabBtn>
         </div>
 
         {tab === "intro" && <Intro onPick={setTab} />}
@@ -34,12 +47,29 @@ export function RidgeLassoRegularizerPage() {
   );
 }
 
-function TabBtn({ children, active, onClick, icon }: any) {
+function TabBtn({
+  children,
+  active,
+  onClick,
+  icon,
+}: {
+  children: React.ReactNode;
+  active: boolean;
+  onClick: () => void;
+  icon?: React.ReactNode;
+}) {
   return (
-    <button onClick={onClick}
+    <button
+      onClick={onClick}
       className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium border-b-2 -mb-px transition-colors ${
-        active ? "border-brand text-foreground" : "border-transparent text-muted-foreground hover:text-foreground"
-      }`}>{icon}{children}</button>
+        active
+          ? "border-brand text-foreground"
+          : "border-transparent text-muted-foreground hover:text-foreground"
+      }`}
+    >
+      {icon}
+      {children}
+    </button>
   );
 }
 
@@ -50,16 +80,15 @@ function Intro({ onPick }: { onPick: (t: Tab) => void }) {
         <h2 className="text-base font-semibold mb-2">Bygger på</h2>
         <ul className="list-disc pl-5 text-muted-foreground space-y-1">
           <li>
-            <strong className="text-foreground">Lineær regresjon</strong>: vi
-            tilpasser <code>y = w₀ + w₁x₁ + w₂x₂ + ... + wₚxₚ</code> til data
-            ved å finne w-er som minimerer summen av kvadrerte residualer
-            (MSE = Mean Squared Error).
+            <strong className="text-foreground">Lineær regresjon</strong>: vi tilpasser{" "}
+            <code>y = w₀ + w₁x₁ + w₂x₂ + ... + wₚxₚ</code> til data ved å finne w-er som minimerer
+            summen av kvadrerte residualer (MSE = Mean Squared Error).
           </li>
           <li>
-            <strong className="text-foreground">Overfitting</strong>: når vi har
-            mange features (p stor) eller få data-punkter (n liten), kan modellen
-            lære <em>støy</em> i treningsdataene. Trening-MSE blir lav, men
-            test-MSE blir høy. Regularisering er motgiften.
+            <strong className="text-foreground">Overfitting</strong>: når vi har mange features (p
+            stor) eller få data-punkter (n liten), kan modellen lære <em>støy</em> i
+            treningsdataene. Trening-MSE blir lav, men test-MSE blir høy. Regularisering er
+            motgiften.
           </li>
         </ul>
       </div>
@@ -68,40 +97,35 @@ function Intro({ onPick }: { onPick: (t: Tab) => void }) {
         <h2 className="text-base font-semibold mb-2">Nye ord</h2>
         <dl className="space-y-2.5 text-[13px]">
           <Def term="Koeffisient (w_i)">
-            Vekten foran én feature. Forteller «hvor mye y endres for hver enhet
-            x_i endres». Store koeffisienter = «modellen reagerer kraftig på
-            denne featuren» — fare for overfitting.
+            Vekten foran én feature. Forteller «hvor mye y endres for hver enhet x_i endres». Store
+            koeffisienter = «modellen reagerer kraftig på denne featuren» — fare for overfitting.
           </Def>
           <Def term="Regulariseringsparameter λ (lambda)">
-            Hvor hardt vi straffer store koeffisienter. λ = 0 betyr «ingen
-            regulering» (vanlig OLS-regresjon). Stor λ tvinger koeffisientene
-            mot null.
+            Hvor hardt vi straffer store koeffisienter. λ = 0 betyr «ingen regulering» (vanlig
+            OLS-regresjon). Stor λ tvinger koeffisientene mot null.
           </Def>
           <Def term="Ridge-regresjon (L2)">
-            Vi minimerer <code>MSE + λ·Σ wᵢ²</code>. «Σ wᵢ²» er summen av
-            kvadrerte koeffisienter. Resultat: alle koeffisienter krymper jevnt
-            mot 0, men ingen blir nøyaktig 0.
+            Vi minimerer <code>MSE + λ·Σ wᵢ²</code>. «Σ wᵢ²» er summen av kvadrerte koeffisienter.
+            Resultat: alle koeffisienter krymper jevnt mot 0, men ingen blir nøyaktig 0.
           </Def>
           <Def term="Lasso-regresjon (L1)">
-            Vi minimerer <code>MSE + λ·Σ |wᵢ|</code>. «Σ |wᵢ|» er summen av
-            absoluttverdiene. Resultat: noen koeffisienter skyves helt til 0 —
-            features blir <em>droppet</em>. Lasso gjør automatisk feature-
-            seleksjon.
+            Vi minimerer <code>MSE + λ·Σ |wᵢ|</code>. «Σ |wᵢ|» er summen av absoluttverdiene.
+            Resultat: noen koeffisienter skyves helt til 0 — features blir <em>droppet</em>. Lasso
+            gjør automatisk feature- seleksjon.
           </Def>
           <Def term="L1 vs L2 — hvorfor forskjellig?">
-            Begge er straffer på «størrelse», men L1 har en hjørne i sin
-            kost-kontur ved null. Optimum havner ofte i hjørnet → koeffisient
-            blir nøyaktig null. L2 er glatt → koeffisientene nærmer seg null
-            asymptotisk men er aldri nøyaktig null.
+            Begge er straffer på «størrelse», men L1 har en hjørne i sin kost-kontur ved null.
+            Optimum havner ofte i hjørnet → koeffisient blir nøyaktig null. L2 er glatt →
+            koeffisientene nærmer seg null asymptotisk men er aldri nøyaktig null.
           </Def>
           <Def term="Bias-variance tradeoff">
-            Lav λ = liten bias (modellen kan fange detaljer) men høy varians
-            (modellen reagerer på støy). Høy λ = høy bias (for enkel) men lav
-            varians. Optimum-λ ligger midt mellom og finnes via kryssvalidering.
+            Lav λ = liten bias (modellen kan fange detaljer) men høy varians (modellen reagerer på
+            støy). Høy λ = høy bias (for enkel) men lav varians. Optimum-λ ligger midt mellom og
+            finnes via kryssvalidering.
           </Def>
           <Def term="ElasticNet">
-            Kombo: <code>MSE + λ₁·Σ |wᵢ| + λ₂·Σ wᵢ²</code>. Får både Lassos
-            feature-seleksjon og Ridges stabilitet ved korrelerte features.
+            Kombo: <code>MSE + λ₁·Σ |wᵢ| + λ₂·Σ wᵢ²</code>. Får både Lassos feature-seleksjon og
+            Ridges stabilitet ved korrelerte features.
           </Def>
         </dl>
       </div>
@@ -109,12 +133,15 @@ function Intro({ onPick }: { onPick: (t: Tab) => void }) {
       <div className="rounded-xl border border-border bg-card p-4">
         <h2 className="text-base font-semibold mb-2">Slik er modulen bygd</h2>
         <p className="text-muted-foreground">
-          Vi har generert syntetiske data med 8 features. Bare features nr. 0, 2
-          og 5 er <em>egentlig</em> relevante; resten er ren støy. En perfekt
-          modell ville hatt null vekt på de fem støy-featurene. Dra λ-slideren
-          og se hvordan Ridge vs Lasso oppdager dette.
+          Vi har generert syntetiske data med 8 features. Bare features nr. 0, 2 og 5 er{" "}
+          <em>egentlig</em> relevante; resten er ren støy. En perfekt modell ville hatt null vekt på
+          de fem støy-featurene. Dra λ-slideren og se hvordan Ridge vs Lasso oppdager dette.
         </p>
-        <div className="mt-3"><Button size="sm" onClick={() => onPick("live")}>Start på modul 1 →</Button></div>
+        <div className="mt-3">
+          <Button size="sm" onClick={() => onPick("live")}>
+            Start på modul 1 →
+          </Button>
+        </div>
       </div>
     </div>
   );
@@ -133,8 +160,8 @@ function Def({ term, children }: { term: string; children: React.ReactNode }) {
 // MODUL 1 — λ-slider med Ridge og Lasso side-ved-side
 // ============================================================
 
-const P = 8;       // features
-const N = 40;      // samples
+const P = 8; // features
+const N = 40; // samples
 const TRUE_W = [3.5, 0, 2.2, 0, 0, -1.8, 0, 0]; // bare feature 0, 2, 5 er ekte
 
 // Generér syntetiske data deterministisk (seedet) så hver render gir samme tall.
@@ -247,15 +274,25 @@ function LiveModule() {
   return (
     <div className="space-y-4">
       <div className="rounded-lg border border-border bg-muted/30 p-3 text-xs text-muted-foreground">
-        <strong className="text-foreground">Eksperimentet:</strong> 40 data-punkter,
-        8 features. Den «sanne» modellen brukte bare feature 0, 2 og 5 (med
-        vekt 3.5, 2.2, −1.8). Resten av features-vektene er <em>egentlig</em> 0.
-        Vi har lagt på litt støy. Kan modellene finne ut av det?
+        <strong className="text-foreground">Eksperimentet:</strong> 40 data-punkter, 8 features. Den
+        «sanne» modellen brukte bare feature 0, 2 og 5 (med vekt 3.5, 2.2, −1.8). Resten av
+        features-vektene er <em>egentlig</em> 0. Vi har lagt på litt støy. Kan modellene finne ut av
+        det?
       </div>
 
       <div className="rounded-xl border border-border bg-card p-4">
-        <label className="text-xs text-muted-foreground">λ = <span className="font-mono font-semibold">{lambda.toFixed(2)}</span></label>
-        <input type="range" min={0} max={20} step={0.1} value={lambda} onChange={(e) => setLambda(Number(e.target.value))} className="w-full max-w-md" />
+        <label className="text-xs text-muted-foreground">
+          λ = <span className="font-mono font-semibold">{lambda.toFixed(2)}</span>
+        </label>
+        <input
+          type="range"
+          min={0}
+          max={20}
+          step={0.1}
+          value={lambda}
+          onChange={(e) => setLambda(Number(e.target.value))}
+          className="w-full max-w-md"
+        />
 
         <div className="mt-4 grid grid-cols-3 gap-2 text-xs">
           <div className="font-medium text-muted-foreground pl-2">Feature</div>
@@ -266,9 +303,13 @@ function LiveModule() {
             const trueVal = TRUE_W[i];
             return (
               <div key={i} className="contents">
-                <div className={`pl-2 font-mono ${isTrue ? "text-foreground font-semibold" : "text-muted-foreground"}`}>
+                <div
+                  className={`pl-2 font-mono ${isTrue ? "text-foreground font-semibold" : "text-muted-foreground"}`}
+                >
                   w<sub>{i}</sub>{" "}
-                  <span className="text-[10px] text-muted-foreground">(ekte: {trueVal === 0 ? "0" : trueVal.toFixed(1)})</span>
+                  <span className="text-[10px] text-muted-foreground">
+                    (ekte: {trueVal === 0 ? "0" : trueVal.toFixed(1)})
+                  </span>
                 </div>
                 <CoefBar value={wRidge[i]} max={4} />
                 <CoefBar value={wLasso[i]} max={4} zero={wLasso[i] === 0} />
@@ -281,7 +322,11 @@ function LiveModule() {
       <div className="grid gap-3 sm:grid-cols-3">
         <Stat label="MSE — OLS (λ=0)" value={mseOls.toFixed(3)} note="Vanlig regresjon" />
         <Stat label="MSE — Ridge" value={mseRidge.toFixed(3)} note="L2-straff: alle krymper" />
-        <Stat label="MSE — Lasso" value={mseLasso.toFixed(3)} note={`L1-straff: ${wLasso.filter((v) => v === 0).length}/8 = 0`} />
+        <Stat
+          label="MSE — Lasso"
+          value={mseLasso.toFixed(3)}
+          note={`L1-straff: ${wLasso.filter((v) => v === 0).length}/8 = 0`}
+        />
       </div>
 
       <div className="rounded-lg border border-border bg-card p-3 text-xs text-muted-foreground">
@@ -290,7 +335,10 @@ function LiveModule() {
           <li>Med λ = 0 vil OLS-vektene være «riktig nok» men også gi vekt til støy-features.</li>
           <li>Skru opp λ. Ridge: alle vektene krymper jevnt, men ingen blir 0.</li>
           <li>Lasso: noen vekter (særlig støy-features 1, 3, 4, 6, 7) skyves til 0.</li>
-          <li>For stor λ → også de ekte feature-vektene krymper for mye → MSE øker. Det er sweet-spot mellom 0.5 og 5.</li>
+          <li>
+            For stor λ → også de ekte feature-vektene krymper for mye → MSE øker. Det er sweet-spot
+            mellom 0.5 og 5.
+          </li>
         </ul>
       </div>
     </div>
@@ -314,7 +362,11 @@ function CoefBar({ value, max, zero }: { value: number; max: number; zero?: bool
           }}
         />
       </div>
-      <span className={`font-mono text-[10px] w-12 text-right ${zero ? "text-muted-foreground" : ""}`}>{value.toFixed(2)}</span>
+      <span
+        className={`font-mono text-[10px] w-12 text-right ${zero ? "text-muted-foreground" : ""}`}
+      >
+        {value.toFixed(2)}
+      </span>
     </div>
   );
 }
@@ -335,23 +387,21 @@ function Lessons() {
       <h2 className="text-lg font-semibold">Oppsummering</h2>
       <ul className="list-disc pl-5 space-y-1.5 text-muted-foreground">
         <li>
-          <strong className="text-foreground">Ridge (L2)</strong>: bra når alle
-          features har litt signal og du vil unngå at noen vekter blir
-          enorme — typisk når features er korrelerte.
+          <strong className="text-foreground">Ridge (L2)</strong>: bra når alle features har litt
+          signal og du vil unngå at noen vekter blir enorme — typisk når features er korrelerte.
         </li>
         <li>
-          <strong className="text-foreground">Lasso (L1)</strong>: bra når du
-          har <em>mange</em> features og mistanken er at de fleste er irrelevante.
-          Lasso gir deg automatisk feature-seleksjon.
+          <strong className="text-foreground">Lasso (L1)</strong>: bra når du har <em>mange</em>{" "}
+          features og mistanken er at de fleste er irrelevante. Lasso gir deg automatisk
+          feature-seleksjon.
         </li>
         <li>
-          <strong className="text-foreground">Hvordan velger man λ?</strong>{" "}
-          Kryssvalidering: prøv flere λ-verdier, måle validering-MSE per λ,
-          velg den som minimerer.
+          <strong className="text-foreground">Hvordan velger man λ?</strong> Kryssvalidering: prøv
+          flere λ-verdier, måle validering-MSE per λ, velg den som minimerer.
         </li>
         <li>
-          Hvis du er usikker — <strong className="text-foreground">ElasticNet</strong>{" "}
-          kombinerer L1 + L2 og er en god default.
+          Hvis du er usikker — <strong className="text-foreground">ElasticNet</strong> kombinerer L1
+          + L2 og er en god default.
         </li>
       </ul>
     </section>

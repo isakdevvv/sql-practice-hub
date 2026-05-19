@@ -12,21 +12,26 @@ export function Dte2501TdQlearningPage() {
       <SiteHeader />
       <main className="container mx-auto px-4 py-8 max-w-4xl">
         <header className="mb-6">
-          <h1 className="text-2xl font-bold tracking-tight">
-            TD-læring & Q-learning — gridworld
-          </h1>
+          <h1 className="text-2xl font-bold tracking-tight">TD-læring & Q-learning — gridworld</h1>
           <p className="mt-1 text-sm text-muted-foreground max-w-2xl">
-            Hvordan en agent lærer hva som er bra uten å vite kartet. Sutton &
-            Barto kap. 6 + AIMA kap. 21. Bygger på dte2501-mdp-bellman og
-            dte2501-bandits.
+            Hvordan en agent lærer hva som er bra uten å vite kartet. Sutton & Barto kap. 6 + AIMA
+            kap. 21. Bygger på dte2501-mdp-bellman og dte2501-bandits.
           </p>
         </header>
 
         <div className="mb-4 flex flex-wrap gap-1.5 border-b border-border">
-          <TabBtn active={tab === "intro"} onClick={() => setTab("intro")} icon={<BookOpen className="h-3.5 w-3.5" />}>
+          <TabBtn
+            active={tab === "intro"}
+            onClick={() => setTab("intro")}
+            icon={<BookOpen className="h-3.5 w-3.5" />}
+          >
             0. Start her
           </TabBtn>
-          <TabBtn active={tab === "qlearning"} onClick={() => setTab("qlearning")} icon={<Grid3x3 className="h-3.5 w-3.5" />}>
+          <TabBtn
+            active={tab === "qlearning"}
+            onClick={() => setTab("qlearning")}
+            icon={<Grid3x3 className="h-3.5 w-3.5" />}
+          >
             1. Q-learning live
           </TabBtn>
         </div>
@@ -40,12 +45,29 @@ export function Dte2501TdQlearningPage() {
   );
 }
 
-function TabBtn({ children, active, onClick, icon }: any) {
+function TabBtn({
+  children,
+  active,
+  onClick,
+  icon,
+}: {
+  children: React.ReactNode;
+  active: boolean;
+  onClick: () => void;
+  icon?: React.ReactNode;
+}) {
   return (
-    <button onClick={onClick}
+    <button
+      onClick={onClick}
       className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium border-b-2 -mb-px transition-colors ${
-        active ? "border-brand text-foreground" : "border-transparent text-muted-foreground hover:text-foreground"
-      }`}>{icon}{children}</button>
+        active
+          ? "border-brand text-foreground"
+          : "border-transparent text-muted-foreground hover:text-foreground"
+      }`}
+    >
+      {icon}
+      {children}
+    </button>
   );
 }
 
@@ -57,22 +79,20 @@ function Intro({ onPick }: { onPick: (t: Tab) => void }) {
         <ul className="list-disc pl-5 text-muted-foreground space-y-1">
           <li>
             <strong className="text-foreground">MDP &amp; Bellman</strong> (stack-side{" "}
-            <code>dte2501-mdp-bellman</code>): vi vet allerede hva en
-            tilstand, en handling, og en belønning er, og hvordan{" "}
-            <em>value iteration</em> regner ut den optimale verdien for hver
-            celle hvis vi <em>kjenner</em> reglene for verden.
+            <code>dte2501-mdp-bellman</code>): vi vet allerede hva en tilstand, en handling, og en
+            belønning er, og hvordan <em>value iteration</em> regner ut den optimale verdien for
+            hver celle hvis vi <em>kjenner</em> reglene for verden.
           </li>
           <li>
             <strong className="text-foreground">Bandits</strong> (stack-side{" "}
-            <code>dte2501-bandits</code>): vi vet hvordan en agent kan velge
-            mellom <em>kjent</em> godt og <em>nytt</em> ukjent
-            (exploration vs exploitation, ε-greedy, UCB).
+            <code>dte2501-bandits</code>): vi vet hvordan en agent kan velge mellom <em>kjent</em>{" "}
+            godt og <em>nytt</em> ukjent (exploration vs exploitation, ε-greedy, UCB).
           </li>
         </ul>
         <p className="text-muted-foreground mt-2">
-          Det vi <strong className="text-foreground">ikke</strong> har gjort
-          enda: hva hvis agenten ikke vet sannsynlighetene for å havne i en
-          tilstand? Det er der TD-læring og Q-learning kommer inn.
+          Det vi <strong className="text-foreground">ikke</strong> har gjort enda: hva hvis agenten
+          ikke vet sannsynlighetene for å havne i en tilstand? Det er der TD-læring og Q-learning
+          kommer inn.
         </p>
       </div>
 
@@ -80,38 +100,38 @@ function Intro({ onPick }: { onPick: (t: Tab) => void }) {
         <h2 className="text-base font-semibold mb-2">Nye ord vi trenger</h2>
         <dl className="space-y-2.5 text-[13px]">
           <Def term="Modell-fri (model-free)">
-            Agenten kjenner IKKE sannsynlighetene <code>P(s' | s, a)</code> eller
-            belønningene på forhånd. Den må prøve seg fram og lære av faktiske
-            opplevelser. (Motsatt: «model-based» = value iteration har modellen.)
+            Agenten kjenner IKKE sannsynlighetene <code>P(s' | s, a)</code> eller belønningene på
+            forhånd. Den må prøve seg fram og lære av faktiske opplevelser. (Motsatt: «model-based»
+            = value iteration har modellen.)
           </Def>
           <Def term="Q-verdi Q(s, a)">
-            «Hvor god er det å være i tilstand s og velge handling a, hvis
-            jeg deretter spiller optimalt?» Et tall per (tilstand, handling)-par.
-            Tabell med rader = tilstander, kolonner = handlinger.
+            «Hvor god er det å være i tilstand s og velge handling a, hvis jeg deretter spiller
+            optimalt?» Et tall per (tilstand, handling)-par. Tabell med rader = tilstander, kolonner
+            = handlinger.
           </Def>
           <Def term="α (alpha) — læringsrate">
-            Hvor mye agenten justerer Q etter hver nye opplevelse. α = 1.0 betyr
-            «glem alt jeg trodde, ta det nye estimatet». α = 0.1 betyr «bland
-            10% nytt med 90% gammelt». Mellom 0 og 1.
+            Hvor mye agenten justerer Q etter hver nye opplevelse. α = 1.0 betyr «glem alt jeg
+            trodde, ta det nye estimatet». α = 0.1 betyr «bland 10% nytt med 90% gammelt». Mellom 0
+            og 1.
           </Def>
           <Def term="γ (gamma) — discount-faktor">
-            Hvor mye agenten bryr seg om fremtidige belønninger vs nåværende.
-            γ = 0.9 betyr «en belønning om 1 steg er verdt 0.9 av den samme nå».
-            Mellom 0 og 1. Lavt γ = kortsynt; høyt γ = tålmodig.
+            Hvor mye agenten bryr seg om fremtidige belønninger vs nåværende. γ = 0.9 betyr «en
+            belønning om 1 steg er verdt 0.9 av den samme nå». Mellom 0 og 1. Lavt γ = kortsynt;
+            høyt γ = tålmodig.
           </Def>
           <Def term="TD-error (temporal-difference error)">
-            Forskjellen mellom det vi trodde Q(s, a) var, og det den nye
-            opplevelsen sier: <code>δ = r + γ·max_a' Q(s', a') − Q(s, a)</code>.
-            Hvis δ er positiv var det BEDRE enn vi trodde, og vi øker Q.
+            Forskjellen mellom det vi trodde Q(s, a) var, og det den nye opplevelsen sier:{" "}
+            <code>δ = r + γ·max_a' Q(s', a') − Q(s, a)</code>. Hvis δ er positiv var det BEDRE enn
+            vi trodde, og vi øker Q.
           </Def>
           <Def term="Q-learning oppdateringsregel">
-            Etter hver handling: <code>Q(s, a) ← Q(s, a) + α·δ</code>.
-            Det er hele algoritmen. Gjenta til Q-tabellen stabiliserer seg.
+            Etter hver handling: <code>Q(s, a) ← Q(s, a) + α·δ</code>. Det er hele algoritmen.
+            Gjenta til Q-tabellen stabiliserer seg.
           </Def>
           <Def term="ε-greedy">
-            Med sannsynlighet ε velger agenten en helt tilfeldig handling
-            (explore). Med sannsynlighet 1−ε velger den den med høyest
-            Q-verdi (exploit). Som vi så i bandits-modulen.
+            Med sannsynlighet ε velger agenten en helt tilfeldig handling (explore). Med
+            sannsynlighet 1−ε velger den den med høyest Q-verdi (exploit). Som vi så i
+            bandits-modulen.
           </Def>
         </dl>
       </div>
@@ -119,13 +139,16 @@ function Intro({ onPick }: { onPick: (t: Tab) => void }) {
       <div className="rounded-xl border border-border bg-card p-4">
         <h2 className="text-base font-semibold mb-2">Hvordan modulen er bygd opp</h2>
         <p className="text-muted-foreground">
-          Du får en gridworld der agenten starter et sted og skal til et mål.
-          Noen celler er feller (negativ belønning). Trykk «Step» for å se én
-          opplevelse oppdatere én Q-celle. Trykk «Kjør» for autoplay. Etter
-          noen hundre steg har Q-tabellen lært hvilken vei som er best —{" "}
+          Du får en gridworld der agenten starter et sted og skal til et mål. Noen celler er feller
+          (negativ belønning). Trykk «Step» for å se én opplevelse oppdatere én Q-celle. Trykk
+          «Kjør» for autoplay. Etter noen hundre steg har Q-tabellen lært hvilken vei som er best —{" "}
           <em>uten at vi noen gang fortalte den reglene</em>.
         </p>
-        <div className="mt-3"><Button size="sm" onClick={() => onPick("qlearning")}>Start på modul 1 →</Button></div>
+        <div className="mt-3">
+          <Button size="sm" onClick={() => onPick("qlearning")}>
+            Start på modul 1 →
+          </Button>
+        </div>
       </div>
     </div>
   );
@@ -176,7 +199,13 @@ function QLearningModule() {
     Array.from({ length: GRID_H }, () => Array.from({ length: GRID_W }, () => [0, 0, 0, 0])),
   );
   const [pos, setPos] = useState<[number, number]>(START);
-  const [last, setLast] = useState<{ s: [number, number]; a: Action; sNext: [number, number]; r: number; delta: number } | null>(null);
+  const [last, setLast] = useState<{
+    s: [number, number];
+    a: Action;
+    sNext: [number, number];
+    r: number;
+    delta: number;
+  } | null>(null);
   const [episodes, setEpisodes] = useState(0);
   const [steps, setSteps] = useState(0);
   const [running, setRunning] = useState(false);
@@ -191,7 +220,7 @@ function QLearningModule() {
   }
 
   function stepOnce() {
-    let [r, c] = pos;
+    const [r, c] = pos;
     if (isTerminal(r, c, rewards)) {
       // Reset episode
       setPos(START);
@@ -201,8 +230,8 @@ function QLearningModule() {
     }
     const a = chooseAction(r, c);
     const [dr, dc] = DXY[a];
-    let nr = Math.max(0, Math.min(GRID_H - 1, r + dr));
-    let nc = Math.max(0, Math.min(GRID_W - 1, c + dc));
+    const nr = Math.max(0, Math.min(GRID_H - 1, r + dr));
+    const nc = Math.max(0, Math.min(GRID_W - 1, c + dc));
     const reward = rewards[nr][nc];
     const oldQ = Q[r][c][a];
     const maxNext = isTerminal(nr, nc, rewards) ? 0 : Math.max(...Q[nr][nc]);
@@ -229,7 +258,9 @@ function QLearningModule() {
       setTimeout(loop, 40);
     };
     loop();
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [running]);
 
@@ -245,12 +276,11 @@ function QLearningModule() {
   return (
     <div className="space-y-4">
       <div className="rounded-lg border border-border bg-muted/30 p-3 text-xs text-muted-foreground">
-        <strong className="text-foreground">Hva du ser:</strong>{" "}
-        agenten (blå sirkel) starter nederst til venstre. Målet (grønn) er
-        øverst til høyre. Røde celler er feller (−10). Hver celle viser de fire
-        Q-verdiene (en per handling). I starten er alt 0 — agenten vet ingenting.
-        Trykk «Step» én gang for å se ÉN opplevelse oppdatere ÉN Q-verdi. Eller
-        «Kjør» for autoplay.
+        <strong className="text-foreground">Hva du ser:</strong> agenten (blå sirkel) starter
+        nederst til venstre. Målet (grønn) er øverst til høyre. Røde celler er feller (−10). Hver
+        celle viser de fire Q-verdiene (en per handling). I starten er alt 0 — agenten vet
+        ingenting. Trykk «Step» én gang for å se ÉN opplevelse oppdatere ÉN Q-verdi. Eller «Kjør»
+        for autoplay.
       </div>
 
       <div className="rounded-xl border border-border bg-card p-4 grid gap-4 md:grid-cols-3">
@@ -260,39 +290,92 @@ function QLearningModule() {
 
         <div className="space-y-3 text-xs">
           <div>
-            <label className="text-muted-foreground">α (læringsrate): <span className="font-mono font-semibold">{alpha.toFixed(2)}</span></label>
-            <input type="range" min={0.05} max={1} step={0.05} value={alpha} onChange={(e) => setAlpha(Number(e.target.value))} className="w-full" />
+            <label className="text-muted-foreground">
+              α (læringsrate): <span className="font-mono font-semibold">{alpha.toFixed(2)}</span>
+            </label>
+            <input
+              type="range"
+              min={0.05}
+              max={1}
+              step={0.05}
+              value={alpha}
+              onChange={(e) => setAlpha(Number(e.target.value))}
+              className="w-full"
+            />
           </div>
           <div>
-            <label className="text-muted-foreground">γ (discount): <span className="font-mono font-semibold">{gamma.toFixed(2)}</span></label>
-            <input type="range" min={0.5} max={0.99} step={0.01} value={gamma} onChange={(e) => setGamma(Number(e.target.value))} className="w-full" />
+            <label className="text-muted-foreground">
+              γ (discount): <span className="font-mono font-semibold">{gamma.toFixed(2)}</span>
+            </label>
+            <input
+              type="range"
+              min={0.5}
+              max={0.99}
+              step={0.01}
+              value={gamma}
+              onChange={(e) => setGamma(Number(e.target.value))}
+              className="w-full"
+            />
           </div>
           <div>
-            <label className="text-muted-foreground">ε (explore): <span className="font-mono font-semibold">{epsilon.toFixed(2)}</span></label>
-            <input type="range" min={0} max={1} step={0.05} value={epsilon} onChange={(e) => setEpsilon(Number(e.target.value))} className="w-full" />
+            <label className="text-muted-foreground">
+              ε (explore): <span className="font-mono font-semibold">{epsilon.toFixed(2)}</span>
+            </label>
+            <input
+              type="range"
+              min={0}
+              max={1}
+              step={0.05}
+              value={epsilon}
+              onChange={(e) => setEpsilon(Number(e.target.value))}
+              className="w-full"
+            />
           </div>
 
           <div className="flex gap-1.5 pt-2">
-            <Button size="sm" onClick={stepOnce}>Step</Button>
-            <Button size="sm" variant={running ? "default" : "outline"} onClick={() => setRunning((v) => !v)}>
-              {running ? <Pause className="h-3 w-3" /> : <Play className="h-3 w-3" />} {running ? "Pause" : "Kjør"}
+            <Button size="sm" onClick={stepOnce}>
+              Step
             </Button>
-            <Button size="sm" variant="outline" onClick={reset}><RotateCcw className="h-3 w-3" /></Button>
+            <Button
+              size="sm"
+              variant={running ? "default" : "outline"}
+              onClick={() => setRunning((v) => !v)}
+            >
+              {running ? <Pause className="h-3 w-3" /> : <Play className="h-3 w-3" />}{" "}
+              {running ? "Pause" : "Kjør"}
+            </Button>
+            <Button size="sm" variant="outline" onClick={reset}>
+              <RotateCcw className="h-3 w-3" />
+            </Button>
           </div>
 
           <div className="rounded border border-border bg-background p-2 space-y-1">
-            <div className="flex justify-between"><span className="text-muted-foreground">Episoder</span><span className="font-mono">{episodes}</span></div>
-            <div className="flex justify-between"><span className="text-muted-foreground">Steg totalt</span><span className="font-mono">{steps}</span></div>
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Episoder</span>
+              <span className="font-mono">{episodes}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Steg totalt</span>
+              <span className="font-mono">{steps}</span>
+            </div>
           </div>
 
           {last && (
             <div className="rounded border border-amber-500/40 bg-amber-500/5 p-2 space-y-0.5 text-[11px]">
               <div className="font-semibold">Siste opplevelse</div>
-              <div>s = ({last.s[0]},{last.s[1]}), a = {ACT_NAMES[last.a]}</div>
-              <div>s' = ({last.sNext[0]},{last.sNext[1]}), r = {last.r}</div>
+              <div>
+                s = ({last.s[0]},{last.s[1]}), a = {ACT_NAMES[last.a]}
+              </div>
+              <div>
+                s' = ({last.sNext[0]},{last.sNext[1]}), r = {last.r}
+              </div>
               <div className="font-mono">δ = {last.delta.toFixed(2)}</div>
               <div className="text-muted-foreground">
-                {last.delta > 0 ? "Bedre enn forventet → øker Q" : last.delta < 0 ? "Verre enn forventet → senker Q" : "Som forventet"}
+                {last.delta > 0
+                  ? "Bedre enn forventet → øker Q"
+                  : last.delta < 0
+                    ? "Verre enn forventet → senker Q"
+                    : "Som forventet"}
               </div>
             </div>
           )}
@@ -303,12 +386,27 @@ function QLearningModule() {
 }
 
 function GridView({
-  Q, pos, rewards, last,
+  Q,
+  pos,
+  rewards,
+  last,
 }: {
-  Q: number[][][]; pos: [number, number]; rewards: number[][]; last: any;
+  Q: number[][][];
+  pos: [number, number];
+  rewards: number[][];
+  last: {
+    s: [number, number];
+    a: Action;
+    sNext: [number, number];
+    r: number;
+    delta: number;
+  } | null;
 }) {
   return (
-    <div className="grid gap-1" style={{ gridTemplateColumns: `repeat(${GRID_W}, minmax(0, 1fr))` }}>
+    <div
+      className="grid gap-1"
+      style={{ gridTemplateColumns: `repeat(${GRID_W}, minmax(0, 1fr))` }}
+    >
       {rewards.map((row, r) =>
         row.map((rew, c) => {
           const isPos = pos[0] === r && pos[1] === c;
@@ -332,23 +430,39 @@ function GridView({
                   A
                 </div>
               )}
-              {rew === GOAL_R && <div className="absolute top-0.5 right-1 text-[10px] font-bold text-success">+10</div>}
-              {rew === TRAP_R && <div className="absolute top-0.5 right-1 text-[10px] font-bold text-destructive">−10</div>}
+              {rew === GOAL_R && (
+                <div className="absolute top-0.5 right-1 text-[10px] font-bold text-success">
+                  +10
+                </div>
+              )}
+              {rew === TRAP_R && (
+                <div className="absolute top-0.5 right-1 text-[10px] font-bold text-destructive">
+                  −10
+                </div>
+              )}
               <div className="absolute inset-0 grid grid-cols-3 grid-rows-3 text-[8px] font-mono p-0.5 leading-tight">
                 <div />
-                <div className={`text-center ${bestA === 0 && !allZero ? "text-brand font-bold" : "text-muted-foreground"}`}>
+                <div
+                  className={`text-center ${bestA === 0 && !allZero ? "text-brand font-bold" : "text-muted-foreground"}`}
+                >
                   {qs[0].toFixed(1)}
                 </div>
                 <div />
-                <div className={`text-left ${bestA === 3 && !allZero ? "text-brand font-bold" : "text-muted-foreground"}`}>
+                <div
+                  className={`text-left ${bestA === 3 && !allZero ? "text-brand font-bold" : "text-muted-foreground"}`}
+                >
                   {qs[3].toFixed(1)}
                 </div>
                 <div />
-                <div className={`text-right ${bestA === 1 && !allZero ? "text-brand font-bold" : "text-muted-foreground"}`}>
+                <div
+                  className={`text-right ${bestA === 1 && !allZero ? "text-brand font-bold" : "text-muted-foreground"}`}
+                >
                   {qs[1].toFixed(1)}
                 </div>
                 <div />
-                <div className={`text-center ${bestA === 2 && !allZero ? "text-brand font-bold" : "text-muted-foreground"}`}>
+                <div
+                  className={`text-center ${bestA === 2 && !allZero ? "text-brand font-bold" : "text-muted-foreground"}`}
+                >
                   {qs[2].toFixed(1)}
                 </div>
                 <div />
@@ -367,22 +481,21 @@ function Lessons() {
       <h2 className="text-lg font-semibold">Oppsummering</h2>
       <ul className="list-disc pl-5 space-y-1.5 text-muted-foreground">
         <li>
-          Q-learning lærer den optimale strategien <em>uten å kjenne reglene</em>.
-          Det er forskjellen fra value iteration (som krever overgangs-sannsynligheter).
+          Q-learning lærer den optimale strategien <em>uten å kjenne reglene</em>. Det er
+          forskjellen fra value iteration (som krever overgangs-sannsynligheter).
         </li>
         <li>
-          TD-erroren <code>δ = r + γ·max Q(s') − Q(s, a)</code> er det algoritmen
-          «hører» fra verden: «du forventet x, du fikk y, juster.»
+          TD-erroren <code>δ = r + γ·max Q(s') − Q(s, a)</code> er det algoritmen «hører» fra
+          verden: «du forventet x, du fikk y, juster.»
         </li>
         <li>
-          ε-greedy holder agenten åpen for nye veier — uten den ville den bare
-          gjenta det første brukbare hun fant.
+          ε-greedy holder agenten åpen for nye veier — uten den ville den bare gjenta det første
+          brukbare hun fant.
         </li>
         <li>
-          Neste skritt: <em>SARSA</em> (samme oppdatering men med faktisk neste
-          handling i stedet for max), <em>function approximation</em> (Q som
-          nevralt nett i stedet for tabell — DQN), og <em>policy gradient</em>{" "}
-          (lær handlingen direkte, ikke verdien).
+          Neste skritt: <em>SARSA</em> (samme oppdatering men med faktisk neste handling i stedet
+          for max), <em>function approximation</em> (Q som nevralt nett i stedet for tabell — DQN),
+          og <em>policy gradient</em> (lær handlingen direkte, ikke verdien).
         </li>
       </ul>
     </section>
