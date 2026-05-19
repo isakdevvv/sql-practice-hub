@@ -14,7 +14,6 @@ import { SectionPager, type SectionNavItem } from "./SectionPager";
 
 type Tab = "intro" | "5.1" | "5.2" | "5.3" | "5.4" | "5.5" | "5.6" | "5.7" | "5.8";
 
-
 const SECTIONS_5: SectionNavItem[] = [
   { id: "intro", label: "Start her" },
   { id: "5.1", label: "5.1 Overview" },
@@ -34,49 +33,52 @@ export function KuroseKap5Page() {
     <div className="min-h-screen bg-background">
       <SiteHeader />
       <main className="container mx-auto px-4 py-4 max-w-6xl">
-        <header className="mb-3"><div className="flex items-center gap-2 text-xs text-muted-foreground mb-2">
-            <a href="/stack/dte-2507" className="inline-flex items-center gap-1 hover:text-foreground"><FolderOpen className="h-3 w-3" /> DTE-2507</a>
-            <span>·</span>
+        <div className="mb-3 flex items-center flex-wrap gap-x-3 gap-y-1 border-b border-border pb-1.5">
+          <div className="flex items-center gap-1.5 text-xs text-muted-foreground min-w-0">
             <a
-              href="/stack/kurose-kurs"
-              className="inline-flex items-center gap-1 hover:text-foreground"
+              href="/stack/dte-2507"
+              className="inline-flex items-center gap-1 hover:text-foreground shrink-0"
             >
-              <FolderOpen className="h-3 w-3" /> Kurose-kurset
+              <FolderOpen className="h-3 w-3" /> DTE-2507
             </a>
             <span>·</span>
-            <span>Kapittel 5 av 9</span>
-          </div><h1 className="text-2xl font-bold tracking-tight">
-            Kap. 5 — Nettverkslaget: control-plane
-          </h1></header>
-
-        <div className="mb-4 flex flex-wrap gap-1.5 border-b border-border">
-          <TabBtn active={tab === "intro"} onClick={() => setTab("intro")}>
-            Start her
-          </TabBtn>
-          <TabBtn active={tab === "5.1"} onClick={() => setTab("5.1")}>
-            5.1 Overview
-          </TabBtn>
-          <TabBtn active={tab === "5.2"} onClick={() => setTab("5.2")}>
-            5.2 Algoritmer
-          </TabBtn>
-          <TabBtn active={tab === "5.3"} onClick={() => setTab("5.3")}>
-            5.3 OSPF
-          </TabBtn>
-          <TabBtn active={tab === "5.4"} onClick={() => setTab("5.4")}>
-            5.4 BGP
-          </TabBtn>
-          <TabBtn active={tab === "5.5"} onClick={() => setTab("5.5")}>
-            5.5 SDN
-          </TabBtn>
-          <TabBtn active={tab === "5.6"} onClick={() => setTab("5.6")}>
-            5.6 ICMP
-          </TabBtn>
-          <TabBtn active={tab === "5.7"} onClick={() => setTab("5.7")}>
-            5.7 DHCP
-          </TabBtn>
-          <TabBtn active={tab === "5.8"} onClick={() => setTab("5.8")}>
-            5.8 Oppgaver
-          </TabBtn>
+            <a href="/stack/kurose-kurs" className="hover:text-foreground shrink-0">
+              Kurose-kurset
+            </a>
+            <span>·</span>
+            <h1 className="text-sm font-bold tracking-tight text-foreground truncate">
+              Kap. 5 — Nettverkslaget: control-plane
+            </h1>
+          </div>
+          <nav className="ml-auto flex flex-wrap gap-0.5">
+            <TabBtn active={tab === "intro"} onClick={() => setTab("intro")}>
+              Start
+            </TabBtn>
+            <TabBtn active={tab === "5.1"} onClick={() => setTab("5.1")} title="Overview">
+              5.1
+            </TabBtn>
+            <TabBtn active={tab === "5.2"} onClick={() => setTab("5.2")} title="Algoritmer">
+              5.2
+            </TabBtn>
+            <TabBtn active={tab === "5.3"} onClick={() => setTab("5.3")} title="OSPF">
+              5.3
+            </TabBtn>
+            <TabBtn active={tab === "5.4"} onClick={() => setTab("5.4")} title="BGP">
+              5.4
+            </TabBtn>
+            <TabBtn active={tab === "5.5"} onClick={() => setTab("5.5")} title="SDN">
+              5.5
+            </TabBtn>
+            <TabBtn active={tab === "5.6"} onClick={() => setTab("5.6")} title="ICMP">
+              5.6
+            </TabBtn>
+            <TabBtn active={tab === "5.7"} onClick={() => setTab("5.7")} title="DHCP">
+              5.7
+            </TabBtn>
+            <TabBtn active={tab === "5.8"} onClick={() => setTab("5.8")} title="Oppgaver">
+              Oppg.
+            </TabBtn>
+          </nav>
         </div>
 
         {tab === "intro" && <Intro onPick={setTab} />}
@@ -89,7 +91,12 @@ export function KuroseKap5Page() {
         {tab === "5.7" && <Section57 />}
         {tab === "5.8" && <Section58 />}
 
-        <SectionPager tabs={SECTIONS_5} current={tab} onPick={(id) => setTab(id as Tab)} nextChapter={NEXT_CHAPTER_5} />
+        <SectionPager
+          tabs={SECTIONS_5}
+          current={tab}
+          onPick={(id) => setTab(id as Tab)}
+          nextChapter={NEXT_CHAPTER_5}
+        />
       </main>
     </div>
   );
@@ -99,18 +106,21 @@ function TabBtn({
   children,
   active,
   onClick,
+  title,
 }: {
   children: React.ReactNode;
   active: boolean;
   onClick: () => void;
+  title?: string;
 }) {
   return (
     <button
       onClick={onClick}
-      className={`px-3 py-1.5 text-xs font-medium border-b-2 -mb-px transition-colors ${
+      title={title}
+      className={`rounded px-2 py-1 text-xs font-medium transition-colors ${
         active
-          ? "border-brand text-foreground"
-          : "border-transparent text-muted-foreground hover:text-foreground"
+          ? "bg-brand/15 text-brand"
+          : "text-muted-foreground hover:bg-muted hover:text-foreground"
       }`}
     >
       {children}
@@ -195,36 +205,60 @@ function Section51() {
 
       <div className="grid gap-3 lg:grid-cols-2">
         <Defs
-        items={[
-          {
-            term: "Data-plane",
-            body: "Per-pakke logikken inni hver ruter — slå opp destinasjon, modifiser TTL, send på rett ut-port. Skjer på nanosekund-nivå i dedikert hardware (ASIC).",
-          },
-          {
-            term: "Control-plane",
-            body: "Logikken som bygger og oppdaterer forwarding-tabellene. Skjer på millisekund-til-sekund-nivå, vanligvis i software. Tar input (topologi, kostnader, policy) og produserer en tabell som data-plane kan bruke.",
-          },
-          {
-            term: "Distribuert control-plane",
-            body: "Hver ruter kjører en routing-algoritme lokalt og snakker bare med naboer. Beslutninger bygges opp gjennom melding-utveksling — ingen sentral autoritet. OSPF og BGP er distribuerte. Historisk modell — robust mot at én node faller.",
-          },
-          {
-            term: "Sentralisert (SDN) control-plane",
-            body: "En logisk sentral controller har global oversikt over topologien og beregner forwarding-tabeller for alle switcher. Pusher tabellene ned via en standard API (typisk OpenFlow). Switcher er enkle — bare data-plane.",
-          },
-          {
-            term: "Routing vs forwarding",
-            body: "Forwarding er den raske per-pakke-handlingen. Routing er den tregere prosessen som finner stier gjennom nettet og bygger forwarding-tabellen. Et fly bruker forwarding (sjekk billett, send til gate); flyselskapet planlegger ruter — det er routing.",
-          },
-          {
-            term: "Konvergens",
-            body: "Tiden det tar fra topologien endres (lenke nede, ny ruter på) til alle rutere har oppdaterte, konsistente forwarding-tabeller. Under konvergens kan pakker bli droppet eller gå i sirkler. Kort konvergens-tid er en hovedutfordring.",
-          },
-        ]}
-      />
+          items={[
+            {
+              term: "Data-plane",
+              body: "Per-pakke logikken inni hver ruter — slå opp destinasjon, modifiser TTL (Time-To-Live, levetidsteller), send på rett ut-port. Skjer på nanosekund-nivå i dedikert hardware (ASIC — Application-Specific Integrated Circuit). En linjekort-ASIC kan håndtere terabit/s uten å vekke CPU-en.",
+            },
+            {
+              term: "Control-plane",
+              body: "Logikken som bygger og oppdaterer forwarding-tabellene. Skjer på millisekund-til-sekund-nivå, vanligvis i software på rutere-CPU-en. Tar input (topologi, kostnader, policy) og produserer en tabell som data-plane kan bruke. Trenger ikke være per-pakke-rask, men må reagere på topologi-endringer.",
+            },
+            {
+              term: "Distribuert control-plane",
+              body: "Hver ruter kjører en routing-algoritme lokalt og snakker bare med naboer. Beslutninger bygges opp gjennom melding-utveksling — ingen sentral autoritet. OSPF og BGP er distribuerte. Historisk modell — robust mot at én node faller.",
+            },
+            {
+              term: "Sentralisert (SDN) control-plane",
+              body: "En logisk sentral controller har global oversikt over topologien og beregner forwarding-tabeller for alle switcher. Pusher tabellene ned via en standard API (typisk OpenFlow). Switcher er enkle — bare data-plane.",
+            },
+            {
+              term: "Routing vs forwarding",
+              body: "Forwarding er den raske per-pakke-handlingen. Routing er den tregere prosessen som finner stier gjennom nettet og bygger forwarding-tabellen. Et fly bruker forwarding (sjekk billett, send til gate); flyselskapet planlegger ruter — det er routing.",
+            },
+            {
+              term: "Forwarding-tabell",
+              body: "Den ferdige datastrukturen data-plane slår opp i. Hver rad: «destinasjons-prefiks → utgående lenke». Typisk implementert som en TRIE eller TCAM (Ternary Content-Addressable Memory) for longest-prefix-match på linjekort-hastighet.",
+            },
+            {
+              term: "RIB vs FIB",
+              body: "RIB (Routing Information Base) er control-planes komplette tabell med ALLE kjente ruter (inkludert backup). FIB (Forwarding Information Base) er det utvalget data-plane faktisk bruker — den beste ruten per prefiks, komprimert for raskt oppslag. RIB lever i CPU-RAM, FIB i ASIC.",
+            },
+            {
+              term: "Konvergens",
+              body: "Tiden det tar fra topologien endres (lenke nede, ny ruter på) til alle rutere har oppdaterte, konsistente forwarding-tabeller. Under konvergens kan pakker bli droppet eller gå i sirkler. Kort konvergens-tid er en hovedutfordring.",
+            },
+            {
+              term: "Routing-loop",
+              body: "Inkonsistente forwarding-tabeller hvor R1 sender pakker til R2 for destinasjon X, mens R2 sender dem tilbake til R1. Pakker går i ring til TTL utløper. Vanligst under konvergens når noen rutere har gammelt bilde av topologien.",
+            },
+            {
+              term: "Black hole",
+              body: "En ruter annonserer at den kan nå et prefiks (kanskje pga konfigurasjons-feil eller hijack), men forkaster faktisk pakkene. Verre enn et brudd — naboer prøver ikke å rute rundt fordi de tror destinasjonen er nådd.",
+            },
+            {
+              term: "Topologi-database",
+              body: "Den interne representasjonen av nettet en ruter har bygget opp. For link-state er det grafen av alle lenker; for distance-vector kun nabo-tabellen. Konvergens betyr at alle rutere har samme database.",
+            },
+            {
+              term: "Soft-state vs hard-state",
+              body: "Soft-state: info forvitrer automatisk hvis den ikke fornyes (LSA-er har levetid, BGP keep-alives). Hard-state: krever eksplisitt tear-down. Soft-state er robust mot at meldinger forsvinner — alt selv-helbreder.",
+            },
+          ]}
+        />
         <Illustration caption="Distribuert control-plane: hver ruter regner selv. SDN control-plane: én controller regner for alle.">
-        <ControlPlaneCompareSvg />
-      </Illustration>
+          <ControlPlaneCompareSvg />
+        </Illustration>
       </div>
 
       <Example title="Eksempel: lenke faller — distribuert vs SDN">
@@ -248,6 +282,39 @@ function Section51() {
         </p>
       </Example>
 
+      <Example title="Eksempel: RIB vs FIB i en kant-ruter">
+        <p>
+          En liten ISP-ruter ved kanten av AS 2118 har lært om prefikset 91.198.174.0/23 (Wikipedia)
+          fra to oppstrøms-naboer:
+        </p>
+        <ul className="list-disc pl-5 mt-1 font-mono text-[12px]">
+          <li>Via NORDU-link: BGP-rute, AS_PATH lengde 4, lokal-pref 100</li>
+          <li>Via Telia-link: BGP-rute, AS_PATH lengde 3, lokal-pref 100</li>
+        </ul>
+        <p className="mt-2">
+          <strong>RIB:</strong> begge rader, sortert etter foretrukken. <strong>FIB:</strong> kun
+          Telia-raden komprimert til en TCAM-entry «91.198.174.0/23 → port 4». Pakker som kommer i
+          linjekortet matches mot FIB på &lt; 100 ns. Hvis Telia-lenken ryker, kopieres backup-raden
+          fra RIB ned i FIB; «konvergens» her er hvor lang tid det tar fra detection til ny FIB.
+        </p>
+      </Example>
+
+      <Hvorfor title="Hvorfor separere control-plane fra data-plane?">
+        <p>
+          Hastigheten i de to lagene skiller seg med en faktor 10⁶. Data-plane må beslutte hva en
+          pakke skal gjøre på &lt; 1 µs (mikrosekund) for å holde linjehastighet — det krever
+          dedikert silisium uten lokk-vendinger eller minne-allokering. Control-plane må reagere på
+          topologi-endringer, holde naboer i live, og kjøre algoritmer som Dijkstra som tar
+          millisekunder. Hvis disse to oppgavene ble blandet i samme kodebane, ville pakketransport
+          stoppet hver gang ruteren regnet en ny rute.
+        </p>
+        <p>
+          Separasjonen lar deg også bytte ut control-plane uten å røre hardware. SDN-revolusjonen
+          gjorde dette eksplisitt — control-plane flyttes hele veien ut til en ekstern server, så
+          switcher blir billige og standardiserte mens innovasjonen skjer i software.
+        </p>
+      </Hvorfor>
+
       <RelatedSlugs slugs={["dte2507-ruting"]} />
     </article>
   );
@@ -269,40 +336,68 @@ function Section52() {
 
       <div className="grid gap-3 lg:grid-cols-2">
         <Defs
-        items={[
-          {
-            term: "Link-state (LS)",
-            body: "Hver ruter måler kostnaden til sine direkte naboer og flooder denne info til hele AS. Etter en stund har alle rutere identisk kart over nettet, og kjører Dijkstra lokalt. Konvergerer raskt og deterministisk. Brukes av OSPF og IS-IS.",
-          },
-          {
-            term: "Dijkstras algoritme",
-            body: "Klassisk shortest-path: hold en mengde N med noder med kjent korteste avstand. Start med kilde-noden, avstand 0. I hvert steg: ta noden med lavest tentativ avstand utenfor N, legg den til N, og oppdater naboenes tentative avstander. Stopp når alle noder er i N.",
-          },
-          {
-            term: "Distance-vector (DV)",
-            body: "Hver ruter holder en tabell: «for hver destinasjon, min beste estimerte avstand og hvilken nabo den går via». Sender tabellen til naboer. Når en nabo sender info som forbedrer egen tabell, oppdaterer du og sender videre. Brukes av RIP (legacy).",
-          },
-          {
-            term: "Bellman-Ford-likningen",
-            body: "Kjernen i DV: d_x(y) = min over alle naboer v av {c(x,v) + d_v(y)}. «Min kost fra x til y er det minste av (kost til nabo) + (nabos kost til y), valgt over alle naboer».",
-          },
-          {
-            term: "Count-to-infinity",
-            body: "DV sin akilleshæl: når en lenke ryker, kan rutere fortsette å bytte stadig økende avstander basert på utdaterte naboer som peker tilbake på deg. Skalerer dårlig — kan ta titalls iterasjoner før alle innser at destinasjon er uoppnåelig.",
-          },
-          {
-            term: "Split horizon + poisoned reverse",
-            body: "DV-hacks for å bremse count-to-infinity. Split horizon: ikke annonser en rute til den naboen du selv lærte ruten fra. Poisoned reverse: annonser tilbake at avstanden er ∞. Hjelper for 2-rutere-loops, men ikke for større.",
-          },
-          {
-            term: "Konvergens-egenskaper",
-            body: "LS: ~O(N² log N) regnetid, konvergerer raskt, alle ser samme topologi. DV: lokal info, lite minne, men dårlig konvergens og potensielle loops. Det er hovedgrunnen til at moderne intra-AS-protokoller bruker LS.",
-          },
-        ]}
-      />
+          items={[
+            {
+              term: "Link-state (LS)",
+              body: "Hver ruter måler kostnaden til sine direkte naboer og flooder denne info til hele AS (autonomt system). Etter en stund har alle rutere identisk kart over nettet, og kjører Dijkstra lokalt. Konvergerer raskt og deterministisk. Brukes av OSPF og IS-IS.",
+            },
+            {
+              term: "Dijkstras algoritme",
+              body: "Klassisk shortest-path: hold en mengde N med noder med kjent korteste avstand. Start med kilde-noden, avstand 0. I hvert steg: ta noden med lavest tentativ avstand utenfor N, legg den til N, og oppdater naboenes tentative avstander. Stopp når alle noder er i N.",
+            },
+            {
+              term: "Dijkstra: visited-sett (N)",
+              body: "Mengden av noder hvor korteste avstand er endelig kjent. Vokser med én node per iterasjon. Når en node legges til N, er dens avstand permanent — vil aldri reduseres igjen (forutsatt ikke-negative kostnader).",
+            },
+            {
+              term: "Dijkstra: dist-tabell",
+              body: "For hver node y holder vi to tall: D(y) = tentativ avstand fra kilden, og p(y) = forgjenger på beste sti så langt. Initialisert til D(kilde)=0, alle andre ∞, p(*) = undefined. Endres bare ved relax-steg.",
+            },
+            {
+              term: "Dijkstra: relax-steg",
+              body: "Når en ny node u legges til N, sjekkes hver nabo v utenfor N: hvis D(u) + c(u,v) < D(v), oppdater D(v) := D(u) + c(u,v) og p(v) := u. Andre naboer endres ikke.",
+            },
+            {
+              term: "Distance-vector (DV)",
+              body: "Hver ruter holder en tabell: «for hver destinasjon, min beste estimerte avstand og hvilken nabo den går via». Sender tabellen til naboer. Når en nabo sender info som forbedrer egen tabell, oppdaterer du og sender videre. Brukes av RIP (Routing Information Protocol — legacy).",
+            },
+            {
+              term: "Bellman-Ford-likningen",
+              body: "Kjernen i DV: d_x(y) = min over alle naboer v av {c(x,v) + d_v(y)}. «Min kost fra x til y er det minste av (kost til nabo) + (nabos kost til y), valgt over alle naboer».",
+            },
+            {
+              term: "Bellman-Ford-iterasjon",
+              body: "Hver ruter starter med d_x(x)=0, d_x(y)=∞ for y ≠ x, og d_x til direkte naboer = lenke-kostnad. Sender sin DV til alle naboer. Mottar deres DV, gjør lokal min-beregning, sender oppdatert versjon hvis noe endret seg. Stopper når ingen DV-endringer skjer (steady state).",
+            },
+            {
+              term: "Asynkron oppdatering",
+              body: "DV-iterasjoner trenger ikke synkroniseres globalt — hver ruter sender sin egen tabell på sin egen takt (typisk hvert 30. sekund i RIP, eller når noe endrer seg). Det gjør protokollen enkel men også kilde til convergence-treghet.",
+            },
+            {
+              term: "Count-to-infinity",
+              body: "DV sin akilleshæl: når en lenke ryker, kan rutere fortsette å bytte stadig økende avstander basert på utdaterte naboer som peker tilbake på deg. Skalerer dårlig — kan ta titalls iterasjoner før alle innser at destinasjon er uoppnåelig.",
+            },
+            {
+              term: "Split horizon",
+              body: "DV-hack for å bremse count-to-infinity: ikke annonser en rute til den naboen du selv lærte ruten fra. Hvis B lærte «C nås via meg» fra A, skal B ikke fortelle A at den kan nå C.",
+            },
+            {
+              term: "Poisoned reverse",
+              body: "Sterkere variant: i stedet for å la være å annonsere, annonser aktivt «avstanden er ∞» tilbake. Det forhindrer at den andre kan tro at du har en alternativ vei.",
+            },
+            {
+              term: "Maks-distanse (∞-grense)",
+              body: "RIP bruker 16 som ∞-grense — hvis en rute oppgis med kost 16, regnes destinasjonen som ikke nåbar. Det limiterer count-to-infinity (kan ikke gå evig), men begrenser også nettstørrelse til 15 hopp.",
+            },
+            {
+              term: "Konvergens-egenskaper",
+              body: "LS: ~O(N² log N) regnetid (eller O((N+E) log N) med min-heap), konvergerer raskt, alle ser samme topologi. DV: lokal info, lite minne, men dårlig konvergens og potensielle loops. Det er hovedgrunnen til at moderne intra-AS-protokoller bruker LS.",
+            },
+          ]}
+        />
         <Illustration caption="Dijkstra på en 5-node graf: i hvert steg legges noden med lavest tentativ avstand inn i shortest-path-treet.">
-        <DijkstraSvg />
-      </Illustration>
+          <DijkstraSvg />
+        </Illustration>
       </div>
 
       <Example title="Eksempel: count-to-infinity i en 3-ruter-loop">
@@ -327,6 +422,52 @@ function Section52() {
         </p>
       </Example>
 
+      <Example title="Eksempel: Dijkstra-traversering, steg for steg">
+        <p>
+          5 noder S, P, Q, R, T med kostnader S—P=2, S—Q=7, P—Q=3, P—R=4, Q—R=1, Q—T=5, R—T=2. Kjør
+          Dijkstra fra S.
+        </p>
+        <p className="font-mono text-[12px] mt-2">
+          Init: D(S)=0, D(P)=D(Q)=D(R)=D(T)=∞; N={"{}"}; p(*) udef
+          <br />
+          --- Iter 1 — velg S (D=0) → N={"{S}"}. Relax naboer: D(P)=2,p=S; D(Q)=7,p=S.
+          <br />
+          --- Iter 2 — velg P (D=2, lavest utenfor N) → N={"{S,P}"}. Naboer av P utenfor N: Q (2+3=5
+          &lt; 7 → D(Q)=5,p=P), R (2+4=6 → D(R)=6,p=P).
+          <br />
+          --- Iter 3 — velg Q (D=5) → N={"{S,P,Q}"}. Naboer: R (5+1=6, like — behold), T (5+5=10 →
+          D(T)=10,p=Q).
+          <br />
+          --- Iter 4 — velg R (D=6) → N={"{S,P,Q,R}"}. Naboer: T (6+2=8 &lt; 10 → D(T)=8,p=R).
+          <br />
+          --- Iter 5 — velg T (D=8) → N={"{S,P,Q,R,T}"}. Ferdig.
+          <br />
+          <br />
+          SPT (shortest-path tree) fra S: S→P (2), S→P→Q (5), S→P→R (6), S→P→R→T (8).
+        </p>
+        <p className="mt-2">
+          Legg merke til at D(Q) ble redusert i iter 2 — det er typisk for Dijkstra. Når en node
+          legges til N, kan en kortere vei oppdages som går via den nye noden i stedet for en
+          direkte kant fra kilden.
+        </p>
+      </Example>
+
+      <Hvorfor title="Hvorfor er link-state foretrukket over distance-vector i moderne nett?">
+        <p>
+          DV-protokollen RIP dominerte tidlig på 80-tallet fordi den var enkel å implementere — hver
+          ruter trengte bare nabo-tabellen, ikke et komplett topologi-bilde. Men tre svakheter ble
+          uakseptable etter hvert som internett vokste: (1) langsom konvergens og count-to-infinity,
+          som kunne gi minutter med svart hull etter en lenke-feil; (2) maks-distansen på 15 hopp
+          begrenset størrelse; (3) hver ruter måtte stole på naboers info uten kryssjekk.
+        </p>
+        <p>
+          Link-state bytter mer bandbredde ved oppstart (full flood av alle LSA-er) mot dramatisk
+          raskere reconvergence (alle har samme bilde, kjører lokalt). I OSPF konvergerer et helt AS
+          på sekunder etter en lenke-feil. Det er en aksept-test verd å huske: hvis du blir spurt
+          «hvorfor RIP ikke brukes i dagens nett», svaret er count-to-infinity og 15-hopp-grensen.
+        </p>
+      </Hvorfor>
+
       <RelatedSlugs
         slugs={["dte2507-ruting", "dte2507-ospf-dijkstra", "dte2507-count-to-infinity"]}
       />
@@ -350,40 +491,72 @@ function Section53() {
 
       <div className="grid gap-3 lg:grid-cols-2">
         <Defs
-        items={[
-          {
-            term: "Autonomt system (AS)",
-            body: "En samling rutere under én administrativ enhet med en sammenhengende routing-policy. Hver AS har et unikt 32-bits AS-nummer (ASN). Internett er ~75 000 AS-er som kommuniserer via BGP.",
-          },
-          {
-            term: "OSPF",
-            body: "RFC 2328. Hver ruter måler kostnad til naboer (typisk omvendt proporsjonal med båndbredde), flooder denne info som LSA-er, bygger lokalt topologi-databasen, og kjører Dijkstra for å fylle forwarding-tabellen.",
-          },
-          {
-            term: "LSA (Link-State Advertisement)",
-            body: "Meldingen OSPF-rutere sender til hverandre med info om sine egne lenker: «jeg er R3, mine naboer er R2 (kost 5), R4 (kost 1), R7 (kost 3)». Flooded til alle rutere i samme area.",
-          },
-          {
-            term: "Flooding",
-            body: "Hvordan LSA-er distribueres: når en ruter mottar en ny LSA, sender den ut på alle andre porter. Sekvens-numre i LSA-en hindrer evig sirkulering. Resultatet er at hver ruter eventuelt har samme topologi-database.",
-          },
-          {
-            term: "Areas",
-            body: "OSPF deler et stort AS i mindre areas for skalering. LSA-flooding er begrenset til samme area. Area 0 (backbone) binder de andre sammen. Ruting innenfor area er via Dijkstra; mellom areas via area border routers (ABR).",
-          },
-          {
-            term: "Hello-protokollen",
-            body: "Naboer sender hello-pakker hvert 10. sekund (default). Hvis tre på rad mangler (dead-interval, 40 s), antas naboen død og lenken merkes nede. Trigger ny LSA og full reconvergence.",
-          },
-          {
-            term: "Funksjoner utover Dijkstra",
-            body: "OSPF har autentisering av nabopakker (mot spoofing), støtter ECMP (equal-cost multipath — load-balance over flere stier av samme kost), og IPv6-variant (OSPFv3).",
-          },
-        ]}
-      />
+          items={[
+            {
+              term: "Autonomt system (AS)",
+              body: "En samling rutere under én administrativ enhet med en sammenhengende routing-policy. Hver AS har et unikt 32-bits AS-nummer (ASN — Autonomous System Number). Internett er ~75 000 AS-er som kommuniserer via BGP.",
+            },
+            {
+              term: "OSPF (Open Shortest Path First)",
+              body: "RFC 2328. Hver ruter måler kostnad til naboer (typisk omvendt proporsjonal med båndbredde), flooder denne info som LSA-er, bygger lokalt topologi-databasen, og kjører Dijkstra for å fylle forwarding-tabellen.",
+            },
+            {
+              term: "LSA (Link-State Advertisement)",
+              body: "Meldingen OSPF-rutere sender til hverandre med info om sine egne lenker: «jeg er R3, mine naboer er R2 (kost 5), R4 (kost 1), R7 (kost 3)». Flooded til alle rutere i samme area.",
+            },
+            {
+              term: "LSA Type 1 (Router-LSA)",
+              body: "Hver ruter genererer én Type-1-LSA som beskriver dens egne lenker innenfor sitt area: nabo-rutere, lenke-kostnader, lenke-typer. Flooded kun innenfor area-en. Grunnstenen Dijkstra kjøres på.",
+            },
+            {
+              term: "LSA Type 2 (Network-LSA)",
+              body: "Genereres av en Designated Router (DR) på en multiaccess-lenke (f.eks. ethernet-segment med flere OSPF-naboer). Beskriver hvilke rutere som er tilkoblet det segmentet. Reduserer flooding på delte medier — én Type-2 erstatter mange Type-1-relasjoner.",
+            },
+            {
+              term: "LSA Type 3 (Summary-LSA)",
+              body: "Genereres av en ABR (Area Border Router) for å annonsere prefiks fra ett area inn i et annet. Inneholder bare destinasjon + kost, ikke topologi-detaljer — det er det som gjør areas til en skaleringsmekanisme.",
+            },
+            {
+              term: "LSA Type 4 og 5 (AS-External)",
+              body: "Type 4 peker på en ASBR (AS Boundary Router); Type 5 (External-LSA) annonserer ruter som er lært utenfor OSPF (typisk fra BGP). Slik kan OSPF-domenet kjenne til eksterne destinasjoner.",
+            },
+            {
+              term: "Flooding",
+              body: "Hvordan LSA-er distribueres: når en ruter mottar en ny LSA, sender den ut på alle andre porter. Sekvens-numre i LSA-en hindrer evig sirkulering. Resultatet er at hver ruter eventuelt har samme topologi-database.",
+            },
+            {
+              term: "LSDB (Link-State Database)",
+              body: "Den lokale samlingen av alle mottatte LSA-er — én rad per ruter-LSA, plus nettverks- og summary-LSA-er. Når den er konsistent på tvers av alle naboer, kan Dijkstra kjøres og produsere identiske forwarding-tabeller.",
+            },
+            {
+              term: "Areas",
+              body: "OSPF deler et stort AS i mindre areas for skalering. LSA-flooding er begrenset til samme area. Area 0 (backbone) binder de andre sammen. Ruting innenfor area er via Dijkstra; mellom areas via area border routers (ABR).",
+            },
+            {
+              term: "Area 0 (backbone)",
+              body: "Den sentrale area-en som alle andre må kobles til (direkte eller via virtual links). All inter-area-trafikk transitter gjennom backbone. Hvis backbone partitioner, kan ikke OSPF garantere ruting mellom de avskårne delene.",
+            },
+            {
+              term: "Stub area",
+              body: "En area som ikke aksepterer Type-5 (eksterne) LSA-er. ABR-en lager i stedet en default-rute som annonseres inn. Reduserer LSDB-størrelse i små grein-areas hvor detaljerte eksterne ruter ikke trengs.",
+            },
+            {
+              term: "NSSA (Not-So-Stubby Area)",
+              body: "Hybrid: som stub, men tillater at egne eksterne ruter genereres lokalt (via en intern ASBR) og bæres ut som Type-7-LSA-er. Brukes når en gren har egen BGP-tilkobling men ikke vil motta hele internett-tabellen.",
+            },
+            {
+              term: "Hello-protokollen",
+              body: "Naboer sender hello-pakker hvert 10. sekund (default). Hvis tre på rad mangler (dead-interval, 40 s), antas naboen død og lenken merkes nede. Trigger ny LSA og full reconvergence.",
+            },
+            {
+              term: "Funksjoner utover Dijkstra",
+              body: "OSPF har autentisering av nabopakker (mot spoofing), støtter ECMP (Equal-Cost Multi-Path — load-balance over flere stier av samme kost), og IPv6-variant (OSPFv3).",
+            },
+          ]}
+        />
         <Illustration caption="Et AS delt i tre OSPF-areas. Area 0 (backbone) binder area 1 og area 2 via ABR-er.">
-        <OspfAreasSvg />
-      </Illustration>
+          <OspfAreasSvg />
+        </Illustration>
       </div>
 
       <Example title="Eksempel: konvergens i et lite OSPF-AS">
@@ -406,6 +579,53 @@ function Section53() {
         </p>
       </Example>
 
+      <Example title="Eksempel: tre areas i et bedrifts-AS">
+        <p>
+          Et fiktivt nordnorsk-konsern AS 64512 har tre kontorer: hovedkontoret i Bodø, en filial i
+          Mo i Rana, og en datasenter-cage i Tromsø. Routing er delt slik:
+        </p>
+        <ul className="list-disc pl-5 mt-1">
+          <li>
+            <strong>Area 0 (Bodø-backbone)</strong>: 4 core-rutere R-bo-1..R-bo-4 som binder
+            filialene sammen. Full LSDB med alle LSA-typer.
+          </li>
+          <li>
+            <strong>Area 1 (Mo i Rana, stub)</strong>: 3 rutere. Mottar bare Type-1, Type-2 og
+            Type-3-LSA-er fra Area 0. Eksterne ruter (Type-5) blokkeres — i stedet får de en
+            default-rute «0.0.0.0/0 → ABR-en R-bo-2».
+          </li>
+          <li>
+            <strong>Area 2 (Tromsø, NSSA)</strong>: 5 rutere, inkludert en lokal BGP-peering med en
+            forskningspartner. Genererer Type-7-LSA-er for de eksterne forsknings-prefiksene; ABR
+            R-bo-3 oversetter dem til Type-5 før de slippes inn i backbone.
+          </li>
+        </ul>
+        <p className="mt-2">
+          Resultatet: Mo-Rana-ruterne har en LSDB på ~10 LSA-er (egne pluss Type-3 summary-er fra
+          backbone). Hvis hele konsernet var én area, ville LSDB-en vært på 12+ ruter-LSA-er pluss
+          alle BGP-eksterne. Areas gjør at små filial-rutere ikke trenger å regne Dijkstra på hele
+          konsernets topologi.
+        </p>
+      </Example>
+
+      <Hvorfor title="Hvorfor flooder OSPF informasjon — og hvorfor deles AS i areas?">
+        <p>
+          Flooding er ikke elegant — i prinsippet sender hver ruter samme info ut på alle porter, og
+          informasjonen ekko-er seg ut til den når alle. Men det er den enkleste måten å garantere
+          at alle rutere ender opp med identisk LSDB uten en sentral koordinator. Sekvens-numre og
+          aldring (LSA-Age-feltet teller sekunder, max 3600) sørger for at gamle versjoner ikke kan
+          komme tilbake fra hvile-tilstand i en del av nettet.
+        </p>
+        <p>
+          Areas løser et helt annet problem: Dijkstras tids- og minne-kompleksitet vokser med antall
+          noder. I et AS med 1000 rutere ville hver ruter måtte holde 1000 LSA-er i minnet og kjøre
+          Dijkstra på en 1000-node-graf hver gang noe endret seg. Areas avskjermer informasjonen —
+          Dijkstra kjøres bare innenfor egen area, og inter-area-info komprimeres til
+          summary-LSA-er. Det reduserer både CPU og minne, og lokaliserer flooding sånn at en
+          lenke-feil i Area 1 ikke trigger reconvergence i Area 2.
+        </p>
+      </Hvorfor>
+
       <RelatedSlugs slugs={["dte2507-ospf-dijkstra"]} />
     </article>
   );
@@ -427,40 +647,72 @@ function Section54() {
 
       <div className="grid gap-3 lg:grid-cols-2">
         <Defs
-        items={[
-          {
-            term: "eBGP vs iBGP",
-            body: "eBGP (external) snakkes mellom rutere i ulike AS-er — annonserer prefiks på tvers av AS-grenser. iBGP (internal) snakkes mellom rutere innenfor samme AS — distribuerer eksternt lærte rute-info inn til alle border-rutere.",
-          },
-          {
-            term: "Prefiks-annonsering",
-            body: "Et AS forteller naboene sine: «trafikk til IP-prefikset 129.242.0.0/16 skal til meg». Naboer videresender annonseringen, ofte med sitt eget AS lagt til AS_PATH. Slik propagerer info om hvem som eier hva.",
-          },
-          {
-            term: "AS_PATH",
-            body: "Lista over AS-er en annonsering har passert. Brukes både som loop-prevent (et AS vil aldri akseptere en annonsering der eget AS allerede står) og som tie-breaker i ruteseleksjon (kortere er bedre).",
-          },
-          {
-            term: "LOCAL_PREF",
-            body: "Det første og sterkeste tie-breaker-attributtet. Lokalt valgt — kun gyldig innenfor eget AS. Lar en ISP foretrekke en kunde-rute over en peer-rute, selv om peer-stien er kortere. Høyere LOCAL_PREF vinner.",
-          },
-          {
-            term: "MED (Multi-Exit Discriminator)",
-            body: "Et hint en AS gir naboene sine: «hvis du har flere lenker til meg, foretrekk lenken med lavere MED». Brukes når to AS-er har flere peerings og vil styre hvor trafikk slipper ut. Lavere er bedre.",
-          },
-          {
-            term: "NEXT_HOP",
-            body: "IP-adressen til den siste eBGP-talker langs ruten. Inni eget AS bruker rutere iBGP til å fortelle hverandre om NEXT_HOP og IGP-en (OSPF) for å finne vei dit.",
-          },
-          {
-            term: "Rute-seleksjons-algoritmen",
-            body: "BGP-rangerings-rekken: (1) høyeste LOCAL_PREF, (2) korteste AS_PATH, (3) laveste origin-type, (4) laveste MED, (5) prefer eBGP over iBGP, (6) lavest IGP-kost til NEXT_HOP, (7) tie-breaker på router-ID. Strengt prioritert.",
-          },
-        ]}
-      />
+          items={[
+            {
+              term: "BGP (Border Gateway Protocol)",
+              body: "Inter-AS-protokollen som binder internett sammen. Versjon 4 (BGP-4) er det som faktisk kjøres siden 1994. Snakker over TCP-port 179, holder sesjoner åpne med keepalives, sender oppdateringer kun når noe endrer seg (inkrementell).",
+            },
+            {
+              term: "eBGP vs iBGP",
+              body: "eBGP (external) snakkes mellom rutere i ulike AS-er — annonserer prefiks på tvers av AS-grenser. iBGP (internal) snakkes mellom rutere innenfor samme AS — distribuerer eksternt lærte rute-info inn til alle border-rutere.",
+            },
+            {
+              term: "Prefiks-annonsering",
+              body: "Et AS forteller naboene sine: «trafikk til IP-prefikset 129.242.0.0/16 skal til meg». Naboer videresender annonseringen, ofte med sitt eget AS lagt til AS_PATH. Slik propagerer info om hvem som eier hva.",
+            },
+            {
+              term: "Withdrawal",
+              body: "Det motsatte av en annonsering: «jeg kan ikke lenger nå dette prefikset, glem ruten du lærte fra meg». Sendes når en intern lenke ryker eller en kunde slutter med tjenesten. BGP er fundamentalt event-driven på den måten.",
+            },
+            {
+              term: "AS_PATH",
+              body: "Lista over AS-er en annonsering har passert. Brukes både som loop-prevent (et AS vil aldri akseptere en annonsering der eget AS allerede står) og som tie-breaker i ruteseleksjon (kortere er bedre).",
+            },
+            {
+              term: "AS_PATH-prepending",
+              body: "Triks for å gjøre en sti mindre attraktiv uten å droppe den: legg ditt eget ASN inn flere ganger («AS_PATH = 100 100 100 200»). Stien teller fortsatt som gyldig, men taper AS_PATH-lengde-sammenligningen. Vanlig for å styre innkommende trafikk når du har flere oppstrøms-tilkoblinger.",
+            },
+            {
+              term: "ORIGIN",
+              body: "Attributtet som sier hvor ruten opprinnelig ble lært: IGP (0, lokalt fra OSPF/IS-IS), EGP (1, legacy), eller Incomplete (2, ukjent kilde, typisk redistribute fra static). Brukes som tie-breaker etter AS_PATH-lengde — lavere ORIGIN vinner.",
+            },
+            {
+              term: "LOCAL_PREF",
+              body: "Det første og sterkeste tie-breaker-attributtet. Lokalt valgt — kun gyldig innenfor eget AS. Lar en ISP foretrekke en kunde-rute over en peer-rute, selv om peer-stien er kortere. Høyere LOCAL_PREF vinner.",
+            },
+            {
+              term: "MED (Multi-Exit Discriminator)",
+              body: "Et hint en AS gir naboene sine: «hvis du har flere lenker til meg, foretrekk lenken med lavere MED». Brukes når to AS-er har flere peerings og vil styre hvor trafikk slipper ut. Lavere er bedre.",
+            },
+            {
+              term: "NEXT_HOP",
+              body: "IP-adressen til den siste eBGP-talker langs ruten. Inni eget AS bruker rutere iBGP til å fortelle hverandre om NEXT_HOP og IGP-en (OSPF) for å finne vei dit.",
+            },
+            {
+              term: "Rute-seleksjons-algoritmen",
+              body: "BGP-rangerings-rekken: (1) høyeste LOCAL_PREF, (2) korteste AS_PATH, (3) laveste origin-type, (4) laveste MED, (5) prefer eBGP over iBGP, (6) lavest IGP-kost til NEXT_HOP, (7) tie-breaker på router-ID. Strengt prioritert.",
+            },
+            {
+              term: "Kunde-policy (customer)",
+              body: "Et AS som betaler en ISP for transit. Ruter fra kunder annonseres til alle andre naboer (peers og oppstrøms). Kunde-ruter får typisk høyest LOCAL_PREF — det er den ISP-en tjener penger på.",
+            },
+            {
+              term: "Peer-policy (peer)",
+              body: "To AS-er som utveksler trafikk gjensidig uten å betale hverandre — typisk to ISP-er av lignende størrelse. Peer-ruter annonseres bare videre til egne kunder, ikke til andre peers eller oppstrøms. Holder peering fra å bli gratis transit.",
+            },
+            {
+              term: "Provider-policy (transit)",
+              body: "En oppstrøms-ISP du betaler. Provider-ruter annonseres bare til egne kunder. Får lavere LOCAL_PREF enn både peers og kunder — du vil bare bruke betalt transit hvis du må.",
+            },
+            {
+              term: "Gao-Rexford-reglene",
+              body: "De tre standard-policyene oppsummert: (1) kunde-ruter foretrekkes over peer over provider, (2) kunde-annonseringer går til alle, (3) peer- og provider-annonseringer går bare til kunder. Hvis alle AS-er følger dem, garanteres BGP å konvergere — uten dem kan policyer skape uendelige oscilleringer.",
+            },
+          ]}
+        />
         <Illustration caption="To AS-er som peerer, hvert med flere kunder. AS_PATH bygges opp ved hver eBGP-grense.">
-        <BgpTopologySvg />
-      </Illustration>
+          <BgpTopologySvg />
+        </Illustration>
       </div>
 
       <Example title="Eksempel: AS3 velger mellom 3 stier til 8.8.8.0/24">
@@ -488,6 +740,46 @@ function Section54() {
         </p>
       </Example>
 
+      <Example title="Eksempel: en ISPs LOCAL_PREF-politikk satt med Gao-Rexford">
+        <p>Tenk deg den fiktive regionale ISP-en NordNett (AS 60001). De har:</p>
+        <ul className="list-disc pl-5 mt-1 font-mono text-[12px]">
+          <li>3 kunder (AS 60010-60012)</li>
+          <li>2 settlement-free peers (AS 70001, AS 70002)</li>
+          <li>2 oppstrøms-providers (AS 80001, AS 80002)</li>
+        </ul>
+        <p className="mt-2">
+          NordNett konfigurerer LOCAL_PREF som følger ved import: kunde-ruter får 200, peer-ruter
+          får 150, provider-ruter får 100. Det betyr: hvis prefikset 1.2.3.0/24 kan nås både via en
+          kunde og via en peer, vinner kunden uansett AS_PATH-lengde. Hvorfor? Fordi NordNett tjener
+          penger per gigabyte trafikk som går mot kunder (de er betalere), mens trafikk via peer
+          eller provider enten er gratis eller koster NordNett selv. Lokal pref er
+          forretnings-policy uttrykt som tall.
+        </p>
+        <p className="mt-2">
+          Eksport-policyen følger Gao-Rexford: kunde-ruter eksporteres til alle 7 naboer; peer- og
+          provider-ruter eksporteres bare til de 3 kundene. Det hindrer at NordNett blir gratis
+          transit mellom sine peers eller mellom sine providers.
+        </p>
+      </Example>
+
+      <Hvorfor title="Hvorfor er BGP policy-basert i stedet for shortest-path?">
+        <p>
+          Internett er ikke ett selskap — det er ~75 000 kommersielle aktører som har inngått
+          forretningsavtaler med hverandre. Hver av disse avtalene koster eller tjener penger. En
+          shortest-path-protokoll ville behandlet en peer-lenke og en betalt provider-lenke som
+          likeverdige hvis hopp-tallet var det samme. Det ville være katastrofalt for en ISP — den
+          ville sende trafikk gjennom dyre transit-lenker når en gratis peer-lenke var tilgjengelig.
+        </p>
+        <p>
+          Derfor separeres policy fra topologi i BGP: alle stier annonseres åpent (sannhet om
+          topologi), men hver AS bruker LOCAL_PREF og AS_PATH-prepending til å håndheve
+          forretningsavtaler. Det er hvorfor man av og til ser tilsynelatende «irrasjonelle» ruter
+          på internett — pakker som tar omveier — fordi en mellomliggende AS valgte en lengre, men
+          billigere sti. Gao-Rexford-reglene er minimums-betingelsen for at dette ikke kollapser i
+          oscilleringer.
+        </p>
+      </Hvorfor>
+
       <RelatedSlugs slugs={["dte2507-bgp-stige"]} />
     </article>
   );
@@ -510,40 +802,60 @@ function Section55() {
 
       <div className="grid gap-3 lg:grid-cols-2">
         <Defs
-        items={[
-          {
-            term: "SDN-arkitektur",
-            body: "Tre lag: (1) infrastruktur-laget (dumme switcher med flow-tabeller); (2) controller-laget (kjører som software-cluster, holder global topologi); (3) applikasjons-laget (load-balancing, firewall, traffic-engineering — egne programmer mot controlleren).",
-          },
-          {
-            term: "OpenFlow",
-            body: "Den første og mest kjente sør-bound API-en (controller ↔ switch). Definerer melding-formater for å installere flow-entries, lese statistikker, og motta pakke-events. Andre alternativer i dag: P4, gNMI, NETCONF.",
-          },
-          {
-            term: "Flow-entry",
-            body: "Én rad i flow-tabellen: match-felter (IP-src, IP-dst, port osv) + action (forward port X, drop, send-til-controller, modify). Switchen sjekker hver pakke mot tabellen og utfører første matchende action.",
-          },
-          {
-            term: "Match-action-paradigmet",
-            body: "Generalisert forwarding: ikke bare IP-prefiks, men hva som helst i headerne. En flow-entry kan matche på TCP-port + VLAN + MAC samtidig. Gir mye mer fleksibilitet enn klassisk IP-forwarding.",
-          },
-          {
-            term: "Logisk vs fysisk sentralisering",
-            body: "Controlleren er logisk sentral (én abstraksjon) men kjører ofte som distribuert cluster bak kulissene, av oppetid- og skaleringsgrunner. Bruker konsensus-protokoller som Raft eller Zookeeper for å holde state synkronisert.",
-          },
-          {
-            term: "Nord-bound vs sør-bound API",
-            body: "Nord-bound: controller → applikasjon (typisk REST). Sør-bound: controller → switch (OpenFlow, P4). Skillet lar deg bytte ut switch-leverandør uten å endre apps.",
-          },
-          {
-            term: "Hvorfor SDN vant i datasentre",
-            body: "Datasentre eier alt utstyret, har homogene policy-behov, og verdsetter rask reconfiguration (VM-flytting, multi-tenancy, micro-segmentation). I et globalt internett med 75 000 AS-er ville én sentral controller vært umulig — derfor bruker fortsatt internet-core BGP.",
-          },
-        ]}
-      />
+          items={[
+            {
+              term: "SDN (Software-Defined Networking)",
+              body: "Paradigme der control-plane separeres fra data-plane og flyttes til en ekstern, programmerbar controller. Switcher reduseres til programmerbare match-action-tabeller styrt utenfra. Først foreslått ved Stanford rundt 2008, dominant i hyperscale datasentre fra ~2015.",
+            },
+            {
+              term: "SDN-arkitektur",
+              body: "Tre lag: (1) infrastruktur-laget (dumme switcher med flow-tabeller); (2) controller-laget (kjører som software-cluster, holder global topologi); (3) applikasjons-laget (load-balancing, firewall, traffic-engineering — egne programmer mot controlleren).",
+            },
+            {
+              term: "OpenFlow",
+              body: "Den første og mest kjente sør-bound API-en (controller ↔ switch). Definerer melding-formater for å installere flow-entries, lese statistikker, og motta pakke-events. Andre alternativer i dag: P4, gNMI, NETCONF.",
+            },
+            {
+              term: "Flow-entry",
+              body: "Én rad i flow-tabellen: match-felter (IP-src, IP-dst, port osv) + action (forward port X, drop, send-til-controller, modify). Switchen sjekker hver pakke mot tabellen og utfører første matchende action.",
+            },
+            {
+              term: "Match-felter",
+              body: "Det settet headers en flow-entry kan sammenligne på. Klassisk OpenFlow 1.0: 12 felter (in-port, MAC src/dst, EtherType, VLAN, IP src/dst, IP-proto, TCP/UDP src/dst-port, ToS). OpenFlow 1.3+ utvider til ~40 felter. P4 lar deg definere helt egne header-formater.",
+            },
+            {
+              term: "Action-set",
+              body: "Hva en pakke skal gjøres ved match: forward(port), drop, output-to-controller, set-field (modifiser en header-verdi), group-action (load balance over flere porter), push/pop (legg til/fjern VLAN, MPLS-label). Actions utføres atomisk per pakke.",
+            },
+            {
+              term: "Match-action-paradigmet",
+              body: "Generalisert forwarding: ikke bare IP-prefiks, men hva som helst i headerne. En flow-entry kan matche på TCP-port + VLAN + MAC samtidig. Gir mye mer fleksibilitet enn klassisk IP-forwarding.",
+            },
+            {
+              term: "Proactive vs reactive flow-installasjon",
+              body: "Proactive: controlleren skyver flow-entries ned i forkant for alle forventede flows (få controller-loops, høyere minne i switch). Reactive: switch sender PACKET_IN til controller på første pakke av ukjent flow, så installeres entry just-in-time (lavere minne, mer latens på første pakke).",
+            },
+            {
+              term: "Logisk vs fysisk sentralisering",
+              body: "Controlleren er logisk sentral (én abstraksjon) men kjører ofte som distribuert cluster bak kulissene, av oppetid- og skaleringsgrunner. Bruker konsensus-protokoller som Raft eller Zookeeper for å holde state synkronisert.",
+            },
+            {
+              term: "Nord-bound vs sør-bound API",
+              body: "Nord-bound: controller → applikasjon (typisk REST). Sør-bound: controller → switch (OpenFlow, P4). Skillet lar deg bytte ut switch-leverandør uten å endre apps.",
+            },
+            {
+              term: "Network OS-en",
+              body: "Controlleren betraktes som en operativ-system-abstraksjon for hele nettet — gir apps høy-nivå-API («send X til Y», «isoler tenant Z») uten at appen vet om individuelle switcher. Kjente: ONOS, OpenDaylight, Nicira NVP (kjøpt av VMware → NSX).",
+            },
+            {
+              term: "Hvorfor SDN vant i datasentre",
+              body: "Datasentre eier alt utstyret, har homogene policy-behov, og verdsetter rask reconfiguration (VM-flytting, multi-tenancy, micro-segmentation). I et globalt internett med 75 000 AS-er ville én sentral controller vært umulig — derfor bruker fortsatt internet-core BGP.",
+            },
+          ]}
+        />
         <Illustration caption="OpenFlow-melding fra controller til switch installerer en ny flow-entry. Pakker som matcher får valgt action.">
-        <OpenFlowSvg />
-      </Illustration>
+          <OpenFlowSvg />
+        </Illustration>
       </div>
 
       <Example title="Eksempel: load balancer som SDN-app">
@@ -573,6 +885,50 @@ function Section55() {
         </p>
       </Example>
 
+      <Example title="Eksempel: VM-migrasjon i et tenant-segment">
+        <p>
+          Et datasenter kjører en tenant «Finans» på VLAN 137. En VM «db-primary» flyttes live fra
+          rack A til rack D mens den fortsatt har åpne klient-tilkoblinger.
+        </p>
+        <ol className="list-decimal pl-5 mt-1">
+          <li>
+            Hypervisor i rack D varsler SDN-controlleren før migrasjons-pause: «db-primary kommer
+            til min toR-switch på port 23 om 200 ms».
+          </li>
+          <li>
+            Controlleren regner deltaet: alle flow-entries i rack-A-toR med dst=db-primaryMAC
+            fjernes, nye entries pushes til rack-D-toR og spine-switcher som rutet trafikk dit før.
+          </li>
+          <li>
+            Hypervisor flytter VM-en. Etter ~10 ms TCP-stillstand er nye entries plassert, og
+            klient-trafikk strømmer mot rack D uten at klientene noensinne ser et tap.
+          </li>
+        </ol>
+        <p className="mt-2">
+          I et tradisjonelt nett ville dette krevd at hver ruter selv lærte at MAC-en hadde flyttet
+          seg (via ARP, MAC-aging) — sekunder med blackhole. SDN flytter koordineringen til
+          controlleren som kan time det perfekt med hypervisoren.
+        </p>
+      </Example>
+
+      <Hvorfor title="Hvorfor sentralisere kontroll i SDN?">
+        <p>
+          Distribuert ruting har én fundamental begrensning: hver ruter ser bare en lokal del av
+          bildet. Det er kraftig for robusthet — ingen single point of failure — men det betyr at
+          globale optimaliseringer er umulige. Du kan ikke be 100 rutere om å sammen reservere
+          båndbredde til en spesifikk video-flow gjennom nettet uten en koordinator. Du kan ikke
+          enkelt si «alle Finans-tenant pakker skal isoleres fra Marketing-tenant» når policyen er
+          definert per tenant, ikke per ruter.
+        </p>
+        <p>
+          Sentralisert SDN gir global oversikt gratis: controlleren ser hele topologien, all flow-
+          statistikk, alle tenant-konfigurasjoner. Den kan kjøre globale algoritmer (ECMP med
+          load-bevissthet, segment routing, micro-segmentation-firewall) som krever
+          tverr-rutere-koordinering. Pris-en er at SDN passer best for én eier (datasenter, en
+          enkelt ISP-backbone) — det er hvorfor internett-core forblir BGP-distribuert.
+        </p>
+      </Hvorfor>
+
       <RelatedSlugs slugs={["dte2507-ruting"]} />
     </article>
   );
@@ -594,40 +950,64 @@ function Section56() {
 
       <div className="grid gap-3 lg:grid-cols-2">
         <Defs
-        items={[
-          {
-            term: "ICMP-meldinger",
-            body: "Klassifiseres med type og kode. Hver melding er pakket i et IP-datagram (protocol-number 1). Ikke en transportlag-protokoll, men en host-til-host kontrollkanal som lever oppå IP.",
-          },
-          {
-            term: "Echo Request / Echo Reply (type 8 / 0)",
-            body: "Ping bruker disse: Echo Request sendes til en destinasjon; den svarer med Echo Reply. Måler RTT og verifiserer reachability. Inneholder identifier og sekvens-nummer for å matche par.",
-          },
-          {
-            term: "Destination Unreachable (type 3)",
-            body: "Ruter sender denne tilbake til kilden hvis den ikke kan levere pakken. Koden forteller hvorfor: kode 0 (network unreachable), 1 (host), 3 (port), 4 (fragmentation needed, DF set), osv.",
-          },
-          {
-            term: "Time Exceeded (type 11)",
-            body: "Ruter dekrementerer TTL i hver IP-pakke. Når TTL når 0, kastes pakken og en ICMP Time Exceeded sendes tilbake. Hjelper å unngå evige loops. Trick brukt av traceroute.",
-          },
-          {
-            term: "Redirect (type 5)",
-            body: "Ruter sier til en host: «du sender til feil first-hop — bruk denne andre i stedet». Sjelden brukt i moderne nett (deaktivert pga sikkerhet — kan brukes til man-in-the-middle).",
-          },
-          {
-            term: "Ping-mekanikken",
-            body: "Send Echo Request, vent på Echo Reply, mål tiden. Sekvens-nummer i hver request lar deg telle pakketap. Default 56 byte payload + 8 byte ICMP-header.",
-          },
-          {
-            term: "Traceroute-mekanikken",
-            body: "Send UDP-pakker (eller ICMP Echo) til destinasjon med stigende TTL: 1, 2, 3, ... Ruter på hopp N kaster TTL=N-pakken og sender Time Exceeded tilbake. Kildens stack registrerer hver responder. Slik kartlegges stien hopp for hopp.",
-          },
-        ]}
-      />
+          items={[
+            {
+              term: "ICMP (Internet Control Message Protocol)",
+              body: "Definert i RFC 792. Ikke et transport-lag, men en feilmelding-kanal som lever oppå IP (protokoll-nummer 1). Brukes av rutere og hoster til å rapportere problemer og diagnose, ikke for å transportere bruker-data.",
+            },
+            {
+              term: "ICMP type og kode",
+              body: "Hver melding identifiseres med (type, kode). Type er hovedkategorien (3 = unreachable, 11 = time exceeded), kode er sub-typen (3,0 = network unreachable; 3,3 = port unreachable). Tilsammen ~30 kombinasjoner i bruk.",
+            },
+            {
+              term: "Echo Request / Echo Reply (type 8 / 0)",
+              body: "Ping bruker disse: Echo Request sendes til en destinasjon; den svarer med Echo Reply. Måler RTT (round-trip-time) og verifiserer reachability. Inneholder identifier og sekvens-nummer for å matche par.",
+            },
+            {
+              term: "Destination Unreachable (type 3)",
+              body: "Ruter sender denne tilbake til kilden hvis den ikke kan levere pakken. Koden forteller hvorfor: kode 0 (network unreachable), 1 (host), 3 (port), 4 (fragmentation needed, DF set), osv.",
+            },
+            {
+              term: "Type 3 kode 4 (fragmentation needed)",
+              body: "Spesielt viktig: kommer når en pakke er større enn neste lenkes MTU (Maximum Transmission Unit) og DF-flagget (Don't Fragment) er satt. Brukt av Path-MTU-discovery: senderen reduserer pakke-størrelsen til den får ACK. Hvis ICMP filtreres bort underveis (vanlig misskonfigurasjon), kalles det «PMTUD black hole».",
+            },
+            {
+              term: "Time Exceeded (type 11)",
+              body: "Ruter dekrementerer TTL (Time-To-Live) i hver IP-pakke. Når TTL når 0, kastes pakken og en ICMP Time Exceeded sendes tilbake. Hjelper å unngå evige loops. Trick brukt av traceroute.",
+            },
+            {
+              term: "Source Quench (type 4) — deprekert",
+              body: "Historisk overbelastning-melding: ruter ber kilde om å bremse. Avskaffet i 2012 (RFC 6633) fordi det stresset rutere mer enn det hjalp; moderne overbelastningsstyring skjer i TCP (ECN, congestion control).",
+            },
+            {
+              term: "Redirect (type 5)",
+              body: "Ruter sier til en host: «du sender til feil first-hop — bruk denne andre i stedet». Sjelden brukt i moderne nett (deaktivert pga sikkerhet — kan brukes til man-in-the-middle).",
+            },
+            {
+              term: "Router Solicitation/Advertisement (type 9/10)",
+              body: "Lar en host oppdage rutere på sitt lokale subnet uten DHCP. Brukes sjelden i IPv4; sentralt i IPv6 hvor det erstatter mye av DHCPs adresse-auto-konfigurasjon.",
+            },
+            {
+              term: "Ping-mekanikken",
+              body: "Send Echo Request, vent på Echo Reply, mål tiden. Sekvens-nummer i hver request lar deg telle pakketap. Default 56 byte payload + 8 byte ICMP-header.",
+            },
+            {
+              term: "Traceroute-mekanikken",
+              body: "Send UDP-pakker (eller ICMP Echo) til destinasjon med stigende TTL: 1, 2, 3, ... Ruter på hopp N kaster TTL=N-pakken og sender Time Exceeded tilbake. Kildens stack registrerer hver responder. Slik kartlegges stien hopp for hopp.",
+            },
+            {
+              term: "ICMP rate-limiting",
+              body: "Rutere genererer ICMP-svar i kontroll-CPU-en (ikke ASIC), så generering kostes dyrt. Derfor begrenses rate (typisk 100-1000 ICMP/sek/destinasjon). Det er grunnen til at traceroute noen ganger viser «*» — pakken ble videresendt, men ICMP-svaret ble droppet av rate-limiter.",
+            },
+            {
+              term: "Hvorfor stoler vi ikke blindt på ICMP",
+              body: "ICMP-pakker kan spoofes — en angriper kan sende falske Redirect, Destination Unreachable eller fragmentation-needed til en host og forstyrre nettet. De fleste OS-er valider ICMP-svar mot åpne forbindelser (sjekker sekvens-nummer), og mange firmaer filtrerer all innkommende ICMP unntatt Echo.",
+            },
+          ]}
+        />
         <Illustration caption="Traceroute: pakker med TTL 1, 2, 3 trigger Time Exceeded fra hver ruter underveis.">
-        <TracerouteSvg />
-      </Illustration>
+          <TracerouteSvg />
+        </Illustration>
       </div>
 
       <Example title="Eksempel: traceroute til uit.no fra hjemmenettet">
@@ -654,6 +1034,49 @@ function Section56() {
         </p>
       </Example>
 
+      <Example title="Eksempel: PMTUD-feil i en VPN-tunnel">
+        <p>En bruker klager: «små nettsider laster, men store filer henger». Sysadmin tracer:</p>
+        <ol className="list-decimal pl-5 mt-1">
+          <li>
+            Brukerens link-MTU er 1500, men trafikken går gjennom en VPN som legger til 60 byte
+            header. Den effektive MTU blir 1440 på en pakke kapslet i tunnelen.
+          </li>
+          <li>
+            Klienten sender TCP-segmenter på 1500 byte med DF-flagget satt. Ved tunnel-inngangen kan
+            ikke ruteren fragmentere; den må droppe pakken og sende ICMP Type 3 Kode 4
+            (fragmentation needed, next-hop MTU = 1440) tilbake.
+          </li>
+          <li>
+            Men firewall midt-på filtrerer all ICMP utgående. Senderen ser bare et pakketap, ikke
+            grunnen. TCP retransmitterer samme størrelse → samme drop. Resultat: forbindelsen
+            henger.
+          </li>
+        </ol>
+        <p className="mt-2">
+          Diagnose: <code className="font-mono">ping -s 1480 -M do destinasjon</code> faller ut,
+          mens <code className="font-mono">-s 1410</code> går gjennom. Løsning: enten åpne ICMP
+          Type-3-Kode-4 i firewall, eller manuelt sette MSS-clamping på VPN-gateway-en. Det er en
+          PMTUD-black-hole, og helt avhengig av at ICMP fungerer for å være automatisk
+          diagnostiserbar.
+        </p>
+      </Example>
+
+      <Hvorfor title="Hvorfor er ICMP en separat protokoll og ikke en del av IP eller TCP?">
+        <p>
+          IP er bevisst designet som «best-effort»: pakken blir levert hvis den kan, ellers tapt
+          stille. Hvis IP selv skulle bære feilmeldinger, måtte hver pakke ha plass til en evt.
+          retur-melding — sløsing for de 99% av pakker som leveres uten problemer. ICMP holder IP-en
+          smal og raskt og legger feilrapportering på et eget logisk lag.
+        </p>
+        <p>
+          Hvorfor ikke TCP da? Fordi feilene som rapporteres (TTL utløpt, host unreachable, MTU for
+          stor) er typisk forårsaket av rutere i nettet, ikke endepunktene. TCP eksisterer bare
+          mellom sender og mottaker; rutere kan ikke snakke TCP til kilden. ICMP er en
+          «out-of-band»-kanal hvor mellomliggende rutere kan rapportere problemer tilbake til kilden
+          — det er den arkitektoniske grunnen til at den finnes som egen protokoll.
+        </p>
+      </Hvorfor>
+
       <RelatedSlugs slugs={["dte2507-ruting"]} />
     </article>
   );
@@ -675,40 +1098,68 @@ function Section57() {
 
       <div className="grid gap-3 lg:grid-cols-2">
         <Defs
-        items={[
-          {
-            term: "DHCP-server",
-            body: "Tjener som administrerer en pool av IP-adresser og leier dem ut til klienter. På et hjemme-nett kjører DHCP-serveren typisk inni hjemmeruteren; på bedriftsnett er den ofte en egen maskin.",
-          },
-          {
-            term: "DHCP Discover (type 1)",
-            body: "Klient broadcaster en pakke på link-laget: «er det noen DHCP-server her?». Bruker source 0.0.0.0 og destination 255.255.255.255 (broadcast). Inneholder klientens MAC-adresse.",
-          },
-          {
-            term: "DHCP Offer (type 2)",
-            body: "Server svarer med et tilbud: «du kan få adresse 192.168.1.42 i 24 timer. Default gateway er 192.168.1.1. DNS er 8.8.8.8». Også broadcastet siden klienten ennå ikke har IP.",
-          },
-          {
-            term: "DHCP Request (type 3)",
-            body: "Klient velger ett av tilbudene (kan være flere servere) og broadcaster et formelt request. Inneholder den ønskede IP-en og server-ID. Andre servere som ga tilbud trekker dem tilbake.",
-          },
-          {
-            term: "DHCP Ack (type 5)",
-            body: "Valgt server bekrefter: «ja, du eier 192.168.1.42 inntil videre». Etter dette kan klienten begynne å bruke adressen, sende ARP-spørringer, snakke med default gateway osv.",
-          },
-          {
-            term: "Lease og fornyelse",
-            body: "Tildelingen er midlertidig (typisk 24 timer på hjemmenett, kortere på offentlig WiFi). Klienten fornyer halvveis i lease-perioden — sender Request direkte til server (unicast) uten ny Discover.",
-          },
-          {
-            term: "DHCP utover IP-en",
-            body: "Server kan levere mange flere parametere: subnet-mask, default gateway, DNS-servere, NTP-server-adresser, domain-suffix, og praktisk talt et hvilket som helst konfigurasjons-felt definert i DHCP-opsjonene.",
-          },
-        ]}
-      />
+          items={[
+            {
+              term: "DHCP (Dynamic Host Configuration Protocol)",
+              body: "Definert i RFC 2131. Lar en host få IP-adresse og nettverks-konfig dynamisk ved å snakke med en DHCP-server. Erstattet BOOTP fra 1993. Kjører over UDP, klient på port 68, server på port 67.",
+            },
+            {
+              term: "DHCP-server",
+              body: "Tjener som administrerer en pool av IP-adresser og leier dem ut til klienter. På et hjemme-nett kjører DHCP-serveren typisk inni hjemmeruteren; på bedriftsnett er den ofte en egen maskin.",
+            },
+            {
+              term: "DORA — Discover, Offer, Request, Ack",
+              body: "De fire meldingene i den fulle utvekslingen. Hver av dem er en BOOTP-melding med en DHCP-message-type-opsjon som spesifiserer hvilken type. Hele dansen tar typisk 50-200 ms på et hjemmenett.",
+            },
+            {
+              term: "DHCP Discover (DHCPDISCOVER)",
+              body: "Steg D: klient broadcaster en pakke på link-laget: «er det noen DHCP-server her?». Bruker source 0.0.0.0 og destination 255.255.255.255 (limited broadcast). Inneholder klientens MAC-adresse i chaddr-feltet.",
+            },
+            {
+              term: "DHCP Offer (DHCPOFFER)",
+              body: "Steg O: server svarer med et tilbud: «du kan få adresse 192.168.1.42 i 24 timer. Default gateway er 192.168.1.1. DNS er 8.8.8.8». Også broadcastet siden klienten ennå ikke har IP, men adressert til klientens MAC.",
+            },
+            {
+              term: "DHCP Request (DHCPREQUEST)",
+              body: "Steg R: klient velger ett av tilbudene (kan være flere servere på samme nett) og broadcaster et formelt request. Inneholder den ønskede IP-en og server-ID. Andre servere som ga tilbud ser dette og trekker tilbudet sitt tilbake.",
+            },
+            {
+              term: "DHCP Ack (DHCPACK)",
+              body: "Steg A: valgt server bekrefter: «ja, du eier 192.168.1.42 inntil videre». Etter dette kan klienten begynne å bruke adressen, sende ARP-spørringer, snakke med default gateway osv. Hvis serveren har gitt adressen til noen andre i mellomtiden, sendes DHCPNAK i stedet.",
+            },
+            {
+              term: "Hvorfor broadcast i de tre første stegene?",
+              body: "Klienten har ingen IP enda, så server kan ikke unicaste tilbake til den. Broadcasting på 255.255.255.255 lar alle på samme link motta — også relay-rutere for å videresende til en DHCP-server på et annet subnet (relay-agent).",
+            },
+            {
+              term: "Lease-tid",
+              body: "Hvor lenge tildelingen varer. Typisk 24 timer på bedriftsnett, ~1-3 timer på offentlig WiFi, dager til uker for statiske oppsett. Etter T1 = halv lease forsøker klienten renewal direkte til server (unicast). Etter T2 ≈ 7/8 lease går den til rebinding (broadcast til hvilken som helst server). Hvis ingen svarer før lease utløper, må klienten gjøre full DORA på nytt.",
+            },
+            {
+              term: "Renewal (T1) vs Rebinding (T2)",
+              body: "T1 ≈ 50% av lease: klient sender DHCPREQUEST unicast til original server. T2 ≈ 87.5% av lease: hvis ingen ack ennå, broadcast DHCPREQUEST til hvilken som helst server. Etter T2 og fortsatt ingen svar: gi opp adressen, kjør full DORA.",
+            },
+            {
+              term: "DHCP Relay Agent",
+              body: "På store nett har ikke hvert subnet sin egen DHCP-server. En ruter (eller spesialisert agent) på subnet-en mottar broadcast Discover, kapsler den i unicast og sender til den sentrale serveren med klientens link-info i giaddr-feltet, slik at server vet hvilken pool å tildele fra.",
+            },
+            {
+              term: "DHCP utover IP-en",
+              body: "Server kan levere mange flere parametere: subnet-mask, default gateway, DNS-servere, NTP-server-adresser, domain-suffix, og praktisk talt et hvilket som helst konfigurasjons-felt definert i DHCP-opsjonene.",
+            },
+            {
+              term: "DHCPDECLINE og DHCPRELEASE",
+              body: "DECLINE: klient oppdager via ARP at den tilbudte IP-en allerede er i bruk (sjelden, men en sikkerhetssjekk). Returnerer adressen til pool. RELEASE: klient frigjør adressen frivillig (f.eks. ved nedstenging). Pool-server kan så gi ut adressen til andre umiddelbart.",
+            },
+            {
+              term: "Link-local fallback (169.254.x.x)",
+              body: "Hvis ingen DHCP-server svarer etter flere forsøk, kan klienten auto-konfigurere en adresse i 169.254.0.0/16-rommet (RFC 3927) og kommunisere direkte med andre på samme link. Praktisk ad-hoc-løsning når DHCP er nede.",
+            },
+          ]}
+        />
         <Illustration caption="DORA: fire broadcasts mellom klient og server gir klienten en IP-adresse på under et sekund.">
-        <DhcpDoraSvg />
-      </Illustration>
+          <DhcpDoraSvg />
+        </Illustration>
       </div>
 
       <Example title="Eksempel: kafé-WiFi DHCP-leie">
@@ -738,6 +1189,52 @@ function Section57() {
           (169.254.x.x) som faller-back, eller bare gir opp.
         </p>
       </Example>
+
+      <Example title="Eksempel: DHCP-relay over flere subnett i en universitets-campus">
+        <p>
+          Et universitet har 200 subnett i ett bygg — én per laboratorie og auditorium. De vil ikke
+          drifte 200 DHCP-servere, så de plasserer én sentral DHCP-server (10.0.0.5) og bruker
+          relay-agents.
+        </p>
+        <ol className="list-decimal pl-5 mt-1">
+          <li>
+            En laptop på lab 12 (subnet 10.0.12.0/24) starter opp. Sender DHCPDISCOVER broadcast.
+          </li>
+          <li>
+            ruteren for lab 12 (10.0.12.1) er konfigurert som DHCP-relay. Den fanger broadcast,
+            setter giaddr=10.0.12.1, og unicaster pakken til 10.0.0.5.
+          </li>
+          <li>
+            DHCP-serveren ser giaddr=10.0.12.1 og vet at klienten er på subnet 10.0.12.0/24. Den
+            velger en ledig adresse fra den pool-en (f.eks. 10.0.12.87), pluss riktig gateway
+            (10.0.12.1) og lab-spesifikke DNS.
+          </li>
+          <li>
+            Server sender DHCPOFFER unicast tilbake til relay-en, som broadcaster den på lab 12 sitt
+            subnet. Resten av dansen følger samme mønster.
+          </li>
+        </ol>
+        <p className="mt-2">
+          giaddr-feltet er nøkkelen: uten det ville serveren bare sett at meldingen kom fra
+          relay-rutuens IP og ikke visst hvilket subnet klienten faktisk satt på.
+        </p>
+      </Example>
+
+      <Hvorfor title="Hvorfor er DHCP det første som skjer når en host kobler til?">
+        <p>
+          IP-adressen er forutsetningen for nesten alt annet i nettet. ARP, DNS, default gateway,
+          TCP-forbindelser — alt krever at host-en har en gyldig IP. DHCP er designet for å være
+          self-bootstrappende: klienten kan starte uten å vite noe om nettet hun er på, sende
+          broadcast som ikke krever en adresse, og lære alt hun trenger fra ett enkelt utveksling.
+        </p>
+        <p>
+          Hvorfor en hel 4-stegs DORA og ikke 2 (forespørsel, svar)? Fordi det kan være flere
+          DHCP-servere på samme link — typisk for redundans. Discover-broadcast lar alle si fra at
+          de er der; klienten velger ett tilbud i Request-steget, og de andre serverene kan tilbake-
+          ringe sine tilbud. Uten dette ville to servere kunne gi samme klient to ulike adresser i
+          samtidig, eller reservere adresser for klienter som aldri kommer tilbake.
+        </p>
+      </Hvorfor>
 
       <RelatedSlugs slugs={["dte2507-dhcp"]} />
     </article>
@@ -940,6 +1437,188 @@ function Section58() {
           </ol>
         }
       />
+
+      <Exercise
+        question={
+          <>
+            <p>
+              Et lite AS består av 6 OSPF-rutere i to areas: Area 0 har R-a, R-b, R-c; Area 1 har
+              R-d, R-e, R-f. R-c er ABR (Area Border Router) mellom dem. En lenke i Area 1 (R-d til
+              R-e) ryker. Beskriv presist hvilke LSA-er som genereres og flooder hvor, og hvorfor
+              R-a (i Area 0) ikke trenger å regne Dijkstra på nytt på Area 1-topologien.
+            </p>
+          </>
+        }
+        hint="Husk: Type 1 (Router-LSA) er area-lokal. Type 3 (Summary) annonseres av ABR-er mellom areas. Hva endrer seg hvis bare en intra-area lenke ryker, men ingen prefiks blir uoppnåelig?"
+        answer={
+          <>
+            <ol className="list-decimal pl-5 space-y-1">
+              <li>
+                R-d og R-e detekterer at hello-pakkene fra hverandre uteblir (etter dead-interval).
+                Begge oppdaterer sin Router-LSA (Type 1): «min lenke til R-e er borte» fra R-d, og
+                speil-vendt fra R-e.
+              </li>
+              <li>
+                Type-1-LSA-er flooder kun innenfor Area 1. R-f, R-c (ABR) mottar dem. R-c oppdaterer
+                sin Area-1-LSDB.
+              </li>
+              <li>
+                R-c, R-d, R-f kjører Dijkstra på nytt på Area-1-topologien. Forutsatt at det
+                fortsatt finnes en sti R-d → R-f → R-e (eller lignende), endres bare interne
+                forwarding-tabeller i Area 1.
+              </li>
+              <li>
+                Området bak ABR-en (Area 0) er upåvirket: ingen prefikser ble uoppnåelig, så R-c
+                trenger ikke generere en ny Type-3 Summary-LSA. R-a og R-b ser ingen endring.
+              </li>
+              <li>
+                Hvis det derimot ikke fantes alternativ sti, ville R-c sendt en oppdatert Type-3 som
+                withdrew det prefikset; bare da måtte R-a regne om sin del.
+              </li>
+            </ol>
+            <p className="mt-2">
+              Poenget: areas avskjermer flooding. Lokale endringer i Area 1 forplanter seg ikke til
+              Area 0 med mindre de endrer hvilke prefikser som er nåbare.
+            </p>
+          </>
+        }
+      />
+
+      <Exercise
+        question={
+          <>
+            <p>BGP path-selection: AS 6 mottar fire stier til prefikset 203.0.113.0/24.</p>
+            <ul className="list-disc pl-5 mt-1 font-mono text-[12px]">
+              <li>P1 via AS7 (peer): LOCAL_PREF=150, AS_PATH=[7, 11], ORIGIN=IGP, MED=10</li>
+              <li>P2 via AS8 (kunde): LOCAL_PREF=200, AS_PATH=[8, 9, 11], ORIGIN=IGP, MED=50</li>
+              <li>
+                P3 via AS9 (kunde): LOCAL_PREF=200, AS_PATH=[9, 11], ORIGIN=Incomplete, MED=20
+              </li>
+              <li>P4 via AS7 (peer): LOCAL_PREF=150, AS_PATH=[7, 12, 11], ORIGIN=IGP, MED=5</li>
+            </ul>
+            <p className="mt-1">Hvilken vinner og hvorfor? Begrunn med rute-seleksjons-rekken.</p>
+          </>
+        }
+        hint="Steg 1: LOCAL_PREF. Steg 2: AS_PATH-lengde. Steg 3: ORIGIN (lavere = bedre; IGP=0 &lt; EGP=1 &lt; Incomplete=2). Steg 4: MED."
+        answer={
+          <>
+            <ol className="list-decimal pl-5 space-y-1">
+              <li>
+                <strong>LOCAL_PREF:</strong> P1=150, P2=200, P3=200, P4=150 → P1 og P4 elimineres.
+              </li>
+              <li>
+                <strong>AS_PATH-lengde:</strong> P2=3, P3=2 → P2 elimineres.
+              </li>
+              <li>
+                <strong>Resultat: P3 vinner</strong> (via AS9). Vi trengte ikke å se på ORIGIN, MED
+                eller IGP-kost.
+              </li>
+            </ol>
+            <p className="mt-2">
+              Merk: ORIGIN-trinnet ville trolig disqualifisert P3 (Incomplete) over P2 (IGP) HVIS de
+              hadde nådd så langt. Men AS_PATH-trinnet brytes først, og P3 vant der. Det er hvorfor
+              ordensn (LOCAL_PREF → AS_PATH → ORIGIN → MED) er nøye spesifisert: tidligere trinn
+              vinner uansett hva senere trinn ville sagt.
+            </p>
+          </>
+        }
+      />
+
+      <Exercise
+        question="En SDN-controller administrerer en switch med en flow-tabell. Tabellen har: (1) prio=100, match=dst-IP=10.0.0.5, action=output port 3; (2) prio=50, match=dst-IP=10.0.0.0/24, action=output port 4; (3) prio=10, match=*, action=send-to-controller. En pakke kommer med dst-IP=10.0.0.5, src-IP=10.0.0.99. Hvilken action utføres? Hva skjer hvis pakken har dst-IP=10.0.0.50? Hva hvis dst-IP=8.8.8.8?"
+        hint="Match-action: alle entries med matchende felter vurderes, høyeste prioritet vinner. Default («catch-all») entry har lavest prio."
+        answer={
+          <ol className="list-decimal pl-5 space-y-1">
+            <li>
+              <strong>10.0.0.5</strong>: Entry 1 (prio=100) og entry 2 (prio=50) matcher begge. 100
+              &gt; 50, så <strong>output port 3</strong> utføres.
+            </li>
+            <li>
+              <strong>10.0.0.50</strong>: Entry 1 matcher ikke (annen IP), entry 2 matcher (samme
+              /24). Action: <strong>output port 4</strong>.
+            </li>
+            <li>
+              <strong>8.8.8.8</strong>: Verken entry 1 eller 2 matcher. Entry 3 (catch-all) matcher.
+              Action: <strong>send-til-controller</strong>. Controlleren mottar PACKET_IN-melding,
+              avgjør hva som skal gjøres, og installerer typisk en ny flow-entry så framtidige
+              pakker ikke trenger controller-rundtur.
+            </li>
+          </ol>
+        }
+      />
+
+      <Exercise
+        question={
+          <>
+            <p>En klient kobler seg til et nytt nett. Wireshark fanger 4 pakker:</p>
+            <ul className="list-disc pl-5 mt-1 font-mono text-[12px]">
+              <li>t=0.000 src=0.0.0.0:68 dst=255.255.255.255:67, UDP, BOOTP-Request, opt 53=1</li>
+              <li>
+                t=0.020 src=10.50.0.1:67 dst=255.255.255.255:68, UDP, BOOTP-Reply, opt 53=2,
+                yiaddr=10.50.0.142
+              </li>
+              <li>
+                t=0.025 src=0.0.0.0:68 dst=255.255.255.255:67, UDP, BOOTP-Request, opt 53=3,
+                requested-IP=10.50.0.142
+              </li>
+              <li>
+                t=0.045 src=10.50.0.1:67 dst=255.255.255.255:68, UDP, BOOTP-Reply, opt 53=5,
+                yiaddr=10.50.0.142
+              </li>
+            </ul>
+            <p className="mt-1">
+              Hva betyr opsjon 53 for hver pakke? Hvilken IP fikk klienten, og hvorfor sendes alle
+              fire pakker som broadcast? Hva blir T1- og T2-tidspunktet hvis lease=3600 s?
+            </p>
+          </>
+        }
+        hint="Opsjon 53 er DHCP-message-type. 1=Discover, 2=Offer, 3=Request, 5=Ack. yiaddr = 'your IP address'."
+        answer={
+          <>
+            <p>
+              Opsjon 53 verdier mapper til DORA: 1=DISCOVER, 2=OFFER, 3=REQUEST, 5=ACK. Klienten
+              fikk IP-en <strong>10.50.0.142</strong> (yiaddr-feltet).
+            </p>
+            <p className="mt-2">
+              Alle fire pakker er broadcast fordi klienten ikke har en gyldig unicast-IP før ACK er
+              mottatt. Tradisjonelt er også svarene broadcastet for å sikre at klienten mottar dem
+              uten å trenge ARP-oppslag på en ennå ikke-konfigurerte adresse — men noen klienter ber
+              om unicast-svar via BROADCAST-flagget i klient-MAC-feltet.
+            </p>
+            <p className="mt-2">
+              Med lease=3600 s: <strong>T1 = 50% = 1800 s</strong> (klient sender Request unicast
+              direkte til serveren for renewal). <strong>T2 = 87.5% = 3150 s</strong> (hvis ingen
+              ack ennå, broadcast Request til hvilken som helst server). Etter 3600 s uten ack
+              kastes adressen og full DORA starter på nytt.
+            </p>
+          </>
+        }
+      />
+
+      <Exercise
+        question="Sammenlign konvergens-tid for tre topologi-endringer: (a) en lenke ryker i et OSPF-AS med default-timere, (b) en lenke ryker i en SDN-controller som har en BFD-sesjon med 100 ms detection, (c) en hel AS blir uoppnåelig pga BGP-withdrawal som propagerer ut. Hvilken er raskest, og hvilken kan ta MINUTTER?"
+        hint="OSPF: hello/dead = 10s/40s default. BFD: 100 ms / 300 ms detection. BGP: avhengig av MRAI-timer (Minimum Route Advertisement Interval, typisk 30 s) og hop-count gjennom internett."
+        answer={
+          <ol className="list-decimal pl-5 space-y-1">
+            <li>
+              <strong>(b) SDN med BFD</strong>: ~100-500 ms. BFD (Bidirectional Forwarding
+              Detection) detekterer tap raskt, controlleren har global topologi og kan regne ny FIB
+              umiddelbart og push ut til alle switcher i én OpenFlow-runde. Klart raskest.
+            </li>
+            <li>
+              <strong>(a) OSPF</strong>: ~10-40 s med default-timere (dead-interval = 40 s). Hvis
+              operatøren har tunet til 1s/3s, kan det komme ned til ~3-5 s. Dijkstra-kjøringen
+              etterpå er sub-sekund.
+            </li>
+            <li>
+              <strong>(c) BGP-withdrawal globalt</strong>: kan ta <strong>2-30 minutter</strong>.
+              Hver AS sitter med MRAI-timer (typisk 30 s) før den sender oppdatert prefiks-info
+              videre. Med en hop-count på 5-10 AS-er globalt, summerer det seg. Path exploration —
+              hvor AS-er prøver alternative stier før de gir opp — kan utvide dette ytterligere.
+            </li>
+          </ol>
+        }
+      />
     </article>
   );
 }
@@ -991,6 +1670,18 @@ function Example({ title, children }: { title: string; children: React.ReactNode
     <div className="rounded-xl border border-amber-500/30 bg-amber-500/5 p-4">
       <div className="text-[10px] uppercase tracking-wider text-amber-700 dark:text-amber-400 font-semibold mb-1">
         Eksempel
+      </div>
+      <div className="font-semibold text-foreground mb-1">{title}</div>
+      <div className="text-muted-foreground text-[13px] space-y-2">{children}</div>
+    </div>
+  );
+}
+
+function Hvorfor({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <div className="rounded-xl border border-sky-500/30 bg-sky-500/5 p-4">
+      <div className="text-[10px] uppercase tracking-wider text-sky-700 dark:text-sky-400 font-semibold mb-1">
+        Hvorfor?
       </div>
       <div className="font-semibold text-foreground mb-1">{title}</div>
       <div className="text-muted-foreground text-[13px] space-y-2">{children}</div>
@@ -1074,7 +1765,6 @@ function RelatedSlugs({ slugs }: { slugs: string[] }) {
     </div>
   );
 }
-
 
 // ============================================================
 // SVG-illustrasjoner — alle original-tegnet

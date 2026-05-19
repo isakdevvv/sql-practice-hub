@@ -14,7 +14,6 @@ import { SectionPager, type SectionNavItem } from "./SectionPager";
 
 type Tab = "intro" | "6.1" | "6.2" | "6.3" | "6.4" | "6.5" | "6.6" | "6.7" | "6.8";
 
-
 const SECTIONS_6: SectionNavItem[] = [
   { id: "intro", label: "Start her" },
   { id: "6.1", label: "6.1 Tjenester" },
@@ -34,47 +33,52 @@ export function KuroseKap6Page() {
     <div className="min-h-screen bg-background">
       <SiteHeader />
       <main className="container mx-auto px-4 py-4 max-w-6xl">
-        <header className="mb-3"><div className="flex items-center gap-2 text-xs text-muted-foreground mb-2">
-            <a href="/stack/dte-2507" className="inline-flex items-center gap-1 hover:text-foreground"><FolderOpen className="h-3 w-3" /> DTE-2507</a>
-            <span>·</span>
+        <div className="mb-3 flex items-center flex-wrap gap-x-3 gap-y-1 border-b border-border pb-1.5">
+          <div className="flex items-center gap-1.5 text-xs text-muted-foreground min-w-0">
             <a
-              href="/stack/kurose-kurs"
-              className="inline-flex items-center gap-1 hover:text-foreground"
+              href="/stack/dte-2507"
+              className="inline-flex items-center gap-1 hover:text-foreground shrink-0"
             >
-              <FolderOpen className="h-3 w-3" /> Kurose-kurset
+              <FolderOpen className="h-3 w-3" /> DTE-2507
             </a>
             <span>·</span>
-            <span>Kapittel 6 av 9</span>
-          </div><h1 className="text-2xl font-bold tracking-tight">Kap. 6 — Link-laget og LAN</h1></header>
-
-        <div className="mb-4 flex flex-wrap gap-1.5 border-b border-border">
-          <TabBtn active={tab === "intro"} onClick={() => setTab("intro")}>
-            Start her
-          </TabBtn>
-          <TabBtn active={tab === "6.1"} onClick={() => setTab("6.1")}>
-            6.1 Tjenester
-          </TabBtn>
-          <TabBtn active={tab === "6.2"} onClick={() => setTab("6.2")}>
-            6.2 Feiloppdaging
-          </TabBtn>
-          <TabBtn active={tab === "6.3"} onClick={() => setTab("6.3")}>
-            6.3 Multiple access
-          </TabBtn>
-          <TabBtn active={tab === "6.4"} onClick={() => setTab("6.4")}>
-            6.4 Switched LAN
-          </TabBtn>
-          <TabBtn active={tab === "6.5"} onClick={() => setTab("6.5")}>
-            6.5 Ethernet
-          </TabBtn>
-          <TabBtn active={tab === "6.6"} onClick={() => setTab("6.6")}>
-            6.6 VLAN
-          </TabBtn>
-          <TabBtn active={tab === "6.7"} onClick={() => setTab("6.7")}>
-            6.7 Datasenter
-          </TabBtn>
-          <TabBtn active={tab === "6.8"} onClick={() => setTab("6.8")}>
-            6.8 Oppgaver
-          </TabBtn>
+            <a href="/stack/kurose-kurs" className="hover:text-foreground shrink-0">
+              Kurose-kurset
+            </a>
+            <span>·</span>
+            <h1 className="text-sm font-bold tracking-tight text-foreground truncate">
+              Kap. 6 — Link-laget og LAN
+            </h1>
+          </div>
+          <nav className="ml-auto flex flex-wrap gap-0.5">
+            <TabBtn active={tab === "intro"} onClick={() => setTab("intro")}>
+              Start
+            </TabBtn>
+            <TabBtn active={tab === "6.1"} onClick={() => setTab("6.1")} title="Tjenester">
+              6.1
+            </TabBtn>
+            <TabBtn active={tab === "6.2"} onClick={() => setTab("6.2")} title="Feiloppdaging">
+              6.2
+            </TabBtn>
+            <TabBtn active={tab === "6.3"} onClick={() => setTab("6.3")} title="Multiple access">
+              6.3
+            </TabBtn>
+            <TabBtn active={tab === "6.4"} onClick={() => setTab("6.4")} title="Switched LAN">
+              6.4
+            </TabBtn>
+            <TabBtn active={tab === "6.5"} onClick={() => setTab("6.5")} title="Ethernet">
+              6.5
+            </TabBtn>
+            <TabBtn active={tab === "6.6"} onClick={() => setTab("6.6")} title="VLAN">
+              6.6
+            </TabBtn>
+            <TabBtn active={tab === "6.7"} onClick={() => setTab("6.7")} title="Datasenter">
+              6.7
+            </TabBtn>
+            <TabBtn active={tab === "6.8"} onClick={() => setTab("6.8")} title="Oppgaver">
+              Oppg.
+            </TabBtn>
+          </nav>
         </div>
 
         {tab === "intro" && <Intro onPick={setTab} />}
@@ -87,7 +91,12 @@ export function KuroseKap6Page() {
         {tab === "6.7" && <Section67 />}
         {tab === "6.8" && <Section68 />}
 
-        <SectionPager tabs={SECTIONS_6} current={tab} onPick={(id) => setTab(id as Tab)} nextChapter={NEXT_CHAPTER_6} />
+        <SectionPager
+          tabs={SECTIONS_6}
+          current={tab}
+          onPick={(id) => setTab(id as Tab)}
+          nextChapter={NEXT_CHAPTER_6}
+        />
       </main>
     </div>
   );
@@ -97,18 +106,21 @@ function TabBtn({
   children,
   active,
   onClick,
+  title,
 }: {
   children: React.ReactNode;
   active: boolean;
   onClick: () => void;
+  title?: string;
 }) {
   return (
     <button
       onClick={onClick}
-      className={`px-3 py-1.5 text-xs font-medium border-b-2 -mb-px transition-colors ${
+      title={title}
+      className={`rounded px-2 py-1 text-xs font-medium transition-colors ${
         active
-          ? "border-brand text-foreground"
-          : "border-transparent text-muted-foreground hover:text-foreground"
+          ? "bg-brand/15 text-brand"
+          : "text-muted-foreground hover:bg-muted hover:text-foreground"
       }`}
     >
       {children}
@@ -194,40 +206,64 @@ function Section61() {
 
       <div className="grid gap-3 lg:grid-cols-2">
         <Defs
-        items={[
-          {
-            term: "Ramme (frame)",
-            body: "Link-lagets enhet. Består av et header, payload (typisk et IP-datagram) og noen ganger en trailer med feil-sjekk. Ulike teknologier (Ethernet, WiFi, PPP) har ulike ramme-format, men ideen er den samme.",
-          },
-          {
-            term: "Node",
-            body: "Samlebetegnelse for alle enheter som snakker link-lag: hosts, rutere, switcher, aksess-punkter. En lenke kobler typisk to noder (eller flere noder hvis det er et delt medium).",
-          },
-          {
-            term: "MAC-adresse",
-            body: "48-bit identifikator som er knyttet til hvert nettverkskort. Skrives som seks heksadesimale par, f.eks. 04:1B:6F:A2:90:0C. De første 24 bitene identifiserer leverandøren (OUI); de neste 24 er en serienummer. Hver MAC-adresse er ment å være globalt unik.",
-          },
-          {
-            term: "Framing",
-            body: "Prosessen med å avgjøre hvor en ramme starter og hvor den slutter på det fysiske mediumet. Ethernet bruker en preamble-sekvens før hver ramme; WiFi bruker andre teknikker. Uten framing er en bit-strøm bare uleselig støy.",
-          },
-          {
-            term: "Half-duplex vs full-duplex",
-            body: "På en half-duplex lenke kan bare én node sende av gangen — som en walkie-talkie. På full-duplex sender begge sider samtidig over hver sine ledere. Moderne Ethernet med switch er full-duplex; klassisk Ethernet over koaks var half-duplex.",
-          },
-          {
-            term: "MTU (Maximum Transmission Unit)",
-            body: "Største ramme link-laget kan håndtere. Ethernet har 1500 bytes payload som standard. Hvis et IP-datagram er større, må det fragmenteres — derav PMTU-discovery i IP.",
-          },
-          {
-            term: "Pålitelig levering (link-nivå)",
-            body: "Noen link-lag (WiFi, gamle modem-protokoller) tilbyr garanti om at hver ramme leveres uten feil. Ethernet over kabel gjør det IKKE — feilete rammer kastes bare, og det er TCP sin jobb høyere oppe å oppdage tapet.",
-          },
-        ]}
-      />
+          items={[
+            {
+              term: "Ramme (frame)",
+              body: "Link-lagets enhet. Består av et header, payload (typisk et IP-datagram) og noen ganger en trailer med feil-sjekk. Ulike teknologier (Ethernet, WiFi, PPP) har ulike ramme-format, men ideen er den samme.",
+            },
+            {
+              term: "Node",
+              body: "Samlebetegnelse for alle enheter som snakker link-lag: hosts, rutere, switcher, aksess-punkter. En lenke kobler typisk to noder (eller flere noder hvis det er et delt medium).",
+            },
+            {
+              term: "MAC-adresse",
+              body: "48-bit identifikator som er knyttet til hvert nettverkskort. Skrives som seks heksadesimale par, f.eks. 04:1B:6F:A2:90:0C. De første 24 bitene identifiserer leverandøren (OUI); de neste 24 er en serienummer. Hver MAC-adresse er ment å være globalt unik.",
+            },
+            {
+              term: "Framing",
+              body: "Prosessen med å avgjøre hvor en ramme starter og hvor den slutter på det fysiske mediumet. Ethernet bruker en preamble-sekvens før hver ramme; WiFi bruker andre teknikker. Uten framing er en bit-strøm bare uleselig støy.",
+            },
+            {
+              term: "Half-duplex vs full-duplex",
+              body: "På en half-duplex lenke kan bare én node sende av gangen — som en walkie-talkie. På full-duplex sender begge sider samtidig over hver sine ledere. Moderne Ethernet med switch er full-duplex; klassisk Ethernet over koaks var half-duplex.",
+            },
+            {
+              term: "MTU (Maximum Transmission Unit)",
+              body: "Største ramme link-laget kan håndtere. Ethernet har 1500 bytes payload som standard. Hvis et IP-datagram er større, må det fragmenteres — derav PMTU-discovery i IP.",
+            },
+            {
+              term: "Pålitelig levering (link-nivå)",
+              body: "Noen link-lag (WiFi, gamle modem-protokoller) tilbyr garanti om at hver ramme leveres uten feil. Ethernet over kabel gjør det IKKE — feilete rammer kastes bare, og det er TCP sin jobb høyere oppe å oppdage tapet.",
+            },
+            {
+              term: "Flytstyring (link-nivå)",
+              body: "Ethernet kan sende en PAUSE-ramme (IEEE 802.3x) når mottakerens buffer fylles opp — sender stopper i N kvante (1 kvant = 512 bit-tider). Brukes i lossless fabric for FCoE og RoCE. Skiller seg fra TCPs ende-til-ende flytstyring som virker over hele stien, ikke per lenke.",
+            },
+            {
+              term: "OUI (Organizationally Unique Identifier)",
+              body: "De første 3 bytene (24 bit) i en MAC-adresse identifiserer NIC-produsenten. F.eks. 00:1B:21 = Intel, B8:27:EB = Raspberry Pi Foundation. Du kan slå opp en MAC mot IEEEs OUI-register for å se hvem som lagde kortet — nyttig i nettverks-feilsøking.",
+            },
+            {
+              term: "I/G- og U/L-bit",
+              body: "I første byte av MAC-adressen er bit 0 «individuell/gruppe» (1 = multicast) og bit 1 «universell/lokal» (1 = lokalt administrert, ikke globalt unik). Lokalt administrerte MAC-er brukes f.eks. når en hypervisor lager virtuelle NIC-er for VM-er.",
+            },
+            {
+              term: "Lenke-type: point-to-point vs broadcast-medium",
+              body: "Point-to-point: nøyaktig to noder per lenke (f.eks. SONET, dial-up, PPP over fiber). Broadcast-medium: tre eller flere noder deler ett medium (gammel koaks-Ethernet, WiFi-celle, satellitt-uplink). Multiple-access-protokoller (6.3) løser problemet bare for det andre tilfellet.",
+            },
+            {
+              term: "Adapter-modell",
+              body: "Avsender-NIC pakker datagrammet i en ramme, beregner CRC, plasserer på medium. Mottaker-NIC leser bits, verifiserer CRC, sjekker om MAC matcher (eller om kortet er i promiscuous mode), og leverer payload til OS. Hele transaksjonen er én tur for NIC-en — derfor er link-laget tradisjonelt et hardware-tema.",
+            },
+            {
+              term: "Promiscuous mode",
+              body: "Når NIC-en konfigureres til å akseptere alle rammer på mediet — også de som ikke er adressert til den. Brukes av sniffere som Wireshark og tcpdump. På en switch ser du da bare det som faktisk når din port; for å se hele LAN trenger du en SPAN-port eller en hub.",
+            },
+          ]}
+        />
         <Illustration caption="Link-laget tar et IP-datagram og pakker det inn med MAC-header + trailer før det går ut på fysisk medium.">
-        <FrameSvg />
-      </Illustration>
+          <FrameSvg />
+        </Illustration>
       </div>
 
       <Example title="Eksempel: hvor er link-laget implementert?">
@@ -242,6 +278,51 @@ function Section61() {
           bruke <code>ethtool -S</code>) for å oppdage en kabel som har dårlig krymp.
         </p>
       </Example>
+
+      <Example title="Eksempel: les en MAC-adresse — hvilket kort er det?">
+        <p>
+          Vi ser MAC-en <code>B8:27:EB:4A:12:99</code> på en port i bedriftens switch. Vi ønsker å
+          vite hvilken type maskin det er.
+        </p>
+        <ol className="list-decimal pl-5 mt-1 space-y-1">
+          <li>
+            OUI = de første 3 bytene = <code>B8:27:EB</code>.
+          </li>
+          <li>
+            Slå opp i IEEEs database (eller bare i Wireshark) → <em>Raspberry Pi Foundation</em>.
+          </li>
+          <li>
+            Sjekk I/G-bit i første byte: 0xB8 = 1011 1000. Bit 0 (laveste) = 0 → unicast. Bit 1 = 0
+            → globalt unik (fabrikkbrent, ikke lokal).
+          </li>
+          <li>
+            Konklusjon: porten har en fysisk Raspberry Pi koblet til, ikke en VM. Ofte nok til å
+            spore opp «hva pokker er det der?» uten å trekke i en kabel.
+          </li>
+        </ol>
+      </Example>
+
+      <Hvorfor title="Hvorfor har vi BÅDE IP- og MAC-adresser?">
+        <p>
+          Det føles redundant: IP-en sier «hvor i nettet», MAC-en sier «hvilket kort». Hvorfor ikke
+          bare ha én? Svaret er at de løser ulike problemer på ulike tidsskalaer.
+        </p>
+        <p>
+          <strong>MAC er knyttet til hardware.</strong> En NIC har sin MAC fra fabrikken; du kan
+          flytte kortet til et nytt rom uten å endre noe. Det gjør plug-and-play mulig — switchen
+          lærer adressen automatisk når kortet plugges inn.
+        </p>
+        <p>
+          <strong>IP er knyttet til topologi.</strong> Når kortet plugges inn et nytt sted i nettet,
+          får det en ny IP fra det subnettet det havner i. Rutingsystemet ville aldri skalert hvis
+          rutere skulle huske hver enkelt MAC i hele internett — det fungerer fordi IP-adressene er
+          hierarkiske og kan oppsummeres med prefiks (CIDR).
+        </p>
+        <p>
+          Konsekvensen er at IP-pakken er konstant gjennom hele reisen, mens MAC-rammen rundt byttes
+          ut på hvert hopp. Vi får både plug-and-play OG skalerbar ruting.
+        </p>
+      </Hvorfor>
 
       <RelatedSlugs slugs={["dte2507-day-in-the-life", "dte2507-switch-self-learning"]} />
     </article>
@@ -265,36 +346,64 @@ function Section62() {
 
       <div className="grid gap-3 lg:grid-cols-2">
         <Defs
-        items={[
-          {
-            term: "Paritets-bit",
-            body: "Én ekstra bit per gruppe data, satt slik at totalt antall 1-ere blir partall (even parity) eller oddetall. Oppdager alle 1-bit-feil. Mister evnen til å oppdage 2-bit-feil. Brukes lite i moderne nett, men er pedagogisk grunnlag.",
-          },
-          {
-            term: "2D-paritet (todimensjonal)",
-            body: "Legg databitene i et rektangel og legg paritets-bit både per rad og per kolonne (pluss en for hjørnet). Du kan da ikke bare OPPDAGE en 1-bit-feil, men FINNE den (krysset mellom feil rad og feil kolonne) og reparere den. Enkel forward error correction.",
-          },
-          {
-            term: "Internet checksum",
-            body: "Summer alle 16-bit ord i pakken med ones-complement-aritmetikk, ta komplementet, send det med. Mottakeren summerer alt inkludert checksum — får null hvis intakt. Svakere enn CRC (oppdager ikke alle 2-bit-feil) men billig å regne i software. Brukes i TCP/UDP/IP, men ikke link-laget.",
-          },
-          {
-            term: "CRC (Cyclic Redundancy Check)",
-            body: "Behandler bit-sekvensen som koeffisienter i et polynom og tar resten ved divisjon med et generator-polynom G. Resten er CRC-verdien, sendes med rammen. Hardware-vennlig — implementeres med shift-registre. Ethernet bruker CRC-32 med et 33-bit G. Oppdager alle 1, 2 og 3-bit-feil, alle burst-feil opp til 32 bit, og 99.99999998 % av alt annet.",
-          },
-          {
-            term: "Generator-polynom",
-            body: "Det faste polynomet G som begge sider er enige om på forhånd. For CRC-r velger man G slik at det har grad r og oppdager flest mulig feilmønstre. CRC-32 sin G er standardisert i Ethernet og ZIP.",
-          },
-          {
-            term: "Burst-feil",
-            body: "Når flere bit-feil opptrer i en sammenhengende sekvens (typisk fordi en støy-puls varer noen mikrosekunder). CRC er spesielt god mot dette: en CRC med r bits oppdager garantert alle burst-feil av lengde ≤ r.",
-          },
-        ]}
-      />
+          items={[
+            {
+              term: "Paritets-bit",
+              body: "Én ekstra bit per gruppe data, satt slik at totalt antall 1-ere blir partall (even parity) eller oddetall. Oppdager alle 1-bit-feil. Mister evnen til å oppdage 2-bit-feil. Brukes lite i moderne nett, men er pedagogisk grunnlag.",
+            },
+            {
+              term: "2D-paritet (todimensjonal)",
+              body: "Legg databitene i et rektangel og legg paritets-bit både per rad og per kolonne (pluss en for hjørnet). Du kan da ikke bare OPPDAGE en 1-bit-feil, men FINNE den (krysset mellom feil rad og feil kolonne) og reparere den. Enkel forward error correction.",
+            },
+            {
+              term: "Internet checksum",
+              body: "Summer alle 16-bit ord i pakken med ones-complement-aritmetikk, ta komplementet, send det med. Mottakeren summerer alt inkludert checksum — får null hvis intakt. Svakere enn CRC (oppdager ikke alle 2-bit-feil) men billig å regne i software. Brukes i TCP/UDP/IP, men ikke link-laget.",
+            },
+            {
+              term: "CRC (Cyclic Redundancy Check)",
+              body: "Behandler bit-sekvensen som koeffisienter i et polynom og tar resten ved divisjon med et generator-polynom G. Resten er CRC-verdien, sendes med rammen. Hardware-vennlig — implementeres med shift-registre. Ethernet bruker CRC-32 med et 33-bit G. Oppdager alle 1, 2 og 3-bit-feil, alle burst-feil opp til 32 bit, og 99.99999998 % av alt annet.",
+            },
+            {
+              term: "Generator-polynom",
+              body: "Det faste polynomet G som begge sider er enige om på forhånd. For CRC-r velger man G slik at det har grad r og oppdager flest mulig feilmønstre. CRC-32 sin G er standardisert i Ethernet og ZIP.",
+            },
+            {
+              term: "Burst-feil",
+              body: "Når flere bit-feil opptrer i en sammenhengende sekvens (typisk fordi en støy-puls varer noen mikrosekunder). CRC er spesielt god mot dette: en CRC med r bits oppdager garantert alle burst-feil av lengde ≤ r.",
+            },
+            {
+              term: "Even vs odd parity",
+              body: "Begge typer paritet gjør samme jobb (oppdager 1-bit-feil). Even (partall) setter paritets-biten slik at totalt antall 1-ere blir et partall. Odd setter den slik at totalen blir oddetall. Sender og mottaker må være enige om hvilken konvensjon som brukes — ellers «oppdager» mottakeren feil i hver eneste ramme.",
+            },
+            {
+              term: "GF(2)-aritmetikk",
+              body: "CRC opererer i Galois-feltet GF(2): bits er enten 0 eller 1, addisjon og subtraksjon er BEGGE XOR, multiplikasjon er AND. Det er derfor long-division i CRC er så uvant — det er ingen «lån» eller «mente» som i vanlig divisjon, bare XOR.",
+            },
+            {
+              term: "CRC-32 (IEEE 802.3)",
+              body: "Den standardiserte Ethernet-CRC-en. Generator-polynom: 0x04C11DB7 (33 bit total: x^32 + x^26 + x^23 + x^22 + x^16 + x^12 + x^11 + x^10 + x^8 + x^7 + x^5 + x^4 + x^2 + x + 1). Brukt også i ZIP, PNG, Bzip2. Implementeres typisk med en 256-entry lookup-tabell i software, eller med 32 XOR-gates og shift-registre i hardware.",
+            },
+            {
+              term: "Forward Error Correction (FEC) vs Backward Error Correction",
+              body: "FEC = mottakeren skal kunne REPARERE feilen uten å spørre på nytt (f.eks. Hamming-koder, Reed-Solomon). BEC = mottakeren oppdager feilen og ber sender om å sende på nytt (f.eks. CRC i Ethernet + TCP-retransmisjon). FEC koster mer båndbredde i ren tilstand; BEC koster mer i feil-tilstand.",
+            },
+            {
+              term: "Hamming-avstand",
+              body: "Antall bit-posisjoner to bit-strenger skiller seg på. En kode som har minimum Hamming-avstand d kan oppdage opp til d-1 bit-feil og rette opp til ⌊(d-1)/2⌋. Paritet har Hamming-avstand 2 (oppdager 1, kan ikke rette). 2D-paritet har avstand 4 (kan rette én feil).",
+            },
+            {
+              term: "Hamming(7,4)-kode",
+              body: "Kjent FEC-kode: 4 databits + 3 paritetsbits = 7 bit. Hver paritets-bit dekker en bestemt overlappende del av databitene. Mottakeren kan ikke bare oppdage, men også finne presis hvilken bit som er feil. Brukes i ECC-RAM og noen radiosystemer.",
+            },
+            {
+              term: "Adler-32",
+              body: "Alternativ til CRC-32, brukt i zlib. Raskere å regne i software (rene addisjoner), men oppdager færre feil — særlig på korte meldinger. Velges når du allerede har sjekksum høyere opp og bare vil ha rask sanity-check på lenken.",
+            },
+          ]}
+        />
         <Illustration caption="CRC: del databitene + tilhørende r nuller på G; resten er CRC-verdien som henges på.">
-        <CrcSvg />
-      </Illustration>
+          <CrcSvg />
+        </Illustration>
       </div>
 
       <Example title="Eksempel: CRC-3 på bit-strengen 1011">
@@ -321,6 +430,96 @@ function Section62() {
         </p>
       </Example>
 
+      <Example title="Eksempel: 2D-paritet finner og retter én bit-feil">
+        <p>
+          Vi har 12 databits arrangert i et 3×4-rektangel. Even paritet legges på hver rad og hver
+          kolonne:
+        </p>
+        <pre className="text-[11px] font-mono bg-muted/30 p-2 rounded mt-1 overflow-x-auto">
+          {`             c1 c2 c3 c4 | p_rad
+        r1:   1  0  1  0  |  0
+        r2:   0  1  1  0  |  0
+        r3:   1  1  0  1  |  1
+        -----------------+------
+        p_kol:0  0  0  1  |  1  ← hjørne`}
+        </pre>
+        <p className="mt-2">
+          Anta at bit (r2, c3) flipper underveis fra 1 til 0. Mottakeren beregner paritet og finner:
+          rad 2 har nå paritet 1 (ikke 0 som vi sendte), og kolonne 3 har nå paritet 1 (ikke 0). En
+          rad og en kolonne klager — krysset deres er den feile biten. Mottakeren flipper den
+          tilbake. <strong>Ingen retransmisjon trengtes.</strong>
+        </p>
+        <p className="mt-2">
+          Hvis to bits flipper, klager 2 rader og 2 kolonner — mottakeren ser at noe er galt, men
+          kan ikke bestemme hvilken av de 4 krysspunktene som er ekte. 2D-paritet oppdager altså
+          alle 2-bit-feil, men retter bare 1-bit-feil.
+        </p>
+      </Example>
+
+      <Example title="Eksempel: paritet vs CRC på samme bit-feil-mønster">
+        <p>
+          Vi sender 8 bits: <code>1100 1010</code>. Vi sammenligner hva henholdsvis even paritet og
+          CRC-3 (med G=1011) oppdager.
+        </p>
+        <p className="mt-2">
+          <strong>Even paritet:</strong>
+        </p>
+        <ul className="list-disc pl-5 mt-1">
+          <li>
+            Antall 1-ere = 4 (partall) → paritets-bit = 0. Sender <code>1100 1010 0</code>.
+          </li>
+          <li>
+            Feilmønster A: bit 3 flipper → <code>1110 1010 0</code>. Mottaker teller 5 ettall +
+            paritets-bit 0 = 5 ettall totalt → oddetall → FEIL OPPDAGET.
+          </li>
+          <li>
+            Feilmønster B: bit 3 OG bit 5 flipper → <code>1110 0010 0</code>. Mottaker teller 4
+            ettall + 0 = 4 → partall → FEIL IKKE OPPDAGET.
+          </li>
+        </ul>
+        <p className="mt-2">
+          <strong>CRC-3 med G=1011:</strong>
+        </p>
+        <ul className="list-disc pl-5 mt-1">
+          <li>
+            D = 11001010, D·2³ = 11001010000. Long-division: rest = 011. Sender{" "}
+            <code>11001010 011</code>.
+          </li>
+          <li>
+            Feilmønster B (bit 3 + bit 5 flippet): mottaker mottar <code>11100010 011</code>. Når
+            mottaker deler hele strengen på 1011, blir resten ≠ 0 → FEIL OPPDAGET.
+          </li>
+        </ul>
+        <p className="mt-2">
+          CRC fanger 2-bit-feilen som paritet glipper. Det er nettopp dette CRC ble designet for.
+        </p>
+      </Example>
+
+      <Hvorfor title="Hvorfor er CRC bedre enn paritet, og hvorfor velges den i Ethernet?">
+        <p>
+          Paritet er enkel og billig (én XOR), men har en åpenbar svakhet: alle feil med partall
+          antall flippede bits er usynlige. På en støyende koppertråd, der støy ofte rammer i burst
+          (flere mikrosekunder med spennings-spikes som flipper en rekke bits ved siden av
+          hverandre), er det nettopp 2-, 4- og 6-bits feil som forekommer.
+        </p>
+        <p>
+          <strong>CRC matematisk matchet til burst-feil.</strong> En CRC med r bits oppdager
+          garantert ALLE burst-feil av lengde ≤ r og 1 − 2^(−r) av alle andre. CRC-32 fanger derfor
+          alle burst opp til 32 bit og 99.99999998 % av alt annet — i praksis perfekt deteksjon.
+        </p>
+        <p>
+          <strong>Implementasjon i hardware er enkel.</strong> En CRC kan beregnes med ett shift-
+          register og noen XOR-gates som tar én bit per klokke. Det betyr at en 100 Gbps NIC kan
+          regne CRC i sann tid uten å være flaskehalsen — paritet ville vært like rask, men ville
+          glipp så mange feil at TCP-retransmisjon ble dominerende.
+        </p>
+        <p>
+          <strong>Bonus: deterministiske egenskaper.</strong> Vi vet matematisk nøyaktig hvilke
+          feilmønstre CRC-32 oppdager (alle 1-, 2- og 3-bit feil, alle bursts ≤ 32). Det gjør CRC
+          analyserbar — i motsetning til hash-funksjoner der vi bare har sannsynlighets-utsagn.
+        </p>
+      </Hvorfor>
+
       <RelatedSlugs slugs={["dte2507-crc-kalkulator"]} />
     </article>
   );
@@ -343,44 +542,72 @@ function Section63() {
 
       <div className="grid gap-3 lg:grid-cols-2">
         <Defs
-        items={[
-          {
-            term: "Channel partitioning",
-            body: "Del kanalen i biter og gi hver node en bit: TDM (tidsluker), FDM (frekvensbånd) eller CDM (kode). Garantert kollisjonsfritt, men ineffektivt når bare én node faktisk vil sende — den får fortsatt bare sin lille bit av kanalen.",
-          },
-          {
-            term: "Ren (pure) ALOHA",
-            body: "Send når du vil. Hvis to noder sender og rammene overlapper i tid, er begge ødelagt — vent en tilfeldig stund og prøv igjen. Maksimal throughput er bare ca. 18 % av kanalens kapasitet (1/2e). Enkelt, men dårlig.",
-          },
-          {
-            term: "Slot ALOHA",
-            body: "Tiden deles i diskrete slots på lengde lik én ramme. Noder må starte å sende ved start av en slot. Dette halverer kollisjons-vinduet, så maks throughput dobles til ca. 37 % (1/e). Krever klokke-synkronisering mellom alle noder.",
-          },
-          {
-            term: "CSMA — Carrier Sense Multiple Access",
-            body: "Lytt før du sender. Hvis du hører at noen andre allerede sender, vent. Reduserer (men eliminerer ikke) kollisjoner — du kan fortsatt rote hvis to noder begynner å snakke samtidig fordi de begge så at kanalen var ledig.",
-          },
-          {
-            term: "CSMA/CD — med kollisjons-deteksjon",
-            body: "Klassisk Ethernet over koaks. Mens du sender, lytter du etter at du hører din egen ramme komme fram uforstyrret. Hvis du ikke gjør det, har det skjedd en kollisjon — du avbryter umiddelbart, sender en jam-signal, og venter en tilfeldig backoff. Sparer kanal-tid sammenlignet med å fortsette å sende en ødelagt ramme.",
-          },
-          {
-            term: "Exponential backoff",
-            body: "Etter n-te kollisjon: velg ventetid uniformt fra {0, 1, ..., 2^n - 1} slots. Dobler vinduet hver gang det går galt, så det selvjusterer til belastningen. Brukes i CSMA/CD og i WiFi (CSMA/CA).",
-          },
-          {
-            term: "Taking-turns: polling",
-            body: "En master-node spør hver slave i tur: «har du noe å sende?» Effektivt under høy last, ingen kollisjoner. Sårbar for at masteren går ned. Brukes f.eks. i Bluetooth.",
-          },
-          {
-            term: "Taking-turns: token-ring",
-            body: "En liten kontroll-ramme («token») sirkulerer mellom nodene. Bare noden som holder tokenet får sende. Etter ferdig sending sendes tokenet videre. Brukt i gamle IBM-nett (Token Ring) og FDDI. Tapt token = hele nettet stopper opp.",
-          },
-        ]}
-      />
+          items={[
+            {
+              term: "Channel partitioning",
+              body: "Del kanalen i biter og gi hver node en bit: TDM (tidsluker), FDM (frekvensbånd) eller CDM (kode). Garantert kollisjonsfritt, men ineffektivt når bare én node faktisk vil sende — den får fortsatt bare sin lille bit av kanalen.",
+            },
+            {
+              term: "Ren (pure) ALOHA",
+              body: "Send når du vil. Hvis to noder sender og rammene overlapper i tid, er begge ødelagt — vent en tilfeldig stund og prøv igjen. Maksimal throughput er bare ca. 18 % av kanalens kapasitet (1/2e). Enkelt, men dårlig.",
+            },
+            {
+              term: "Slot ALOHA",
+              body: "Tiden deles i diskrete slots på lengde lik én ramme. Noder må starte å sende ved start av en slot. Dette halverer kollisjons-vinduet, så maks throughput dobles til ca. 37 % (1/e). Krever klokke-synkronisering mellom alle noder.",
+            },
+            {
+              term: "CSMA — Carrier Sense Multiple Access",
+              body: "Lytt før du sender. Hvis du hører at noen andre allerede sender, vent. Reduserer (men eliminerer ikke) kollisjoner — du kan fortsatt rote hvis to noder begynner å snakke samtidig fordi de begge så at kanalen var ledig.",
+            },
+            {
+              term: "CSMA/CD — med kollisjons-deteksjon",
+              body: "Klassisk Ethernet over koaks. Mens du sender, lytter du etter at du hører din egen ramme komme fram uforstyrret. Hvis du ikke gjør det, har det skjedd en kollisjon — du avbryter umiddelbart, sender en jam-signal, og venter en tilfeldig backoff. Sparer kanal-tid sammenlignet med å fortsette å sende en ødelagt ramme.",
+            },
+            {
+              term: "Exponential backoff",
+              body: "Etter n-te kollisjon: velg ventetid uniformt fra {0, 1, ..., 2^n - 1} slots. Dobler vinduet hver gang det går galt, så det selvjusterer til belastningen. Brukes i CSMA/CD og i WiFi (CSMA/CA).",
+            },
+            {
+              term: "Taking-turns: polling",
+              body: "En master-node spør hver slave i tur: «har du noe å sende?» Effektivt under høy last, ingen kollisjoner. Sårbar for at masteren går ned. Brukes f.eks. i Bluetooth.",
+            },
+            {
+              term: "Taking-turns: token-ring",
+              body: "En liten kontroll-ramme («token») sirkulerer mellom nodene. Bare noden som holder tokenet får sende. Etter ferdig sending sendes tokenet videre. Brukt i gamle IBM-nett (Token Ring) og FDDI. Tapt token = hele nettet stopper opp.",
+            },
+            {
+              term: "Propagation-time (t_prop)",
+              body: "Tiden et signal bruker fra én ende av lenken til den andre. På 500 m koaks med utbredelses-hastighet ≈ 2/3 · c blir t_prop ≈ 2,5 μs. CSMA/CD trenger at en ramme er stor nok til at avsender sender i minst 2·t_prop slik at en kollisjon oppdages før hun er ferdig — derav 64-byte minimum-ramme på 10 Mbps Ethernet.",
+            },
+            {
+              term: "Jam-signal",
+              body: "En 48-bit støy-sekvens en CSMA/CD-node sender ut etter at hun har oppdaget en kollisjon. Hensikten: forsikre seg om at alle andre noder også registrerer kollisjonen, ikke bare svinger forbi. Etter jam-en starter exponential backoff.",
+            },
+            {
+              term: "Binary Exponential Backoff (BEB)",
+              body: "Den konkrete formelen i CSMA/CD: etter n-te kollisjon, velg K uniformt fra {0, 1, ..., 2^min(n,10) − 1} og vent K·512 bit-tider. Maks 16 forsøk — etter det gir noden opp og melder feil til operativsystemet. Cap på n=10 forhindrer at vinduet blir absurd stort.",
+            },
+            {
+              term: "Hidden terminal-problem",
+              body: "I trådløse nett kan to noder A og C høre samme aksess-punkt B, men IKKE hverandre. Da feiler carrier sense: A ser at kanalen er ledig (hører ikke C), C ser også at den er ledig — begge sender, B får kollisjon. CSMA/CA i WiFi løser dette med RTS/CTS-håndtrykk.",
+            },
+            {
+              term: "CSMA/CA — Collision Avoidance",
+              body: "WiFi-varianten: i stedet for å oppdage en kollisjon (umulig på radio, sender drukner mottak), prøver vi å UNNGÅ den. Mekanismer: random backoff FØR sending (ikke bare etter), RTS/CTS-frames for å reservere mediet, og ACK-rammer per pakke. Mer overhead enn CD, men nødvendig på halv-duplex radio.",
+            },
+            {
+              term: "Capture effect",
+              body: "Når to noder kolliderer på radio og den ene har vesentlig sterkere signal, kan mottakeren faktisk klare å demodulere den sterke — den «vinner» kollisjonen mens den svake druknes ut. Skjer ikke i kabel-Ethernet, men forklarer hvorfor WiFi i praksis ofte er bedre enn ren CA-teori tilsier.",
+            },
+            {
+              term: "Slotted offered load (G)",
+              body: "Antall ramme-forsøk (nye + retransmisjoner) per ramme-tid. G = 1 betyr at det i snitt kommer ett forsøk per slot. Throughput-funksjonen S(G) = G·e^(-G) har topp ved G=1, der S = 1/e ≈ 0.368. For G > 1 går throughput NED — for mange retransmisjoner spiser opp kanalen (collision collapse).",
+            },
+          ]}
+        />
         <Illustration caption="Pure ALOHA-kollisjon: ramme A overlapper med starten av B. Begge må retransmitteres.">
-        <AlohaSvg />
-      </Illustration>
+          <AlohaSvg />
+        </Illustration>
       </div>
 
       <Example title="Eksempel: hvorfor er slot ALOHA 2× bedre enn pure ALOHA?">
@@ -399,6 +626,83 @@ function Section63() {
           synkronisere klokkene.
         </p>
       </Example>
+
+      <Example title="Eksempel: CSMA/CD-trace med flere kollisjoner">
+        <p>
+          To noder A og B vil sende samtidig på 10 Mbps Ethernet (slot-tid = 51,2 μs). Vi følger
+          forsøkene deres steg for steg.
+        </p>
+        <ol className="list-decimal pl-5 mt-1 space-y-1">
+          <li>
+            <strong>Forsøk 1:</strong> begge ser ledig kanal, begge starter samtidig. KOLLISJON.
+            Hver sender 48-bit jam-signal og går til backoff. n=1 → velg K fra {`{0,1}`}. A trekker
+            1, B trekker 0.
+          </li>
+          <li>
+            <strong>Backoff:</strong> B venter 0·51,2 μs og sender umiddelbart; A venter 1·51,2 μs.
+            B kommer på lufta først.
+          </li>
+          <li>
+            <strong>Forsøk 2 (A):</strong> A lytter, hører B, venter til kanalen er ledig (carrier
+            sense). Når B er ferdig, venter A inter-frame gap (9,6 μs) og sender.
+          </li>
+          <li>
+            <strong>Tredje node C dukker opp og kolliderer med A.</strong> n=2 for A → velg K fra
+            {`{0,1,2,3}`}. A trekker 3. C trekker også 3. Ny kollisjon på forsøk 3 → n=3, velg K fra
+            {`{0..7}`}. Statistisk synkende kollisjons-sannsynlighet idet vinduet vokser.
+          </li>
+        </ol>
+        <p className="mt-2">
+          Etter 16 mislykkede forsøk gir noden opp og rapporterer feil oppover. I praksis skjer
+          dette aldri på et fungerende nett — det er en sikkerhetsventil mot dødløkker.
+        </p>
+      </Example>
+
+      <Example title="Eksempel: ALOHA vs slot ALOHA — konkrete tall">
+        <p>
+          Anta 100 sensorer ute i felt som hver sender en kort melding med rate 0,005 ramme per
+          sekund. Vi setter ramme-tid t = 200 ms. Total offered load: G = 100 · 0,005 · 0,2 = 0,1
+          forsøk per ramme-tid.
+        </p>
+        <ul className="list-disc pl-5 mt-1 font-mono text-[12px]">
+          <li>Pure ALOHA: S = G·e^(-2G) = 0,1·e^(-0,2) ≈ 0,082 (82 % suksess)</li>
+          <li>Slot ALOHA: S = G·e^(-G) = 0,1·e^(-0,1) ≈ 0,091 (91 % suksess)</li>
+        </ul>
+        <p className="mt-2">
+          Forskjellen er liten ved lav last, men vokser raskt. Ved G = 1: pure ALOHA gir 13,5 %,
+          slot ALOHA gir 36,8 %. Det er hvor lasten er høy (sjeldne men store hendelser, alle
+          sensorer våkner samtidig) at synkronisering virkelig betaler seg. For en
+          LoRaWAN-installasjon der batterier teller, må man velge: betaler synkronisering seg i
+          strømforbruk?
+        </p>
+      </Example>
+
+      <Hvorfor title="Hvorfor finnes CSMA/CD nesten ikke i moderne nett?">
+        <p>
+          På 80- og 90-tallet var Ethernet et delt medium: alle maskiner hang på den samme koaks-
+          kabelen, og kollisjons-deteksjon var kjernen i hvordan det fungerte. I dag er det helt
+          borte. Hvorfor?
+        </p>
+        <p>
+          <strong>Switcher erstattet hubs.</strong> En switch isolerer hver port til sitt eget
+          kollisjons-domene. Hvis kun én maskin er koblet til en port, kan det ikke skje en
+          kollisjon fysisk — det er bare avsender og mottaker på lenken. CSMA/CD blir overflødig.
+        </p>
+        <p>
+          <strong>Full-duplex.</strong> Moderne Ethernet over twisted pair eller fiber bruker
+          separate ledere for hver retning. Begge sider kan sende og motta samtidig. Carrier sense
+          gir ingen mening når du alltid kan sende.
+        </p>
+        <p>
+          <strong>Standardene har strippet det ut.</strong> 10G-Ethernet og raskere finnes IKKE i
+          half-duplex-versjoner — kollisjons-protokollen er fjernet fra spesifikasjonen. Lenken må
+          være punkt-til-punkt og full-duplex.
+        </p>
+        <p>
+          CSMA/CD lever fortsatt der mediumet faktisk er delt — gamle radioer, satellitt-uplinks. Og
+          ideen om backoff overlever i CSMA/CA i WiFi. Men på en moderne Ethernet-port: dødt.
+        </p>
+      </Hvorfor>
 
       <RelatedSlugs slugs={["dte2507-aloha-kasino"]} />
     </article>
@@ -422,40 +726,68 @@ function Section64() {
 
       <div className="grid gap-3 lg:grid-cols-2">
         <Defs
-        items={[
-          {
-            term: "ARP (Address Resolution Protocol)",
-            body: "Spørringen «hvem har IP 10.0.0.42?» Sendes som en broadcast på link-laget. Den som har den IP-en svarer med sin MAC. Svaret caches lokalt en stund (typisk 20 minutter) for å unngå å spørre om og om igjen.",
-          },
-          {
-            term: "ARP-cache",
-            body: "Tabell på hver host som mapper IP → MAC. Du ser den lokalt med 'ip neigh' (Linux) eller 'arp -a' (mac/Windows). Tomme oppføringer = neste pakke til den IP-en utløser et nytt ARP-spørsmål.",
-          },
-          {
-            term: "MAC-broadcast",
-            body: "Ramme med destinasjons-MAC FF:FF:FF:FF:FF:FF — alle på samme link-lag-domene mottar den. ARP-spørringer bruker denne. Begrenset til ett LAN/VLAN; en ruter sender ikke broadcast videre.",
-          },
-          {
-            term: "IP-broadcast",
-            body: "Et IP-datagram med destinasjon 255.255.255.255 (lokal broadcast) eller subnet-broadcast (f.eks. 10.0.0.255). Pakkes inn i en MAC-broadcast for å bli levert til alle på subnettet. Brukes lite på moderne nett — multicast er bedre.",
-          },
-          {
-            term: "Switch forwarding-tabell",
-            body: "Tabell i switchen som mapper MAC-adresse → port. Hver oppføring har også en tidsstempel slik at gamle entries kan utløpe (typisk 5–15 min). Tabellen er det som gjør at en switch leverer rammen bare til riktig port.",
-          },
-          {
-            term: "Self-learning",
-            body: "Switchen begynner med tom tabell. Når en ramme kommer inn på port p med kilde-MAC X, skriver switchen ned (X, p). Når en ramme skal til en MAC switchen IKKE kjenner, sender den flooding — kopierer rammen ut alle porter unntatt den den kom inn på. Etter litt trafikk lærer switchen seg topologien selv.",
-          },
-          {
-            term: "Plug-and-play",
-            body: "Konsekvensen av self-learning: en switch trenger ingen konfigurasjon. Plugg den i, koble på maskiner, og den fungerer. En del av grunnen til at Ethernet vant over alternativer som krevde manuell konfigurasjon.",
-          },
-        ]}
-      />
+          items={[
+            {
+              term: "ARP (Address Resolution Protocol)",
+              body: "Spørringen «hvem har IP 10.0.0.42?» Sendes som en broadcast på link-laget. Den som har den IP-en svarer med sin MAC. Svaret caches lokalt en stund (typisk 20 minutter) for å unngå å spørre om og om igjen.",
+            },
+            {
+              term: "ARP-cache",
+              body: "Tabell på hver host som mapper IP → MAC. Du ser den lokalt med 'ip neigh' (Linux) eller 'arp -a' (mac/Windows). Tomme oppføringer = neste pakke til den IP-en utløser et nytt ARP-spørsmål.",
+            },
+            {
+              term: "MAC-broadcast",
+              body: "Ramme med destinasjons-MAC FF:FF:FF:FF:FF:FF — alle på samme link-lag-domene mottar den. ARP-spørringer bruker denne. Begrenset til ett LAN/VLAN; en ruter sender ikke broadcast videre.",
+            },
+            {
+              term: "IP-broadcast",
+              body: "Et IP-datagram med destinasjon 255.255.255.255 (lokal broadcast) eller subnet-broadcast (f.eks. 10.0.0.255). Pakkes inn i en MAC-broadcast for å bli levert til alle på subnettet. Brukes lite på moderne nett — multicast er bedre.",
+            },
+            {
+              term: "Switch forwarding-tabell",
+              body: "Tabell i switchen som mapper MAC-adresse → port. Hver oppføring har også en tidsstempel slik at gamle entries kan utløpe (typisk 5–15 min). Tabellen er det som gjør at en switch leverer rammen bare til riktig port.",
+            },
+            {
+              term: "Self-learning",
+              body: "Switchen begynner med tom tabell. Når en ramme kommer inn på port p med kilde-MAC X, skriver switchen ned (X, p). Når en ramme skal til en MAC switchen IKKE kjenner, sender den flooding — kopierer rammen ut alle porter unntatt den den kom inn på. Etter litt trafikk lærer switchen seg topologien selv.",
+            },
+            {
+              term: "Plug-and-play",
+              body: "Konsekvensen av self-learning: en switch trenger ingen konfigurasjon. Plugg den i, koble på maskiner, og den fungerer. En del av grunnen til at Ethernet vant over alternativer som krevde manuell konfigurasjon.",
+            },
+            {
+              term: "Gratuitous ARP",
+              body: "En ARP-melding der avsender spør etter sin EGEN IP (eller broadcaster «jeg er 10.0.0.5 på MAC XX»). Brukes når en host får ny IP (DHCP-lease) for å rydde gamle ARP-cache-entries på andre hoster, og for å oppdage IP-konflikter (to maskiner som tror de eier samme IP).",
+            },
+            {
+              term: "ARP-spoofing / ARP-poisoning",
+              body: "Et angrep der en ondsinnet node svarer på ARP-spørringer med sin egen MAC i stedet for den ekte mottakerens. Andre hoster cacher (offer-IP → angriper-MAC) og sender all trafikk gjennom angriperen. Sikkerhets-switcher har Dynamic ARP Inspection (DAI) for å blokkere falske ARP-svar.",
+            },
+            {
+              term: "Flooding",
+              body: "Når switchen mottar en ramme med ukjent destinasjons-MAC (ikke i tabellen), kopierer den rammen ut på ALLE porter unntatt den den kom inn på. Også broadcast-rammer (dst = FF:FF:FF:FF:FF:FF) flødes. Etter at destinasjonen svarer, lærer switchen porten og slutter å flood.",
+            },
+            {
+              term: "MAC-table aging",
+              body: "Hver entry i switchens forwarding-tabell har en timer (typisk 300 sekunder). Hvis switchen ikke ser noen rammer fra MAC X på et tidsrom, fjernes entry-en. Neste pakke til X utløser ny flooding. Hindrer at gamle entries hoper seg opp etter at maskiner frakobles.",
+            },
+            {
+              term: "Spanning Tree Protocol (STP / 802.1D)",
+              body: "Hvis switcher er koblet i en loop (med vilje eller ved en feil), vil broadcast-rammer sirkulere uendelig — en broadcast-storm som lammer hele LAN. STP løser dette ved at switcher snakker sammen via BPDU-rammer, velger en root-switch, og slår av portene som ikke er på korteste sti til root. Resultat: et logisk tre uten loops, selv om fysisk topologi har sløyfer.",
+            },
+            {
+              term: "BPDU (Bridge Protocol Data Unit)",
+              body: "Kontroll-rammer STP bruker for å snakke sammen. Inneholder switchens ID, root-switchens ID, og kostnad til root. Sendes hvert annet sekund. Når topologien endres (kabel går ned), velger STP nye stier — konvergerer på ~30 sekunder klassisk, ~1 sekund med Rapid STP.",
+            },
+            {
+              term: "VRRP / HSRP",
+              body: "Standby-protokoller for ruteren i et LAN. To rutere er konfigurert med samme virtuelle MAC og IP; én er aktiv, en er backup. Hvis aktive ruteren dør, tar backupen over uten at hostene merker det — de ARP-er fortsatt mot den samme virtuelle MAC-en.",
+            },
+          ]}
+        />
         <Illustration caption="Switch self-learning: ramme fra MAC X på port 1 lærer switchen at X sitter på port 1.">
-        <SwitchLearningSvg />
-      </Illustration>
+          <SwitchLearningSvg />
+        </Illustration>
       </div>
 
       <Example title="Eksempel: ARP-spørring fra mobilen din">
@@ -479,6 +811,82 @@ function Section64() {
         </ol>
       </Example>
 
+      <Example title="Eksempel: trace switch-tabell etter 5 rammer">
+        <p>
+          Switch S har 4 porter og en tom forwarding-tabell. Følgende rammer ankommer i rekkefølge:
+        </p>
+        <ol className="list-decimal pl-5 mt-1 space-y-1">
+          <li>Ramme fra X til Y på port 1.</li>
+          <li>Ramme fra Y til X på port 2.</li>
+          <li>Ramme fra Z til X på port 3.</li>
+          <li>Ramme fra X til Z på port 1.</li>
+          <li>Broadcast fra W på port 4.</li>
+        </ol>
+        <p className="mt-2">
+          <strong>Tabell etter hver ramme:</strong>
+        </p>
+        <pre className="text-[11px] font-mono bg-muted/30 p-2 rounded mt-1 overflow-x-auto">
+          {`Etter 1: {X→1}                        flood (Y ukjent)
+Etter 2: {X→1, Y→2}                    unicast ut port 1 (X kjent)
+Etter 3: {X→1, Y→2, Z→3}                unicast ut port 1 (X kjent)
+Etter 4: {X→1, Y→2, Z→3}                unicast ut port 3 (Z kjent)
+Etter 5: {X→1, Y→2, Z→3, W→4}           flood (broadcast)`}
+        </pre>
+        <p className="mt-2">
+          Bare ramme 1 og ramme 5 forårsaker flooding. Etter den første tur-retur-runden mellom et
+          par maskiner er switchen i full unicast-mode for det paret.
+        </p>
+      </Example>
+
+      <Example title="Eksempel: broadcast-storm uten Spanning Tree">
+        <p>
+          Vi har tre switcher S1, S2, S3 koblet i en trekant (loop). Host H på S1 sender en
+          broadcast-ramme:
+        </p>
+        <ol className="list-decimal pl-5 mt-1 space-y-1">
+          <li>S1 flooder ut til S2 og S3.</li>
+          <li>S2 flooder mottatte broadcast ut til S3 (og hostene sine). S3 mottar.</li>
+          <li>S3 flooder også broadcast videre til S2. S2 mottar (igjen!).</li>
+          <li>S2 og S3 fortsetter å skubbe rammen rundt i ringen — uendelig.</li>
+        </ol>
+        <p className="mt-2">
+          I løpet av millisekunder fyller en eneste broadcast-ramme hele LAN-et med duplikater.
+          Switchenes CPU-er går i 100 %, ingenting kommer fram. Dette er en broadcast-storm —
+          klassisk failure-mode før STP. STP løser det ved å slå AV én port i ringen slik at
+          topologien blir et tre.
+        </p>
+      </Example>
+
+      <Hvorfor title="Hvorfor erstattet switcher hubs?">
+        <p>
+          Hub-en var enkel: en passiv enhet som sendte hver bit den så på inn-porten ut alle andre
+          porter. Alle portene var ett kollisjons-domene — hvis to maskiner sendte samtidig, fikk
+          alle se kollisjonen og CSMA/CD-protokollen tråtte i kraft. Hvorfor forsvant den?
+        </p>
+        <p>
+          <strong>Skalering.</strong> På en hub med 24 porter måtte alle 24 maskiner dele samme 10
+          Mbps. Med 6-7 aktive maskiner ble kollisjons-andelen så høy at hver enkelt fikk under 1
+          Mbps reelt. En switch isolerer hver port — hver maskin får full hastighet uavhengig av
+          naboen.
+        </p>
+        <p>
+          <strong>Sikkerhet.</strong> På en hub kan en hvilken som helst maskin se ALL trafikk (sett
+          NIC i promiscuous mode → tcpdump). På en switch ser hver maskin bare det som er adressert
+          til den (pluss broadcast). Det er ikke en kryptografisk garanti, men det hever terskelen
+          betraktelig.
+        </p>
+        <p>
+          <strong>Full-duplex.</strong> En hub er fundamentalt half-duplex (alle deler ett medium).
+          En switch lar hver port være full-duplex — 100 Mbps inn OG 100 Mbps ut samtidig. 2x
+          throughput uten endring i kabel.
+        </p>
+        <p>
+          <strong>Pris.</strong> På 2000-tallet ble switch-silisium nesten gratis. Et grunnleggende
+          unmanaged 8-port-switch koster mindre enn en hub gjorde i 1995. Ingen grunn til ikke å
+          oppgradere.
+        </p>
+      </Hvorfor>
+
       <RelatedSlugs slugs={["dte2507-arp-detektiv", "dte2507-switch-self-learning"]} />
     </article>
   );
@@ -501,44 +909,72 @@ function Section65() {
 
       <div className="grid gap-3 lg:grid-cols-2">
         <Defs
-        items={[
-          {
-            term: "Preamble",
-            body: "7 bytes med vekslende 1 og 0, etterfulgt av 1 byte med 10101011. Lar mottakerens klokke synkronisere seg med sender-klokken før den faktiske rammen starter. Ikke regnet som en del av rammen i offisiell forstand.",
-          },
-          {
-            term: "Destinasjons- og kilde-MAC",
-            body: "6 bytes hver. Destinasjons-MAC kan være unicast (én mottaker), multicast (en gruppe) eller broadcast (alle).",
-          },
-          {
-            term: "EtherType / lengde-felt",
-            body: "2 bytes. Hvis verdien er ≥ 1536 (0x0600), tolkes det som EtherType — hvilken protokoll er over: 0x0800 = IPv4, 0x86DD = IPv6, 0x0806 = ARP. Hvis < 1500, er det rammens lengde (gammel IEEE 802.3-variant). Smart for bakover-kompatibilitet.",
-          },
-          {
-            term: "Payload",
-            body: "46 til 1500 bytes. Minimum 46 fordi CSMA/CD krever at en ramme er stor nok til at sender kan detektere en kollisjon før hun er ferdig — i en 10 Mbps koaks-buss på maks 500 m er det 64 bytes (med header).",
-          },
-          {
-            term: "CRC (FCS — Frame Check Sequence)",
-            body: "4 bytes CRC-32 over destinasjons-MAC, kilde-MAC, type, payload. Beregnes og sjekkes i hardware på NIC-en. Rammer med dårlig CRC kastes uten varsel.",
-          },
-          {
-            term: "Hub",
-            body: "Historisk: en passiv enhet som forsterket signalet og sendte enhver bit som kom inn ut alle andre porter. Hele hubben var ett kollisjons-domene — CSMA/CD måtte være på. Forsvant på 2000-tallet til fordel for switch.",
-          },
-          {
-            term: "Switch",
-            body: "Aktiv enhet som mottar hele rammer, sjekker CRC, slår opp destinasjons-MAC i forwarding-tabellen, og sender bare ut på riktig port. Hver port er sitt eget kollisjons-domene; full duplex; ingen behov for CSMA/CD i moderne switch-nett.",
-          },
-          {
-            term: "Switch-hierarki",
-            body: "Større nett bygges av flere switcher koblet sammen. Aksess-switcher som hostene plugges i, distribusjons-switcher som samler aksess-switcher, og en core-switch i toppen. Forwarding-tabeller læres på tvers; Spanning Tree Protocol forhindrer at en loop i topologien forårsaker uendelig flooding.",
-          },
-        ]}
-      />
+          items={[
+            {
+              term: "Preamble",
+              body: "7 bytes med vekslende 1 og 0, etterfulgt av 1 byte med 10101011. Lar mottakerens klokke synkronisere seg med sender-klokken før den faktiske rammen starter. Ikke regnet som en del av rammen i offisiell forstand.",
+            },
+            {
+              term: "Destinasjons- og kilde-MAC",
+              body: "6 bytes hver. Destinasjons-MAC kan være unicast (én mottaker), multicast (en gruppe) eller broadcast (alle).",
+            },
+            {
+              term: "EtherType / lengde-felt",
+              body: "2 bytes. Hvis verdien er ≥ 1536 (0x0600), tolkes det som EtherType — hvilken protokoll er over: 0x0800 = IPv4, 0x86DD = IPv6, 0x0806 = ARP. Hvis < 1500, er det rammens lengde (gammel IEEE 802.3-variant). Smart for bakover-kompatibilitet.",
+            },
+            {
+              term: "Payload",
+              body: "46 til 1500 bytes. Minimum 46 fordi CSMA/CD krever at en ramme er stor nok til at sender kan detektere en kollisjon før hun er ferdig — i en 10 Mbps koaks-buss på maks 500 m er det 64 bytes (med header).",
+            },
+            {
+              term: "CRC (FCS — Frame Check Sequence)",
+              body: "4 bytes CRC-32 over destinasjons-MAC, kilde-MAC, type, payload. Beregnes og sjekkes i hardware på NIC-en. Rammer med dårlig CRC kastes uten varsel.",
+            },
+            {
+              term: "Hub",
+              body: "Historisk: en passiv enhet som forsterket signalet og sendte enhver bit som kom inn ut alle andre porter. Hele hubben var ett kollisjons-domene — CSMA/CD måtte være på. Forsvant på 2000-tallet til fordel for switch.",
+            },
+            {
+              term: "Switch",
+              body: "Aktiv enhet som mottar hele rammer, sjekker CRC, slår opp destinasjons-MAC i forwarding-tabellen, og sender bare ut på riktig port. Hver port er sitt eget kollisjons-domene; full duplex; ingen behov for CSMA/CD i moderne switch-nett.",
+            },
+            {
+              term: "Switch-hierarki",
+              body: "Større nett bygges av flere switcher koblet sammen. Aksess-switcher som hostene plugges i, distribusjons-switcher som samler aksess-switcher, og en core-switch i toppen. Forwarding-tabeller læres på tvers; Spanning Tree Protocol forhindrer at en loop i topologien forårsaker uendelig flooding.",
+            },
+            {
+              term: "SFD (Start-of-Frame Delimiter)",
+              body: "Den siste byten av preamble: 10101011 (0xAB). De seks første 1010-parene gir mottakeren tid til å lage seg fast i klokken; den ekstra 11-en signaliserer at den faktiske rammen starter med neste byte. Skiller seg fra resten av preamble nettopp for at det skal være entydig.",
+            },
+            {
+              term: "Inter-Frame Gap (IFG)",
+              body: "Minst 96 bit-tider stillhet mellom to rammer på samme medium. På 10 Mbps = 9,6 μs; på 100 Mbps = 0,96 μs; på 10 Gbps = 9,6 ns. Gir mottakeren tid til å re-synkronisere klokken og prosessere forrige ramme før den neste kommer.",
+            },
+            {
+              term: "Jumbo frames",
+              body: "Ethernet-rammer større enn standard 1500 bytes payload — typisk 9000 bytes. Brukes i datasentre der host og switch begge støtter det. Reduserer overhead: 9000-byte payload vs 26 byte header = 0,3 % overhead vs 1,7 % for vanlig MTU. Krever at HELE stien (alle switcher) er konfigurert likt — én switch som ikke kan jumbo dropper rammen.",
+            },
+            {
+              term: "Auto-negotiation",
+              body: "Når en kabel plugges inn, sender begge sider av lenken en sekvens av puls-koder (FLP — Fast Link Pulses) som forteller hva de støtter (hastighet, half/full duplex). Begge velger det høyeste begge støtter. Hvis auto-negotiering feiler (sjelden, ofte pga. ulik konfigurasjon), faller man tilbake til 10 Mbps half-duplex.",
+            },
+            {
+              term: "PoE (Power over Ethernet)",
+              body: "Standardiserte måter å sende strøm sammen med data på samme Ethernet-kabel. PoE (802.3af) gir 15 W per port, PoE+ (802.3at) 30 W, PoE++ (802.3bt) opp til 90 W. Brukes til WiFi-AP-er, IP-telefoner, sikkerhetskameraer — null ekstra strømkabel.",
+            },
+            {
+              term: "MAC-tabellen som CAM",
+              body: "Switchens forwarding-tabell implementeres typisk som en CAM (Content-Addressable Memory) — et hardware-minne der oppslag på MAC-adresse skjer parallelt over alle entries i én klokkesyklus. Det er hvordan en switch klarer å route en pakke på under en mikrosekund, selv med titusenvis av entries.",
+            },
+            {
+              term: "Manchester-koding",
+              body: "Det fysiske kodings-skjemaet i klassisk 10 Mbps Ethernet: hver bit kodes som en overgang i midten av sin tids-luke (1 = lav-til-høy, 0 = høy-til-lav). Sikrer mange overganger så mottakerens klokke holder seg synkronisert. 100 Mbps Ethernet bruker 4B/5B-koding pluss MLT-3 i stedet; 1 Gbps bruker 8B/10B.",
+            },
+          ]}
+        />
         <Illustration caption="Ethernet-ramme: preamble · dst · src · type · payload · CRC. Alle felt har faste posisjoner.">
-        <EthernetFrameSvg />
-      </Illustration>
+          <EthernetFrameSvg />
+        </Illustration>
       </div>
 
       <Example title="Eksempel: hva inneholder et 1500-byte Ethernet-ramme egentlig?">
@@ -555,6 +991,74 @@ function Section65() {
           %. Pluss 12 bytes inter-frame gap mellom hver ramme. Ethernet er overraskende effektivt.
         </p>
       </Example>
+
+      <Example title="Eksempel: minimum-ramme på 10 Mbps vs 1 Gbps Ethernet">
+        <p>
+          Minimum-rammen på 64 bytes ble valgt slik at en avsender på 10 Mbps over 500 m koaks
+          alltid ville rekke å oppdage en kollisjon før hun var ferdig. Beregningen:
+        </p>
+        <ul className="list-disc pl-5 mt-1 font-mono text-[12px]">
+          <li>Round-trip-tid over 500 m: 2 · 2,5 μs ≈ 5 μs</li>
+          <li>+ repeater-forsinkelse i begge ender ≈ 51,2 μs total slot-tid</li>
+          <li>51,2 μs · 10 Mbps = 512 bit = 64 bytes</li>
+        </ul>
+        <p className="mt-2">
+          På 1 Gbps blir 64 bytes overført på 0,5 μs — alt for kort til kollisjons-deteksjon over
+          rimelige avstander. Løsning: «carrier extension», der korte rammer padses opp til 512
+          bytes med spesielle pad-symboler. I praksis brukes 1 Gbps nesten alltid full-duplex
+          (switched), så hele problemet er irrelevant. Det er en historisk artefakt som vi fortsatt
+          bærer med oss i standarden.
+        </p>
+      </Example>
+
+      <Example title="Eksempel: spore en Ethernet-ramme med Wireshark">
+        <p>Vi tar Wireshark-output for en HTTP-pakke. Ethernet-laget viser:</p>
+        <pre className="text-[11px] font-mono bg-muted/30 p-2 rounded mt-1 overflow-x-auto">
+          {`Frame 42: 74 bytes on wire
+Ethernet II, Src: Apple_4a:12:99 (a4:83:e7:4a:12:99)
+              Dst: Cisco_1b:c0:de (3c:08:f6:1b:c0:de)
+    Type: IPv4 (0x0800)
+    [stream index: 14]
+Internet Protocol Version 4, Src: 10.0.0.42, Dst: 142.250.74.46`}
+        </pre>
+        <p className="mt-2">
+          Bemerk: <strong>destinasjons-MAC = ruterens MAC</strong> (Cisco), ikke server-en på
+          142.250.74.46. På link-laget snakker du alltid bare med den NESTE noden — ruteren bytter
+          ut MAC-headeren før den sender pakken videre på neste lenke. Wireshark viser <em>ikke</em>
+          preamble eller CRC fordi NIC-en strippet de før OS-en så pakken.
+        </p>
+      </Example>
+
+      <Hvorfor title="Hvorfor overlevde Ethernet, mens Token Ring og ATM forsvant?">
+        <p>
+          På 80- og 90-tallet var det flere alternativer til Ethernet, mange teknisk bedre på papir:
+          Token Ring hadde determinisme, FDDI hadde fiber og høyere hastighet, ATM hadde QoS for
+          stemme og video. Likevel vant Ethernet alle markeder. Hvorfor?
+        </p>
+        <p>
+          <strong>Enkelhet og pris.</strong> En Ethernet-NIC var billigere å produsere enn en Token
+          Ring-NIC fra start. Ingen aktiv master, ingen token-håndtering, ingen kompleks
+          tilkoblings-protokoll. Volum-fordelen ble selvforsterkende: høyere volum → lavere pris →
+          mer adopsjon → mer volum.
+        </p>
+        <p>
+          <strong>Backward compatibility i ramme-formatet.</strong> Ethernet-rammen fra 1980 ser
+          essensielt lik ut i 2026. Hvert hastighets-hopp (10 → 100 → 1G → 10G → 40G → 100G → 400G)
+          har beholdt samme MAC-format og samme MTU. En 2026-applikasjon kan snakke med en 1995-
+          server uten oversetting.
+        </p>
+        <p>
+          <strong>Switcher løste kollisjons-problemet.</strong> Den klassiske kritikken mot Ethernet
+          var «ikke-deterministisk pga. kollisjoner». Når switcher gjorde at det aldri mer ble
+          kollisjoner, falt den kritikken bort. Token Rings determinisme-fordel var plutselig
+          irrelevant.
+        </p>
+        <p>
+          <strong>IP elsker Ethernet.</strong> ATM forsøkte å være det universelle laget under IP,
+          men cell-formatet (53 bytes) passet dårlig for IP-datagrammer (typisk 500-1500). Ethernet
+          har akkurat samme MTU som IPv4 typisk vil ha — null friksjon.
+        </p>
+      </Hvorfor>
 
       <RelatedSlugs slugs={["dte2507-day-in-the-life", "dte2507-switch-self-learning"]} />
     </article>
@@ -578,40 +1082,64 @@ function Section66() {
 
       <div className="grid gap-3 lg:grid-cols-2">
         <Defs
-        items={[
-          {
-            term: "VLAN (Virtual LAN)",
-            body: "En logisk gruppe av switch-porter som oppfører seg som et eget broadcast-domene. To porter på samme VLAN snakker fritt sammen; porter på ulike VLAN trenger en ruter mellom seg, akkurat som om de var fysisk adskilte switcher.",
-          },
-          {
-            term: "Port-basert VLAN",
-            body: "Den vanligste typen: hver switch-port konfigureres til å høre til ett (eller flere) VLAN. Konfigurert manuelt eller via DHCP-snooping. Enkel og forutsigbar.",
-          },
-          {
-            term: "802.1Q tagging",
-            body: "Når en ramme krysser mellom to switcher via en delt lenke (trunk), legges en 4-byte tag inn rett etter kilde-MAC. Tag-en inneholder VLAN-ID (12 bits — opp til 4094 VLANer), prioritet og en TPID som identifiserer at dette er en tagget ramme.",
-          },
-          {
-            term: "Trunk-link",
-            body: "Lenke mellom to switcher som bærer rammer fra flere VLANer samtidig. Rammene tagges på vei ut og fjernes tagg på vei inn der hostene bor. En typisk nedlink fra distribusjons- til aksess-switch er en trunk; en lenke til en bruker-PC er en access-link uten tagging.",
-          },
-          {
-            term: "Native VLAN",
-            body: "Det ene VLAN-et som SKAL ha tagg fjernet (utagget) over en trunk. Ofte VLAN 1 by default. Hvis begge sider av en trunk er enige om native, kan en ramme uten tagg fortsatt rutes korrekt.",
-          },
-          {
-            term: "Inter-VLAN routing",
-            body: "Pakkene på VLAN 10 må gjennom en ruter (eller layer-3 switch) for å komme til VLAN 20. Rutere har ett ben i hvert VLAN, eller en «router on a stick»-konfigurasjon der én fysisk lenke bærer alle VLANer som trunk og ruteren bruker virtuelle sub-interfaces.",
-          },
-          {
-            term: "Brannmur per VLAN",
-            body: "Praktisk gevinst: HR-avdelingens VLAN kan beskyttes av en regel som blokkerer all trafikk fra gjeste-VLAN. Siden trafikken må gjennom en ruter for å krysse VLAN-grensen, er det et naturlig sted å sette filteret.",
-          },
-        ]}
-      />
+          items={[
+            {
+              term: "VLAN (Virtual LAN)",
+              body: "En logisk gruppe av switch-porter som oppfører seg som et eget broadcast-domene. To porter på samme VLAN snakker fritt sammen; porter på ulike VLAN trenger en ruter mellom seg, akkurat som om de var fysisk adskilte switcher.",
+            },
+            {
+              term: "Port-basert VLAN",
+              body: "Den vanligste typen: hver switch-port konfigureres til å høre til ett (eller flere) VLAN. Konfigurert manuelt eller via DHCP-snooping. Enkel og forutsigbar.",
+            },
+            {
+              term: "802.1Q tagging",
+              body: "Når en ramme krysser mellom to switcher via en delt lenke (trunk), legges en 4-byte tag inn rett etter kilde-MAC. Tag-en inneholder VLAN-ID (12 bits — opp til 4094 VLANer), prioritet og en TPID som identifiserer at dette er en tagget ramme.",
+            },
+            {
+              term: "Trunk-link",
+              body: "Lenke mellom to switcher som bærer rammer fra flere VLANer samtidig. Rammene tagges på vei ut og fjernes tagg på vei inn der hostene bor. En typisk nedlink fra distribusjons- til aksess-switch er en trunk; en lenke til en bruker-PC er en access-link uten tagging.",
+            },
+            {
+              term: "Native VLAN",
+              body: "Det ene VLAN-et som SKAL ha tagg fjernet (utagget) over en trunk. Ofte VLAN 1 by default. Hvis begge sider av en trunk er enige om native, kan en ramme uten tagg fortsatt rutes korrekt.",
+            },
+            {
+              term: "Inter-VLAN routing",
+              body: "Pakkene på VLAN 10 må gjennom en ruter (eller layer-3 switch) for å komme til VLAN 20. Rutere har ett ben i hvert VLAN, eller en «router on a stick»-konfigurasjon der én fysisk lenke bærer alle VLANer som trunk og ruteren bruker virtuelle sub-interfaces.",
+            },
+            {
+              term: "Brannmur per VLAN",
+              body: "Praktisk gevinst: HR-avdelingens VLAN kan beskyttes av en regel som blokkerer all trafikk fra gjeste-VLAN. Siden trafikken må gjennom en ruter for å krysse VLAN-grensen, er det et naturlig sted å sette filteret.",
+            },
+            {
+              term: "VLAN-hopping (sikkerhetsproblem)",
+              body: "Angrep der en host på VLAN 20 prøver å snakke som om hun var på VLAN 10. To varianter: switch-spoofing (host later som hun er en switch og forhandler en trunk), og double-tagging (host sender ramme med to 802.1Q-tagger; ytterste fjernes av access-port, indre tolkes som ekte VLAN av neste switch). Forhindres ved å aldri bruke native VLAN for hosts og aldri gjøre VLAN 1 til native.",
+            },
+            {
+              term: "Private VLAN (PVLAN)",
+              body: "Forfining av VLAN-konseptet for sikkerhet: én primary VLAN inneholder community-porter og isolated porter. Isolated porter kan KUN snakke med ruteren — ikke engang andre porter i samme VLAN. Brukes i hoteller der hver gjest skal ha internett, men ikke kunne snakke med naboværelset.",
+            },
+            {
+              term: "Voice VLAN",
+              body: "En IP-telefon kobles inn i samme port som en PC. Switchen identifiserer telefonen via CDP/LLDP og putter den i et eget voice-VLAN med QoS-prioritet, mens PC-en havner i data-VLAN. Telefonen videresender PC-ens trafikk inn på riktig VLAN-tag via en intern mini-switch. Én kabel, to logiske nett.",
+            },
+            {
+              term: "VTP (VLAN Trunking Protocol)",
+              body: "Ciscos protokoll for å distribuere VLAN-konfigurasjon mellom switcher i samme domene. Endre VLAN-liste på én switch — VTP propagerer endringen automatisk. Berømt for å forårsake katastrofer når en gammel switch med høyere revision-number plugges inn og overskriver hele domenets VLAN-database.",
+            },
+            {
+              term: "QinQ (802.1ad / Provider Bridges)",
+              body: "Når en ISP vil tilby «en VLAN-trunk» som tjeneste til en kunde, men kunden allerede har 802.1Q-tags i sine egne rammer: ISP-en legger på sin EGEN ytre tag (S-tag) over kundens C-tag. Dobbelt-tagging gjør at ISP-en kan ha mange kunder uten å kollidere med deres VLAN-IDer.",
+            },
+            {
+              term: "MAC-basert VLAN",
+              body: "Alternativ til port-basert: en switch holder en tabell {MAC → VLAN-ID} og putter rammer i riktig VLAN basert på kilde-MAC. Maskinen får samme VLAN selv om den flytter mellom porter. Vanlig i WiFi-controller-konfigurasjoner.",
+            },
+          ]}
+        />
         <Illustration caption="Én fysisk switch deles i to VLANer. Trunk-lenken bærer tagget trafikk fra begge.">
-        <VlanSvg />
-      </Illustration>
+          <VlanSvg />
+        </Illustration>
       </div>
 
       <Example title="Eksempel: 802.1Q-tag detaljert">
@@ -631,6 +1159,100 @@ function Section66() {
           ser aldri rammen.
         </p>
       </Example>
+
+      <Example title="Eksempel: router-on-a-stick for inter-VLAN routing">
+        <p>
+          En liten bedrift har én ruter og én switch. Switchen er konfigurert med tre VLANer (10,
+          20, 30). Ruteren har bare ett fysisk Ethernet-interface ledig. Hvordan får ruteren tilgang
+          til alle tre VLANer?
+        </p>
+        <ol className="list-decimal pl-5 mt-1 space-y-1">
+          <li>
+            Switch-porten mot ruteren konfigureres som en TRUNK som transporterer VLAN 10, 20 og 30
+            (tagget).
+          </li>
+          <li>
+            Ruterens ene fysiske port deles inn i tre virtuelle sub-interfaces:
+            <code className="ml-1">eth0.10</code>, <code>eth0.20</code>, <code>eth0.30</code>.
+          </li>
+          <li>
+            Hver sub-interface får sin egen IP (f.eks. 10.0.10.1/24, 10.0.20.1/24, 10.0.30.1/24) og
+            blir default gateway for sitt VLAN.
+          </li>
+          <li>
+            Når en pakke skal fra VLAN 10 til VLAN 20: host sender til sub-interface 10, ruteren
+            slår opp i routing-tabellen, sender via sub-interface 20. Switchen får rammen tagget med
+            VLAN 20 og leverer den til riktig host.
+          </li>
+        </ol>
+        <p className="mt-2">
+          Trafikken mellom VLAN 10 og 20 går altså opp til ruteren og tilbake igjen via samme
+          fysiske lenke — derav navnet «router on a stick». Modent design var det 90-talls; i dag
+          har du som regel en layer-3-switch som gjør ruting og switching i samme boks (uten
+          utveiingen).
+        </p>
+      </Example>
+
+      <Example title="Eksempel: VLAN-hopping via double-tagging">
+        <p>
+          Angriperen sitter på VLAN 20 (data-nett) og vil snakke med servere på VLAN 10 (HR), uten å
+          gå via ruteren der brannmuren sitter.
+        </p>
+        <ol className="list-decimal pl-5 mt-1 space-y-1">
+          <li>
+            Angriperen lager en ramme med TO 802.1Q-tags: ytre = 20 (native VLAN), indre = 10.
+          </li>
+          <li>
+            Switch S1 mottar rammen på access-porten. Den fjerner det ytre tagget (siden 20 er
+            native) — men ser ikke at det fortsatt er et indre tagg.
+          </li>
+          <li>
+            S1 sender rammen videre på trunk til S2. Trunk-rammen har nå BARE indre tagget (VLAN
+            10).
+          </li>
+          <li>
+            S2 mottar trunk-rammen, ser VLAN-ID 10, og leverer den til en HR-port. Brannmur ble
+            aldri konsultert.
+          </li>
+        </ol>
+        <p className="mt-2">
+          Forsvar: aldri bruk VLAN 20 (eller noe VLAN med hosts) som native på en trunk. La native
+          VLAN være et tomt VLAN som ingen host kjenner til. Da feiler trikset på steg 2 — switchen
+          oppdager at det er en uventet VLAN-tag og kaster rammen.
+        </p>
+      </Example>
+
+      <Hvorfor title="Hvorfor ble VLAN nødvendig?">
+        <p>
+          På 90-tallet hadde en bedrift typisk én fysisk switch per fysisk avdeling. HR i tredje
+          etasje hadde sin egen switch, IT i kjelleren sin egen, gjester ble plugget i en hub i
+          resepsjonen. Hver switch var ett broadcast-domene; det fungerte fordi bygningen var
+          underdelt fysisk.
+        </p>
+        <p>
+          <strong>Ombyggings-problemet.</strong> Når HR flytter til andre etasje, må man dra nye
+          kabler eller flytte en switch. Et nytt prosjektteam med folk fra flere avdelinger? Enten
+          fysisk segregering (dyrt) eller dele broadcast-domene med tilfeldige andre (sikkerhets-
+          risiko).
+        </p>
+        <p>
+          <strong>Skalering av broadcast.</strong> Hver maskin sender ARP, DHCP, mDNS osv. som
+          broadcasts. Et stort flatt LAN med 5000 maskiner ble overfylt av broadcasts — for hver
+          ramme måtte hver maskin se på den, kjenne at den ikke var for henne, og kaste den. Mange
+          små broadcast-domener (ett per VLAN) løser dette.
+        </p>
+        <p>
+          <strong>Sikkerhet og compliance.</strong> Regulatorisk krav (PCI-DSS, GDPR for spesielle
+          data) krever at visse systemer er logisk isolert. VLAN gir denne isolasjonen uten å måtte
+          investere i fysisk segregert infrastruktur. Brannmuren mellom VLAN ankommer naturlig på
+          ruteren.
+        </p>
+        <p>
+          <strong>WiFi.</strong> Gjeste-WiFi og bedrifts-WiFi sender begge over samme aksess-punkt
+          fysisk, men putter rammene i ulike VLAN. Hver SSID mapper til sin VLAN-ID; brannmuren
+          mellom ankommer på neste hopp.
+        </p>
+      </Hvorfor>
 
       <RelatedSlugs slugs={["dte2507-brannmur-vlan"]} />
     </article>
@@ -654,40 +1276,68 @@ function Section67() {
 
       <div className="grid gap-3 lg:grid-cols-2">
         <Defs
-        items={[
-          {
-            term: "Top-of-Rack (ToR) switch",
-            body: "Switchen som sitter på toppen av hvert rack og kobler alle ~40 serverne i racket. Vanligvis 48 server-porter pluss 4–8 uplinks. Aksess-laget i et datasenter.",
-          },
-          {
-            term: "Klassisk tre-topologi",
-            body: "ToR-switcher kobler til distribusjons-switcher som kobler til en kjerne-switch. Enkelt mentalt, men flaskehals: hvis to servere i samme rack snakker med to servere i et annet rack må trafikken gjennom kjerne-switchen som har begrenset båndbredde.",
-          },
-          {
-            term: "Fat-tree",
-            body: "En tre-topologi der lenkene blir tykkere jo høyere opp du går — antall lenker fra et nivå til neste opprettholder full bisection bandwidth. Foreslått av Charles Leiserson på 80-tallet, brukt i superdatamaskiner, gjenoppdaget for datasentre på 2000-tallet.",
-          },
-          {
-            term: "Leaf-spine",
-            body: "En to-lags variant: leaf-switcher (samme rolle som ToR) kobler hver til ALLE spine-switcher. Alle leaf-til-leaf har nøyaktig samme hopp-tall: leaf → spine → leaf = 2 hopp. Lett å skalere: vil du ha mer båndbredde, legg til en spine. Vil du ha flere servere, legg til en leaf.",
-          },
-          {
-            term: "ECMP — Equal-Cost Multi-Path",
-            body: "Når det finnes flere like raske stier mellom A og B (i fat-tree/leaf-spine vrimler det av sånt), kan ruteren hash-fordele flows mellom stiene. Hver flow holder seg på én sti (for å unngå out-of-order), men ulike flows velges ut på ulike stier — utnytter all kapasitet.",
-          },
-          {
-            term: "Bisection bandwidth",
-            body: "Hvis du deler nettverket i to halvdeler med like mange noder hver, hvor mye trafikk får du gjennom snittet? Et bredt fat-tree har bisection bandwidth lik N · (per-server-rate) — dvs. alle kan snakke med en motpart samtidig på full rate. Et klassisk tre har mye mindre.",
-          },
-          {
-            term: "Oversubscription",
-            body: "Forholdet mellom samlet ned-båndbredde (mot servere) og opp-båndbredde (mot core). 1:1 = full bisection, ingen flaskehals. 4:1 = aksess-laget kan generere 4× mer trafikk enn uplinks bærer — bra nok hvis trafikken stort sett er lokal. Datasentre med massiv øst-vest-trafikk vil ha 1:1.",
-          },
-        ]}
-      />
+          items={[
+            {
+              term: "Top-of-Rack (ToR) switch",
+              body: "Switchen som sitter på toppen av hvert rack og kobler alle ~40 serverne i racket. Vanligvis 48 server-porter pluss 4–8 uplinks. Aksess-laget i et datasenter.",
+            },
+            {
+              term: "Klassisk tre-topologi",
+              body: "ToR-switcher kobler til distribusjons-switcher som kobler til en kjerne-switch. Enkelt mentalt, men flaskehals: hvis to servere i samme rack snakker med to servere i et annet rack må trafikken gjennom kjerne-switchen som har begrenset båndbredde.",
+            },
+            {
+              term: "Fat-tree",
+              body: "En tre-topologi der lenkene blir tykkere jo høyere opp du går — antall lenker fra et nivå til neste opprettholder full bisection bandwidth. Foreslått av Charles Leiserson på 80-tallet, brukt i superdatamaskiner, gjenoppdaget for datasentre på 2000-tallet.",
+            },
+            {
+              term: "Leaf-spine",
+              body: "En to-lags variant: leaf-switcher (samme rolle som ToR) kobler hver til ALLE spine-switcher. Alle leaf-til-leaf har nøyaktig samme hopp-tall: leaf → spine → leaf = 2 hopp. Lett å skalere: vil du ha mer båndbredde, legg til en spine. Vil du ha flere servere, legg til en leaf.",
+            },
+            {
+              term: "ECMP — Equal-Cost Multi-Path",
+              body: "Når det finnes flere like raske stier mellom A og B (i fat-tree/leaf-spine vrimler det av sånt), kan ruteren hash-fordele flows mellom stiene. Hver flow holder seg på én sti (for å unngå out-of-order), men ulike flows velges ut på ulike stier — utnytter all kapasitet.",
+            },
+            {
+              term: "Bisection bandwidth",
+              body: "Hvis du deler nettverket i to halvdeler med like mange noder hver, hvor mye trafikk får du gjennom snittet? Et bredt fat-tree har bisection bandwidth lik N · (per-server-rate) — dvs. alle kan snakke med en motpart samtidig på full rate. Et klassisk tre har mye mindre.",
+            },
+            {
+              term: "Oversubscription",
+              body: "Forholdet mellom samlet ned-båndbredde (mot servere) og opp-båndbredde (mot core). 1:1 = full bisection, ingen flaskehals. 4:1 = aksess-laget kan generere 4× mer trafikk enn uplinks bærer — bra nok hvis trafikken stort sett er lokal. Datasentre med massiv øst-vest-trafikk vil ha 1:1.",
+            },
+            {
+              term: "3-tier vs 2-tier topologi",
+              body: "Klassisk 3-tier: aksess (ToR) → distribusjons-switcher (aggregeringslag) → core. Hver pakke som krysser racker går 3 hopp opp og 3 hopp ned = 6 hopp totalt. 2-tier (leaf-spine): leaf-switcher kobler direkte til spine-switcher. Hver kryss-rack-pakke går 2 hopp. Færre hopp = lavere latency og enklere kabling, og er nå standarden.",
+            },
+            {
+              term: "Øst-vest- vs nord-sør-trafikk",
+              body: "Nord-sør = trafikk mellom datasenteret og omverdenen (brukere på internett). Øst-vest = trafikk mellom servere INNE i datasenteret (mikrotjenester, distribuerte databaser, RPC, MapReduce). I moderne sky-arkitekturer er øst-vest 5-10× mer enn nord-sør — derfor må fabric-en være bygget for tett intern kommunikasjon.",
+            },
+            {
+              term: "Clos-nettverk",
+              body: "Den matematiske familien fat-tree og leaf-spine tilhører — først foreslått av Charles Clos i 1953 for telefon-svitsjing. Et k-stage Clos-nett består av flere lag like-størrelse-switcher koblet i en spesifikk mønster som garanterer ikke-blokkerende ruting hvis bisection er bredt nok.",
+            },
+            {
+              term: "DCB (Data Center Bridging)",
+              body: "Settet av Ethernet-utvidelser som gjør Ethernet egnet for storage-trafikk: PFC (priority flow control = pause per prioritets-kø), ETS (båndbredde-garanti per klasse), QCN (congestion notification). Lar storage-protokoller som FCoE og RoCE kjøre over standard Ethernet i stedet for dedikert Fibre Channel.",
+            },
+            {
+              term: "RoCE / RDMA",
+              body: "RDMA = Remote Direct Memory Access: en NIC kan lese og skrive i en annen maskins RAM uten å gå via CPU. RoCE = RDMA over Converged Ethernet bruker DCB for å gi den lossless garantien RDMA trenger. Brukes for HPC, GPU-til-GPU-overføring, og raske distribuerte databaser. Latency ned mot ~1 μs.",
+            },
+            {
+              term: "BGP i datasenter",
+              body: "Moderne fat-tree-datasentre kjører BGP — protokollen som styrer hele internettet — også internt. Hver leaf og hver spine er et eget «autonomt system». Det gir samme verktøy for intern og ekstern ruting, og BGPs ECMP-støtte fordeler trafikk over alle parallelle stier. Forenkler operativt verktøy-stakken.",
+            },
+            {
+              term: "VXLAN / overlay-nettverk",
+              body: "Når mange tenants (kunder) deler samme fysiske datasenter, vil hver ha sitt eget «virtuelle nettverk» som spenner over flere racker. VXLAN pakker Ethernet-rammer inn i UDP og legger en 24-bit VNI («VLAN-ID for skyen») i header — opp til 16 millioner virtuelle nett mot 802.1Qs 4094.",
+            },
+          ]}
+        />
         <Illustration caption="Leaf-spine: hver leaf kobles til hver spine. To leaf-switcher kommuniserer alltid via én spine, ECMP fordeler last.">
-        <LeafSpineSvg />
-      </Illustration>
+          <LeafSpineSvg />
+        </Illustration>
       </div>
 
       <Example title="Eksempel: bisection i en 4-leaf, 4-spine topologi">
@@ -708,6 +1358,91 @@ function Section67() {
         </p>
       </Example>
 
+      <Example title="Eksempel: ECMP-hashing fordeler trafikk over 4 spine-switcher">
+        <p>
+          Leaf L1 har 4 like uplinks, én til hver av S1, S2, S3, S4. En server R1 i L1 åpner tre
+          parallelle TCP-flows mot R8 (under leaf L4):
+        </p>
+        <ul className="list-disc pl-5 mt-1">
+          <li>Flow A: (R1:54000, R8:443)</li>
+          <li>Flow B: (R1:54001, R8:443)</li>
+          <li>Flow C: (R1:54002, R8:443)</li>
+        </ul>
+        <p className="mt-2">
+          L1 hash-er 5-tuplen (src-IP, dst-IP, src-port, dst-port, protokoll) og tar resten modulo
+          4. Anta hash(A) % 4 = 0, hash(B) % 4 = 2, hash(C) % 4 = 2. Da:
+        </p>
+        <ul className="list-disc pl-5 mt-1">
+          <li>Flow A går via S1.</li>
+          <li>Flow B går via S3.</li>
+          <li>Flow C går også via S3 (hash-kollisjon).</li>
+        </ul>
+        <p className="mt-2">
+          Hver flow holder seg KONSISTENT på sin sti — pakkene i en TCP-flow tar samme rute, så det
+          ankommer ikke i feil rekkefølge (out-of-order). Men ECMP-hashing er ikke perfekt: når to
+          tunge flows kolliderer i samme spine (som B og C her), kan den ene spine-en bli flaskehals
+          mens en annen er ledig. Moderne implementasjoner bruker «flowlet switching» som re-hasher
+          midt i en flow når den ser et naturlig brudd.
+        </p>
+      </Example>
+
+      <Example title="Eksempel: fat-tree med k=4 — hvor mange servere og switcher?">
+        <p>Standard fat-tree-formel: en k-ary fat-tree har:</p>
+        <ul className="list-disc pl-5 mt-1 font-mono text-[12px]">
+          <li>(k/2)² core-switcher</li>
+          <li>k pods, hver med k/2 aggregerings-switcher og k/2 edge-switcher</li>
+          <li>Hver edge-switch har k/2 servere</li>
+          <li>Totalt: k³/4 servere</li>
+        </ul>
+        <p className="mt-2">
+          For k=4: 4 core-switcher, 4 pods × (2 agg + 2 edge) = 16 switcher i pod-ene, og 4 · 4 / 4
+          · 4 = <strong>16 servere</strong>. Liten skala, men full bisection.
+        </p>
+        <p className="mt-2">
+          For k=48 (typisk høyport-switch): 576 core, 48·48 = 2304 pod-switcher, og 48³/4 =
+          <strong> 27 648 servere</strong>. Det skalerer godt: dobler du k, åttedobler du
+          server-kapasitet. Det er hvorfor Facebooks og Googles datasentre er bygget på dette
+          mønsteret.
+        </p>
+      </Example>
+
+      <Hvorfor title="Hvorfor erstattet leaf-spine den klassiske 3-tier-topologien?">
+        <p>
+          Klassisk 3-tier (aksess → distribusjons → core) dominerte enterprise-nett gjennom 90- og
+          2000-tallet. Det fungerte fint mens trafikken stort sett var nord-sør: brukere snakket med
+          servere via internett. I 2010 begynte ting å skifte.
+        </p>
+        <p>
+          <strong>Øst-vest-eksplosjon.</strong> Mikrotjenester, distribuerte databaser (Cassandra,
+          Spanner), MapReduce, GPU-trening — alt dette krever at servere i datasenteret snakker
+          intenst med HVERANDRE, ikke med utsiden. 3-tier-design med en trang nakke-core ble
+          flaskehals.
+        </p>
+        <p>
+          <strong>Determinisme i latency.</strong> I 3-tier kan en pakke gå alt fra 2 hopp (samme
+          rack) til 6 hopp (kryss-aggregat) — uforutsigbart for applikasjons-utviklere. I leaf-spine
+          er det ALLTID 2 hopp mellom to vilkårlige servere. Forutsigbar latency er essensielt for
+          distribuerte databaser.
+        </p>
+        <p>
+          <strong>Skalering av bisection.</strong> I 3-tier må core-switcher være enorme — én enkelt
+          monster-boks. I leaf-spine bytter du komplekse core-switcher mot mange enkle spine-
+          switcher som hver bare gjør ECMP. Skalering = legg til en spine. Mye lettere å vokse i
+          inkrementer.
+        </p>
+        <p>
+          <strong>Kostnads-effektivitet via volum-silikon.</strong> Industri-standardiserte merchant
+          silicon-brikker (Broadcom Tomahawk, Trident osv.) gjør at en 32-port 400G-switch koster en
+          brøkdel av hva en proprietær chassis-switch gjorde. Leaf-spine er bygget av mange like
+          slike — null spesial-hardware.
+        </p>
+        <p>
+          <strong>Operasjonell enkelhet.</strong> Hver switch i leaf-spine er identisk konfigurert
+          (bortsett fra IP-er). Failure-domene = én switch. Bytting av en død leaf eller spine er en
+          15-minutters jobb, ikke et kontroll-plane-mareritt.
+        </p>
+      </Hvorfor>
+
       <RelatedSlugs slugs={["dte2507-day-in-the-life", "dte2507-switch-self-learning"]} />
     </article>
   );
@@ -721,7 +1456,7 @@ function Section68() {
     <article className="space-y-4 text-sm">
       <Header num="6.8" title="Oppgaver" />
       <p className="text-muted-foreground">
-        Fem oppgaver som tester at du faktisk kan regne og resonere — ikke bare gjenkjenne ordene.
+        Ti oppgaver som tester at du faktisk kan regne og resonere — ikke bare gjenkjenne ordene.
         Klikk «Vis svar» etter du har prøvd selv.
       </p>
 
@@ -871,6 +1606,173 @@ function Section68() {
           </>
         }
       />
+
+      <Exercise
+        question={
+          <>
+            Verifiser at en mottaker oppdager en burst-feil på 3 bits med CRC-3 (G = 1011). Du
+            sender D = 10110 med CRC. Anta at bitene i posisjon 3, 4 og 5 (med 0-indeksering fra
+            venstre, i hele kabel-strengen) flippes underveis. Vis at mottakeren oppdager feilen.
+          </>
+        }
+        hint="Beregn CRC for D, lag det som sendes, flipp de tre bitene, og deriver hele mottatte string med 1011."
+        answer={
+          <>
+            <p>D = 10110, r = 3. D·2³ = 10110000. Long-division med 1011 i GF(2):</p>
+            <pre className="text-[11px] font-mono bg-muted/30 p-2 rounded mt-1 overflow-x-auto">
+              {`     10110000  ÷  1011
+     1011
+     ----
+      0000
+       000
+       ----
+       0000000
+        ...
+         1000
+         1011
+         ----
+           110   ← CRC = 110`}
+            </pre>
+            <p className="mt-2">
+              Sendt: <code>10110 110</code> = <code>10110110</code> (8 bits).
+            </p>
+            <p className="mt-2">
+              Flipp bit 3, 4, 5 (de tre i midten): <code>10001110</code>. Mottaker divider på 1011:
+            </p>
+            <pre className="text-[11px] font-mono bg-muted/30 p-2 rounded mt-1 overflow-x-auto">
+              {`     10001110  ÷  1011
+     1011
+     ----
+      0111
+       ...
+       (rest ≠ 0)`}
+            </pre>
+            <p className="mt-2">
+              Resten er forskjellig fra 0 → feil oppdaget. Garantert: CRC med r=3 oppdager ALLE
+              burst-feil av lengde ≤ 3.
+            </p>
+          </>
+        }
+      />
+
+      <Exercise
+        question="En 10 Mbps Ethernet-hub med 500 m maks-kabel: hvorfor må minimum-rammen være på minst 64 bytes? Vis utregningen, og forklar hva som ville skjedd hvis vi tillot 32-byte rammer."
+        hint="Round-trip-tid. Tenk på en kollisjon mellom A og B i hver sin ende av kabelen."
+        answer={
+          <>
+            <p>
+              Signalet bruker ca. 2/3 av lyshastigheten i koaks: v ≈ 2·10⁸ m/s. Single-trip på 500 m
+              = 500 / 2·10⁸ = 2,5 μs. Round-trip = 5 μs. Pluss repeater-forsinkelser →
+              kollisjons-vindu ≈ 51,2 μs.
+            </p>
+            <p className="mt-2">
+              For at avsender skal kunne oppdage en kollisjon FØR hun er ferdig, må senden vare
+              minst 51,2 μs. På 10 Mbps blir det 51,2 · 10⁻⁶ · 10·10⁶ = 512 bits = 64 bytes.
+            </p>
+            <p className="mt-2">
+              <strong>Hvis 32-byte rammer var tillatt:</strong> avsender A sender 32 bytes = 25,6
+              μs. Hun blir ferdig FØR hun ser at B i den andre enden også begynte å sende. Hun tror
+              rammen kom fram, og går videre. Men B oppdager kollisjonen og gjør retransmisjon.
+              Mottakeren har en korrupt ramme og venter på retransmisjon som A ikke gjør.
+              Resultatet: tapet av pakker som software-stacken må håndtere — TCP retransmisjon med
+              full timeout, ikke link-nivå-replay. Mye langsommere, mye mer trafikk-bortkasting.
+            </p>
+          </>
+        }
+      />
+
+      <Exercise
+        question="Du ser i Wireshark at en ARP-pakke har source-MAC AA:BB:CC:11:22:33 og en gratuitous ARP der target IP = source IP = 10.0.0.50. To minutter senere ser du en annen host som sender gratuitous ARP for SAMME IP, men fra MAC DE:AD:BE:EF:CA:FE. Hva skjer, og hva er konsekvensen?"
+        hint="To maskiner tror de er 10.0.0.50. Hva gjør de andre hostene som mottar disse gratuitous ARPs?"
+        answer={
+          <>
+            <p>
+              Vi har en <strong>IP-konflikt</strong>: to maskiner har konfigurert seg med samme IP
+              (10.0.0.50). Begge sender gratuitous ARP for å annonsere sin (IP, MAC)-binding.
+            </p>
+            <p className="mt-2">
+              Andre hosters ARP-cache: når første ramme ankommer, cacher de (10.0.0.50 →
+              AA:BB:CC:11:22:33). Når andre ramme ankommer, oppdaterer de cachen til (10.0.0.50 →
+              DE:AD:BE:EF:CA:FE) — standard ARP-oppførsel er «siste vinner».
+            </p>
+            <p className="mt-2">
+              <strong>Konsekvens:</strong> all trafikk til 10.0.0.50 sendes plutselig til DE:AD:...
+              i stedet for AA:BB:.... Maskinen på AA:BB:... mottar ingen trafikk. Når den selv
+              sender en gratuitous ARP igjen (typisk hvert annet minutt), bytter rutingen tilbake.
+              Brukerne opplever sporadisk «internett virker, så virker det ikke».
+            </p>
+            <p className="mt-2">
+              Moderne operativsystemer oppdager konflikten ved at de mottar et ARP-svar for sin egen
+              IP fra en annen MAC og logger en advarsel. Linux NetworkManager popper opp: «Address
+              conflict detected». Det er gratuitous ARPs jobb.
+            </p>
+          </>
+        }
+      />
+
+      <Exercise
+        question="To switcher S1 og S2 er koblet med to parallelle kabler (begge i samme VLAN, samme aksess-status). Du ønsker å bruke begge kablene for ekstra båndbredde, men nettet stopper å fungere så snart begge plugges inn. Forklar hvorfor, og foreslå to ulike løsninger."
+        hint="Tenk broadcast-storm uten STP. Hva slags Ethernet-funksjon kunne kombinert kablene som én logisk lenke?"
+        answer={
+          <>
+            <p>
+              <strong>Hva skjer:</strong> de to kablene danner en loop mellom S1 og S2. En
+              broadcast-ramme fra en host på S1 floodes ut begge lenkene. S2 mottar to kopier og
+              flooder hver av dem tilbake ut den andre lenken. Kopiene multipliseres uten ende — en
+              broadcast-storm fyller all båndbredde og lammer LAN-et på sekunder.
+            </p>
+            <p className="mt-2">
+              <strong>Løsning 1: Spanning Tree Protocol (STP).</strong> Slå på STP (sannsynligvis
+              allerede på som default). STP velger en root-switch, beregner korteste sti til root
+              for hver port, og slår AV den ene av de to lenkene. Den slåtte lenken er en backup —
+              hvis den aktive ryker, åpner STP backup-en innen 30-60 sekunder (eller 1 sekund med
+              Rapid STP). Du får redundans, men ikke ekstra båndbredde.
+            </p>
+            <p className="mt-2">
+              <strong>Løsning 2: LAG / EtherChannel / 802.3ad.</strong>
+              Konfigurer begge kablene som ÉN logisk lenke (Link Aggregation Group).
+              LACP-protokollen håndhilser på hver side; switcher behandler de to fysiske portene som
+              én bundle. STP ser bare én logisk lenke, så ingen loop. Trafikk hash-fordeles over
+              begge fysiske kablene → DOBBEL båndbredde og redundans samtidig.
+            </p>
+          </>
+        }
+      />
+
+      <Exercise
+        question="En leaf-spine fabric har 16 leaf-switcher og 8 spine-switcher. Hver leaf har 48 server-porter à 10 Gbps og bruker resten av portene som 100 Gbps uplinks (én til hver spine). Beregn (a) ned-kapasitet per leaf, (b) opp-kapasitet per leaf, (c) oversubscription-ratio, (d) total bisection bandwidth."
+        hint="Du må regne ut hvor mange uplinks per leaf det er først (én per spine = 8). Bisection: del leafene i to grupper, summer kapasiteten over snittet."
+        answer={
+          <>
+            <p>
+              <strong>(a) Ned-kapasitet per leaf:</strong> 48 porter × 10 Gbps ={" "}
+              <strong>480 Gbps</strong>.
+            </p>
+            <p className="mt-2">
+              <strong>(b) Opp-kapasitet per leaf:</strong> 8 spines, så 8 uplinks à 100 Gbps =
+              <strong> 800 Gbps</strong>.
+            </p>
+            <p className="mt-2">
+              <strong>(c) Oversubscription:</strong> 480/800 = 0,6:1, eller mer brukbart: opp-
+              kapasiteten er 1,67× ned-kapasiteten. Vi har FAKTISK over-provisjonert oppover. I
+              praksis betyr det at hver server kan kjøre i full 10 Gbps mot HVILKEN som helst annen
+              server i fabric-en, uten kongestion. <strong>Bedre enn 1:1</strong>, sannsynligvis
+              valgt fordi hver leaf har spare-uplinks for redundans.
+            </p>
+            <p className="mt-2">
+              <strong>(d) Bisection:</strong> del 16 leafene i to grupper à 8. Snittet går mellom
+              leafene og spinene. Hver leaf bidrar med 800 Gbps oppover; halvparten av disse
+              flow-ene krysser snittet i snitt (ECMP fordeler). Per side: 8 leaf × 800 Gbps · 0,5 =
+              3200 Gbps. Total bisection ≈ <strong>3,2 Tbps</strong>.
+            </p>
+            <p className="mt-2">
+              Med 16 · 48 = 768 servere totalt, deler 384 per side 3200 Gbps = 8,33 Gbps per server.
+              Nesten full 10 Gbps. En sky-leverandør med øst-vest-tunge workloads ville være
+              fornøyd.
+            </p>
+          </>
+        }
+      />
     </article>
   );
 }
@@ -922,6 +1824,18 @@ function Example({ title, children }: { title: string; children: React.ReactNode
     <div className="rounded-xl border border-amber-500/30 bg-amber-500/5 p-4">
       <div className="text-[10px] uppercase tracking-wider text-amber-700 dark:text-amber-400 font-semibold mb-1">
         Eksempel
+      </div>
+      <div className="font-semibold text-foreground mb-1">{title}</div>
+      <div className="text-muted-foreground text-[13px] space-y-2">{children}</div>
+    </div>
+  );
+}
+
+function Hvorfor({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <div className="rounded-xl border border-sky-500/30 bg-sky-500/5 p-4">
+      <div className="text-[10px] uppercase tracking-wider text-sky-700 dark:text-sky-400 font-semibold mb-1">
+        Hvorfor
       </div>
       <div className="font-semibold text-foreground mb-1">{title}</div>
       <div className="text-muted-foreground text-[13px] space-y-2">{children}</div>
@@ -1005,7 +1919,6 @@ function RelatedSlugs({ slugs }: { slugs: string[] }) {
     </div>
   );
 }
-
 
 // ============================================================
 // SVG-illustrasjoner — alle original-tegnet
