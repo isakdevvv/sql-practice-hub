@@ -3,6 +3,7 @@ import {
   Atom,
   Beaker,
   Binary,
+  BookOpen,
   Brain,
   Code2,
   Compass,
@@ -415,6 +416,16 @@ export const LIBRARY: LibraryItem[] = [
   },
 
   // ───────── LÆR — mini-kurs og lineære løp ─────────
+  {
+    slug: "kurose-kurs",
+    title: "Kurose-kurset — Computer Networking",
+    kind: "laer",
+    tags: ["nettverk", "kurs", "bok"],
+    href: "/stack/kurose-kurs",
+    blurb: "Bok-som-kurs: 9 kapitler med våre egne definisjoner, illustrasjoner og oppgaver. Direkte koblet til alle DTE-2507-sider.",
+    Icon: BookOpen,
+    subjectSlug: "dte-2507",
+  },
   {
     slug: "tek-1501",
     title: "Sannsynlighet & statistikk",
