@@ -202,62 +202,98 @@ function Section71() {
       <div className="grid gap-3 lg:grid-cols-2">
         <Defs
           items={[
-            {
-              term: "Path loss (avstands-svekning)",
-              body: "Signal-styrken faller som inversen av avstanden kvadrert i fritt rom, og enda raskere innendørs der vegger absorberer. Dobler du avstanden, mister du minst 6 dB. Det er derfor en AP i et stort kontor må kompromisse mellom rekkevidde og data-rate.",
-            },
+            { term: "Path loss", body: "Signal faller med avstanden² — dobbel avstand = −6 dB." },
             {
               term: "Multipath-fading",
-              body: "Signalet tar flere veier — direkte, via veggen, via taket — og kommer fram med ulike forsinkelser. Når kopiene addereres kan de forsterke (konstruktivt) eller utslette (destruktivt) hverandre. Flytter du laptopen 10 cm kan signalet hoppe fra 5 streker til 1.",
+              body: "Flere refleksjons-veier kanselleres i destruktiv addering.",
             },
             {
               term: "SNR (signal-to-noise ratio)",
-              body: "Forholdet mellom ønsket signal-styrke og bakgrunns-støy, målt i dB. Modulasjons-skjemaet i WiFi (BPSK, QPSK, ulike QAM) velges adaptivt etter SNR: høy SNR → mange bits per symbol → høy data-rate; lav SNR → robust modulasjon med færre bits.",
+              body: "Signal vs støy i dB — styrer valgt modulasjon.",
             },
             {
               term: "Ekstern interferens",
-              body: "2.4 GHz-båndet deles med Bluetooth, mikrobølgeovner, trådløse telefoner og babymonitorer. 5 GHz er mindre overfylt. Interferens-kilder utenfor protokollen kan ikke høres av CSMA — de bare ødelegger pakker uten forvarsel.",
+              body: "Bluetooth, mikrobølgeovn, babymonitor — utenfor CSMA.",
             },
             {
-              term: "Hidden terminal-problemet",
-              body: "Station A og station C kan begge høre access-pointet AP, men ikke hverandre (fordi en vegg eller for stor avstand står imellom). Begge tror lufta er ledig, begge sender samtidig, og pakkene kolliderer ved AP. Klassisk CSMA/CD hjelper ikke — sendere kan ikke detektere kollisjonen i sitt eget radio-felt.",
+              term: "Hidden terminal",
+              body: "To sendere hører ikke hverandre, kolliderer hos mottaker.",
             },
             {
-              term: "Exposed terminal-problemet",
-              body: "Speilbildet: B hører at en nabo A sender, og holder igjen sin egen sending selv om B sin tiltenkte mottaker D er utenfor A sin rekkevidde og ikke ville blitt forstyrret. Konservativ CSMA gir tapt kapasitet.",
+              term: "Exposed terminal",
+              body: "Speilbildet — konservativ CSMA gir tapt kapasitet.",
             },
             {
               term: "Half-duplex radio",
-              body: "Et standard WiFi-grensesnitt kan ikke sende og lytte samtidig på samme frekvens — radioens egen sender ville druknet en mye svakere innkommende signal. Derfor kan du ikke detektere kollisjoner under sending slik Ethernet gjør.",
+              body: "Kan ikke lytte mens den sender — egen utgang drukner.",
             },
-            {
-              term: "Shadow fading (skyggetap)",
-              body: "Sakte svekning av snitt-signalet når noe stort kommer mellom sender og mottaker — typisk en betongvegg, et lastebil-tilhenger som parkerer, eller en kropp som beveger seg gjennom strålen. Ulik fra multipath fordi det varer i sekund-skalaen, ikke i millisekund-skalaen.",
-            },
+            { term: "Shadow fading", body: "Treg svekning fra mur, kropp eller lastebil." },
             {
               term: "Co-channel-interferens",
-              body: "To stationer eller AP-er bruker samme kanal (samme frekvens-bånd). De hører hverandre som støy, og må enten dele lufta via CSMA eller akseptere lavere SNR. Tre naboleiligheter med rutere alle på kanal 1 i 2.4 GHz er det klassiske eksempelet.",
+              body: "Naboer på samme kanal hører hverandre som støy.",
             },
             {
-              term: "Adjacent-channel-interferens",
-              body: "Spillover av energi fra en sender på kanal X inn i en mottaker som lytter på kanal X±1. I 2.4 GHz overlapper hver 20-MHz-kanal med 4–5 nabokanaler — derfor er kun 1, 6 og 11 reelt non-overlappende der.",
+              term: "Adjacent-channel",
+              body: "Spillover til kanal X±1 — derav 1/6/11-regelen i 2.4 GHz.",
             },
             {
-              term: "Free-space path loss-formelen",
-              body: "Modellen FSPL (dB) = 20·log₁₀(d) + 20·log₁₀(f) + 32.45 brukt for fritt rom. d i km, f i MHz. For et 2.4 GHz-signal over 100 m gir det ca. 80 dB tap — derav typiske AP-rekkevidder rundt 20–30 m innendørs der vegger legger til ekstra demping.",
+              term: "Free-space path loss",
+              body: "FSPL = 20·log d + 20·log f + 32.45 (fritt rom).",
             },
             {
               term: "Modulasjon",
-              body: "Hvordan bits avbildes på en radio-bølge. Enkleste form (BPSK) sender 1 bit per symbol ved å snu fasen 180°; QPSK sender 2 bit per symbol; 16-QAM 4 bit; 256-QAM 8 bit. Høyere QAM krever bedre SNR fordi mottakeren må skille flere symbol-tilstander uten å forveksle dem.",
+              body: "Bits per radio-symbol: BPSK=1, QPSK=2, 16-QAM=4, 256-QAM=8.",
             },
             {
               term: "Antenne-gain",
-              body: "Hvor mye en antenne fokuserer energien i én retning sammenlignet med en isotropisk (allretnings) referanse, målt i dBi. En vanlig laptop-antenne har 0–2 dBi; en retnings-antenne på en mast kan ha 15 dBi. Høyere gain betyr lengre rekkevidde i den retningen — på bekostning av dekning i andre retninger.",
+              body: "Fokus-grad i dBi — laptop ~2 dBi, mast-antenne ~15 dBi.",
             },
           ]}
         />
         <Illustration caption="Hidden terminal: A og C hører begge AP, men ikke hverandre. AP får krasjete signaler.">
           <HiddenTerminalSvg />
+        </Illustration>
+      </div>
+
+      <div className="grid gap-3 lg:grid-cols-2">
+        <Metafor tittel="Path loss — som å rope over en fotballbane">
+          <p>
+            Stå på midtbanen og rop. En kompis 5 m unna hører tydelig. En 50 m unna hører knapt
+            navnet sitt. En 100 m unna hører bare en svak mumlebar lyd. Lufta «spiser» lyden jo
+            lenger den må reise. Akkurat slik blir radiosignalet stadig svakere — dobler du
+            avstanden, mister du minst 6 dB. Det er derfor en WiFi-ruter midt i kontoret må gå ned
+            på modulasjonsrate (færre bits per radio-symbol) for å nå klienter ved langveggen.
+          </p>
+        </Metafor>
+        <Metafor tittel="Multipath — som ekko i en gymsal">
+          <p>
+            Rop «HEI» i en stor gymsal. Du hører ditt eget «hei» direkte, og deretter ekkoer fra
+            kortveggene som kommer 50–100 ms senere. Ekkoene gjør stemmen din uleselig. På radio er
+            det det samme: direkte bølge + refleksjoner fra vegg/tak ankommer mottakeren med ulik
+            forsinkelse. Hvis to kopier er i motfase — toppene møter dalene — kansellerer de
+            hverandre, og signalet kollapser. Flytt laptopen 10 cm, og ekkoenes innbyrdes faser
+            endres helt. Plutselig 5 streker.
+          </p>
+        </Metafor>
+      </div>
+
+      <Metafor tittel="Hidden terminal — T-kryss med blindsoner">
+        <p>
+          Du står i ett av to T-kryss på en bygate. Kompisen din står i det andre — begge skjult bak
+          murhjørner som ikke ser hverandre. Begge ser at hovedveien er klar, og begge tråkker ut
+          samtidig. KRASJ. Det er hidden terminal i et nøtteskall: to WiFi-stationer som ikke kan
+          høre hverandre velger samtidig å sende fordi de hver for seg «sjekket lufta». Begge
+          framene smelter sammen til støy hos AP-en. RTS/CTS er som å sette opp et felles trafikklys
+          (CTS-en) som begge T-kryssene kan se selv om de ikke ser hverandre.
+        </p>
+      </Metafor>
+
+      <div className="grid gap-3 lg:grid-cols-2">
+        <Illustration caption="Path loss-kurve: signalstyrke vs avstand på log-skala — fritt rom + innendørs med vegger.">
+          <PathLossCurveSvg />
+        </Illustration>
+        <Illustration caption="Multipath: direkte + refleksjon-kopi gir konstruktiv (additiv) eller destruktiv (kansellerende) addering.">
+          <MultipathFadingSvg />
         </Illustration>
       </div>
 
@@ -361,64 +397,64 @@ function Section72() {
       <div className="grid gap-3 lg:grid-cols-2">
         <Defs
           items={[
-            {
-              term: "CSMA/CA (Carrier Sense Multiple Access with Collision Avoidance)",
-              body: "WiFi sin grunnleggende tilgangs-protokoll. Lytt først; hvis ledig, vent en DIFS-periode og deretter en tilfeldig antall slot-tider (backoff). Send. Vent på ACK. Hvis ingen ACK kommer, doble maks-backoff og forsøk igjen.",
-            },
-            {
-              term: "DIFS (DCF Interframe Space)",
-              body: "Den lengste obligatoriske stille-perioden — ca. 34 μs i 802.11n — som hver ny sending må vente etter at lufta ble ledig. Lengre enn SIFS for å gi prioritet til pågående transaksjoner.",
-            },
-            {
-              term: "SIFS (Short Interframe Space)",
-              body: "Den korteste stille-perioden, ca. 16 μs, som brukes mellom relaterte rammer (data-ACK, RTS-CTS-DATA-ACK). Kort fordi vi ikke vil at noen andre skal sno seg inn mellom dem.",
-            },
-            {
-              term: "Backoff-vindu (CW)",
-              body: "Etter DIFS velger station et tilfeldig heltall mellom 0 og CW, og venter dette antall slot-tider. Telle-ned pauser hvis lufta blir opptatt; gjenoppta etter ny DIFS. Vinneren av loddtrekningen sender; taperne fortsetter neste runde med samme telling.",
-            },
-            {
-              term: "RTS/CTS (Request-To-Send / Clear-To-Send)",
-              body: "Valgfri mekanisme mot hidden terminal: sender ber AP om plass med en liten RTS-frame; AP svarer med CTS som alle innen rekkevidde av AP hører. CTS reserverer mediet (via NAV — Network Allocation Vector) i en kjent tidsperiode, så også skjulte stationer holder seg unna.",
-            },
-            {
-              term: "Beacon-frame",
-              body: "AP-en kringkaster en beacon hver ~100 ms med nettverksnavn (SSID), kapasiteter, og en synkroniserings-tidsstempel. Beacon-en er hvordan klienter finner og holder kontakten med nettet, og hvordan power-save fungerer (klienten kan sove mellom beacons).",
-            },
-            {
-              term: "Assosiasjon",
-              body: "Før en station kan sende data må den (1) finne en AP via passiv scan av beacons eller aktiv probe, (2) autentisere, og (3) assosiere — formelt si fra hvilket nett man tilhører. Først etter assosiasjon mottar AP-en data-frames fra stationen.",
-            },
-            {
-              term: "Autentisering (separat fra assosiasjon)",
-              body: "Steget før assosiasjon der stationen og AP-en (eller en RADIUS-server bak) verifiserer hverandres identitet. I åpne nett er det en formalitet; i WPA2/WPA3 utveksles nøkler her via en firevegs-handshake. En klient kan være autentisert hos flere AP-er samtidig — det letter raskt roaming.",
-            },
-            {
-              term: "NAV (Network Allocation Vector)",
-              body: "En virtuell carrier-sense som hver station holder lokalt: en nedteller som settes basert på Duration-feltet i hver mottatt ramme. Så lenge NAV > 0 oppfører stationen seg som om lufta er opptatt selv om den fysisk ikke hører noe. Det er mekanismen som lar RTS/CTS reservere mediet for skjulte naboer.",
-            },
-            {
-              term: "Slot-tid",
-              body: "Den grunnleggende tidskvantet i CSMA/CA backoff-telling, vanligvis 9 μs i 802.11n/ac/ax. Velges så det er kortere enn forskjellen i propageringsforsinkelse mellom to stationer pluss deteksjons-tid for radio — så ingen to stationer kommer i situasjonen der den ene begynner å sende «mellom» den andres carrier-sense og dens egen.",
-            },
-            {
-              term: "802.11-standard-familien (a/b/g/n/ac/ax)",
-              body: "a (1999, 5 GHz, opp til 54 Mbps), b (1999, 2.4 GHz, 11 Mbps), g (2003, 2.4 GHz, 54 Mbps), n (2009, MIMO, opp til 600 Mbps), ac (2014, 5 GHz, MU-MIMO, gigabit-rater), ax/WiFi 6 (2019, OFDMA, bedre tetthet), be/WiFi 7 (2024, 320 MHz-kanaler, multi-link). Hver ny standard er bakoverkompatibel via fallback-modus.",
-            },
-            {
-              term: "Eksponentiell backoff (CW-vokst)",
-              body: "Etter hver mislykket sending dobles maks-backoff fra CWmin (typisk 15) opp mot CWmax (typisk 1023). Etter en vellykket sending resettes vinduet til CWmin. Mønsteret 15, 31, 63, 127, 255, 511, 1023 sikrer at to klienter som krasjet ikke gjentar samme tidspunkt-valg.",
-            },
-            {
-              term: "MU-MIMO (Multi-User MIMO)",
-              body: "AP-en sender til flere klienter samtidig på samme frekvens ved å bruke flere antenner med matematisk beamforming. Hver klient mottar bare sin egen del fordi de fysiske bølge-mønstrene er ortogonale i deres respektive lokasjoner. Introdusert i 802.11ac, gjør luft-tids-deling vesentlig mer effektiv.",
-            },
+            { term: "CSMA/CA", body: "Lytt, vent DIFS, tilfeldig backoff, send, vent ACK." },
+            { term: "DIFS", body: "Obligatorisk stille-pause ~34 μs etter ledig luft." },
+            { term: "SIFS", body: "Kort pause ~16 μs mellom data og ACK." },
+            { term: "Backoff-vindu (CW)", body: "Tilfeldig telle-ned i slot-tider før sending." },
+            { term: "RTS/CTS", body: "Liten reservasjon mot hidden terminal — alle hører CTS." },
+            { term: "Beacon-frame", body: "AP kringkaster SSID hver ~100 ms." },
+            { term: "Assosiasjon", body: "Probe → autentiser → assosiere før første data-frame." },
+            { term: "Autentisering", body: "Nøkkel-handshake (WPA2/WPA3) før assosiasjon." },
+            { term: "NAV", body: "Virtuell timer som tvinger stillhet selv uten å høre signal." },
+            { term: "Slot-tid", body: "Grunntakten i backoff-telling, ~9 μs i 802.11n+." },
+            { term: "802.11 a/b/g/n/ac/ax", body: "Hver generasjon: ny modulasjon + MIMO/OFDMA." },
+            { term: "Eksponentiell backoff", body: "CW dobles etter hver kollisjon: 15→31→63→…" },
+            { term: "MU-MIMO", body: "AP sender til flere klienter parallelt via beamforming." },
           ]}
         />
         <Illustration caption="CSMA/CA-sekvens: lytt → DIFS → backoff → send → SIFS → ACK.">
           <CsmaCaSvg />
         </Illustration>
       </div>
+
+      <div className="grid gap-3 lg:grid-cols-2">
+        <Metafor tittel="CSMA/CA + RTS/CTS — hånd-i-været-systemet i klasserommet">
+          <p>
+            Tenk deg en klasseromsdebatt med 25 elever. Hvis alle bare snakker når de føler for det,
+            blir det kaos. I stedet venter de til det er stille (DIFS — den obligatoriske pausen),
+            så strekker de hånda i været. Læreren (AP-en) peker på én — det er CTS-en. Alle andre
+            hører at akkurat denne eleven har ordet, og blir tause helt til hun er ferdig. Selv
+            elever lengst bak som ikke kan høre at hun snakker, vet at de skal være stille fordi
+            læreren ga klar beskjed. Det er nøyaktig hvordan RTS/CTS løser hidden
+            terminal-problemet.
+          </p>
+        </Metafor>
+        <Metafor tittel="Backoff — kron-og-mynt for de som rakk opp hånda samtidig">
+          <p>
+            To elever (X og Y) rekker opp hånda i samme øyeblikk. Læreren kan ikke se hvem som var
+            først. I stedet trekker X et tilfeldig tall fra 0 til 15, og Y trekker sitt eget. X får
+            5, Y får 9 — X teller raskere ned og får ordet først. Hvis de er ekstra uheldige og
+            trekker samme tall, kolliderer de i å snakke samtidig. Da dobles trekke-spennet til 0–31
+            (eksponentiell backoff), og sannsynligheten for å treffe samme tall halveres. Det er
+            nøyaktig CSMA/CA-loddtrekningen som forhindrer at to WiFi-klienter rir hverandre i
+            stykker.
+          </p>
+        </Metafor>
+      </div>
+
+      <Metafor tittel="RTS/CTS — som å reservere bord på restauranten">
+        <p>
+          Du sender en SMS til hovmesteren: «Vi er 4 personer, kan vi få et bord 19:00?» (RTS).
+          Hovmesteren svarer høyt til hele restauranten: «Bord 7 er booket av 4 personer 19:00»
+          (CTS). Selv gjester ute i baren som ikke hørte din SMS, vet at de ikke skal sette seg ved
+          bord 7. Når dere kommer, slipper dere å kjempe om plassen — NAV-en har holdt det tomt for
+          dere.
+        </p>
+      </Metafor>
+
+      <Illustration caption="To stationer X og Y kjemper om lufta. X trekker 5, Y trekker 9. X vinner; Y fryser med 4 igjen.">
+        <BackoffRaceSvg />
+      </Illustration>
 
       <Example title="Eksempel: to stationer kjemper om lufta">
         <p>
@@ -513,64 +549,64 @@ function Section73() {
       <div className="grid gap-3 lg:grid-cols-2">
         <Defs
           items={[
-            {
-              term: "Celle",
-              body: "Et geografisk område dekket av én basestasjon. Naboceller bruker ulike frekvenser slik at de ikke forstyrrer hverandre. Frekvenser kan gjenbrukes i celler som ligger langt fra hverandre — det kalles frequency reuse, og er hele grunnen til at mobilnett skalerer.",
-            },
-            {
-              term: "Basestasjon",
-              body: "Antennen med tilhørende radio-utstyr på toppen av en mast eller et bygg. Het BTS i 2G, NodeB i 3G, eNodeB i 4G/LTE, og gNodeB i 5G. Snakker både med mobil-enhetene over radio og med kjernen over fiber.",
-            },
+            { term: "Celle", body: "Geografisk område dekket av én basestasjon." },
+            { term: "Basestasjon", body: "BTS/NodeB/eNodeB/gNodeB — radio + fiber-kobling." },
             {
               term: "Kjernenettet",
-              body: "Den faste delen av mobilnettet — switcher, rutere, databaser med abonnement-info, gateways til internett. Het MSC i GSM, hadde tillegget GPRS for pakke-data i 2.5G, og er nå et flatt IP-nett (EPC i 4G, 5GC i 5G).",
+              body: "Faste switcher, gateways og databaser bak basestasjonene.",
             },
-            {
-              term: "GSM (2G)",
-              body: "Krets-svitsjet for tale, opprinnelig ingen data. TDMA + FDMA: hver bruker fikk en frekvens og et tidsslot. Lagt til GPRS rundt 2000 for å smugle pakke-data inn over samme radio — det var den første egentlig mobile internett-tilgangen.",
-            },
-            {
-              term: "LTE (4G)",
-              body: "Helt pakke-svitsjet. Bruker OFDMA på radio — frekvensbåndet deles i tusenvis av smale subbærere som tildeles dynamisk per bruker. Tale går over IP via VoLTE. Kjernen (EPC) er ren IP-ruting med spesielle gateways (S-GW, P-GW) for å håndtere mobilitet.",
-            },
-            {
-              term: "5G",
-              body: "Tre hovedforbedringer: høyere kapasitet (millimeter-bånd, 24–100 GHz, med massive MIMO), lavere forsinkelse (under 10 ms ende-til-ende), og network slicing (samme fysiske nett presentert som flere logisk separate nett med ulike egenskaper for IoT, biler, video etc.). Kjernen (5GC) er service-orientert og bygget på containere.",
-            },
-            {
-              term: "Frequency reuse",
-              body: "Mønsteret som lar de samme frekvensene brukes om igjen i ikke-nabo-celler. Et reuse-tall N = 7 betyr at hver frekvens-gruppe gjentas hver 7. celle. Lavere N = mer kapasitet, men mer risiko for interferens fra fjern-celler.",
-            },
-            {
-              term: "BTS / NodeB / eNodeB / gNodeB",
-              body: "Generasjons-navnene på basestasjons-radioen: BTS i 2G/GSM, NodeB i 3G/UMTS, eNodeB i 4G/LTE, gNodeB i 5G NR. Hvert navn signaliserer mer intelligens flyttet ut i radio-noden — eNodeB tok over scheduling fra kjernen som RNC gjorde i 3G, og gNodeB støtter også funksjoner som tidligere lå i kjernen.",
-            },
-            {
-              term: "HSS / UDM (abonnent-database)",
-              body: "Home Subscriber Server i 4G og Unified Data Management i 5G — den sentrale databasen som lagrer hvem som har lov til å bruke nettet, hvilke tjenester de er abonnert på, og hvilke krypto-nøkler som matcher deres SIM-kort. Autentiserings-anker for hele nettet.",
-            },
-            {
-              term: "MME / AMF (mobility manager)",
-              body: "Mobility Management Entity i 4G og Access and Mobility Function i 5G — kontroll-plane-funksjonen som holder oversikt over hvilken celle hver telefon er i, koordinerer paging når en innkommende samtale skal ringes ut, og styrer håndover-prosesser. Snakker aldri med data-pakker direkte, kun signalering.",
-            },
-            {
-              term: "S-GW / P-GW / UPF (data-plane-gateway)",
-              body: "I 4G/LTE: Serving Gateway nær brukeren og Packet Data Network Gateway ut mot internett. I 5G slått sammen til User Plane Function (UPF) for lavere forsinkelse. Alle bruker-data-pakker passerer en av disse — det er endepunktet for GTP-tunnelen og IP-adressens egentlige hjem.",
-            },
-            {
-              term: "OFDMA-subbærere",
-              body: "I LTE deles 20 MHz båndet i 1200 subbærere à 15 kHz. Hver bruker tildeles et rektangel i tid·frekvens-rutenettet (en «resource block») hver millisekund. Det er dette som lar mange brukere dele samme celle samtidig uten å vente på CSMA.",
-            },
-            {
-              term: "SIM/eSIM",
-              body: "Et tamper-resistant kort (Subscriber Identity Module) som lagrer en hemmelig nøkkel K_i og et identifikator IMSI. Brukes til å gjøre challenge-response autentisering mot HSS uten å eksponere K_i. eSIM er samme funksjonalitet i en chip loddet på hovedkortet, oppdaterbar over internett.",
-            },
+            { term: "GSM (2G)", body: "Krets-svitsjet tale + GPRS-pakker som tilleggsmodul." },
+            { term: "LTE (4G)", body: "All-IP, OFDMA på radio, VoLTE for tale." },
+            { term: "5G", body: "Mer kapasitet (mmWave), <10 ms forsinkelse, network slicing." },
+            { term: "Frequency reuse", body: "Samme frekvenser gjenbrukt i ikke-nabo-celler." },
+            { term: "BTS/NodeB/eNodeB/gNodeB", body: "Generasjons-navn på basestasjons-radioen." },
+            { term: "HSS / UDM", body: "Sentral abonnent-database med krypto-nøkler." },
+            { term: "MME / AMF", body: "Mobility manager — holder rede på hvilken celle du er i." },
+            { term: "S-GW / P-GW / UPF", body: "Data-plane-gateway — eier IP-adressen din." },
+            { term: "OFDMA-subbærere", body: "20 MHz delt i 1200 smale bærere à 15 kHz." },
+            { term: "SIM/eSIM", body: "Tamper-resistent nøkkel-kort for autentisering." },
           ]}
         />
         <Illustration caption="Sekskant-mønsteret med fargede frekvens-grupper og kjernens kobling ut på internett.">
           <CellularTopologySvg />
         </Illustration>
       </div>
+
+      <div className="grid gap-3 lg:grid-cols-2">
+        <Metafor tittel="Celler — som en honningkake-mosaikk over kartet">
+          <p>
+            Tenk deg at du brer et honningkake-mønster av sekskanter ut over hele Nord-Norge. Hver
+            sekskant er en celle med sin egen basestasjon på toppen av masten i midten. Du kan se
+            for deg de tre fargene som tre ulike frekvens-grupper (f1, f2, f3): naboer maler aldri
+            samme farge slik at de ikke forstyrrer hverandre, men celler langt unna kan bruke samme
+            farge fritt. Det er hele trikset som gjør at hele Norge får mobildekning uten å sprenge
+            spektrum-budsjettet.
+          </p>
+        </Metafor>
+        <Metafor tittel="Frequency reuse — som å rope navn på skolegården">
+          <p>
+            «Per!» roper en mor i ene enden av skolegården. En annen «Per!» fra den andre enden
+            forveksles ikke fordi avstanden mellom dem er så stor at hver Per bare hører sin egen
+            mor. Men hvis to mødre står 5 m fra hverandre og begge roper Per, blir det forvirring —
+            samme frekvens (samme «navn-lyd»), kort avstand, garantert kollisjon. Mobilnett gjør
+            akkurat dette med radio: samme kanal kan brukes om igjen — bare ikke i nabo-cellen.
+          </p>
+        </Metafor>
+      </div>
+
+      <Metafor tittel="Generasjons-skiftet 2G → 5G — fra rør-svitsj til pakke-fabrikk">
+        <p>
+          GSM (2G) var som et fast telefonbord der hver samtale fikk sin egen ledning trukket fra
+          ende til ende. Stille pauser kostet like mye som ord — krets-svitsjet. LTE og 5G ligner
+          mer på en postsentral: pakker reiser i sky, kjernen er en moderne ruter-fabrikk, og tale
+          er bare en applikasjon (VoLTE/VoNR) blant alle andre IP-pakker. Hver generasjon har
+          skjøvet intelligensen lenger ut til basestasjonen og gjort kjernen flatere.
+        </p>
+      </Metafor>
+
+      <Illustration caption="Generasjons-tidslinjen 2G→5G med radio-teknologi, data-rate-størrelser, og kjerne-arkitektur side om side.">
+        <CellGenTimelineSvg />
+      </Illustration>
 
       <Example title="Eksempel: en SMS i 2G vs en TikTok-video i 5G">
         <p>
@@ -689,57 +725,33 @@ function Section74() {
       <div className="grid gap-3 lg:grid-cols-2">
         <Defs
           items={[
-            {
-              term: "Home network",
-              body: "Det nettet hvor mobil-hostens permanente IP-adresse hører hjemme. Andre maskiner sender pakker til denne adressen som om hosten alltid er der.",
-            },
+            { term: "Home network", body: "Der den permanente IP-adressen hører hjemme." },
             {
               term: "Home agent (HA)",
-              body: "En ruter på hjemnettet som vet hvor mobil-hosten er akkurat nå. Når pakker kommer til hjem-adressen mens hosten er borte, fanger HA dem opp og videresender til den nåværende lokasjonen.",
+              body: "Ruter som videresender pakker til hosten der den er nå.",
             },
             {
-              term: "Foreign network og foreign agent (FA)",
-              body: "Nettet hosten er på akkurat nå, og en lokal ruter som hjelper med å registrere hosten og motta videresendte pakker. Den mobile hosten får en midlertidig care-of-adresse på dette nettet.",
+              term: "Foreign network / FA",
+              body: "Nettet hosten besøker; lokal ruter mottar tunnel.",
             },
-            {
-              term: "Care-of-address (COA)",
-              body: "Den midlertidige adressen mobil-hosten har akkurat nå. Den fungerer bare lokalt; eksterne korrespondenter vet ingenting om den. Når hosten flytter til et nytt foreign network, får den ny COA og må melde fra til HA.",
-            },
-            {
-              term: "Tunneling",
-              body: "HA pakker hver innkommende pakke (med hjem-adresse som destinasjon) inn i en ny ytre IP-pakke med COA som destinasjon, og sender den til foreign network. FA pakker ut og leverer den indre pakken til hosten. Hosten ser fortsatt sitt eget hjem-IP som destinasjon — derfor brytes ikke TCP-forbindelser.",
-            },
+            { term: "Care-of-address (COA)", body: "Midlertidig adresse på besøks-nettet." },
+            { term: "Tunneling", body: "Pakk innpakket i ny ytre IP med COA som destinasjon." },
             {
               term: "Triangle routing",
-              body: "Bivirkningen av indirect routing: alle pakker til hosten må først innom HA, selv om korrespondenten er rett ved siden av foreign network. Direkte ruting (route optimization) lar korrespondenten cache COA og sende rett dit — på bekostning av at korrespondent-stacken må forstå Mobile IP.",
+              body: "Trafikk-omvei via HA — løses av route optimization.",
             },
-            {
-              term: "GTP i mobilkjernen",
-              body: "Mobilnett gjør i praksis det samme prinsipielt, men med GTP-tunneler (GPRS Tunneling Protocol) mellom basestasjon og gateway. Når telefonen flytter seg mellom celler, oppdateres tunnel-endepunktet uten at telefonens IP endrer seg.",
-            },
-            {
-              term: "Korrespondent (CN, correspondent node)",
-              body: "Den andre enden i kommunikasjonen — typisk en server på fast internett som mobil-hosten snakker med. CN trenger ikke vite om mobilitet i det hele tatt; den sender pakker til mobil-hostens permanente hjem-IP og forventer svar fra samme IP.",
-            },
-            {
-              term: "Registrering med HA",
-              body: "Når mobil-hosten kommer til et nytt foreign network, sender den (eventuelt via FA) en Registration Request til sin Home Agent med ny COA. HA oppdaterer en intern binding-tabell (hjem-IP → COA) og svarer med Registration Reply. Først etter dette kan trafikk leveres til den nye lokasjonen.",
-            },
-            {
-              term: "Co-located care-of-address",
-              body: "En alternativ form der mobil-hosten selv tar en COA fra DHCP på foreign network, uten å bruke en separat FA. Da pakker HA inn pakker og sender dem direkte til hosten på dens COA. Vanlig i IPv6 Mobile IP der DHCPv6 + Neighbor Discovery gjør FA-rollen overflødig.",
-            },
+            { term: "GTP-tunnel", body: "Mobilkjernens versjon — tunnel mellom eNB og gateway." },
+            { term: "Korrespondent (CN)", body: "Server som snakker med mobil-hosten." },
+            { term: "Registrering med HA", body: "Si fra om ny COA hver gang du flytter deg." },
+            { term: "Co-located COA", body: "Hosten tar selv DHCP-adresse, dropper FA." },
             {
               term: "Reverse tunneling",
-              body: "I motsatt retning sender mobil-hosten utgående pakker først tilbake til HA via en tunnel før de slippes ut på internett med hjem-IP som kilde. Uten dette ville mange ISP-er ha droppet pakker med ukjent kilde-IP (ingress filtering, RFC 2827). Påvirker ytelse ved at all trafikk gjør en omvei.",
+              body: "Utgående trafikk via HA for å passere ingress-filter.",
             },
-            {
-              term: "Soft-state-binding",
-              body: "HA og FA holder COA-bindingen som mykt-state: den utløper hvis ikke fornyet med jevne mellomrom. Den mobile hosten sender Registration Requests typisk hvert minutt. Hvis hosten plutselig dør eller mister kontakt, ryddes bindingen automatisk uten manuell intervensjon.",
-            },
+            { term: "Soft-state", body: "Bindinger utløper hvis ikke fornyet jevnlig." },
             {
               term: "Encapsulation-overhead",
-              body: "Hver pakke i en Mobile IP-tunnel får en ekstra 20-byte IPv4-header (eller 40-byte IPv6). Det er typisk 1–2 % overhead på 1500-byte payload, men kan utløse fragmentering om kjede-MTU er 1500 og ytre payload også er 1500. Path MTU Discovery må fungere ende-til-ende for å unngå sortier.",
+              body: "20–40 byte ekstra IP-header per tunnelert pakke.",
             },
           ]}
         />
@@ -747,6 +759,44 @@ function Section74() {
           <MobileIpSvg />
         </Illustration>
       </div>
+
+      <div className="grid gap-3 lg:grid-cols-2">
+        <Metafor tittel="Mobile IP — som å bytte adresse, men ha posten videresendt">
+          <p>
+            Du flytter fra Oslo til Tromsø, men har ikke fortalt vennene dine om den nye adressen
+            ennå. På Posten setter du opp en automatisk videreforsendelse: post stilet til
+            Oslo-adressen din blir lagt i en stor brun konvolutt (tunnel) merket med Tromsø-adressen
+            og fløyet nordover. Avsenderen i Bergen merker ingenting — for henne er din «adresse»
+            fortsatt Oslo. Det er nøyaktig home agent og care-of-address: din permanente IP er
+            Oslo-adressen, COA er Tromsø-adressen, og tunnelen er den brune konvolutten.
+          </p>
+        </Metafor>
+        <Metafor tittel="Triangle routing — kompis ringer fra naborommet via Australia">
+          <p>
+            Forestill deg at du sitter på et hotell i Bodø. Vennen din ligger i sengen ved siden av
+            deg på samme rom. Han ringer mobilen din. Anropet går først til Telenor sin sentral i
+            Tromsø (Home Agent), pakkes inn der, sendes 1100 km tilbake til Bodø, og ringer på
+            telefonen din 30 cm unna. Det er triangel-ruting i konsentrert form: pakker reiser to
+            ganger Norge frem og tilbake selv om sender og mottaker er nakke til nakke. Route
+            optimization lar vennen registrere COA-en din og sende direkte.
+          </p>
+        </Metafor>
+      </div>
+
+      <Metafor tittel="Care-of-address — som et hotellrom-nummer">
+        <p>
+          Din permanente IP er hjemmeadressen din. COA er rom 312 på Radisson Blu Tromsø. Hver gang
+          du sjekker inn på et nytt hotell får du et nytt rom-nummer, og du må fortelle
+          husholdersken (HA) hvilket rom-nummer du har nå så fysisk post (pakker) kan leveres dit.
+          Når du sjekker ut, blir COA fritt brukt av neste gjest. Soft-state betyr at husholdersken
+          automatisk glemmer rom-nummeret ditt hvis du ikke konfirmerer det jevnlig — slik unngår de
+          å levere post til et tomt rom evig.
+        </p>
+      </Metafor>
+
+      <Illustration caption="Mobilkjernens GTP-tunnel — telefonens IP står stille mens tunnel-endepunktet (eNB) flytter seg mellom celler.">
+        <GtpTunnelMobilitySvg />
+      </Illustration>
 
       <Example title="Eksempel: video-samtale mens du tar bussen">
         <p>
@@ -843,64 +893,73 @@ function Section75() {
       <div className="grid gap-3 lg:grid-cols-2">
         <Defs
           items={[
+            { term: "Hard handover", body: "Break-before-make — kort gap, 50–200 ms i LTE." },
+            { term: "Soft handover", body: "Make-before-break — kun mulig i 3G CDMA." },
+            { term: "Måle-rapporter", body: "Telefonen rapporterer RSRP/RSRQ til nettet jevnlig." },
+            { term: "Frekvens-bytte", body: "Retune radio når ny celle er på annen frekvens." },
             {
-              term: "Hard handover (break-before-make)",
-              body: "Klienten kobler først fra gammel basestasjon, så til ny. Mellom de to er det et lite vindu uten kontakt. Brukt i GSM, LTE, og WiFi. Kort men ikke null nedetid — 50–200 ms typisk i LTE.",
+              term: "WiFi roaming",
+              body: "Klienten alene bestemmer — disassociate + re-associate.",
             },
-            {
-              term: "Soft handover (make-before-break)",
-              body: "Klienten er koblet til både gammel og ny basestasjon samtidig en kort periode, og bytter når den nye er stabil. Brukt i 3G UMTS (CDMA-basert, hvor begge stationer kan dele samme frekvens). Lavere nedetid men mer kompleksitet i kjernen.",
-            },
-            {
-              term: "Måle-rapporter",
-              body: "Telefonen måler kontinuerlig signalstyrken (RSRP) og kvaliteten (RSRQ) til både egen og nabocell-basestasjoner, og rapporterer til nettet. Når en nabo passerer en terskel og holder seg over i en TTT (time-to-trigger), bestemmer nettet håndover.",
-            },
-            {
-              term: "Frekvens-bytte",
-              body: "Når ny basestasjon er på en annen frekvens enn den gamle, må telefonen retunes radio-en — det krever et målevindu (measurement gap) der eksisterende strøm pauses i noen ms. Ofte rotårsaken til en hørbar «klikk» i samtaler.",
-            },
-            {
-              term: "AP-bytte i WiFi (roaming)",
-              body: "WiFi har ingen sentral koordinator. Klienten bestemmer selv når den vil bytte: probe-r naboer, sammenligner signal, sender disassociation til gammel AP, og association til ny. Hvis nettet ikke støtter fast roaming (802.11r) må også full WPA-handshake gjøres på nytt — kan ta 1–2 sekunder.",
-            },
-            {
-              term: "Kontekst-overføring",
-              body: "Sikkerhets-nøkler, paged data, QoS-bærere — alle disse må flyttes fra gammel til ny basestasjon. I LTE/5G skjer dette via X2/Xn-grensesnitt direkte mellom basestasjonene; i WiFi 802.11r kalles det Fast BSS Transition.",
-            },
-            {
-              term: "RSRP og RSRQ",
-              body: "Reference Signal Received Power måler ren styrke (typisk −70 til −120 dBm); Reference Signal Received Quality måler styrke relativt til interferens (typisk −5 til −20 dB). En celle med høy RSRP men dårlig RSRQ er sterk men full — håndover dit hjelper ikke. Telefonen tar begge inn i beslutningen.",
-            },
+            { term: "Kontekst-overføring", body: "Nøkler + buffere flyttes via X2/Xn." },
+            { term: "RSRP / RSRQ", body: "Styrke (dBm) og kvalitet (dB) — begge brukes." },
             {
               term: "Time-to-Trigger (TTT)",
-              body: "Hvor lenge en målt nabocelle må holde seg over terskel før håndover faktisk utløses, typisk 40–640 ms. Forhindrer ping-pong-håndover på grensen mellom to celler der signalstyrken svinger frem og tilbake. For lav TTT = mange unødvendige håndover; for høy = klienter holder seg på en dårligere celle lenger enn nødvendig.",
+              body: "Hvor lenge terskel må holdes før bytte utløses.",
             },
             {
-              term: "Mobile-controlled vs network-controlled handover",
-              body: "Mobile-controlled (klassisk WiFi): klienten alene bestemmer når og hvor den skal bytte. Network-controlled (LTE/5G): nettverket bestemmer basert på klientens målerapporter. Network-assisted (3G): klienten foreslår, nettet godkjenner. Mer kontroll hos nettet = bedre samkjøring og ressurs-balansering på tvers av celler.",
+              term: "Mobile- vs network-controlled",
+              body: "WiFi: klient bestemmer; LTE/5G: nettet bestemmer.",
             },
-            {
-              term: "X2/Xn-grensesnitt",
-              body: "Direkte tunneler mellom nabo-basestasjoner (eNodeB i 4G, gNodeB i 5G) som bærer både kontroll-meldinger (HANDOVER REQUEST) og bufferede bruker-data under håndover. Reduserer behov for å gå om kjernen, og kutter dermed håndover-latency med flere tiitalls millisekund.",
-            },
+            { term: "X2/Xn-grensesnitt", body: "Direkte tunnel mellom nabo-basestasjoner." },
             {
               term: "Conditional handover (CHO)",
-              body: "5G-funksjon: nettet forbereder håndover til flere kandidat-celler på forhånd, og telefonen utløser bytte selv når en terskel passes — uten nytt signal-til-nettet-trinn. Reduserer typisk håndover-gap fra 50 ms til under 10 ms. Spesielt viktig for høy-hastighets-toggjennomgang.",
+              body: "5G: forhåndsforberedt bytte — gap <10 ms.",
             },
-            {
-              term: "Ping-pong-effekten",
-              body: "En klient som beveger seg langs grensen mellom to celler kan veksle mellom dem mange ganger på få sekunder hvis signalmålinger fluktuerer på grunn av multipath-fading. Skadelig fordi hver håndover bruker både radio- og kjerne-ressurser. Demping via TTT og histeresis (terskel-margin) er essensielt.",
-            },
-            {
-              term: "802.11r Fast BSS Transition",
-              body: "WiFi-utvidelse der to AP-er i samme nett deler PMK-R0/PMK-R1 nøkler på forhånd, slik at en roamende klient kan re-assosiere uten å gjennomføre hele 4-veis WPA2-handshake-en (som tar 100–200 ms). Med 802.11r blir AP-bytte ofte under 30 ms — nok til at VoIP overlever.",
-            },
+            { term: "Ping-pong-effekt", body: "Veksler mellom to celler ved grenseflimmer." },
+            { term: "802.11r FT", body: "Forhåndsdelt PMK gir <30 ms WiFi-roam." },
           ]}
         />
         <Illustration caption="Tidslinje for soft vs hard håndover — overlapp eller gap mellom gammel og ny.">
           <HandoverSvg />
         </Illustration>
       </div>
+
+      <div className="grid gap-3 lg:grid-cols-2">
+        <Metafor tittel="Soft handover — vannballett-bytte i bassenget">
+          <p>
+            Tenk på et synkronsvømmer-skift: før den gamle svømmeren slipper håndtaket på flåten,
+            har den nye allerede tatt godt tak. Bevegelsen er sømløs — publikum ser aldri at noen
+            faktisk byttes ut. Soft handover (3G CDMA) fungerer slik: telefonen er fysisk koblet til
+            både gammel og ny basestasjon samtidig en kort overlapps-stund. Først når den nye er
+            sikkert «festet», slippes den gamle.
+          </p>
+        </Metafor>
+        <Metafor tittel="Hard handover — stafett-pinnen i 100 meter sprint">
+          <p>
+            I LTE/5G er det heller stafett-pinne: pinnen er i lufta en kort stund mens den ene
+            slipper og den andre griper. Det er et lite vindu — 50–150 ms — der ingen har pinnen.
+            Hvis byttet er trent (X2/Xn-koordinering på forhånd), faller den ikke i bakken.
+            Conditional handover (CHO) i 5G er som å gjøre vekslingen blindt etter et ferdig avtalt
+            signal — pinnen flyr over på under 10 ms.
+          </p>
+        </Metafor>
+      </div>
+
+      <Metafor tittel="Ping-pong — pendling mellom to kontorer på samme korridor">
+        <p>
+          Du står midt i korridoren og hører to kontorer fra begge sider. Stemmevolumet svinger litt
+          frem og tilbake hvert minutt. Hvis du bestemmer deg for å gå inn på «det høyeste-stemte»
+          kontoret hvert tiende sekund, ender du opp med å løpe frem og tilbake mellom dem hele
+          dagen. Histeresis (krev en klar margin før du bytter) og Time-to-Trigger (krev at margen
+          vedvarer en stund) er det som forhindrer at en mobil-klient gjør samme tabben på grensen
+          mellom to celler.
+        </p>
+      </Metafor>
+
+      <Illustration caption="RSRP-måling over tid: histeresis-margin + TTT forhindrer ping-pong når signalet flimrer.">
+        <HandoverHysteresisSvg />
+      </Illustration>
 
       <Example title="Eksempel: hva 200 ms gap betyr for en samtale">
         <p>
@@ -997,58 +1056,78 @@ function Section76() {
           items={[
             {
               term: "Bit-feil vs pakketap",
-              body: "På kobber er bit-feil-rate (BER) typisk 10⁻¹² — neglisjerbar. På radio kan BER være 10⁻⁵ til 10⁻³ avhengig av SNR. Selv med feilretting i link-laget havner restfeil opp i pakker som forkastes ved CRC-sjekk — og TCP ser tap.",
+              body: "Radio: BER 10⁻⁵; kobber 10⁻¹² — TCP merker forskjellen.",
             },
-            {
-              term: "Link-layer ARQ",
-              body: "WiFi og LTE retransmitterer feilede frames lokalt i radio-link-laget før TCP merker noe. ACK ned i link-laget, ikke ende-til-ende. Skjuler de fleste radio-feil, men introduserer variabel forsinkelse — som forvirrer TCP sin RTT-måling.",
-            },
+            { term: "Link-layer ARQ", body: "WiFi/LTE retransmitterer lokalt; gir variabel RTT." },
             {
               term: "Spurious timeouts",
-              body: "Når radio-laget bruker uvanlig lang tid (f.eks. under en handover-pause på 150 ms), kan TCP sin retransmission timer slå inn selv om pakker ikke er tapt. TCP retransmitterer unødvendig og halverer senderaten. Eksempel på hvordan to lag som ikke vet om hverandre kan jobbe mot hverandre.",
+              body: "Handover-pause utløser TCP-retransmit som ikke trengs.",
             },
             {
-              term: "Performance Enhancing Proxy (PEP)",
-              body: "En mellommann som splitter TCP-forbindelsen i to: én del over trådløst, en over kabel. PEP-en kvitterer raskere på kabel-siden så avsenderen kan skyve mer; tar ansvar for radio-feil på den andre. Vanlig i satellitt-nett og enkelte mobilnett — men bryter ende-til-ende-prinsippet.",
+              term: "PEP (Performance Enhancing Proxy)",
+              body: "Splitter TCP — kvitterer fra mellom-rute.",
             },
+            { term: "CUBIC vs BBR", body: "CUBIC reagerer på tap; BBR måler BW+RTT direkte." },
+            { term: "Mobilitets-jitter", body: "RTT-variasjoner forvirrer RTO-estimatet." },
             {
-              term: "TCP CUBIC og BBR i radio-kontekst",
-              body: "Moderne congestion-algoritmer prøver å skille tap fra congestion fra tap fra støy. BBR (Google) modellerer flaskehals-båndbredde og minimum RTT direkte i stedet for å reagere på tap — fungerer markant bedre over trådløst enn klassisk Reno/CUBIC.",
+              term: "Bufferbloat",
+              body: "Stor radio-kø → kunstig høy RTT → TCP overdriver vindu.",
             },
+            { term: "Snoop-protokoll", body: "Basestasjon cacher segmenter, skjuler radio-tap." },
+            { term: "Split-TCP", body: "Eksplisitt to TCP-sesjoner — bryter ende-til-ende." },
             {
-              term: "Mobilitets-jitter",
-              body: "Selv uten tap kan RTT variere drastisk mellom konsekutive pakker når radio-laget retransmitterer eller en handover skjer. TCP sin RTO-estimering (smoothed RTT + variansestimat) får et sjokk og må re-tune seg, ofte med konservative valg som senker throughput.",
-            },
-            {
-              term: "Bufferbloat på radio-link",
-              body: "Radio-laget buffrer pakker for å hente ut alle de retransmisjons-mulighetene den kan før den gir opp. Med 100+ ms av kø-tid blir RTT målt av TCP urealistisk høy, og TCP øker congestion window mer enn den burde. Resultat: enda mer kø, enda høyere RTT — selv om båndbredden er ledig.",
-            },
-            {
-              term: "Snoop-protokoll",
-              body: "En tidlig løsning på radio-tap der en mellom-ruter (typisk basestasjonen) cacher TCP-segmenter og lokalt retransmitterer hvis ACK ikke kommer fra mottakeren, samt skjuler duplikate ACK-er fra senderen. Slik unngås at avsender utløser congestion-respons. Ikke utbredt i dag fordi det krever klartekst-TCP — mislykkes med IPsec/TLS.",
-            },
-            {
-              term: "Split-TCP arkitektur",
-              body: "Forbindelsen deles eksplisitt i to: én TCP-sesjon mellom mobil host og PEP, en annen mellom PEP og endelig server. PEP-en bruker spesielle innstillinger på radio-siden (større initial window, mer aggressiv ACK-clocking) og standard på kabel-siden. Bryter ende-til-ende-prinsippet, derav kontroversielt — men effektivt der det fungerer.",
-            },
-            {
-              term: "Explicit loss notification (ELN)",
-              body: "Foreslått utvidelse av TCP der nettverket eksplisitt signaliserer «pakke tapt grunnet radio-feil, ikke congestion». Avsenderen retransmitterer uten å redusere senderaten. Aldri standardisert fordi det krever endring i alle berørte rutere. Filosofisk slekt til ECN (Explicit Congestion Notification).",
+              term: "Explicit loss notification",
+              body: "«Tap = radio-feil, ikke congestion» — aldri standardisert.",
             },
             {
               term: "Selective ACK (SACK)",
-              body: "TCP-utvidelse der mottaker rapporterer eksakt hvilke segmenter som er mottatt, ikke bare høyeste fortløpende. Lar senderen retransmittere kun det som faktisk mangler. Spesielt nyttig over radio-link der enkelt-pakker-tap fra støy ellers ville utløse ineffektiv full re-sending av et helt vindu.",
+              body: "Mottaker rapporterer eksakte hull i mottatt strøm.",
             },
-            {
-              term: "Slow start på en mobil link",
-              body: "Når en TCP-forbindelse starter, dobler avsender congestion-vinduet hver RTT inntil tap detekteres. På en høy-BDP radio-link kan denne fasen ta sekunder, og hvis et tap skjer underveis (lett over radio), kan slow-start avbrytes prematurt. Resultat: forbindelsen får aldri lov å utnytte full kapasitet før den avsluttes.",
-            },
+            { term: "Slow start på mobil", body: "Lang oppvarmingsfase til full BDP er fylt." },
           ]}
         />
         <Illustration caption="Kabelmessig: tap = congestion. Radio: tap kan komme fra støy, fading, eller handover — TCP vet ikke forskjellen.">
           <TcpWirelessSvg />
         </Illustration>
       </div>
+
+      <div className="grid gap-3 lg:grid-cols-2">
+        <Metafor tittel="TCP + wireless — leiebil-sjåføren som tror enhver dump er trafikkork">
+          <p>
+            Forestill deg en leiebil-sjåfør som bare har kjørt på motorvei. Når han nå kjører på
+            grusvei og bilen rister, antar han at det er trafikk-kork foran og kjører tregere og
+            tregere. Egentlig er det bare grusvei — han kunne kjørt fort. Det er TCP CUBIC over
+            WiFi: hvert pakke-tap fra radio-støy tolkes som «kø-overløp» og avsender halverer
+            senderaten. BBR er den nye sjåføren som måler hvor fort bilen faktisk kommer fram, og
+            ignorerer ristingen.
+          </p>
+        </Metafor>
+        <Metafor tittel="Spurious timeout under handover — postbudet som ringer i feil dør">
+          <p>
+            Postbudet (TCP-avsender) leverer en pakke til hytta di. Han venter på kvittering. Du er
+            midt i et bytte fra ene rommet til det andre (handover) og ringeklokka er frakoblet et
+            halvt minutt. Postbudet antar at pakka må være borte og leverer en ny (retransmit),
+            samtidig som han bestemmer seg for å gå roligere fremover (halver cwnd). Litt senere
+            kommer kvitteringen din for den første pakka — for sent. Nå har han to leveranser og en
+            unødvendig redusert leveringsfart.
+          </p>
+        </Metafor>
+      </div>
+
+      <Metafor tittel="Bufferbloat — som en uendelig lang post-kø">
+        <p>
+          Radio-laget vil ikke at noen pakke skal gå tapt, så det stabler dem opp i en gigantisk kø
+          og prøver om igjen og om igjen. Resultat: pakken bruker 500 ms før den slipper ut. TCP ser
+          den lange RTT-en og tenker «det er masse plass — jeg kan sende mer» og fyrer inn enda
+          flere pakker. Køen vokser. RTT vokser. Det er bufferbloat: prinsippet om at intet kan bli
+          «litt fullt» — det blir helt fullt, og hele rør-kapasiteten ender opp som venterom
+          istedenfor transport.
+        </p>
+      </Metafor>
+
+      <Illustration caption="Mathis-formelen: TCP throughput faller med 1/√p. Radio-tap-rate på 0.3 % kapper teoretisk hastighet til ~3 Mbps uavhengig av link-kapasitet.">
+        <MathisCurveSvg />
+      </Illustration>
 
       <Example title="Eksempel: hvorfor 4G-laptopen din ikke når nominell hastighet">
         <p>En 4G-lenke annonserer 100 Mbps. Du tester med iperf og får 23 Mbps. Hvorfor?</p>
@@ -1589,6 +1668,18 @@ function Hvorfor({ title, children }: { title: string; children: React.ReactNode
         Hvorfor?
       </div>
       <div className="font-semibold text-foreground mb-1">{title}</div>
+      <div className="text-muted-foreground text-[13px] space-y-2">{children}</div>
+    </div>
+  );
+}
+
+function Metafor({ tittel, children }: { tittel: string; children: React.ReactNode }) {
+  return (
+    <div className="rounded-xl border border-purple-500/30 bg-purple-500/5 p-4">
+      <div className="text-[10px] uppercase tracking-wider text-purple-700 dark:text-purple-400 font-semibold mb-1">
+        🔮 Metafor
+      </div>
+      <div className="font-semibold text-foreground mb-1">{tittel}</div>
       <div className="text-muted-foreground text-[13px] space-y-2">{children}</div>
     </div>
   );
@@ -2327,6 +2418,640 @@ function TcpWirelessSvg() {
       </text>
       <text x={250} y={216} textAnchor="middle" className="fill-muted-foreground text-[9px]">
         → halverer senderaten selv om radio-laget ikke er overbelastet
+      </text>
+    </svg>
+  );
+}
+
+// ---------- Nye SVG-er for metafor-utvidelsen ----------
+
+function PathLossCurveSvg() {
+  // Log-skala-aktig kurve: dB-tap vs avstand
+  const points: string[] = [];
+  const innendørs: string[] = [];
+  for (let d = 1; d <= 100; d++) {
+    const x = 30 + (d / 100) * 430;
+    // Fritt rom: 20·log10(d) — start ved 40 dB referanse på 1 m
+    const dbFree = 40 + 20 * Math.log10(d);
+    const yFree = 40 + (dbFree - 40) * 1.8;
+    points.push(`${x},${yFree}`);
+    // Innendørs: legg til ~5 dB ekstra per dobling
+    const dbIndoor = 40 + 35 * Math.log10(d);
+    const yIndoor = 40 + (dbIndoor - 40) * 1.8;
+    innendørs.push(`${x},${yIndoor}`);
+  }
+  return (
+    <svg viewBox="0 0 500 230" className="w-full h-auto">
+      <text
+        x={250}
+        y={18}
+        textAnchor="middle"
+        className="fill-foreground text-[12px] font-semibold"
+      >
+        Signal-svekning vs avstand (logaritmisk)
+      </text>
+      {/* Akser */}
+      <line x1={30} y1={200} x2={470} y2={200} className="stroke-foreground/70" />
+      <line x1={30} y1={40} x2={30} y2={200} className="stroke-foreground/70" />
+      <text x={250} y={220} textAnchor="middle" className="fill-muted-foreground text-[9px]">
+        avstand (m, log-skala)
+      </text>
+      <text
+        x={10}
+        y={120}
+        className="fill-muted-foreground text-[9px]"
+        transform="rotate(-90 10 120)"
+      >
+        tap (dB)
+      </text>
+      {/* Kurver */}
+      <polyline points={points.join(" ")} className="fill-none stroke-brand" strokeWidth={2} />
+      <polyline
+        points={innendørs.join(" ")}
+        className="fill-none stroke-destructive"
+        strokeWidth={2}
+        strokeDasharray="4 3"
+      />
+      {/* Legend */}
+      <line x1={320} y1={50} x2={345} y2={50} className="stroke-brand" strokeWidth={2} />
+      <text x={350} y={54} className="fill-foreground text-[9px]">
+        fritt rom (20·log d)
+      </text>
+      <line
+        x1={320}
+        y1={68}
+        x2={345}
+        y2={68}
+        className="stroke-destructive"
+        strokeWidth={2}
+        strokeDasharray="4 3"
+      />
+      <text x={350} y={72} className="fill-foreground text-[9px]">
+        innendørs (vegger)
+      </text>
+      {/* Annotering: dobler avstand */}
+      <text x={250} y={170} textAnchor="middle" className="fill-muted-foreground text-[9px] italic">
+        hver dobling av avstand = minst 6 dB tap
+      </text>
+    </svg>
+  );
+}
+
+function MultipathFadingSvg() {
+  return (
+    <svg viewBox="0 0 500 240" className="w-full h-auto">
+      <text
+        x={250}
+        y={18}
+        textAnchor="middle"
+        className="fill-foreground text-[12px] font-semibold"
+      >
+        Multipath: direkte + refleksjon → konstruktiv eller destruktiv
+      </text>
+      {/* Sender */}
+      <circle cx={60} cy={120} r={12} className="fill-brand stroke-foreground" strokeWidth={1.5} />
+      <text x={60} y={124} textAnchor="middle" className="fill-background text-[9px] font-bold">
+        TX
+      </text>
+      {/* Vegg som reflekterer */}
+      <line x1={250} y1={40} x2={250} y2={75} className="stroke-foreground/60" strokeWidth={3} />
+      <text x={250} y={32} textAnchor="middle" className="fill-muted-foreground text-[9px]">
+        vegg
+      </text>
+      {/* Mottaker konstruktiv */}
+      <circle
+        cx={440}
+        cy={80}
+        r={12}
+        className="fill-success stroke-foreground"
+        strokeWidth={1.5}
+      />
+      <text x={440} y={84} textAnchor="middle" className="fill-background text-[9px] font-bold">
+        +
+      </text>
+      <text x={440} y={108} textAnchor="middle" className="fill-success text-[9px]">
+        konstruktiv
+      </text>
+      <text x={440} y={120} textAnchor="middle" className="fill-muted-foreground text-[8px]">
+        toppene møter toppene
+      </text>
+      {/* Mottaker destruktiv */}
+      <circle
+        cx={440}
+        cy={180}
+        r={12}
+        className="fill-destructive stroke-foreground"
+        strokeWidth={1.5}
+      />
+      <text x={440} y={184} textAnchor="middle" className="fill-background text-[9px] font-bold">
+        −
+      </text>
+      <text x={440} y={208} textAnchor="middle" className="fill-destructive text-[9px]">
+        destruktiv
+      </text>
+      <text x={440} y={220} textAnchor="middle" className="fill-muted-foreground text-[8px]">
+        toppene møter dalene
+      </text>
+
+      {/* Direkte-vei + reflektert-vei til konstruktiv-mottaker */}
+      <line x1={72} y1={120} x2={428} y2={80} className="stroke-brand" strokeWidth={1.5} />
+      <text x={250} y={100} textAnchor="middle" className="fill-brand text-[8px]">
+        direkte
+      </text>
+      <path
+        d="M 72 120 L 250 70 L 428 80"
+        className="fill-none stroke-brand/70"
+        strokeWidth={1.2}
+        strokeDasharray="3 3"
+      />
+      <text x={170} y={92} textAnchor="middle" className="fill-brand text-[8px]">
+        reflektert
+      </text>
+
+      {/* Direkte-vei + reflektert-vei til destruktiv-mottaker (avstand-forskjell = λ/2) */}
+      <line x1={72} y1={120} x2={428} y2={180} className="stroke-destructive" strokeWidth={1.5} />
+      <path
+        d="M 72 120 L 250 78 L 428 180"
+        className="fill-none stroke-destructive/70"
+        strokeWidth={1.2}
+        strokeDasharray="3 3"
+      />
+
+      {/* Mini-bølge-forklaring */}
+      <text x={250} y={180} textAnchor="middle" className="fill-muted-foreground text-[8px] italic">
+        flytt mottaker 6 cm — sti-differansen endres med λ/2 — fra ledig til hull
+      </text>
+    </svg>
+  );
+}
+
+function BackoffRaceSvg() {
+  return (
+    <svg viewBox="0 0 500 230" className="w-full h-auto">
+      <text
+        x={250}
+        y={18}
+        textAnchor="middle"
+        className="fill-foreground text-[12px] font-semibold"
+      >
+        Two-station backoff-løp: X trekker 5, Y trekker 9
+      </text>
+      {/* Felles tidsakse */}
+      <line x1={20} y1={205} x2={480} y2={205} className="stroke-foreground/60" />
+      <text x={485} y={209} className="fill-muted-foreground text-[9px]">
+        tid
+      </text>
+
+      {/* X-rad */}
+      <text x={15} y={70} className="fill-foreground text-[10px] font-semibold">
+        X
+      </text>
+      <rect x={30} y={55} width={40} height={25} className="fill-amber-500/30 stroke-amber-500" />
+      <text x={50} y={71} textAnchor="middle" className="fill-foreground text-[9px]">
+        DIFS
+      </text>
+      {/* 5 slots for X */}
+      {[0, 1, 2, 3, 4].map((i) => (
+        <g key={`x${i}`}>
+          <rect
+            x={70 + i * 16}
+            y={55}
+            width={16}
+            height={25}
+            className="fill-brand/30 stroke-brand"
+          />
+          <text
+            x={70 + i * 16 + 8}
+            y={71}
+            textAnchor="middle"
+            className="fill-foreground text-[8px]"
+          >
+            {4 - i}
+          </text>
+        </g>
+      ))}
+      <rect
+        x={150}
+        y={55}
+        width={130}
+        height={25}
+        className="fill-success/40 stroke-success"
+        strokeWidth={1.5}
+      />
+      <text x={215} y={71} textAnchor="middle" className="fill-foreground text-[10px]">
+        DATA + ACK
+      </text>
+
+      {/* Y-rad */}
+      <text x={15} y={130} className="fill-foreground text-[10px] font-semibold">
+        Y
+      </text>
+      <rect x={30} y={115} width={40} height={25} className="fill-amber-500/30 stroke-amber-500" />
+      <text x={50} y={131} textAnchor="middle" className="fill-foreground text-[9px]">
+        DIFS
+      </text>
+      {/* Y teller 5 først, så fryses */}
+      {[0, 1, 2, 3, 4].map((i) => (
+        <g key={`y${i}`}>
+          <rect
+            x={70 + i * 16}
+            y={115}
+            width={16}
+            height={25}
+            className="fill-brand/30 stroke-brand"
+          />
+          <text
+            x={70 + i * 16 + 8}
+            y={131}
+            textAnchor="middle"
+            className="fill-foreground text-[8px]"
+          >
+            {8 - i}
+          </text>
+        </g>
+      ))}
+      {/* Y fryses */}
+      <rect
+        x={150}
+        y={115}
+        width={130}
+        height={25}
+        className="fill-muted/30 stroke-foreground/40"
+        strokeDasharray="3 3"
+      />
+      <text x={215} y={131} textAnchor="middle" className="fill-muted-foreground text-[9px] italic">
+        Y fryser med 4 igjen
+      </text>
+      {/* Y fortsetter etter X */}
+      {[0, 1, 2, 3].map((i) => (
+        <g key={`y2${i}`}>
+          <rect
+            x={290 + i * 16}
+            y={115}
+            width={16}
+            height={25}
+            className="fill-brand/30 stroke-brand"
+          />
+          <text
+            x={290 + i * 16 + 8}
+            y={131}
+            textAnchor="middle"
+            className="fill-foreground text-[8px]"
+          >
+            {3 - i}
+          </text>
+        </g>
+      ))}
+      <rect
+        x={354}
+        y={115}
+        width={120}
+        height={25}
+        className="fill-success/40 stroke-success"
+        strokeWidth={1.5}
+      />
+      <text x={414} y={131} textAnchor="middle" className="fill-foreground text-[10px]">
+        Y sender
+      </text>
+
+      <text x={250} y={175} textAnchor="middle" className="fill-muted-foreground text-[9px] italic">
+        X vant loddtrekningen; Y fullfører telte-resten etter X uten ny trekning
+      </text>
+    </svg>
+  );
+}
+
+function CellGenTimelineSvg() {
+  const gens = [
+    {
+      x: 50,
+      label: "2G",
+      year: "1991",
+      tech: "TDMA + FDMA",
+      core: "MSC (krets)",
+      rate: "9.6 kbps",
+      color: "fill-muted-foreground/30 stroke-muted-foreground",
+    },
+    {
+      x: 150,
+      label: "3G",
+      year: "2001",
+      tech: "CDMA / WCDMA",
+      core: "GGSN (pakke)",
+      rate: "2 Mbps",
+      color: "fill-amber-500/30 stroke-amber-500",
+    },
+    {
+      x: 250,
+      label: "4G/LTE",
+      year: "2010",
+      tech: "OFDMA + MIMO",
+      core: "EPC (IP)",
+      rate: "100 Mbps",
+      color: "fill-brand/30 stroke-brand",
+    },
+    {
+      x: 350,
+      label: "5G",
+      year: "2019",
+      tech: "OFDMA + mMIMO + mmWave",
+      core: "5GC (skytjeneste)",
+      rate: "1+ Gbps",
+      color: "fill-success/30 stroke-success",
+    },
+  ];
+  return (
+    <svg viewBox="0 0 500 240" className="w-full h-auto">
+      <text
+        x={250}
+        y={18}
+        textAnchor="middle"
+        className="fill-foreground text-[12px] font-semibold"
+      >
+        Generasjons-tidslinje: 2G → 5G
+      </text>
+      <line x1={30} y1={75} x2={470} y2={75} className="stroke-foreground/60" strokeWidth={2} />
+      {gens.map((g, i) => (
+        <g key={i}>
+          <circle cx={g.x + 30} cy={75} r={14} className={g.color} strokeWidth={1.5} />
+          <text
+            x={g.x + 30}
+            y={79}
+            textAnchor="middle"
+            className="fill-foreground text-[10px] font-bold"
+          >
+            {g.label}
+          </text>
+          <text
+            x={g.x + 30}
+            y={45}
+            textAnchor="middle"
+            className="fill-muted-foreground text-[9px]"
+          >
+            {g.year}
+          </text>
+          <text x={g.x + 30} y={110} textAnchor="middle" className="fill-foreground text-[9px]">
+            {g.tech}
+          </text>
+          <text
+            x={g.x + 30}
+            y={125}
+            textAnchor="middle"
+            className="fill-muted-foreground text-[9px]"
+          >
+            {g.core}
+          </text>
+          <text
+            x={g.x + 30}
+            y={140}
+            textAnchor="middle"
+            className="fill-success text-[9px] font-semibold"
+          >
+            ≤ {g.rate}
+          </text>
+        </g>
+      ))}
+      <text x={250} y={185} textAnchor="middle" className="fill-muted-foreground text-[9px] italic">
+        Kjernen blir flatere og mer IP-aktig for hver generasjon — tale flytter inn i pakkene
+      </text>
+      <text x={250} y={205} textAnchor="middle" className="fill-muted-foreground text-[9px]">
+        2G: ren stemme · 3G: data-tilbehør · 4G: all-IP · 5G: skyfunksjoner i kjernen
+      </text>
+    </svg>
+  );
+}
+
+function GtpTunnelMobilitySvg() {
+  return (
+    <svg viewBox="0 0 500 230" className="w-full h-auto">
+      <text
+        x={250}
+        y={18}
+        textAnchor="middle"
+        className="fill-foreground text-[12px] font-semibold"
+      >
+        GTP-tunnel: telefonens IP står stille, tunnel-endepunkt flytter seg
+      </text>
+      {/* Internett */}
+      <ellipse
+        cx={60}
+        cy={120}
+        rx={40}
+        ry={20}
+        className="fill-success/15 stroke-success/60"
+        strokeWidth={1.5}
+      />
+      <text x={60} y={124} textAnchor="middle" className="fill-foreground text-[10px]">
+        Internett
+      </text>
+      {/* Gateway (P-GW / UPF) */}
+      <rect
+        x={130}
+        y={100}
+        width={70}
+        height={40}
+        rx={4}
+        className="fill-brand/30 stroke-brand"
+        strokeWidth={1.5}
+      />
+      <text
+        x={165}
+        y={118}
+        textAnchor="middle"
+        className="fill-foreground text-[10px] font-semibold"
+      >
+        P-GW / UPF
+      </text>
+      <text x={165} y={132} textAnchor="middle" className="fill-muted-foreground text-[8px]">
+        eier IP 10.42.0.15
+      </text>
+      {/* Gammel eNB */}
+      <rect
+        x={250}
+        y={45}
+        width={60}
+        height={30}
+        rx={4}
+        className="fill-muted-foreground/30 stroke-muted-foreground"
+        strokeWidth={1.5}
+        strokeDasharray="3 3"
+      />
+      <text x={280} y={64} textAnchor="middle" className="fill-foreground text-[9px]">
+        eNB-A (gammel)
+      </text>
+      {/* Ny eNB */}
+      <rect
+        x={250}
+        y={155}
+        width={60}
+        height={30}
+        rx={4}
+        className="fill-amber-500/30 stroke-amber-500"
+        strokeWidth={1.5}
+      />
+      <text x={280} y={174} textAnchor="middle" className="fill-foreground text-[9px]">
+        eNB-B (ny)
+      </text>
+      {/* Telefon */}
+      <circle
+        cx={420}
+        cy={170}
+        r={14}
+        className="fill-success stroke-foreground"
+        strokeWidth={1.5}
+      />
+      <text x={420} y={174} textAnchor="middle" className="fill-background text-[9px] font-bold">
+        📱
+      </text>
+      <text x={420} y={196} textAnchor="middle" className="fill-foreground text-[9px]">
+        IP=10.42.0.15
+      </text>
+      <text x={420} y={208} textAnchor="middle" className="fill-muted-foreground text-[8px] italic">
+        konstant!
+      </text>
+      {/* Gammel tunnel */}
+      <path
+        d="M 200 110 Q 230 80 250 60"
+        className="fill-none stroke-muted-foreground/40"
+        strokeWidth={2}
+        strokeDasharray="4 3"
+      />
+      <text x={220} y={88} className="fill-muted-foreground text-[8px]">
+        gammel tunnel
+      </text>
+      {/* Ny tunnel */}
+      <path
+        d="M 200 130 Q 230 160 250 170"
+        className="fill-none stroke-amber-500"
+        strokeWidth={2}
+      />
+      <text x={220} y={158} className="fill-amber-700 dark:fill-amber-400 text-[8px]">
+        ny tunnel
+      </text>
+      {/* Radio til telefon */}
+      <path d="M 310 170 Q 360 165 405 168" className="fill-none stroke-success" strokeWidth={2} />
+      <text x={355} y={158} textAnchor="middle" className="fill-success text-[8px]">
+        radio
+      </text>
+      <line x1={100} y1={120} x2={130} y2={120} className="stroke-foreground/70" strokeWidth={2} />
+    </svg>
+  );
+}
+
+function HandoverHysteresisSvg() {
+  // To kurver — RSRP-celle-A faller, RSRP-celle-B stiger; vis flimmer og histeresis-bytte
+  const a: string[] = [];
+  const b: string[] = [];
+  const n = 80;
+  for (let i = 0; i < n; i++) {
+    const t = i / (n - 1);
+    const aBase = -60 - t * 18; // -60 → -78
+    const bBase = -78 + t * 18;
+    const noise = Math.sin(i * 0.9) * 3;
+    a.push(`${30 + t * 440},${100 + (aBase + 90) * -2 + 60 + noise * 2}`);
+    b.push(`${30 + t * 440},${100 + (bBase + 90) * -2 + 60 - noise * 2}`);
+  }
+  return (
+    <svg viewBox="0 0 500 230" className="w-full h-auto">
+      <text
+        x={250}
+        y={18}
+        textAnchor="middle"
+        className="fill-foreground text-[12px] font-semibold"
+      >
+        Ping-pong-demping: histeresis + Time-to-Trigger
+      </text>
+      <line x1={30} y1={195} x2={470} y2={195} className="stroke-foreground/60" />
+      <line x1={30} y1={40} x2={30} y2={195} className="stroke-foreground/60" />
+      <text x={250} y={215} textAnchor="middle" className="fill-muted-foreground text-[9px]">
+        tid
+      </text>
+      <text
+        x={10}
+        y={120}
+        className="fill-muted-foreground text-[9px]"
+        transform="rotate(-90 10 120)"
+      >
+        RSRP (dBm)
+      </text>
+      <polyline points={a.join(" ")} className="fill-none stroke-brand" strokeWidth={1.8} />
+      <polyline points={b.join(" ")} className="fill-none stroke-success" strokeWidth={1.8} />
+      {/* Bytte-punkt */}
+      <line
+        x1={300}
+        y1={45}
+        x2={300}
+        y2={195}
+        className="stroke-amber-500"
+        strokeWidth={1.5}
+        strokeDasharray="3 3"
+      />
+      <text
+        x={300}
+        y={42}
+        textAnchor="middle"
+        className="fill-amber-600 dark:fill-amber-400 text-[9px]"
+      >
+        håndover (med 6 dB margin + 640 ms TTT)
+      </text>
+      {/* Legend */}
+      <line x1={350} y1={170} x2={375} y2={170} className="stroke-brand" strokeWidth={2} />
+      <text x={380} y={174} className="fill-foreground text-[9px]">
+        celle A (faller)
+      </text>
+      <line x1={350} y1={185} x2={375} y2={185} className="stroke-success" strokeWidth={2} />
+      <text x={380} y={189} className="fill-foreground text-[9px]">
+        celle B (stiger)
+      </text>
+    </svg>
+  );
+}
+
+function MathisCurveSvg() {
+  // throughput = MSS / (RTT · sqrt(p) · 1.22)
+  // y-skala: 0 til ca 10 Mbps
+  const points: string[] = [];
+  for (let i = 1; i <= 100; i++) {
+    const p = (i / 10000) * 5; // tap-rate fra 0.0005 til 0.05
+    const tput = (1460 * 8) / (0.06 * Math.sqrt(p) * 1.22) / 1e6; // Mbps
+    const x = 30 + (i / 100) * 430;
+    const y = 200 - Math.min(tput * 10, 160);
+    points.push(`${x},${y}`);
+  }
+  return (
+    <svg viewBox="0 0 500 230" className="w-full h-auto">
+      <text
+        x={250}
+        y={18}
+        textAnchor="middle"
+        className="fill-foreground text-[12px] font-semibold"
+      >
+        Mathis-formel: TCP-throughput ∝ 1/√p (radio = lav p, men ikke null)
+      </text>
+      <line x1={30} y1={200} x2={470} y2={200} className="stroke-foreground/70" />
+      <line x1={30} y1={40} x2={30} y2={200} className="stroke-foreground/70" />
+      <polyline points={points.join(" ")} className="fill-none stroke-brand" strokeWidth={2} />
+      <text x={250} y={220} textAnchor="middle" className="fill-muted-foreground text-[9px]">
+        tap-rate p (0.05 % → 5 %)
+      </text>
+      <text
+        x={10}
+        y={120}
+        className="fill-muted-foreground text-[9px]"
+        transform="rotate(-90 10 120)"
+      >
+        throughput (Mbps)
+      </text>
+      {/* Annoterings-punkt: 0.3 % radio-tap → ~3 Mbps */}
+      <circle cx={56} cy={170} r={4} className="fill-destructive" />
+      <text x={70} y={168} className="fill-destructive text-[9px] font-semibold">
+        0.3 % radio-tap → ~3 Mbps
+      </text>
+      <text x={70} y={180} className="fill-muted-foreground text-[8px]">
+        (selv med uendelig vindu)
+      </text>
+      <text x={250} y={65} textAnchor="middle" className="fill-muted-foreground text-[9px] italic">
+        CUBIC/Reno er bundet av denne kurven — BBR omgår den
       </text>
     </svg>
   );

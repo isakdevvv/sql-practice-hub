@@ -188,63 +188,97 @@ function Section91() {
         <Defs
           items={[
             {
-              term: "Lagret strømmende video (eks. Netflix, YouTube VOD)",
-              body: "Innholdet ligger ferdig på en server og strømmes ut etterhvert som klienten trenger neste segment. Tåler høy oppstarts-delay (3–5 sekunder buffer er greit), men selve playbacken må flyte. Kan løses elegant med HTTP over TCP fordi vi har tid til retransmisjoner.",
+              term: "Lagret strømmende video (Netflix, YouTube VOD)",
+              body: "Ferdig på server, tåler stor oppstarts-buffer — TCP er greit.",
             },
             {
               term: "Sann-tids samtale (VoIP, video-møte)",
-              body: "To eller flere parter snakker live. Total ende-til-ende-delay må holdes under ca. 150 ms for naturlig opplevelse; over 400 ms blir samtalen vanskelig. Tåler litt tap (5–10 % med god PLC = Packet Loss Concealment) bedre enn ekstra delay.",
+              body: "Under 150 ms mund-til-øre; tåler 5–10 % tap med PLC.",
             },
             {
-              term: "Live streaming (sport, konsert, live nyheter)",
-              body: "Mellomting: én sender, mange mottakere, men hendelsen skjer akkurat nå. Glass-to-glass delay 2–10 sekunder er vanlig for HLS/DASH-basert sending; lav-latens-protokoller (LL-HLS = Low-Latency HTTP Live Streaming, WebRTC = Web Real-Time Communication) kan komme under 1 sekund.",
+              term: "Live streaming (sport, konsert)",
+              body: "Glass-to-glass 2–10 s for DASH/HLS; WebRTC under 1 s.",
             },
             {
-              term: "IoT-sensor- og telemetri-strømmer",
-              body: "En egen multimedia-klasse i Kurose 8. utg.: små pakker med målinger (temperatur, GPS, akselerometer) som kommer i jevnt tempo. Tåler vanligvis 200–500 ms delay og bruker MQTT/CoAP over UDP. Skiller seg fra tale ved svært lav båndbredde, men ligner i at hver pakke er ferskvare.",
+              term: "IoT-sensor / telemetri",
+              body: "Små pakker, jevnt tempo; MQTT/CoAP, 200–500 ms tåles.",
             },
             {
               term: "Sky-spill (cloud gaming)",
-              body: "Spillet kjøres i sky-en og videostrømmen sendes til klienten mens input-tastetrykk går motsatt vei. Strengeste delay-krav av alle (under 80 ms motion-to-photon for kompetitive titler). Kombinerer interaktivitet fra VoIP med båndbredde fra live-video — vanskeligste klassen.",
+              body: "Strengeste delay-krav — under 80 ms motion-to-photon.",
             },
             {
               term: "Jitter (network jitter)",
-              body: "Variasjon i pakke-ankomster forårsaket av varierende kø-fyll i ruterne underveis. Hvis hver pakke representerer 20 ms lyd og to nabopakker kommer henholdsvis 5 ms og 45 ms etter forrige, så har vi 40 ms network jitter. Måles ofte som differensen mellom forventet og faktisk ankomst (RFC 3550-formelen).",
+              body: "Variasjon i pakke-ankomster fra varierende kø-fyll.",
             },
             {
-              term: "Processing jitter (endesystem-jitter)",
-              body: "Variasjon som oppstår fordi senderen eller mottakeren bruker ulik tid på å enkode/dekode hver ramme — for eksempel når en GPU prioriterer andre oppgaver. Mindre enn network jitter på et godt utstyrt system, men kan dominere på en travel mobiltelefon eller laptop.",
+              term: "Processing jitter",
+              body: "Variasjon fra endesystem-koding/dekoding, ikke fra nettet.",
             },
             {
               term: "Tap-toleranse",
-              body: "Hvor mange prosent pakker som kan forsvinne uten merkbar kvalitetsforringelse. For Opus-kodet tale med PLC: opp mot 10 % kan skjules akseptabelt. For ukomprimert video: i praksis null. For DASH-segmenter: 0 % siden TCP retransmitterer alt.",
+              body: "Hvor mange % pakker som kan tapes uten hørbar forringelse.",
             },
             {
               term: "Mean Opinion Score (MOS)",
-              body: "Subjektiv kvalitetsskala 1–5 brukt for lyd/video. 5 = perfekt, 4 = bra, 3 = akseptabel, 2 = dårlig, 1 = ubrukelig. ITU-T sin E-modell (E for «E-model») kan beregne en estimert MOS fra delay, tap og jitter uten å spørre faktiske brukere.",
+              body: "Subjektiv 1–5-skala; E-modellen estimerer fra delay+tap+jitter.",
             },
             {
-              term: "End-to-end delay vs interaktiv delay",
-              body: "End-to-end er tiden fra mikrofon til høyttaler på andre siden — summen av koding, transport, buffer og dekoding. Interaktiv delay er den ene-veis-tiden som påvirker hvor lett det er å ha en samtale — den merkes som å «snakke i munnen på hverandre» eller pinlige pauser.",
+              term: "End-to-end vs interaktiv delay",
+              body: "Total tid mikrofon-til-høyttaler vs én-veis konversasjons-pause.",
             },
             {
               term: "Glass-to-glass-latens",
-              body: "Bransje-uttrykk for live-video: tid fra et lys-foton treffer kameraets linse til samme bilde vises på mottakerens skjerm. Dekker også kompresjon og buffering — typisk 2–10 s for ren HLS/DASH, 1–3 s for LL-HLS, og 200–600 ms for WebRTC-konfererings-pipeline.",
+              body: "Foton-til-skjerm: koding + transport + buffering kombinert.",
             },
             {
               term: "Best-effort-kjernen",
-              body: "Antagelsen som ligger under hele multimedia-kapittelet: IP-nettet gir ingen garantier — alle pakker behandles likt, ingen forutsigbar delay. Multimedia-applikasjoner må derfor håndtere variasjon selv (buffer, FEC, ABR) eller be om ekstra hjelp via QoS-mekanismer (seksjon 9.5).",
+              body: "IP gir ingen garantier — appen må håndtere variasjon selv.",
             },
-            {
-              term: "Codec",
-              body: "Forkortelse for «coder-decoder»: algoritmen som komprimerer rå lyd/video-data til en bit-strøm og rekonstruerer det på andre siden. Hvilken codec som velges avgjør båndbredde, kvalitet, kompresjons-delay og toleranse for tap. Behandles inngående i 9.3.",
-            },
+            { term: "Codec", body: "Coder-decoder: komprimerer rå media til bits og tilbake." },
           ]}
         />
         <Illustration caption="Krav-rom: hver applikasjons-type plassert etter delay-budsjett og tap-toleranse.">
           <RequirementsSvg />
         </Illustration>
       </div>
+
+      <div className="grid gap-3 lg:grid-cols-2">
+        <Illustration caption="Jitter visualisert: senderen avgir jevnt, ankomstene sprer seg.">
+          <JitterMetronomeSvg />
+        </Illustration>
+        <Illustration caption="Ferskvare-spekteret: hvor lenge en pakke er nyttig før den blir søppel.">
+          <FreshnessSpectrumSvg />
+        </Illustration>
+      </div>
+
+      <Metafor tittel="Live-konsert vs streaming-konsert">
+        <p>
+          En live-konsert på Tromsø Folkets Hus tåler ingen forsinkelse — kommer bandet 2 sekunder
+          etter publikum klappet, blir tilbakeskrivningen pinlig. En streaming-konsert via YouTube
+          kan derimot buffre 5 sekunder framover; publikum hjemme merker ikke at de er bakpå, så
+          lenge selve filmen flyter. Det er forskjellen mellom VoIP og Netflix i ett bilde.
+        </p>
+      </Metafor>
+
+      <Metafor tittel="Jitter — metronomen som hopper">
+        <p>
+          Tenk en metronom som skal slå 50 takter per sekund. Hvis den noen ganger slår 18 ms senere
+          og andre ganger 24 ms tidligere, har den fortsatt riktig gjennomsnitt — men du klarer ikke
+          holde rytmen til den. Jitter er akkurat det: gjennomsnittlig delay er kanskje fin, men
+          avstanden mellom tikkene gjør at lyden blir hakkete og «tonedøv». Playout-bufferet er
+          øre-proppen som jevner det ut.
+        </p>
+      </Metafor>
+
+      <Metafor tittel="Ferskvare-pakker">
+        <p>
+          Pakker i multimedia er som havtorsk fra Senja: noen timer gamle er den fortsatt verdt mye,
+          en dag gammel og den er nesten verdiløs. En VoIP-pakke som kommer 200 ms etter sin
+          spille-tid er ikke «litt forsinket» — den er søppel. Det er hele grunnen til at vi velger
+          UDP framfor TCP: bedre å droppe den dårlige fisken med en gang enn å vente på leveransen.
+        </p>
+      </Metafor>
 
       <Example title="Eksempel: hvorfor TCP er greit for Netflix, men ikke for samtale">
         <p>
@@ -340,59 +374,47 @@ function Section92() {
           items={[
             {
               term: "MPD (Media Presentation Description)",
-              body: "XML-fil klienten henter først. Den lister alle tilgjengelige bitrate-varianter, segment-lengde, hvor segmentene ligger (URL-mønster), og hvilke språk-spor som finnes. Tilsvarer en «meny» klienten velger fra. Tilsvarende fil i HLS-verdenen heter `playlist.m3u8`.",
+              body: "XML-«meny» som lister varianter, lengder og URL-mønster.",
             },
-            {
-              term: "Segment",
-              body: "Et selvstendig stykke video som kan dekodes uten å vite om naboene. Hver variant produserer én segment-fil per tidsvindu — for eksempel video_720p_005.m4s, video_720p_006.m4s, og så videre. Segment-lengde er en designparameter: kortere = raskere reaksjon, lengre = bedre kompresjons-effektivitet.",
-            },
+            { term: "Segment", body: "Selvstendig bit video (2–10 s) som kan dekodes alene." },
             {
               term: "GOP (Group of Pictures)",
-              body: "Den minste enheten med en I-ramme (intra-koded, selvstendig) etterfulgt av P- og B-rammer som refererer til den. Et DASH-segment må starte på en I-ramme — derfor er typisk segment-lengde et helt antall GOP-er (ofte 2 s = 2 GOP á 1 s).",
+              body: "I-ramme + P/B-rammer; segment må starte på I-ramme.",
             },
             {
               term: "Bitrate-varianter (representations)",
-              body: "Den samme videoen kodet på N ulike kvalitetsnivåer, for eksempel 240p/400 kbps, 480p/1 Mbps, 720p/2.5 Mbps, 1080p/5 Mbps, 2160p/15 Mbps. Lagres som separate filer på serveren. ABR-algoritmen plukker fra denne listen for hvert segment.",
+              body: "Samme video, N ulike kvalitetsnivåer som separate filer.",
             },
             {
               term: "Adaptation set",
-              body: "MPD-en grupperer relaterte varianter — for eksempel «alle video-varianter» i én adaptation set og «alle norske lydspor» i en annen. Klienten velger én variant per set. Det er sånn en bruker kan bytte språk midt i filmen uten å bytte video-stream.",
+              body: "MPD-grupper relaterte varianter (alle video, alle lydspor).",
             },
             {
               term: "ABR-algoritme (Adaptive Bitrate)",
-              body: "Klient-logikken som velger neste bitrate. Tre hovedsignaler den kan bruke: estimert nett-throughput, hvor full bufferet er, og en blanding av begge. Mål: høyest mulig bitrate uten å tømme bufferet og forårsake re-buffering.",
+              body: "Klient-logikken som plukker bitrate per segment.",
             },
             {
               term: "Throughput-basert ABR",
-              body: "Klienten måler hvor lang tid forrige segment tok å laste ned, regner ut effektiv båndbredde, og velger neste segment med litt margin under det. Reagerer raskt, men kan vingle (bitrate-oscillation) hvis nettet er ustabilt.",
+              body: "Måler forrige nedlasting; velger neste under estimatet.",
             },
+            { term: "Buffer-basert ABR", body: "Stort buffer → hev bitrate; lite buffer → senk." },
+            { term: "BOLA", body: "Hybrid-ABR med Lyapunov-funksjon; standard i dash.js." },
             {
-              term: "Buffer-basert ABR",
-              body: "Klienten ser på hvor mange sekunder video som ligger ferdig i bufferet. Mye buffer → vi har råd til høyere bitrate; lite buffer → ned med bitraten for å unngå å tømme. Stabilere enn ren throughput-måling. BBA-0 fra Stanford er kanonisk referanse-algoritme.",
-            },
-            {
-              term: "BOLA",
-              body: "Buffer Occupancy based Lyapunov Algorithm — populær hybrid-ABR som matematisk balanserer høy bitrate mot lav re-buffering. Bruker en Lyapunov-funksjon (verktøy fra kontroll-teori) til å garantere stabilitet. Standard i dash.js.",
-            },
-            {
-              term: "MPC (Model Predictive Control) ABR",
-              body: "Mer avansert hybrid: predikerer fremtidig båndbredde fra de siste N segmentene, kjører simulering av flere bitrate-valg framover, og velger den banen som maksimerer score-funksjonen (høy bitrate − re-buffer-straff − for hyppige bytter). Brukt i Pensieve-forskningen.",
+              term: "MPC ABR (Model Predictive Control)",
+              body: "Simulerer N segmenter framover; velger beste bane.",
             },
             {
               term: "Bitrate-oscillation",
-              body: "Når ABR-algoritmen vingler raskt opp og ned mellom bitrater fordi den reagerer for sterkt på kortsiktige throughput-svingninger. Synlig som hyppige kvalitetsbytter. Demp ved EWMA-glatting eller hysterese (krav om at endring må overstige terskel).",
+              body: "Hyppige kvalitets-bytter; dempes med EWMA eller hysterese.",
             },
             {
               term: "Stall / re-buffering",
-              body: "Når bufferet tømmes og playbacken må stoppe og vente på neste segment. Den verste opplevelsen for brukeren — målet for ABR er null re-buffering, selv på bekostning av lavere bitrate. Måles som «stall ratio» = stalled-sekunder / total spilletid.",
+              body: "Buffer tomt; playback stopper. Verste brukeropplevelse.",
             },
-            {
-              term: "Startup delay",
-              body: "Tida fra brukeren trykker «play» til første ramme vises. Klienten må først hente MPD-en, deretter første segment, deretter fylle nok buffer til at avspilling er trygg. Typisk 1–3 sekunder. ABR-er som starter på laveste bitrate gir kortere startup men dårligere kvalitet de første sekundene.",
-            },
+            { term: "Startup delay", body: "Fra play-trykk til første ramme — typisk 1–3 s." },
             {
               term: "CDN (Content Delivery Network)",
-              body: "Distribuert nettverk av cache-servere plassert nær brukerne. DASH-segmenter ligger ofte på en CDN-edge nær Tromsø istedenfor i Netflix sin sentrale data-senter, så throughput-en blir høyere og delay lavere. CDN-en gjør DASH skalerbart til millioner samtidige seere.",
+              body: "Cache-servere nær brukeren; gjør DASH skalerbart.",
             },
           ]}
         />
@@ -400,6 +422,45 @@ function Section92() {
           <DashSvg />
         </Illustration>
       </div>
+
+      <div className="grid gap-3 lg:grid-cols-2">
+        <Illustration caption="Stigen: hver segment-tids-luke har 4 trinn (bitrater) — ABR plukker ett trinn per luke.">
+          <BitrateLadderSvg />
+        </Illustration>
+        <Illustration caption="Termostat-løkka: ABR måler, velger, henter, måler — på nytt for hvert segment.">
+          <AbrLoopSvg />
+        </Illustration>
+      </div>
+
+      <Metafor tittel="Flytur-WiFi: filmen som krymper">
+        <p>
+          Du ser en film på flytur fra Tromsø til Oslo. Når flyet flyr over fjellet faller
+          satellitt- forbindelsen fra 10 Mbps til 0.5 Mbps. Skjermen blir ikke svart — filmen bytter
+          automatisk fra 1080p til 360p så avspillingen kan fortsette. Når flyet lander og
+          kabin-WiFi-en er borte, plukker tjenesten opp 4G og kvaliteten klatrer tilbake. Det er
+          DASH i naturen: bedre å se en uskarp film enn å vente.
+        </p>
+      </Metafor>
+
+      <Metafor tittel="ABR som termostat">
+        <p>
+          En termostat i hytta måler temperaturen, sammenligner med settpunktet, og skrur opp eller
+          ned ovnen. ABR gjør akkurat det samme — bare med bitrate. Den måler hvor mye båndbredde
+          forrige segment fikk, sammenligner med bufferet, og velger neste bitrate. EWMA-glattingen
+          er termostatens hysterese: vi vil ikke at den slår av og på 50 ganger i sekundet bare
+          fordi en kald luftstrøm passerte.
+        </p>
+      </Metafor>
+
+      <Metafor tittel="Bok med kapitler i flere språk">
+        <p>
+          MPD-en er som forsiden av en kursbok der innholdsfortegnelsen viser at kapittel 5 finnes
+          på norsk, engelsk og fransk. Leseren (klienten) plukker språk per kapittel, og siden hvert
+          kapittel er selvstendig (I-ramme!) kan du blande språk underveis uten å miste tråden. Det
+          er sånn Netflix lar deg bytte fra norsk til engelsk lyd midt i en serie uten å laste
+          filmen på nytt.
+        </p>
+      </Metafor>
 
       <Example title="Eksempel: en ABR-runde">
         <p>
@@ -498,73 +559,52 @@ function Section93() {
       <div className="grid gap-3 lg:grid-cols-2">
         <Defs
           items={[
-            {
-              term: "Codec",
-              body: "Algoritme som komprimerer lyd til en strøm av bits. Velges som kompromiss mellom kvalitet, båndbredde, kompresjons-delay og hvor godt den tåler tap. Forkortelse for «coder-decoder».",
-            },
+            { term: "Codec", body: "Coder-decoder: kompresjon ↔ rekonstruksjon av lyd/video." },
             {
               term: "PCM (Pulse-Code Modulation)",
-              body: "Den enkleste digitaliseringen: sample lyd-bølgen med jevne mellomrom, kvantiser hvert sample til en heltallsverdi. Ingen komprimering — bare rå digital lyd. Studio-kvalitet CD-er bruker 44.1 kHz · 16 bit · 2 kanaler = 1.4 Mbps PCM. Utgangs-punkt for alle andre codec-er.",
+              body: "Rå digital lyd: sample + kvantiser. Ingen kompresjon.",
             },
             {
               term: "G.711 (PCMU / PCMA)",
-              body: "Den klassiske telefon-codecen fra 1972. Sampler 8 kHz, bruker 8 bits per sample med µ-law (USA) eller A-law (Europa) ulinjær kvantisering → 64 kbps. Ingen komprimering, lav kompleksitet, alle systemer støtter den. Sliter med pakketap fordi det ikke er noen indre redundans å lene seg på.",
+              body: "Klassisk telefon-codec, 64 kbps; sårbar for tap.",
+            },
+            { term: "G.729", body: "8 kbps CELP-tale-codec; smal båndbredde, ikke musikk." },
+            { term: "Opus", body: "Moderne åpen codec; 6–510 kbps, robust mot tap via FEC." },
+            { term: "H.264 / AVC", body: "HD-video-codec; 1080p på 4–8 Mbps, universell støtte." },
+            { term: "H.265 / HEVC", body: "Etterfølger; ~50 % bedre kompresjon, dyrere lisens." },
+            { term: "VP9", body: "Googles åpne HEVC-konkurrent; brukt på YouTube 4K." },
+            { term: "AV1", body: "Ny åpen codec; 20–30 % bedre enn HEVC, voksende utbredelse." },
+            {
+              term: "PLC (Packet Loss Concealment)",
+              body: "Generer manglende lyd ved å gjenta/interpolere naboer.",
             },
             {
-              term: "G.729",
-              body: "Lavbåndbredde-codec (1996) som komprimerer tale til 8 kbps ved hjelp av CELP-modellering (Code-Excited Linear Prediction). Lyder akseptabel for tale, men dårlig for musikk. Tradisjonelt brukt på VoIP-lenker med dyr/smal båndbredde. Patent-belastet inntil 2017.",
-            },
-            {
-              term: "Opus",
-              body: "Moderne åpen codec (RFC 6716, 2012). Variabel bitrate 6–510 kbps, sampler opp til 48 kHz, tåler 5–10 % pakketap pent takket være innebygd FEC. Brukt i Discord, WhatsApp, Zoom og WebRTC som standard for tale. Slår både G.711 (kvalitet) og G.729 (komprimering).",
-            },
-            {
-              term: "H.264 / AVC",
-              body: "Video-codec (2003) som dominerte HD-æra-en. Komprimerer 1080p til 4–8 Mbps. Maskinvare-dekoding i alle telefoner og laptops — derfor fortsatt mest brukt for kompatibilitet. Patent-pool gjør lisensiering komplisert.",
-            },
-            {
-              term: "H.265 / HEVC",
-              body: "Etterfølgeren (2013): omtrent 50 % bedre kompresjon enn H.264 ved samme kvalitet. 4K-video på 8–15 Mbps. Maskinvare-støtte i nyere enheter. Lisens-modellen er dyrere enn H.264 — derfor ikke universelt utbredt.",
-            },
-            {
-              term: "VP9",
-              body: "Googles åpne svar på H.265 (2013). Brukt på YouTube for 4K og HDR-strømmer. Lignende kompresjons-effektivitet som HEVC, royalty-fri. Maskinvare-dekoding finnes i Android og Chromecast, men ikke alle Apple-enheter.",
-            },
-            {
-              term: "AV1",
-              body: "Den nyeste åpne video-codecen (2018), utviklet av Alliance for Open Media (Google, Netflix, Amazon m.fl.). 20–30 % bedre enn HEVC/VP9. Programmvare-koding er fortsatt tregt, men nyere GPU-er har maskinvare-AV1 og bruken vokser raskt på Netflix og YouTube.",
-            },
-            {
-              term: "Pakke-tap-skjuling (PLC)",
-              body: "Når en pakke uteblir genererer dekoderen lyd for det manglende intervallet ved å gjenta forrige eller interpolere fra naboer. Hørbar som et lite klikk eller en metalliserende artefakt, men langt bedre enn stillhet.",
-            },
-            {
-              term: "Forward Error Correction (FEC)",
-              body: "Senderen pakker inn redundant informasjon — for eksempel en lav-bitrate kopi av forrige rammen — i hver pakke. Mister mottakeren pakke N, kan den rekonstruere innholdet fra det som lå inne i pakke N+1. Koster båndbredde men sparer delay.",
+              term: "FEC (Forward Error Correction)",
+              body: "Pakk inn ekstra-data så tap kan rekonstrueres umiddelbart.",
             },
             {
               term: "Interleaving",
-              body: "Alternativ til FEC: senderen flytter samples rundt før de pakkes, så et tap av én pakke sprer seg som mange små feil over flere lyd-rammer (lettere å maskere) i stedet for ett stort hull. Koster delay (mottakeren må vente til hele blokken er ankommet før den de-interleaver).",
+              body: "Sprer tap som mange små feil i stedet for ett stort hull.",
             },
             {
               term: "Fixed playout-buffer",
-              body: "Variant av playout-buffer der forsinkelsen settes til en fast verdi (f.eks. 60 ms) gjennom hele samtalen. Enkel å implementere, men suboptimal: enten for stor (kaster bort delay-budsjett) eller for liten (kaster for mange pakker).",
+              body: "Fast forsinkelse hele samtalen; enkelt, ofte suboptimalt.",
             },
             {
               term: "Adaptive playout-buffer",
-              body: "Bufferet endrer størrelse løpende basert på målt jitter. Vanlig regel: buffer ≈ middel-delay + k·σ_jitter (k = 3–4). Krymper når nettet er stabilt, vokser når det ustabiliseres. Brukt i alle moderne VoIP-stacker.",
+              body: "Buffer ≈ middel + k·σ_jitter; vokser/krymper løpende.",
             },
             {
               term: "Playout-buffer (jitter-buffer)",
-              body: "Liten kø på mottakersiden som forsinker avspilling med f.eks. 50 ms slik at pakker som kommer litt sent fortsatt rekker fram før de skal spilles. Konverterer variabel ankomst-tid til fast avspilling-takt.",
+              body: "Mottakerkø som jevner ut ankomst-jitter til fast takt.",
             },
             {
               term: "Silence suppression / VAD",
-              body: "Voice Activity Detection oppdager når den som snakker er stille og slutter å sende pakker i den perioden (typisk 60 % av samtaletida). Sparer båndbredde og batteri. Mottakeren genererer komfort-støy så det ikke høres ut som linjen er død.",
+              body: "Stopper sending under stillhet; sparer båndbredde.",
             },
             {
               term: "Mund-til-øre-delay (mouth-to-ear)",
-              body: "Det totale en-veis-delayet brukerne faktisk merker. Summen av: mikrofon-kapring (5 ms), encoder (10–25 ms), pakke-aggregering (20 ms), nett-transport (variabelt), jitter-buffer (30–60 ms), decoder (5 ms), høyttaler (5 ms). Mål: under 150 ms.",
+              body: "Total en-veis delay; mål: under 150 ms.",
             },
           ]}
         />
@@ -572,6 +612,45 @@ function Section93() {
           <PlayoutBufferSvg />
         </Illustration>
       </div>
+
+      <div className="grid gap-3 lg:grid-cols-2">
+        <Illustration caption="PLC i praksis: senderen mister pakke 3, mottakeren limer inn en kopi av pakke 2.">
+          <PlcRepairSvg />
+        </Illustration>
+        <Illustration caption="Codec-kompromiss: båndbredde mot kvalitet mot tap-toleranse.">
+          <CodecTradeoffSvg />
+        </Illustration>
+      </div>
+
+      <Metafor tittel="Vannkanne som fylles før du skjenker">
+        <p>
+          Playout-bufferet er som en vannkanne under en utett kran. Kranen drypper ujevnt (jitter),
+          men så lenge du fyller kanna først kan du skjenke i glasset i jevn strøm. Hvis kanna er
+          for liten, renner den tom mellom drypp og glasset står tørrt (pakker kastes). Hvis den er
+          for stor, må du vente lenge før første skjenking (mye delay). Adaptive buffere er kanner
+          som vokser når kranen krangler og krymper når den er rolig.
+        </p>
+      </Metafor>
+
+      <Metafor tittel="PLC — øre-hjernen vår er overraskende lett å lure">
+        <p>
+          Hvis du mister 20 ms av lyden i en samtale — omtrent én konsonant — kan dekoderen bare
+          gjenta forrige 20 ms. Øret ditt merker det ikke fordi vokaler endrer seg sakte. Det er som
+          å miste ett enkelt frame i en film: viser samme bilde to ganger i strekk og hjernen fyller
+          inn. Mister du tre pakker på rad (60 ms) hører du imidlertid en metallisk «zip» — derfor
+          er FEC og interleaving viktig på dårlige forbindelser.
+        </p>
+      </Metafor>
+
+      <Metafor tittel="Opus vs G.711: skihopper i bakvind">
+        <p>
+          G.711 er en alpinløper som krever perfekt løype: ingen humper (tap), eller han faller.
+          Opus er en utfor-løper med fjæring og parachute (PLC + FEC) — han tåler ujevn løype og
+          kommer i mål selv om vinden snur. Det er derfor moderne VoIP velger Opus i nesten alle
+          tilfeller: ikke fordi den lyder bedre i perfekt nett, men fordi den holder seg på beina
+          når nettet rister.
+        </p>
+      </Metafor>
 
       <Example title="Eksempel: 60 ms playout-buffer i praksis">
         <p>
@@ -671,73 +750,61 @@ function Section94() {
       <div className="grid gap-3 lg:grid-cols-2">
         <Defs
           items={[
-            {
-              term: "V — Version (2 bit)",
-              body: "Versjonsfeltet, alltid 2 i dagens RTP. Bare to bits brukt fordi det forventes sjelden å endre seg. Mottakeren bruker dette til å avvise pakker fra eldre protokoll-revisjoner.",
-            },
+            { term: "V — Version (2 bit)", body: "Versjonen, alltid 2 i dagens RTP." },
             {
               term: "P — Padding (1 bit)",
-              body: "Hvis satt til 1, har pakka padding-bytes på slutten som ikke er del av payloaden. Den aller siste byten forteller hvor mange padding-bytes som ligger der. Brukes for kryptering der blokk-størrelsen må være et helt antall bytes.",
+              body: "Hvis 1: padding-bytes på slutten, antall i siste byte.",
             },
             {
               term: "X — Extension (1 bit)",
-              body: "Hvis 1, kommer det en utvidelses-header rett etter den faste 12-byte headeren. Egendefinerte felt-typer kan ligge der — brukt blant annet i WebRTC for å sende absolutt-sender-tid og lyd-nivå.",
+              body: "Hvis 1: utvidelses-header etter de 12 obligatoriske bytene.",
             },
             {
               term: "CC — CSRC Count (4 bit)",
-              body: "Antall CSRC-identifikatorer som følger headeren. 0 normalt; større når en mixer kombinerer flere kilder til én strøm (audio-mix i et konferansesystem).",
+              body: "Antall CSRC-er som følger; 0 utenom mixer-bruk.",
             },
-            {
-              term: "M — Marker (1 bit)",
-              body: "Codec-spesifikk hendelses-flag. For tale: settes på første pakke etter en stillhets-periode. For video: settes på siste pakke i en ramme. Mottakeren bruker den til å vite at det er trygt å starte avspilling eller signalisere ramme-ferdig.",
-            },
+            { term: "M — Marker (1 bit)", body: "Codec-flagg: «her starter ramme/talespurt»." },
             {
               term: "PT — Payload Type (7 bit)",
-              body: "Forteller hvilken codec som er brukt — for eksempel 0 = G.711 µ-law, 8 = G.711 A-law, 14 = MPA, 96–127 = dynamisk tildelt for nyere codecs som Opus eller H.264. Mottakeren bruker dette til å vite hvilken dekoder den skal mate pakka inn i.",
+              body: "Hvilken codec; 0=G.711µ, 8=G.711A, 96–127=dynamisk.",
             },
             {
               term: "SEQ — Sequence number (16 bit)",
-              body: "Inkrementeres med 1 for hver pakke avsenderen sender. Lar mottakeren oppdage pakketap og levere pakker i riktig rekkefølge selv om UDP omkalfatrer dem. Starter på en tilfeldig verdi for å gjøre angrep vanskeligere.",
+              body: "Inkrementeres per pakke; oppdager tap og rekkefølge.",
             },
             {
               term: "TS — Timestamp (32 bit)",
-              body: "Tidspunkt for når innholdet i pakka ble laget — målt i codec-spesifikke enheter (for 8 kHz lyd: én enhet per sample, så ts øker med 160 mellom 20-ms pakker). To pakker med samme timestamp kommer fra samme øyeblikk. Bufferet bruker timestamp til å beregne når en pakke skal spilles av.",
+              body: "Codec-tid for når innholdet ble laget; styrer avspilling.",
             },
             {
               term: "SSRC — Synchronization Source (32 bit)",
-              body: "Tilfeldig identifikator for kilden. I et møte hvor tre deltakere snakker har hver sin SSRC, så mottakeren kan skille strømmene fra hverandre selv om de kommer på samme port. Hvis to senderne ved uflaks velger samme SSRC, omformer en av dem identifikatoren («SSRC collision»).",
+              body: "Unik kilde-ID; skiller strømmer på samme port.",
             },
             {
-              term: "CSRC — Contributing Source list (0–15 × 32 bit)",
-              body: "Liste over SSRC-ene til kilder som er mikset inn i denne pakka. Tom (CC=0) for direkte ende-til-ende-strøm. En audio-mixer i en bro kan kombinere tre talere; CSRC-lista forteller mottakeren hvem som bidro.",
+              term: "CSRC — Contributing Source list",
+              body: "Mixer-bidrags-IDer; tom for direkte ende-til-ende.",
             },
             {
               term: "RTCP Sender Report (SR)",
-              body: "Pakker avsenderen sender med jevne mellomrom som inneholder absolutt-tid (NTP-format), hvor mange pakker den har sendt, og hvor mange bytes. Lar mottakeren synkronisere lyd og video som kom over separate RTP-strømmer (matche en NTP-tid mot en RTP-timestamp).",
+              body: "NTP-tid + RTP-ts; lar mottaker synke lyd og video.",
             },
             {
               term: "RTCP Receiver Report (RR)",
-              body: "Pakker mottakeren sender tilbake med målt jitter (RFC 3550-formelen), akkumulert pakketap, høyeste sekvensnummer mottatt, og «inter-arrival jitter» som en glidende statistikk. Lar senderen tilpasse seg — for eksempel redusere bitraten hvis tapet stiger.",
+              body: "Mottakerens målte jitter/tap/seq tilbake til sender.",
             },
             {
               term: "RTCP SDES (Source Description)",
-              body: "Periodisk pakke med tekstlig informasjon om kilden: CNAME (kanonisk navn, brukt til å gjenkjenne samme avsender på tvers av SSRC-collisions), brukernavn, e-post, lokasjon, telefon, verktøy. CNAME er obligatorisk; resten er valgfritt.",
+              body: "CNAME + tekstlig kilde-info; obligatorisk for CNAME.",
             },
-            {
-              term: "RTCP BYE",
-              body: "Pakke en deltaker sender før den forlater økten. Lister hvilke SSRC-er som forsvinner og eventuelt en grunn-streng. Lar de andre umiddelbart fjerne disse fra synlige deltaker-lister i stedet for å vente på timeout.",
-            },
-            {
-              term: "RTCP APP",
-              body: "Applikasjons-spesifikk RTCP-utvidelse. Definert som «escape hatch» for forskning og leverandør-spesifikke meldinger uten å forurense standard-feltene. Sjelden brukt i offentlige protokoller.",
-            },
+            { term: "RTCP BYE", body: "«Jeg forlater økten» — fjern SSRC umiddelbart." },
+            { term: "RTCP APP", body: "Applikasjons-spesifikk escape hatch for utvidelser." },
             {
               term: "RTSP (Real-Time Streaming Protocol)",
-              body: "Kontroll-protokollen ved siden av RTP. Tilbyr SETUP/PLAY/PAUSE/TEARDOWN-kommandoer over TCP. Brukes mest til mediabokser og overvåkningskameraer; moderne web-streaming (DASH/HLS) bruker ikke RTSP. Tenk «fjernkontroll» for en media-strøm.",
+              body: "Fjernkontroll: SETUP/PLAY/PAUSE/TEARDOWN over TCP.",
             },
             {
               term: "SRTP (Secure RTP)",
-              body: "Kryptert variant (RFC 3711) der payloaden krypteres med AES-CTR og hele pakka autentiseres med HMAC-SHA1. Brukt i WebRTC og i moderne SIP-telefoni. Header forblir i klartekst sånn at mellomliggende ruterklasse-mekanismer fortsatt kan se SSRC og sequence.",
+              body: "AES-kryptert payload + HMAC-autentisering; brukt i WebRTC.",
             },
           ]}
         />
@@ -745,6 +812,45 @@ function Section94() {
           <RtpHeaderSvg />
         </Illustration>
       </div>
+
+      <div className="grid gap-3 lg:grid-cols-2">
+        <Illustration caption="Audio og video bærer hver sin RTP-klokke; RTCP SR limer dem til samme NTP-tid.">
+          <RtcpSyncSvg />
+        </Illustration>
+        <Illustration caption="Audio-mixer: tre talere mikses; CSRC-lista forteller hvem som bidro.">
+          <MixerSsrcSvg />
+        </Illustration>
+      </div>
+
+      <Metafor tittel="Filmrull med tidsstempel">
+        <p>
+          RTP-timestamp er som tidskoden trykt på hver rute av en gammel filmrull. Selv om noen
+          ruter faller på gulvet under projeksjon, vet vi nøyaktig hvor i filmen vi er — projektøren
+          plasserer dem på riktig sekund. UDP-pakker som kommer i feil rekkefølge er filmruter som
+          er kommet dryssende ut av esken; SEQ + TS lar mottakeren legge dem i riktig rekkefølge
+          igjen.
+        </p>
+      </Metafor>
+
+      <Metafor tittel="SSRC — musiker-ID i symfoniorkester">
+        <p>
+          I et Zoom-møte med tre deltakere kan alle stemmene komme på samme UDP-port. SSRC er som en
+          arm-binding hver musiker har på seg i orkesteret — fiolinist nummer 1, bratsj nummer 2,
+          cello nummer 3. Dirigenten (mottakeren) ser armen og vet hvilket noteark stemmen skal
+          mates inn i. Hvis to nye musikere vassom velger samme arm-binding, må en av dem bytte
+          («SSRC collision»).
+        </p>
+      </Metafor>
+
+      <Metafor tittel="RTCP — bilfører-bilder fra speedometeret">
+        <p>
+          RTP-pakker er som bilen som kjører, men RTCP er sjåføren som hvert femte sekund titter på
+          speedometeret, GPS-en og motor-temperaturen og melder tilbake til verkstedet. Verkstedet
+          kan da si «du ligger 2 km/t under fartsgrense» eller «motoren går varm — slipp gassen».
+          Tilbake-meldingen er sjelden nok til ikke å forstyrre kjøringen, men hyppig nok til å
+          gripe inn før det blir krise.
+        </p>
+      </Metafor>
 
       <Example title="Eksempel: tre pakker fra samme VoIP-strøm">
         <p>En klient sender pakker hver 20 ms (160 samples ved 8 kHz). Vi observerer:</p>
@@ -825,77 +931,59 @@ function Section95() {
       <div className="grid gap-3 lg:grid-cols-2">
         <Defs
           items={[
+            { term: "Best-effort", body: "Én FIFO-kø per lenke; alle pakker likeverdige." },
             {
-              term: "Best-effort",
-              body: "Standard-nettet: ruterne har én utgangskø per lenke, alle pakker behandles FIFO (First-In-First-Out), ingen garantier. Enkelt, billig, men gir ingen forutsigbar oppførsel under last. Internett er grunnleggende best-effort i kjernen.",
-            },
-            {
-              term: "Integrated Services (IntServ) / RSVP",
-              body: "Per-strøm-reservasjon: en applikasjon ber via RSVP (Resource Reservation Protocol) om at hver ruter langs stien reserverer båndbredde og buffer-plass for den ene strømmen. Gir harde garantier, men skalerer dårlig fordi hver ruter må holde tilstand for tusenvis av strømmer.",
+              term: "IntServ / RSVP",
+              body: "Per-strøm reservasjon; harde garantier, skalerer dårlig.",
             },
             {
               term: "RSVP soft-state",
-              body: "RSVP-reservasjoner forsvinner automatisk hvis ikke avsenderen sender en refresh-melding hvert 30. sekund. Designet sånn fordi ruterne ofte mister tilstand (reboot, link-flap) — soft state betyr at det er trygt selv om en ruter glemmer; den vil bli minnet på neste refresh, eller reservasjonen renner ut.",
+              body: "Reservasjon dør hvis ikke refreshet hvert 30. sekund.",
             },
-            {
-              term: "Differentiated Services (DiffServ)",
-              body: "Per-klasse-prioritering i stedet for per-strøm. Pakker merkes med en DSCP-verdi (6 bits i IP-headeren) som forteller hvilken klasse de tilhører. Ruterne har egne køer per klasse. Skalerer langt bedre enn IntServ fordi ruterne bare må vite om noen få klasser, ikke om tusenvis av flows.",
-            },
+            { term: "DiffServ", body: "Per-klasse prioritering via DSCP-merke; skalerer godt." },
             {
               term: "DSCP (Differentiated Services Code Point)",
-              body: "De 6 mest signifikante bitene av ToS-feltet i IPv4-headeren (eller Traffic Class i IPv6). Definerer hvilken PHB (Per-Hop Behavior) ruteren skal anvende. Standardiserte verdier: 0 = default, 46 (101110₂) = EF, 10/12/14 = AF11/AF12/AF13, og så videre.",
+              body: "6 bits i IP-header; velger Per-Hop Behavior.",
             },
             {
               term: "EF (Expedited Forwarding, DSCP 46)",
-              body: "Klassen for tids-kritisk trafikk: VoIP, video-konferering. Ruterne lover lav delay og lavt tap. Behandles oftest i en priority-kø som tømmes før andre. Skal være begrenset til en liten andel av total trafikk for å unngå å sulte ut resten.",
+              body: "Tids-kritisk klasse; priority-kø, lavt delay/tap.",
             },
             {
-              term: "AF (Assured Forwarding, DSCP 10–38)",
-              body: "Fire klasser (AF1x–AF4x) med tre drop-prioriteter (x = 1/2/3) hver. Tanken er: garanter et minimum av båndbredde for klassen, men hvis køen blir full, drop først pakker med høyere drop-prioritet. Brukt for «business-data» som SAP, ERP, viktige nedlastinger.",
+              term: "AF (Assured Forwarding)",
+              body: "4 klasser × 3 drop-nivåer; minimums-båndbredde garantert.",
             },
             {
               term: "BE (Best Effort, DSCP 0)",
-              body: "Default-klassen som umerkede pakker faller i. Får det som er igjen etter EF og AF. Inkluderer web-surfing, e-post, software-oppdateringer. Forventes å være tålmodig.",
+              body: "Default; får det som er igjen etter EF/AF.",
             },
-            {
-              term: "Marking",
-              body: "Operasjonen der en pakke får sin DSCP-verdi satt. Skjer typisk på første ruter inn i et administrativt domene («network edge»), enten basert på avsender-IP, applikasjons-port, eller DPI (Deep Packet Inspection). Etterpå stoler indre ruterne på markeringen.",
-            },
+            { term: "Marking", body: "Sett DSCP ved nett-inngangen; indre rutere stoler på den." },
             {
               term: "Policing",
-              body: "Sjekk ved nett-inngangen: kommer det inn flere pakker per sekund enn avtalen tillater, blir overskuddet enten droppet eller nedklassifisert (re-marked til lavere prioritet). Token-bucket er den vanlige implementasjonen. Jobben er å beskytte indre ruterne mot kunder som overstiger sin avtale.",
+              body: "Drop/re-mark overskudd ved nett-grensa; ofte token-bucket.",
             },
             {
               term: "Shaping",
-              body: "Den snillere versjonen av policing: i stedet for å droppe overskudd, holdes pakkene i en kø og slippes ut jevnt over tid. Bytter pakketap mot litt delay. Vanlig på utgående side i hjemmerutere for å unngå buffer-bloat.",
+              body: "Hold overskudd i kø og slipp ut jevnt; bytter tap mot delay.",
             },
-            {
-              term: "Leaky bucket",
-              body: "Konseptuell modell: pakker (vann) renner inn i en bøtte med fast utløp-rate. Hvis bøtta blir full, søler det over og pakker droppes. Effekten er at utgående rate er konstant — ingen burst kan slippe gjennom. Streng, men forutsigbar.",
-            },
-            {
-              term: "Token bucket",
-              body: "Smartere modell: ruteren samler «tokens» med fast rate r (én token per byte tillatt) i en bøtte med kapasitet b. En pakke av størrelse n sendes hvis den finner n tokens — ellers droppes/forsinkes den. Tillater burst opptil b når bøtta er full, men holder gjennomsnitt på r over tid.",
-            },
+            { term: "Leaky bucket", body: "Konstant utgangs-rate; ingen burst slipper gjennom." },
+            { term: "Token bucket", body: "Burst opp til bøtte b; langtids-snitt = rate r." },
             {
               term: "Priority queueing (PQ)",
-              body: "Ruterens utgang har flere køer i prioritet-rekkefølge. Høy-prioritet-kø tømmes alltid først; lav-prioritet får bare slippe ut når høyere er tom. Kan sulte ut lav-prioritet hvis høy-prioritet er evig full — derfor begrenses EF til en liten andel.",
+              body: "Høy-prioritet alltid først; kan sulte lav-prioritet.",
             },
             {
               term: "WFQ (Weighted Fair Queueing)",
-              body: "Hver kø får en vekt; scheduleren sørger for at hver kø får sin proporsjonale andel av lenken (vekt-i / Σ-vekt). Ingen kø kan bli sulta ut helt. Mer rettferdig enn priority queueing, men noe høyere worst-case delay for de viktigste pakkene.",
+              body: "Hver kø sin vekt; ingen kø blir helt sulta ut.",
             },
             {
               term: "RED (Random Early Detection)",
-              body: "Aktiv kø-management: når køen begynner å fylle seg (mellom min og max-terskel), drop en tilfeldig pakke før hele køen er full. TCP merker tapet og bremser ned, og forhindrer kø-overflow + global synkronisering (alle TCP-strømmer kollapser samtidig).",
+              body: "Drop tilfeldig pakke før full kø; bremser TCP tidlig.",
             },
-            {
-              term: "Admission control",
-              body: "Mekanismen som sier nei når nettet er fullt. RSVP eller en SIP-proxy kan blokkere en ny VoIP-samtale hvis det ikke er ledig reservert kapasitet — bedre å nekte forbindelsen helt enn å akseptere en samtale som blir ubrukelig. Vanlig i forretnings-VoIP-systemer.",
-            },
+            { term: "Admission control", body: "Si nei til ny strøm når nettet er fullt." },
             {
               term: "SLA (Service Level Agreement)",
-              body: "Kontraktlig avtale mellom ISP og kunde om hva nettet skal levere: maks delay, maks tap, garantert båndbredde per klasse. DiffServ-merking er den tekniske mekanismen for å håndheve SLA-en. Brudd kan utløse økonomisk kompensasjon.",
+              body: "ISP-kontrakt: maks delay/tap per klasse.",
             },
           ]}
         />
@@ -903,6 +991,46 @@ function Section95() {
           <DiffservSvg />
         </Illustration>
       </div>
+
+      <div className="grid gap-3 lg:grid-cols-2">
+        <Illustration caption="Token-bucket-fysikk: tokens drypper inn med rate r; pakker forbruker n tokens hver.">
+          <TokenBucketSvg />
+        </Illustration>
+        <Illustration caption="DSCP-merking ved nett-edge: pakken stemples med klasse-merke som indre rutere stoler på.">
+          <DscpMarkSvg />
+        </Illustration>
+      </div>
+
+      <Metafor tittel="Flyplassens hurtig-spor">
+        <p>
+          DiffServ er Tromsø lufthavns business-spor. Alle reisende går gjennom samme sikkerhets-
+          kontroll, men business-class har egen kø som tømmes først. Selve flyturen og bagasjen er
+          felles; bare prioriteten på rampene er forskjellig. EF-merket (DSCP 46) er
+          business-billetten, BE er turist-klasse. Hvis alle plutselig hadde business-billett ville
+          hurtig-sporet stå stille — derfor begrenser flyplassen (og DiffServ) hvor mange som får
+          merket.
+        </p>
+      </Metafor>
+
+      <Metafor tittel="Buffet-billetter — token bucket">
+        <p>
+          Tenk Wok Buffet i sentrum: hver gjest får én billett per minutt, men maks 30 billetter
+          oppspart i lomma. Det betyr at en sulten gjest kan komme inn etter en halvtime, betale 30
+          billetter på en gang og forsyne seg storstilt — men over timen ligger forbruket på akkurat
+          60 billetter. Token bucket fungerer identisk: rate r er billett-utdelingen, bøtte b er
+          lomme-størrelsen, og hver pakke er en tallerken som koster n billetter å fylle.
+        </p>
+      </Metafor>
+
+      <Metafor tittel="Leaky bucket — hagevannings-slangen med fast trykk">
+        <p>
+          Leaky bucket er en hageslange som bare gir 1 liter i minuttet uansett om du skrur kranen
+          full eller halvveis: vann (pakker) som kommer for fort renner over kanten og forsvinner.
+          Token bucket er det samme — pluss en vanntank som kan bli full mellom skylletilfellene.
+          Leaky bucket passer for VoIP (jevnt drypp er det vi vil ha); token bucket passer for fil-
+          overføring (TCP vil burste opp så snart kranen åpnes).
+        </p>
+      </Metafor>
 
       <Example title="Eksempel: hjemmenett under tung opplasting">
         <p>
@@ -1395,6 +1523,18 @@ function Hvorfor({ title, children }: { title: string; children: React.ReactNode
         Hvorfor?
       </div>
       <div className="font-semibold text-foreground mb-1">{title}</div>
+      <div className="text-muted-foreground text-[13px] space-y-2">{children}</div>
+    </div>
+  );
+}
+
+function Metafor({ tittel, children }: { tittel: string; children: React.ReactNode }) {
+  return (
+    <div className="rounded-xl border border-purple-500/30 bg-purple-500/5 p-4">
+      <div className="text-[10px] uppercase tracking-wider text-purple-700 dark:text-purple-400 font-semibold mb-1">
+        Metafor
+      </div>
+      <div className="font-semibold text-foreground mb-1">{tittel}</div>
       <div className="text-muted-foreground text-[13px] space-y-2">{children}</div>
     </div>
   );
@@ -2159,6 +2299,1083 @@ function DiffservSvg() {
 
       <text x={250} y={210} textAnchor="middle" className="fill-muted-foreground text-[9px] italic">
         EF tømmes alltid først; AF og BE deler resten etter WFQ-vekt
+      </text>
+    </svg>
+  );
+}
+
+// ------------ 9.1: Jitter-metronom ------------
+function JitterMetronomeSvg() {
+  return (
+    <svg viewBox="0 0 500 240" className="w-full h-auto">
+      <text
+        x={250}
+        y={18}
+        textAnchor="middle"
+        className="fill-foreground text-[12px] font-semibold"
+      >
+        Metronomen som hopper — gjennomsnitt riktig, takt feil
+      </text>
+      <text x={20} y={50} className="fill-muted-foreground text-[10px]">
+        Sendt:
+      </text>
+      <line
+        x1={60}
+        y1={55}
+        x2={460}
+        y2={55}
+        className="stroke-muted-foreground/40"
+        strokeWidth={1}
+      />
+      {[0, 1, 2, 3, 4, 5, 6, 7].map((i) => {
+        const x = 70 + i * 50;
+        return (
+          <g key={`s${i}`}>
+            <line x1={x} y1={45} x2={x} y2={65} className="stroke-brand" strokeWidth={2} />
+            <text x={x} y={82} textAnchor="middle" className="fill-muted-foreground text-[8px]">
+              {i * 20}
+            </text>
+          </g>
+        );
+      })}
+      <text x={20} y={120} className="fill-muted-foreground text-[10px]">
+        Ankomst:
+      </text>
+      <line
+        x1={60}
+        y1={125}
+        x2={460}
+        y2={125}
+        className="stroke-muted-foreground/40"
+        strokeWidth={1}
+      />
+      {[
+        { i: 0, off: 0 },
+        { i: 1, off: -12 },
+        { i: 2, off: 8 },
+        { i: 3, off: 22 },
+        { i: 4, off: -4 },
+        { i: 5, off: 16 },
+        { i: 6, off: -8 },
+        { i: 7, off: 14 },
+      ].map((p) => {
+        const x = 70 + p.i * 50 + p.off;
+        return (
+          <g key={`a${p.i}`}>
+            <line x1={x} y1={115} x2={x} y2={135} className="stroke-amber-500" strokeWidth={2} />
+            <text x={x} y={152} textAnchor="middle" className="fill-muted-foreground text-[7px]">
+              {p.off > 0 ? "+" : ""}
+              {p.off}
+            </text>
+          </g>
+        );
+      })}
+      <text
+        x={250}
+        y={185}
+        textAnchor="middle"
+        className="fill-foreground text-[10px] font-semibold"
+      >
+        Selv om snittet ligger på 20 ms, vingler det ±22 ms
+      </text>
+      <text x={250} y={205} textAnchor="middle" className="fill-muted-foreground text-[9px] italic">
+        Øret hører jitteret som hakking eller metallisk «zip»
+      </text>
+      <text
+        x={250}
+        y={222}
+        textAnchor="middle"
+        className="fill-purple-700 dark:fill-purple-400 text-[9px]"
+      >
+        Playout-buffer = ørepropp som skjuler hoppingen
+      </text>
+    </svg>
+  );
+}
+
+// ------------ 9.1: Ferskvare-spekter ------------
+function FreshnessSpectrumSvg() {
+  return (
+    <svg viewBox="0 0 500 240" className="w-full h-auto">
+      <text
+        x={250}
+        y={18}
+        textAnchor="middle"
+        className="fill-foreground text-[12px] font-semibold"
+      >
+        Ferskvare-spekteret — hvor lenge er en pakke verdt?
+      </text>
+      {/* Akse */}
+      <line x1={40} y1={180} x2={470} y2={180} className="stroke-foreground/60" strokeWidth={1.5} />
+      {[
+        { x: 60, label: "0 ms", t: "Akkurat sendt" },
+        { x: 160, label: "80 ms", t: "Cloud-gaming-grense" },
+        { x: 260, label: "150 ms", t: "VoIP-grense" },
+        { x: 360, label: "2 s", t: "Live-stream-grense" },
+        { x: 450, label: "10 s+", t: "VOD-grense" },
+      ].map((m) => (
+        <g key={m.x}>
+          <line
+            x1={m.x}
+            y1={175}
+            x2={m.x}
+            y2={185}
+            className="stroke-foreground/60"
+            strokeWidth={1}
+          />
+          <text
+            x={m.x}
+            y={198}
+            textAnchor="middle"
+            className="fill-foreground text-[8px] font-semibold"
+          >
+            {m.label}
+          </text>
+          <text x={m.x} y={212} textAnchor="middle" className="fill-muted-foreground text-[7px]">
+            {m.t}
+          </text>
+        </g>
+      ))}
+      {/* Verdikurve */}
+      <path
+        d="M 60 50 L 160 60 L 260 90 L 360 140 L 450 165 L 470 175"
+        className="fill-none stroke-success"
+        strokeWidth={2}
+      />
+      {/* Fersk-sone */}
+      <rect x={60} y={45} width={120} height={130} className="fill-success/10" />
+      <text x={120} y={70} textAnchor="middle" className="fill-success text-[10px] font-semibold">
+        Fersk
+      </text>
+      <text x={120} y={84} textAnchor="middle" className="fill-muted-foreground text-[8px]">
+        spises rått
+      </text>
+      {/* Brukbar */}
+      <rect x={180} y={45} width={180} height={130} className="fill-amber-500/10" />
+      <text
+        x={270}
+        y={70}
+        textAnchor="middle"
+        className="fill-amber-700 dark:fill-amber-400 text-[10px] font-semibold"
+      >
+        Brukbar
+      </text>
+      <text x={270} y={84} textAnchor="middle" className="fill-muted-foreground text-[8px]">
+        må prosesseres
+      </text>
+      {/* Søppel */}
+      <rect x={360} y={45} width={110} height={130} className="fill-destructive/10" />
+      <text
+        x={415}
+        y={70}
+        textAnchor="middle"
+        className="fill-destructive text-[10px] font-semibold"
+      >
+        Søppel
+      </text>
+      <text x={415} y={84} textAnchor="middle" className="fill-muted-foreground text-[8px]">
+        drop / PLC
+      </text>
+      <text x={250} y={232} textAnchor="middle" className="fill-muted-foreground text-[9px] italic">
+        Multimedia-applikasjoner velger UDP for å droppe råtten fisk umiddelbart
+      </text>
+    </svg>
+  );
+}
+
+// ------------ 9.2: Bitrate-stige ------------
+function BitrateLadderSvg() {
+  const segWidth = 50;
+  const bitrates = [
+    { y: 50, label: "8 Mbps", c: "fill-success/30 stroke-success" },
+    { y: 90, label: "2.5 Mbps", c: "fill-brand/30 stroke-brand" },
+    { y: 130, label: "1 Mbps", c: "fill-amber-500/30 stroke-amber-500" },
+    { y: 170, label: "0.4 Mbps", c: "fill-destructive/30 stroke-destructive" },
+  ];
+  // Per segment, hvilken bitrate ble valgt (index i bitrates)
+  const choices = [0, 0, 1, 1, 2, 3, 2, 1];
+  return (
+    <svg viewBox="0 0 500 240" className="w-full h-auto">
+      <text
+        x={250}
+        y={18}
+        textAnchor="middle"
+        className="fill-foreground text-[12px] font-semibold"
+      >
+        Bitrate-stigen — ABR plukker ett trinn per segment-luke
+      </text>
+      {bitrates.map((b) => (
+        <g key={b.y}>
+          <text x={48} y={b.y + 22} textAnchor="end" className="fill-muted-foreground text-[9px]">
+            {b.label}
+          </text>
+          {choices.map((_, i) => (
+            <rect
+              key={i}
+              x={60 + i * segWidth}
+              y={b.y}
+              width={segWidth - 4}
+              height={30}
+              rx={3}
+              className={b.c}
+              strokeWidth={1}
+            />
+          ))}
+        </g>
+      ))}
+      {/* Markere valgt sti */}
+      {choices.map((c, i) => {
+        const x = 60 + i * segWidth + (segWidth - 4) / 2;
+        const y = bitrates[c].y + 15;
+        return (
+          <circle
+            key={i}
+            cx={x}
+            cy={y}
+            r={6}
+            className="fill-purple-500 stroke-purple-700"
+            strokeWidth={1.5}
+          />
+        );
+      })}
+      {/* Linje gjennom valgene */}
+      <polyline
+        points={choices
+          .map((c, i) => `${60 + i * segWidth + (segWidth - 4) / 2},${bitrates[c].y + 15}`)
+          .join(" ")}
+        className="fill-none stroke-purple-500"
+        strokeWidth={2}
+      />
+      <text x={250} y={215} textAnchor="middle" className="fill-muted-foreground text-[8px]">
+        Segm-1 Segm-2 Segm-3 Segm-4 Segm-5 Segm-6 Segm-7 Segm-8
+      </text>
+      <text x={250} y={232} textAnchor="middle" className="fill-muted-foreground text-[9px] italic">
+        Lilla sti viser ABR-valg når båndbredden synker og hever seg igjen
+      </text>
+    </svg>
+  );
+}
+
+// ------------ 9.2: ABR-løkka ------------
+function AbrLoopSvg() {
+  return (
+    <svg viewBox="0 0 500 260" className="w-full h-auto">
+      <text
+        x={250}
+        y={18}
+        textAnchor="middle"
+        className="fill-foreground text-[12px] font-semibold"
+      >
+        ABR-termostaten — løkka som kjøres per segment
+      </text>
+      {/* 4 noder i en sirkel */}
+      {[
+        { x: 250, y: 60, label: "Mål throughput", sub: "T = bytes/tid" },
+        { x: 420, y: 140, label: "Velg bitrate", sub: "B ≤ T · 0.8" },
+        { x: 250, y: 220, label: "Hent segment", sub: "GET via HTTP" },
+        { x: 80, y: 140, label: "Oppdater buffer", sub: "+4 s" },
+      ].map((n, i) => (
+        <g key={i}>
+          <circle cx={n.x} cy={n.y} r={42} className="fill-card stroke-brand" strokeWidth={1.5} />
+          <text
+            x={n.x}
+            y={n.y - 2}
+            textAnchor="middle"
+            className="fill-foreground text-[9px] font-semibold"
+          >
+            {n.label}
+          </text>
+          <text
+            x={n.x}
+            y={n.y + 12}
+            textAnchor="middle"
+            className="fill-muted-foreground text-[8px]"
+          >
+            {n.sub}
+          </text>
+        </g>
+      ))}
+      {/* Piler */}
+      <defs>
+        <marker
+          id="abrArrow"
+          viewBox="0 0 10 10"
+          refX={8}
+          refY={5}
+          markerWidth={5}
+          markerHeight={5}
+          orient="auto"
+        >
+          <path d="M 0 0 L 10 5 L 0 10 z" className="fill-brand" />
+        </marker>
+      </defs>
+      <path
+        d="M 290 75 Q 380 80 388 110"
+        className="fill-none stroke-brand"
+        strokeWidth={1.5}
+        markerEnd="url(#abrArrow)"
+      />
+      <path
+        d="M 410 175 Q 380 220 290 215"
+        className="fill-none stroke-brand"
+        strokeWidth={1.5}
+        markerEnd="url(#abrArrow)"
+      />
+      <path
+        d="M 210 215 Q 120 220 92 175"
+        className="fill-none stroke-brand"
+        strokeWidth={1.5}
+        markerEnd="url(#abrArrow)"
+      />
+      <path
+        d="M 112 110 Q 120 80 210 75"
+        className="fill-none stroke-brand"
+        strokeWidth={1.5}
+        markerEnd="url(#abrArrow)"
+      />
+      {/* Termostat-analogi i midten */}
+      <text
+        x={250}
+        y={140}
+        textAnchor="middle"
+        className="fill-purple-700 dark:fill-purple-400 text-[10px] font-semibold"
+      >
+        Som termostat
+      </text>
+      <text x={250} y={156} textAnchor="middle" className="fill-muted-foreground text-[8px]">
+        mål · juster · vent · gjenta
+      </text>
+    </svg>
+  );
+}
+
+// ------------ 9.3: PLC-reparasjon ------------
+function PlcRepairSvg() {
+  return (
+    <svg viewBox="0 0 500 240" className="w-full h-auto">
+      <text
+        x={250}
+        y={18}
+        textAnchor="middle"
+        className="fill-foreground text-[12px] font-semibold"
+      >
+        PLC: lim inn forrige pakke når en mangler
+      </text>
+      <text x={20} y={55} className="fill-muted-foreground text-[10px]">
+        Sendt:
+      </text>
+      {[1, 2, 3, 4, 5, 6].map((i) => {
+        const x = 70 + (i - 1) * 65;
+        return (
+          <g key={`s${i}`}>
+            <rect
+              x={x}
+              y={45}
+              width={55}
+              height={28}
+              rx={3}
+              className="fill-brand/30 stroke-brand"
+              strokeWidth={1}
+            />
+            <text x={x + 27} y={63} textAnchor="middle" className="fill-foreground text-[9px]">
+              pkt {i}
+            </text>
+          </g>
+        );
+      })}
+      <text x={20} y={115} className="fill-muted-foreground text-[10px]">
+        Mottatt:
+      </text>
+      {[1, 2, 4, 5, 6].map((i) => {
+        const x = 70 + (i - 1) * 65;
+        return (
+          <g key={`r${i}`}>
+            <rect
+              x={x}
+              y={105}
+              width={55}
+              height={28}
+              rx={3}
+              className="fill-success/30 stroke-success"
+              strokeWidth={1}
+            />
+            <text x={x + 27} y={123} textAnchor="middle" className="fill-foreground text-[9px]">
+              pkt {i}
+            </text>
+          </g>
+        );
+      })}
+      {/* Manglende pakke 3 */}
+      <rect
+        x={70 + 2 * 65}
+        y={105}
+        width={55}
+        height={28}
+        rx={3}
+        className="fill-destructive/10 stroke-destructive"
+        strokeWidth={1}
+        strokeDasharray="3 2"
+      />
+      <text
+        x={70 + 2 * 65 + 27}
+        y={123}
+        textAnchor="middle"
+        className="fill-destructive text-[9px]"
+      >
+        tapt
+      </text>
+
+      <text x={20} y={185} className="fill-muted-foreground text-[10px]">
+        Spilt:
+      </text>
+      {[1, 2, 3, 4, 5, 6].map((i) => {
+        const x = 70 + (i - 1) * 65;
+        const isPlc = i === 3;
+        return (
+          <g key={`p${i}`}>
+            <rect
+              x={x}
+              y={175}
+              width={55}
+              height={28}
+              rx={3}
+              className={
+                isPlc ? "fill-purple-500/30 stroke-purple-500" : "fill-success/30 stroke-success"
+              }
+              strokeWidth={1}
+              strokeDasharray={isPlc ? "3 2" : undefined}
+            />
+            <text x={x + 27} y={193} textAnchor="middle" className="fill-foreground text-[9px]">
+              {isPlc ? "kopi 2" : `pkt ${i}`}
+            </text>
+          </g>
+        );
+      })}
+      <text x={250} y={228} textAnchor="middle" className="fill-muted-foreground text-[9px] italic">
+        Øret merker ikke 20 ms gjentakelse — bedre enn 20 ms stillhet
+      </text>
+    </svg>
+  );
+}
+
+// ------------ 9.3: Codec-kompromiss ------------
+function CodecTradeoffSvg() {
+  return (
+    <svg viewBox="0 0 500 260" className="w-full h-auto">
+      <text
+        x={250}
+        y={18}
+        textAnchor="middle"
+        className="fill-foreground text-[12px] font-semibold"
+      >
+        Codec-kompromiss — kvalitet vs båndbredde vs tap-toleranse
+      </text>
+      {/* Akser */}
+      <line x1={60} y1={220} x2={460} y2={220} className="stroke-foreground/60" strokeWidth={1.5} />
+      <line x1={60} y1={220} x2={60} y2={50} className="stroke-foreground/60" strokeWidth={1.5} />
+      <text x={250} y={245} textAnchor="middle" className="fill-muted-foreground text-[10px]">
+        Båndbredde →
+      </text>
+      <text
+        x={22}
+        y={135}
+        textAnchor="middle"
+        className="fill-muted-foreground text-[10px]"
+        transform="rotate(-90 22 135)"
+      >
+        Kvalitet →
+      </text>
+
+      {/* Codecs som bobler — radius = tap-toleranse */}
+      {[
+        {
+          x: 380,
+          y: 200,
+          r: 8,
+          name: "G.711",
+          c: "fill-destructive/30 stroke-destructive",
+          note: "64 kbps · 0% PLC",
+        },
+        {
+          x: 100,
+          y: 180,
+          r: 6,
+          name: "G.729",
+          c: "fill-amber-500/30 stroke-amber-500",
+          note: "8 kbps · 2%",
+        },
+        {
+          x: 200,
+          y: 100,
+          r: 18,
+          name: "Opus",
+          c: "fill-success/30 stroke-success",
+          note: "32 kbps · 10% FEC",
+        },
+        {
+          x: 320,
+          y: 140,
+          r: 12,
+          name: "AAC-LC",
+          c: "fill-brand/30 stroke-brand",
+          note: "128 kbps · 5%",
+        },
+        {
+          x: 250,
+          y: 70,
+          r: 22,
+          name: "Opus hi-q",
+          c: "fill-success/40 stroke-success",
+          note: "128 kbps · 10%",
+        },
+      ].map((p) => (
+        <g key={p.name}>
+          <circle cx={p.x} cy={p.y} r={p.r} className={p.c} strokeWidth={1.5} />
+          <text
+            x={p.x}
+            y={p.y - p.r - 4}
+            textAnchor="middle"
+            className="fill-foreground text-[10px] font-semibold"
+          >
+            {p.name}
+          </text>
+          <text
+            x={p.x}
+            y={p.y + p.r + 12}
+            textAnchor="middle"
+            className="fill-muted-foreground text-[8px]"
+          >
+            {p.note}
+          </text>
+        </g>
+      ))}
+      <text x={460} y={230} textAnchor="end" className="fill-muted-foreground text-[8px] italic">
+        sirkel-radius = tap-toleranse
+      </text>
+    </svg>
+  );
+}
+
+// ------------ 9.4: RTCP-synk ------------
+function RtcpSyncSvg() {
+  return (
+    <svg viewBox="0 0 500 240" className="w-full h-auto">
+      <text
+        x={250}
+        y={18}
+        textAnchor="middle"
+        className="fill-foreground text-[12px] font-semibold"
+      >
+        RTCP SR — limer video-klokka og lyd-klokka til samme NTP-tid
+      </text>
+      {/* Video-strøm */}
+      <line x1={70} y1={70} x2={430} y2={70} className="stroke-brand" strokeWidth={1.5} />
+      <text x={20} y={75} className="fill-brand text-[10px] font-semibold">
+        Video
+      </text>
+      {[80, 140, 200, 260, 320, 380].map((x, i) => (
+        <g key={`v${i}`}>
+          <rect x={x - 8} y={62} width={16} height={16} rx={2} className="fill-brand" />
+          <text x={x} y={92} textAnchor="middle" className="fill-muted-foreground text-[7px]">
+            ts={90000 * i}
+          </text>
+        </g>
+      ))}
+      {/* Audio-strøm */}
+      <line x1={70} y1={140} x2={430} y2={140} className="stroke-success" strokeWidth={1.5} />
+      <text x={20} y={145} className="fill-success text-[10px] font-semibold">
+        Audio
+      </text>
+      {[80, 140, 200, 260, 320, 380].map((x, i) => (
+        <g key={`a${i}`}>
+          <rect x={x - 8} y={132} width={16} height={16} rx={2} className="fill-success" />
+          <text x={x} y={162} textAnchor="middle" className="fill-muted-foreground text-[7px]">
+            ts={48000 * i}
+          </text>
+        </g>
+      ))}
+      {/* SR-merker */}
+      <line
+        x1={80}
+        y1={50}
+        x2={80}
+        y2={160}
+        className="stroke-purple-500"
+        strokeWidth={1.5}
+        strokeDasharray="3 3"
+      />
+      <text
+        x={80}
+        y={45}
+        textAnchor="middle"
+        className="fill-purple-700 dark:fill-purple-400 text-[9px] font-semibold"
+      >
+        SR @ NTP T₀
+      </text>
+      <line
+        x1={260}
+        y1={50}
+        x2={260}
+        y2={160}
+        className="stroke-purple-500"
+        strokeWidth={1.5}
+        strokeDasharray="3 3"
+      />
+      <text
+        x={260}
+        y={45}
+        textAnchor="middle"
+        className="fill-purple-700 dark:fill-purple-400 text-[9px] font-semibold"
+      >
+        SR @ NTP T₀+2s
+      </text>
+      <text
+        x={250}
+        y={195}
+        textAnchor="middle"
+        className="fill-foreground text-[10px] font-semibold"
+      >
+        Video 90 kHz og audio 48 kHz har egne klokker
+      </text>
+      <text x={250} y={215} textAnchor="middle" className="fill-muted-foreground text-[9px] italic">
+        SR-pakka kobler hver klokke til samme NTP-tidspunkt
+      </text>
+      <text x={250} y={230} textAnchor="middle" className="fill-muted-foreground text-[8px] italic">
+        Uten SR ville lyd og bilde drifte fra hverandre
+      </text>
+    </svg>
+  );
+}
+
+// ------------ 9.4: Mixer + SSRC ------------
+function MixerSsrcSvg() {
+  return (
+    <svg viewBox="0 0 500 240" className="w-full h-auto">
+      <text
+        x={250}
+        y={18}
+        textAnchor="middle"
+        className="fill-foreground text-[12px] font-semibold"
+      >
+        Audio-mixer: tre SSRC inn, én SSRC ut, CSRC-liste forklarer
+      </text>
+      {/* Tre kilder */}
+      {[
+        { y: 50, name: "Alice", ssrc: "0xA1A1" },
+        { y: 110, name: "Bob", ssrc: "0xB2B2" },
+        { y: 170, name: "Cecilia", ssrc: "0xC3C3" },
+      ].map((src, i) => (
+        <g key={i}>
+          <rect
+            x={30}
+            y={src.y - 18}
+            width={90}
+            height={36}
+            rx={4}
+            className="fill-card stroke-brand"
+            strokeWidth={1.5}
+          />
+          <text
+            x={75}
+            y={src.y - 4}
+            textAnchor="middle"
+            className="fill-foreground text-[10px] font-semibold"
+          >
+            {src.name}
+          </text>
+          <text
+            x={75}
+            y={src.y + 10}
+            textAnchor="middle"
+            className="fill-muted-foreground text-[8px] font-mono"
+          >
+            SSRC {src.ssrc}
+          </text>
+          {/* Pil mot mixer */}
+          <line
+            x1={120}
+            y1={src.y}
+            x2={210}
+            y2={120}
+            className="stroke-foreground/40"
+            strokeWidth={1.5}
+          />
+        </g>
+      ))}
+      {/* Mixer */}
+      <rect
+        x={210}
+        y={90}
+        width={100}
+        height={60}
+        rx={6}
+        className="fill-purple-500/10 stroke-purple-500"
+        strokeWidth={1.5}
+      />
+      <text
+        x={260}
+        y={115}
+        textAnchor="middle"
+        className="fill-foreground text-[10px] font-semibold"
+      >
+        Audio Mixer
+      </text>
+      <text x={260} y={130} textAnchor="middle" className="fill-muted-foreground text-[8px]">
+        SSRC 0xMIX1
+      </text>
+      <text
+        x={260}
+        y={143}
+        textAnchor="middle"
+        className="fill-purple-700 dark:fill-purple-400 text-[8px]"
+      >
+        CC=3
+      </text>
+      {/* Pil ut */}
+      <line
+        x1={310}
+        y1={120}
+        x2={380}
+        y2={120}
+        className="stroke-brand"
+        strokeWidth={2}
+        markerEnd="url(#mixArrow)"
+      />
+      <defs>
+        <marker
+          id="mixArrow"
+          viewBox="0 0 10 10"
+          refX={8}
+          refY={5}
+          markerWidth={6}
+          markerHeight={6}
+          orient="auto"
+        >
+          <path d="M 0 0 L 10 5 L 0 10 z" className="fill-brand" />
+        </marker>
+      </defs>
+      {/* Mottaker */}
+      <rect
+        x={380}
+        y={90}
+        width={100}
+        height={60}
+        rx={6}
+        className="fill-card stroke-success"
+        strokeWidth={1.5}
+      />
+      <text
+        x={430}
+        y={115}
+        textAnchor="middle"
+        className="fill-foreground text-[10px] font-semibold"
+      >
+        Mottaker
+      </text>
+      <text
+        x={430}
+        y={130}
+        textAnchor="middle"
+        className="fill-muted-foreground text-[7px] font-mono"
+      >
+        ser SSRC=MIX1
+      </text>
+      <text
+        x={430}
+        y={142}
+        textAnchor="middle"
+        className="fill-muted-foreground text-[7px] font-mono"
+      >
+        CSRC=A,B,C
+      </text>
+      <text x={250} y={215} textAnchor="middle" className="fill-muted-foreground text-[9px] italic">
+        Mottakeren ser én strøm, men CSRC-lista forteller at tre talere bidro
+      </text>
+    </svg>
+  );
+}
+
+// ------------ 9.5: Token-bucket ------------
+function TokenBucketSvg() {
+  return (
+    <svg viewBox="0 0 500 260" className="w-full h-auto">
+      <text
+        x={250}
+        y={18}
+        textAnchor="middle"
+        className="fill-foreground text-[12px] font-semibold"
+      >
+        Token bucket — drypp inn med rate r, brukes av pakker
+      </text>
+      {/* Kran som drypper tokens */}
+      <rect
+        x={40}
+        y={40}
+        width={50}
+        height={20}
+        rx={3}
+        className="fill-muted/40 stroke-border"
+        strokeWidth={1}
+      />
+      <text x={65} y={54} textAnchor="middle" className="fill-foreground text-[8px]">
+        Token-kran
+      </text>
+      <text x={65} y={75} textAnchor="middle" className="fill-muted-foreground text-[8px]">
+        rate r
+      </text>
+      {[0, 1, 2, 3].map((i) => (
+        <circle key={i} cx={65} cy={85 + i * 15} r={4} className="fill-amber-500" />
+      ))}
+      {/* Bøtta */}
+      <path
+        d="M 130 80 L 230 80 L 220 200 L 140 200 Z"
+        className="fill-amber-500/10 stroke-amber-500"
+        strokeWidth={1.5}
+      />
+      <text x={180} y={75} textAnchor="middle" className="fill-foreground text-[9px] font-semibold">
+        Bøtte kapasitet b
+      </text>
+      {/* Tokens i bøtta */}
+      {[
+        { x: 155, y: 180 },
+        { x: 175, y: 180 },
+        { x: 195, y: 180 },
+        { x: 210, y: 180 },
+        { x: 165, y: 165 },
+        { x: 185, y: 165 },
+        { x: 200, y: 165 },
+        { x: 175, y: 150 },
+        { x: 190, y: 150 },
+      ].map((p, i) => (
+        <circle key={i} cx={p.x} cy={p.y} r={5} className="fill-amber-500" />
+      ))}
+      {/* Pakker som ankommer */}
+      <text x={310} y={75} textAnchor="middle" className="fill-muted-foreground text-[9px]">
+        Pakker inn:
+      </text>
+      {[
+        { y: 90, ok: true, n: 3 },
+        { y: 125, ok: true, n: 5 },
+        { y: 160, ok: false, n: 8 },
+        { y: 195, ok: true, n: 2 },
+      ].map((p, i) => (
+        <g key={i}>
+          <rect
+            x={290}
+            y={p.y}
+            width={40}
+            height={22}
+            rx={3}
+            className={
+              p.ok ? "fill-success/30 stroke-success" : "fill-destructive/30 stroke-destructive"
+            }
+            strokeWidth={1}
+          />
+          <text x={310} y={p.y + 14} textAnchor="middle" className="fill-foreground text-[9px]">
+            {p.n} B
+          </text>
+          {/* Pil ut */}
+          {p.ok ? (
+            <>
+              <line
+                x1={335}
+                y1={p.y + 11}
+                x2={400}
+                y2={p.y + 11}
+                className="stroke-success"
+                strokeWidth={1.5}
+              />
+              <text x={440} y={p.y + 14} textAnchor="middle" className="fill-success text-[9px]">
+                sendes
+              </text>
+            </>
+          ) : (
+            <>
+              <line
+                x1={335}
+                y1={p.y + 11}
+                x2={400}
+                y2={p.y + 11}
+                className="stroke-destructive"
+                strokeWidth={1.5}
+                strokeDasharray="3 3"
+              />
+              <text
+                x={440}
+                y={p.y + 14}
+                textAnchor="middle"
+                className="fill-destructive text-[9px]"
+              >
+                droppes
+              </text>
+            </>
+          )}
+        </g>
+      ))}
+      <text x={250} y={235} textAnchor="middle" className="fill-muted-foreground text-[9px] italic">
+        Pakke 3 ankommer med tomt bøtte → for stor burst, kastes
+      </text>
+    </svg>
+  );
+}
+
+// ------------ 9.5: DSCP-merking ved edge ------------
+function DscpMarkSvg() {
+  return (
+    <svg viewBox="0 0 500 240" className="w-full h-auto">
+      <text
+        x={250}
+        y={18}
+        textAnchor="middle"
+        className="fill-foreground text-[12px] font-semibold"
+      >
+        DSCP-merking ved nett-edge — indre rutere stoler på stempelet
+      </text>
+      {/* Avsendere */}
+      {[
+        { y: 50, app: "VoIP-app", color: "fill-destructive", dscp: "EF (46)" },
+        { y: 100, app: "ERP/SAP", color: "fill-amber-500", dscp: "AF21 (18)" },
+        { y: 150, app: "Web-surf", color: "fill-success", dscp: "BE (0)" },
+      ].map((a, i) => (
+        <g key={i}>
+          <rect
+            x={30}
+            y={a.y - 15}
+            width={70}
+            height={30}
+            rx={4}
+            className="fill-card stroke-border"
+            strokeWidth={1}
+          />
+          <text
+            x={65}
+            y={a.y + 3}
+            textAnchor="middle"
+            className="fill-foreground text-[9px] font-semibold"
+          >
+            {a.app}
+          </text>
+          {/* Umerket pakke */}
+          <rect
+            x={110}
+            y={a.y - 8}
+            width={28}
+            height={16}
+            rx={2}
+            className="fill-muted/40 stroke-border"
+            strokeWidth={1}
+          />
+          <text
+            x={124}
+            y={a.y + 3}
+            textAnchor="middle"
+            className="fill-muted-foreground text-[7px]"
+          >
+            ?
+          </text>
+          {/* Pil til edge */}
+          <line
+            x1={140}
+            y1={a.y}
+            x2={195}
+            y2={120}
+            className="stroke-foreground/40"
+            strokeWidth={1}
+          />
+        </g>
+      ))}
+      {/* Edge-ruter (marking) */}
+      <rect
+        x={195}
+        y={90}
+        width={90}
+        height={60}
+        rx={6}
+        className="fill-purple-500/10 stroke-purple-500"
+        strokeWidth={1.5}
+      />
+      <text
+        x={240}
+        y={115}
+        textAnchor="middle"
+        className="fill-foreground text-[10px] font-semibold"
+      >
+        Edge-ruter
+      </text>
+      <text x={240} y={130} textAnchor="middle" className="fill-muted-foreground text-[8px]">
+        Marking
+      </text>
+      <text
+        x={240}
+        y={143}
+        textAnchor="middle"
+        className="fill-purple-700 dark:fill-purple-400 text-[8px]"
+      >
+        DSCP-stempel
+      </text>
+      {/* Pakker ut, fargede */}
+      {[
+        { y: 50, color: "fill-destructive", dscp: "EF" },
+        { y: 100, color: "fill-amber-500", dscp: "AF21" },
+        { y: 150, color: "fill-success", dscp: "BE" },
+      ].map((p, i) => (
+        <g key={i}>
+          <line
+            x1={285}
+            y1={120}
+            x2={335}
+            y2={p.y}
+            className="stroke-foreground/40"
+            strokeWidth={1}
+          />
+          <rect
+            x={335}
+            y={p.y - 9}
+            width={42}
+            height={18}
+            rx={2}
+            className={`${p.color} stroke-foreground/30`}
+            strokeWidth={1}
+          />
+          <text
+            x={356}
+            y={p.y + 3}
+            textAnchor="middle"
+            className="fill-background text-[8px] font-bold"
+          >
+            {p.dscp}
+          </text>
+        </g>
+      ))}
+      {/* Indre kjerne-ruter */}
+      <rect
+        x={400}
+        y={70}
+        width={70}
+        height={100}
+        rx={6}
+        className="fill-card stroke-brand"
+        strokeWidth={1.5}
+      />
+      <text
+        x={435}
+        y={115}
+        textAnchor="middle"
+        className="fill-foreground text-[10px] font-semibold"
+      >
+        Kjerne
+      </text>
+      <text x={435} y={130} textAnchor="middle" className="fill-muted-foreground text-[8px]">
+        stateless
+      </text>
+      <text x={435} y={143} textAnchor="middle" className="fill-muted-foreground text-[8px]">
+        leser DSCP
+      </text>
+      <text x={250} y={210} textAnchor="middle" className="fill-muted-foreground text-[9px] italic">
+        Edge gjør jobben én gang; alle indre rutere kan jobbe per-pakke uten state
+      </text>
+      <text x={250} y={228} textAnchor="middle" className="fill-muted-foreground text-[8px] italic">
+        Det er hva som lar DiffServ skalere til hele internett
       </text>
     </svg>
   );

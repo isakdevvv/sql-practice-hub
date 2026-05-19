@@ -207,64 +207,64 @@ function Section61() {
       <div className="grid gap-3 lg:grid-cols-2">
         <Defs
           items={[
+            { term: "Ramme (frame)", body: "Pakke på link-laget — header + payload + trailer." },
+            { term: "Node", body: "Maskin som snakker link-lag — host, ruter, switch." },
+            { term: "MAC-adresse", body: "48-bit fabrikkbrent ID per nettverkskort." },
+            { term: "Framing", body: "Avgjøre hvor en ramme starter og slutter på kabelen." },
+            { term: "Half- vs full-duplex", body: "Én vei av gangen, vs begge veier samtidig." },
+            { term: "MTU", body: "Maks payload per ramme (Ethernet: 1500 bytes)." },
             {
-              term: "Ramme (frame)",
-              body: "Link-lagets enhet. Består av et header, payload (typisk et IP-datagram) og noen ganger en trailer med feil-sjekk. Ulike teknologier (Ethernet, WiFi, PPP) har ulike ramme-format, men ideen er den samme.",
+              term: "Pålitelig link-levering",
+              body: "Link-laget garanterer feilfri ramme — Ethernet gjør IKKE det.",
             },
             {
-              term: "Node",
-              body: "Samlebetegnelse for alle enheter som snakker link-lag: hosts, rutere, switcher, aksess-punkter. En lenke kobler typisk to noder (eller flere noder hvis det er et delt medium).",
+              term: "Flytstyring (PAUSE)",
+              body: "Mottaker ber sender stoppe — kun per-lenke, ikke ende-til-ende.",
             },
+            { term: "OUI", body: "Første 3 bytes av MAC = produsent (Intel, Apple, …)." },
+            { term: "I/G- og U/L-bit", body: "Markerer multicast og lokalt-administrert MAC." },
             {
-              term: "MAC-adresse",
-              body: "48-bit identifikator som er knyttet til hvert nettverkskort. Skrives som seks heksadesimale par, f.eks. 04:1B:6F:A2:90:0C. De første 24 bitene identifiserer leverandøren (OUI); de neste 24 er en serienummer. Hver MAC-adresse er ment å være globalt unik.",
+              term: "Point-to-point vs broadcast-medium",
+              body: "To noder vs flere som deler én kanal.",
             },
-            {
-              term: "Framing",
-              body: "Prosessen med å avgjøre hvor en ramme starter og hvor den slutter på det fysiske mediumet. Ethernet bruker en preamble-sekvens før hver ramme; WiFi bruker andre teknikker. Uten framing er en bit-strøm bare uleselig støy.",
-            },
-            {
-              term: "Half-duplex vs full-duplex",
-              body: "På en half-duplex lenke kan bare én node sende av gangen — som en walkie-talkie. På full-duplex sender begge sider samtidig over hver sine ledere. Moderne Ethernet med switch er full-duplex; klassisk Ethernet over koaks var half-duplex.",
-            },
-            {
-              term: "MTU (Maximum Transmission Unit)",
-              body: "Største ramme link-laget kan håndtere. Ethernet har 1500 bytes payload som standard. Hvis et IP-datagram er større, må det fragmenteres — derav PMTU-discovery i IP.",
-            },
-            {
-              term: "Pålitelig levering (link-nivå)",
-              body: "Noen link-lag (WiFi, gamle modem-protokoller) tilbyr garanti om at hver ramme leveres uten feil. Ethernet over kabel gjør det IKKE — feilete rammer kastes bare, og det er TCP sin jobb høyere oppe å oppdage tapet.",
-            },
-            {
-              term: "Flytstyring (link-nivå)",
-              body: "Ethernet kan sende en PAUSE-ramme (IEEE 802.3x) når mottakerens buffer fylles opp — sender stopper i N kvante (1 kvant = 512 bit-tider). Brukes i lossless fabric for FCoE og RoCE. Skiller seg fra TCPs ende-til-ende flytstyring som virker over hele stien, ikke per lenke.",
-            },
-            {
-              term: "OUI (Organizationally Unique Identifier)",
-              body: "De første 3 bytene (24 bit) i en MAC-adresse identifiserer NIC-produsenten. F.eks. 00:1B:21 = Intel, B8:27:EB = Raspberry Pi Foundation. Du kan slå opp en MAC mot IEEEs OUI-register for å se hvem som lagde kortet — nyttig i nettverks-feilsøking.",
-            },
-            {
-              term: "I/G- og U/L-bit",
-              body: "I første byte av MAC-adressen er bit 0 «individuell/gruppe» (1 = multicast) og bit 1 «universell/lokal» (1 = lokalt administrert, ikke globalt unik). Lokalt administrerte MAC-er brukes f.eks. når en hypervisor lager virtuelle NIC-er for VM-er.",
-            },
-            {
-              term: "Lenke-type: point-to-point vs broadcast-medium",
-              body: "Point-to-point: nøyaktig to noder per lenke (f.eks. SONET, dial-up, PPP over fiber). Broadcast-medium: tre eller flere noder deler ett medium (gammel koaks-Ethernet, WiFi-celle, satellitt-uplink). Multiple-access-protokoller (6.3) løser problemet bare for det andre tilfellet.",
-            },
-            {
-              term: "Adapter-modell",
-              body: "Avsender-NIC pakker datagrammet i en ramme, beregner CRC, plasserer på medium. Mottaker-NIC leser bits, verifiserer CRC, sjekker om MAC matcher (eller om kortet er i promiscuous mode), og leverer payload til OS. Hele transaksjonen er én tur for NIC-en — derfor er link-laget tradisjonelt et hardware-tema.",
-            },
-            {
-              term: "Promiscuous mode",
-              body: "Når NIC-en konfigureres til å akseptere alle rammer på mediet — også de som ikke er adressert til den. Brukes av sniffere som Wireshark og tcpdump. På en switch ser du da bare det som faktisk når din port; for å se hele LAN trenger du en SPAN-port eller en hub.",
-            },
+            { term: "Adapter-modell", body: "NIC pakker/leser ramme i hardware før OS ser den." },
+            { term: "Promiscuous mode", body: "NIC aksepterer ALLE rammer — brukes av Wireshark." },
           ]}
         />
-        <Illustration caption="Link-laget tar et IP-datagram og pakker det inn med MAC-header + trailer før det går ut på fysisk medium.">
-          <FrameSvg />
-        </Illustration>
+        <div className="space-y-3">
+          <Illustration caption="Link-laget tar et IP-datagram og pakker det inn med MAC-header + trailer før det går ut på fysisk medium.">
+            <FrameSvg />
+          </Illustration>
+          <Illustration caption="MAC-adresse: OUI (produsent-prefix) + serienummer. Først bytes I/G og U/L-bit setter type.">
+            <MacAdresseSvg />
+          </Illustration>
+        </div>
       </div>
+
+      <Metafor tittel="Link-laget = å snakke med naboen over hekken">
+        <p>
+          IP-laget er som å sende et brev fra Tromsø til Tokyo — adressen forteller hvor i verden,
+          ruta velges underveis. Link-laget er det helt motsatte: kort distanse, direkte
+          kommunikasjon. Du snakker bare med den fysiske naboen din — den ene noden i andre enden av
+          kabelen eller radio-kanalen.
+        </p>
+        <p>
+          Derfor byttes MAC-rammen ut på hvert eneste hopp gjennom internett, mens IP-konvolutten
+          forblir uendret. Hver ruter er en ny «nabo» som leverer brevet videre.
+        </p>
+      </Metafor>
+
+      <Metafor tittel="MAC-adresse = fødselsnummeret til nettverkskortet">
+        <p>
+          MAC-adressen er brent inn i NIC-en på fabrikken og blir aldri endret. Som et norsk
+          fødselsnummer: globalt unikt, fast for alltid, og forteller noe om opprinnelsen (OUI =
+          første 6 sifre = «produsent-fødselsår»).
+        </p>
+        <p>
+          IP-adressen derimot er som postadressen din — den endres når du flytter. Hver gang
+          laptopen din kobler seg til et nytt kafé-WiFi, får den ny IP, men MAC-en er den samme.
+        </p>
+      </Metafor>
 
       <Example title="Eksempel: hvor er link-laget implementert?">
         <p>
@@ -347,64 +347,73 @@ function Section62() {
       <div className="grid gap-3 lg:grid-cols-2">
         <Defs
           items={[
-            {
-              term: "Paritets-bit",
-              body: "Én ekstra bit per gruppe data, satt slik at totalt antall 1-ere blir partall (even parity) eller oddetall. Oppdager alle 1-bit-feil. Mister evnen til å oppdage 2-bit-feil. Brukes lite i moderne nett, men er pedagogisk grunnlag.",
-            },
-            {
-              term: "2D-paritet (todimensjonal)",
-              body: "Legg databitene i et rektangel og legg paritets-bit både per rad og per kolonne (pluss en for hjørnet). Du kan da ikke bare OPPDAGE en 1-bit-feil, men FINNE den (krysset mellom feil rad og feil kolonne) og reparere den. Enkel forward error correction.",
-            },
+            { term: "Paritets-bit", body: "Én bit som gjør antall 1-ere partall/oddetall." },
+            { term: "2D-paritet", body: "Paritet både per rad og kolonne — kan rette 1 feil." },
             {
               term: "Internet checksum",
-              body: "Summer alle 16-bit ord i pakken med ones-complement-aritmetikk, ta komplementet, send det med. Mottakeren summerer alt inkludert checksum — får null hvis intakt. Svakere enn CRC (oppdager ikke alle 2-bit-feil) men billig å regne i software. Brukes i TCP/UDP/IP, men ikke link-laget.",
+              body: "Sum av 16-bit ord — billig software-sjekk i TCP/IP.",
             },
-            {
-              term: "CRC (Cyclic Redundancy Check)",
-              body: "Behandler bit-sekvensen som koeffisienter i et polynom og tar resten ved divisjon med et generator-polynom G. Resten er CRC-verdien, sendes med rammen. Hardware-vennlig — implementeres med shift-registre. Ethernet bruker CRC-32 med et 33-bit G. Oppdager alle 1, 2 og 3-bit-feil, alle burst-feil opp til 32 bit, og 99.99999998 % av alt annet.",
-            },
-            {
-              term: "Generator-polynom",
-              body: "Det faste polynomet G som begge sider er enige om på forhånd. For CRC-r velger man G slik at det har grad r og oppdager flest mulig feilmønstre. CRC-32 sin G er standardisert i Ethernet og ZIP.",
-            },
-            {
-              term: "Burst-feil",
-              body: "Når flere bit-feil opptrer i en sammenhengende sekvens (typisk fordi en støy-puls varer noen mikrosekunder). CRC er spesielt god mot dette: en CRC med r bits oppdager garantert alle burst-feil av lengde ≤ r.",
-            },
-            {
-              term: "Even vs odd parity",
-              body: "Begge typer paritet gjør samme jobb (oppdager 1-bit-feil). Even (partall) setter paritets-biten slik at totalt antall 1-ere blir et partall. Odd setter den slik at totalen blir oddetall. Sender og mottaker må være enige om hvilken konvensjon som brukes — ellers «oppdager» mottakeren feil i hver eneste ramme.",
-            },
-            {
-              term: "GF(2)-aritmetikk",
-              body: "CRC opererer i Galois-feltet GF(2): bits er enten 0 eller 1, addisjon og subtraksjon er BEGGE XOR, multiplikasjon er AND. Det er derfor long-division i CRC er så uvant — det er ingen «lån» eller «mente» som i vanlig divisjon, bare XOR.",
-            },
-            {
-              term: "CRC-32 (IEEE 802.3)",
-              body: "Den standardiserte Ethernet-CRC-en. Generator-polynom: 0x04C11DB7 (33 bit total: x^32 + x^26 + x^23 + x^22 + x^16 + x^12 + x^11 + x^10 + x^8 + x^7 + x^5 + x^4 + x^2 + x + 1). Brukt også i ZIP, PNG, Bzip2. Implementeres typisk med en 256-entry lookup-tabell i software, eller med 32 XOR-gates og shift-registre i hardware.",
-            },
-            {
-              term: "Forward Error Correction (FEC) vs Backward Error Correction",
-              body: "FEC = mottakeren skal kunne REPARERE feilen uten å spørre på nytt (f.eks. Hamming-koder, Reed-Solomon). BEC = mottakeren oppdager feilen og ber sender om å sende på nytt (f.eks. CRC i Ethernet + TCP-retransmisjon). FEC koster mer båndbredde i ren tilstand; BEC koster mer i feil-tilstand.",
-            },
-            {
-              term: "Hamming-avstand",
-              body: "Antall bit-posisjoner to bit-strenger skiller seg på. En kode som har minimum Hamming-avstand d kan oppdage opp til d-1 bit-feil og rette opp til ⌊(d-1)/2⌋. Paritet har Hamming-avstand 2 (oppdager 1, kan ikke rette). 2D-paritet har avstand 4 (kan rette én feil).",
-            },
-            {
-              term: "Hamming(7,4)-kode",
-              body: "Kjent FEC-kode: 4 databits + 3 paritetsbits = 7 bit. Hver paritets-bit dekker en bestemt overlappende del av databitene. Mottakeren kan ikke bare oppdage, men også finne presis hvilken bit som er feil. Brukes i ECC-RAM og noen radiosystemer.",
-            },
-            {
-              term: "Adler-32",
-              body: "Alternativ til CRC-32, brukt i zlib. Raskere å regne i software (rene addisjoner), men oppdager færre feil — særlig på korte meldinger. Velges når du allerede har sjekksum høyere opp og bare vil ha rask sanity-check på lenken.",
-            },
+            { term: "CRC", body: "Rest ved polynom-divisjon — fanger nesten alle feil." },
+            { term: "Generator-polynom G", body: "Felles polynom sender og mottaker deler på." },
+            { term: "Burst-feil", body: "Flere feil i rekke — CRC fanger alle ≤ r bits." },
+            { term: "Even vs odd parity", body: "Partall vs oddetall ettere — samme styrke." },
+            { term: "GF(2)-aritmetikk", body: "Addisjon og subtraksjon er XOR — ingen mente." },
+            { term: "CRC-32 (Ethernet)", body: "33-bit standard-G — fanger 99,999999 %." },
+            { term: "FEC vs BEC", body: "Rett feilen selv vs spør om retransmisjon." },
+            { term: "Hamming-avstand", body: "Antall bits som skiller to ord — bestemmer kraft." },
+            { term: "Hamming(7,4)", body: "4 data + 3 paritet = kan rette én bit-feil." },
+            { term: "Adler-32", body: "Lett checksum brukt i zlib — svakere enn CRC." },
           ]}
         />
-        <Illustration caption="CRC: del databitene + tilhørende r nuller på G; resten er CRC-verdien som henges på.">
-          <CrcSvg />
-        </Illustration>
+        <div className="space-y-3">
+          <Illustration caption="CRC: del databitene + tilhørende r nuller på G; resten er CRC-verdien som henges på.">
+            <CrcSvg />
+          </Illustration>
+          <Illustration caption="2D-paritet: krysset mellom feil rad og feil kolonne avslører hvilken bit som flippet.">
+            <Paritet2DSvg />
+          </Illustration>
+        </div>
       </div>
+
+      <Metafor tittel="Paritet = telle mynter i bunken">
+        <p>
+          Du legger en stabel med mynter. Du teller dem og noterer at det skal være et partall.
+          Senere kommer kompisen og teller — han får oddetall. Da vet han at minst én mynt mangler
+          (eller er lagt til). Men hvis to mynter forsvant, ser tellingen riktig ut igjen — paritet
+          er blind for partalls-feil.
+        </p>
+        <p>
+          Det er nettopp dette CRC løser: i stedet for å bare telle, gjør den en polynom-divisjon
+          som «vet» nøyaktig hvor i bitstrengen feilen ligger — nok til å avsløre nesten alle mulige
+          feilmønstre.
+        </p>
+      </Metafor>
+
+      <Metafor tittel="CRC = kontrollsifferet i et norsk fødselsnummer">
+        <p>
+          Personnummeret ditt er 11 sifre. De to siste er ikke tilfeldige — de er{" "}
+          <em>matematisk beregnet</em> fra de første 9 etter en bestemt formel (modulo 11). Hvis du
+          taster feil ved utfylling, vil kontroll-sifrene ikke stemme, og systemet oppdager feilen
+          umiddelbart.
+        </p>
+        <p>
+          CRC-32 i en Ethernet-ramme er det samme prinsippet, bare med 32 «kontrollsifre» og mange
+          milliarder ganger sterkere — derfor garanterer den å fange ALLE burst-feil opp til 32 bit
+          lange.
+        </p>
+      </Metafor>
+
+      <Metafor tittel="2D-paritet = bingo-brett med kontroll">
+        <p>
+          Tegn et 5×5-rutenett med 1-ere og 0-ere. Tell hver rad og hver kolonne, skriv ned
+          paritetene som ekstra felter i kanten. Hvis EN bit flipper, klager rad-paritet
+          <em> og</em> kolonne-paritet samtidig — krysset mellom dem peker rett på den dårlige ruta.
+        </p>
+        <p>
+          Dette er forward error correction i sin enkleste form: du kan reparere feilen UTEN å
+          spørre senderen om retransmisjon. Brukt i ECC-RAM på alle moderne servere.
+        </p>
+      </Metafor>
 
       <Example title="Eksempel: CRC-3 på bit-strengen 1011">
         <p>
@@ -545,70 +554,83 @@ function Section63() {
           items={[
             {
               term: "Channel partitioning",
-              body: "Del kanalen i biter og gi hver node en bit: TDM (tidsluker), FDM (frekvensbånd) eller CDM (kode). Garantert kollisjonsfritt, men ineffektivt når bare én node faktisk vil sende — den får fortsatt bare sin lille bit av kanalen.",
+              body: "Del kanalen — TDM, FDM, CDM. Garantert konfliktfritt.",
             },
+            { term: "Pure ALOHA", body: "Send når du vil. Maks 18 % throughput." },
+            { term: "Slot ALOHA", body: "Send kun ved slot-start. Maks 37 %." },
+            { term: "CSMA", body: "Lytt før du sender." },
+            { term: "CSMA/CD", body: "Hør din egen sending — kollisjon? Avbryt og prøv igjen." },
+            { term: "Exponential backoff", body: "Vent {0..2ⁿ−1} slots etter n-te kollisjon." },
             {
-              term: "Ren (pure) ALOHA",
-              body: "Send når du vil. Hvis to noder sender og rammene overlapper i tid, er begge ødelagt — vent en tilfeldig stund og prøv igjen. Maksimal throughput er bare ca. 18 % av kanalens kapasitet (1/2e). Enkelt, men dårlig.",
+              term: "Polling",
+              body: "Master spør slaver i tur — ingen kollisjon, dårlig redundans.",
             },
+            { term: "Token-ring", body: "Token sirkulerer — den som har det får sende." },
             {
-              term: "Slot ALOHA",
-              body: "Tiden deles i diskrete slots på lengde lik én ramme. Noder må starte å sende ved start av en slot. Dette halverer kollisjons-vinduet, så maks throughput dobles til ca. 37 % (1/e). Krever klokke-synkronisering mellom alle noder.",
+              term: "Propagation-time t_prop",
+              body: "Signal-tid ende-til-ende — bestemmer min-ramme.",
             },
+            { term: "Jam-signal", body: "48 bit støy etter kollisjon — varsler alle." },
             {
-              term: "CSMA — Carrier Sense Multiple Access",
-              body: "Lytt før du sender. Hvis du hører at noen andre allerede sender, vent. Reduserer (men eliminerer ikke) kollisjoner — du kan fortsatt rote hvis to noder begynner å snakke samtidig fordi de begge så at kanalen var ledig.",
+              term: "Binary Exponential Backoff",
+              body: "Vent K·512 bit-tider, gi opp etter 16 forsøk.",
             },
-            {
-              term: "CSMA/CD — med kollisjons-deteksjon",
-              body: "Klassisk Ethernet over koaks. Mens du sender, lytter du etter at du hører din egen ramme komme fram uforstyrret. Hvis du ikke gjør det, har det skjedd en kollisjon — du avbryter umiddelbart, sender en jam-signal, og venter en tilfeldig backoff. Sparer kanal-tid sammenlignet med å fortsette å sende en ødelagt ramme.",
-            },
-            {
-              term: "Exponential backoff",
-              body: "Etter n-te kollisjon: velg ventetid uniformt fra {0, 1, ..., 2^n - 1} slots. Dobler vinduet hver gang det går galt, så det selvjusterer til belastningen. Brukes i CSMA/CD og i WiFi (CSMA/CA).",
-            },
-            {
-              term: "Taking-turns: polling",
-              body: "En master-node spør hver slave i tur: «har du noe å sende?» Effektivt under høy last, ingen kollisjoner. Sårbar for at masteren går ned. Brukes f.eks. i Bluetooth.",
-            },
-            {
-              term: "Taking-turns: token-ring",
-              body: "En liten kontroll-ramme («token») sirkulerer mellom nodene. Bare noden som holder tokenet får sende. Etter ferdig sending sendes tokenet videre. Brukt i gamle IBM-nett (Token Ring) og FDDI. Tapt token = hele nettet stopper opp.",
-            },
-            {
-              term: "Propagation-time (t_prop)",
-              body: "Tiden et signal bruker fra én ende av lenken til den andre. På 500 m koaks med utbredelses-hastighet ≈ 2/3 · c blir t_prop ≈ 2,5 μs. CSMA/CD trenger at en ramme er stor nok til at avsender sender i minst 2·t_prop slik at en kollisjon oppdages før hun er ferdig — derav 64-byte minimum-ramme på 10 Mbps Ethernet.",
-            },
-            {
-              term: "Jam-signal",
-              body: "En 48-bit støy-sekvens en CSMA/CD-node sender ut etter at hun har oppdaget en kollisjon. Hensikten: forsikre seg om at alle andre noder også registrerer kollisjonen, ikke bare svinger forbi. Etter jam-en starter exponential backoff.",
-            },
-            {
-              term: "Binary Exponential Backoff (BEB)",
-              body: "Den konkrete formelen i CSMA/CD: etter n-te kollisjon, velg K uniformt fra {0, 1, ..., 2^min(n,10) − 1} og vent K·512 bit-tider. Maks 16 forsøk — etter det gir noden opp og melder feil til operativsystemet. Cap på n=10 forhindrer at vinduet blir absurd stort.",
-            },
-            {
-              term: "Hidden terminal-problem",
-              body: "I trådløse nett kan to noder A og C høre samme aksess-punkt B, men IKKE hverandre. Da feiler carrier sense: A ser at kanalen er ledig (hører ikke C), C ser også at den er ledig — begge sender, B får kollisjon. CSMA/CA i WiFi løser dette med RTS/CTS-håndtrykk.",
-            },
-            {
-              term: "CSMA/CA — Collision Avoidance",
-              body: "WiFi-varianten: i stedet for å oppdage en kollisjon (umulig på radio, sender drukner mottak), prøver vi å UNNGÅ den. Mekanismer: random backoff FØR sending (ikke bare etter), RTS/CTS-frames for å reservere mediet, og ACK-rammer per pakke. Mer overhead enn CD, men nødvendig på halv-duplex radio.",
-            },
-            {
-              term: "Capture effect",
-              body: "Når to noder kolliderer på radio og den ene har vesentlig sterkere signal, kan mottakeren faktisk klare å demodulere den sterke — den «vinner» kollisjonen mens den svake druknes ut. Skjer ikke i kabel-Ethernet, men forklarer hvorfor WiFi i praksis ofte er bedre enn ren CA-teori tilsier.",
-            },
-            {
-              term: "Slotted offered load (G)",
-              body: "Antall ramme-forsøk (nye + retransmisjoner) per ramme-tid. G = 1 betyr at det i snitt kommer ett forsøk per slot. Throughput-funksjonen S(G) = G·e^(-G) har topp ved G=1, der S = 1/e ≈ 0.368. For G > 1 går throughput NED — for mange retransmisjoner spiser opp kanalen (collision collapse).",
-            },
+            { term: "Hidden terminal", body: "A og C hører B men ikke hverandre — radio-fall." },
+            { term: "CSMA/CA (WiFi)", body: "Unngå heller enn oppdage — backoff FØR sending." },
+            { term: "Capture effect", body: "Sterkere signal vinner kollisjon på radio." },
+            { term: "Offered load G", body: "Forsøk per ramme-tid — topp ved G=1 (slot ALOHA)." },
           ]}
         />
-        <Illustration caption="Pure ALOHA-kollisjon: ramme A overlapper med starten av B. Begge må retransmitteres.">
-          <AlohaSvg />
-        </Illustration>
+        <div className="space-y-3">
+          <Illustration caption="Pure ALOHA-kollisjon: ramme A overlapper med starten av B. Begge må retransmitteres.">
+            <AlohaSvg />
+          </Illustration>
+          <Illustration caption="Throughput S(G) for pure (rød) vs slot ALOHA (blå). Slot ligger dobbelt så høyt — toppen ved G=1.">
+            <ThroughputSvg />
+          </Illustration>
+        </div>
       </div>
+
+      <Metafor tittel="ALOHA = folk som hopper inn i en samtale i en bråkete bar">
+        <p>
+          Tenk deg en bar i Tromsø sentrum på en lørdagskveld. Alle prater, ingen koordinerer. Når
+          du vil si noe, bare sier du det — men hvis sidemannen begynner samtidig, blir begge
+          stemmer drukna. Du venter litt og prøver igjen.
+        </p>
+        <p>
+          Slot ALOHA er litt mer høflig: alle venter til neste tone fra DJ-en før de begynner. Da
+          kollisjons-vinduet halveres — to dobler maksimal «utveksling» fra 18 % til 37 %. Bare det
+          å være enig om <em>når</em> man får lov å snakke, mer enn dobler kapasiteten.
+        </p>
+      </Metafor>
+
+      <Metafor tittel="CSMA/CD = telefon-konferanse på 90-tallet">
+        <p>
+          «Hør først — så snakk». Du lytter etter om noen andre allerede snakker, før du selv
+          begynner. Men hvis to personer begynner samtidig (begge hørte stillhet), kolliderer
+          stemmene: «...halloHei?? Du må gjenta!» Begge stopper umiddelbart og venter en tilfeldig
+          tid før de prøver igjen.
+        </p>
+        <p>
+          Det er nettopp dette gamle Ethernet over koaks gjorde. I dag (med switcher) er
+          kollisjons-deteksjon overflødig — som om hvert par på konferansen fikk sin egen dedikerte
+          telefon-linje.
+        </p>
+      </Metafor>
+
+      <Metafor tittel="Exponential backoff = restaurant-køen som blir tålmodig">
+        <p>
+          Du ringer en populær restaurant i Tromsø klokken 18:00 — opptatt. Du venter 1 minutt og
+          ringer igjen — opptatt. Du tenker «jeg venter 2 minutter». Fortsatt opptatt — «4
+          minutter». Hver gang dobler du ventetiden. Til slutt er du den eneste som ringer akkurat
+          da, og du får bordet.
+        </p>
+        <p>
+          Det samme gjør et Ethernet-kort: hver kollisjon dobler det tilfeldige ventetid-vinduet.
+          Selvjusterende: ved lav belastning prøver alle nesten umiddelbart, ved høy belastning
+          sprer de seg automatisk ut i tid.
+        </p>
+      </Metafor>
 
       <Example title="Eksempel: hvorfor er slot ALOHA 2× bedre enn pure ALOHA?">
         <p>
@@ -727,68 +749,81 @@ function Section64() {
       <div className="grid gap-3 lg:grid-cols-2">
         <Defs
           items={[
-            {
-              term: "ARP (Address Resolution Protocol)",
-              body: "Spørringen «hvem har IP 10.0.0.42?» Sendes som en broadcast på link-laget. Den som har den IP-en svarer med sin MAC. Svaret caches lokalt en stund (typisk 20 minutter) for å unngå å spørre om og om igjen.",
-            },
-            {
-              term: "ARP-cache",
-              body: "Tabell på hver host som mapper IP → MAC. Du ser den lokalt med 'ip neigh' (Linux) eller 'arp -a' (mac/Windows). Tomme oppføringer = neste pakke til den IP-en utløser et nytt ARP-spørsmål.",
-            },
-            {
-              term: "MAC-broadcast",
-              body: "Ramme med destinasjons-MAC FF:FF:FF:FF:FF:FF — alle på samme link-lag-domene mottar den. ARP-spørringer bruker denne. Begrenset til ett LAN/VLAN; en ruter sender ikke broadcast videre.",
-            },
-            {
-              term: "IP-broadcast",
-              body: "Et IP-datagram med destinasjon 255.255.255.255 (lokal broadcast) eller subnet-broadcast (f.eks. 10.0.0.255). Pakkes inn i en MAC-broadcast for å bli levert til alle på subnettet. Brukes lite på moderne nett — multicast er bedre.",
-            },
+            { term: "ARP", body: "«Hvem har IP X?» — broadcast som mapper IP til MAC." },
+            { term: "ARP-cache", body: "Tabell IP→MAC, lever ~20 min lokalt." },
+            { term: "MAC-broadcast", body: "FF:FF:FF:FF:FF:FF — alle på samme link mottar." },
+            { term: "IP-broadcast", body: "Til alle på subnett — pakkes i MAC-broadcast." },
             {
               term: "Switch forwarding-tabell",
-              body: "Tabell i switchen som mapper MAC-adresse → port. Hver oppføring har også en tidsstempel slik at gamle entries kan utløpe (typisk 5–15 min). Tabellen er det som gjør at en switch leverer rammen bare til riktig port.",
+              body: "MAC→port — kjernen i hvordan switchen ruter.",
             },
             {
               term: "Self-learning",
-              body: "Switchen begynner med tom tabell. Når en ramme kommer inn på port p med kilde-MAC X, skriver switchen ned (X, p). Når en ramme skal til en MAC switchen IKKE kjenner, sender den flooding — kopierer rammen ut alle porter unntatt den den kom inn på. Etter litt trafikk lærer switchen seg topologien selv.",
+              body: "Switch lærer (kilde-MAC, port) når en ramme kommer inn.",
             },
-            {
-              term: "Plug-and-play",
-              body: "Konsekvensen av self-learning: en switch trenger ingen konfigurasjon. Plugg den i, koble på maskiner, og den fungerer. En del av grunnen til at Ethernet vant over alternativer som krevde manuell konfigurasjon.",
-            },
-            {
-              term: "Gratuitous ARP",
-              body: "En ARP-melding der avsender spør etter sin EGEN IP (eller broadcaster «jeg er 10.0.0.5 på MAC XX»). Brukes når en host får ny IP (DHCP-lease) for å rydde gamle ARP-cache-entries på andre hoster, og for å oppdage IP-konflikter (to maskiner som tror de eier samme IP).",
-            },
-            {
-              term: "ARP-spoofing / ARP-poisoning",
-              body: "Et angrep der en ondsinnet node svarer på ARP-spørringer med sin egen MAC i stedet for den ekte mottakerens. Andre hoster cacher (offer-IP → angriper-MAC) og sender all trafikk gjennom angriperen. Sikkerhets-switcher har Dynamic ARP Inspection (DAI) for å blokkere falske ARP-svar.",
-            },
+            { term: "Plug-and-play", body: "Switch fungerer uten konfigurasjon." },
+            { term: "Gratuitous ARP", body: "Annonser «jeg er X på MAC Y» — sjekker IP-konflikt." },
+            { term: "ARP-spoofing", body: "Angriper svarer falskt — alt går via ham." },
             {
               term: "Flooding",
-              body: "Når switchen mottar en ramme med ukjent destinasjons-MAC (ikke i tabellen), kopierer den rammen ut på ALLE porter unntatt den den kom inn på. Også broadcast-rammer (dst = FF:FF:FF:FF:FF:FF) flødes. Etter at destinasjonen svarer, lærer switchen porten og slutter å flood.",
+              body: "Ukjent destinasjon → send ut alle porter unntatt inn-porten.",
             },
-            {
-              term: "MAC-table aging",
-              body: "Hver entry i switchens forwarding-tabell har en timer (typisk 300 sekunder). Hvis switchen ikke ser noen rammer fra MAC X på et tidsrom, fjernes entry-en. Neste pakke til X utløser ny flooding. Hindrer at gamle entries hoper seg opp etter at maskiner frakobles.",
-            },
-            {
-              term: "Spanning Tree Protocol (STP / 802.1D)",
-              body: "Hvis switcher er koblet i en loop (med vilje eller ved en feil), vil broadcast-rammer sirkulere uendelig — en broadcast-storm som lammer hele LAN. STP løser dette ved at switcher snakker sammen via BPDU-rammer, velger en root-switch, og slår av portene som ikke er på korteste sti til root. Resultat: et logisk tre uten loops, selv om fysisk topologi har sløyfer.",
-            },
-            {
-              term: "BPDU (Bridge Protocol Data Unit)",
-              body: "Kontroll-rammer STP bruker for å snakke sammen. Inneholder switchens ID, root-switchens ID, og kostnad til root. Sendes hvert annet sekund. Når topologien endres (kabel går ned), velger STP nye stier — konvergerer på ~30 sekunder klassisk, ~1 sekund med Rapid STP.",
-            },
-            {
-              term: "VRRP / HSRP",
-              body: "Standby-protokoller for ruteren i et LAN. To rutere er konfigurert med samme virtuelle MAC og IP; én er aktiv, en er backup. Hvis aktive ruteren dør, tar backupen over uten at hostene merker det — de ARP-er fortsatt mot den samme virtuelle MAC-en.",
-            },
+            { term: "MAC-table aging", body: "Entry slettes etter ~5 min stillhet." },
+            { term: "Spanning Tree Protocol", body: "Slår av redundante linker — fjerner loops." },
+            { term: "BPDU", body: "Kontroll-ramme STP-switcher snakker sammen med." },
+            { term: "VRRP / HSRP", body: "To rutere deler virtuell IP+MAC for failover." },
           ]}
         />
-        <Illustration caption="Switch self-learning: ramme fra MAC X på port 1 lærer switchen at X sitter på port 1.">
-          <SwitchLearningSvg />
-        </Illustration>
+        <div className="space-y-3">
+          <Illustration caption="Switch self-learning: ramme fra MAC X på port 1 lærer switchen at X sitter på port 1.">
+            <SwitchLearningSvg />
+          </Illustration>
+          <Illustration caption="ARP-håndtrykk: PC broadcaster «hvem har 10.0.0.10?» — skriveren svarer med sin MAC unicast.">
+            <ArpSvg />
+          </Illustration>
+        </div>
       </div>
+
+      <Metafor tittel="ARP = «du har nummeret, jeg trenger adressen»">
+        <p>
+          Du har fått telefonnummeret til en kollega i Tromsø, men du vil møte henne i Storgata og
+          trenger å vite hvilken bygning hun jobber i. Du ringer resepsjonen («lobbyen») og spør:
+          «Hei, hvem har nummeret 12 34 56 78?» Hun som har det nummeret svarer: «Det er meg — jeg
+          sitter i 3. etasje, kontor 304.» Nå har du adressen.
+        </p>
+        <p>
+          ARP gjør nøyaktig dette: IP-adressen er telefonnummeret (logisk identifikator),
+          MAC-adressen er den fysiske adressen i bygget. Du må vite den fysiske MAC-en for å faktisk
+          levere rammen på kabelen.
+        </p>
+      </Metafor>
+
+      <Metafor tittel="Switch = bartenderen som husker alt">
+        <p>
+          God bartender i Tromsø: du bestiller en pils, og senere når du kommer tilbake, husker han
+          ikke bare hva du drakk, men hvor i lokalet du sitter. Han trenger ikke spørre rundt — han
+          bare sender pilsen rett til ditt bord.
+        </p>
+        <p>
+          Switchen lærer på samme måte. Første gang du sender en ramme, registrerer switchen «host A
+          sitter på port 1». Neste gang noen vil snakke med A, går rammen RETT til port 1 — ingen
+          flooding, ingen forstyrrelse av andre porter. Self-learning er plug-and-play-magien.
+        </p>
+      </Metafor>
+
+      <Metafor tittel="Spanning Tree = enveiskjøring i rundkjøringen">
+        <p>
+          Forestill deg en rundkjøring der bilene kan kjøre begge veier. Hver bil som kommer inn
+          blir sendt rundt og rundt, multipliserer seg, og fyller hele rundkjøringen på sekunder —
+          en kaos-storm. Løsningen: skilt som kun tillater ETT kjørefelt rundt. Du mister litt
+          fleksibilitet, men trafikken flyter.
+        </p>
+        <p>
+          STP gjør dette automatisk: alle switcher sammen velger en «root», beregner korteste sti,
+          og slår av lenkene som ville lage loops. Resultat: et tre uten sløyfer, selv om fysisk
+          kabling har redundans.
+        </p>
+      </Metafor>
 
       <Example title="Eksempel: ARP-spørring fra mobilen din">
         <p>
@@ -910,72 +945,71 @@ function Section65() {
       <div className="grid gap-3 lg:grid-cols-2">
         <Defs
           items={[
-            {
-              term: "Preamble",
-              body: "7 bytes med vekslende 1 og 0, etterfulgt av 1 byte med 10101011. Lar mottakerens klokke synkronisere seg med sender-klokken før den faktiske rammen starter. Ikke regnet som en del av rammen i offisiell forstand.",
-            },
-            {
-              term: "Destinasjons- og kilde-MAC",
-              body: "6 bytes hver. Destinasjons-MAC kan være unicast (én mottaker), multicast (en gruppe) eller broadcast (alle).",
-            },
-            {
-              term: "EtherType / lengde-felt",
-              body: "2 bytes. Hvis verdien er ≥ 1536 (0x0600), tolkes det som EtherType — hvilken protokoll er over: 0x0800 = IPv4, 0x86DD = IPv6, 0x0806 = ARP. Hvis < 1500, er det rammens lengde (gammel IEEE 802.3-variant). Smart for bakover-kompatibilitet.",
-            },
-            {
-              term: "Payload",
-              body: "46 til 1500 bytes. Minimum 46 fordi CSMA/CD krever at en ramme er stor nok til at sender kan detektere en kollisjon før hun er ferdig — i en 10 Mbps koaks-buss på maks 500 m er det 64 bytes (med header).",
-            },
-            {
-              term: "CRC (FCS — Frame Check Sequence)",
-              body: "4 bytes CRC-32 over destinasjons-MAC, kilde-MAC, type, payload. Beregnes og sjekkes i hardware på NIC-en. Rammer med dårlig CRC kastes uten varsel.",
-            },
-            {
-              term: "Hub",
-              body: "Historisk: en passiv enhet som forsterket signalet og sendte enhver bit som kom inn ut alle andre porter. Hele hubben var ett kollisjons-domene — CSMA/CD måtte være på. Forsvant på 2000-tallet til fordel for switch.",
-            },
-            {
-              term: "Switch",
-              body: "Aktiv enhet som mottar hele rammer, sjekker CRC, slår opp destinasjons-MAC i forwarding-tabellen, og sender bare ut på riktig port. Hver port er sitt eget kollisjons-domene; full duplex; ingen behov for CSMA/CD i moderne switch-nett.",
-            },
-            {
-              term: "Switch-hierarki",
-              body: "Større nett bygges av flere switcher koblet sammen. Aksess-switcher som hostene plugges i, distribusjons-switcher som samler aksess-switcher, og en core-switch i toppen. Forwarding-tabeller læres på tvers; Spanning Tree Protocol forhindrer at en loop i topologien forårsaker uendelig flooding.",
-            },
-            {
-              term: "SFD (Start-of-Frame Delimiter)",
-              body: "Den siste byten av preamble: 10101011 (0xAB). De seks første 1010-parene gir mottakeren tid til å lage seg fast i klokken; den ekstra 11-en signaliserer at den faktiske rammen starter med neste byte. Skiller seg fra resten av preamble nettopp for at det skal være entydig.",
-            },
-            {
-              term: "Inter-Frame Gap (IFG)",
-              body: "Minst 96 bit-tider stillhet mellom to rammer på samme medium. På 10 Mbps = 9,6 μs; på 100 Mbps = 0,96 μs; på 10 Gbps = 9,6 ns. Gir mottakeren tid til å re-synkronisere klokken og prosessere forrige ramme før den neste kommer.",
-            },
-            {
-              term: "Jumbo frames",
-              body: "Ethernet-rammer større enn standard 1500 bytes payload — typisk 9000 bytes. Brukes i datasentre der host og switch begge støtter det. Reduserer overhead: 9000-byte payload vs 26 byte header = 0,3 % overhead vs 1,7 % for vanlig MTU. Krever at HELE stien (alle switcher) er konfigurert likt — én switch som ikke kan jumbo dropper rammen.",
-            },
-            {
-              term: "Auto-negotiation",
-              body: "Når en kabel plugges inn, sender begge sider av lenken en sekvens av puls-koder (FLP — Fast Link Pulses) som forteller hva de støtter (hastighet, half/full duplex). Begge velger det høyeste begge støtter. Hvis auto-negotiering feiler (sjelden, ofte pga. ulik konfigurasjon), faller man tilbake til 10 Mbps half-duplex.",
-            },
-            {
-              term: "PoE (Power over Ethernet)",
-              body: "Standardiserte måter å sende strøm sammen med data på samme Ethernet-kabel. PoE (802.3af) gir 15 W per port, PoE+ (802.3at) 30 W, PoE++ (802.3bt) opp til 90 W. Brukes til WiFi-AP-er, IP-telefoner, sikkerhetskameraer — null ekstra strømkabel.",
-            },
-            {
-              term: "MAC-tabellen som CAM",
-              body: "Switchens forwarding-tabell implementeres typisk som en CAM (Content-Addressable Memory) — et hardware-minne der oppslag på MAC-adresse skjer parallelt over alle entries i én klokkesyklus. Det er hvordan en switch klarer å route en pakke på under en mikrosekund, selv med titusenvis av entries.",
-            },
-            {
-              term: "Manchester-koding",
-              body: "Det fysiske kodings-skjemaet i klassisk 10 Mbps Ethernet: hver bit kodes som en overgang i midten av sin tids-luke (1 = lav-til-høy, 0 = høy-til-lav). Sikrer mange overganger så mottakerens klokke holder seg synkronisert. 100 Mbps Ethernet bruker 4B/5B-koding pluss MLT-3 i stedet; 1 Gbps bruker 8B/10B.",
-            },
+            { term: "Preamble", body: "8 bytes synkronisering — kalibrerer mottaker-klokken." },
+            { term: "Dst/src-MAC", body: "6 bytes hver — unicast, multicast eller broadcast." },
+            { term: "EtherType", body: "2 bytes — sier hvilken protokoll er inni (IPv4, ARP, …)." },
+            { term: "Payload", body: "46–1500 bytes — typisk et IP-datagram." },
+            { term: "CRC (FCS)", body: "4 bytes CRC-32 — sjekkes i hardware på NIC." },
+            { term: "Hub", body: "Passiv flerporter — ett kollisjons-domene. Død i dag." },
+            { term: "Switch", body: "Aktiv enhet, hver port = eget kollisjons-domene." },
+            { term: "Switch-hierarki", body: "Aksess → distribusjons → core i klassisk LAN." },
+            { term: "SFD", body: "Siste byte av preamble — markerer rammens start." },
+            { term: "Inter-Frame Gap", body: "96 bit-tider stillhet mellom rammer." },
+            { term: "Jumbo frames", body: "9000-byte payload — brukes i datasenter." },
+            { term: "Auto-negotiation", body: "Begge sider forhandler hastighet og duplex." },
+            { term: "PoE", body: "Strøm via Ethernet — 15–90 W per port." },
+            { term: "CAM", body: "Hardware-minne med parallell-oppslag på MAC." },
+            { term: "Manchester-koding", body: "Overgang midt-i bit — holder klokken synk." },
           ]}
         />
-        <Illustration caption="Ethernet-ramme: preamble · dst · src · type · payload · CRC. Alle felt har faste posisjoner.">
-          <EthernetFrameSvg />
-        </Illustration>
+        <div className="space-y-3">
+          <Illustration caption="Ethernet-ramme: preamble · dst · src · type · payload · CRC. Alle felt har faste posisjoner.">
+            <EthernetFrameSvg />
+          </Illustration>
+          <Illustration caption="Switch-hierarki: aksess (ToR) under, distribusjons i midten, core på toppen — 3-tier klassisk.">
+            <SwitchHierarkiSvg />
+          </Illustration>
+        </div>
       </div>
+
+      <Metafor tittel="Ethernet-ramme = ferdig-frankert pakke fra Posten">
+        <p>
+          En Posten-pakke har alltid samme oppbygging: avsender-adresse øverst venstre,
+          mottaker-adresse midt på, strekkode for sortering, vekt-felt, og innholdet inni.
+          Sortér-maskinene på Lørenskog kan lese ALLE pakker i hardware fordi feltene er på eksakt
+          samme posisjon hver gang.
+        </p>
+        <p>
+          Ethernet-rammen er bygd opp likt: dst-MAC først, kilde-MAC, type, payload, CRC til slutt.
+          NIC-en på 100 Gbps-serveren rekker å parse rammen og rute den videre på en mikrosekund —
+          utelukkende fordi formatet er fast.
+        </p>
+      </Metafor>
+
+      <Metafor tittel="Preamble = «test, test, mikrofon-sjekk»">
+        <p>
+          Før en konsert i Tromsø starter, sier teknikeren «test test, en to tre» i mikrofonen. Det
+          er ikke selve sangen — det er for å la lydanlegget kalibrere nivå og synk før showet
+          starter. Etterpå kommer den ekte musikken.
+        </p>
+        <p>
+          Ethernet-preamble (8 bytes med 10101010-mønster) er nøyaktig dette: mottakerens klokke får
+          tid til å låse seg på riktig frekvens før den faktiske rammen starter. Uten preamble ville
+          første byte vært tapt.
+        </p>
+      </Metafor>
+
+      <Metafor tittel="Hub vs switch = høyttaler vs hodetelefon">
+        <p>
+          En hub er en høyttaler på torvet: én snakker — alle hører. Hvis to vil si noe samtidig,
+          blir det rot for alle (kollisjon). Du må følge tur-takings-regler.
+        </p>
+        <p>
+          En switch er som å gi alle hver sin hodetelefon koblet til en sentral mixer. Mixeren ruter
+          lyden bare til riktig hodetelefon. To kan snakke samtidig uten å forstyrre hverandre — det
+          finnes ingen «kollisjon» fordi alle har sin egen lyd-kanal.
+        </p>
+      </Metafor>
 
       <Example title="Eksempel: hva inneholder et 1500-byte Ethernet-ramme egentlig?">
         <ul className="list-disc pl-5">
@@ -1083,64 +1117,72 @@ function Section66() {
       <div className="grid gap-3 lg:grid-cols-2">
         <Defs
           items={[
-            {
-              term: "VLAN (Virtual LAN)",
-              body: "En logisk gruppe av switch-porter som oppfører seg som et eget broadcast-domene. To porter på samme VLAN snakker fritt sammen; porter på ulike VLAN trenger en ruter mellom seg, akkurat som om de var fysisk adskilte switcher.",
-            },
-            {
-              term: "Port-basert VLAN",
-              body: "Den vanligste typen: hver switch-port konfigureres til å høre til ett (eller flere) VLAN. Konfigurert manuelt eller via DHCP-snooping. Enkel og forutsigbar.",
-            },
-            {
-              term: "802.1Q tagging",
-              body: "Når en ramme krysser mellom to switcher via en delt lenke (trunk), legges en 4-byte tag inn rett etter kilde-MAC. Tag-en inneholder VLAN-ID (12 bits — opp til 4094 VLANer), prioritet og en TPID som identifiserer at dette er en tagget ramme.",
-            },
-            {
-              term: "Trunk-link",
-              body: "Lenke mellom to switcher som bærer rammer fra flere VLANer samtidig. Rammene tagges på vei ut og fjernes tagg på vei inn der hostene bor. En typisk nedlink fra distribusjons- til aksess-switch er en trunk; en lenke til en bruker-PC er en access-link uten tagging.",
-            },
-            {
-              term: "Native VLAN",
-              body: "Det ene VLAN-et som SKAL ha tagg fjernet (utagget) over en trunk. Ofte VLAN 1 by default. Hvis begge sider av en trunk er enige om native, kan en ramme uten tagg fortsatt rutes korrekt.",
-            },
-            {
-              term: "Inter-VLAN routing",
-              body: "Pakkene på VLAN 10 må gjennom en ruter (eller layer-3 switch) for å komme til VLAN 20. Rutere har ett ben i hvert VLAN, eller en «router on a stick»-konfigurasjon der én fysisk lenke bærer alle VLANer som trunk og ruteren bruker virtuelle sub-interfaces.",
-            },
-            {
-              term: "Brannmur per VLAN",
-              body: "Praktisk gevinst: HR-avdelingens VLAN kan beskyttes av en regel som blokkerer all trafikk fra gjeste-VLAN. Siden trafikken må gjennom en ruter for å krysse VLAN-grensen, er det et naturlig sted å sette filteret.",
-            },
-            {
-              term: "VLAN-hopping (sikkerhetsproblem)",
-              body: "Angrep der en host på VLAN 20 prøver å snakke som om hun var på VLAN 10. To varianter: switch-spoofing (host later som hun er en switch og forhandler en trunk), og double-tagging (host sender ramme med to 802.1Q-tagger; ytterste fjernes av access-port, indre tolkes som ekte VLAN av neste switch). Forhindres ved å aldri bruke native VLAN for hosts og aldri gjøre VLAN 1 til native.",
-            },
-            {
-              term: "Private VLAN (PVLAN)",
-              body: "Forfining av VLAN-konseptet for sikkerhet: én primary VLAN inneholder community-porter og isolated porter. Isolated porter kan KUN snakke med ruteren — ikke engang andre porter i samme VLAN. Brukes i hoteller der hver gjest skal ha internett, men ikke kunne snakke med naboværelset.",
-            },
-            {
-              term: "Voice VLAN",
-              body: "En IP-telefon kobles inn i samme port som en PC. Switchen identifiserer telefonen via CDP/LLDP og putter den i et eget voice-VLAN med QoS-prioritet, mens PC-en havner i data-VLAN. Telefonen videresender PC-ens trafikk inn på riktig VLAN-tag via en intern mini-switch. Én kabel, to logiske nett.",
-            },
-            {
-              term: "VTP (VLAN Trunking Protocol)",
-              body: "Ciscos protokoll for å distribuere VLAN-konfigurasjon mellom switcher i samme domene. Endre VLAN-liste på én switch — VTP propagerer endringen automatisk. Berømt for å forårsake katastrofer når en gammel switch med høyere revision-number plugges inn og overskriver hele domenets VLAN-database.",
-            },
-            {
-              term: "QinQ (802.1ad / Provider Bridges)",
-              body: "Når en ISP vil tilby «en VLAN-trunk» som tjeneste til en kunde, men kunden allerede har 802.1Q-tags i sine egne rammer: ISP-en legger på sin EGEN ytre tag (S-tag) over kundens C-tag. Dobbelt-tagging gjør at ISP-en kan ha mange kunder uten å kollidere med deres VLAN-IDer.",
-            },
-            {
-              term: "MAC-basert VLAN",
-              body: "Alternativ til port-basert: en switch holder en tabell {MAC → VLAN-ID} og putter rammer i riktig VLAN basert på kilde-MAC. Maskinen får samme VLAN selv om den flytter mellom porter. Vanlig i WiFi-controller-konfigurasjoner.",
-            },
+            { term: "VLAN", body: "Logisk gruppe porter — eget broadcast-domene." },
+            { term: "Port-basert VLAN", body: "Hver port hører til ett bestemt VLAN." },
+            { term: "802.1Q tagging", body: "4-byte tag etter kilde-MAC — 12-bit VLAN-ID." },
+            { term: "Trunk-link", body: "Switch-switch-lenke som bærer flere VLAN tagget." },
+            { term: "Native VLAN", body: "VLAN uten tagg over trunk — ofte VLAN 1." },
+            { term: "Inter-VLAN routing", body: "Krysning av VLAN-grense går via ruter." },
+            { term: "Brannmur per VLAN", body: "Ruter blir naturlig filter mellom VLAN." },
+            { term: "VLAN-hopping", body: "Angrep: bruk dobbel-tag for å nå annet VLAN." },
+            { term: "Private VLAN", body: "Isolerte porter — selv ikke nabo ser deg." },
+            { term: "Voice VLAN", body: "IP-telefon i eget VLAN med QoS — én kabel." },
+            { term: "VTP", body: "Cisco-protokoll for å sync VLAN-liste mellom switcher." },
+            { term: "QinQ", body: "Dobbel 802.1Q — ISP-tag over kunde-tag." },
+            { term: "MAC-basert VLAN", body: "VLAN avgjort av kilde-MAC, ikke port." },
           ]}
         />
-        <Illustration caption="Én fysisk switch deles i to VLANer. Trunk-lenken bærer tagget trafikk fra begge.">
-          <VlanSvg />
-        </Illustration>
+        <div className="space-y-3">
+          <Illustration caption="Én fysisk switch deles i to VLANer. Trunk-lenken bærer tagget trafikk fra begge.">
+            <VlanSvg />
+          </Illustration>
+          <Illustration caption="802.1Q-tag: 4 bytes lagt mellom kilde-MAC og EtherType — TPID, prioritet, DEI, VLAN-ID.">
+            <VlanTagSvg />
+          </Illustration>
+        </div>
       </div>
+
+      <Metafor tittel="VLAN = ulike etasjer i samme kontorbygg">
+        <p>
+          Tenk deg Forskningsparken i Tromsø: ett fysisk bygg, men ulike etasjer for ulike firmaer.
+          HR-avdelingen i 3. etasje, IT i 4., gjeste-resepsjon i 1. Hver etasje har sin egen
+          kortleser, sin egen kjøkkenkrok, og du kan ikke gå rett fra HR til gjeste-området uten å
+          gå via heisen (felles infrastruktur).
+        </p>
+        <p>
+          VLAN setter en virtuell vegg mellom porter på samme fysiske switch. Trafikk fra HR-VLAN
+          når ikke gjeste-VLAN — det fungerer som om de var to separate switcher. Eneste vei mellom:
+          gå via heisen (= ruter med brannmur).
+        </p>
+      </Metafor>
+
+      <Metafor tittel="802.1Q-tag = farget bånd rundt brevet">
+        <p>
+          Tenk deg postsystemet på en stor arbeidsplass: hver pakke har et farget bånd rundt seg som
+          forteller hvilken avdeling den hører til. Når pakken passerer felleskorridoren, ser
+          sortereren båndet og leverer den til riktig avdelings-hylle. Når den når ditt skrivebord,
+          fjernes båndet — du ser bare den originale pakken.
+        </p>
+        <p>
+          VLAN-tag-en (802.1Q) virker likt: den legges på når rammen krysser en trunk-lenke mellom
+          switcher, og fjernes når rammen kommer ut til en host-port. Hosten ser aldri tag-en — den
+          er kun til intern bruk i switch-fabric.
+        </p>
+      </Metafor>
+
+      <Metafor tittel="VLAN-hopping = å smugle deg inn med to ID-kort">
+        <p>
+          Du har ID-kort for 4. etasje, men vil til 3. Du teiper ID for 3. etasje under ID for 4.
+          Vakta i 1. ser bare ytre kortet (4. etasje), slipper deg gjennom slusen, fjerner ditt
+          4.-kort. Du går videre med 3.-kortet eksponert — den neste vakta i heisen gjenkjenner det
+          og lar deg gå inn der.
+        </p>
+        <p>
+          Dobbel-tagging i VLAN-hopping fungerer slik: angriperen legger to 802.1Q-tags i rammen.
+          Første switch stripper ytre tag, neste switch ser indre tag og leverer rammen i feil VLAN.
+          Forsvar: aldri la host-VLAN være «native» på trunk.
+        </p>
+      </Metafor>
 
       <Example title="Eksempel: 802.1Q-tag detaljert">
         <p>
@@ -1277,68 +1319,77 @@ function Section67() {
       <div className="grid gap-3 lg:grid-cols-2">
         <Defs
           items={[
-            {
-              term: "Top-of-Rack (ToR) switch",
-              body: "Switchen som sitter på toppen av hvert rack og kobler alle ~40 serverne i racket. Vanligvis 48 server-porter pluss 4–8 uplinks. Aksess-laget i et datasenter.",
-            },
+            { term: "ToR-switch", body: "Switch på toppen av server-rack — aksess-laget." },
             {
               term: "Klassisk tre-topologi",
-              body: "ToR-switcher kobler til distribusjons-switcher som kobler til en kjerne-switch. Enkelt mentalt, men flaskehals: hvis to servere i samme rack snakker med to servere i et annet rack må trafikken gjennom kjerne-switchen som har begrenset båndbredde.",
+              body: "Aksess → distribusjon → core. Trang flaskehals.",
             },
+            { term: "Fat-tree", body: "Tre der lenkene blir tykkere mot toppen — full bisection." },
+            { term: "Leaf-spine", body: "To lag: hver leaf kobles til hver spine. 2 hopp alltid." },
+            { term: "ECMP", body: "Hash-fordel flows over flere like-kost-stier." },
+            { term: "Bisection bandwidth", body: "Kapasitet over et snitt som deler nettet i to." },
+            { term: "Oversubscription", body: "Ned-kapasitet / opp-kapasitet — 1:1 ideelt." },
+            { term: "3-tier vs 2-tier", body: "6 hopp vs 2 hopp på tvers av racker." },
             {
-              term: "Fat-tree",
-              body: "En tre-topologi der lenkene blir tykkere jo høyere opp du går — antall lenker fra et nivå til neste opprettholder full bisection bandwidth. Foreslått av Charles Leiserson på 80-tallet, brukt i superdatamaskiner, gjenoppdaget for datasentre på 2000-tallet.",
+              term: "Øst-vest vs nord-sør",
+              body: "Server-til-server vs til internett — 10× mer øst-vest.",
             },
-            {
-              term: "Leaf-spine",
-              body: "En to-lags variant: leaf-switcher (samme rolle som ToR) kobler hver til ALLE spine-switcher. Alle leaf-til-leaf har nøyaktig samme hopp-tall: leaf → spine → leaf = 2 hopp. Lett å skalere: vil du ha mer båndbredde, legg til en spine. Vil du ha flere servere, legg til en leaf.",
-            },
-            {
-              term: "ECMP — Equal-Cost Multi-Path",
-              body: "Når det finnes flere like raske stier mellom A og B (i fat-tree/leaf-spine vrimler det av sånt), kan ruteren hash-fordele flows mellom stiene. Hver flow holder seg på én sti (for å unngå out-of-order), men ulike flows velges ut på ulike stier — utnytter all kapasitet.",
-            },
-            {
-              term: "Bisection bandwidth",
-              body: "Hvis du deler nettverket i to halvdeler med like mange noder hver, hvor mye trafikk får du gjennom snittet? Et bredt fat-tree har bisection bandwidth lik N · (per-server-rate) — dvs. alle kan snakke med en motpart samtidig på full rate. Et klassisk tre har mye mindre.",
-            },
-            {
-              term: "Oversubscription",
-              body: "Forholdet mellom samlet ned-båndbredde (mot servere) og opp-båndbredde (mot core). 1:1 = full bisection, ingen flaskehals. 4:1 = aksess-laget kan generere 4× mer trafikk enn uplinks bærer — bra nok hvis trafikken stort sett er lokal. Datasentre med massiv øst-vest-trafikk vil ha 1:1.",
-            },
-            {
-              term: "3-tier vs 2-tier topologi",
-              body: "Klassisk 3-tier: aksess (ToR) → distribusjons-switcher (aggregeringslag) → core. Hver pakke som krysser racker går 3 hopp opp og 3 hopp ned = 6 hopp totalt. 2-tier (leaf-spine): leaf-switcher kobler direkte til spine-switcher. Hver kryss-rack-pakke går 2 hopp. Færre hopp = lavere latency og enklere kabling, og er nå standarden.",
-            },
-            {
-              term: "Øst-vest- vs nord-sør-trafikk",
-              body: "Nord-sør = trafikk mellom datasenteret og omverdenen (brukere på internett). Øst-vest = trafikk mellom servere INNE i datasenteret (mikrotjenester, distribuerte databaser, RPC, MapReduce). I moderne sky-arkitekturer er øst-vest 5-10× mer enn nord-sør — derfor må fabric-en være bygget for tett intern kommunikasjon.",
-            },
-            {
-              term: "Clos-nettverk",
-              body: "Den matematiske familien fat-tree og leaf-spine tilhører — først foreslått av Charles Clos i 1953 for telefon-svitsjing. Et k-stage Clos-nett består av flere lag like-størrelse-switcher koblet i en spesifikk mønster som garanterer ikke-blokkerende ruting hvis bisection er bredt nok.",
-            },
-            {
-              term: "DCB (Data Center Bridging)",
-              body: "Settet av Ethernet-utvidelser som gjør Ethernet egnet for storage-trafikk: PFC (priority flow control = pause per prioritets-kø), ETS (båndbredde-garanti per klasse), QCN (congestion notification). Lar storage-protokoller som FCoE og RoCE kjøre over standard Ethernet i stedet for dedikert Fibre Channel.",
-            },
-            {
-              term: "RoCE / RDMA",
-              body: "RDMA = Remote Direct Memory Access: en NIC kan lese og skrive i en annen maskins RAM uten å gå via CPU. RoCE = RDMA over Converged Ethernet bruker DCB for å gi den lossless garantien RDMA trenger. Brukes for HPC, GPU-til-GPU-overføring, og raske distribuerte databaser. Latency ned mot ~1 μs.",
-            },
-            {
-              term: "BGP i datasenter",
-              body: "Moderne fat-tree-datasentre kjører BGP — protokollen som styrer hele internettet — også internt. Hver leaf og hver spine er et eget «autonomt system». Det gir samme verktøy for intern og ekstern ruting, og BGPs ECMP-støtte fordeler trafikk over alle parallelle stier. Forenkler operativt verktøy-stakken.",
-            },
-            {
-              term: "VXLAN / overlay-nettverk",
-              body: "Når mange tenants (kunder) deler samme fysiske datasenter, vil hver ha sitt eget «virtuelle nettverk» som spenner over flere racker. VXLAN pakker Ethernet-rammer inn i UDP og legger en 24-bit VNI («VLAN-ID for skyen») i header — opp til 16 millioner virtuelle nett mot 802.1Qs 4094.",
-            },
+            { term: "Clos-nettverk", body: "Matematisk familie fat-tree/leaf-spine hører til." },
+            { term: "DCB", body: "Ethernet-utvidelser for lossless storage-trafikk." },
+            { term: "RoCE / RDMA", body: "NIC leser/skriver RAM direkte — ~1 μs latency." },
+            { term: "BGP i datasenter", body: "Internettets ruting-protokoll brukt internt." },
+            { term: "VXLAN", body: "Overlay-nett — 24-bit VNI gir 16M virtuelle nett." },
           ]}
         />
-        <Illustration caption="Leaf-spine: hver leaf kobles til hver spine. To leaf-switcher kommuniserer alltid via én spine, ECMP fordeler last.">
-          <LeafSpineSvg />
-        </Illustration>
+        <div className="space-y-3">
+          <Illustration caption="Leaf-spine: hver leaf kobles til hver spine. To leaf-switcher kommuniserer alltid via én spine, ECMP fordeler last.">
+            <LeafSpineSvg />
+          </Illustration>
+          <Illustration caption="3-tier vs leaf-spine: klassisk tre tvinger alle pakker opp 3 hopp; leaf-spine flater til 2 hopp og åpner mange parallelle stier.">
+            <FatTreeVsLeafSpineSvg />
+          </Illustration>
+        </div>
       </div>
+
+      <Metafor tittel="Fat-tree = Oslo Lufthavn">
+        <p>
+          Tenk deg Oslo Lufthavn: mange porter på bakken (gates der flyene står — som server-rackene
+          i et datasenter), men koblet sammen via store transit-terminaler (spine-switcher) som
+          flyttbart kan håndtere stor trafikk-flyt på tvers. Du kan gå fra hvilken som helst gate
+          til hvilken som helst annen via terminalen, og det er flere parallelle veier rundt.
+        </p>
+        <p>
+          En klassisk tre-topologi er som en flyplass med ÉN trang hovedhall — alle som vil krysse
+          må presse seg gjennom den. Fat-tree/leaf-spine åpner mange parallelle korridorer, og ECMP
+          er som å fordele reisende på ulike heiser så ingen blir flaskehals.
+        </p>
+      </Metafor>
+
+      <Metafor tittel="Leaf-spine = T-banen i Oslo med mange linjer som krysser sentrum">
+        <p>
+          For å komme fra Tøyen (leaf 1) til Majorstuen (leaf 2) tar du ALLTID nøyaktig to stopp via
+          en sentrums-stasjon (en spine). Du har valget mellom Stortinget, Nationaltheatret eller
+          Jernbanetorget som transit — like raskt uansett. Hvis én linje er overfylt, velg en annen.
+        </p>
+        <p>
+          Det er nøyaktig leaf-spine: alltid 2 hopp mellom to leaf-er, og ECMP fordeler flows jevnt
+          over alle spiner. Forutsigbar latency er gull verdt for distribuerte databaser.
+        </p>
+      </Metafor>
+
+      <Metafor tittel="Oversubscription = hotell-buffeen om morgenen">
+        <p>
+          Hotellet i Bodø har 200 rom (servere) og en buffé med kapasitet for 50 personer (uplink).
+          Det er 4:1 oversubscription. Det funker FORDI ikke alle gjester går til buffeen samtidig —
+          de fleste sover, andre er ute. Men hvis det er en konferanse og alle møter klokken 07:30,
+          blir det kø.
+        </p>
+        <p>
+          Datasentre med tung øst-vest trafikk (alle servere snakker med alle servere samtidig — som
+          ved en MapReduce shuffle) krever 1:1, ellers blir uplinks flaskehals. Web- arbeidsmengder
+          med lite intern-snakk klarer seg fint med 4:1 eller 8:1.
+        </p>
+      </Metafor>
 
       <Example title="Eksempel: bisection i en 4-leaf, 4-spine topologi">
         <p>
@@ -1838,6 +1889,18 @@ function Hvorfor({ title, children }: { title: string; children: React.ReactNode
         Hvorfor
       </div>
       <div className="font-semibold text-foreground mb-1">{title}</div>
+      <div className="text-muted-foreground text-[13px] space-y-2">{children}</div>
+    </div>
+  );
+}
+
+function Metafor({ tittel, children }: { tittel: string; children: React.ReactNode }) {
+  return (
+    <div className="rounded-xl border border-purple-500/30 bg-purple-500/5 p-4">
+      <div className="text-[10px] uppercase tracking-wider text-purple-700 dark:text-purple-400 font-semibold mb-1">
+        🔮 Metafor
+      </div>
+      <div className="font-semibold text-foreground mb-1">{tittel}</div>
       <div className="text-muted-foreground text-[13px] space-y-2">{children}</div>
     </div>
   );
@@ -2689,6 +2752,1073 @@ function LeafSpineSvg() {
         className="fill-muted-foreground text-[10px] italic"
       >
         L1 → L4: alltid 2 hopp via en spine. ECMP fordeler flows på tvers av S1–S4.
+      </text>
+    </svg>
+  );
+}
+
+function MacAdresseSvg() {
+  return (
+    <svg viewBox="0 0 500 180" className="w-full h-auto">
+      <text
+        x={250}
+        y={20}
+        textAnchor="middle"
+        className="fill-foreground text-[12px] font-semibold"
+      >
+        MAC-adresse: 48 bit = OUI + serienummer
+      </text>
+      {/* OUI */}
+      <rect
+        x={60}
+        y={50}
+        width={170}
+        height={40}
+        className="fill-brand/25 stroke-brand"
+        strokeWidth={1.5}
+      />
+      <text
+        x={145}
+        y={70}
+        textAnchor="middle"
+        className="fill-foreground text-[11px] font-mono font-semibold"
+      >
+        04:1B:6F
+      </text>
+      <text x={145} y={84} textAnchor="middle" className="fill-muted-foreground text-[9px]">
+        OUI (produsent, 24 bit)
+      </text>
+      {/* Serie */}
+      <rect
+        x={230}
+        y={50}
+        width={210}
+        height={40}
+        className="fill-success/25 stroke-success"
+        strokeWidth={1.5}
+      />
+      <text
+        x={335}
+        y={70}
+        textAnchor="middle"
+        className="fill-foreground text-[11px] font-mono font-semibold"
+      >
+        A2:90:0C
+      </text>
+      <text x={335} y={84} textAnchor="middle" className="fill-muted-foreground text-[9px]">
+        Serienummer (24 bit)
+      </text>
+      {/* Første byte zoom */}
+      <text
+        x={250}
+        y={115}
+        textAnchor="middle"
+        className="fill-foreground text-[10px] font-semibold"
+      >
+        Første byte: 0x04 = 0000 0100
+      </text>
+      <g>
+        <rect
+          x={120}
+          y={125}
+          width={40}
+          height={28}
+          className="fill-amber-500/30 stroke-amber-500"
+          strokeWidth={1}
+        />
+        <text x={140} y={143} textAnchor="middle" className="fill-foreground text-[10px] font-mono">
+          0
+        </text>
+        <text x={140} y={166} textAnchor="middle" className="fill-muted-foreground text-[8px]">
+          I/G=0 unicast
+        </text>
+      </g>
+      <g>
+        <rect
+          x={170}
+          y={125}
+          width={40}
+          height={28}
+          className="fill-amber-500/30 stroke-amber-500"
+          strokeWidth={1}
+        />
+        <text x={190} y={143} textAnchor="middle" className="fill-foreground text-[10px] font-mono">
+          0
+        </text>
+        <text x={190} y={166} textAnchor="middle" className="fill-muted-foreground text-[8px]">
+          U/L=0 globalt
+        </text>
+      </g>
+      <g>
+        <rect
+          x={220}
+          y={125}
+          width={160}
+          height={28}
+          className="fill-muted stroke-border"
+          strokeWidth={1}
+        />
+        <text x={300} y={143} textAnchor="middle" className="fill-foreground text-[10px] font-mono">
+          000100
+        </text>
+        <text x={300} y={166} textAnchor="middle" className="fill-muted-foreground text-[8px]">
+          resten av OUI
+        </text>
+      </g>
+    </svg>
+  );
+}
+
+function Paritet2DSvg() {
+  return (
+    <svg viewBox="0 0 500 220" className="w-full h-auto">
+      <text
+        x={250}
+        y={20}
+        textAnchor="middle"
+        className="fill-foreground text-[12px] font-semibold"
+      >
+        2D-paritet: krysset peker på feilen
+      </text>
+      {/* 3x4 grid + parity row/col */}
+      {(() => {
+        const bits = [
+          [1, 0, 1, 0],
+          [0, 1, 0, 0], // flipped: original 0,1,1,0
+          [1, 1, 0, 1],
+        ];
+        const pRow = [0, 0, 1];
+        const pCol = [0, 0, 0, 1];
+        const cellW = 50,
+          cellH = 30,
+          startX = 100,
+          startY = 50;
+        const elements: React.ReactNode[] = [];
+        for (let r = 0; r < 3; r++) {
+          for (let c = 0; c < 4; c++) {
+            const isFlipped = r === 1 && c === 2;
+            elements.push(
+              <g key={`b${r}-${c}`}>
+                <rect
+                  x={startX + c * cellW}
+                  y={startY + r * cellH}
+                  width={cellW}
+                  height={cellH}
+                  className={
+                    isFlipped ? "fill-destructive/40 stroke-destructive" : "fill-card stroke-border"
+                  }
+                  strokeWidth={1.5}
+                />
+                <text
+                  x={startX + c * cellW + cellW / 2}
+                  y={startY + r * cellH + cellH / 2 + 4}
+                  textAnchor="middle"
+                  className="fill-foreground text-[12px] font-mono"
+                >
+                  {bits[r][c]}
+                </text>
+              </g>,
+            );
+          }
+          // row parity
+          const parityWrong = r === 1;
+          elements.push(
+            <g key={`pr${r}`}>
+              <rect
+                x={startX + 4 * cellW + 8}
+                y={startY + r * cellH}
+                width={cellW}
+                height={cellH}
+                className={
+                  parityWrong
+                    ? "fill-amber-500/30 stroke-amber-500"
+                    : "fill-success/20 stroke-success/60"
+                }
+                strokeWidth={1.5}
+              />
+              <text
+                x={startX + 4 * cellW + 8 + cellW / 2}
+                y={startY + r * cellH + cellH / 2 + 4}
+                textAnchor="middle"
+                className="fill-foreground text-[12px] font-mono"
+              >
+                {pRow[r]}
+              </text>
+            </g>,
+          );
+        }
+        // col parity row
+        for (let c = 0; c < 4; c++) {
+          const parityWrong = c === 2;
+          elements.push(
+            <g key={`pc${c}`}>
+              <rect
+                x={startX + c * cellW}
+                y={startY + 3 * cellH + 8}
+                width={cellW}
+                height={cellH}
+                className={
+                  parityWrong
+                    ? "fill-amber-500/30 stroke-amber-500"
+                    : "fill-success/20 stroke-success/60"
+                }
+                strokeWidth={1.5}
+              />
+              <text
+                x={startX + c * cellW + cellW / 2}
+                y={startY + 3 * cellH + 8 + cellH / 2 + 4}
+                textAnchor="middle"
+                className="fill-foreground text-[12px] font-mono"
+              >
+                {pCol[c]}
+              </text>
+            </g>,
+          );
+        }
+        return elements;
+      })()}
+      <text x={50} y={95} className="fill-muted-foreground text-[9px]">
+        rad 2 →
+      </text>
+      <text x={235} y={195} className="fill-muted-foreground text-[9px]">
+        ↑ kol 3
+      </text>
+      <text
+        x={250}
+        y={210}
+        textAnchor="middle"
+        className="fill-muted-foreground text-[10px] italic"
+      >
+        Rad 2 og kolonne 3 klager — krysset er den feile biten
+      </text>
+    </svg>
+  );
+}
+
+function ThroughputSvg() {
+  // S(G) for pure and slot ALOHA
+  const W = 460,
+    H = 160,
+    leftPad = 50,
+    bottomPad = 30;
+  const Gmax = 3;
+  const Smax = 0.4;
+  const toX = (g: number) => leftPad + (g / Gmax) * (W - leftPad - 20);
+  const toY = (s: number) => H - bottomPad - (s / Smax) * (H - bottomPad - 30);
+  const pure: string[] = [];
+  const slot: string[] = [];
+  for (let i = 0; i <= 100; i++) {
+    const g = (i / 100) * Gmax;
+    pure.push(`${toX(g)},${toY(g * Math.exp(-2 * g))}`);
+    slot.push(`${toX(g)},${toY(g * Math.exp(-g))}`);
+  }
+  return (
+    <svg viewBox={`0 0 ${W} ${H}`} className="w-full h-auto">
+      <text
+        x={W / 2}
+        y={18}
+        textAnchor="middle"
+        className="fill-foreground text-[12px] font-semibold"
+      >
+        Throughput S vs offered load G
+      </text>
+      {/* axes */}
+      <line
+        x1={leftPad}
+        y1={H - bottomPad}
+        x2={W - 20}
+        y2={H - bottomPad}
+        className="stroke-foreground/60"
+        strokeWidth={1}
+      />
+      <line
+        x1={leftPad}
+        y1={H - bottomPad}
+        x2={leftPad}
+        y2={20}
+        className="stroke-foreground/60"
+        strokeWidth={1}
+      />
+      <text x={W - 25} y={H - bottomPad + 18} className="fill-muted-foreground text-[10px]">
+        G
+      </text>
+      <text x={leftPad - 35} y={28} className="fill-muted-foreground text-[10px]">
+        S
+      </text>
+      {/* ticks */}
+      <text
+        x={leftPad}
+        y={H - bottomPad + 14}
+        className="fill-muted-foreground text-[9px]"
+        textAnchor="middle"
+      >
+        0
+      </text>
+      <text
+        x={toX(1)}
+        y={H - bottomPad + 14}
+        className="fill-muted-foreground text-[9px]"
+        textAnchor="middle"
+      >
+        1
+      </text>
+      <text
+        x={toX(2)}
+        y={H - bottomPad + 14}
+        className="fill-muted-foreground text-[9px]"
+        textAnchor="middle"
+      >
+        2
+      </text>
+      <text
+        x={toX(3)}
+        y={H - bottomPad + 14}
+        className="fill-muted-foreground text-[9px]"
+        textAnchor="middle"
+      >
+        3
+      </text>
+      <text
+        x={leftPad - 8}
+        y={toY(1 / Math.E) + 3}
+        className="fill-muted-foreground text-[9px]"
+        textAnchor="end"
+      >
+        0.37
+      </text>
+      <text
+        x={leftPad - 8}
+        y={toY(1 / (2 * Math.E)) + 3}
+        className="fill-muted-foreground text-[9px]"
+        textAnchor="end"
+      >
+        0.18
+      </text>
+      {/* curves */}
+      <polyline
+        points={pure.join(" ")}
+        fill="none"
+        className="stroke-destructive"
+        strokeWidth={1.8}
+      />
+      <polyline points={slot.join(" ")} fill="none" className="stroke-brand" strokeWidth={1.8} />
+      {/* legend */}
+      <rect
+        x={W - 130}
+        y={30}
+        width={120}
+        height={36}
+        className="fill-card stroke-border"
+        strokeWidth={1}
+        rx={3}
+      />
+      <line x1={W - 122} y1={42} x2={W - 102} y2={42} className="stroke-brand" strokeWidth={2} />
+      <text x={W - 98} y={45} className="fill-foreground text-[10px]">
+        slot (1/e)
+      </text>
+      <line
+        x1={W - 122}
+        y1={56}
+        x2={W - 102}
+        y2={56}
+        className="stroke-destructive"
+        strokeWidth={2}
+      />
+      <text x={W - 98} y={59} className="fill-foreground text-[10px]">
+        pure (1/2e)
+      </text>
+    </svg>
+  );
+}
+
+function ArpSvg() {
+  return (
+    <svg viewBox="0 0 500 220" className="w-full h-auto">
+      <text
+        x={250}
+        y={20}
+        textAnchor="middle"
+        className="fill-foreground text-[12px] font-semibold"
+      >
+        ARP-håndtrykk
+      </text>
+      {/* PC */}
+      <rect
+        x={30}
+        y={60}
+        width={100}
+        height={50}
+        rx={4}
+        className="fill-brand/20 stroke-brand"
+        strokeWidth={1.5}
+      />
+      <text x={80} y={80} textAnchor="middle" className="fill-foreground text-[11px] font-semibold">
+        Mobilen
+      </text>
+      <text
+        x={80}
+        y={94}
+        textAnchor="middle"
+        className="fill-muted-foreground text-[9px] font-mono"
+      >
+        10.0.0.5
+      </text>
+      <text
+        x={80}
+        y={105}
+        textAnchor="middle"
+        className="fill-muted-foreground text-[9px] font-mono"
+      >
+        AA:01
+      </text>
+      {/* Printer */}
+      <rect
+        x={370}
+        y={60}
+        width={100}
+        height={50}
+        rx={4}
+        className="fill-success/20 stroke-success"
+        strokeWidth={1.5}
+      />
+      <text
+        x={420}
+        y={80}
+        textAnchor="middle"
+        className="fill-foreground text-[11px] font-semibold"
+      >
+        Skriveren
+      </text>
+      <text
+        x={420}
+        y={94}
+        textAnchor="middle"
+        className="fill-muted-foreground text-[9px] font-mono"
+      >
+        10.0.0.10
+      </text>
+      <text
+        x={420}
+        y={105}
+        textAnchor="middle"
+        className="fill-muted-foreground text-[9px] font-mono"
+      >
+        BB:02
+      </text>
+      {/* Andre noder */}
+      <circle cx={200} cy={150} r={10} className="fill-muted stroke-border" strokeWidth={1} />
+      <text x={200} y={168} textAnchor="middle" className="fill-muted-foreground text-[8px]">
+        host
+      </text>
+      <circle cx={250} cy={150} r={10} className="fill-muted stroke-border" strokeWidth={1} />
+      <text x={250} y={168} textAnchor="middle" className="fill-muted-foreground text-[8px]">
+        host
+      </text>
+      <circle cx={300} cy={150} r={10} className="fill-muted stroke-border" strokeWidth={1} />
+      <text x={300} y={168} textAnchor="middle" className="fill-muted-foreground text-[8px]">
+        host
+      </text>
+      {/* Request: broadcast */}
+      <line
+        x1={130}
+        y1={75}
+        x2={370}
+        y2={75}
+        className="stroke-amber-500"
+        strokeWidth={1.8}
+        markerEnd="url(#arr-arp)"
+      />
+      <text
+        x={250}
+        y={68}
+        textAnchor="middle"
+        className="fill-amber-700 dark:fill-amber-400 text-[10px] font-semibold"
+      >
+        1. «Hvem har 10.0.0.10?» (broadcast)
+      </text>
+      {/* Reply: unicast */}
+      <line
+        x1={370}
+        y1={100}
+        x2={130}
+        y2={100}
+        className="stroke-success"
+        strokeWidth={1.8}
+        markerEnd="url(#arr-arp)"
+      />
+      <text x={250} y={195} textAnchor="middle" className="fill-success text-[10px] font-semibold">
+        2. «Det er meg, MAC=BB:02» (unicast)
+      </text>
+      <defs>
+        <marker
+          id="arr-arp"
+          viewBox="0 0 10 10"
+          refX={8}
+          refY={5}
+          markerWidth={6}
+          markerHeight={6}
+          orient="auto"
+        >
+          <path d="M 0 0 L 10 5 L 0 10 z" className="fill-foreground/70" />
+        </marker>
+      </defs>
+    </svg>
+  );
+}
+
+function SwitchHierarkiSvg() {
+  return (
+    <svg viewBox="0 0 500 220" className="w-full h-auto">
+      <text
+        x={250}
+        y={18}
+        textAnchor="middle"
+        className="fill-foreground text-[12px] font-semibold"
+      >
+        Klassisk switch-hierarki (3-tier)
+      </text>
+      {/* Core */}
+      <rect
+        x={210}
+        y={35}
+        width={80}
+        height={26}
+        rx={4}
+        className="fill-brand/30 stroke-brand"
+        strokeWidth={1.5}
+      />
+      <text
+        x={250}
+        y={52}
+        textAnchor="middle"
+        className="fill-foreground text-[10px] font-semibold"
+      >
+        Core
+      </text>
+      {/* Distrib */}
+      <rect
+        x={100}
+        y={95}
+        width={70}
+        height={24}
+        rx={4}
+        className="fill-amber-500/30 stroke-amber-500"
+        strokeWidth={1.5}
+      />
+      <text x={135} y={111} textAnchor="middle" className="fill-foreground text-[10px]">
+        Dist 1
+      </text>
+      <rect
+        x={330}
+        y={95}
+        width={70}
+        height={24}
+        rx={4}
+        className="fill-amber-500/30 stroke-amber-500"
+        strokeWidth={1.5}
+      />
+      <text x={365} y={111} textAnchor="middle" className="fill-foreground text-[10px]">
+        Dist 2
+      </text>
+      {/* Acc */}
+      <rect
+        x={40}
+        y={150}
+        width={60}
+        height={22}
+        rx={4}
+        className="fill-success/30 stroke-success"
+        strokeWidth={1.2}
+      />
+      <text x={70} y={165} textAnchor="middle" className="fill-foreground text-[9px]">
+        Acc A
+      </text>
+      <rect
+        x={110}
+        y={150}
+        width={60}
+        height={22}
+        rx={4}
+        className="fill-success/30 stroke-success"
+        strokeWidth={1.2}
+      />
+      <text x={140} y={165} textAnchor="middle" className="fill-foreground text-[9px]">
+        Acc B
+      </text>
+      <rect
+        x={330}
+        y={150}
+        width={60}
+        height={22}
+        rx={4}
+        className="fill-success/30 stroke-success"
+        strokeWidth={1.2}
+      />
+      <text x={360} y={165} textAnchor="middle" className="fill-foreground text-[9px]">
+        Acc C
+      </text>
+      <rect
+        x={400}
+        y={150}
+        width={60}
+        height={22}
+        rx={4}
+        className="fill-success/30 stroke-success"
+        strokeWidth={1.2}
+      />
+      <text x={430} y={165} textAnchor="middle" className="fill-foreground text-[9px]">
+        Acc D
+      </text>
+      {/* Links */}
+      <line x1={230} y1={61} x2={135} y2={95} className="stroke-foreground/60" strokeWidth={1.2} />
+      <line x1={270} y1={61} x2={365} y2={95} className="stroke-foreground/60" strokeWidth={1.2} />
+      <line x1={120} y1={119} x2={70} y2={150} className="stroke-foreground/60" strokeWidth={1.2} />
+      <line
+        x1={150}
+        y1={119}
+        x2={140}
+        y2={150}
+        className="stroke-foreground/60"
+        strokeWidth={1.2}
+      />
+      <line
+        x1={350}
+        y1={119}
+        x2={360}
+        y2={150}
+        className="stroke-foreground/60"
+        strokeWidth={1.2}
+      />
+      <line
+        x1={380}
+        y1={119}
+        x2={430}
+        y2={150}
+        className="stroke-foreground/60"
+        strokeWidth={1.2}
+      />
+      {/* PC */}
+      {[55, 125, 345, 415].map((x, i) => (
+        <g key={i}>
+          <line x1={x} y1={172} x2={x} y2={195} className="stroke-foreground/40" strokeWidth={1} />
+          <circle cx={x} cy={203} r={6} className="fill-card stroke-border" strokeWidth={1} />
+        </g>
+      ))}
+      <text x={250} y={215} textAnchor="middle" className="fill-muted-foreground text-[9px] italic">
+        Aksess (hostene) → distribusjons (aggregering) → core (toppen)
+      </text>
+    </svg>
+  );
+}
+
+function VlanTagSvg() {
+  return (
+    <svg viewBox="0 0 500 200" className="w-full h-auto">
+      <text
+        x={250}
+        y={18}
+        textAnchor="middle"
+        className="fill-foreground text-[12px] font-semibold"
+      >
+        802.1Q-tag: 4 bytes mellom kilde-MAC og EtherType
+      </text>
+      {/* Ramme uten tag */}
+      <text x={20} y={50} className="fill-muted-foreground text-[10px]">
+        Uten tag:
+      </text>
+      <rect
+        x={80}
+        y={40}
+        width={70}
+        height={24}
+        className="fill-amber-500/30 stroke-amber-500"
+        strokeWidth={1}
+      />
+      <text x={115} y={56} textAnchor="middle" className="fill-foreground text-[9px]">
+        dst MAC
+      </text>
+      <rect
+        x={150}
+        y={40}
+        width={70}
+        height={24}
+        className="fill-amber-500/30 stroke-amber-500"
+        strokeWidth={1}
+      />
+      <text x={185} y={56} textAnchor="middle" className="fill-foreground text-[9px]">
+        src MAC
+      </text>
+      <rect
+        x={220}
+        y={40}
+        width={50}
+        height={24}
+        className="fill-brand/30 stroke-brand"
+        strokeWidth={1}
+      />
+      <text x={245} y={56} textAnchor="middle" className="fill-foreground text-[9px]">
+        Type
+      </text>
+      <rect
+        x={270}
+        y={40}
+        width={180}
+        height={24}
+        className="fill-brand/15 stroke-brand/60"
+        strokeWidth={1}
+      />
+      <text x={360} y={56} textAnchor="middle" className="fill-foreground text-[9px]">
+        payload
+      </text>
+
+      {/* Ramme med tag */}
+      <text x={20} y={120} className="fill-muted-foreground text-[10px]">
+        Med tag:
+      </text>
+      <rect
+        x={80}
+        y={110}
+        width={50}
+        height={24}
+        className="fill-amber-500/30 stroke-amber-500"
+        strokeWidth={1}
+      />
+      <text x={105} y={126} textAnchor="middle" className="fill-foreground text-[9px]">
+        dst MAC
+      </text>
+      <rect
+        x={130}
+        y={110}
+        width={50}
+        height={24}
+        className="fill-amber-500/30 stroke-amber-500"
+        strokeWidth={1}
+      />
+      <text x={155} y={126} textAnchor="middle" className="fill-foreground text-[9px]">
+        src MAC
+      </text>
+      <rect
+        x={180}
+        y={110}
+        width={80}
+        height={24}
+        className="fill-purple-500/30 stroke-purple-500"
+        strokeWidth={1.5}
+      />
+      <text
+        x={220}
+        y={126}
+        textAnchor="middle"
+        className="fill-foreground text-[9px] font-semibold"
+      >
+        VLAN-tag
+      </text>
+      <rect
+        x={260}
+        y={110}
+        width={40}
+        height={24}
+        className="fill-brand/30 stroke-brand"
+        strokeWidth={1}
+      />
+      <text x={280} y={126} textAnchor="middle" className="fill-foreground text-[9px]">
+        Type
+      </text>
+      <rect
+        x={300}
+        y={110}
+        width={150}
+        height={24}
+        className="fill-brand/15 stroke-brand/60"
+        strokeWidth={1}
+      />
+      <text x={375} y={126} textAnchor="middle" className="fill-foreground text-[9px]">
+        payload
+      </text>
+
+      {/* Tag zoom */}
+      <line
+        x1={180}
+        y1={134}
+        x2={140}
+        y2={155}
+        className="stroke-purple-500/60"
+        strokeWidth={1}
+        strokeDasharray="2 2"
+      />
+      <line
+        x1={260}
+        y1={134}
+        x2={400}
+        y2={155}
+        className="stroke-purple-500/60"
+        strokeWidth={1}
+        strokeDasharray="2 2"
+      />
+      <rect
+        x={140}
+        y={155}
+        width={70}
+        height={28}
+        className="fill-purple-500/30 stroke-purple-500"
+        strokeWidth={1}
+      />
+      <text x={175} y={170} textAnchor="middle" className="fill-foreground text-[9px] font-mono">
+        TPID
+      </text>
+      <text x={175} y={180} textAnchor="middle" className="fill-muted-foreground text-[8px]">
+        0x8100
+      </text>
+      <rect
+        x={210}
+        y={155}
+        width={50}
+        height={28}
+        className="fill-purple-500/30 stroke-purple-500"
+        strokeWidth={1}
+      />
+      <text x={235} y={170} textAnchor="middle" className="fill-foreground text-[9px] font-mono">
+        PCP
+      </text>
+      <text x={235} y={180} textAnchor="middle" className="fill-muted-foreground text-[8px]">
+        3 bit
+      </text>
+      <rect
+        x={260}
+        y={155}
+        width={40}
+        height={28}
+        className="fill-purple-500/30 stroke-purple-500"
+        strokeWidth={1}
+      />
+      <text x={280} y={170} textAnchor="middle" className="fill-foreground text-[9px] font-mono">
+        DEI
+      </text>
+      <text x={280} y={180} textAnchor="middle" className="fill-muted-foreground text-[8px]">
+        1 bit
+      </text>
+      <rect
+        x={300}
+        y={155}
+        width={100}
+        height={28}
+        className="fill-purple-500/30 stroke-purple-500"
+        strokeWidth={1}
+      />
+      <text
+        x={350}
+        y={170}
+        textAnchor="middle"
+        className="fill-foreground text-[9px] font-mono font-semibold"
+      >
+        VLAN-ID
+      </text>
+      <text x={350} y={180} textAnchor="middle" className="fill-muted-foreground text-[8px]">
+        12 bit (0–4095)
+      </text>
+    </svg>
+  );
+}
+
+function FatTreeVsLeafSpineSvg() {
+  return (
+    <svg viewBox="0 0 500 240" className="w-full h-auto">
+      <text
+        x={250}
+        y={18}
+        textAnchor="middle"
+        className="fill-foreground text-[12px] font-semibold"
+      >
+        3-tier (klassisk) vs leaf-spine
+      </text>
+      {/* Left: 3-tier */}
+      <text
+        x={110}
+        y={40}
+        textAnchor="middle"
+        className="fill-destructive text-[10px] uppercase tracking-wider font-semibold"
+      >
+        3-tier
+      </text>
+      <rect
+        x={90}
+        y={50}
+        width={40}
+        height={18}
+        className="fill-brand/30 stroke-brand"
+        strokeWidth={1}
+      />
+      <text x={110} y={62} textAnchor="middle" className="fill-foreground text-[8px]">
+        core
+      </text>
+      <rect
+        x={60}
+        y={95}
+        width={40}
+        height={18}
+        className="fill-amber-500/30 stroke-amber-500"
+        strokeWidth={1}
+      />
+      <rect
+        x={120}
+        y={95}
+        width={40}
+        height={18}
+        className="fill-amber-500/30 stroke-amber-500"
+        strokeWidth={1}
+      />
+      <text x={80} y={107} textAnchor="middle" className="fill-foreground text-[8px]">
+        agg
+      </text>
+      <text x={140} y={107} textAnchor="middle" className="fill-foreground text-[8px]">
+        agg
+      </text>
+      <rect
+        x={40}
+        y={140}
+        width={30}
+        height={18}
+        className="fill-success/30 stroke-success"
+        strokeWidth={1}
+      />
+      <rect
+        x={75}
+        y={140}
+        width={30}
+        height={18}
+        className="fill-success/30 stroke-success"
+        strokeWidth={1}
+      />
+      <rect
+        x={110}
+        y={140}
+        width={30}
+        height={18}
+        className="fill-success/30 stroke-success"
+        strokeWidth={1}
+      />
+      <rect
+        x={145}
+        y={140}
+        width={30}
+        height={18}
+        className="fill-success/30 stroke-success"
+        strokeWidth={1}
+      />
+      {/* core-agg */}
+      <line x1={110} y1={68} x2={80} y2={95} className="stroke-foreground/50" strokeWidth={1} />
+      <line x1={110} y1={68} x2={140} y2={95} className="stroke-foreground/50" strokeWidth={1} />
+      {/* agg-acc */}
+      <line x1={80} y1={113} x2={55} y2={140} className="stroke-foreground/50" strokeWidth={1} />
+      <line x1={80} y1={113} x2={90} y2={140} className="stroke-foreground/50" strokeWidth={1} />
+      <line x1={140} y1={113} x2={125} y2={140} className="stroke-foreground/50" strokeWidth={1} />
+      <line x1={140} y1={113} x2={160} y2={140} className="stroke-foreground/50" strokeWidth={1} />
+      <text
+        x={110}
+        y={180}
+        textAnchor="middle"
+        className="fill-destructive text-[9px] font-semibold"
+      >
+        Acc → Acc: 6 hopp
+      </text>
+      <text x={110} y={196} textAnchor="middle" className="fill-muted-foreground text-[9px]">
+        Trang core-flaskehals
+      </text>
+
+      {/* Right: leaf-spine */}
+      <text
+        x={370}
+        y={40}
+        textAnchor="middle"
+        className="fill-success text-[10px] uppercase tracking-wider font-semibold"
+      >
+        Leaf-spine
+      </text>
+      <rect
+        x={290}
+        y={60}
+        width={40}
+        height={18}
+        className="fill-brand/30 stroke-brand"
+        strokeWidth={1}
+      />
+      <rect
+        x={340}
+        y={60}
+        width={40}
+        height={18}
+        className="fill-brand/30 stroke-brand"
+        strokeWidth={1}
+      />
+      <rect
+        x={390}
+        y={60}
+        width={40}
+        height={18}
+        className="fill-brand/30 stroke-brand"
+        strokeWidth={1}
+      />
+      <text x={310} y={72} textAnchor="middle" className="fill-foreground text-[8px]">
+        spine
+      </text>
+      <text x={360} y={72} textAnchor="middle" className="fill-foreground text-[8px]">
+        spine
+      </text>
+      <text x={410} y={72} textAnchor="middle" className="fill-foreground text-[8px]">
+        spine
+      </text>
+      <rect
+        x={280}
+        y={130}
+        width={40}
+        height={18}
+        className="fill-success/30 stroke-success"
+        strokeWidth={1}
+      />
+      <rect
+        x={340}
+        y={130}
+        width={40}
+        height={18}
+        className="fill-success/30 stroke-success"
+        strokeWidth={1}
+      />
+      <rect
+        x={400}
+        y={130}
+        width={40}
+        height={18}
+        className="fill-success/30 stroke-success"
+        strokeWidth={1}
+      />
+      <text x={300} y={142} textAnchor="middle" className="fill-foreground text-[8px]">
+        leaf
+      </text>
+      <text x={360} y={142} textAnchor="middle" className="fill-foreground text-[8px]">
+        leaf
+      </text>
+      <text x={420} y={142} textAnchor="middle" className="fill-foreground text-[8px]">
+        leaf
+      </text>
+      {/* Mesh */}
+      {[300, 360, 420].map((lx) =>
+        [310, 360, 410].map((sx, i) => (
+          <line
+            key={`${lx}-${sx}-${i}`}
+            x1={lx}
+            y1={130}
+            x2={sx}
+            y2={78}
+            className="stroke-foreground/40"
+            strokeWidth={0.7}
+          />
+        )),
+      )}
+      <text x={360} y={180} textAnchor="middle" className="fill-success text-[9px] font-semibold">
+        Leaf → Leaf: 2 hopp
+      </text>
+      <text x={360} y={196} textAnchor="middle" className="fill-muted-foreground text-[9px]">
+        Mange parallelle stier (ECMP)
       </text>
     </svg>
   );

@@ -223,63 +223,63 @@ function Section81() {
       <div className="grid gap-3 lg:grid-cols-2">
         <Defs
           items={[
-            {
-              term: "Konfidensialitet",
-              body: "Bare avsender og tiltenkt mottaker skal kunne lese innholdet. En passiv tjuvlytter på lenken skal ikke kunne forstå hva som sendes. Oppnås med kryptering.",
-            },
-            {
-              term: "Meldings-integritet",
-              body: "Mottakeren skal kunne stole på at innholdet ikke har blitt endret underveis — verken ved et uhell eller av en ondsinnet aktør. Selv et enkelt bit skal ikke kunne flippes uten at det oppdages. Oppnås med MAC, HMAC eller digital signering.",
-            },
+            { term: "Konfidensialitet", body: "Bare A og B leser innholdet — krypter." },
+            { term: "Meldings-integritet", body: "Ingen bit endret underveis — MAC/signering." },
             {
               term: "Endepunkts-autentisering",
-              body: "Begge parter skal kunne være sikre på hvem de snakker med. Når nettleseren din kobler til en bank skal den vite at det faktisk er banken — ikke en angriper som har omdirigert DNS. Oppnås typisk med digitale sertifikater og nonces.",
+              body: "Du snakker med rett part — sertifikat + nonce.",
             },
             {
               term: "Operasjonell tilgjengelighet",
-              body: "Tjenesten skal være tilgjengelig for legitime brukere. Et angrep som lammer tjenesten (DoS, DDoS) bryter dette målet selv om det ikke leser eller endrer data. Forsvares med rate-limiting, scrubbing-tjenester og overdimensjonering.",
+              body: "Tjenesten lever — rate-limit, scrubbing.",
             },
+            { term: "Trussel-modell", body: "Eksplisitt liste over hva angriper kan/ikke kan." },
+            { term: "Alice, Bob, Trudy", body: "Standard-navn: to legitime parter + angriper." },
+            { term: "Defense in depth", body: "Flere lag forsvar — én feil knekker ikke alt." },
             {
-              term: "Trussel-modell",
-              body: "Eksplisitt liste over hva angriperen kan og ikke kan. Eks: «angriperen kan se all pakkene på lenken, men ikke kjøre kode på endepunktene». Uten en klar trussel-modell går sikkerhets-diskusjoner i ring.",
+              term: "Ikke-avvisning",
+              body: "Avsender kan ikke nekte — krever signering, ikke MAC.",
             },
+            { term: "Autorisasjon vs autentisering", body: "«Hvem er du» vs «hva får du gjøre»." },
             {
-              term: "Trudy som standard-fiende",
-              body: "Vi bruker tradisjonelt Alice og Bob som de to legitime partene som vil snakke trygt, og Trudy som angriperen. Det er bare en pedagogisk konvensjon — i praksis er angriperen alt fra et statlig etterretningsapparat til en kompromittert WiFi-ruter.",
+              term: "Personvern vs konfidensialitet",
+              body: "Personvern er bredere: hvilke data samles.",
             },
-            {
-              term: "Defense in depth",
-              body: "Prinsipp om at man ikke skal stole på ett enkelt forsvar. Hvis brannmuren skulle feile, skal det fortsatt være kryptering, autentisering og tilgangsstyring som beskytter. Hver lag er en uavhengig barriere.",
-            },
-            {
-              term: "Ikke-avvisning (non-repudiation)",
-              body: "Mottaker kan i ettertid bevise overfor en tredjepart at avsender faktisk sendte meldingen. Symmetrisk MAC gir IKKE dette (begge har nøkkelen — hvem som helst av dem kan ha laget tag-en). Digital signering gjør det fordi bare innehaveren av den private nøkkelen kan signere.",
-            },
-            {
-              term: "Autorisasjon",
-              body: "Adskilt fra autentisering: når jeg vet hvem du er, hvilke handlinger får du lov til? Autentisering svarer «hvem», autorisasjon svarer «hva får du gjøre». En innlogget bruker kan være autentisert men ikke autorisert til å slette andre brukeres data.",
-            },
-            {
-              term: "Konfidensialitet vs personvern",
-              body: "Konfidensialitet betyr at innholdet ikke leses av uvedkommende. Personvern er bredere — det handler også om hvilke data som overhodet samles inn, hvem som ser dem internt, hvor lenge de lagres. Krypto løser konfidensialitet; personvern krever også organisatoriske og juridiske grep.",
-            },
-            {
-              term: "Konfidensialitet for metadata",
-              body: "Selv om innholdet er kryptert lekker ofte hvem som snakker med hvem, når, og hvor mye. TLS skjuler bytene men ikke at klient X koblet til server Y kl. 14:03. Tor og mixnett er forsvar mot metadata-lekkasje.",
-            },
-            {
-              term: "Passiv vs aktiv angriper",
-              body: "Passiv: kan kun lytte (sniffe trafikk). Aktiv: kan også endre, slette, sette inn eller forsinke pakker. Forsvars-mekanismer som bare beskytter mot passiv (f.eks. ren kryptering uten MAC) er ikke nok når trussel-modellen inkluderer aktiv angriper.",
-            },
+            { term: "Metadata-lekkasje", body: "Krypto skjuler innhold, ikke hvem/når." },
+            { term: "Passiv vs aktiv angriper", body: "Lytter / endrer-sletter-injiserer." },
             {
               term: "Insider-trussel",
-              body: "Angriper med legitim tilgang til deler av systemet — ansatt, leverandør, kompromittert konto. Klassiske perimeter-forsvar (brannmur) ser ikke dette. Forsvar krever minste-privilegium, logging, og separation of duties.",
+              body: "Ansatt med legitim tilgang — perimeter ser ikke det.",
             },
           ]}
         />
         <Illustration caption="De fire målene som tilsammen utgjør «sikker kommunikasjon». Ingen av dem leveres gratis — hver krever sin egen mekanisme.">
           <FourGoalsSvg />
         </Illustration>
+      </div>
+
+      <div className="grid gap-3 md:grid-cols-2">
+        <Metafor tittel="CIA-triaden er et bankhvelv">
+          <p>
+            Konfidensialitet: ingen ser pengene gjennom døra. Integritet: ingen endrer beløpet på
+            kontoutskriften. Tilgjengelighet: banken er åpen når du trenger den. Tre uavhengige
+            egenskaper — den ene gir ikke gratis de andre.
+          </p>
+        </Metafor>
+        <Metafor tittel="Defense in depth er et middelaldersk slott">
+          <p>
+            Vollgrav, ytre mur, indre mur, donjon. En angriper som har tatt vollgraven, har ikke
+            tatt slottet. Brannmur er vollgraven; kryptering, autentisering og tilgangsstyring er
+            innerveggene. Hver gir en uavhengig sjanse til å stoppe ham.
+          </p>
+        </Metafor>
+        <Metafor tittel="Ikke-avvisning er en notarius-signatur">
+          <p>
+            En MAC er som at både du og jeg har samme stempel — vi kan begge stemple en sjekk, så
+            ingen kan bevise at det var DU som signerte. En digital signatur er som en notarius:
+            bare DU har det unike notarius-stemplet, så du kan ikke senere nekte for at det var deg.
+          </p>
+        </Metafor>
       </div>
 
       <Hvorfor title="Hvorfor skille mellom autentisering og integritet?">
@@ -292,6 +292,10 @@ function Section81() {
           (GCM, ChaCha20-Poly1305) sørger for at begge mål dekkes i én operasjon.
         </p>
       </Hvorfor>
+
+      <Illustration caption="Passiv lytter ser bytene; aktiv angriper kan endre, slette og injisere — krever helt ulike forsvar.">
+        <PassiveActiveSvg />
+      </Illustration>
 
       <Example title="Eksempel: hvilket mål brytes?">
         <ul className="list-disc pl-5 space-y-1">
@@ -340,91 +344,87 @@ function Section82() {
       <div className="grid gap-3 lg:grid-cols-2">
         <Defs
           items={[
-            {
-              term: "Symmetrisk kryptografi",
-              body: "Samme nøkkel K brukes for å kryptere og dekryptere: C = E(K, P) og P = D(K, C). Veldig raskt — moderne CPU-er kjører AES i hardware med flere GB/s gjennomstrømning. Men avsender og mottaker må allerede dele K, og det er der det vanskelige starter.",
-            },
-            {
-              term: "AES (Advanced Encryption Standard)",
-              body: "Standarden for symmetrisk krypto siden 2001. Blokk-cipher med 128-bits blokker og 128/192/256-bits nøkler. Brukes i alt fra disk-kryptering til TLS. Ingen kjente effektive angrep mot full AES med riktig nøkkellengde og driftsmodus.",
-            },
+            { term: "Symmetrisk kryptografi", body: "Samme nøkkel K på begge sider — rask AES." },
+            { term: "AES", body: "Symmetrisk standard, 128-bits blokk, 128/192/256-bits nøkler." },
             {
               term: "Drifts-modus (CBC, CTR, GCM)",
-              body: "En blokk-cipher krypterer bare én fast-stor blokk om gangen. For å kryptere lengre meldinger trengs en modus. CBC kjeder blokkene med XOR; CTR bruker krypteringen som en pseudo-strøm; GCM kombinerer CTR med en MAC og er førstevalg i dag.",
+              body: "Hvordan kjede blokker — GCM er førstevalg.",
             },
             {
               term: "Asymmetrisk kryptografi",
-              body: "Hver bruker har et nøkkel-par: en offentlig nøkkel som alle ser, og en privat nøkkel som bare hun har. Alt kryptert med offentlig nøkkel kan bare leses med tilhørende privat nøkkel. Løser nøkkel-distribusjon — men er ~1000 ganger tregere enn symmetrisk.",
+              body: "Nøkkel-par: offentlig krypterer, privat dekrypterer.",
             },
+            { term: "RSA", body: "Asymmetrisk — bygger på faktorisering, 2048+ bits." },
+            { term: "ECC", body: "Elliptiske kurver — kortere nøkler, samme styrke." },
             {
-              term: "RSA",
-              body: "Klassisk asymmetrisk algoritme, basert på vanskelighetsgraden ved å faktorisere et stort tall som er produktet av to primtall. Moderne nøkkellengde er 2048 eller 3072 bit. Brukes både til kryptering og digital signering, men erstattes gradvis av ECC fordi nøkler og signaturer blir mye mindre.",
+              term: "Diffie-Hellman",
+              body: "Felles hemmelighet over åpen kanal, uten å sende den.",
             },
+            { term: "Hybrid-system", body: "Asym deler nøkkel, sym krypterer dataene." },
             {
-              term: "ECC (Elliptic Curve Cryptography)",
-              body: "Asymmetrisk krypto basert på algebraen på elliptiske kurver. Gir samme sikkerhet som RSA med mye mindre nøkler — en 256-bits ECC-nøkkel tilsvarer omtrent 3072 bits RSA. Mindre nøkler betyr mindre data over linja og raskere operasjoner. Dominerer på mobil og i moderne TLS.",
+              term: "Blokk- vs strøm-cipher",
+              body: "Faste blokker vs nøkkel-strøm XOR-et på input.",
             },
+            { term: "ECB-modus", body: "Naiv per-blokk — lekker mønstre, BRUK ALDRI." },
+            { term: "CBC-modus", body: "Kjeder med XOR — krever IV og separat MAC." },
+            { term: "CTR-modus", body: "Krypterer en teller, XOR-er ut — fullt parallelt." },
+            { term: "GCM-modus", body: "AEAD: CTR + autentiserings-tag, én operasjon." },
+            { term: "IV / nonce", body: "Unik per (nøkkel, melding) — hindrer mønster." },
+            { term: "AEAD", body: "Krypter OG autentiser i én primitiv (GCM, ChaCha20-Poly1305)." },
             {
-              term: "Diffie-Hellman nøkkelutveksling",
-              body: "Algoritme som lar to parter avtale en delt hemmelighet over en åpen kanal, uten å ha kommunisert på forhånd. Begge velger en privat verdi, sender en avledet offentlig verdi, og kombinerer egne private med motpartens offentlige til samme felles tall. En tjuvlytter ser bare de offentlige verdiene og kan ikke regne ut den delte hemmeligheten.",
+              term: "Padding (PKCS#7)",
+              body: "Fyller siste blokk — feil sjekk gir padding-oracle.",
             },
-            {
-              term: "Hybrid-system",
-              body: "I praksis bruker man asymmetrisk krypto eller DH bare til å avtale en sesjons-nøkkel, og deretter krypteres alle data med symmetrisk AES. Du får det beste fra begge — løste nøkkel-distribusjon, samtidig som datasiden går i hardware-fart.",
-            },
-            {
-              term: "Blokk-cipher vs strøm-cipher",
-              body: "Blokk-cipher (AES) krypterer faste blokker (128 bit). Strøm-cipher (ChaCha20, RC4) produserer en lang pseudo-tilfeldig nøkkelstrøm som XOR-es med klarteksten byte-for-byte. CTR-modus gjør en blokk-cipher om til en strøm-cipher i praksis.",
-            },
-            {
-              term: "ECB-modus (Electronic Codebook)",
-              body: "Naiveste blokk-cipher-modus: hver blokk krypteres uavhengig med samme nøkkel. Problem: like klartekst-blokker gir like ciphertext-blokker. Et kjent eksempel er Tux-bildet som forblir gjenkjennelig etter ECB-kryptering. Bruk ALDRI ECB for noe annet enn øvinger.",
-            },
-            {
-              term: "CBC-modus (Cipher Block Chaining)",
-              body: "Hver klartekst-blokk XOR-es med forrige ciphertext-blokk før kryptering. Første blokk XOR-es med en IV (initialization vector). Skjuler mønstre, men er sekvensiell (kan ikke parallelliseres) og krever separat MAC for integritet — feil bruk gir padding-oracle-angrep.",
-            },
-            {
-              term: "CTR-modus (Counter)",
-              body: "Krypterer en teller (IV ‖ 0, IV ‖ 1, ...) og XOR-er resultatet med klarteksten. Helt parallelliserbar — perfekt for hardware-akselerasjon. Men hvis (nøkkel, teller)-paret gjenbrukes, kan klarteksten utledes ved å XOR-e to ciphertekster.",
-            },
-            {
-              term: "GCM-modus (Galois/Counter Mode)",
-              body: "AEAD-modus: kombinerer AES-CTR for kryptering med GHASH for autentisering. Produserer både ciphertext og en autentiserings-tag i én operasjon. Førstevalg i dag — TLS 1.3 tillater nesten ingenting annet. Krever unik nonce per (nøkkel, melding) — gjenbruk er katastrofalt.",
-            },
-            {
-              term: "IV (Initialization Vector) / nonce",
-              body: "Tilfeldig eller telle-basert verdi som sendes klart sammen med ciphertext. Sørger for at samme klartekst kryptert to ganger med samme nøkkel gir forskjellig ciphertext. CBC krever uforutsigbar IV; CTR og GCM krever bare at nonce er unik for nøkkelen.",
-            },
-            {
-              term: "AEAD (Authenticated Encryption with Associated Data)",
-              body: "Modus som gir konfidensialitet OG integritet i én primitiv. «Associated data» (f.eks. en pakke-header) blir autentisert men ikke kryptert. GCM, ChaCha20-Poly1305 og AES-OCB er AEAD. Eliminerer hele klasser av implementasjons-feil som rammer separat-kryptering-og-MAC-konstruksjoner.",
-            },
-            {
-              term: "Padding og PKCS#7",
-              body: "Blokk-ciphere krever input i hele blokker. PKCS#7 fyller på de N manglende bytene med verdien N (eks: trenger 3 byte → tre byte 0x03). Dekryptering må sjekke padding. Hvis denne sjekken lekker via tids- eller feilmeldinger får man et padding-oracle-angrep som lar angriper dekryptere uten nøkkel.",
-            },
-            {
-              term: "Nøkkellengde og 2^N",
-              body: "En 128-bits AES-nøkkel betyr 2^128 mulige nøkler. Brute-force er praktisk umulig — selv om hele jordens datakraft brukte resten av solens levetid på det. Asymmetriske algoritmer krever lengre nøkler (RSA 2048+, ECC 256+) fordi de bygger på matematiske strukturer med smartere angrep enn brute-force.",
-            },
-            {
-              term: "ChaCha20-Poly1305",
-              body: "Alternativ AEAD til AES-GCM. Strøm-cipher (ChaCha20) + MAC (Poly1305). Konstant-tids implementasjon i programvare uten AES-hardware — derfor foretrukket på mobil med dårlig AES-NI-støtte. Brukes også av Google QUIC og WireGuard.",
-            },
+            { term: "Nøkkellengde og 2^N", body: "128-bit = 2^128 nøkler, brute-force umulig." },
+            { term: "ChaCha20-Poly1305", body: "AEAD uten AES-hardware — favoritt på mobil." },
             {
               term: "Kerckhoffs' prinsipp",
-              body: "Sikkerheten skal hvile på nøkkelens hemmelighet, ikke på algoritmens. Hemmelige algoritmer (security through obscurity) brytes erfaringsmessig så fort de blir analysert. Åpne algoritmer som har overlevd mange års offentlig kryptoanalyse er mye tryggere.",
+              body: "Sikkerhet skal ligge i nøkkelen, ikke algoritmen.",
             },
             {
-              term: "Post-kvante-kryptografi",
-              body: "RSA og ECC brytes av Shor's algoritme på en stor nok kvantemaskin. NIST har derfor standardisert nye algoritmer (CRYSTALS-Kyber for KEM, Dilithium for signering) som hviler på gitter-problemer som er antatt vanskelige også for kvantemaskiner. Hybrid-deployment (ECDHE + Kyber) ruller ut nå.",
+              term: "Post-kvante-krypto",
+              body: "Gitter-baserte algoritmer mot fremtidige kvante-PC-er.",
             },
           ]}
         />
         <Illustration caption="Symmetrisk vs asymmetrisk flyt. Til venstre samme nøkkel begge veier; til høyre offentlig kryptering, privat dekryptering.">
           <SymVsAsymSvg />
         </Illustration>
+      </div>
+
+      <div className="grid gap-3 md:grid-cols-2">
+        <Metafor tittel="Symmetrisk nøkkel er husnøkkelen">
+          <p>
+            Samme nøkkel låser og åpner. Trygt — så lenge ingen kopierer den. Men hvordan får du
+            nøkkelen til en venn i Bergen som du aldri har møtt? Du kan ikke poste den åpent. Det er
+            nøkkel-distribusjons-problemet.
+          </p>
+        </Metafor>
+        <Metafor tittel="Asymmetrisk er en postkasse">
+          <p>
+            Alle kan slippe et brev inn (offentlig nøkkel — sleifa er åpen). Men bare DU har
+            nøkkelen til å åpne postkassen og lese (privat nøkkel). Du kan til og med trykke en
+            stempel «her er sleifa-åpningen min» på dronning Gates' offentlige nettside, og
+            allikevel er det bare DU som kan lese det som blir lagt inn.
+          </p>
+        </Metafor>
+        <Metafor tittel="Diffie-Hellman er to malingbøtter">
+          <p>
+            Alice og Bob har hver sin lille pott med privat farge. De har en felles startfarge
+            (gul). Begge blander pott + startfarge og sender den blandede fargen åpent over. Når de
+            igjen mikser inn sin egen private farge i motpartens, ender begge på nøyaktig samme
+            slutt-blanding — men en tjuvlytter ser bare de halv-blandede fargene og kan ikke utlede
+            det private bidraget.
+          </p>
+        </Metafor>
+        <Metafor tittel="ECB-modus er en filt-stempel">
+          <p>
+            Tenk deg en stempel-arbeid der hvert ord erstattes med et eget stempel-tegn («ja» → ▲,
+            «nei» → ●, «overfør» → ◆). Like ord blir like tegn. Et bilde av en pingvin forblir
+            formet som en pingvin etter «kryptering». Det er hvorfor ECB lekker mønstre — og hvorfor
+            du aldri skal bruke det utenfor lærebok-eksempler.
+          </p>
+        </Metafor>
       </div>
 
       <Hvorfor title="Hvorfor brukes hybrid krypto (asymmetrisk + symmetrisk) i praksis?">
@@ -446,6 +446,10 @@ function Section82() {
 
       <Illustration caption="Diffie-Hellman: begge mikser sin private verdi med motpartens offentlige, og ender på samme delte hemmelighet uten å sende den.">
         <DhSvg />
+      </Illustration>
+
+      <Illustration caption="ECB lekker mønstre: like klartekst-blokker gir like ciphertext-blokker. CBC-kjede skjuler det.">
+        <EcbVsCbcSvg />
       </Illustration>
 
       <Example title="Eksempel: hvorfor ikke bare bruke RSA hele veien?">
@@ -524,75 +528,74 @@ function Section83() {
       <div className="grid gap-3 lg:grid-cols-2">
         <Defs
           items={[
+            { term: "Kryptografisk hash", body: "Fingeravtrykk: vilkårlig inn, kort fast ut." },
             {
-              term: "Kryptografisk hash-funksjon",
-              body: "Funksjon h(m) som tar inn en melding av vilkårlig lengde og produserer en kort, fast-størrelse fingeravtrykk. Skal være praktisk umulig å (a) finne to meldinger med samme hash, eller (b) regne ut en melding som matcher en gitt hash. SHA-256 er dagens standard.",
+              term: "Hash alene ikke nok",
+              body: "Trudy kan bytte både m og h(m) — trenger nøkkel.",
             },
-            {
-              term: "Hvorfor hash alene ikke er nok",
-              body: "Hvis Alice sender (m, h(m)) til Bob over en åpen lenke, kan Trudy bytte ut hele meldingen til (m', h(m')) — hashen passer fortsatt. Hash gir bare beskyttelse mot tilfeldig endring (transmission errors), ikke mot en aktiv angriper.",
-            },
-            {
-              term: "MAC (Message Authentication Code)",
-              body: "Som en hash, men funksjonen tar inn en delt hemmelig nøkkel: t = MAC(K, m). Mottakeren regner ut samme MAC med samme K og sjekker at den matcher. Trudy uten K kan ikke generere gyldig t, så hun kan ikke forfalske meldinger. Krever at avsender og mottaker allerede deler K.",
-            },
-            {
-              term: "HMAC",
-              body: "Standard-konstruksjon for å lage en MAC ut av en hvilken som helst hash-funksjon. HMAC-SHA256 = SHA256((K ⊕ opad) || SHA256((K ⊕ ipad) || m)). Den doble hashen og de to konstantene gjør at lengde-extension-angrep mot rene hash-baserte MAC-er ikke fungerer.",
-            },
-            {
-              term: "Digital signering",
-              body: "Asymmetrisk versjon av MAC. Alice signerer m med sin private nøkkel: s = sign(privA, m). Hvem som helst med Alices offentlige nøkkel kan verifisere: verify(pubA, m, s) → ja/nei. Gir også ikke-avvisbarhet — Alice kan ikke i ettertid hevde at hun ikke signerte, siden bare hun har privA.",
-            },
-            {
-              term: "Signer hashen, ikke meldingen",
-              body: "Asymmetrisk signering er treigt, så i praksis signerer man h(m) i stedet for m. Alice sender (m, sign(privA, h(m))). Bob henter m, beregner h(m), og verifiserer signaturen mot den. Like trygt fordi hash-en er kollisjonsresistent.",
-            },
+            { term: "MAC", body: "Hash med delt nøkkel: t = MAC(K, m)." },
+            { term: "HMAC", body: "Standard MAC-konstruksjon fra hvilken som helst hash." },
+            { term: "Digital signering", body: "Asymmetrisk MAC — bare privat nøkkel kan lage." },
+            { term: "Signer hashen", body: "RSA er treig; signer h(m), ikke hele m." },
             {
               term: "Replay-angrep",
-              body: "Selv en gyldig signert melding kan misbrukes hvis Trudy spiller den av på nytt senere. «Overfør 100 kr fra Alice til Trudy» med Alices signatur kan sendes 1000 ganger. Forsvar: inkluder en nonce eller tidsstempel i meldingen som signeres.",
+              body: "Gammel gyldig melding sendt på nytt — bruk nonce/tid.",
             },
-            {
-              term: "Preimage-resistens",
-              body: "Gitt en hash y skal det være praktisk umulig å finne en m som hasher til y (h(m) = y). Hvis dette brytes kan en angriper «invertere» hashen — alvorlig for passord-lagring der h(passord) er det som lagres.",
-            },
-            {
-              term: "Second-preimage-resistens",
-              body: "Gitt en konkret melding m1 skal det være praktisk umulig å finne en annen m2 ≠ m1 med h(m1) = h(m2). Hvis dette brytes kan angriperen lage en alternativ kontrakt som har samme hash som den signerte original-kontrakten.",
-            },
+            { term: "Preimage-resistens", body: "Gitt y, umulig å finne m med h(m) = y." },
+            { term: "Second-preimage", body: "Gitt m1, umulig å finne m2 med samme hash." },
             {
               term: "Kollisjons-resistens",
-              body: "Det skal være praktisk umulig å finne et hvilket som helst par (m1, m2) med h(m1) = h(m2). Lavere bar enn second-preimage fordi angriperen får velge begge — derfor er denne grensen 2^(n/2) («fødselsdag-paradokset») i stedet for 2^n. SHA-1 ble pensjonert da praktiske kollisjoner ble vist.",
+              body: "Vanskelig å finne to vilkårlige m1, m2 — bursdag-paradokset.",
             },
+            { term: "SHA-2 og SHA-3", body: "Moderne hash-familier — SHA-3 er svamp-basert." },
+            { term: "MD5 og SHA-1", body: "Brutt — aldri til sikkerhet, kun checksum." },
+            { term: "Lengde-extension", body: "Hash(K‖m) er ikke MAC — bruk HMAC." },
+            { term: "RSA-PSS / ECDSA / EdDSA", body: "Signatur-algoritmer; EdDSA er mest robust." },
             {
-              term: "SHA-2 og SHA-3 familier",
-              body: "SHA-2 (SHA-256, SHA-384, SHA-512) er Merkle-Damgård-konstruksjoner basert på Davies-Meyer. SHA-3 (Keccak) er en svamp-konstruksjon valgt etter åpen NIST-konkurranse, designet for å være matematisk uavhengig av SHA-2 i tilfelle den ene skulle brytes.",
+              term: "Encrypt-then-MAC vs AEAD",
+              body: "AEAD (GCM) lukker hele rekkefølge-klassen.",
             },
-            {
-              term: "MD5 og SHA-1 — pensjonert",
-              body: "MD5 har vært brutt for kollisjoner siden 2004; SHA-1 siden 2017 (SHAttered-angrepet). Bruk dem aldri for sikkerhet (signering, sertifikater). De brukes fortsatt som ikke-krypto-checksums for rask integritets-sjekk i ikke-fiendtlig kontekst (git-objekter, men git migrerer også).",
-            },
-            {
-              term: "Lengde-extension-angrep",
-              body: "På Merkle-Damgård-hashes (MD5, SHA-1, SHA-2) kan en angriper som har sett h(secret ‖ m) regne ut h(secret ‖ m ‖ padding ‖ m') uten å kjenne secret. Derfor må man ALDRI bygge en MAC som bare hash(secret ‖ m). HMAC er den korrekte konstruksjonen som unngår dette.",
-            },
-            {
-              term: "Digital signering: RSA-PSS vs ECDSA vs EdDSA",
-              body: "RSA-PSS er moderne RSA-signering med tilfeldig padding. ECDSA bruker elliptiske kurver — kortere signaturer, men krever god randomness per signering (en gjenbrukt nonce kan lekke privat nøkkel; PlayStation 3 ble hacket sånn). EdDSA (Ed25519) er deterministisk og uten det fotfellet — mest robuste valg i dag.",
-            },
-            {
-              term: "Hvorfor MAC-then-encrypt vs encrypt-then-MAC vs AEAD",
-              body: "Encrypt-then-MAC er beviselig riktig: krypter først, så lag MAC over ciphertext. MAC-then-encrypt (SSL/TLS gjorde dette feil i flere år) skapte angrep som POODLE og Lucky-13. AEAD-modi (GCM, ChaCha20-Poly1305) gjør begge i ett og lukker hele klassen av disse feilene.",
-            },
-            {
-              term: "Tids-stempel og monotonisk teller",
-              body: "Alternativ til nonce mot replay. Mottaker avviser meldinger eldre enn N sekunder, eller med teller mindre enn forrige. Krever klokkesynkronisering eller persistent tilstand. Brukes f.eks. i Kerberos-billetter og JWT-er med exp-felt.",
-            },
+            { term: "Tidsstempel / teller", body: "Alternativ til nonce mot replay." },
           ]}
         />
         <Illustration caption="Hash mapper vilkårlig input til et kort fingeravtrykk. Selv én flippet bit i input endrer hele hashen.">
           <HashSvg />
         </Illustration>
+      </div>
+
+      <div className="grid gap-3 md:grid-cols-2">
+        <Metafor tittel="Hash er å smelte en istår">
+          <p>
+            Du tar en istår, smelter den til vann, og veier vannet. Du kan ALDRI gjenskape den
+            originale formen på iståren ut fra vannet. Men hvis noen sender deg en ny istår og sier
+            «dette er samme», kan du smelte den og sjekke om vekten matcher. Du verifiserer uten å
+            kunne reversere — det er preimage-resistens.
+          </p>
+        </Metafor>
+        <Metafor tittel="HMAC er en sjekk i en forsegla konvolutt">
+          <p>
+            En vanlig hash er som en checksum på en sjekk — alle kan regne den ut. En MAC er som å
+            signere sjekken OG putte den i en konvolutt med ditt personlige segl. Uten segl
+            (nøkkelen) kan ingen lage konvolutten — om noen tuklet med innholdet, ser du det med en
+            gang fordi seglet ikke matcher.
+          </p>
+        </Metafor>
+        <Metafor tittel="Bursdag-paradokset er en fest">
+          <p>
+            For at NOEN i en sal skal ha samme bursdag som deg, må salen ha ~183 personer (1/365 ⋅
+            183 ≈ 50 %). Men for at TO HVEM SOM HELST i salen skal dele bursdag, holder det med ~23
+            personer. Hash-kollisjon er det andre problemet — angriperen får velge begge sider av
+            kollisjonen, så han trenger bare 2^(n/2) forsøk, ikke 2^n.
+          </p>
+        </Metafor>
+        <Metafor tittel="Replay-angrep er en talk-back-radio">
+          <p>
+            Tenk en walkie-talkie der noen tar opp meldingen «åpne dør 3» og spiller den av senere.
+            Selv om radioen er signert, gjenkjenner mottakeren bare lyden — ikke når den kom. Nonce
+            er som å si «åpne dør 3, ærend-nummer 4711» — Trudy som spiller av igjen har feil
+            ærend-nummer.
+          </p>
+        </Metafor>
       </div>
 
       <Hvorfor title="Hvorfor er kollisjons-resistens en lavere bar enn preimage-resistens?">
@@ -614,6 +617,10 @@ function Section83() {
 
       <Illustration caption="HMAC tar inn både meldingen og en delt nøkkel — uten nøkkelen kan ikke Trudy lage gyldig tag.">
         <HmacSvg />
+      </Illustration>
+
+      <Illustration caption="Hash, MAC og signering side om side: ulike garantier, ulike forutsetninger om hvem som deler hva.">
+        <HashMacSignSvg />
       </Illustration>
 
       <Example title="Eksempel: signering av en pull request">
@@ -657,78 +664,81 @@ function Section84() {
         <Defs
           items={[
             {
-              term: "Forsøk 1: «Det er meg, Alice»",
-              body: "Alice sender bare en tekst. Trudy kan trivielt sende samme tekst — ingen bevis. Mislykket.",
+              term: "Forsøk 1: bare navn",
+              body: "«Jeg er Alice» — Trudy kan si det også. Feiler.",
             },
             {
-              term: "Forsøk 2: passord",
-              body: "Alice sender navn og passord. Hvis lenken er ukryptert kan Trudy snappe opp passordet og spille det av selv. Mislykket mot en passiv tjuvlytter.",
+              term: "Forsøk 2: passord i klartekst",
+              body: "Tjuvlytter snapper og spiller av. Feiler.",
             },
-            {
-              term: "Nonce",
-              body: "Et tilfeldig tall (nummer used once) som bare brukes i én sesjon. Mottakeren sender en nonce og krever at avsender beviser at hun ser den ved å gjøre noe med den — typisk ved å kryptere eller signere den. Forhindrer replay-angrep fordi gamle svar ikke matcher den nye nonce-en.",
-            },
+            { term: "Nonce", body: "Tilfeldig engangs-tall — knytter svaret til denne sesjonen." },
             {
               term: "Challenge-response",
-              body: "Mønster der Bob sender en utfordring (typisk en nonce), og Alice svarer med en funksjon av utfordringen og en hemmelighet bare hun har. Hvis hemmeligheten er en delt symmetrisk nøkkel: svaret er MAC(K, nonce). Hvis det er Alices private nøkkel: svaret er sign(privA, nonce).",
+              body: "Bob ber, Alice signerer/MAC-er svaret med hemmelighet.",
             },
             {
               term: "Man-in-the-middle",
-              body: "Trudy plasserer seg mellom Alice og Bob. Hun kjører to parallelle handshakes — én med hver. Begge tror de snakker med den andre, men alt går gjennom Trudy. Forsvares ved at en av partene har et forhåndsetablert anker (sertifikat eller forhåndsdelt nøkkel) som binder identitet til offentlig nøkkel.",
+              body: "Trudy mellom A og B kjører to parallelle handshakes.",
             },
             {
               term: "Digitalt sertifikat",
-              body: "En signert binding av (identitet, offentlig nøkkel). Utstedes av en betrodd Certificate Authority (CA). Bob ser et sertifikat som sier «Alice sin offentlige nøkkel er pubA», signert av CA-en han allerede stoler på. Han trenger ikke ha møtt Alice — han trenger bare å stole på CA-en.",
+              body: "CA-signert (identitet, offentlig-nøkkel)-binding.",
             },
+            { term: "PKI", body: "Systemet av CA-er, rotnøkler og trust stores." },
+            { term: "Revoke / OCSP", body: "Trekk tilbake kompromitterte sertifikater før utløp." },
+            { term: "X.509-felter", body: "Subject, Issuer, Validity, PubKey, SAN." },
             {
-              term: "PKI (Public Key Infrastructure)",
-              body: "Hele systemet av CA-er, sertifikater, revoke-lister, og rot-nøkler som er bygd inn i operativsystem og nettlesere. Når du går til vg.no leveres et sertifikat utstedt av en CA hvis rot-sertifikat allerede er i Chromes trust store fra fabrikken. Tillit er transitiv: jeg stoler på CA, CA stoler på vg.no.",
+              term: "Sertifikat-utvidelser",
+              body: "KeyUsage, ExtKeyUsage, BasicConstraints, OCSP-peker.",
             },
+            { term: "DV / OV / EV", body: "Tre nivåer av CA-validering — DV via ACME." },
+            { term: "Chain-of-trust", body: "Server → mellom-CA → rot-CA, hver signert opp." },
+            { term: "CRL", body: "Stor ja/nei-liste over tilbaketrukne sertifikater." },
+            { term: "OCSP-stapling", body: "Server leverer ferskt OCSP-svar selv." },
             {
-              term: "Revoke og OCSP",
-              body: "Hvis en privat nøkkel kompromitteres må sertifikatet trekkes tilbake før det utløper. CRL-er (lange ja/nei-lister) og OCSP (online sjekk per sertifikat) er to mekanismer for dette. I praksis bruker moderne nettlesere OCSP-stapling — serveren leverer selv et nylig OCSP-svar sammen med sertifikatet.",
+              term: "Certificate Transparency",
+              body: "Offentlige logger — falske sertifikater oppdages.",
             },
-            {
-              term: "X.509-sertifikat-felter",
-              body: "Standard-felter: Subject (hvem sertifikatet hører til, f.eks. CN=vg.no), Issuer (CA-en som signerte), Validity (NotBefore/NotAfter), Public Key (algoritme + nøkkelmateriale), Serial Number (unikt per CA), Signature Algorithm, og en stor blokk Extensions. SAN (Subject Alternative Names) er der ekte domener for HTTPS legges i dag — CN brukes ikke lenger til validering.",
-            },
-            {
-              term: "Sertifikat-utvidelser (Extensions)",
-              body: "Bærer den meste av semantikken i moderne X.509: KeyUsage (signering / kryptering / nøkkel-utveksling), ExtendedKeyUsage (server-auth, klient-auth, code-signing), BasicConstraints (CA: true/false), CRLDistributionPoints, AuthorityInfoAccess (peker til OCSP). En misforstått KeyUsage er klassisk feilkonfigurasjon.",
-            },
-            {
-              term: "Domain Validation (DV) vs Organization (OV) vs Extended (EV)",
-              body: "DV: CA verifiserer bare at søker kontrollerer domenet (typisk ACME-challenge med Let's Encrypt). OV: CA verifiserer også organisasjonens identitet manuelt. EV: enda strengere prosess. Nettlesere viser ikke lenger EV-bannere; for vanlige brukere er forskjellen i praksis blitt usynlig.",
-            },
-            {
-              term: "Sertifikat-piping og chain-of-trust",
-              body: "En server sender ikke bare sitt eget sertifikat men også de mellomliggende CA-ene helt opp til (men ikke inkludert) en rot CA som klienten har lokalt. Klienten verifiserer hver signatur i kjeden. Feiler om et mellomledd mangler — vanlig konfigurasjons-feil.",
-            },
-            {
-              term: "CRL (Certificate Revocation List)",
-              body: "Stor liste utstedt av CA som inneholder serienumrene til alle tilbaketrukne sertifikater i dens domene. Lastes ned periodisk av klienter. Skalerer dårlig (kan bli mange MB) og er ofte utdatert. Erstattes gradvis av OCSP og kortere-levetid-sertifikater.",
-            },
-            {
-              term: "OCSP-stapling og MustStaple",
-              body: "OCSP-stapling lar server selv hente et signert OCSP-svar fra CA og levere det sammen med sertifikatet i TLS-handshake. Sparer klient en runde til CA. MustStaple-utvidelsen i sertifikatet sier: «hvis serveren ikke leverer stapled OCSP, ikke stol på den» — gir mye sterkere revoke-garantier.",
-            },
-            {
-              term: "Certificate Transparency (CT)",
-              body: "Offentlige, append-only-logger der alle nyutstedte sertifikater må publiseres. Hvis en CA utsteder et falskt sertifikat for vg.no, vil VG kunne oppdage det ved å overvåke CT-logger. Moderne nettlesere krever at sertifikater er i minst to CT-logger.",
-            },
-            {
-              term: "Mutual TLS (mTLS)",
-              body: "Begge parter presenterer sertifikat — ikke bare serveren. Brukes i service-mesh (Istio, Linkerd) og mellom interne tjenester. Klient-sertifikatet bærer både identitet og autorisasjon. Mye sterkere enn passord/API-nøkler fordi privat nøkkel aldri sendes.",
-            },
-            {
-              term: "Multi-factor authentication (MFA)",
-              body: "Bevis bestående av minst to av: noe du vet (passord), noe du har (telefon med TOTP / sikkerhetsnøkkel), noe du er (biometri). SMS-koder regnes som svak MFA pga. SIM-swap; TOTP (Google Authenticator) er bedre; FIDO2/WebAuthn med hardware-nøkkel er sterkest.",
-            },
+            { term: "mTLS", body: "Begge parter har sertifikat — sterk service-til-service-auth." },
+            { term: "MFA", body: "To av: vet, har, er — FIDO2 er sterkest." },
           ]}
         />
         <Illustration caption="Challenge-response med signatur. Bob velger en fersk nonce; Alice beviser identitet ved å signere den.">
           <ChallengeResponseSvg />
         </Illustration>
+      </div>
+
+      <div className="grid gap-3 md:grid-cols-2">
+        <Metafor tittel="Sertifikat er et pass">
+          <p>
+            Du dukker opp i et fremmed land. Grensevakta har aldri møtt deg. Men du leverer et pass
+            utstedt av regjeringen, og grensevakta stoler ALLEREDE på regjeringen din. Han
+            sammenligner ansiktet ditt med passet — og slipper deg inn. Bob trenger ikke å ha møtt
+            Alice; han trenger bare å stole på CA-en som signerte passet hennes.
+          </p>
+        </Metafor>
+        <Metafor tittel="Nonce er en tilfeldig PIN-utfordring">
+          <p>
+            Banken sier «hva er PIN-en din, men også kvitter med tallet 5824 jeg sender deg nå?»
+            Hvis du svarer «PIN + 5824» riktig, vet banken at det er DENNE samtalen — ikke en
+            innspilling fra forrige uke. Tallet endres hver gang, så gamle svar gjenbrukes ikke.
+          </p>
+        </Metafor>
+        <Metafor tittel="Man-in-the-middle er en falsk tolk">
+          <p>
+            Du er på en forretningsreise og snakker via en tolk. Tolken later som han oversetter
+            ord-for-ord til motparten, men endrer alt han vil. Begge parter tror de snakker med
+            hverandre, men alt går gjennom tolken. Et forhåndsdelt anker (du har sett motpartens
+            ansikt før, eller har et sertifikat fra ham) er det eneste forsvaret.
+          </p>
+        </Metafor>
+        <Metafor tittel="MFA er låsen + nøkkelen + ansiktet">
+          <p>
+            En bil som krever (1) bilnøkkelen i lommen (har), (2) PIN-koden for å starte (vet), og
+            (3) fingeravtrykk på rattet (er). Selv om en tyv stjeler nøkkelen, kan han ikke kjøre
+            uten kode og finger. Hver faktor er en uavhengig barriere.
+          </p>
+        </Metafor>
       </div>
 
       <Hvorfor title="Hvorfor må nonce være tilfeldig og ikke bare øke monotont?">
@@ -750,6 +760,10 @@ function Section84() {
 
       <Illustration caption="Tillits-kjede: rot-CA → mellom-CA → server-sertifikat. Nettleseren har rot-CA i trust store fra fabrikken.">
         <PkiSvg />
+      </Illustration>
+
+      <Illustration caption="MITM-angrep: Trudy holder to parallelle handshakes; sertifikat-anker er det som blokkerer det.">
+        <MitmSvg />
       </Illustration>
 
       <Example title="Eksempel: hvorfor en nonce må være fersk">
@@ -788,75 +802,67 @@ function Section85() {
       <div className="grid gap-3 lg:grid-cols-2">
         <Defs
           items={[
-            {
-              term: "TLS-record",
-              body: "Etter handshake snakker partene i TLS-records: en liten header som angir type og lengde, så en kryptert+autentisert payload. Hver record er uavhengig kryptert, så en angriper kan ikke kutte ut eller flytte rundt records.",
-            },
-            {
-              term: "Handshake-faser",
-              body: "(1) Hilse — klient og server utveksler nonces og hva slags algoritmer de støtter. (2) Server-autentisering — server sender sertifikat. (3) Nøkkelutveksling — typisk ECDHE for forward secrecy. (4) Bekreftelse — begge sjekker at handshake-en ikke har blitt tuklet med, så starter de å sende kryptert data.",
-            },
+            { term: "TLS-record", body: "Header + kryptert+autentisert payload-enhet." },
+            { term: "Handshake-faser", body: "Hilse → server-auth → DH → bekreftelse → app-data." },
             {
               term: "Cipher suite",
-              body: "Pakke av valgte algoritmer som forhandles frem i hilse-fasen. Eks: TLS_AES_128_GCM_SHA256 betyr AES-128 i GCM-modus og SHA-256 for HKDF. TLS 1.3 ryddet kraftig — det er nå et lite, sikkert sett av suites igjen.",
+              body: "Forhandlet algoritme-pakke, f.eks. AES_128_GCM_SHA256.",
             },
+            { term: "Forward Secrecy", body: "Server-lekk i ettertid bryter ikke gamle sesjoner." },
+            { term: "Master secret", body: "DH-resultat → HKDF → trafikk-nøkler per retning." },
+            { term: "Session resumption", body: "PSK fra forrige sesjon — handshake kortes ned." },
+            { term: "TLS 1.3 forenkling", body: "Bare AEAD, kun (EC)DHE, 1-RTT." },
+            { term: "ClientHello + SNI", body: "Klientens første pakke — hvilket domene." },
+            { term: "ServerHello", body: "Server velger cipher, leverer DH-andel + sertifikat." },
+            { term: "Finished", body: "MAC over hele handshake-historikk — fanger tukling." },
+            { term: "0-RTT", body: "App-data sammen med ClientHello (PSK) — replay-risiko." },
+            { term: "HKDF", body: "HMAC-basert nøkkel-avledning — tre av nøkler." },
             {
-              term: "Forward Secrecy (FS)",
-              body: "Egenskap der kompromittering av en server-nøkkel i ettertid ikke avslører gamle sesjoner. Oppnås ved at sesjons-nøkkelen avtales via en éphemeral DH (ECDHE) og kastes når sesjonen er over. TLS 1.3 dropper RSA-key-exchange nettopp fordi det ikke gir FS — server-nøkkel kompromittert = alle gamle sesjoner kan dekrypteres.",
+              term: "Downgrade-angrep",
+              body: "Tvinger ned til svakere versjon — SCSV stopper det.",
             },
-            {
-              term: "Master secret og avledede nøkler",
-              body: "DH-en gir et felles tilfeldig tall (pre-master). Det blandes med begge nonces gjennom HKDF og produserer mange separate nøkler — én for hver retning av trafikken og én for MAC. Hver retning har sin egen nøkkel og IV-teller, så replay og refleksjon ikke fungerer.",
-            },
-            {
-              term: "Session resumption",
-              body: "TLS-handshake koster en eller to RTT-er. For å unngå dette ved gjenoppkobling kan klienten ta vare på en sesjons-billett (session ticket) eller en PSK (pre-shared key). Neste gang sender den en short-circuit handshake basert på den, og 1-RTT (eller 0-RTT) er nok. Lagrer ofte bare 24 timer.",
-            },
-            {
-              term: "TLS 1.3 forenkling",
-              body: "Versjonen fjernet en haug arvet bagasje: ingen RSA-key-exchange, ingen statisk DH, ingen MAC-then-encrypt, ingen renforhandling. Bare AEAD-ciphers (GCM, ChaCha20-Poly1305). Handshake gikk fra 2-RTT til 1-RTT. Resultatet er enklere, raskere og tryggere.",
-            },
-            {
-              term: "ClientHello og SNI (Server Name Indication)",
-              body: "Første pakke fra klient. Inneholder støttede versjoner, cipher suites, supported groups (kurver for DH), key shares, og kritisk: SNI — hvilket domene klienten vil snakke med. SNI gjør at én IP kan vertere mange HTTPS-domener fordi serveren ser navnet før den velger sertifikat. ECH (Encrypted Client Hello) krypterer også SNI.",
-            },
-            {
-              term: "ServerHello og cipher-valg",
-              body: "Server svarer med valgt versjon, cipher suite, sin DH-andel og sitt sertifikat. I TLS 1.3 er sertifikat-meldingen kryptert med handshake-nøkkel — angriper kan ikke se hvilket sertifikat serveren bruker.",
-            },
-            {
-              term: "Finished-melding",
-              body: "Siste handshake-melding fra hver side. Inneholder en MAC over hele handshake-transkripsjonen (alt som er sendt så langt) med en nøkkel avledet fra handshake. Hvis en angriper har manipulert et tidligere felt (downgrade-angrep), matcher ikke MAC-en og handshake feiler.",
-            },
-            {
-              term: "0-RTT (Zero Round-Trip Time)",
-              body: "TLS 1.3-tillegg: klient som har en gyldig PSK fra tidligere sesjon kan sende kryptert applikasjons-data sammen med ClientHello, før server har svart. Sparer en RTT. Pris: 0-RTT-data har ikke forward secrecy mot den ene PSK-en, og er sårbar for replay — derfor kun for idempotente operasjoner.",
-            },
-            {
-              term: "HKDF og nøkkel-avledning",
-              body: "TLS 1.3 bruker HKDF (HMAC-based Key Derivation Function) til å avlede et helt tre av nøkler fra DH-shared-secret + handshake-transkript: handshake_traffic_secret, application_traffic_secret, exporter_secret, resumption_master_secret. Hver tjener et eget formål og er bundet til transkriptet.",
-            },
-            {
-              term: "Downgrade-angrep og TLS_FALLBACK_SCSV",
-              body: "Angriper avbryter TLS-handshake og lurer klienten til å prøve igjen med eldre, svakere versjon (TLS 1.0 / SSL 3.0). POODLE-angrepet utnyttet dette. Forsvar: TLS_FALLBACK_SCSV signaliserer at klienten har fallback-et, og serveren avviser hvis den støtter høyere versjon.",
-            },
-            {
-              term: "QUIC og TLS 1.3",
-              body: "QUIC (under HTTP/3) integrerer TLS 1.3 direkte i transport-laget over UDP. Handshake skjer parallelt med transport-oppsett, så 1-RTT etablerer både transport og kryptering. Forhindrer hele klasser av middlebox-interferens fordi UDP-payload er helt kryptert.",
-            },
-            {
-              term: "Cipher suite-notasjon i TLS 1.3 vs 1.2",
-              body: "TLS 1.2: TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256 (key-exchange + auth + cipher + MAC, alt i navnet). TLS 1.3: kun TLS_AES_128_GCM_SHA256 — key-exchange og signatur forhandles separat via supported_groups og signature_algorithms-utvidelser. Mye renere.",
-            },
-            {
-              term: "ALPN (Application-Layer Protocol Negotiation)",
-              body: "TLS-utvidelse der klient og server forhandler applikasjons-protokoll under handshake (h2 for HTTP/2, http/1.1 for klassisk, h3 for QUIC). Sparer en ekstra runde og lar én port kjøre flere protokoller. Brukes også av WebSocket-oppgradering og gRPC.",
-            },
+            { term: "QUIC + TLS 1.3", body: "TLS integrert i transport over UDP — HTTP/3." },
+            { term: "ALPN", body: "Forhandler applikasjons-protokoll (h2, h3, http/1.1)." },
           ]}
         />
         <Illustration caption="TLS 1.3 handshake — én RTT før applikasjons-data kan sendes. ServerHello inneholder sertifikat og DH-andel.">
           <TlsHandshakeSvg />
         </Illustration>
+      </div>
+
+      <div className="grid gap-3 md:grid-cols-2">
+        <Metafor tittel="TLS-handshake er et formelt møte">
+          <p>
+            «Hei, jeg er Alice» (ClientHello). «Bevis det» (ServerHello + sertifikat-utfordring).
+            «Her er passet mitt — utstedt av regjeringen du stoler på» (Certificate). «OK, la oss
+            blande en hemmelig håndtrykk-bevegelse ingen andre kjenner» (DH). «Skal vi snakke
+            kryptert nå?» (Finished). Hele rituale er tegnet inn på forhånd — én misforståelse, og
+            avtalen brytes.
+          </p>
+        </Metafor>
+        <Metafor tittel="Forward Secrecy er ferske møterom">
+          <p>
+            En sjef møter ulike ansatte i en stor virksomhet. Med RSA-key-exchange møter han alle i
+            samme arkivrom — innholdet skrives ned i én bok med ett lås. Stjeles nøkkelen, avsløres
+            alt. Med ECDHE går han i et nytt møterom for HVERT møte, og brenner møte- referatet
+            etter møtet. Nøkkelen til arkivet stjeler ingen senere — det er ingen arkiv.
+          </p>
+        </Metafor>
+        <Metafor tittel="0-RTT er postordre uten å vente på katalogen">
+          <p>
+            Du har handlet på samme nettbutikk før, så du vet allerede prisene. Du sender
+            bestillingen sammen med kortet ditt, uten å vente på en ny katalog. Sparer tid — men
+            hvis en kopist har snappet bestillingen, kan den sendes på nytt og kortet trekkes en
+            gang til. Derfor: kun for idempotente operasjoner (henting, ikke betaling).
+          </p>
+        </Metafor>
+        <Metafor tittel="SNI er hotell-resepsjonen">
+          <p>
+            Én bygning huser ti hoteller (én IP, ti domener). Du må si i resepsjonen hvilket hotell
+            du leter etter, ellers vet ikke portieren hvilken kjede-uniform han skal ta på. Det er
+            SNI — uten den ville én IP bare kunne håndtere ett HTTPS-domene.
+          </p>
+        </Metafor>
       </div>
 
       <Hvorfor title="Hvorfor dropper TLS 1.3 RSA-key-exchange?">
@@ -877,6 +883,10 @@ function Section85() {
           derfor (EC)DHE obligatorisk og fjerner RSA-key-exchange helt.
         </p>
       </Hvorfor>
+
+      <Illustration caption="Forward Secrecy: RSA-key-exchange (venstre) lekker alle gamle sesjoner ved server-lekk; ECDHE (høyre) gjør ikke det.">
+        <ForwardSecrecySvg />
+      </Illustration>
 
       <Example title="Eksempel: regn ut hva som er trygt etter at server-nøkkelen lekker">
         <p>
@@ -965,75 +975,84 @@ function Section86() {
       <div className="grid gap-3 lg:grid-cols-2">
         <Defs
           items={[
-            {
-              term: "AH (Authentication Header)",
-              body: "IPsec-protokoll som gir integritet og autentisering, men IKKE konfidensialitet. AH-headeren inneholder en HMAC over hele pakken inkludert (de fleste) IP-felter. Brukes sjelden alene i dag — folk vil nesten alltid også ha kryptering.",
-            },
-            {
-              term: "ESP (Encapsulating Security Payload)",
-              body: "IPsec-protokoll som gir konfidensialitet pluss integritet. Payload krypteres (typisk AES-CBC eller AES-GCM), og en MAC dekker den krypterte payload-en. ESP er det vanlige valget i moderne deployments.",
-            },
+            { term: "AH", body: "Integritet+auth, INGEN kryptering. Sjeldent alene." },
+            { term: "ESP", body: "Konfidensialitet + integritet. Standard-valg i dag." },
             {
               term: "Transport-mode",
-              body: "Den originale IP-headeren beholdes; bare payload-en (TCP/UDP-data) krypteres og legges innenfor en ESP-konvolutt. Brukes mellom to enkelt-hosts som vil snakke trygt direkte. Sparer plass siden det ikke trengs ekstra IP-header.",
+              body: "Original IP-header beholdes, bare payload krypteres.",
             },
-            {
-              term: "Tunnel-mode",
-              body: "Hele den originale IP-pakken krypteres og pakkes inn som payload i en helt ny IP-pakke med ny header. Vanlig mellom to VPN-gateways: kontoret i Tromsø og kontoret i Bergen har én tunnel; alle pakker fra Tromsø-LAN-et pakkes inn, sendes over internett kryptert, og pakkes ut i Bergen.",
-            },
+            { term: "Tunnel-mode", body: "Hele pakken pakkes inn i ny ytre IP — VPN-tunnel." },
             {
               term: "SA (Security Association)",
-              body: "Enveis avtale mellom to noder om en spesifikk sikkerhetsprofil: hvilken protokoll (AH/ESP), modus, krypterings- og autentiserings-nøkler, og en SPI (Security Parameters Index) som identifiserer SA-en. To-veis kommunikasjon krever to SA-er, én i hver retning.",
+              body: "Enveis avtale: protokoll, modus, nøkler, SPI.",
             },
-            {
-              term: "IKE (Internet Key Exchange)",
-              body: "Protokollen som forhandler frem SA-er og avtaler nøkler. Versjon 2 er standard i dag. Bruker DH for nøkkelutveksling, sertifikater eller PSK for autentisering. Resultatet er at begge sider har samme symmetriske nøkler uten at de noen gang er sendt åpent.",
-            },
+            { term: "IKE", body: "Forhandler SA-er og avtaler DH-nøkler — IKEv2 standard." },
             {
               term: "Anti-replay-vindu",
-              body: "Hver pakke i en SA har et 32-bits sekvensnummer. Mottaker holder et glidende vindu (typisk 64 pakker) og avviser pakker som er for gamle eller allerede sett. Stopper en angriper fra å samle gamle pakker og spille dem av senere.",
+              body: "Sekvensnummer i glidende vindu, gamle pakker avvises.",
             },
-            {
-              term: "SPI (Security Parameters Index)",
-              body: "32-bits identifikator i ESP/AH-headeren. Mottaker bruker (dst-IP, SPI, protokoll) som nøkkel til å slå opp riktig SA i sin SAD (Security Association Database) og dermed riktige krypto-nøkler. Velges av mottaker når SA opprettes via IKE.",
-            },
+            { term: "SPI", body: "32-bit ID som peker til riktig SA i SAD." },
             {
               term: "SAD og SPD",
-              body: "SAD (Security Association Database): tabell over aktive SA-er — én rad per retning, indeksert på SPI. SPD (Security Policy Database): regel-tabell som sier hvilken trafikk som skal beskyttes (protect), slippes gjennom klart (bypass), eller forkastes (discard). SPD-en konfigureres av admin; SAD-en fylles ut av IKE.",
+              body: "SAD: aktive SA-er. SPD: policy hvilken trafikk beskyttes.",
+            },
+            { term: "IKEv2-faser", body: "IKE_SA_INIT + IKE_AUTH → CHILD_SA-er for trafikk." },
+            { term: "PFS i IPsec", body: "Hver child-SA får fersk DH — gammel trafikk trygg." },
+            { term: "NAT-traversal", body: "ESP innkapslet i UDP 4500 — passerer NAT." },
+            { term: "WireGuard", body: "Moderne VPN — 1 cipher suite, ~4000 linjer kode." },
+            {
+              term: "Site-to-site vs remote",
+              body: "Gateway-til-gateway vs bruker-til-konsentrator.",
             },
             {
-              term: "IKEv2-faser",
-              body: "Fase 1 (IKE_SA_INIT): forhandler IKE-SA selv — DH-utveksling + algoritmer, åpner en sikker kanal for resten av IKE. Fase 2 (IKE_AUTH): autentiserer parter (sertifikat eller PSK) og oppretter første barne-SA for trafikk. CREATE_CHILD_SA-utvekslinger oppretter senere SA-er eller roterer nøkler.",
-            },
-            {
-              term: "PFS (Perfect Forward Secrecy) i IPsec",
-              body: "Hver ny barne-SA gjør sin egen ferske DH-utveksling i stedet for å avlede nøkler fra IKE-SA-ens master. Hvis IKE-master-nøkkelen lekker, er fortsatt eldre barne-SA-trafikk trygg. Anbefales på i moderne deployments.",
-            },
-            {
-              term: "NAT-traversal (NAT-T) og UDP-encapsulation",
-              body: "ESP er protokoll 50 — NAT-bokser klarer ikke å rute den fordi det ikke er TCP/UDP-porter å spore. Løsningen er å pakke ESP inn i UDP port 4500. IKEv2 detekterer NAT under handshake via NAT_DETECTION-payloads og bytter automatisk til UDP-encapsulation.",
-            },
-            {
-              term: "WireGuard som moderne alternativ",
-              body: "Ny VPN-protokoll som droppet IPsec-kompleksiteten. Bare én cipher suite (ChaCha20-Poly1305 + Curve25519 + BLAKE2s + SipHash), fast 4-byte header, ingen forhandling. ~4000 linjer kode mot IPsec sine ~400 000. Kjøres i kjernen, ekstremt rask, og enkel å auditere.",
-            },
-            {
-              term: "Site-to-site vs remote-access VPN",
-              body: "Site-to-site: tunnel mellom to faste gateways (kontorer). Remote-access: en bruker med klient-programvare kobler seg til en VPN-konsentrator (hjemmekontor). De bruker samme underliggende protokoller (IPsec, OpenVPN, WireGuard) men med ulik klient-tilstand.",
-            },
-            {
-              term: "Split-tunneling vs full-tunneling",
-              body: "Full-tunneling: ALL trafikk fra klienten går gjennom VPN. Sikkert men treigt og overdrevet for vanlig web-surf. Split-tunneling: bare trafikk til bedriftsadresser går i tunnelen, resten direkte. Bedre ytelse, men eksponerer klient-maskinen for hjemmenettet hvis det er kompromittert.",
+              term: "Split vs full tunneling",
+              body: "Bare bedrift, eller all trafikk gjennom VPN.",
             },
             {
               term: "Hva IPsec ikke gir",
-              body: "Tilgang til applikasjons-laget (kan ikke filtrere på HTTP-URL eller blokkere XSS), ingen bruker-til-bruker-autentisering (bare endepunkt-til-endepunkt), og ingen forsvar mot insider på samme LAN som har tilgang til den dekrypterte enden. IPsec er transport-sikkerhet, ikke et helhetlig forsvar.",
+              body: "Ingen app-lag-filter, ingen bruker-auth, ingen insider-forsvar.",
             },
           ]}
         />
         <Illustration caption="Tunnel-mode: hele original-pakken pakkes inn i en ny IP+ESP-pakke. De interne adressene er skjult.">
           <IpsecTunnelSvg />
         </Illustration>
+      </div>
+
+      <div className="grid gap-3 md:grid-cols-2">
+        <Metafor tittel="Tunnel-mode er en pansret busstransport">
+          <p>
+            Kontoret i Oslo og kontoret i Bergen ligger i samme «interne by» (10.0.0.0/16). For å få
+            post mellom dem må alle pakkene legges i en pansret buss med Oslo-gateway og
+            Bergen-gateway som offentlige adresser. Internett ser bare bussen kjøre — ikke hvem som
+            sitter inni eller hva de snakker om. Inni bussen er pakkene fortsatt adressert til de
+            interne adressene; det åpnes først når bussen er inne i Bergen.
+          </p>
+        </Metafor>
+        <Metafor tittel="Transport-mode er konvolutt rundt brev">
+          <p>
+            To bedrifter med egne offentlige postadresser sender brev til hverandre. Postsystemet
+            (internett) trenger ikke pakke om brevet — adressene står allerede utenpå. De legger
+            bare en forseglet konvolutt rundt selve innholdet. Mindre overhead, men forutsetter at
+            både avsender og mottaker allerede er rutbare i posten.
+          </p>
+        </Metafor>
+        <Metafor tittel="SA er et signert reise-kontrakt">
+          <p>
+            To partnere bestemmer på forhånd: «vi snakker via ESP, med AES-GCM, denne nøkkelen,
+            denne sekvensteller, og kontrakten har ID-nummer 0x7f3a». Hver pakke ber så vakta sjekke
+            kontrakt 0x7f3a. En egen kontrakt for hver retning av samtalen, derfor TO SA-er for et
+            fullt to-veis-rør.
+          </p>
+        </Metafor>
+        <Metafor tittel="NAT-traversal er pakke-i-pakke">
+          <p>
+            ESP er en spesiell type «pakke» som hjemme-ruteren din ikke gjenkjenner — den vet
+            hvordan TCP og UDP fungerer, ikke protokoll 50. Løsningen er å putte ESP-pakken inni en
+            UDP-konvolutt på port 4500. Nå ser ruteren UDP, sporer den fint, og pakker ut på andre
+            siden.
+          </p>
+        </Metafor>
       </div>
 
       <Hvorfor title="Hvorfor velger man tunnel-mode mellom kontorer, men transport-mode for host-til-host?">
@@ -1053,6 +1072,10 @@ function Section86() {
           beskytter andre, bruk tunnel; hvis de snakker direkte, bruk transport.
         </p>
       </Hvorfor>
+
+      <Illustration caption="Transport-mode vs tunnel-mode: hvor mye av original-pakken som blir kapslet inn.">
+        <TransportVsTunnelSvg />
+      </Illustration>
 
       <Example title="Eksempel: når bør du velge tunnel-mode?">
         <p>
@@ -1101,71 +1124,71 @@ function Section87() {
       <div className="grid gap-3 lg:grid-cols-2">
         <Defs
           items={[
-            {
-              term: "Stateless pakkefilter",
-              body: "Ser på hver pakke for seg uten å huske noe fra før. Regelsett er en ordnet liste av (kilde, dest, port, protokoll, handling). Ekstremt rask og enkel, men kan ikke skille mellom «svar på en utgående forespørsel» og «uoppfordret innkommende pakke» — du må enten åpne portene for alltid eller stenge dem helt.",
-            },
+            { term: "Stateless pakkefilter", body: "Hver pakke alene — ingen hukommelse om flow." },
             {
               term: "Stateful inspeksjon",
-              body: "Holder en tabell over aktive forbindelser. Når en intern host åpner TCP til en ekstern server (SYN ut), legges (src-IP, src-port, dst-IP, dst-port) inn i tabellen. Innkommende pakker matches mot tabellen; svar slippes inn, uoppfordrede pakker avvises. Default-policy kan dermed være «deny all incoming», men interne kan fortsatt åpne forbindelser ut.",
+              body: "Conntrack-tabell over åpne flows — svar slippes inn.",
             },
+            { term: "Default deny", body: "Alt som ikke eksplisitt tillates, avvises." },
+            { term: "Implicit deny", body: "Siste regel: «deny all» fanger det som glapp." },
             {
-              term: "Default deny",
-              body: "Beste-praksis-policy: alt som ikke eksplisitt er tillatt, blir avvist. Motsatt av «default allow» som krever at man tenker på alle mulige angrep — umulig. Med default deny gir man bare positive eksempler («tillat TCP/443 ut»).",
+              term: "Applikasjons-brannmur",
+              body: "Proxy som forstår HTTP/SMTP-innhold, ikke bare port.",
             },
+            { term: "Tunneling/smugling", body: "Angriper gjemmer SSH inni TLS på 443." },
+            { term: "Egress-filtrering", body: "Filtrer utgående — stopper malware-kall hjem." },
             {
-              term: "Implicit deny ved slutten av regelsettet",
-              body: "Regler evalueres top-down, første match vinner. Helt nederst legges en eksplisitt «deny all» — slik at en pakke som ikke matchet noen regel ovenfor, fanges der i stedet for å slippe gjennom ved et uhell.",
+              term: "Conntrack-tabell",
+              body: "(proto, src, dst, port, tilstand, timer) per flow.",
             },
+            { term: "NGFW", body: "Stateful + app-ID + IPS i ett produkt." },
+            { term: "WAF", body: "App-brannmur for HTTP — OWASP Top 10-mønstre." },
+            { term: "DMZ", body: "Mellom-segment for offentlige tjenester — buffer mot LAN." },
+            { term: "Zero-trust", body: "«Innsiden er ikke trygg» — auth+autoriser hver request." },
             {
-              term: "Applikasjons-brannmur (proxy)",
-              body: "Forstår innholdet i applikasjons-protokoller. En HTTP-proxy kan blokkere POST-er med bestemte mønstre eller cookies; en SMTP-proxy kan strippe ut farlige vedlegg. Mye dyrere per pakke enn pakkefilter, men kan stoppe ting et lavnivå-filter ikke ser.",
-            },
-            {
-              term: "Tunneling og smugling",
-              body: "Hvis brannmuren bare ser på port-nummer, kan angripere skjule trafikk i tillatte protokoller. SSH over port 443, eller en hel TCP-forbindelse inn i HTTPS via WebSocket. Forsvar: dyp pakke-inspeksjon eller TLS-terminering på en intern proxy som kan se trafikken etter dekryptering.",
-            },
-            {
-              term: "Egress-filtrering",
-              body: "Filtrering også av utgående trafikk. Mange organisasjoner glemmer dette og fokuserer bare på innkommende. Egress-regler stopper malware fra å eksfiltrere data eller koble seg til kommando-servere. Også god praksis: blokker utgående SMTP fra alt unntatt e-postserveren.",
-            },
-            {
-              term: "Stateless vs stateful (forskjellen)",
-              body: "Stateless: regelsett uten hukommelse, hver pakke vurderes for seg. Krever at man åpner svar-portene (eks. høye tilfeldige porter 1024+) for innkommende. Stateful: ser TCP-handshake (SYN/SYN-ACK/ACK) og UDP-«flow» og legger til ephemeral-regler for svar automatisk. Stateful er standard i alt fra hjemmerutere til enterprise.",
-            },
-            {
-              term: "Connection-tracking-tabell",
-              body: "Datastrukturen som driver stateful inspeksjon. En rad per aktiv flow: (proto, src-IP, src-port, dst-IP, dst-port, tilstand, timer). TCP-flows beholdes til FIN/RST eller idle-timeout (timer); UDP «flows» eksisterer bare som idle-timer (typisk 30 s). Stor tabell tar mye minne — DoS-angrep kan fylle den opp.",
-            },
-            {
-              term: "Next-Generation Firewall (NGFW)",
-              body: "Kombinasjon av stateful pakkefilter + applikasjons-identifikasjon + IPS + ofte SSL-inspeksjon. Identifiserer applikasjoner basert på protokoll-signaturer og oppførsel, ikke bare port. Kan f.eks. blokkere Skype-trafikk selv om den prøver å bytte port for å skjule seg.",
-            },
-            {
-              term: "WAF (Web Application Firewall)",
-              body: "Spesialisert applikasjons-brannmur for HTTP/HTTPS. Forstår URL-er, parametere, headere, cookies. Inspekterer ofte for OWASP Top 10-mønstre — SQL-injeksjon, XSS, path-traversal. ModSecurity er klassisk open-source WAF; cloud-tjenester som Cloudflare, AWS WAF tilbyr managed varianter.",
-            },
-            {
-              term: "Default deny vs default allow",
-              body: "Default deny: alt som ikke eksplisitt er tillatt, blokkeres. Default allow: alt som ikke eksplisitt er blokkert, tillates. Sikkerhets-best-practice er default deny på innkommende. Default allow krever at man kan forutse alle mulige angrep og blokkere hver av dem — umulig.",
-            },
-            {
-              term: "DMZ (Demilitarized Zone)",
-              body: "Mellomliggende nettverks-segment for tjenester som må være tilgjengelig fra internett (web, mail, DNS). Brannmur slipper utenfra-trafikk inn i DMZ, men ikke videre inn i interne LAN. Hvis en server i DMZ kompromitteres, må angriperen bryte gjennom andre laget for å nå interne data.",
-            },
-            {
-              term: "Zero-trust og micro-segmentering",
-              body: "Moderne paradigme som forkaster perimeter-tankegang: «alt på innsiden er trygt» antas å være feil. Hver request, også internt, autentiseres og autoriseres eksplisitt. Micro-segmentering: hver workload har sin egen lille brannmur-policy basert på identitet, ikke IP.",
-            },
-            {
-              term: "Iptables/nftables-regel-syntaks",
-              body: "Linux-kjernens innebygde pakkefilter. nftables (moderne) erstatter iptables. Regler organiseres i tabeller (filter, nat) → kjeder (INPUT, FORWARD, OUTPUT) → individuelle regler. Eks: «iptables -A INPUT -p tcp --dport 22 -s 10.0.0.0/8 -j ACCEPT». Conntrack-modulen gir stateful-funksjonen.",
+              term: "iptables / nftables",
+              body: "Linux pakkefilter — tabeller → kjeder → regler.",
             },
           ]}
         />
         <Illustration caption="Regel-evaluering i et pakkefilter — top-down match, første treff bestemmer, deny som siste regel.">
           <FirewallRulesSvg />
         </Illustration>
+      </div>
+
+      <div className="grid gap-3 md:grid-cols-2">
+        <Metafor tittel="Brannmur er vakta på døra">
+          <p>
+            «Hvem er du? Hva vil du?» Hvis du står på lista, slipper du inn. Hvis ikke, snur du. En
+            stateless vakt har bare lista. En stateful vakt husker også: «Aha, du gikk ut for 5 min
+            siden og snakket med Tom — så når svar fra Tom kommer, slipper jeg det også inn».
+            Default deny betyr at vakta er konservativ: er du i tvil, snu.
+          </p>
+        </Metafor>
+        <Metafor tittel="DMZ er et venterom">
+          <p>
+            Bedriften har et besøks-venterom mellom hovedinngangen og den indre kontordelen. Alle
+            kunder må vente i venterommet — får ikke gå inn i selve kontoret. Hvis venterommet
+            angripes, må angriperen bryte en ekstra dør for å nå data. Web-server og mail-server er
+            i venterommet; databasen er i kontoret.
+          </p>
+        </Metafor>
+        <Metafor tittel="Stateful er en hotell-portier">
+          <p>
+            Portieren ser deg sjekke inn (åpne en TCP-forbindelse), noterer romnummer og navn, og
+            slipper inn bare folk som spør etter DEG (svar-pakker). Gjester som dukker opp
+            uoppfordret og spør etter «hvilket som helst rom over 1024» avvises. En stateless
+            portier hadde måttet la alle høyere romnumre stå åpne for sikkerhets skyld.
+          </p>
+        </Metafor>
+        <Metafor tittel="Zero-trust er flyplass-sikkerhet">
+          <p>
+            Også ansatte må gjennom metalldetektoren, hver dag. Det å bare være «innenfor
+            perimeteren» (på bedriftens LAN) er ikke nok. Hver request, hver tjeneste-til-tjeneste-
+            kall, blir autentisert på nytt. Hvis en maskin er kompromittert, sprer ikke angriperen
+            seg fritt.
+          </p>
+        </Metafor>
       </div>
 
       <Hvorfor title="Hvorfor er stateful inspeksjon nesten alltid bedre enn stateless?">
@@ -1187,6 +1210,10 @@ function Section87() {
           hardware-stateful.
         </p>
       </Hvorfor>
+
+      <Illustration caption="DMZ-topologi: web og mail i ytre sone, interne data i indre sone, brannmurer på begge grenser.">
+        <DmzSvg />
+      </Illustration>
 
       <Example title="Eksempel: regelsett for en liten bedrift">
         <p>
@@ -1274,79 +1301,66 @@ function Section88() {
       <div className="grid gap-3 lg:grid-cols-2">
         <Defs
           items={[
+            { term: "IDS", body: "Passiv: logger og varsler, ikke in-line." },
+            { term: "IPS", body: "In-line: kan droppe ondsinnede pakker i sanntid." },
+            { term: "Signatur-basert", body: "Match mot kjente mønstre — lav FP, ingen ukjente." },
+            { term: "Anomali-basert", body: "Lærer normalt; varsler avvik — høy FP, fanger nytt." },
+            { term: "DPI", body: "Inspeksjon av payload, ikke bare header." },
+            { term: "FP vs FN", body: "Falsk alarm vs ekte angrep som glipper." },
+            { term: "Snort / Suricata", body: "Åpne IDS/IPS-motorer med tekstuelle regler." },
+            { term: "NIDS vs HIDS", body: "På nettverket vs på hver host." },
+            { term: "SPAN-port", body: "Switch speiler trafikk til analyse-port." },
+            { term: "Network TAP", body: "Fysisk passiv koppling som dupliserer pakker." },
+            { term: "FPR og presisjon", body: "Bayes slår beinhardt på sjeldne angrep." },
+            { term: "Alarm-tretthet", body: ">50 % SOC-alarmer aldri fulgt opp." },
             {
-              term: "IDS (Intrusion Detection System)",
-              body: "Passivt system som inspiserer trafikken og varsler ved mistenkelig aktivitet. Påvirker ikke pakkeflyten — bare logger og varsler en operatør. Brukes ofte for å oppdage angrep man ikke har klart å forhindre.",
+              term: "EDR",
+              body: "Endepunkt-telemetri (prosesser, fil-tilgang) til sentral analyse.",
             },
-            {
-              term: "IPS (Intrusion Prevention System)",
-              body: "Som IDS, men plassert in-line: kan også droppe eller blokkere ondsinnede pakker i sanntid. Risiko: false positives stopper legitim trafikk, så IPS-er kjøres ofte konservativt — bare høyt sikre mønstre blokkeres, resten bare logges.",
-            },
-            {
-              term: "Signatur-basert deteksjon",
-              body: "Sammenligner trafikken mot en database av kjente angreps-mønstre («signaturer»). Sterk side: lav false-positive-rate, nøyaktige varsler — du vet akkurat hva angrepet er. Svak side: ser bare angrep noen allerede har beskrevet; nye angrep og varianter glipper.",
-            },
-            {
-              term: "Anomali-basert deteksjon",
-              body: "Lærer hva «normal» trafikk ser ut som og varsler ved avvik. Kan fange ukjente angrep. Svak side: høyere false-positive-rate, og «normal» er en bevegelig baseline — endringer i bedriftens bruk gir falske varsler.",
-            },
-            {
-              term: "DPI (Deep Packet Inspection)",
-              body: "Inspeksjon av selve payload-innholdet, ikke bare header-feltene. Krever mye mer prosessering per pakke og blir vanskelig med TLS-kryptert trafikk. Mange organisasjoner setter opp en TLS-terminerende proxy internt for å kunne kjøre DPI.",
-            },
-            {
-              term: "False positive vs false negative",
-              body: "En FP er et varsel uten et reelt angrep (irriterende, bygger varsel-tretthet). En FN er et reelt angrep som glipper (farlig). Operatører må balansere reglene — for streng gir for mange FP, for slappe gir for mange FN.",
-            },
-            {
-              term: "Snort og Suricata",
-              body: "To populære open-source IDS/IPS-motorer. Bruker tekstuelle regler som beskriver pakke-mønstre («alert tcp any any -> $HOME_NET 80 (content: «/etc/passwd»; sid: 1001)»). Stort økosystem av ferdige regelsett (Emerging Threats, Talos).",
-            },
-            {
-              term: "NIDS vs HIDS",
-              body: "NIDS (Network IDS): inspiserer pakker på lenken. Ser hele organisasjonens trafikk, men ikke innhold av kryptert trafikk eller hva som faktisk skjer på endepunktene. HIDS (Host IDS): kjører på selve hosten. Ser system-kall, fil-endringer, registry-endringer. Krever agent på hver host, men ser ting NIDS ikke kan.",
-            },
-            {
-              term: "SPAN-port (Switched Port Analyzer)",
-              body: "Konfigurasjon på switch der trafikk fra én eller flere porter speiles ut til en analyse-port. IDS-en kobles dit og ser kopi av all interessant trafikk uten å være in-line. Lavt risiko (kan ikke selv blokkere ved feil), men også ute av stand til å stoppe angrep i sanntid.",
-            },
-            {
-              term: "Network TAP",
-              body: "Fysisk eller virtuell enhet som setter seg i en lenke og kopierer alle pakker ut. Mer pålitelig enn SPAN-port (tar ikke skade av switch-overbelastning) og brukes der ekte fullstendig sikkerhets-mon krever 100 % pakke-fangst.",
-            },
-            {
-              term: "False-positive-rate (FPR) og presisjon",
-              body: "FPR = andel godkjent trafikk som likevel utløser alarm. Presisjon = andel alarmer som faktisk er angrep. Begge avhenger av rate of attacks. Selv en 99 % nøyaktig detektor i et nett med 1 angrep per million pakker vil generere overveldende mange falske alarmer — Bayes' setning slår beinhardt.",
-            },
-            {
-              term: "Alarm-tretthet",
-              body: "Operatør-fenomen der mange falske alarmer fører til at ekte alarmer ignoreres. Studier av store SOC-er viser at >50 % av alarmer aldri følges opp. Forsvar: tune regler aggressivt, korreler alarmer fra ulike kilder, prioriter på alvorlighetsgrad.",
-            },
-            {
-              term: "EDR (Endpoint Detection and Response)",
-              body: "Moderne HIDS-arvtagere: kjører på endepunkt, samler telemetri (prosess-trær, nettverks-koblinger, fil-tilganger) til en sentral analyse-tjeneste. Bruker både regler og ML-baseline. Crowdstrike, SentinelOne, Microsoft Defender for Endpoint er kommersielle eksempler.",
-            },
-            {
-              term: "SIEM (Security Information and Event Management)",
-              body: "Sentralisert plattform som samler logger fra brannmur, IDS, EDR, autentiserings-systemer, applikasjoner. Korrelerer hendelser på tvers, kjører regler som spenner kilder («mistenkelig login + database-dump i etterkant»). Splunk, Elastic SIEM, Microsoft Sentinel er typiske.",
-            },
-            {
-              term: "Honeypot og deception",
-              body: "Falsk system designet for å lokke til seg angripere. All trafikk til det er per definisjon mistenkelig — ingen legitime brukere skal ha kontakt med en honeypot. Gir høy presisjon på alarmene og innsikt i angreps-teknikker. Brukes også til å forsinke pågående angrep.",
-            },
-            {
-              term: "Begrensninger i kryptert verden",
-              body: "TLS-kryptering gjør DPI praktisk umulig uten at IDS terminerer TLS internt (egne sertifikater på klientene). Mange organisasjoner setter opp en TLS-terminerende proxy på utkanten av nett for å gjøre IDS-deteksjon. Personvern-tradeoff: nå ser bedriften innholdet i alle ansattes web-trafikk.",
-            },
-            {
-              term: "Kill chain og MITRE ATT&CK",
-              body: "Rammeverk for å beskrive angrep i faser: rekognosering, initial access, execution, persistence, privilege escalation, defense evasion, credential access, discovery, lateral movement, collection, exfiltration. MITRE ATT&CK er et detaljert taksonomi-rammeverk som mappet TTP-er (Tactics, Techniques, Procedures). IDS-regler taggges ofte mot ATT&CK-ID-er.",
-            },
+            { term: "SIEM", body: "Samler og korrelerer logger på tvers av kilder." },
+            { term: "Honeypot", body: "Falsk system — all trafikk er per def mistenkelig." },
+            { term: "TLS-blindhet", body: "IDS ser ikke i kryptert; krever intern terminering." },
+            { term: "Kill chain / MITRE ATT&CK", body: "Faser i angrep — taksonomi for forsvar." },
           ]}
         />
         <Illustration caption="IDS sniffer trafikken via et SPAN-port og varsler operatøren. IPS sitter in-line og kan blokkere.">
           <IdsIpsSvg />
         </Illustration>
+      </div>
+
+      <div className="grid gap-3 md:grid-cols-2">
+        <Metafor tittel="IDS er en røykvarsler">
+          <p>
+            Den piper når den lukter røyk, men slukker ikke brannen. Det er du som må gripe inn.
+            Verdien er at du i det hele tatt får vite om at noe brenner. En IPS er et sprinkler-
+            anlegg: lukter den røyk, så åpner den vannet automatisk — men er den feilkalibrert,
+            ødelegger den serverrommet uten grunn.
+          </p>
+        </Metafor>
+        <Metafor tittel="Signatur er en etterlysning, anomali er en lokal kjentmann">
+          <p>
+            En signatur-IDS har et hefte med bilder av kjente kriminelle — den gjenkjenner dem
+            øyeblikkelig, men en ny kriminell går rett forbi. En anomali-IDS er en kjentmann i
+            nabolaget: «Du er ikke herfra. Jeg har aldri sett deg før». Han fanger nye, men sukker
+            hver gang en gjest kommer på besøk.
+          </p>
+        </Metafor>
+        <Metafor tittel="Honeypot er en lokkeand">
+          <p>
+            En falsk database-server, full av falske passord, plassert et sted der ingen legitim
+            ansatt har grunn til å gå inn. Hver gang noen kobler seg på den, vet du at det er en
+            angriper — ingen falske positiver. Bonus: du kan studere teknikkene hans uten å risikere
+            ekte data.
+          </p>
+        </Metafor>
+        <Metafor tittel="Bayes-fellen er en sjelden sykdoms-test">
+          <p>
+            En test med 99 % nøyaktighet for en sykdom som bare 0.01 % har: hvis du tester positiv,
+            er du sannsynligvis ikke syk — det er flere falske positive (1 % av friske) enn ekte
+            syke. Samme felle rammer IDS-er: selv en 99 %-nøyaktig detektor på milliarder av pakker
+            gir tusenvis av falske alarmer per ekte angrep.
+          </p>
+        </Metafor>
       </div>
 
       <Hvorfor title="Hvorfor har signatur-basert IDS lav false-positive men anomali-basert høy?">
@@ -1368,6 +1382,10 @@ function Section88() {
           analyse, og EDR/SIEM-korrelasjon for å løfte presisjonen.
         </p>
       </Hvorfor>
+
+      <Illustration caption="Bayes-fellen visualisert: selv en svært nøyaktig detektor produserer overveldende mange falske alarmer når angrep er sjeldne.">
+        <BayesFellaSvg />
+      </Illustration>
 
       <Example title="Eksempel: en enkel Snort-regel">
         <pre className="rounded bg-muted/30 p-2 font-mono text-[11px] overflow-x-auto">
@@ -1407,87 +1425,82 @@ function Section89() {
       <div className="grid gap-3 lg:grid-cols-2">
         <Defs
           items={[
-            {
-              term: "XSS (Cross-Site Scripting)",
-              body: "Angriperen klarer å få sin egen JavaScript til å kjøre i en annen brukers nettleser, i konteksten av et legitimt nettsted. Stjeler typisk session-cookies eller spiller av handlinger som brukeren. Tre varianter: stored (skript lagres i database), reflected (skript ekkes tilbake fra URL) og DOM-based (skript injiseres via klient-side parsing).",
-            },
-            {
-              term: "XSS-forsvar",
-              body: "Kontekst-bevisst escaping av all brukerdata før den settes inn i HTML, og en streng Content-Security-Policy (CSP) som forbyr inline scripts og kun tillater skript fra spesifikke origins. innerHTML-tilordninger med ukontrollert input er en magnet for XSS — bruk textContent eller en escape-funksjon.",
-            },
-            {
-              term: "CSRF (Cross-Site Request Forgery)",
-              body: "Angriperen lurer offerets nettleser til å sende en forespørsel mot et annet domene der offeret allerede er innlogget. F.eks. en skjult form på evil.com som POST-er til bank.no/overforing. Nettleseren legger automatisk ved bank.no-cookies, og banken tror forespørselen er legitim.",
-            },
-            {
-              term: "CSRF-forsvar",
-              body: "(1) CSRF-tokens: server genererer et tilfeldig tokens per sesjon, embedder det i alle skjemaer, og krever det ved hver state-changing request. Evil.com kan ikke gjette tokenet. (2) SameSite-cookies: nettleseren slutter å sende cookies på cross-site requests. (3) Origin/Referer-header-sjekk.",
-            },
-            {
-              term: "SQL-injeksjon",
-              body: "Brukerdata konkateneres inn i en SQL-streng uten parameter-binding, slik at angriperen kan endre selve spørringen. Klassisk: «SELECT * FROM users WHERE name='» + input + «'» — sett input til «' OR 1=1 --» og hele tabellen returneres.",
-            },
-            {
-              term: "SQL-injeksjon-forsvar",
-              body: "Bruk forberedte spørringer (prepared statements) med parameter-binding overalt. Da behandles brukerdata som data, aldri som SQL-syntaks. Stored procedures og ORM-er gir samme beskyttelse hvis de ikke har emergency-escape-luker. Validering av input er bare ekstra-belte, ikke selve forsvaret.",
-            },
-            {
-              term: "OWASP Top 10",
-              body: "Liste over de ti mest kritiske web-applikasjons-risikoene, oppdatert hvert par år. Injeksjons-angrep og broken access control har vært på topp i flere år. Bruk den som sjekkliste i kode-review og når man bygger trusselsmodell for en applikasjon.",
-            },
-            {
-              term: "Stored XSS (persistent)",
-              body: "Angriperen lagrer skriptet i applikasjonens database — kommentarfelt, brukerprofil, forum-innlegg. Hver fremtidig leser eksekverer det. Mest skadelig variant fordi den treffer alle brukere som ser den infiserte siden, uten at angriperen trenger å lokke dem til en spesiell URL.",
-            },
-            {
-              term: "Reflected XSS",
-              body: "Skriptet er i URL-en og «reflekteres» tilbake usanitisert i HTML-svaret. Krever at angriper får offeret til å klikke en spesiallaget lenke (typisk via phishing). Eksempel: <code>site.no/search?q=&lt;script&gt;...&lt;/script&gt;</code> hvor søkestrengen ekkes uten escaping.",
-            },
+            { term: "XSS", body: "Fremmed JS kjøres i andres nettleser, i ditt domenes kontekst." },
+            { term: "XSS-forsvar", body: "Escape ved utskrift + streng CSP." },
+            { term: "CSRF", body: "Offerets nettleser sender skjult request med dens cookies." },
+            { term: "CSRF-forsvar", body: "Token per sesjon + SameSite-cookies + Origin-sjekk." },
+            { term: "SQL-injeksjon", body: "Brukerdata konkateneres inn i SQL → endrer struktur." },
+            { term: "SQL-forsvar", body: "Prepared statements / parameter-binding. Punkt." },
+            { term: "OWASP Top 10", body: "De 10 vanligste webapp-feilene, oppdateres jevnlig." },
+            { term: "Stored XSS", body: "Skript lagret i db, treffer alle senere lesere." },
+            { term: "Reflected XSS", body: "Skript i URL ekkes tilbake usanitisert." },
             {
               term: "DOM-based XSS",
-              body: "Hele angrepet skjer i klient-side JavaScript — serveren returnerer trygg HTML, men noe JS plukker opp <code>location.hash</code> eller URL-parameter og setter det inn i DOM via innerHTML. Server-loggene ser ingen ondskap; bare nettleser-instrumentering eller kode-audit finner det.",
+              body: "Klient-side JS lager XSS via innerHTML — server ser intet.",
             },
             {
-              term: "Content Security Policy (CSP)",
-              body: "HTTP-header som forteller nettleseren hvilke kilder JS, CSS, bilder etc. får hentes fra. <code>Content-Security-Policy: script-src 'self' https://apis.google.com</code> stopper alle skript fra ukjente origins, inkludert injiserte inline-skripts. Krever streng disiplin — ingen <code>onclick=...</code>-attributter i HTML.",
+              term: "Content Security Policy",
+              body: "Header: hvilke skript-kilder nettleser tillater.",
+            },
+            { term: "SameSite-cookies", body: "Cookien sendes ikke på cross-site requests." },
+            { term: "CSRF-token", body: "Hemmelig per-sesjon-tokens i alle skjema." },
+            {
+              term: "Blind SQL-injeksjon",
+              body: "Boolean- eller tids-basert oraculum utleder bit.",
             },
             {
-              term: "SameSite-cookies",
-              body: "Cookie-attributt som styrer om nettleseren skal sende cookien på cross-site requests. <code>Strict</code>: aldri. <code>Lax</code> (default nå): bare på top-level navigation (klikk på lenke). <code>None</code>: alltid (men krever Secure). Lax + tokens stopper de fleste CSRF-angrep.",
+              term: "Prepared statements",
+              body: "SQL og data separat — ingen syntaks-tolkning av input.",
             },
+            { term: "SSRF", body: "Server tvinges til å hente intern URL — 169.254.169.254-lekk." },
+            { term: "Path traversal", body: "../-segmenter rømmer fra tiltenkt katalog." },
+            { term: "Click-jacking", body: "Usynlig iframe over knapp — X-Frame-Options stopper." },
             {
-              term: "CSRF-token-implementasjon",
-              body: "Standard mønster: server genererer kryptografisk tilfeldig token, lagrer i bruker-sesjonen, embedder det som skjult input i alle skjemaer. Ved POST sammenligner server token i forms-data mot sesjon. Double-submit-cookie er en variant uten server-state: token settes som cookie OG i form, server sammenligner.",
-            },
-            {
-              term: "SQL-injeksjons-typer",
-              body: "(1) Klassisk in-band: angriperen ser resultatet direkte i svaret. (2) Blind boolean-based: utleder bit for bit via om svaret er forskjellig (eks. true/false-side). (3) Blind time-based: <code>WHERE x = ' OR (SELECT SLEEP(5))</code> — målt forsinkelse avslører svar. (4) Out-of-band: data eksfiltreres via en separat kanal (DNS-oppslag fra serveren).",
-            },
-            {
-              term: "Prepared statements / parameter-binding",
-              body: "Databasen får SQL-strengen med <code>?</code>-placeholders og verdiene som adskilte argumenter. Driveren binder dem på protokoll-nivå — verdiene kan aldri tolkes som SQL-syntaks. Stopper SQL-injeksjon fullstendig. ORM-er bruker dette under panseret.",
-            },
-            {
-              term: "Server-Side Request Forgery (SSRF)",
-              body: "Applikasjonen henter en URL angitt av bruker (eks. «importer profilbilde fra denne URL-en»). Angriperen får serveren til å hente fra interne IP-er — <code>http://169.254.169.254/</code> avslører cloud-metadata med IAM-credentials. Forsvar: validér URL-mål, blokker private IP-rom og DNS-rebinding.",
-            },
-            {
-              term: "Path traversal",
-              body: "Bruker-input legges inn i filsti uten validering: <code>open('/var/www/uploads/' + filename)</code> der filename = <code>'../../etc/passwd'</code>. Leser sensitive filer utenfor tiltenkt katalog. Forsvar: validér at resolved path er prefiks av tillatt katalog, ikke bare strip <code>..</code>.",
-            },
-            {
-              term: "Click-jacking og X-Frame-Options",
-              body: "Angriperens side innebed offerets nettsted i en usynlig iframe og lokker offer til å klikke på det de tror er en del av angriperens side, men som faktisk er en knapp i offerets innloggede sesjon. Forsvar: <code>X-Frame-Options: DENY</code> eller CSP <code>frame-ancestors 'none'</code>.",
-            },
-            {
-              term: "Sub-resource Integrity (SRI)",
-              body: "Når du laster ekstern JS (CDN) kan du oppgi en hash av forventet innhold: <code>&lt;script integrity=&quot;sha384-...&quot;&gt;</code>. Hvis CDN-en kompromitteres og bytter ut skriptet, matcher ikke hashen og nettleseren nekter å kjøre det. Lite kost, stort gevinst mot supply-chain-angrep.",
+              term: "SRI (Sub-resource Integrity)",
+              body: "Hash av ekstern JS — CDN-tukling avvises.",
             },
           ]}
         />
         <Illustration caption="CSRF-flyt: offer er innlogget på bank, besøker evil.com som POST-er til bank med offerets cookies.">
           <CsrfSvg />
         </Illustration>
+      </div>
+
+      <div className="grid gap-3 md:grid-cols-2">
+        <Metafor tittel="SQL-injeksjon er en distraherbar kelner">
+          <p>
+            En gjest bestiller: «Jeg vil ha kaffe, og forresten glem regninga og gi meg alle pengene
+            i kassa». Kelneren leser alt høyt for kjøkkenet uten å skille mellom bestilling og
+            instruks — og kjøkkenet utfører det. Prepared statements er som å gi kelneren et
+            bestillings-skjema med faste felter: gjesten kan bare fylle ut «drikke»- feltet, og hva
+            hun enn skriver der havner i drikke-feltet — ikke som ordre.
+          </p>
+        </Metafor>
+        <Metafor tittel="XSS er noen som henger lapper i ditt skap">
+          <p>
+            Et skole-låskap som alle elever har tilgang til. En ondsinnet medelev gjemmer en lapp
+            inni: «Når du leser dette, gå og rop i lærerrommet». Hver gang en annen elev åpner
+            skapet, eksekverer hjernen lappen — som om det var en lærer som ga ordren. CSP er en
+            regel «kun lapper signert av rektor regnes som ekte ordrer».
+          </p>
+        </Metafor>
+        <Metafor tittel="CSRF er å forfalske underskrift med fjernsignering">
+          <p>
+            Du har en kortleser som automatisk signerer kontrakter du fysisk holder. En slu person
+            legger en sjekk på 1 000 000 kr i kortleseren mens du sover med fingrene på den.
+            Nettleseren legger ved cookies automatisk — som fingrene på kortleseren. CSRF- tokens er
+            som å kreve at hver kontrakt har en unik, hemmelig kvitterings-stempel ingen
+            utenforstående kjenner.
+          </p>
+        </Metafor>
+        <Metafor tittel="SSRF er å sende serveren på ærend">
+          <p>
+            «Hei server, kan du hente bildet på denne adressen?» — angriperen oppgir
+            <code className="ml-1">http://169.254.169.254</code>, som er en intern adresse bare
+            serveren kan nå. Det er som å be portieren på hotellet om å hente en gave fra
+            direktørens kontor — han har nøkkelen, det har ikke du.
+          </p>
+        </Metafor>
       </div>
 
       <Hvorfor title="Hvorfor er prepared statements det eneste forsvaret som faktisk fungerer mot SQL-injeksjon?">
@@ -1510,6 +1523,10 @@ function Section89() {
           parameter-binding (eller en ORM som bruker det under panseret) det eneste ekte forsvaret.
         </p>
       </Hvorfor>
+
+      <Illustration caption="SQL-injeksjon: konkatenering tolker brukerinput som SQL-syntaks; parameter-binding behandler det som ren data.">
+        <SqliSvg />
+      </Illustration>
 
       <Example title="Eksempel: SQL-injeksjon-fiks med forberedt spørring">
         <pre className="rounded bg-muted/30 p-2 font-mono text-[11px] overflow-x-auto">
@@ -2010,6 +2027,18 @@ function Hvorfor({ title, children }: { title: string; children: React.ReactNode
         Hvorfor?
       </div>
       <div className="font-semibold text-foreground mb-1">{title}</div>
+      <div className="text-muted-foreground text-[13px] space-y-2">{children}</div>
+    </div>
+  );
+}
+
+function Metafor({ tittel, children }: { tittel: string; children: React.ReactNode }) {
+  return (
+    <div className="rounded-xl border border-purple-500/30 bg-purple-500/5 p-4">
+      <div className="text-[10px] uppercase tracking-wider text-purple-700 dark:text-purple-400 font-semibold mb-1">
+        🔮 Metafor
+      </div>
+      <div className="font-semibold text-foreground mb-1">{tittel}</div>
       <div className="text-muted-foreground text-[13px] space-y-2">{children}</div>
     </div>
   );
@@ -3503,6 +3532,968 @@ function CsrfSvg() {
       <defs>
         <marker id="cs" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
           <polygon points="0 0, 6 3, 0 6" className="fill-current" />
+        </marker>
+      </defs>
+    </svg>
+  );
+}
+
+// ============================================================
+// Nye SVG-er for metafor-pass
+// ============================================================
+
+function PassiveActiveSvg() {
+  return (
+    <svg viewBox="0 0 520 200" className="w-full h-auto">
+      <text
+        x={260}
+        y={16}
+        textAnchor="middle"
+        className="fill-foreground text-[12px] font-semibold"
+      >
+        Passiv vs aktiv angriper
+      </text>
+      {/* Passive */}
+      <text x={20} y={40} className="fill-brand text-[10px] uppercase tracking-wider font-semibold">
+        Passiv
+      </text>
+      <circle cx={60} cy={75} r={12} className="fill-amber-500" />
+      <text x={60} y={79} textAnchor="middle" className="fill-foreground text-[9px]">
+        A
+      </text>
+      <circle cx={400} cy={75} r={12} className="fill-success" />
+      <text x={400} y={79} textAnchor="middle" className="fill-foreground text-[9px]">
+        B
+      </text>
+      <line x1={72} y1={75} x2={388} y2={75} className="stroke-foreground/50" strokeWidth={1.5} />
+      <circle
+        cx={230}
+        cy={100}
+        r={14}
+        className="fill-muted/40 stroke-muted-foreground"
+        strokeWidth={1}
+        strokeDasharray="2 2"
+      />
+      <text x={230} y={104} textAnchor="middle" className="fill-foreground text-[9px]">
+        T
+      </text>
+      <line
+        x1={230}
+        y1={86}
+        x2={230}
+        y2={76}
+        className="stroke-muted-foreground/60"
+        strokeWidth={1}
+        strokeDasharray="2 2"
+      />
+      <text x={230} y={130} textAnchor="middle" className="fill-muted-foreground text-[8px] italic">
+        lytter bare — forsvar: kryptering
+      </text>
+
+      {/* Active */}
+      <text
+        x={20}
+        y={160}
+        className="fill-destructive text-[10px] uppercase tracking-wider font-semibold"
+      >
+        Aktiv
+      </text>
+      <circle cx={60} cy={185} r={12} className="fill-amber-500" />
+      <text x={60} y={189} textAnchor="middle" className="fill-foreground text-[9px]">
+        A
+      </text>
+      <circle cx={400} cy={185} r={12} className="fill-success" />
+      <text x={400} y={189} textAnchor="middle" className="fill-foreground text-[9px]">
+        B
+      </text>
+      <line x1={72} y1={185} x2={210} y2={185} className="stroke-foreground/50" strokeWidth={1.5} />
+      <line
+        x1={250}
+        y1={185}
+        x2={388}
+        y2={185}
+        className="stroke-foreground/50"
+        strokeWidth={1.5}
+      />
+      <rect
+        x={210}
+        y={172}
+        width={40}
+        height={26}
+        rx={3}
+        className="fill-destructive/30 stroke-destructive"
+        strokeWidth={1.5}
+      />
+      <text x={230} y={189} textAnchor="middle" className="fill-foreground text-[9px]">
+        T
+      </text>
+      <text x={460} y={189} className="fill-destructive text-[9px]">
+        drop/endre
+      </text>
+    </svg>
+  );
+}
+
+function EcbVsCbcSvg() {
+  return (
+    <svg viewBox="0 0 520 220" className="w-full h-auto">
+      <text
+        x={260}
+        y={16}
+        textAnchor="middle"
+        className="fill-foreground text-[12px] font-semibold"
+      >
+        ECB lekker mønstre; CBC kjeder dem ut
+      </text>
+      {/* ECB row */}
+      <text
+        x={20}
+        y={40}
+        className="fill-destructive text-[10px] uppercase tracking-wider font-semibold"
+      >
+        ECB
+      </text>
+      <text x={20} y={60} className="fill-muted-foreground text-[8px]">
+        klartekst
+      </text>
+      {["A", "A", "B", "A", "B", "B"].map((c, i) => (
+        <g key={`ecbp-${i}`}>
+          <rect
+            x={70 + i * 30}
+            y={50}
+            width={26}
+            height={20}
+            className={c === "A" ? "fill-brand/40 stroke-brand" : "fill-success/40 stroke-success"}
+            strokeWidth={1}
+          />
+          <text x={83 + i * 30} y={64} textAnchor="middle" className="fill-foreground text-[9px]">
+            {c}
+          </text>
+        </g>
+      ))}
+      <text x={20} y={95} className="fill-muted-foreground text-[8px]">
+        ciphertext
+      </text>
+      {["X", "X", "Y", "X", "Y", "Y"].map((c, i) => (
+        <g key={`ecbc-${i}`}>
+          <rect
+            x={70 + i * 30}
+            y={85}
+            width={26}
+            height={20}
+            className={
+              c === "X"
+                ? "fill-amber-500/40 stroke-amber-500"
+                : "fill-destructive/40 stroke-destructive"
+            }
+            strokeWidth={1}
+          />
+          <text x={83 + i * 30} y={99} textAnchor="middle" className="fill-foreground text-[9px]">
+            {c}
+          </text>
+        </g>
+      ))}
+      <text x={280} y={120} className="fill-destructive text-[9px] italic">
+        ← like A-blokker gir like X-er, mønster synlig
+      </text>
+
+      {/* CBC row */}
+      <text
+        x={20}
+        y={150}
+        className="fill-success text-[10px] uppercase tracking-wider font-semibold"
+      >
+        CBC
+      </text>
+      <text x={20} y={170} className="fill-muted-foreground text-[8px]">
+        klartekst
+      </text>
+      {["A", "A", "B", "A", "B", "B"].map((c, i) => (
+        <g key={`cbcp-${i}`}>
+          <rect
+            x={70 + i * 30}
+            y={160}
+            width={26}
+            height={20}
+            className={c === "A" ? "fill-brand/40 stroke-brand" : "fill-success/40 stroke-success"}
+            strokeWidth={1}
+          />
+          <text x={83 + i * 30} y={174} textAnchor="middle" className="fill-foreground text-[9px]">
+            {c}
+          </text>
+        </g>
+      ))}
+      <text x={20} y={205} className="fill-muted-foreground text-[8px]">
+        ciphertext
+      </text>
+      {["q3", "f8", "k2", "p9", "z4", "m7"].map((c, i) => (
+        <g key={`cbcc-${i}`}>
+          <rect
+            x={70 + i * 30}
+            y={195}
+            width={26}
+            height={20}
+            className="fill-muted/40 stroke-muted-foreground"
+            strokeWidth={1}
+          />
+          <text
+            x={83 + i * 30}
+            y={209}
+            textAnchor="middle"
+            className="fill-foreground text-[8px] font-mono"
+          >
+            {c}
+          </text>
+        </g>
+      ))}
+    </svg>
+  );
+}
+
+function HashMacSignSvg() {
+  return (
+    <svg viewBox="0 0 520 240" className="w-full h-auto">
+      <text
+        x={260}
+        y={16}
+        textAnchor="middle"
+        className="fill-foreground text-[12px] font-semibold"
+      >
+        Hash vs MAC vs Signering — hvem deler hva?
+      </text>
+      {[
+        {
+          y: 50,
+          label: "Hash",
+          who: "ingen hemmelighet",
+          color: "fill-brand/30 stroke-brand",
+          note: "kun mot tilfeldige feil",
+        },
+        {
+          y: 110,
+          label: "MAC",
+          who: "A og B deler nøkkel K",
+          color: "fill-amber-500/30 stroke-amber-500",
+          note: "integritet + auth, ikke ikke-avvisning",
+        },
+        {
+          y: 170,
+          label: "Signering",
+          who: "A har priv, alle har pub",
+          color: "fill-success/30 stroke-success",
+          note: "integritet + auth + ikke-avvisning",
+        },
+      ].map((row) => (
+        <g key={row.label}>
+          <rect
+            x={20}
+            y={row.y}
+            width={90}
+            height={50}
+            rx={5}
+            className={row.color}
+            strokeWidth={1.5}
+          />
+          <text
+            x={65}
+            y={row.y + 22}
+            textAnchor="middle"
+            className="fill-foreground text-[11px] font-semibold"
+          >
+            {row.label}
+          </text>
+          <text
+            x={65}
+            y={row.y + 38}
+            textAnchor="middle"
+            className="fill-muted-foreground text-[8px]"
+          >
+            {row.who}
+          </text>
+          <text x={130} y={row.y + 28} className="fill-foreground text-[10px]">
+            {row.note}
+          </text>
+        </g>
+      ))}
+      <text x={260} y={230} textAnchor="middle" className="fill-muted-foreground text-[9px] italic">
+        Hash er gratis men svak; signering er dyrt men sterkest
+      </text>
+    </svg>
+  );
+}
+
+function MitmSvg() {
+  return (
+    <svg viewBox="0 0 520 240" className="w-full h-auto">
+      <text
+        x={260}
+        y={16}
+        textAnchor="middle"
+        className="fill-foreground text-[12px] font-semibold"
+      >
+        Man-in-the-Middle — to parallelle handshakes
+      </text>
+      <circle cx={50} cy={120} r={18} className="fill-amber-500" />
+      <text x={50} y={126} textAnchor="middle" className="fill-foreground text-[11px]">
+        A
+      </text>
+      <circle cx={260} cy={120} r={20} className="fill-destructive" />
+      <text x={260} y={126} textAnchor="middle" className="fill-foreground text-[11px]">
+        T
+      </text>
+      <circle cx={470} cy={120} r={18} className="fill-success" />
+      <text x={470} y={126} textAnchor="middle" className="fill-foreground text-[11px]">
+        B
+      </text>
+
+      <line
+        x1={70}
+        y1={105}
+        x2={240}
+        y2={105}
+        className="stroke-brand"
+        strokeWidth={1.5}
+        markerEnd="url(#mm)"
+      />
+      <text x={155} y={100} textAnchor="middle" className="fill-foreground text-[9px]">
+        handshake 1
+      </text>
+      <line
+        x1={240}
+        y1={135}
+        x2={70}
+        y2={135}
+        className="stroke-brand"
+        strokeWidth={1.5}
+        markerEnd="url(#mm)"
+      />
+      <text x={155} y={150} textAnchor="middle" className="fill-muted-foreground text-[8px]">
+        T later som B
+      </text>
+
+      <line
+        x1={280}
+        y1={105}
+        x2={450}
+        y2={105}
+        className="stroke-success"
+        strokeWidth={1.5}
+        markerEnd="url(#mm)"
+      />
+      <text x={365} y={100} textAnchor="middle" className="fill-foreground text-[9px]">
+        handshake 2
+      </text>
+      <line
+        x1={450}
+        y1={135}
+        x2={280}
+        y2={135}
+        className="stroke-success"
+        strokeWidth={1.5}
+        markerEnd="url(#mm)"
+      />
+      <text x={365} y={150} textAnchor="middle" className="fill-muted-foreground text-[8px]">
+        T later som A
+      </text>
+
+      <defs>
+        <marker id="mm" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+          <polygon points="0 0, 6 3, 0 6" className="fill-current" />
+        </marker>
+      </defs>
+
+      <text x={260} y={195} textAnchor="middle" className="fill-foreground text-[10px]">
+        Begge tror de snakker med rett part — alt går via T
+      </text>
+      <text x={260} y={215} textAnchor="middle" className="fill-muted-foreground text-[9px] italic">
+        Forsvar: forhåndsdelt anker — sertifikat eller PSK binder identitet til nøkkel
+      </text>
+    </svg>
+  );
+}
+
+function ForwardSecrecySvg() {
+  return (
+    <svg viewBox="0 0 520 260" className="w-full h-auto">
+      <text
+        x={260}
+        y={16}
+        textAnchor="middle"
+        className="fill-foreground text-[12px] font-semibold"
+      >
+        Hva skjer når server-nøkkelen lekker?
+      </text>
+
+      {/* Left: RSA */}
+      <text
+        x={130}
+        y={40}
+        textAnchor="middle"
+        className="fill-destructive text-[10px] uppercase tracking-wider font-semibold"
+      >
+        TLS 1.2 m/ RSA-KE
+      </text>
+      {[0, 1, 2, 3].map((i) => (
+        <rect
+          key={`l-${i}`}
+          x={50 + i * 35}
+          y={55}
+          width={28}
+          height={22}
+          className="fill-brand/40 stroke-brand"
+          strokeWidth={1}
+        />
+      ))}
+      <text x={130} y={95} textAnchor="middle" className="fill-muted-foreground text-[8px]">
+        lagrede sesjoner
+      </text>
+      <line
+        x1={50}
+        y1={115}
+        x2={210}
+        y2={115}
+        className="stroke-destructive"
+        strokeWidth={1.5}
+        strokeDasharray="3 2"
+      />
+      <text
+        x={130}
+        y={135}
+        textAnchor="middle"
+        className="fill-destructive text-[9px] font-semibold"
+      >
+        ⚠ alle dekrypteres
+      </text>
+      <text x={130} y={155} textAnchor="middle" className="fill-muted-foreground text-[8px] italic">
+        pre-master kryptert med
+      </text>
+      <text x={130} y={167} textAnchor="middle" className="fill-muted-foreground text-[8px] italic">
+        nå-lekket nøkkel
+      </text>
+
+      {/* Right: ECDHE */}
+      <line x1={270} y1={30} x2={270} y2={230} className="stroke-border" strokeWidth={1} />
+      <text
+        x={400}
+        y={40}
+        textAnchor="middle"
+        className="fill-success text-[10px] uppercase tracking-wider font-semibold"
+      >
+        TLS 1.3 m/ ECDHE
+      </text>
+      {[0, 1, 2, 3].map((i) => (
+        <rect
+          key={`r-${i}`}
+          x={320 + i * 35}
+          y={55}
+          width={28}
+          height={22}
+          className="fill-success/40 stroke-success"
+          strokeWidth={1}
+        />
+      ))}
+      <text x={400} y={95} textAnchor="middle" className="fill-muted-foreground text-[8px]">
+        lagrede sesjoner
+      </text>
+      <line x1={320} y1={115} x2={480} y2={115} className="stroke-success" strokeWidth={1.5} />
+      <text x={400} y={135} textAnchor="middle" className="fill-success text-[9px] font-semibold">
+        ✓ trygge
+      </text>
+      <text x={400} y={155} textAnchor="middle" className="fill-muted-foreground text-[8px] italic">
+        ephemeral DH-nøkkel
+      </text>
+      <text x={400} y={167} textAnchor="middle" className="fill-muted-foreground text-[8px] italic">
+        slettet etter handshake
+      </text>
+
+      <text x={260} y={210} textAnchor="middle" className="fill-foreground text-[10px]">
+        Server-nøkkel lekker
+      </text>
+      <text x={260} y={230} textAnchor="middle" className="fill-muted-foreground text-[9px] italic">
+        Forward Secrecy beskytter fortiden — ikke fremtiden
+      </text>
+    </svg>
+  );
+}
+
+function TransportVsTunnelSvg() {
+  return (
+    <svg viewBox="0 0 520 240" className="w-full h-auto">
+      <text
+        x={260}
+        y={16}
+        textAnchor="middle"
+        className="fill-foreground text-[12px] font-semibold"
+      >
+        Transport-mode vs Tunnel-mode (ESP)
+      </text>
+
+      {/* Transport */}
+      <text x={20} y={45} className="fill-brand text-[10px] uppercase tracking-wider font-semibold">
+        Transport
+      </text>
+      <rect
+        x={70}
+        y={55}
+        width={70}
+        height={28}
+        className="fill-amber-500/30 stroke-amber-500"
+        strokeWidth={1}
+      />
+      <text x={105} y={73} textAnchor="middle" className="fill-foreground text-[9px]">
+        IP-hdr
+      </text>
+      <rect
+        x={140}
+        y={55}
+        width={50}
+        height={28}
+        className="fill-destructive/30 stroke-destructive"
+        strokeWidth={1}
+      />
+      <text x={165} y={73} textAnchor="middle" className="fill-foreground text-[8px]">
+        ESP-hdr
+      </text>
+      <rect
+        x={190}
+        y={55}
+        width={170}
+        height={28}
+        className="fill-brand/40 stroke-brand"
+        strokeWidth={1}
+      />
+      <text x={275} y={73} textAnchor="middle" className="fill-foreground text-[9px]">
+        kryptert TCP+data
+      </text>
+      <rect
+        x={360}
+        y={55}
+        width={35}
+        height={28}
+        className="fill-success/30 stroke-success"
+        strokeWidth={1}
+      />
+      <text x={377} y={73} textAnchor="middle" className="fill-foreground text-[8px]">
+        MAC
+      </text>
+      <text x={70} y={105} className="fill-muted-foreground text-[8px] italic">
+        original IP-header beholdes — host-til-host
+      </text>
+
+      {/* Tunnel */}
+      <text
+        x={20}
+        y={145}
+        className="fill-success text-[10px] uppercase tracking-wider font-semibold"
+      >
+        Tunnel
+      </text>
+      <rect
+        x={50}
+        y={155}
+        width={70}
+        height={28}
+        className="fill-amber-500/30 stroke-amber-500"
+        strokeWidth={1}
+      />
+      <text x={85} y={173} textAnchor="middle" className="fill-foreground text-[9px]">
+        ny IP-hdr
+      </text>
+      <rect
+        x={120}
+        y={155}
+        width={50}
+        height={28}
+        className="fill-destructive/30 stroke-destructive"
+        strokeWidth={1}
+      />
+      <text x={145} y={173} textAnchor="middle" className="fill-foreground text-[8px]">
+        ESP-hdr
+      </text>
+      <rect
+        x={170}
+        y={155}
+        width={235}
+        height={28}
+        className="fill-brand/40 stroke-brand"
+        strokeWidth={1}
+      />
+      <text x={287} y={173} textAnchor="middle" className="fill-foreground text-[9px]">
+        kryptert (gammel IP + TCP + data)
+      </text>
+      <rect
+        x={405}
+        y={155}
+        width={35}
+        height={28}
+        className="fill-success/30 stroke-success"
+        strokeWidth={1}
+      />
+      <text x={422} y={173} textAnchor="middle" className="fill-foreground text-[8px]">
+        MAC
+      </text>
+      <text x={50} y={205} className="fill-muted-foreground text-[8px] italic">
+        hele original-pakken pakkes inn — gateway-til-gateway, interne adresser skjult
+      </text>
+    </svg>
+  );
+}
+
+function DmzSvg() {
+  return (
+    <svg viewBox="0 0 520 240" className="w-full h-auto">
+      <text
+        x={260}
+        y={16}
+        textAnchor="middle"
+        className="fill-foreground text-[12px] font-semibold"
+      >
+        DMZ-topologi
+      </text>
+
+      <rect
+        x={20}
+        y={70}
+        width={70}
+        height={50}
+        rx={5}
+        className="fill-amber-500/20 stroke-amber-500"
+        strokeWidth={1.5}
+      />
+      <text x={55} y={90} textAnchor="middle" className="fill-foreground text-[10px]">
+        Internett
+      </text>
+      <text x={55} y={105} textAnchor="middle" className="fill-muted-foreground text-[8px]">
+        ukjent
+      </text>
+
+      <rect
+        x={110}
+        y={75}
+        width={20}
+        height={40}
+        className="fill-destructive/30 stroke-destructive"
+        strokeWidth={1.5}
+      />
+      <text x={120} y={130} textAnchor="middle" className="fill-foreground text-[8px]">
+        FW1
+      </text>
+
+      <rect
+        x={150}
+        y={50}
+        width={180}
+        height={90}
+        rx={6}
+        className="fill-card stroke-brand/60"
+        strokeWidth={1.5}
+        strokeDasharray="4 3"
+      />
+      <text
+        x={240}
+        y={72}
+        textAnchor="middle"
+        className="fill-brand text-[10px] uppercase tracking-wider font-semibold"
+      >
+        DMZ
+      </text>
+      <rect
+        x={165}
+        y={85}
+        width={60}
+        height={22}
+        rx={3}
+        className="fill-brand/30 stroke-brand"
+        strokeWidth={1}
+      />
+      <text x={195} y={100} textAnchor="middle" className="fill-foreground text-[9px]">
+        web
+      </text>
+      <rect
+        x={245}
+        y={85}
+        width={60}
+        height={22}
+        rx={3}
+        className="fill-brand/30 stroke-brand"
+        strokeWidth={1}
+      />
+      <text x={275} y={100} textAnchor="middle" className="fill-foreground text-[9px]">
+        mail
+      </text>
+      <rect
+        x={205}
+        y={115}
+        width={60}
+        height={22}
+        rx={3}
+        className="fill-brand/30 stroke-brand"
+        strokeWidth={1}
+      />
+      <text x={235} y={130} textAnchor="middle" className="fill-foreground text-[9px]">
+        DNS
+      </text>
+
+      <rect
+        x={350}
+        y={75}
+        width={20}
+        height={40}
+        className="fill-destructive/30 stroke-destructive"
+        strokeWidth={1.5}
+      />
+      <text x={360} y={130} textAnchor="middle" className="fill-foreground text-[8px]">
+        FW2
+      </text>
+
+      <rect
+        x={390}
+        y={70}
+        width={110}
+        height={50}
+        rx={5}
+        className="fill-success/20 stroke-success"
+        strokeWidth={1.5}
+      />
+      <text x={445} y={90} textAnchor="middle" className="fill-foreground text-[10px]">
+        Intern LAN
+      </text>
+      <text x={445} y={105} textAnchor="middle" className="fill-muted-foreground text-[8px]">
+        database, ansatte
+      </text>
+
+      <text x={260} y={175} textAnchor="middle" className="fill-foreground text-[10px]">
+        Brann-mur 1: slipper inn på 80/443/25 → DMZ
+      </text>
+      <text x={260} y={195} textAnchor="middle" className="fill-foreground text-[10px]">
+        Brann-mur 2: slipper INGEN inn fra DMZ → LAN
+      </text>
+      <text x={260} y={220} textAnchor="middle" className="fill-muted-foreground text-[9px] italic">
+        Hvis DMZ kompromitteres, må angriper bryte FW2 også
+      </text>
+    </svg>
+  );
+}
+
+function BayesFellaSvg() {
+  return (
+    <svg viewBox="0 0 520 240" className="w-full h-auto">
+      <text
+        x={260}
+        y={16}
+        textAnchor="middle"
+        className="fill-foreground text-[12px] font-semibold"
+      >
+        Bayes-fellen: presisjon faller når angrep er sjeldne
+      </text>
+
+      {/* Confusion matrix */}
+      <rect
+        x={150}
+        y={50}
+        width={120}
+        height={70}
+        className="fill-success/30 stroke-success"
+        strokeWidth={1.5}
+      />
+      <text
+        x={210}
+        y={80}
+        textAnchor="middle"
+        className="fill-foreground text-[11px] font-semibold"
+      >
+        99
+      </text>
+      <text x={210} y={100} textAnchor="middle" className="fill-muted-foreground text-[8px]">
+        TP (ekte angrep)
+      </text>
+
+      <rect
+        x={270}
+        y={50}
+        width={120}
+        height={70}
+        className="fill-destructive/30 stroke-destructive"
+        strokeWidth={1.5}
+      />
+      <text
+        x={330}
+        y={80}
+        textAnchor="middle"
+        className="fill-foreground text-[11px] font-semibold"
+      >
+        5000
+      </text>
+      <text x={330} y={100} textAnchor="middle" className="fill-muted-foreground text-[8px]">
+        FP (falsk alarm)
+      </text>
+
+      <rect
+        x={150}
+        y={120}
+        width={120}
+        height={50}
+        className="fill-destructive/15 stroke-destructive/60"
+        strokeWidth={1}
+      />
+      <text x={210} y={140} textAnchor="middle" className="fill-foreground text-[10px]">
+        1
+      </text>
+      <text x={210} y={155} textAnchor="middle" className="fill-muted-foreground text-[8px]">
+        FN (mistet angrep)
+      </text>
+
+      <rect
+        x={270}
+        y={120}
+        width={120}
+        height={50}
+        className="fill-muted/20 stroke-muted-foreground/40"
+        strokeWidth={1}
+      />
+      <text x={330} y={140} textAnchor="middle" className="fill-foreground text-[10px]">
+        ~10M
+      </text>
+      <text x={330} y={155} textAnchor="middle" className="fill-muted-foreground text-[8px]">
+        TN
+      </text>
+
+      <text x={210} y={45} textAnchor="middle" className="fill-muted-foreground text-[9px]">
+        alarm
+      </text>
+      <text x={330} y={45} textAnchor="middle" className="fill-muted-foreground text-[9px]">
+        ingen alarm
+      </text>
+      <text x={130} y={87} textAnchor="end" className="fill-muted-foreground text-[9px]">
+        ekte
+      </text>
+      <text x={130} y={150} textAnchor="end" className="fill-muted-foreground text-[9px]">
+        ingen
+      </text>
+
+      <text x={260} y={195} textAnchor="middle" className="fill-foreground text-[10px]">
+        Presisjon = 99 / (99 + 5000) ≈ <tspan className="fill-destructive font-semibold">2 %</tspan>
+      </text>
+      <text x={260} y={215} textAnchor="middle" className="fill-muted-foreground text-[9px] italic">
+        Selv en god detektor drukner i støy når basisraten er liten
+      </text>
+    </svg>
+  );
+}
+
+function SqliSvg() {
+  return (
+    <svg viewBox="0 0 520 260" className="w-full h-auto">
+      <text
+        x={260}
+        y={16}
+        textAnchor="middle"
+        className="fill-foreground text-[12px] font-semibold"
+      >
+        SQL: konkatenering vs prepared statement
+      </text>
+
+      {/* Vulnerable */}
+      <text
+        x={20}
+        y={45}
+        className="fill-destructive text-[10px] uppercase tracking-wider font-semibold"
+      >
+        Sårbart
+      </text>
+      <rect
+        x={20}
+        y={55}
+        width={480}
+        height={30}
+        rx={3}
+        className="fill-destructive/10 stroke-destructive"
+        strokeWidth={1}
+      />
+      <text x={30} y={75} className="fill-foreground text-[10px] font-mono">
+        "SELECT * FROM u WHERE name='" + input + "'"
+      </text>
+      <text x={20} y={100} className="fill-muted-foreground text-[9px]">
+        input:
+      </text>
+      <rect
+        x={70}
+        y={88}
+        width={150}
+        height={20}
+        rx={3}
+        className="fill-amber-500/20 stroke-amber-500"
+        strokeWidth={1}
+      />
+      <text x={75} y={103} className="fill-foreground text-[10px] font-mono">
+        ' OR 1=1 --
+      </text>
+      <text x={230} y={103} className="fill-destructive text-[10px]">
+        → tolket som SQL-syntaks!
+      </text>
+
+      <line
+        x1={260}
+        y1={115}
+        x2={260}
+        y2={140}
+        className="stroke-destructive"
+        strokeWidth={1.5}
+        markerEnd="url(#sqi)"
+      />
+
+      <rect
+        x={70}
+        y={140}
+        width={380}
+        height={28}
+        rx={3}
+        className="fill-destructive/20 stroke-destructive"
+        strokeWidth={1}
+      />
+      <text x={260} y={158} textAnchor="middle" className="fill-foreground text-[10px] font-mono">
+        SELECT * FROM u WHERE name='' OR 1=1 --'
+      </text>
+
+      {/* Safe */}
+      <text
+        x={20}
+        y={195}
+        className="fill-success text-[10px] uppercase tracking-wider font-semibold"
+      >
+        Trygt — prepared statement
+      </text>
+      <rect
+        x={20}
+        y={205}
+        width={290}
+        height={30}
+        rx={3}
+        className="fill-success/10 stroke-success"
+        strokeWidth={1}
+      />
+      <text x={30} y={225} className="fill-foreground text-[10px] font-mono">
+        "SELECT * FROM u WHERE name=?"
+      </text>
+      <rect
+        x={320}
+        y={205}
+        width={140}
+        height={30}
+        rx={3}
+        className="fill-amber-500/20 stroke-amber-500"
+        strokeWidth={1}
+      />
+      <text x={330} y={225} className="fill-foreground text-[10px] font-mono">
+        bind: ' OR 1=1 --
+      </text>
+      <text x={260} y={250} textAnchor="middle" className="fill-muted-foreground text-[9px] italic">
+        Verdien tolkes som ren streng — kan ikke endre spørringens struktur
+      </text>
+
+      <defs>
+        <marker id="sqi" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+          <polygon points="0 0, 6 3, 0 6" className="fill-destructive" />
         </marker>
       </defs>
     </svg>
