@@ -10,5 +10,5 @@ export const content: TrinnContent = {
   status: "ready",
   shortDescription: "Streaming, VoIP, RTP, jitter, QoS. Disposisjon + lenker.",
   prerequisites: [],
-  Component: lazy(() => import("@/components/stack/kurose-kurs/KuroseKapStubPage").then((m) => ({ default: m.KuroseKap9Page }))),
+  Component: lazy(() => import("@/components/stack/kurose-kurs/KuroseKap9Page").then((m) => ({ default: m.KuroseKap9Page }))),
 };

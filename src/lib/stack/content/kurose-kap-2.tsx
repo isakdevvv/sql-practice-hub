@@ -10,5 +10,5 @@ export const content: TrinnContent = {
   status: "ready",
   shortDescription: "HTTP, DNS, e-post, P2P, video-streaming, sockets. Disposisjon + lenker til våre interaktive sider mens den fulle versjonen bygges.",
   prerequisites: [],
-  Component: lazy(() => import("@/components/stack/kurose-kurs/KuroseKapStubPage").then((m) => ({ default: m.KuroseKap2Page }))),
+  Component: lazy(() => import("@/components/stack/kurose-kurs/KuroseKap2Page").then((m) => ({ default: m.KuroseKap2Page }))),
 };

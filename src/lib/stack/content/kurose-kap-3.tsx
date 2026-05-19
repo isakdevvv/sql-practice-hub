@@ -10,5 +10,5 @@ export const content: TrinnContent = {
   status: "ready",
   shortDescription: "UDP, TCP, pålitelig data-transport, congestion-kontroll. Disposisjon + lenker til våre interaktive sider.",
   prerequisites: [],
-  Component: lazy(() => import("@/components/stack/kurose-kurs/KuroseKapStubPage").then((m) => ({ default: m.KuroseKap3Page }))),
+  Component: lazy(() => import("@/components/stack/kurose-kurs/KuroseKap3Page").then((m) => ({ default: m.KuroseKap3Page }))),
 };

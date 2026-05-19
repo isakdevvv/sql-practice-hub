@@ -10,5 +10,5 @@ export const content: TrinnContent = {
   status: "ready",
   shortDescription: "Inne i en ruter, IPv4/IPv6, NAT, SDN. Disposisjon + lenker til interaktive sider.",
   prerequisites: [],
-  Component: lazy(() => import("@/components/stack/kurose-kurs/KuroseKapStubPage").then((m) => ({ default: m.KuroseKap4Page }))),
+  Component: lazy(() => import("@/components/stack/kurose-kurs/KuroseKap4Page").then((m) => ({ default: m.KuroseKap4Page }))),
 };
