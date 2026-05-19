@@ -169,8 +169,9 @@ function Section11() {
         vite om kablene.
       </p>
 
-      <div className="grid gap-3 lg:grid-cols-2">
-        <Defs
+      <Section11Live />
+
+      <Defs
         items={[
           {
             term: "Host (også: end-system)",
@@ -198,8 +199,6 @@ function Section11() {
           },
         ]}
       />
-        <Section11Live />
-      </div>
 
       <RelatedSlugs slugs={["osi-tcpip", "dte2507-day-in-the-life", "dte2507-dns-dyp"]} />
     </article>
