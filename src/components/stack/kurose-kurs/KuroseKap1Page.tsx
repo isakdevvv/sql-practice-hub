@@ -181,58 +181,104 @@ function Section11() {
         items={[
           {
             term: "Host (også: end-system)",
-            body: "En maskin som kjører applikasjoner — laptop, mobil, server, smartklokke, IoT-sensor. Hosts er der applikasjonene faktisk lever. Bok-en bruker også «sluttsystem» som synonym — viktig å kjenne igjen begge.",
+            body: "Maskin som kjører apper — laptop, mobil, server, IoT.",
           },
           {
             term: "Klient og server",
-            body: "To roller en host kan ha: klient initierer kommunikasjon (nettleseren din), server venter på forespørsler og svarer (web-tjeneren til nrk.no). Samme maskin kan være begge deler samtidig — en laptop som streamer film er klient mot Netflix, men kan også være server for en lokal fildeling.",
+            body: "Klient spør; server svarer. Samme maskin kan være begge.",
           },
-          {
-            term: "Lenke",
-            body: "Det fysiske mediumet mellom to noder: kobberparkabel, fiber, radio, satellitt. Hver lenke har en throughput-rate i bits per sekund.",
-          },
+          { term: "Lenke", body: "Det fysiske mediet: kobber, fiber, radio eller satellitt." },
           {
             term: "Pakke (også: datagram, segment, ramme)",
-            body: "En selvstendig enhet data som sendes gjennom nettet. På applikasjonsnivå heter det «melding», i transportlaget «segment», i nettverkslaget «datagram», og i linklaget «ramme». Samme objekt — bare ulikt navn alt etter hvilket lag som ser på det.",
+            body: "Selvstendig data-enhet med adresse, lik konvolutt i posten.",
           },
           {
             term: "Ruter",
-            body: "Spesialisert maskin som tar imot pakker på én lenke, ser på destinasjons-adressen, og videresender på riktig ut-lenke. Internett består av millioner av rutere som hjelper pakker finne fram.",
+            body: "Maskin som leser destinasjon og sender pakker videre på rett lenke.",
           },
           {
             term: "Svitsj (link-svitsj)",
-            body: "Forveksles ofte med ruter. En svitsj jobber kun på linklaget (lag 2) og videresender ut fra MAC-adresser innenfor ett lokalnett. En ruter jobber på nettverkslaget (lag 3) og kobler ulike nettverk sammen. Hjemme-routeren din er egentlig begge deler i én boks.",
+            body: "Jobber kun på lokalnettet via MAC; ruter kobler nett sammen via IP.",
           },
           {
             term: "Protokoll",
-            body: "Avtalen om hvordan to maskiner skal snakke sammen. Format på meldinger + rekkefølge + hvilken handling som tas ved hver melding. TCP, HTTP, DNS og hundrevis andre er protokoller.",
+            body: "Avtale om format og rekkefølge i samtalen mellom to maskiner.",
           },
           {
             term: "API (Application Programming Interface)",
-            body: "Det programmerings-grensesnittet en applikasjon bruker for å snakke med nettverket — typisk socket-API-et. Tenk på det som «hullet» applikasjonen putter data inn i; resten av nettverks-stakken tar over derfra.",
+            body: "Grensesnittet appen bruker for å gi data til nettet — typisk sockets.",
           },
           {
             term: "ISP (Internet Service Provider)",
-            body: "Selskap som driver et nettverk av rutere og selger tilkobling. Hjemme-ISP-en (Telenor, Altibox) kobler deg til et større tier-2 eller tier-1 ISP, som igjen kobler seg til andre ISP-er. Internett er ISP-er av ISP-er.",
+            body: "Selskap som driver et nettverk og selger tilkobling (f.eks. Telenor).",
           },
           {
             term: "IXP (Internet Exchange Point)",
-            body: "Fysisk lokasjon der mange ISP-er møtes for å bytte trafikk direkte uten å gå via en tier-1. Oslo har f.eks. NIX. IXP-er reduserer kostnader og forsinkelse — trafikk mellom to norske ISP-er trenger ikke ta omveien via Stockholm eller London.",
+            body: "Møteplass der ISP-er bytter trafikk direkte. Norge har NIX i Oslo.",
           },
           {
             term: "Tier-1, tier-2, tier-3",
-            body: "Uformell rangering av ISP-er. Tier-1 (CenturyLink, NTT, Telia Carrier) er globale og bytter trafikk gratis seg imellom. Tier-2 er regionale (Telenor i Norden), kjøper transit fra tier-1. Tier-3 er lokale tilkoblings-ISP-er. Hierarkiet er flatere i dag enn for 20 år siden.",
+            body: "Rangering av ISP-er: globale, regionale, lokale tilkoblings-ISP-er.",
           },
           {
             term: "IETF og RFC",
-            body: "Internet Engineering Task Force er den åpne organisasjonen som standardiserer internett-protokoller. Hver protokoll er beskrevet i en RFC (Request for Comments) — nummererte standard-dokumenter. F.eks. er HTTP/1.1 RFC 7230 og IPv6 RFC 8200.",
+            body: "Organet som lager protokoller; hver standard er et nummerert RFC-dokument.",
           },
           {
             term: "Distribuert applikasjon",
-            body: "Et program som kjører delt på to eller flere hosts og kommuniserer over nettet — som Spotify (klient + tjener), Slack (mange klienter + sky-tjener), eller BitTorrent (peer-to-peer). Selve internett er en plattform; det er de distribuerte appene som gir det verdi.",
+            body: "Program som kjører delt på flere hosts og snakker over nettet.",
           },
         ]}
       />
+
+      <Illustration caption="ISP-hierarki: tier-1-backbone på toppen, regionale ISP-er midt, aksess-nett nederst.">
+        <IspHierarchySvg />
+      </Illustration>
+
+      <Metafor tittel="Internett som lag av norske veier">
+        <p>
+          Tenk på ISP-hierarkiet som det norske vegvesen-systemet. Sykkelveien hjem til deg er
+          aksess-nettet. Den kommunale veien er hjemme-ISP-en din (Altibox lokalt). Riksveien er
+          tier-2 (Telenor i Norden). Europavei E6 er tier-1-backbonen — den krysser landegrenser og
+          binder kontinentet sammen.
+        </p>
+        <p>
+          Ingen kjører fra inngangsdøren rett ut på E6. Du må alltid gjennom flere veiklasser i
+          rekkefølge — og når trafikken flyter dårlig på én klasse, sprer det seg oppover og nedover
+          i hele systemet.
+        </p>
+      </Metafor>
+
+      <Metafor tittel="ISP-er som flyselskaps-allianser">
+        <p>
+          Når du flyr SAS fra Tromsø til Tokyo, sitter du sjelden i et SAS-fly hele veien. SAS har
+          en partner-avtale med ANA: SAS tar deg til København, ANA tar deg videre. Ingen sentral
+          myndighet har bestemt dette — det er kommersielle avtaler mellom uavhengige selskaper.
+        </p>
+        <p>
+          Slik fungerer pakker på internett også. Pakken din byttes mellom ISP-er via
+          peering-avtaler (gjensidig bytte) eller transit-avtaler (én betaler den andre). NIX i Oslo
+          er som Gardermoen: et samlings-sted der mange aktører møtes for å utveksle passasjerer
+          effektivt.
+        </p>
+      </Metafor>
+
+      <Metafor tittel="Protokoll som dansetrinn">
+        <p>
+          En protokoll er som koreografien til en tango. Begge dansere må kunne den samme sekvensen
+          — hvilket trinn kommer etter hvilket, og hva som er respons på hva. Hvis den ene plutselig
+          danser samba, kollapser hele samtalen.
+        </p>
+        <p>
+          Når nettleseren din «danser» med vg.no, har de avtalt på forhånd: først DNS-spørring, så
+          TCP-håndtrykk, så TLS, så HTTP-GET. Bytter du ut én del må alle partene ha trent på den
+          nye versjonen — som hvorfor IPv6 og HTTP/3 tar tiår å rulle ut.
+        </p>
+      </Metafor>
+
+      <Illustration caption="Én Macbook-host kan samtidig være klient, server og peer mot ulike tjenester.">
+        <HostRolesSvg />
+      </Illustration>
 
       <Example title="Eksempel: forespørselen din til vg.no i tall">
         <p>
@@ -322,58 +368,95 @@ function Section12() {
         items={[
           {
             term: "Aksess-nettverk",
-            body: "Nettverket som kobler edge-hosten din til den nærmeste ruteren. Hjemme: DSL, fiber-til-hjem, kabel-modem, eller 5G. Bedrift: Ethernet eller WiFi. Aksess-nettverket er typisk det tregeste leddet i en ende-til-ende-rute.",
+            body: "Nettet som kobler hosten din til nærmeste ruter; ofte det tregeste leddet.",
           },
-          {
-            term: "Last-mile",
-            body: "Folkelig uttrykk for aksess-nettverket: «den siste kilometeren» fra ISP-en til hjemmet ditt. Historisk dyrt fordi det krever fysiske kabler til hver kunde.",
-          },
+          { term: "Last-mile", body: "«Siste kilometer» — fra ISP-en og inn i hjemmet ditt." },
           {
             term: "FTTH (Fiber To The Home)",
-            body: "Aksess-teknologi der fiberoptikken går helt inn i boligen. Gir symmetrisk høy throughput (1-10 Gbps i dag) og lav forsinkelse. Norge er blant verdens mest fiberdekkede land — Altibox og Telenor leverer i hovedsak FTTH til nye områder.",
+            body: "Fiber helt inn i boligen. Symmetrisk og rask (1–10 Gbps).",
           },
           {
             term: "DSL (Digital Subscriber Line)",
-            body: "Eldre aksess-teknologi som bruker det vanlige telefon-kobberparet til bredbånd. Maks-rater faller raskt med avstand fra sentralen (typisk 10-100 Mbps). Asymmetrisk: nedlasting er raskere enn opplasting (derav «ADSL»).",
+            body: "Bredbånd over telefon-kobberen. Treigere jo lenger fra sentralen.",
           },
           {
             term: "HFC (Hybrid Fiber-Coax)",
-            body: "Kabel-TV-nettets svar på bredbånd. Fiber til en lokal node, koaks (TV-kabel) inn i hjemmet. Et delt medium — alle kunder på samme koaks-segment konkurrerer om båndbredde, derav «kvelds-nedgang» når alle ser Netflix.",
+            body: "Fiber til lokal node, koaks-kabel inn i huset; delt mellom naboer.",
           },
           {
             term: "Trådløse aksessnett (WiFi, 4G/5G)",
-            body: "WiFi (IEEE 802.11) er kortrekkende — typisk 10-50 meter innendørs. Mobilnett (4G LTE, 5G NR) dekker kilometer-rekkevidde fra hver basestasjon. Begge deler radiospekter mellom mange brukere og taper i forhold til fiber på både kapasitet og forsinkelses-stabilitet.",
+            body: "Radio-baserte aksess-nett. Deler spektrum mellom mange brukere.",
           },
-          {
-            term: "Core router",
-            body: "Ruter som sitter i en ISP-backbone, ikke direkte koblet til hosts. Optimalisert for veldig høy throughput — kan flytte terabits per sekund.",
-          },
-          {
-            term: "Backbone",
-            body: "Langdistanse-rygg-raden i et ISP-nettverk: linker mellom store byer eller landsdeler. Som regel fiber-baserte 100 Gbps eller 400 Gbps lenker mellom POP-er (Points of Presence) i ulike byer.",
-          },
+          { term: "Core router", body: "Backbone-ruter optimalisert for terabits per sekund." },
+          { term: "Backbone", body: "Langdistanse-fibre mellom store byer eller landsdeler." },
           {
             term: "Datasenter",
-            body: "Konsentrert samling tusenvis til hundretusener servere med eget høy-hastighets internt nett. Edge-en av nettet du snakker med når du bruker Gmail eller Netflix er nesten alltid et datasenter, ikke en server som står et tilfeldig sted.",
+            body: "Tusenvis av servere samlet med eget høy-hastighets internt nett.",
           },
-          {
-            term: "Peering",
-            body: "Avtale der to ISP-er bytter trafikk seg imellom uten å betale hverandre — fordi det er gjensidig fordel (begge slipper å betale en tredjepart). Settlement-free peering skjer typisk mellom ISP-er på samme nivå.",
-          },
+          { term: "Peering", body: "To ISP-er bytter trafikk gratis fordi det gagner begge." },
           {
             term: "Transit",
-            body: "Avtale der ISP A betaler ISP B for å bære A-s trafikk videre til resten av internett. En liten norsk lokal-ISP kjøper transit av Telenor; Telenor kjøper transit av en tier-1 som CenturyLink.",
+            body: "ISP A betaler ISP B for å bære trafikken videre til resten av nettet.",
           },
           {
             term: "Multi-homing",
-            body: "Strategi der en kunde (typisk en bedrift eller mellomstor ISP) kobler seg til flere oppstrøms-ISP-er samtidig — for redundans og lavere kostnader. Krever at kunden har et eget AS-nummer og kjører BGP.",
+            body: "Kunde kobler seg til flere ISP-er samtidig for redundans.",
           },
           {
             term: "POP (Point of Presence)",
-            body: "Fysisk lokasjon der en ISP har utstyr som kobler kunder, peering-partnere eller backbone-lenker sammen. Norge har f.eks. store POP-er i Oslo, Stavanger, Bergen og Tromsø.",
+            body: "Fysisk samlingssted der en ISP har sitt utstyr og peerer.",
           },
         ]}
       />
+
+      <Illustration caption="Edge er der end-hostene sitter; core er det indre ruter-nettet.">
+        <EdgeCoreSvg />
+      </Illustration>
+
+      <Metafor tittel="Edge og core som by og motorvei">
+        <p>
+          Edge er der folk faktisk bor og jobber — leiligheter, kontorer, butikker. Core er
+          motorveiene mellom byene: ingen bor langs dem, men alle bruker dem for å komme et sted.
+          Aksess-nettverket er fortauene og bykjernen som binder huset ditt til motorvei-rampen.
+        </p>
+        <p>
+          Når du «laster en nettside», kjører pakkene først ut av nabolaget (aksess), så inn på
+          motorveien (core), så ut av motorveien i en annen by (annet aksess-nett) og fram til en
+          server-bygning der. Flaskehalsen er nesten alltid i bytrafikken, ikke på motorveien.
+        </p>
+      </Metafor>
+
+      <Metafor tittel="Datasenter som varehus-distribusjon">
+        <p>
+          Et moderne datasenter er ikke som en kontorbygning med servere — det er som et Amazon
+          fulfillment-senter. Hundretusen identiske «varer» (servere) på reoler i lange ganger,
+          tråkkmaskiner (gigabit-svitsjer) overalt, og roboter (orkestratorer) som flytter
+          arbeidsmengder dit det er kapasitet.
+        </p>
+        <p>
+          Når du åpner Gmail, henvender du deg ikke til «en server» — du sender en pakke til en
+          tilfeldig av tusen identiske maskiner som tilfeldigvis hadde plass i øyeblikket. Edge-en
+          du møter er en gigant-bygning, ikke en enkelt-maskin.
+        </p>
+      </Metafor>
+
+      <Metafor tittel="Peering og transit som båt-fellesskap">
+        <p>
+          Forestill deg to fiskemottak på samme kai. De inngår peering: «jeg leverer din torsk til
+          mine kunder, du leverer min hyse til dine — vi sparer begge å sende egen bil». Ingen
+          betaler den andre, fordi det er gjensidig nytte.
+        </p>
+        <p>
+          Transit er det motsatte: en liten frosken-fiskeprodusent i Hammerfest har ikke biler nok
+          til å nå Oslo, så de betaler et større speditør-selskap for å frakte varene videre. ISP-er
+          gjør akkurat dette med pakker — peer der det er gjensidig vinn-vinn, kjøp transit der det
+          ikke er.
+        </p>
+      </Metafor>
+
+      <Illustration caption="Aksess-teknologiene rangert etter typisk kapasitet og forsinkelse.">
+        <AksessKartSvg />
+      </Illustration>
 
       <Example title="Eksempel: hvorfor opplastning hjemme er tregere enn nedlastning">
         <p>
@@ -451,58 +534,105 @@ function Section13() {
         items={[
           {
             term: "Krets-svitsjing",
-            body: "Før samtalen begynner reserveres en dedikert sti gjennom nettet med fast båndbredde. Sti-en holdes opp så lenge samtalen varer, uansett om dere snakker eller er stille. Forutsigbar — du har alltid din båndbredde — men sløsing av kapasitet hvis du ikke bruker den.",
+            body: "Reserverer en dedikert sti før samtalen, holder den hele tiden.",
           },
           {
             term: "Pakke-svitsjing",
-            body: "Data deles i små pakker. Hver pakke får en destinasjons-adresse og kjøres uavhengig gjennom nettet — eventuelt over ulike ruter. Ingen reservasjon på forhånd. Effektivt fordi inaktiv tid for én kunde brukes til pakker fra andre, men forsinkelse kan variere.",
+            body: "Data deles i pakker som rutes uavhengig uten forhånds-reservasjon.",
           },
           {
             term: "FDM (Frequency-Division Multiplexing)",
-            body: "Krets-svitsjings-variant der den fysiske båndbredden deles i frekvens-bånd, ett per krets. FM-radio er det klassiske eksempelet: hver kanal får sitt eget bånd. Brukt i tradisjonelt telefoni-stamnett.",
+            body: "Deler båndbredden i frekvens-bånd — som FM-radio-kanaler.",
           },
           {
             term: "TDM (Time-Division Multiplexing)",
-            body: "Krets-svitsjings-variant der lenken deles i tids-slots. Hver krets får hvert N-te slot uansett om den har data å sende. Klassisk i T1/E1-linjer i telefonnettet. Effektivt forutsigbar, men bortkastet kapasitet ved stille perioder.",
+            body: "Deler lenken i tids-slots, ett per krets.",
           },
           {
             term: "Statistisk multipleksing",
-            body: "Trikset som gjør pakke-svitsjing effektivt: når mange brukere deler en lenke og hver bare bruker den litt om gangen, kan du sende mer total trafikk enn summen av deres maks-rater (fordi ikke alle er aktive samtidig).",
+            body: "Mange brukere deler én lenke fordi få er aktive samtidig.",
           },
           {
             term: "Store-and-forward",
-            body: "Hver ruter mottar hele pakken før den begynner å videresende. Tar tid lik pakke-størrelse / lenke-rate. Konsekvensen er at en pakke som hopper gjennom N lenker bruker minst N × (pakke / rate) bare på å bli «relayed».",
+            body: "Ruter mottar hele pakken før den begynner å videresende.",
           },
           {
             term: "Cut-through-svitsjing",
-            body: "Alternativ til store-and-forward der svitsjen begynner å videresende så snart header-en (med destinasjon) er lest, før hele pakken er ankommet. Sparer forsinkelse men kan videresende skadde pakker. Brukes i høy-ytelses datasenter-svitsjer.",
+            body: "Videresender før hele pakken er mottatt — sparer forsinkelse.",
           },
           {
             term: "Køing og pakketap",
-            body: "Hvis flere pakker ankommer en ruter samtidig og alle vil ut samme lenke, må noen vente i en kø. Hvis køen fylles helt opp, kastes nye pakker — det er pakketap. Pålitelige protokoller (TCP) merker pakketap og retransmitterer.",
+            body: "Pakker venter når lenken er opptatt; full kø droppes.",
           },
-          {
-            term: "Buffer (kø-buffer)",
-            body: "Det fysiske minnet i ruteren der ventende pakker lagres. Hvor stor bufferen skal være er et åpent forsknings-spørsmål: for liten gir mye pakketap, for stor gir «bufferbloat» — kunstig høy forsinkelse fordi pakker venter lenge i en oppblåst kø.",
-          },
+          { term: "Buffer (kø-buffer)", body: "Minne i ruteren der ventende pakker står på rad." },
           {
             term: "Connection-oriented vs connectionless",
-            body: "Krets-svitsjing er connection-oriented (oppsett før sending). Pakke-svitsjing er som regel connectionless på nettverkslaget (IP) — hver pakke står for seg selv. Transportlaget (TCP) kan likevel gi et «connection-oriented» inntrykk over connectionless IP.",
+            body: "Med eller uten oppsett før første pakke sendes.",
           },
           {
             term: "Virtual circuit",
-            body: "Hybrid: pakke-svitsjet nett som etterligner krets-svitsjing ved å sette opp en logisk sti på forhånd. Pakker følger samme rute og får sekvens-nummer, men ressurser kan deles. ATM-nettet og MPLS bruker dette mønsteret. Internett selv bruker det ikke.",
+            body: "Pakke-nett som etterligner krets ved å sette opp logisk sti først.",
           },
           {
             term: "Burst-trafikk",
-            body: "Karakteristikken som gjør pakke-svitsjing lønnsom: data kommer i støt med lange stillheter mellom. Nettlesing, e-post og filoverføring er burst-trafikk. Sann-tid lyd (uten komprimering) er motsatt — jevn lav-rate strøm, der krets-svitsjing skinner.",
+            body: "Data i støt med lange stillheter — typisk for nettlesing og e-post.",
           },
           {
             term: "QoS (Quality of Service)",
-            body: "Mekanismer i pakke-nett som forsøker å gi visse pakke-typer (f.eks. VoIP) prioritet i køer. Ren pakke-svitsjing gir best-effort; QoS forsøker å nærme seg krets-svitsjingens forutsigbarhet uten å reservere helt.",
+            body: "Mekanismer som gir prioritet til viktige pakker (VoIP, video).",
           },
         ]}
       />
+
+      <Illustration caption="Krets-svitsjing reserverer en hel sti; pakke-svitsjing blander pakker fra mange kilder.">
+        <CircuitVsPacketSvg />
+      </Illustration>
+
+      <Metafor tittel="Telefon-sentralen vs postvesenet">
+        <p>
+          Krets-svitsjing er som å ringe en venn fra en gammeldags telefon-sentral. Operatøren
+          plugger en fysisk ledning fra deg til mottakeren. Ledningen er din alene til samtalen
+          slutter — selv om dere bare er stille mesteparten av tiden, kan ingen andre bruke den.
+        </p>
+        <p>
+          Pakke-svitsjing er postvesenet. Du skriver et brev, putter på adressen, og legger det i
+          postkassen. Posten vet ikke om eller når du skal sende neste brev, og brevet ditt deler
+          postbil med tusenvis av andre folks brev. Effektivt — men hvor lang tid det tar er ikke
+          helt forutsigbart.
+        </p>
+      </Metafor>
+
+      <Metafor tittel="Statistisk multipleksing som restaurant-bord">
+        <p>
+          En restaurant med 50 bord kan i teorien servere 50 grupper samtidig — men i praksis bruker
+          hver gruppe halve tiden på meny-lesing, ventetid, drikke. Hvis restauranten satte av 50
+          bord per kveld og forlangte at gjestene satt der hele tiden (krets-modell), ville mange
+          bord stå tomme i mesteparten av kvelden.
+        </p>
+        <p>
+          I stedet aksepterer restauranten 120 reservasjoner i samme tidsrom, fordi de vet at
+          gjennomsnitts-belegget på bordene er ~40 %. Det går nesten alltid bra. Når det av og til
+          ikke gjør det, må noen vente i baren — det er kø-forsinkelse i pakke-nettet.
+        </p>
+      </Metafor>
+
+      <Metafor tittel="Store-and-forward som flyplass-omlastning">
+        <p>
+          Hvis du flyr Tromsø → Oslo → Frankfurt, kan ikke flyet til Frankfurt ta av før hele flyet
+          fra Tromsø er landet og passasjerene er omlastet. Tids-tapet per byttetur er omtrent
+          konstant — like mange minutter uansett hvor lang neste etappe er.
+        </p>
+        <p>
+          Ruteren gjør samme: den må motta hele pakken før den kan sende den ut på neste lenke. Tre
+          hopp = tre transmisjons-runder. Men hvis du deler én stor «pakke» i flere små
+          (pipelining), kan andre pakke være på flyet til Frankfurt mens første ennå er på vei.
+          Derfor er små pakker raskere over mange hopp.
+        </p>
+      </Metafor>
+
+      <Illustration caption="Sammenligning: krets vs pakke på fire dimensjoner.">
+        <KretsVsPakkeTabellSvg />
+      </Illustration>
 
       <Example title="Eksempel: pakke vs krets med 35 brukere">
         <p>
@@ -583,62 +713,113 @@ function Section14() {
         items={[
           {
             term: "Prosesserings-forsinkelse (d_proc)",
-            body: "Tiden ruteren bruker på å lese pakke-headeren, sjekke for bit-feil, slå opp destinasjon i forwarding-tabellen, og bestemme ut-lenke. Typisk noen mikrosekunder i moderne rutere — neglisjerbar i de fleste regnestykker.",
+            body: "Tiden ruteren bruker på å lese header og finne ut-lenke.",
           },
           {
             term: "Kø-forsinkelse (d_kø)",
-            body: "Hvor lenge pakken sitter i kø før den slipper inn på ut-lenken. Avhenger av hvor full køen er. Når trafikken nærmer seg full lenke-kapasitet, eksploderer kø-forsinkelse — det er derfor nett som er > 80 % belastet føles trege.",
+            body: "Hvor lenge pakken venter i kø før den slipper ut på lenken.",
           },
           {
             term: "Transmisjons-forsinkelse (d_trans)",
-            body: "Tiden det tar å «klemme ut» alle bitene på lenken. Lik pakke-størrelse L delt på lenke-rate R: d_trans = L / R. For en 1500-byte pakke på en 1 Gbps lenke: 1500·8 / 10⁹ ≈ 12 μs.",
+            body: "Tid å klemme ut bitene: L / R (pakke-størrelse delt på lenke-rate).",
           },
           {
             term: "Propagasjons-forsinkelse (d_prop)",
-            body: "Hvor lenge det tar for én bit å reise fra ene enden av lenken til den andre. Lik avstand delt på utbredelse-hastighet (~2/3 av lyshastigheten i kobber/fiber). Bergen til Oslo (~400 km): ~2 ms. New York til Tokyo: ~80 ms.",
+            body: "Tid for én bit å reise fra ene enden til den andre — avstand / lyshastighet.",
           },
           {
             term: "Total nodal forsinkelse",
-            body: "d_proc + d_kø + d_trans + d_prop. Hopper pakken gjennom N lenker er total forsinkelse summen av alle nodale forsinkelser pluss propagasjon på de N lenkene.",
+            body: "Summen: d_proc + d_kø + d_trans + d_prop per hopp.",
           },
           {
             term: "Trafikk-intensitet (ρ = La / R)",
-            body: "Hvor full lenken er i snitt: gjennomsnittlig ankomst-rate L·a delt på utgangs-rate R, der L er pakke-størrelse, a er pakker per sekund. ρ < 1 er sunt; ρ → 1 gir eksponentielt voksende kø-forsinkelse; ρ > 1 betyr at køen vokser uten øvre grense — katastrofalt.",
+            body: "Hvor full lenken er i snitt. ρ → 1 sprenger køen.",
           },
           {
             term: "Throughput",
-            body: "Antall bits per sekund som faktisk strømmer gjennom. End-to-end throughput er begrenset av den tregeste lenken på stien — flaskehalsen. Akkurat som vann gjennom et rør.",
+            body: "Bits per sekund som faktisk strømmer; begrenset av tregeste lenke.",
           },
           {
             term: "Throughput vs båndbredde",
-            body: "Båndbredde er teoretisk maks (lenke-kapasitet R). Throughput er faktisk oppnådd rate, alltid ≤ båndbredden. På en 1 Gbps lenke kan TCP-throughput være 800 Mbps på grunn av protokoll-overhead og congestion-control.",
+            body: "Båndbredde = teoretisk maks; throughput = faktisk oppnådd rate.",
           },
           {
             term: "Bandwidth-delay product (BDP)",
-            body: "Produktet av throughput og RTT (Round-Trip Time). Gir antall bits «i transitt» på en lenke. Eksempel: 100 Mbps lenke med 50 ms RTT har BDP = 100·10⁶ × 0.05 = 5 Mbit ≈ 625 KB. TCP-vinduet må være minst BDP for å mette lenken.",
+            body: "Throughput × RTT — antall bits «i transitt» på lenken.",
           },
           {
             term: "Pakketap-rate (loss rate)",
-            body: "Andel av sendte pakker som ikke kommer fram, typisk fordi de ble droppet i en full kø. 0.1 % er typisk på sunne nett; > 1 % gir merkbar TCP-degradering.",
+            body: "Andel sendte pakker som ikke kommer fram, ofte fra full kø.",
           },
-          {
-            term: "RTT (Round-Trip Time)",
-            body: "Tiden fra en pakke sendes til kvittering kommer tilbake — en gangs fram + en gangs tilbake. Ping måler RTT. Brukes i nesten alle ytelses-formler (TCP-vindu, timeout, retransmit).",
-          },
+          { term: "RTT (Round-Trip Time)", body: "Tid fram + tid tilbake; det ping måler." },
           {
             term: "Jitter",
-            body: "Variasjonen i forsinkelse mellom pakker. Gjennomsnittlig forsinkelse kan være lav (50 ms) men hvis det svinger mellom 30 og 200 ms er det høy jitter. Sann-tid lyd/video tåler dårlig jitter — derav playout-buffer på mottakersiden.",
+            body: "Variasjon i forsinkelse mellom pakker. Ødelegger sann-tid lyd/video.",
           },
           {
             term: "Goodput",
-            body: "Faktisk nyttig datarate på applikasjonsnivå, eksklusive headere og retransmisjoner. Hvis du laster opp en 10 MB-fil og det tar 10 s, er goodput 8 Mbps — men throughput på lenken var kanskje 9 Mbps fordi protokoll-overhead spiste 1 Mbps.",
+            body: "Faktisk nyttig app-rate, eksklusive headere og retransmisjoner.",
           },
           {
             term: "Traceroute / ping",
-            body: "Verktøy som måler nettverks-ytelse. Ping sender ICMP echo og rapporterer RTT. Traceroute sender pakker med TTL=1, 2, 3... og noterer hvilken ruter som svarer — kart over hvert hopp og forsinkelse.",
+            body: "Verktøy som måler RTT og kartlegger ruten hopp for hopp.",
           },
         ]}
       />
+
+      <Illustration caption="Fire forsinkelses-kilder i én ruter: prosessering, kø, transmisjon, propagasjon.">
+        <DelaySvg />
+      </Illustration>
+
+      <Metafor tittel="Fire forsinkelser i kassakøen på Rema 1000">
+        <p>
+          Tenk på pakken din som en handlekurv på vei gjennom Rema. Du opplever fire ventetider som
+          er nøyaktig analoge til de fire forsinkelses-typene:
+        </p>
+        <p>
+          <strong>d_proc</strong> = kassadama leser strekkoder og tar betaling. Rask.
+          <strong> d_kø</strong> = du står bak fire andre kunder før det er din tur. Varierer mest.{" "}
+          <strong>d_trans</strong> = du må fysisk pakke alle varene i pose — tar tid proporsjonal
+          med hvor mange varer du har. <strong>d_prop</strong> = du går fra kassen til bilen på
+          parkeringen. Avstanden er konstant og ikke noe du kan forhandle om.
+        </p>
+        <p>
+          Akkurat som med pakker: hvis køen er kort, dominerer transport-tiden til bilen
+          (propagasjon). Hvis butikken er overfylt, dominerer kø-tiden.
+        </p>
+      </Metafor>
+
+      <Metafor tittel="Throughput som vann gjennom rør i serie">
+        <p>
+          Du har tre rør i serie: 10 cm, 2 cm, 8 cm i diameter. Hvor mye vann kan du presse gjennom
+          hele systemet per sekund? Svaret er bestemt av det smaleste røret — 2 cm-røret. Å bytte 10
+          cm-røret til 20 cm hjelper ingenting.
+        </p>
+        <p>
+          End-to-end throughput på nettet er presis det samme. En 1 Gbps server-lenke som går
+          gjennom en 100 Mbps WiFi-hjemmeruter ender på 100 Mbps. Flaskehalsen er oftest
+          aksess-nettet ditt — derfor sender Spotify forhåndspakkede lavoppløselige versjoner til
+          mobil først.
+        </p>
+      </Metafor>
+
+      <Metafor tittel="BDP som bil-stafett over et land">
+        <p>
+          Tenk på data-strømmen din som biler som kjører Trondheim–Oslo og tilbake. RTT er
+          rundetiden — la oss si 8 timer fram-og-tilbake. Throughput er hvor mange biler du kan
+          slippe inn på veien per time (la oss si 100).
+        </p>
+        <p>
+          For å holde veien full, må du ha minst 100 × 8 = 800 biler «underveis» til enhver tid. Det
+          er BDP. TCP-vinduet er garasjen din — hvis den bare rommer 200 biler, må du vente på at
+          noen kommer hjem før du kan slippe ut nye, og veien står halvtom mesteparten av tiden.
+          Derfor er BDP avgjørende for tilkoblinger med høy RTT (satellitt).
+        </p>
+      </Metafor>
+
+      <Illustration caption="Kø-forsinkelse vokser eksponentielt mot uendelig når trafikk-intensitet ρ nærmer seg 1.">
+        <QueueDelayCurveSvg />
+      </Illustration>
 
       <Example title="Eksempel: end-to-end-forsinkelse Bergen → New York">
         <p>
@@ -756,62 +937,113 @@ function Section15() {
         items={[
           {
             term: "Applikasjonslaget",
-            body: "HTTP, SMTP, DNS, sockets. Her ligger logikken som genererer meldinger applikasjoner forstår.",
+            body: "HTTP, SMTP, DNS — her lever meldingene applikasjoner forstår.",
           },
           {
             term: "Transportlaget",
-            body: "TCP eller UDP. Tar applikasjonens meldinger og deler i segmenter, gir dem sekvens-numre, og sørger eventuelt for pålitelig levering. Bruker portnumre for å skille mellom samtidige forbindelser på samme host.",
+            body: "TCP/UDP. Deler i segmenter, bruker portnumre, gir (kanskje) pålitelighet.",
           },
           {
             term: "Nettverkslaget",
-            body: "IP. Pakker segmenter inn i datagrammer med IP-adresser, og leverer datagrammer fra én host til en annen via mange rutere.",
+            body: "IP. Leverer datagrammer host-til-host via mange rutere.",
           },
           {
             term: "Linklaget",
-            body: "Ethernet, WiFi. Flytter datagrammer fra én node til neste over én lenke. MAC-adresser, bit-stuffing, feiloppdaging.",
+            body: "Ethernet/WiFi. Flytter pakker fra én node til neste over én lenke.",
           },
           {
             term: "Fysisk lag",
-            body: "Hvordan bits faktisk representeres på mediumet — spenning, lys-pulser, radiofrekvenser.",
+            body: "Selve representasjonen av bits: spenning, lys, radiobølger.",
           },
           {
             term: "Innkapsling (encapsulation)",
-            body: "Hver lag legger sitt eget header foran (og noen ganger trailer bak) meldingen før den sendes ned til neste lag. Mottakeren skreller av lag for lag oppover. Det er innkapsling som gjør at lagene kan være uavhengige av hverandre.",
+            body: "Hvert lag legger sitt eget header foran meldingen på vei ned.",
           },
           {
             term: "Header vs payload",
-            body: "Hver pakke består av header (metadata: avsender, mottaker, sekvens, sum-sjekk) og payload (selve dataene). Når et lag innkapsler en pakke fra laget over, blir hele forrige pakke (header + payload) til ny payload, og nytt header legges foran.",
+            body: "Header er metadata; payload er selve dataene fra laget over.",
           },
           {
             term: "PDU (Protocol Data Unit)",
-            body: "Generisk navn på en pakke på et gitt lag. Applikasjonslagets PDU heter «melding», transportlagets «segment», nettverkslagets «datagram» (eller «pakke»), linklagets «ramme», fysisk lags «bit».",
+            body: "Navn på pakken per lag: melding, segment, datagram, ramme.",
           },
           {
             term: "Service model",
-            body: "Tjenesten et lag tilbyr laget over. Transportlagets service-model kan være «pålitelig levering, riktig rekkefølge, byte-strøm» (TCP) eller «best-effort melding-levering» (UDP). Nettverkslaget tilbyr bare best-effort.",
+            body: "Tjenesten et lag tilbyr laget over: pålitelig, ordnet, best-effort osv.",
           },
           {
             term: "Horisontal vs vertikal kommunikasjon",
-            body: "Vertikalt: ett lag snakker med laget over og under (lokalt på hver host). Horisontalt (logisk): samme lag på to ulike hosts «snakker» med hverandre via header-felter — selv om pakkene fysisk reiser ned-på-tråden-opp.",
+            body: "Lag snakker med naboen over/under lokalt og med samme lag på den andre hosten via header.",
           },
           {
             term: "OSI-modellen (7 lag)",
-            body: "Standardisering fra ISO på 80-tallet med 7 lag (legger session og presentation mellom transport og applikasjon). Et akademisk forsøk på å standardisere alt — fungerte best som pedagogisk referanseramme. Internett bruker TCP/IP-modellen i praksis.",
+            body: "Akademisk standard med 7 lag; vant aldri i praksis.",
           },
           {
             term: "Session-lag og presentation-lag",
-            body: "OSI-spesifikke lag som internett ikke har som egne lag. Session: opprettholdelse av en logisk samtale (cookies, login). Presentation: koding/avkoding (JSON, MIME, kryptering). I TCP/IP er disse en del av applikasjonslaget.",
+            body: "OSI-lag som TCP/IP slo sammen med applikasjonslaget.",
           },
           {
             term: "Demultipleksing",
-            body: "Når en pakke ankommer en host, må riktig protokoll/applikasjon få den. Linklaget bruker «type»-feltet (IPv4? IPv6? ARP?). Transportlaget bruker portnumre (HTTP? SSH?). Applikasjonen leser data via socket-en.",
+            body: "Riktig protokoll/app får pakken via type-felt og portnumre.",
           },
           {
             term: "End-to-end-prinsippet",
-            body: "Designprinsipp: legg funksjonalitet så høyt i stakken som mulig — typisk på endene, ikke i nettet. Pålitelighet ligger i TCP (på hosts), ikke i rutere. Argumentet: nettet trenger ikke gjøre noe et lag over kan gjøre, og enkle rutere skalerer.",
+            body: "Legg smarthet på endene, ikke i rutere. Holder kjernen enkel.",
           },
         ]}
       />
+
+      <Illustration caption="Innkapsling: hvert lag legger til sin header på vei nedover stakken.">
+        <EncapsulationSvg />
+      </Illustration>
+
+      <Metafor tittel="Lag-modellen som norsk postvesen">
+        <p>
+          Tenk på lagene som hvert sitt rolle-byrå i postsystemet. Du skriver et brev
+          (applikasjonslag). Du brettetit, putter i konvolutt og skriver mottakeren (transportlag).
+          Du skriver postnummer (nettverkslag). Du leverer det til lokalt posthus (linklag), som
+          sorterer og legger på postbil (fysisk lag).
+        </p>
+        <p>
+          Hver person i kjeden bryr seg bare om sitt lag. Brevbæreren leser ikke brevet.
+          Sorteringssentralen leser ikke konvolutt-innholdet, bare postnummeret. Hver lag har sin
+          egen «adresse-type» — og hver lag legger til sin egen merking før den gir det videre til
+          neste.
+        </p>
+      </Metafor>
+
+      <Metafor tittel="Innkapsling som matrjosjka-dukker">
+        <p>
+          En matrjosjka — den russiske trefiguren der du åpner én dukke og finner en mindre inni.
+          Pakken din på nettet er nøyaktig sånn. Innerst ligger «hei»-meldingen din. Rundt den
+          ligger TCP-headeren. Rundt det ligger IP-headeren. Ytterst ligger Ethernet-rammen.
+        </p>
+        <p>
+          Mottakeren skreller av lag for lag. Linklaget åpner Ethernet-skallet og gir innholdet
+          videre til IP. IP åpner sitt skall og gir resten til TCP. TCP åpner sitt og gir den minste
+          dukken — selve meldingen — til appen. Ingen lag røper for de andre hva som ligger inni.
+        </p>
+      </Metafor>
+
+      <Metafor tittel="End-to-end-prinsippet som ekte-brev-bekreftelse">
+        <p>
+          Hvis du sender et viktig brev, hvem skal kvittere for at det er mottatt? PostNord kunne i
+          prinsippet kvittert i hvert sorterings-anlegg pakken passerer. Men det er dyrt, sårbart
+          for feil, og hva hjelper det egentlig — den eneste kvitteringen som betyr noe er at
+          mottakeren har holdt brevet i hånda.
+        </p>
+        <p>
+          Internett bruker samme logikk: TCP-bekreftelser går fra ende-host til ende-host, ikke
+          mellom rutere. Det holder kjernen av nettet billig og rask, og lar pålitelighet være et
+          frittstående valg per applikasjon. Det er hvorfor du kan oppgradere TCP (Cubic → BBR) uten
+          å røre én ruter i verden.
+        </p>
+      </Metafor>
+
+      <Illustration caption="De fem lagene som vertikal stripe med eksempler per lag.">
+        <FemLagSvg />
+      </Illustration>
 
       <Example title="Eksempel: innkapsling på vei ned, dekapsling på vei opp">
         <p>
@@ -1178,6 +1410,18 @@ function Hvorfor({ children }: { children: React.ReactNode }) {
       <div className="text-[10px] uppercase tracking-wider text-cyan-700 dark:text-cyan-400 font-semibold mb-1">
         Hvorfor er det slik?
       </div>
+      <div className="text-muted-foreground text-[13px] space-y-2">{children}</div>
+    </div>
+  );
+}
+
+function Metafor({ tittel, children }: { tittel: string; children: React.ReactNode }) {
+  return (
+    <div className="rounded-xl border border-purple-500/30 bg-purple-500/5 p-4">
+      <div className="text-[10px] uppercase tracking-wider text-purple-700 dark:text-purple-400 font-semibold mb-1">
+        Metafor
+      </div>
+      <div className="font-semibold text-foreground mb-1">{tittel}</div>
       <div className="text-muted-foreground text-[13px] space-y-2">{children}</div>
     </div>
   );
@@ -1811,6 +2055,494 @@ function EncapsulationSvg() {
       >
         Hver lag legger til sitt eget header (H1, H2, ...) før pakken sendes ned
       </text>
+    </svg>
+  );
+}
+
+function HostRolesSvg() {
+  return (
+    <svg viewBox="0 0 400 200" className="w-full h-auto">
+      <rect
+        x={150}
+        y={70}
+        width={100}
+        height={60}
+        rx={6}
+        className="fill-card stroke-foreground/60"
+        strokeWidth={2}
+      />
+      <text
+        x={200}
+        y={95}
+        textAnchor="middle"
+        className="fill-foreground text-[11px] font-semibold"
+      >
+        Én Macbook
+      </text>
+      <text x={200} y={112} textAnchor="middle" className="fill-muted-foreground text-[9px]">
+        i Bodø
+      </text>
+      {/* Spotify - klient */}
+      <line x1={150} y1={85} x2={50} y2={30} className="stroke-brand" strokeWidth={1.5} />
+      <rect
+        x={5}
+        y={15}
+        width={90}
+        height={28}
+        rx={4}
+        className="fill-brand/15 stroke-brand"
+        strokeWidth={1.5}
+      />
+      <text x={50} y={29} textAnchor="middle" className="fill-foreground text-[9px] font-semibold">
+        klient
+      </text>
+      <text x={50} y={40} textAnchor="middle" className="fill-muted-foreground text-[8px]">
+        → Spotify
+      </text>
+      {/* iCloud - klient */}
+      <line x1={150} y1={100} x2={50} y2={100} className="stroke-brand" strokeWidth={1.5} />
+      <rect
+        x={5}
+        y={86}
+        width={90}
+        height={28}
+        rx={4}
+        className="fill-brand/15 stroke-brand"
+        strokeWidth={1.5}
+      />
+      <text x={50} y={100} textAnchor="middle" className="fill-foreground text-[9px] font-semibold">
+        klient
+      </text>
+      <text x={50} y={111} textAnchor="middle" className="fill-muted-foreground text-[8px]">
+        → iCloud
+      </text>
+      {/* Server iPhone */}
+      <line x1={250} y1={85} x2={350} y2={30} className="stroke-success" strokeWidth={1.5} />
+      <rect
+        x={305}
+        y={15}
+        width={90}
+        height={28}
+        rx={4}
+        className="fill-success/15 stroke-success"
+        strokeWidth={1.5}
+      />
+      <text x={350} y={29} textAnchor="middle" className="fill-foreground text-[9px] font-semibold">
+        server
+      </text>
+      <text x={350} y={40} textAnchor="middle" className="fill-muted-foreground text-[8px]">
+        ← iPhone
+      </text>
+      {/* Peer Wireguard */}
+      <line x1={250} y1={115} x2={350} y2={170} className="stroke-amber-500" strokeWidth={1.5} />
+      <rect
+        x={305}
+        y={155}
+        width={90}
+        height={28}
+        rx={4}
+        className="fill-amber-500/15 stroke-amber-500"
+        strokeWidth={1.5}
+      />
+      <text
+        x={350}
+        y={169}
+        textAnchor="middle"
+        className="fill-foreground text-[9px] font-semibold"
+      >
+        peer
+      </text>
+      <text x={350} y={180} textAnchor="middle" className="fill-muted-foreground text-[8px]">
+        ↔ WireGuard
+      </text>
+      {/* AirDrop server-side */}
+      <line x1={150} y1={115} x2={50} y2={170} className="stroke-success" strokeWidth={1.5} />
+      <rect
+        x={5}
+        y={155}
+        width={90}
+        height={28}
+        rx={4}
+        className="fill-success/15 stroke-success"
+        strokeWidth={1.5}
+      />
+      <text x={50} y={169} textAnchor="middle" className="fill-foreground text-[9px] font-semibold">
+        server
+      </text>
+      <text x={50} y={180} textAnchor="middle" className="fill-muted-foreground text-[8px]">
+        AirDrop-mottak
+      </text>
+    </svg>
+  );
+}
+
+function AksessKartSvg() {
+  const rader = [
+    {
+      teknologi: "FTTH (fiber hjem)",
+      kapasitet: 95,
+      forsink: 5,
+      fill: "fill-success/40",
+      stroke: "stroke-success",
+    },
+    {
+      teknologi: "5G mobil",
+      kapasitet: 70,
+      forsink: 25,
+      fill: "fill-brand/40",
+      stroke: "stroke-brand",
+    },
+    {
+      teknologi: "HFC (kabel-TV)",
+      kapasitet: 55,
+      forsink: 15,
+      fill: "fill-amber-500/40",
+      stroke: "stroke-amber-500",
+    },
+    {
+      teknologi: "WiFi 6",
+      kapasitet: 60,
+      forsink: 10,
+      fill: "fill-brand/40",
+      stroke: "stroke-brand",
+    },
+    {
+      teknologi: "ADSL",
+      kapasitet: 20,
+      forsink: 30,
+      fill: "fill-destructive/40",
+      stroke: "stroke-destructive",
+    },
+    {
+      teknologi: "4G LTE",
+      kapasitet: 40,
+      forsink: 45,
+      fill: "fill-amber-500/40",
+      stroke: "stroke-amber-500",
+    },
+    {
+      teknologi: "Starlink LEO",
+      kapasitet: 50,
+      forsink: 40,
+      fill: "fill-brand/40",
+      stroke: "stroke-brand",
+    },
+  ];
+  return (
+    <svg viewBox="0 0 500 240" className="w-full h-auto">
+      <text x={20} y={15} className="fill-foreground text-[10px] font-semibold">
+        Aksess-teknologi
+      </text>
+      <text x={250} y={15} className="fill-foreground text-[10px] font-semibold">
+        Typisk kapasitet →
+      </text>
+      <text x={420} y={15} className="fill-foreground text-[10px] font-semibold">
+        Forsinkelse
+      </text>
+      {rader.map((r) => {
+        const y = 35 + rader.indexOf(r) * 28;
+        return (
+          <g key={r.teknologi}>
+            <text x={20} y={y + 12} className="fill-foreground text-[10px]">
+              {r.teknologi}
+            </text>
+            <rect
+              x={150}
+              y={y + 2}
+              width={r.kapasitet * 2}
+              height={16}
+              className={`${r.fill} ${r.stroke}`}
+              strokeWidth={1}
+            />
+            <text x={155 + r.kapasitet * 2} y={y + 13} className="fill-muted-foreground text-[9px]">
+              {r.kapasitet}%
+            </text>
+            <rect
+              x={420}
+              y={y + 2}
+              width={r.forsink}
+              height={16}
+              className="fill-destructive/30 stroke-destructive"
+              strokeWidth={1}
+            />
+          </g>
+        );
+      })}
+      <text x={250} y={230} textAnchor="middle" className="fill-muted-foreground text-[9px] italic">
+        Norske aksess-teknologier rangert. FTTH dominerer både kapasitet og lav forsinkelse.
+      </text>
+    </svg>
+  );
+}
+
+function KretsVsPakkeTabellSvg() {
+  const rader = [
+    { dim: "Båndbredde-garanti", krets: "Ja, dedikert", pakke: "Nei, deles" },
+    { dim: "Kapasitets-utnyttelse", krets: "Lav (sløsing)", pakke: "Høy (mux)" },
+    { dim: "Forsinkelse", krets: "Konstant", pakke: "Variabel (jitter)" },
+    { dim: "Robust ved feil", krets: "Bryter samtalen", pakke: "Ruter rundt" },
+  ];
+  return (
+    <svg viewBox="0 0 500 200" className="w-full h-auto">
+      <rect
+        x={15}
+        y={15}
+        width={150}
+        height={25}
+        rx={3}
+        className="fill-card stroke-border"
+        strokeWidth={1}
+      />
+      <text x={90} y={32} textAnchor="middle" className="fill-foreground text-[10px] font-semibold">
+        Dimensjon
+      </text>
+      <rect
+        x={170}
+        y={15}
+        width={155}
+        height={25}
+        rx={3}
+        className="fill-brand/15 stroke-brand"
+        strokeWidth={1.5}
+      />
+      <text x={247} y={32} textAnchor="middle" className="fill-brand text-[10px] font-semibold">
+        Krets-svitsjing
+      </text>
+      <rect
+        x={330}
+        y={15}
+        width={155}
+        height={25}
+        rx={3}
+        className="fill-success/15 stroke-success"
+        strokeWidth={1.5}
+      />
+      <text x={407} y={32} textAnchor="middle" className="fill-success text-[10px] font-semibold">
+        Pakke-svitsjing
+      </text>
+      {rader.map((r, i) => {
+        const y = 50 + i * 32;
+        return (
+          <g key={r.dim}>
+            <rect
+              x={15}
+              y={y}
+              width={150}
+              height={28}
+              rx={3}
+              className="fill-muted/20 stroke-border"
+              strokeWidth={1}
+            />
+            <text x={90} y={y + 18} textAnchor="middle" className="fill-foreground text-[10px]">
+              {r.dim}
+            </text>
+            <rect
+              x={170}
+              y={y}
+              width={155}
+              height={28}
+              rx={3}
+              className="fill-brand/5 stroke-brand/40"
+              strokeWidth={1}
+            />
+            <text
+              x={247}
+              y={y + 18}
+              textAnchor="middle"
+              className="fill-muted-foreground text-[9px]"
+            >
+              {r.krets}
+            </text>
+            <rect
+              x={330}
+              y={y}
+              width={155}
+              height={28}
+              rx={3}
+              className="fill-success/5 stroke-success/40"
+              strokeWidth={1}
+            />
+            <text
+              x={407}
+              y={y + 18}
+              textAnchor="middle"
+              className="fill-muted-foreground text-[9px]"
+            >
+              {r.pakke}
+            </text>
+          </g>
+        );
+      })}
+    </svg>
+  );
+}
+
+function QueueDelayCurveSvg() {
+  // M/M/1 d_kø ∝ ρ/(1-ρ). Trekk pseudo-kurven.
+  const points: string[] = [];
+  for (let i = 0; i <= 95; i += 3) {
+    const rho = i / 100;
+    const d = rho / (1 - rho);
+    const x = 30 + rho * 420;
+    const y = 180 - Math.min(d * 8, 150);
+    points.push(`${x},${y}`);
+  }
+  return (
+    <svg viewBox="0 0 500 220" className="w-full h-auto">
+      <text
+        x={250}
+        y={15}
+        textAnchor="middle"
+        className="fill-foreground text-[11px] font-semibold"
+      >
+        Gjennomsnittlig kø-forsinkelse vs trafikk-intensitet ρ
+      </text>
+      {/* Akser */}
+      <line x1={30} y1={30} x2={30} y2={180} className="stroke-foreground/60" strokeWidth={1.5} />
+      <line x1={30} y1={180} x2={470} y2={180} className="stroke-foreground/60" strokeWidth={1.5} />
+      {/* Aksetekst */}
+      <text
+        x={5}
+        y={100}
+        className="fill-muted-foreground text-[9px]"
+        transform="rotate(-90 5 100)"
+      >
+        d_kø
+      </text>
+      <text x={250} y={205} textAnchor="middle" className="fill-muted-foreground text-[9px]">
+        ρ (trafikk-intensitet)
+      </text>
+      {/* Skala */}
+      {[0, 0.25, 0.5, 0.75, 0.9, 0.99].map((rho) => (
+        <g key={rho}>
+          <line
+            x1={30 + rho * 420}
+            y1={180}
+            x2={30 + rho * 420}
+            y2={185}
+            className="stroke-foreground/60"
+            strokeWidth={1}
+          />
+          <text
+            x={30 + rho * 420}
+            y={196}
+            textAnchor="middle"
+            className="fill-muted-foreground text-[8px]"
+          >
+            {rho}
+          </text>
+        </g>
+      ))}
+      {/* Kurven */}
+      <polyline points={points.join(" ")} fill="none" className="stroke-brand" strokeWidth={2} />
+      {/* Sone-markeringer */}
+      <rect x={30} y={30} width={336} height={150} className="fill-success/5" />
+      <rect x={366} y={30} width={62} height={150} className="fill-amber-500/10" />
+      <rect x={428} y={30} width={42} height={150} className="fill-destructive/10" />
+      <text x={198} y={50} textAnchor="middle" className="fill-success text-[9px] font-semibold">
+        Sunt nett (ρ &lt; 0.8)
+      </text>
+      <text
+        x={397}
+        y={50}
+        textAnchor="middle"
+        className="fill-amber-600 dark:fill-amber-400 text-[8px]"
+      >
+        Press
+      </text>
+      <text x={449} y={50} textAnchor="middle" className="fill-destructive text-[8px]">
+        Sprenger
+      </text>
+    </svg>
+  );
+}
+
+function FemLagSvg() {
+  const lag = [
+    {
+      navn: "Applikasjon",
+      eks: "HTTP, DNS, SMTP",
+      pdu: "melding",
+      fill: "fill-brand/15",
+      stroke: "stroke-brand",
+    },
+    {
+      navn: "Transport",
+      eks: "TCP, UDP",
+      pdu: "segment",
+      fill: "fill-success/15",
+      stroke: "stroke-success",
+    },
+    {
+      navn: "Nettverk",
+      eks: "IP, ICMP",
+      pdu: "datagram",
+      fill: "fill-amber-500/15",
+      stroke: "stroke-amber-500",
+    },
+    {
+      navn: "Link",
+      eks: "Ethernet, WiFi",
+      pdu: "ramme",
+      fill: "fill-destructive/15",
+      stroke: "stroke-destructive",
+    },
+    {
+      navn: "Fysisk",
+      eks: "Fiber, kobber, radio",
+      pdu: "bit",
+      fill: "fill-muted/40",
+      stroke: "stroke-foreground/60",
+    },
+  ];
+  return (
+    <svg viewBox="0 0 500 280" className="w-full h-auto">
+      <text
+        x={250}
+        y={15}
+        textAnchor="middle"
+        className="fill-foreground text-[11px] font-semibold"
+      >
+        TCP/IP-stakken: 5 lag, hvert med sin egen PDU
+      </text>
+      {lag.map((l, i) => {
+        const y = 30 + i * 48;
+        return (
+          <g key={l.navn}>
+            <rect
+              x={50}
+              y={y}
+              width={400}
+              height={40}
+              rx={4}
+              className={`${l.fill} ${l.stroke}`}
+              strokeWidth={1.5}
+            />
+            <text x={70} y={y + 18} className="fill-foreground text-[11px] font-semibold">
+              {i + 1}. {l.navn}
+            </text>
+            <text x={70} y={y + 33} className="fill-muted-foreground text-[9px]">
+              Eks: {l.eks}
+            </text>
+            <text
+              x={440}
+              y={y + 18}
+              textAnchor="end"
+              className="fill-muted-foreground text-[9px] italic"
+            >
+              PDU:
+            </text>
+            <text
+              x={440}
+              y={y + 33}
+              textAnchor="end"
+              className="fill-foreground text-[10px] font-mono"
+            >
+              {l.pdu}
+            </text>
+          </g>
+        );
+      })}
     </svg>
   );
 }

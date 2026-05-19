@@ -190,62 +190,82 @@ function Section21() {
       <div className="grid gap-3 lg:grid-cols-2">
         <Defs
           items={[
+            { term: "Klient-server", body: "Én alltid-på server, mange tilkoblende klienter." },
+            { term: "P2P (peer-to-peer)", body: "Likeverdige peers; ingen sentral server." },
+            { term: "Hybrid", body: "Sentral kontrollplan, distribuert dataplan." },
+            { term: "Socket", body: "API-døra mellom appen din og transport-laget." },
+            { term: "Adresse + port", body: "IP velger maskin, port velger prosess." },
             {
-              term: "Klient-server-arkitektur",
-              body: "En server-prosess kjører hele tiden på en kjent IP og venter på henvendelser. Klient-prosesser kobler seg på når de trenger noe og kobler fra etterpå. Klientene snakker aldri direkte sammen — all kommunikasjon går via serveren. Web-banken din, Gmail-grensesnittet og de fleste tradisjonelle apper er bygd slik.",
+              term: "Transport-tjenester",
+              body: "Pålitelighet, throughput, timing, sikkerhet — fire knapper.",
             },
             {
-              term: "P2P-arkitektur (peer-to-peer)",
-              body: "Det er ingen alltid-på server. I stedet kontakter intermitterende end-hosts (peers) hverandre direkte. Skalerer godt fordi hver ny peer både bruker og gir ressurser. BitTorrent og en del distribuerte filsystemer er P2P. Ulempen er at det er vanskeligere å sikre og administrere.",
+              term: "App-protokoll",
+              body: "Meldingsformat + rekkefølge + semantikk (HTTP, DNS, SMTP).",
             },
             {
-              term: "Hybrid-arkitektur",
-              body: "Mange ekte systemer blander de to. Skype hadde sentrale login-servere men P2P-medieoverføring. Spotify har sentrale metadata-servere men deler musikk-bits delvis peer-til-peer i visse versjoner. Diskaden lærer du: arkitekturen er et spektrum, ikke et binært valg.",
+              term: "Well-known ports",
+              body: "0–1023 reservert (22 SSH, 80 HTTP, 443 HTTPS, 53 DNS).",
             },
             {
-              term: "Prosess og socket",
-              body: "Programmer kommuniserer ikke direkte med hverandre — prosessene gjør det. Hver prosess sender og mottar gjennom et socket-grensesnitt: en API-dør mellom applikasjonen og transport-laget. Sockets er den eneste måten din kode rører nettverket på.",
+              term: "Throughput / latency / jitter",
+              body: "Mengde per tid / tid per pakke / varians i tid.",
             },
             {
-              term: "Adresse + port = navngiving",
-              body: "For å sende noe til en prosess på en annen maskin trenger du to ting: hvilken maskin (IP-adresse), og hvilken prosess på den maskinen (portnummer). En web-server lytter typisk på port 80 (HTTP) eller 443 (HTTPS). DNS lytter på 53. SSH på 22.",
+              term: "RTT (round-trip time)",
+              body: "Tid til server og tilbake — gulv for hvert request-svar.",
             },
-            {
-              term: "Tjenester transport-laget tilbyr",
-              body: "Applikasjoner velger transport-protokoll basert på fire egenskaper: pålitelig levering (kommer alle bytes fram?), throughput-garantier (minimum bps?), timing (lav forsinkelse?), og sikkerhet (kryptering?). TCP gir pålitelighet og flow-control men ingen timing-garantier; UDP gir nesten ingenting men er rask og lett. TLS legger på sikkerhet over TCP.",
-            },
-            {
-              term: "Applikasjonslag-protokoll",
-              body: "Definerer hvilke meldinger som finnes (request, response, error), hvordan de er formatert (tekst-linjer som i HTTP, eller binært som i HTTP/2), rekkefølgen de skal komme i, og hva som er semantikken. HTTP, DNS, SMTP og IMAP er alle eksempler.",
-            },
-            {
-              term: "Velkjente porter (well-known ports)",
-              body: "Portene 0–1023 er reservert til standard-tjenester: 22 SSH, 25 SMTP, 53 DNS, 80 HTTP, 110 POP3, 143 IMAP, 443 HTTPS, 587 SMTP submission, 993 IMAPS. Operativsystemet krever vanligvis root-rettigheter for å binde til disse. Portene 1024–49151 er registrerte (f.eks. 3306 MySQL, 5432 PostgreSQL, 6379 Redis), og 49152–65535 er ephemeral — det er disse OS-en tildeler klienter automatisk.",
-            },
-            {
-              term: "Throughput vs forsinkelse vs jitter",
-              body: "Throughput er hvor mye data per tidsenhet du kan presse gjennom (Mbps). Forsinkelse (latency) er hvor lang tid én pakke bruker hver vei. Jitter er hvor mye forsinkelsen varierer fra pakke til pakke. En videostrøm tåler høy forsinkelse men hater jitter; et spill hater forsinkelse men kan leve med moderat jitter; en filoverføring bryr seg bare om throughput.",
-            },
-            {
-              term: "Round-trip time (RTT)",
-              body: "Tiden det tar for en liten pakke å reise fra klient til server og tilbake. Avhenger av propagasjons-forsinkelse (lysets hastighet i fiber er ~200 000 km/s) pluss kø-tid og prosessering. Typisk: 1–5 ms innenfor samme by, 15–40 ms innenfor Europa, 80–150 ms over Atlanteren, 250 ms+ via geostasjonær satellitt. RTT setter et hardt gulv for hvor rask hver request/response-runde kan bli.",
-            },
-            {
-              term: "Tilstandsfull vs tilstandsløs protokoll",
-              body: "En tilstandsfull protokoll husker historikken — FTP husker hvilket katalog du er i, en database-forbindelse husker transaksjonen din. Tilstandsløs glemmer alt mellom requests, så hver kan behandles uavhengig. Tilstandsløst skalerer enklere (en hvilken som helst server kan ta neste request) men flytter byrden over på klienten eller på tokens/cookies.",
-            },
-            {
-              term: "Push- vs pull-modell",
-              body: "I pull-modellen ber klienten om data når den vil ha dem (HTTP, IMAP, polling). I push-modellen sender serveren data uoppfordret når noe skjer (WebSockets, server-sent events, SMTP server-til-server). Push gir lavere forsinkelse for sjeldne hendelser men krever at klienten holder en åpen forbindelse; pull er enklere men sløser når det ikke er noe nytt å hente.",
-            },
-            {
-              term: "Båndbredde-forsinkelse-produkt",
-              body: "Produktet av båndbredde og RTT — antall bits som «kan være underveis» samtidig på lenken. En 1 Gbps-lenke med 80 ms RTT har et BDP på 1·10⁹ × 0.08 = 80 Mbit = 10 MB. For å fylle lenken må sender ha 10 MB usendt data eller usend-bekreftede pakker i flyt. Dette er hvorfor små TCP-vinduer kveler raske lenker over lange avstander.",
-            },
+            { term: "Stateful vs stateless", body: "Husker mellom requests vs glemmer alt." },
+            { term: "Push vs pull", body: "Server dytter til klient vs klient drar fra server." },
+            { term: "BDP", body: "Båndbredde × RTT = bits «underveis» samtidig." },
           ]}
         />
         <Illustration caption="To prosesser snakker via sockets — applikasjonen bryr seg ikke om hvordan transport-laget faktisk leverer dataene.">
           <ProcessSocketSvg />
+        </Illustration>
+      </div>
+
+      <div className="grid gap-3 lg:grid-cols-2">
+        <Metafor tittel="Klient-server = restaurant med én kokk">
+          <p>
+            Kokken (serveren) står på kjøkkenet hele kvelden med en kjent adresse. Gjester
+            (klienter) går inn, bestiller, får mat, drar igjen. To gjester på nabobordet snakker
+            ikke direkte — de roper ikke «kan du sende meg potetstappa di?» til hverandre. Alt går
+            via kokken. Hvis kokken blir syk stenger restauranten.
+          </p>
+        </Metafor>
+        <Metafor tittel="P2P = lørdags-dugnad i borettslaget">
+          <p>
+            Ingen kokk. Alle som dukker opp har med seg noe og tar med seg noe: Per har bærpaier,
+            Kari har vafler, Ola tar en porsjon av hver og deler ut kaffe i retur. Jo flere som
+            kommer, jo mer mat er det totalt — kapasiteten <em>vokser</em> med deltakerne. Men hvis
+            ingen gidder å bake, blir det heller ingenting å spise.
+          </p>
+        </Metafor>
+        <Metafor tittel="Socket = handsettet på en gammeldags telefon">
+          <p>
+            Programmet ditt løfter handsettet (åpner socket), trykker nummer (port + IP), snakker
+            (send) og lytter (recv). Det er ingen direkte kabel mellom dine ører og den andre — det
+            er en svart boks i veggen (kernel/transportlaget) som ordner alt det tekniske. Du
+            forholder deg bare til handsettet.
+          </p>
+        </Metafor>
+        <Metafor tittel="RTT = ekko-tid i en fjelldal">
+          <p>
+            Du roper «hei!» mot fjellveggen og hører ekkoet 1 sekund senere. Det er din RTT. Selv om
+            du står og skriker hver halve sekund, kommer hvert ekko først etter et helt sekund —
+            bortenfra-veggen-og-tilbake har du ikke noe valg. Tromsø–Oslo ekko ≈ 20 ms;
+            Tromsø–Sydney ekko ≈ 300 ms. Lysets hastighet er en lov, ikke en bug.
+          </p>
+        </Metafor>
+      </div>
+
+      <div className="grid gap-3 lg:grid-cols-2">
+        <Illustration caption="Klient-server vs P2P: én sender til alle, vs alle sender til alle.">
+          <ArchVsP2PSvg />
+        </Illustration>
+        <Illustration caption="Transport-laget som meny: hver app krysser av hva den trenger.">
+          <TransportMenuSvg />
         </Illustration>
       </div>
 
@@ -356,61 +376,96 @@ function Section22() {
         <Defs
           items={[
             {
-              term: "HTTP request / response",
-              body: "En request består av en startlinje (metode + URL + versjon), headers (Host, User-Agent, Accept, ...) og en eventuell body. Responsen har statuslinje (versjon + kode + frase), headers (Content-Type, Content-Length, ...) og body. Tekstbasert i HTTP/1.x, binært i HTTP/2 og /3.",
+              term: "Request / response",
+              body: "Startlinje + headers + body; svar har statuslinje.",
             },
-            {
-              term: "Stateless",
-              body: "Hver request behandles uavhengig — serveren glemmer alt mellom dem. Det er enkelt og skalerbart, men du trenger andre mekanismer (cookies, session-tokens) for å huske hvem brukeren er. Stateless er en bevisst designvalg, ikke en mangel.",
-            },
+            { term: "Stateless", body: "Server glemmer alt mellom requests — bevisst valg." },
             {
               term: "Persistent forbindelse",
-              body: "I HTTP/1.0 åpnet du en ny TCP-forbindelse per request. Tre TCP-handshakes for tre bilder. HTTP/1.1 holder forbindelsen åpen som standard (Connection: keep-alive) så flere requests kan dele samme forbindelse — sparer mange RTT-er.",
+              body: "Holder TCP åpen for flere requests (keep-alive).",
             },
             {
-              term: "Pipelining og head-of-line-blocking",
-              body: "Pipelining lar klienten sende flere requests på rad uten å vente på svar. Problemet i HTTP/1.1: svarene må komme i samme rekkefølge — hvis bilde 1 er stort, blokkerer det bilde 2 og 3 selv om de er ferdig på serveren. HTTP/2 løser dette med multipleksing.",
+              term: "Pipelining / HOL-blocking",
+              body: "Send flere på rad; sakte svar blokkerer raske.",
             },
+            { term: "HTTP/2", body: "Binær, mange streams over én TCP-forbindelse." },
             {
-              term: "HTTP/2",
-              body: "Binær protokoll med streams: mange uavhengige request/response-par over én TCP-forbindelse, sendt om hverandre i små rammer (frames). Header-komprimering med HPACK reduserer overhead på gjentatte requests. Server push tillater serveren å sende ressurser før klienten ber om dem — i praksis lite brukt.",
+              term: "HTTP/3 (QUIC)",
+              body: "Streams uavhengige også på transportlaget; UDP-basert.",
             },
+            { term: "Cookies", body: "Server-satt tekst som klienten gir tilbake hver request." },
             {
-              term: "HTTP/3 og QUIC",
-              body: "HTTP/3 kjører på QUIC istedenfor TCP. QUIC er bygget på UDP og inkluderer kryptering, multipleksing og connection-migrasjon. Hovedfordelen: HTTP/2 har fortsatt TCP-nivå head-of-line-blocking (en mistet pakke holder igjen alle streams), mens QUIC har uavhengige streams også på transport-laget.",
+              term: "Metoder",
+              body: "GET hent, POST opprett, PUT erstatt, PATCH endre, DELETE slett.",
             },
+            { term: "Statuskoder", body: "2xx ok, 3xx redirect, 4xx du-feil, 5xx jeg-feil." },
+            { term: "Conditional GET", body: "If-None-Match → server svarer 304 (uendret)." },
             {
-              term: "Cookies",
-              body: "Liten tekst-strengen serveren sender i Set-Cookie-header. Nettleseren returnerer den i Cookie-header på alle videre requests til samme domene. Dette er hvordan «innlogget»-tilstanden overlever stateless HTTP. Tredjeparts-cookies (cookies satt av annet domene enn det du besøker) brukes til kryss-side sporing og er nå begrenset i de fleste nettlesere.",
+              term: "Proxy / web-cache",
+              body: "Bedrifts-mellom-server som cacher for sine brukere.",
             },
+            { term: "CORS", body: "Headers som lar fremmed domene lese svaret i nettleseren." },
             {
-              term: "HTTP-metoder",
-              body: "GET henter en ressurs uten side-effekter (idempotent og safe). POST sender data som typisk lager noe nytt (ikke-idempotent). PUT overskriver en hel ressurs på en kjent URL (idempotent). PATCH endrer deler av en ressurs. DELETE fjerner. HEAD er som GET men returnerer kun headers — nyttig for å sjekke størrelse eller om noe har endret seg. OPTIONS spør hva som er lov, brukt av CORS-preflight.",
-            },
-            {
-              term: "Statuskoder",
-              body: "Familier: 2xx suksess (200 OK, 201 Created, 204 No Content), 3xx omdirigering (301 Moved Permanently, 304 Not Modified, 307 Temporary Redirect), 4xx klient-feil (400 Bad Request, 401 Unauthorized, 403 Forbidden, 404 Not Found, 429 Too Many Requests), 5xx server-feil (500 Internal Server Error, 502 Bad Gateway, 503 Service Unavailable, 504 Gateway Timeout). Den første sifferen forteller deg ansvar; resten forteller detalj.",
-            },
-            {
-              term: "Conditional GET og caching-headere",
-              body: "Når nettleseren har en gammel kopi sender den If-Modified-Since: <dato> eller If-None-Match: <etag>. Serveren svarer enten med 200 OG nytt innhold, eller 304 Not Modified uten body — sparende båndbredde. Cache-Control: max-age=3600 forteller hvor lenge svaret kan caches; Cache-Control: no-store sier «ikke lagre i det hele tatt»; private vs public sier om mellom-cacher (CDN) får lagre.",
-            },
-            {
-              term: "Proxy-server (web-cache)",
-              body: "Mellom-server som mottar HTTP-request på vegne av klienten, henter ressursen fra origin (eller egen cache), og leverer tilbake. Reduserer trafikk over WAN-en (gamle skolenett hadde caching-proxyer for alt) og kan håndheve policy (filtrering, logging). Forskjellen mot CDN er hovedsakelig hvem som eier den — bedriftens egen vs kommersiell tjeneste.",
-            },
-            {
-              term: "CORS (Cross-Origin Resource Sharing)",
-              body: "Same-origin policy hindrer JavaScript på domene A i å lese svar fra domene B med mindre B aktivt tillater det. CORS er headerne (Access-Control-Allow-Origin, -Methods, -Headers) som lar serveren si «ja, denne origin får hente meg». For «ufarlige» requests (GET med standard headers) sjekkes etterpå; for «farlige» (PUT, DELETE, custom headers) gjør nettleseren først en OPTIONS-preflight.",
-            },
-            {
-              term: "HTTPS og TLS",
-              body: "HTTPS er HTTP over TLS over TCP. TLS gir tre ting: autentisering (sertifikat signert av en CA bekrefter at server.no er server.no), konfidensialitet (symmetrisk kryptering av all trafikk), og integritet (MAC på hver melding). Handshake forhandler frem ciphersuite (f.eks. TLS_AES_128_GCM_SHA256) og utleder shared secret via ECDHE. TLS 1.3 reduserte handshake fra 2 RTT til 1 RTT, og 0 RTT med session resumption.",
+              term: "HTTPS / TLS",
+              body: "HTTP over TLS over TCP — autentisering, kryptering, integritet.",
             },
           ]}
         />
         <Illustration caption="Forskjellen mellom seriell HTTP/1.1 og multiplekset HTTP/2 når en side har flere ressurser.">
           <HttpVersionsSvg />
+        </Illustration>
+      </div>
+
+      <div className="grid gap-3 lg:grid-cols-2">
+        <Metafor tittel="HTTP-request = bestillings-skjema på pappkartong">
+          <p>
+            Du krysser av: <em>metode</em> (hent / send / slett), <em>vare-nummer</em> (URL),
+            <em> notater</em> (headers — «pakk inn i jpeg», «jeg snakker norsk»), og eventuelt en
+            <em> handlekurv-liste</em> (body). Kokken bak disken returnerer et identisk
+            kvitterings-skjema: <em>kode</em> (200 OK, 404 finnes ikke), <em>notater</em> tilbake,
+            og selve <em>varen</em>. Hver bestilling er sin egen lapp — ingen «du vet jo hva jeg
+            pleier».
+          </p>
+        </Metafor>
+        <Metafor tittel="Stateless server = legevakts-fastlegen som glemmer alt">
+          <p>
+            Du går til legevakta. Legen har <em>aldri</em> sett deg før — du må fortelle alt på
+            nytt: navn, sykdom, allergier. Hver visitt er en blank tavle. Ulempen er at du må gjenta
+            deg selv. Fordelen er at det <em>spiller ingen rolle hvilken lege du får</em> — de er
+            alle like uvitende, så ekspedering kan parallelliseres uansvarlig. Cookies er sedler du
+            har med deg som forteller legen hvem du er.
+          </p>
+        </Metafor>
+        <Metafor tittel="HTTP/1.1 vs HTTP/2 = enkel betjent vs flere kasser samtidig">
+          <p>
+            HTTP/1.1 seriell: én kasse, en lang kø. Bestillingen din venter til alle foran er
+            ferdig. HTTP/1.1 «6 parallelle TCP» = seks separate kø-betjenter på samme butikk —
+            forbedring, men hver kø er fortsatt seriell og må sette opp seg selv først. HTTP/2 =
+            <em>
+              {" "}
+              én kasse-disk som tar mange bestillinger om gangen og leverer dem etter hvert som de
+              er ferdig
+            </em>
+            , ikke nødvendigvis i samme rekkefølge.
+          </p>
+        </Metafor>
+        <Metafor tittel="TLS-handshake = veksle hemmelig kode før samtalen">
+          <p>
+            Før du og kompisen din begynner å hviske hemmeligheter på bussen, sender du ham en
+            kodebok i en konvolutt. Han åpner den, lager seg en kopi, og fra det øyeblikket snakker
+            dere via koden. Ingen som lytter kan forstå. TLS gjør det samme i 1 RTT (TLS 1.3):
+            klient og server bytter offentlige nøkler og utleder en delt sesjon-nøkkel, og{" "}
+            <em>alt</em> deretter krypteres med den.
+          </p>
+        </Metafor>
+      </div>
+
+      <div className="grid gap-3 lg:grid-cols-2">
+        <Illustration caption="Statuskode-familier: første siffer forteller hvem som har skylda.">
+          <StatusCodeFamiliesSvg />
+        </Illustration>
+        <Illustration caption="Cookie-flyt: server setter, klient lagrer, klient sender tilbake hver gang.">
+          <CookieFlowSvg />
         </Illustration>
       </div>
 
@@ -536,62 +591,92 @@ function Section23() {
       <div className="grid gap-3 lg:grid-cols-2">
         <Defs
           items={[
+            { term: "Hierarkisk navnerom", body: "Leses høyre→venstre; ansvar deles per nivå." },
+            { term: "Root-servere", body: "13 logiske, hundrevis fysisk via anycast — toppen." },
             {
-              term: "Hierarkisk navnerom",
-              body: "Domener leses fra høyre mot venstre: i www.fakultet.uit.no er .no top-level (TLD), uit er second-level, fakultet er subdomene, www er host. Ansvaret deles: TLD-servere vet hvem som vet om .no, .no-serverne vet hvem som vet om uit.no, uit sin server vet om alt under uit.no.",
+              term: "Iterativt vs rekursivt",
+              body: "Klient→resolver rekursivt; resolver→auth iterativt.",
             },
             {
-              term: "Root-servere",
-              body: "13 logiske root-servere (a.root-servers.net til m.root-servers.net), implementert som hundrevis av fysiske maskiner spredd over hele verden via anycast. De vet hvilke TLD-servere som er autoritative for hver TLD. Toppen av hele systemet.",
-            },
-            {
-              term: "Iterativt vs rekursivt oppslag",
-              body: "I et rekursivt oppslag spør klienten sin lokale DNS-server, som så gjør alt arbeidet (kontakter root, TLD, autoritativ) og leverer endelig svar tilbake. I et iterativt oppslag svarer hver mellom-server med «jeg vet ikke, men spør denne neste», og klienten følger pekerne selv. I praksis: klient → lokal resolver er rekursivt, resolver → root/TLD/auth er iterativt.",
-            },
-            {
-              term: "Caching og TTL",
-              body: "Hver record har en TTL (time-to-live) i sekunder som forteller hvor lenge svaret kan caches. En typisk A-record har TTL 300–3600 sekunder. Lokal DNS-resolver cacher svar slik at neste oppslag av samme navn er gratis. Det er denne caching-en som gjør DNS skalerbar — root-serverne ser ikke spørringer for hver eneste googling.",
+              term: "Caching + TTL",
+              body: "Lokal lagring i N sekunder — det som gjør DNS skalerbar.",
             },
             {
               term: "Record-typer",
-              body: "A: IPv4-adresse for et navn. AAAA: IPv6-adresse. CNAME: alias som peker til et annet navn. MX: hvilken mail-server som tar imot e-post for domenet. NS: hvilken navneserver er autoritativ for domenet. TXT: vilkårlig tekst (brukes til SPF, DKIM, domene-verifisering).",
+              body: "A=IPv4, AAAA=IPv6, CNAME=alias, MX=mail, NS=navneserver, TXT=fri tekst.",
             },
             {
-              term: "Glue records og delegering",
-              body: "Når .no-serveren sier «spør ns1.uit.no for uit.no», hvordan kommer du dit hvis du ikke vet IP-en til ns1.uit.no? Svaret er glue records: .no-svaret inkluderer ns1.uit.no sin IP-adresse direkte, så du slipper en sirkulær avhengighet.",
+              term: "Glue records",
+              body: "Følger med delegering så du unngår sirkulær avhengighet.",
             },
-            {
-              term: "Stub-resolver",
-              body: "Den enkleste DNS-komponenten — biblioteket inne i operativ-systemet (eller appen) som tar et navn og returnerer en IP. Den gjør ikke selv noe iterativt arbeid; den sender bare ett spørsmål til den lokale resolveren konfigurert i /etc/resolv.conf eller via DHCP. På Linux kalles funksjonen typisk getaddrinfo().",
-            },
-            {
-              term: "Reverse DNS (PTR)",
-              body: "Den motsatte oppslags-retningen: «hvilket navn hører til IP 129.242.16.214?» Brukes til logging (mail-servere sjekker at avsender-IP har et navn som matcher), nettverks-debugging og noen sikkerhets-policy-er. Implementert via spesial-sonen in-addr.arpa: IP 129.242.16.214 slås opp som 214.16.242.129.in-addr.arpa PTR.",
-            },
-            {
-              term: "Autoritativ vs ikke-autoritativ svar",
-              body: "Et autoritativt svar kommer fra serveren som faktisk har sonen — den vet sannheten. Et ikke-autoritativt svar kommer fra en cache som tror den vet, men kanskje har et utdatert TTL-tellende svar. Når dig svarer ser du «ANSWER SECTION» med eller uten 'AA'-flagget; ANS-aut betyr autoritativt.",
-            },
+            { term: "Stub-resolver", body: "OS-biblioteket som bare spør lokal resolver." },
+            { term: "Reverse DNS (PTR)", body: "IP → navn, via in-addr.arpa-sonen." },
+            { term: "Autoritativ svar", body: "Fra sonens egen server (AA-flagg) vs cache." },
             {
               term: "Negativ caching",
-              body: "Hva hvis et navn ikke finnes? Resolveren cacher også NXDOMAIN-svar (typisk i opp til SOA-en sin minimum-TTL, ofte 1–4 timer) så feilstavede oppslag ikke hamrer på autoritative servere. Det er derfor en tip-feil i nettleseren kan vise feil i flere minutter selv etter at du har rettet den.",
+              body: "NXDOMAIN huskes også — derfor henger feil-svar igjen.",
             },
-            {
-              term: "DNS over HTTPS (DoH) og DNS over TLS (DoT)",
-              body: "Tradisjonell DNS er ukryptert UDP på port 53 — ISP-en din kan se hvert navn du slår opp. DoH (port 443, ser ut som vanlig HTTPS-trafikk) og DoT (port 853) krypterer kanalen mellom stub og resolver. Beskytter privatliv og hindrer ISP-injeksjon (sensur, annonser), men flytter tilliten over til resolveren — Cloudflare, Google eller Quad9 ser i stedet.",
-            },
+            { term: "DoH / DoT", body: "Krypterer DNS-spørringen mellom stub og resolver." },
             {
               term: "DNSSEC",
-              body: "DNSSEC signerer DNS-svar kryptografisk så klienten kan bekrefte at svaret faktisk kom fra den autoritative serveren og ikke fra en mann-i-midten. Sertifikat-kjeden følger DNS-hierarkiet: roten signerer .no-nøkkelen, .no signerer uit.no, uit.no signerer hver record. Adopsjon er ujevn — under halvparten av TLD-er er fullt signert, men kritiske roller (banker, statlige tjenester) bruker det.",
+              body: "Signaturer i hierarki-kjede — root signerer TLD signerer ...",
             },
-            {
-              term: "EDNS og spørrings-størrelse",
-              body: "Original DNS-spørring/svar var begrenset til 512 bytes over UDP — for stort betydde å falle tilbake til TCP. EDNS0 utvider denne grensen til typisk 4096 bytes så svar med mange records (f.eks. en stor MX-liste eller DNSSEC-signaturer) får plass i én UDP-pakke. Klient annonserer størrelsen i en spesial-OPT-record i requesten.",
-            },
+            { term: "EDNS0", body: "Utvider UDP-svar fra 512 til 4096 bytes." },
           ]}
         />
         <Illustration caption="Iterativt DNS-oppslag for www.uit.no fra en lokal resolver — fire trinn, deretter cached.">
           <DnsLookupSvg />
+        </Illustration>
+      </div>
+
+      <div className="grid gap-3 lg:grid-cols-2">
+        <Metafor tittel="DNS-hierarki = kommune-administrasjon for å finne folk">
+          <p>
+            Du leter etter en spesifikk svømmehallsvakt i Tromsø. Du går først til{" "}
+            <em>statens adressekontor</em> (root) — de sier «kommunale tjenester håndteres av
+            kommunens administrasjon». Du går til <em>kommune-administrasjonen</em> (.no TLD) — de
+            sier «idrettsanlegg ligger under kultursjefen». Du går til <em>kultursjefen</em>
+            (uit.no auth) — som peker deg til personen som faktisk vet:
+            <em> svømmehall-leder</em>. Ingen ett kontor vet alt. Hvert kontor vet bare hva neste
+            steg er.
+          </p>
+        </Metafor>
+        <Metafor tittel="DNS-cache + TTL = «meste-pris-tilbud» klistret på kjøleskapet">
+          <p>
+            Du ringte Pizza-Olsen for nummeret deres. Du klistrer det på kjøleskapet med en lapp:
+            «gyldig 1 mnd». Neste gang du vil bestille pizza ringer du <em>fra lappen</em> uten å
+            ringe nummeropplysningen igjen. Etter en måned river du den ned og slår opp på nytt —
+            kanskje Pizza-Olsen har byttet nummer. TTL er hvor lenge lappen henger. Kort TTL =
+            ferskere data, mer arbeid. Lang TTL = mindre arbeid, men «kunden hører ikke at vi
+            flyttet på 3 dager».
+          </p>
+        </Metafor>
+        <Metafor tittel="CNAME = videresend-pil på en gammel butikk">
+          <p>
+            «Lille Bakeri flyttet — finn oss på Storgata 12 fra og med i dag.» Skiltet henger på den
+            gamle adressen, men du må fortsatt gå til Storgata 12 for å kjøpe brød. En CNAME er
+            akkurat dette: spør du etter <code>www.eksempel.no</code> og det er en CNAME til
+            <code>edge.cdn.com</code>, må du slå opp <em>det</em> navnet for å få faktisk IP. Ett
+            ekstra hopp, men gir fleksibilitet.
+          </p>
+        </Metafor>
+        <Metafor tittel="MX-prioritet = bryllups-gjestelisten med back-up-flyplasser">
+          <p>
+            Når et fly er kansellert sjekker bagasje-systemet en prioriterings-liste: 1) Oslo, 2)
+            Bergen, 3) Trondheim, 4) Tromsø. Sender prøver lavest tall først, går videre hvis den
+            ikke svarer. MX-records virker likt:{" "}
+            <em>10 primary, 20 backup1, 20 backup2, 50 fjern-by</em>. Likt tall = last-balanseres.
+            Hele oppsettet uten å endre noe annet enn DNS.
+          </p>
+        </Metafor>
+      </div>
+
+      <div className="grid gap-3 lg:grid-cols-2">
+        <Illustration caption="Hvordan DNS-cache filtrerer trafikk vekk fra autoritativ server (TTL = 1 t, jevn trafikk).">
+          <DnsCacheFilterSvg />
+        </Illustration>
+        <Illustration caption="Vanlige record-typer: hva returneres for ulike spørsmål om samme domene.">
+          <DnsRecordTypesSvg />
         </Illustration>
       </div>
 
@@ -712,62 +797,89 @@ function Section24() {
       <div className="grid gap-3 lg:grid-cols-2">
         <Defs
           items={[
+            { term: "SMTP", body: "Server→server-protokoll for å levere mail (port 25/587)." },
+            { term: "IMAP / POP3", body: "Klient henter sin egen postkasse fra serveren." },
+            { term: "MIME", body: "Pakker vedlegg/bilder/HTML inn i ASCII (Base64)." },
+            { term: "BitTorrent", body: "P2P-fildeling: fil i biter, alle deler med alle." },
+            { term: "Tit-for-tat", body: "Send mest til dem som sender mest til deg." },
+            { term: "DHT (Kademlia)", body: "Distribuert peer-katalog uten sentral tracker." },
             {
-              term: "SMTP",
-              body: "Simple Mail Transfer Protocol. Den klassiske server-til-server-protokollen for å levere e-post videre. Når du sender en mail går den fra din mail-klient til din mail-server (ofte via SMTP submission, port 587), og videre til mottakerens mail-server (SMTP, port 25). Push-orientert: avsenderens server kontakter mottakerens.",
+              term: "SMTP-handshake",
+              body: "Klartekst-linjer: HELO, MAIL FROM, RCPT TO, DATA, ..",
             },
             {
-              term: "IMAP og POP3",
-              body: "Mottakerens klient bruker IMAP (Internet Message Access Protocol, port 143/993) eller eldre POP3 for å lese sin egen postkasse fra serveren. IMAP holder meldinger på serveren og lar deg organisere dem i mapper på tvers av enheter; POP3 laster ned og sletter (typisk). Pull-orientert: klienten henter når den vil.",
+              term: "Envelope vs header",
+              body: "Konvolutt (ruting) vs brev-innhold (From:-feltet).",
             },
             {
-              term: "MIME",
-              body: "E-post var opprinnelig ren ASCII. MIME (Multipurpose Internet Mail Extensions) er utvidelsen som lar deg sende vedlegg, bilder, HTML-formatert tekst og ikke-engelske tegn. Base64-koding pakker binær-data inn i ASCII-tegn som SMTP kan håndtere.",
+              term: "SPF / DKIM / DMARC",
+              body: "DNS-baserte signaturer som avslører forfalskning.",
             },
             {
-              term: "BitTorrent",
-              body: "P2P-fildelings-protokoll. En fil deles i biter (vanligvis 256 KB hver). En tracker (eller DHT) lar peers finne hverandre. Hver peer laster ned biter den mangler og laster opp biter den har, samtidig. Resultat: jo flere som vil ha filen, jo raskere går det.",
+              term: "Biter og blocks",
+              body: "Bit = 256 kB med SHA-hash; blokk = 16 kB som sendes.",
+            },
+            { term: "Rarest-first", body: "Last ned det færrest har — sprer risiko." },
+            {
+              term: "Tracker vs DHT",
+              body: "Sentral peer-liste vs distribuert via magnet-lenker.",
             },
             {
-              term: "Tit-for-tat",
-              body: "BitTorrent-incentiv-mekanismen mot snyltere: hver peer prioriterer å sende biter til de peers som sender mest tilbake til dem. Hvis du bare laster ned uten å laste opp, blir du nedprioritert (choked). Optimistisk unchoking sender litt til tilfeldige peers så nye deltakere får sjansen til å starte.",
-            },
-            {
-              term: "DHT (Distributed Hash Table)",
-              body: "Distribuert nøkkel/verdi-lookup uten sentral server. Hver peer er ansvarlig for en del av et stort nøkkel-rom (typisk 160 bit SHA-1). For å finne hvem som har en gitt fil, hopper du gjennom log(N) andre peers etter en deterministisk algoritme (Kademlia for BitTorrent). Brukes når trackeren er nede eller ikke ønskes.",
-            },
-            {
-              term: "SMTP-handshake i klartekst",
-              body: "SMTP er en samtale i klartekst-linjer: klient sier HELO/EHLO, server svarer 220, klient sier MAIL FROM, RCPT TO, DATA, og avslutter meldingen med en linje med kun en punktum. Hver kommando får numerisk respons (250 OK, 550 No such user). Designet i 1982 — du kan fortsatt telnette til en SMTP-server og snakke direkte med den, men nesten alle har nå STARTTLS for å oppgradere kanalen til TLS.",
-            },
-            {
-              term: "Mail-headers og envelope",
-              body: "Det er to nivåer: envelope (MAIL FROM/RCPT TO som SMTP bruker for ruting — usynlig for brukeren) og message headers (From:, To:, Subject:, Date:, som er en del av selve meldingen). Forskjellen er kritisk for spam: et phishing-mail kan ha From: bank@dnb.no i meldingen men avsluk reelt RCPT FROM: attack@dodgy.cn — det er den siste mail-serveren bruker til å levere.",
-            },
-            {
-              term: "SPF, DKIM, DMARC",
-              body: "Tre TXT-record-baserte mekanismer som hjelper mottakeren skille ekte mail fra forfalsket. SPF (Sender Policy Framework) lister IP-er som har lov å sende mail for et domene. DKIM (DomainKeys Identified Mail) lar avsenderens server signere meldingen kryptografisk. DMARC binder de to sammen og forteller mottakere hva de skal gjøre med mail som feiler begge (avvis, marker, ignorer).",
-            },
-            {
-              term: "BitTorrent-biter, blocks og hash-listen",
-              body: ".torrent-filen (eller magnet-lenken) inneholder en SHA-1-hash for hver bit i filen. Det betyr at peer-en kan verifisere hver bit den mottar uavhengig. Større filer deles til biter (typisk 256 kB–4 MB) og hver bit deles videre i blokker (typisk 16 kB) som er enheten som faktisk sendes over nettet. Bare når alle blokker i en bit er mottatt, verifiseres bit-en mot hash-en.",
-            },
-            {
-              term: "Rarest-first-strategi",
-              body: "BitTorrent-klient prioriterer å laste ned biter som finnes hos færrest peers i swarmen. Hvorfor? Hvis hver peer hadde lastet ned bit nr. 1 først ville biten med høyest peer-tetthet bli enda høyere — andre biter risikerer å forsvinne hvis seederen forlater. Rarest-first sprer risikoen og opprettholder swarmens helse.",
-            },
-            {
-              term: "Tracker vs trackerless",
-              body: "Tradisjonelle BitTorrent-trackere er sentrale servere som vedlikeholder lister over peers per torrent. Klienter rapporterer inn jevnlig og får andres adresser. Trackerless mode bruker DHT (Mainline DHT, basert på Kademlia) i stedet — peer-listen lagres distribuert. Magnet-lenker (URL-er som starter med magnet:?xt=urn:btih:...) er torrent-identifikatorer som krever DHT for å fungere.",
-            },
-            {
-              term: "Choking og unchoking",
-              body: "Hver peer holder maksimalt 4–5 forbindelser aktive om gangen (unchoked). Resten er choked — TCP-en er åpen, men ingen data sendes. Hvert tiende sekund evalueres hvem som har sendt mest tilbake nylig og som derfor får forbli unchoked. Optimistic unchoke unchoker én tilfeldig peer hvert 30. sekund så nykommere får sjansen til å vise at de er ekte bidragsytere.",
+              term: "Choking",
+              body: "Stopper å sende til dem som ikke gir tilbake; unchoker periodisk.",
             },
           ]}
         />
         <Illustration caption="BitTorrent-swarm: ingen sentral server, alle utveksler biter med alle.">
           <BitTorrentSvg />
+        </Illustration>
+      </div>
+
+      <div className="grid gap-3 lg:grid-cols-2">
+        <Metafor tittel="SMTP = postkontor-stafett, IMAP = postkasse-besøk">
+          <p>
+            Du legger et brev i din lokale postkasse (din SMTP-server). Et postbud frakter det til
+            mottakerens postkontor (SMTP server→server). Det <em>ligger</em> der til mottakeren selv
+            kommer innom for å hente — dét er IMAP. Postbudet ringer ikke på døra hennes;
+            postkontoret er åpent og hun bestemmer når hun vil komme. Derfor må postkontoret være
+            alltid-på; hennes laptop trenger ikke være det.
+          </p>
+        </Metafor>
+        <Metafor tittel="BitTorrent = potluck-middag der maten skal vokse">
+          <p>
+            10 personer møtes til middag. Bare én har laget mat. Hvis han skulle dele med 9, må han
+            mate hver i tur — det tar 9 porsjoner-tid. <em>Trikset</em>: så snart en gjest har fått
+            en bit, kan <em>hun</em> dele den biten videre til de andre mens kokken serverer noe
+            annet. Etter første runde har alle litt av alt; etter andre runde har alle alt.
+            Totalkapasiteten skalerer med antall gjester, ikke synker med dem.
+          </p>
+        </Metafor>
+        <Metafor tittel="Tit-for-tat = byttehandel på loppemarkedet">
+          <p>
+            Du står med en gammel platespiller. Naboen din har et messing-stativ du vil ha. Du
+            bytter. <em>Hver</em> peer i swarmen gjør dette kontinuerlig: «du sendte meg en bit jeg
+            trengte, så jeg sender deg en jeg har». Hvis du bare står og stirrer uten å bytte
+            (snylte), nedprioriteres du. Hvert 30. sekund prøver alle en
+            <em> tilfeldig fremmed</em> for å gi nykommere sjansen — det er optimistic unchoke.
+          </p>
+        </Metafor>
+        <Metafor tittel="Rarest-first = redde de utrydningstruede dyrene først">
+          <p>
+            Bibliotekaren har 100 bøker, hver med 100 eksemplar — bortsett fra ett som finnes i kun
+            ett eksemplar. Hvis bibliotekaren tar permisjon i morgen, hvilket eksemplar bør
+            <em> du</em> låne først? Det sjeldne. Hvis du venter til neste uke kan det være
+            forsvunnet. Rarest-first sikrer at swarmen aldri mister en bit fordi den ene seederen
+            logget av.
+          </p>
+        </Metafor>
+      </div>
+
+      <div className="grid gap-3 lg:grid-cols-2">
+        <Illustration caption="Mail-flyt: avsender → SMTP submission → mottakerens SMTP → IMAP-postkasse → klient.">
+          <MailFlowSvg />
+        </Illustration>
+        <Illustration caption="Tit-for-tat over tid: peer som ikke deler nedprioriteres, choked etter 30 s.">
+          <TitForTatSvg />
         </Illustration>
       </div>
 
@@ -882,62 +994,83 @@ function Section25() {
       <div className="grid gap-3 lg:grid-cols-2">
         <Defs
           items={[
-            {
-              term: "DASH (Dynamic Adaptive Streaming over HTTP)",
-              body: "Videoen lagres på serveren i flere versjoner med ulik bitrate (typisk 5–10 trinn, fra 240p til 4K). Hver versjon deles i korte segmenter (2–10 s). Klienten ber om ett segment om gangen og velger kvalitet basert på målt throughput og buffer-fyll. Når nettet treger, dropper klienten til lavere kvalitet uten å avbryte avspilling.",
-            },
-            {
-              term: "Manifest-fil",
-              body: "Klientens første request henter et manifest (typisk en MPD- eller HLS-playlist) som lister alle tilgjengelige bitrater og hvor hvert segment er. Etter det er resten bare en serie HTTP-GETs på segment-URL-er — derfor «over HTTP», som passer perfekt inn i eksisterende CDN-er.",
-            },
-            {
-              term: "CDN (Content Delivery Network)",
-              body: "Tredjeparts-nettverk (Akamai, Cloudflare, Fastly) eller egne (Netflix Open Connect) av servere plassert nær brukerne — i ISP-en sitt nettverk, i sentrale exchange-punkter, i regionale datasentre. Innholdet kopieres ut til kant-servere så brukeren henter fra naboens server, ikke fra Mountain View.",
-            },
+            { term: "DASH", body: "Flere bitrate-versjoner; klient velger kvalitet per segment." },
+            { term: "Manifest", body: "Liste over hvilke bitrater og segmenter som finnes." },
+            { term: "CDN", body: "Kant-servere nær brukeren — innhold kopieres ut." },
             {
               term: "Hvorfor CDN funker",
-              body: "Tre grunner. (1) Lavere propagasjons-forsinkelse fordi serveren er nærmere. (2) Lavere belastning på origin og på trans-kontinentale lenker. (3) Bedre opplevd throughput fordi det er færre rutere og kortere ende-til-ende-tid for TCP å åpne windowet.",
+              body: "Kortere RTT, mindre origin-trafikk, raskere TCP-vekst.",
             },
             {
-              term: "CDN-redirect / DNS-mapping",
-              body: "Hvordan vet nettleseren din hvilken kant-server å gå til? Vanligvis via DNS: domenet (f.eks. video.nrk.no) er en CNAME til CDN-ens domene, og CDN-ens autoritative DNS svarer med IP-en til den geografisk nærmeste eller minst belastede serveren basert på hvor LDNS-spørringen kom fra.",
+              term: "DNS-mapping",
+              body: "CDN-DNS svarer med nærmeste edge basert på resolver-IP.",
             },
+            { term: "Cache-hierarki", body: "Edge → regional → origin; 99 %+ stoppes på edge." },
+            { term: "Segment-lengde", body: "2 s = raskt bytte, 10 s = mindre overhead." },
+            { term: "Buffer-fyll", body: "Stor buffer = trygt; lav buffer = panikk-bytte ned." },
             {
-              term: "Cache-hierarki",
-              body: "Edge-servere (helt ute hos ISP-en) cacher det mest sett innholdet. Hvis edge ikke har det, går den til en regional cache; hvis den heller ikke har det, til origin. Slik holder vi 99 %+ cache-hit på kanten selv om innholdsbiblioteket er kjempestort.",
+              term: "Origin shield",
+              body: "Ekstra cache-lag — beskytter origin mot thundering herd.",
             },
+            { term: "Cache-warming", body: "Pre-populer edge før storserie-slipp." },
             {
-              term: "Segment-lengde-trade-off",
-              body: "Kortere DASH-segmenter (2 s) gir raskere reaksjon på endret throughput og lavere oppstarts-forsinkelse, men mer protokoll-overhead (flere requests, flere headers, mindre komprimerings-vinning). Lengre segmenter (10 s) er effektive på lange overføringer men gir trege bytte-tider hvis nettet plutselig forverres. Live-streaming foretrekker korte segmenter; on-demand kan tåle lengre.",
+              term: "Live-distribusjon",
+              body: "Encode → ingest → regional → edge i nær sann-tid.",
             },
-            {
-              term: "Buffer-fyll og start-spike",
-              body: "Ved oppstart laster en DASH-klient typisk segmenter på lavest bitrate så avspillingen kan starte raskt, og oppgraderer kvalitet etter hvert som bufferen vokser. Når bufferen passerer en terskel (typisk 10–30 s) er klienten konfortabel og kan satse på høyere bitrate. Hvis bufferen synker mot null, panikkbytter den til laveste kvalitet for å unngå stall.",
-            },
-            {
-              term: "Origin shielding",
-              body: "Et ekstra cache-lag mellom regionale caches og origin. Alle regionale cache-miss går først til shieldet, ikke direkte til origin — så hvis 10 regioner alle får cache-miss på samme nye episode, treffer shieldet kun origin én gang. Beskytter origin mot tordenstorm av cache-miss («thundering herd») når noe nytt blir populært.",
-            },
-            {
-              term: "Cache-warming",
-              body: "Når en stor utgivelse er planlagt (ny Netflix-episode kl. 09:00) blir cache-en pre-populert om natten — innholdet sendes ut til alle edge-servere før forespørslene kommer. Ellers ville første time bli en pinefull cascade av cache-misses som overbelaster origin. Pre-positioning er en kontrollert måte å unngå warm-up-perioden på.",
-            },
-            {
-              term: "Tunnel- og live-distribusjon",
-              body: "Live-streaming (sport, nyhets-sending) har en helt annen pipeline: source-feed encodes til alle bitrater, sendes til en ingest-server, derfra til regionale caches og videre til edge — alt i nesten sann-tid. Latens fra event til seer er typisk 5–30 sekunder, hovedsakelig på grunn av segment-lengde og buffering. Low-latency HLS/DASH (chunked encoding) får dette ned mot 2–3 sekunder.",
-            },
-            {
-              term: "Codec-valg",
-              body: "Hvilken videokodek brukes? H.264 er universell og enkel å dekode, men gir høy bitrate. H.265/HEVC sparer 40 % båndbredde men har lisensvansker. VP9 (Google) og AV1 (åpen standard) gir enda bedre kompresjon. Streamere kompromisserer ved å enkode flere kodek-versjoner og servere klienten den beste den støtter — en moderne mobiltelefon vil typisk ha en AV1-decoder i hardware.",
-            },
-            {
-              term: "Anycast for nær-server-lokering",
-              body: "Et alternativ til DNS-basert geo-mapping er BGP anycast: samme IP-adresse annonseres fra mange lokasjoner samtidig, og internett-rutingen automatisk styrer brukerens trafikk til den nærmeste. Cloudflare bruker dette tungt. Fordel: ingen DNS-lag, raskere failover. Ulempe: man har mindre fin-kontroll over hvilken instans en bestemt bruker treffer.",
-            },
+            { term: "Codec-valg", body: "H.264 universell, H.265/AV1 sparer båndbredde." },
+            { term: "Anycast", body: "Samme IP fra mange steder; BGP velger nærmeste automatisk." },
           ]}
         />
         <Illustration caption="CDN-arkitektur: bruker går til lokal edge, edge spør regional, regional eventuelt origin.">
           <CdnSvg />
+        </Illustration>
+      </div>
+
+      <div className="grid gap-3 lg:grid-cols-2">
+        <Metafor tittel="CDN = Spotify har lokal-lager i hver by">
+          <p>
+            Tenk om all musikk i verden bare lå på én stor harddisk i San Francisco. Hver gang du
+            trykker «spill» måtte signalet over Atlanteren, gjennom 30 rutere, og tilbake. Det ville
+            knirke. CDN-er løser det ved å plassere <em>en miniatyr-disk i hver større by</em>:
+            Tromsø-disken har det Tromsø-folk hører på, Oslo-disken har det Oslo-folk hører på. Når
+            du trykker «spill» går spørringen 50 km, ikke 8000.
+          </p>
+        </Metafor>
+        <Metafor tittel="DASH = vegg-monteringen som tilpasser tunge bilder underveis">
+          <p>
+            Du henger 30 bilder på rekke. Hvis veggen knirker av vekt, slipper du de tunge rammene
+            og bruker letteversjoner — bildet er der, bare i lavere kvalitet. Når veggen føles solid
+            igjen, henger du tilbake de tunge. Slik gjør DASH-klienten: hvert segment kan være 240p
+            eller 1080p eller 4K. Den velger basert på <em>hvor solid bufferen føles</em>, ikke
+            etter en forhåndsbestemt plan.
+          </p>
+        </Metafor>
+        <Metafor tittel="Cache-warming = bygge isbarrieren før vinteren kommer">
+          <p>
+            Når kraftselskapet vet det blir snøstorm i morgen, kjører de generatorene varme i kveld.
+            Når Netflix vet at <em>siste episode av populærserien</em> slippes kl. 09:00 i morgen,
+            sender de filen ut til alle edge-servere klokken 03:00 om natten. Hvis de ikke gjorde
+            det, ville alle de første 100 000 seerne treffe en cache-miss samtidig — hver eneste
+            edge ville rope etter origin på én gang, og origin ville bli knust av en «thundering
+            herd».
+          </p>
+        </Metafor>
+        <Metafor tittel="Anycast = nødnummeret 113 finner nærmeste sykehus automatisk">
+          <p>
+            Du ringer 113 fra Tromsø. Du blir ikke koblet til <em>landets eneste 113-sentral</em>—
+            du blir koblet til Tromsøs lokalsentral. Ringer du fra Oslo, går samtalen til Oslos.
+            Samme nummer, mange svarende. BGP anycast funker likt: Cloudflare annonserer IP 1.1.1.1
+            fra hundrevis av byer; rutingen sender deg automatisk til den nærmeste, uten DNS-magi.
+          </p>
+        </Metafor>
+      </div>
+
+      <div className="grid gap-3 lg:grid-cols-2">
+        <Illustration caption="DASH-bitrate-bytting: klienten bytter trinn basert på buffer-fyll og målt throughput.">
+          <DashBitrateSvg />
+        </Illustration>
+        <Illustration caption="Cache-warming vs «thundering herd»: pre-pushe innhold før etterspørselen starter.">
+          <CacheWarmingSvg />
         </Illustration>
       </div>
 
@@ -1058,60 +1191,81 @@ function Section26() {
           items={[
             {
               term: "Socket",
-              body: "OS-abstraksjon for en endpoint i en nettverks-samtale. Identifisert av (protokoll, lokal IP, lokal port, ekstern IP, ekstern port). Operativ-systemet leverer en handle (file descriptor) som applikasjonen leser/skriver til.",
+              body: "OS-handle for en endpoint: (proto, lokal IP+port, ekstern IP+port).",
             },
-            {
-              term: "TCP-socket — server-side",
-              body: "Server kaller socket() for å opprette, bind() for å feste på en port (f.eks. 8080), listen() for å gå i lyttemodus, og accept() i en loop. accept() blokkerer til en klient kobler seg på, og returnerer en ny socket dedikert til den klienten. Den nye socket-en brukes til send()/recv() med klienten; den opprinnelige fortsetter å ta imot nye.",
-            },
-            {
-              term: "TCP-socket — klient-side",
-              body: "Klienten kaller socket(), så connect(server_ip, server_port). Etter at TCP-handshakeen er ferdig kan klienten send()/recv(). Klienten trenger ikke bind() — OS-en velger en ledig kilde-port automatisk.",
-            },
-            {
-              term: "UDP-socket",
-              body: "Enklere: socket(), bind() (om du vil ha en spesifikk port), sendto(data, dest_addr) og recvfrom(). Ingen handshake, ingen connection-state. Hver sendto er uavhengig — du kan sende til ulike mottakere fra samme socket. Du må selv håndtere tap, omrokering og duplikater hvis det er viktig.",
-            },
+            { term: "TCP server-kall", body: "socket → bind → listen → accept-loop." },
+            { term: "TCP klient-kall", body: "socket → connect → send/recv → close." },
+            { term: "UDP-socket", body: "socket → bind → sendto / recvfrom; ingen forbindelse." },
             {
               term: "Stream vs datagram",
-              body: "TCP er en bytestrøm: bytes kommer fram i samme rekkefølge de ble sendt, men ikke nødvendigvis i samme «pakker». 1000 bytes sendt i to send()-kall kan komme som 1 recv() på 1000, eller to recv() på 500, eller hva som helst. UDP er datagram: hver sendto() blir én recvfrom() på samme størrelse — eller forsvinner helt.",
+              body: "TCP = bytestrøm uten grenser, UDP = atomiske pakker.",
             },
             {
               term: "Blocking vs non-blocking",
-              body: "Standard er at recv() blokkerer til data kommer. For en server som håndterer 1000 klienter er det upraktisk å ha 1000 tråder som sitter og venter. Non-blocking sockets + select()/poll()/epoll/kqueue (eller asyncio i Python, async i Rust) lar én tråd vente på mange sockets samtidig.",
+              body: "Vent passivt vs spør «er det noe?» og fortsett.",
             },
             {
-              term: "Socket API-kall i rekkefølge (TCP)",
-              body: "Server: socket() → bind() → listen() → accept() (i loop) → recv()/send() → close(). Klient: socket() → (optional bind()) → connect() → send()/recv() → close(). Hver kall returnerer en feilkode (eller -1 + errno på Unix), og en robust app må sjekke alle. accept() og connect() blokkerer per default; recv() blokkerer hvis ingen data er tilgjengelig.",
+              term: "send() returnerer mindre",
+              body: "Kernel-buffer full → du må loope resten selv.",
             },
-            {
-              term: "send() leverer ikke alltid alt",
-              body: "Et avgjørende detalj: send(buf, 1000) kan returnere 600 — bare 600 bytes ble lagt i kernel-bufferen, resten må du sende igjen. En naiv klient som ikke loopper på dette taper data ved metning. Standard-mønsteret: while sent < total: sent += send(buf[sent:]). På UDP er det annerledes — sendto returnerer enten hele datagrammet eller -1, men du må sikre at MTU ikke overskrides.",
-            },
-            {
-              term: "SO_REUSEADDR og TIME_WAIT",
-              body: "Når en TCP-server stopper og restarter raskt, kan port-en være «opptatt» selv om ingen lytter — det er TIME_WAIT-tilstand fra forrige forbindelse (60–120 s typisk). Sett socket-option SO_REUSEADDR før bind() for å si «la meg ta porten selv om den er i TIME_WAIT». Standard på alle serie-utviklingsservere. Forskjellig fra SO_REUSEPORT som tillater flere prosesser å lytte på samme port for parallellisering.",
-            },
-            {
-              term: "Nagle, TCP_NODELAY og MSG_MORE",
-              body: "Nagles algoritme samler små send()-er i én pakke for å unngå dust-pakker (40 byte header + 1 byte data). Bra for filoverføring, ille for interaktive apper der hver tastetrykk gir 200 ms forsinkelse. Sett TCP_NODELAY for å skru av Nagle, eller bruk MSG_MORE-flagget på enkelt-send() for å si «mer kommer, samle gjerne».",
-            },
-            {
-              term: "select / poll / epoll / kqueue",
-              body: "Etter hvert som server-skalering ble viktig kom raskere mekanismer. select() var det første men har O(n)-scan og 1024-socket-grense. poll() fjernet grensen men fortsatt O(n). epoll (Linux) og kqueue (BSD/macOS) er edge-triggered og O(1) — kernel forteller deg bare hva som faktisk endret seg. Dette er fundamentet for Nginx, Node.js og alle moderne C10k-servere.",
-            },
-            {
-              term: "MTU, fragmentering og Path MTU Discovery",
-              body: "MTU (Maximum Transmission Unit) er største IP-pakke en lenke håndterer — Ethernet 1500 byte, mobilnett ofte mindre. UDP-datagrammer større enn MTU må fragmenteres av rutere, noe som dobler tap-risiko (alle fragmenter må fram). Standard råd: hold UDP-payloads under 1472 bytes (1500 − 20 IP − 8 UDP). For TCP håndteres dette automatisk via Path MTU Discovery, men UDP-app må selv unngå fragmentering.",
-            },
-            {
-              term: "Raw sockets",
-              body: "Med SOCK_RAW (root-kun på Linux) kan en applikasjon sende egendefinerte IP-pakker uten TCP/UDP-laget. Brukes til verktøy som ping (ICMP) og traceroute, til diagnose-verktøy og av brannmur-implementasjoner. Vanlige apps trenger aldri dette og bør holde seg på SOCK_STREAM/SOCK_DGRAM.",
-            },
+            { term: "SO_REUSEADDR", body: "Ta porten selv om forrige forbindelse er i TIME_WAIT." },
+            { term: "Nagle / TCP_NODELAY", body: "Samler små send-er; skru av for chat/spill." },
+            { term: "epoll / kqueue", body: "Vent på 10 000 sockets fra én tråd, O(1)." },
+            { term: "MTU", body: "Største pakke uten fragmentering (Ethernet 1500 byte)." },
+            { term: "Raw socket", body: "Sende egne IP-pakker; brukes av ping, traceroute." },
           ]}
         />
         <Illustration caption="TCP-server-loop: accept() lager en ny socket per klient, det opprinnelige fortsetter å lytte.">
           <SocketLoopSvg />
+        </Illustration>
+      </div>
+
+      <div className="grid gap-3 lg:grid-cols-2">
+        <Metafor tittel="Socket = telefonen din">
+          <p>
+            <strong>socket()</strong> = du går ut og kjøper et apparat.
+            <strong> bind()</strong> = du registrerer et fast telefonnummer på det.
+            <strong> listen()</strong> = du slår på «ta-imot-anrop». <strong>accept()</strong> = du
+            svarer når noen ringer, og får en <em>dedikert linje</em> til akkurat den samtalen. Den
+            opprinnelige telefonen ringer videre — andre kan ringe inn samtidig. På klient-siden er
+            det enklere: <strong>connect()</strong> = du slår nummeret hennes.
+          </p>
+        </Metafor>
+        <Metafor tittel="TCP-stream vs UDP-datagram = elv vs brevpost">
+          <p>
+            TCP er som en kontinuerlig elv: du kan helle inn vann (bytes) i mange omganger, men
+            mottakeren ser bare ett vann-flom. Du må selv legge inn flaske-korker (lengde-prefiks
+            eller skille-tegn) hvis du vil at de skal kunne hente ut akkurat din portion. UDP er som
+            å sende brev: hvert brev er et separat hele — det kommer fram intakt, eller ikke i det
+            hele tatt. Du kan aldri «få et halvt brev».
+          </p>
+        </Metafor>
+        <Metafor tittel="send()-loop = mate brev gjennom et fullt slissehull">
+          <p>
+            Du har en stabel med 1000 ark og en postkasse-slisse. Du dytter alle ned — men slissen
+            er trang og bare 600 går gjennom før den er proppfull. Du må vente til postbudet tømmer
+            kassen, og dytte de resterende 400 senere. <code>send()</code>
+            -funksjonen returnerer hvor mange ark som faktisk gikk gjennom; <em>du må selv</em>
+            sende resten i flere kall (eller bruke <code>sendall()</code> som looper for deg).
+          </p>
+        </Metafor>
+        <Metafor tittel="epoll = én resepsjonist med 10 000 ringeklokker">
+          <p>
+            Tråd-per-klient er som å ha 10 000 ansatte som hver sitter ved sin egen ringeklokke og
+            kjeder seg 99 % av tiden. epoll/kqueue gir deg <em>én</em>
+            resepsjonist med et stort kontrollpanel: når en ringeklokke gnistrer, lyser et lite lys,
+            og resepsjonisten går bort til <em>den</em> klokken. Når det er stille er det stille for
+            alle. Dette er C10k-løsningen — fundamentet i Nginx og Node.js.
+          </p>
+        </Metafor>
+      </div>
+
+      <div className="grid gap-3 lg:grid-cols-2">
+        <Illustration caption="TCP-tilstandsmaskin sett fra app-siden: hvilke kall fører til hvilke tilstander.">
+          <SocketStateSvg />
+        </Illustration>
+        <Illustration caption="Tråd-per-klient vs epoll/asyncio: hvor minne og CPU går når du skalerer til 10 k.">
+          <ThreadVsEpollSvg />
         </Illustration>
       </div>
 
@@ -1540,6 +1694,18 @@ function Hvorfor({ title, children }: { title: string; children: React.ReactNode
         Hvorfor er det sånn?
       </div>
       <div className="font-semibold text-foreground mb-1">{title}</div>
+      <div className="text-muted-foreground text-[13px] space-y-2">{children}</div>
+    </div>
+  );
+}
+
+function Metafor({ tittel, children }: { tittel: string; children: React.ReactNode }) {
+  return (
+    <div className="rounded-xl border border-purple-500/30 bg-purple-500/5 p-4">
+      <div className="text-[10px] uppercase tracking-wider text-purple-700 dark:text-purple-400 font-semibold mb-1">
+        Metafor
+      </div>
+      <div className="font-semibold text-foreground mb-1">{tittel}</div>
       <div className="text-muted-foreground text-[13px] space-y-2">{children}</div>
     </div>
   );
@@ -2229,6 +2395,992 @@ function SocketLoopSvg() {
           />
         </g>
       ))}
+    </svg>
+  );
+}
+
+// ============================================================
+// Nye SVG-er — metafor- og konsept-visualiseringer (2.1–2.6)
+// ============================================================
+
+function ArchVsP2PSvg() {
+  return (
+    <svg viewBox="0 0 500 220" className="w-full h-auto">
+      <text
+        x={120}
+        y={18}
+        textAnchor="middle"
+        className="fill-foreground text-[11px] font-semibold"
+      >
+        Klient-server
+      </text>
+      <rect
+        x={95}
+        y={95}
+        width={50}
+        height={30}
+        rx={4}
+        className="fill-success/30 stroke-success"
+        strokeWidth={1.5}
+      />
+      <text x={120} y={114} textAnchor="middle" className="fill-foreground text-[9px]">
+        server
+      </text>
+      {[
+        [40, 40],
+        [200, 40],
+        [40, 170],
+        [200, 170],
+      ].map(([cx, cy], i) => (
+        <g key={i}>
+          <circle cx={cx} cy={cy} r={11} className="fill-brand/30 stroke-brand" strokeWidth={1.2} />
+          <text x={cx} y={cy + 3} textAnchor="middle" className="fill-foreground text-[8px]">
+            K{i + 1}
+          </text>
+          <line x1={cx} y1={cy} x2={120} y2={110} className="stroke-brand/50" strokeWidth={1} />
+        </g>
+      ))}
+      <text x={120} y={205} textAnchor="middle" className="fill-muted-foreground text-[9px] italic">
+        klienter snakker aldri direkte
+      </text>
+
+      <line
+        x1={260}
+        y1={30}
+        x2={260}
+        y2={205}
+        className="stroke-border"
+        strokeWidth={1}
+        strokeDasharray="3 3"
+      />
+
+      <text
+        x={380}
+        y={18}
+        textAnchor="middle"
+        className="fill-foreground text-[11px] font-semibold"
+      >
+        P2P
+      </text>
+      {[
+        [330, 50],
+        [430, 50],
+        [310, 130],
+        [450, 130],
+        [380, 190],
+      ].map(([cx, cy], i) => (
+        <g key={i}>
+          <circle
+            cx={cx}
+            cy={cy}
+            r={12}
+            className="fill-purple-500/30 stroke-purple-500"
+            strokeWidth={1.2}
+          />
+          <text x={cx} y={cy + 3} textAnchor="middle" className="fill-foreground text-[8px]">
+            P{i + 1}
+          </text>
+        </g>
+      ))}
+      {(() => {
+        const peers: [number, number][] = [
+          [330, 50],
+          [430, 50],
+          [310, 130],
+          [450, 130],
+          [380, 190],
+        ];
+        const lines: React.ReactElement[] = [];
+        for (let i = 0; i < peers.length; i++)
+          for (let j = i + 1; j < peers.length; j++) {
+            lines.push(
+              <line
+                key={`${i}-${j}`}
+                x1={peers[i][0]}
+                y1={peers[i][1]}
+                x2={peers[j][0]}
+                y2={peers[j][1]}
+                className="stroke-purple-500/40"
+                strokeWidth={0.7}
+              />,
+            );
+          }
+        return lines;
+      })()}
+      <text x={380} y={205} textAnchor="middle" className="fill-muted-foreground text-[9px] italic">
+        alle med alle — ingen sentral
+      </text>
+    </svg>
+  );
+}
+
+function TransportMenuSvg() {
+  const rows = [
+    { app: "Bank-overføring", pal: true, thr: "lav", tim: "egal", sec: true },
+    { app: "Netflix-streaming", pal: true, thr: "høy", tim: "moderat", sec: true },
+    { app: "FPS-spill (60 Hz)", pal: false, thr: "lav", tim: "kritisk", sec: false },
+    { app: "DNS-oppslag", pal: false, thr: "lav", tim: "moderat", sec: false },
+    { app: "Filoverføring", pal: true, thr: "høy", tim: "egal", sec: true },
+  ];
+  return (
+    <svg viewBox="0 0 500 230" className="w-full h-auto">
+      <text
+        x={250}
+        y={16}
+        textAnchor="middle"
+        className="fill-foreground text-[12px] font-semibold"
+      >
+        Hvilken transport-tjeneste trenger appen?
+      </text>
+      {["App", "Pålitelig", "Throughput", "Timing", "Krypto"].map((h, i) => (
+        <text
+          key={h}
+          x={20 + i * 95}
+          y={38}
+          className="fill-brand text-[9px] font-semibold uppercase tracking-wider"
+        >
+          {h}
+        </text>
+      ))}
+      <line x1={15} y1={42} x2={485} y2={42} className="stroke-border" strokeWidth={1} />
+      {rows.map((r, i) => {
+        const y = 60 + i * 30;
+        return (
+          <g key={r.app}>
+            <text x={20} y={y} className="fill-foreground text-[10px]">
+              {r.app}
+            </text>
+            <text
+              x={115}
+              y={y}
+              className={r.pal ? "fill-success text-[10px]" : "fill-muted-foreground text-[10px]"}
+            >
+              {r.pal ? "✓" : "—"}
+            </text>
+            <text x={210} y={y} className="fill-foreground text-[10px]">
+              {r.thr}
+            </text>
+            <text x={305} y={y} className="fill-foreground text-[10px]">
+              {r.tim}
+            </text>
+            <text
+              x={400}
+              y={y}
+              className={r.sec ? "fill-success text-[10px]" : "fill-muted-foreground text-[10px]"}
+            >
+              {r.sec ? "✓" : "—"}
+            </text>
+            <text
+              x={460}
+              y={y}
+              className="fill-purple-700 dark:fill-purple-400 text-[9px] font-mono"
+            >
+              {r.app.startsWith("FPS") || r.app.startsWith("DNS") ? "UDP" : "TCP"}
+            </text>
+          </g>
+        );
+      })}
+      <text x={250} y={220} textAnchor="middle" className="fill-muted-foreground text-[8px] italic">
+        Velg transport som matcher rad-en — TCP for pålitelig+krypto, UDP når timing trumfer alt
+      </text>
+    </svg>
+  );
+}
+
+function StatusCodeFamiliesSvg() {
+  const fams = [
+    {
+      code: "2xx",
+      boxCls: "fill-success/15 stroke-success",
+      textCls: "fill-success",
+      title: "OK",
+      ex: "200, 201, 204",
+    },
+    {
+      code: "3xx",
+      boxCls: "fill-amber-500/15 stroke-amber-500",
+      textCls: "fill-amber-700 dark:fill-amber-400",
+      title: "Redirect",
+      ex: "301, 304, 307",
+    },
+    {
+      code: "4xx",
+      boxCls: "fill-purple-500/15 stroke-purple-500",
+      textCls: "fill-purple-700 dark:fill-purple-400",
+      title: "Du-feil",
+      ex: "400, 401, 404, 429",
+    },
+    {
+      code: "5xx",
+      boxCls: "fill-destructive/15 stroke-destructive",
+      textCls: "fill-destructive",
+      title: "Jeg-feil",
+      ex: "500, 502, 503",
+    },
+  ];
+  return (
+    <svg viewBox="0 0 500 200" className="w-full h-auto">
+      <text
+        x={250}
+        y={18}
+        textAnchor="middle"
+        className="fill-foreground text-[12px] font-semibold"
+      >
+        Statuskode-familier — første siffer forteller alt
+      </text>
+      {fams.map((f, i) => {
+        const x = 20 + i * 120;
+        return (
+          <g key={f.code}>
+            <rect
+              x={x}
+              y={40}
+              width={100}
+              height={130}
+              rx={6}
+              className={f.boxCls}
+              strokeWidth={1.5}
+            />
+            <text
+              x={x + 50}
+              y={68}
+              textAnchor="middle"
+              className={`${f.textCls} text-[18px] font-bold font-mono`}
+            >
+              {f.code}
+            </text>
+            <text
+              x={x + 50}
+              y={95}
+              textAnchor="middle"
+              className="fill-foreground text-[11px] font-semibold"
+            >
+              {f.title}
+            </text>
+            <text
+              x={x + 50}
+              y={130}
+              textAnchor="middle"
+              className="fill-muted-foreground text-[9px] font-mono"
+            >
+              {f.ex}
+            </text>
+          </g>
+        );
+      })}
+      <text x={250} y={192} textAnchor="middle" className="fill-muted-foreground text-[9px] italic">
+        Husk: 4xx = «du gjorde noe galt», 5xx = «jeg gjorde noe galt»
+      </text>
+    </svg>
+  );
+}
+
+function CookieFlowSvg() {
+  return (
+    <svg viewBox="0 0 500 220" className="w-full h-auto">
+      <text
+        x={250}
+        y={16}
+        textAnchor="middle"
+        className="fill-foreground text-[12px] font-semibold"
+      >
+        Cookie-flyt: tre besøk på samme nettside
+      </text>
+      <line x1={70} y1={40} x2={70} y2={205} className="stroke-foreground/40" strokeWidth={1.5} />
+      <line x1={430} y1={40} x2={430} y2={205} className="stroke-foreground/40" strokeWidth={1.5} />
+      <text x={70} y={35} textAnchor="middle" className="fill-foreground text-[9px] font-semibold">
+        nettleser
+      </text>
+      <text x={430} y={35} textAnchor="middle" className="fill-foreground text-[9px] font-semibold">
+        server
+      </text>
+
+      {/* 1. login */}
+      <line x1={70} y1={55} x2={430} y2={65} className="stroke-brand" strokeWidth={1.5} />
+      <polygon points="430,65 422,61 422,68" className="fill-brand" />
+      <text x={250} y={52} textAnchor="middle" className="fill-foreground text-[9px]">
+        POST /login (brukernavn + passord)
+      </text>
+
+      <line x1={430} y1={85} x2={70} y2={95} className="stroke-success" strokeWidth={1.5} />
+      <polygon points="70,95 78,91 78,98" className="fill-success" />
+      <text x={250} y={82} textAnchor="middle" className="fill-success text-[9px]">
+        Set-Cookie: sid=ABC123
+      </text>
+
+      {/* 2. besøk-side */}
+      <line x1={70} y1={115} x2={430} y2={125} className="stroke-brand" strokeWidth={1.5} />
+      <polygon points="430,125 422,121 422,128" className="fill-brand" />
+      <text x={250} y={112} textAnchor="middle" className="fill-foreground text-[9px]">
+        GET /min-side (Cookie: sid=ABC123)
+      </text>
+
+      <line x1={430} y1={145} x2={70} y2={155} className="stroke-success" strokeWidth={1.5} />
+      <polygon points="70,155 78,151 78,158" className="fill-success" />
+      <text x={250} y={142} textAnchor="middle" className="fill-success text-[9px]">
+        200 OK «Hei Kari» (server slo opp ABC123 → Kari)
+      </text>
+
+      {/* 3. uten cookie */}
+      <line
+        x1={70}
+        y1={175}
+        x2={430}
+        y2={185}
+        className="stroke-amber-500"
+        strokeWidth={1.5}
+        strokeDasharray="3 3"
+      />
+      <text
+        x={250}
+        y={172}
+        textAnchor="middle"
+        className="fill-amber-700 dark:fill-amber-400 text-[9px] italic"
+      >
+        (uten cookie) GET /min-side
+      </text>
+      <text
+        x={250}
+        y={200}
+        textAnchor="middle"
+        className="fill-amber-700 dark:fill-amber-400 text-[9px] italic"
+      >
+        → 401 «hvem er du?»
+      </text>
+    </svg>
+  );
+}
+
+function DnsCacheFilterSvg() {
+  return (
+    <svg viewBox="0 0 500 220" className="w-full h-auto">
+      <text
+        x={250}
+        y={16}
+        textAnchor="middle"
+        className="fill-foreground text-[12px] font-semibold"
+      >
+        Cache filtrerer 99 % av trafikken — TTL = 1 t, mange like spørringer
+      </text>
+      {/* Tre kolonner */}
+      <text x={70} y={45} textAnchor="middle" className="fill-foreground text-[10px] font-semibold">
+        klient-spørringer
+      </text>
+      <text
+        x={250}
+        y={45}
+        textAnchor="middle"
+        className="fill-foreground text-[10px] font-semibold"
+      >
+        lokal resolver (cache)
+      </text>
+      <text
+        x={430}
+        y={45}
+        textAnchor="middle"
+        className="fill-foreground text-[10px] font-semibold"
+      >
+        autoritativ
+      </text>
+
+      {/* Mange piler inn */}
+      {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map((i) => (
+        <g key={i}>
+          <line
+            x1={20}
+            y1={70 + i * 12}
+            x2={130}
+            y2={120}
+            className="stroke-brand/50"
+            strokeWidth={0.8}
+          />
+          <polygon points="130,120 124,117 124,123" className="fill-brand/50" />
+        </g>
+      ))}
+      <rect
+        x={130}
+        y={100}
+        width={240}
+        height={50}
+        rx={6}
+        className="fill-brand/15 stroke-brand"
+        strokeWidth={1.5}
+      />
+      <text x={250} y={120} textAnchor="middle" className="fill-foreground text-[10px]">
+        cache
+      </text>
+      <text x={250} y={138} textAnchor="middle" className="fill-muted-foreground text-[9px]">
+        www.x.no → 1.2.3.4 (TTL: 47 min igjen)
+      </text>
+
+      {/* Én pil ut */}
+      <line x1={370} y1={125} x2={420} y2={125} className="stroke-success" strokeWidth={2} />
+      <polygon points="420,125 412,121 412,128" className="fill-success" />
+      <text x={395} y={117} textAnchor="middle" className="fill-success text-[9px]">
+        1×/time
+      </text>
+
+      <text x={70} y={200} textAnchor="middle" className="fill-foreground text-[10px] font-mono">
+        10 × n spørringer
+      </text>
+      <text x={430} y={200} textAnchor="middle" className="fill-success text-[10px] font-mono">
+        1 spørring
+      </text>
+      <text x={250} y={210} textAnchor="middle" className="fill-muted-foreground text-[9px] italic">
+        TTL = 1 t betyr at autoritativ ser maks 1 oppslag per time per resolver, uansett
+        klient-volum
+      </text>
+    </svg>
+  );
+}
+
+function DnsRecordTypesSvg() {
+  const rows = [
+    { q: "A    eksempel.no", a: "203.0.113.7" },
+    { q: "AAAA eksempel.no", a: "2001:db8::7" },
+    { q: "MX   eksempel.no", a: "10 mail.eksempel.no" },
+    { q: "NS   eksempel.no", a: "ns1.eksempel.no" },
+    { q: "TXT  eksempel.no", a: "v=spf1 -all" },
+    { q: "CNAME shop.eksempel.no", a: "edge.cdn.com" },
+  ];
+  return (
+    <svg viewBox="0 0 500 220" className="w-full h-auto">
+      <text
+        x={250}
+        y={16}
+        textAnchor="middle"
+        className="fill-foreground text-[12px] font-semibold"
+      >
+        Record-typer — samme domene, ulike spørsmål
+      </text>
+      <text x={20} y={40} className="fill-brand text-[9px] uppercase tracking-wider font-semibold">
+        spørsmål
+      </text>
+      <text
+        x={270}
+        y={40}
+        className="fill-success text-[9px] uppercase tracking-wider font-semibold"
+      >
+        svar
+      </text>
+      <line x1={15} y1={45} x2={485} y2={45} className="stroke-border" />
+      {rows.map((r, i) => {
+        const y = 65 + i * 25;
+        return (
+          <g key={r.q}>
+            <text x={20} y={y} className="fill-foreground text-[10px] font-mono">
+              {r.q}
+            </text>
+            <text x={258} y={y} className="fill-muted-foreground text-[10px]">
+              →
+            </text>
+            <text x={275} y={y} className="fill-success text-[10px] font-mono">
+              {r.a}
+            </text>
+          </g>
+        );
+      })}
+      <text x={250} y={215} textAnchor="middle" className="fill-muted-foreground text-[8px] italic">
+        Samme navn, helt forskjellige verdier — record-type bestemmer hva som returneres
+      </text>
+    </svg>
+  );
+}
+
+function MailFlowSvg() {
+  return (
+    <svg viewBox="0 0 500 200" className="w-full h-auto">
+      <text
+        x={250}
+        y={16}
+        textAnchor="middle"
+        className="fill-foreground text-[12px] font-semibold"
+      >
+        E-post-flyt: 4 hopp fra Ola til Kari
+      </text>
+      {[
+        { x: 30, y: 90, label: "Ola sin\nmail-klient", cls: "fill-brand/20 stroke-brand" },
+        { x: 145, y: 90, label: "send.no\nSMTP-server", cls: "fill-success/20 stroke-success" },
+        { x: 270, y: 90, label: "mottak.no\nSMTP-server", cls: "fill-success/20 stroke-success" },
+        { x: 395, y: 90, label: "Kari sin\nmail-klient", cls: "fill-brand/20 stroke-brand" },
+      ].map((n, i) => (
+        <g key={i}>
+          <rect x={n.x} y={n.y} width={80} height={50} rx={5} className={n.cls} strokeWidth={1.5} />
+          {n.label.split("\n").map((l, j) => (
+            <text
+              key={j}
+              x={n.x + 40}
+              y={n.y + 22 + j * 12}
+              textAnchor="middle"
+              className="fill-foreground text-[9px]"
+            >
+              {l}
+            </text>
+          ))}
+        </g>
+      ))}
+      {[
+        {
+          x1: 110,
+          x2: 145,
+          label: "SMTP submission (587)",
+          lineCls: "stroke-brand",
+          fillCls: "fill-brand",
+        },
+        {
+          x1: 225,
+          x2: 270,
+          label: "SMTP (25)",
+          lineCls: "stroke-success",
+          fillCls: "fill-success",
+        },
+        {
+          x1: 350,
+          x2: 395,
+          label: "IMAP (993)",
+          lineCls: "stroke-purple-500",
+          fillCls: "fill-purple-500",
+        },
+      ].map((arr, i) => (
+        <g key={i}>
+          <line x1={arr.x1} y1={115} x2={arr.x2} y2={115} className={arr.lineCls} strokeWidth={2} />
+          <polygon
+            points={`${arr.x2},115 ${arr.x2 - 6},112 ${arr.x2 - 6},118`}
+            className={arr.fillCls}
+          />
+          <text
+            x={(arr.x1 + arr.x2) / 2}
+            y={108}
+            textAnchor="middle"
+            className="fill-muted-foreground text-[8px]"
+          >
+            {arr.label}
+          </text>
+        </g>
+      ))}
+      <text x={250} y={175} textAnchor="middle" className="fill-muted-foreground text-[9px] italic">
+        SMTP er push (server-til-server). IMAP er pull (klient henter når hun vil).
+      </text>
+    </svg>
+  );
+}
+
+function TitForTatSvg() {
+  return (
+    <svg viewBox="0 0 500 220" className="w-full h-auto">
+      <text
+        x={250}
+        y={16}
+        textAnchor="middle"
+        className="fill-foreground text-[12px] font-semibold"
+      >
+        Tit-for-tat over 4 runder: deler du, blir du belønnet
+      </text>
+      {/* Header */}
+      <text x={20} y={45} className="fill-brand text-[9px] uppercase tracking-wider font-semibold">
+        Peer
+      </text>
+      {["t=0", "t=10", "t=20", "t=30"].map((t, i) => (
+        <text
+          key={t}
+          x={120 + i * 90}
+          y={45}
+          textAnchor="middle"
+          className="fill-brand text-[9px] uppercase tracking-wider font-semibold"
+        >
+          {t}
+        </text>
+      ))}
+      <line x1={15} y1={50} x2={485} y2={50} className="stroke-border" />
+      {[
+        { name: "Per (deler 5 b/s)", states: ["unchoke", "unchoke", "unchoke", "unchoke"] },
+        { name: "Kari (deler 3 b/s)", states: ["unchoke", "unchoke", "unchoke", "unchoke"] },
+        { name: "Ola (deler 0 b/s)", states: ["unchoke", "choked", "choked", "choked"] },
+        { name: "Liv (nykommer)", states: ["—", "—", "opt.unchoke", "unchoke"] },
+      ].map((row, i) => {
+        const y = 75 + i * 28;
+        return (
+          <g key={row.name}>
+            <text x={20} y={y} className="fill-foreground text-[10px]">
+              {row.name}
+            </text>
+            {row.states.map((s, j) => {
+              const fill =
+                s === "unchoke"
+                  ? "fill-success"
+                  : s === "choked"
+                    ? "fill-destructive"
+                    : s.startsWith("opt")
+                      ? "fill-purple-500"
+                      : "fill-muted-foreground";
+              return (
+                <text
+                  key={j}
+                  x={120 + j * 90}
+                  y={y}
+                  textAnchor="middle"
+                  className={`${fill} text-[9px] font-mono`}
+                >
+                  {s}
+                </text>
+              );
+            })}
+          </g>
+        );
+      })}
+      <text x={250} y={205} textAnchor="middle" className="fill-muted-foreground text-[9px] italic">
+        Ola snylter, blir choked. Liv prøves «optimistic» runde 3 og oppfører seg fint — promotert.
+      </text>
+    </svg>
+  );
+}
+
+function DashBitrateSvg() {
+  return (
+    <svg viewBox="0 0 500 220" className="w-full h-auto">
+      <text
+        x={250}
+        y={16}
+        textAnchor="middle"
+        className="fill-foreground text-[12px] font-semibold"
+      >
+        DASH-klient: throughput stuper, klient bytter kvalitet ned, så opp igjen
+      </text>
+      {/* Akser */}
+      <line x1={50} y1={180} x2={470} y2={180} className="stroke-foreground/60" strokeWidth={1} />
+      <line x1={50} y1={40} x2={50} y2={180} className="stroke-foreground/60" strokeWidth={1} />
+      <text x={20} y={45} className="fill-muted-foreground text-[8px]">
+        Mbps
+      </text>
+      <text x={465} y={195} className="fill-muted-foreground text-[8px]">
+        tid →
+      </text>
+
+      {/* Throughput-linje */}
+      <polyline
+        points="50,60 180,60 200,150 280,150 300,75 470,75"
+        className="fill-none stroke-amber-500"
+        strokeWidth={1.5}
+      />
+      <text x={120} y={55} className="fill-amber-700 dark:fill-amber-400 text-[8px]">
+        målt throughput
+      </text>
+
+      {/* Valgt bitrate */}
+      <polyline
+        points="50,80 180,80 195,160 280,160 300,95 470,95"
+        className="fill-none stroke-brand"
+        strokeWidth={2}
+        strokeDasharray="4 2"
+      />
+      <text x={120} y={75} className="fill-brand text-[8px]">
+        valgt bitrate
+      </text>
+
+      {/* Annotasjoner */}
+      <text x={115} y={130} className="fill-foreground text-[9px]">
+        720p
+      </text>
+      <text x={235} y={175} className="fill-foreground text-[9px]">
+        480p
+      </text>
+      <text x={235} y={140} className="fill-muted-foreground text-[8px]">
+        (panikk-bytte)
+      </text>
+      <text x={385} y={120} className="fill-foreground text-[9px]">
+        720p igjen
+      </text>
+
+      <line
+        x1={195}
+        y1={40}
+        x2={195}
+        y2={180}
+        className="stroke-foreground/30"
+        strokeDasharray="2 2"
+      />
+      <line
+        x1={300}
+        y1={40}
+        x2={300}
+        y2={180}
+        className="stroke-foreground/30"
+        strokeDasharray="2 2"
+      />
+      <text x={195} y={210} textAnchor="middle" className="fill-muted-foreground text-[8px]">
+        bryter ned
+      </text>
+      <text x={300} y={210} textAnchor="middle" className="fill-muted-foreground text-[8px]">
+        bryter opp
+      </text>
+    </svg>
+  );
+}
+
+function CacheWarmingSvg() {
+  return (
+    <svg viewBox="0 0 500 220" className="w-full h-auto">
+      <text
+        x={250}
+        y={16}
+        textAnchor="middle"
+        className="fill-foreground text-[12px] font-semibold"
+      >
+        Cache-warming vs thundering herd ved storserie-slipp
+      </text>
+      {/* Uten warming */}
+      <text
+        x={20}
+        y={40}
+        className="fill-destructive text-[10px] uppercase tracking-wider font-semibold"
+      >
+        Uten pre-warming
+      </text>
+      <rect
+        x={20}
+        y={50}
+        width={60}
+        height={30}
+        rx={4}
+        className="fill-success/20 stroke-success"
+        strokeWidth={1.5}
+      />
+      <text x={50} y={70} textAnchor="middle" className="fill-foreground text-[9px]">
+        origin
+      </text>
+      {[120, 170, 220, 270, 320, 370, 420].map((x, i) => (
+        <g key={i}>
+          <line x1={80} y1={65} x2={x} y2={95} className="stroke-destructive" strokeWidth={1.5} />
+          <polygon points={`${x},95 ${x - 4},91 ${x + 4},91`} className="fill-destructive" />
+          <rect
+            x={x - 10}
+            y={95}
+            width={20}
+            height={14}
+            rx={2}
+            className="fill-amber-500/30 stroke-amber-500"
+            strokeWidth={1}
+          />
+        </g>
+      ))}
+      <text x={270} y={125} textAnchor="middle" className="fill-destructive text-[9px] italic">
+        alle edges spør samtidig kl. 09:00 → origin knust
+      </text>
+
+      <line x1={15} y1={140} x2={485} y2={140} className="stroke-border" strokeDasharray="3 3" />
+
+      {/* Med warming */}
+      <text
+        x={20}
+        y={160}
+        className="fill-success text-[10px] uppercase tracking-wider font-semibold"
+      >
+        Med pre-warming (kl. 03:00)
+      </text>
+      <rect
+        x={20}
+        y={170}
+        width={60}
+        height={20}
+        rx={4}
+        className="fill-success/20 stroke-success"
+        strokeWidth={1.5}
+      />
+      <text x={50} y={184} textAnchor="middle" className="fill-foreground text-[9px]">
+        origin
+      </text>
+      {[120, 170, 220, 270, 320, 370, 420].map((x, i) => (
+        <g key={i}>
+          <line
+            x1={80}
+            y1={180}
+            x2={x}
+            y2={200}
+            className="stroke-success/60"
+            strokeWidth={1}
+            strokeDasharray="2 2"
+          />
+          <rect
+            x={x - 10}
+            y={200}
+            width={20}
+            height={14}
+            rx={2}
+            className="fill-success/40 stroke-success"
+            strokeWidth={1}
+          />
+        </g>
+      ))}
+    </svg>
+  );
+}
+
+function SocketStateSvg() {
+  return (
+    <svg viewBox="0 0 500 220" className="w-full h-auto">
+      <text
+        x={250}
+        y={16}
+        textAnchor="middle"
+        className="fill-foreground text-[12px] font-semibold"
+      >
+        TCP-server-tilstander (fra app-siden)
+      </text>
+      {[
+        { x: 60, y: 60, label: "CLOSED", note: "socket()" },
+        { x: 180, y: 60, label: "BOUND", note: "bind()" },
+        { x: 300, y: 60, label: "LISTEN", note: "listen()" },
+        { x: 420, y: 60, label: "ESTABLISHED", note: "accept()" },
+        { x: 300, y: 170, label: "TIME_WAIT", note: "close()" },
+      ].map((s, i) => (
+        <g key={i}>
+          <ellipse
+            cx={s.x}
+            cy={s.y}
+            rx={50}
+            ry={20}
+            className={
+              i === 4 ? "fill-amber-500/20 stroke-amber-500" : "fill-brand/20 stroke-brand"
+            }
+            strokeWidth={1.5}
+          />
+          <text
+            x={s.x}
+            y={s.y + 3}
+            textAnchor="middle"
+            className="fill-foreground text-[10px] font-mono"
+          >
+            {s.label}
+          </text>
+          <text
+            x={s.x}
+            y={s.y + 35}
+            textAnchor="middle"
+            className="fill-muted-foreground text-[9px] italic"
+          >
+            {s.note}
+          </text>
+        </g>
+      ))}
+      {[
+        [110, 180],
+        [230, 300],
+        [350, 420],
+      ].map(([from, to], i) => (
+        <g key={i}>
+          <line
+            x1={from}
+            y1={60}
+            x2={to}
+            y2={60}
+            className="stroke-foreground/60"
+            strokeWidth={1.2}
+          />
+          <polygon points={`${to},60 ${to - 5},57 ${to - 5},63`} className="fill-foreground/60" />
+        </g>
+      ))}
+      <line x1={420} y1={80} x2={350} y2={170} className="stroke-foreground/60" strokeWidth={1.2} />
+      <polygon points="350,170 357,167 354,173" className="fill-foreground/60" />
+      <text x={195} y={185} className="fill-muted-foreground text-[8px] italic">
+        TIME_WAIT henger i 60–120 s → SO_REUSEADDR ved restart
+      </text>
+    </svg>
+  );
+}
+
+function ThreadVsEpollSvg() {
+  return (
+    <svg viewBox="0 0 500 220" className="w-full h-auto">
+      <text
+        x={250}
+        y={16}
+        textAnchor="middle"
+        className="fill-foreground text-[12px] font-semibold"
+      >
+        Skalering til 10 000 klienter: tråd-per-klient vs epoll
+      </text>
+      {/* Tråd-per-klient */}
+      <text
+        x={120}
+        y={40}
+        textAnchor="middle"
+        className="fill-destructive text-[10px] uppercase tracking-wider font-semibold"
+      >
+        tråd-per-klient
+      </text>
+      {[0, 1, 2, 3, 4, 5, 6, 7].map((i) => {
+        const col = i % 4;
+        const row = Math.floor(i / 4);
+        return (
+          <g key={i}>
+            <rect
+              x={30 + col * 45}
+              y={55 + row * 30}
+              width={40}
+              height={22}
+              rx={3}
+              className="fill-destructive/15 stroke-destructive"
+              strokeWidth={1}
+            />
+            <text
+              x={50 + col * 45}
+              y={70 + row * 30}
+              textAnchor="middle"
+              className="fill-foreground text-[8px]"
+            >
+              T{i + 1}
+            </text>
+          </g>
+        );
+      })}
+      <text x={120} y={140} textAnchor="middle" className="fill-foreground text-[9px]">
+        … × 10 000 tråder
+      </text>
+      <text x={120} y={158} textAnchor="middle" className="fill-destructive text-[10px] font-mono">
+        80 GB RAM
+      </text>
+      <text x={120} y={175} textAnchor="middle" className="fill-destructive text-[9px]">
+        context-switch dreper CPU
+      </text>
+
+      <line x1={245} y1={30} x2={245} y2={205} className="stroke-border" strokeDasharray="3 3" />
+
+      {/* epoll */}
+      <text
+        x={380}
+        y={40}
+        textAnchor="middle"
+        className="fill-success text-[10px] uppercase tracking-wider font-semibold"
+      >
+        epoll / asyncio
+      </text>
+      <rect
+        x={350}
+        y={55}
+        width={60}
+        height={30}
+        rx={4}
+        className="fill-success/20 stroke-success"
+        strokeWidth={1.5}
+      />
+      <text x={380} y={73} textAnchor="middle" className="fill-foreground text-[10px]">
+        1 tråd
+      </text>
+      <text x={380} y={100} textAnchor="middle" className="fill-foreground text-[9px]">
+        kernel sier:
+      </text>
+      <text x={380} y={114} textAnchor="middle" className="fill-muted-foreground text-[9px] italic">
+        «sock-23 har data»
+      </text>
+      <text x={380} y={130} textAnchor="middle" className="fill-muted-foreground text-[9px] italic">
+        «sock-99 har data»
+      </text>
+      <text x={380} y={158} textAnchor="middle" className="fill-success text-[10px] font-mono">
+        ~150 MB RAM
+      </text>
+      <text x={380} y={175} textAnchor="middle" className="fill-success text-[9px]">
+        samme tråd jobber raskt
+      </text>
     </svg>
   );
 }

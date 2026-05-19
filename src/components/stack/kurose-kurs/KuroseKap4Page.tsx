@@ -210,51 +210,51 @@ function Section41() {
           items={[
             {
               term: "Data-plane (forwarding)",
-              body: "Den per-pakke avgjørelsen: «her kommer en pakke til 192.168.5.7, slå opp i tabellen, send ut på port 3.» Skjer i hardware på moderne rutere, i nanosekunder. Det er denne fasen som dette kapittelet handler om.",
+              body: "Per-pakke oppslag i tabell, send på riktig ut-port.",
             },
             {
               term: "Control-plane (routing)",
-              body: "Bakgrunns-arbeidet med å beregne hva forwarding-tabellen skal inneholde. Krever at ruterne snakker sammen og blir enige om hvor i nettet ulike prefix ligger. Vi tar dette i kap. 5.",
+              body: "Bygger selve tabellen ved å snakke med naboer.",
             },
             {
               term: "Forwarding-tabell",
-              body: "Lookup-struktur som mapper destinasjon (et IP-prefix) til en ut-port. Hver pakke matches mot tabellen; den lengste matchende prefiks-raden vinner — derav «longest prefix match».",
+              body: "Mapper IP-prefiks til ut-port. Lengste match vinner.",
             },
             {
               term: "Tradisjonell ruter",
-              body: "I gamle rutere kjørte både data-plane og control-plane sammen på en proprietær CPU inne i ruteren. Hver leverandør hadde sitt eget operativsystem (Cisco IOS, Juniper Junos, ...). Vanskelig å endre adferd uten leverandørens tillatelse.",
+              body: "Begge planene på samme proprietær CPU i ruteren.",
             },
             {
               term: "SDN-tilnærming",
-              body: "Software-Defined Networking trekker control-plane ut av selve ruteren og opp i en sentral kontroller. Ruterne blir «dumme» — de gjør bare det data-planet ber dem om. Kontrolleren kan endre adferden på hele nettet med en programmatisk API.",
+              body: "Control-plane løftet ut til sentral kontroller.",
             },
             {
               term: "Longest-prefix-match (LPM)",
-              body: "Når flere rader i tabellen matcher samme destinasjon, velges den med flest matchende bits. Eksempel: 192.168.0.0/16 og 192.168.5.0/24 matcher begge 192.168.5.7 — /24 er mer spesifikk og vinner.",
+              body: "Mest spesifikke prefiks vinner ved flere treff.",
             },
             {
-              term: "TCAM (Ternary Content-Addressable Memory)",
-              body: "Spesial-RAM der hver celle kan lagre 0, 1 eller «don't care». Hele tabellen sjekkes parallelt på ett klokketakt — perfekt for LPM-oppslag. Dyr og strømkrevende, men eneste praktiske måte å gjøre tens-av-millioner lookups per sekund i en ruter.",
+              term: "TCAM",
+              body: "Spesial-RAM som sjekker hele tabellen parallelt.",
             },
             {
               term: "Best-effort-service",
-              body: "Internett-modellens grunnløfte: nettverket prøver å levere pakker, men garanterer ingenting (ikke rekkefølge, ingen leveranse, ingen tid). Pålitelighet bygges av endepunkt-protokoller som TCP. Alternative modeller med kvalitetsgarantier (IntServ, ATM) har aldri fått fotfeste.",
+              body: "Nettverket prøver — garanterer ingenting.",
             },
             {
               term: "Forwarding vs ruting",
-              body: "Forwarding = lokal handling per pakke på én ruter (tar mikrosekunder). Ruting = global koordinering mellom alle rutere for å beregne hvilke paths som finnes (tar sekunder til minutter). To svært ulike tidsskalaer.",
+              body: "Lokal per pakke (ns) vs global koordinering (s).",
             },
             {
               term: "Per-pakke vs per-flow-tilstand",
-              body: "Internett-rutere holder ikke tilstand om enkelt-samtaler (per-flow) — de behandler hver pakke isolert mot tabellen. Det er denne tilstandsløsheten som gjør rutere skalerbare. Kontrast: telefon-svitsjer holdt tilstand per samtale; det skalerer ikke til milliarder av samtidige forbindelser.",
+              body: "Hver pakke behandles isolert — tilstandsløst og skalerbart.",
             },
             {
               term: "Match-action-paradigmet",
-              body: "Generalisering av LPM: en regel består av en betingelse (match) og en handling (action). Tradisjonell forwarding er ett spesialtilfelle (match: destinasjons-prefiks, action: send på port). SDN åpner for vilkårlige felter i match og vilkårlige operasjoner som action.",
+              body: "Regel = betingelse + handling. Generalisering av LPM.",
             },
             {
-              term: "Linje-rate (line rate)",
-              body: "Når en ruter klarer å prosessere pakker like raskt som lenken kan levere dem — uten å sakke ned eller miste pakker når det ikke er overbelastet. Krav for kjerne-rutere. Et 100 Gbps interface må kunne prosessere ~15 millioner små pakker per sekund.",
+              term: "Linje-rate",
+              body: "Ruteren holder samme hastighet som lenken leverer.",
             },
           ]}
         />
@@ -262,6 +262,31 @@ function Section41() {
           <DataControlPlaneSvg />
         </Illustration>
       </div>
+
+      <div className="grid gap-3 lg:grid-cols-2">
+        <Metafor tittel="Trafikklys vs biler">
+          <p>
+            Trafikklysene (control-plane) bestemmer mønsteret — hvilke veier som er åpne når. De
+            byttes ikke mange ganger i sekundet; de programmeres etter trafikk-mønster.
+          </p>
+          <p>
+            Bilene (data-plane) er det som faktisk kjører gjennom krysset. Tusenvis i timen, hver
+            følger lyset uten å «forhandle». Hvis du fjerner trafikklysene blir det kaos i bilenes
+            lag — men selve det å kjøre er en separat funksjon.
+          </p>
+        </Metafor>
+        <Metafor tittel="Postsorter-anlegg med adresseliste">
+          <p>
+            Forwarding-tabellen er postsorter-anleggets oppslagsliste: «postnummer 9000–9099 → bånd
+            3, mot Tromsø». Brevet leses, slås opp, og dyttes på riktig bånd. Selve listen
+            oppdateres sjelden — av noen andre, i administrasjonen.
+          </p>
+        </Metafor>
+      </div>
+
+      <Illustration caption="Longest-prefix-match: en pakke til 129.242.18.55 matcher fire rader; den lengste vinner.">
+        <LpmSvg />
+      </Illustration>
 
       <Example title="Eksempel: hvor mange beslutninger?">
         <p>
@@ -335,59 +360,59 @@ function Section42() {
           items={[
             {
               term: "Input-port",
-              body: "Mottar bits fra en innkommende lenke, fjerner linklags-headeren, og kjører lookup i forwarding-tabellen for å bestemme hvilken output-port pakken skal til. Hver input-port har sin egen kopi av tabellen for å unngå at de blir flaskehals på hverandre.",
+              body: "Leser bits, slår opp tabell, finner ut-port.",
             },
             {
               term: "Switching-fabric",
-              body: "Det interne «bakplanet» som flytter pakker fra input-porter til output-porter. Tre vanlige arkitekturer: via minne (CPU kopierer), via buss (én pakke om gangen), eller via crossbar (kan flytte mange pakker parallelt).",
+              body: "Internt «bakplan» som flytter pakker mellom porter.",
             },
             {
               term: "Output-port",
-              body: "Mottar pakker fra fabric-en, plasserer dem i en kø, og sender dem ut på lenken med riktig linklags-header. Det er her kø-forsinkelse fra kap. 1 oppstår.",
+              body: "Køer pakken og sender ut på lenken.",
             },
             {
-              term: "HOL-blokkering (head-of-line)",
-              body: "Når en kø foran input-porten er FIFO, og pakken først i køen venter på en opptatt output-port, så blokkerer den alle pakker bak — selv om disse er på vei til en annen, ledig, output-port. Løses med virtual output queues (én kø per output per input).",
+              term: "HOL-blokkering",
+              body: "Pakke fremst i FIFO sperrer alle bak seg.",
             },
             {
               term: "Pakketap",
-              body: "Skjer på output-køene når en lenke er overbelastet. Pakker som ikke får plass kastes (drop tail) eller velges aktivt ut (RED — random early detection) før køen renner over.",
+              body: "Output-kø renner over — pakker droppes.",
             },
             {
               term: "Switching-rate",
-              body: "Hvor raskt fabric-en kan flytte pakker fra input til output. Hvis den er saktere enn summen av input-rater, oppstår kø allerede inne i ruteren. Moderne core-rutere har fabric flere ganger raskere enn samlet input.",
+              body: "Fabricens kapasitet å flytte pakker per sekund.",
             },
             {
               term: "Packet scheduling",
-              body: "På output-porten kan vi velge hvilken pakke som sendes neste. FIFO er enkleste; men round-robin, weighted fair queueing (WFQ), priority queueing brukes for å gi noen flows bedre service.",
+              body: "Hvem får sende neste på output-lenken.",
             },
             {
               term: "Shared-memory switch",
-              body: "Den enkleste fabric-arkitekturen: en CPU leser pakken inn i en delt minneblokk, ser på destinasjon, og kopierer pakken ut til riktig output-buffer. Lett å bygge, men begrenset av minne-bussens båndbredde. Brukes i lavpris-svitsjer og hjemmeprodukter.",
+              body: "CPU kopierer pakker via delt minne.",
             },
             {
               term: "Shared-bus switch",
-              body: "Alle input- og output-porter henger på én felles intern buss. Én pakke om gangen krysser bussen. Enkel, men bussen er flaskehalsen — hele bussens kapasitet må deles på alle innkommende strømmer.",
+              body: "Én buss, én pakke om gangen.",
             },
             {
               term: "Crossbar switch",
-              body: "Et 2D-koblings-rutenett med N inputs og N outputs. Hver input kan kobles til hvilken som helst output samtidig, så lenge ingen to inputs vil til samme output. Tillater N pakker å bevege seg parallelt — den raskeste fabric-typen og standarden i moderne høyytelses-rutere.",
+              body: "N inputs × N outputs samtidig i parallell.",
             },
             {
               term: "VOQ (Virtual Output Queue)",
-              body: "Hver input-port holder N separate køer — én for hver output-port. Når fabricen er klar tar den fra den VOQ-en som passer; pakker som skal til opptatte outputer venter i sin egen kø uten å blokkere andre. Eliminerer HOL-blokkering helt.",
+              body: "Én kø per output per input — eliminerer HOL.",
             },
             {
               term: "RED (Random Early Detection)",
-              body: "Aktiv kø-styring: ruteren begynner å droppe pakker tilfeldig før køen er helt full. Sender oppdager tapet og senker farten (TCP-overbelastningskontroll), så køen aldri renner over. Bedre enn å vente til drop-tail og miste mange pakker på en gang.",
+              body: "Dropp tilfeldig før køen er full.",
             },
             {
-              term: "ECN (Explicit Congestion Notification)",
-              body: "I stedet for å droppe pakker, markerer ruteren et bit i IP-headeren («CE» — congestion experienced). Mottakeren ekkoer signalet tilbake til sender via TCP. Mottakeren reduserer sendeflyten uten at en pakke faktisk gikk tapt — sparer retransmisjons-arbeid.",
+              term: "ECN",
+              body: "Marker pakken i stedet for å droppe.",
             },
             {
-              term: "WFQ (Weighted Fair Queueing)",
-              body: "Hver flow får en vekt; planleggeren sender pakker slik at flows får båndbredde proporsjonal med vektene. En premium-flow med vekt 4 mot tre standard-flows á vekt 1 får 4/7 av lenken. Grunnlaget for kvalitets-tjenester.",
+              term: "WFQ",
+              body: "Vektet rettferdig kø — flows får andel etter vekt.",
             },
           ]}
         />
@@ -395,6 +420,35 @@ function Section42() {
           <RouterArchitectureSvg />
         </Illustration>
       </div>
+
+      <div className="grid gap-3 lg:grid-cols-2">
+        <Metafor tittel="Postsorter-anlegg på Alnabru">
+          <p>
+            Brev kommer inn på løpebånd (input-port). Hvert brev avleses, postnummeret slås opp i en
+            tabell, og brevet dyttes over på rett ut-bånd (switching-fabric flytter til riktig
+            output-port).
+          </p>
+          <p>
+            Ut-båndet samler brev i en sekk (output-kø) før sjåføren plukker dem opp. Hvis sekken
+            blir full før sjåføren kommer, må noen brev kastes i kassen «retur» — det er pakketap.
+          </p>
+        </Metafor>
+        <Metafor tittel="Boarding-køen som blokkerer alle">
+          <p>
+            HOL-blokkering: én flykø i Tromsø lufthavn. Personen fremst leter etter passet sitt og
+            holder opp 30 sekunder. Bak henne står 50 personer som har klart pass og kunne sjekket
+            inn på 2 sekunder hver — men de venter likevel.
+          </p>
+          <p>
+            Løsningen (VOQ) er å åpne flere køer parallelt — én per destinasjon. Hver kø stopper
+            bare seg selv, ikke de andre.
+          </p>
+        </Metafor>
+      </div>
+
+      <Illustration caption="HOL-blokkering: FIFO-kø sperrer pakker bak seg (venstre). VOQ åpner parallelle køer (høyre).">
+        <HolVoqSvg />
+      </Illustration>
 
       <Example title="Eksempel: HOL-blokkering kostes en ruter mye">
         <p>
@@ -471,67 +525,67 @@ function Section43() {
           items={[
             {
               term: "Datagram",
-              body: "En IP-pakke. Består av et 20-bytes header (eller mer hvis options brukes) og en payload — som typisk er et TCP- eller UDP-segment.",
+              body: "Én IP-pakke: 20-bytes header + payload.",
             },
             {
               term: "Version",
-              body: "4 bits som angir IP-versjon. For IPv4 er feltet 0100 (=4). Hvis du møter 0110 (=6) er det IPv6 og resten av headeren tolkes annerledes.",
+              body: "4 bits — 4 for IPv4, 6 for IPv6.",
             },
             {
               term: "TTL (Time To Live)",
-              body: "8 bits som dekrementeres med 1 hver gang pakken passerer en ruter. Når den når 0 forkastes pakken og en ICMP-feilmelding sendes til kilden. Forhindrer at pakker går i evige løkker hvis routing-tabellen er feil.",
+              body: "Telles ned per ruter. 0 = dropp.",
             },
             {
               term: "Protocol",
-              body: "8 bits som forteller hvilken protokoll payload tilhører: 6 = TCP, 17 = UDP, 1 = ICMP, 41 = IPv6-i-IPv4, osv. Slik vet mottakerens kjerne hvilken handler den skal kalle.",
+              body: "Hva payload er: 6=TCP, 17=UDP, 1=ICMP.",
             },
             {
               term: "Total length",
-              body: "16 bits — total lengde av datagrammet (header + payload) i bytes. Maks 65 535, men i praksis begrenset av MTU-en på lenkene pakken må gjennom.",
+              body: "Header + payload i bytes. Maks 65 535.",
             },
             {
-              term: "MTU (Maximum Transmission Unit)",
-              body: "Største ramme-størrelse en lenke kan bære. Ethernet: 1500 bytes. WiFi: ofte 2304. PPPoE: 1492. En IP-pakke som er større enn MTU må fragmenteres før den kan sendes på den lenken.",
+              term: "MTU",
+              body: "Største ramme lenken bærer (Ethernet: 1500).",
             },
             {
               term: "Fragmentering",
-              body: "Hvis en pakke ankommer en ruter der ut-lenken har for liten MTU, deler ruteren pakken i fragmenter. Hvert fragment får sin egen IP-header med samme Identification, satt MF (More Fragments)-flag, og en Fragment offset som sier hvor i original-pakken dette fragmentet hører hjemme. Reassembly skjer på mottakeren — aldri underveis.",
+              body: "For stor pakke deles; mottakeren setter sammen.",
             },
             {
               term: "Header Length (IHL)",
-              body: "4 bits som angir IP-header-lengden i 32-bits-ord. Vanlig verdi er 5 (= 20 bytes header uten options). Maks 15 (= 60 bytes). IHL er nødvendig fordi IPv4-headeren har valgfri «options»-feltet med variabel lengde.",
+              body: "Header-lengde i 32-bits-ord (5 = 20 bytes).",
             },
             {
-              term: "DSCP (Differentiated Services Code Point)",
-              body: "6 bits i ToS-feltet brukt for å markere prioritets-/service-klasse. Operatører kan sette rutere til å gi pakker med høy DSCP foretrukket behandling — for eksempel kan VoIP-pakker merkes EF (Expedited Forwarding) for å unngå kø-jitter.",
+              term: "DSCP",
+              body: "Prioritets-merke for QoS (f.eks. VoIP).",
             },
             {
               term: "ECN-bits",
-              body: "2 bits ved siden av DSCP brukt til Explicit Congestion Notification. En ruter som opplever kø-vekst kan sette CE (Congestion Experienced)-koden i stedet for å droppe pakken. Mottakeren ekkoer signalet via TCP-headeren.",
+              body: "Ruteren markerer kø-trøbbel i stedet for å droppe.",
             },
             {
               term: "Identification",
-              body: "16 bits unik per pakke fra samme kilde-IP. Brukes som «lim» når en pakke fragmenteres: alle fragmenter av samme original-pakke deler samme Identification, slik at mottakeren vet hvilke fragmenter som hører sammen.",
+              body: "Lim som holder fragmenter sammen.",
             },
             {
               term: "Flags (DF, MF)",
-              body: "DF (Don't Fragment) sier «hvis pakken ikke passer, dropp den heller enn å fragmentere». MF (More Fragments) er 1 på alle fragmenter unntatt det siste — slik vet mottakeren når den har fått hele pakken. Tredje bit er reservert til 0.",
+              body: "DF = ikke fragmenter. MF = flere fragmenter kommer.",
             },
             {
               term: "Fragment Offset",
-              body: "13 bits som angir hvor i original-pakkens payload dette fragmentet starter — målt i enheter av 8 bytes (derav 8-byte-justeringskravet). Med 13 bits og enhet 8 dekker det opp til 65 528 bytes — like under maks pakkestørrelse.",
+              body: "Hvor i original-pakken fragmentet starter (i 8-byte).",
             },
             {
               term: "Header checksum",
-              body: "16-bits sjekk-sum kun over IP-headeren. Re-beregnes på hver ruter fordi TTL endrer seg. Beskytter ikke payload (det er TCP/UDP-checksumens jobb). Eksisterer ikke i IPv6.",
+              body: "Sjekk-sum over headeren. Re-beregnes per ruter.",
             },
             {
               term: "Options",
-              body: "Sjelden brukt utvidelsesfelt i IPv4-headeren — record route, source route, timestamp osv. Krever software-prosessering på rutere og slår derfor av hardware-fast path. Praksis: unngås, og slippes helt i IPv6.",
+              body: "Sjeldent felt — slår av hardware fast-path.",
             },
             {
               term: "Path MTU Discovery (PMTUD)",
-              body: "Mekanisme der sender finner laveste MTU langs path før den sender store pakker. Setter DF=1 og prøver stor pakke; en ruter som ikke kan fragmentere returnerer ICMP «Fragmentation Needed» med MTU-verdien. Sender reduserer og prøver igjen.",
+              body: "Sender finner laveste MTU langs path før store sendes.",
             },
           ]}
         />
@@ -539,6 +593,42 @@ function Section43() {
           <Ipv4HeaderSvg />
         </Illustration>
       </div>
+
+      <div className="grid gap-3 lg:grid-cols-2">
+        <Metafor tittel="Postadressen: gate.husnummer">
+          <p>
+            En IP-adresse er som en postadresse: nettverks-delen er gate-navnet, host-delen er
+            husnummeret. <code className="font-mono text-[12px]">129.242.18.55</code> = «Storgata
+            (129.242.18) hus 55».
+          </p>
+          <p>
+            Postbudet (ruteren) trenger bare lese gata først for å sortere brevet riktig — selve
+            husnummeret håndteres lokalt på rett gate.
+          </p>
+        </Metafor>
+        <Metafor tittel="Pasienten må deles på trange dører">
+          <p>
+            Fragmentering er som å frakte en sofa gjennom en smal dør: ut-lenken har MTU 1500, men
+            pakken er 4000 bytes. Du må kappe sofaen i delene 1500+1500+1040, merke hver del med
+            samme «møbel-ID» (Identification) og rekkefølge (Fragment offset).
+          </p>
+          <p>
+            Mottakeren limer den sammen igjen. Mister du én del, må hele sofaen sendes på nytt —
+            derfor unngår vi det.
+          </p>
+        </Metafor>
+        <Metafor tittel="TTL er som et flaskepost-stempel">
+          <p>
+            Hver ruter stempler «-1» på en TTL-billett. Når billetten viser 0, blir pakken kastet —
+            akkurat som en flaske som har gått for lenge i sirkulasjon. Hindrer evige sløyfer hvis
+            kartet er feil.
+          </p>
+        </Metafor>
+      </div>
+
+      <Illustration caption="Fragmentering: en 4000-byte pakke deles i tre fragmenter for å passere en lenke med MTU 1500.">
+        <FragmenteringSvg />
+      </Illustration>
 
       <Example title="Eksempel: fragmentering av en 4000-byte pakke gjennom MTU 1500">
         <p>
@@ -638,59 +728,59 @@ function Section44() {
           items={[
             {
               term: "IP-adresse (32 bits)",
-              body: "Skrives som fire desimal-tall mellom 0 og 255 skilt av punktum: 192.168.1.42. Hvert tall representerer 8 bits — totalt 32 bits.",
+              body: "Fire desimal-tall á 8 bits: 192.168.1.42.",
             },
             {
-              term: "CIDR-notasjon (Classless Inter-Domain Routing)",
-              body: "Skriver et nettverk som adresse/lengde, der lengden er antall bits i prefiks-delen. 192.168.1.0/24 betyr «de første 24 bitsene er nettverks-delen, de siste 8 er host-delen». /24 = 256 adresser i blokken.",
+              term: "CIDR-notasjon",
+              body: "adresse/lengde — /24 = 24 nettverks-bits.",
             },
             {
               term: "Subnett-maske",
-              body: "Eldre måte å uttrykke det samme på: en 32-bits maske der prefiks-bitene er 1 og host-bitene er 0. /24 = 255.255.255.0. /20 = 255.255.240.0. Konseptuelt identisk med CIDR.",
+              body: "/24 = 255.255.255.0. Samme som CIDR i annen form.",
             },
             {
               term: "Nettverks-adresse",
-              body: "Første adresse i blokken — den med alle host-bits=0. For 192.168.5.0/24: nettverks-adresse er 192.168.5.0. Brukes som identifikator for blokken, kan ikke tildeles en host.",
+              body: "Første adresse i blokken (alle host-bits = 0).",
             },
             {
               term: "Broadcast-adresse",
-              body: "Siste adresse i blokken — alle host-bits=1. For 192.168.5.0/24: broadcast er 192.168.5.255. En pakke sendt hit leveres til alle hosts i subnettet. Kan heller ikke tildeles en host.",
+              body: "Siste adresse (alle host-bits = 1).",
             },
             {
               term: "Antall brukbare hosts",
-              body: "I et /n-subnett er det 2^(32-n) totalt-adresser, hvorav 2 reserveres (nettverk + broadcast). Et /24 har dermed 254 brukbare host-adresser. Et /30 har 4-2=2 (typisk for point-to-point-lenker mellom rutere).",
+              body: "2^(32-n) − 2 (minus nettverk og broadcast).",
             },
             {
               term: "Subnetting",
-              body: "Å dele et eksisterende prefiks i flere mindre prefiks. Hvis du har /22 og vil ha 4 like store underblokker, øker du prefiks-lengden med 2 bits til /24. De 2 nye bitsene gir 2² = 4 unike subnett.",
+              body: "Del prefiks i mindre — øk lengden med k bits gir 2^k subnett.",
             },
             {
-              term: "Klasseløs (classless) ruting",
-              body: "Klassisk IP-adresse-rom delte adresser i klasser A (/8), B (/16), C (/24) med fast prefiks-lengde. Det var rigid og forrente raskt. CIDR (RFC 1519, 1993) lar prefiks-lengden være hvilket som helst tall fra 0-32 — fleksibelt og adresse-bevarende.",
+              term: "Classless ruting",
+              body: "CIDR erstattet rigid A/B/C-klasser. Fri prefiks-lengde.",
             },
             {
-              term: "Rute-aggregering (supernetting)",
-              body: "Motsatt av subnetting: flere små nabo-prefiks samles til ett kortere. ISP-en din kan annonsere én /20 i stedet for sytten /24-er — globalt ruting-tabell krymper. Hovedgrunnen til at internett-kjerne-rutere bare har ~900 000 rader, ikke milliarder.",
+              term: "Rute-aggregering",
+              body: "Slå sammen nabo-prefiks til ett kortere.",
             },
             {
-              term: "VLSM (Variable Length Subnet Masking)",
-              body: "Innenfor samme organisasjon kan ulike subnett ha ulik prefiks-lengde. Et stort kontor får /23, et lite får /27, en point-to-point-lenke får /30. Maksimal utnyttelse av adresse-budsjettet.",
+              term: "VLSM",
+              body: "Variable lengder innen samme organisasjon.",
             },
             {
-              term: "Loopback-adresse",
-              body: "127.0.0.0/8 er reservert til lokal-host. 127.0.0.1 er den vanligste — en pakke til den adressen sirkulerer aldri ut på nettverket, men leveres internt i kjernen. Brukes for testing og lokal IPC.",
+              term: "Loopback (127.0.0.0/8)",
+              body: "Lokal-host — sirkulerer aldri ut på nettet.",
             },
             {
               term: "Link-local (169.254.0.0/16)",
-              body: "Adresse-blokk en host kan ta i bruk hvis DHCP feiler. Pakkene rutes ikke utenfor det lokale segmentet — derav «link-local». Når du ser en 169.254.x.y-adresse på en maskin betyr det vanligvis at DHCP har feilet.",
+              body: "Auto-adresse hvis DHCP feiler.",
             },
             {
-              term: "DHCP (Dynamic Host Configuration Protocol)",
-              body: "Protokoll som lar en host be om en IP-adresse fra subnettet ved oppstart. Serveren tildeler en ledig adresse fra en pool, sammen med default gateway, DNS-server og leasing-tid. Helt sentralt i moderne nett — ingen konfigurerer IP-adresser manuelt lenger.",
+              term: "DHCP",
+              body: "Host ber om IP-adresse fra subnettets pool.",
             },
             {
               term: "Default gateway",
-              body: "IP-adressen til ruteren som hosten sender pakker til når destinasjonen ligger utenfor lokalt subnett. Hver host har én default gateway konfigurert; for en typisk hjemme-ruter er det noe som 192.168.1.1.",
+              body: "Ruteren hosten sender ut-pakker til.",
             },
           ]}
         />
@@ -698,6 +788,34 @@ function Section44() {
           <SubnettingSvg />
         </Illustration>
       </div>
+
+      <div className="grid gap-3 lg:grid-cols-2">
+        <Metafor tittel="Tomtedeling i Tromsø">
+          <p>
+            Du eier ei stor tomt på 1024 m² (en /22-blokk). Du vil dele i fire mindre tomter á 256
+            m² (fire /24). Du tegner to streker — én nord-sør, én øst-vest — og får fire deler.
+          </p>
+          <p>
+            «Strekene» tilsvarer å låne to nye bits fra host-delen. Hvert nytt bit-mønster (00, 01,
+            10, 11) blir adressen til én tomt. Hver tomt får sitt eget gate-nummer-område.
+          </p>
+        </Metafor>
+        <Metafor tittel="Slå sammen postnummer (aggregering)">
+          <p>
+            En lokal post-distributør i Tromsø leverer til 9000, 9001, 9002, 9003. I stedet for å
+            annonsere fire postnummer mot resten av Posten, sier hun «alt som starter med 900» (=
+            /22-aggregering).
+          </p>
+          <p>
+            Ruting-tabellen i resten av landet får én rad i stedet for fire. Internett kan ikke
+            eksistert uten denne kompresjonen — 900 000 rader i stedet for milliarder.
+          </p>
+        </Metafor>
+      </div>
+
+      <Illustration caption="CIDR-aggregering: fire /24-prefiks med felles 22 bits slås sammen til én /22-rad i naboens ruting-tabell.">
+        <CidrAggregeringSvg />
+      </Illustration>
 
       <Example title="Eksempel: del 10.50.0.0/22 i fire like subnett">
         <p>
@@ -813,60 +931,60 @@ function Section45() {
         <Defs
           items={[
             {
-              term: "NAT (Network Address Translation)",
-              body: "Mekanisme der en ruter på kanten av et privat nett bytter ut kilde-adresse (og kilde-port) på utgående pakker, og reverserer byttet for innkommende svar. Resultatet: et helt nett kan dele én offentlig IP-adresse.",
+              term: "NAT",
+              body: "Bytte kilde-IP/port ut, reversér på vei inn.",
             },
             {
-              term: "Private adresseområder (RFC 1918)",
-              body: "Tre blokker reservert til intern bruk: 10.0.0.0/8, 172.16.0.0/12, og 192.168.0.0/16. Rutere på internett dropper pakker med disse som kilde/destinasjon — de finnes bare innenfor ett organisasjons-nett.",
+              term: "Private adresser (RFC 1918)",
+              body: "10/8, 172.16/12, 192.168/16 — kun internt.",
             },
             {
               term: "NAT-translation-tabell",
-              body: "Datastruktur i NAT-ruteren som lagrer mappingen: «pakke fra 192.168.1.34:51000 ble omskrevet til 84.55.12.7:62001». Når et svar kommer inn til 84.55.12.7:62001 vet ruteren hvem den skal sendes til internt.",
+              body: "Mapper (intern:port ↔ ekstern:port ↔ destinasjon).",
             },
             {
               term: "PAT (Port Address Translation)",
-              body: "Den utvidede formen av NAT som de fleste hjemme-rutere bruker: vi bytter både IP og port. Slik kan flere interne hosts dele samme offentlige IP, så lenge hver får en unik port-mapping.",
+              body: "Bytte både IP og port — det folk kaller «NAT» til daglig.",
             },
             {
               term: "Middlebox",
-              body: "Sekkebegrep for nettverks-bokser som gjør mer enn ren forwarding: NAT-er, brannmurer, load-balancere, DPI-bokser. De er pragmatisk uunngåelige i moderne nett, men bryter «end-to-end-prinsippet».",
+              body: "Nett-boks som gjør mer enn ren forwarding.",
             },
             {
               term: "End-to-end-prinsippet",
-              body: "Den arkitektoniske idéen at intelligens skal ligge i endene (hostene) og at nettverket kun skal flytte bits. NAT bryter dette fordi en mellom-boks aktivt rør adresser og porter — applikasjons-utviklere må forholde seg til det.",
+              body: "Intelligens i endene, nettet flytter bare bits.",
             },
             {
               term: "NAT-traversal",
-              body: "Teknikker for å la to hosts bak ulike NAT-er snakke direkte med hverandre (peer-to-peer). Sentralt verktøy: en utenforliggende server (STUN) som hjelper hver klient finne ut hvilken offentlig adresse/port deres NAT eksponerer. Hvis dette feiler brukes en relé-server (TURN).",
+              body: "Slå hull gjennom NAT for P2P (STUN/TURN).",
             },
             {
-              term: "Basic NAT (1:1 NAT)",
-              body: "Den enkle formen: ett internt-til-ekstern-adresse-bytte uten port-modifikasjon. Krever like mange offentlige adresser som interne. Brukt sjelden i dag — kun for å skjule intern topologi eller migrere mellom adresse-rom.",
+              term: "Basic NAT (1:1)",
+              body: "Bare IP byttes — én ekstern per intern.",
             },
             {
-              term: "NAPT (Network Address Port Translation)",
-              body: "Det presise navnet på det folk vanligvis kaller «NAT» — bytte av både IP og port slik at mange interne hosts kan dele én offentlig IP. RFC 3022 definerer dette skarpt: «NAT» = bare adresse-bytte, «NAPT» = adresse + port. I praksis brukes ordene om hverandre.",
+              term: "NAPT",
+              body: "Presist navn for IP+port-bytte (RFC 3022).",
             },
             {
               term: "Port-forwarding",
-              body: "Statisk regel i NAT-ruteren: «pakker som ankommer 84.55.12.7:8080 fra utsiden skal sendes til 192.168.1.50:80». Lar en intern server være nåbar utenfra på en valgt port. Konfigureres manuelt i ruterens admin-grensesnitt.",
+              body: "Statisk inn-regel for å nå en intern server.",
             },
             {
               term: "UPnP / NAT-PMP",
-              body: "Protokoller som lar en applikasjon på en intern host be NAT-en automatisk om port-forwarding (i stedet for manuell konfigurasjon). En spillkonsoll eller en BitTorrent-klient bruker UPnP for å åpne hull i NAT-en uten brukerinngrep. Sikkerhetsbekymring — kan utnyttes.",
+              body: "App ber NAT om å åpne hull automatisk.",
             },
             {
               term: "Full-cone vs symmetric NAT",
-              body: "Full-cone: én intern host:port mappes til én ekstern port; alle utenfor kan nå den. Symmetric: ny ekstern port for hver destinasjon. Full-cone er enkel å traversere med STUN; symmetric krever TURN-relé.",
+              body: "Full-cone: fast ekstern port. Symmetric: ny per mål.",
             },
             {
               term: "Hairpinning",
-              body: "Når to interne hosts på samme NAT prøver å snakke til hverandre via NAT-ens offentlige IP. NAT må reflektere pakken tilbake inn («hårnål-sving»). Eldre NAT-er klarte ikke dette — moderne gjør det.",
+              body: "To interne snakker via NAT-ens offentlige IP.",
             },
             {
-              term: "Carrier-Grade NAT (CGN, NAT444)",
-              body: "Når kundens ruter er bak ISP-ens NAT, som er bak en til. Tre lag adresse-oversettelse. Vanlig i mobil-nett og i regioner med adresse-knapphet (Asia, Afrika). Bryter P2P og gjør traceroute-debugging vanskelig.",
+              term: "Carrier-Grade NAT (CGN)",
+              body: "NAT på toppen av NAT — to+ lag oversettelse.",
             },
           ]}
         />
@@ -874,6 +992,41 @@ function Section45() {
           <NatTranslationSvg />
         </Illustration>
       </div>
+
+      <div className="grid gap-3 lg:grid-cols-2">
+        <Metafor tittel="Hotellet med én gate-adresse">
+          <p>
+            Hotellet «Rica Tromsø» har én gate-adresse: Storgata 44. Gjestene har rom-numre internt
+            (101, 102, 103) — men disse rom-numrene finnes ikke i postsystemet. Alt utgående post
+            stemples med hotellets adresse pluss «konvolutt-ID» (porten).
+          </p>
+          <p>
+            Når et svar kommer inn til Storgata 44 med konvolutt-ID 62002, ser resepsjonen
+            (NAT-ruteren) i sin egen lille bok: «62002 → rom 102». Brevet videresendes internt.
+          </p>
+          <p>
+            Hva som ikke fungerer: noen utenfra kan ikke skrive «til rom 102, Rica Tromsø» — fordi
+            postsystemet kjenner ikke rom-numre. Det må alltid være rommet som starter
+            korrespondansen først.
+          </p>
+        </Metafor>
+        <Metafor tittel="Slå hull gjennom døra">
+          <p>
+            STUN/hole-punching er som å åpne en dør innenfra: når Alice i hjemmenett A og Bob i
+            hjemmenett B begge sender en pakke mot hverandre samtidig, lager hver NAT en åpning for
+            den andre.
+          </p>
+          <p>
+            En STUN-server (på offentlig internett) sier til hver av dem: «Du framstår som
+            X.Y.Z.W:port for meg». Begge bruker dette til å peke mot hverandre. Den første utgående
+            pakken «slår hull» — neste innkommende fra rett peer slipper inn.
+          </p>
+        </Metafor>
+      </div>
+
+      <Illustration caption="Hole-punching gjennom to NAT-er: STUN-server forteller hver klient sin egen offentlige adresse; klientene sender mot hverandre samtidig.">
+        <HolePunchingSvg />
+      </Illustration>
 
       <Example title="Eksempel: en mappings-rad i NAT-tabellen">
         <p>
@@ -974,55 +1127,55 @@ function Section46() {
           items={[
             {
               term: "Match-action",
-              body: "Generalisert forwarding-modell: hver rad i forwarding-tabellen er en betingelse (match — over hvilke som helst felt i pakken: IP-adresse, port, MAC, VLAN, ...) og en handling (action — videresend på port X, dropp, send til kontroller, omskrive et felt).",
+              body: "Regel = betingelse (alle felt) + handling.",
             },
             {
               term: "OpenFlow",
-              body: "Standardisert protokoll mellom SDN-kontrolleren og ruterne. Definerer hvordan kontrolleren skyver match-action-regler ned til ruterne. Versjon 1.0 hadde én tabell; senere versjoner har pipeline med flere tabeller for fleksibilitet.",
+              body: "Standard protokoll kontroller ↔ ruter.",
             },
             {
               term: "Flow-tabell",
-              body: "Datastrukturen som lagrer match-action-reglene på ruteren. Ligner mye på en utvidet forwarding-tabell, men matcher ikke bare på destinasjon — kan matche på alle pakke-felt.",
+              body: "Lagrer match-action-regler på ruteren.",
             },
             {
               term: "Kontroller",
-              body: "Sentralisert programmerbar enhet som har en samlet view av hele nettet. Tar inn topologi og policy, beregner ruter, og pusher flow-tabell-oppdateringer til alle rutere. ONOS, OpenDaylight og Ryu er kjente kontroller-implementasjoner.",
+              body: "Sentralt hjerne — har helhetsbildet, pusher regler.",
             },
             {
               term: "Northbound API",
-              body: "Grensesnittet kontrolleren tilbyr applikasjoner — der nettverks-policy formuleres («last-balanser trafikk til disse serverne», «isoler tenant A fra tenant B»). Nettverks-policy blir vanlig software.",
+              body: "Apper → kontroller. Policy som software.",
             },
             {
               term: "Southbound API",
-              body: "Grensesnittet kontrolleren bruker for å snakke med ruterne — typisk OpenFlow. Standardisert slik at kontroller og ruter kan komme fra ulike leverandører.",
+              body: "Kontroller → ruter, typisk OpenFlow.",
             },
             {
               term: "Match-felter i OpenFlow",
-              body: "OpenFlow 1.3 definerer 40+ match-felter — inn-port, MAC src/dst, EtherType, VLAN-ID, MPLS-label, IP src/dst, IP-proto, TCP/UDP-porter, ICMP-type, IPv6-felter, m.fl. Hver flow-rad kan matche på en kombinasjon. Dramatisk mer fleksibelt enn rene IP-baserte forwarding-tabeller.",
+              body: "40+ felt: porter, MAC, VLAN, IP, TCP/UDP, ICMP.",
             },
             {
               term: "Action-typer",
-              body: "Mulige handlinger inkluderer: forward til port X, drop, send-to-controller (for ukjente pakker), modify-field (skriv om header), group (replikere til flere porter), meter (rate-limiting). Action-listen utføres i rekkefølge på matchende pakker.",
+              body: "Forward, drop, modify, group, meter, send-til-kontroller.",
             },
             {
-              term: "Pipeline (multi-table forwarding)",
-              body: "Fra OpenFlow 1.1: en pakke passerer flere flow-tabeller etter hverandre. Tabell 0 kan gjøre L2-lookup, tabell 1 L3, tabell 2 ACL, osv. Modulærer regel-settet og lar samme matchefelter brukes på ulike måter i ulike stadier.",
+              term: "Pipeline (multi-table)",
+              body: "Pakken går gjennom flere tabeller i serie.",
             },
             {
-              term: "Reaktiv vs proaktiv installasjon",
-              body: "Reaktiv: når en pakke ikke matcher noen rad, sendes den til kontrolleren som beslutter en regel og pusher den. Proaktiv: kontrolleren installerer alle nødvendige regler på forhånd. Datacenter-fabrikker er typisk proaktive (forutsigbar adferd); kampus-nett er ofte reaktive.",
+              term: "Reaktiv vs proaktiv",
+              body: "Spør kontroller ved miss vs preinstaller alt.",
             },
             {
               term: "OpenFlow priority",
-              body: "Hver flow-rad har et numerisk prioritets-tall. Når flere rader matcher samme pakke, vinner høyest prioritet. I motsetning til IPv4-tabellens automatiske LPM er dette eksplisitt — du må sette prioritet manuelt for å få ønsket rekkefølge.",
+              body: "Eksplisitt tall avgjør hvem som vinner ved flere treff.",
             },
             {
-              term: "Idle-timeout / hard-timeout",
-              body: "Hver flow-rad kan ha en idle-timeout (slett hvis ingen pakke matcher i N sekunder) og en hard-timeout (slett etter N sekunder uavhengig). Holder tabellene rene og frigjør TCAM-plass.",
+              term: "Idle/hard-timeout",
+              body: "Slett rad ved inaktivitet eller etter fast tid.",
             },
             {
               term: "Programmable data plane (P4)",
-              body: "OpenFlow forutsetter et fast sett match-felter. P4 går videre: la pakkeformatet selv være programmerbart. Du skriver et P4-program som definerer headere og parsere, og kompilatoren bygger en spesialtilpasset svitsj-pipeline. Brukes av Tofino-svitsjer og Google sitt produksjonsnettverk.",
+              body: "Selve pakkeformatet programmeres — ikke bare reglene.",
             },
           ]}
         />
@@ -1030,6 +1183,39 @@ function Section46() {
           <SdnArchitectureSvg />
         </Illustration>
       </div>
+
+      <div className="grid gap-3 lg:grid-cols-2">
+        <Metafor tittel="Vegtrafikksentralen i Mosjøen">
+          <p>
+            Tradisjonelt: hver kommune programmerer sine egne trafikklys. Resultat: lysmønstre er
+            ikke-koordinert; det er ingen som ser hele bilde-bildet.
+          </p>
+          <p>
+            SDN: én leder i Vegtrafikksentralen ser hele E6 i sanntid. Hun bestemmer alle lysene fra
+            Trondheim til Bodø samtidig — kan rute trafikk rundt en ulykke, prioritere ambulanse,
+            grønn bølge til pendlere.
+          </p>
+        </Metafor>
+        <Metafor tittel="Husnøkler bestemt av sentral-systemet">
+          <p>
+            Match-action er som et kort-lås-system på et hotell. Kortleseren leser bare:
+            «kortnummer-mønster X» (match), og åpner riktig dør (action). Hotelldirektøren
+            (kontrolleren) bestemmer hvilke kort skal åpne hva — og kan endre det fra én skjerm,
+            uten å bytte låsene.
+          </p>
+        </Metafor>
+        <Metafor tittel="Apotek-resepter i flere stadier">
+          <p>
+            En OpenFlow-pipeline er som et apotek der pasienten passerer flere disker: først
+            ID-sjekk (tabell 0), så resept-validering (tabell 1), så utlevering (tabell 2). Hver
+            disk har sin spesial-funksjon og videresender pasienten med et stempel («metadata»).
+          </p>
+        </Metafor>
+      </div>
+
+      <Illustration caption="OpenFlow match-action: pakken matches mot tabell-rader; raden med høyest priority bestemmer handlingen.">
+        <MatchActionSvg />
+      </Illustration>
 
       <Example title="Eksempel: en flow-tabell rad">
         <p>En enkel match-action-rad kan se slik ut:</p>
@@ -1133,67 +1319,67 @@ function Section47() {
           items={[
             {
               term: "128-bits adresser",
-              body: "Skrives som åtte grupper á 4 heksadesimale tegn skilt med kolon: 2001:0db8:85a3:0000:0000:8a2e:0370:7334. Sammenhengende nuller kan komprimeres med dobbel-kolon: 2001:db8:85a3::8a2e:370:7334.",
+              body: "Åtte hex-grupper á 4 tegn; nuller komprimeres med ::.",
             },
             {
-              term: "Fast header-størrelse (40 bytes)",
-              body: "Mot IPv4 sin variable header er IPv6-headeren alltid 40 bytes. Det gjør hardware-prosessering raskere — ingen behov for å beregne header-lengde først. Options håndteres via «extension headers» som er payload, ikke header.",
+              term: "Fast header (40 bytes)",
+              body: "Alltid samme størrelse — enklere for hardware.",
             },
             {
               term: "Ingen fragmentering på rutere",
-              body: "IPv6 forbyr rutere å fragmentere underveis. Hvis en pakke er for stor, sendes en ICMPv6-feilmelding til kilden, som så reduserer pakkestørrelsen (Path MTU Discovery). Dette flytter kostnad fra core til edge — riktig sted.",
+              body: "Kun sender klipper. ICMPv6 Packet Too Big.",
             },
             {
               term: "Ingen header checksum",
-              body: "IPv4 har en checksum over headeren som må re-beregnes på hver ruter (fordi TTL endrer seg). IPv6 dropper denne — link-laget og transport-laget tar feildeteksjon.",
+              body: "Spares re-beregning per hop.",
             },
             {
               term: "Flow label",
-              body: "Nytt 20-bits felt i IPv6-headeren der avsender kan merke pakker som tilhører samme «flow» (en samtale). Rutere kan da gi alle pakker i samme flow lik behandling uten å parse hele headeren.",
+              body: "20-bits «samtale-ID» for QoS uten payload-parsing.",
             },
             {
               term: "Dual-stack",
-              body: "Overgangs-strategi der hostene kjører IPv4 og IPv6 i parallell. Hvis begge endepunkter har IPv6, brukes IPv6; ellers faller man tilbake til IPv4. De fleste moderne OS gjør dette automatisk.",
+              body: "Host kjører IPv4 og IPv6 parallelt.",
             },
             {
               term: "Tunnelering",
-              body: "Strategi for å sende IPv6 over IPv4-strekninger. IPv6-pakken pakkes inn i en IPv4-pakke (protocol-nummer 41) gjennom en IPv4-bare seksjon, og pakkes ut på den andre siden. Slik kan IPv6-øyer kommunisere på tvers av et hav av IPv4.",
+              body: "IPv6 pakket inn i IPv4 gjennom v4-strekning.",
             },
             {
               term: "Extension headers",
-              body: "IPv6 sin måte å håndtere valgfri funksjonalitet. Etter den faste 40-byte-headeren kan det komme 0 eller flere extension headers — Hop-by-Hop, Routing, Fragment, Destination Options, AH, ESP. Hver lenkes til neste via Next Header-feltet. Bevarer den faste hovedhederen samtidig som funksjonalitet er utvidbar.",
+              body: "Valgfrie tillegg etter hoved-headeren.",
             },
             {
               term: "Hop Limit",
-              body: "IPv6 sin versjon av TTL — 8 bits som dekrementeres på hver ruter. Pakke forkastes hvis den når 0 og ICMPv6 «Time Exceeded» sendes. Funksjonelt likt IPv4 TTL, men navnet er ærligere — det måler hop, ikke tid.",
+              body: "IPv6 sin TTL. Ærligere navn.",
             },
             {
               term: "Next Header",
-              body: "8 bits som identifiserer hva som følger etter denne headeren — enten en extension header eller en transport-protokoll (6 for TCP, 17 for UDP, 58 for ICMPv6). Ekvivalent med IPv4 Protocol-feltet.",
+              body: "Hva følger etter — extension eller transport.",
             },
             {
               term: "Traffic Class",
-              body: "8 bits som tilsvarer IPv4 DSCP+ECN. Brukes for QoS-merking på samme måte — operatører kan gi pakker med høy Traffic Class foretrukket behandling.",
+              body: "IPv6 sin DSCP+ECN.",
             },
             {
-              term: "Unicast vs Multicast vs Anycast",
-              body: "IPv6 har tre adresse-typer. Unicast = én adresse, én mottaker. Multicast = leveres til alle medlemmer av en gruppe (ff00::/8). Anycast = leveres til nærmeste av flere mottakere som deler samme adresse — brukes for f.eks. CDN-er og DNS-rotservere. IPv6 droppet broadcast.",
+              term: "Unicast / Multicast / Anycast",
+              body: "Én / gruppe / nærmeste. Ingen broadcast i IPv6.",
             },
             {
               term: "Global unicast (2000::/3)",
-              body: "IPv6 sitt offentlige adresse-rom — alt som starter med binærprefiks 001. Allokeres av RIR-er på vanlig måte. Det er 2¹²⁵ adresser her — mer enn IPv4 sitt totale rom millioner av ganger over.",
+              body: "Det offentlige adresse-rommet i IPv6.",
             },
             {
-              term: "Unique Local Address (fc00::/7)",
-              body: "IPv6 sin versjon av RFC 1918 (private adresser). Brukes innenfor en organisasjon, rutes ikke globalt. Sjeldnere brukt enn man tror — IPv6 sin overflod gjør at de fleste bare bruker globale adresser internt også.",
+              term: "Unique Local (fc00::/7)",
+              body: "IPv6 sin RFC 1918 — privat, rutes ikke globalt.",
             },
             {
-              term: "SLAAC (Stateless Address Auto-Configuration)",
-              body: "IPv6 sin mekanisme der en host kan generere sin egen IP-adresse uten DHCP. Hosten kombinerer prefikset annonsert av en ruter (Router Advertisement) med en interface-ID basert på MAC-adressen sin eller en tilfeldig verdi. Ingen sentral server nødvendig.",
+              term: "SLAAC",
+              body: "Host genererer sin IP-adresse uten DHCP.",
             },
             {
-              term: "NDP (Neighbor Discovery Protocol)",
-              body: "IPv6-erstatning for ARP. Bruker ICMPv6-meldinger til å finne link-layer-adresser, oppdage rutere, og detektere duplikat-adresser. Mer kraftfull enn ARP — håndterer også ruter-annonsering og parameter-discovery.",
+              term: "NDP",
+              body: "IPv6 erstatning for ARP — finn naboer via ICMPv6.",
             },
           ]}
         />
@@ -1201,6 +1387,42 @@ function Section47() {
           <Ipv6HeaderSvg />
         </Illustration>
       </div>
+
+      <div className="grid gap-3 lg:grid-cols-2">
+        <Metafor tittel="Telefonnummeret som ble for kort">
+          <p>
+            På 1970-tallet hadde Norge fem-sifrede telefonnummer. Det dekket «alt vi noensinne
+            kommer til å trenge». Så kom mobiler, datalinjer, faks, ISDN — og nummerne tok slutt.
+            Telenor måtte utvide til åtte sifre.
+          </p>
+          <p>
+            IPv4: 32 bits = 4.3 mrd «nummer». Tok slutt rundt 2011. IPv6: 128 bits = 3.4·10³⁸. Mer
+            enn nok til hvert sandkorn på jorden. Det er samme historien om numre som ble for korte.
+          </p>
+        </Metafor>
+        <Metafor tittel="Maleren slipper å finne kruka selv (SLAAC)">
+          <p>
+            Med IPv4 + DHCP: hver gang du flytter inn i et nytt hus, må du ringe oppvaskhjelpa
+            (DHCP-serveren) som tildeler husnummer. Uten serveren — ingen adresse.
+          </p>
+          <p>
+            Med IPv6 SLAAC: huset har en stor adresse-blokk på veggen (Router Advertisement). Du
+            finner et tilfeldig ledig nummer selv, sjekker at ingen har det, og tar det i bruk.
+            Ingen tildelings-server nødvendig.
+          </p>
+        </Metafor>
+        <Metafor tittel="Brevet pakket i en større konvolutt (tunnelering)">
+          <p>
+            Du vil sende et IPv6-brev fra Tromsø til Oslo, men strekket gjennom Bodø går bare gammel
+            IPv4-post. Løsning: legg IPv6-brevet inne i en IPv4-konvolutt mellom de to IPv6-øyene.
+            Bodø-post håndterer ytterkonvolutten; Oslo åpner ytterkonvolutten og leverer indre brev.
+          </p>
+        </Metafor>
+      </div>
+
+      <Illustration caption="SLAAC i tre steg: ruter annonserer prefiks, host genererer interface-ID, sjekker duplikat, tar adressen i bruk.">
+        <SlaacSvg />
+      </Illustration>
 
       <Example title="Eksempel: en IPv6-adresse parset">
         <p className="font-mono text-[12px]">2001:0db8:0000:0042:0000:8a2e:0370:7334</p>
@@ -1808,6 +2030,18 @@ function Hvorfor({ title, children }: { title: string; children: React.ReactNode
         Hvorfor?
       </div>
       <div className="font-semibold text-foreground mb-1">{title}</div>
+      <div className="text-muted-foreground text-[13px] space-y-2">{children}</div>
+    </div>
+  );
+}
+
+function Metafor({ tittel, children }: { tittel: string; children: React.ReactNode }) {
+  return (
+    <div className="rounded-xl border border-purple-500/30 bg-purple-500/5 p-4">
+      <div className="text-[10px] uppercase tracking-wider text-purple-700 dark:text-purple-400 font-semibold mb-1">
+        🔮 Metafor
+      </div>
+      <div className="font-semibold text-foreground mb-1">{tittel}</div>
       <div className="text-muted-foreground text-[13px] space-y-2">{children}</div>
     </div>
   );
@@ -2926,6 +3160,919 @@ function Ipv6HeaderSvg() {
       <text x={250} y={236} textAnchor="middle" className="fill-muted-foreground text-[8px]">
         Eksempel: 2001:db8:85a3::8a2e:370:7334
       </text>
+    </svg>
+  );
+}
+
+// ============================================================
+// Nye visuelle SVG-er (metafor-tilkoblede)
+// ============================================================
+
+function LpmSvg() {
+  const rows = [
+    { prefix: "0.0.0.0/0", port: "1", bits: 0, win: false },
+    { prefix: "129.242.0.0/16", port: "2", bits: 16, win: false },
+    { prefix: "129.242.16.0/20", port: "3", bits: 20, win: false },
+    { prefix: "129.242.18.0/24", port: "4", bits: 24, win: true },
+  ];
+  return (
+    <svg viewBox="0 0 500 240" className="w-full h-auto">
+      <text
+        x={250}
+        y={14}
+        textAnchor="middle"
+        className="fill-foreground text-[11px] font-semibold"
+      >
+        Longest-prefix-match for 129.242.18.55
+      </text>
+      <text x={250} y={28} textAnchor="middle" className="fill-muted-foreground text-[9px]">
+        fire rader matcher — den med lengst prefiks vinner
+      </text>
+
+      {rows.map((r, i) => {
+        const y = 50 + i * 40;
+        const barW = (r.bits / 32) * 280;
+        return (
+          <g key={i}>
+            <rect
+              x={20}
+              y={y}
+              width={460}
+              height={32}
+              rx={4}
+              className={r.win ? "fill-success/15 stroke-success" : "fill-muted/30 stroke-border"}
+              strokeWidth={r.win ? 2 : 1}
+            />
+            <text x={32} y={y + 20} className="fill-foreground text-[10px] font-mono font-semibold">
+              {r.prefix}
+            </text>
+            <rect
+              x={170}
+              y={y + 10}
+              width={barW}
+              height={12}
+              className={r.win ? "fill-success" : "fill-brand/40"}
+            />
+            <text x={170 + barW + 6} y={y + 20} className="fill-muted-foreground text-[9px]">
+              {r.bits} bits
+            </text>
+            <text
+              x={460}
+              y={y + 20}
+              textAnchor="end"
+              className="fill-foreground text-[9px] font-mono"
+            >
+              port {r.port}
+            </text>
+            {r.win && (
+              <text
+                x={420}
+                y={y + 20}
+                textAnchor="end"
+                className="fill-success text-[9px] font-semibold"
+              >
+                ✓ vinner
+              </text>
+            )}
+          </g>
+        );
+      })}
+    </svg>
+  );
+}
+
+function HolVoqSvg() {
+  return (
+    <svg viewBox="0 0 500 260" className="w-full h-auto">
+      <text
+        x={120}
+        y={16}
+        textAnchor="middle"
+        className="fill-foreground text-[10px] font-semibold"
+      >
+        FIFO-input (HOL-blokkering)
+      </text>
+      <text
+        x={380}
+        y={16}
+        textAnchor="middle"
+        className="fill-foreground text-[10px] font-semibold"
+      >
+        VOQ (én kø per output)
+      </text>
+
+      {/* Left: FIFO */}
+      <rect
+        x={20}
+        y={30}
+        width={200}
+        height={40}
+        rx={4}
+        className="fill-amber-500/10 stroke-amber-500"
+        strokeWidth={1.5}
+      />
+      <text x={120} y={54} textAnchor="middle" className="fill-foreground text-[9px]">
+        Input A — én FIFO-kø
+      </text>
+      {/* Packets - colors indicate destination */}
+      <rect x={30} y={78} width={30} height={20} className="fill-destructive" />
+      <text x={45} y={92} textAnchor="middle" className="fill-white text-[9px] font-bold">
+        →B
+      </text>
+      <rect x={62} y={78} width={30} height={20} className="fill-success" />
+      <text x={77} y={92} textAnchor="middle" className="fill-white text-[9px] font-bold">
+        →C
+      </text>
+      <rect x={94} y={78} width={30} height={20} className="fill-success" />
+      <text x={109} y={92} textAnchor="middle" className="fill-white text-[9px] font-bold">
+        →C
+      </text>
+      <rect x={126} y={78} width={30} height={20} className="fill-brand" />
+      <text x={141} y={92} textAnchor="middle" className="fill-white text-[9px] font-bold">
+        →A
+      </text>
+
+      <text x={120} y={120} textAnchor="middle" className="fill-destructive text-[9px] italic">
+        Output B opptatt → ALT venter
+      </text>
+      <text x={120} y={134} textAnchor="middle" className="fill-muted-foreground text-[8px]">
+        selv om C og A er ledige
+      </text>
+
+      {/* Right: VOQ */}
+      <rect
+        x={260}
+        y={30}
+        width={220}
+        height={40}
+        rx={4}
+        className="fill-success/10 stroke-success"
+        strokeWidth={1.5}
+      />
+      <text x={370} y={54} textAnchor="middle" className="fill-foreground text-[9px]">
+        Input A — tre køer
+      </text>
+
+      {/* VOQ A→A */}
+      <text x={260} y={92} className="fill-muted-foreground text-[8px]">
+        →A:
+      </text>
+      <rect x={282} y={80} width={28} height={18} className="fill-brand" />
+      <text x={296} y={93} textAnchor="middle" className="fill-white text-[8px] font-bold">
+        A
+      </text>
+
+      {/* VOQ A→B */}
+      <text x={260} y={122} className="fill-muted-foreground text-[8px]">
+        →B:
+      </text>
+      <rect x={282} y={110} width={28} height={18} className="fill-destructive" />
+      <text x={296} y={123} textAnchor="middle" className="fill-white text-[8px] font-bold">
+        B
+      </text>
+
+      {/* VOQ A→C */}
+      <text x={260} y={152} className="fill-muted-foreground text-[8px]">
+        →C:
+      </text>
+      <rect x={282} y={140} width={28} height={18} className="fill-success" />
+      <text x={296} y={153} textAnchor="middle" className="fill-white text-[8px] font-bold">
+        C
+      </text>
+      <rect x={313} y={140} width={28} height={18} className="fill-success" />
+      <text x={327} y={153} textAnchor="middle" className="fill-white text-[8px] font-bold">
+        C
+      </text>
+
+      <text x={370} y={185} textAnchor="middle" className="fill-success text-[9px] italic">
+        Hver kø går uavhengig
+      </text>
+      <text x={370} y={199} textAnchor="middle" className="fill-muted-foreground text-[8px]">
+        ingen blokkerer hverandre
+      </text>
+
+      {/* Bottom comparison */}
+      <text x={120} y={230} textAnchor="middle" className="fill-muted-foreground text-[9px]">
+        Maks gjennomstrømming ~58 %
+      </text>
+      <text x={380} y={230} textAnchor="middle" className="fill-muted-foreground text-[9px]">
+        Maks gjennomstrømming ~100 %
+      </text>
+    </svg>
+  );
+}
+
+function FragmenteringSvg() {
+  return (
+    <svg viewBox="0 0 500 220" className="w-full h-auto">
+      <text
+        x={250}
+        y={14}
+        textAnchor="middle"
+        className="fill-foreground text-[11px] font-semibold"
+      >
+        4000-byte pakke → MTU 1500 lenke
+      </text>
+
+      {/* Original packet */}
+      <rect
+        x={40}
+        y={30}
+        width={420}
+        height={32}
+        rx={4}
+        className="fill-brand/15 stroke-brand"
+        strokeWidth={1.5}
+      />
+      <rect x={40} y={30} width={30} height={32} className="fill-brand/40 stroke-brand" />
+      <text x={55} y={50} textAnchor="middle" className="fill-foreground text-[8px]">
+        hdr
+      </text>
+      <text x={250} y={50} textAnchor="middle" className="fill-foreground text-[10px] font-mono">
+        Payload 3980 bytes (ID = 4711)
+      </text>
+      <text x={250} y={75} textAnchor="middle" className="fill-muted-foreground text-[8px]">
+        Total = 4000 bytes — for stor for MTU 1500
+      </text>
+
+      {/* Arrow */}
+      <line
+        x1={250}
+        y1={80}
+        x2={250}
+        y2={100}
+        className="stroke-foreground/60"
+        strokeWidth={1.5}
+        markerEnd="url(#arrFrag)"
+      />
+      <text x={260} y={94} className="fill-muted-foreground text-[8px]">
+        klippes
+      </text>
+
+      {/* Fragments */}
+      {[
+        { x: 30, w: 145, offset: "0", mf: "MF=1", size: "1500", payload: "0-1479" },
+        { x: 180, w: 145, offset: "185", mf: "MF=1", size: "1500", payload: "1480-2959" },
+        { x: 330, w: 100, offset: "370", mf: "MF=0", size: "1040", payload: "2960-3979" },
+      ].map((f, i) => (
+        <g key={i}>
+          <rect
+            x={f.x}
+            y={110}
+            width={f.w}
+            height={36}
+            rx={4}
+            className="fill-amber-500/15 stroke-amber-500"
+            strokeWidth={1.5}
+          />
+          <rect x={f.x} y={110} width={20} height={36} className="fill-amber-500/40" />
+          <text x={f.x + 10} y={130} textAnchor="middle" className="fill-foreground text-[7px]">
+            hdr
+          </text>
+          <text
+            x={f.x + (f.w + 20) / 2 + 10}
+            y={124}
+            textAnchor="middle"
+            className="fill-foreground text-[9px] font-mono"
+          >
+            Frag {i + 1}
+          </text>
+          <text
+            x={f.x + (f.w + 20) / 2 + 10}
+            y={138}
+            textAnchor="middle"
+            className="fill-muted-foreground text-[7px] font-mono"
+          >
+            {f.size} B
+          </text>
+          <text
+            x={f.x + f.w / 2}
+            y={162}
+            textAnchor="middle"
+            className="fill-muted-foreground text-[7px] font-mono"
+          >
+            offset={f.offset}
+          </text>
+          <text
+            x={f.x + f.w / 2}
+            y={174}
+            textAnchor="middle"
+            className="fill-muted-foreground text-[7px] font-mono"
+          >
+            {f.mf}, ID=4711
+          </text>
+        </g>
+      ))}
+
+      <text x={250} y={200} textAnchor="middle" className="fill-muted-foreground text-[9px] italic">
+        Alle fragmenter har samme ID — mottakeren limer sammen
+      </text>
+
+      <defs>
+        <marker
+          id="arrFrag"
+          viewBox="0 0 10 10"
+          refX={9}
+          refY={5}
+          markerWidth={6}
+          markerHeight={6}
+          orient="auto"
+        >
+          <path d="M0 0 L10 5 L0 10 z" className="fill-foreground" />
+        </marker>
+      </defs>
+    </svg>
+  );
+}
+
+function CidrAggregeringSvg() {
+  return (
+    <svg viewBox="0 0 500 240" className="w-full h-auto">
+      <text
+        x={250}
+        y={14}
+        textAnchor="middle"
+        className="fill-foreground text-[11px] font-semibold"
+      >
+        Fire /24-rader → én /22-rad i naboens ruting-tabell
+      </text>
+
+      {/* Internal /24 */}
+      {[
+        { x: 30, label: "198.51.96.0/24" },
+        { x: 145, label: "198.51.97.0/24" },
+        { x: 260, label: "198.51.98.0/24" },
+        { x: 375, label: "198.51.99.0/24" },
+      ].map((s, i) => (
+        <g key={i}>
+          <rect
+            x={s.x}
+            y={36}
+            width={100}
+            height={32}
+            rx={4}
+            className="fill-amber-500/15 stroke-amber-500"
+            strokeWidth={1.2}
+          />
+          <text
+            x={s.x + 50}
+            y={56}
+            textAnchor="middle"
+            className="fill-foreground text-[9px] font-mono"
+          >
+            {s.label}
+          </text>
+        </g>
+      ))}
+
+      {/* Arrows down */}
+      {[80, 195, 310, 425].map((x, i) => (
+        <line
+          key={i}
+          x1={x}
+          y1={70}
+          x2={250}
+          y2={110}
+          className="stroke-muted-foreground/60"
+          strokeWidth={1}
+          strokeDasharray="2 2"
+        />
+      ))}
+
+      {/* Aggregated /22 */}
+      <rect
+        x={120}
+        y={115}
+        width={260}
+        height={42}
+        rx={6}
+        className="fill-success/20 stroke-success"
+        strokeWidth={2}
+      />
+      <text
+        x={250}
+        y={135}
+        textAnchor="middle"
+        className="fill-foreground text-[11px] font-mono font-semibold"
+      >
+        198.51.96.0/22
+      </text>
+      <text x={250} y={150} textAnchor="middle" className="fill-muted-foreground text-[9px]">
+        dekker .96 – .99 — én rad
+      </text>
+
+      {/* Bit illustration */}
+      <text x={30} y={180} className="fill-muted-foreground text-[8px] font-semibold">
+        Binær fellesnevner i siste oktett:
+      </text>
+      <text x={30} y={196} className="fill-foreground text-[9px] font-mono">
+        96 = 01100<tspan className="fill-success font-bold">000</tspan> 97 = 01100
+        <tspan className="fill-success font-bold">001</tspan>
+      </text>
+      <text x={30} y={210} className="fill-foreground text-[9px] font-mono">
+        98 = 01100<tspan className="fill-success font-bold">010</tspan> 99 = 01100
+        <tspan className="fill-success font-bold">011</tspan>
+      </text>
+      <text x={30} y={228} className="fill-muted-foreground text-[8px] italic">
+        Felles: 22 bits (011000) — derav /22.
+      </text>
+    </svg>
+  );
+}
+
+function HolePunchingSvg() {
+  return (
+    <svg viewBox="0 0 500 260" className="w-full h-auto">
+      <text
+        x={250}
+        y={14}
+        textAnchor="middle"
+        className="fill-foreground text-[11px] font-semibold"
+      >
+        Hole-punching: to klienter bak NAT snakker direkte
+      </text>
+
+      {/* STUN server top */}
+      <rect
+        x={210}
+        y={28}
+        width={80}
+        height={32}
+        rx={6}
+        className="fill-brand/15 stroke-brand"
+        strokeWidth={1.5}
+      />
+      <text x={250} y={42} textAnchor="middle" className="fill-foreground text-[9px] font-semibold">
+        STUN
+      </text>
+      <text x={250} y={54} textAnchor="middle" className="fill-muted-foreground text-[8px]">
+        offentlig
+      </text>
+
+      {/* Alice */}
+      <rect
+        x={20}
+        y={140}
+        width={120}
+        height={50}
+        rx={6}
+        className="fill-amber-500/10 stroke-amber-500"
+        strokeWidth={1.5}
+        strokeDasharray="3 2"
+      />
+      <text x={80} y={158} textAnchor="middle" className="fill-foreground text-[9px] font-semibold">
+        NAT A
+      </text>
+      <text x={80} y={172} textAnchor="middle" className="fill-muted-foreground text-[8px]">
+        Alice: 10.0.1.5
+      </text>
+      <text
+        x={80}
+        y={184}
+        textAnchor="middle"
+        className="fill-muted-foreground text-[8px] font-mono"
+      >
+        ekstern 84.55.12.7:62001
+      </text>
+
+      {/* Bob */}
+      <rect
+        x={360}
+        y={140}
+        width={120}
+        height={50}
+        rx={6}
+        className="fill-success/10 stroke-success"
+        strokeWidth={1.5}
+        strokeDasharray="3 2"
+      />
+      <text
+        x={420}
+        y={158}
+        textAnchor="middle"
+        className="fill-foreground text-[9px] font-semibold"
+      >
+        NAT B
+      </text>
+      <text x={420} y={172} textAnchor="middle" className="fill-muted-foreground text-[8px]">
+        Bob: 10.0.2.7
+      </text>
+      <text
+        x={420}
+        y={184}
+        textAnchor="middle"
+        className="fill-muted-foreground text-[8px] font-mono"
+      >
+        ekstern 91.12.4.20:55300
+      </text>
+
+      {/* Step 1 lines to STUN */}
+      <line
+        x1={80}
+        y1={140}
+        x2={230}
+        y2={60}
+        className="stroke-brand/60"
+        strokeWidth={1.2}
+        strokeDasharray="3 3"
+      />
+      <text x={140} y={100} className="fill-brand text-[8px] font-semibold">
+        1. spør STUN
+      </text>
+
+      <line
+        x1={420}
+        y1={140}
+        x2={270}
+        y2={60}
+        className="stroke-brand/60"
+        strokeWidth={1.2}
+        strokeDasharray="3 3"
+      />
+      <text x={330} y={100} className="fill-brand text-[8px] font-semibold">
+        1. spør STUN
+      </text>
+
+      {/* Step 2: direct connection */}
+      <line
+        x1={140}
+        y1={210}
+        x2={360}
+        y2={210}
+        className="stroke-success"
+        strokeWidth={2.5}
+        markerEnd="url(#arrHP)"
+        markerStart="url(#arrHPstart)"
+      />
+      <text x={250} y={205} textAnchor="middle" className="fill-success text-[9px] font-semibold">
+        2. SAMTIDIG utgående
+      </text>
+      <text x={250} y={228} textAnchor="middle" className="fill-muted-foreground text-[8px]">
+        Hver NAT lager hull for den andre — pakkene møtes
+      </text>
+      <text x={250} y={248} textAnchor="middle" className="fill-muted-foreground text-[8px] italic">
+        Direkte P2P uten å gå via en server
+      </text>
+
+      <defs>
+        <marker
+          id="arrHP"
+          viewBox="0 0 10 10"
+          refX={9}
+          refY={5}
+          markerWidth={6}
+          markerHeight={6}
+          orient="auto"
+        >
+          <path d="M0 0 L10 5 L0 10 z" className="fill-success" />
+        </marker>
+        <marker
+          id="arrHPstart"
+          viewBox="0 0 10 10"
+          refX={1}
+          refY={5}
+          markerWidth={6}
+          markerHeight={6}
+          orient="auto"
+        >
+          <path d="M10 0 L0 5 L10 10 z" className="fill-success" />
+        </marker>
+      </defs>
+    </svg>
+  );
+}
+
+function MatchActionSvg() {
+  return (
+    <svg viewBox="0 0 500 260" className="w-full h-auto">
+      <text
+        x={250}
+        y={14}
+        textAnchor="middle"
+        className="fill-foreground text-[11px] font-semibold"
+      >
+        OpenFlow match-action: priority avgjør hvilken regel vinner
+      </text>
+
+      {/* Incoming packet */}
+      <rect
+        x={20}
+        y={30}
+        width={140}
+        height={40}
+        rx={4}
+        className="fill-amber-500/15 stroke-amber-500"
+        strokeWidth={1.5}
+      />
+      <text x={90} y={47} textAnchor="middle" className="fill-foreground text-[9px] font-semibold">
+        Innkommende pakke
+      </text>
+      <text
+        x={90}
+        y={61}
+        textAnchor="middle"
+        className="fill-muted-foreground text-[8px] font-mono"
+      >
+        dst=10.0.5.42:443
+      </text>
+
+      <line
+        x1={160}
+        y1={50}
+        x2={195}
+        y2={50}
+        className="stroke-foreground"
+        strokeWidth={2}
+        markerEnd="url(#arrMA)"
+      />
+
+      {/* Rule table */}
+      <rect
+        x={200}
+        y={30}
+        width={290}
+        height={170}
+        rx={6}
+        className="fill-card stroke-brand"
+        strokeWidth={1.5}
+      />
+      <text
+        x={345}
+        y={48}
+        textAnchor="middle"
+        className="fill-foreground text-[10px] font-semibold"
+      >
+        Flow-tabell
+      </text>
+
+      {[
+        {
+          y: 60,
+          match: "dst=10.0.5.0/24, port=443",
+          act: "out: port 7",
+          prio: 200,
+          win: true,
+        },
+        {
+          y: 95,
+          match: "dst=10.0.0.0/16",
+          act: "out: port 3",
+          prio: 100,
+          win: false,
+          partial: true,
+        },
+        {
+          y: 130,
+          match: "dst=10.0.0.50",
+          act: "drop",
+          prio: 300,
+          win: false,
+          no: true,
+        },
+      ].map((r, i) => (
+        <g key={i}>
+          <rect
+            x={210}
+            y={r.y}
+            width={270}
+            height={28}
+            rx={3}
+            className={
+              r.win
+                ? "fill-success/15 stroke-success"
+                : r.partial
+                  ? "fill-amber-500/10 stroke-amber-500/50"
+                  : "fill-muted/30 stroke-border"
+            }
+            strokeWidth={r.win ? 2 : 1}
+          />
+          <text x={218} y={r.y + 12} className="fill-foreground text-[8px] font-mono">
+            match: {r.match}
+          </text>
+          <text x={218} y={r.y + 23} className="fill-muted-foreground text-[8px] font-mono">
+            {r.act} · prio={r.prio}
+          </text>
+          {r.win && (
+            <text
+              x={470}
+              y={r.y + 18}
+              textAnchor="end"
+              className="fill-success text-[9px] font-semibold"
+            >
+              ✓
+            </text>
+          )}
+          {r.partial && (
+            <text x={470} y={r.y + 18} textAnchor="end" className="fill-amber-600 text-[8px]">
+              også matchet
+            </text>
+          )}
+          {r.no && (
+            <text
+              x={470}
+              y={r.y + 18}
+              textAnchor="end"
+              className="fill-muted-foreground text-[8px]"
+            >
+              ingen match
+            </text>
+          )}
+        </g>
+      ))}
+
+      <text x={345} y={185} textAnchor="middle" className="fill-muted-foreground text-[8px] italic">
+        Begge gjør match; høyest priority vinner → forward port 7
+      </text>
+
+      {/* Action arrow */}
+      <line
+        x1={345}
+        y1={200}
+        x2={345}
+        y2={222}
+        className="stroke-success"
+        strokeWidth={2}
+        markerEnd="url(#arrMA)"
+      />
+      <rect
+        x={280}
+        y={222}
+        width={130}
+        height={30}
+        rx={4}
+        className="fill-success/20 stroke-success"
+        strokeWidth={1.5}
+      />
+      <text
+        x={345}
+        y={242}
+        textAnchor="middle"
+        className="fill-foreground text-[10px] font-mono font-semibold"
+      >
+        Send på port 7
+      </text>
+
+      <defs>
+        <marker
+          id="arrMA"
+          viewBox="0 0 10 10"
+          refX={9}
+          refY={5}
+          markerWidth={6}
+          markerHeight={6}
+          orient="auto"
+        >
+          <path d="M0 0 L10 5 L0 10 z" className="fill-foreground" />
+        </marker>
+      </defs>
+    </svg>
+  );
+}
+
+function SlaacSvg() {
+  return (
+    <svg viewBox="0 0 500 240" className="w-full h-auto">
+      <text
+        x={250}
+        y={14}
+        textAnchor="middle"
+        className="fill-foreground text-[11px] font-semibold"
+      >
+        SLAAC: host konfigurerer egen IPv6-adresse uten DHCP
+      </text>
+
+      {/* Step 1: RA */}
+      <rect
+        x={20}
+        y={30}
+        width={140}
+        height={60}
+        rx={6}
+        className="fill-brand/15 stroke-brand"
+        strokeWidth={1.5}
+      />
+      <text x={90} y={48} textAnchor="middle" className="fill-foreground text-[9px] font-semibold">
+        1. Ruter Advertisement
+      </text>
+      <text x={90} y={62} textAnchor="middle" className="fill-muted-foreground text-[8px]">
+        ruter sender prefiks
+      </text>
+      <text x={90} y={78} textAnchor="middle" className="fill-foreground text-[8px] font-mono">
+        2001:db8:cafe::/64
+      </text>
+
+      {/* Step 2: generate */}
+      <rect
+        x={180}
+        y={30}
+        width={140}
+        height={60}
+        rx={6}
+        className="fill-amber-500/15 stroke-amber-500"
+        strokeWidth={1.5}
+      />
+      <text x={250} y={48} textAnchor="middle" className="fill-foreground text-[9px] font-semibold">
+        2. Host genererer ID
+      </text>
+      <text x={250} y={62} textAnchor="middle" className="fill-muted-foreground text-[8px]">
+        tilfeldig 64-bit
+      </text>
+      <text x={250} y={78} textAnchor="middle" className="fill-foreground text-[8px] font-mono">
+        a1c2:b3d4:e5f6:789
+      </text>
+
+      {/* Step 3: DAD */}
+      <rect
+        x={340}
+        y={30}
+        width={140}
+        height={60}
+        rx={6}
+        className="fill-success/15 stroke-success"
+        strokeWidth={1.5}
+      />
+      <text x={410} y={48} textAnchor="middle" className="fill-foreground text-[9px] font-semibold">
+        3. Sjekk + bruk
+      </text>
+      <text x={410} y={62} textAnchor="middle" className="fill-muted-foreground text-[8px]">
+        Duplicate Address Detection
+      </text>
+      <text x={410} y={78} textAnchor="middle" className="fill-success text-[8px] font-semibold">
+        ledig — tar den i bruk
+      </text>
+
+      {/* Arrows */}
+      <line
+        x1={160}
+        y1={60}
+        x2={180}
+        y2={60}
+        className="stroke-foreground"
+        strokeWidth={1.5}
+        markerEnd="url(#arrSL)"
+      />
+      <line
+        x1={320}
+        y1={60}
+        x2={340}
+        y2={60}
+        className="stroke-foreground"
+        strokeWidth={1.5}
+        markerEnd="url(#arrSL)"
+      />
+
+      {/* Final address */}
+      <rect
+        x={60}
+        y={130}
+        width={380}
+        height={50}
+        rx={6}
+        className="fill-card stroke-foreground"
+        strokeWidth={1.5}
+      />
+      <text
+        x={250}
+        y={150}
+        textAnchor="middle"
+        className="fill-foreground text-[10px] font-semibold"
+      >
+        Resulterende adresse
+      </text>
+      <text x={250} y={170} textAnchor="middle" className="fill-foreground text-[10px] font-mono">
+        <tspan className="fill-brand">2001:db8:cafe::</tspan>
+        <tspan className="fill-amber-600 dark:fill-amber-400">a1c2:b3d4:e5f6:789</tspan>
+      </text>
+
+      <text x={140} y={200} textAnchor="middle" className="fill-brand text-[8px]">
+        prefiks (fra ruter)
+      </text>
+      <text
+        x={360}
+        y={200}
+        textAnchor="middle"
+        className="fill-amber-600 dark:fill-amber-400 text-[8px]"
+      >
+        interface-ID (selv-valgt)
+      </text>
+
+      <text x={250} y={225} textAnchor="middle" className="fill-muted-foreground text-[9px] italic">
+        Ingen DHCP-server var involvert
+      </text>
+
+      <defs>
+        <marker
+          id="arrSL"
+          viewBox="0 0 10 10"
+          refX={9}
+          refY={5}
+          markerWidth={6}
+          markerHeight={6}
+          orient="auto"
+        >
+          <path d="M0 0 L10 5 L0 10 z" className="fill-foreground" />
+        </marker>
+      </defs>
     </svg>
   );
 }

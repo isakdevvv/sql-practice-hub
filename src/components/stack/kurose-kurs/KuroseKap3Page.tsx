@@ -206,64 +206,85 @@ function Section31() {
       <div className="grid gap-3 lg:grid-cols-2">
         <Defs
           items={[
-            {
-              term: "Segment",
-              body: "Transport-lagets dataenhet. Inneholder en transport-header (TCP eller UDP) pluss applikasjonsdata. Når segmentet pakkes inn i et IP-datagram, kalles det fortsatt et segment fra transportlaget sitt synspunkt.",
-            },
+            { term: "Segment", body: "Transportlagets pakke (header + data)." },
             {
               term: "Ende-til-ende vs hopp-for-hopp",
-              body: "Transportlaget jobber ende-til-ende: bare avsender og mottaker har transport-stack-er. Rutere på veien ignorerer transport-headeren og forholder seg kun til IP-laget (hopp-for-hopp). Det betyr at endring i transport-protokoll bare krever endring hos endepunktene.",
+              body: "Bare endepunktene har transport; rutere bare IP.",
             },
             {
               term: "Logisk forbindelse",
-              body: "Selv om IP er forbindelsesløst, kan transportlaget gi inntrykk av en stabil kanal mellom to prosesser. TCP åpner en logisk forbindelse med 3-veis handshake og lukker den med FIN; UDP gjør ingen slik etablering.",
+              body: "Inntrykk av stabil kanal over forbindelsesløst IP.",
             },
+            { term: "Best effort", body: "IP lover ingenting — alt annet må vi bygge selv." },
             {
-              term: "Best effort",
-              body: "IP lover ingenting: pakker kan tapes, dupliseres, omsorteres eller forsinkes vilkårlig. Alt utover bare-leveranse må gjenoppfinnes av transportlaget hvis applikasjonen trenger det.",
+              term: "Transport-tjenester",
+              body: "Pålitelighet, ordning, flow, congestion, sikkerhet.",
             },
-            {
-              term: "Transport-tjenester (tilbudt meny)",
-              body: "Pålitelig dataoverføring, ordning, flow control, congestion control, sikkerhet (via TLS over TCP). UDP tilbyr ingen av disse utover en sjekksum; TCP tilbyr alle med unntak av kryptering.",
-            },
-            {
-              term: "Socket",
-              body: "OS-grensesnittet mellom applikasjonen og transport-stack-en. En socket identifiseres av (protokoll, lokal IP, lokal port, fjern-IP, fjern-port). Applikasjonen skriver til socket-en, transportlaget tar over.",
-            },
+            { term: "Socket", body: "Døra mellom app og transport-stacken." },
             {
               term: "API-forskjell TCP vs UDP",
-              body: "TCP-sockets er stream-orientert: du skriver bytes, mottakeren leser bytes — grenser mellom send()-kall bevares ikke. UDP-sockets er melding-orientert: hvert sendto() blir nøyaktig én pakke som mottakeren får i ett recvfrom().",
+              body: "TCP = bytestrøm; UDP = pakke-grenser bevares.",
             },
-            {
-              term: "Pålitelighet (reliability)",
-              body: "Garanti om at hver byte som ble sendt, kommer fram i samme rekkefølge — eller at applikasjonen får beskjed om feil. TCP gir dette; UDP gir det ikke. Pålitelighet koster minst én ekstra runde (ACK) per tapt enhet, så det er ikke gratis.",
-            },
-            {
-              term: "Latens-følsomhet vs gjennomstrømning",
-              body: "To akser å velge protokoll etter. Latens-følsomme apper (spill, telefoni) bryr seg om hvor lenge én bit bruker fra send til mottak. Gjennomstrømnings-følsomme apper (filoverføring, video on-demand) bryr seg om bytes per sekund. TCP optimaliserer det andre, UDP åpner for at du selv kan optimere det første.",
-            },
-            {
-              term: "Sikkerhets-tjeneste (TLS)",
-              body: "Transportlaget gir av seg selv ingen konfidensialitet. TLS legger seg som et lag mellom applikasjonen og TCP og gir kryptering, integritet og autentisering. QUIC pakker TLS inn i selve transportprotokollen, slik at handshake og kryptering går i samme runde.",
-            },
+            { term: "Pålitelighet", body: "Hver byte kommer fram, i orden — eller feilbeskjed." },
+            { term: "Latens vs gjennomstrømning", body: "To akser å velge protokoll etter." },
+            { term: "TLS", body: "Krypterings-lag mellom app og TCP." },
             {
               term: "Tilkoblingsorientert vs forbindelsesløs",
-              body: "Tilkoblingsorientert (TCP): begge ender setter opp en delt tilstand før data — hvilke sekvensnumre, vinduer, bufre. Forbindelsesløs (UDP): hver pakke står på egne ben, ingen tilstand på endene. Ruterne i midten er alltid forbindelsesløse.",
+              body: "TCP setter opp delt tilstand; UDP gjør det ikke.",
             },
-            {
-              term: "Head-of-line blocking",
-              body: "Når en strøm sendes i orden, må alt vente på den tregeste delen. Hvis byte 1000 mangler, kan ikke byte 2000-9999 leveres til applikasjonen før 1000 ankommer. TCP har dette over hele strømmen; QUIC har det per stream, ikke per forbindelse.",
-            },
-            {
-              term: "Full-duplex",
-              body: "TCP er full-duplex: begge sider kan sende samtidig på samme forbindelse. Hver retning har sitt eget par av sekvens- og ACK-numre. UDP er trivielt full-duplex siden hver pakke er uavhengig.",
-            },
+            { term: "Head-of-line blocking", body: "Én tapt byte stopper alt etter." },
+            { term: "Full-duplex", body: "Begge sider sender samtidig på samme forbindelse." },
           ]}
         />
-        <Illustration caption="Transportlaget snakker prosess-til-prosess via IP, som flytter pakker host-til-host gjennom rutere som ikke ser inn i transport-headeren.">
+        <Illustration caption="Transportlaget snakker prosess-til-prosess via IP. Rutere ser bare nettverkslaget.">
           <TransportE2ESvg />
         </Illustration>
       </div>
+
+      <div className="grid gap-3 lg:grid-cols-2">
+        <Metafor tittel="Transport-laget er UPS sin sporings-tjeneste">
+          <p>
+            IP er som en haug med vilkårlige lastebiler og fly: pakken din kan ta hvilken som helst
+            rute, kan bli mistet, eller leveres i feil rekkefølge. Du har ingen anelse om reisen.
+          </p>
+          <p>
+            Transport-laget er sporings- og leveringsbekreftelses-tjenesten oppå dette. UPS lover
+            deg ikke at akkurat den lastebilen er rask — men de lover at pakken kommer fram, i
+            riktig kasse, og at du får varsel hvis noe ryker. TCP er UPS Premium med signaturkrav.
+            UDP er «slipp i postkassen og kryss fingrene».
+          </p>
+        </Metafor>
+
+        <Metafor tittel="Best effort er som å slippe brev fra et fly">
+          <p>
+            Tenk deg at IP er et fly som slipper brev ut av lasterommet over byen din. Noen blader
+            lander i hagen, noen blåser bort, noen blir gjennomvåte, og to lander samtidig i feil
+            rekkefølge. Det er ingenting flyet kan gjøre — det leverer best mulig.
+          </p>
+          <p>
+            Hvis du trenger garantert leveranse, må du sette opp et eget system på bakken som
+            plukker opp brevene, sorterer dem, og ber piloten kaste på nytt det som mangler. Det
+            systemet er transport-laget.
+          </p>
+        </Metafor>
+      </div>
+
+      <Metafor tittel="Head-of-line blocking = køen på Vinmonopolet">
+        <p>
+          Du har 5 ting i kurven, men kassedama scanner dem i rekkefølge. Hvis det første produktet
+          har en defekt strekkode og ekspeditøren må ringe en kollega, må de fire andre kundene bak
+          deg vente — selv om deres varer er helt fine.
+        </p>
+        <p>
+          TCP er Vinmonopol-køen. Hvis byte 1000 mangler, må byte 2000-9999 vente i bufferen til
+          1000 retransmitteres. QUIC er som å ha flere parallelle kasser: tap i én kø blokkerer ikke
+          de andre.
+        </p>
+      </Metafor>
+
+      <Illustration caption="UPS-metaforen: app-laget gir pakken til transport, som garanterer leveranse over et upålitelig IP-nett.">
+        <UpsMetaforSvg />
+      </Illustration>
 
       <Hvorfor title="Hvorfor introdusere et eget transport-lag i det hele tatt?">
         <p>
@@ -354,68 +375,90 @@ function Section32() {
       <div className="grid gap-3 lg:grid-cols-2">
         <Defs
           items={[
-            {
-              term: "Portnummer",
-              body: "16-bits identifikator (0–65535) som hver socket binder seg til. Sammen med IP-adressen og protokoll-typen gir den en unik adresse for en endepunkt-prosess. Welbekjente porter: 80 (HTTP), 443 (HTTPS), 22 (SSH), 53 (DNS), 25 (SMTP).",
-            },
-            {
-              term: "Multipleksing (mux)",
-              body: "Avsender-siden: transportlaget samler data fra flere kilde-sockets, legger på riktig header med kilde- og dest-port, og sender alle segmentene ned til IP-laget. Mange strømmer går inn — én IP-stack går ut.",
-            },
-            {
-              term: "Demultipleksing (demux)",
-              body: "Mottaker-siden: IP-laget leverer datagrammer oppover, og transportlaget leser headerens portfelt for å bestemme hvilken socket pakken hører til. Én strøm går inn — den fordeles ut på riktige sockets.",
-            },
+            { term: "Portnummer", body: "16-bits ID per socket. Velkjente: 80, 443, 53, 22." },
+            { term: "Multipleksing (mux)", body: "Mange sockets inn → én IP-strøm ut." },
+            { term: "Demultipleksing (demux)", body: "Én IP-strøm inn → riktig socket via port." },
             {
               term: "UDP-demux: 2-tuppel",
-              body: "UDP-sockets identifiseres bare av (dest-IP, dest-port). To pakker fra forskjellige kilder med samme destinasjon havner på samme socket. Server-prosessen må lese kilde-feltet selv for å vite hvem som sendte.",
+              body: "Kun (dest-IP, dest-port). Server leser kilde selv.",
             },
-            {
-              term: "TCP-demux: 4-tuppel",
-              body: "TCP-sockets identifiseres av (kilde-IP, kilde-port, dest-IP, dest-port). En web-server som lytter på port 443 kan derfor ha hundretusenvis av samtidige TCP-forbindelser på samme port — hver klient har en unik kilde-tuppel.",
-            },
+            { term: "TCP-demux: 4-tuppel", body: "(kilde-IP, kilde-port, dest-IP, dest-port)." },
             {
               term: "Lytte-socket vs forbindelse-socket",
-              body: "Web-serveren har én lytte-socket bundet til port 443. Når en ny klient åpner forbindelse, oppretter OS-en en ny socket bundet til 4-tuppelen for akkurat den forbindelsen. Lytte-socketen forblir tilgjengelig for nye klienter.",
+              body: "Lytter venter; forbindelse er per 4-tuppel.",
             },
-            {
-              term: "Ephemeral port",
-              body: "Klient-siden binder seg ikke til en kjent port; OS-en gir den en tilfeldig høy port (typisk 49152–65535). Når forbindelsen lukkes, frigjøres den. Det er denne tilfeldigheten som gjør at to faner kan koble seg til samme server uten kollisjon.",
-            },
-            {
-              term: "Velkjente porter (0-1023)",
-              body: "Reservert av IANA (Internet Assigned Numbers Authority) for standard-tjenester: 22 SSH, 25 SMTP, 53 DNS, 80 HTTP, 110 POP3, 143 IMAP, 443 HTTPS, 993 IMAPS. På Unix-systemer krever binding til disse porter root-rettigheter — en sikkerhetsforanstaltning som hindrer en ondsinnet brukerprosess i å utgi seg for å være en systemtjeneste.",
-            },
+            { term: "Ephemeral port", body: "Tilfeldig høy port klienten får av OS." },
+            { term: "Velkjente porter (0-1023)", body: "IANA-reservert, root-only på Unix." },
             {
               term: "Registrerte porter (1024-49151)",
-              body: "Reservert hos IANA for bestemte applikasjoner, men ikke beskyttet av OS-et. Eksempler: 3306 MySQL, 5432 PostgreSQL, 6379 Redis, 27017 MongoDB. En vanlig brukerprosess kan binde her, men du bør ikke kollidere med kjente apper.",
+              body: "IANA-listet, ikke OS-beskyttet (MySQL, Redis…).",
             },
             {
-              term: "Dynamiske/private porter (49152-65535)",
-              body: "Ingen registrering, brukes for ephemeral-allokering. Når socket-en lukkes, går porten gjennom TIME_WAIT (typisk 60-120 s) før den kan brukes igjen — for å unngå at gamle pakker landet på en helt ny forbindelse med samme tuppel.",
+              term: "Dynamiske porter (49152-65535)",
+              body: "Til ephemeral-bruk; TIME_WAIT etter lukking.",
             },
             {
-              term: "Port-forwarding (NAT)",
-              body: "På en hjemme-ruter har alle klienter samme offentlige IP-adresse. Ruteren modifiserer kilde-port (og IP) på vei ut, lagrer mappingen, og reverserer den på vei tilbake. Demux skjer da i to nivåer: ruteren bruker sin port-tabell, klienten bruker sin lokale 4-tuppel.",
+              term: "NAT port-forwarding",
+              body: "Hjemme-ruter mapper privat:port ↔ offentlig:port.",
             },
             {
-              term: "Socket-API: bind() og connect()",
-              body: "bind() knytter en socket til en lokal (IP, port). Serveren gjør dette eksplisitt med en kjent port. Klienten skipper det vanligvis og lar OS-en velge ephemeral. connect() setter destinasjons-IP og -port; for TCP utløser den også 3-veis handshake. Etter connect() er 4-tuppelen full og demux fungerer.",
+              term: "bind() og connect()",
+              body: "bind = ta lokal port; connect = sett dest + handshake.",
             },
-            {
-              term: "Port-uttømming",
-              body: "Hvis en klient lager mange forbindelser per sekund (web-skraper, lasttest), kan ephemeral-rommet (~16k porter) bli tomt før gamle forbindelser har forlatt TIME_WAIT. Resultat: connect() feiler med EADDRNOTAVAIL. Løsning: redusere TIME_WAIT, eller bruke flere kilde-IP-er.",
-            },
-            {
-              term: "Demux-mismatch og RST",
-              body: "Hvis en TCP-pakke kommer med en 4-tuppel som ikke matcher noen aktiv socket, svarer kjernen vanligvis med RST. Det er hvordan «port closed»-meldinger oppstår — i motsetning til UDP, hvor en lukket port produserer ICMP «port unreachable».",
-            },
+            { term: "Port-uttømming", body: "Slipper opp ephemeral → EADDRNOTAVAIL." },
+            { term: "Demux-mismatch og RST", body: "Ingen socket matcher → RST tilbake." },
           ]}
         />
-        <Illustration caption="TCP-demux med 4-tuppel: én lytte-port, men hver aktiv forbindelse får sin egen socket basert på kilde-tuppelen.">
+        <Illustration caption="TCP-demux med 4-tuppel: én lytte-port, hver aktiv forbindelse får egen socket.">
           <MuxDemuxSvg />
         </Illustration>
       </div>
+
+      <div className="grid gap-3 lg:grid-cols-2">
+        <Metafor tittel="Lågårdsskolens postsystem">
+          <p>
+            En postmann (postmannen = IP-laget) kommer til hovedinngangen og leverer hele dagens
+            postbunke på resepsjonen. På bunken står bare «Lågårdsskolen, 4000 Stavanger».
+            Resepsjonisten (transport-laget) plukker så ett og ett brev, leser klasse-rom-nummeret
+            på konvolutten, og legger brevet i riktig posthylle.
+          </p>
+          <p>
+            Klasserommet er prosessen. Romnummeret er portnummeret. Hovedadressen er IP-adressen.
+            Demultipleksing = resepsjonistens sortering. Uten det havner alt på samme bord, og
+            historielæreren må sile gjennom matte-prøver for å finne sine fagsvar.
+          </p>
+        </Metafor>
+
+        <Metafor tittel="4-tuppel = Tinder-match, 2-tuppel = anonym DM-boks">
+          <p>
+            TCP er som Tinder-match: det matcher én bestemt klient med én bestemt server-instans.
+            Identiteten består av begge parters fulle adresse — derfor 4-tuppel. To forskjellige
+            klienter mot samme server-port får hver sin private samtale.
+          </p>
+          <p>
+            UDP er som en anonym DM-boks: alle som vet rom-nummeret kan slenge en lapp inn. Server
+            må selv kikke på «hvem kommer dette fra»-feltet på lappen. Bare 2-tuppel: (dest-IP,
+            dest-port).
+          </p>
+        </Metafor>
+      </div>
+
+      <Metafor tittel="Ephemeral porter = engangs-mobilnumre">
+        <p>
+          Når du ringer pizzeria-en bruker du ditt eget telefonnummer. Pizzeria-en vet alltid hvor
+          den skal ringe tilbake. Men hvis du har 3 faner åpne mot <code>nrk.no</code> samtidig, kan
+          ikke alle bruke nummer «1». Hver fane må ha sitt eget engangs-mobilnummer (51001, 51002,
+          51003) som OS-et leverer ut.
+        </p>
+        <p>
+          TIME_WAIT er karantenetiden før nummeret kan brukes igjen — for å unngå at gamle samtaler
+          forveksles med nye når noen ringer tilbake til samme nummer.
+        </p>
+      </Metafor>
+
+      <Illustration caption="Portnumre som rom-nummer i et postsystem: én adresse (IP), mange rom (porter).">
+        <PortRomNummerSvg />
+      </Illustration>
 
       <Hvorfor title="Hvorfor 4-tuppel for TCP, men 2-tuppel for UDP?">
         <p>
@@ -511,64 +554,87 @@ function Section33() {
       <div className="grid gap-3 lg:grid-cols-2">
         <Defs
           items={[
+            { term: "Forbindelsesløs", body: "Ingen handshake. Spar 1 RTT." },
             {
-              term: "Forbindelsesløs",
-              body: "Ingen handshake før data sendes. Første pakke er allerede en datapakke. Sparer 1 RTT ved oppstart — verdifullt for korte forespørsler som DNS, hvor handshake-tiden ville dominere.",
+              term: "UDP-header (8 bytes)",
+              body: "Kilde-port, dest-port, lengde, sjekksum. Slutt.",
             },
-            {
-              term: "UDP-header (8 bytes, 4 felter)",
-              body: "Kilde-port (2 bytes), dest-port (2 bytes), lengde (2 bytes — totalt segment inkl. header), sjekksum (2 bytes). Det er alt. TCP-headeren er minst 20 bytes og typisk større.",
-            },
-            {
-              term: "Sjekksum",
-              body: "Enkelt 16-bits one's-complement-sum over header + data + en pseudo-header som inkluderer IP-adressene. Detekterer bit-feil med høy sannsynlighet, men UDP kan ikke korrigere — det dropper bare den feilaktige pakken og overlater resten til applikasjonen.",
-            },
-            {
-              term: "Melding-grenser bevares",
-              body: "Hver sendto() blir nøyaktig én UDP-pakke. Hvis du sender 100 bytes og deretter 200 bytes, vil mottakeren få ett recvfrom() som returnerer 100, og deretter ett som returnerer 200. TCP ville fritt kunne slått dem sammen eller delt dem opp.",
-            },
+            { term: "Sjekksum", body: "16-bits one's-complement; detekterer, korrigerer ikke." },
+            { term: "Melding-grenser bevares", body: "Hvert sendto() = én pakke." },
             {
               term: "Når UDP slår TCP",
-              body: "Når 1) leveransen må være rask og en tapt enhet er foreldet før retransmisjon hjelper (sanntids-tale/spill), 2) forespørselen er kort og handshake-overhead er stor (DNS, NTP), 3) du selv vil styre påliteligheten (QUIC bygger sin egen pålitelighet over UDP), 4) du sender til mange mottakere samtidig (multicast).",
+              body: "Sanntid, korte spørringer, multicast, custom-pålitelighet.",
             },
             {
               term: "QUIC-paradokset",
-              body: "Moderne HTTP/3 kjører over UDP, ikke TCP. Hvorfor? Fordi de bygde en helt ny pålitelighets- og congestion-control-protokoll på applikasjonsnivå (i userspace), og UDP var den raskeste veien gjennom OS-kjernen og NAT-bokser. Bevis på at transportlaget kan re-implementeres når det trengs.",
+              body: "HTTP/3 over UDP — bygger TCP-erstatning i userspace.",
             },
             {
               term: "Pseudo-header for sjekksum",
-              body: "UDP-sjekksummen dekker også en pseudo-header som inneholder kilde-IP, dest-IP, protokoll (17) og UDP-lengde. Pseudo-headeren overføres ikke; den brukes bare ved beregning. Hensikten: oppdage tilfeller der pakken havnet hos feil mottaker pga. korrupt IP-header. Det er litt et lag-brudd (transport leser nettverk-felter), men nyttig.",
+              body: "IP-adresser tas med i sjekksum-beregning.",
             },
             {
-              term: "Maksimal UDP-pakkestørrelse",
-              body: "UDP-lengde-feltet er 16 bits → maks 65535 bytes, minus 8 (UDP-header) minus 20 (IP-header) = 65507 bytes nyttelast. I praksis fragmenteres alt over MTU (typisk 1500 bytes på Ethernet) i IP-laget, og tap av én fragment ødelegger hele datagrammet. De fleste UDP-baserte protokoller holder seg under ~512-1400 bytes.",
+              term: "Maksimal UDP-pakke",
+              body: "65507 bytes; men IP fragmenterer over MTU (~1500).",
             },
-            {
-              term: "Ingen sjekksum (frivillig på IPv4)",
-              body: "På IPv4 er UDP-sjekksumfeltet teknisk valgfritt: sender kan sette det til 0 for å hoppe over. Lite brukt i dag (sjekksumberegning er nesten gratis). På IPv6 er sjekksum obligatorisk fordi IP-laget der ikke selv har sjekksum.",
-            },
-            {
-              term: "Demultipleksering ved port",
-              body: "Som forklart i 3.2: UDP demuxer på (dest-IP, dest-port). Hvis ingen socket lytter, returnerer kjernen ICMP «port unreachable». Det er hvordan traceroute oppdager mellomstasjoner: send UDP til en port ingen lytter på, regn ut ruten via ICMP-svar.",
-            },
-            {
-              term: "Bruk-tilfeller for UDP",
-              body: "DNS (oppslag), DHCP (IP-tildeling), NTP (tids-synk), SNMP (overvåkning), QUIC/HTTP3, mediabærere i SIP/RTP, online-spill, real-time telemetri, multicast og broadcast (kun UDP støtter dette siden TCP er punkt-til-punkt).",
-            },
-            {
-              term: "VoIP-typisk valg",
-              body: "VoIP (telefon over IP) sender 20 ms talepakker. Hver pakke er ~40 bytes data + 12 bytes RTP + 8 bytes UDP + 20 bytes IP = ~80 bytes. Tap av én pakke = 20 ms knirk. TCP ville stoppet hele samtalen mens den retransmitterte — uakseptabelt. UDP + applikasjons-jitter-buffer = den riktige løsningen.",
-            },
-            {
-              term: "DCCP — Datagram Congestion Control Protocol",
-              body: "Sjelden brukt, men finnes: gir UDP-lignende beskjedlevering, men med congestion control innebygd. Tanken er å redde nettet fra UDP-flommer uten å tvinge applikasjonen til å selv implementere AIMD. I praksis bruker de fleste apper bare UDP og passer congestion selv eller hopper over det.",
-            },
+            { term: "Frivillig sjekksum (IPv4)", body: "Kan settes til 0; obligatorisk på IPv6." },
+            { term: "Demux ved port", body: "Ingen lytter → ICMP «port unreachable»." },
+            { term: "Bruk-tilfeller", body: "DNS, DHCP, NTP, QUIC, VoIP, spill, multicast." },
+            { term: "VoIP-valg", body: "20 ms tale-pakker; tap = liten knirk, TCP ville frosset." },
+            { term: "DCCP", body: "UDP + congestion control. Sjelden brukt." },
           ]}
         />
-        <Illustration caption="UDP-header: 8 bytes, fire 2-byte-felter. Sammenlign med TCP-headerens 20+ bytes.">
+        <Illustration caption="UDP-header: 8 bytes, fire 2-byte-felter. TCP-headeren er minst 20.">
           <UdpHeaderSvg />
         </Illustration>
       </div>
+
+      <div className="grid gap-3 lg:grid-cols-2">
+        <Metafor tittel="UDP = postkort, TCP = rekommandert brev">
+          <p>
+            <strong>UDP er et postkort:</strong> du skriver adressen, slenger det i postkassen, og
+            håper det kommer fram. Ingen kvittering. Ingen forsegling. Postmannen kan lese alt. Hvis
+            det blir borte, så blir det borte. Til gjengjeld er det billig, lett, og du slipper å gå
+            innom postkontoret for å sette opp en avtale.
+          </p>
+          <p>
+            <strong>TCP er rekommandert brev med kvittering:</strong> du må gå innom postkontoret
+            (handshake), du får sporings-nummer, kvittering på leveranse, og hvis brevet ikke kommer
+            fram blir det sendt på nytt. Pålitelig, men trege og omstendelig.
+          </p>
+        </Metafor>
+
+        <Metafor tittel="QUIC = postkort med eget sporings-system limt på">
+          <p>
+            QUIC (HTTP/3) er som å sende et postkort, men limt på et eget DIY sporings-system: du
+            nummererer postkortene selv, sender dem på nytt hvis de blir borte, og noterer
+            leveringen i din egen loggbok. Hvorfor ikke bare bruke rekommandert?
+          </p>
+          <p>
+            Fordi postkontorene (NAT-bokser, brannmurer) godtar postkort ukritisk, men rekommanderte
+            forsendelser krever spesielle skjemaer. Postkortet er fluktveien — du får
+            TCP-pålitelighet uten å være låst til kjernens TCP-stack.
+          </p>
+        </Metafor>
+      </div>
+
+      <Metafor tittel="DNS over UDP = SMS-spørsmål til kompisen">
+        <p>
+          Du sender SMS: «Hva er adressen til Burger King på Nedre Holmegate?». Kompisen svarer:
+          «Verftsgata 14». Total tid: 2 sekunder. Du kunne ringt og hatt en høflig samtale med
+          oppstarts-fraser og avslutnings-fraser («Hei Pål, hvordan går det? Du, kjapt spørsmål…
+          jaja, ha det bra»), men det ville tatt 30 sekunder for samme svar.
+        </p>
+        <p>
+          DNS-oppslag er sekund-kritisk for hver eneste nettside-lasting. UDP gir deg 1 RTT total.
+          TCP ville krevd 2 RTT (handshake + spørring). Når svaret uansett er kort, og du kan bare
+          prøve igjen hvis SMS-en blir borte, er det åpenbart valg.
+        </p>
+      </Metafor>
+
+      <Illustration caption="Postkort vs rekommandert: UDP og TCP visualisert som postvesen-metafor.">
+        <PostkortVsRekSvg />
+      </Illustration>
 
       <Hvorfor title="Hvorfor finnes UDP når TCP gir mye mer?">
         <p>
@@ -665,72 +731,80 @@ function Section34() {
       <div className="grid gap-3 lg:grid-cols-2">
         <Defs
           items={[
-            {
-              term: "RDT 1.0 — perfekt kanal",
-              body: "Antakelse: ingen bit-feil, ingen tap, ingen omsortering. Avsender bare sender; mottaker bare mottar. Trivielt. Tjener som start-punkt.",
-            },
-            {
-              term: "RDT 2.0 — bit-feil, ingen tap",
-              body: "Vi legger til en sjekksum og to nye meldinger fra mottakeren: ACK (alt godt, send neste) og NAK (jeg fikk en korrupt pakke, send på nytt). Avsenderen stopper og venter på svar. Problem: hva hvis selve ACK-en blir korrupt?",
-            },
-            {
-              term: "RDT 2.1 — sekvensnummer",
-              body: "Når avsenderen ikke kan stole på ACK-en, må vi vite om mottakeren har sett pakken før. Vi legger til 1-bits sekvensnummer (0 eller 1). Hvis avsenderen får tvetydig svar, sender den samme sekvensnummer på nytt; mottakeren ser at det er duplikat og sender ACK igjen uten å levere oppover.",
-            },
-            {
-              term: "RDT 2.2 — bare ACK, ingen NAK",
-              body: "Forenklingstrinn: mottakeren sender ACK(0) eller ACK(1) for å indikere hvilken pakke som ble korrekt mottatt. Et duplikat ACK fungerer som NAK — avsender skjønner at neste pakke ikke kom fram.",
-            },
-            {
-              term: "RDT 3.0 — pakketap",
-              body: "Den virkelige verdenen: pakker kan forsvinne helt. Hvis avsenderen sitter og venter på en ACK som aldri kommer, henger den for alltid. Løsning: timeout. Avsenderen starter en timer; hvis ingen ACK før timeout, retransmitter. Hvis ACK var bare forsinket, oppdager mottakeren duplikat via sekvensnummer.",
-            },
-            {
-              term: "Stop-and-wait",
-              body: "Alle RDT-versjoner bruker dette: send én pakke, vent på ACK, send neste. Korrekt, men forferdelig throughput-utnyttelse over lenker med stor båndbredde-forsinkelse-produkt. En 1 Gbps lenke med 50 ms RTT som sender 1500-byte pakker stop-and-wait når under 1 % av kapasiteten.",
-            },
-            {
-              term: "Pipelining",
-              body: "Løsningen på stop-and-wait: ha flere pakker «in flight» samtidig. Avsenderen sender N pakker før den må vente på første ACK. To klassiske skjemaer: Go-Back-N (én timer for hele vinduet, retransmitter alt fra første ubekreftede ved tap) og Selective Repeat (egen timer og ACK per pakke). TCP er en hybrid.",
-            },
-            {
-              term: "Go-Back-N (GBN)",
-              body: "Avsender holder et vindu på N ubekreftede pakker. Mottaker ACK-er bare den siste sammenhengende mottatte (kumulativ ACK), kaster alle ute-av-orden-pakker. Ved tap eller timeout: avsender retransmitterer alt fra første ubekreftede og fremover. Enkel mottaker (ingen buffer for ute-av-orden), men sløsing av båndbredde ved tap midt i et stort vindu.",
-            },
-            {
-              term: "Selective Repeat (SR)",
-              body: "Egen timer per pakke i vinduet, og mottakeren buffer-er ute-av-orden pakker for å levere dem senere i orden. ACK-er er per pakke. Ved tap retransmitterer avsender BARE den tapte. Bedre båndbredde-utnyttelse enn GBN, men kompleks mottaker (må holde og rebuilde buffer). Krever også sekvensnummer-rom ≥ 2N.",
-            },
-            {
-              term: "Vindu-størrelse og sekvensnummer-rom",
-              body: "For GBN: rom ≥ N+1. For SR: rom ≥ 2N — ellers kan mottakeren ikke skille en retransmisjon av den eldste fra en helt ny pakke som har samme sekvensnummer (mod-aritmetikk). TCPs 32-bits sekvensnummer-rom = 4 GiB, mer enn nok for praksis.",
-            },
-            {
-              term: "Utnyttelse U for stop-and-wait",
-              body: "U = (L/R) / (RTT + L/R), der L = pakkestørrelse i bits, R = lenke-rate, RTT = round-trip-time. Eksempel: L = 8000 bits, R = 1 Gbps, RTT = 30 ms. Sendetid L/R = 8 μs. U = 8 μs / 30 008 μs ≈ 0.027 %. Stop-and-wait er praktisk talt ubrukelig på fete lenker.",
-            },
-            {
-              term: "Båndbredde-forsinkelse-produkt (BDP)",
-              body: "BDP = R · RTT. Hvor mye data «får plass» i røret som flyr mellom partene. På en 1 Gbps lenke med 30 ms RTT er BDP = 1e9 · 0.030 = 30 Mbit ≈ 3.75 MB. For å fylle røret må avsenderen ha minst så mange ubekreftede bytes — derfor må vindusstørrelsen i TCP økes med høyhastighets-lenker (window scaling).",
-            },
-            {
-              term: "Duplikat-deteksjon",
-              body: "Alle robuste RDT-varianter må takle duplikater. Sekvensnumre løser det: hvis mottaker ser samme sekvensnr som den nettopp leverte, behandler den det som duplikat — sender ACK på nytt, men leverer ikke til applikasjonen. Idempotens på leveransen er prinsippet.",
-            },
-            {
-              term: "Negativ ACK (NAK) vs duplikat-ACK",
-              body: "Tidlig RDT brukte eksplisitt NAK for å si «pakke korrupt». Senere versjoner droppet NAK helt: et duplikat-ACK gir samme informasjon (mottakeren venter fortsatt på samme pakke). TCP bruker dette: tre dupliserte ACK-er fungerer som «pakken etter den ACK-en er åpenbart tapt — retransmitter NÅ».",
-            },
-            {
-              term: "Timeout vs RTT-estimat",
-              body: "Hvor lang skal en timeout være? For kort = falske retransmisjoner (spam). For lang = lang ventetid ved ekte tap. Løsning: estimere RTT dynamisk og sette timeout = RTT + sikkerhetsmargin. TCP bruker EWMA pluss variansestimat. RDT 3.0 antar at vi har et fornuftig timeout-tall som inngangsdata.",
-            },
+            { term: "RDT 1.0", body: "Perfekt kanal — bare send og motta." },
+            { term: "RDT 2.0", body: "Bit-feil → + sjekksum, ACK/NAK." },
+            { term: "RDT 2.1", body: "Korrupt ACK → + 1-bits sekvensnr." },
+            { term: "RDT 2.2", body: "Forenkling: duplikat-ACK erstatter NAK." },
+            { term: "RDT 3.0", body: "Pakketap → + timeout + retransmisjon." },
+            { term: "Stop-and-wait", body: "Send én, vent ACK. Trygt, men tregt." },
+            { term: "Pipelining", body: "Flere pakker «in flight» samtidig." },
+            { term: "Go-Back-N (GBN)", body: "Tap → retransmitter alt fra første ubekreftet." },
+            { term: "Selective Repeat (SR)", body: "Tap → retransmitter bare den tapte." },
+            { term: "Sekvensnr-rom", body: "GBN: ≥ N+1. SR: ≥ 2N." },
+            { term: "Utnyttelse U", body: "U = (L/R)/(RTT + L/R). Lav på fete lenker." },
+            { term: "BDP", body: "Båndbredde × RTT = bytes som «får plass» i røret." },
+            { term: "Duplikat-deteksjon", body: "Sekvensnr → idempotent leveranse." },
+            { term: "NAK vs duplikat-ACK", body: "Duplikat-ACK gir samme info som NAK." },
+            { term: "Timeout vs RTT-estimat", body: "For kort = spam; for lang = treg." },
           ]}
         />
         <Illustration caption="RDT-progresjonen: hver versjon legger til håndtering av ett nytt feil-scenario.">
           <RdtProgressionSvg />
         </Illustration>
       </div>
+
+      <div className="grid gap-3 lg:grid-cols-2">
+        <Metafor tittel="RDT 3.0 = huskeliste over telefon">
+          <p>
+            Du ringer bestemoren din og dikterer en handleliste: «Melk. Brød. Egg. Smør.» Etter hver
+            ting gjentar hun tilbake: «Melk» — du sier «ok». Det er ACK.
+          </p>
+          <p>
+            Hvis hun ikke hørte deg (bit-feil), spør hun «hva sa du?» — det er NAK, og du gjentar.
+            Hvis du nettopp har sagt «melk» og hun gjentar «melk», men du så åpner munnen for å si
+            «brød» og hun samtidig sier «melk» igjen — er det andre «melk» en gjentakelse eller en
+            ny vare? Du nummererer: «Vare 1: melk. Vare 2: brød.» Det er sekvensnummeret.
+          </p>
+          <p>
+            Hvis linjen klikker bort midt i et ord (pakketap), og du sitter og venter — har du
+            telefon-vakthold på? Du bestemmer: «hvis hun ikke svarer på 5 sekunder, gjenta det jeg
+            sa.» Det er timeout. Hvis hun faktisk hørte «melk» men du tror linjen brakk, og du
+            gjentar «melk», ser hun at det er vare 1 og setter ikke melk på listen to ganger.
+          </p>
+        </Metafor>
+
+        <Metafor tittel="GBN vs SR = bagasje-bånd vs pakke-utlevering">
+          <p>
+            <strong>Go-Back-N er bagasje-båndet på flyplassen:</strong> alle kofferter må komme i
+            samme rekkefølge som de ble pakket inn. Hvis koffert #4 mangler, kaster bakker-en alle
+            koffertene som kommer etter, og forlanger at flyselskapet sender hele bunken på nytt fra
+            #4 og framover. Veldig enkel mottaker (ingen buffer), veldig sløsete.
+          </p>
+          <p>
+            <strong>Selective Repeat er post-pakke-utlevering:</strong> hver pakke har eget
+            sporings- nummer. Hvis pakke #4 forsvinner, oppbevarer mottakeren #5, #6, #7 i lageret
+            og venter bare på at #4 skal sendes på nytt. Smartere, men krever buffer-plass og
+            bok-holderi.
+          </p>
+        </Metafor>
+      </div>
+
+      <Metafor tittel="Stop-and-wait på fiber = supersonisk fly med 1 koffert">
+        <p>
+          Tenk på et supersonisk fly som flyr Oslo–Tromsø på 30 ms. Det har plass til 1000
+          kofferter, men du sender bare én koffert per tur, og venter på at flyet returnerer tomt
+          før du sender neste. Utnyttelse: 0.1 %.
+        </p>
+        <p>
+          Pipelining = pakk flyet fullt før hver avgang. Båndbredde-forsinkelse-produktet er hvor
+          mange kofferter som passer i flyet under én tur. På fiber-lenker er det enormt — vinduet
+          må være tilsvarende stort, ellers «flyr du tomt».
+        </p>
+      </Metafor>
+
+      <Illustration caption="Stop-and-wait vs pipelining: forskjellen mellom tom og full fly-lass per tur.">
+        <StopAndWaitVsPipelineSvg />
+      </Illustration>
 
       <Hvorfor title="Hvorfor bygge RDT inkrementelt i stedet for å hoppe rett til full TCP?">
         <p>
@@ -839,84 +913,94 @@ function Section35() {
       <div className="grid gap-3 lg:grid-cols-2">
         <Defs
           items={[
+            { term: "Segmentering", body: "Del bytestrøm i MSS-store biter (~1460 B)." },
+            { term: "Sekvensnummer (32 bits)", body: "Byte-offset, ikke pakke-teller." },
+            { term: "Kumulativ ACK", body: "ACK(N) = «alt før N har jeg»." },
             {
-              term: "Segmentering",
-              body: "TCP bryter applikasjonens bytestrøm i segmenter som passer innenfor MSS (Maximum Segment Size, typisk 1460 bytes på Ethernet). Mottakeren har en bytenummert «buffer» og setter sammen igjen, slik at applikasjonen leser sammenhengende bytes.",
+              term: "Tre dup-ACK = fast retransmit",
+              body: "Retransmitter uten å vente på timeout.",
+            },
+            { term: "RTT-estimat (EWMA)", body: "α·ny + (1-α)·gamle; α = 0.125." },
+            { term: "Flow control", body: "rwnd = ledig plass i mottakers buffer." },
+            {
+              term: "3-veis handshake",
+              body: "SYN → SYN-ACK → ACK. Begge sider får ISN bekreftet.",
             },
             {
-              term: "Sekvensnummer (32 bits)",
-              body: "I motsetning til RDT er TCPs sekvensnummer en byte-offset, ikke en pakke-teller. Hvis et segment har sekvensnr 1000 og inneholder 500 bytes, har neste segment sekvensnr 1500. Det gjør delvis overlapp og delvis retransmisjon mulig.",
+              term: "TCP-tilstander",
+              body: "CLOSED → LISTEN → SYN_SENT → … → ESTABLISHED → … → TIME_WAIT.",
             },
-            {
-              term: "Kumulativ ACK",
-              body: "Mottakeren sender ACK(N) for å si «jeg har mottatt alle bytes opp til, men ikke inkludert, N — gi meg N». Hvis pakker 1, 3, 4 kommer (2 mangler), sender mottakeren ACK = sekvensnr for pakke 2. Når 2 endelig ankommer, hopper ACK forbi alt som er bufret.",
-            },
-            {
-              term: "Tre dupliserte ACK-er (fast retransmit)",
-              body: "Hvis avsenderen får tre identiske ACK-er på rad, antar den at pakken etter den ACK-en er tapt — uten å vente på timeout. Mye raskere reaksjon. Innebygget i alle moderne TCP-implementasjoner.",
-            },
-            {
-              term: "RTT-estimat med EWMA",
-              body: "TCP måler RTT for hver ACK den får. For å unngå at en enkelt utlier setter timeout for høyt eller lavt, brukes et glidende eksponentielt vektet snitt: EstimatedRTT = (1-α)·EstimatedRTT + α·SampleRTT, typisk med α = 0.125. Variansen estimeres på lignende måte og brukes til å sette TimeoutInterval = EstimatedRTT + 4·DevRTT.",
-            },
-            {
-              term: "Flow control",
-              body: "Mottakeren har en buffer. Hvis applikasjonen leser sakte, kan buffer-en fylles. TCP unngår overflow ved at mottakeren rapporterer ledig plass i et felt kalt rwnd (receiver window) i hver ACK. Avsenderen sørger for at antall unACK-ede bytes ≤ rwnd.",
-            },
-            {
-              term: "3-veis handshake (SYN, SYN-ACK, ACK)",
-              body: "Før data kan sendes, må begge sider bli enige om initielle sekvensnumre. Klienten sender SYN med sin ISN; serveren svarer SYN+ACK med sin ISN; klienten ACK-er. Først nå er forbindelsen «established».",
-            },
-            {
-              term: "TCP-tilstander (state machine)",
-              body: "Hver TCP-forbindelse går gjennom en endelig automat. Hovedtilstander: CLOSED (ingen forbindelse), LISTEN (server venter), SYN_SENT (klient har sendt SYN), SYN_RCVD (server har fått SYN, sendt SYN-ACK), ESTABLISHED (data flyter), FIN_WAIT_1/2, CLOSE_WAIT, LAST_ACK, TIME_WAIT (vent på sene pakker), CLOSED igjen. Du kan se den med `netstat -an`.",
-            },
-            {
-              term: "TCP-flags i headeren (6 kontroll-bits)",
-              body: "SYN = «synchronize», starter forbindelse. ACK = «dette feltet er en gyldig kvittering». FIN = «jeg er ferdig med å sende, lukker min retning». RST = «reset, kast forbindelsen umiddelbart». PSH = «push», be mottakeren levere til app uten å vente. URG = «urgent», markerer noen bytes som hastedata (lite brukt). Flagene kan kombineres: typisk SYN+ACK, FIN+ACK.",
-            },
+            { term: "TCP-flags", body: "SYN, ACK, FIN, RST, PSH, URG." },
             {
               term: "Initial Sequence Number (ISN)",
-              body: "Når en TCP-side begynner en forbindelse, velger den en tilfeldig 32-bits ISN. Hvorfor tilfeldig? Sikkerhet — hvis ISN var forutsigbar, kunne en angriper forfalske TCP-pakker som passet inn i sekvensrommet. RFC 6528 anbefaler en kryptografisk basert generator.",
+              body: "Tilfeldig for sikkerhet (anti-spoofing).",
             },
-            {
-              term: "TIME_WAIT-tilstanden",
-              body: "Etter at en side har sendt siste ACK i lukkings-sekvensen, må den vente 2·MSL (Maximum Segment Lifetime) før socket-en frigjøres helt. Hensikt: forsikre at forsinkede duplikat-pakker fra denne forbindelsen dør ut før en ny forbindelse kan gjenbruke samme 4-tuppel. Typisk 60-120 s på Linux.",
-            },
-            {
-              term: "MSS — Maximum Segment Size",
-              body: "Maks bytes nyttelast per TCP-segment (eksklusiv header). Vanligvis MTU − IP-header − TCP-header = 1500 − 20 − 20 = 1460 bytes på Ethernet. Forhandles i SYN-pakkene via en TCP-opsjon. Hvis avsender velger MSS for høyt, fragmenteres IP-pakkene videre nedstrøms — uønsket.",
-            },
-            {
-              term: "Karn&apos;s algoritme",
-              body: "Når et segment retransmitteres, vet vi ikke om en ankommen ACK svarte på originalen eller retransmisjonen. Karn sier: ikke bruk en RTT-måling fra en pakke som ble retransmittert. I tillegg: ved hver timeout, doble TimeoutInterval («eksponentiell backoff»). Innfører kvalitet i RTT-estimatet og hindrer at en kort timeout permanent forblir kort.",
-            },
-            {
-              term: "Nagle&apos;s algoritme",
-              body: "Hindrer at TCP sender mange små segmenter (såkalt «silly window»). Regelen: hvis det er ubekreftede bytes utestående OG dataen vi har er mindre enn MSS, vent på flere bytes eller på ACK. Resultat: bedre båndbredde-utnyttelse, men ekstra latens for interaktive apper. Slå av med TCP_NODELAY for spill/ssh.",
-            },
-            {
-              term: "Delayed ACK",
-              body: "Mottaker venter typisk opptil 200 ms før den sender ACK, i håp om å piggyback-e på et data-segment som likevel skulle gå motsatt vei. Sparer mange små rene-ACK-pakker. Kombinert med Nagle på avsendersiden gir det ofte uventet latens for små forespørsel/svar-mønstre.",
-            },
-            {
-              term: "TCP-opsjoner",
-              body: "TCP-headeren kan utvides med opsjoner. De viktigste: MSS (avtalt segment-størrelse), Window Scale (multiplikator for rwnd så vi får større effektive vindu enn 65 535 bytes), SACK Permitted og SACK (selektiv kvittering), Timestamps (eksakt RTT-måling og PAWS-beskyttelse).",
-            },
-            {
-              term: "RST (reset)",
-              body: "TCP-flagget som dreper en forbindelse umiddelbart. Sendes når: pakke ankommer en lukket port, et halvåpent forsøk («ghost connection») oppdages etter restart, eller applikasjonen kaller `close()` mens data fortsatt er ulest. RST-er er en feilkilde i lasttester når noden går tom for ressurser.",
-            },
-            {
-              term: "Halv-lukking (half-close)",
-              body: "TCP er full-duplex, og kan lukkes asymmetrisk. Side A sender FIN: «jeg er ferdig med å sende», men kan fortsatt motta. Side B kan fortsette å sende. Brukes i protokoller som «klient sender forespørsel, lukker sin halv, mottar svar, lukker helt». shutdown(SHUT_WR) i sockets-API.",
-            },
+            { term: "TIME_WAIT", body: "Vent 2·MSL før 4-tuppel kan gjenbrukes." },
+            { term: "MSS", body: "Maks nyttelast = MTU − IP − TCP = 1460 B." },
+            { term: "Karn's algoritme", body: "Ikke bruk retransmittert pakke til RTT-måling." },
+            { term: "Nagle's algoritme", body: "Saml små segmenter — TCP_NODELAY slår av." },
+            { term: "Delayed ACK", body: "Mottaker venter ~200 ms for piggyback." },
+            { term: "TCP-opsjoner", body: "MSS, Window Scale, SACK, Timestamps." },
+            { term: "RST (reset)", body: "Drep forbindelsen umiddelbart." },
+            { term: "Half-close", body: "FIN i én retning, lytt i den andre." },
           ]}
         />
-        <Illustration caption="TCP-segment-header: 20 bytes minimum. Sekvensnr og ACK-felt er hjertet i påliteligheten.">
+        <Illustration caption="TCP-header (20 bytes min): sekvensnr og ACK-felt er hjertet i påliteligheten.">
           <TcpHeaderSvg />
         </Illustration>
       </div>
+
+      <div className="grid gap-3 lg:grid-cols-2">
+        <Metafor tittel="3-veis handshake = møte-avtale på tinder">
+          <p>
+            <strong>Klient (SYN):</strong> «Hei, jeg vil møtes onsdag kl. 19 på Bøker &amp; Børst,
+            mitt valg-nummer er 47281.»
+          </p>
+          <p>
+            <strong>Server (SYN-ACK):</strong> «Ja, jeg så meldingen om 47281 — møte avtalt. Mitt
+            eget valg-nummer er 88934.»
+          </p>
+          <p>
+            <strong>Klient (ACK):</strong> «Mottatt 88934 — vi sees onsdag.»
+          </p>
+          <p>
+            Hvorfor tre meldinger? Begge må vite at den ANDRE har bekreftet avtalen. Hvis bare to
+            meldinger, kan en gammel SMS fra forrige uke som omsider kommer fram, lure serveren til
+            å tro at klienten fortsatt er interessert. Den tredje meldingen lukker dialogen.
+          </p>
+        </Metafor>
+
+        <Metafor tittel="TCP-vindu = bestillinger ute hos pizzeriaen">
+          <p>
+            Du ringer pizzeria-en og bestiller flere pizzaer i serie. Du kunne lagt på etter hver
+            bestilling og ringt opp igjen — det er stop-and-wait, treigt. I stedet bestiller du
+            flere samtidig. Hvor mange du tør ha «ute» før du venter på en bekreftelse på den
+            første, er ditt sender-vindu (cwnd).
+          </p>
+          <p>
+            Pizzeria-en sier også: «vi har plass til maks 8 pizzaer i ovnen samtidig» — det er
+            mottakerens vindu (rwnd). Du holder antall ubekreftede bestillinger ≤ min(cwnd, rwnd).
+          </p>
+        </Metafor>
+      </div>
+
+      <Metafor tittel="EWMA RTT-estimat = vegg-termometer for nervøse forelder">
+        <p>
+          Du måler ditt barns kropps-temperatur hver morgen. Én dag viser den 38.5 — er barnet sykt
+          eller fikk termometeret feil verdi? Hvis du panikkutløser legebesøk på hver enkelt måling,
+          får du falske alarmer. Hvis du venter for lenge med å reagere, mister du tidlig diagnose.
+        </p>
+        <p>
+          EWMA er kompromisset: nytt estimat = 87.5 % gammelt gjennomsnitt + 12.5 % dagens måling.
+          En utlier på 38.5 drar bare estimatet opp ~0.05 grader. Men hvis temperaturen virkelig er
+          forhøyet over flere dager, vil estimatet stige jevnt. TCP-timeout settes basert på estimat
+          + 4 × varians — robust mot utliers, men reaktiv mot ekte endringer.
+        </p>
+      </Metafor>
+
+      <Illustration caption="TCP 3-veis handshake visualisert som dialog mellom to parter — hver melding bekrefter forrige.">
+        <ThreeWayHandshakeSvg />
+      </Illustration>
 
       <Hvorfor title="Hvorfor 3-veis handshake — hvorfor ikke 2-veis?">
         <p>
@@ -1042,78 +1126,94 @@ function Section36() {
           items={[
             {
               term: "Congestion collapse",
-              body: "Når lenkene fylles opp, øker kø-forsinkelsen, timeouts utløses, alle retransmitterer aggressivt, lastes øker enda mer, mer tap, flere retransmisjoner — en positiv feedback-løkke som gjør nettet ubrukelig selv om kapasiteten er der.",
+              body: "Tap → flere retransmisjoner → mer tap. Død-spiral.",
             },
             {
               term: "Congestion window (cwnd)",
-              body: "TCPs interne begrensning på hvor mange bytes som kan være «in flight». Avsendervinduet er min(rwnd, cwnd). Endrer seg dynamisk basert på opplevd nettverks-tilstand. Pakketap = signal om at nettet er fullt.",
+              body: "Maks bytes «in flight» fra nettverkets side.",
             },
-            {
-              term: "AIMD — Additive Increase, Multiplicative Decrease",
-              body: "Grunn-prinsippet i klassisk TCP: ved hver vellykket RTT, øk cwnd med 1 MSS (additivt). Ved tap, halver cwnd (multiplikativt). Det gir den karakteristiske sagtann-profilen og — viktigst — konvergerer mot en rettferdig deling av flaskehalsen mellom konkurrerende strømmer.",
-            },
-            {
-              term: "Slow start",
-              body: "Ved start av forbindelsen vet vi ikke nettets kapasitet. cwnd starter på 1 MSS og dobles hver RTT (eksponentielt). Når cwnd når en terskel (ssthresh) eller pakketap inntreffer, gå over til AIMD. Tross navnet vokser den raskt.",
-            },
-            {
-              term: "TCP Reno",
-              body: "Klassisk TCP-variant fra 1990. Bruker slow start, AIMD, og «fast recovery» — i stedet for å falle helt tilbake til 1 MSS ved tap, halver vi cwnd og fortsetter additivt. Var dominerende i tiår, men sliter på lenker med høyt båndbredde-forsinkelse-produkt.",
-            },
-            {
-              term: "TCP Cubic",
-              body: "Standard i Linux siden 2008 (og dermed på flesteparten av servere). Bruker en kubisk funksjon av tid-siden-tap til å bestemme cwnd. Vokser aggressivt etter et tap, men flater ut nær det forrige maks-punktet. Mye bedre throughput på lange, høybåndbredde-lenker enn Reno.",
-            },
-            {
-              term: "BBR — Bottleneck Bandwidth and RTT",
-              body: "Google, 2016. Bryter med tap-som-signal. Måler i stedet aktivt nettets båndbredde og minimum-RTT, og sender med en rate som matcher flaskehalsen uten å fylle køer. Resultat: høyere throughput og lavere latens samtidig, særlig på mobilnett og lange interkontinentale lenker.",
-            },
-            {
-              term: "Rettferdighet",
-              body: "AIMD har en pen egenskap: hvis to TCP-strømmer deler én flaskehals, konvergerer cwnd-ene deres mot like store verdier. Bevis ved «AIMD-diagrammet»: hver runde flytter punktet i 45-graders linje (begge øker likt), tap flytter mot origo (begge halveres). Linjen mot rettferdig deling er en attraktor.",
-            },
-            {
-              term: "ssthresh — Slow Start Threshold",
-              body: "Grenseverdien som skiller slow start (eksponentiell vekst) fra congestion avoidance (additiv vekst). Initialt veldig høyt. Når pakketap inntreffer, settes ssthresh = cwnd/2 og cwnd kuttes (til 1 ved timeout, til ssthresh ved tre dupliserte ACK-er). På den måten husker TCP «sist gang ble nettet trangt rundt cwnd/2-nivået».",
-            },
-            {
-              term: "Congestion-events: timeout vs 3 dup-ACK",
-              body: "TCP skiller to typer tap. Timeout: ingen ACK på lang stund — anta nettet er virkelig kvalt. Reaksjon: cwnd → 1 MSS, gå inn i slow start. Tre dupliserte ACK-er: vi får fortsatt ACK-er, så nettet flyter, bare én pakke mangler. Reaksjon: cwnd halveres, fortsetter i congestion avoidance (TCP Reno «fast recovery»).",
-            },
-            {
-              term: "ECN — Explicit Congestion Notification",
-              body: "I stedet for å vente på pakketap som signal, kan rutere markere bits i IP-headeren når køen begynner å fylles. Mottakeren ekko-er ECN-flagget i ACK-en. Avsenderen halverer cwnd som om det var et tap, men uten å miste pakker. Krever støtte hos rutere, sender og mottaker. Stadig mer utbredt.",
-            },
-            {
-              term: "Throughput-formel for AIMD",
-              body: "For en TCP-strøm med tapsrate p, MSS = MSS-størrelse, RTT = round-trip-time, gir AIMD-modellen omtrent throughput ≈ (1.22 · MSS) / (RTT · √p). Innebærer at en strøm med høy RTT eller dårlig lenke (høy p) er sterkt underlegen en med lav RTT eller lite tap — selv om de er teknisk «like rettferdige». Kalles «RTT-urettferdighet».",
-            },
-            {
-              term: "TCP Tahoe (eldre)",
-              body: "Forløperen til Reno. Ved tap (uansett signal): cwnd → 1 MSS, ssthresh → cwnd/2, slow start på nytt. Veldig konservativ — kaster bort potensielt mange RTT-er på å gå tilbake til 1. Reno introduserte «fast recovery» for tilfellet der vi fikk dup-ACK-er (nettet flyter fortsatt, ikke trenger full retur til 1).",
-            },
-            {
-              term: "Bufferbloat",
-              body: "Rutere med store bufre forsinker pakker i stedet for å droppe dem. TCP venter på pakketap som signal, men når det signalet endelig kommer, har køen vært full lenge — alle pakker har fått høy latens. ECN og BBR adresserer dette: ECN sender signal tidligere, BBR sender ikke pakker som likevel havner i kø.",
-            },
-            {
-              term: "Self-clocking (TCP-klokken)",
-              body: "TCP justerer sendetakt etter ACK-ankomster. Hver ACK «frigjør» en eller flere nye bytes til å sendes (når cwnd er fullt). Hvis nettet er trangt, kommer ACK-er sakte, og sendetakten reduseres automatisk uten eksplisitt regulering. Det er en av grunnene til at TCP er så robust uten sentral koordinator.",
-            },
-            {
-              term: "Sender-vinduet: min(cwnd, rwnd)",
-              body: "Mengden ubekreftede bytes TCP kan ha utestående er begrenset til det minste av cwnd (begrensning fra nettverket) og rwnd (begrensning fra mottakers buffer). Hvis cwnd er flaskehalsen → congestion-bound. Hvis rwnd er det → receiver-bound. Du kan diagnostisere med en pakkesnif: hvor lavt blir vinduet, og hva drev det dit?",
-            },
-            {
-              term: "AIMD-konvergens (matematisk)",
-              body: "Tenk på to strømmer A og B som koordinater i et plan. Additiv vekst: (A+k, B+k) — bevegelse langs 45-graders linje, bevarer A−B. Multiplikativ reduksjon: (A/2, B/2) — bevegelse mot origo langs strålen fra origo, halverer både A og B (men også A−B). Differansen reduseres bare ved tap, aldri ved vekst → konvergerer mot A = B.",
-            },
+            { term: "AIMD", body: "+1 per RTT (vekst); /2 per tap (reduksjon)." },
+            { term: "Slow start", body: "cwnd dobles per RTT inntil ssthresh eller tap." },
+            { term: "TCP Reno", body: "Slow start + AIMD + fast recovery." },
+            { term: "TCP Cubic", body: "Linux-standard. Kubisk vekst etter tap." },
+            { term: "BBR", body: "Mål båndbredde og RTT direkte, ikke tap." },
+            { term: "Rettferdighet", body: "AIMD konvergerer mot lik deling av flaskehalsen." },
+            { term: "ssthresh", body: "Grense mellom slow start og AIMD." },
+            { term: "Timeout vs 3 dup-ACK", body: "Timeout → cwnd=1. 3 dup → halver." },
+            { term: "ECN", body: "Rutere markerer overbelastning før tap." },
+            { term: "AIMD-throughput", body: "≈ 1.22·MSS / (RTT·√p)." },
+            { term: "TCP Tahoe", body: "Forløper: alltid tilbake til 1 MSS ved tap." },
+            { term: "Bufferbloat", body: "Store ruter-bufre = treghet, ikke tap." },
+            { term: "Self-clocking", body: "ACK-takten regulerer sende-takten automatisk." },
+            { term: "Sender-vindu", body: "min(cwnd, rwnd) — nett eller mottaker." },
+            { term: "AIMD-konvergens", body: "Halvering bringer forholdet nærmere 1:1." },
           ]}
         />
-        <Illustration caption="AIMD-sagtann: lineær økning av cwnd til pakketap utløser halvering, så starter syklusen på nytt.">
+        <Illustration caption="AIMD-sagtann: lineær vekst, halvering ved tap. Klassisk TCP-rytme.">
           <AimdSawtoothSvg />
         </Illustration>
       </div>
+
+      <div className="grid gap-3 lg:grid-cols-2">
+        <Metafor tittel="Congestion control = biltrafikk på E18">
+          <p>
+            E18 har én flaskehals — Sjølyst-krysset. Hver morgen prøver hver bilist å presse seg
+            gjennom så fort hen kan (slow start: alle kjører i 90 km/t). Når køen begynner å bygge
+            seg opp, vil noen biler nødt til å stå stille (pakketap). Da blir alle litt mer
+            forsiktige.
+          </p>
+          <p>
+            AIMD = «når trafikken flyter, øk farten gradvis (én bil per minutt har lov til å fylle
+            på). Når noen står stille, halver alle farten umiddelbart.» Etter mange runder finner
+            alle en jevn fart som flaskehalsen tåler — uten sentral trafikk-styring. Hver bilist
+            justerer kun ut fra hva hen selv opplever.
+          </p>
+        </Metafor>
+
+        <Metafor tittel="Slow start = test av varmt badekar">
+          <p>
+            Når du fyller badekaret skrur du ikke kranen full kraft umiddelbart. Du begynner
+            forsiktig (cwnd = 1), kjenner: «ah, ikke for varmt». Da skrur du opp dobbelt (cwnd = 2).
+            Fortsatt OK? Dobbelt igjen (cwnd = 4). Du dobler så lenge alt går bra.
+          </p>
+          <p>
+            Når du merker at varmtvannet plutselig brenner (pakketap), stopper du opp, husker «sist
+            gang ble det for varmt rundt 32» (ssthresh), og fra nå skrur du opp én klikk om gangen
+            (AIMD). Aldri mer aggressivt enn det.
+          </p>
+        </Metafor>
+      </div>
+
+      <Metafor tittel="BBR = se på vannivået, ikke vent på flommen">
+        <p>
+          Klassisk TCP (Reno/Cubic) er som å fylle bøtte til den renner over for å vite at den er
+          full. Du får pålitelig signal — men du har nettopp søl all over kjøkkengulvet.
+        </p>
+        <p>
+          BBR er som å se på vann-stranden direkte: jeg måler hvor fort vannet renner i fra kranen
+          (båndbredde) og hvor høyt det stiger (RTT). Når stigningen begynner å øke uten at
+          gjennomstrømmen øker, vet jeg at det fylles opp i kø. Da stopper jeg uten å vente på at
+          den faktisk overflommer. Resultat: høyere throughput OG lavere latens samtidig.
+        </p>
+      </Metafor>
+
+      <Metafor tittel="Bufferbloat = elastisk kø foran kassen">
+        <p>
+          Tenk deg at REMA 1000 har en kø-løype som strekker seg som strikk når flere kommer. I
+          stedet for at folk snur når de ser den er full (signal: lang kø = nettet er fullt), tøyer
+          den seg, og alle står lenger og lenger. Til slutt er det 40 personer i strikkøen, hver
+          venter 25 minutter, men ingen får signal om å gå et annet sted.
+        </p>
+        <p>
+          Det er nettopp hva store ruter-buffere gjør med TCP: tapet kommer ikke, så TCP fortsetter
+          å pumpe pakker inn, mens latensen eksploderer. ECN og BBR redder oss: ECN setter opp et
+          gult skilt («kø er full snart!»), BBR ser direkte at strikken har tøyet seg.
+        </p>
+      </Metafor>
+
+      <Illustration caption="TCP-trafikken som E18-køen: AIMD lar alle parter finne en jevn fart uten sentralstyring.">
+        <TrafikkE18Svg />
+      </Illustration>
 
       <Example title="Eksempel: AIMD-konvergens mot rettferdighet">
         <p>
@@ -1571,6 +1671,18 @@ function Hvorfor({ title, children }: { title: string; children: React.ReactNode
         Hvorfor egentlig?
       </div>
       <div className="font-semibold text-foreground mb-1">{title}</div>
+      <div className="text-muted-foreground text-[13px] space-y-2">{children}</div>
+    </div>
+  );
+}
+
+function Metafor({ tittel, children }: { tittel: string; children: React.ReactNode }) {
+  return (
+    <div className="rounded-xl border border-purple-500/30 bg-purple-500/5 p-4">
+      <div className="text-[10px] uppercase tracking-wider text-purple-700 dark:text-purple-400 font-semibold mb-1">
+        🔮 Metafor
+      </div>
+      <div className="font-semibold text-foreground mb-1">{tittel}</div>
       <div className="text-muted-foreground text-[13px] space-y-2">{children}</div>
     </div>
   );
@@ -2492,6 +2604,1039 @@ function AimdSawtoothSvg() {
 
       <text x={250} y={238} textAnchor="middle" className="fill-muted-foreground text-[9px] italic">
         Lineær vekst per RTT (+1 MSS) — halvering ved tap — gjentas
+      </text>
+    </svg>
+  );
+}
+
+// ============================================================
+// Nye metafor-SVG-er for kap. 3
+// ============================================================
+
+function UpsMetaforSvg() {
+  return (
+    <svg viewBox="0 0 500 230" className="w-full h-auto">
+      <text
+        x={250}
+        y={16}
+        textAnchor="middle"
+        className="fill-foreground text-[12px] font-semibold"
+      >
+        UPS-metaforen: App → Transport → IP → Transport → App
+      </text>
+
+      {/* App A (sender) */}
+      <rect
+        x={20}
+        y={40}
+        width={90}
+        height={50}
+        rx={6}
+        className="fill-brand/15 stroke-brand"
+        strokeWidth={1.5}
+      />
+      <text x={65} y={60} textAnchor="middle" className="fill-foreground text-[10px] font-semibold">
+        App A
+      </text>
+      <text x={65} y={75} textAnchor="middle" className="fill-muted-foreground text-[9px]">
+        «send pakke»
+      </text>
+
+      {/* Transport sender */}
+      <rect
+        x={20}
+        y={100}
+        width={90}
+        height={50}
+        rx={6}
+        className="fill-purple-500/15 stroke-purple-500"
+        strokeWidth={1.5}
+      />
+      <text
+        x={65}
+        y={120}
+        textAnchor="middle"
+        className="fill-foreground text-[10px] font-semibold"
+      >
+        UPS-sjåfør
+      </text>
+      <text x={65} y={135} textAnchor="middle" className="fill-muted-foreground text-[9px]">
+        (transport)
+      </text>
+
+      {/* IP cloud */}
+      <ellipse
+        cx={250}
+        cy={125}
+        rx={80}
+        ry={50}
+        className="fill-amber-500/10 stroke-amber-500"
+        strokeWidth={1.5}
+        strokeDasharray="3 2"
+      />
+      <text
+        x={250}
+        y={115}
+        textAnchor="middle"
+        className="fill-foreground text-[10px] font-semibold"
+      >
+        IP-«lastebiler»
+      </text>
+      <text x={250} y={130} textAnchor="middle" className="fill-muted-foreground text-[9px]">
+        best effort, ukjent rute
+      </text>
+      <text x={250} y={145} textAnchor="middle" className="fill-muted-foreground text-[8px]">
+        noen pakker mistes
+      </text>
+
+      {/* Transport receiver */}
+      <rect
+        x={390}
+        y={100}
+        width={90}
+        height={50}
+        rx={6}
+        className="fill-purple-500/15 stroke-purple-500"
+        strokeWidth={1.5}
+      />
+      <text
+        x={435}
+        y={120}
+        textAnchor="middle"
+        className="fill-foreground text-[10px] font-semibold"
+      >
+        UPS-sjåfør
+      </text>
+      <text x={435} y={135} textAnchor="middle" className="fill-muted-foreground text-[9px]">
+        (transport)
+      </text>
+
+      {/* App B */}
+      <rect
+        x={390}
+        y={40}
+        width={90}
+        height={50}
+        rx={6}
+        className="fill-success/15 stroke-success"
+        strokeWidth={1.5}
+      />
+      <text
+        x={435}
+        y={60}
+        textAnchor="middle"
+        className="fill-foreground text-[10px] font-semibold"
+      >
+        App B
+      </text>
+      <text x={435} y={75} textAnchor="middle" className="fill-muted-foreground text-[9px]">
+        «pakke mottatt»
+      </text>
+
+      {/* Arrows */}
+      <line
+        x1={65}
+        y1={90}
+        x2={65}
+        y2={100}
+        className="stroke-foreground/60"
+        strokeWidth={1.5}
+        markerEnd="url(#arrowUps)"
+      />
+      <line
+        x1={110}
+        y1={125}
+        x2={170}
+        y2={125}
+        className="stroke-foreground/60"
+        strokeWidth={1.5}
+        markerEnd="url(#arrowUps)"
+      />
+      <line
+        x1={330}
+        y1={125}
+        x2={390}
+        y2={125}
+        className="stroke-foreground/60"
+        strokeWidth={1.5}
+        markerEnd="url(#arrowUps)"
+      />
+      <line
+        x1={435}
+        y1={100}
+        x2={435}
+        y2={90}
+        className="stroke-foreground/60"
+        strokeWidth={1.5}
+        markerEnd="url(#arrowUps)"
+      />
+
+      {/* Reliability label */}
+      <text
+        x={250}
+        y={190}
+        textAnchor="middle"
+        className="fill-purple-700 dark:fill-purple-400 text-[10px] font-semibold"
+      >
+        UPS-laget garanterer levering, sporing, kvittering
+      </text>
+      <text x={250} y={205} textAnchor="middle" className="fill-muted-foreground text-[9px] italic">
+        IP-laget ser bare adressen og kjører «best effort»
+      </text>
+
+      <defs>
+        <marker
+          id="arrowUps"
+          viewBox="0 0 10 10"
+          refX={8}
+          refY={5}
+          markerWidth={6}
+          markerHeight={6}
+          orient="auto"
+        >
+          <path d="M 0 0 L 10 5 L 0 10 z" className="fill-foreground/60" />
+        </marker>
+      </defs>
+    </svg>
+  );
+}
+
+function PortRomNummerSvg() {
+  return (
+    <svg viewBox="0 0 500 240" className="w-full h-auto">
+      <text
+        x={250}
+        y={16}
+        textAnchor="middle"
+        className="fill-foreground text-[12px] font-semibold"
+      >
+        Postsystem-metaforen: én bygning, mange rom
+      </text>
+
+      {/* Bygning */}
+      <rect
+        x={120}
+        y={40}
+        width={300}
+        height={170}
+        rx={6}
+        className="fill-card stroke-border"
+        strokeWidth={1.5}
+      />
+      <text
+        x={270}
+        y={58}
+        textAnchor="middle"
+        className="fill-foreground text-[10px] font-semibold"
+      >
+        Lågårdsskolen (IP 10.0.0.50)
+      </text>
+
+      {/* Rom 80 */}
+      <rect
+        x={140}
+        y={70}
+        width={80}
+        height={40}
+        rx={4}
+        className="fill-brand/15 stroke-brand"
+        strokeWidth={1}
+      />
+      <text
+        x={180}
+        y={88}
+        textAnchor="middle"
+        className="fill-foreground text-[10px] font-semibold"
+      >
+        Rom :80
+      </text>
+      <text x={180} y={102} textAnchor="middle" className="fill-muted-foreground text-[8px]">
+        HTTP-server
+      </text>
+
+      {/* Rom 443 */}
+      <rect
+        x={230}
+        y={70}
+        width={80}
+        height={40}
+        rx={4}
+        className="fill-success/15 stroke-success"
+        strokeWidth={1}
+      />
+      <text
+        x={270}
+        y={88}
+        textAnchor="middle"
+        className="fill-foreground text-[10px] font-semibold"
+      >
+        Rom :443
+      </text>
+      <text x={270} y={102} textAnchor="middle" className="fill-muted-foreground text-[8px]">
+        HTTPS
+      </text>
+
+      {/* Rom 22 */}
+      <rect
+        x={320}
+        y={70}
+        width={80}
+        height={40}
+        rx={4}
+        className="fill-amber-500/15 stroke-amber-500"
+        strokeWidth={1}
+      />
+      <text
+        x={360}
+        y={88}
+        textAnchor="middle"
+        className="fill-foreground text-[10px] font-semibold"
+      >
+        Rom :22
+      </text>
+      <text x={360} y={102} textAnchor="middle" className="fill-muted-foreground text-[8px]">
+        SSH
+      </text>
+
+      {/* Rom 5432 */}
+      <rect
+        x={140}
+        y={120}
+        width={80}
+        height={40}
+        rx={4}
+        className="fill-purple-500/15 stroke-purple-500"
+        strokeWidth={1}
+      />
+      <text
+        x={180}
+        y={138}
+        textAnchor="middle"
+        className="fill-foreground text-[10px] font-semibold"
+      >
+        Rom :5432
+      </text>
+      <text x={180} y={152} textAnchor="middle" className="fill-muted-foreground text-[8px]">
+        PostgreSQL
+      </text>
+
+      {/* Rom 51001 */}
+      <rect
+        x={230}
+        y={120}
+        width={80}
+        height={40}
+        rx={4}
+        className="fill-destructive/15 stroke-destructive"
+        strokeWidth={1}
+      />
+      <text
+        x={270}
+        y={138}
+        textAnchor="middle"
+        className="fill-foreground text-[10px] font-semibold"
+      >
+        Rom :51001
+      </text>
+      <text x={270} y={152} textAnchor="middle" className="fill-muted-foreground text-[8px]">
+        ephemeral
+      </text>
+
+      {/* Rom 51002 */}
+      <rect
+        x={320}
+        y={120}
+        width={80}
+        height={40}
+        rx={4}
+        className="fill-destructive/15 stroke-destructive"
+        strokeWidth={1}
+      />
+      <text
+        x={360}
+        y={138}
+        textAnchor="middle"
+        className="fill-foreground text-[10px] font-semibold"
+      >
+        Rom :51002
+      </text>
+      <text x={360} y={152} textAnchor="middle" className="fill-muted-foreground text-[8px]">
+        ephemeral
+      </text>
+
+      {/* Resepsjonist */}
+      <circle cx={270} cy={185} r={14} className="fill-purple-500" />
+      <text x={270} y={189} textAnchor="middle" className="fill-white text-[9px] font-semibold">
+        R
+      </text>
+      <text x={310} y={189} className="fill-muted-foreground text-[9px]">
+        ← Resepsjonist (transportlaget)
+      </text>
+
+      {/* Postmann */}
+      <circle cx={40} cy={125} r={14} className="fill-amber-500" />
+      <text x={40} y={129} textAnchor="middle" className="fill-foreground text-[9px] font-semibold">
+        P
+      </text>
+      <text x={40} y={150} textAnchor="middle" className="fill-muted-foreground text-[9px]">
+        Postmann
+      </text>
+      <text x={40} y={162} textAnchor="middle" className="fill-muted-foreground text-[8px]">
+        (IP-laget)
+      </text>
+
+      <line
+        x1={56}
+        y1={125}
+        x2={115}
+        y2={125}
+        className="stroke-foreground/60"
+        strokeWidth={1.5}
+        markerEnd="url(#arrowPort)"
+      />
+      <text x={85} y={120} textAnchor="middle" className="fill-muted-foreground text-[8px]">
+        postbunke
+      </text>
+
+      <text x={250} y={228} textAnchor="middle" className="fill-muted-foreground text-[9px] italic">
+        Resepsjonisten leser «rom-nummer» (port) og leverer i riktig posthylle
+      </text>
+
+      <defs>
+        <marker
+          id="arrowPort"
+          viewBox="0 0 10 10"
+          refX={8}
+          refY={5}
+          markerWidth={6}
+          markerHeight={6}
+          orient="auto"
+        >
+          <path d="M 0 0 L 10 5 L 0 10 z" className="fill-foreground/60" />
+        </marker>
+      </defs>
+    </svg>
+  );
+}
+
+function PostkortVsRekSvg() {
+  return (
+    <svg viewBox="0 0 500 240" className="w-full h-auto">
+      <text
+        x={250}
+        y={16}
+        textAnchor="middle"
+        className="fill-foreground text-[12px] font-semibold"
+      >
+        UDP = postkort · TCP = rekommandert brev med kvittering
+      </text>
+
+      {/* UDP side - postkort */}
+      <rect
+        x={30}
+        y={40}
+        width={200}
+        height={170}
+        rx={6}
+        className="fill-amber-500/5 stroke-amber-500"
+        strokeWidth={1.5}
+      />
+      <text
+        x={130}
+        y={58}
+        textAnchor="middle"
+        className="fill-foreground text-[11px] font-semibold"
+      >
+        UDP — postkort
+      </text>
+
+      {/* Postkort */}
+      <rect
+        x={60}
+        y={75}
+        width={140}
+        height={80}
+        rx={3}
+        className="fill-amber-500/20 stroke-amber-500"
+        strokeWidth={1.2}
+      />
+      <line x1={130} y1={75} x2={130} y2={155} className="stroke-amber-500/50" strokeWidth={1} />
+      <text x={75} y={92} className="fill-foreground text-[8px]">
+        Hilsen fra
+      </text>
+      <text x={75} y={104} className="fill-foreground text-[8px]">
+        Stavanger!
+      </text>
+      <text x={75} y={130} className="fill-muted-foreground text-[7px]">
+        (åpen,
+      </text>
+      <text x={75} y={140} className="fill-muted-foreground text-[7px]">
+        alle kan lese)
+      </text>
+      <text x={140} y={92} className="fill-foreground text-[7px]">
+        Til:
+      </text>
+      <text x={140} y={104} className="fill-foreground text-[7px]">
+        Bestemor
+      </text>
+      <text x={140} y={116} className="fill-foreground text-[7px]">
+        Tromsø
+      </text>
+
+      <text x={130} y={175} textAnchor="middle" className="fill-foreground text-[9px]">
+        8 bytes header
+      </text>
+      <text x={130} y={188} textAnchor="middle" className="fill-muted-foreground text-[8px]">
+        ingen kvittering · ingen avtale
+      </text>
+      <text x={130} y={200} textAnchor="middle" className="fill-muted-foreground text-[8px]">
+        slipp i postkassen · ferdig
+      </text>
+
+      {/* TCP side - rekommandert */}
+      <rect
+        x={270}
+        y={40}
+        width={200}
+        height={170}
+        rx={6}
+        className="fill-success/5 stroke-success"
+        strokeWidth={1.5}
+      />
+      <text
+        x={370}
+        y={58}
+        textAnchor="middle"
+        className="fill-foreground text-[11px] font-semibold"
+      >
+        TCP — rekommandert
+      </text>
+
+      {/* Konvolutt med segl */}
+      <rect
+        x={300}
+        y={75}
+        width={140}
+        height={80}
+        rx={3}
+        className="fill-success/15 stroke-success"
+        strokeWidth={1.2}
+      />
+      <path
+        d="M 300 75 L 370 115 L 440 75"
+        className="fill-none stroke-success/60"
+        strokeWidth={1}
+      />
+      <circle
+        cx={370}
+        cy={115}
+        r={6}
+        className="fill-destructive/30 stroke-destructive"
+        strokeWidth={1}
+      />
+      <text x={370} y={117} textAnchor="middle" className="fill-destructive text-[6px] font-bold">
+        SEGL
+      </text>
+      <text x={310} y={138} className="fill-foreground text-[7px]">
+        Spor: 47281
+      </text>
+      <text x={310} y={148} className="fill-foreground text-[7px]">
+        Krav: signatur
+      </text>
+
+      <text x={370} y={175} textAnchor="middle" className="fill-foreground text-[9px]">
+        20+ bytes header
+      </text>
+      <text x={370} y={188} textAnchor="middle" className="fill-muted-foreground text-[8px]">
+        handshake først · kvittering
+      </text>
+      <text x={370} y={200} textAnchor="middle" className="fill-muted-foreground text-[8px]">
+        re-send hvis tapt · i orden
+      </text>
+
+      <text x={250} y={230} textAnchor="middle" className="fill-muted-foreground text-[9px] italic">
+        Velg postkort når du sender mange korte hilsener — rekommandert når hver byte må fram
+      </text>
+    </svg>
+  );
+}
+
+function StopAndWaitVsPipelineSvg() {
+  return (
+    <svg viewBox="0 0 500 240" className="w-full h-auto">
+      <text
+        x={250}
+        y={16}
+        textAnchor="middle"
+        className="fill-foreground text-[12px] font-semibold"
+      >
+        Stop-and-wait vs pipelining — flyet med tom vs full last
+      </text>
+
+      {/* Stop-and-wait */}
+      <text
+        x={250}
+        y={40}
+        textAnchor="middle"
+        className="fill-foreground text-[10px] font-semibold"
+      >
+        Stop-and-wait: én koffert per tur
+      </text>
+
+      {/* Sender 1 */}
+      <circle cx={60} cy={70} r={10} className="fill-brand stroke-brand" />
+      <text x={60} y={90} textAnchor="middle" className="fill-muted-foreground text-[8px]">
+        avs.
+      </text>
+
+      {/* Plane outline tom */}
+      <rect
+        x={100}
+        y={55}
+        width={300}
+        height={30}
+        rx={15}
+        className="fill-amber-500/10 stroke-amber-500"
+        strokeWidth={1.2}
+      />
+      <rect
+        x={110}
+        y={62}
+        width={16}
+        height={16}
+        rx={2}
+        className="fill-success/40 stroke-success"
+        strokeWidth={1}
+      />
+      <text x={250} y={75} textAnchor="middle" className="fill-muted-foreground text-[9px] italic">
+        ← 1 koffert · 999 plasser tomme · returnerer tomt →
+      </text>
+
+      <circle cx={440} cy={70} r={10} className="fill-success stroke-success" />
+      <text x={440} y={90} textAnchor="middle" className="fill-muted-foreground text-[8px]">
+        mott.
+      </text>
+
+      {/* Pipelining */}
+      <text
+        x={250}
+        y={130}
+        textAnchor="middle"
+        className="fill-foreground text-[10px] font-semibold"
+      >
+        Pipelining: full last per tur
+      </text>
+
+      <circle cx={60} cy={160} r={10} className="fill-brand stroke-brand" />
+      <text x={60} y={180} textAnchor="middle" className="fill-muted-foreground text-[8px]">
+        avs.
+      </text>
+
+      <rect
+        x={100}
+        y={145}
+        width={300}
+        height={30}
+        rx={15}
+        className="fill-amber-500/10 stroke-amber-500"
+        strokeWidth={1.2}
+      />
+      {Array.from({ length: 15 }).map((_, i) => (
+        <rect
+          key={i}
+          x={108 + i * 18}
+          y={152}
+          width={16}
+          height={16}
+          rx={2}
+          className="fill-success/60 stroke-success"
+          strokeWidth={1}
+        />
+      ))}
+      <text x={250} y={165} textAnchor="middle" className="fill-white text-[8px] font-semibold" />
+
+      <circle cx={440} cy={160} r={10} className="fill-success stroke-success" />
+      <text x={440} y={180} textAnchor="middle" className="fill-muted-foreground text-[8px]">
+        mott.
+      </text>
+
+      <text x={250} y={205} textAnchor="middle" className="fill-muted-foreground text-[9px]">
+        BDP = båndbredde × RTT = hvor mange kofferter som «får plass» i flyet under én tur
+      </text>
+      <text x={250} y={222} textAnchor="middle" className="fill-muted-foreground text-[9px] italic">
+        Vindusstørrelsen må matche BDP for å fylle lenken
+      </text>
+    </svg>
+  );
+}
+
+function ThreeWayHandshakeSvg() {
+  return (
+    <svg viewBox="0 0 500 260" className="w-full h-auto">
+      <text
+        x={250}
+        y={16}
+        textAnchor="middle"
+        className="fill-foreground text-[12px] font-semibold"
+      >
+        3-veis handshake som tinder-dialog
+      </text>
+
+      {/* Klient */}
+      <rect
+        x={30}
+        y={40}
+        width={120}
+        height={40}
+        rx={6}
+        className="fill-brand/15 stroke-brand"
+        strokeWidth={1.5}
+      />
+      <text x={90} y={64} textAnchor="middle" className="fill-foreground text-[10px] font-semibold">
+        Klient
+      </text>
+
+      {/* Server */}
+      <rect
+        x={350}
+        y={40}
+        width={120}
+        height={40}
+        rx={6}
+        className="fill-success/15 stroke-success"
+        strokeWidth={1.5}
+      />
+      <text
+        x={410}
+        y={64}
+        textAnchor="middle"
+        className="fill-foreground text-[10px] font-semibold"
+      >
+        Server
+      </text>
+
+      {/* Timelines */}
+      <line
+        x1={90}
+        y1={80}
+        x2={90}
+        y2={240}
+        className="stroke-foreground/30"
+        strokeWidth={1}
+        strokeDasharray="3 2"
+      />
+      <line
+        x1={410}
+        y1={80}
+        x2={410}
+        y2={240}
+        className="stroke-foreground/30"
+        strokeWidth={1}
+        strokeDasharray="3 2"
+      />
+
+      {/* SYN */}
+      <line
+        x1={90}
+        y1={105}
+        x2={410}
+        y2={130}
+        className="stroke-brand"
+        strokeWidth={1.8}
+        markerEnd="url(#arrow3w)"
+      />
+      <rect
+        x={170}
+        y={95}
+        width={160}
+        height={28}
+        rx={4}
+        className="fill-brand/15 stroke-brand"
+        strokeWidth={1}
+      />
+      <text
+        x={250}
+        y={107}
+        textAnchor="middle"
+        className="fill-foreground text-[9px] font-semibold"
+      >
+        1. SYN, seq=x
+      </text>
+      <text x={250} y={119} textAnchor="middle" className="fill-muted-foreground text-[8px]">
+        «møte onsdag? mitt nr: x»
+      </text>
+
+      {/* SYN-ACK */}
+      <line
+        x1={410}
+        y1={155}
+        x2={90}
+        y2={180}
+        className="stroke-success"
+        strokeWidth={1.8}
+        markerEnd="url(#arrow3w)"
+      />
+      <rect
+        x={170}
+        y={145}
+        width={160}
+        height={28}
+        rx={4}
+        className="fill-success/15 stroke-success"
+        strokeWidth={1}
+      />
+      <text
+        x={250}
+        y={157}
+        textAnchor="middle"
+        className="fill-foreground text-[9px] font-semibold"
+      >
+        2. SYN+ACK, seq=y, ack=x+1
+      </text>
+      <text x={250} y={169} textAnchor="middle" className="fill-muted-foreground text-[8px]">
+        «ja, mottok x. mitt nr: y»
+      </text>
+
+      {/* ACK */}
+      <line
+        x1={90}
+        y1={205}
+        x2={410}
+        y2={230}
+        className="stroke-brand"
+        strokeWidth={1.8}
+        markerEnd="url(#arrow3w)"
+      />
+      <rect
+        x={170}
+        y={195}
+        width={160}
+        height={28}
+        rx={4}
+        className="fill-brand/15 stroke-brand"
+        strokeWidth={1}
+      />
+      <text
+        x={250}
+        y={207}
+        textAnchor="middle"
+        className="fill-foreground text-[9px] font-semibold"
+      >
+        3. ACK, ack=y+1
+      </text>
+      <text x={250} y={219} textAnchor="middle" className="fill-muted-foreground text-[8px]">
+        «mottok y — vi sees onsdag»
+      </text>
+
+      <defs>
+        <marker
+          id="arrow3w"
+          viewBox="0 0 10 10"
+          refX={8}
+          refY={5}
+          markerWidth={6}
+          markerHeight={6}
+          orient="auto"
+        >
+          <path d="M 0 0 L 10 5 L 0 10 z" className="fill-foreground/60" />
+        </marker>
+      </defs>
+
+      <text x={250} y={253} textAnchor="middle" className="fill-muted-foreground text-[9px] italic">
+        Etter steg 3 vet BÅDE klient og server at den andre har bekreftet — forbindelsen er
+        ESTABLISHED
+      </text>
+    </svg>
+  );
+}
+
+function TrafikkE18Svg() {
+  return (
+    <svg viewBox="0 0 500 240" className="w-full h-auto">
+      <text
+        x={250}
+        y={16}
+        textAnchor="middle"
+        className="fill-foreground text-[12px] font-semibold"
+      >
+        TCP-trafikk som E18-køen: AIMD finner jevn fart
+      </text>
+
+      {/* Road */}
+      <rect
+        x={30}
+        y={80}
+        width={440}
+        height={70}
+        rx={4}
+        className="fill-muted/50 stroke-border"
+        strokeWidth={1.2}
+      />
+      <line
+        x1={30}
+        y1={115}
+        x2={470}
+        y2={115}
+        className="stroke-amber-500"
+        strokeWidth={1}
+        strokeDasharray="8 8"
+      />
+
+      {/* Cars - før flaskehals (lite trafikk, høy fart) */}
+      <rect
+        x={50}
+        y={90}
+        width={28}
+        height={14}
+        rx={2}
+        className="fill-brand stroke-brand"
+        strokeWidth={1}
+      />
+      <rect
+        x={100}
+        y={90}
+        width={28}
+        height={14}
+        rx={2}
+        className="fill-success stroke-success"
+        strokeWidth={1}
+      />
+      <rect
+        x={150}
+        y={90}
+        width={28}
+        height={14}
+        rx={2}
+        className="fill-amber-500 stroke-amber-500"
+        strokeWidth={1}
+      />
+      <text x={120} y={75} textAnchor="middle" className="fill-muted-foreground text-[9px]">
+        jevn flyt: «slow start»
+      </text>
+
+      <rect
+        x={70}
+        y={123}
+        width={28}
+        height={14}
+        rx={2}
+        className="fill-purple-500 stroke-purple-500"
+        strokeWidth={1}
+      />
+      <rect
+        x={130}
+        y={123}
+        width={28}
+        height={14}
+        rx={2}
+        className="fill-destructive stroke-destructive"
+        strokeWidth={1}
+      />
+
+      {/* Bottleneck */}
+      <path
+        d="M 220 80 L 250 115 L 220 150"
+        className="fill-destructive/20 stroke-destructive"
+        strokeWidth={1.5}
+      />
+      <path
+        d="M 320 80 L 290 115 L 320 150"
+        className="fill-destructive/20 stroke-destructive"
+        strokeWidth={1.5}
+      />
+      <text
+        x={270}
+        y={70}
+        textAnchor="middle"
+        className="fill-destructive text-[10px] font-semibold"
+      >
+        Sjølyst-krysset
+      </text>
+
+      {/* Cars i kø */}
+      <rect
+        x={260}
+        y={90}
+        width={22}
+        height={14}
+        rx={2}
+        className="fill-brand stroke-brand"
+        strokeWidth={1}
+      />
+      <rect
+        x={262}
+        y={123}
+        width={22}
+        height={14}
+        rx={2}
+        className="fill-amber-500 stroke-amber-500"
+        strokeWidth={1}
+      />
+
+      {/* After bottleneck */}
+      <rect
+        x={340}
+        y={90}
+        width={28}
+        height={14}
+        rx={2}
+        className="fill-success stroke-success"
+        strokeWidth={1}
+      />
+      <rect
+        x={400}
+        y={90}
+        width={28}
+        height={14}
+        rx={2}
+        className="fill-purple-500 stroke-purple-500"
+        strokeWidth={1}
+      />
+      <rect
+        x={360}
+        y={123}
+        width={28}
+        height={14}
+        rx={2}
+        className="fill-destructive stroke-destructive"
+        strokeWidth={1}
+      />
+
+      {/* AIMD labels */}
+      <text
+        x={130}
+        y={175}
+        textAnchor="middle"
+        className="fill-foreground text-[9px] font-semibold"
+      >
+        +1 per RTT (additiv økning)
+      </text>
+      <text x={130} y={188} textAnchor="middle" className="fill-muted-foreground text-[8px]">
+        hver bil kjører litt fortere når det flyter
+      </text>
+
+      <text
+        x={400}
+        y={175}
+        textAnchor="middle"
+        className="fill-foreground text-[9px] font-semibold"
+      >
+        ÷2 ved tap (mult. reduksjon)
+      </text>
+      <text x={400} y={188} textAnchor="middle" className="fill-muted-foreground text-[8px]">
+        står stille i krysset → alle senker farten
+      </text>
+
+      <text x={250} y={215} textAnchor="middle" className="fill-muted-foreground text-[9px] italic">
+        Ingen sentral trafikk-styring — hver TCP-strøm justerer kun ut fra eget tap-signal
+      </text>
+      <text
+        x={250}
+        y={230}
+        textAnchor="middle"
+        className="fill-purple-700 dark:fill-purple-400 text-[9px] font-semibold"
+      >
+        Etter mange runder konvergerer alle mot lik fart over flaskehalsen
       </text>
     </svg>
   );
