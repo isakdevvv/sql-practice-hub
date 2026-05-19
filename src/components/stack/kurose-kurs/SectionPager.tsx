@@ -37,14 +37,14 @@ export function SectionPager({
   }
 
   return (
-    <nav className="mt-6 grid gap-3 sm:grid-cols-2 border-t border-border pt-4">
+    <nav className="mt-4 grid gap-3 sm:grid-cols-2 border-t border-border pt-3">
       {prev ? (
         <button
           onClick={() => {
             onPick(prev.id);
             scrollToTop();
           }}
-          className="group flex items-center gap-3 rounded-xl border border-border bg-card p-3 text-left transition-all hover:border-brand/60"
+          className="group flex items-center gap-3 rounded-lg border border-border bg-card p-2.5 text-left transition-all hover:border-brand/60"
         >
           <ArrowLeft className="h-4 w-4 shrink-0 text-muted-foreground group-hover:text-brand transition-colors" />
           <div className="min-w-0 flex-1">
@@ -64,7 +64,7 @@ export function SectionPager({
             onPick(nextInChapter.id);
             scrollToTop();
           }}
-          className="group flex items-center gap-3 rounded-xl border border-brand/40 bg-brand/5 p-3 text-left transition-all hover:border-brand hover:bg-brand/10 sm:flex-row-reverse sm:text-right"
+          className="group flex items-center gap-3 rounded-lg border border-brand/40 bg-brand/5 p-2.5 text-left transition-all hover:border-brand hover:bg-brand/10 sm:flex-row-reverse sm:text-right"
         >
           <ArrowRight className="h-4 w-4 shrink-0 text-brand transition-transform group-hover:translate-x-0.5" />
           <div className="min-w-0 flex-1">
@@ -77,7 +77,7 @@ export function SectionPager({
       ) : atEnd ? (
         <a
           href={`/stack/${nextChapter.slug}`}
-          className="group flex items-center gap-3 rounded-xl border border-success/40 bg-success/5 p-3 transition-all hover:border-success hover:bg-success/10 sm:flex-row-reverse sm:text-right"
+          className="group flex items-center gap-3 rounded-lg border border-success/40 bg-success/5 p-2.5 transition-all hover:border-success hover:bg-success/10 sm:flex-row-reverse sm:text-right"
         >
           <ArrowRight className="h-4 w-4 shrink-0 text-success transition-transform group-hover:translate-x-0.5" />
           <div className="min-w-0 flex-1">
@@ -90,7 +90,7 @@ export function SectionPager({
       ) : (
         <a
           href="/stack/kurose-kurs"
-          className="group flex items-center gap-3 rounded-xl border border-brand/40 bg-brand/5 p-3 transition-all hover:border-brand sm:flex-row-reverse sm:text-right"
+          className="group flex items-center gap-3 rounded-lg border border-brand/40 bg-brand/5 p-2.5 transition-all hover:border-brand sm:flex-row-reverse sm:text-right"
         >
           <BookOpen className="h-4 w-4 shrink-0 text-brand" />
           <div className="min-w-0 flex-1">
