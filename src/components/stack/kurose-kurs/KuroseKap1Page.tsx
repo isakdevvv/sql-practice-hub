@@ -11,6 +11,7 @@ import {
   ExternalLink,
 } from "lucide-react";
 import { SectionPager, type SectionNavItem } from "./SectionPager";
+import { Section11Live } from "./Section11Live";
 
 type Tab = "intro" | "1.1" | "1.2" | "1.3" | "1.4" | "1.5" | "1.6";
 
@@ -197,27 +198,8 @@ function Section11() {
           },
         ]}
       />
-        <Illustration caption="Internett som lag av ISP-er — hosts kobler seg til aksess-ISP, som henger på regional, som henger på tier-1 backbone.">
-        <IspHierarchySvg />
-      </Illustration>
+        <Section11Live />
       </div>
-
-      <Example title="Eksempel: hva skjer når du åpner en webside?">
-        <ol className="list-decimal pl-5 space-y-1">
-          <li>
-            Mobilen din slår opp <code>vg.no</code> i DNS — får tilbake en IP-adresse.
-          </li>
-          <li>Den åpner en TCP-forbindelse til den IP-en på port 443.</li>
-          <li>TLS-handshake forhandler kryptering.</li>
-          <li>HTTP-request går over den krypterte forbindelsen.</li>
-          <li>Pakkene hopper gjennom 8–15 rutere på vei til VG sin server (varierer).</li>
-          <li>Serveren svarer med HTML; din nettleser parser og henter videre ressurser.</li>
-        </ol>
-        <p className="mt-2 text-muted-foreground">
-          Hvert av disse trinnene er en protokoll. Dette kapittelet etablerer rammeverket; resten av
-          boka går i dybden på hvert av dem.
-        </p>
-      </Example>
 
       <RelatedSlugs slugs={["osi-tcpip", "dte2507-day-in-the-life", "dte2507-dns-dyp"]} />
     </article>
