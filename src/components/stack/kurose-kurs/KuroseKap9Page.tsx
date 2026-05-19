@@ -83,8 +83,6 @@ export function KuroseKap9Page() {
         {tab === "9.6" && <Section96 />}
 
         <SectionPager tabs={SECTIONS_9} current={tab} onPick={(id) => setTab(id as Tab)} nextChapter={NEXT_CHAPTER_9} />
-
-        <ChapterPager prev={{ slug: "kurose-kap-8", title: "Sikkerhet i nettverk" }} />
       </main>
     </div>
   );
@@ -828,40 +826,6 @@ function RelatedSlugs({ slugs }: { slugs: string[] }) {
   );
 }
 
-function ChapterPager({ prev }: { prev: { slug: string; title: string } | null }) {
-  return (
-    <nav className="mt-10 grid gap-3 sm:grid-cols-2">
-      {prev ? (
-        <a
-          href={`/stack/${prev.slug}`}
-          className="group flex items-center gap-3 rounded-xl border border-border bg-card p-4 hover:border-brand/60"
-        >
-          <ArrowLeft className="h-4 w-4 text-muted-foreground group-hover:text-brand" />
-          <div>
-            <div className="text-[10px] uppercase tracking-wider text-muted-foreground">
-              Forrige kap.
-            </div>
-            <div className="text-sm font-semibold">{prev.title}</div>
-          </div>
-        </a>
-      ) : (
-        <span />
-      )}
-      <a
-        href="/stack/kurose-kurs"
-        className="group flex items-center gap-3 rounded-xl border border-brand/40 bg-brand/5 p-4 hover:border-brand sm:flex-row-reverse sm:text-right"
-      >
-        <FolderOpen className="h-4 w-4 text-brand" />
-        <div>
-          <div className="text-[10px] uppercase tracking-wider text-brand/80">
-            Siste kapittel ferdig
-          </div>
-          <div className="text-sm font-semibold">Tilbake til Kurose-kurset</div>
-        </div>
-      </a>
-    </nav>
-  );
-}
 
 // ============================================================
 // SVG-illustrasjoner — alle original-tegnet
