@@ -18,6 +18,10 @@ import { HasseDiagram } from "./figures/HasseDiagram";
 import { GraphSandbox } from "./figures/GraphSandbox";
 import { ModClock } from "./figures/ModClock";
 import { SectionQuiz } from "./figures/SectionQuiz";
+import { FunctionOutputMatch } from "./funksjons-ovinger/FunctionOutputMatch";
+import { ImageSetPartitioner } from "./funksjons-ovinger/ImageSetPartitioner";
+import { FiberPicker } from "./funksjons-ovinger/FiberPicker";
+import { CompositionTracer } from "./funksjons-ovinger/CompositionTracer";
 
 const STEPS = [
   { title: "Mattens ABC — mengder, ∈ ⊆ ∀ ∃, tallmengder", anchor: "abc" },
@@ -677,6 +681,72 @@ Identitet      id(x) = x                                gjør ingenting`}</pre>
 
           <h3 className="text-sm font-semibold mb-2">Funksjonstype-visualisering</h3>
           <FunctionTypeVis />
+
+          <h3 className="text-sm font-semibold mb-2 mt-6">Øvinger — tolke hva funksjonen produserer</h3>
+          <p className="text-xs text-muted-foreground mb-3">
+            Fire progressive øvinger: les én verdi, finn hele bildet, finn fiberen til
+            en y, og spor en komposisjon. Hver øving har «lær»-modus (fasit synlig) og
+            «prøv»-modus (test deg selv).
+          </p>
+
+          <div className="space-y-4">
+            <FunctionOutputMatch
+              id="lin-2x-plus-1"
+              rule="f(x) = 2x + 1"
+              fn={(x) => 2 * x + 1}
+              domain={[0, 1, 2, 3, 4]}
+              explanation="Lineær funksjon: legg merke til at differensen mellom nabo-output er konstant (2). Det er karakteristisk for ax + b."
+            />
+
+            <ImageSetPartitioner
+              id="sq-1to3"
+              rule="f(x) = x²,  A = {1, 2, 3},  B = {1, 2, ..., 9}"
+              A={[1, 2, 3]}
+              B={[1, 2, 3, 4, 5, 6, 7, 8, 9]}
+              fn={(x) => x * x}
+              explanation="Bildet f(A) = {1, 4, 9} — bare kvadratene av elementene i A. Selv om kodomenet B inneholder mange tall, treffer ikke f alle. Det er forskjellen på «kodomene» og «verdimengde / bilde»."
+            />
+
+            <FiberPicker
+              id="sq-pm3"
+              rule="f(x) = x²,  A = {−3, −2, −1, 0, 1, 2, 3}"
+              A={[-3, -2, -1, 0, 1, 2, 3]}
+              B={[0, 1, 4, 9]}
+              fn={(x) => x * x}
+              targets={[0, 1, 4, 9]}
+              explanation="Fiberen f⁻¹({y}) = {x ∈ A : f(x) = y}. For y = 4 er det {−2, 2} — to elementer. Det er presis grunnen til at x² IKKE er injektiv på ℝ: fiberen til de fleste y inneholder mer enn ett element."
+            />
+
+            <CompositionTracer
+              id="comp-main"
+              variants={[
+                {
+                  id: "fx-plus-1__gxsq",
+                  title: "f(x)=x+1, g(x)=x²",
+                  f: { label: "f(x) = x + 1", fn: (x) => x + 1 },
+                  g: { label: "g(x) = x²", fn: (x) => x * x },
+                  xs: [0, 1, 2, 3],
+                  explanation: "(g∘f)(x) = (x+1)². Merk: g∘f og f∘g er nesten alltid forskjellige — bytt rekkefølge og se hva som skjer.",
+                },
+                {
+                  id: "fx2x__gx_plus_3",
+                  title: "f(x)=2x, g(x)=x+3",
+                  f: { label: "f(x) = 2x", fn: (x) => 2 * x },
+                  g: { label: "g(x) = x + 3", fn: (x) => x + 3 },
+                  xs: [0, 1, 2, 5],
+                  explanation: "(g∘f)(x) = 2x + 3. Lineære funksjoner komponert gir en ny lineær funksjon.",
+                },
+                {
+                  id: "fxsq__gx_minus_1",
+                  title: "f(x)=x², g(x)=x−1",
+                  f: { label: "f(x) = x²", fn: (x) => x * x },
+                  g: { label: "g(x) = x − 1", fn: (x) => x - 1 },
+                  xs: [0, 1, 2, 3],
+                  explanation: "(g∘f)(x) = x² − 1. Når f ikke er injektiv, arver g∘f det: g(f(−2)) = g(f(2)) = 3.",
+                },
+              ]}
+            />
+          </div>
 
           <div className="mt-4 rounded-xl border border-border bg-card p-5">
             <div className="text-xs uppercase tracking-wider text-brand font-semibold mb-2">
