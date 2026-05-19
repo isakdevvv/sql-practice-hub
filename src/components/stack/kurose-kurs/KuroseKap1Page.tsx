@@ -33,43 +33,27 @@ export function KuroseKap1Page() {
     <div className="min-h-screen bg-background">
       <SiteHeader />
       <main className="container mx-auto px-4 py-4 max-w-6xl">
-        <header className="mb-3"><div className="flex items-center gap-2 text-xs text-muted-foreground mb-2">
-            <a href="/stack/dte-2507" className="inline-flex items-center gap-1 hover:text-foreground"><FolderOpen className="h-3 w-3" /> DTE-2507</a>
-            <span>·</span>
-            <a
-              href="/stack/kurose-kurs"
-              className="inline-flex items-center gap-1 hover:text-foreground"
-            >
-              <FolderOpen className="h-3 w-3" /> Kurose-kurset
+        <div className="mb-3 flex items-center flex-wrap gap-x-3 gap-y-1 border-b border-border pb-1.5">
+          <div className="flex items-center gap-1.5 text-xs text-muted-foreground min-w-0">
+            <a href="/stack/dte-2507" className="inline-flex items-center gap-1 hover:text-foreground shrink-0">
+              <FolderOpen className="h-3 w-3" /> DTE-2507
             </a>
             <span>·</span>
-            <span>Kapittel 1 av 9</span>
-          </div><h1 className="text-2xl font-bold tracking-tight">
-            Kap. 1 — Internett og nettverks-grunnleggende
-          </h1></header>
-
-        <div className="mb-4 flex flex-wrap gap-1.5 border-b border-border">
-          <TabBtn active={tab === "intro"} onClick={() => setTab("intro")}>
-            Start her
-          </TabBtn>
-          <TabBtn active={tab === "1.1"} onClick={() => setTab("1.1")}>
-            1.1 Hva er internett?
-          </TabBtn>
-          <TabBtn active={tab === "1.2"} onClick={() => setTab("1.2")}>
-            1.2 Edge &amp; core
-          </TabBtn>
-          <TabBtn active={tab === "1.3"} onClick={() => setTab("1.3")}>
-            1.3 Pakker vs kretser
-          </TabBtn>
-          <TabBtn active={tab === "1.4"} onClick={() => setTab("1.4")}>
-            1.4 Forsinkelse
-          </TabBtn>
-          <TabBtn active={tab === "1.5"} onClick={() => setTab("1.5")}>
-            1.5 Lagene
-          </TabBtn>
-          <TabBtn active={tab === "1.6"} onClick={() => setTab("1.6")}>
-            1.6 Oppgaver
-          </TabBtn>
+            <a href="/stack/kurose-kurs" className="hover:text-foreground shrink-0">Kurose-kurset</a>
+            <span>·</span>
+            <h1 className="text-sm font-bold tracking-tight text-foreground truncate">
+              Kap. 1 — Internett og nettverks-grunnleggende
+            </h1>
+          </div>
+          <nav className="ml-auto flex flex-wrap gap-0.5">
+            <TabBtn active={tab === "intro"} onClick={() => setTab("intro")}>Start</TabBtn>
+            <TabBtn active={tab === "1.1"} onClick={() => setTab("1.1")} title="Hva er internett?">1.1</TabBtn>
+            <TabBtn active={tab === "1.2"} onClick={() => setTab("1.2")} title="Edge & core">1.2</TabBtn>
+            <TabBtn active={tab === "1.3"} onClick={() => setTab("1.3")} title="Pakker vs kretser">1.3</TabBtn>
+            <TabBtn active={tab === "1.4"} onClick={() => setTab("1.4")} title="Forsinkelse">1.4</TabBtn>
+            <TabBtn active={tab === "1.5"} onClick={() => setTab("1.5")} title="Lagene">1.5</TabBtn>
+            <TabBtn active={tab === "1.6"} onClick={() => setTab("1.6")} title="Oppgaver">Oppg.</TabBtn>
+          </nav>
         </div>
 
         {tab === "intro" && <Intro onPick={setTab} />}
@@ -90,18 +74,21 @@ function TabBtn({
   children,
   active,
   onClick,
+  title,
 }: {
   children: React.ReactNode;
   active: boolean;
   onClick: () => void;
+  title?: string;
 }) {
   return (
     <button
       onClick={onClick}
-      className={`px-3 py-1.5 text-xs font-medium border-b-2 -mb-px transition-colors ${
+      title={title}
+      className={`rounded px-2 py-1 text-xs font-medium transition-colors ${
         active
-          ? "border-brand text-foreground"
-          : "border-transparent text-muted-foreground hover:text-foreground"
+          ? "bg-brand/15 text-brand"
+          : "text-muted-foreground hover:bg-muted hover:text-foreground"
       }`}
     >
       {children}
