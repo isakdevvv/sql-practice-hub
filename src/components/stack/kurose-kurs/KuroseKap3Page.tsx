@@ -183,7 +183,8 @@ function Section31() {
         piler en utvikler trenger å skyte i applikasjonskoden sin.
       </p>
 
-      <Defs
+      <div className="grid gap-3 lg:grid-cols-2">
+        <Defs
         items={[
           {
             term: "Segment",
@@ -215,10 +216,10 @@ function Section31() {
           },
         ]}
       />
-
-      <Illustration caption="Transportlaget snakker prosess-til-prosess via IP, som flytter pakker host-til-host gjennom rutere som ikke ser inn i transport-headeren.">
+        <Illustration caption="Transportlaget snakker prosess-til-prosess via IP, som flytter pakker host-til-host gjennom rutere som ikke ser inn i transport-headeren.">
         <TransportE2ESvg />
       </Illustration>
+      </div>
 
       <Example title="Eksempel: hva må applikasjonen håndtere selv?">
         <p>
@@ -261,7 +262,8 @@ function Section32() {
         demultipleksing.
       </p>
 
-      <Defs
+      <div className="grid gap-3 lg:grid-cols-2">
+        <Defs
         items={[
           {
             term: "Portnummer",
@@ -293,10 +295,10 @@ function Section32() {
           },
         ]}
       />
-
-      <Illustration caption="TCP-demux med 4-tuppel: én lytte-port, men hver aktiv forbindelse får sin egen socket basert på kilde-tuppelen.">
+        <Illustration caption="TCP-demux med 4-tuppel: én lytte-port, men hver aktiv forbindelse får sin egen socket basert på kilde-tuppelen.">
         <MuxDemuxSvg />
       </Illustration>
+      </div>
 
       <Example title="Eksempel: tre faner mot samme server">
         <p>
@@ -339,7 +341,8 @@ function Section33() {
         en svakhet, men for visse applikasjoner er det nøyaktig det man trenger.
       </p>
 
-      <Defs
+      <div className="grid gap-3 lg:grid-cols-2">
+        <Defs
         items={[
           {
             term: "Forbindelsesløs",
@@ -367,10 +370,10 @@ function Section33() {
           },
         ]}
       />
-
-      <Illustration caption="UDP-header: 8 bytes, fire 2-byte-felter. Sammenlign med TCP-headerens 20+ bytes.">
+        <Illustration caption="UDP-header: 8 bytes, fire 2-byte-felter. Sammenlign med TCP-headerens 20+ bytes.">
         <UdpHeaderSvg />
       </Illustration>
+      </div>
 
       <Example title="Eksempel: hvorfor DNS bruker UDP">
         <p>
@@ -406,7 +409,8 @@ function Section34() {
         over en kanal som taper, korrumperer og forsinker.
       </p>
 
-      <Defs
+      <div className="grid gap-3 lg:grid-cols-2">
+        <Defs
         items={[
           {
             term: "RDT 1.0 — perfekt kanal",
@@ -438,10 +442,10 @@ function Section34() {
           },
         ]}
       />
-
-      <Illustration caption="RDT-progresjonen: hver versjon legger til håndtering av ett nytt feil-scenario.">
+        <Illustration caption="RDT-progresjonen: hver versjon legger til håndtering av ett nytt feil-scenario.">
         <RdtProgressionSvg />
       </Illustration>
+      </div>
 
       <Example title="Eksempel: ACK for pakke-5 går tapt i RDT 3.0">
         <p>
@@ -482,7 +486,8 @@ function Section35() {
         bruker kumulative ACK-er, og estimerer RTT dynamisk for å sette fornuftige timeout-verdier.
       </p>
 
-      <Defs
+      <div className="grid gap-3 lg:grid-cols-2">
+        <Defs
         items={[
           {
             term: "Segmentering",
@@ -514,10 +519,10 @@ function Section35() {
           },
         ]}
       />
-
-      <Illustration caption="TCP-segment-header: 20 bytes minimum. Sekvensnr og ACK-felt er hjertet i påliteligheten.">
+        <Illustration caption="TCP-segment-header: 20 bytes minimum. Sekvensnr og ACK-felt er hjertet i påliteligheten.">
         <TcpHeaderSvg />
       </Illustration>
+      </div>
 
       <Example title="Eksempel: RTT-estimat med EWMA over tre målinger">
         <p>
@@ -565,7 +570,8 @@ function Section36() {
         var faktisk hva som skjedde i 1986 før Van Jacobson kom med løsningen.
       </p>
 
-      <Defs
+      <div className="grid gap-3 lg:grid-cols-2">
+        <Defs
         items={[
           {
             term: "Congestion collapse",
@@ -601,10 +607,10 @@ function Section36() {
           },
         ]}
       />
-
-      <Illustration caption="AIMD-sagtann: lineær økning av cwnd til pakketap utløser halvering, så starter syklusen på nytt.">
+        <Illustration caption="AIMD-sagtann: lineær økning av cwnd til pakketap utløser halvering, så starter syklusen på nytt.">
         <AimdSawtoothSvg />
       </Illustration>
+      </div>
 
       <Example title="Eksempel: AIMD-konvergens mot rettferdighet">
         <p>

@@ -172,7 +172,8 @@ function Section91() {
         tap.
       </p>
 
-      <Defs
+      <div className="grid gap-3 lg:grid-cols-2">
+        <Defs
         items={[
           {
             term: "Lagret strømmende video (eks. Netflix, YouTube VOD)",
@@ -204,10 +205,10 @@ function Section91() {
           },
         ]}
       />
-
-      <Illustration caption="Krav-rom: hver applikasjons-type plassert etter delay-budsjett og tap-toleranse.">
+        <Illustration caption="Krav-rom: hver applikasjons-type plassert etter delay-budsjett og tap-toleranse.">
         <RequirementsSvg />
       </Illustration>
+      </div>
 
       <Example title="Eksempel: hvorfor TCP er greit for Netflix, men ikke for samtale">
         <p>
@@ -252,7 +253,8 @@ function Section92() {
         velge hvilken variant den vil ha for hvert nye segment.
       </p>
 
-      <Defs
+      <div className="grid gap-3 lg:grid-cols-2">
+        <Defs
         items={[
           {
             term: "MPD (Media Presentation Description)",
@@ -284,10 +286,10 @@ function Section92() {
           },
         ]}
       />
-
-      <Illustration caption="DASH-arkitekturen: server lagrer hvert segment i flere bitrater; klienten plukker per segment.">
+        <Illustration caption="DASH-arkitekturen: server lagrer hvert segment i flere bitrater; klienten plukker per segment.">
         <DashSvg />
       </Illustration>
+      </div>
 
       <Example title="Eksempel: en ABR-runde">
         <p>
@@ -334,7 +336,8 @@ function Section93() {
         naturlig.
       </p>
 
-      <Defs
+      <div className="grid gap-3 lg:grid-cols-2">
+        <Defs
         items={[
           {
             term: "Codec",
@@ -366,10 +369,10 @@ function Section93() {
           },
         ]}
       />
-
-      <Illustration caption="Playout-buffer-tidslinje: pakker ankommer med jitter; bufferet jevner ut og leverer på fast takt.">
+        <Illustration caption="Playout-buffer-tidslinje: pakker ankommer med jitter; bufferet jevner ut og leverer på fast takt.">
         <PlayoutBufferSvg />
       </Illustration>
+      </div>
 
       <Example title="Eksempel: 60 ms playout-buffer i praksis">
         <p>
@@ -413,7 +416,8 @@ function Section94() {
         er parløpet — kontroll- og statistikk-pakker som rapporterer kvalitet underveis.
       </p>
 
-      <Defs
+      <div className="grid gap-3 lg:grid-cols-2">
+        <Defs
         items={[
           {
             term: "Sequence number (16 bit)",
@@ -445,10 +449,10 @@ function Section94() {
           },
         ]}
       />
-
-      <Illustration caption="RTP-headerens 12 første bytes — felter mottakeren trenger for å synkronisere og oppdage tap.">
+        <Illustration caption="RTP-headerens 12 første bytes — felter mottakeren trenger for å synkronisere og oppdage tap.">
         <RtpHeaderSvg />
       </Illustration>
+      </div>
 
       <Example title="Eksempel: tre pakker fra samme VoIP-strøm">
         <p>En klient sender pakker hver 20 ms (160 samples ved 8 kHz). Vi observerer:</p>
@@ -485,7 +489,8 @@ function Section95() {
         nedlasting. QoS-mekanismer gir oss det.
       </p>
 
-      <Defs
+      <div className="grid gap-3 lg:grid-cols-2">
+        <Defs
         items={[
           {
             term: "Best-effort",
@@ -517,10 +522,10 @@ function Section95() {
           },
         ]}
       />
-
-      <Illustration caption="DiffServ i en ruter: pakker klassifiseres på DSCP, går i hver sin kø, scheduler velger.">
+        <Illustration caption="DiffServ i en ruter: pakker klassifiseres på DSCP, går i hver sin kø, scheduler velger.">
         <DiffservSvg />
       </Illustration>
+      </div>
 
       <Example title="Eksempel: hjemmenett under tung opplasting">
         <p>

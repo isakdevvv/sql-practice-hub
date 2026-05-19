@@ -208,7 +208,8 @@ function Section81() {
         fire. Vi starter med å definere rammeverket før vi går løs på selve verktøyene.
       </p>
 
-      <Defs
+      <div className="grid gap-3 lg:grid-cols-2">
+        <Defs
         items={[
           {
             term: "Konfidensialitet",
@@ -240,10 +241,10 @@ function Section81() {
           },
         ]}
       />
-
-      <Illustration caption="De fire målene som tilsammen utgjør «sikker kommunikasjon». Ingen av dem leveres gratis — hver krever sin egen mekanisme.">
+        <Illustration caption="De fire målene som tilsammen utgjør «sikker kommunikasjon». Ingen av dem leveres gratis — hver krever sin egen mekanisme.">
         <FourGoalsSvg />
       </Illustration>
+      </div>
 
       <Example title="Eksempel: hvilket mål brytes?">
         <ul className="list-disc pl-5 space-y-1">
@@ -289,7 +290,8 @@ function Section82() {
         og brukes alltid i kombinasjon i moderne protokoller.
       </p>
 
-      <Defs
+      <div className="grid gap-3 lg:grid-cols-2">
+        <Defs
         items={[
           {
             term: "Symmetrisk kryptografi",
@@ -325,10 +327,10 @@ function Section82() {
           },
         ]}
       />
-
-      <Illustration caption="Symmetrisk vs asymmetrisk flyt. Til venstre samme nøkkel begge veier; til høyre offentlig kryptering, privat dekryptering.">
+        <Illustration caption="Symmetrisk vs asymmetrisk flyt. Til venstre samme nøkkel begge veier; til høyre offentlig kryptering, privat dekryptering.">
         <SymVsAsymSvg />
       </Illustration>
+      </div>
 
       <Illustration caption="Diffie-Hellman: begge mikser sin private verdi med motpartens offentlige, og ender på samme delte hemmelighet uten å sende den.">
         <DhSvg />
@@ -371,7 +373,8 @@ function Section83() {
         mekanisme for integritet.
       </p>
 
-      <Defs
+      <div className="grid gap-3 lg:grid-cols-2">
+        <Defs
         items={[
           {
             term: "Kryptografisk hash-funksjon",
@@ -403,10 +406,10 @@ function Section83() {
           },
         ]}
       />
-
-      <Illustration caption="Hash mapper vilkårlig input til et kort fingeravtrykk. Selv én flippet bit i input endrer hele hashen.">
+        <Illustration caption="Hash mapper vilkårlig input til et kort fingeravtrykk. Selv én flippet bit i input endrer hele hashen.">
         <HashSvg />
       </Illustration>
+      </div>
 
       <Illustration caption="HMAC tar inn både meldingen og en delt nøkkel — uten nøkkelen kan ikke Trudy lage gyldig tag.">
         <HmacSvg />
@@ -449,7 +452,8 @@ function Section84() {
         feiler, før vi lander på sertifikatbasert autentisering.
       </p>
 
-      <Defs
+      <div className="grid gap-3 lg:grid-cols-2">
+        <Defs
         items={[
           {
             term: "Forsøk 1: «Det er meg, Alice»",
@@ -485,10 +489,10 @@ function Section84() {
           },
         ]}
       />
-
-      <Illustration caption="Challenge-response med signatur. Bob velger en fersk nonce; Alice beviser identitet ved å signere den.">
+        <Illustration caption="Challenge-response med signatur. Bob velger en fersk nonce; Alice beviser identitet ved å signere den.">
         <ChallengeResponseSvg />
       </Illustration>
+      </div>
 
       <Illustration caption="Tillits-kjede: rot-CA → mellom-CA → server-sertifikat. Nettleseren har rot-CA i trust store fra fabrikken.">
         <PkiSvg />
@@ -527,7 +531,8 @@ function Section85() {
         ser.
       </p>
 
-      <Defs
+      <div className="grid gap-3 lg:grid-cols-2">
+        <Defs
         items={[
           {
             term: "TLS-record",
@@ -559,10 +564,10 @@ function Section85() {
           },
         ]}
       />
-
-      <Illustration caption="TLS 1.3 handshake — én RTT før applikasjons-data kan sendes. ServerHello inneholder sertifikat og DH-andel.">
+        <Illustration caption="TLS 1.3 handshake — én RTT før applikasjons-data kan sendes. ServerHello inneholder sertifikat og DH-andel.">
         <TlsHandshakeSvg />
       </Illustration>
+      </div>
 
       <Example title="Eksempel: regn ut hva som er trygt etter at server-nøkkelen lekker">
         <p>
@@ -606,7 +611,8 @@ function Section86() {
         det. Det er ryggraden i bedrifts-VPN-er og i site-to-site-tunneler mellom kontorer.
       </p>
 
-      <Defs
+      <div className="grid gap-3 lg:grid-cols-2">
+        <Defs
         items={[
           {
             term: "AH (Authentication Header)",
@@ -638,10 +644,10 @@ function Section86() {
           },
         ]}
       />
-
-      <Illustration caption="Tunnel-mode: hele original-pakken pakkes inn i en ny IP+ESP-pakke. De interne adressene er skjult.">
+        <Illustration caption="Tunnel-mode: hele original-pakken pakkes inn i en ny IP+ESP-pakke. De interne adressene er skjult.">
         <IpsecTunnelSvg />
       </Illustration>
+      </div>
 
       <Example title="Eksempel: når bør du velge tunnel-mode?">
         <p>
@@ -687,7 +693,8 @@ function Section87() {
         stateless, stateful, og applikasjons-bevisst — med ulike trade-offs.
       </p>
 
-      <Defs
+      <div className="grid gap-3 lg:grid-cols-2">
+        <Defs
         items={[
           {
             term: "Stateless pakkefilter",
@@ -719,10 +726,10 @@ function Section87() {
           },
         ]}
       />
-
-      <Illustration caption="Regel-evaluering i et pakkefilter — top-down match, første treff bestemmer, deny som siste regel.">
+        <Illustration caption="Regel-evaluering i et pakkefilter — top-down match, første treff bestemmer, deny som siste regel.">
         <FirewallRulesSvg />
       </Illustration>
+      </div>
 
       <Example title="Eksempel: regelsett for en liten bedrift">
         <p>
@@ -766,7 +773,8 @@ function Section88() {
         webserveren, for eksempel? Det er her IDS-er og IPS-er kommer inn.
       </p>
 
-      <Defs
+      <div className="grid gap-3 lg:grid-cols-2">
+        <Defs
         items={[
           {
             term: "IDS (Intrusion Detection System)",
@@ -798,10 +806,10 @@ function Section88() {
           },
         ]}
       />
-
-      <Illustration caption="IDS sniffer trafikken via et SPAN-port og varsler operatøren. IPS sitter in-line og kan blokkere.">
+        <Illustration caption="IDS sniffer trafikken via et SPAN-port og varsler operatøren. IPS sitter in-line og kan blokkere.">
         <IdsIpsSvg />
       </Illustration>
+      </div>
 
       <Example title="Eksempel: en enkel Snort-regel">
         <pre className="rounded bg-muted/30 p-2 font-mono text-[11px] overflow-x-auto">
@@ -838,7 +846,8 @@ function Section89() {
         dominerer: skript-injeksjon (XSS), kryss-forespørsler (CSRF) og SQL-injeksjon.
       </p>
 
-      <Defs
+      <div className="grid gap-3 lg:grid-cols-2">
+        <Defs
         items={[
           {
             term: "XSS (Cross-Site Scripting)",
@@ -870,10 +879,10 @@ function Section89() {
           },
         ]}
       />
-
-      <Illustration caption="CSRF-flyt: offer er innlogget på bank, besøker evil.com som POST-er til bank med offerets cookies.">
+        <Illustration caption="CSRF-flyt: offer er innlogget på bank, besøker evil.com som POST-er til bank med offerets cookies.">
         <CsrfSvg />
       </Illustration>
+      </div>
 
       <Example title="Eksempel: SQL-injeksjon-fiks med forberedt spørring">
         <pre className="rounded bg-muted/30 p-2 font-mono text-[11px] overflow-x-auto">

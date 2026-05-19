@@ -193,7 +193,8 @@ function Section41() {
         andre rutere. Disse to fasene har egne navn og egen plass i moderne ruter-design.
       </p>
 
-      <Defs
+      <div className="grid gap-3 lg:grid-cols-2">
+        <Defs
         items={[
           {
             term: "Data-plane (forwarding)",
@@ -221,10 +222,10 @@ function Section41() {
           },
         ]}
       />
-
-      <Illustration caption="Kontroll-plane bygger tabellen, data-plane bruker den per pakke. Tradisjonelt skjer begge inne i ruteren; SDN flytter control-plane ut.">
+        <Illustration caption="Kontroll-plane bygger tabellen, data-plane bruker den per pakke. Tradisjonelt skjer begge inne i ruteren; SDN flytter control-plane ut.">
         <DataControlPlaneSvg />
       </Illustration>
+      </div>
 
       <Example title="Eksempel: hvor mange beslutninger?">
         <p>
@@ -258,7 +259,8 @@ function Section42() {
         liten datamaskin med spesialisert IO. La oss åpne lokket og se hva som er der.
       </p>
 
-      <Defs
+      <div className="grid gap-3 lg:grid-cols-2">
+        <Defs
         items={[
           {
             term: "Input-port",
@@ -290,10 +292,10 @@ function Section42() {
           },
         ]}
       />
-
-      <Illustration caption="Pakkenes vei gjennom en ruter: input-port leser header, switching-fabric flytter til riktig output-port, output-kø sender ut.">
+        <Illustration caption="Pakkenes vei gjennom en ruter: input-port leser header, switching-fabric flytter til riktig output-port, output-kø sender ut.">
         <RouterArchitectureSvg />
       </Illustration>
+      </div>
 
       <Example title="Eksempel: HOL-blokkering kostes en ruter mye">
         <p>
@@ -332,7 +334,8 @@ function Section43() {
         for smal til pakke-størrelsen.
       </p>
 
-      <Defs
+      <div className="grid gap-3 lg:grid-cols-2">
+        <Defs
         items={[
           {
             term: "Datagram",
@@ -364,10 +367,10 @@ function Section43() {
           },
         ]}
       />
-
-      <Illustration caption="IPv4-headeren ord for ord (32 bits per rad). Identification, flags og fragment-offset brukes når en pakke må deles opp på vei.">
+        <Illustration caption="IPv4-headeren ord for ord (32 bits per rad). Identification, flags og fragment-offset brukes når en pakke må deles opp på vei.">
         <Ipv4HeaderSvg />
       </Illustration>
+      </div>
 
       <Example title="Eksempel: fragmentering av en 4000-byte pakke gjennom MTU 1500">
         <p>
@@ -411,7 +414,8 @@ function Section44() {
         Slash-notasjonen (CIDR) er språket vi bruker for å snakke om disse blokkene.
       </p>
 
-      <Defs
+      <div className="grid gap-3 lg:grid-cols-2">
+        <Defs
         items={[
           {
             term: "IP-adresse (32 bits)",
@@ -443,10 +447,10 @@ function Section44() {
           },
         ]}
       />
-
-      <Illustration caption="Et /22 prefiks delt i fire /24-subnett. De to nye bitene gir fire kombinasjoner: 00, 01, 10, 11.">
+        <Illustration caption="Et /22 prefiks delt i fire /24-subnett. De to nye bitene gir fire kombinasjoner: 00, 01, 10, 11.">
         <SubnettingSvg />
       </Illustration>
+      </div>
 
       <Example title="Eksempel: del 10.50.0.0/22 i fire like subnett">
         <p>
@@ -490,7 +494,8 @@ function Section45() {
         prinsipper.
       </p>
 
-      <Defs
+      <div className="grid gap-3 lg:grid-cols-2">
+        <Defs
         items={[
           {
             term: "NAT (Network Address Translation)",
@@ -522,10 +527,10 @@ function Section45() {
           },
         ]}
       />
-
-      <Illustration caption="NAT-ruteren skriver om kilde-IP og kilde-port på vei ut, og reverserer på vei inn. Resultatet er at de tre interne hostene deler én offentlig adresse.">
+        <Illustration caption="NAT-ruteren skriver om kilde-IP og kilde-port på vei ut, og reverserer på vei inn. Resultatet er at de tre interne hostene deler én offentlig adresse.">
         <NatTranslationSvg />
       </Illustration>
+      </div>
 
       <Example title="Eksempel: en mappings-rad i NAT-tabellen">
         <p>
@@ -571,7 +576,8 @@ function Section46() {
         kontroller som kan styre hele nettverket fra ett sted.
       </p>
 
-      <Defs
+      <div className="grid gap-3 lg:grid-cols-2">
+        <Defs
         items={[
           {
             term: "Match-action",
@@ -603,10 +609,10 @@ function Section46() {
           },
         ]}
       />
-
-      <Illustration caption="SDN-arkitekturen: kontrolleren har et helhetsbilde og skyver flow-regler til alle rutere via OpenFlow. Applikasjoner snakker med kontrolleren via en northbound API.">
+        <Illustration caption="SDN-arkitekturen: kontrolleren har et helhetsbilde og skyver flow-regler til alle rutere via OpenFlow. Applikasjoner snakker med kontrolleren via en northbound API.">
         <SdnArchitectureSvg />
       </Illustration>
+      </div>
 
       <Example title="Eksempel: en flow-tabell rad">
         <p>En enkel match-action-rad kan se slik ut:</p>
@@ -652,7 +658,8 @@ function Section47() {
         del designvalg som har vist seg dårlige med erfaring.
       </p>
 
-      <Defs
+      <div className="grid gap-3 lg:grid-cols-2">
+        <Defs
         items={[
           {
             term: "128-bits adresser",
@@ -684,10 +691,10 @@ function Section47() {
           },
         ]}
       />
-
-      <Illustration caption="IPv4-header (variabel størrelse, mange felter) versus IPv6-header (fast 40 bytes, færre men bredere felt).">
+        <Illustration caption="IPv4-header (variabel størrelse, mange felter) versus IPv6-header (fast 40 bytes, færre men bredere felt).">
         <Ipv6HeaderSvg />
       </Illustration>
+      </div>
 
       <Example title="Eksempel: en IPv6-adresse parset">
         <p className="font-mono text-[12px]">2001:0db8:0000:0042:0000:8a2e:0370:7334</p>
