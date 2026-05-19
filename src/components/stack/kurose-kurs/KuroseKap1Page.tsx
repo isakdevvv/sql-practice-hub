@@ -10,8 +10,21 @@ import {
   FolderOpen,
   ExternalLink,
 } from "lucide-react";
+import { SectionPager, type SectionNavItem } from "./SectionPager";
 
 type Tab = "intro" | "1.1" | "1.2" | "1.3" | "1.4" | "1.5" | "1.6";
+
+
+const SECTIONS_1: SectionNavItem[] = [
+  { id: "intro", label: "Start her" },
+  { id: "1.1", label: "1.1 Hva er internett?" },
+  { id: "1.2", label: "1.2 Edge & core" },
+  { id: "1.3", label: "1.3 Pakker vs kretser" },
+  { id: "1.4", label: "1.4 Forsinkelse" },
+  { id: "1.5", label: "1.5 Lagene" },
+  { id: "1.6", label: "1.6 Oppgaver" },
+];
+const NEXT_CHAPTER_1 = { slug: "kurose-kap-2", title: "Applikasjonslaget" };
 
 export function KuroseKap1Page() {
   const [tab, setTab] = useState<Tab>("intro");
@@ -70,6 +83,8 @@ export function KuroseKap1Page() {
         {tab === "1.4" && <Section14 />}
         {tab === "1.5" && <Section15 />}
         {tab === "1.6" && <Section16 />}
+
+        <SectionPager tabs={SECTIONS_1} current={tab} onPick={(id) => setTab(id as Tab)} nextChapter={NEXT_CHAPTER_1} />
 
         <ChapterPager prev={null} next={{ slug: "kurose-kap-2", title: "Applikasjonslaget" }} />
       </main>
