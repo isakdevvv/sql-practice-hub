@@ -10,5 +10,5 @@ export const content: TrinnContent = {
   status: "ready",
   shortDescription: "Feiloppdaging, ALOHA, CSMA/CD, switcher, VLAN. Disposisjon + lenker.",
   prerequisites: [],
-  Component: lazy(() => import("@/components/stack/kurose-kurs/KuroseKapStubPage").then((m) => ({ default: m.KuroseKap6Page }))),
+  Component: lazy(() => import("@/components/stack/kurose-kurs/KuroseKap6Page").then((m) => ({ default: m.KuroseKap6Page }))),
 };

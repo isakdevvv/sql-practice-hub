@@ -10,5 +10,5 @@ export const content: TrinnContent = {
   status: "ready",
   shortDescription: "Krypto, TLS, IPsec, brannmurer, IDS. Disposisjon + lenker.",
   prerequisites: [],
-  Component: lazy(() => import("@/components/stack/kurose-kurs/KuroseKapStubPage").then((m) => ({ default: m.KuroseKap8Page }))),
+  Component: lazy(() => import("@/components/stack/kurose-kurs/KuroseKap8Page").then((m) => ({ default: m.KuroseKap8Page }))),
 };

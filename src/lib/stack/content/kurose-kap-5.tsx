@@ -10,5 +10,5 @@ export const content: TrinnContent = {
   status: "ready",
   shortDescription: "OSPF, BGP, ICMP, DHCP, SDN. Disposisjon + lenker til interaktive sider.",
   prerequisites: [],
-  Component: lazy(() => import("@/components/stack/kurose-kurs/KuroseKapStubPage").then((m) => ({ default: m.KuroseKap5Page }))),
+  Component: lazy(() => import("@/components/stack/kurose-kurs/KuroseKap5Page").then((m) => ({ default: m.KuroseKap5Page }))),
 };

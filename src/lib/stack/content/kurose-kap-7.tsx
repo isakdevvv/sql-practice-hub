@@ -10,5 +10,5 @@ export const content: TrinnContent = {
   status: "ready",
   shortDescription: "WiFi, mobilnett, håndover, mobilitet. Disposisjon + lenker.",
   prerequisites: [],
-  Component: lazy(() => import("@/components/stack/kurose-kurs/KuroseKapStubPage").then((m) => ({ default: m.KuroseKap7Page }))),
+  Component: lazy(() => import("@/components/stack/kurose-kurs/KuroseKap7Page").then((m) => ({ default: m.KuroseKap7Page }))),
 };
