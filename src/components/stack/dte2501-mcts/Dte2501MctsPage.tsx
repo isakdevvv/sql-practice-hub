@@ -2,6 +2,17 @@ import { useMemo, useState } from "react";
 import { SiteHeader } from "@/components/SiteHeader";
 import { Button } from "@/components/ui/button";
 import { BookOpen, GitBranch, RotateCcw } from "lucide-react";
+import { VisualDefs } from "@/components/stack/kurose-kurs/VisualDefs";
+import {
+  SelectionIcon,
+  ExpansionIcon,
+  RolloutIcon,
+  BackpropTreeIcon,
+  UcbIcon,
+  PolicyIcon,
+  BranchingIcon,
+  AnytimeIcon,
+} from "@/components/stack/mlIcons";
 
 type Tab = "intro" | "live";
 
@@ -63,15 +74,6 @@ function TabBtn({
     </button>
   );
 }
-function Def({ term, children }: { term: string; children: React.ReactNode }) {
-  return (
-    <div>
-      <dt className="font-semibold text-foreground">{term}</dt>
-      <dd className="text-muted-foreground mt-0.5">{children}</dd>
-    </div>
-  );
-}
-
 function Intro({ onPick }: { onPick: (t: Tab) => void }) {
   return (
     <div className="space-y-4 text-sm">
@@ -105,54 +107,70 @@ function Intro({ onPick }: { onPick: (t: Tab) => void }) {
         </p>
       </div>
 
+      <VisualDefs
+        title="De 4 fasene i én iterasjon"
+        items={[
+          {
+            term: "1. Selection",
+            icon: <SelectionIcon />,
+            body: "Start ved roten. Følg en sti nedover treet ved å velge barnet med høyest UCB1-score. Slutt ved en node som har et ikke-utvidet barn.",
+          },
+          {
+            term: "2. Expansion",
+            icon: <ExpansionIcon />,
+            body: "Legg til ett NYTT barn-node for et trekk vi ikke har prøvd enda.",
+          },
+          {
+            term: "3. Simulation (rollout)",
+            icon: <RolloutIcon />,
+            body: "Fra det nye barnet, spill spillet til slutt med tilfeldige trekk. Få et utfall: +1 (vunnet), 0 (uavgjort), -1 (tapt).",
+          },
+          {
+            term: "4. Backpropagation",
+            icon: <BackpropTreeIcon />,
+            body: "Gå tilbake opp stien fra det nye barnet til rota. Oppdater hver node: visits += 1, wins += utfall.",
+          },
+        ]}
+      />
       <div className="rounded-xl border border-border bg-card p-4">
-        <h2 className="text-base font-semibold mb-2">De 4 fasene i én iterasjon</h2>
-        <dl className="space-y-2.5 text-[13px]">
-          <Def term="1. Selection">
-            Start ved roten. Følg en sti nedover treet ved å velge barnet med høyest UCB1-score.
-            Slutt ved en node som har et ikke-utvidet barn.
-          </Def>
-          <Def term="2. Expansion">
-            Legg til ett NYTT barn-node for et trekk vi ikke har prøvd enda.
-          </Def>
-          <Def term="3. Simulation (rollout)">
-            Fra det nye barnet, spill spillet til slutt med tilfeldige trekk. Få et utfall: +1
-            (vunnet), 0 (uavgjort), -1 (tapt).
-          </Def>
-          <Def term="4. Backpropagation">
-            Gå tilbake opp stien fra det nye barnet til rota. Oppdater hver node: visits += 1, wins
-            += utfall.
-          </Def>
-        </dl>
-        <p className="text-muted-foreground mt-2">
+        <p className="text-muted-foreground text-sm">
           Gjenta. Etter N iterasjoner: velg trekket fra rota som har høyest visit count (mest
           pålitelig statistikk, ikke høyest win-rate som kan være tilfeldig).
         </p>
       </div>
 
-      <div className="rounded-xl border border-border bg-card p-4">
-        <h2 className="text-base font-semibold mb-2">Ordbok</h2>
-        <dl className="space-y-2.5 text-[13px]">
-          <Def term="UCB1-formel (Upper Confidence Bound)">
-            For å velge barn under selection: maksimer{" "}
-            <code>wins/visits + c·√(ln(parent.visits) / visits)</code>. Første ledd: empirisk
-            win-rate (exploitation). Andre ledd: usikkerhets-bonus (exploration). c styrer balansen
-            (typisk c = √2).
-          </Def>
-          <Def term="Rollout-policy">
-            Hvordan man velger trekk under simulation. Ren MCTS = uniform random. AlphaGo brukte et
-            lite nevralt nett som «vurderte» neste trekk under rollout, ikke ren random.
-          </Def>
-          <Def term="Forgreningsfaktor (b)">
-            Antall mulige trekk per posisjon. Sjakk ≈ 35, Go ≈ 250, tic-tac-toe ≤ 9. MCTS skaler
-            bedre med b enn minimax.
-          </Def>
-          <Def term="Anytime-algoritme">
-            MCTS kan stoppes når som helst og gi det beste hittil-funnet svaret. Minimax må kjøre
-            ferdig til en gitt dybde for å være korrekt.
-          </Def>
-        </dl>
-      </div>
+      <VisualDefs
+        title="Ordbok"
+        items={[
+          {
+            term: "UCB1-formel (Upper Confidence Bound)",
+            icon: <UcbIcon />,
+            body: (
+              <>
+                For å velge barn under selection: maksimer{" "}
+                <code>wins/visits + c·√(ln(parent.visits) / visits)</code>. Første ledd: empirisk
+                win-rate (exploitation). Andre ledd: usikkerhets-bonus (exploration). c styrer
+                balansen (typisk c = √2).
+              </>
+            ),
+          },
+          {
+            term: "Rollout-policy",
+            icon: <PolicyIcon />,
+            body: "Hvordan man velger trekk under simulation. Ren MCTS = uniform random. AlphaGo brukte et lite nevralt nett som «vurderte» neste trekk under rollout, ikke ren random.",
+          },
+          {
+            term: "Forgreningsfaktor (b)",
+            icon: <BranchingIcon />,
+            body: "Antall mulige trekk per posisjon. Sjakk ≈ 35, Go ≈ 250, tic-tac-toe ≤ 9. MCTS skaler bedre med b enn minimax.",
+          },
+          {
+            term: "Anytime-algoritme",
+            icon: <AnytimeIcon />,
+            body: "MCTS kan stoppes når som helst og gi det beste hittil-funnet svaret. Minimax må kjøre ferdig til en gitt dybde for å være korrekt.",
+          },
+        ]}
+      />
       <div className="flex gap-2">
         <Button size="sm" onClick={() => onPick("live")}>
           Start på modul 1 →
