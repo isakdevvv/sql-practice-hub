@@ -10,6 +10,7 @@ import {
   ExternalLink,
 } from "lucide-react";
 import { SectionPager, type SectionNavItem } from "./SectionPager";
+import { Section91Live } from "./Section91Live";
 
 type Tab = "intro" | "9.1" | "9.2" | "9.3" | "9.4" | "9.5" | "9.6" | "9.7";
 
@@ -188,6 +189,8 @@ function Section91() {
         tre klasser, og hver av dem har sitt eget kompromiss mellom delay, jitter og toleranse for
         tap.
       </p>
+
+      <Section91Live />
 
       <div className="grid gap-3 lg:grid-cols-2">
         <Defs
