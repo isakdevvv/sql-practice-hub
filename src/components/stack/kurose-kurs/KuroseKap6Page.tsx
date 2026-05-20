@@ -11,20 +11,20 @@ import {
   ExternalLink,
 } from "lucide-react";
 import { SectionPager, type SectionNavItem } from "./SectionPager";
+import { Section61Live } from "./Section61Live";
 
-type Tab = "intro" | "6.1" | "6.2" | "6.3" | "6.4" | "6.5" | "6.6" | "6.7" | "6.8" | "6.9";
+type Tab = "intro" | "6.1" | "6.2" | "6.3" | "6.4" | "6.5" | "6.6" | "oppgaver" | "eksamen";
 
 const SECTIONS_6: SectionNavItem[] = [
   { id: "intro", label: "Start her" },
-  { id: "6.1", label: "6.1 Tjenester" },
-  { id: "6.2", label: "6.2 Feiloppdaging" },
+  { id: "6.1", label: "6.1 Intro til linklaget" },
+  { id: "6.2", label: "6.2 Error detection" },
   { id: "6.3", label: "6.3 Multiple access" },
   { id: "6.4", label: "6.4 Switched LAN" },
-  { id: "6.5", label: "6.5 Ethernet" },
-  { id: "6.6", label: "6.6 VLAN" },
-  { id: "6.7", label: "6.7 Datasenter" },
-  { id: "6.8", label: "6.8 Oppgaver" },
-  { id: "6.9", label: "6.9 Eksamen-fokus" },
+  { id: "6.5", label: "6.5 Datasenter-nett" },
+  { id: "6.6", label: "6.6 MPLS" },
+  { id: "oppgaver", label: "Oppgaver" },
+  { id: "eksamen", label: "Eksamen-fokus" },
 ];
 const NEXT_CHAPTER_6 = { slug: "kurose-kap-7", title: "Trådløst og mobilt" };
 
@@ -55,31 +55,32 @@ export function KuroseKap6Page() {
             <TabBtn active={tab === "intro"} onClick={() => setTab("intro")}>
               Start
             </TabBtn>
-            <TabBtn active={tab === "6.1"} onClick={() => setTab("6.1")} title="Tjenester">
+            <TabBtn active={tab === "6.1"} onClick={() => setTab("6.1")} title="Intro til linklaget">
               6.1
             </TabBtn>
-            <TabBtn active={tab === "6.2"} onClick={() => setTab("6.2")} title="Feiloppdaging">
+            <TabBtn active={tab === "6.2"} onClick={() => setTab("6.2")} title="Error detection">
               6.2
             </TabBtn>
             <TabBtn active={tab === "6.3"} onClick={() => setTab("6.3")} title="Multiple access">
               6.3
             </TabBtn>
-            <TabBtn active={tab === "6.4"} onClick={() => setTab("6.4")} title="Switched LAN">
+            <TabBtn
+              active={tab === "6.4"}
+              onClick={() => setTab("6.4")}
+              title="Switched LAN: Ethernet, switches, VLAN"
+            >
               6.4
             </TabBtn>
-            <TabBtn active={tab === "6.5"} onClick={() => setTab("6.5")} title="Ethernet">
+            <TabBtn active={tab === "6.5"} onClick={() => setTab("6.5")} title="Datasenter-nett">
               6.5
             </TabBtn>
-            <TabBtn active={tab === "6.6"} onClick={() => setTab("6.6")} title="VLAN">
+            <TabBtn active={tab === "6.6"} onClick={() => setTab("6.6")} title="MPLS">
               6.6
             </TabBtn>
-            <TabBtn active={tab === "6.7"} onClick={() => setTab("6.7")} title="Datasenter">
-              6.7
-            </TabBtn>
-            <TabBtn active={tab === "6.8"} onClick={() => setTab("6.8")} title="Oppgaver">
+            <TabBtn active={tab === "oppgaver"} onClick={() => setTab("oppgaver")} title="Oppgaver">
               Oppg.
             </TabBtn>
-            <TabBtn active={tab === "6.9"} onClick={() => setTab("6.9")} title="Eksamen-fokus">
+            <TabBtn active={tab === "eksamen"} onClick={() => setTab("eksamen")} title="Eksamen-fokus">
               Eksamen
             </TabBtn>
           </nav>
@@ -92,9 +93,8 @@ export function KuroseKap6Page() {
         {tab === "6.4" && <Section64 />}
         {tab === "6.5" && <Section65 />}
         {tab === "6.6" && <Section66 />}
-        {tab === "6.7" && <Section67 />}
-        {tab === "6.8" && <Section68 />}
-        {tab === "6.9" && <SectionEksamen />}
+        {tab === "oppgaver" && <SectionOppgaver />}
+        {tab === "eksamen" && <SectionEksamen />}
 
         <SectionPager
           tabs={SECTIONS_6}
@@ -200,13 +200,22 @@ function Intro({ onPick }: { onPick: (t: Tab) => void }) {
 function Section61() {
   return (
     <article className="space-y-4 text-sm">
-      <Header num="6.1" title="Hva gjør link-laget egentlig?" />
+      <Header num="6.1" title="Intro til datalink-laget — hvordan en ramme bygges" />
 
       <p className="text-muted-foreground">
         Link-laget er det laveste laget vi behandler i detalj. Det tar et IP-datagram fra
         nettverkslaget, pakker det inn i en <em>ramme</em>, og flytter rammen over én fysisk lenke
         til neste node. Det er bittelitt mer komplisert enn det høres ut, fordi link-laget også må
         håndtere bit-feil, kollisjoner på delte medier, og det å vite hvem den faktisk snakker med.
+      </p>
+
+      <Section61Live />
+
+      <p className="text-muted-foreground">
+        Steg-walkthroughen over viser hvordan NIC-en bygger en Ethernet-ramme felt for felt på
+        avsender-side, sender bitstrømmen over linja, og hvordan mottakerens NIC dekoder rammen,
+        sjekker FCS og leverer payload videre opp i stakken. Det er nøyaktig det samme mønsteret du
+        ser i Wireshark når du fanger trafikken på ditt eget grensesnitt.
       </p>
 
       <div className="grid gap-3 lg:grid-cols-2">
@@ -746,12 +755,31 @@ function Section63() {
 }
 
 // ============================================================
-// 6.4 — Switched LAN
+// 6.4 — Switched LAN (kombinerer ARP/self-learning + Ethernet + VLAN)
 // ============================================================
 function Section64() {
   return (
+    <article className="space-y-6 text-sm">
+      <Section64ArpSelfLearning />
+      <Section64Ethernet />
+      <Section64Vlan />
+    </article>
+  );
+}
+
+function Section64ArpSelfLearning() {
+  return (
     <article className="space-y-4 text-sm">
-      <Header num="6.4" title="Switched LAN — ARP og self-learning" />
+      <Header num="6.4" title="Switched LAN — Ethernet, switches, MAC-læring og VLAN" />
+
+      <p className="text-muted-foreground">
+        Et moderne lokalnett er ikke et delt medium lenger. Hver host kobles til én port på en
+        switch, og switchen sender hver ramme bare til riktig port. Vi går gjennom tre sammenkoblede
+        tema: (1) ARP og hvordan switchen lærer hvor en MAC sitter, (2) selve Ethernet-rammen og
+        switch-hierarkiet, og (3) hvordan VLAN gjør én fysisk switch til mange logiske nett.
+      </p>
+
+      <h3 className="text-base font-semibold mt-2">ARP og switch self-learning</h3>
 
       <p className="text-muted-foreground">
         Et moderne lokalnett er ikke et delt medium lenger. Hver host kobles til én port på en
@@ -945,12 +973,12 @@ Etter 5: {X→1, Y→2, Z→3, W→4}           flood (broadcast)`}
 }
 
 // ============================================================
-// 6.5 — Ethernet
+// 6.4 (forts.) — Ethernet
 // ============================================================
-function Section65() {
+function Section64Ethernet() {
   return (
-    <article className="space-y-4 text-sm">
-      <Header num="6.5" title="Ethernet — link-lagets seierherre" />
+    <article className="space-y-4 text-sm border-t border-border pt-6">
+      <h3 className="text-base font-semibold">Ethernet og switch-hierarki</h3>
 
       <p className="text-muted-foreground">
         Ethernet ble oppfunnet på Xerox PARC i 1973, standardisert i 1980, og har overlevd alle sine
@@ -1120,12 +1148,12 @@ Internet Protocol Version 4, Src: 10.0.0.42, Dst: 142.250.74.46`}
 }
 
 // ============================================================
-// 6.6 — VLAN
+// 6.4 (forts.) — VLAN
 // ============================================================
-function Section66() {
+function Section64Vlan() {
   return (
-    <article className="space-y-4 text-sm">
-      <Header num="6.6" title="VLAN — én switch, mange logiske nett" />
+    <article className="space-y-4 text-sm border-t border-border pt-6">
+      <h3 className="text-base font-semibold">VLAN — én switch, mange logiske nett</h3>
 
       <p className="text-muted-foreground">
         En klassisk switch deler verden i ett stort broadcast-domene per fysisk switch (egentlig per
@@ -1325,12 +1353,12 @@ function Section66() {
 }
 
 // ============================================================
-// 6.7 — Datasenter-nettverk
+// 6.5 — Linker mellom datasentre (rack-topologier)
 // ============================================================
-function Section67() {
+function Section65() {
   return (
     <article className="space-y-4 text-sm">
-      <Header num="6.7" title="Datasenter-nettverk — fat-tree og leaf-spine" />
+      <Header num="6.5" title="Linker mellom datasentre — fat-tree og leaf-spine" />
 
       <p className="text-muted-foreground">
         Et moderne datasenter har titusenvis av servere som snakker konstant sammen — distribuerte
@@ -1526,12 +1554,156 @@ function Section67() {
 }
 
 // ============================================================
-// 6.8 — Oppgaver
+// 6.6 — MPLS og virtuelle nett
 // ============================================================
-function Section68() {
+function Section66() {
   return (
     <article className="space-y-4 text-sm">
-      <Header num="6.8" title="Oppgaver" />
+      <Header num="6.6" title="MPLS og virtuelle nett" />
+
+      <p className="text-muted-foreground">
+        MPLS (Multiprotocol Label Switching) er en teknikk for å rute pakker basert på en kort{" "}
+        <em>label</em> i stedet for å gjøre fullt IP-oppslag på hver ruter. Tenk på det som et
+        «lag 2.5» som ligger mellom linklaget og IP-laget: når en pakke kommer inn i et MPLS-nett,
+        legges en label på; alle rutere underveis (LSR — Label Switching Routers) ser bare på
+        labelen og bytter den ut for neste hopp. Det er switching-hastighet på ruter-funksjonalitet,
+        og det er grunnlaget for de fleste store ISP-er og bedrifts-VPN-er.
+      </p>
+
+      <div className="grid gap-3 lg:grid-cols-2">
+        <Defs
+          items={[
+            { term: "MPLS-label", body: "20-bit ID — slås opp i en tabell på hver ruter." },
+            { term: "LSR", body: "Label Switching Router — bytter ut label per hopp." },
+            { term: "LSP", body: "Label Switched Path — forhåndsdefinert sti gjennom nettet." },
+            { term: "Push / swap / pop", body: "Operasjoner på label-stacken (legg på / bytt / fjern)." },
+            { term: "FEC", body: "Forwarding Equivalence Class — pakker som behandles likt." },
+            { term: "LDP", body: "Label Distribution Protocol — sprer labels mellom rutere." },
+            { term: "MPLS-VPN", body: "Kunde-nett tunnel via outer label = «ditt» trafikk." },
+            { term: "L3VPN", body: "Ruter-nivå-VPN: hver kunde sin VRF + label-stack." },
+            { term: "L2VPN / VPLS", body: "Ethernet-strekk over MPLS-kjerne." },
+            { term: "TE (Traffic Engineering)", body: "Pin LSP-er over ønskede stier — unngå hotspot." },
+            { term: "Segment Routing", body: "MPLS-arvtaker — sti i pakke-headeren, ingen LDP." },
+            { term: "EXP-bit / TC", body: "3 QoS-bit i label — som DSCP i IP." },
+            { term: "TTL i MPLS", body: "Egen TTL i labelen — kopieres ofte fra IP-TTL." },
+          ]}
+        />
+        <div className="space-y-3">
+          <Illustration caption="MPLS-label legges på ved kanten av nettet (ingress LSR), byttes ut hopp-for-hopp, fjernes ved utgang (egress).">
+            <MplsLabelSvg />
+          </Illustration>
+          <Illustration caption="L3VPN: hver kunde får sin egen VRF og «outer label» som identifiserer kundenettet — to kunder kan ha overlappende 10.0.0.0/8 uten konflikt.">
+            <MplsVpnSvg />
+          </Illustration>
+        </div>
+      </div>
+
+      <Metafor tittel="MPLS-label = strekkode på pakken">
+        <p>
+          Når Posten skanner en pakke i Oslo, leser de strekkoden — ikke selve adressen. Strekkoden
+          er kort og rask å lese; mengden informasjon den koder er forhåndsbestemt («denne pakken
+          hører til kunde X, prioritet Y, destinasjon Z»). På hvert nytt sorteringsanlegg byttes
+          strekkoden ut for den neste leddet i kjeden.
+        </p>
+        <p>
+          MPLS gjør nøyaktig dette: ved kanten av nettet ser en LSR på IP-headeren én gang og
+          tildeler en label. Alle rutere innover i nettet ser kun på labelen — det er et rask
+          oppslag på 20 bit i en flat tabell, ikke en lengste-prefiks-søk i en BGP-tabell med en
+          million IP-prefikser.
+        </p>
+      </Metafor>
+
+      <Metafor tittel="Label-stack = russisk dukke">
+        <p>
+          MPLS støtter <strong>flere</strong> labels stablet utenpå hverandre. Ytre label kan
+          identifisere veien gjennom ISP-en, indre label kan identifisere kunde-VPN-et. Når
+          pakken når egress, popes ytterste label og indre tar over. Det er som å pakke en
+          russisk dukke — én skall av gangen.
+        </p>
+        <p>
+          Det er nettopp denne mekanismen som gjør MPLS-VPN mulig: ISP-en ser bare på ytterste
+          label («denne pakken skal til kunde Acme»). Den vet ikke noe om Acmes interne IP-er, og
+          to ulike kunder kan trygt bruke overlappende 10.0.0.0/8-adresser uten at trafikken
+          blandes.
+        </p>
+      </Metafor>
+
+      <Example title="Eksempel: en pakke gjennom en 4-hopp LSP">
+        <p>
+          En kundepakke kommer inn på ingress-LSR R1. R1 ser at den hører til FEC «til R5 via TE-sti
+          A», legger på label = 100, og sender til R2. R2 har lært via LDP at label 100 fra R1
+          mapper til label 200 mot R3 — den swapper. R3 swapper 200 til 300 mot R4. R4 er
+          «penultimate hop» og popper labelen (PHP). R5 mottar ren IP-pakke, gjør én vanlig
+          IP-oppslag og leverer til kunden.
+        </p>
+        <pre className="text-[11px] font-mono bg-muted/30 p-2 rounded mt-1 overflow-x-auto">
+          {`R1 → push 100 → R2 → swap 100→200 → R3 → swap 200→300 → R4 → pop → R5 → IP-lookup`}
+        </pre>
+        <p className="mt-2">
+          Bare R1 og R5 trengte å se på IP-headeren. Alt der imellom var label-swapping — billig og
+          rask.
+        </p>
+      </Example>
+
+      <Example title="Eksempel: L3VPN med to kunder">
+        <p>
+          ISP-en har to bedriftskunder, Acme og Beta. Begge bruker 10.0.0.0/8 internt. ISP-en
+          konfigurerer to VRF-er (Virtual Routing and Forwarding) på sine PE-rutere (Provider Edge):
+        </p>
+        <ul className="list-disc pl-5 mt-1">
+          <li>VRF Acme: «outer label» 500 brukes for trafikk til Acme-nettet.</li>
+          <li>VRF Beta: «outer label» 600 brukes for trafikk til Beta-nettet.</li>
+        </ul>
+        <p className="mt-2">
+          En pakke fra Acme-kontor i Oslo til Acme-kontor i Tromsø får label-stack {"[500, X]"}. ISP-
+          ene i kjernen ser bare på label 500, ruter pakken til riktig egress-PE, popper 500, og
+          leverer videre til Acme-Tromsø. Beta-trafikk har label 600 og holdes helt adskilt — selv
+          med samme IP-prefikser.
+        </p>
+      </Example>
+
+      <Hvorfor title="Hvorfor brukes MPLS når IP-ruting fungerer?">
+        <p>
+          IP-ruting fungerer fint i internett-kjernen i dag — så hvorfor finnes MPLS fortsatt?
+        </p>
+        <p>
+          <strong>Traffic engineering.</strong> Ren IP-ruting velger korteste sti (BGP/OSPF
+          metrikker). Hvis du vil tvinge en kunde-tunnel over en spesifikk fiber-rute (for SLA eller
+          for å unngå overfylte segmenter), trenger du noe annet enn IGP. MPLS-TE lar deg «pinne»
+          en LSP over en valgt sti.
+        </p>
+        <p>
+          <strong>VPN-isolasjon.</strong> Ren IP-routing kan ikke holde to kunde-nett med
+          overlappende RFC1918-adresser separate. MPLS-VPN er den dominerende løsningen for
+          bedrifts-VPN-er hos ISP-er som Telenor og Telia.
+        </p>
+        <p>
+          <strong>Multiprotokoll-arven.</strong> MPLS ble designet for å bære både IP og andre
+          protokoller (frame relay, ATM, Ethernet) i ett underlying-nett. Selv om de fleste i dag
+          bare bærer IP, finnes Ethernet-over-MPLS (VPLS, EVPN) i mange operatør-nettverk.
+        </p>
+        <p>
+          <strong>Performance på gammel hardware.</strong> Historisk var label-swap mye raskere
+          enn longest-prefix-match. Moderne ASIC-er gjør IP-lookup på samme hastighet, men
+          installert base av MPLS er enorm — så det blir værende.
+        </p>
+        <p className="mt-2">
+          <em>Trend:</em> Segment Routing (SRv6, SR-MPLS) er på vei inn som arvtaker. Sti-en pakkes
+          inn i selve headeren, og man slipper LDP-vedlikehold i nettet. Konseptuelt fortsatt
+          «label switching», men med ren state-i-pakken-design.
+        </p>
+      </Hvorfor>
+    </article>
+  );
+}
+
+// ============================================================
+// Oppgaver
+// ============================================================
+function SectionOppgaver() {
+  return (
+    <article className="space-y-4 text-sm">
+      <Header num="Oppgaver" title="Sjekk forståelsen" />
       <p className="text-muted-foreground">
         Ti oppgaver som tester at du faktisk kan regne og resonere — ikke bare gjenkjenne ordene.
         Klikk «Vis svar» etter du har prøvd selv.
@@ -2012,6 +2184,151 @@ function RelatedSlugs({ slugs }: { slugs: string[] }) {
 // ============================================================
 // SVG-illustrasjoner — alle original-tegnet
 // ============================================================
+
+function MplsLabelSvg() {
+  // Pakke gjennom ingress→LSR→LSR→egress med label-operasjoner.
+  const nodes = [
+    { x: 60, label: "Ingress\nLSR (PE1)", op: "push 100", color: "fill-brand" },
+    { x: 180, label: "LSR (P1)", op: "swap 100→200", color: "fill-amber-500" },
+    { x: 300, label: "LSR (P2)", op: "swap 200→300", color: "fill-amber-500" },
+    { x: 420, label: "Penult.\nLSR (P3)", op: "pop label", color: "fill-amber-500" },
+    { x: 540, label: "Egress\nLSR (PE2)", op: "IP lookup", color: "fill-brand" },
+  ];
+  return (
+    <svg viewBox="0 0 600 220" className="w-full h-auto">
+      <text x={300} y={20} textAnchor="middle" className="fill-foreground text-[12px] font-semibold">
+        MPLS LSP — én pakke gjennom 5 rutere
+      </text>
+      {/* Linja som binder nodene */}
+      <line x1={70} y1={90} x2={550} y2={90} className="stroke-muted-foreground/40" strokeWidth={1.5} />
+      {nodes.map((n, i) => (
+        <g key={i}>
+          <circle cx={n.x} cy={90} r={22} className={`${n.color} stroke-foreground/40`} strokeWidth={1.2} fillOpacity={0.85} />
+          <text x={n.x} y={86} textAnchor="middle" className="fill-background text-[8px] font-semibold">
+            {n.label.split("\n")[0]}
+          </text>
+          <text x={n.x} y={96} textAnchor="middle" className="fill-background text-[8px]">
+            {n.label.split("\n")[1] ?? ""}
+          </text>
+          <text x={n.x} y={130} textAnchor="middle" className="fill-foreground text-[9px] font-mono">
+            {n.op}
+          </text>
+        </g>
+      ))}
+      {/* Pakke-label langs veien */}
+      {[
+        { x: 120, label: "[100|IP|data]" },
+        { x: 240, label: "[200|IP|data]" },
+        { x: 360, label: "[300|IP|data]" },
+        { x: 480, label: "[IP|data]" },
+      ].map((p, i) => (
+        <g key={i}>
+          <rect x={p.x - 40} y={155} width={80} height={20} rx={3} className="fill-card stroke-border" strokeWidth={1} />
+          <text x={p.x} y={169} textAnchor="middle" className="fill-foreground text-[9px] font-mono">
+            {p.label}
+          </text>
+        </g>
+      ))}
+      <text x={300} y={200} textAnchor="middle" className="fill-muted-foreground text-[9px] italic">
+        Bare ingress (PE1) og egress (PE2) ser på IP — alt der imellom er label-swap.
+      </text>
+    </svg>
+  );
+}
+
+function MplsVpnSvg() {
+  // To kunder, samme IP-prefiks, isolert av outer-label.
+  return (
+    <svg viewBox="0 0 600 260" className="w-full h-auto">
+      <text x={300} y={20} textAnchor="middle" className="fill-foreground text-[12px] font-semibold">
+        L3VPN: to kunder med samme 10.0.0.0/8 — separert av outer label
+      </text>
+
+      {/* Acme venstre */}
+      <rect x={20} y={50} width={110} height={50} rx={6} className="fill-brand/15 stroke-brand" strokeWidth={1.5} />
+      <text x={75} y={70} textAnchor="middle" className="fill-foreground text-[10px] font-semibold">
+        Acme Oslo
+      </text>
+      <text x={75} y={86} textAnchor="middle" className="fill-muted-foreground text-[9px] font-mono">
+        10.0.0.0/8
+      </text>
+
+      <rect x={20} y={170} width={110} height={50} rx={6} className="fill-purple-500/15 stroke-purple-500" strokeWidth={1.5} />
+      <text x={75} y={190} textAnchor="middle" className="fill-foreground text-[10px] font-semibold">
+        Beta Oslo
+      </text>
+      <text x={75} y={206} textAnchor="middle" className="fill-muted-foreground text-[9px] font-mono">
+        10.0.0.0/8
+      </text>
+
+      {/* PE1 */}
+      <rect x={170} y={110} width={70} height={50} rx={6} className="fill-card stroke-border" strokeWidth={1.5} />
+      <text x={205} y={130} textAnchor="middle" className="fill-foreground text-[10px] font-semibold">
+        PE1
+      </text>
+      <text x={205} y={146} textAnchor="middle" className="fill-muted-foreground text-[9px]">
+        VRF/labels
+      </text>
+
+      {/* Kjerne */}
+      <rect x={280} y={110} width={70} height={50} rx={6} className="fill-amber-500/15 stroke-amber-500" strokeWidth={1.5} />
+      <text x={315} y={130} textAnchor="middle" className="fill-foreground text-[10px] font-semibold">
+        MPLS core
+      </text>
+      <text x={315} y={146} textAnchor="middle" className="fill-muted-foreground text-[9px]">
+        label swap
+      </text>
+
+      {/* PE2 */}
+      <rect x={390} y={110} width={70} height={50} rx={6} className="fill-card stroke-border" strokeWidth={1.5} />
+      <text x={425} y={130} textAnchor="middle" className="fill-foreground text-[10px] font-semibold">
+        PE2
+      </text>
+      <text x={425} y={146} textAnchor="middle" className="fill-muted-foreground text-[9px]">
+        VRF/labels
+      </text>
+
+      {/* Acme høyre */}
+      <rect x={490} y={50} width={110} height={50} rx={6} className="fill-brand/15 stroke-brand" strokeWidth={1.5} />
+      <text x={545} y={70} textAnchor="middle" className="fill-foreground text-[10px] font-semibold">
+        Acme Tromsø
+      </text>
+      <text x={545} y={86} textAnchor="middle" className="fill-muted-foreground text-[9px] font-mono">
+        10.0.0.0/8
+      </text>
+
+      <rect x={490} y={170} width={110} height={50} rx={6} className="fill-purple-500/15 stroke-purple-500" strokeWidth={1.5} />
+      <text x={545} y={190} textAnchor="middle" className="fill-foreground text-[10px] font-semibold">
+        Beta Tromsø
+      </text>
+      <text x={545} y={206} textAnchor="middle" className="fill-muted-foreground text-[9px] font-mono">
+        10.0.0.0/8
+      </text>
+
+      {/* Linjer — Acme via outer label 500 */}
+      <path d="M 130 75 Q 200 110 205 110" className="stroke-brand fill-none" strokeWidth={1.8} />
+      <path d="M 240 135 H 280" className="stroke-brand fill-none" strokeWidth={1.8} />
+      <path d="M 350 135 H 390" className="stroke-brand fill-none" strokeWidth={1.8} />
+      <path d="M 460 130 Q 480 110 490 75" className="stroke-brand fill-none" strokeWidth={1.8} />
+      <text x={315} y={104} textAnchor="middle" className="fill-brand text-[9px] font-mono font-semibold">
+        outer label = 500 (Acme)
+      </text>
+
+      {/* Linjer — Beta via outer label 600 */}
+      <path d="M 130 195 Q 200 160 205 160" className="stroke-purple-500 fill-none" strokeWidth={1.8} />
+      <path d="M 240 145 H 280" className="stroke-purple-500 fill-none" strokeWidth={1.8} strokeDasharray="2 2" />
+      <path d="M 350 145 H 390" className="stroke-purple-500 fill-none" strokeWidth={1.8} strokeDasharray="2 2" />
+      <path d="M 460 160 Q 480 160 490 195" className="stroke-purple-500 fill-none" strokeWidth={1.8} />
+      <text x={315} y={172} textAnchor="middle" className="fill-purple-500 text-[9px] font-mono font-semibold">
+        outer label = 600 (Beta)
+      </text>
+
+      <text x={300} y={240} textAnchor="middle" className="fill-muted-foreground text-[9px] italic">
+        Samme IP-prefiks, men forskjellig label-stack — kundene møtes aldri.
+      </text>
+    </svg>
+  );
+}
 
 function FrameSvg() {
   return (
@@ -6063,7 +6380,7 @@ function ArpRetningSvg() {
 function SectionEksamen() {
   return (
     <article className="space-y-5 text-sm">
-      <Header num="6.9" title="Eksamen-fokus — komprimert oppsummering av kap. 6" />
+      <Header num="Eksamen" title="Eksamen-fokus — komprimert oppsummering av kap. 6" />
 
       <p className="text-muted-foreground">
         Denne delen er ikke ny lærdom — det er den siste passet over stoffet før du går inn til
