@@ -2,6 +2,16 @@ import { useMemo, useState } from "react";
 import { SiteHeader } from "@/components/SiteHeader";
 import { Button } from "@/components/ui/button";
 import { BookOpen, HardDrive, RotateCcw } from "lucide-react";
+import { VisualDefs } from "@/components/stack/kurose-kurs/VisualDefs";
+import {
+  SegmentIcon,
+  AppendOnlyIcon,
+  ImapIcon,
+  LiveDeadIcon,
+  GcIcon,
+  WriteAmpIcon,
+  CheckpointIcon,
+} from "@/components/stack/dte2505/osIcons";
 
 type Tab = "intro" | "live";
 
@@ -102,57 +112,58 @@ function Intro({ onPick }: { onPick: (t: Tab) => void }) {
         </p>
       </div>
 
-      <div className="rounded-xl border border-border bg-card p-4">
-        <h2 className="text-base font-semibold mb-2">Ordbok</h2>
-        <dl className="space-y-2.5 text-[13px]">
-          <Def term="Segment">
-            En stor, sammenhengende blokk på disken (typisk 1 MB). LFS skriver ALLTID et helt
-            segment om gangen. Disken er delt opp i mange tomme og fulle segmenter.
-          </Def>
-          <Def term="Append-only">
-            Nye data tilføyes alltid til enden av loggen. Aldri «redigere på stedet». Endringer blir
-            nye kopier ved enden.
-          </Def>
-          <Def term="Inode-mapping (imap)">
-            Et oppslagstabell som forteller hvor på disken hver fil-inode bor akkurat nå. Oppdateres
-            ved hver skriving — også imap-en skrives i loggen.
-          </Def>
-          <Def term="Live block vs dead block">
-            En blokk er <em>live</em> hvis det fortsatt finnes en fil som peker på den. Hvis vi
-            oppdaterte fila er den gamle versjonen <em>dead</em> — den ligger på disken, men ingen
-            referansene.
-          </Def>
-          <Def term="Garbage collection (GC)">
-            En bakgrunns-prosess som leser fulle segmenter, kopierer ut bare de live blokkene, og
-            skriver dem til et tomt segment. Det gamle segmentet blir helt tomt og kan gjenbrukes.
-          </Def>
-          <Def term="Write amplification">
-            «Når jeg vil skrive 1 MB ekte data, hvor mye må disken faktisk skrive?» Hvis GC må
-            flytte 9 MB live data for hver 1 MB ny = 10x write amplification. SSD-er bryr seg mye om
-            dette fordi celler har begrenset levetid.
-          </Def>
-          <Def term="Checkpoint">
-            Et stabilt punkt der hele FS-strukturen kan rekonstrueres fra disken. Hvis maskinen
-            kræsjer mellom checkpoints, kan vi spille av loggen fra siste checkpoint og fram til
-            siste komplette segment.
-          </Def>
-        </dl>
-      </div>
+      <VisualDefs
+        title="Ordbok"
+        items={[
+          {
+            term: "Segment",
+            icon: <SegmentIcon />,
+            body: "En stor, sammenhengende blokk på disken (typisk 1 MB). LFS skriver ALLTID et helt segment om gangen. Disken er delt opp i mange tomme og fulle segmenter.",
+          },
+          {
+            term: "Append-only",
+            icon: <AppendOnlyIcon />,
+            body: "Nye data tilføyes alltid til enden av loggen. Aldri «redigere på stedet». Endringer blir nye kopier ved enden.",
+          },
+          {
+            term: "Inode-mapping (imap)",
+            icon: <ImapIcon />,
+            body: "Et oppslagstabell som forteller hvor på disken hver fil-inode bor akkurat nå. Oppdateres ved hver skriving — også imap-en skrives i loggen.",
+          },
+          {
+            term: "Live block vs dead block",
+            icon: <LiveDeadIcon />,
+            body: (
+              <>
+                En blokk er <em>live</em> hvis det fortsatt finnes en fil som peker på den. Hvis vi
+                oppdaterte fila er den gamle versjonen <em>dead</em> — den ligger på disken, men
+                ingen referansene.
+              </>
+            ),
+          },
+          {
+            term: "Garbage collection (GC)",
+            icon: <GcIcon />,
+            body: "En bakgrunns-prosess som leser fulle segmenter, kopierer ut bare de live blokkene, og skriver dem til et tomt segment. Det gamle segmentet blir helt tomt og kan gjenbrukes.",
+          },
+          {
+            term: "Write amplification",
+            icon: <WriteAmpIcon />,
+            body: "«Når jeg vil skrive 1 MB ekte data, hvor mye må disken faktisk skrive?» Hvis GC må flytte 9 MB live data for hver 1 MB ny = 10x write amplification. SSD-er bryr seg mye om dette fordi celler har begrenset levetid.",
+          },
+          {
+            term: "Checkpoint",
+            icon: <CheckpointIcon />,
+            body: "Et stabilt punkt der hele FS-strukturen kan rekonstrueres fra disken. Hvis maskinen kræsjer mellom checkpoints, kan vi spille av loggen fra siste checkpoint og fram til siste komplette segment.",
+          },
+        ]}
+      />
 
       <div className="flex gap-2">
         <Button size="sm" onClick={() => onPick("live")}>
           Start på modul 1 →
         </Button>
       </div>
-    </div>
-  );
-}
-
-function Def({ term, children }: { term: string; children: React.ReactNode }) {
-  return (
-    <div>
-      <dt className="font-semibold text-foreground">{term}</dt>
-      <dd className="text-muted-foreground mt-0.5">{children}</dd>
     </div>
   );
 }

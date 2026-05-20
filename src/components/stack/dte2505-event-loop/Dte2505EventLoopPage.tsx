@@ -2,6 +2,16 @@ import { useEffect, useRef, useState } from "react";
 import { SiteHeader } from "@/components/SiteHeader";
 import { Button } from "@/components/ui/button";
 import { BookOpen, Activity, Play, Pause, RotateCcw } from "lucide-react";
+import { VisualDefs } from "@/components/stack/kurose-kurs/VisualDefs";
+import {
+  FileDescriptorIcon,
+  BlockingIoIcon,
+  NonBlockingIoIcon,
+  EpollIcon,
+  EventLoopIcon,
+  ReactorIcon,
+  CpuVsIoIcon,
+} from "@/components/stack/dte2505/osIcons";
 
 type Tab = "intro" | "live";
 
@@ -104,82 +114,108 @@ function Intro({ onPick }: { onPick: (t: Tab) => void }) {
         </p>
       </div>
 
-      <div className="rounded-xl border border-border bg-card p-4">
-        <h2 className="text-base font-semibold mb-2">Ordbok</h2>
-        <dl className="space-y-2.5 text-[13px]">
-          <Def term="File descriptor (fd)">
-            Et heltall OS-et bruker for å peke på en åpen ressurs — fil, socket, pipe. Du sender det
-            til <code>read</code>, <code>write</code>, osv. En server med 10 000 klienter har 10 000
-            fd-er åpne.
-          </Def>
-          <Def term="Blocking I/O">
-            <code>read(fd, buf, n)</code> stopper thread-en til det faktisk finnes data å lese. Hvis
-            ingen data kommer på 10 sekunder, sover thread-en i 10 sekunder. Brukbart for én klient,
-            fælt for 10 000.
-          </Def>
-          <Def term="Non-blocking I/O">
-            Vi setter fd-en i non-blocking modus. Da returnerer <code>read</code> umiddelbart —
-            enten med data, eller med en feil (EWOULDBLOCK / EAGAIN) som betyr «ingenting akkurat
-            nå, prøv senere». Bygger fundamentet for event loop.
-          </Def>
-          <Def term="select / poll / epoll">
-            Syscall-er som spør OS-et: «her er N fd-er. Vekk meg når MINST ÉN har data klar.»
-            Forskjell:
-            <ul className="list-disc pl-5 mt-1">
-              <li>
-                <code>select</code> (1983): begrenset til 1024 fd-er, må sende hele lista hver gang.
-                Tregt for store N.
-              </li>
-              <li>
-                <code>poll</code> (1986): ingen 1024-grense, men fortsatt O(N) per kall.
-              </li>
-              <li>
-                <code>epoll</code> (Linux, 2002): O(1) per «ready event». OS-et holder lista internt
-                og leverer bare endringer.
-              </li>
-            </ul>
-          </Def>
-          <Def term="Event loop">
-            <code>
-              while (true) {`{`} events = epoll_wait(); for (event in events) handle(event); {`}`}
-            </code>
-            . En enkelt thread som bare prosesserer ferdige hendelser. Brukt av nginx, Node.js,
-            Redis, asyncio i Python.
-          </Def>
-          <Def term="Reactor pattern">
-            Designmønsteret bak event loop-er. «Reactor» (event-løkken) demultiplexer innkommende
-            events og kaller registrerte handlers («handlers»). Hver handler må RETURNERE raskt —
-            ellers blokkeres alle de andre klientene.
-          </Def>
-          <Def term="CPU-bound vs I/O-bound">
-            <ul className="list-disc pl-5 mt-1">
-              <li>
-                <strong>I/O-bound</strong>: jobben venter mest på disk eller nett. Event loop er
-                ideelt — bytte mellom mange klienter mens hver venter.
-              </li>
-              <li>
-                <strong>CPU-bound</strong>: jobben jobber konstant med tunge utregninger. Event loop
-                hjelper IKKE — du vil ha threads / prosesser for å bruke flere CPU-kjerner.
-              </li>
-            </ul>
-          </Def>
-        </dl>
-      </div>
+      <VisualDefs
+        title="Ordbok"
+        items={[
+          {
+            term: "File descriptor (fd)",
+            icon: <FileDescriptorIcon />,
+            body: (
+              <>
+                Et heltall OS-et bruker for å peke på en åpen ressurs — fil, socket, pipe. Du sender
+                det til <code>read</code>, <code>write</code>, osv. En server med 10 000 klienter har
+                10 000 fd-er åpne.
+              </>
+            ),
+          },
+          {
+            term: "Blocking I/O",
+            icon: <BlockingIoIcon />,
+            body: (
+              <>
+                <code>read(fd, buf, n)</code> stopper thread-en til det faktisk finnes data å lese.
+                Hvis ingen data kommer på 10 sekunder, sover thread-en i 10 sekunder. Brukbart for én
+                klient, fælt for 10 000.
+              </>
+            ),
+          },
+          {
+            term: "Non-blocking I/O",
+            icon: <NonBlockingIoIcon />,
+            body: (
+              <>
+                Vi setter fd-en i non-blocking modus. Da returnerer <code>read</code> umiddelbart —
+                enten med data, eller med en feil (EWOULDBLOCK / EAGAIN) som betyr «ingenting akkurat
+                nå, prøv senere». Bygger fundamentet for event loop.
+              </>
+            ),
+          },
+          {
+            term: "select / poll / epoll",
+            icon: <EpollIcon />,
+            body: (
+              <>
+                Syscall-er som spør OS-et: «her er N fd-er. Vekk meg når MINST ÉN har data klar.»
+                Forskjell:
+                <ul className="list-disc pl-5 mt-1">
+                  <li>
+                    <code>select</code> (1983): begrenset til 1024 fd-er, må sende hele lista hver
+                    gang. Tregt for store N.
+                  </li>
+                  <li>
+                    <code>poll</code> (1986): ingen 1024-grense, men fortsatt O(N) per kall.
+                  </li>
+                  <li>
+                    <code>epoll</code> (Linux, 2002): O(1) per «ready event». OS-et holder lista
+                    internt og leverer bare endringer.
+                  </li>
+                </ul>
+              </>
+            ),
+          },
+          {
+            term: "Event loop",
+            icon: <EventLoopIcon />,
+            body: (
+              <>
+                <code>
+                  while (true) {`{`} events = epoll_wait(); for (event in events) handle(event);{" "}
+                  {`}`}
+                </code>
+                . En enkelt thread som bare prosesserer ferdige hendelser. Brukt av nginx, Node.js,
+                Redis, asyncio i Python.
+              </>
+            ),
+          },
+          {
+            term: "Reactor pattern",
+            icon: <ReactorIcon />,
+            body: "Designmønsteret bak event loop-er. «Reactor» (event-løkken) demultiplexer innkommende events og kaller registrerte handlers («handlers»). Hver handler må RETURNERE raskt — ellers blokkeres alle de andre klientene.",
+          },
+          {
+            term: "CPU-bound vs I/O-bound",
+            icon: <CpuVsIoIcon />,
+            body: (
+              <ul className="list-disc pl-5 mt-1">
+                <li>
+                  <strong>I/O-bound</strong>: jobben venter mest på disk eller nett. Event loop er
+                  ideelt — bytte mellom mange klienter mens hver venter.
+                </li>
+                <li>
+                  <strong>CPU-bound</strong>: jobben jobber konstant med tunge utregninger. Event
+                  loop hjelper IKKE — du vil ha threads / prosesser for å bruke flere CPU-kjerner.
+                </li>
+              </ul>
+            ),
+          },
+        ]}
+      />
 
       <div className="flex gap-2">
         <Button size="sm" onClick={() => onPick("live")}>
           Start på modul 1 →
         </Button>
       </div>
-    </div>
-  );
-}
-
-function Def({ term, children }: { term: string; children: React.ReactNode }) {
-  return (
-    <div>
-      <dt className="font-semibold text-foreground">{term}</dt>
-      <dd className="text-muted-foreground mt-0.5">{children}</dd>
     </div>
   );
 }

@@ -2,6 +2,15 @@ import { useMemo, useState } from "react";
 import { SiteHeader } from "@/components/SiteHeader";
 import { Button } from "@/components/ui/button";
 import { BookOpen, Layers, RotateCcw } from "lucide-react";
+import { VisualDefs } from "@/components/stack/kurose-kurs/VisualDefs";
+import {
+  SegmentIcon,
+  BaseLimitIcon,
+  InternalFragIcon,
+  ExternalFragIcon,
+  FitStrategyIcon,
+  CompactionIcon,
+} from "@/components/stack/dte2505/osIcons";
 
 type Tab = "intro" | "live";
 
@@ -66,15 +75,6 @@ function TabBtn({
     </button>
   );
 }
-function Def({ term, children }: { term: string; children: React.ReactNode }) {
-  return (
-    <div>
-      <dt className="font-semibold text-foreground">{term}</dt>
-      <dd className="text-muted-foreground mt-0.5">{children}</dd>
-    </div>
-  );
-}
-
 function Intro({ onPick }: { onPick: (t: Tab) => void }) {
   return (
     <div className="space-y-4 text-sm">
@@ -109,47 +109,68 @@ function Intro({ onPick }: { onPick: (t: Tab) => void }) {
         </p>
       </div>
 
-      <div className="rounded-xl border border-border bg-card p-4">
-        <h2 className="text-base font-semibold mb-2">Ordbok</h2>
-        <dl className="space-y-2.5 text-[13px]">
-          <Def term="Segment">
-            En logisk del av et adresse-rom med en spesifikk rolle: kode, stack, heap. Hvert segment
-            har en base-adresse (hvor i fysisk minne det ligger) og en limit (hvor stort det er).
-          </Def>
-          <Def term="Base + limit-register">
-            CPU-hardware har to registre per aktivt segment. Når en prosess prøver å lese virtuell
-            adresse v: fysisk = base + v, og hvis v ≥ limit → segmentation fault.
-          </Def>
-          <Def term="Intern fragmentering">
-            Plass <em>inne i</em> en allokert blokk som ikke brukes. F.eks. hvis vi alltid runder
-            opp til 4 KB-sider og prosessen trenger 100 B, kaster vi 3996 B.
-          </Def>
-          <Def term="Ekstern fragmentering">
-            Plass <em>mellom</em> allokerte blokker. Det er nok TOTALT-ledig plass, men ingen
-            sammenhengende stor nok blokk. Hovedproblemet med segmentering.
-          </Def>
-          <Def term="First fit / Best fit / Worst fit">
-            Strategier for å velge hvilken ledig blokk en ny allokering skal få:
-            <ul className="list-disc pl-5 mt-1">
-              <li>
-                <strong>First fit</strong>: ta første ledig blokk som er stor nok. Raskt, men kan
-                fragmenttere starten av minnet.
-              </li>
-              <li>
-                <strong>Best fit</strong>: ta den minste ledige blokken som passer. Mindre slack,
-                men flere små rester.
-              </li>
-              <li>
-                <strong>Worst fit</strong>: ta den største ledige blokken. Sjelden bra.
-              </li>
-            </ul>
-          </Def>
-          <Def term="Compaction">
-            Flytte alle allokerte blokker sammen for å konsolidere ledig plass i én stor blokk. Dyrt
-            — krever oppdatering av alle base-registre.
-          </Def>
-        </dl>
-      </div>
+      <VisualDefs
+        title="Ordbok"
+        items={[
+          {
+            term: "Segment",
+            icon: <SegmentIcon />,
+            body: "En logisk del av et adresse-rom med en spesifikk rolle: kode, stack, heap. Hvert segment har en base-adresse (hvor i fysisk minne det ligger) og en limit (hvor stort det er).",
+          },
+          {
+            term: "Base + limit-register",
+            icon: <BaseLimitIcon />,
+            body: "CPU-hardware har to registre per aktivt segment. Når en prosess prøver å lese virtuell adresse v: fysisk = base + v, og hvis v ≥ limit → segmentation fault.",
+          },
+          {
+            term: "Intern fragmentering",
+            icon: <InternalFragIcon />,
+            body: (
+              <>
+                Plass <em>inne i</em> en allokert blokk som ikke brukes. F.eks. hvis vi alltid
+                runder opp til 4 KB-sider og prosessen trenger 100 B, kaster vi 3996 B.
+              </>
+            ),
+          },
+          {
+            term: "Ekstern fragmentering",
+            icon: <ExternalFragIcon />,
+            body: (
+              <>
+                Plass <em>mellom</em> allokerte blokker. Det er nok TOTALT-ledig plass, men ingen
+                sammenhengende stor nok blokk. Hovedproblemet med segmentering.
+              </>
+            ),
+          },
+          {
+            term: "First fit / Best fit / Worst fit",
+            icon: <FitStrategyIcon />,
+            body: (
+              <>
+                Strategier for å velge hvilken ledig blokk en ny allokering skal få:
+                <ul className="list-disc pl-5 mt-1">
+                  <li>
+                    <strong>First fit</strong>: ta første ledig blokk som er stor nok. Raskt, men
+                    kan fragmenttere starten av minnet.
+                  </li>
+                  <li>
+                    <strong>Best fit</strong>: ta den minste ledige blokken som passer. Mindre
+                    slack, men flere små rester.
+                  </li>
+                  <li>
+                    <strong>Worst fit</strong>: ta den største ledige blokken. Sjelden bra.
+                  </li>
+                </ul>
+              </>
+            ),
+          },
+          {
+            term: "Compaction",
+            icon: <CompactionIcon />,
+            body: "Flytte alle allokerte blokker sammen for å konsolidere ledig plass i én stor blokk. Dyrt — krever oppdatering av alle base-registre.",
+          },
+        ]}
+      />
       <div className="flex gap-2">
         <Button size="sm" onClick={() => onPick("live")}>
           Start på modul 1 →
