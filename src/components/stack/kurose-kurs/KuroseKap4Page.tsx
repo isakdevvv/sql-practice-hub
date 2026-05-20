@@ -10,6 +10,10 @@ import {
 } from "lucide-react";
 import { SectionPager, type SectionNavItem } from "./SectionPager";
 import { Section41Live } from "./Section41Live";
+import { Section42Live } from "./Section42Live";
+import { Section43Live } from "./Section43Live";
+import { Section44Live } from "./Section44Live";
+import { Section45Live } from "./Section45Live";
 
 type Tab = "intro" | "4.1" | "4.2" | "4.3" | "4.4" | "4.5" | "4.6" | "4.7";
 
@@ -316,6 +320,8 @@ function Section42() {
         hver input-port.
       </p>
 
+      <Section42Live />
+
       <Defs
         items={[
           {
@@ -433,6 +439,8 @@ function Section43() {
         ordens-bevaring. Alt over (TCP) og under (lenke-lag) snakker IP, og det er det som
         gjør internett internett.
       </p>
+
+      <Section43Live />
 
       <Defs
         items={[
@@ -565,6 +573,8 @@ function Section44() {
         prefix-tabell. Generalisert forwarding generaliserer dette: «matche på hva som helst i
         pakke-headerne, og gjør hva som helst med pakken». Det åpner døren for SDN.
       </p>
+
+      <Section44Live />
 
       <Defs
         items={[
@@ -700,6 +710,8 @@ function Section45() {
         ikke i nettverket»), men er overalt likevel — fordi de løser reelle problemer som
         ikke endepunktene kunne løse alene.
       </p>
+
+      <Section45Live />
 
       <Defs
         items={[
