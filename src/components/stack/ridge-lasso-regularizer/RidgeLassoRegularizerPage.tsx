@@ -2,6 +2,15 @@ import { useMemo, useState } from "react";
 import { SiteHeader } from "@/components/SiteHeader";
 import { Button } from "@/components/ui/button";
 import { BookOpen, LineChart as LineIcon } from "lucide-react";
+import { VisualDefs } from "@/components/stack/kurose-kurs/VisualDefs";
+import {
+  CoefficientIcon,
+  LambdaIcon,
+  RidgeIcon,
+  LassoIcon,
+  BiasVarianceIcon,
+  ElasticNetIcon,
+} from "@/components/stack/statIcons";
 
 type Tab = "intro" | "live";
 
@@ -93,42 +102,86 @@ function Intro({ onPick }: { onPick: (t: Tab) => void }) {
         </ul>
       </div>
 
-      <div className="rounded-xl border border-border bg-card p-4">
-        <h2 className="text-base font-semibold mb-2">Nye ord</h2>
-        <dl className="space-y-2.5 text-[13px]">
-          <Def term="Koeffisient (w_i)">
-            Vekten foran én feature. Forteller «hvor mye y endres for hver enhet x_i endres». Store
-            koeffisienter = «modellen reagerer kraftig på denne featuren» — fare for overfitting.
-          </Def>
-          <Def term="Regulariseringsparameter λ (lambda)">
-            Hvor hardt vi straffer store koeffisienter. λ = 0 betyr «ingen regulering» (vanlig
-            OLS-regresjon). Stor λ tvinger koeffisientene mot null.
-          </Def>
-          <Def term="Ridge-regresjon (L2)">
-            Vi minimerer <code>MSE + λ·Σ wᵢ²</code>. «Σ wᵢ²» er summen av kvadrerte koeffisienter.
-            Resultat: alle koeffisienter krymper jevnt mot 0, men ingen blir nøyaktig 0.
-          </Def>
-          <Def term="Lasso-regresjon (L1)">
-            Vi minimerer <code>MSE + λ·Σ |wᵢ|</code>. «Σ |wᵢ|» er summen av absoluttverdiene.
-            Resultat: noen koeffisienter skyves helt til 0 — features blir <em>droppet</em>. Lasso
-            gjør automatisk feature- seleksjon.
-          </Def>
-          <Def term="L1 vs L2 — hvorfor forskjellig?">
-            Begge er straffer på «størrelse», men L1 har en hjørne i sin kost-kontur ved null.
-            Optimum havner ofte i hjørnet → koeffisient blir nøyaktig null. L2 er glatt →
-            koeffisientene nærmer seg null asymptotisk men er aldri nøyaktig null.
-          </Def>
-          <Def term="Bias-variance tradeoff">
-            Lav λ = liten bias (modellen kan fange detaljer) men høy varians (modellen reagerer på
-            støy). Høy λ = høy bias (for enkel) men lav varians. Optimum-λ ligger midt mellom og
-            finnes via kryssvalidering.
-          </Def>
-          <Def term="ElasticNet">
-            Kombo: <code>MSE + λ₁·Σ |wᵢ| + λ₂·Σ wᵢ²</code>. Får både Lassos feature-seleksjon og
-            Ridges stabilitet ved korrelerte features.
-          </Def>
-        </dl>
-      </div>
+      <VisualDefs
+        title="Nye ord"
+        items={[
+          {
+            term: "Koeffisient w_i",
+            icon: <CoefficientIcon />,
+            body: (
+              <>
+                Vekten foran én feature. Forteller «hvor mye y endres for hver enhet x_i endres».
+                Store koeffisienter = «modellen reagerer kraftig på denne featuren» — fare for
+                overfitting.
+              </>
+            ),
+          },
+          {
+            term: "λ (lambda)",
+            icon: <LambdaIcon />,
+            body: (
+              <>
+                Hvor hardt vi straffer store koeffisienter. λ = 0 betyr «ingen regulering» (vanlig
+                OLS-regresjon). Stor λ tvinger koeffisientene mot null.
+              </>
+            ),
+          },
+          {
+            term: "Ridge (L2)",
+            icon: <RidgeIcon />,
+            body: (
+              <>
+                Vi minimerer <code>MSE + λ·Σ wᵢ²</code>. «Σ wᵢ²» er summen av kvadrerte
+                koeffisienter. Resultat: alle koeffisienter krymper jevnt mot 0, men ingen blir
+                nøyaktig 0.
+              </>
+            ),
+          },
+          {
+            term: "Lasso (L1)",
+            icon: <LassoIcon />,
+            body: (
+              <>
+                Vi minimerer <code>MSE + λ·Σ |wᵢ|</code>. «Σ |wᵢ|» er summen av absoluttverdiene.
+                Resultat: noen koeffisienter skyves helt til 0 — features blir <em>droppet</em>.
+                Lasso gjør automatisk feature-seleksjon.
+              </>
+            ),
+          },
+          {
+            term: "L1 vs L2",
+            icon: <LassoIcon />,
+            body: (
+              <>
+                Begge er straffer på «størrelse», men L1 har en hjørne i sin kost-kontur ved null.
+                Optimum havner ofte i hjørnet → koeffisient blir nøyaktig null. L2 er glatt →
+                koeffisientene nærmer seg null asymptotisk men er aldri nøyaktig null.
+              </>
+            ),
+          },
+          {
+            term: "Bias-variance",
+            icon: <BiasVarianceIcon />,
+            body: (
+              <>
+                Lav λ = liten bias (modellen kan fange detaljer) men høy varians (modellen reagerer
+                på støy). Høy λ = høy bias (for enkel) men lav varians. Optimum-λ ligger midt
+                mellom og finnes via kryssvalidering.
+              </>
+            ),
+          },
+          {
+            term: "ElasticNet",
+            icon: <ElasticNetIcon />,
+            body: (
+              <>
+                Kombo: <code>MSE + λ₁·Σ |wᵢ| + λ₂·Σ wᵢ²</code>. Får både Lassos feature-seleksjon
+                og Ridges stabilitet ved korrelerte features.
+              </>
+            ),
+          },
+        ]}
+      />
 
       <div className="rounded-xl border border-border bg-card p-4">
         <h2 className="text-base font-semibold mb-2">Slik er modulen bygd</h2>
@@ -143,15 +196,6 @@ function Intro({ onPick }: { onPick: (t: Tab) => void }) {
           </Button>
         </div>
       </div>
-    </div>
-  );
-}
-
-function Def({ term, children }: { term: string; children: React.ReactNode }) {
-  return (
-    <div>
-      <dt className="font-semibold text-foreground">{term}</dt>
-      <dd className="text-muted-foreground mt-0.5">{children}</dd>
     </div>
   );
 }

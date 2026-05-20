@@ -2,6 +2,21 @@ import { useEffect, useMemo, useState } from "react";
 import { SiteHeader } from "@/components/SiteHeader";
 import { Button } from "@/components/ui/button";
 import { BookOpen, Hash, Sigma, Layers, KeyRound, Workflow, RotateCcw } from "lucide-react";
+import { VisualDefs } from "@/components/stack/kurose-kurs/VisualDefs";
+import {
+  HashIcon,
+  BitarrayIcon,
+  BucketIcon,
+  CardinalityIcon,
+  ProbabilisticAlgoIcon,
+  FalsePositiveIcon,
+  JaccardIcon,
+  ShingleIcon,
+  LeadingZerosIcon,
+  ShaIcon,
+  MapReduceIcon,
+  BloomFormulaIcon,
+} from "@/components/stack/statIcons";
 
 type Tab = "intro" | "bloom" | "hll" | "lsh" | "sha" | "mapreduce";
 
@@ -83,74 +98,146 @@ export function ProbabilisticBigDataPage() {
 function IntroModule({ onPick }: { onPick: (t: Tab) => void }) {
   return (
     <div className="space-y-4 text-sm">
-      <div className="rounded-xl border border-border bg-card p-4">
-        <h2 className="text-base font-semibold mb-2">Byggestein-ordbok</h2>
-        <dl className="space-y-3 text-[13px]">
-          <Def term="Hash-funksjon">
-            En funksjon som tar en streng/tall og spytter ut et tilsynelatende tilfeldig tall
-            innenfor et område. Samme input gir alltid samme output. Eksempel:{" "}
-            <code>hash("epler") = 42</code>, <code>hash("bananer") = 7</code>. Brukes til å plassere
-            ting i bøtter, oppdage duplikater og mer.
-          </Def>
-          <Def term="Bitarray">
-            Et fast antall bits (0 eller 1) lagt i rekke. Et bitarray med m = 64 bits bruker 8 bytes
-            minne. Du kan «sette» bit nr. i ved å skrive 1 der, og «sjekke» ved å lese om det er 0
-            eller 1.
-          </Def>
-          <Def term="Bucket (bøtte)">
-            En liten plass med en indeks. «Hash-funksjon plasserer noe i bucket <code>h % m</code>»
-            betyr: regn ut hash, ta rest ved deling med m, få et tall mellom 0 og m−1, plasser der.
-          </Def>
-          <Def term="Kardinalitet">
-            Antall <em>unike</em> elementer i en samling. <code>[a, b, a, c, b]</code> har lengde 5
-            men kardinalitet 3 (unikt: a, b, c).
-          </Def>
-          <Def term="Sannsynlig / probabilistisk">
-            Algoritmen bruker tilfeldighet og garanterer ikke et perfekt svar, men kommer veldig nær
-            med høy sannsynlighet. Bytter litt nøyaktighet mot massiv plass-besparelse.
-          </Def>
-          <Def term="False positive (falsk positiv)">
-            Algoritmen sier «JA, dette er i settet» når svaret faktisk er nei. Bloom-filter kan ha
-            false positives, men ALDRI false negatives.
-          </Def>
-          <Def term="Jaccard-likhet">
-            Et tall mellom 0 og 1 som måler hvor like to mengder er.{" "}
-            <code>J(A, B) = |A ∩ B| / |A ∪ B|</code>: størrelsen på snittet delt på størrelsen på
-            unionen. Helt like → 1. Helt forskjellige → 0.
-          </Def>
-          <Def term="Shingle (n-gram)">
-            En liten bit av en tekst. 3-shingle av «hund» er <code>["hun", "und"]</code>: hver
-            3-bokstavs-sekvens. To dokumenter med mange like shingles likner hverandre.
-          </Def>
-          <Def term="Leading zeros">
-            Antall null-bits i starten av et binærtall. F.eks. binær <code>00010110</code> har 3
-            leading zeros. Brukes av HyperLogLog som «hvor uvanlig er denne hashen».
-          </Def>
-          <Def term="Kryptografisk hash (SHA-256)">
-            En spesielt sterk hash-funksjon der: (1) du ikke kan reversere den, (2) det er praktisk
-            umulig å finne to inputs som gir samme output, og (3) endring av én bit input gir helt
-            forskjellig output («avalanche»). SHA-256 gir 256 bits = 32 bytes = 64 hex-tegn.
-          </Def>
-          <Def term="MapReduce">
-            Et mønster for å fordele jobben på mange maskiner: map = bryt opp input i (nøkkel,
-            verdi)-par; shuffle = gruppér per nøkkel; reduce = slå sammen verdier i hver gruppe.
-            Word-count er kanon-eksempelet.
-          </Def>
-          <Def term="m, n, k (i Bloom-formler)">
-            <ul className="list-disc pl-5 mt-1">
-              <li>
-                <code>m</code> = antall bits i bitarrayet (større = mindre kollisjon).
-              </li>
-              <li>
-                <code>n</code> = antall elementer du har satt inn.
-              </li>
-              <li>
-                <code>k</code> = antall hash-funksjoner per element.
-              </li>
-            </ul>
-          </Def>
-        </dl>
-      </div>
+      <VisualDefs
+        title="Byggestein-ordbok"
+        items={[
+          {
+            term: "Hash-funksjon",
+            icon: <HashIcon />,
+            body: (
+              <>
+                En funksjon som tar en streng/tall og spytter ut et tilsynelatende tilfeldig tall
+                innenfor et område. Samme input gir alltid samme output. Eksempel:{" "}
+                <code>hash("epler") = 42</code>, <code>hash("bananer") = 7</code>. Brukes til å
+                plassere ting i bøtter, oppdage duplikater og mer.
+              </>
+            ),
+          },
+          {
+            term: "Bitarray",
+            icon: <BitarrayIcon />,
+            body: (
+              <>
+                Et fast antall bits (0 eller 1) lagt i rekke. Et bitarray med m = 64 bits bruker
+                8 bytes minne. Du kan «sette» bit nr. i ved å skrive 1 der, og «sjekke» ved å lese
+                om det er 0 eller 1.
+              </>
+            ),
+          },
+          {
+            term: "Bucket (bøtte)",
+            icon: <BucketIcon />,
+            body: (
+              <>
+                En liten plass med en indeks. «Hash-funksjon plasserer noe i bucket{" "}
+                <code>h % m</code>» betyr: regn ut hash, ta rest ved deling med m, få et tall
+                mellom 0 og m−1, plasser der.
+              </>
+            ),
+          },
+          {
+            term: "Kardinalitet",
+            icon: <CardinalityIcon />,
+            body: (
+              <>
+                Antall <em>unike</em> elementer i en samling. <code>[a, b, a, c, b]</code> har
+                lengde 5 men kardinalitet 3 (unikt: a, b, c).
+              </>
+            ),
+          },
+          {
+            term: "Sannsynlig / probabilistisk",
+            icon: <ProbabilisticAlgoIcon />,
+            body: (
+              <>
+                Algoritmen bruker tilfeldighet og garanterer ikke et perfekt svar, men kommer veldig
+                nær med høy sannsynlighet. Bytter litt nøyaktighet mot massiv plass-besparelse.
+              </>
+            ),
+          },
+          {
+            term: "False positive",
+            icon: <FalsePositiveIcon />,
+            body: (
+              <>
+                Algoritmen sier «JA, dette er i settet» når svaret faktisk er nei. Bloom-filter
+                kan ha false positives, men ALDRI false negatives.
+              </>
+            ),
+          },
+          {
+            term: "Jaccard-likhet",
+            icon: <JaccardIcon />,
+            body: (
+              <>
+                Et tall mellom 0 og 1 som måler hvor like to mengder er.{" "}
+                <code>J(A, B) = |A ∩ B| / |A ∪ B|</code>: størrelsen på snittet delt på størrelsen
+                på unionen. Helt like → 1. Helt forskjellige → 0.
+              </>
+            ),
+          },
+          {
+            term: "Shingle (n-gram)",
+            icon: <ShingleIcon />,
+            body: (
+              <>
+                En liten bit av en tekst. 3-shingle av «hund» er <code>["hun", "und"]</code>: hver
+                3-bokstavs-sekvens. To dokumenter med mange like shingles likner hverandre.
+              </>
+            ),
+          },
+          {
+            term: "Leading zeros",
+            icon: <LeadingZerosIcon />,
+            body: (
+              <>
+                Antall null-bits i starten av et binærtall. F.eks. binær <code>00010110</code> har
+                3 leading zeros. Brukes av HyperLogLog som «hvor uvanlig er denne hashen».
+              </>
+            ),
+          },
+          {
+            term: "Kryptografisk hash",
+            icon: <ShaIcon />,
+            body: (
+              <>
+                En spesielt sterk hash-funksjon der: (1) du ikke kan reversere den, (2) det er
+                praktisk umulig å finne to inputs som gir samme output, og (3) endring av én bit
+                input gir helt forskjellig output («avalanche»). SHA-256 gir 256 bits = 32 bytes
+                = 64 hex-tegn.
+              </>
+            ),
+          },
+          {
+            term: "MapReduce",
+            icon: <MapReduceIcon />,
+            body: (
+              <>
+                Et mønster for å fordele jobben på mange maskiner: map = bryt opp input i (nøkkel,
+                verdi)-par; shuffle = gruppér per nøkkel; reduce = slå sammen verdier i hver
+                gruppe. Word-count er kanon-eksempelet.
+              </>
+            ),
+          },
+          {
+            term: "m, n, k (Bloom)",
+            icon: <BloomFormulaIcon />,
+            body: (
+              <ul className="list-disc pl-5">
+                <li>
+                  <code>m</code> = antall bits i bitarrayet (større = mindre kollisjon).
+                </li>
+                <li>
+                  <code>n</code> = antall elementer du har satt inn.
+                </li>
+                <li>
+                  <code>k</code> = antall hash-funksjoner per element.
+                </li>
+              </ul>
+            ),
+          },
+        ]}
+      />
 
       <div className="rounded-xl border border-border bg-card p-4">
         <h2 className="text-base font-semibold mb-2">Slik bygger modulene på hverandre</h2>
@@ -186,15 +273,6 @@ function IntroModule({ onPick }: { onPick: (t: Tab) => void }) {
           </Button>
         </div>
       </div>
-    </div>
-  );
-}
-
-function Def({ term, children }: { term: string; children: React.ReactNode }) {
-  return (
-    <div>
-      <dt className="font-semibold text-foreground">{term}</dt>
-      <dd className="text-muted-foreground mt-0.5">{children}</dd>
     </div>
   );
 }

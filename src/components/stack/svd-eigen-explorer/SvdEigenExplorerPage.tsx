@@ -2,6 +2,17 @@ import { useMemo, useState } from "react";
 import { SiteHeader } from "@/components/SiteHeader";
 import { Button } from "@/components/ui/button";
 import { BookOpen, Compass } from "lucide-react";
+import { VisualDefs } from "@/components/stack/kurose-kurs/VisualDefs";
+import {
+  EigenvectorIcon,
+  EigenvalueIcon,
+  EigenDecompIcon,
+  SvdIcon,
+  SingularValueIcon,
+  RankIcon,
+  RankKIcon,
+  PcaIcon,
+} from "@/components/stack/statIcons";
 
 type Tab = "intro" | "live";
 
@@ -63,15 +74,6 @@ function TabBtn({
     </button>
   );
 }
-function Def({ term, children }: { term: string; children: React.ReactNode }) {
-  return (
-    <div>
-      <dt className="font-semibold text-foreground">{term}</dt>
-      <dd className="text-muted-foreground mt-0.5">{children}</dd>
-    </div>
-  );
-}
-
 function Intro({ onPick }: { onPick: (t: Tab) => void }) {
   return (
     <div className="space-y-4 text-sm">
@@ -99,46 +101,94 @@ function Intro({ onPick }: { onPick: (t: Tab) => void }) {
         </p>
       </div>
 
-      <div className="rounded-xl border border-border bg-card p-4">
-        <h2 className="text-base font-semibold mb-2">Ordbok</h2>
-        <dl className="space-y-2.5 text-[13px]">
-          <Def term="Egenvektor v">
-            En vektor som, multiplisert med matrisen A, kun blir skalert (ikke rotert):
-            <code> A·v = λ·v</code>. λ er en skalar (egenverdi).
-          </Def>
-          <Def term="Egenverdi λ">
-            Hvor mye egenvektoren blir skalert. λ &gt; 1 = stretched. 0 &lt; λ &lt; 1 = shrunk. λ
-            &lt; 0 = flippet.
-          </Def>
-          <Def term="Eigendekomposisjon">
-            For en symmetrisk n×n matrise: <code>A = V·Λ·V⁻¹</code> der V er en matrise med
-            egenvektorer som kolonner og Λ er en diagonal matrise med egenverdier. Bare definert for
-            kvadratiske matriser.
-          </Def>
-          <Def term="SVD (Singular Value Decomposition)">
-            For ENHVER m×n matrise: <code>A = U·Σ·Vᵀ</code>. U: m×m, ortogonal (kolonner =
-            «output-retninger»). Σ: m×n, diagonal med singulærverdier (alltid ≥ 0). V: n×n,
-            ortogonal (rader = «input-retninger»).
-          </Def>
-          <Def term="Singulærverdi σ_i">
-            Diagonal-elementene i Σ, sortert avtagende: σ_1 ≥ σ_2 ≥ ... ≥ 0. Forteller hvor mye
-            «kraft» det er i hver komponent.
-          </Def>
-          <Def term="Rangering (rank)">
-            Antall ikke-null singulærverdier. En matrise med rank r kan «virkelig» bare representere
-            et r-dimensjonalt rom, uansett hvor mange rader/kolonner den har.
-          </Def>
-          <Def term="Rank-k approksimasjon">
-            Behold bare de k største singulærverdiene. <code>A_k = U_k·Σ_k·V_kᵀ</code> er den beste
-            mulige k-rangs tilnærmingen til A (i Frobenius-norm). Brukes til kompresjon og
-            støy-reduksjon.
-          </Def>
-          <Def term="Forhold til PCA">
-            PCA = SVD av (sentrert) datamatrise. Hovedkomponentene er kolonnene i V, og «hvor mye
-            varians de fanger» = σ_i² / Σ σ_j².
-          </Def>
-        </dl>
-      </div>
+      <VisualDefs
+        title="Ordbok"
+        items={[
+          {
+            term: "Egenvektor v",
+            icon: <EigenvectorIcon />,
+            body: (
+              <>
+                En vektor som, multiplisert med matrisen A, kun blir skalert (ikke rotert):
+                <code> A·v = λ·v</code>. λ er en skalar (egenverdi).
+              </>
+            ),
+          },
+          {
+            term: "Egenverdi λ",
+            icon: <EigenvalueIcon />,
+            body: (
+              <>
+                Hvor mye egenvektoren blir skalert. λ &gt; 1 = stretched. 0 &lt; λ &lt; 1 = shrunk.
+                λ &lt; 0 = flippet.
+              </>
+            ),
+          },
+          {
+            term: "Eigendekomposisjon",
+            icon: <EigenDecompIcon />,
+            body: (
+              <>
+                For en symmetrisk n×n matrise: <code>A = V·Λ·V⁻¹</code> der V er en matrise med
+                egenvektorer som kolonner og Λ er en diagonal matrise med egenverdier. Bare
+                definert for kvadratiske matriser.
+              </>
+            ),
+          },
+          {
+            term: "SVD",
+            icon: <SvdIcon />,
+            body: (
+              <>
+                For ENHVER m×n matrise: <code>A = U·Σ·Vᵀ</code>. U: m×m, ortogonal (kolonner =
+                «output-retninger»). Σ: m×n, diagonal med singulærverdier (alltid ≥ 0). V: n×n,
+                ortogonal (rader = «input-retninger»).
+              </>
+            ),
+          },
+          {
+            term: "Singulærverdi σ_i",
+            icon: <SingularValueIcon />,
+            body: (
+              <>
+                Diagonal-elementene i Σ, sortert avtagende: σ_1 ≥ σ_2 ≥ ... ≥ 0. Forteller hvor
+                mye «kraft» det er i hver komponent.
+              </>
+            ),
+          },
+          {
+            term: "Rangering (rank)",
+            icon: <RankIcon />,
+            body: (
+              <>
+                Antall ikke-null singulærverdier. En matrise med rank r kan «virkelig» bare
+                representere et r-dimensjonalt rom, uansett hvor mange rader/kolonner den har.
+              </>
+            ),
+          },
+          {
+            term: "Rank-k approksimasjon",
+            icon: <RankKIcon />,
+            body: (
+              <>
+                Behold bare de k største singulærverdiene. <code>A_k = U_k·Σ_k·V_kᵀ</code> er den
+                beste mulige k-rangs tilnærmingen til A (i Frobenius-norm). Brukes til kompresjon
+                og støy-reduksjon.
+              </>
+            ),
+          },
+          {
+            term: "Forhold til PCA",
+            icon: <PcaIcon />,
+            body: (
+              <>
+                PCA = SVD av (sentrert) datamatrise. Hovedkomponentene er kolonnene i V, og «hvor
+                mye varians de fanger» = σ_i² / Σ σ_j².
+              </>
+            ),
+          },
+        ]}
+      />
       <div className="flex gap-2">
         <Button size="sm" onClick={() => onPick("live")}>
           Start på modul 1 →
