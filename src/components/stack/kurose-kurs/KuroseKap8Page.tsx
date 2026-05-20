@@ -19,6 +19,149 @@ import { Section85Live } from "./Section85Live";
 import { Section86Live } from "./Section86Live";
 import { Section87Live } from "./Section87Live";
 import { Section88Live } from "./Section88Live";
+import { VisualDefs } from "./VisualDefs";
+import {
+  ConfidentialityIcon,
+  IntegrityIcon,
+  AuthEndpointIcon,
+  AvailabilityIcon,
+  ThreatModelIcon,
+  AliceBobTrudyIcon,
+  DefenseDepthIcon,
+  NonRepudiationIcon,
+  AuthorizationIcon,
+  PrivacyIcon,
+  MetadataLeakIcon,
+  PassiveActiveIcon,
+  InsiderIcon,
+  SymmetricKeyIcon,
+  AesIcon,
+  CipherModeIcon,
+  AsymmetricKeyIcon,
+  RsaIcon,
+  EccIcon,
+  DiffieHellmanIcon,
+  HybridIcon,
+  BlockStreamIcon,
+  EcbIcon,
+  CbcIcon,
+  CtrIcon,
+  GcmIcon,
+  IvNonceIcon,
+  AeadIcon,
+  PaddingIcon,
+  KeyLengthIcon,
+  ChaChaIcon,
+  KerckhoffsIcon,
+  PostQuantumIcon,
+  HashIcon,
+  HashWeakIcon,
+  MacIcon,
+  HmacIcon,
+  DigitalSignatureIcon,
+  ReplayAttackIcon,
+  PreimageIcon,
+  CollisionIcon,
+  Sha2Sha3Icon,
+  LengthExtensionIcon,
+  SignAlgoIcon,
+  TimestampIcon,
+  NameOnlyIcon,
+  PasswordClearIcon,
+  NonceIcon,
+  ChallengeResponseIcon,
+  MitmIcon,
+  CertificateIcon,
+  PkiIcon,
+  RevokeIcon,
+  X509FieldsIcon,
+  CertExtensionIcon,
+  ValidationLevelIcon,
+  ChainOfTrustIcon,
+  CrlIcon,
+  OcspStaplingIcon,
+  CtLogIcon,
+  MtlsIcon,
+  MfaIcon,
+  TlsRecordIcon,
+  HandshakeIcon,
+  CipherSuiteIcon,
+  ForwardSecrecyIcon,
+  MasterSecretIcon,
+  SessionResumptionIcon,
+  Tls13Icon,
+  ClientHelloIcon,
+  ServerHelloIcon,
+  FinishedMacIcon,
+  ZeroRttIcon,
+  HkdfIcon,
+  DowngradeIcon,
+  QuicIcon,
+  AlpnIcon,
+  AhIcon,
+  EspIcon,
+  TransportModeIcon,
+  TunnelModeIcon,
+  SaIcon,
+  IkeIcon,
+  AntiReplayIcon,
+  SpiIcon,
+  SadSpdIcon,
+  Ikev2PhasesIcon,
+  NatTraversalIcon,
+  WireguardIcon,
+  SiteToSiteIcon,
+  SplitTunnelIcon,
+  StatelessFilterIcon,
+  StatefulFilterIcon,
+  DefaultDenyIcon,
+  ImplicitDenyIcon,
+  AppFirewallIcon,
+  TunnelSmugglingIcon,
+  EgressIcon,
+  ConntrackIcon,
+  NgfwIcon,
+  WafIcon,
+  DmzIcon,
+  ZeroTrustIcon,
+  IptablesIcon,
+  IdsIcon,
+  IpsIcon,
+  SignatureBasedIcon,
+  AnomalyBasedIcon,
+  DpiIcon,
+  FpFnIcon,
+  SnortIcon,
+  NidsHidsIcon,
+  SpanPortIcon,
+  NetworkTapIcon,
+  PrecisionIcon,
+  AlertFatigueIcon,
+  EdrIcon,
+  SiemIcon,
+  HoneypotIcon,
+  TlsBlindIcon,
+  KillChainIcon,
+  XssIcon,
+  XssDefenseIcon,
+  CsrfIcon,
+  CsrfDefenseIcon,
+  SqlInjectionIcon,
+  SqlDefenseIcon,
+  OwaspIcon,
+  StoredXssIcon,
+  ReflectedXssIcon,
+  DomXssIcon,
+  CspIcon,
+  SameSiteIcon,
+  CsrfTokenIcon,
+  BlindSqliIcon,
+  PreparedStmtIcon,
+  SsrfIcon,
+  PathTraversalIcon,
+  ClickjackingIcon,
+  SriIcon,
+} from "./visualDefIcons.kap8";
 
 type Tab =
   | "intro"
@@ -252,34 +395,39 @@ function Section81() {
       <Section81Live />
 
       <div className="grid gap-3 lg:grid-cols-2">
-        <Defs
+        <VisualDefs
           items={[
-            { term: "Konfidensialitet", body: "Bare A og B leser innholdet — krypter." },
-            { term: "Meldings-integritet", body: "Ingen bit endret underveis — MAC/signering." },
+            { term: "Konfidensialitet", icon: <ConfidentialityIcon />, body: "Bare A og B leser innholdet — krypter." },
+            { term: "Meldings-integritet", icon: <IntegrityIcon />, body: "Ingen bit endret underveis — MAC/signering." },
             {
               term: "Endepunkts-autentisering",
+              icon: <AuthEndpointIcon />,
               body: "Du snakker med rett part — sertifikat + nonce.",
             },
             {
               term: "Operasjonell tilgjengelighet",
+              icon: <AvailabilityIcon />,
               body: "Tjenesten lever — rate-limit, scrubbing.",
             },
-            { term: "Trussel-modell", body: "Eksplisitt liste over hva angriper kan/ikke kan." },
-            { term: "Alice, Bob, Trudy", body: "Standard-navn: to legitime parter + angriper." },
-            { term: "Defense in depth", body: "Flere lag forsvar — én feil knekker ikke alt." },
+            { term: "Trussel-modell", icon: <ThreatModelIcon />, body: "Eksplisitt liste over hva angriper kan/ikke kan." },
+            { term: "Alice, Bob, Trudy", icon: <AliceBobTrudyIcon />, body: "Standard-navn: to legitime parter + angriper." },
+            { term: "Defense in depth", icon: <DefenseDepthIcon />, body: "Flere lag forsvar — én feil knekker ikke alt." },
             {
               term: "Ikke-avvisning",
+              icon: <NonRepudiationIcon />,
               body: "Avsender kan ikke nekte — krever signering, ikke MAC.",
             },
-            { term: "Autorisasjon vs autentisering", body: "«Hvem er du» vs «hva får du gjøre»." },
+            { term: "Autorisasjon vs autentisering", icon: <AuthorizationIcon />, body: "«Hvem er du» vs «hva får du gjøre»." },
             {
               term: "Personvern vs konfidensialitet",
+              icon: <PrivacyIcon />,
               body: "Personvern er bredere: hvilke data samles.",
             },
-            { term: "Metadata-lekkasje", body: "Krypto skjuler innhold, ikke hvem/når." },
-            { term: "Passiv vs aktiv angriper", body: "Lytter / endrer-sletter-injiserer." },
+            { term: "Metadata-lekkasje", icon: <MetadataLeakIcon />, body: "Krypto skjuler innhold, ikke hvem/når." },
+            { term: "Passiv vs aktiv angriper", icon: <PassiveActiveIcon />, body: "Lytter / endrer-sletter-injiserer." },
             {
               term: "Insider-trussel",
+              icon: <InsiderIcon />,
               body: "Ansatt med legitim tilgang — perimeter ser ikke det.",
             },
           ]}
@@ -379,47 +527,54 @@ function Section82() {
       </p>
 
       <div className="grid gap-3 lg:grid-cols-2">
-        <Defs
+        <VisualDefs
           items={[
-            { term: "Symmetrisk kryptografi", body: "Samme nøkkel K på begge sider — rask AES." },
-            { term: "AES", body: "Symmetrisk standard, 128-bits blokk, 128/192/256-bits nøkler." },
+            { term: "Symmetrisk kryptografi", icon: <SymmetricKeyIcon />, body: "Samme nøkkel K på begge sider — rask AES." },
+            { term: "AES", icon: <AesIcon />, body: "Symmetrisk standard, 128-bits blokk, 128/192/256-bits nøkler." },
             {
               term: "Drifts-modus (CBC, CTR, GCM)",
+              icon: <CipherModeIcon />,
               body: "Hvordan kjede blokker — GCM er førstevalg.",
             },
             {
               term: "Asymmetrisk kryptografi",
+              icon: <AsymmetricKeyIcon />,
               body: "Nøkkel-par: offentlig krypterer, privat dekrypterer.",
             },
-            { term: "RSA", body: "Asymmetrisk — bygger på faktorisering, 2048+ bits." },
-            { term: "ECC", body: "Elliptiske kurver — kortere nøkler, samme styrke." },
+            { term: "RSA", icon: <RsaIcon />, body: "Asymmetrisk — bygger på faktorisering, 2048+ bits." },
+            { term: "ECC", icon: <EccIcon />, body: "Elliptiske kurver — kortere nøkler, samme styrke." },
             {
               term: "Diffie-Hellman",
+              icon: <DiffieHellmanIcon />,
               body: "Felles hemmelighet over åpen kanal, uten å sende den.",
             },
-            { term: "Hybrid-system", body: "Asym deler nøkkel, sym krypterer dataene." },
+            { term: "Hybrid-system", icon: <HybridIcon />, body: "Asym deler nøkkel, sym krypterer dataene." },
             {
               term: "Blokk- vs strøm-cipher",
+              icon: <BlockStreamIcon />,
               body: "Faste blokker vs nøkkel-strøm XOR-et på input.",
             },
-            { term: "ECB-modus", body: "Naiv per-blokk — lekker mønstre, BRUK ALDRI." },
-            { term: "CBC-modus", body: "Kjeder med XOR — krever IV og separat MAC." },
-            { term: "CTR-modus", body: "Krypterer en teller, XOR-er ut — fullt parallelt." },
-            { term: "GCM-modus", body: "AEAD: CTR + autentiserings-tag, én operasjon." },
-            { term: "IV / nonce", body: "Unik per (nøkkel, melding) — hindrer mønster." },
-            { term: "AEAD", body: "Krypter OG autentiser i én primitiv (GCM, ChaCha20-Poly1305)." },
+            { term: "ECB-modus", icon: <EcbIcon />, body: "Naiv per-blokk — lekker mønstre, BRUK ALDRI." },
+            { term: "CBC-modus", icon: <CbcIcon />, body: "Kjeder med XOR — krever IV og separat MAC." },
+            { term: "CTR-modus", icon: <CtrIcon />, body: "Krypterer en teller, XOR-er ut — fullt parallelt." },
+            { term: "GCM-modus", icon: <GcmIcon />, body: "AEAD: CTR + autentiserings-tag, én operasjon." },
+            { term: "IV / nonce", icon: <IvNonceIcon />, body: "Unik per (nøkkel, melding) — hindrer mønster." },
+            { term: "AEAD", icon: <AeadIcon />, body: "Krypter OG autentiser i én primitiv (GCM, ChaCha20-Poly1305)." },
             {
               term: "Padding (PKCS#7)",
+              icon: <PaddingIcon />,
               body: "Fyller siste blokk — feil sjekk gir padding-oracle.",
             },
-            { term: "Nøkkellengde og 2^N", body: "128-bit = 2^128 nøkler, brute-force umulig." },
-            { term: "ChaCha20-Poly1305", body: "AEAD uten AES-hardware — favoritt på mobil." },
+            { term: "Nøkkellengde og 2^N", icon: <KeyLengthIcon />, body: "128-bit = 2^128 nøkler, brute-force umulig." },
+            { term: "ChaCha20-Poly1305", icon: <ChaChaIcon />, body: "AEAD uten AES-hardware — favoritt på mobil." },
             {
               term: "Kerckhoffs' prinsipp",
+              icon: <KerckhoffsIcon />,
               body: "Sikkerhet skal ligge i nøkkelen, ikke algoritmen.",
             },
             {
               term: "Post-kvante-krypto",
+              icon: <PostQuantumIcon />,
               body: "Gitter-baserte algoritmer mot fremtidige kvante-PC-er.",
             },
           ]}
@@ -569,36 +724,40 @@ function Section83() {
       </p>
 
       <div className="grid gap-3 lg:grid-cols-2">
-        <Defs
+        <VisualDefs
           items={[
-            { term: "Kryptografisk hash", body: "Fingeravtrykk: vilkårlig inn, kort fast ut." },
+            { term: "Kryptografisk hash", icon: <HashIcon />, body: "Fingeravtrykk: vilkårlig inn, kort fast ut." },
             {
               term: "Hash alene ikke nok",
+              icon: <HashWeakIcon />,
               body: "Trudy kan bytte både m og h(m) — trenger nøkkel.",
             },
-            { term: "MAC", body: "Hash med delt nøkkel: t = MAC(K, m)." },
-            { term: "HMAC", body: "Standard MAC-konstruksjon fra hvilken som helst hash." },
-            { term: "Digital signering", body: "Asymmetrisk MAC — bare privat nøkkel kan lage." },
-            { term: "Signer hashen", body: "RSA er treig; signer h(m), ikke hele m." },
+            { term: "MAC", icon: <MacIcon />, body: "Hash med delt nøkkel: t = MAC(K, m)." },
+            { term: "HMAC", icon: <HmacIcon />, body: "Standard MAC-konstruksjon fra hvilken som helst hash." },
+            { term: "Digital signering", icon: <DigitalSignatureIcon />, body: "Asymmetrisk MAC — bare privat nøkkel kan lage." },
+            { term: "Signer hashen", icon: <DigitalSignatureIcon />, body: "RSA er treig; signer h(m), ikke hele m." },
             {
               term: "Replay-angrep",
+              icon: <ReplayAttackIcon />,
               body: "Gammel gyldig melding sendt på nytt — bruk nonce/tid.",
             },
-            { term: "Preimage-resistens", body: "Gitt y, umulig å finne m med h(m) = y." },
-            { term: "Second-preimage", body: "Gitt m1, umulig å finne m2 med samme hash." },
+            { term: "Preimage-resistens", icon: <PreimageIcon />, body: "Gitt y, umulig å finne m med h(m) = y." },
+            { term: "Second-preimage", icon: <PreimageIcon />, body: "Gitt m1, umulig å finne m2 med samme hash." },
             {
               term: "Kollisjons-resistens",
+              icon: <CollisionIcon />,
               body: "Vanskelig å finne to vilkårlige m1, m2 — bursdag-paradokset.",
             },
-            { term: "SHA-2 og SHA-3", body: "Moderne hash-familier — SHA-3 er svamp-basert." },
-            { term: "MD5 og SHA-1", body: "Brutt — aldri til sikkerhet, kun checksum." },
-            { term: "Lengde-extension", body: "Hash(K‖m) er ikke MAC — bruk HMAC." },
-            { term: "RSA-PSS / ECDSA / EdDSA", body: "Signatur-algoritmer; EdDSA er mest robust." },
+            { term: "SHA-2 og SHA-3", icon: <Sha2Sha3Icon />, body: "Moderne hash-familier — SHA-3 er svamp-basert." },
+            { term: "MD5 og SHA-1", icon: <HashWeakIcon />, body: "Brutt — aldri til sikkerhet, kun checksum." },
+            { term: "Lengde-extension", icon: <LengthExtensionIcon />, body: "Hash(K‖m) er ikke MAC — bruk HMAC." },
+            { term: "RSA-PSS / ECDSA / EdDSA", icon: <SignAlgoIcon />, body: "Signatur-algoritmer; EdDSA er mest robust." },
             {
               term: "Encrypt-then-MAC vs AEAD",
+              icon: <AeadIcon />,
               body: "AEAD (GCM) lukker hele rekkefølge-klassen.",
             },
-            { term: "Tidsstempel / teller", body: "Alternativ til nonce mot replay." },
+            { term: "Tidsstempel / teller", icon: <TimestampIcon />, body: "Alternativ til nonce mot replay." },
           ]}
         />
         <Illustration caption="Hash mapper vilkårlig input til et kort fingeravtrykk. Selv én flippet bit i input endrer hele hashen.">
@@ -723,46 +882,53 @@ function Section84() {
       </p>
 
       <div className="grid gap-3 lg:grid-cols-2">
-        <Defs
+        <VisualDefs
           items={[
             {
               term: "Forsøk 1: bare navn",
+              icon: <NameOnlyIcon />,
               body: "«Jeg er Alice» — Trudy kan si det også. Feiler.",
             },
             {
               term: "Forsøk 2: passord i klartekst",
+              icon: <PasswordClearIcon />,
               body: "Tjuvlytter snapper og spiller av. Feiler.",
             },
-            { term: "Nonce", body: "Tilfeldig engangs-tall — knytter svaret til denne sesjonen." },
+            { term: "Nonce", icon: <NonceIcon />, body: "Tilfeldig engangs-tall — knytter svaret til denne sesjonen." },
             {
               term: "Challenge-response",
+              icon: <ChallengeResponseIcon />,
               body: "Bob ber, Alice signerer/MAC-er svaret med hemmelighet.",
             },
             {
               term: "Man-in-the-middle",
+              icon: <MitmIcon />,
               body: "Trudy mellom A og B kjører to parallelle handshakes.",
             },
             {
               term: "Digitalt sertifikat",
+              icon: <CertificateIcon />,
               body: "CA-signert (identitet, offentlig-nøkkel)-binding.",
             },
-            { term: "PKI", body: "Systemet av CA-er, rotnøkler og trust stores." },
-            { term: "Revoke / OCSP", body: "Trekk tilbake kompromitterte sertifikater før utløp." },
-            { term: "X.509-felter", body: "Subject, Issuer, Validity, PubKey, SAN." },
+            { term: "PKI", icon: <PkiIcon />, body: "Systemet av CA-er, rotnøkler og trust stores." },
+            { term: "Revoke / OCSP", icon: <RevokeIcon />, body: "Trekk tilbake kompromitterte sertifikater før utløp." },
+            { term: "X.509-felter", icon: <X509FieldsIcon />, body: "Subject, Issuer, Validity, PubKey, SAN." },
             {
               term: "Sertifikat-utvidelser",
+              icon: <CertExtensionIcon />,
               body: "KeyUsage, ExtKeyUsage, BasicConstraints, OCSP-peker.",
             },
-            { term: "DV / OV / EV", body: "Tre nivåer av CA-validering — DV via ACME." },
-            { term: "Chain-of-trust", body: "Server → mellom-CA → rot-CA, hver signert opp." },
-            { term: "CRL", body: "Stor ja/nei-liste over tilbaketrukne sertifikater." },
-            { term: "OCSP-stapling", body: "Server leverer ferskt OCSP-svar selv." },
+            { term: "DV / OV / EV", icon: <ValidationLevelIcon />, body: "Tre nivåer av CA-validering — DV via ACME." },
+            { term: "Chain-of-trust", icon: <ChainOfTrustIcon />, body: "Server → mellom-CA → rot-CA, hver signert opp." },
+            { term: "CRL", icon: <CrlIcon />, body: "Stor ja/nei-liste over tilbaketrukne sertifikater." },
+            { term: "OCSP-stapling", icon: <OcspStaplingIcon />, body: "Server leverer ferskt OCSP-svar selv." },
             {
               term: "Certificate Transparency",
+              icon: <CtLogIcon />,
               body: "Offentlige logger — falske sertifikater oppdages.",
             },
-            { term: "mTLS", body: "Begge parter har sertifikat — sterk service-til-service-auth." },
-            { term: "MFA", body: "To av: vet, har, er — FIDO2 er sterkest." },
+            { term: "mTLS", icon: <MtlsIcon />, body: "Begge parter har sertifikat — sterk service-til-service-auth." },
+            { term: "MFA", icon: <MfaIcon />, body: "To av: vet, har, er — FIDO2 er sterkest." },
           ]}
         />
         <Illustration caption="Challenge-response med signatur. Bob velger en fersk nonce; Alice beviser identitet ved å signere den.">
@@ -879,29 +1045,31 @@ function Section85() {
       </p>
 
       <div className="grid gap-3 lg:grid-cols-2">
-        <Defs
+        <VisualDefs
           items={[
-            { term: "TLS-record", body: "Header + kryptert+autentisert payload-enhet." },
-            { term: "Handshake-faser", body: "Hilse → server-auth → DH → bekreftelse → app-data." },
+            { term: "TLS-record", icon: <TlsRecordIcon />, body: "Header + kryptert+autentisert payload-enhet." },
+            { term: "Handshake-faser", icon: <HandshakeIcon />, body: "Hilse → server-auth → DH → bekreftelse → app-data." },
             {
               term: "Cipher suite",
+              icon: <CipherSuiteIcon />,
               body: "Forhandlet algoritme-pakke, f.eks. AES_128_GCM_SHA256.",
             },
-            { term: "Forward Secrecy", body: "Server-lekk i ettertid bryter ikke gamle sesjoner." },
-            { term: "Master secret", body: "DH-resultat → HKDF → trafikk-nøkler per retning." },
-            { term: "Session resumption", body: "PSK fra forrige sesjon — handshake kortes ned." },
-            { term: "TLS 1.3 forenkling", body: "Bare AEAD, kun (EC)DHE, 1-RTT." },
-            { term: "ClientHello + SNI", body: "Klientens første pakke — hvilket domene." },
-            { term: "ServerHello", body: "Server velger cipher, leverer DH-andel + sertifikat." },
-            { term: "Finished", body: "MAC over hele handshake-historikk — fanger tukling." },
-            { term: "0-RTT", body: "App-data sammen med ClientHello (PSK) — replay-risiko." },
-            { term: "HKDF", body: "HMAC-basert nøkkel-avledning — tre av nøkler." },
+            { term: "Forward Secrecy", icon: <ForwardSecrecyIcon />, body: "Server-lekk i ettertid bryter ikke gamle sesjoner." },
+            { term: "Master secret", icon: <MasterSecretIcon />, body: "DH-resultat → HKDF → trafikk-nøkler per retning." },
+            { term: "Session resumption", icon: <SessionResumptionIcon />, body: "PSK fra forrige sesjon — handshake kortes ned." },
+            { term: "TLS 1.3 forenkling", icon: <Tls13Icon />, body: "Bare AEAD, kun (EC)DHE, 1-RTT." },
+            { term: "ClientHello + SNI", icon: <ClientHelloIcon />, body: "Klientens første pakke — hvilket domene." },
+            { term: "ServerHello", icon: <ServerHelloIcon />, body: "Server velger cipher, leverer DH-andel + sertifikat." },
+            { term: "Finished", icon: <FinishedMacIcon />, body: "MAC over hele handshake-historikk — fanger tukling." },
+            { term: "0-RTT", icon: <ZeroRttIcon />, body: "App-data sammen med ClientHello (PSK) — replay-risiko." },
+            { term: "HKDF", icon: <HkdfIcon />, body: "HMAC-basert nøkkel-avledning — tre av nøkler." },
             {
               term: "Downgrade-angrep",
+              icon: <DowngradeIcon />,
               body: "Tvinger ned til svakere versjon — SCSV stopper det.",
             },
-            { term: "QUIC + TLS 1.3", body: "TLS integrert i transport over UDP — HTTP/3." },
-            { term: "ALPN", body: "Forhandler applikasjons-protokoll (h2, h3, http/1.1)." },
+            { term: "QUIC + TLS 1.3", icon: <QuicIcon />, body: "TLS integrert i transport over UDP — HTTP/3." },
+            { term: "ALPN", icon: <AlpnIcon />, body: "Forhandler applikasjons-protokoll (h2, h3, http/1.1)." },
           ]}
         />
         <Illustration caption="TLS 1.3 handshake — én RTT før applikasjons-data kan sendes. ServerHello inneholder sertifikat og DH-andel.">
@@ -1054,43 +1222,50 @@ function Section86() {
       </p>
 
       <div className="grid gap-3 lg:grid-cols-2">
-        <Defs
+        <VisualDefs
           items={[
-            { term: "AH", body: "Integritet+auth, INGEN kryptering. Sjeldent alene." },
-            { term: "ESP", body: "Konfidensialitet + integritet. Standard-valg i dag." },
+            { term: "AH", icon: <AhIcon />, body: "Integritet+auth, INGEN kryptering. Sjeldent alene." },
+            { term: "ESP", icon: <EspIcon />, body: "Konfidensialitet + integritet. Standard-valg i dag." },
             {
               term: "Transport-mode",
+              icon: <TransportModeIcon />,
               body: "Original IP-header beholdes, bare payload krypteres.",
             },
-            { term: "Tunnel-mode", body: "Hele pakken pakkes inn i ny ytre IP — VPN-tunnel." },
+            { term: "Tunnel-mode", icon: <TunnelModeIcon />, body: "Hele pakken pakkes inn i ny ytre IP — VPN-tunnel." },
             {
               term: "SA (Security Association)",
+              icon: <SaIcon />,
               body: "Enveis avtale: protokoll, modus, nøkler, SPI.",
             },
-            { term: "IKE", body: "Forhandler SA-er og avtaler DH-nøkler — IKEv2 standard." },
+            { term: "IKE", icon: <IkeIcon />, body: "Forhandler SA-er og avtaler DH-nøkler — IKEv2 standard." },
             {
               term: "Anti-replay-vindu",
+              icon: <AntiReplayIcon />,
               body: "Sekvensnummer i glidende vindu, gamle pakker avvises.",
             },
-            { term: "SPI", body: "32-bit ID som peker til riktig SA i SAD." },
+            { term: "SPI", icon: <SpiIcon />, body: "32-bit ID som peker til riktig SA i SAD." },
             {
               term: "SAD og SPD",
+              icon: <SadSpdIcon />,
               body: "SAD: aktive SA-er. SPD: policy hvilken trafikk beskyttes.",
             },
-            { term: "IKEv2-faser", body: "IKE_SA_INIT + IKE_AUTH → CHILD_SA-er for trafikk." },
-            { term: "PFS i IPsec", body: "Hver child-SA får fersk DH — gammel trafikk trygg." },
-            { term: "NAT-traversal", body: "ESP innkapslet i UDP 4500 — passerer NAT." },
-            { term: "WireGuard", body: "Moderne VPN — 1 cipher suite, ~4000 linjer kode." },
+            { term: "IKEv2-faser", icon: <Ikev2PhasesIcon />, body: "IKE_SA_INIT + IKE_AUTH → CHILD_SA-er for trafikk." },
+            { term: "PFS i IPsec", icon: <ForwardSecrecyIcon />, body: "Hver child-SA får fersk DH — gammel trafikk trygg." },
+            { term: "NAT-traversal", icon: <NatTraversalIcon />, body: "ESP innkapslet i UDP 4500 — passerer NAT." },
+            { term: "WireGuard", icon: <WireguardIcon />, body: "Moderne VPN — 1 cipher suite, ~4000 linjer kode." },
             {
               term: "Site-to-site vs remote",
+              icon: <SiteToSiteIcon />,
               body: "Gateway-til-gateway vs bruker-til-konsentrator.",
             },
             {
               term: "Split vs full tunneling",
+              icon: <SplitTunnelIcon />,
               body: "Bare bedrift, eller all trafikk gjennom VPN.",
             },
             {
               term: "Hva IPsec ikke gir",
+              icon: <InsiderIcon />,
               body: "Ingen app-lag-filter, ingen bruker-auth, ingen insider-forsvar.",
             },
           ]}
@@ -1207,31 +1382,35 @@ function Section87() {
       </p>
 
       <div className="grid gap-3 lg:grid-cols-2">
-        <Defs
+        <VisualDefs
           items={[
-            { term: "Stateless pakkefilter", body: "Hver pakke alene — ingen hukommelse om flow." },
+            { term: "Stateless pakkefilter", icon: <StatelessFilterIcon />, body: "Hver pakke alene — ingen hukommelse om flow." },
             {
               term: "Stateful inspeksjon",
+              icon: <StatefulFilterIcon />,
               body: "Conntrack-tabell over åpne flows — svar slippes inn.",
             },
-            { term: "Default deny", body: "Alt som ikke eksplisitt tillates, avvises." },
-            { term: "Implicit deny", body: "Siste regel: «deny all» fanger det som glapp." },
+            { term: "Default deny", icon: <DefaultDenyIcon />, body: "Alt som ikke eksplisitt tillates, avvises." },
+            { term: "Implicit deny", icon: <ImplicitDenyIcon />, body: "Siste regel: «deny all» fanger det som glapp." },
             {
               term: "Applikasjons-brannmur",
+              icon: <AppFirewallIcon />,
               body: "Proxy som forstår HTTP/SMTP-innhold, ikke bare port.",
             },
-            { term: "Tunneling/smugling", body: "Angriper gjemmer SSH inni TLS på 443." },
-            { term: "Egress-filtrering", body: "Filtrer utgående — stopper malware-kall hjem." },
+            { term: "Tunneling/smugling", icon: <TunnelSmugglingIcon />, body: "Angriper gjemmer SSH inni TLS på 443." },
+            { term: "Egress-filtrering", icon: <EgressIcon />, body: "Filtrer utgående — stopper malware-kall hjem." },
             {
               term: "Conntrack-tabell",
+              icon: <ConntrackIcon />,
               body: "(proto, src, dst, port, tilstand, timer) per flow.",
             },
-            { term: "NGFW", body: "Stateful + app-ID + IPS i ett produkt." },
-            { term: "WAF", body: "App-brannmur for HTTP — OWASP Top 10-mønstre." },
-            { term: "DMZ", body: "Mellom-segment for offentlige tjenester — buffer mot LAN." },
-            { term: "Zero-trust", body: "«Innsiden er ikke trygg» — auth+autoriser hver request." },
+            { term: "NGFW", icon: <NgfwIcon />, body: "Stateful + app-ID + IPS i ett produkt." },
+            { term: "WAF", icon: <WafIcon />, body: "App-brannmur for HTTP — OWASP Top 10-mønstre." },
+            { term: "DMZ", icon: <DmzIcon />, body: "Mellom-segment for offentlige tjenester — buffer mot LAN." },
+            { term: "Zero-trust", icon: <ZeroTrustIcon />, body: "«Innsiden er ikke trygg» — auth+autoriser hver request." },
             {
               term: "iptables / nftables",
+              icon: <IptablesIcon />,
               body: "Linux pakkefilter — tabeller → kjeder → regler.",
             },
           ]}
@@ -1388,28 +1567,29 @@ function Section88() {
       </p>
 
       <div className="grid gap-3 lg:grid-cols-2">
-        <Defs
+        <VisualDefs
           items={[
-            { term: "IDS", body: "Passiv: logger og varsler, ikke in-line." },
-            { term: "IPS", body: "In-line: kan droppe ondsinnede pakker i sanntid." },
-            { term: "Signatur-basert", body: "Match mot kjente mønstre — lav FP, ingen ukjente." },
-            { term: "Anomali-basert", body: "Lærer normalt; varsler avvik — høy FP, fanger nytt." },
-            { term: "DPI", body: "Inspeksjon av payload, ikke bare header." },
-            { term: "FP vs FN", body: "Falsk alarm vs ekte angrep som glipper." },
-            { term: "Snort / Suricata", body: "Åpne IDS/IPS-motorer med tekstuelle regler." },
-            { term: "NIDS vs HIDS", body: "På nettverket vs på hver host." },
-            { term: "SPAN-port", body: "Switch speiler trafikk til analyse-port." },
-            { term: "Network TAP", body: "Fysisk passiv koppling som dupliserer pakker." },
-            { term: "FPR og presisjon", body: "Bayes slår beinhardt på sjeldne angrep." },
-            { term: "Alarm-tretthet", body: ">50 % SOC-alarmer aldri fulgt opp." },
+            { term: "IDS", icon: <IdsIcon />, body: "Passiv: logger og varsler, ikke in-line." },
+            { term: "IPS", icon: <IpsIcon />, body: "In-line: kan droppe ondsinnede pakker i sanntid." },
+            { term: "Signatur-basert", icon: <SignatureBasedIcon />, body: "Match mot kjente mønstre — lav FP, ingen ukjente." },
+            { term: "Anomali-basert", icon: <AnomalyBasedIcon />, body: "Lærer normalt; varsler avvik — høy FP, fanger nytt." },
+            { term: "DPI", icon: <DpiIcon />, body: "Inspeksjon av payload, ikke bare header." },
+            { term: "FP vs FN", icon: <FpFnIcon />, body: "Falsk alarm vs ekte angrep som glipper." },
+            { term: "Snort / Suricata", icon: <SnortIcon />, body: "Åpne IDS/IPS-motorer med tekstuelle regler." },
+            { term: "NIDS vs HIDS", icon: <NidsHidsIcon />, body: "På nettverket vs på hver host." },
+            { term: "SPAN-port", icon: <SpanPortIcon />, body: "Switch speiler trafikk til analyse-port." },
+            { term: "Network TAP", icon: <NetworkTapIcon />, body: "Fysisk passiv koppling som dupliserer pakker." },
+            { term: "FPR og presisjon", icon: <PrecisionIcon />, body: "Bayes slår beinhardt på sjeldne angrep." },
+            { term: "Alarm-tretthet", icon: <AlertFatigueIcon />, body: ">50 % SOC-alarmer aldri fulgt opp." },
             {
               term: "EDR",
+              icon: <EdrIcon />,
               body: "Endepunkt-telemetri (prosesser, fil-tilgang) til sentral analyse.",
             },
-            { term: "SIEM", body: "Samler og korrelerer logger på tvers av kilder." },
-            { term: "Honeypot", body: "Falsk system — all trafikk er per def mistenkelig." },
-            { term: "TLS-blindhet", body: "IDS ser ikke i kryptert; krever intern terminering." },
-            { term: "Kill chain / MITRE ATT&CK", body: "Faser i angrep — taksonomi for forsvar." },
+            { term: "SIEM", icon: <SiemIcon />, body: "Samler og korrelerer logger på tvers av kilder." },
+            { term: "Honeypot", icon: <HoneypotIcon />, body: "Falsk system — all trafikk er per def mistenkelig." },
+            { term: "TLS-blindhet", icon: <TlsBlindIcon />, body: "IDS ser ikke i kryptert; krever intern terminering." },
+            { term: "Kill chain / MITRE ATT&CK", icon: <KillChainIcon />, body: "Faser i angrep — taksonomi for forsvar." },
           ]}
         />
         <Illustration caption="IDS sniffer trafikken via et SPAN-port og varsler operatøren. IPS sitter in-line og kan blokkere.">
@@ -1516,40 +1696,45 @@ function Section89() {
       </p>
 
       <div className="grid gap-3 lg:grid-cols-2">
-        <Defs
+        <VisualDefs
           items={[
-            { term: "XSS", body: "Fremmed JS kjøres i andres nettleser, i ditt domenes kontekst." },
-            { term: "XSS-forsvar", body: "Escape ved utskrift + streng CSP." },
-            { term: "CSRF", body: "Offerets nettleser sender skjult request med dens cookies." },
-            { term: "CSRF-forsvar", body: "Token per sesjon + SameSite-cookies + Origin-sjekk." },
-            { term: "SQL-injeksjon", body: "Brukerdata konkateneres inn i SQL → endrer struktur." },
-            { term: "SQL-forsvar", body: "Prepared statements / parameter-binding. Punkt." },
-            { term: "OWASP Top 10", body: "De 10 vanligste webapp-feilene, oppdateres jevnlig." },
-            { term: "Stored XSS", body: "Skript lagret i db, treffer alle senere lesere." },
-            { term: "Reflected XSS", body: "Skript i URL ekkes tilbake usanitisert." },
+            { term: "XSS", icon: <XssIcon />, body: "Fremmed JS kjøres i andres nettleser, i ditt domenes kontekst." },
+            { term: "XSS-forsvar", icon: <XssDefenseIcon />, body: "Escape ved utskrift + streng CSP." },
+            { term: "CSRF", icon: <CsrfIcon />, body: "Offerets nettleser sender skjult request med dens cookies." },
+            { term: "CSRF-forsvar", icon: <CsrfDefenseIcon />, body: "Token per sesjon + SameSite-cookies + Origin-sjekk." },
+            { term: "SQL-injeksjon", icon: <SqlInjectionIcon />, body: "Brukerdata konkateneres inn i SQL → endrer struktur." },
+            { term: "SQL-forsvar", icon: <SqlDefenseIcon />, body: "Prepared statements / parameter-binding. Punkt." },
+            { term: "OWASP Top 10", icon: <OwaspIcon />, body: "De 10 vanligste webapp-feilene, oppdateres jevnlig." },
+            { term: "Stored XSS", icon: <StoredXssIcon />, body: "Skript lagret i db, treffer alle senere lesere." },
+            { term: "Reflected XSS", icon: <ReflectedXssIcon />, body: "Skript i URL ekkes tilbake usanitisert." },
             {
               term: "DOM-based XSS",
+              icon: <DomXssIcon />,
               body: "Klient-side JS lager XSS via innerHTML — server ser intet.",
             },
             {
               term: "Content Security Policy",
+              icon: <CspIcon />,
               body: "Header: hvilke skript-kilder nettleser tillater.",
             },
-            { term: "SameSite-cookies", body: "Cookien sendes ikke på cross-site requests." },
-            { term: "CSRF-token", body: "Hemmelig per-sesjon-tokens i alle skjema." },
+            { term: "SameSite-cookies", icon: <SameSiteIcon />, body: "Cookien sendes ikke på cross-site requests." },
+            { term: "CSRF-token", icon: <CsrfTokenIcon />, body: "Hemmelig per-sesjon-tokens i alle skjema." },
             {
               term: "Blind SQL-injeksjon",
+              icon: <BlindSqliIcon />,
               body: "Boolean- eller tids-basert oraculum utleder bit.",
             },
             {
               term: "Prepared statements",
+              icon: <PreparedStmtIcon />,
               body: "SQL og data separat — ingen syntaks-tolkning av input.",
             },
-            { term: "SSRF", body: "Server tvinges til å hente intern URL — 169.254.169.254-lekk." },
-            { term: "Path traversal", body: "../-segmenter rømmer fra tiltenkt katalog." },
-            { term: "Click-jacking", body: "Usynlig iframe over knapp — X-Frame-Options stopper." },
+            { term: "SSRF", icon: <SsrfIcon />, body: "Server tvinges til å hente intern URL — 169.254.169.254-lekk." },
+            { term: "Path traversal", icon: <PathTraversalIcon />, body: "../-segmenter rømmer fra tiltenkt katalog." },
+            { term: "Click-jacking", icon: <ClickjackingIcon />, body: "Usynlig iframe over knapp — X-Frame-Options stopper." },
             {
               term: "SRI (Sub-resource Integrity)",
+              icon: <SriIcon />,
               body: "Hash av ekstern JS — CDN-tukling avvises.",
             },
           ]}
