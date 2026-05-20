@@ -505,8 +505,8 @@ function LegendDot({ color }: { color: Step["color"] }) {
   return <span className={`inline-block w-2 h-2 rounded-full ${BG_CLASS[color]}`} />;
 }
 
-function nodeById(id: NodeId): Node {
-  return NODES.find((n) => n.id === id)!;
+function nodeById(id: NodeId): Node | undefined {
+  return NODES.find((n) => n.id === id);
 }
 
 function pathToEdges(path: NodeId[]): [NodeId, NodeId][] {
@@ -518,11 +518,13 @@ function pathToEdges(path: NodeId[]): [NodeId, NodeId][] {
 function packetPosition(path: NodeId[], progress: number): { x: number; y: number } | null {
   if (path.length < 2) return null;
   const segments = path.length - 1;
-  const t = Math.min(progress, 0.999) * segments;
-  const segIdx = Math.floor(t);
+  const safeProgress = Number.isFinite(progress) ? Math.min(Math.max(progress, 0), 0.999) : 0;
+  const t = safeProgress * segments;
+  const segIdx = Math.min(segments - 1, Math.floor(t));
   const segT = t - segIdx;
   const a = nodeById(path[segIdx]);
   const b = nodeById(path[segIdx + 1]);
+  if (!a || !b) return null;
   return {
     x: a.x + (b.x - a.x) * segT,
     y: a.y + (b.y - a.y) * segT,
