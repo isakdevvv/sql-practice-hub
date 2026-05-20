@@ -16,6 +16,98 @@ import { Section32Live } from "./Section32Live";
 import { Section33Live } from "./Section33Live";
 import { Section34Live } from "./Section34Live";
 import { Section35Live } from "./Section35Live";
+import { VisualDefs } from "./VisualDefs";
+import {
+  SegmentIcon,
+  EndToEndIcon,
+  LogicalLinkIcon,
+  BestEffortIcon,
+  ServiceMenuIcon,
+  SocketIcon,
+  ApiVsIcon,
+  ReliabilityIcon,
+  LatencyThroughputIcon,
+  TlsIcon,
+  ConnectionOrientedIcon,
+  HolBlockingIcon,
+  FullDuplexIcon,
+  PortNumberIcon,
+  MuxIcon,
+  DemuxIcon,
+  TwoTupleIcon,
+  FourTupleIcon,
+  ListenSocketIcon,
+  EphemeralPortIcon,
+  WellKnownPortIcon,
+  RegisteredPortIcon,
+  DynamicPortIcon,
+  NatIcon,
+  BindConnectIcon,
+  PortExhaustionIcon,
+  RstIcon,
+  ConnectionlessIcon,
+  UdpHeaderIcon,
+  ChecksumIcon,
+  MessageBoundaryIcon,
+  UdpVsTcpIcon,
+  QuicIcon,
+  PseudoHeaderIcon,
+  MaxPacketIcon,
+  OptionalChecksumIcon,
+  PortUnreachableIcon,
+  UseCasesIcon,
+  VoipIcon,
+  DccpIcon,
+  Rdt1Icon,
+  Rdt2Icon,
+  Rdt21Icon,
+  Rdt22Icon,
+  Rdt3Icon,
+  StopAndWaitIcon,
+  PipeliningIcon,
+  GoBackNIcon,
+  SelectiveRepeatIcon,
+  SeqSpaceIcon,
+  UtilizationIcon,
+  BdpIcon,
+  DuplicateDetectIcon,
+  NakDupAckIcon,
+  TimerIcon,
+  SegmentationIcon,
+  SeqNumIcon,
+  CumAckIcon,
+  FastRetransmitIcon,
+  RttEstimateIcon,
+  FlowControlIcon,
+  HandshakeIcon,
+  TcpStatesIcon,
+  TcpFlagsIcon,
+  IsnIcon,
+  TimeWaitIcon,
+  MssIcon,
+  KarnAlgIcon,
+  NagleIcon,
+  DelayedAckIcon,
+  TcpOptionsIcon,
+  HalfCloseIcon,
+  CongestionCollapseIcon,
+  CwndIcon,
+  AimdIcon,
+  SlowStartIcon,
+  TcpRenoIcon,
+  TcpCubicIcon,
+  BbrIcon,
+  FairnessIcon,
+  SsthreshIcon,
+  TimeoutVsDupAckIcon,
+  EcnIcon,
+  AimdThroughputIcon,
+  TcpTahoeIcon,
+  BufferbloatIcon,
+  SelfClockingIcon,
+  SenderWindowIcon,
+  ConvergenceIcon,
+} from "./visualDefIcons.kap3";
 
 type Tab = "intro" | "3.1" | "3.2" | "3.3" | "3.4" | "3.5" | "3.6" | "3.7" | "3.8";
 
@@ -220,36 +312,41 @@ function Section31() {
       <Section31Live />
 
       <div className="grid gap-3 lg:grid-cols-2">
-        <Defs
+        <VisualDefs
           items={[
-            { term: "Segment", body: "Transportlagets pakke (header + data)." },
+            { term: "Segment", icon: <SegmentIcon />, body: "Transportlagets pakke (header + data)." },
             {
               term: "Ende-til-ende vs hopp-for-hopp",
+              icon: <EndToEndIcon />,
               body: "Bare endepunktene har transport; rutere bare IP.",
             },
             {
               term: "Logisk forbindelse",
+              icon: <LogicalLinkIcon />,
               body: "Inntrykk av stabil kanal over forbindelsesløst IP.",
             },
-            { term: "Best effort", body: "IP lover ingenting — alt annet må vi bygge selv." },
+            { term: "Best effort", icon: <BestEffortIcon />, body: "IP lover ingenting — alt annet må vi bygge selv." },
             {
               term: "Transport-tjenester",
+              icon: <ServiceMenuIcon />,
               body: "Pålitelighet, ordning, flow, congestion, sikkerhet.",
             },
-            { term: "Socket", body: "Døra mellom app og transport-stacken." },
+            { term: "Socket", icon: <SocketIcon />, body: "Døra mellom app og transport-stacken." },
             {
               term: "API-forskjell TCP vs UDP",
+              icon: <ApiVsIcon />,
               body: "TCP = bytestrøm; UDP = pakke-grenser bevares.",
             },
-            { term: "Pålitelighet", body: "Hver byte kommer fram, i orden — eller feilbeskjed." },
-            { term: "Latens vs gjennomstrømning", body: "To akser å velge protokoll etter." },
-            { term: "TLS", body: "Krypterings-lag mellom app og TCP." },
+            { term: "Pålitelighet", icon: <ReliabilityIcon />, body: "Hver byte kommer fram, i orden — eller feilbeskjed." },
+            { term: "Latens vs gjennomstrømning", icon: <LatencyThroughputIcon />, body: "To akser å velge protokoll etter." },
+            { term: "TLS", icon: <TlsIcon />, body: "Krypterings-lag mellom app og TCP." },
             {
               term: "Tilkoblingsorientert vs forbindelsesløs",
+              icon: <ConnectionOrientedIcon />,
               body: "TCP setter opp delt tilstand; UDP gjør det ikke.",
             },
-            { term: "Head-of-line blocking", body: "Én tapt byte stopper alt etter." },
-            { term: "Full-duplex", body: "Begge sider sender samtidig på samme forbindelse." },
+            { term: "Head-of-line blocking", icon: <HolBlockingIcon />, body: "Én tapt byte stopper alt etter." },
+            { term: "Full-duplex", icon: <FullDuplexIcon />, body: "Begge sider sender samtidig på samme forbindelse." },
           ]}
         />
         <Illustration caption="Transportlaget snakker prosess-til-prosess via IP. Rutere ser bare nettverkslaget.">
@@ -391,40 +488,46 @@ function Section32() {
       <Section31Live />
 
       <div className="grid gap-3 lg:grid-cols-2">
-        <Defs
+        <VisualDefs
           items={[
-            { term: "Portnummer", body: "16-bits ID per socket. Velkjente: 80, 443, 53, 22." },
-            { term: "Multipleksing (mux)", body: "Mange sockets inn → én IP-strøm ut." },
-            { term: "Demultipleksing (demux)", body: "Én IP-strøm inn → riktig socket via port." },
+            { term: "Portnummer", icon: <PortNumberIcon />, body: "16-bits ID per socket. Velkjente: 80, 443, 53, 22." },
+            { term: "Multipleksing (mux)", icon: <MuxIcon />, body: "Mange sockets inn → én IP-strøm ut." },
+            { term: "Demultipleksing (demux)", icon: <DemuxIcon />, body: "Én IP-strøm inn → riktig socket via port." },
             {
               term: "UDP-demux: 2-tuppel",
+              icon: <TwoTupleIcon />,
               body: "Kun (dest-IP, dest-port). Server leser kilde selv.",
             },
-            { term: "TCP-demux: 4-tuppel", body: "(kilde-IP, kilde-port, dest-IP, dest-port)." },
+            { term: "TCP-demux: 4-tuppel", icon: <FourTupleIcon />, body: "(kilde-IP, kilde-port, dest-IP, dest-port)." },
             {
               term: "Lytte-socket vs forbindelse-socket",
+              icon: <ListenSocketIcon />,
               body: "Lytter venter; forbindelse er per 4-tuppel.",
             },
-            { term: "Ephemeral port", body: "Tilfeldig høy port klienten får av OS." },
-            { term: "Velkjente porter (0-1023)", body: "IANA-reservert, root-only på Unix." },
+            { term: "Ephemeral port", icon: <EphemeralPortIcon />, body: "Tilfeldig høy port klienten får av OS." },
+            { term: "Velkjente porter (0-1023)", icon: <WellKnownPortIcon />, body: "IANA-reservert, root-only på Unix." },
             {
               term: "Registrerte porter (1024-49151)",
+              icon: <RegisteredPortIcon />,
               body: "IANA-listet, ikke OS-beskyttet (MySQL, Redis…).",
             },
             {
               term: "Dynamiske porter (49152-65535)",
+              icon: <DynamicPortIcon />,
               body: "Til ephemeral-bruk; TIME_WAIT etter lukking.",
             },
             {
               term: "NAT port-forwarding",
+              icon: <NatIcon />,
               body: "Hjemme-ruter mapper privat:port ↔ offentlig:port.",
             },
             {
               term: "bind() og connect()",
+              icon: <BindConnectIcon />,
               body: "bind = ta lokal port; connect = sett dest + handshake.",
             },
-            { term: "Port-uttømming", body: "Slipper opp ephemeral → EADDRNOTAVAIL." },
-            { term: "Demux-mismatch og RST", body: "Ingen socket matcher → RST tilbake." },
+            { term: "Port-uttømming", icon: <PortExhaustionIcon />, body: "Slipper opp ephemeral → EADDRNOTAVAIL." },
+            { term: "Demux-mismatch og RST", icon: <RstIcon />, body: "Ingen socket matcher → RST tilbake." },
           ]}
         />
         <Illustration caption="TCP-demux med 4-tuppel: én lytte-port, hver aktiv forbindelse får egen socket.">
@@ -572,36 +675,41 @@ function Section33() {
       <Section32Live />
 
       <div className="grid gap-3 lg:grid-cols-2">
-        <Defs
+        <VisualDefs
           items={[
-            { term: "Forbindelsesløs", body: "Ingen handshake. Spar 1 RTT." },
+            { term: "Forbindelsesløs", icon: <ConnectionlessIcon />, body: "Ingen handshake. Spar 1 RTT." },
             {
               term: "UDP-header (8 bytes)",
+              icon: <UdpHeaderIcon />,
               body: "Kilde-port, dest-port, lengde, sjekksum. Slutt.",
             },
-            { term: "Sjekksum", body: "16-bits one's-complement; detekterer, korrigerer ikke." },
-            { term: "Melding-grenser bevares", body: "Hvert sendto() = én pakke." },
+            { term: "Sjekksum", icon: <ChecksumIcon />, body: "16-bits one's-complement; detekterer, korrigerer ikke." },
+            { term: "Melding-grenser bevares", icon: <MessageBoundaryIcon />, body: "Hvert sendto() = én pakke." },
             {
               term: "Når UDP slår TCP",
+              icon: <UdpVsTcpIcon />,
               body: "Sanntid, korte spørringer, multicast, custom-pålitelighet.",
             },
             {
               term: "QUIC-paradokset",
+              icon: <QuicIcon />,
               body: "HTTP/3 over UDP — bygger TCP-erstatning i userspace.",
             },
             {
               term: "Pseudo-header for sjekksum",
+              icon: <PseudoHeaderIcon />,
               body: "IP-adresser tas med i sjekksum-beregning.",
             },
             {
               term: "Maksimal UDP-pakke",
+              icon: <MaxPacketIcon />,
               body: "65507 bytes; men IP fragmenterer over MTU (~1500).",
             },
-            { term: "Frivillig sjekksum (IPv4)", body: "Kan settes til 0; obligatorisk på IPv6." },
-            { term: "Demux ved port", body: "Ingen lytter → ICMP «port unreachable»." },
-            { term: "Bruk-tilfeller", body: "DNS, DHCP, NTP, QUIC, VoIP, spill, multicast." },
-            { term: "VoIP-valg", body: "20 ms tale-pakker; tap = liten knirk, TCP ville frosset." },
-            { term: "DCCP", body: "UDP + congestion control. Sjelden brukt." },
+            { term: "Frivillig sjekksum (IPv4)", icon: <OptionalChecksumIcon />, body: "Kan settes til 0; obligatorisk på IPv6." },
+            { term: "Demux ved port", icon: <PortUnreachableIcon />, body: "Ingen lytter → ICMP «port unreachable»." },
+            { term: "Bruk-tilfeller", icon: <UseCasesIcon />, body: "DNS, DHCP, NTP, QUIC, VoIP, spill, multicast." },
+            { term: "VoIP-valg", icon: <VoipIcon />, body: "20 ms tale-pakker; tap = liten knirk, TCP ville frosset." },
+            { term: "DCCP", icon: <DccpIcon />, body: "UDP + congestion control. Sjelden brukt." },
           ]}
         />
         <Illustration caption="UDP-header: 8 bytes, fire 2-byte-felter. TCP-headeren er minst 20.">
@@ -751,23 +859,23 @@ function Section34() {
       <Section33Live />
 
       <div className="grid gap-3 lg:grid-cols-2">
-        <Defs
+        <VisualDefs
           items={[
-            { term: "RDT 1.0", body: "Perfekt kanal — bare send og motta." },
-            { term: "RDT 2.0", body: "Bit-feil → + sjekksum, ACK/NAK." },
-            { term: "RDT 2.1", body: "Korrupt ACK → + 1-bits sekvensnr." },
-            { term: "RDT 2.2", body: "Forenkling: duplikat-ACK erstatter NAK." },
-            { term: "RDT 3.0", body: "Pakketap → + timeout + retransmisjon." },
-            { term: "Stop-and-wait", body: "Send én, vent ACK. Trygt, men tregt." },
-            { term: "Pipelining", body: "Flere pakker «in flight» samtidig." },
-            { term: "Go-Back-N (GBN)", body: "Tap → retransmitter alt fra første ubekreftet." },
-            { term: "Selective Repeat (SR)", body: "Tap → retransmitter bare den tapte." },
-            { term: "Sekvensnr-rom", body: "GBN: ≥ N+1. SR: ≥ 2N." },
-            { term: "Utnyttelse U", body: "U = (L/R)/(RTT + L/R). Lav på fete lenker." },
-            { term: "BDP", body: "Båndbredde × RTT = bytes som «får plass» i røret." },
-            { term: "Duplikat-deteksjon", body: "Sekvensnr → idempotent leveranse." },
-            { term: "NAK vs duplikat-ACK", body: "Duplikat-ACK gir samme info som NAK." },
-            { term: "Timeout vs RTT-estimat", body: "For kort = spam; for lang = treg." },
+            { term: "RDT 1.0", icon: <Rdt1Icon />, body: "Perfekt kanal — bare send og motta." },
+            { term: "RDT 2.0", icon: <Rdt2Icon />, body: "Bit-feil → + sjekksum, ACK/NAK." },
+            { term: "RDT 2.1", icon: <Rdt21Icon />, body: "Korrupt ACK → + 1-bits sekvensnr." },
+            { term: "RDT 2.2", icon: <Rdt22Icon />, body: "Forenkling: duplikat-ACK erstatter NAK." },
+            { term: "RDT 3.0", icon: <Rdt3Icon />, body: "Pakketap → + timeout + retransmisjon." },
+            { term: "Stop-and-wait", icon: <StopAndWaitIcon />, body: "Send én, vent ACK. Trygt, men tregt." },
+            { term: "Pipelining", icon: <PipeliningIcon />, body: "Flere pakker «in flight» samtidig." },
+            { term: "Go-Back-N (GBN)", icon: <GoBackNIcon />, body: "Tap → retransmitter alt fra første ubekreftet." },
+            { term: "Selective Repeat (SR)", icon: <SelectiveRepeatIcon />, body: "Tap → retransmitter bare den tapte." },
+            { term: "Sekvensnr-rom", icon: <SeqSpaceIcon />, body: "GBN: ≥ N+1. SR: ≥ 2N." },
+            { term: "Utnyttelse U", icon: <UtilizationIcon />, body: "U = (L/R)/(RTT + L/R). Lav på fete lenker." },
+            { term: "BDP", icon: <BdpIcon />, body: "Båndbredde × RTT = bytes som «får plass» i røret." },
+            { term: "Duplikat-deteksjon", icon: <DuplicateDetectIcon />, body: "Sekvensnr → idempotent leveranse." },
+            { term: "NAK vs duplikat-ACK", icon: <NakDupAckIcon />, body: "Duplikat-ACK gir samme info som NAK." },
+            { term: "Timeout vs RTT-estimat", icon: <TimerIcon />, body: "For kort = spam; for lang = treg." },
           ]}
         />
         <Illustration caption="RDT-progresjonen: hver versjon legger til håndtering av ett nytt feil-scenario.">
@@ -935,38 +1043,42 @@ function Section35() {
       <Section34Live />
 
       <div className="grid gap-3 lg:grid-cols-2">
-        <Defs
+        <VisualDefs
           items={[
-            { term: "Segmentering", body: "Del bytestrøm i MSS-store biter (~1460 B)." },
-            { term: "Sekvensnummer (32 bits)", body: "Byte-offset, ikke pakke-teller." },
-            { term: "Kumulativ ACK", body: "ACK(N) = «alt før N har jeg»." },
+            { term: "Segmentering", icon: <SegmentationIcon />, body: "Del bytestrøm i MSS-store biter (~1460 B)." },
+            { term: "Sekvensnummer (32 bits)", icon: <SeqNumIcon />, body: "Byte-offset, ikke pakke-teller." },
+            { term: "Kumulativ ACK", icon: <CumAckIcon />, body: "ACK(N) = «alt før N har jeg»." },
             {
               term: "Tre dup-ACK = fast retransmit",
+              icon: <FastRetransmitIcon />,
               body: "Retransmitter uten å vente på timeout.",
             },
-            { term: "RTT-estimat (EWMA)", body: "α·ny + (1-α)·gamle; α = 0.125." },
-            { term: "Flow control", body: "rwnd = ledig plass i mottakers buffer." },
+            { term: "RTT-estimat (EWMA)", icon: <RttEstimateIcon />, body: "α·ny + (1-α)·gamle; α = 0.125." },
+            { term: "Flow control", icon: <FlowControlIcon />, body: "rwnd = ledig plass i mottakers buffer." },
             {
               term: "3-veis handshake",
+              icon: <HandshakeIcon />,
               body: "SYN → SYN-ACK → ACK. Begge sider får ISN bekreftet.",
             },
             {
               term: "TCP-tilstander",
+              icon: <TcpStatesIcon />,
               body: "CLOSED → LISTEN → SYN_SENT → … → ESTABLISHED → … → TIME_WAIT.",
             },
-            { term: "TCP-flags", body: "SYN, ACK, FIN, RST, PSH, URG." },
+            { term: "TCP-flags", icon: <TcpFlagsIcon />, body: "SYN, ACK, FIN, RST, PSH, URG." },
             {
               term: "Initial Sequence Number (ISN)",
+              icon: <IsnIcon />,
               body: "Tilfeldig for sikkerhet (anti-spoofing).",
             },
-            { term: "TIME_WAIT", body: "Vent 2·MSL før 4-tuppel kan gjenbrukes." },
-            { term: "MSS", body: "Maks nyttelast = MTU − IP − TCP = 1460 B." },
-            { term: "Karn's algoritme", body: "Ikke bruk retransmittert pakke til RTT-måling." },
-            { term: "Nagle's algoritme", body: "Saml små segmenter — TCP_NODELAY slår av." },
-            { term: "Delayed ACK", body: "Mottaker venter ~200 ms for piggyback." },
-            { term: "TCP-opsjoner", body: "MSS, Window Scale, SACK, Timestamps." },
-            { term: "RST (reset)", body: "Drep forbindelsen umiddelbart." },
-            { term: "Half-close", body: "FIN i én retning, lytt i den andre." },
+            { term: "TIME_WAIT", icon: <TimeWaitIcon />, body: "Vent 2·MSL før 4-tuppel kan gjenbrukes." },
+            { term: "MSS", icon: <MssIcon />, body: "Maks nyttelast = MTU − IP − TCP = 1460 B." },
+            { term: "Karn's algoritme", icon: <KarnAlgIcon />, body: "Ikke bruk retransmittert pakke til RTT-måling." },
+            { term: "Nagle's algoritme", icon: <NagleIcon />, body: "Saml små segmenter — TCP_NODELAY slår av." },
+            { term: "Delayed ACK", icon: <DelayedAckIcon />, body: "Mottaker venter ~200 ms for piggyback." },
+            { term: "TCP-opsjoner", icon: <TcpOptionsIcon />, body: "MSS, Window Scale, SACK, Timestamps." },
+            { term: "RST (reset)", icon: <RstIcon />, body: "Drep forbindelsen umiddelbart." },
+            { term: "Half-close", icon: <HalfCloseIcon />, body: "FIN i én retning, lytt i den andre." },
           ]}
         />
         <Illustration caption="TCP-header (20 bytes min): sekvensnr og ACK-felt er hjertet i påliteligheten.">
@@ -1148,31 +1260,33 @@ function Section36() {
       <Section35Live />
 
       <div className="grid gap-3 lg:grid-cols-2">
-        <Defs
+        <VisualDefs
           items={[
             {
               term: "Congestion collapse",
+              icon: <CongestionCollapseIcon />,
               body: "Tap → flere retransmisjoner → mer tap. Død-spiral.",
             },
             {
               term: "Congestion window (cwnd)",
+              icon: <CwndIcon />,
               body: "Maks bytes «in flight» fra nettverkets side.",
             },
-            { term: "AIMD", body: "+1 per RTT (vekst); /2 per tap (reduksjon)." },
-            { term: "Slow start", body: "cwnd dobles per RTT inntil ssthresh eller tap." },
-            { term: "TCP Reno", body: "Slow start + AIMD + fast recovery." },
-            { term: "TCP Cubic", body: "Linux-standard. Kubisk vekst etter tap." },
-            { term: "BBR", body: "Mål båndbredde og RTT direkte, ikke tap." },
-            { term: "Rettferdighet", body: "AIMD konvergerer mot lik deling av flaskehalsen." },
-            { term: "ssthresh", body: "Grense mellom slow start og AIMD." },
-            { term: "Timeout vs 3 dup-ACK", body: "Timeout → cwnd=1. 3 dup → halver." },
-            { term: "ECN", body: "Rutere markerer overbelastning før tap." },
-            { term: "AIMD-throughput", body: "≈ 1.22·MSS / (RTT·√p)." },
-            { term: "TCP Tahoe", body: "Forløper: alltid tilbake til 1 MSS ved tap." },
-            { term: "Bufferbloat", body: "Store ruter-bufre = treghet, ikke tap." },
-            { term: "Self-clocking", body: "ACK-takten regulerer sende-takten automatisk." },
-            { term: "Sender-vindu", body: "min(cwnd, rwnd) — nett eller mottaker." },
-            { term: "AIMD-konvergens", body: "Halvering bringer forholdet nærmere 1:1." },
+            { term: "AIMD", icon: <AimdIcon />, body: "+1 per RTT (vekst); /2 per tap (reduksjon)." },
+            { term: "Slow start", icon: <SlowStartIcon />, body: "cwnd dobles per RTT inntil ssthresh eller tap." },
+            { term: "TCP Reno", icon: <TcpRenoIcon />, body: "Slow start + AIMD + fast recovery." },
+            { term: "TCP Cubic", icon: <TcpCubicIcon />, body: "Linux-standard. Kubisk vekst etter tap." },
+            { term: "BBR", icon: <BbrIcon />, body: "Mål båndbredde og RTT direkte, ikke tap." },
+            { term: "Rettferdighet", icon: <FairnessIcon />, body: "AIMD konvergerer mot lik deling av flaskehalsen." },
+            { term: "ssthresh", icon: <SsthreshIcon />, body: "Grense mellom slow start og AIMD." },
+            { term: "Timeout vs 3 dup-ACK", icon: <TimeoutVsDupAckIcon />, body: "Timeout → cwnd=1. 3 dup → halver." },
+            { term: "ECN", icon: <EcnIcon />, body: "Rutere markerer overbelastning før tap." },
+            { term: "AIMD-throughput", icon: <AimdThroughputIcon />, body: "≈ 1.22·MSS / (RTT·√p)." },
+            { term: "TCP Tahoe", icon: <TcpTahoeIcon />, body: "Forløper: alltid tilbake til 1 MSS ved tap." },
+            { term: "Bufferbloat", icon: <BufferbloatIcon />, body: "Store ruter-bufre = treghet, ikke tap." },
+            { term: "Self-clocking", icon: <SelfClockingIcon />, body: "ACK-takten regulerer sende-takten automatisk." },
+            { term: "Sender-vindu", icon: <SenderWindowIcon />, body: "min(cwnd, rwnd) — nett eller mottaker." },
+            { term: "AIMD-konvergens", icon: <ConvergenceIcon />, body: "Halvering bringer forholdet nærmere 1:1." },
           ]}
         />
         <Illustration caption="AIMD-sagtann: lineær vekst, halvering ved tap. Klassisk TCP-rytme.">
