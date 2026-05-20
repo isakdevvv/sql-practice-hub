@@ -11,6 +11,12 @@ import {
   ExternalLink,
 } from "lucide-react";
 import { SectionPager, type SectionNavItem } from "./SectionPager";
+import { M1Sinus } from "./kap7/M1Sinus";
+import { SpektrumViz } from "./kap7/SpektrumViz";
+import { CellulaViz } from "./kap7/CellulaViz";
+import { MobilitetsTracer } from "./kap7/MobilitetsTracer";
+import { HandoverTidslinje } from "./kap7/HandoverTidslinje";
+import { TCPRadioLab } from "./kap7/TCPRadioLab";
 
 type Tab = "intro" | "7.1" | "7.2" | "7.3" | "7.4" | "7.5" | "7.6" | "7.7" | "7.8";
 
@@ -203,6 +209,8 @@ function Section71() {
         hverandre kan likevel kollidere hos en mottaker mellom dem. Alle protokoll-valgene i WiFi og
         mobilnett er svar på en eller flere av disse problemene.
       </p>
+
+      <M1Sinus />
 
       <div className="grid gap-3 lg:grid-cols-2">
         <Defs
@@ -399,6 +407,8 @@ function Section72() {
         gikk tapt og må sendes på nytt.
       </p>
 
+      <SpektrumViz />
+
       <div className="grid gap-3 lg:grid-cols-2">
         <Defs
           items={[
@@ -550,6 +560,8 @@ function Section73() {
         for generasjon har kjernen blitt mer og mer lik vanlig internett, mens radio-grensesnittet
         har blitt smartere.
       </p>
+
+      <CellulaViz />
 
       <div className="grid gap-3 lg:grid-cols-2">
         <Defs
@@ -727,6 +739,8 @@ function Section74() {
         Mobile IP og mobil-kjernens GTP-tunneling gjør.
       </p>
 
+      <MobilitetsTracer />
+
       <div className="grid gap-3 lg:grid-cols-2">
         <Defs
           items={[
@@ -895,6 +909,8 @@ function Section75() {
         og bruker en koordinert sekvens av målinger, beslutninger og signalerings-meldinger.
       </p>
 
+      <HandoverTidslinje />
+
       <div className="grid gap-3 lg:grid-cols-2">
         <Defs
           items={[
@@ -1055,6 +1071,8 @@ function Section76() {
         congestion, og TCP straffer en lenke som faktisk er ledig. Resultat — kronisk
         under-utnyttelse av trådløse lenker.
       </p>
+
+      <TCPRadioLab />
 
       <div className="grid gap-3 lg:grid-cols-2">
         <Defs
