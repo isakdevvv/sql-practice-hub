@@ -17,6 +17,12 @@ import {
   Server,
 } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
+import { VisualDefs } from "@/components/stack/kurose-kurs/VisualDefs";
+import {
+  IsoDiscIcon,
+  DiskImageIcon,
+  RamChipIcon,
+} from "./forkursIcons";
 
 /**
  * F-02 Installer VirtualBox + Ubuntu.
@@ -129,37 +135,28 @@ function EkteArbeid() {
 }
 
 function Ordliste() {
-  const ord = [
-    {
-      term: "ISO",
-      forklaring:
-        "Et disk-image på ISO-format — en eneste stor fil som inneholder hele innholdet av en DVD. Ubuntu kommer som en ISO-fil du laster ned (~5 GB).",
-      icon: <Disc3 className="h-4 w-4" />,
-    },
-    {
-      term: "Disk-image",
-      forklaring:
-        "Generelt: en fil som lar som en hel disk. ISO er én type. VM-ens virtuelle harddisk (en .vdi-fil) er en annen type — en kjempefil som later som om den er en 25 GB hard-disk inne i VM-en.",
-      icon: <HardDrive className="h-4 w-4" />,
-    },
-    {
-      term: "RAM-allokering",
-      forklaring:
-        "Hvor mye av din ekte RAM (arbeids-minne, gjerne 8 eller 16 GB totalt) som VM-en får låne mens den kjører. Du gir bort en bit, beholder resten selv. Tar du for mye, sloves host. Tar du for lite, sloves guest.",
-      icon: <MemoryStick className="h-4 w-4" />,
-    },
-  ];
   return (
-    <div className="my-6 grid sm:grid-cols-3 gap-3">
-      {ord.map((o) => (
-        <div key={o.term} className="rounded-lg border border-border bg-card/40 p-4">
-          <div className="flex items-center gap-2 text-brand font-semibold text-sm mb-2">
-            {o.icon}
-            {o.term}
-          </div>
-          <p className="text-xs text-muted-foreground leading-relaxed">{o.forklaring}</p>
-        </div>
-      ))}
+    <div className="my-6">
+      <VisualDefs
+        title="Tre ord du møter underveis"
+        items={[
+          {
+            term: "ISO",
+            icon: <IsoDiscIcon />,
+            body: "Et disk-image på ISO-format — en eneste stor fil som inneholder hele innholdet av en DVD. Ubuntu kommer som en ISO-fil du laster ned (~5 GB).",
+          },
+          {
+            term: "Disk-image",
+            icon: <DiskImageIcon />,
+            body: "Generelt: en fil som lar som en hel disk. ISO er én type. VM-ens virtuelle harddisk (en .vdi-fil) er en annen type — en kjempefil som later som om den er en 25 GB hard-disk inne i VM-en.",
+          },
+          {
+            term: "RAM-allokering",
+            icon: <RamChipIcon />,
+            body: "Hvor mye av din ekte RAM (arbeids-minne, gjerne 8 eller 16 GB totalt) som VM-en får låne mens den kjører. Du gir bort en bit, beholder resten selv. Tar du for mye, sloves host. Tar du for lite, sloves guest.",
+          },
+        ]}
+      />
     </div>
   );
 }
