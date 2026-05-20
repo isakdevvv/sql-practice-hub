@@ -14,6 +14,47 @@ import { Section42Live } from "./Section42Live";
 import { Section43Live } from "./Section43Live";
 import { Section44Live } from "./Section44Live";
 import { Section45Live } from "./Section45Live";
+import { VisualDefs } from "./VisualDefs";
+import {
+  ForwardingIcon,
+  RoutingIcon,
+  FibTableIcon,
+  RibTableIcon,
+  LpmIcon,
+  FabricCrossbarIcon,
+  InputPortIcon,
+  OutputPortIcon,
+  FabricMemoryIcon,
+  FabricBusIcon,
+  HolBlockingIcon,
+  OutputLossIcon,
+  RoutingProcessorIcon,
+  Ipv4HeaderIcon,
+  TtlIcon,
+  MtuIcon,
+  FragmentationIcon,
+  PathMtuIcon,
+  Ipv6HeaderIcon,
+  Ipv6VsIpv4Icon,
+  AddressRulerIcon,
+  DualStackIcon,
+  SdnIcon,
+  OpenFlowIcon,
+  MatchActionIcon,
+  FlowIcon,
+  ActionsIcon,
+  PipelineIcon,
+  NorthboundIcon,
+  SouthboundIcon,
+  NatIcon,
+  NatTraversalIcon,
+  NatTypesIcon,
+  StatefulFirewallIcon,
+  AclIcon,
+  LoadBalancerIcon,
+  DpiIcon,
+  ProxyIcon,
+} from "./visualDefIcons.kap4";
 
 type Tab = "intro" | "4.1" | "4.2" | "4.3" | "4.4" | "4.5" | "4.6" | "4.7";
 
@@ -201,10 +242,11 @@ function Section41() {
 
       <Section41Live />
 
-      <Defs
+      <VisualDefs
         items={[
           {
             term: "Forwarding (data-plane)",
+            icon: <ForwardingIcon />,
             body: (
               <>
                 Per-pakke-beslutningen: ankommer en pakke, slå opp i forwarding-tabellen, send ut
@@ -214,6 +256,7 @@ function Section41() {
           },
           {
             term: "Routing (control-plane)",
+            icon: <RoutingIcon />,
             body: (
               <>
                 Beregner <em>hva</em> som skal stå i forwarding-tabellen. Bytter info med
@@ -224,6 +267,7 @@ function Section41() {
           },
           {
             term: "Forwarding-tabell (FIB — Forwarding Information Base)",
+            icon: <FibTableIcon />,
             body: (
               <>
                 Mapping fra IP-prefix til output-port. Eksempel: <code>10.1.2.0/24 → P4</code>.
@@ -233,6 +277,7 @@ function Section41() {
           },
           {
             term: "Routing-tabell (RIB — Routing Information Base)",
+            icon: <RibTableIcon />,
             body: (
               <>
                 Routing-prosessorens kompletteste bilde av topologien. RIB er CPU-data; FIB
@@ -242,6 +287,7 @@ function Section41() {
           },
           {
             term: "Longest Prefix Match (LPM)",
+            icon: <LpmIcon />,
             body: (
               <>
                 Når flere prefikser i tabellen matcher samme destinasjons-IP, velges det
@@ -252,6 +298,7 @@ function Section41() {
           },
           {
             term: "Switching-fabric",
+            icon: <FabricCrossbarIcon />,
             body: (
               <>
                 Mekanismen inne i ruteren som flytter pakker fra input-port til output-port.
@@ -322,10 +369,11 @@ function Section42() {
 
       <Section42Live />
 
-      <Defs
+      <VisualDefs
         items={[
           {
             term: "Input-port",
+            icon: <InputPortIcon />,
             body: (
               <>
                 Tre lag av jobb: fysisk mottak (decoder bits fra mediet), lenke-lag
@@ -337,6 +385,7 @@ function Section42() {
           },
           {
             term: "Output-port",
+            icon: <OutputPortIcon />,
             body: (
               <>
                 Speilbilde av input. Tar pakker fra fabric, legger dem i en kø, kjører
@@ -347,6 +396,7 @@ function Section42() {
           },
           {
             term: "Switching fabric — minne",
+            icon: <FabricMemoryIcon />,
             body: (
               <>
                 Eldste modell. CPU kopierer pakken fra input-buffer til output-buffer over en
@@ -357,6 +407,7 @@ function Section42() {
           },
           {
             term: "Switching fabric — buss",
+            icon: <FabricBusIcon />,
             body: (
               <>
                 En felles intern buss alle porter henger på. Bedre enn minne (ingen CPU), men
@@ -367,6 +418,7 @@ function Section42() {
           },
           {
             term: "Switching fabric — crossbar (interconnect)",
+            icon: <FabricCrossbarIcon />,
             body: (
               <>
                 Et 2D-koblingsnett der hver input-port har en uavhengig sti til hver
@@ -377,6 +429,7 @@ function Section42() {
           },
           {
             term: "Head-of-line (HOL) blocking",
+            icon: <HolBlockingIcon />,
             body: (
               <>
                 Når input-kø er FIFO og pakken først i køen ikke får komme over fabric (fordi
@@ -388,6 +441,7 @@ function Section42() {
           },
           {
             term: "Output-kø-pakketap",
+            icon: <OutputLossIcon />,
             body: (
               <>
                 Hvis fabric leverer pakker til en output-port raskere enn lenken kan sende
@@ -398,6 +452,7 @@ function Section42() {
           },
           {
             term: "Routing-prosessor",
+            icon: <RoutingProcessorIcon />,
             body: (
               <>
                 CPU-en som kjører routing-protokoller (OSPF, BGP), holder RIB, og oppdaterer
@@ -442,10 +497,11 @@ function Section43() {
 
       <Section43Live />
 
-      <Defs
+      <VisualDefs
         items={[
           {
             term: "IPv4-header (20–60 bytes)",
+            icon: <Ipv4HeaderIcon />,
             body: (
               <>
                 Felter du må kjenne: <code>Version</code> (4), <code>IHL</code> (header-lengde i
@@ -460,6 +516,7 @@ function Section43() {
           },
           {
             term: "TTL (Time To Live)",
+            icon: <TtlIcon />,
             body: (
               <>
                 Hver ruter på stien dekrementerer TTL med 1. Når TTL = 0 dropper ruteren pakken
@@ -471,6 +528,7 @@ function Section43() {
           },
           {
             term: "MTU (Maximum Transmission Unit)",
+            icon: <MtuIcon />,
             body: (
               <>
                 Største pakke en lenke kan transportere uten splitting. Ethernet: 1500 bytes;
@@ -480,6 +538,7 @@ function Section43() {
           },
           {
             term: "Fragmentering (IPv4)",
+            icon: <FragmentationIcon />,
             body: (
               <>
                 Hvis en pakke er større enn neste lenkes MTU, deler ruteren den i fragmenter.
@@ -491,6 +550,7 @@ function Section43() {
           },
           {
             term: "Path MTU Discovery",
+            icon: <PathMtuIcon />,
             body: (
               <>
                 Sender setter <code>Don&apos;t Fragment</code>-flag og lar rutere som ikke kan
@@ -501,6 +561,7 @@ function Section43() {
           },
           {
             term: "IPv6-header (fast 40 bytes)",
+            icon: <Ipv6HeaderIcon />,
             body: (
               <>
                 Mye enklere enn IPv4: <code>Version</code> (6), <code>Traffic Class</code>,{" "}
@@ -513,6 +574,7 @@ function Section43() {
           },
           {
             term: "IPv6 vs IPv4 — hva er borte",
+            icon: <Ipv6VsIpv4Icon />,
             body: (
               <>
                 IPv6 fjerner header-checksum (raskere forwarding), fjerner fragmentering på
@@ -523,6 +585,7 @@ function Section43() {
           },
           {
             term: "Adressering: 32 bits → 128 bits",
+            icon: <AddressRulerIcon />,
             body: (
               <>
                 IPv4: ~4,3 milliarder unike adresser. IPv6: 2^128 ≈ 3,4×10^38. Skrives som åtte
@@ -534,6 +597,7 @@ function Section43() {
           },
           {
             term: "Overgang: dual-stack og tunnelering",
+            icon: <DualStackIcon />,
             body: (
               <>
                 <em>Dual-stack:</em> hosts og rutere kjører både IPv4 og IPv6 samtidig.{" "}
@@ -576,10 +640,11 @@ function Section44() {
 
       <Section44Live />
 
-      <Defs
+      <VisualDefs
         items={[
           {
             term: "SDN (Software-Defined Networking)",
+            icon: <SdnIcon />,
             body: (
               <>
                 Arkitektur som flytter control-planet ut av ruterne og inn i en sentral
@@ -591,6 +656,7 @@ function Section44() {
           },
           {
             term: "OpenFlow",
+            icon: <OpenFlowIcon />,
             body: (
               <>
                 Det første store SDN-protokollen. Standardiserer hva en kontroller sier til en
@@ -601,6 +667,7 @@ function Section44() {
           },
           {
             term: "Match-Action-tabell",
+            icon: <MatchActionIcon />,
             body: (
               <>
                 Den generaliserte forwarding-strukturen. Hver regel har et{" "}
@@ -612,6 +679,7 @@ function Section44() {
           },
           {
             term: "Flow",
+            icon: <FlowIcon />,
             body: (
               <>
                 En sekvens av pakker som matcher samme regel. En flow defineres ikke av
@@ -622,6 +690,7 @@ function Section44() {
           },
           {
             term: "Actions",
+            icon: <ActionsIcon />,
             body: (
               <>
                 Typiske handlinger: <code>forward(port)</code>, <code>drop</code>,{" "}
@@ -633,6 +702,7 @@ function Section44() {
           },
           {
             term: "Pipeline (flere tabeller)",
+            icon: <PipelineIcon />,
             body: (
               <>
                 Moderne OpenFlow har flere tabeller i serie: pakken matches mot tabell 0,
@@ -643,6 +713,7 @@ function Section44() {
           },
           {
             term: "Northbound API",
+            icon: <NorthboundIcon />,
             body: (
               <>
                 Grensesnittet mellom SDN-kontrolleren og apper som programmerer den. Lar
@@ -653,6 +724,7 @@ function Section44() {
           },
           {
             term: "Southbound API",
+            icon: <SouthboundIcon />,
             body: (
               <>
                 Grensesnittet mellom kontroller og switcher. OpenFlow er den mest kjente, men
@@ -713,10 +785,11 @@ function Section45() {
 
       <Section45Live />
 
-      <Defs
+      <VisualDefs
         items={[
           {
             term: "NAT (Network Address Translation)",
+            icon: <NatIcon />,
             body: (
               <>
                 Lar mange private IP-adresser (typisk 10.0.0.0/8 eller 192.168.0.0/16) dele én
@@ -728,6 +801,7 @@ function Section45() {
           },
           {
             term: "NAT-traversal — hva som ikke fungerer",
+            icon: <NatTraversalIcon />,
             body: (
               <>
                 Pakker som ankommer NAT-boksen utenfra uten en eksisterende oversetting blir
@@ -738,6 +812,7 @@ function Section45() {
           },
           {
             term: "NAT-typer",
+            icon: <NatTypesIcon />,
             body: (
               <>
                 <em>Full cone:</em> én ekstern endepunkt kan kontakte intern host via mappingen.
@@ -749,6 +824,7 @@ function Section45() {
           },
           {
             term: "Stateful brannmur",
+            icon: <StatefulFirewallIcon />,
             body: (
               <>
                 Holder oversikt over åpne tilkoblinger og slipper kun gjennom pakker som
@@ -760,6 +836,7 @@ function Section45() {
           },
           {
             term: "ACL (Access Control List)",
+            icon: <AclIcon />,
             body: (
               <>
                 Liste av regler som matcher på pakke-felt og enten tillater eller blokkerer.
@@ -769,6 +846,7 @@ function Section45() {
           },
           {
             term: "Load-balancer",
+            icon: <LoadBalancerIcon />,
             body: (
               <>
                 Mottar trafikk på én virtuell IP, distribuerer den på mange back-end-servere.
@@ -779,6 +857,7 @@ function Section45() {
           },
           {
             term: "DPI (Deep Packet Inspection)",
+            icon: <DpiIcon />,
             body: (
               <>
                 Middleboks som leser pakke-innholdet, ikke bare headerne. Brukes til
@@ -789,6 +868,7 @@ function Section45() {
           },
           {
             term: "Application-gateway / proxy",
+            icon: <ProxyIcon />,
             body: (
               <>
                 Bryter tilkoblingen i to: klient ↔ proxy, og proxy ↔ server. Brukes for
