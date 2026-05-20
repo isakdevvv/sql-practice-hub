@@ -3674,6 +3674,7 @@ function SectionEksamen() {
             <Formel>EstimatedRTT = (1 − α) · EstimatedRTT + α · SampleRTT</Formel>
             <Formel>DevRTT = (1 − β) · DevRTT + β · |SampleRTT − EstimatedRTT|</Formel>
             <Formel>TimeoutInterval = EstimatedRTT + 4 · DevRTT</Formel>
+            <EwmaMiniSvg />
             <p>
               Standard-verdier: α = 0,125 og β = 0,25. EstimatedRTT er et glidende snitt; DevRTT er
               glidende snitt over avviket — altså «hvor mye varierer RTT?». 4·DevRTT-margenen gir
@@ -3690,6 +3691,7 @@ function SectionEksamen() {
             <Formel>
               CLOSED → LISTEN → SYN_RCVD → ESTABLISHED → CLOSE_WAIT → LAST_ACK → CLOSED
             </Formel>
+            <TcpStateMachineSvg />
             <p>
               TIME_WAIT varer i 2·MSL (Maximum Segment Lifetime) for å fange ekko-segmenter og
               bekrefte at siste ACK kom fram. Det er derfor du ikke kan starte ny tjener på samme
@@ -3698,6 +3700,7 @@ function SectionEksamen() {
           </Cheat>
 
           <Cheat tittel="TCP-flagg (6 bits i header)">
+            <TcpFlagsRowSvg />
             <ul className="space-y-1 list-disc list-inside">
               <li>
                 <b>SYN</b> — synkroniser sekvens-nummer (åpning).
@@ -3721,6 +3724,7 @@ function SectionEksamen() {
           </Cheat>
 
           <Cheat tittel="AIMD — Additive Increase, Multiplicative Decrease">
+            <AimdMiniSawtoothSvg />
             <ul className="space-y-1 list-disc list-inside">
               <li>
                 <b>+1 MSS per RTT</b> mens alt går bra (additiv økning).
@@ -3734,6 +3738,7 @@ function SectionEksamen() {
           </Cheat>
 
           <Cheat tittel="Slow start vs. congestion avoidance">
+            <SlowStartVsCaSvg />
             <ul className="space-y-1 list-disc list-inside">
               <li>
                 <b>cwnd &lt; ssthresh</b> → slow start: cwnd dobles per RTT (eksponentiell).
@@ -3750,6 +3755,7 @@ function SectionEksamen() {
           </Cheat>
 
           <Cheat tittel="UDP-header — 4 felter, 8 byte totalt">
+            <UdpFourBoxesSvg />
             <ul className="space-y-1 list-disc list-inside">
               <li>
                 <b>Source port</b> (16 bit) — kan settes til 0 hvis ingen retur ønskes.
@@ -3775,6 +3781,9 @@ function SectionEksamen() {
       {/* (b) Sammenligning */}
       <section className="space-y-3">
         <h3 className="text-base font-semibold">b) TCP vs UDP — direkte sammenligning</h3>
+        <Illustration caption="Pakke-format side-ved-side: TCP-headeren er minst 20 byte (med felter for sekvens, ACK, window, flagg); UDP-headeren er fast 8 byte med kun fire 16-bits-felter.">
+          <TcpUdpPackagesSvg />
+        </Illustration>
         <div className="overflow-x-auto rounded-xl border border-border bg-card">
           <table className="w-full text-[13px]">
             <thead className="bg-muted/40">
@@ -3850,6 +3859,7 @@ function SectionEksamen() {
         <h3 className="text-base font-semibold">d) Vanlige fallgruver på eksamen</h3>
         <div className="grid gap-3 lg:grid-cols-2">
           <Fallgruve tittel="Forveksle dup-ACK med timeout">
+            <DupAckVsTimeoutSvg />
             Begge er tap-signaler, men de fører til ulik respons. <b>Tre dup-ACK</b> trigger fast
             retransmit + fast recovery: ssthresh = cwnd/2 og cwnd = ssthresh (TCP Reno). En ren{" "}
             <b>timeout</b> tolker TCP som mye verre — full reset: ssthresh = cwnd/2, cwnd = 1 MSS,
@@ -3865,6 +3875,7 @@ function SectionEksamen() {
           </Fallgruve>
 
           <Fallgruve tittel="Tro at handshake er 2-veis">
+            <HandshakeMiniSvg />
             TCP-oppsett er <b>3-veis</b>: SYN → SYN+ACK → ACK. To-veis ville vært sårbart for gamle,
             forsinkede SYN-segmenter som dukker opp og åpner en spøkelses-forbindelse. Det tredje
             ACK-et lar serveren være sikker på at klienten faktisk er der og «mente» det. Tear-down
@@ -3928,6 +3939,7 @@ function SectionEksamen() {
           Hvis du har fem minutter igjen før eksamen og bare kan repetere én ting fra kap. 3, les
           denne lista. Den er ment som siste sjekk — alt under bør være selvinnlysende.
         </p>
+        <AnkerGrid />
         <Anker>
           <AnkerPunkt n={1}>
             <b>Transportlaget</b> gir prosess-til-prosess på toppen av IP sin host-til-host. Bare
@@ -4211,4 +4223,1634 @@ function TreNote({ x, y, text }: { x: number; y: number; text: string }) {
       {text}
     </text>
   );
+}
+
+// ============================================================
+// Nye Eksamen-tab SVG-er (mini-illustrasjoner i cheat-blokker,
+// pakke-format-sammenligning, fallgruve-mini, anker-grid)
+// ============================================================
+
+// EWMA-kurve for RTT-estimering. Viser SampleRTT (støyete) vs EstimatedRTT (glattet).
+function EwmaMiniSvg() {
+  // Sample-data: SampleRTT i ms (med spikes) og glidet EstimatedRTT med α=0.125.
+  const samples = [180, 210, 195, 240, 205, 270, 220, 210, 195, 230, 215, 200, 260, 210, 205];
+  const alpha = 0.125;
+  let est = samples[0];
+  const ests = samples.map((s, i) => {
+    if (i === 0) return s;
+    est = (1 - alpha) * est + alpha * s;
+    return est;
+  });
+  const W = 360;
+  const H = 110;
+  const padX = 28;
+  const padY = 14;
+  const xMin = padX;
+  const xMax = W - 8;
+  const yMin = padY;
+  const yMax = H - 20;
+  const vMin = 150;
+  const vMax = 290;
+  const xs = samples.map((_, i) => xMin + ((xMax - xMin) * i) / (samples.length - 1));
+  const yOf = (v: number) => yMax - ((v - vMin) / (vMax - vMin)) * (yMax - yMin);
+  const sampPath = samples.map((s, i) => `${i === 0 ? "M" : "L"}${xs[i]} ${yOf(s)}`).join(" ");
+  const estPath = ests.map((s, i) => `${i === 0 ? "M" : "L"}${xs[i]} ${yOf(s)}`).join(" ");
+  return (
+    <svg viewBox={`0 0 ${W} ${H}`} className="w-full h-auto">
+      {/* axes */}
+      <line x1={xMin} y1={yMax} x2={xMax} y2={yMax} className="stroke-border" strokeWidth={0.8} />
+      <line x1={xMin} y1={yMin} x2={xMin} y2={yMax} className="stroke-border" strokeWidth={0.8} />
+      {/* y-ticks */}
+      {[180, 230, 280].map((v) => (
+        <g key={v}>
+          <line
+            x1={xMin - 3}
+            y1={yOf(v)}
+            x2={xMin}
+            y2={yOf(v)}
+            className="stroke-border"
+            strokeWidth={0.7}
+          />
+          <text
+            x={xMin - 5}
+            y={yOf(v) + 3}
+            textAnchor="end"
+            className="fill-muted-foreground text-[8px]"
+          >
+            {v}
+          </text>
+        </g>
+      ))}
+      {/* sample dots + line */}
+      <path
+        d={sampPath}
+        className="fill-none stroke-amber-500/70"
+        strokeWidth={1}
+        strokeDasharray="2 2"
+      />
+      {samples.map((s, i) => (
+        <circle key={i} cx={xs[i]} cy={yOf(s)} r={1.8} className="fill-amber-500" />
+      ))}
+      {/* est line */}
+      <path d={estPath} className="fill-none stroke-sky-500" strokeWidth={1.8} />
+      {/* labels */}
+      <text
+        x={xMax - 6}
+        y={yMax + 14}
+        textAnchor="end"
+        className="fill-muted-foreground text-[8px]"
+      >
+        tid (sample-nr)
+      </text>
+      <text x={xMin - 22} y={yMin + 4} className="fill-muted-foreground text-[8px]">
+        RTT (ms)
+      </text>
+      {/* legend */}
+      <g transform={`translate(${xMin + 4}, ${yMin + 2})`}>
+        <line
+          x1={0}
+          y1={4}
+          x2={14}
+          y2={4}
+          className="stroke-amber-500/70"
+          strokeWidth={1}
+          strokeDasharray="2 2"
+        />
+        <text x={18} y={7} className="fill-muted-foreground text-[8px]">
+          SampleRTT
+        </text>
+        <line x1={88} y1={4} x2={102} y2={4} className="stroke-sky-500" strokeWidth={1.8} />
+        <text x={106} y={7} className="fill-muted-foreground text-[8px]">
+          EstimatedRTT (α=0,125)
+        </text>
+      </g>
+    </svg>
+  );
+}
+
+// Forenklet TCP-tilstandsmaskin (klient + server-sti).
+function TcpStateMachineSvg() {
+  const W = 360;
+  const H = 200;
+  // States as (x, y, label)
+  const node = (x: number, y: number, label: string, tone: "neutral" | "active" | "wait") => {
+    const fill =
+      tone === "active"
+        ? "fill-sky-500/20 stroke-sky-500"
+        : tone === "wait"
+          ? "fill-amber-500/20 stroke-amber-500"
+          : "fill-muted/40 stroke-border";
+    const tw = Math.max(58, label.length * 5.8);
+    return (
+      <g key={`${x},${y},${label}`}>
+        <rect
+          x={x - tw / 2}
+          y={y - 9}
+          width={tw}
+          height={18}
+          rx={4}
+          className={fill}
+          strokeWidth={1}
+        />
+        <text
+          x={x}
+          y={y + 3}
+          textAnchor="middle"
+          className="fill-foreground text-[8.5px] font-semibold"
+        >
+          {label}
+        </text>
+      </g>
+    );
+  };
+  const arrow = (x1: number, y1: number, x2: number, y2: number, label?: string) => {
+    const mx = (x1 + x2) / 2;
+    const my = (y1 + y2) / 2 - 3;
+    return (
+      <g key={`a-${x1}-${y1}-${x2}-${y2}`}>
+        <line
+          x1={x1}
+          y1={y1}
+          x2={x2}
+          y2={y2}
+          className="stroke-border"
+          strokeWidth={1}
+          markerEnd="url(#tcparrow)"
+        />
+        {label && (
+          <text x={mx} y={my} textAnchor="middle" className="fill-muted-foreground text-[7.5px]">
+            {label}
+          </text>
+        )}
+      </g>
+    );
+  };
+  return (
+    <svg viewBox={`0 0 ${W} ${H}`} className="w-full h-auto">
+      <defs>
+        <marker
+          id="tcparrow"
+          viewBox="0 0 10 10"
+          refX="9"
+          refY="5"
+          markerWidth="6"
+          markerHeight="6"
+          orient="auto"
+        >
+          <path d="M0,0 L10,5 L0,10 z" className="fill-border" />
+        </marker>
+      </defs>
+      {/* Klient-rad */}
+      <text x={6} y={14} className="fill-sky-700 dark:fill-sky-400 text-[9px] font-semibold">
+        Klient
+      </text>
+      {node(50, 30, "CLOSED", "neutral")}
+      {arrow(78, 30, 112, 30, "SYN")}
+      {node(140, 30, "SYN_SENT", "active")}
+      {arrow(175, 30, 210, 30, "SYN+ACK / ACK")}
+      {node(245, 30, "ESTABL.", "active")}
+      {arrow(280, 30, 315, 30, "FIN")}
+      {node(338, 30, "FIN_W1", "wait")}
+      {arrow(338, 42, 245, 72, "ACK")}
+      {node(245, 80, "FIN_W2", "wait")}
+      {arrow(220, 80, 150, 80, "FIN / ACK")}
+      {node(110, 80, "TIME_WAIT", "wait")}
+      {arrow(82, 80, 60, 80, "2·MSL")}
+      {node(40, 80, "CLOSED", "neutral")}
+      {/* Server-rad */}
+      <line
+        x1={6}
+        y1={108}
+        x2={W - 6}
+        y2={108}
+        className="stroke-border"
+        strokeWidth={0.5}
+        strokeDasharray="2 2"
+      />
+      <text
+        x={6}
+        y={124}
+        className="fill-emerald-700 dark:fill-emerald-400 text-[9px] font-semibold"
+      >
+        Server
+      </text>
+      {node(50, 140, "CLOSED", "neutral")}
+      {arrow(78, 140, 100, 140, "listen()")}
+      {node(130, 140, "LISTEN", "neutral")}
+      {arrow(160, 140, 195, 140, "SYN / SYN+ACK")}
+      {node(225, 140, "SYN_RCVD", "active")}
+      {arrow(258, 140, 285, 140, "ACK")}
+      {node(315, 140, "ESTABL.", "active")}
+      {arrow(315, 152, 225, 180, "FIN / ACK")}
+      {node(225, 188, "CLOSE_W", "wait")}
+      {arrow(195, 188, 140, 188, "close()/FIN")}
+      {node(110, 188, "LAST_ACK", "wait")}
+      {arrow(82, 188, 60, 188, "ACK")}
+      {node(40, 188, "CLOSED", "neutral")}
+    </svg>
+  );
+}
+
+// TCP flagg som en horisontal ikon-rad.
+function TcpFlagsRowSvg() {
+  const flags: { name: string; rolle: string; tone: string }[] = [
+    { name: "SYN", rolle: "sync seq", tone: "fill-sky-500/30 stroke-sky-500" },
+    { name: "ACK", rolle: "ack-felt gyldig", tone: "fill-emerald-500/30 stroke-emerald-500" },
+    { name: "FIN", rolle: "ferdig sende", tone: "fill-amber-500/30 stroke-amber-500" },
+    { name: "RST", rolle: "drep nå", tone: "fill-rose-500/30 stroke-rose-500" },
+    { name: "PSH", rolle: "push til app", tone: "fill-violet-500/30 stroke-violet-500" },
+    { name: "URG", rolle: "urgent ptr", tone: "fill-muted stroke-border" },
+  ];
+  const W = 360;
+  const H = 64;
+  const cellW = 56;
+  const gap = 4;
+  const totalW = flags.length * cellW + (flags.length - 1) * gap;
+  const startX = (W - totalW) / 2;
+  return (
+    <svg viewBox={`0 0 ${W} ${H}`} className="w-full h-auto">
+      {flags.map((f, i) => {
+        const x = startX + i * (cellW + gap);
+        return (
+          <g key={f.name}>
+            <rect
+              x={x}
+              y={8}
+              width={cellW}
+              height={36}
+              rx={5}
+              className={f.tone}
+              strokeWidth={1.2}
+            />
+            <text
+              x={x + cellW / 2}
+              y={24}
+              textAnchor="middle"
+              className="fill-foreground text-[11px] font-bold"
+            >
+              {f.name}
+            </text>
+            <text
+              x={x + cellW / 2}
+              y={36}
+              textAnchor="middle"
+              className="fill-muted-foreground text-[7.5px]"
+            >
+              1 bit
+            </text>
+            <text
+              x={x + cellW / 2}
+              y={56}
+              textAnchor="middle"
+              className="fill-muted-foreground text-[8px] italic"
+            >
+              {f.rolle}
+            </text>
+          </g>
+        );
+      })}
+    </svg>
+  );
+}
+
+// Mini-AIMD sagtann (kompakt versjon for cheat-blokk).
+function AimdMiniSawtoothSvg() {
+  const W = 360;
+  const H = 90;
+  const padX = 22;
+  const padY = 10;
+  const xMax = W - 6;
+  const yMax = H - 18;
+  // Sagtann: vokser fra cwnd=10, +1 per RTT i 14 RTT, halver, gjenta tre ganger.
+  const pts: { x: number; y: number }[] = [];
+  const cwndMax = 30;
+  const yOf = (c: number) => yMax - (c / cwndMax) * (yMax - padY);
+  let t = 0;
+  let c = 10;
+  const totalRTTs = 60;
+  pts.push({ x: padX + ((xMax - padX) * t) / totalRTTs, y: yOf(c) });
+  while (t < totalRTTs) {
+    if (c >= 24) {
+      // tap: halver
+      pts.push({ x: padX + ((xMax - padX) * t) / totalRTTs, y: yOf(c) });
+      c = Math.floor(c / 2);
+      pts.push({ x: padX + ((xMax - padX) * t) / totalRTTs, y: yOf(c) });
+    } else {
+      c += 1;
+      t += 1;
+      pts.push({ x: padX + ((xMax - padX) * t) / totalRTTs, y: yOf(c) });
+    }
+  }
+  const path = pts.map((p, i) => `${i === 0 ? "M" : "L"}${p.x} ${p.y}`).join(" ");
+  return (
+    <svg viewBox={`0 0 ${W} ${H}`} className="w-full h-auto">
+      <line x1={padX} y1={yMax} x2={xMax} y2={yMax} className="stroke-border" strokeWidth={0.8} />
+      <line x1={padX} y1={padY} x2={padX} y2={yMax} className="stroke-border" strokeWidth={0.8} />
+      <path d={path} className="fill-none stroke-sky-500" strokeWidth={1.6} />
+      {/* marker tap-events */}
+      {pts.map((p, i) =>
+        i > 0 && pts[i - 1].x === p.x && pts[i - 1].y < p.y ? (
+          <g key={`loss-${i}`}>
+            <circle cx={p.x} cy={pts[i - 1].y} r={2.2} className="fill-rose-500" />
+            <text
+              x={p.x + 4}
+              y={pts[i - 1].y - 2}
+              className="fill-rose-500 text-[7px] font-semibold"
+            >
+              tap → ÷2
+            </text>
+          </g>
+        ) : null,
+      )}
+      <text
+        x={xMax - 4}
+        y={yMax + 12}
+        textAnchor="end"
+        className="fill-muted-foreground text-[8px]"
+      >
+        tid (RTT)
+      </text>
+      <text x={padX + 2} y={padY + 6} className="fill-muted-foreground text-[8px]">
+        cwnd
+      </text>
+      <text x={padX + 60} y={padY + 6} className="fill-sky-600 dark:fill-sky-400 text-[8px]">
+        +1 MSS / RTT (AI)
+      </text>
+    </svg>
+  );
+}
+
+// Slow-start (eksponentiell) vs congestion avoidance (lineær), to-fase graf.
+function SlowStartVsCaSvg() {
+  const W = 360;
+  const H = 110;
+  const padX = 26;
+  const padY = 10;
+  const xMax = W - 6;
+  const yMax = H - 18;
+  const cwndMax = 40;
+  const yOf = (c: number) => yMax - (c / cwndMax) * (yMax - padY);
+  const xOf = (t: number) => padX + ((xMax - padX) * t) / 16;
+  // SS: t=0..5, cwnd dobles: 1,2,4,8,16,32 → da hit ssthresh=24, går over til CA
+  const ssPts: { x: number; y: number }[] = [];
+  let c = 1;
+  for (let t = 0; t <= 5; t++) {
+    ssPts.push({ x: xOf(t), y: yOf(c) });
+    c = Math.min(c * 2, 32);
+  }
+  // After SS exit at (5, 32), assume timeout-loss → ssthresh=16, cwnd=1, slow start, then CA
+  const caPts: { x: number; y: number }[] = [];
+  // continue: from t=5..10 SS again to ssthresh=16
+  let c2 = 1;
+  caPts.push({ x: xOf(5), y: yOf(1) });
+  let tt = 5;
+  while (c2 < 16) {
+    c2 = Math.min(c2 * 2, 16);
+    tt += 1;
+    caPts.push({ x: xOf(tt), y: yOf(c2) });
+  }
+  // CA: +1 per RTT
+  while (tt < 16) {
+    tt += 1;
+    c2 = Math.min(c2 + 1, 40);
+    caPts.push({ x: xOf(tt), y: yOf(c2) });
+  }
+  const ssPath = ssPts.map((p, i) => `${i === 0 ? "M" : "L"}${p.x} ${p.y}`).join(" ");
+  const caPath = caPts.map((p, i) => `${i === 0 ? "M" : "L"}${p.x} ${p.y}`).join(" ");
+  return (
+    <svg viewBox={`0 0 ${W} ${H}`} className="w-full h-auto">
+      <line x1={padX} y1={yMax} x2={xMax} y2={yMax} className="stroke-border" strokeWidth={0.8} />
+      <line x1={padX} y1={padY} x2={padX} y2={yMax} className="stroke-border" strokeWidth={0.8} />
+      {/* ssthresh-linje */}
+      <line
+        x1={padX}
+        y1={yOf(16)}
+        x2={xMax}
+        y2={yOf(16)}
+        className="stroke-amber-500"
+        strokeWidth={0.8}
+        strokeDasharray="3 2"
+      />
+      <text
+        x={xMax - 4}
+        y={yOf(16) - 2}
+        textAnchor="end"
+        className="fill-amber-600 dark:fill-amber-400 text-[8px]"
+      >
+        ssthresh
+      </text>
+      {/* SS (eksponentiell) */}
+      <path d={ssPath} className="fill-none stroke-violet-500" strokeWidth={1.6} />
+      {/* Etter tap: SS igjen og deretter CA */}
+      <path d={caPath} className="fill-none stroke-sky-500" strokeWidth={1.6} />
+      {/* tap-merkelapp ved t=5 */}
+      <circle cx={xOf(5)} cy={yOf(32)} r={2.5} className="fill-rose-500" />
+      <text x={xOf(5) + 4} y={yOf(32) - 4} className="fill-rose-500 text-[8px] font-semibold">
+        timeout
+      </text>
+      <text x={padX + 2} y={padY + 6} className="fill-muted-foreground text-[8px]">
+        cwnd
+      </text>
+      <text
+        x={xMax - 4}
+        y={yMax + 12}
+        textAnchor="end"
+        className="fill-muted-foreground text-[8px]"
+      >
+        tid (RTT)
+      </text>
+      <g transform={`translate(${padX + 6}, ${yMax + 6})`}>
+        <line x1={0} y1={4} x2={12} y2={4} className="stroke-violet-500" strokeWidth={1.6} />
+        <text x={16} y={7} className="fill-muted-foreground text-[8px]">
+          slow start (×2 / RTT)
+        </text>
+        <line x1={120} y1={4} x2={132} y2={4} className="stroke-sky-500" strokeWidth={1.6} />
+        <text x={136} y={7} className="fill-muted-foreground text-[8px]">
+          cong. avoidance (+1 / RTT)
+        </text>
+      </g>
+    </svg>
+  );
+}
+
+// UDP-header som fire bokser med byte-felter.
+function UdpFourBoxesSvg() {
+  const W = 360;
+  const H = 80;
+  const fields = [
+    { label: "Source port", size: "16 bit", color: "fill-amber-500/20 stroke-amber-500" },
+    { label: "Dest port", size: "16 bit", color: "fill-amber-500/20 stroke-amber-500" },
+    { label: "Length", size: "16 bit", color: "fill-sky-500/20 stroke-sky-500" },
+    { label: "Checksum", size: "16 bit", color: "fill-emerald-500/20 stroke-emerald-500" },
+  ];
+  const cellW = 80;
+  const gap = 4;
+  const totalW = fields.length * cellW + (fields.length - 1) * gap;
+  const startX = (W - totalW) / 2;
+  return (
+    <svg viewBox={`0 0 ${W} ${H}`} className="w-full h-auto">
+      <text
+        x={W / 2}
+        y={12}
+        textAnchor="middle"
+        className="fill-muted-foreground text-[9px] font-semibold uppercase tracking-wider"
+      >
+        UDP-header (8 byte)
+      </text>
+      {fields.map((f, i) => {
+        const x = startX + i * (cellW + gap);
+        return (
+          <g key={f.label}>
+            <rect
+              x={x}
+              y={22}
+              width={cellW}
+              height={36}
+              rx={4}
+              className={f.color}
+              strokeWidth={1.2}
+            />
+            <text
+              x={x + cellW / 2}
+              y={40}
+              textAnchor="middle"
+              className="fill-foreground text-[10px] font-semibold"
+            >
+              {f.label}
+            </text>
+            <text
+              x={x + cellW / 2}
+              y={52}
+              textAnchor="middle"
+              className="fill-muted-foreground text-[8px]"
+            >
+              {f.size}
+            </text>
+          </g>
+        );
+      })}
+      <text
+        x={W / 2}
+        y={72}
+        textAnchor="middle"
+        className="fill-muted-foreground text-[8px] italic"
+      >
+        Hvert felt = 2 byte. Sum = 8 byte (vs TCP sin 20 minimum).
+      </text>
+    </svg>
+  );
+}
+
+// TCP vs UDP pakke-format side-ved-side.
+function TcpUdpPackagesSvg() {
+  return (
+    <svg viewBox="0 0 720 200" className="w-full h-auto">
+      <text
+        x={180}
+        y={16}
+        textAnchor="middle"
+        className="fill-sky-700 dark:fill-sky-400 text-[11px] font-bold uppercase tracking-wider"
+      >
+        TCP-pakke (min. 20 byte header)
+      </text>
+      <text
+        x={540}
+        y={16}
+        textAnchor="middle"
+        className="fill-amber-700 dark:fill-amber-400 text-[11px] font-bold uppercase tracking-wider"
+      >
+        UDP-pakke (8 byte header)
+      </text>
+
+      {/* TCP-blokk */}
+      <g transform="translate(20, 28)">
+        {/* row 1: source/dest port */}
+        <rect
+          x={0}
+          y={0}
+          width={150}
+          height={20}
+          className="fill-sky-500/20 stroke-sky-500"
+          strokeWidth={1}
+        />
+        <text
+          x={75}
+          y={14}
+          textAnchor="middle"
+          className="fill-foreground text-[9px] font-semibold"
+        >
+          Source port (16)
+        </text>
+        <rect
+          x={150}
+          y={0}
+          width={170}
+          height={20}
+          className="fill-sky-500/20 stroke-sky-500"
+          strokeWidth={1}
+        />
+        <text
+          x={235}
+          y={14}
+          textAnchor="middle"
+          className="fill-foreground text-[9px] font-semibold"
+        >
+          Dest port (16)
+        </text>
+        {/* row 2: seq */}
+        <rect
+          x={0}
+          y={20}
+          width={320}
+          height={20}
+          className="fill-sky-500/30 stroke-sky-500"
+          strokeWidth={1}
+        />
+        <text
+          x={160}
+          y={34}
+          textAnchor="middle"
+          className="fill-foreground text-[9px] font-semibold"
+        >
+          Sekvensnummer (32)
+        </text>
+        {/* row 3: ack */}
+        <rect
+          x={0}
+          y={40}
+          width={320}
+          height={20}
+          className="fill-sky-500/30 stroke-sky-500"
+          strokeWidth={1}
+        />
+        <text
+          x={160}
+          y={54}
+          textAnchor="middle"
+          className="fill-foreground text-[9px] font-semibold"
+        >
+          Ack-nummer (32)
+        </text>
+        {/* row 4: HL + flags + window */}
+        <rect
+          x={0}
+          y={60}
+          width={50}
+          height={20}
+          className="fill-sky-500/20 stroke-sky-500"
+          strokeWidth={1}
+        />
+        <text x={25} y={74} textAnchor="middle" className="fill-foreground text-[8px]">
+          HL/res
+        </text>
+        <rect
+          x={50}
+          y={60}
+          width={110}
+          height={20}
+          className="fill-rose-500/20 stroke-rose-500"
+          strokeWidth={1}
+        />
+        <text
+          x={105}
+          y={74}
+          textAnchor="middle"
+          className="fill-foreground text-[8px] font-semibold"
+        >
+          flags (6 bit)
+        </text>
+        <rect
+          x={160}
+          y={60}
+          width={160}
+          height={20}
+          className="fill-emerald-500/20 stroke-emerald-500"
+          strokeWidth={1}
+        />
+        <text
+          x={240}
+          y={74}
+          textAnchor="middle"
+          className="fill-foreground text-[9px] font-semibold"
+        >
+          rwnd (16)
+        </text>
+        {/* row 5: checksum + urg */}
+        <rect
+          x={0}
+          y={80}
+          width={160}
+          height={20}
+          className="fill-sky-500/20 stroke-sky-500"
+          strokeWidth={1}
+        />
+        <text x={80} y={94} textAnchor="middle" className="fill-foreground text-[9px]">
+          Checksum (16)
+        </text>
+        <rect
+          x={160}
+          y={80}
+          width={160}
+          height={20}
+          className="fill-sky-500/20 stroke-sky-500"
+          strokeWidth={1}
+        />
+        <text x={240} y={94} textAnchor="middle" className="fill-foreground text-[9px]">
+          Urgent ptr (16)
+        </text>
+        {/* options */}
+        <rect
+          x={0}
+          y={100}
+          width={320}
+          height={16}
+          className="fill-muted stroke-border"
+          strokeWidth={1}
+          strokeDasharray="3 2"
+        />
+        <text
+          x={160}
+          y={111}
+          textAnchor="middle"
+          className="fill-muted-foreground text-[8px] italic"
+        >
+          Options (0-40 byte, MSS, SACK, timestamps…)
+        </text>
+        {/* payload */}
+        <rect
+          x={0}
+          y={116}
+          width={320}
+          height={40}
+          className="fill-card stroke-border"
+          strokeWidth={1.2}
+        />
+        <text
+          x={160}
+          y={140}
+          textAnchor="middle"
+          className="fill-foreground text-[10px] font-semibold"
+        >
+          DATA (bytestrøm)
+        </text>
+        <text
+          x={160}
+          y={166}
+          textAnchor="middle"
+          className="fill-muted-foreground text-[8px] italic"
+        >
+          headerstørrelse ≥ 20 byte
+        </text>
+      </g>
+
+      {/* UDP-blokk */}
+      <g transform="translate(420, 28)">
+        <rect
+          x={0}
+          y={0}
+          width={140}
+          height={26}
+          className="fill-amber-500/20 stroke-amber-500"
+          strokeWidth={1}
+        />
+        <text
+          x={70}
+          y={17}
+          textAnchor="middle"
+          className="fill-foreground text-[9px] font-semibold"
+        >
+          Source port (16)
+        </text>
+        <rect
+          x={140}
+          y={0}
+          width={140}
+          height={26}
+          className="fill-amber-500/20 stroke-amber-500"
+          strokeWidth={1}
+        />
+        <text
+          x={210}
+          y={17}
+          textAnchor="middle"
+          className="fill-foreground text-[9px] font-semibold"
+        >
+          Dest port (16)
+        </text>
+        <rect
+          x={0}
+          y={26}
+          width={140}
+          height={26}
+          className="fill-amber-500/30 stroke-amber-500"
+          strokeWidth={1}
+        />
+        <text
+          x={70}
+          y={43}
+          textAnchor="middle"
+          className="fill-foreground text-[9px] font-semibold"
+        >
+          Length (16)
+        </text>
+        <rect
+          x={140}
+          y={26}
+          width={140}
+          height={26}
+          className="fill-amber-500/30 stroke-amber-500"
+          strokeWidth={1}
+        />
+        <text
+          x={210}
+          y={43}
+          textAnchor="middle"
+          className="fill-foreground text-[9px] font-semibold"
+        >
+          Checksum (16)
+        </text>
+        {/* payload */}
+        <rect
+          x={0}
+          y={52}
+          width={280}
+          height={104}
+          className="fill-card stroke-border"
+          strokeWidth={1.2}
+        />
+        <text
+          x={140}
+          y={86}
+          textAnchor="middle"
+          className="fill-foreground text-[10px] font-semibold"
+        >
+          DATA (datagram, opp til 65507 byte)
+        </text>
+        <text
+          x={140}
+          y={106}
+          textAnchor="middle"
+          className="fill-muted-foreground text-[8px] italic"
+        >
+          melding-grenser bevares
+        </text>
+        <text
+          x={140}
+          y={146}
+          textAnchor="middle"
+          className="fill-muted-foreground text-[8px] italic"
+        >
+          headerstørrelse = 8 byte (fast)
+        </text>
+      </g>
+
+      {/* footer-sammenligning */}
+      <text x={180} y={188} textAnchor="middle" className="fill-muted-foreground text-[9px]">
+        seq/ack/flags/window + options → pålitelighet + ratejustering
+      </text>
+      <text x={540} y={188} textAnchor="middle" className="fill-muted-foreground text-[9px]">
+        kun port/length/checksum → minimalt overhead
+      </text>
+    </svg>
+  );
+}
+
+// Mini-timeline som viser dup-ACK vs timeout-respons side-ved-side.
+function DupAckVsTimeoutSvg() {
+  return (
+    <svg viewBox="0 0 520 170" className="w-full h-auto">
+      {/* venstre: 3 dup-ACK */}
+      <g transform="translate(10, 0)">
+        <text
+          x={120}
+          y={14}
+          textAnchor="middle"
+          className="fill-emerald-700 dark:fill-emerald-400 text-[10px] font-bold uppercase tracking-wider"
+        >
+          3 dup-ACK → fast recovery
+        </text>
+        {/* sender/mottaker linjer */}
+        <text x={4} y={36} className="fill-muted-foreground text-[8px]">
+          Sender
+        </text>
+        <text x={196} y={36} textAnchor="end" className="fill-muted-foreground text-[8px]">
+          Mottaker
+        </text>
+        <line x1={28} y1={42} x2={28} y2={150} className="stroke-border" strokeWidth={0.8} />
+        <line x1={200} y1={42} x2={200} y2={150} className="stroke-border" strokeWidth={0.8} />
+        {/* segm 1 → ACK 2 */}
+        <line
+          x1={28}
+          y1={50}
+          x2={200}
+          y2={56}
+          className="stroke-sky-500"
+          strokeWidth={1}
+          markerEnd="url(#aarr)"
+        />
+        <text x={114} y={48} textAnchor="middle" className="fill-sky-600 text-[7.5px]">
+          seg #1 OK
+        </text>
+        <line
+          x1={200}
+          y1={60}
+          x2={28}
+          y2={66}
+          className="stroke-emerald-500"
+          strokeWidth={1}
+          markerEnd="url(#aarr)"
+        />
+        <text x={114} y={64} textAnchor="middle" className="fill-emerald-600 text-[7.5px]">
+          ACK 2
+        </text>
+        {/* segm 2 tapt */}
+        <line
+          x1={28}
+          y1={72}
+          x2={130}
+          y2={80}
+          className="stroke-rose-500"
+          strokeWidth={1}
+          strokeDasharray="2 2"
+        />
+        <text x={130} y={86} className="fill-rose-500 text-[8px] font-bold">
+          ✕ tapt
+        </text>
+        {/* segm 3,4,5 → 3 dup-ACK */}
+        <line
+          x1={28}
+          y1={92}
+          x2={200}
+          y2={96}
+          className="stroke-sky-500"
+          strokeWidth={1}
+          markerEnd="url(#aarr)"
+        />
+        <line
+          x1={200}
+          y1={100}
+          x2={28}
+          y2={104}
+          className="stroke-amber-500"
+          strokeWidth={1}
+          markerEnd="url(#aarr)"
+        />
+        <text x={114} y={104} textAnchor="middle" className="fill-amber-600 text-[7.5px]">
+          dup-ACK 2 (×1)
+        </text>
+        <line
+          x1={28}
+          y1={110}
+          x2={200}
+          y2={114}
+          className="stroke-sky-500"
+          strokeWidth={1}
+          markerEnd="url(#aarr)"
+        />
+        <line
+          x1={200}
+          y1={118}
+          x2={28}
+          y2={122}
+          className="stroke-amber-500"
+          strokeWidth={1}
+          markerEnd="url(#aarr)"
+        />
+        <text x={114} y={122} textAnchor="middle" className="fill-amber-600 text-[7.5px]">
+          dup-ACK 2 (×2,×3)
+        </text>
+        {/* respons */}
+        <rect
+          x={4}
+          y={130}
+          width={216}
+          height={22}
+          className="fill-emerald-500/10 stroke-emerald-500"
+          strokeWidth={0.8}
+          rx={3}
+        />
+        <text
+          x={112}
+          y={144}
+          textAnchor="middle"
+          className="fill-emerald-700 dark:fill-emerald-400 text-[8.5px] font-semibold"
+        >
+          ssthresh = cwnd/2, cwnd = ssthresh
+        </text>
+      </g>
+
+      {/* høyre: timeout */}
+      <g transform="translate(290, 0)">
+        <text
+          x={120}
+          y={14}
+          textAnchor="middle"
+          className="fill-rose-700 dark:fill-rose-400 text-[10px] font-bold uppercase tracking-wider"
+        >
+          Timeout → slow start
+        </text>
+        <text x={4} y={36} className="fill-muted-foreground text-[8px]">
+          Sender
+        </text>
+        <text x={196} y={36} textAnchor="end" className="fill-muted-foreground text-[8px]">
+          Mottaker
+        </text>
+        <line x1={28} y1={42} x2={28} y2={150} className="stroke-border" strokeWidth={0.8} />
+        <line x1={200} y1={42} x2={200} y2={150} className="stroke-border" strokeWidth={0.8} />
+        {/* segm 1 tapt */}
+        <line
+          x1={28}
+          y1={50}
+          x2={130}
+          y2={56}
+          className="stroke-rose-500"
+          strokeWidth={1}
+          strokeDasharray="2 2"
+        />
+        <text x={130} y={62} className="fill-rose-500 text-[8px] font-bold">
+          ✕ tapt
+        </text>
+        {/* segm 2 tapt */}
+        <line
+          x1={28}
+          y1={70}
+          x2={130}
+          y2={76}
+          className="stroke-rose-500"
+          strokeWidth={1}
+          strokeDasharray="2 2"
+        />
+        <text x={130} y={82} className="fill-rose-500 text-[8px] font-bold">
+          ✕ tapt
+        </text>
+        {/* ingen ACK */}
+        <text
+          x={114}
+          y={104}
+          textAnchor="middle"
+          className="fill-muted-foreground text-[8px] italic"
+        >
+          ...stillhet i RTO ms...
+        </text>
+        {/* timer expires */}
+        <rect
+          x={4}
+          y={114}
+          width={216}
+          height={14}
+          className="fill-rose-500/15 stroke-rose-500"
+          strokeWidth={0.8}
+          rx={3}
+        />
+        <text
+          x={112}
+          y={124}
+          textAnchor="middle"
+          className="fill-rose-700 dark:fill-rose-400 text-[8.5px] font-semibold"
+        >
+          ⏱ TIMER LØPER UT
+        </text>
+        {/* respons */}
+        <rect
+          x={4}
+          y={130}
+          width={216}
+          height={22}
+          className="fill-rose-500/10 stroke-rose-500"
+          strokeWidth={0.8}
+          rx={3}
+        />
+        <text
+          x={112}
+          y={144}
+          textAnchor="middle"
+          className="fill-rose-700 dark:fill-rose-400 text-[8.5px] font-semibold"
+        >
+          ssthresh = cwnd/2, cwnd = 1 MSS
+        </text>
+      </g>
+
+      <defs>
+        <marker
+          id="aarr"
+          viewBox="0 0 10 10"
+          refX="9"
+          refY="5"
+          markerWidth="5"
+          markerHeight="5"
+          orient="auto"
+        >
+          <path d="M0,0 L10,5 L0,10 z" className="fill-current" />
+        </marker>
+      </defs>
+    </svg>
+  );
+}
+
+// Mini-handshake-pile (3-veis + 4-veis tear-down).
+function HandshakeMiniSvg() {
+  return (
+    <svg viewBox="0 0 520 170" className="w-full h-auto">
+      {/* venstre: 3-veis setup */}
+      <g transform="translate(10, 0)">
+        <text
+          x={120}
+          y={14}
+          textAnchor="middle"
+          className="fill-sky-700 dark:fill-sky-400 text-[10px] font-bold uppercase tracking-wider"
+        >
+          3-veis handshake (setup)
+        </text>
+        <text x={20} y={36} className="fill-muted-foreground text-[8.5px] font-semibold">
+          Klient
+        </text>
+        <text
+          x={220}
+          y={36}
+          textAnchor="end"
+          className="fill-muted-foreground text-[8.5px] font-semibold"
+        >
+          Server
+        </text>
+        <line x1={36} y1={42} x2={36} y2={158} className="stroke-border" strokeWidth={0.8} />
+        <line x1={200} y1={42} x2={200} y2={158} className="stroke-border" strokeWidth={0.8} />
+        {/* SYN */}
+        <line
+          x1={36}
+          y1={56}
+          x2={200}
+          y2={66}
+          className="stroke-sky-500"
+          strokeWidth={1.4}
+          markerEnd="url(#harr)"
+        />
+        <text
+          x={118}
+          y={60}
+          textAnchor="middle"
+          className="fill-sky-700 dark:fill-sky-400 text-[8.5px] font-semibold"
+        >
+          SYN seq=x
+        </text>
+        {/* SYN+ACK */}
+        <line
+          x1={200}
+          y1={86}
+          x2={36}
+          y2={96}
+          className="stroke-emerald-500"
+          strokeWidth={1.4}
+          markerEnd="url(#harr)"
+        />
+        <text
+          x={118}
+          y={90}
+          textAnchor="middle"
+          className="fill-emerald-700 dark:fill-emerald-400 text-[8.5px] font-semibold"
+        >
+          SYN+ACK seq=y, ack=x+1
+        </text>
+        {/* ACK */}
+        <line
+          x1={36}
+          y1={116}
+          x2={200}
+          y2={126}
+          className="stroke-sky-500"
+          strokeWidth={1.4}
+          markerEnd="url(#harr)"
+        />
+        <text
+          x={118}
+          y={120}
+          textAnchor="middle"
+          className="fill-sky-700 dark:fill-sky-400 text-[8.5px] font-semibold"
+        >
+          ACK ack=y+1
+        </text>
+        <text
+          x={118}
+          y={150}
+          textAnchor="middle"
+          className="fill-muted-foreground text-[8px] italic"
+        >
+          → ESTABLISHED i begge ender
+        </text>
+      </g>
+
+      {/* høyre: 4-veis tear-down */}
+      <g transform="translate(290, 0)">
+        <text
+          x={120}
+          y={14}
+          textAnchor="middle"
+          className="fill-rose-700 dark:fill-rose-400 text-[10px] font-bold uppercase tracking-wider"
+        >
+          4-veis tear-down
+        </text>
+        <text x={20} y={36} className="fill-muted-foreground text-[8.5px] font-semibold">
+          Klient
+        </text>
+        <text
+          x={220}
+          y={36}
+          textAnchor="end"
+          className="fill-muted-foreground text-[8.5px] font-semibold"
+        >
+          Server
+        </text>
+        <line x1={36} y1={42} x2={36} y2={158} className="stroke-border" strokeWidth={0.8} />
+        <line x1={200} y1={42} x2={200} y2={158} className="stroke-border" strokeWidth={0.8} />
+        <line
+          x1={36}
+          y1={52}
+          x2={200}
+          y2={62}
+          className="stroke-rose-500"
+          strokeWidth={1.4}
+          markerEnd="url(#harr)"
+        />
+        <text
+          x={118}
+          y={56}
+          textAnchor="middle"
+          className="fill-rose-600 text-[8.5px] font-semibold"
+        >
+          FIN
+        </text>
+        <line
+          x1={200}
+          y1={76}
+          x2={36}
+          y2={86}
+          className="stroke-emerald-500"
+          strokeWidth={1.4}
+          markerEnd="url(#harr)"
+        />
+        <text
+          x={118}
+          y={80}
+          textAnchor="middle"
+          className="fill-emerald-600 text-[8.5px] font-semibold"
+        >
+          ACK
+        </text>
+        <line
+          x1={200}
+          y1={100}
+          x2={36}
+          y2={110}
+          className="stroke-rose-500"
+          strokeWidth={1.4}
+          markerEnd="url(#harr)"
+        />
+        <text
+          x={118}
+          y={104}
+          textAnchor="middle"
+          className="fill-rose-600 text-[8.5px] font-semibold"
+        >
+          FIN
+        </text>
+        <line
+          x1={36}
+          y1={124}
+          x2={200}
+          y2={134}
+          className="stroke-emerald-500"
+          strokeWidth={1.4}
+          markerEnd="url(#harr)"
+        />
+        <text
+          x={118}
+          y={128}
+          textAnchor="middle"
+          className="fill-emerald-600 text-[8.5px] font-semibold"
+        >
+          ACK
+        </text>
+        <text
+          x={118}
+          y={152}
+          textAnchor="middle"
+          className="fill-muted-foreground text-[8px] italic"
+        >
+          → hver retning lukkes uavhengig
+        </text>
+      </g>
+
+      <defs>
+        <marker
+          id="harr"
+          viewBox="0 0 10 10"
+          refX="9"
+          refY="5"
+          markerWidth="6"
+          markerHeight="6"
+          orient="auto"
+        >
+          <path d="M0,0 L10,5 L0,10 z" className="fill-current" />
+        </marker>
+      </defs>
+    </svg>
+  );
+}
+
+// 5-minutter-anker som visuell grid med ikon-kort.
+function AnkerGrid() {
+  const items: {
+    n: number;
+    label: string;
+    sub: string;
+    ikon:
+      | "transport"
+      | "mux"
+      | "udp"
+      | "tcp"
+      | "rdt"
+      | "rtt"
+      | "fast"
+      | "flow"
+      | "aimd"
+      | "ss"
+      | "to"
+      | "udpPick"
+      | "tcpPick";
+  }[] = [
+    { n: 1, label: "Transportlaget", sub: "prosess-til-prosess", ikon: "transport" },
+    { n: 2, label: "Mux/demux", sub: "2-tup. UDP, 4-tup. TCP", ikon: "mux" },
+    { n: 3, label: "UDP-header", sub: "8 byte fast", ikon: "udp" },
+    { n: 4, label: "TCP", sub: "bytestrøm, full-duplex", ikon: "tcp" },
+    { n: 5, label: "RDT-byggesteiner", sub: "ACK + seq + timer", ikon: "rdt" },
+    { n: 6, label: "RTT-timer", sub: "EWMA + 4·DevRTT", ikon: "rtt" },
+    { n: 7, label: "Fast retransmit", sub: "3 dup-ACK", ikon: "fast" },
+    { n: 8, label: "rwnd vs cwnd", sub: "send = min(...)", ikon: "flow" },
+    { n: 9, label: "AIMD", sub: "+1 / ÷2 sagtann", ikon: "aimd" },
+    { n: 10, label: "Slow start", sub: "×2 til ssthresh", ikon: "ss" },
+    { n: 11, label: "Timeout vs dup-ACK", sub: "harde vs milde tap", ikon: "to" },
+    { n: 12, label: "Velg UDP", sub: "DNS, video, multicast", ikon: "udpPick" },
+    { n: 13, label: "Velg TCP", sub: "HTTP, SSH, fil-overf.", ikon: "tcpPick" },
+  ];
+  return (
+    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
+      {items.map((it) => (
+        <div
+          key={it.n}
+          className="rounded-lg border border-brand/30 bg-brand/5 p-2 flex items-center gap-2"
+        >
+          <svg viewBox="0 0 40 40" className="h-9 w-9 shrink-0">
+            <AnkerIkon ikon={it.ikon} />
+          </svg>
+          <div className="min-w-0">
+            <div className="text-[10px] font-semibold text-brand">#{it.n}</div>
+            <div className="text-[11px] font-semibold text-foreground truncate">{it.label}</div>
+            <div className="text-[10px] text-muted-foreground truncate">{it.sub}</div>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function AnkerIkon({ ikon }: { ikon: string }) {
+  switch (ikon) {
+    case "transport":
+      // tre lag stablet, med pil opp og ned
+      return (
+        <g>
+          <rect
+            x={6}
+            y={6}
+            width={28}
+            height={7}
+            rx={2}
+            className="fill-sky-500/30 stroke-sky-500"
+            strokeWidth={0.8}
+          />
+          <rect
+            x={6}
+            y={16}
+            width={28}
+            height={7}
+            rx={2}
+            className="fill-emerald-500/30 stroke-emerald-500"
+            strokeWidth={0.8}
+          />
+          <rect
+            x={6}
+            y={26}
+            width={28}
+            height={7}
+            rx={2}
+            className="fill-amber-500/30 stroke-amber-500"
+            strokeWidth={0.8}
+          />
+          <text x={20} y={11} textAnchor="middle" className="fill-foreground text-[5px] font-bold">
+            APP
+          </text>
+          <text x={20} y={21} textAnchor="middle" className="fill-foreground text-[5px] font-bold">
+            TRP
+          </text>
+          <text x={20} y={31} textAnchor="middle" className="fill-foreground text-[5px] font-bold">
+            IP
+          </text>
+        </g>
+      );
+    case "mux":
+      // tre piler inn til en boks, en pil ut
+      return (
+        <g>
+          <line x1={4} y1={8} x2={18} y2={20} className="stroke-sky-500" strokeWidth={1} />
+          <line x1={4} y1={20} x2={18} y2={20} className="stroke-sky-500" strokeWidth={1} />
+          <line x1={4} y1={32} x2={18} y2={20} className="stroke-sky-500" strokeWidth={1} />
+          <rect
+            x={18}
+            y={15}
+            width={10}
+            height={10}
+            rx={2}
+            className="fill-brand/40 stroke-brand"
+            strokeWidth={0.8}
+          />
+          <line x1={28} y1={20} x2={36} y2={20} className="stroke-amber-500" strokeWidth={1.2} />
+          <polygon points="36,17 36,23 39,20" className="fill-amber-500" />
+        </g>
+      );
+    case "udp":
+      return (
+        <g>
+          <rect
+            x={4}
+            y={12}
+            width={8}
+            height={16}
+            className="fill-amber-500/30 stroke-amber-500"
+            strokeWidth={0.8}
+          />
+          <rect
+            x={13}
+            y={12}
+            width={8}
+            height={16}
+            className="fill-amber-500/30 stroke-amber-500"
+            strokeWidth={0.8}
+          />
+          <rect
+            x={22}
+            y={12}
+            width={6}
+            height={16}
+            className="fill-amber-500/30 stroke-amber-500"
+            strokeWidth={0.8}
+          />
+          <rect
+            x={29}
+            y={12}
+            width={6}
+            height={16}
+            className="fill-amber-500/30 stroke-amber-500"
+            strokeWidth={0.8}
+          />
+          <text
+            x={20}
+            y={9}
+            textAnchor="middle"
+            className="fill-amber-700 dark:fill-amber-400 text-[6px] font-bold"
+          >
+            UDP 8B
+          </text>
+        </g>
+      );
+    case "tcp":
+      return (
+        <g>
+          <path
+            d="M5 28 L15 18 L25 24 L35 12"
+            className="fill-none stroke-sky-500"
+            strokeWidth={1.4}
+          />
+          <circle cx={5} cy={28} r={1.6} className="fill-sky-500" />
+          <circle cx={15} cy={18} r={1.6} className="fill-sky-500" />
+          <circle cx={25} cy={24} r={1.6} className="fill-sky-500" />
+          <circle cx={35} cy={12} r={1.6} className="fill-sky-500" />
+          <text
+            x={20}
+            y={36}
+            textAnchor="middle"
+            className="fill-sky-700 dark:fill-sky-400 text-[6px] font-bold"
+          >
+            stream
+          </text>
+        </g>
+      );
+    case "rdt":
+      return (
+        <g>
+          <circle cx={10} cy={20} r={5} className="fill-card stroke-border" strokeWidth={0.8} />
+          <text x={10} y={22} textAnchor="middle" className="fill-foreground text-[6px] font-bold">
+            S
+          </text>
+          <circle cx={30} cy={20} r={5} className="fill-card stroke-border" strokeWidth={0.8} />
+          <text x={30} y={22} textAnchor="middle" className="fill-foreground text-[6px] font-bold">
+            R
+          </text>
+          <line x1={15} y1={17} x2={25} y2={17} className="stroke-sky-500" strokeWidth={0.8} />
+          <polygon points="25,15 25,19 27,17" className="fill-sky-500" />
+          <line x1={25} y1={23} x2={15} y2={23} className="stroke-emerald-500" strokeWidth={0.8} />
+          <polygon points="15,21 15,25 13,23" className="fill-emerald-500" />
+        </g>
+      );
+    case "rtt":
+      return (
+        <g>
+          <circle cx={20} cy={20} r={12} className="fill-none stroke-border" strokeWidth={1} />
+          <line x1={20} y1={20} x2={20} y2={10} className="stroke-sky-500" strokeWidth={1.4} />
+          <line x1={20} y1={20} x2={28} y2={24} className="stroke-rose-500" strokeWidth={1.4} />
+          <circle cx={20} cy={20} r={1.4} className="fill-foreground" />
+        </g>
+      );
+    case "fast":
+      return (
+        <g>
+          <text x={6} y={18} className="fill-amber-600 text-[7px] font-bold">
+            ACK
+          </text>
+          <text x={6} y={26} className="fill-amber-600 text-[7px] font-bold">
+            ACK
+          </text>
+          <text x={6} y={34} className="fill-amber-600 text-[7px] font-bold">
+            ACK
+          </text>
+          <path
+            d="M26 12 L34 24 L29 24 L33 32"
+            className="fill-none stroke-rose-500"
+            strokeWidth={1.4}
+          />
+          <polygon points="32,28 36,32 30,34" className="fill-rose-500" />
+        </g>
+      );
+    case "flow":
+      return (
+        <g>
+          <rect
+            x={4}
+            y={10}
+            width={14}
+            height={20}
+            className="fill-sky-500/30 stroke-sky-500"
+            strokeWidth={0.8}
+          />
+          <text x={11} y={22} textAnchor="middle" className="fill-foreground text-[6px] font-bold">
+            cwnd
+          </text>
+          <text x={20} y={22} textAnchor="middle" className="fill-foreground text-[8px] font-bold">
+            ∩
+          </text>
+          <rect
+            x={22}
+            y={10}
+            width={14}
+            height={20}
+            className="fill-emerald-500/30 stroke-emerald-500"
+            strokeWidth={0.8}
+          />
+          <text x={29} y={22} textAnchor="middle" className="fill-foreground text-[6px] font-bold">
+            rwnd
+          </text>
+        </g>
+      );
+    case "aimd":
+      return (
+        <g>
+          <path
+            d="M4 30 L10 22 L16 14 L18 28 L24 20 L28 12 L30 26 L36 18"
+            className="fill-none stroke-sky-500"
+            strokeWidth={1.4}
+          />
+          <line x1={4} y1={32} x2={36} y2={32} className="stroke-border" strokeWidth={0.6} />
+          <line x1={4} y1={32} x2={4} y2={8} className="stroke-border" strokeWidth={0.6} />
+        </g>
+      );
+    case "ss":
+      return (
+        <g>
+          <path
+            d="M4 32 L8 30 L12 26 L16 20 L20 12 L24 8"
+            className="fill-none stroke-violet-500"
+            strokeWidth={1.4}
+          />
+          <line x1={4} y1={34} x2={36} y2={34} className="stroke-border" strokeWidth={0.6} />
+          <line x1={4} y1={34} x2={4} y2={6} className="stroke-border" strokeWidth={0.6} />
+          <text x={28} y={20} className="fill-violet-600 text-[6px] font-bold">
+            ×2
+          </text>
+        </g>
+      );
+    case "to":
+      return (
+        <g>
+          <circle cx={12} cy={20} r={8} className="fill-none stroke-rose-500" strokeWidth={1.2} />
+          <line x1={12} y1={14} x2={12} y2={20} className="stroke-rose-500" strokeWidth={1.2} />
+          <line x1={12} y1={20} x2={16} y2={22} className="stroke-rose-500" strokeWidth={1.2} />
+          <text x={28} y={16} className="fill-rose-600 text-[6px] font-bold">
+            RTO
+          </text>
+          <text x={28} y={24} className="fill-emerald-600 text-[6px] font-bold">
+            3dup
+          </text>
+        </g>
+      );
+    case "udpPick":
+      return (
+        <g>
+          <rect
+            x={4}
+            y={8}
+            width={32}
+            height={24}
+            rx={3}
+            className="fill-amber-500/20 stroke-amber-500"
+            strokeWidth={1}
+          />
+          <text
+            x={20}
+            y={18}
+            textAnchor="middle"
+            className="fill-amber-700 dark:fill-amber-400 text-[7px] font-bold"
+          >
+            UDP
+          </text>
+          <text x={20} y={28} textAnchor="middle" className="fill-muted-foreground text-[5.5px]">
+            DNS · VoIP
+          </text>
+        </g>
+      );
+    case "tcpPick":
+      return (
+        <g>
+          <rect
+            x={4}
+            y={8}
+            width={32}
+            height={24}
+            rx={3}
+            className="fill-sky-500/20 stroke-sky-500"
+            strokeWidth={1}
+          />
+          <text
+            x={20}
+            y={18}
+            textAnchor="middle"
+            className="fill-sky-700 dark:fill-sky-400 text-[7px] font-bold"
+          >
+            TCP
+          </text>
+          <text x={20} y={28} textAnchor="middle" className="fill-muted-foreground text-[5.5px]">
+            HTTP · SSH
+          </text>
+        </g>
+      );
+    default:
+      return null;
+  }
 }

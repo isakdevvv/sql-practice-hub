@@ -257,6 +257,10 @@ function Section91() {
         </Illustration>
       </div>
 
+      <Illustration caption="Tre multimedia-typer og deres latens-budsjett på logaritmisk akse.">
+        <MmTypesTimebudgetSvg />
+      </Illustration>
+
       <Metafor tittel="Live-konsert vs streaming-konsert">
         <p>
           En live-konsert på Tromsø Folkets Hus tåler ingen forsinkelse — kommer bandet 2 sekunder
@@ -306,6 +310,7 @@ function Section91() {
           Konklusjonen: streaming kan bruke TCP fordi forsinkelsen blir absorbert i bufferet;
           sann-tids samtale må bruke UDP og håndtere tap selv.
         </p>
+        <TimelineNetflixVsCallSvg />
       </Example>
 
       <Example title="Eksempel: MOS-beregning for tre ulike forbindelser">
@@ -437,6 +442,10 @@ function Section92() {
         </Illustration>
       </div>
 
+      <Illustration caption="Bitrate-ladder + buffer-state med lav-/høyvannmerke (NRK-eksempel).">
+        <BitrateLadderBufferSvg />
+      </Illustration>
+
       <Metafor tittel="Flytur-WiFi: filmen som krymper">
         <p>
           Du ser en film på flytur fra Tromsø til Oslo. Når flyet flyr over fjellet faller
@@ -490,6 +499,7 @@ function Section92() {
             sekunder etterpå.
           </li>
         </ul>
+        <TimelineDashSegmentSvg />
       </Example>
 
       <Example title="Eksempel: ABR-switch under et togtunnel-scenario">
@@ -627,6 +637,10 @@ function Section93() {
         </Illustration>
       </div>
 
+      <Illustration caption="Jitter-buffer + PLC: nettverk-ankomster glattes ut til jevn playout, tap fylles med PLC.">
+        <JitterBufferPlcSvg />
+      </Illustration>
+
       <Metafor tittel="Vannkanne som fylles før du skjenker">
         <p>
           Playout-bufferet er som en vannkanne under en utett kran. Kranen drypper ujevnt (jitter),
@@ -677,6 +691,7 @@ function Section93() {
           pakker rekker fram, men mer total delay. Bytter mellom toleranse for tap og toleranse for
           delay.
         </p>
+        <TimelineVoipPlayoutSvg />
       </Example>
 
       <Example title="Eksempel: dimensjonering av adaptiv jitter-buffer">
@@ -827,6 +842,10 @@ function Section94() {
         </Illustration>
       </div>
 
+      <Illustration caption="RTP-felt forklart i klartekst — hva hvert felt brukes til.">
+        <RtpFieldsVizSvg />
+      </Illustration>
+
       <Metafor tittel="Filmrull med tidsstempel">
         <p>
           RTP-timestamp er som tidskoden trykt på hver rute av en gammel filmrull. Selv om noen
@@ -870,6 +889,7 @@ function Section94() {
           C. RTCP RR-en som sendes hvert femte sekund vil rapportere tap-tellingen tilbake til
           sender, som da eventuelt skrur opp FEC-graden.
         </p>
+        <TimelineRtpTrainSvg />
       </Example>
 
       <Example title="Eksempel: lyd-video-synkronisering via RTCP SR">
@@ -1006,6 +1026,10 @@ function Section95() {
         </Illustration>
       </div>
 
+      <Illustration caption="Token vs leaky bucket — to formgivere side-ved-side.">
+        <TokenLeakySideBySideSvg />
+      </Illustration>
+
       <Metafor tittel="Flyplassens hurtig-spor">
         <p>
           DiffServ er Tromsø lufthavns business-spor. Alle reisende går gjennom samme sikkerhets-
@@ -1087,6 +1111,7 @@ function Section95() {
           alene var større enn rate-en kunne dekke i 0.1 s), men da var bøtta tom og C måtte
           droppes.
         </p>
+        <TimelineTokenBucketSvg />
       </Example>
 
       <Hvorfor title="Hvorfor DiffServ utkonkurrerte IntServ — selv om IntServ teknisk gir hardere garantier">
@@ -1428,6 +1453,40 @@ function SectionEksamen() {
         fallgruver, og et 5-minutter-anker med kjernepunktene.
       </p>
 
+      {/* Visuelt cheat sheet — 8 SVG-er som dekker nøkkelfaktaene */}
+      <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/5 p-4 space-y-4">
+        <div className="text-[10px] uppercase tracking-wider text-emerald-700 dark:text-emerald-400 font-semibold">
+          Visuelt cheat sheet
+        </div>
+        <div className="font-semibold text-foreground">8 grafiske kjernekonsepter for kap. 9</div>
+        <div className="grid gap-3 lg:grid-cols-2">
+          <Illustration caption="Multimedia-typer plassert i (latens-budsjett, tap-toleranse)-rom.">
+            <MultimediaToleranseSvg />
+          </Illustration>
+          <Illustration caption="Latens vs jitter — to nettverk med samme snitt-delay, ulik variasjon.">
+            <DelayVsJitterSvg />
+          </Illustration>
+          <Illustration caption="MOS-stigen: subjektiv 1-5-skala med ansikter.">
+            <MosLadderSvg />
+          </Illustration>
+          <Illustration caption="DASH-arkitektur: origin → CDN → klient (NRK TV).">
+            <DashArchitectureSvg />
+          </Illustration>
+          <Illustration caption="RTP-header som byte-layout (3 ord á 32 bit).">
+            <RtpHeaderBytesSvg />
+          </Illustration>
+          <Illustration caption="RTCP-pakke-typer som tabell.">
+            <RtcpTypesSvg />
+          </Illustration>
+          <Illustration caption="DiffServ vs IntServ — to QoS-filosofier.">
+            <DiffServVsIntServSvg />
+          </Illustration>
+          <Illustration caption="Token bucket — burst opp til b, snitt-rate r.">
+            <TokenBucketCheatSvg />
+          </Illustration>
+        </div>
+      </div>
+
       {/* a) Cheat sheet */}
       <Cheat
         tittel="Cheat sheet — kap. 9 nøkkelfakta"
@@ -1476,6 +1535,10 @@ function SectionEksamen() {
       />
 
       {/* b) Sammenligning-tabell DASH vs RTP-streaming */}
+      <Illustration caption="DASH vs RTP — to streaming-stiler visuelt side-ved-side.">
+        <DashVsRtpVisualSvg />
+      </Illustration>
+
       <div className="rounded-xl border border-border bg-card p-4">
         <div className="text-[10px] uppercase tracking-wider text-brand font-semibold mb-2">
           Sammenligning
@@ -1570,6 +1633,7 @@ function SectionEksamen() {
             ms jitter (verre for VoIP enn 200 ms konstant delay), eller 300 ms delay og 1 ms jitter
             (greit for video, men ubrukelig for samtidsinteraktiv lyd).
           </p>
+          <PitfallLatencyJitterSvg />
         </Fallgruve>
         <Fallgruve tittel="Tro RTP gir pålitelig levering">
           <p>
@@ -1579,6 +1643,7 @@ function SectionEksamen() {
             Pålitelighet — hvis du vil ha det — må du bygge selv via FEC, interleaving eller
             RTCP-feedback-loops.
           </p>
+          <PitfallRtpMythSvg />
         </Fallgruve>
         <Fallgruve tittel="Tror DASH justerer kvalitet basert på link-rate">
           <p>
@@ -1588,6 +1653,7 @@ function SectionEksamen() {
             full-fart 1 Gbit/s fiber kan oppleve dårlig DASH-kvalitet hvis serveren eller en
             mellom-hop er flaskehalsen.
           </p>
+          <PitfallDashThroughputSvg />
         </Fallgruve>
         <Fallgruve tittel="Anta at QoS-merking respekteres hele veien">
           <p>
@@ -1595,6 +1661,7 @@ function SectionEksamen() {
             domene-overgang strippes eller remappes ofte DSCP-bittene — internett som helhet er
             best-effort. QoS er et kontrakts-spørsmål, ikke en protokoll-garanti.
           </p>
+          <PitfallQosMarkingSvg />
         </Fallgruve>
         <Fallgruve tittel="Blande token bucket og leaky bucket">
           <p>Begge regulerer trafikk, men oppfører seg forskjellig:</p>
@@ -1612,6 +1679,7 @@ function SectionEksamen() {
             Token bucket er greiere for VBR-video (variable bitrate); leaky bucket er strengere og
             bedre der nedstrøms-enheter forventer konstant rate.
           </p>
+          <PitfallTokenVsLeakySvg />
         </Fallgruve>
         <Fallgruve tittel="Forveksle SR og RR i RTCP">
           <p>
@@ -1639,6 +1707,10 @@ function SectionEksamen() {
       </div>
 
       {/* e) 5-minutter-anker */}
+      <Illustration caption="15 visuelle anker-kort — én rask repetisjon av kjernepunktene.">
+        <AnkerKortSvg />
+      </Illustration>
+
       <Anker
         tittel="5-minutter-anker — kjernepunkter du må ha"
         punkter={[
@@ -4036,6 +4108,2941 @@ function DscpMarkSvg() {
       </text>
       <text x={250} y={228} textAnchor="middle" className="fill-muted-foreground text-[8px] italic">
         Det er hva som lar DiffServ skalere til hele internett
+      </text>
+    </svg>
+  );
+}
+
+// ============================================================
+// Nye SVG-er for 9.7 (cheat sheet, sammenligning, anker, fallgruver)
+// og defs-blokker for 9.1-9.5
+// ============================================================
+
+// 1) Tidstoleranse-graf: x = latens-budsjett, y = tap-toleranse, viser app-typer
+function MultimediaToleranseSvg() {
+  const apps = [
+    { name: "Cloud gaming", x: 60, y: 0.2, color: "fill-rose-500" },
+    { name: "WebRTC", x: 180, y: 1.0, color: "fill-orange-500" },
+    { name: "VoIP / SIP", x: 280, y: 3.5, color: "fill-amber-500" },
+    { name: "Live (DASH)", x: 480, y: 0.5, color: "fill-sky-500" },
+    { name: "NRK VOD", x: 640, y: 0.1, color: "fill-emerald-500" },
+    { name: "MQTT/IoT", x: 380, y: 5.0, color: "fill-violet-500" },
+  ];
+  // map latency ms -> x in chart 80..720; tap% -> y in chart 240..40
+  const xMap = (ms: number) => 80 + (ms / 800) * 640;
+  const yMap = (loss: number) => 240 - (loss / 6) * 200;
+  return (
+    <svg viewBox="0 0 760 300" className="w-full h-auto">
+      <text
+        x={380}
+        y={20}
+        textAnchor="middle"
+        className="fill-foreground text-[12px] font-semibold"
+      >
+        Tidstoleranse-kart for multimedia-apper
+      </text>
+      {/* axes */}
+      <line x1={80} y1={240} x2={720} y2={240} className="stroke-foreground/50" strokeWidth={1.2} />
+      <line x1={80} y1={40} x2={80} y2={240} className="stroke-foreground/50" strokeWidth={1.2} />
+      {/* x-ticks */}
+      {[0, 200, 400, 600, 800].map((ms) => (
+        <g key={ms}>
+          <line x1={xMap(ms)} y1={240} x2={xMap(ms)} y2={244} className="stroke-foreground/50" />
+          <text
+            x={xMap(ms)}
+            y={256}
+            textAnchor="middle"
+            className="fill-muted-foreground text-[9px]"
+          >
+            {ms}
+          </text>
+        </g>
+      ))}
+      <text x={400} y={280} textAnchor="middle" className="fill-muted-foreground text-[10px]">
+        Latens-budsjett (ms ende-til-ende)
+      </text>
+      {/* y-ticks */}
+      {[0, 2, 4, 6].map((p) => (
+        <g key={p}>
+          <line x1={76} y1={yMap(p)} x2={80} y2={yMap(p)} className="stroke-foreground/50" />
+          <text
+            x={72}
+            y={yMap(p) + 3}
+            textAnchor="end"
+            className="fill-muted-foreground text-[9px]"
+          >
+            {p}%
+          </text>
+        </g>
+      ))}
+      <text
+        x={20}
+        y={140}
+        textAnchor="middle"
+        className="fill-muted-foreground text-[10px]"
+        transform="rotate(-90 20 140)"
+      >
+        Tap-toleranse (% pakker)
+      </text>
+      {/* regions */}
+      <rect x={80} y={40} width={170} height={200} className="fill-rose-500/10" />
+      <text
+        x={165}
+        y={56}
+        textAnchor="middle"
+        className="fill-rose-700 dark:fill-rose-400 text-[10px] italic"
+      >
+        interaktiv
+      </text>
+      <rect x={250} y={40} width={230} height={200} className="fill-amber-500/10" />
+      <text
+        x={365}
+        y={56}
+        textAnchor="middle"
+        className="fill-amber-700 dark:fill-amber-400 text-[10px] italic"
+      >
+        live broadcast
+      </text>
+      <rect x={480} y={40} width={240} height={200} className="fill-emerald-500/10" />
+      <text
+        x={600}
+        y={56}
+        textAnchor="middle"
+        className="fill-emerald-700 dark:fill-emerald-400 text-[10px] italic"
+      >
+        lagret (on-demand)
+      </text>
+      {/* points */}
+      {apps.map((a) => (
+        <g key={a.name}>
+          <circle
+            cx={xMap(a.x)}
+            cy={yMap(a.y)}
+            r={7}
+            className={`${a.color} stroke-background`}
+            strokeWidth={1.5}
+          />
+          <text
+            x={xMap(a.x) + 10}
+            y={yMap(a.y) + 4}
+            className="fill-foreground text-[10px] font-semibold"
+          >
+            {a.name}
+          </text>
+        </g>
+      ))}
+    </svg>
+  );
+}
+
+// 2) Delay vs jitter — to kurver
+function DelayVsJitterSvg() {
+  // 30 pakker; en med konstant 100ms delay, en med jittery delay rundt 100
+  const pkts = Array.from({ length: 30 }, (_, i) => i);
+  const flat = pkts.map((i) => ({ x: 60 + i * 21, y: 130 }));
+  const jit = pkts.map((i) => {
+    const v = [
+      0, 25, -15, 40, -30, 10, 35, -25, 20, -10, 45, -20, 5, 30, -35, 15, 50, -10, 25, -40, 10, 35,
+      -20, 5, 40, -30, 15, -25, 30, -10,
+    ][i];
+    return { x: 60 + i * 21, y: 130 - v };
+  });
+  const flatPath = "M " + flat.map((p) => `${p.x},${p.y}`).join(" L ");
+  const jitPath = "M " + jit.map((p) => `${p.x},${p.y}`).join(" L ");
+  return (
+    <svg viewBox="0 0 760 280" className="w-full h-auto">
+      <text
+        x={380}
+        y={20}
+        textAnchor="middle"
+        className="fill-foreground text-[12px] font-semibold"
+      >
+        Latens vs jitter — to forskjellige nettverk
+      </text>
+      <line x1={50} y1={220} x2={720} y2={220} className="stroke-foreground/50" />
+      <line x1={50} y1={40} x2={50} y2={220} className="stroke-foreground/50" />
+      <text x={385} y={250} textAnchor="middle" className="fill-muted-foreground text-[10px]">
+        Pakke-sekvensnr
+      </text>
+      <text
+        x={20}
+        y={130}
+        textAnchor="middle"
+        className="fill-muted-foreground text-[10px]"
+        transform="rotate(-90 20 130)"
+      >
+        Delay (ms)
+      </text>
+      {/* baseline */}
+      <line
+        x1={50}
+        y1={130}
+        x2={720}
+        y2={130}
+        className="stroke-foreground/20"
+        strokeDasharray="2 3"
+      />
+      <text x={725} y={134} className="fill-muted-foreground text-[8px]">
+        100ms
+      </text>
+      {/* flat curve */}
+      <path d={flatPath} className="stroke-emerald-500 fill-none" strokeWidth={1.8} />
+      {flat.map((p, i) => (
+        <circle key={i} cx={p.x} cy={p.y} r={2.5} className="fill-emerald-500" />
+      ))}
+      {/* jittery curve */}
+      <path d={jitPath} className="stroke-rose-500 fill-none" strokeWidth={1.8} />
+      {jit.map((p, i) => (
+        <circle key={i} cx={p.x} cy={p.y} r={2.5} className="fill-rose-500" />
+      ))}
+      {/* legend */}
+      <rect x={500} y={45} width={210} height={50} rx={4} className="fill-card stroke-border" />
+      <circle cx={515} cy={60} r={5} className="fill-emerald-500" />
+      <text x={525} y={64} className="fill-foreground text-[10px]">
+        Konstant 100ms — null jitter
+      </text>
+      <circle cx={515} cy={82} r={5} className="fill-rose-500" />
+      <text x={525} y={86} className="fill-foreground text-[10px]">
+        Snitt 100ms — stor jitter (±40ms)
+      </text>
+      <text x={385} y={272} textAnchor="middle" className="fill-muted-foreground text-[9px] italic">
+        Begge har samme gjennomsnitts-delay; bare den røde gir hakkete VoIP
+      </text>
+    </svg>
+  );
+}
+
+// 3) MOS-skala som visuell stige med ansikter
+function MosLadderSvg() {
+  const rows = [
+    {
+      score: 5,
+      label: "Utmerket",
+      desc: "Som å sitte i samme rom",
+      color: "fill-emerald-500",
+      face: ":D",
+    },
+    {
+      score: 4,
+      label: "God (toll-kvalitet)",
+      desc: "Knapt merkbar forringelse",
+      color: "fill-lime-500",
+      face: ":)",
+    },
+    {
+      score: 3,
+      label: "Rimelig",
+      desc: "Litt forstyrrende — men brukbar",
+      color: "fill-amber-500",
+      face: ":|",
+    },
+    {
+      score: 2,
+      label: "Dårlig",
+      desc: "Krever konsentrasjon å forstå",
+      color: "fill-orange-500",
+      face: ":(",
+    },
+    {
+      score: 1,
+      label: "Uakseptabel",
+      desc: "Kommunikasjon bryter sammen",
+      color: "fill-rose-500",
+      face: "D:",
+    },
+  ];
+  return (
+    <svg viewBox="0 0 700 280" className="w-full h-auto">
+      <text
+        x={350}
+        y={20}
+        textAnchor="middle"
+        className="fill-foreground text-[12px] font-semibold"
+      >
+        Mean Opinion Score — subjektiv kvalitets-stige
+      </text>
+      {rows.map((r, i) => {
+        const y = 40 + i * 45;
+        const w = 80 + (5 - i) * 90;
+        return (
+          <g key={r.score}>
+            <rect x={120} y={y} width={w} height={36} rx={4} className={`${r.color} opacity-70`} />
+            <circle
+              cx={140}
+              cy={y + 18}
+              r={14}
+              className="fill-card stroke-foreground/30"
+              strokeWidth={1.2}
+            />
+            <text
+              x={140}
+              y={y + 22}
+              textAnchor="middle"
+              className="fill-foreground text-[11px] font-bold"
+            >
+              {r.face}
+            </text>
+            <text
+              x={70}
+              y={y + 23}
+              textAnchor="middle"
+              className="fill-foreground text-[14px] font-bold"
+            >
+              {r.score}
+            </text>
+            <text x={170} y={y + 16} className="fill-background text-[11px] font-semibold">
+              {r.label}
+            </text>
+            <text x={170} y={y + 30} className="fill-background text-[9px]">
+              {r.desc}
+            </text>
+          </g>
+        );
+      })}
+      <text x={350} y={262} textAnchor="middle" className="fill-muted-foreground text-[9px] italic">
+        E-modellen: MOS ≈ 4.5 − 0.025·(delay/10) − 0.5·loss% − 0.02·jitter
+      </text>
+    </svg>
+  );
+}
+
+// 4) DASH-arkitektur: server / CDN / klient
+function DashArchitectureSvg() {
+  return (
+    <svg viewBox="0 0 760 320" className="w-full h-auto">
+      <text
+        x={380}
+        y={20}
+        textAnchor="middle"
+        className="fill-foreground text-[12px] font-semibold"
+      >
+        DASH-arkitektur — NRK TV som eksempel
+      </text>
+      {/* Origin server */}
+      <rect
+        x={30}
+        y={60}
+        width={130}
+        height={90}
+        rx={6}
+        className="fill-card stroke-foreground/50"
+        strokeWidth={1.4}
+      />
+      <text x={95} y={82} textAnchor="middle" className="fill-foreground text-[11px] font-semibold">
+        NRK Origin
+      </text>
+      <text x={95} y={98} textAnchor="middle" className="fill-muted-foreground text-[9px]">
+        MPD-manifest
+      </text>
+      <text x={95} y={112} textAnchor="middle" className="fill-muted-foreground text-[9px]">
+        256k / 512k / 1M /
+      </text>
+      <text x={95} y={124} textAnchor="middle" className="fill-muted-foreground text-[9px]">
+        2M / 4M / 8M-segmenter
+      </text>
+      <text x={95} y={142} textAnchor="middle" className="fill-brand text-[9px] italic">
+        2-10 s lange
+      </text>
+
+      {/* CDN nodes */}
+      <rect
+        x={280}
+        y={40}
+        width={120}
+        height={50}
+        rx={6}
+        className="fill-sky-500/15 stroke-sky-500/60"
+        strokeWidth={1.4}
+      />
+      <text
+        x={340}
+        y={60}
+        textAnchor="middle"
+        className="fill-foreground text-[10.5px] font-semibold"
+      >
+        CDN Oslo
+      </text>
+      <text x={340} y={76} textAnchor="middle" className="fill-muted-foreground text-[9px]">
+        cache nær brukere
+      </text>
+
+      <rect
+        x={280}
+        y={115}
+        width={120}
+        height={50}
+        rx={6}
+        className="fill-sky-500/15 stroke-sky-500/60"
+        strokeWidth={1.4}
+      />
+      <text
+        x={340}
+        y={135}
+        textAnchor="middle"
+        className="fill-foreground text-[10.5px] font-semibold"
+      >
+        CDN Tromsø
+      </text>
+      <text x={340} y={151} textAnchor="middle" className="fill-muted-foreground text-[9px]">
+        cache nær brukere
+      </text>
+
+      <rect
+        x={280}
+        y={190}
+        width={120}
+        height={50}
+        rx={6}
+        className="fill-sky-500/15 stroke-sky-500/60"
+        strokeWidth={1.4}
+      />
+      <text
+        x={340}
+        y={210}
+        textAnchor="middle"
+        className="fill-foreground text-[10.5px] font-semibold"
+      >
+        CDN Bergen
+      </text>
+      <text x={340} y={226} textAnchor="middle" className="fill-muted-foreground text-[9px]">
+        cache nær brukere
+      </text>
+
+      {/* Clients */}
+      <rect
+        x={520}
+        y={50}
+        width={140}
+        height={60}
+        rx={6}
+        className="fill-emerald-500/15 stroke-emerald-500/60"
+        strokeWidth={1.4}
+      />
+      <text
+        x={590}
+        y={70}
+        textAnchor="middle"
+        className="fill-foreground text-[11px] font-semibold"
+      >
+        Klient: TV-app
+      </text>
+      <text x={590} y={84} textAnchor="middle" className="fill-muted-foreground text-[9px]">
+        ABR + buffer 30 s
+      </text>
+      <text x={590} y={98} textAnchor="middle" className="fill-muted-foreground text-[9px]">
+        velger bitrate selv
+      </text>
+
+      <rect
+        x={520}
+        y={130}
+        width={140}
+        height={60}
+        rx={6}
+        className="fill-emerald-500/15 stroke-emerald-500/60"
+        strokeWidth={1.4}
+      />
+      <text
+        x={590}
+        y={150}
+        textAnchor="middle"
+        className="fill-foreground text-[11px] font-semibold"
+      >
+        Klient: mobil
+      </text>
+      <text x={590} y={164} textAnchor="middle" className="fill-muted-foreground text-[9px]">
+        faller til 512k på 4G
+      </text>
+
+      <rect
+        x={520}
+        y={210}
+        width={140}
+        height={60}
+        rx={6}
+        className="fill-emerald-500/15 stroke-emerald-500/60"
+        strokeWidth={1.4}
+      />
+      <text
+        x={590}
+        y={230}
+        textAnchor="middle"
+        className="fill-foreground text-[11px] font-semibold"
+      >
+        Klient: laptop
+      </text>
+      <text x={590} y={244} textAnchor="middle" className="fill-muted-foreground text-[9px]">
+        fiber: stabil 4M
+      </text>
+
+      {/* Arrows */}
+      <line
+        x1={160}
+        y1={105}
+        x2={278}
+        y2={65}
+        className="stroke-foreground/40"
+        strokeWidth={1.4}
+        markerEnd="url(#arr1)"
+      />
+      <line
+        x1={160}
+        y1={105}
+        x2={278}
+        y2={140}
+        className="stroke-foreground/40"
+        strokeWidth={1.4}
+        markerEnd="url(#arr1)"
+      />
+      <line
+        x1={160}
+        y1={105}
+        x2={278}
+        y2={215}
+        className="stroke-foreground/40"
+        strokeWidth={1.4}
+        markerEnd="url(#arr1)"
+      />
+
+      <line
+        x1={400}
+        y1={65}
+        x2={520}
+        y2={80}
+        className="stroke-foreground/40"
+        strokeWidth={1.4}
+        markerEnd="url(#arr1)"
+      />
+      <line
+        x1={400}
+        y1={140}
+        x2={520}
+        y2={160}
+        className="stroke-foreground/40"
+        strokeWidth={1.4}
+        markerEnd="url(#arr1)"
+      />
+      <line
+        x1={400}
+        y1={215}
+        x2={520}
+        y2={240}
+        className="stroke-foreground/40"
+        strokeWidth={1.4}
+        markerEnd="url(#arr1)"
+      />
+
+      <defs>
+        <marker id="arr1" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+          <polygon points="0 0, 8 4, 0 8" className="fill-foreground/50" />
+        </marker>
+      </defs>
+
+      <text x={220} y={285} textAnchor="middle" className="fill-muted-foreground text-[9px] italic">
+        push segmenter
+      </text>
+      <text x={460} y={285} textAnchor="middle" className="fill-muted-foreground text-[9px] italic">
+        HTTPS GET — klient velger
+      </text>
+      <text
+        x={380}
+        y={305}
+        textAnchor="middle"
+        className="fill-muted-foreground text-[10px] italic"
+      >
+        Klienten styrer — serveren har ingen state om hvem som ser hva
+      </text>
+    </svg>
+  );
+}
+
+// 5) RTP-header som byte-layout
+function RtpHeaderBytesSvg() {
+  // 12 byte header = 3 rows av 4 bytes (32 bit per row)
+  return (
+    <svg viewBox="0 0 760 280" className="w-full h-auto">
+      <text
+        x={380}
+        y={20}
+        textAnchor="middle"
+        className="fill-foreground text-[12px] font-semibold"
+      >
+        RTP-header — 12 bytes (3 ord á 32 bit)
+      </text>
+      {/* bit markers */}
+      <text x={70} y={50} className="fill-muted-foreground text-[8px]">
+        0
+      </text>
+      <text x={235} y={50} className="fill-muted-foreground text-[8px]">
+        8
+      </text>
+      <text x={400} y={50} className="fill-muted-foreground text-[8px]">
+        16
+      </text>
+      <text x={565} y={50} className="fill-muted-foreground text-[8px]">
+        24
+      </text>
+      <text x={720} y={50} className="fill-muted-foreground text-[8px]">
+        31
+      </text>
+
+      {/* Row 1 */}
+      <rect
+        x={70}
+        y={60}
+        width={42}
+        height={36}
+        className="fill-rose-500/30 stroke-foreground/50"
+      />
+      <text x={91} y={82} textAnchor="middle" className="fill-foreground text-[10px] font-semibold">
+        V
+      </text>
+      <text x={91} y={92} textAnchor="middle" className="fill-muted-foreground text-[8px]">
+        2b
+      </text>
+
+      <rect
+        x={112}
+        y={60}
+        width={22}
+        height={36}
+        className="fill-rose-500/20 stroke-foreground/50"
+      />
+      <text
+        x={123}
+        y={82}
+        textAnchor="middle"
+        className="fill-foreground text-[10px] font-semibold"
+      >
+        P
+      </text>
+      <text x={123} y={92} textAnchor="middle" className="fill-muted-foreground text-[8px]">
+        1
+      </text>
+
+      <rect
+        x={134}
+        y={60}
+        width={22}
+        height={36}
+        className="fill-rose-500/20 stroke-foreground/50"
+      />
+      <text
+        x={145}
+        y={82}
+        textAnchor="middle"
+        className="fill-foreground text-[10px] font-semibold"
+      >
+        X
+      </text>
+      <text x={145} y={92} textAnchor="middle" className="fill-muted-foreground text-[8px]">
+        1
+      </text>
+
+      <rect
+        x={156}
+        y={60}
+        width={80}
+        height={36}
+        className="fill-rose-500/30 stroke-foreground/50"
+      />
+      <text
+        x={196}
+        y={82}
+        textAnchor="middle"
+        className="fill-foreground text-[10px] font-semibold"
+      >
+        CC
+      </text>
+      <text x={196} y={92} textAnchor="middle" className="fill-muted-foreground text-[8px]">
+        4 bit
+      </text>
+
+      <rect
+        x={236}
+        y={60}
+        width={22}
+        height={36}
+        className="fill-amber-500/30 stroke-foreground/50"
+      />
+      <text
+        x={247}
+        y={82}
+        textAnchor="middle"
+        className="fill-foreground text-[10px] font-semibold"
+      >
+        M
+      </text>
+      <text x={247} y={92} textAnchor="middle" className="fill-muted-foreground text-[8px]">
+        1
+      </text>
+
+      <rect
+        x={258}
+        y={60}
+        width={142}
+        height={36}
+        className="fill-amber-500/30 stroke-foreground/50"
+      />
+      <text
+        x={329}
+        y={82}
+        textAnchor="middle"
+        className="fill-foreground text-[10px] font-semibold"
+      >
+        PT (payload type)
+      </text>
+      <text x={329} y={92} textAnchor="middle" className="fill-muted-foreground text-[8px]">
+        7 bit — codec-id
+      </text>
+
+      <rect
+        x={400}
+        y={60}
+        width={336}
+        height={36}
+        className="fill-sky-500/30 stroke-foreground/50"
+      />
+      <text
+        x={568}
+        y={82}
+        textAnchor="middle"
+        className="fill-foreground text-[10px] font-semibold"
+      >
+        Sequence Number
+      </text>
+      <text x={568} y={92} textAnchor="middle" className="fill-muted-foreground text-[8px]">
+        16 bit — øker per pakke, oppdager tap
+      </text>
+
+      {/* Row 2 — Timestamp */}
+      <rect
+        x={70}
+        y={106}
+        width={666}
+        height={36}
+        className="fill-emerald-500/30 stroke-foreground/50"
+      />
+      <text
+        x={403}
+        y={128}
+        textAnchor="middle"
+        className="fill-foreground text-[10px] font-semibold"
+      >
+        Timestamp
+      </text>
+      <text x={403} y={138} textAnchor="middle" className="fill-muted-foreground text-[8px]">
+        32 bit — sampling-tidsstempel for playout-rekonstruksjon
+      </text>
+
+      {/* Row 3 — SSRC */}
+      <rect
+        x={70}
+        y={152}
+        width={666}
+        height={36}
+        className="fill-violet-500/30 stroke-foreground/50"
+      />
+      <text
+        x={403}
+        y={174}
+        textAnchor="middle"
+        className="fill-foreground text-[10px] font-semibold"
+      >
+        SSRC (Synchronization Source identifier)
+      </text>
+      <text x={403} y={184} textAnchor="middle" className="fill-muted-foreground text-[8px]">
+        32 bit — kilde-id, tilfeldig valgt per sender
+      </text>
+
+      {/* Optional CSRC */}
+      <rect
+        x={70}
+        y={200}
+        width={666}
+        height={26}
+        className="fill-card stroke-foreground/40"
+        strokeDasharray="3 3"
+      />
+      <text
+        x={403}
+        y={218}
+        textAnchor="middle"
+        className="fill-muted-foreground text-[10px] italic"
+      >
+        CSRC[0..CC-1] — bare hvis CC &gt; 0 (mixer-tilfellet)
+      </text>
+
+      <text x={380} y={258} textAnchor="middle" className="fill-muted-foreground text-[9px] italic">
+        Husk: V=2 (versjon), SEQ teller pakker, TS teller samples — ikke pakker
+      </text>
+    </svg>
+  );
+}
+
+// 6) RTCP-pakke-typer som tabell-SVG
+function RtcpTypesSvg() {
+  const rows = [
+    {
+      code: 200,
+      name: "SR",
+      full: "Sender Report",
+      who: "Aktiv sender",
+      info: "NTP/RTP-tidsstempel + rcv-stats",
+      color: "fill-emerald-500/20",
+    },
+    {
+      code: 201,
+      name: "RR",
+      full: "Receiver Report",
+      who: "Bare mottaker",
+      info: "Tap-rate, jitter, last-SR-delay",
+      color: "fill-sky-500/20",
+    },
+    {
+      code: 202,
+      name: "SDES",
+      full: "Source Description",
+      who: "Alle",
+      info: "CNAME, NAME, EMAIL — identitet",
+      color: "fill-amber-500/20",
+    },
+    {
+      code: 203,
+      name: "BYE",
+      full: "Goodbye",
+      who: "Forlater sesjon",
+      info: "Eksplisitt avslutning",
+      color: "fill-rose-500/20",
+    },
+    {
+      code: 204,
+      name: "APP",
+      full: "Application-defined",
+      who: "Hvem som helst",
+      info: "App-spesifikk ekstra-info",
+      color: "fill-violet-500/20",
+    },
+  ];
+  return (
+    <svg viewBox="0 0 760 280" className="w-full h-auto">
+      <text
+        x={380}
+        y={20}
+        textAnchor="middle"
+        className="fill-foreground text-[12px] font-semibold"
+      >
+        RTCP-pakke-typer (PT = 200-204)
+      </text>
+      {/* header */}
+      <rect x={30} y={36} width={700} height={28} className="fill-muted/40 stroke-foreground/30" />
+      <text x={70} y={54} className="fill-foreground text-[10px] font-semibold">
+        PT
+      </text>
+      <text x={130} y={54} className="fill-foreground text-[10px] font-semibold">
+        Navn
+      </text>
+      <text x={230} y={54} className="fill-foreground text-[10px] font-semibold">
+        Full betegnelse
+      </text>
+      <text x={420} y={54} className="fill-foreground text-[10px] font-semibold">
+        Hvem sender
+      </text>
+      <text x={560} y={54} className="fill-foreground text-[10px] font-semibold">
+        Innhold
+      </text>
+      {rows.map((r, i) => {
+        const y = 64 + i * 36;
+        return (
+          <g key={r.code}>
+            <rect
+              x={30}
+              y={y}
+              width={700}
+              height={36}
+              className={`${r.color} stroke-foreground/30`}
+            />
+            <text x={70} y={y + 22} className="fill-foreground text-[11px] font-mono font-bold">
+              {r.code}
+            </text>
+            <text x={130} y={y + 22} className="fill-foreground text-[11px] font-bold">
+              {r.name}
+            </text>
+            <text x={230} y={y + 22} className="fill-foreground text-[10px]">
+              {r.full}
+            </text>
+            <text x={420} y={y + 22} className="fill-muted-foreground text-[10px]">
+              {r.who}
+            </text>
+            <text x={560} y={y + 22} className="fill-muted-foreground text-[10px]">
+              {r.info}
+            </text>
+          </g>
+        );
+      })}
+      <text x={380} y={264} textAnchor="middle" className="fill-muted-foreground text-[9px] italic">
+        RTCP-trafikk skal være ≤ 5 % av sesjonsbåndbredden — fordelt likt mellom sendere og
+        mottakere
+      </text>
+    </svg>
+  );
+}
+
+// 7) DiffServ vs IntServ side-ved-side
+function DiffServVsIntServSvg() {
+  return (
+    <svg viewBox="0 0 760 300" className="w-full h-auto">
+      <text
+        x={380}
+        y={20}
+        textAnchor="middle"
+        className="fill-foreground text-[12px] font-semibold"
+      >
+        DiffServ vs IntServ — to QoS-filosofier
+      </text>
+      {/* DiffServ panel */}
+      <rect
+        x={30}
+        y={40}
+        width={340}
+        height={240}
+        rx={8}
+        className="fill-sky-500/10 stroke-sky-500/60"
+        strokeWidth={1.4}
+      />
+      <text
+        x={200}
+        y={62}
+        textAnchor="middle"
+        className="fill-foreground text-[12px] font-semibold"
+      >
+        DiffServ
+      </text>
+      <text x={200} y={78} textAnchor="middle" className="fill-muted-foreground text-[9px] italic">
+        stateless, klassebasert
+      </text>
+
+      {/* Edge router classifies */}
+      <rect x={50} y={100} width={70} height={40} rx={4} className="fill-card stroke-sky-500/70" />
+      <text
+        x={85}
+        y={120}
+        textAnchor="middle"
+        className="fill-foreground text-[10px] font-semibold"
+      >
+        Edge
+      </text>
+      <text x={85} y={132} textAnchor="middle" className="fill-muted-foreground text-[8px]">
+        setter DSCP
+      </text>
+
+      <line
+        x1={120}
+        y1={120}
+        x2={170}
+        y2={120}
+        className="stroke-foreground/50"
+        strokeWidth={1.4}
+        markerEnd="url(#a-arr2)"
+      />
+      <rect x={170} y={100} width={70} height={40} rx={4} className="fill-card stroke-sky-500/70" />
+      <text
+        x={205}
+        y={120}
+        textAnchor="middle"
+        className="fill-foreground text-[10px] font-semibold"
+      >
+        Kjerne
+      </text>
+      <text x={205} y={132} textAnchor="middle" className="fill-muted-foreground text-[8px]">
+        leser DSCP
+      </text>
+
+      <line
+        x1={240}
+        y1={120}
+        x2={290}
+        y2={120}
+        className="stroke-foreground/50"
+        strokeWidth={1.4}
+        markerEnd="url(#a-arr2)"
+      />
+      <rect x={290} y={100} width={70} height={40} rx={4} className="fill-card stroke-sky-500/70" />
+      <text
+        x={325}
+        y={120}
+        textAnchor="middle"
+        className="fill-foreground text-[10px] font-semibold"
+      >
+        Kjerne
+      </text>
+      <text x={325} y={132} textAnchor="middle" className="fill-muted-foreground text-[8px]">
+        leser DSCP
+      </text>
+
+      <text
+        x={200}
+        y={170}
+        textAnchor="middle"
+        className="fill-foreground text-[10px] font-semibold"
+      >
+        PHB per pakke
+      </text>
+      <text x={200} y={188} textAnchor="middle" className="fill-muted-foreground text-[9px]">
+        EF / AF / BE
+      </text>
+      <text
+        x={200}
+        y={210}
+        textAnchor="middle"
+        className="fill-emerald-700 dark:fill-emerald-400 text-[9.5px] font-semibold"
+      >
+        + skalerer
+      </text>
+      <text
+        x={200}
+        y={224}
+        textAnchor="middle"
+        className="fill-emerald-700 dark:fill-emerald-400 text-[9.5px]"
+      >
+        ingen state i kjernen
+      </text>
+      <text
+        x={200}
+        y={244}
+        textAnchor="middle"
+        className="fill-rose-700 dark:fill-rose-400 text-[9.5px] font-semibold"
+      >
+        − myke garantier
+      </text>
+      <text
+        x={200}
+        y={258}
+        textAnchor="middle"
+        className="fill-rose-700 dark:fill-rose-400 text-[9.5px]"
+      >
+        klasse, ikke flow
+      </text>
+
+      {/* IntServ panel */}
+      <rect
+        x={390}
+        y={40}
+        width={340}
+        height={240}
+        rx={8}
+        className="fill-violet-500/10 stroke-violet-500/60"
+        strokeWidth={1.4}
+      />
+      <text
+        x={560}
+        y={62}
+        textAnchor="middle"
+        className="fill-foreground text-[12px] font-semibold"
+      >
+        IntServ
+      </text>
+      <text x={560} y={78} textAnchor="middle" className="fill-muted-foreground text-[9px] italic">
+        stateful, per-flow (RSVP)
+      </text>
+
+      <rect
+        x={410}
+        y={100}
+        width={70}
+        height={40}
+        rx={4}
+        className="fill-card stroke-violet-500/70"
+      />
+      <text
+        x={445}
+        y={120}
+        textAnchor="middle"
+        className="fill-foreground text-[10px] font-semibold"
+      >
+        R1
+      </text>
+      <text x={445} y={132} textAnchor="middle" className="fill-muted-foreground text-[7.5px]">
+        flow-state
+      </text>
+
+      <line
+        x1={480}
+        y1={120}
+        x2={530}
+        y2={120}
+        className="stroke-violet-500/70"
+        strokeWidth={1.4}
+        strokeDasharray="2 2"
+      />
+      <rect
+        x={530}
+        y={100}
+        width={70}
+        height={40}
+        rx={4}
+        className="fill-card stroke-violet-500/70"
+      />
+      <text
+        x={565}
+        y={120}
+        textAnchor="middle"
+        className="fill-foreground text-[10px] font-semibold"
+      >
+        R2
+      </text>
+      <text x={565} y={132} textAnchor="middle" className="fill-muted-foreground text-[7.5px]">
+        flow-state
+      </text>
+
+      <line
+        x1={600}
+        y1={120}
+        x2={650}
+        y2={120}
+        className="stroke-violet-500/70"
+        strokeWidth={1.4}
+        strokeDasharray="2 2"
+      />
+      <rect
+        x={650}
+        y={100}
+        width={70}
+        height={40}
+        rx={4}
+        className="fill-card stroke-violet-500/70"
+      />
+      <text
+        x={685}
+        y={120}
+        textAnchor="middle"
+        className="fill-foreground text-[10px] font-semibold"
+      >
+        R3
+      </text>
+      <text x={685} y={132} textAnchor="middle" className="fill-muted-foreground text-[7.5px]">
+        flow-state
+      </text>
+
+      <text
+        x={560}
+        y={170}
+        textAnchor="middle"
+        className="fill-foreground text-[10px] font-semibold"
+      >
+        RSVP-reservasjon per flow
+      </text>
+      <text x={560} y={188} textAnchor="middle" className="fill-muted-foreground text-[9px]">
+        båndbredde + buffer reserveres
+      </text>
+      <text
+        x={560}
+        y={210}
+        textAnchor="middle"
+        className="fill-emerald-700 dark:fill-emerald-400 text-[9.5px] font-semibold"
+      >
+        + harde garantier
+      </text>
+      <text
+        x={560}
+        y={224}
+        textAnchor="middle"
+        className="fill-emerald-700 dark:fill-emerald-400 text-[9.5px]"
+      >
+        deterministisk delay-tak
+      </text>
+      <text
+        x={560}
+        y={244}
+        textAnchor="middle"
+        className="fill-rose-700 dark:fill-rose-400 text-[9.5px] font-semibold"
+      >
+        − skalerer dårlig
+      </text>
+      <text
+        x={560}
+        y={258}
+        textAnchor="middle"
+        className="fill-rose-700 dark:fill-rose-400 text-[9.5px]"
+      >
+        state per flow i hver ruter
+      </text>
+
+      <defs>
+        <marker id="a-arr2" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+          <polygon points="0 0, 8 4, 0 8" className="fill-foreground/60" />
+        </marker>
+      </defs>
+    </svg>
+  );
+}
+
+// 8) Token-bucket som bøtte med tokens
+function TokenBucketCheatSvg() {
+  return (
+    <svg viewBox="0 0 760 260" className="w-full h-auto">
+      <text
+        x={380}
+        y={20}
+        textAnchor="middle"
+        className="fill-foreground text-[12px] font-semibold"
+      >
+        Token bucket — burst opp til b, snitt-rate r
+      </text>
+      {/* tap drips tokens */}
+      <text x={140} y={50} textAnchor="middle" className="fill-foreground text-[10px]">
+        tokens kommer @ r/s
+      </text>
+      {[60, 80, 100].map((y) => (
+        <circle key={y} cx={140} cy={y} r={4} className="fill-amber-500" />
+      ))}
+      {/* bucket */}
+      <path
+        d="M 80 110 L 80 220 Q 80 230 90 230 L 190 230 Q 200 230 200 220 L 200 110 Z"
+        className="fill-amber-500/15 stroke-amber-500/70"
+        strokeWidth={1.4}
+      />
+      <text
+        x={140}
+        y={130}
+        textAnchor="middle"
+        className="fill-foreground text-[10px] font-semibold"
+      >
+        Bøtte (kapasitet b)
+      </text>
+      {/* tokens piled */}
+      {[180, 195, 210, 218].map((y, i) => {
+        const cols = i === 3 ? [105, 120, 135, 150, 165, 180] : [110, 130, 150, 170];
+        return cols.map((x) => (
+          <circle key={`${y}-${x}`} cx={x} cy={y} r={4} className="fill-amber-500" />
+        ));
+      })}
+      <text x={140} y={250} textAnchor="middle" className="fill-muted-foreground text-[9px] italic">
+        akkumulerer når trafikk er lav
+      </text>
+
+      {/* packets needing tokens */}
+      <text x={420} y={50} textAnchor="middle" className="fill-foreground text-[10px]">
+        pakker krever 1 token hver
+      </text>
+      <line
+        x1={240}
+        y1={170}
+        x2={580}
+        y2={170}
+        className="stroke-foreground/40"
+        strokeWidth={1.2}
+      />
+      {["P5", "P4", "P3", "P2", "P1"].map((p, i) => (
+        <g key={p}>
+          <rect
+            x={300 + i * 50}
+            y={158}
+            width={42}
+            height={24}
+            rx={3}
+            className="fill-sky-500/30 stroke-sky-500/70"
+          />
+          <text
+            x={321 + i * 50}
+            y={174}
+            textAnchor="middle"
+            className="fill-foreground text-[10px] font-semibold"
+          >
+            {p}
+          </text>
+        </g>
+      ))}
+      <text x={420} y={210} textAnchor="middle" className="fill-muted-foreground text-[9px]">
+        5 pakker venter — alle kan sendes hvis bøtta har ≥ 5 tokens
+      </text>
+
+      {/* out arrow */}
+      <line
+        x1={580}
+        y1={170}
+        x2={720}
+        y2={170}
+        className="stroke-emerald-500"
+        strokeWidth={1.8}
+        markerEnd="url(#b-arr)"
+      />
+      <text
+        x={650}
+        y={160}
+        textAnchor="middle"
+        className="fill-emerald-700 dark:fill-emerald-400 text-[10px]"
+      >
+        utgang (raskt)
+      </text>
+
+      <defs>
+        <marker id="b-arr" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+          <polygon points="0 0, 8 4, 0 8" className="fill-emerald-500" />
+        </marker>
+      </defs>
+      <text x={380} y={232} textAnchor="middle" className="fill-muted-foreground text-[9px] italic">
+        Kontrast: leaky bucket slipper alltid ut én og én med konstant rate — ingen burst tillatt
+      </text>
+    </svg>
+  );
+}
+
+// 9) DASH vs RTP visuell sammenligning
+function DashVsRtpVisualSvg() {
+  return (
+    <svg viewBox="0 0 760 320" className="w-full h-auto">
+      <text
+        x={380}
+        y={20}
+        textAnchor="middle"
+        className="fill-foreground text-[12px] font-semibold"
+      >
+        DASH vs RTP — to streaming-stiler side-ved-side
+      </text>
+      {/* DASH */}
+      <rect
+        x={30}
+        y={40}
+        width={340}
+        height={260}
+        rx={8}
+        className="fill-sky-500/10 stroke-sky-500/60"
+        strokeWidth={1.4}
+      />
+      <text
+        x={200}
+        y={62}
+        textAnchor="middle"
+        className="fill-foreground text-[12px] font-semibold"
+      >
+        DASH — HTTPS-segmenter
+      </text>
+      <text x={60} y={88} className="fill-muted-foreground text-[10px]">
+        Klient
+      </text>
+      <text x={310} y={88} className="fill-muted-foreground text-[10px]">
+        Server
+      </text>
+      {[100, 140, 180, 220, 260].map((y, i) => (
+        <g key={y}>
+          <line
+            x1={100}
+            y1={y}
+            x2={330}
+            y2={y}
+            className="stroke-sky-500/40"
+            strokeDasharray="2 2"
+          />
+          <text x={75} y={y + 4} className="fill-foreground text-[9px]">
+            GET seg{i + 1}
+          </text>
+          <line
+            x1={100}
+            y1={y}
+            x2={325}
+            y2={y}
+            className="stroke-sky-500/70"
+            strokeWidth={1.2}
+            markerEnd="url(#c-arrR)"
+          />
+          <line
+            x1={325}
+            y1={y + 6}
+            x2={105}
+            y2={y + 6}
+            className="stroke-emerald-500/70"
+            strokeWidth={1.2}
+            markerEnd="url(#c-arrL)"
+          />
+          <text x={340} y={y + 10} className="fill-emerald-700 dark:fill-emerald-400 text-[8px]">
+            200
+          </text>
+        </g>
+      ))}
+      <text x={200} y={290} textAnchor="middle" className="fill-muted-foreground text-[9px] italic">
+        TCP + pull · stateless server · CDN-vennlig
+      </text>
+
+      {/* RTP */}
+      <rect
+        x={390}
+        y={40}
+        width={340}
+        height={260}
+        rx={8}
+        className="fill-rose-500/10 stroke-rose-500/60"
+        strokeWidth={1.4}
+      />
+      <text
+        x={560}
+        y={62}
+        textAnchor="middle"
+        className="fill-foreground text-[12px] font-semibold"
+      >
+        RTP — UDP-strøm
+      </text>
+      <text x={420} y={88} className="fill-muted-foreground text-[10px]">
+        Mottaker
+      </text>
+      <text x={670} y={88} className="fill-muted-foreground text-[10px]">
+        Sender
+      </text>
+      {/* RTSP SETUP */}
+      <line
+        x1={460}
+        y1={100}
+        x2={690}
+        y2={100}
+        className="stroke-rose-500/70"
+        strokeWidth={1.2}
+        markerEnd="url(#c-arrR)"
+      />
+      <text x={435} y={104} className="fill-foreground text-[9px]">
+        SETUP
+      </text>
+      <line
+        x1={690}
+        y1={114}
+        x2={465}
+        y2={114}
+        className="stroke-emerald-500/70"
+        strokeWidth={1.2}
+        markerEnd="url(#c-arrL)"
+      />
+      <text x={695} y={118} className="fill-emerald-700 dark:fill-emerald-400 text-[8px]">
+        OK
+      </text>
+      <line
+        x1={460}
+        y1={128}
+        x2={690}
+        y2={128}
+        className="stroke-rose-500/70"
+        strokeWidth={1.2}
+        markerEnd="url(#c-arrR)"
+      />
+      <text x={435} y={132} className="fill-foreground text-[9px]">
+        PLAY
+      </text>
+      {/* continuous RTP pakker */}
+      {[150, 170, 190, 210, 230, 250, 270].map((y, i) => (
+        <g key={y}>
+          <line
+            x1={690}
+            y1={y}
+            x2={465}
+            y2={y}
+            className="stroke-rose-500"
+            strokeWidth={1.5}
+            markerEnd="url(#c-arrL)"
+          />
+          {i === 3 && (
+            <g>
+              <line x1={690} y1={y} x2={565} y2={y} className="stroke-rose-500" strokeWidth={1.5} />
+              <text x={550} y={y + 4} className="fill-rose-700 dark:fill-rose-400 text-[8px]">
+                X
+              </text>
+            </g>
+          )}
+        </g>
+      ))}
+      <text x={560} y={290} textAnchor="middle" className="fill-muted-foreground text-[9px] italic">
+        UDP + push · tap droppes · lavere latens
+      </text>
+
+      <defs>
+        <marker id="c-arrR" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+          <polygon points="0 0, 8 4, 0 8" className="fill-foreground/60" />
+        </marker>
+        <marker id="c-arrL" markerWidth="8" markerHeight="8" refX="2" refY="4" orient="auto">
+          <polygon points="8 0, 0 4, 8 8" className="fill-foreground/60" />
+        </marker>
+      </defs>
+    </svg>
+  );
+}
+
+// 10) 5-min anker visualisert som 15 kort i grid
+function AnkerKortSvg() {
+  const kort = [
+    { n: 1, t: "3 typer", b: "lagret / live / interaktiv" },
+    { n: 2, t: "150ms", b: "mund-til-øre-grense" },
+    { n: 3, t: "Jitter", b: "variasjon, ikke delay" },
+    { n: 4, t: "MOS 4.0", b: "toll-kvalitet" },
+    { n: 5, t: "DASH", b: "TCP · pull · ABR" },
+    { n: 6, t: "RTP 12B", b: "V/P/X/CC/M/PT/SEQ/TS/SSRC" },
+    { n: 7, t: "UDP", b: "RTP gir ikke pålitelighet" },
+    { n: 8, t: "RTCP", b: "SR · RR · SDES · BYE · APP" },
+    { n: 9, t: "DiffServ", b: "DSCP, stateless" },
+    { n: 10, t: "IntServ", b: "RSVP, per-flow state" },
+    { n: 11, t: "Token b.", b: "burst b, rate r" },
+    { n: 12, t: "Playout", b: "delay vs tap trade-off" },
+    { n: 13, t: "WebRTC", b: "SRTP + ICE + DTLS" },
+    { n: 14, t: "ABR", b: "throughput · buffer · hybrid" },
+    { n: 15, t: "Best-eff.", b: "QoS kun innen ditt domene" },
+  ];
+  const colors = [
+    "fill-emerald-500/20",
+    "fill-sky-500/20",
+    "fill-amber-500/20",
+    "fill-rose-500/20",
+    "fill-violet-500/20",
+  ];
+  return (
+    <svg viewBox="0 0 760 380" className="w-full h-auto">
+      <text
+        x={380}
+        y={20}
+        textAnchor="middle"
+        className="fill-foreground text-[12px] font-semibold"
+      >
+        15 anker-kort — én visuell repetisjon
+      </text>
+      {kort.map((k, i) => {
+        const col = i % 5;
+        const row = Math.floor(i / 5);
+        const x = 30 + col * 145;
+        const y = 40 + row * 105;
+        return (
+          <g key={k.n}>
+            <rect
+              x={x}
+              y={y}
+              width={135}
+              height={92}
+              rx={6}
+              className={`${colors[i % colors.length]} stroke-foreground/40`}
+              strokeWidth={1.2}
+            />
+            <circle
+              cx={x + 18}
+              cy={y + 18}
+              r={11}
+              className="fill-card stroke-foreground/50"
+              strokeWidth={1.1}
+            />
+            <text
+              x={x + 18}
+              y={y + 22}
+              textAnchor="middle"
+              className="fill-foreground text-[10px] font-bold"
+            >
+              {k.n}
+            </text>
+            <text x={x + 36} y={y + 22} className="fill-foreground text-[11px] font-bold">
+              {k.t}
+            </text>
+            <text
+              x={x + 68}
+              y={y + 55}
+              textAnchor="middle"
+              className="fill-muted-foreground text-[9.5px]"
+            >
+              <tspan x={x + 68} dy={0}>
+                {k.b}
+              </tspan>
+            </text>
+          </g>
+        );
+      })}
+      <text x={380} y={370} textAnchor="middle" className="fill-muted-foreground text-[9px] italic">
+        Gå gjennom kortene i rekkefølge — ett kort = ca. 20 s
+      </text>
+    </svg>
+  );
+}
+
+// 11) Fallgruve: latens vs jitter — to kurver
+function PitfallLatencyJitterSvg() {
+  // Reuse style: line plot
+  const pts1 = Array.from({ length: 25 }, (_, i) => ({ x: 40 + i * 16, y: 70 + i * 1.2 }));
+  const pts2 = Array.from({ length: 25 }, (_, i) => {
+    const noise = [
+      0, 15, -10, 22, -18, 8, 24, -16, 14, -8, 26, -14, 4, 20, -22, 12, 28, -8, 18, -24, 8, 22, -14,
+      6, 20,
+    ][i];
+    return { x: 40 + i * 16, y: 130 + noise };
+  });
+  const path1 = "M " + pts1.map((p) => `${p.x},${p.y}`).join(" L ");
+  const path2 = "M " + pts2.map((p) => `${p.x},${p.y}`).join(" L ");
+  return (
+    <svg viewBox="0 0 760 220" className="w-full h-auto">
+      <text
+        x={380}
+        y={20}
+        textAnchor="middle"
+        className="fill-foreground text-[12px] font-semibold"
+      >
+        Fallgruve: latens (slow, jevn) ≠ jitter (rask snitt, hakkete)
+      </text>
+      <line x1={40} y1={190} x2={460} y2={190} className="stroke-foreground/40" />
+      <line x1={40} y1={40} x2={40} y2={190} className="stroke-foreground/40" />
+      <path d={path1} className="stroke-emerald-500 fill-none" strokeWidth={1.8} />
+      <path d={path2} className="stroke-rose-500 fill-none" strokeWidth={1.8} />
+      <text x={250} y={205} textAnchor="middle" className="fill-muted-foreground text-[9px]">
+        Pakke nr
+      </text>
+      <rect x={480} y={50} width={250} height={130} rx={6} className="fill-card stroke-border" />
+      <circle cx={494} cy={70} r={5} className="fill-emerald-500" />
+      <text x={504} y={74} className="fill-foreground text-[10px] font-semibold">
+        Høy latens, lav jitter
+      </text>
+      <text x={504} y={88} className="fill-muted-foreground text-[9px]">
+        300ms snitt, ±2ms
+      </text>
+      <text x={504} y={102} className="fill-muted-foreground text-[9px]">
+        → video går fint, VoIP treigt
+      </text>
+      <circle cx={494} cy={124} r={5} className="fill-rose-500" />
+      <text x={504} y={128} className="fill-foreground text-[10px] font-semibold">
+        Lav latens, høy jitter
+      </text>
+      <text x={504} y={142} className="fill-muted-foreground text-[9px]">
+        30ms snitt, ±25ms
+      </text>
+      <text x={504} y={156} className="fill-muted-foreground text-[9px]">
+        → VoIP hakkete uten buffer
+      </text>
+      <text x={604} y={175} textAnchor="middle" className="fill-muted-foreground text-[8px] italic">
+        Eksamens-felle: blande de to
+      </text>
+    </svg>
+  );
+}
+
+// 12) RTP-pålitelighet-myte
+function PitfallRtpMythSvg() {
+  return (
+    <svg viewBox="0 0 760 220" className="w-full h-auto">
+      <text
+        x={380}
+        y={20}
+        textAnchor="middle"
+        className="fill-foreground text-[12px] font-semibold"
+      >
+        Fallgruve: «RTP er pålitelig» — nei, RTP kjører over UDP
+      </text>
+      {/* Sender */}
+      <rect
+        x={30}
+        y={70}
+        width={100}
+        height={50}
+        rx={6}
+        className="fill-card stroke-foreground/40"
+      />
+      <text x={80} y={92} textAnchor="middle" className="fill-foreground text-[10px] font-semibold">
+        Sender
+      </text>
+      <text x={80} y={107} textAnchor="middle" className="fill-muted-foreground text-[9px]">
+        RTP/UDP
+      </text>
+
+      {/* Mottaker */}
+      <rect
+        x={630}
+        y={70}
+        width={100}
+        height={50}
+        rx={6}
+        className="fill-card stroke-foreground/40"
+      />
+      <text
+        x={680}
+        y={92}
+        textAnchor="middle"
+        className="fill-foreground text-[10px] font-semibold"
+      >
+        Mottaker
+      </text>
+      <text x={680} y={107} textAnchor="middle" className="fill-muted-foreground text-[9px]">
+        PLC/FEC
+      </text>
+
+      {/* packets */}
+      {[1, 2, 3, 4, 5, 6].map((n, i) => {
+        const x = 160 + i * 75;
+        const dropped = n === 4;
+        return (
+          <g key={n}>
+            <rect
+              x={x}
+              y={82}
+              width={42}
+              height={28}
+              rx={3}
+              className={
+                dropped
+                  ? "fill-rose-500/20 stroke-rose-500/70"
+                  : "fill-emerald-500/20 stroke-emerald-500/70"
+              }
+              strokeDasharray={dropped ? "3 2" : undefined}
+              strokeWidth={1.3}
+            />
+            <text
+              x={x + 21}
+              y={100}
+              textAnchor="middle"
+              className="fill-foreground text-[10px] font-semibold"
+            >
+              SEQ {n}
+            </text>
+            {dropped && (
+              <>
+                <line
+                  x1={x}
+                  y1={82}
+                  x2={x + 42}
+                  y2={110}
+                  className="stroke-rose-500"
+                  strokeWidth={1.6}
+                />
+                <line
+                  x1={x + 42}
+                  y1={82}
+                  x2={x}
+                  y2={110}
+                  className="stroke-rose-500"
+                  strokeWidth={1.6}
+                />
+                <text
+                  x={x + 21}
+                  y={138}
+                  textAnchor="middle"
+                  className="fill-rose-700 dark:fill-rose-400 text-[9px]"
+                >
+                  tapt
+                </text>
+                <text
+                  x={x + 21}
+                  y={150}
+                  textAnchor="middle"
+                  className="fill-rose-700 dark:fill-rose-400 text-[9px]"
+                >
+                  ingen retransmit
+                </text>
+              </>
+            )}
+          </g>
+        );
+      })}
+      <text x={380} y={180} textAnchor="middle" className="fill-foreground text-[10px]">
+        Mottaker oppdager hullet via SEQ-nr — men må selv skjule det med PLC eller FEC
+      </text>
+      <text x={380} y={200} textAnchor="middle" className="fill-muted-foreground text-[9px] italic">
+        Det RTP gir: deteksjon. Det RTP ikke gir: gjenoppretting.
+      </text>
+    </svg>
+  );
+}
+
+// 13) DASH ABR-throughput-basert
+function PitfallDashThroughputSvg() {
+  return (
+    <svg viewBox="0 0 760 230" className="w-full h-auto">
+      <text
+        x={380}
+        y={20}
+        textAnchor="middle"
+        className="fill-foreground text-[12px] font-semibold"
+      >
+        Fallgruve: DASH justerer ikke etter linkrate — etter målt throughput
+      </text>
+      {/* Klient */}
+      <rect
+        x={30}
+        y={70}
+        width={100}
+        height={50}
+        rx={6}
+        className="fill-card stroke-foreground/40"
+      />
+      <text x={80} y={92} textAnchor="middle" className="fill-foreground text-[10px] font-semibold">
+        Klient
+      </text>
+      <text x={80} y={107} textAnchor="middle" className="fill-muted-foreground text-[9px]">
+        1 Gbit/s fiber
+      </text>
+
+      <line x1={130} y1={95} x2={250} y2={95} className="stroke-emerald-500" strokeWidth={2.5} />
+      <text
+        x={190}
+        y={85}
+        textAnchor="middle"
+        className="fill-emerald-700 dark:fill-emerald-400 text-[9px]"
+      >
+        1 Gbit/s
+      </text>
+
+      {/* Mellom-hop bottleneck */}
+      <rect
+        x={250}
+        y={70}
+        width={120}
+        height={50}
+        rx={6}
+        className="fill-amber-500/15 stroke-amber-500/60"
+      />
+      <text
+        x={310}
+        y={92}
+        textAnchor="middle"
+        className="fill-foreground text-[10px] font-semibold"
+      >
+        ISP-overgang
+      </text>
+      <text
+        x={310}
+        y={107}
+        textAnchor="middle"
+        className="fill-rose-700 dark:fill-rose-400 text-[9px]"
+      >
+        flaskehals 6 Mbit/s
+      </text>
+
+      <line
+        x1={370}
+        y1={95}
+        x2={490}
+        y2={95}
+        className="stroke-rose-500"
+        strokeWidth={1.5}
+        strokeDasharray="3 2"
+      />
+      <text
+        x={430}
+        y={85}
+        textAnchor="middle"
+        className="fill-rose-700 dark:fill-rose-400 text-[9px]"
+      >
+        6 Mbit/s
+      </text>
+
+      {/* CDN */}
+      <rect
+        x={490}
+        y={70}
+        width={100}
+        height={50}
+        rx={6}
+        className="fill-card stroke-foreground/40"
+      />
+      <text
+        x={540}
+        y={92}
+        textAnchor="middle"
+        className="fill-foreground text-[10px] font-semibold"
+      >
+        CDN
+      </text>
+      <text x={540} y={107} textAnchor="middle" className="fill-muted-foreground text-[9px]">
+        10 Gbit/s
+      </text>
+
+      <line x1={590} y1={95} x2={680} y2={95} className="stroke-emerald-500" strokeWidth={2.5} />
+
+      {/* Origin */}
+      <rect
+        x={680}
+        y={70}
+        width={60}
+        height={50}
+        rx={6}
+        className="fill-card stroke-foreground/40"
+      />
+      <text
+        x={710}
+        y={92}
+        textAnchor="middle"
+        className="fill-foreground text-[10px] font-semibold"
+      >
+        Origin
+      </text>
+
+      <text
+        x={380}
+        y={160}
+        textAnchor="middle"
+        className="fill-foreground text-[11px] font-semibold"
+      >
+        Resultat: DASH velger 4 Mbit/s — ikke 100 Mbit/s
+      </text>
+      <text x={380} y={180} textAnchor="middle" className="fill-muted-foreground text-[10px]">
+        Klienten måler segment-bytes / nedlastingstid = end-to-end-throughput
+      </text>
+      <text x={380} y={200} textAnchor="middle" className="fill-muted-foreground text-[9px] italic">
+        Linken kan være 1 Gbit/s og kvaliteten kan likevel bli dårlig — flaskehalsen styrer
+      </text>
+    </svg>
+  );
+}
+
+// 14) QoS-marking-respekt
+function PitfallQosMarkingSvg() {
+  return (
+    <svg viewBox="0 0 760 230" className="w-full h-auto">
+      <text
+        x={380}
+        y={20}
+        textAnchor="middle"
+        className="fill-foreground text-[12px] font-semibold"
+      >
+        Fallgruve: DSCP-marking gjelder kun innen ditt eget ISP-domene
+      </text>
+      {/* tre domener */}
+      <rect
+        x={30}
+        y={80}
+        width={210}
+        height={70}
+        rx={6}
+        className="fill-sky-500/15 stroke-sky-500/60"
+      />
+      <text
+        x={135}
+        y={102}
+        textAnchor="middle"
+        className="fill-foreground text-[11px] font-semibold"
+      >
+        ISP Tromsø
+      </text>
+      <text x={135} y={118} textAnchor="middle" className="fill-muted-foreground text-[9px]">
+        DSCP=EF respekteres
+      </text>
+      <text
+        x={135}
+        y={134}
+        textAnchor="middle"
+        className="fill-emerald-700 dark:fill-emerald-400 text-[9px]"
+      >
+        SLA med kunde
+      </text>
+
+      <rect
+        x={275}
+        y={80}
+        width={210}
+        height={70}
+        rx={6}
+        className="fill-amber-500/15 stroke-amber-500/60"
+      />
+      <text
+        x={380}
+        y={102}
+        textAnchor="middle"
+        className="fill-foreground text-[11px] font-semibold"
+      >
+        Transit-AS
+      </text>
+      <text x={380} y={118} textAnchor="middle" className="fill-muted-foreground text-[9px]">
+        DSCP ofte strippet
+      </text>
+      <text
+        x={380}
+        y={134}
+        textAnchor="middle"
+        className="fill-rose-700 dark:fill-rose-400 text-[9px]"
+      >
+        best-effort
+      </text>
+
+      <rect
+        x={520}
+        y={80}
+        width={210}
+        height={70}
+        rx={6}
+        className="fill-sky-500/15 stroke-sky-500/60"
+      />
+      <text
+        x={625}
+        y={102}
+        textAnchor="middle"
+        className="fill-foreground text-[11px] font-semibold"
+      >
+        ISP Oslo
+      </text>
+      <text x={625} y={118} textAnchor="middle" className="fill-muted-foreground text-[9px]">
+        DSCP remappes
+      </text>
+      <text
+        x={625}
+        y={134}
+        textAnchor="middle"
+        className="fill-amber-700 dark:fill-amber-400 text-[9px]"
+      >
+        egen klassifisering
+      </text>
+
+      {/* pakke + tegn */}
+      <rect
+        x={50}
+        y={50}
+        width={50}
+        height={22}
+        rx={3}
+        className="fill-emerald-500/40 stroke-foreground/50"
+      />
+      <text x={75} y={66} textAnchor="middle" className="fill-foreground text-[9px] font-semibold">
+        EF
+      </text>
+
+      <rect
+        x={300}
+        y={50}
+        width={50}
+        height={22}
+        rx={3}
+        className="fill-amber-500/40 stroke-foreground/50"
+        strokeDasharray="3 2"
+      />
+      <text x={325} y={66} textAnchor="middle" className="fill-foreground text-[9px] font-semibold">
+        ??
+      </text>
+
+      <rect
+        x={555}
+        y={50}
+        width={50}
+        height={22}
+        rx={3}
+        className="fill-amber-500/40 stroke-foreground/50"
+      />
+      <text x={580} y={66} textAnchor="middle" className="fill-foreground text-[9px] font-semibold">
+        AF
+      </text>
+
+      <line
+        x1={100}
+        y1={61}
+        x2={300}
+        y2={61}
+        className="stroke-foreground/40"
+        markerEnd="url(#d-arr)"
+      />
+      <line
+        x1={350}
+        y1={61}
+        x2={555}
+        y2={61}
+        className="stroke-foreground/40"
+        markerEnd="url(#d-arr)"
+      />
+
+      <defs>
+        <marker id="d-arr" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+          <polygon points="0 0, 8 4, 0 8" className="fill-foreground/50" />
+        </marker>
+      </defs>
+
+      <text x={380} y={185} textAnchor="middle" className="fill-foreground text-[10.5px]">
+        QoS er et kontrakts-spørsmål mellom AS-er — ikke en protokoll-garanti
+      </text>
+      <text x={380} y={205} textAnchor="middle" className="fill-muted-foreground text-[9px] italic">
+        Internett som helhet er best-effort; QoS finnes kun der noen har kjøpt det
+      </text>
+    </svg>
+  );
+}
+
+// 15) Token vs leaky bucket
+function PitfallTokenVsLeakySvg() {
+  return (
+    <svg viewBox="0 0 760 280" className="w-full h-auto">
+      <text
+        x={380}
+        y={20}
+        textAnchor="middle"
+        className="fill-foreground text-[12px] font-semibold"
+      >
+        Fallgruve: token bucket vs leaky bucket
+      </text>
+      {/* TOKEN */}
+      <rect
+        x={30}
+        y={40}
+        width={340}
+        height={220}
+        rx={8}
+        className="fill-amber-500/8 stroke-amber-500/60"
+        strokeWidth={1.4}
+      />
+      <text
+        x={200}
+        y={62}
+        textAnchor="middle"
+        className="fill-foreground text-[11.5px] font-semibold"
+      >
+        Token bucket — tillater burst
+      </text>
+      <path
+        d="M 90 100 L 90 200 Q 90 210 100 210 L 180 210 Q 190 210 190 200 L 190 100 Z"
+        className="fill-amber-500/15 stroke-amber-500/70"
+      />
+      {[160, 175, 190, 200].map((y, i) => {
+        const xs = i === 3 ? [105, 120, 135, 150, 165, 175] : [105, 125, 145, 165];
+        return xs.map((x, j) => (
+          <circle key={`${y}-${j}`} cx={x} cy={y} r={3.5} className="fill-amber-500" />
+        ));
+      })}
+      <text x={140} y={235} textAnchor="middle" className="fill-muted-foreground text-[9px]">
+        akkumulerer tokens
+      </text>
+      {/* burst out */}
+      <g>
+        {[0, 1, 2, 3, 4].map((i) => (
+          <rect
+            key={i}
+            x={220 + i * 25}
+            y={150}
+            width={20}
+            height={18}
+            rx={2}
+            className="fill-sky-500/30 stroke-sky-500/70"
+          />
+        ))}
+        <text
+          x={280}
+          y={138}
+          textAnchor="middle"
+          className="fill-emerald-700 dark:fill-emerald-400 text-[9px]"
+        >
+          5 pakker burst
+        </text>
+      </g>
+      <text x={200} y={250} textAnchor="middle" className="fill-muted-foreground text-[9px] italic">
+        long-term ≤ r, kortsiktig burst ≤ b
+      </text>
+
+      {/* LEAKY */}
+      <rect
+        x={390}
+        y={40}
+        width={340}
+        height={220}
+        rx={8}
+        className="fill-sky-500/8 stroke-sky-500/60"
+        strokeWidth={1.4}
+      />
+      <text
+        x={560}
+        y={62}
+        textAnchor="middle"
+        className="fill-foreground text-[11.5px] font-semibold"
+      >
+        Leaky bucket — konstant ut-rate
+      </text>
+      <path
+        d="M 450 100 L 450 200 Q 450 210 460 210 L 540 210 Q 550 210 550 200 L 550 100 Z"
+        className="fill-sky-500/15 stroke-sky-500/70"
+      />
+      {/* queue inside */}
+      {[110, 130, 150, 170].map((y, i) => (
+        <rect
+          key={y}
+          x={462}
+          y={y}
+          width={76}
+          height={16}
+          rx={2}
+          className="fill-sky-500/30 stroke-sky-500/70"
+        />
+      ))}
+      {/* hole at bottom dripping */}
+      <line x1={500} y1={210} x2={500} y2={228} className="stroke-sky-500" strokeWidth={1.5} />
+      <circle cx={500} cy={232} r={3} className="fill-sky-500" />
+      <circle cx={500} cy={245} r={3} className="fill-sky-500 opacity-60" />
+      <circle cx={500} cy={258} r={3} className="fill-sky-500 opacity-30" />
+      {/* one packet out at a time */}
+      <rect
+        x={600}
+        y={195}
+        width={20}
+        height={18}
+        rx={2}
+        className="fill-sky-500/30 stroke-sky-500/70"
+      />
+      <text x={650} y={208} className="fill-emerald-700 dark:fill-emerald-400 text-[9px]">
+        1 av gangen
+      </text>
+
+      <text x={560} y={250} textAnchor="middle" className="fill-muted-foreground text-[9px] italic">
+        tvinger jevn ut-rate uansett input
+      </text>
+    </svg>
+  );
+}
+
+// === Defs-blokk-SVG-er for 9.1-9.5 ===
+
+// 9.1 — 3 typer multimedia med tidskrav
+function MmTypesTimebudgetSvg() {
+  const rows = [
+    {
+      name: "Lagret video (NRK VOD)",
+      budget: 5000,
+      color: "fill-emerald-500",
+      desc: "tåler stor buffer",
+    },
+    {
+      name: "Live broadcast (NRK Sport)",
+      budget: 10000,
+      color: "fill-sky-500",
+      desc: "glass-til-glass 2-10 s",
+    },
+    {
+      name: "Samtidsinteraktiv (VoIP)",
+      budget: 150,
+      color: "fill-rose-500",
+      desc: "mund-til-øre < 150 ms",
+    },
+  ];
+  return (
+    <svg viewBox="0 0 700 200" className="w-full h-auto">
+      <text
+        x={350}
+        y={20}
+        textAnchor="middle"
+        className="fill-foreground text-[12px] font-semibold"
+      >
+        Tre multimedia-typer og deres latens-budsjett
+      </text>
+      {/* log-ish scale */}
+      <line x1={200} y1={50} x2={650} y2={50} className="stroke-foreground/40" />
+      {[100, 1000, 10000].map((ms, i) => {
+        const x = 200 + (Math.log10(ms / 100) / Math.log10(100)) * 450;
+        return (
+          <g key={ms}>
+            <line x1={x} y1={48} x2={x} y2={52} className="stroke-foreground/50" />
+            <text x={x} y={42} textAnchor="middle" className="fill-muted-foreground text-[9px]">
+              {ms < 1000 ? `${ms}ms` : `${ms / 1000}s`}
+            </text>
+          </g>
+        );
+      })}
+      {rows.map((r, i) => {
+        const y = 70 + i * 42;
+        const x = 200 + (Math.log10(r.budget / 100) / Math.log10(100)) * 450;
+        return (
+          <g key={r.name}>
+            <text x={20} y={y + 14} className="fill-foreground text-[10px] font-semibold">
+              {r.name}
+            </text>
+            <line
+              x1={200}
+              y1={y + 10}
+              x2={x}
+              y2={y + 10}
+              className={`${r.color.replace("fill", "stroke")}`}
+              strokeWidth={10}
+              opacity={0.4}
+            />
+            <circle cx={x} cy={y + 10} r={6} className={r.color} />
+            <text x={x + 12} y={y + 14} className="fill-muted-foreground text-[9px] italic">
+              {r.desc}
+            </text>
+          </g>
+        );
+      })}
+      <text x={350} y={195} textAnchor="middle" className="fill-muted-foreground text-[9px] italic">
+        Logaritmisk skala — interaktiv har 30-100x mindre budsjett enn live
+      </text>
+    </svg>
+  );
+}
+
+// 9.2 — bitrate-ladder + buffer-state
+function BitrateLadderBufferSvg() {
+  const ladder = [
+    { res: "240p", br: 256, y: 200 },
+    { res: "360p", br: 512, y: 170 },
+    { res: "480p", br: 1000, y: 140 },
+    { res: "720p", br: 2500, y: 110 },
+    { res: "1080p", br: 5000, y: 80 },
+    { res: "4K", br: 16000, y: 50 },
+  ];
+  return (
+    <svg viewBox="0 0 760 260" className="w-full h-auto">
+      <text
+        x={380}
+        y={20}
+        textAnchor="middle"
+        className="fill-foreground text-[12px] font-semibold"
+      >
+        Bitrate-ladder + buffer-state (NRK TV)
+      </text>
+      {/* ladder vertical */}
+      <line x1={140} y1={40} x2={140} y2={220} className="stroke-foreground/40" />
+      {ladder.map((l) => (
+        <g key={l.res}>
+          <line x1={130} y1={l.y} x2={150} y2={l.y} className="stroke-foreground/40" />
+          <rect
+            x={155}
+            y={l.y - 10}
+            width={80}
+            height={20}
+            rx={3}
+            className="fill-sky-500/20 stroke-sky-500/60"
+          />
+          <text
+            x={195}
+            y={l.y + 4}
+            textAnchor="middle"
+            className="fill-foreground text-[10px] font-semibold"
+          >
+            {l.res} · {l.br} kbps
+          </text>
+        </g>
+      ))}
+      <text x={140} y={240} textAnchor="middle" className="fill-muted-foreground text-[9px]">
+        Klient velger
+      </text>
+
+      {/* buffer state */}
+      <rect x={320} y={60} width={400} height={140} rx={6} className="fill-card stroke-border" />
+      <text
+        x={520}
+        y={80}
+        textAnchor="middle"
+        className="fill-foreground text-[11px] font-semibold"
+      >
+        Buffer-state
+      </text>
+      <line x1={340} y1={170} x2={700} y2={170} className="stroke-foreground/30" />
+      <text x={355} y={185} className="fill-muted-foreground text-[8.5px]">
+        0s
+      </text>
+      <text x={690} y={185} className="fill-muted-foreground text-[8.5px]">
+        60s
+      </text>
+      {/* buffer level curve */}
+      <path
+        d="M 340 165 Q 380 140, 420 115 T 520 95 T 620 130 T 700 110"
+        className="stroke-emerald-500 fill-none"
+        strokeWidth={2}
+      />
+      <line
+        x1={340}
+        y1={150}
+        x2={700}
+        y2={150}
+        className="stroke-amber-500/60"
+        strokeDasharray="3 3"
+      />
+      <text x={705} y={154} className="fill-amber-700 dark:fill-amber-400 text-[9px]">
+        lav-vannmerke
+      </text>
+      <line
+        x1={340}
+        y1={100}
+        x2={700}
+        y2={100}
+        className="stroke-rose-500/60"
+        strokeDasharray="3 3"
+      />
+      <text x={705} y={104} className="fill-rose-700 dark:fill-rose-400 text-[9px]">
+        høy-vannmerke
+      </text>
+      <text x={520} y={195} textAnchor="middle" className="fill-muted-foreground text-[9px] italic">
+        ABR: lavt buffer → velg lavere bitrate; høyt buffer → kan øke
+      </text>
+    </svg>
+  );
+}
+
+// 9.3 — jitter-buffer + PLC
+function JitterBufferPlcSvg() {
+  return (
+    <svg viewBox="0 0 760 260" className="w-full h-auto">
+      <text
+        x={380}
+        y={20}
+        textAnchor="middle"
+        className="fill-foreground text-[12px] font-semibold"
+      >
+        Jitter-buffer + Packet Loss Concealment (PLC) i VoIP
+      </text>
+      {/* network arrivals */}
+      <text x={40} y={60} className="fill-foreground text-[10px] font-semibold">
+        Nettverk ankomster
+      </text>
+      {[60, 130, 200, 290, 360, 470, 540, 620].map((x, i) => {
+        const lost = i === 3;
+        return (
+          <g key={i}>
+            <rect
+              x={x}
+              y={68}
+              width={32}
+              height={20}
+              rx={2}
+              className={
+                lost ? "fill-rose-500/30 stroke-rose-500/70" : "fill-sky-500/30 stroke-sky-500/70"
+              }
+            />
+            <text
+              x={x + 16}
+              y={83}
+              textAnchor="middle"
+              className="fill-foreground text-[9px] font-semibold"
+            >
+              {i + 1}
+            </text>
+            {lost && (
+              <text
+                x={x + 16}
+                y={102}
+                textAnchor="middle"
+                className="fill-rose-700 dark:fill-rose-400 text-[8px]"
+              >
+                tapt
+              </text>
+            )}
+          </g>
+        );
+      })}
+      {/* buffer */}
+      <rect
+        x={40}
+        y={130}
+        width={680}
+        height={50}
+        rx={6}
+        className="fill-amber-500/10 stroke-amber-500/60"
+        strokeWidth={1.2}
+      />
+      <text x={50} y={148} className="fill-foreground text-[10px] font-semibold">
+        Jitter-buffer (200 ms)
+      </text>
+      <text x={50} y={162} className="fill-muted-foreground text-[9px]">
+        jevner ut ankomstvariasjon
+      </text>
+      <text x={50} y={174} className="fill-muted-foreground text-[9px]">
+        PLC fyller hull med interpolert lyd
+      </text>
+      {/* playout — jevne */}
+      <text x={40} y={205} className="fill-foreground text-[10px] font-semibold">
+        Playout (jevn rate)
+      </text>
+      {[1, 2, 3, "PLC", 5, 6, 7, 8].map((v, i) => {
+        const isPlc = v === "PLC";
+        return (
+          <g key={i}>
+            <rect
+              x={60 + i * 80}
+              y={210}
+              width={50}
+              height={22}
+              rx={2}
+              className={
+                isPlc
+                  ? "fill-violet-500/30 stroke-violet-500/70"
+                  : "fill-emerald-500/30 stroke-emerald-500/70"
+              }
+            />
+            <text
+              x={85 + i * 80}
+              y={226}
+              textAnchor="middle"
+              className="fill-foreground text-[10px] font-semibold"
+            >
+              {v}
+            </text>
+          </g>
+        );
+      })}
+      <text x={380} y={254} textAnchor="middle" className="fill-muted-foreground text-[9px] italic">
+        PLC dekker tap 4 ved å gjenta/interpolere fra nabopakker — bedre enn stillhet
+      </text>
+    </svg>
+  );
+}
+
+// 9.4 — RTP-header-felt-visualisering (kompakt)
+function RtpFieldsVizSvg() {
+  return (
+    <svg viewBox="0 0 760 220" className="w-full h-auto">
+      <text
+        x={380}
+        y={20}
+        textAnchor="middle"
+        className="fill-foreground text-[12px] font-semibold"
+      >
+        RTP-felt — hva hver del betyr i praksis
+      </text>
+      {/* Stack: hver felt med ikon */}
+      {[
+        { name: "V", desc: "RTP-versjon (alltid 2)", color: "fill-rose-500/30" },
+        {
+          name: "PT",
+          desc: "Payload Type — hvilken codec (96 = Opus, osv)",
+          color: "fill-amber-500/30",
+        },
+        {
+          name: "SEQ",
+          desc: "Sekvensnummer — oppdager tap og omstokking",
+          color: "fill-sky-500/30",
+        },
+        {
+          name: "TS",
+          desc: "Timestamp — sampling-tid for rekonstruert playout",
+          color: "fill-emerald-500/30",
+        },
+        {
+          name: "SSRC",
+          desc: "Synchronization Source — unik kilde-id",
+          color: "fill-violet-500/30",
+        },
+      ].map((f, i) => {
+        const y = 40 + i * 32;
+        return (
+          <g key={f.name}>
+            <rect
+              x={40}
+              y={y}
+              width={80}
+              height={24}
+              rx={3}
+              className={`${f.color} stroke-foreground/50`}
+            />
+            <text
+              x={80}
+              y={y + 16}
+              textAnchor="middle"
+              className="fill-foreground text-[11px] font-bold"
+            >
+              {f.name}
+            </text>
+            <text x={140} y={y + 16} className="fill-foreground text-[10px]">
+              {f.desc}
+            </text>
+          </g>
+        );
+      })}
+    </svg>
+  );
+}
+
+// 9.5 — token-bucket + leaky-bucket side-ved-side
+function TokenLeakySideBySideSvg() {
+  return (
+    <svg viewBox="0 0 760 240" className="w-full h-auto">
+      <text
+        x={380}
+        y={20}
+        textAnchor="middle"
+        className="fill-foreground text-[12px] font-semibold"
+      >
+        Token vs leaky bucket — to formgivere
+      </text>
+      {/* Token */}
+      <text
+        x={170}
+        y={48}
+        textAnchor="middle"
+        className="fill-foreground text-[11px] font-semibold"
+      >
+        Token bucket
+      </text>
+      <path
+        d="M 100 60 L 100 180 Q 100 190 110 190 L 230 190 Q 240 190 240 180 L 240 60 Z"
+        className="fill-amber-500/15 stroke-amber-500/70"
+      />
+      {[160, 175, 185].map((y, i) => {
+        const xs = i === 2 ? [115, 130, 145, 160, 175, 195, 215] : [120, 145, 170, 200];
+        return xs.map((x) => (
+          <circle key={`t-${y}-${x}`} cx={x} cy={y} r={3.2} className="fill-amber-500" />
+        ));
+      })}
+      <text x={170} y={210} textAnchor="middle" className="fill-muted-foreground text-[9px]">
+        tokens akkumulerer
+      </text>
+      {/* pakker raskt ut */}
+      {[0, 1, 2, 3, 4].map((i) => (
+        <rect
+          key={i}
+          x={260 + i * 18}
+          y={110}
+          width={15}
+          height={14}
+          rx={2}
+          className="fill-sky-500/30 stroke-sky-500/70"
+        />
+      ))}
+      <text
+        x={293}
+        y={100}
+        textAnchor="middle"
+        className="fill-emerald-700 dark:fill-emerald-400 text-[9px]"
+      >
+        burst tillatt
+      </text>
+
+      {/* Leaky */}
+      <text
+        x={560}
+        y={48}
+        textAnchor="middle"
+        className="fill-foreground text-[11px] font-semibold"
+      >
+        Leaky bucket
+      </text>
+      <path
+        d="M 490 60 L 490 180 Q 490 190 500 190 L 620 190 Q 630 190 630 180 L 630 60 Z"
+        className="fill-sky-500/15 stroke-sky-500/70"
+      />
+      {/* packets queued inside */}
+      {[80, 100, 120, 140, 160].map((y, i) => (
+        <rect
+          key={y}
+          x={500}
+          y={y}
+          width={120}
+          height={14}
+          rx={2}
+          className="fill-sky-500/30 stroke-sky-500/70"
+        />
+      ))}
+      {/* drip */}
+      <circle cx={560} cy={205} r={3} className="fill-sky-500" />
+      <circle cx={560} cy={220} r={3} className="fill-sky-500 opacity-60" />
+      <text x={680} y={208} className="fill-emerald-700 dark:fill-emerald-400 text-[9px]">
+        én og én ut
+      </text>
+      <text x={560} y={235} textAnchor="middle" className="fill-muted-foreground text-[9px]">
+        konstant ut-rate
+      </text>
+    </svg>
+  );
+}
+
+// === Examples timeline-SVG-er ===
+
+// Timeline 9.1: Netflix TCP-retransmit vs samtale tap
+function TimelineNetflixVsCallSvg() {
+  return (
+    <svg viewBox="0 0 760 220" className="w-full h-auto">
+      <text
+        x={380}
+        y={20}
+        textAnchor="middle"
+        className="fill-foreground text-[12px] font-semibold"
+      >
+        Tidslinje: TCP-pause (200 ms RTO) — Netflix vs samtale
+      </text>
+      {/* Netflix row */}
+      <text x={20} y={68} className="fill-foreground text-[10px] font-semibold">
+        Netflix
+      </text>
+      <line x1={80} y1={70} x2={720} y2={70} className="stroke-emerald-500" strokeWidth={3} />
+      <rect
+        x={300}
+        y={62}
+        width={60}
+        height={16}
+        className="fill-amber-500/30 stroke-amber-500/70"
+      />
+      <text x={330} y={74} textAnchor="middle" className="fill-foreground text-[9px] font-semibold">
+        TCP RTX
+      </text>
+      <text x={400} y={90} className="fill-muted-foreground text-[9px] italic">
+        buffer absorberer pausen — seeren ser ingenting
+      </text>
+
+      {/* Samtale row */}
+      <text x={20} y={148} className="fill-foreground text-[10px] font-semibold">
+        Samtale
+      </text>
+      <line x1={80} y1={150} x2={720} y2={150} className="stroke-emerald-500" strokeWidth={3} />
+      <rect
+        x={300}
+        y={142}
+        width={60}
+        height={16}
+        className="fill-rose-500/30 stroke-rose-500/70"
+      />
+      <text
+        x={330}
+        y={154}
+        textAnchor="middle"
+        className="fill-foreground text-[9px] font-semibold"
+      >
+        200 ms!
+      </text>
+      <text x={400} y={170} className="fill-rose-700 dark:fill-rose-400 text-[9px] italic">
+        stillhet i lyden — samtalen brekker
+      </text>
+
+      <text x={380} y={205} textAnchor="middle" className="fill-muted-foreground text-[9px] italic">
+        Samme TCP-mekanisme; ulik konsekvens fordi bufferet er ulikt
+      </text>
+    </svg>
+  );
+}
+
+// Timeline 9.2: DASH segment fetch
+function TimelineDashSegmentSvg() {
+  return (
+    <svg viewBox="0 0 760 220" className="w-full h-auto">
+      <text
+        x={380}
+        y={20}
+        textAnchor="middle"
+        className="fill-foreground text-[12px] font-semibold"
+      >
+        Tidslinje: DASH ABR — én sesjon på NRK
+      </text>
+      <line x1={60} y1={170} x2={720} y2={170} className="stroke-foreground/40" />
+      {[0, 1, 2, 3, 4, 5, 6, 7].map((i) => (
+        <line
+          key={i}
+          x1={60 + i * 80}
+          y1={166}
+          x2={60 + i * 80}
+          y2={174}
+          className="stroke-foreground/40"
+        />
+      ))}
+      <text x={60} y={195} className="fill-muted-foreground text-[9px]">
+        t=0
+      </text>
+      <text x={700} y={195} className="fill-muted-foreground text-[9px]">
+        t=56s
+      </text>
+      {/* Segments with quality coding */}
+      {[
+        { br: 512, h: 30 },
+        { br: 1000, h: 50 },
+        { br: 2500, h: 80 },
+        { br: 2500, h: 80 },
+        { br: 5000, h: 110 },
+        { br: 5000, h: 110 },
+        { br: 2500, h: 80 },
+        { br: 1000, h: 50 },
+      ].map((s, i) => (
+        <g key={i}>
+          <rect
+            x={60 + i * 80}
+            y={170 - s.h}
+            width={75}
+            height={s.h}
+            className="fill-sky-500/30 stroke-sky-500/70"
+          />
+          <text
+            x={97 + i * 80}
+            y={165 - s.h + 14}
+            textAnchor="middle"
+            className="fill-foreground text-[9px] font-semibold"
+          >
+            {s.br}k
+          </text>
+        </g>
+      ))}
+      <text x={380} y={50} textAnchor="middle" className="fill-foreground text-[10px]">
+        Klienten justerer opp/ned per segment basert på throughput og buffer
+      </text>
+    </svg>
+  );
+}
+
+// Timeline 9.3: VoIP playout med jitter-buffer
+function TimelineVoipPlayoutSvg() {
+  // arrivals (jittery) on top, playout (smooth) on bottom
+  const arrivals = [50, 55, 62, 110, 115, 125, 170, 195, 230, 280, 305];
+  const playout = arrivals.map((a, i) => 50 + i * 25);
+  return (
+    <svg viewBox="0 0 760 220" className="w-full h-auto">
+      <text
+        x={380}
+        y={20}
+        textAnchor="middle"
+        className="fill-foreground text-[12px] font-semibold"
+      >
+        Tidslinje: jittery ankomster vs glatt playout (VoIP)
+      </text>
+      <text x={20} y={75} className="fill-foreground text-[10px] font-semibold">
+        Ankomst
+      </text>
+      <line x1={80} y1={75} x2={720} y2={75} className="stroke-foreground/30" />
+      {arrivals.map((a, i) => (
+        <g key={i}>
+          <line
+            x1={80 + a * 2}
+            y1={65}
+            x2={80 + a * 2}
+            y2={85}
+            className="stroke-rose-500"
+            strokeWidth={2}
+          />
+          <text
+            x={80 + a * 2}
+            y={60}
+            textAnchor="middle"
+            className="fill-rose-700 dark:fill-rose-400 text-[8px]"
+          >
+            {i + 1}
+          </text>
+        </g>
+      ))}
+      <text x={20} y={155} className="fill-foreground text-[10px] font-semibold">
+        Playout
+      </text>
+      <line x1={80} y1={155} x2={720} y2={155} className="stroke-foreground/30" />
+      {playout.map((p, i) => (
+        <g key={i}>
+          <line
+            x1={80 + p * 2}
+            y1={145}
+            x2={80 + p * 2}
+            y2={165}
+            className="stroke-emerald-500"
+            strokeWidth={2}
+          />
+          <text
+            x={80 + p * 2}
+            y={180}
+            textAnchor="middle"
+            className="fill-emerald-700 dark:fill-emerald-400 text-[8px]"
+          >
+            {i + 1}
+          </text>
+        </g>
+      ))}
+      <text x={380} y={205} textAnchor="middle" className="fill-muted-foreground text-[9px] italic">
+        Bufferet venter til t = ankomst_1 + delay-budsjett, så slipper én pakke hver 20 ms
+      </text>
+    </svg>
+  );
+}
+
+// Timeline 9.4: RTP pakketog
+function TimelineRtpTrainSvg() {
+  return (
+    <svg viewBox="0 0 760 200" className="w-full h-auto">
+      <text
+        x={380}
+        y={20}
+        textAnchor="middle"
+        className="fill-foreground text-[12px] font-semibold"
+      >
+        Tidslinje: RTP-strøm med SEQ og TS økende
+      </text>
+      <line x1={40} y1={120} x2={720} y2={120} className="stroke-foreground/40" />
+      {[0, 1, 2, 3, 4, 5, 6, 7].map((i) => {
+        const x = 70 + i * 80;
+        return (
+          <g key={i}>
+            <rect
+              x={x}
+              y={70}
+              width={60}
+              height={50}
+              rx={3}
+              className="fill-violet-500/20 stroke-violet-500/70"
+            />
+            <text
+              x={x + 30}
+              y={88}
+              textAnchor="middle"
+              className="fill-foreground text-[10px] font-bold"
+            >
+              RTP {i + 1}
+            </text>
+            <text
+              x={x + 30}
+              y={102}
+              textAnchor="middle"
+              className="fill-muted-foreground text-[8px]"
+            >
+              SEQ {1001 + i}
+            </text>
+            <text
+              x={x + 30}
+              y={115}
+              textAnchor="middle"
+              className="fill-muted-foreground text-[8px]"
+            >
+              TS {8000 + i * 160}
+            </text>
+          </g>
+        );
+      })}
+      <text x={380} y={155} textAnchor="middle" className="fill-muted-foreground text-[9px]">
+        SEQ øker med 1, TS øker med samples per pakke (160 for 20 ms @ 8 kHz)
+      </text>
+      <text x={380} y={175} textAnchor="middle" className="fill-muted-foreground text-[9px] italic">
+        Et hull i SEQ avslører tap; TS lar mottakeren rekonstruere playout-tid
+      </text>
+    </svg>
+  );
+}
+
+// Timeline 9.5: token-bucket over tid med pakke-ankomster
+function TimelineTokenBucketSvg() {
+  // 10 time slots; tokens-grafen og pakke-slipps
+  const slots = Array.from({ length: 10 }, (_, i) => i);
+  const tokens = [2, 3, 4, 5, 1, 2, 3, 4, 5, 3];
+  const arrivals = [0, 0, 0, 4, 0, 0, 0, 0, 0, 2]; // burst at t=3 og t=9
+  return (
+    <svg viewBox="0 0 760 240" className="w-full h-auto">
+      <text
+        x={380}
+        y={20}
+        textAnchor="middle"
+        className="fill-foreground text-[12px] font-semibold"
+      >
+        Tidslinje: token-bucket — akkumulasjon, burst, ut-strøm
+      </text>
+      <line x1={60} y1={180} x2={720} y2={180} className="stroke-foreground/40" />
+      {slots.map((i) => {
+        const x = 80 + i * 65;
+        const hT = tokens[i] * 14;
+        const hA = arrivals[i] * 14;
+        return (
+          <g key={i}>
+            <rect
+              x={x}
+              y={180 - hT}
+              width={26}
+              height={hT}
+              className="fill-amber-500/40 stroke-amber-500/70"
+            />
+            <rect
+              x={x + 30}
+              y={180 - hA}
+              width={26}
+              height={hA}
+              className="fill-sky-500/40 stroke-sky-500/70"
+            />
+            <text
+              x={x + 28}
+              y={200}
+              textAnchor="middle"
+              className="fill-muted-foreground text-[9px]"
+            >
+              t{i}
+            </text>
+          </g>
+        );
+      })}
+      <rect x={620} y={40} width={130} height={50} rx={4} className="fill-card stroke-border" />
+      <rect
+        x={628}
+        y={50}
+        width={14}
+        height={14}
+        className="fill-amber-500/40 stroke-amber-500/70"
+      />
+      <text x={650} y={62} className="fill-foreground text-[9px]">
+        tokens i bøtta
+      </text>
+      <rect x={628} y={68} width={14} height={14} className="fill-sky-500/40 stroke-sky-500/70" />
+      <text x={650} y={80} className="fill-foreground text-[9px]">
+        pakker sendt
+      </text>
+      <text x={380} y={225} textAnchor="middle" className="fill-muted-foreground text-[9px] italic">
+        Ved t=3: 4 pakker burst — tillatt fordi bøtta hadde 5 tokens; bøtta tømmes
       </text>
     </svg>
   );

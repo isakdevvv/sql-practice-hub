@@ -303,6 +303,10 @@ function Section81() {
         </Metafor>
       </div>
 
+      <Illustration caption="CIA-triaden som Venn: konfidensialitet, integritet, tilgjengelighet er uavhengige mål. AEAD-modus (GCM) er en sjelden teknikk som dekker C ∩ I i én operasjon.">
+        <CiaVennSvg />
+      </Illustration>
+
       <Hvorfor title="Hvorfor skille mellom autentisering og integritet?">
         <p>
           De henger sammen — en gyldig MAC tyder på at meldingen ikke er endret OG at avsender hadde
@@ -473,6 +477,10 @@ function Section82() {
         <EcbVsCbcSvg />
       </Illustration>
 
+      <Illustration caption="De fire AES-modi side-ved-side — bare ECB er usikker. GCM er førstevalg fordi den kombinerer konfidensialitet og integritet i én operasjon (AEAD).">
+        <AesModesSvg />
+      </Illustration>
+
       <Example title="Eksempel: hvorfor ikke bare bruke RSA hele veien?">
         <p>
           Tenk at Alice vil sende en 10 MB fil til Bob. Hvis hun krypterer alt med Bobs
@@ -636,8 +644,16 @@ function Section83() {
         </p>
       </Hvorfor>
 
+      <Illustration caption="Hash-kjede: hver blokk lagrer hash av forrige. Endrer du én bit langt tilbake, brytes hele kjeden — grunnlaget for blockchain, Git og audit-logger.">
+        <HashChainSvg />
+      </Illustration>
+
       <Illustration caption="HMAC tar inn både meldingen og en delt nøkkel — uten nøkkelen kan ikke Trudy lage gyldig tag.">
         <HmacSvg />
+      </Illustration>
+
+      <Illustration caption="HMAC-konstruksjonen: nøkkelen XOR-es med to forskjellige padder (ipad/opad) og hashes i to runder. Dobbeltrunden er ikke pynt — den stopper length-extension-angrep mot SHA-1/SHA-256.">
+        <HmacInnerOuterSvg />
       </Illustration>
 
       <Illustration caption="Hash, MAC og signering side om side: ulike garantier, ulike forutsetninger om hvem som deler hva.">
@@ -781,6 +797,10 @@ function Section84() {
 
       <Illustration caption="Tillits-kjede: rot-CA → mellom-CA → server-sertifikat. Nettleseren har rot-CA i trust store fra fabrikken.">
         <PkiSvg />
+      </Illustration>
+
+      <Illustration caption="Autentisering bygger på tre uavhengige faktorer: noe du vet, noe du har, noe du er. To-faktor (2FA) krever ulike kategorier — ikke to passord.">
+        <ThreeFactorsSvg />
       </Illustration>
 
       <Illustration caption="MITM-angrep: Trudy holder to parallelle handshakes; sertifikat-anker er det som blokkerer det.">
@@ -1098,6 +1118,10 @@ function Section86() {
         <TransportVsTunnelSvg />
       </Illustration>
 
+      <Illustration caption="ESP- og AH-pakke-layout side-ved-side. ESP krypterer payload og autentiserer fra ESP-header til ICV; AH autentiserer hele pakken inkl. ytre IP-header — og brytes derfor av NAT.">
+        <EspPacketLayoutSvg />
+      </Illustration>
+
       <Example title="Eksempel: når bør du velge tunnel-mode?">
         <p>
           Et selskap har et hovedkontor i Oslo og en filial i Bodø. De vil at interne IP-er
@@ -1234,6 +1258,10 @@ function Section87() {
 
       <Illustration caption="DMZ-topologi: web og mail i ytre sone, interne data i indre sone, brannmurer på begge grenser.">
         <DmzSvg />
+      </Illustration>
+
+      <Illustration caption="Tre brannmur-generasjoner: stateless filter ser bare IP/port; stateful holder conntrack-tabell; app-gateway/WAF ser HTTP-innhold. Hver legger ett lag på toppen av forrige.">
+        <FirewallStacksSvg />
       </Illustration>
 
       <Example title="Eksempel: regelsett for en liten bedrift">
@@ -1408,6 +1436,10 @@ function Section88() {
         <BayesFellaSvg />
       </Illustration>
 
+      <Illustration caption="Klassisk confusion-matrix for IDS-utfall. False Negative (mistet angrep) er typisk verre enn False Positive (falsk alarm) — men nok FPer skaper alarm-tretthet og dermed indirekte FN.">
+        <IdsConfusionMatrixSvg />
+      </Illustration>
+
       <Example title="Eksempel: en enkel Snort-regel">
         <pre className="rounded bg-muted/30 p-2 font-mono text-[11px] overflow-x-auto">
           {`alert tcp $EXTERNAL_NET any -> $HOME_NET 80 ( \\
@@ -1547,6 +1579,10 @@ function Section89() {
 
       <Illustration caption="SQL-injeksjon: konkatenering tolker brukerinput som SQL-syntaks; parameter-binding behandler det som ren data.">
         <SqliSvg />
+      </Illustration>
+
+      <Illustration caption="XSS, CSRF og SQLi side-ved-side: tre angrep, samme grunnfeil — brukerdata tolkes som kode i feil kontekst. Forsvaret er separasjon, ikke filtrering.">
+        <WebAttacksFlowSvg />
       </Illustration>
 
       <Example title="Eksempel: SQL-injeksjon-fiks med forberedt spørring">
@@ -4721,6 +4757,37 @@ function SectionEksamen() {
         </div>
       </section>
 
+      {/* ============ A.2) VISUELLE ANKER FOR CHEAT-ARKET ============ */}
+      <section className="space-y-3">
+        <h3 className="text-sm font-semibold text-foreground">
+          a.2) Visuelle anker — det samme på et blikk
+        </h3>
+        <p className="text-[12px] text-muted-foreground">
+          Bullet-listene over er presise, men trege å laste inn rett før eksamen. Her er de samme
+          fakta som diagrammer du kan dra opp i hodet på sekunder.
+        </p>
+        <div className="grid md:grid-cols-2 gap-3">
+          <Illustration caption="CIA-triaden som Venn — tre uavhengige mål, ulike verktøy.">
+            <CiaVennSvg />
+          </Illustration>
+          <Illustration caption="AES-modi: ECB lekker, GCM er førstevalg (AEAD).">
+            <AesModesSvg />
+          </Illustration>
+          <Illustration caption="HMAC: inner+outer hash stopper length-extension.">
+            <HmacInnerOuterSvg />
+          </Illustration>
+          <Illustration caption="IPsec ESP+AH pakke-struktur — hva som krypteres, hva som autentiseres.">
+            <EspPacketLayoutSvg />
+          </Illustration>
+          <Illustration caption="Tre brannmur-typer — hvor høyt opp i stacken de ser.">
+            <FirewallStacksSvg />
+          </Illustration>
+          <Illustration caption="IDS-utfall som confusion-matrix — TP/FP/FN/TN.">
+            <IdsConfusionMatrixSvg />
+          </Illustration>
+        </div>
+      </section>
+
       {/* ============ B) SAMMENLIGNING — AES vs RSA ============ */}
       <section className="space-y-3">
         <h3 className="text-sm font-semibold text-foreground">b) AES vs. RSA — side-ved-side</h3>
@@ -4910,6 +4977,22 @@ function SectionEksamen() {
             chiffertekster og fjerne nøkkelen — total catastrophe. For ECDSA gir gjenbruk av k ut
             den private nøkkelen direkte (kjent fra Sony PS3).
           </Fallgruve>
+        </div>
+
+        {/* Visuelle fallgruve-illustrasjoner */}
+        <div className="grid md:grid-cols-2 gap-3 pt-2">
+          <Illustration caption="HTTPS er en stack — DNS, IP og SNI lekker selv om TLS krypterer HTTP-en.">
+            <HttpsStackSvg />
+          </Illustration>
+          <Illustration caption="Passord-lagring: ren SHA-256 faller på timer; salt + argon2id gjør hver gjetning kostbar.">
+            <SaltKdfSvg />
+          </Illustration>
+          <Illustration caption="WAF og brannmur ser ulike lag — supplementer, ikke erstattere.">
+            <WafVsFirewallSvg />
+          </Illustration>
+          <Illustration caption="XSS · CSRF · SQLi: tre angrep, samme grunnfeil — input tolkes som kode i feil kontekst.">
+            <WebAttacksFlowSvg />
+          </Illustration>
         </div>
       </section>
 
@@ -5357,6 +5440,1710 @@ function KryptoBeslutningSvg() {
           Primitiv-valg (blad)
         </text>
       </g>
+    </svg>
+  );
+}
+
+// ===========================================================================
+// Nye illustrasjoner — kap. 8 visuelle anker
+// ===========================================================================
+
+/** 1) CIA-triad som tre-sirkel-Venn */
+function CiaVennSvg() {
+  return (
+    <svg viewBox="0 0 520 260" className="w-full h-auto" aria-label="CIA-triaden som Venn-diagram">
+      <text
+        x={260}
+        y={18}
+        textAnchor="middle"
+        className="fill-foreground text-[12px] font-semibold"
+      >
+        CIA-triaden — tre uavhengige mål, ett nettverk
+      </text>
+      <circle cx={205} cy={130} r={70} className="fill-brand/15 stroke-brand" strokeWidth={1.5} />
+      <circle
+        cx={315}
+        cy={130}
+        r={70}
+        className="fill-success/15 stroke-success"
+        strokeWidth={1.5}
+      />
+      <circle
+        cx={260}
+        cy={195}
+        r={70}
+        className="fill-amber-500/15 stroke-amber-500"
+        strokeWidth={1.5}
+      />
+      <text x={170} y={95} textAnchor="middle" className="fill-brand text-[11px] font-semibold">
+        C — Confidentiality
+      </text>
+      <text x={170} y={108} textAnchor="middle" className="fill-muted-foreground text-[9px]">
+        kryptering
+      </text>
+      <text x={355} y={95} textAnchor="middle" className="fill-success text-[11px] font-semibold">
+        I — Integrity
+      </text>
+      <text x={355} y={108} textAnchor="middle" className="fill-muted-foreground text-[9px]">
+        hash · MAC · signatur
+      </text>
+      <text
+        x={260}
+        y={245}
+        textAnchor="middle"
+        className="fill-amber-700 dark:fill-amber-400 text-[11px] font-semibold"
+      >
+        A — Availability
+      </text>
+      <text x={260} y={257} textAnchor="middle" className="fill-muted-foreground text-[9px]">
+        redundans · rate-limit
+      </text>
+      <text x={260} y={135} textAnchor="middle" className="fill-foreground text-[10px] font-bold">
+        C ∩ I
+      </text>
+      <text x={260} y={148} textAnchor="middle" className="fill-muted-foreground text-[8px]">
+        AEAD (GCM)
+      </text>
+      <text x={228} y={185} textAnchor="middle" className="fill-foreground text-[9px]">
+        C ∩ A
+      </text>
+      <text x={295} y={185} textAnchor="middle" className="fill-foreground text-[9px]">
+        I ∩ A
+      </text>
+    </svg>
+  );
+}
+
+/** 2) AES-modi som fire boks-diagrammer */
+function AesModesSvg() {
+  const modes = [
+    { x: 10, name: "ECB", color: "destructive", ok: false, note: "Lekker mønstre" },
+    { x: 140, name: "CBC", color: "amber-500", ok: true, note: "Trenger IV · seriell" },
+    { x: 270, name: "CTR", color: "brand", ok: true, note: "Parallell · ingen padding" },
+    { x: 400, name: "GCM", color: "success", ok: true, note: "AEAD · krypt + auth" },
+  ];
+  return (
+    <svg viewBox="0 0 530 230" className="w-full h-auto" aria-label="Fire AES-modi">
+      <text
+        x={265}
+        y={18}
+        textAnchor="middle"
+        className="fill-foreground text-[12px] font-semibold"
+      >
+        AES-modi — hvordan blokker kjedes
+      </text>
+      {modes.map((m) => (
+        <g key={m.name}>
+          <rect
+            x={m.x}
+            y={30}
+            width={120}
+            height={170}
+            rx={8}
+            className={`fill-${m.color}/10 stroke-${m.color}`}
+            strokeWidth={1.5}
+          />
+          <text
+            x={m.x + 60}
+            y={52}
+            textAnchor="middle"
+            className={`fill-${m.color} text-[13px] font-bold`}
+          >
+            {m.name}
+          </text>
+          {/* mini-diagram inni boksen — 3 blokker */}
+          {[0, 1, 2].map((i) => (
+            <g key={i}>
+              <rect
+                x={m.x + 14 + i * 30}
+                y={70}
+                width={22}
+                height={22}
+                className="fill-muted/30 stroke-muted-foreground"
+                strokeWidth={0.8}
+              />
+              <text
+                x={m.x + 25 + i * 30}
+                y={86}
+                textAnchor="middle"
+                className="fill-foreground text-[8px]"
+              >
+                P{i + 1}
+              </text>
+            </g>
+          ))}
+          {/* chiffer-blokker */}
+          {[0, 1, 2].map((i) => {
+            // ECB: like P-blokker → like C-blokker (vises ved samme farge)
+            const sameOutput =
+              m.name === "ECB" && i === 2 ? "fill-destructive/40" : `fill-${m.color}/40`;
+            return (
+              <g key={`c${i}`}>
+                <rect
+                  x={m.x + 14 + i * 30}
+                  y={130}
+                  width={22}
+                  height={22}
+                  className={`${sameOutput} stroke-${m.color}`}
+                  strokeWidth={0.8}
+                />
+                <text
+                  x={m.x + 25 + i * 30}
+                  y={146}
+                  textAnchor="middle"
+                  className="fill-foreground text-[8px]"
+                >
+                  C{i + 1}
+                </text>
+              </g>
+            );
+          })}
+          {/* Piler P→C */}
+          {[0, 1, 2].map((i) => (
+            <line
+              key={`a${i}`}
+              x1={m.x + 25 + i * 30}
+              y1={94}
+              x2={m.x + 25 + i * 30}
+              y2={128}
+              className="stroke-muted-foreground"
+              strokeWidth={0.8}
+            />
+          ))}
+          <text
+            x={m.x + 60}
+            y={178}
+            textAnchor="middle"
+            className="fill-muted-foreground text-[9px]"
+          >
+            {m.note}
+          </text>
+          <text
+            x={m.x + 60}
+            y={192}
+            textAnchor="middle"
+            className={
+              m.ok
+                ? "fill-success text-[10px] font-semibold"
+                : "fill-destructive text-[10px] font-semibold"
+            }
+          >
+            {m.ok ? "✓ trygt" : "✗ usikker"}
+          </text>
+        </g>
+      ))}
+      <text x={265} y={222} textAnchor="middle" className="fill-muted-foreground text-[9px] italic">
+        Like input-blokker i ECB gir like output-blokker — derfor lekker mønstre
+      </text>
+    </svg>
+  );
+}
+
+/** 3) Hash-chain — som blokk-kjede med koblede hasher */
+function HashChainSvg() {
+  return (
+    <svg viewBox="0 0 520 200" className="w-full h-auto" aria-label="Hash-chain">
+      <text
+        x={260}
+        y={18}
+        textAnchor="middle"
+        className="fill-foreground text-[12px] font-semibold"
+      >
+        Hash-kjede — hver blokk binder seg til den forrige
+      </text>
+      {[0, 1, 2, 3].map((i) => (
+        <g key={i}>
+          <rect
+            x={20 + i * 125}
+            y={50}
+            width={105}
+            height={100}
+            rx={6}
+            className="fill-card stroke-brand"
+            strokeWidth={1.3}
+          />
+          <text
+            x={72 + i * 125}
+            y={68}
+            textAnchor="middle"
+            className="fill-brand text-[10px] font-semibold"
+          >
+            Blokk #{i}
+          </text>
+          <rect
+            x={32 + i * 125}
+            y={76}
+            width={80}
+            height={18}
+            rx={2}
+            className="fill-muted/30 stroke-muted-foreground"
+            strokeWidth={0.6}
+          />
+          <text x={72 + i * 125} y={88} textAnchor="middle" className="fill-foreground text-[8px]">
+            data {i}
+          </text>
+          <rect
+            x={32 + i * 125}
+            y={100}
+            width={80}
+            height={14}
+            rx={2}
+            className="fill-amber-500/15 stroke-amber-500"
+            strokeWidth={0.6}
+          />
+          <text x={72 + i * 125} y={110} textAnchor="middle" className="fill-foreground text-[7px]">
+            prev-hash
+          </text>
+          <rect
+            x={32 + i * 125}
+            y={118}
+            width={80}
+            height={14}
+            rx={2}
+            className="fill-success/15 stroke-success"
+            strokeWidth={0.6}
+          />
+          <text x={72 + i * 125} y={128} textAnchor="middle" className="fill-foreground text-[7px]">
+            H = sha256(...)
+          </text>
+        </g>
+      ))}
+      {[0, 1, 2].map((i) => (
+        <line
+          key={`l${i}`}
+          x1={125 + i * 125}
+          y1={125}
+          x2={147 + i * 125}
+          y2={107}
+          className="stroke-success"
+          strokeWidth={1.4}
+          markerEnd="url(#hc-arrow)"
+        />
+      ))}
+      <defs>
+        <marker
+          id="hc-arrow"
+          viewBox="0 0 10 10"
+          refX={9}
+          refY={5}
+          markerWidth={5}
+          markerHeight={5}
+          orient="auto"
+        >
+          <path d="M0 0 L10 5 L0 10 z" className="fill-success" />
+        </marker>
+      </defs>
+      <text x={260} y={180} textAnchor="middle" className="fill-muted-foreground text-[9px] italic">
+        Endrer du én bit i blokk #1, brytes alle senere hasher
+      </text>
+    </svg>
+  );
+}
+
+/** 4) Tre-faktor-autentisering: vet, har, er */
+function ThreeFactorsSvg() {
+  const fs = [
+    {
+      x: 90,
+      label: "Vet",
+      sub: "kunnskap",
+      ex: "passord · PIN",
+      color: "brand",
+      glyph: "🔑",
+    },
+    {
+      x: 260,
+      label: "Har",
+      sub: "eierskap",
+      ex: "YubiKey · telefon",
+      color: "success",
+      glyph: "⬛",
+    },
+    {
+      x: 430,
+      label: "Er",
+      sub: "biometri",
+      ex: "fingeravtrykk · Face ID",
+      color: "amber-500",
+      glyph: "✦",
+    },
+  ];
+  return (
+    <svg
+      viewBox="0 0 520 220"
+      className="w-full h-auto"
+      aria-label="Tre faktorer for autentisering"
+    >
+      <text
+        x={260}
+        y={18}
+        textAnchor="middle"
+        className="fill-foreground text-[12px] font-semibold"
+      >
+        Autentiseringsfaktorer — MFA kombinerer minst to
+      </text>
+      {fs.map((f) => (
+        <g key={f.label}>
+          <circle
+            cx={f.x}
+            cy={95}
+            r={42}
+            className={`fill-${f.color}/15 stroke-${f.color}`}
+            strokeWidth={1.5}
+          />
+          <text
+            x={f.x}
+            y={88}
+            textAnchor="middle"
+            className={`fill-${f.color} text-[14px] font-bold`}
+          >
+            {f.label}
+          </text>
+          <text x={f.x} y={104} textAnchor="middle" className="fill-foreground text-[9px]">
+            {f.sub}
+          </text>
+          <text
+            x={f.x}
+            y={156}
+            textAnchor="middle"
+            className="fill-foreground text-[10px] font-semibold"
+          >
+            {f.ex}
+          </text>
+        </g>
+      ))}
+      <text x={175} y={195} textAnchor="middle" className="fill-success text-[10px] font-semibold">
+        2FA = Vet + Har
+      </text>
+      <text x={345} y={195} textAnchor="middle" className="fill-success text-[10px] font-semibold">
+        MFA = Vet + Har + Er
+      </text>
+      <text x={260} y={212} textAnchor="middle" className="fill-muted-foreground text-[9px] italic">
+        Hver faktor er uavhengig — tyv av én knekker ikke de andre
+      </text>
+    </svg>
+  );
+}
+
+/** 5) HMAC inner+outer hash som flytdiagram */
+function HmacInnerOuterSvg() {
+  return (
+    <svg viewBox="0 0 520 240" className="w-full h-auto" aria-label="HMAC inner og outer hash">
+      <text
+        x={260}
+        y={18}
+        textAnchor="middle"
+        className="fill-foreground text-[12px] font-semibold"
+      >
+        HMAC = H((K ⊕ opad) ∥ H((K ⊕ ipad) ∥ m))
+      </text>
+
+      {/* Inputs */}
+      <rect
+        x={20}
+        y={45}
+        width={80}
+        height={28}
+        rx={4}
+        className="fill-amber-500/15 stroke-amber-500"
+        strokeWidth={1}
+      />
+      <text x={60} y={62} textAnchor="middle" className="fill-foreground text-[10px] font-semibold">
+        nøkkel K
+      </text>
+      <rect
+        x={20}
+        y={85}
+        width={80}
+        height={28}
+        rx={4}
+        className="fill-brand/15 stroke-brand"
+        strokeWidth={1}
+      />
+      <text
+        x={60}
+        y={102}
+        textAnchor="middle"
+        className="fill-foreground text-[10px] font-semibold"
+      >
+        melding m
+      </text>
+
+      {/* K ⊕ ipad */}
+      <rect
+        x={140}
+        y={45}
+        width={90}
+        height={28}
+        rx={4}
+        className="fill-card stroke-muted-foreground"
+        strokeWidth={1}
+      />
+      <text x={185} y={62} textAnchor="middle" className="fill-foreground text-[10px]">
+        K ⊕ ipad
+      </text>
+      <line x1={100} y1={59} x2={140} y2={59} className="stroke-amber-500" strokeWidth={1.2} />
+
+      {/* Inner hash */}
+      <rect
+        x={260}
+        y={45}
+        width={120}
+        height={56}
+        rx={6}
+        className="fill-brand/10 stroke-brand"
+        strokeWidth={1.5}
+      />
+      <text x={320} y={68} textAnchor="middle" className="fill-brand text-[11px] font-semibold">
+        H( inner )
+      </text>
+      <text x={320} y={84} textAnchor="middle" className="fill-muted-foreground text-[9px]">
+        sha256 første gang
+      </text>
+      <line x1={230} y1={59} x2={260} y2={66} className="stroke-muted-foreground" strokeWidth={1} />
+      <line x1={100} y1={99} x2={260} y2={82} className="stroke-brand" strokeWidth={1} />
+
+      {/* K ⊕ opad */}
+      <rect
+        x={140}
+        y={130}
+        width={90}
+        height={28}
+        rx={4}
+        className="fill-card stroke-muted-foreground"
+        strokeWidth={1}
+      />
+      <text x={185} y={148} textAnchor="middle" className="fill-foreground text-[10px]">
+        K ⊕ opad
+      </text>
+      <line x1={60} y1={73} x2={60} y2={144} className="stroke-amber-500" strokeWidth={1} />
+      <line x1={60} y1={144} x2={140} y2={144} className="stroke-amber-500" strokeWidth={1} />
+
+      {/* Outer hash */}
+      <rect
+        x={260}
+        y={130}
+        width={120}
+        height={56}
+        rx={6}
+        className="fill-success/10 stroke-success"
+        strokeWidth={1.5}
+      />
+      <text x={320} y={153} textAnchor="middle" className="fill-success text-[11px] font-semibold">
+        H( outer )
+      </text>
+      <text x={320} y={169} textAnchor="middle" className="fill-muted-foreground text-[9px]">
+        sha256 andre gang
+      </text>
+      <line
+        x1={230}
+        y1={144}
+        x2={260}
+        y2={151}
+        className="stroke-muted-foreground"
+        strokeWidth={1}
+      />
+      {/* inner-output mates outer */}
+      <line x1={380} y1={73} x2={400} y2={73} className="stroke-brand" strokeWidth={1.2} />
+      <line x1={400} y1={73} x2={400} y2={158} className="stroke-brand" strokeWidth={1.2} />
+      <line
+        x1={400}
+        y1={158}
+        x2={380}
+        y2={158}
+        className="stroke-brand"
+        strokeWidth={1.2}
+        markerEnd="url(#hmac-arr)"
+      />
+
+      {/* Tag */}
+      <rect
+        x={420}
+        y={140}
+        width={80}
+        height={36}
+        rx={4}
+        className="fill-success stroke-success"
+        strokeWidth={1.2}
+      />
+      <text x={460} y={163} textAnchor="middle" className="fill-background text-[11px] font-bold">
+        HMAC-tag
+      </text>
+      <line
+        x1={380}
+        y1={158}
+        x2={420}
+        y2={158}
+        className="stroke-success"
+        strokeWidth={1.5}
+        markerEnd="url(#hmac-arr)"
+      />
+
+      <defs>
+        <marker
+          id="hmac-arr"
+          viewBox="0 0 10 10"
+          refX={9}
+          refY={5}
+          markerWidth={5}
+          markerHeight={5}
+          orient="auto"
+        >
+          <path d="M0 0 L10 5 L0 10 z" className="fill-foreground" />
+        </marker>
+      </defs>
+
+      <text x={260} y={210} textAnchor="middle" className="fill-muted-foreground text-[9px] italic">
+        Dobbel-hash struktur stopper length-extension-angrep mot Merkle–Damgård
+      </text>
+      <text x={260} y={224} textAnchor="middle" className="fill-muted-foreground text-[9px]">
+        opad = 0x5c gjentatt · ipad = 0x36 gjentatt
+      </text>
+    </svg>
+  );
+}
+
+/** 6) ESP / AH pakke-layout */
+function EspPacketLayoutSvg() {
+  return (
+    <svg viewBox="0 0 520 240" className="w-full h-auto" aria-label="ESP og AH pakke-layout">
+      <text
+        x={260}
+        y={16}
+        textAnchor="middle"
+        className="fill-foreground text-[12px] font-semibold"
+      >
+        IPsec — ESP og AH pakke-struktur
+      </text>
+
+      {/* ESP */}
+      <text x={20} y={42} className="fill-brand text-[11px] font-semibold">
+        ESP (Encapsulating Security Payload)
+      </text>
+      <g>
+        <rect
+          x={20}
+          y={50}
+          width={60}
+          height={42}
+          className="fill-muted/40 stroke-muted-foreground"
+          strokeWidth={1}
+        />
+        <text x={50} y={67} textAnchor="middle" className="fill-foreground text-[9px]">
+          IP-hdr
+        </text>
+        <text x={50} y={80} textAnchor="middle" className="fill-muted-foreground text-[8px]">
+          ny ytre
+        </text>
+
+        <rect
+          x={80}
+          y={50}
+          width={60}
+          height={42}
+          className="fill-brand/20 stroke-brand"
+          strokeWidth={1}
+        />
+        <text x={110} y={67} textAnchor="middle" className="fill-foreground text-[9px]">
+          ESP-hdr
+        </text>
+        <text x={110} y={80} textAnchor="middle" className="fill-muted-foreground text-[8px]">
+          SPI, seq
+        </text>
+
+        <rect
+          x={140}
+          y={50}
+          width={260}
+          height={42}
+          className="fill-success/20 stroke-success"
+          strokeWidth={1}
+        />
+        <text
+          x={270}
+          y={67}
+          textAnchor="middle"
+          className="fill-foreground text-[9px] font-semibold"
+        >
+          Payload (kryptert)
+        </text>
+        <text x={270} y={80} textAnchor="middle" className="fill-muted-foreground text-[8px]">
+          original IP + TCP + data
+        </text>
+
+        <rect
+          x={400}
+          y={50}
+          width={50}
+          height={42}
+          className="fill-amber-500/20 stroke-amber-500"
+          strokeWidth={1}
+        />
+        <text x={425} y={67} textAnchor="middle" className="fill-foreground text-[9px]">
+          ESP-trl
+        </text>
+        <text x={425} y={80} textAnchor="middle" className="fill-muted-foreground text-[8px]">
+          padding
+        </text>
+
+        <rect
+          x={450}
+          y={50}
+          width={50}
+          height={42}
+          className="fill-success/40 stroke-success"
+          strokeWidth={1.2}
+        />
+        <text x={475} y={67} textAnchor="middle" className="fill-foreground text-[9px]">
+          ICV
+        </text>
+        <text x={475} y={80} textAnchor="middle" className="fill-muted-foreground text-[8px]">
+          auth-tag
+        </text>
+      </g>
+      {/* Encrypted span */}
+      <line x1={80} y1={102} x2={450} y2={102} className="stroke-brand" strokeWidth={1.2} />
+      <text x={265} y={114} textAnchor="middle" className="fill-brand text-[8px] font-semibold">
+        kryptert (CONF)
+      </text>
+      {/* Auth span */}
+      <line x1={80} y1={122} x2={500} y2={122} className="stroke-success" strokeWidth={1.2} />
+      <text x={290} y={134} textAnchor="middle" className="fill-success text-[8px] font-semibold">
+        autentisert (INT)
+      </text>
+
+      {/* AH */}
+      <text x={20} y={158} className="fill-amber-700 dark:fill-amber-400 text-[11px] font-semibold">
+        AH (Authentication Header) — kun integritet, brytes av NAT
+      </text>
+      <g>
+        <rect
+          x={20}
+          y={166}
+          width={70}
+          height={42}
+          className="fill-muted/40 stroke-muted-foreground"
+          strokeWidth={1}
+        />
+        <text x={55} y={183} textAnchor="middle" className="fill-foreground text-[9px]">
+          IP-hdr
+        </text>
+        <rect
+          x={90}
+          y={166}
+          width={90}
+          height={42}
+          className="fill-amber-500/20 stroke-amber-500"
+          strokeWidth={1}
+        />
+        <text x={135} y={183} textAnchor="middle" className="fill-foreground text-[9px]">
+          AH-hdr
+        </text>
+        <text x={135} y={196} textAnchor="middle" className="fill-muted-foreground text-[8px]">
+          SPI · seq · ICV
+        </text>
+        <rect
+          x={180}
+          y={166}
+          width={320}
+          height={42}
+          className="fill-muted/30 stroke-muted-foreground"
+          strokeWidth={1}
+        />
+        <text x={340} y={183} textAnchor="middle" className="fill-foreground text-[9px]">
+          Payload (KLARTEKST)
+        </text>
+        <text x={340} y={196} textAnchor="middle" className="fill-muted-foreground text-[8px]">
+          original TCP + data
+        </text>
+      </g>
+      <line x1={20} y1={218} x2={500} y2={218} className="stroke-amber-500" strokeWidth={1.2} />
+      <text
+        x={260}
+        y={230}
+        textAnchor="middle"
+        className="fill-amber-700 dark:fill-amber-400 text-[8px] font-semibold"
+      >
+        autentisert (også ytre IP-header — NAT endrer den og bryter ICV)
+      </text>
+    </svg>
+  );
+}
+
+/** 7) Brannmur-typer som tre stack-diagrammer */
+function FirewallStacksSvg() {
+  const types = [
+    {
+      x: 20,
+      title: "Stateless filter",
+      sub: "ingen flow-minne",
+      layers: ["L4 port", "L3 IP", "regel-tabell"],
+      color: "amber-500",
+    },
+    {
+      x: 190,
+      title: "Stateful",
+      sub: "conntrack-tabell",
+      layers: ["conntrack", "L4 port", "L3 IP", "regel-tabell"],
+      color: "brand",
+    },
+    {
+      x: 360,
+      title: "App-gateway / WAF",
+      sub: "ser lag-7",
+      layers: ["HTTP-parse", "conntrack", "L4 / L3", "OWASP-mønstre"],
+      color: "success",
+    },
+  ];
+  return (
+    <svg viewBox="0 0 520 240" className="w-full h-auto" aria-label="Tre brannmur-typer">
+      <text
+        x={260}
+        y={16}
+        textAnchor="middle"
+        className="fill-foreground text-[12px] font-semibold"
+      >
+        Tre generasjoner brannmur — hvor høyt opp ser den?
+      </text>
+      {types.map((t) => (
+        <g key={t.title}>
+          <rect
+            x={t.x}
+            y={32}
+            width={140}
+            height={200}
+            rx={8}
+            className={`fill-${t.color}/5 stroke-${t.color}`}
+            strokeWidth={1.5}
+          />
+          <text
+            x={t.x + 70}
+            y={50}
+            textAnchor="middle"
+            className={`fill-${t.color} text-[11px] font-semibold`}
+          >
+            {t.title}
+          </text>
+          <text
+            x={t.x + 70}
+            y={64}
+            textAnchor="middle"
+            className="fill-muted-foreground text-[9px]"
+          >
+            {t.sub}
+          </text>
+          {t.layers.map((layer, i) => (
+            <g key={layer}>
+              <rect
+                x={t.x + 12}
+                y={80 + i * 28}
+                width={116}
+                height={22}
+                rx={3}
+                className={`fill-${t.color}/15 stroke-${t.color}`}
+                strokeWidth={0.8}
+              />
+              <text
+                x={t.x + 70}
+                y={95 + i * 28}
+                textAnchor="middle"
+                className="fill-foreground text-[10px]"
+              >
+                {layer}
+              </text>
+            </g>
+          ))}
+          <text
+            x={t.x + 70}
+            y={222}
+            textAnchor="middle"
+            className="fill-muted-foreground text-[9px] italic"
+          >
+            ↑ pakke
+          </text>
+        </g>
+      ))}
+    </svg>
+  );
+}
+
+/** 8) IDS/IPS confusion-matrix */
+function IdsConfusionMatrixSvg() {
+  return (
+    <svg viewBox="0 0 520 260" className="w-full h-auto" aria-label="Confusion-matrix for IDS">
+      <text
+        x={260}
+        y={18}
+        textAnchor="middle"
+        className="fill-foreground text-[12px] font-semibold"
+      >
+        IDS-utfall — fire ruter i confusion-matrix
+      </text>
+
+      {/* Akser */}
+      <text
+        x={260}
+        y={42}
+        textAnchor="middle"
+        className="fill-foreground text-[10px] font-semibold"
+      >
+        Faktisk
+      </text>
+      <text x={195} y={62} textAnchor="middle" className="fill-foreground text-[9px]">
+        angrep
+      </text>
+      <text x={365} y={62} textAnchor="middle" className="fill-foreground text-[9px]">
+        normal
+      </text>
+      <text
+        x={50}
+        y={155}
+        textAnchor="middle"
+        className="fill-foreground text-[10px] font-semibold"
+        transform="rotate(-90, 50, 155)"
+      >
+        Forutsagt
+      </text>
+      <text x={90} y={110} textAnchor="middle" className="fill-foreground text-[9px]">
+        alarm
+      </text>
+      <text x={90} y={195} textAnchor="middle" className="fill-foreground text-[9px]">
+        ingen
+      </text>
+
+      {/* Fire ruter */}
+      <rect
+        x={120}
+        y={70}
+        width={160}
+        height={80}
+        className="fill-success/15 stroke-success"
+        strokeWidth={1.5}
+      />
+      <text x={200} y={100} textAnchor="middle" className="fill-success text-[11px] font-bold">
+        TP
+      </text>
+      <text x={200} y={120} textAnchor="middle" className="fill-foreground text-[10px]">
+        True Positive
+      </text>
+      <text x={200} y={138} textAnchor="middle" className="fill-muted-foreground text-[9px]">
+        ekte angrep oppdaget
+      </text>
+
+      <rect
+        x={280}
+        y={70}
+        width={160}
+        height={80}
+        className="fill-destructive/15 stroke-destructive"
+        strokeWidth={1.5}
+      />
+      <text x={360} y={100} textAnchor="middle" className="fill-destructive text-[11px] font-bold">
+        FP
+      </text>
+      <text x={360} y={120} textAnchor="middle" className="fill-foreground text-[10px]">
+        False Positive
+      </text>
+      <text x={360} y={138} textAnchor="middle" className="fill-muted-foreground text-[9px]">
+        falsk alarm
+      </text>
+
+      <rect
+        x={120}
+        y={150}
+        width={160}
+        height={80}
+        className="fill-destructive/15 stroke-destructive"
+        strokeWidth={1.5}
+      />
+      <text x={200} y={180} textAnchor="middle" className="fill-destructive text-[11px] font-bold">
+        FN
+      </text>
+      <text x={200} y={200} textAnchor="middle" className="fill-foreground text-[10px]">
+        False Negative
+      </text>
+      <text x={200} y={218} textAnchor="middle" className="fill-muted-foreground text-[9px]">
+        glipp — verst!
+      </text>
+
+      <rect
+        x={280}
+        y={150}
+        width={160}
+        height={80}
+        className="fill-success/15 stroke-success"
+        strokeWidth={1.5}
+      />
+      <text x={360} y={180} textAnchor="middle" className="fill-success text-[11px] font-bold">
+        TN
+      </text>
+      <text x={360} y={200} textAnchor="middle" className="fill-foreground text-[10px]">
+        True Negative
+      </text>
+      <text x={360} y={218} textAnchor="middle" className="fill-muted-foreground text-[9px]">
+        normal forblir
+      </text>
+
+      <text x={260} y={250} textAnchor="middle" className="fill-muted-foreground text-[9px] italic">
+        Signatur-IDS: lav FP, høy FN. Anomali-IDS: motsatt.
+      </text>
+    </svg>
+  );
+}
+
+/** 9) Web-angrep-flyt: XSS / CSRF / SQLi side-ved-side */
+function WebAttacksFlowSvg() {
+  return (
+    <svg viewBox="0 0 520 280" className="w-full h-auto" aria-label="Tre web-angreps flyter">
+      <text
+        x={260}
+        y={16}
+        textAnchor="middle"
+        className="fill-foreground text-[12px] font-semibold"
+      >
+        Tre angreps-mønstre — hvor input blir tolket
+      </text>
+
+      {/* XSS */}
+      <g transform="translate(10, 30)">
+        <text x={80} y={12} textAnchor="middle" className="fill-brand text-[11px] font-semibold">
+          XSS
+        </text>
+        <rect
+          x={10}
+          y={20}
+          width={140}
+          height={26}
+          rx={3}
+          className="fill-card stroke-brand"
+          strokeWidth={1}
+        />
+        <text x={80} y={36} textAnchor="middle" className="fill-foreground text-[9px]">
+          Trudy poster &lt;script&gt;
+        </text>
+        <line
+          x1={80}
+          y1={46}
+          x2={80}
+          y2={62}
+          className="stroke-brand"
+          strokeWidth={1}
+          markerEnd="url(#wa-arr)"
+        />
+        <rect
+          x={10}
+          y={62}
+          width={140}
+          height={26}
+          rx={3}
+          className="fill-card stroke-brand"
+          strokeWidth={1}
+        />
+        <text x={80} y={78} textAnchor="middle" className="fill-foreground text-[9px]">
+          Server lagrer ren
+        </text>
+        <line
+          x1={80}
+          y1={88}
+          x2={80}
+          y2={104}
+          className="stroke-brand"
+          strokeWidth={1}
+          markerEnd="url(#wa-arr)"
+        />
+        <rect
+          x={10}
+          y={104}
+          width={140}
+          height={26}
+          rx={3}
+          className="fill-destructive/15 stroke-destructive"
+          strokeWidth={1.2}
+        />
+        <text
+          x={80}
+          y={120}
+          textAnchor="middle"
+          className="fill-foreground text-[9px] font-semibold"
+        >
+          Offer kjører JS!
+        </text>
+        <rect
+          x={10}
+          y={140}
+          width={140}
+          height={48}
+          rx={3}
+          className="fill-success/10 stroke-success"
+          strokeWidth={1}
+        />
+        <text x={80} y={156} textAnchor="middle" className="fill-success text-[9px] font-semibold">
+          Forsvar
+        </text>
+        <text x={80} y={170} textAnchor="middle" className="fill-foreground text-[9px]">
+          escape-ved-utskrift
+        </text>
+        <text x={80} y={182} textAnchor="middle" className="fill-foreground text-[9px]">
+          + CSP-header
+        </text>
+      </g>
+
+      {/* CSRF */}
+      <g transform="translate(180, 30)">
+        <text
+          x={80}
+          y={12}
+          textAnchor="middle"
+          className="fill-amber-700 dark:fill-amber-400 text-[11px] font-semibold"
+        >
+          CSRF
+        </text>
+        <rect
+          x={10}
+          y={20}
+          width={140}
+          height={26}
+          rx={3}
+          className="fill-card stroke-amber-500"
+          strokeWidth={1}
+        />
+        <text x={80} y={36} textAnchor="middle" className="fill-foreground text-[9px]">
+          Offer logget på bank
+        </text>
+        <line
+          x1={80}
+          y1={46}
+          x2={80}
+          y2={62}
+          className="stroke-amber-500"
+          strokeWidth={1}
+          markerEnd="url(#wa-arr)"
+        />
+        <rect
+          x={10}
+          y={62}
+          width={140}
+          height={26}
+          rx={3}
+          className="fill-card stroke-amber-500"
+          strokeWidth={1}
+        />
+        <text x={80} y={78} textAnchor="middle" className="fill-foreground text-[9px]">
+          Besøker evil.com
+        </text>
+        <line
+          x1={80}
+          y1={88}
+          x2={80}
+          y2={104}
+          className="stroke-amber-500"
+          strokeWidth={1}
+          markerEnd="url(#wa-arr)"
+        />
+        <rect
+          x={10}
+          y={104}
+          width={140}
+          height={26}
+          rx={3}
+          className="fill-destructive/15 stroke-destructive"
+          strokeWidth={1.2}
+        />
+        <text
+          x={80}
+          y={120}
+          textAnchor="middle"
+          className="fill-foreground text-[9px] font-semibold"
+        >
+          Auto-POST m/cookie
+        </text>
+        <rect
+          x={10}
+          y={140}
+          width={140}
+          height={48}
+          rx={3}
+          className="fill-success/10 stroke-success"
+          strokeWidth={1}
+        />
+        <text x={80} y={156} textAnchor="middle" className="fill-success text-[9px] font-semibold">
+          Forsvar
+        </text>
+        <text x={80} y={170} textAnchor="middle" className="fill-foreground text-[9px]">
+          SameSite=Lax/Strict
+        </text>
+        <text x={80} y={182} textAnchor="middle" className="fill-foreground text-[9px]">
+          + CSRF-token
+        </text>
+      </g>
+
+      {/* SQLi */}
+      <g transform="translate(350, 30)">
+        <text
+          x={80}
+          y={12}
+          textAnchor="middle"
+          className="fill-destructive text-[11px] font-semibold"
+        >
+          SQLi
+        </text>
+        <rect
+          x={10}
+          y={20}
+          width={140}
+          height={26}
+          rx={3}
+          className="fill-card stroke-destructive"
+          strokeWidth={1}
+        />
+        <text x={80} y={36} textAnchor="middle" className="fill-foreground text-[9px]">
+          Bruker: &apos; OR 1=1 --
+        </text>
+        <line
+          x1={80}
+          y1={46}
+          x2={80}
+          y2={62}
+          className="stroke-destructive"
+          strokeWidth={1}
+          markerEnd="url(#wa-arr)"
+        />
+        <rect
+          x={10}
+          y={62}
+          width={140}
+          height={26}
+          rx={3}
+          className="fill-card stroke-destructive"
+          strokeWidth={1}
+        />
+        <text x={80} y={78} textAnchor="middle" className="fill-foreground text-[9px]">
+          Konkat. inn i SQL
+        </text>
+        <line
+          x1={80}
+          y1={88}
+          x2={80}
+          y2={104}
+          className="stroke-destructive"
+          strokeWidth={1}
+          markerEnd="url(#wa-arr)"
+        />
+        <rect
+          x={10}
+          y={104}
+          width={140}
+          height={26}
+          rx={3}
+          className="fill-destructive/15 stroke-destructive"
+          strokeWidth={1.2}
+        />
+        <text
+          x={80}
+          y={120}
+          textAnchor="middle"
+          className="fill-foreground text-[9px] font-semibold"
+        >
+          DB lekker hele tabell
+        </text>
+        <rect
+          x={10}
+          y={140}
+          width={140}
+          height={48}
+          rx={3}
+          className="fill-success/10 stroke-success"
+          strokeWidth={1}
+        />
+        <text x={80} y={156} textAnchor="middle" className="fill-success text-[9px] font-semibold">
+          Forsvar
+        </text>
+        <text x={80} y={170} textAnchor="middle" className="fill-foreground text-[9px]">
+          parameter-binding
+        </text>
+        <text x={80} y={182} textAnchor="middle" className="fill-foreground text-[9px]">
+          (prepared stmts)
+        </text>
+      </g>
+
+      <defs>
+        <marker
+          id="wa-arr"
+          viewBox="0 0 10 10"
+          refX={9}
+          refY={5}
+          markerWidth={5}
+          markerHeight={5}
+          orient="auto"
+        >
+          <path d="M0 0 L10 5 L0 10 z" className="fill-foreground" />
+        </marker>
+      </defs>
+
+      <text x={260} y={260} textAnchor="middle" className="fill-muted-foreground text-[9px] italic">
+        Felles mønster: brukerdata tolkes som kode/instruksjon — separasjon er forsvaret
+      </text>
+    </svg>
+  );
+}
+
+/** 10) HTTPS-stack — hva som krypteres, hva som lekker */
+function HttpsStackSvg() {
+  return (
+    <svg viewBox="0 0 520 260" className="w-full h-auto" aria-label="HTTPS protokoll-stack">
+      <text
+        x={260}
+        y={18}
+        textAnchor="middle"
+        className="fill-foreground text-[12px] font-semibold"
+      >
+        HTTPS er en stack — TLS krypterer kanalen, ikke alt
+      </text>
+
+      {[
+        {
+          y: 35,
+          name: "HTTP/1.1 · HTTP/2",
+          desc: "request-line, headers, body",
+          crypt: true,
+          label: "applikasjon",
+        },
+        { y: 75, name: "TLS 1.3", desc: "record-layer, AES-GCM", crypt: true, label: "sikkerhet" },
+        {
+          y: 115,
+          name: "TCP",
+          desc: "porter (443), flow-kontroll",
+          crypt: false,
+          label: "transport",
+        },
+        { y: 155, name: "IP", desc: "kilde- og mål-IP synlige", crypt: false, label: "nettverk" },
+      ].map((lay) => (
+        <g key={lay.name}>
+          <rect
+            x={40}
+            y={lay.y}
+            width={400}
+            height={32}
+            rx={4}
+            className={
+              lay.crypt
+                ? "fill-success/15 stroke-success"
+                : "fill-destructive/15 stroke-destructive"
+            }
+            strokeWidth={1.3}
+          />
+          <text x={50} y={lay.y + 20} className="fill-foreground text-[11px] font-semibold">
+            {lay.name}
+          </text>
+          <text x={210} y={lay.y + 20} className="fill-muted-foreground text-[10px]">
+            {lay.desc}
+          </text>
+          <text x={450} y={lay.y + 20} className="fill-muted-foreground text-[10px]">
+            {lay.label}
+          </text>
+        </g>
+      ))}
+
+      {/* Side-band lekkasje */}
+      <rect
+        x={40}
+        y={200}
+        width={400}
+        height={42}
+        rx={6}
+        className="fill-amber-500/10 stroke-amber-500"
+        strokeWidth={1.3}
+      />
+      <text x={50} y={216} className="fill-amber-700 dark:fill-amber-400 text-[10px] font-semibold">
+        Lekker selv med HTTPS:
+      </text>
+      <text x={50} y={232} className="fill-foreground text-[10px]">
+        DNS-spørring · mål-IP · SNI-felt i ClientHello · pakke-størrelse-mønster
+      </text>
+
+      <text x={260} y={256} textAnchor="middle" className="fill-muted-foreground text-[9px] italic">
+        Grønn = kryptert · rød = klartekst · gul = side-kanal-info
+      </text>
+    </svg>
+  );
+}
+
+/** 11) Salt + KDF for passord-lagring */
+function SaltKdfSvg() {
+  return (
+    <svg viewBox="0 0 520 240" className="w-full h-auto" aria-label="Salt og KDF for passord">
+      <text
+        x={260}
+        y={16}
+        textAnchor="middle"
+        className="fill-foreground text-[12px] font-semibold"
+      >
+        Passord-lagring — salt + treig KDF, aldri ren hash
+      </text>
+
+      {/* ANTI-PATTERN */}
+      <text x={20} y={42} className="fill-destructive text-[10px] font-semibold">
+        Anti-mønster — SHA-256(passord)
+      </text>
+      <rect
+        x={20}
+        y={50}
+        width={80}
+        height={26}
+        rx={3}
+        className="fill-card stroke-muted-foreground"
+        strokeWidth={1}
+      />
+      <text x={60} y={66} textAnchor="middle" className="fill-foreground text-[10px]">
+        &quot;Sommer123&quot;
+      </text>
+      <line
+        x1={100}
+        y1={63}
+        x2={130}
+        y2={63}
+        className="stroke-muted-foreground"
+        strokeWidth={1}
+        markerEnd="url(#kdf-arr)"
+      />
+      <rect
+        x={130}
+        y={50}
+        width={90}
+        height={26}
+        rx={3}
+        className="fill-destructive/15 stroke-destructive"
+        strokeWidth={1}
+      />
+      <text x={175} y={66} textAnchor="middle" className="fill-foreground text-[9px]">
+        SHA-256 (rask)
+      </text>
+      <line
+        x1={220}
+        y1={63}
+        x2={250}
+        y2={63}
+        className="stroke-muted-foreground"
+        strokeWidth={1}
+        markerEnd="url(#kdf-arr)"
+      />
+      <rect
+        x={250}
+        y={50}
+        width={130}
+        height={26}
+        rx={3}
+        className="fill-card stroke-muted-foreground"
+        strokeWidth={1}
+      />
+      <text x={315} y={66} textAnchor="middle" className="fill-foreground text-[9px]">
+        9f8e... (lagres)
+      </text>
+      <text x={400} y={66} className="fill-destructive text-[9px]">
+        GPU: 10⁹/sek
+      </text>
+      <text x={20} y={92} className="fill-muted-foreground text-[9px] italic">
+        Rainbow-tables + GPU brute-force knekker mesteparten på timer
+      </text>
+
+      {/* GOOD PATTERN */}
+      <line x1={20} y1={108} x2={500} y2={108} className="stroke-border" strokeWidth={1} />
+
+      <text x={20} y={130} className="fill-success text-[10px] font-semibold">
+        Riktig — unik salt + argon2id
+      </text>
+      <rect
+        x={20}
+        y={138}
+        width={80}
+        height={26}
+        rx={3}
+        className="fill-card stroke-muted-foreground"
+        strokeWidth={1}
+      />
+      <text x={60} y={154} textAnchor="middle" className="fill-foreground text-[10px]">
+        &quot;Sommer123&quot;
+      </text>
+      <rect
+        x={20}
+        y={170}
+        width={80}
+        height={22}
+        rx={3}
+        className="fill-amber-500/20 stroke-amber-500"
+        strokeWidth={1}
+      />
+      <text x={60} y={185} textAnchor="middle" className="fill-foreground text-[9px]">
+        salt (16 B)
+      </text>
+      <line x1={100} y1={151} x2={130} y2={155} className="stroke-success" strokeWidth={1} />
+      <line x1={100} y1={181} x2={130} y2={172} className="stroke-success" strokeWidth={1} />
+      <rect
+        x={130}
+        y={148}
+        width={110}
+        height={36}
+        rx={3}
+        className="fill-success/15 stroke-success"
+        strokeWidth={1.2}
+      />
+      <text x={185} y={164} textAnchor="middle" className="fill-success text-[10px] font-semibold">
+        argon2id
+      </text>
+      <text x={185} y={177} textAnchor="middle" className="fill-muted-foreground text-[8px]">
+        64 MB · 3 iter
+      </text>
+      <line
+        x1={240}
+        y1={166}
+        x2={270}
+        y2={166}
+        className="stroke-muted-foreground"
+        strokeWidth={1}
+        markerEnd="url(#kdf-arr)"
+      />
+      <rect
+        x={270}
+        y={148}
+        width={150}
+        height={36}
+        rx={3}
+        className="fill-card stroke-muted-foreground"
+        strokeWidth={1}
+      />
+      <text x={345} y={164} textAnchor="middle" className="fill-foreground text-[9px]">
+        $argon2id$v=19$...$h
+      </text>
+      <text x={345} y={177} textAnchor="middle" className="fill-muted-foreground text-[8px]">
+        (lagres med salt + cost)
+      </text>
+      <text x={430} y={168} className="fill-success text-[9px]">
+        ~1 gjet/s
+      </text>
+      <text x={20} y={210} className="fill-muted-foreground text-[9px] italic">
+        Unik salt blokkerer rainbow-tables · KDF gjør hver gjetning kostbar
+      </text>
+      <text x={20} y={224} className="fill-muted-foreground text-[9px]">
+        Alternativer: bcrypt (eldre), scrypt (minne-hardt). Aldri MD5/SHA1/SHA256 alene.
+      </text>
+
+      <defs>
+        <marker
+          id="kdf-arr"
+          viewBox="0 0 10 10"
+          refX={9}
+          refY={5}
+          markerWidth={5}
+          markerHeight={5}
+          orient="auto"
+        >
+          <path d="M0 0 L10 5 L0 10 z" className="fill-foreground" />
+        </marker>
+      </defs>
+    </svg>
+  );
+}
+
+/** 12) WAF vs brannmur — lag-perspektiv */
+function WafVsFirewallSvg() {
+  return (
+    <svg viewBox="0 0 520 240" className="w-full h-auto" aria-label="WAF vs brannmur">
+      <text
+        x={260}
+        y={18}
+        textAnchor="middle"
+        className="fill-foreground text-[12px] font-semibold"
+      >
+        WAF og brannmur — ulike lag, supplementer ikke erstattere
+      </text>
+
+      {/* Klient */}
+      <circle cx={40} cy={130} r={18} className="fill-brand/20 stroke-brand" strokeWidth={1.2} />
+      <text x={40} y={134} textAnchor="middle" className="fill-foreground text-[10px]">
+        klient
+      </text>
+
+      {/* Vanlig brannmur */}
+      <rect
+        x={90}
+        y={70}
+        width={120}
+        height={120}
+        rx={8}
+        className="fill-amber-500/10 stroke-amber-500"
+        strokeWidth={1.5}
+      />
+      <text
+        x={150}
+        y={90}
+        textAnchor="middle"
+        className="fill-amber-700 dark:fill-amber-400 text-[11px] font-semibold"
+      >
+        Brannmur
+      </text>
+      <text x={150} y={104} textAnchor="middle" className="fill-muted-foreground text-[9px]">
+        L3–L4
+      </text>
+      <rect
+        x={102}
+        y={120}
+        width={96}
+        height={18}
+        rx={2}
+        className="fill-card stroke-muted-foreground"
+        strokeWidth={0.7}
+      />
+      <text x={150} y={133} textAnchor="middle" className="fill-foreground text-[9px]">
+        src/dst IP
+      </text>
+      <rect
+        x={102}
+        y={142}
+        width={96}
+        height={18}
+        rx={2}
+        className="fill-card stroke-muted-foreground"
+        strokeWidth={0.7}
+      />
+      <text x={150} y={155} textAnchor="middle" className="fill-foreground text-[9px]">
+        port (80, 443)
+      </text>
+      <rect
+        x={102}
+        y={164}
+        width={96}
+        height={18}
+        rx={2}
+        className="fill-card stroke-muted-foreground"
+        strokeWidth={0.7}
+      />
+      <text x={150} y={177} textAnchor="middle" className="fill-foreground text-[9px]">
+        TCP-tilstand
+      </text>
+
+      {/* WAF */}
+      <rect
+        x={240}
+        y={70}
+        width={120}
+        height={120}
+        rx={8}
+        className="fill-success/10 stroke-success"
+        strokeWidth={1.5}
+      />
+      <text x={300} y={90} textAnchor="middle" className="fill-success text-[11px] font-semibold">
+        WAF
+      </text>
+      <text x={300} y={104} textAnchor="middle" className="fill-muted-foreground text-[9px]">
+        L7 (HTTP-innhold)
+      </text>
+      <rect
+        x={252}
+        y={120}
+        width={96}
+        height={18}
+        rx={2}
+        className="fill-card stroke-muted-foreground"
+        strokeWidth={0.7}
+      />
+      <text x={300} y={133} textAnchor="middle" className="fill-foreground text-[9px]">
+        URI · headers
+      </text>
+      <rect
+        x={252}
+        y={142}
+        width={96}
+        height={18}
+        rx={2}
+        className="fill-card stroke-muted-foreground"
+        strokeWidth={0.7}
+      />
+      <text x={300} y={155} textAnchor="middle" className="fill-foreground text-[9px]">
+        body-mønstre
+      </text>
+      <rect
+        x={252}
+        y={164}
+        width={96}
+        height={18}
+        rx={2}
+        className="fill-card stroke-muted-foreground"
+        strokeWidth={0.7}
+      />
+      <text x={300} y={177} textAnchor="middle" className="fill-foreground text-[9px]">
+        SQLi · XSS-regex
+      </text>
+
+      {/* Webserver */}
+      <rect
+        x={400}
+        y={108}
+        width={100}
+        height={50}
+        rx={6}
+        className="fill-card stroke-brand"
+        strokeWidth={1.2}
+      />
+      <text
+        x={450}
+        y={130}
+        textAnchor="middle"
+        className="fill-foreground text-[11px] font-semibold"
+      >
+        Webserver
+      </text>
+      <text x={450} y={146} textAnchor="middle" className="fill-muted-foreground text-[9px]">
+        applikasjon
+      </text>
+
+      <line
+        x1={58}
+        y1={130}
+        x2={88}
+        y2={130}
+        className="stroke-foreground/50"
+        strokeWidth={1.5}
+        markerEnd="url(#waf-arr)"
+      />
+      <line
+        x1={210}
+        y1={130}
+        x2={238}
+        y2={130}
+        className="stroke-foreground/50"
+        strokeWidth={1.5}
+        markerEnd="url(#waf-arr)"
+      />
+      <line
+        x1={360}
+        y1={130}
+        x2={398}
+        y2={130}
+        className="stroke-foreground/50"
+        strokeWidth={1.5}
+        markerEnd="url(#waf-arr)"
+      />
+
+      <defs>
+        <marker
+          id="waf-arr"
+          viewBox="0 0 10 10"
+          refX={9}
+          refY={5}
+          markerWidth={5}
+          markerHeight={5}
+          orient="auto"
+        >
+          <path d="M0 0 L10 5 L0 10 z" className="fill-foreground" />
+        </marker>
+      </defs>
+
+      <text x={260} y={215} textAnchor="middle" className="fill-muted-foreground text-[9px] italic">
+        Brannmur stopper portscan og uautoriserte IP-er.
+      </text>
+      <text x={260} y={228} textAnchor="middle" className="fill-muted-foreground text-[9px] italic">
+        WAF stopper SQLi/XSS i payload som brannmuren slipper gjennom på port 443.
+      </text>
     </svg>
   );
 }

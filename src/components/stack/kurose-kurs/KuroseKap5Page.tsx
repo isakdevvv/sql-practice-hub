@@ -3674,6 +3674,12 @@ while N' ≠ alle noder:
               Når løkka er ferdig: D(v) er korteste avstand u→v, p(v) gir baklengs sti.
               Kompleksitet: O(n²) naivt, O(n log n) med min-heap.
             </p>
+            <div className="mt-2 rounded bg-muted/20 p-2">
+              <DijkstraPseudocodeFlowSvg />
+              <p className="text-[10px] text-muted-foreground mt-1 italic text-center">
+                Dijkstra som flowchart — init, velg-min, relax, gjenta.
+              </p>
+            </div>
           </div>
 
           <div>
@@ -3696,6 +3702,12 @@ Stabil tilstand: ingen endringer på en runde.
               Ligningen «D_x(y) = min_v ( c(x,v) + D_v(y) )» er Bellman-Ford-essensen — alltid det
               minste av (kost til naboen) + (det naboen selv klarer).
             </p>
+            <div className="mt-2 rounded bg-muted/20 p-2">
+              <BellmanFordUpdateSvg />
+              <p className="text-[10px] text-muted-foreground mt-1 italic text-center">
+                Hvordan D_x(y) oppdateres når nabo sender ny vektor.
+              </p>
+            </div>
           </div>
         </div>
 
@@ -3719,6 +3731,13 @@ Stabil tilstand: ingen endringer på en runde.
               tall.
             </li>
           </ul>
+          <div className="mt-2 rounded bg-muted/20 p-2">
+            <CountToInfinityTimelineSvg />
+            <p className="text-[10px] text-muted-foreground mt-1 italic text-center">
+              Tidslinje: B og C bytter stadig økende falske avstander til X — én iterasjon per
+              kolonne.
+            </p>
+          </div>
         </div>
 
         <div className="mt-3 grid gap-3 lg:grid-cols-2">
@@ -3747,6 +3766,12 @@ Stabil tilstand: ingen endringer på en runde.
               </li>
               <li>Konvergens: sekunder; alle ASBR/ABR ser samme topologi-database.</li>
             </ul>
+            <div className="mt-2 rounded bg-muted/20 p-2">
+              <OspfAreasColoredSvg />
+              <p className="text-[10px] text-muted-foreground mt-1 italic text-center">
+                Areas som fargede regioner — backbone (område 0) i midten, ABR-er på grensene.
+              </p>
+            </div>
           </div>
 
           <div>
@@ -3786,6 +3811,12 @@ Stabil tilstand: ingen endringer på en runde.
               Husk: BGP er <strong>policy</strong>-basert, ikke shortest-path. Steg 1 (LOCAL_PREF)
               kan overstyre alt annet, og det er der pengene tjenes.
             </p>
+            <div className="mt-2 rounded bg-muted/20 p-2">
+              <BgpPathSelectionStepsSvg />
+              <p className="text-[10px] text-muted-foreground mt-1 italic text-center">
+                Beslutningstre — første kriterium som skiller stiene vinner.
+              </p>
+            </div>
           </div>
         </div>
 
@@ -3813,6 +3844,12 @@ Stabil tilstand: ingen endringer på en runde.
             Hvorfor broadcast på Request: alle servere må vite om beslutningen så de slipper å holde
             adressen reservert. Renewal etter halv lease-tid skjer unicast direkte til serveren.
           </p>
+          <div className="mt-2 rounded bg-muted/20 p-2">
+            <DhcpDora4MessageFlowSvg />
+            <p className="text-[10px] text-muted-foreground mt-1 italic text-center">
+              DORA: 4 meldinger mellom klient og server — under 200 ms i kafé-WiFi.
+            </p>
+          </div>
         </div>
       </Cheat>
 
@@ -3869,6 +3906,10 @@ Stabil tilstand: ingen endringer på en runde.
         </div>
       </Illustration>
 
+      <Illustration caption="Side-ved-side topologi: OSPF dekker en flat AS-topologi med vekter på lenkene; BGP ser kun AS-grafen og prater policy mellom dem.">
+        <OspfVsBgpTopologyCompareSvg />
+      </Illustration>
+
       {/* ---------- c) Beslutningstre ---------- */}
       <Illustration caption="Beslutningstre: hvilken routing-protokoll passer for ditt use-case?">
         <ProtocolDecisionTreeSvg />
@@ -3885,6 +3926,12 @@ Stabil tilstand: ingen endringer på en runde.
           har <em>ingen</em> intern topologi-tegning. LS-noder flooder hele lenke-databasen og
           kjører Dijkstra selv. Hvis du skriver «OSPF sender sin distance-vektor til naboer», har du
           blandet det.
+          <div className="mt-2 rounded bg-background p-2">
+            <DvVsLsAlgoSvg />
+            <p className="text-[10px] text-muted-foreground mt-1 italic text-center">
+              DV: kun «hvor langt + via hvem». LS: hele lenke-databasen + lokal Dijkstra.
+            </p>
+          </div>
         </Fallgruve>
 
         <Fallgruve tittel="Tro at BGP velger korteste sti">
@@ -3892,6 +3939,13 @@ Stabil tilstand: ingen endringer på en runde.
           geografisk distanse, ikke båndbredde, ikke ms forsinkelse). Det avgjørende steget er
           LOCAL_PREF, satt manuelt for å reflektere kommersielle avtaler — «vi foretrekker å sende
           via kunden vi tjener penger på» kan trumfe en kortere sti gjennom transit-leverandøren.
+          <div className="mt-2 rounded bg-background p-2">
+            <BgpPolicyOverlaySvg />
+            <p className="text-[10px] text-muted-foreground mt-1 italic text-center">
+              Korteste AS_PATH = 2 hopp, men kunde-policy (LOCAL_PREF=200) overstyrer og velger
+              3-hopp-stien.
+            </p>
+          </div>
         </Fallgruve>
 
         <Fallgruve tittel="Glemme at OSPF area-grenser bruker Type 3 LSA">
@@ -3899,6 +3953,12 @@ Stabil tilstand: ingen endringer på en runde.
           border router (ABR) og re-injiseres som Type 3 Summary LSA. Hvis du sier «alle OSPF-rutere
           ser samme database overalt», stemmer det bare innen ett area — backbone og leaf-areas har
           ulik intern detalj.
+          <div className="mt-2 rounded bg-background p-2">
+            <Type3LsaBetweenAreasSvg />
+            <p className="text-[10px] text-muted-foreground mt-1 italic text-center">
+              Type 1/2 stoppes ved ABR; Type 3 «10.20.0.0/16, kost=42» krysser grensen.
+            </p>
+          </div>
         </Fallgruve>
 
         <Fallgruve tittel="Tro at ICMP står for «Internet Control Protocol»">
@@ -3906,6 +3966,12 @@ Stabil tilstand: ingen endringer på en runde.
           protokoll i Kuroses forstand — det bygger ikke ruter, det rapporterer feil og brukes til
           diagnostikk (ping, traceroute, «Destination Unreachable», «Time Exceeded»). Tabben ligger
           i kap. 5 fordi den lever ved siden av IP, ikke fordi den hjelper med ruting.
+          <div className="mt-2 rounded bg-background p-2">
+            <IcmpNameConfusionSvg />
+            <p className="text-[10px] text-muted-foreground mt-1 italic text-center">
+              ICMP = «message» — diagnose-kanal, ikke ruting. Kontroll i navnet, ikke i jobben.
+            </p>
+          </div>
         </Fallgruve>
 
         <Fallgruve tittel="Si at DHCP bruker TCP">
@@ -3938,6 +4004,12 @@ Stabil tilstand: ingen endringer på en runde.
 
       {/* ---------- e) 5-minutter-anker ---------- */}
       <Anker tittel="5-minutter-anker — les disse rett før du går inn">
+        <div className="rounded bg-background/60 p-2 mb-3">
+          <FiveMinAnker15CardsSvg />
+          <p className="text-[10px] text-muted-foreground mt-1 italic text-center">
+            15 visuelle anker-kort — én idé per kort, samme rekkefølge som lista nedenfor.
+          </p>
+        </div>
         <ol className="list-decimal pl-5 text-[13px] space-y-1.5">
           <li>
             <strong>Control-plane bygger tabellen, data-plane bruker den.</strong> Hastighetene
@@ -4369,6 +4441,1865 @@ function ProtocolDecisionTreeSvg() {
       <text x={20} y={418} className="fill-muted-foreground text-[10px] italic">
         Grønn = distance-vector · blå = link-state · oransje = path-vector · lilla = sentralisert.
       </text>
+    </svg>
+  );
+}
+
+// ============================================================
+// Nye SVG-er for Eksamen-fokus-tabben (5.9)
+// ============================================================
+
+function DijkstraPseudocodeFlowSvg() {
+  // Flowchart: 4 boxes connected vertically + loop-back arrow
+  return (
+    <svg
+      viewBox="0 0 360 320"
+      className="w-full h-auto"
+      role="img"
+      aria-label="Dijkstra som flowchart"
+    >
+      {/* Step 1: Init */}
+      <rect
+        x={100}
+        y={10}
+        width={160}
+        height={42}
+        rx={4}
+        className="fill-brand/15 stroke-brand"
+        strokeWidth={1.5}
+      />
+      <text
+        x={180}
+        y={28}
+        textAnchor="middle"
+        className="fill-foreground text-[11px] font-semibold"
+      >
+        1. Init
+      </text>
+      <text x={180} y={44} textAnchor="middle" className="fill-muted-foreground text-[9px]">
+        N&apos;={"{u}"}, D(v)=c(u,v) eller ∞
+      </text>
+
+      {/* Arrow */}
+      <line x1={180} y1={52} x2={180} y2={75} className="stroke-foreground" strokeWidth={1.2} />
+      <polygon points="176,72 184,72 180,80" className="fill-foreground" />
+
+      {/* Step 2: Decision diamond — alle besøkt? */}
+      <polygon
+        points="180,80 270,115 180,150 90,115"
+        className="fill-amber-500/15 stroke-amber-500"
+        strokeWidth={1.5}
+      />
+      <text
+        x={180}
+        y={111}
+        textAnchor="middle"
+        className="fill-foreground text-[10px] font-semibold"
+      >
+        Alle noder
+      </text>
+      <text x={180} y={124} textAnchor="middle" className="fill-foreground text-[10px]">
+        i N&apos;?
+      </text>
+
+      {/* Yes branch right -> ferdig */}
+      <line x1={270} y1={115} x2={310} y2={115} className="stroke-foreground" strokeWidth={1.2} />
+      <polygon points="307,111 315,115 307,119" className="fill-foreground" />
+      <text x={290} y={108} textAnchor="middle" className="fill-success text-[9px] font-semibold">
+        ja
+      </text>
+      <rect
+        x={300}
+        y={100}
+        width={56}
+        height={30}
+        rx={4}
+        className="fill-success/15 stroke-success"
+        strokeWidth={1.2}
+      />
+      <text x={328} y={119} textAnchor="middle" className="fill-success text-[10px] font-semibold">
+        Ferdig
+      </text>
+
+      {/* No branch down */}
+      <line x1={180} y1={150} x2={180} y2={170} className="stroke-foreground" strokeWidth={1.2} />
+      <polygon points="176,167 184,167 180,175" className="fill-foreground" />
+      <text x={193} y={163} className="fill-muted-foreground text-[9px]">
+        nei
+      </text>
+
+      {/* Step 3: Velg w */}
+      <rect
+        x={80}
+        y={175}
+        width={200}
+        height={38}
+        rx={4}
+        className="fill-brand/15 stroke-brand"
+        strokeWidth={1.5}
+      />
+      <text
+        x={180}
+        y={193}
+        textAnchor="middle"
+        className="fill-foreground text-[11px] font-semibold"
+      >
+        3. Velg w utenfor N&apos; med min D(w)
+      </text>
+      <text x={180} y={207} textAnchor="middle" className="fill-muted-foreground text-[9px]">
+        legg w til N&apos;
+      </text>
+
+      {/* Arrow */}
+      <line x1={180} y1={213} x2={180} y2={232} className="stroke-foreground" strokeWidth={1.2} />
+      <polygon points="176,229 184,229 180,237" className="fill-foreground" />
+
+      {/* Step 4: Relax */}
+      <rect
+        x={60}
+        y={237}
+        width={240}
+        height={42}
+        rx={4}
+        className="fill-purple-500/15 stroke-purple-500"
+        strokeWidth={1.5}
+      />
+      <text
+        x={180}
+        y={255}
+        textAnchor="middle"
+        className="fill-foreground text-[11px] font-semibold"
+      >
+        4. Relax: for hver nabo v av w
+      </text>
+      <text x={180} y={271} textAnchor="middle" className="fill-muted-foreground text-[9px]">
+        if D(w)+c(w,v) &lt; D(v): D(v)=D(w)+c(w,v); p(v)=w
+      </text>
+
+      {/* Loop back arrow up to decision */}
+      <path
+        d="M 60,258 Q 25,258 25,115 Q 25,90 90,115"
+        className="fill-none stroke-foreground"
+        strokeWidth={1.2}
+      />
+      <polygon points="86,111 92,115 86,119" className="fill-foreground" />
+      <text x={32} y={188} className="fill-muted-foreground text-[9px] italic">
+        gjenta
+      </text>
+
+      <text
+        x={180}
+        y={302}
+        textAnchor="middle"
+        className="fill-muted-foreground text-[10px] italic"
+      >
+        Init → mens noder gjenstår → velg-min → relax → loop
+      </text>
+    </svg>
+  );
+}
+
+function BellmanFordUpdateSvg() {
+  // Show how D_x(y) is updated when neighbor v sends vector
+  return (
+    <svg
+      viewBox="0 0 380 220"
+      className="w-full h-auto"
+      role="img"
+      aria-label="Bellman-Ford-oppdatering"
+    >
+      {/* Title */}
+      <text
+        x={190}
+        y={14}
+        textAnchor="middle"
+        className="fill-foreground text-[11px] font-semibold"
+      >
+        D_x(y) = min_v ( c(x,v) + D_v(y) )
+      </text>
+
+      {/* Node x */}
+      <circle cx={50} cy={110} r={22} className="fill-brand/20 stroke-brand" strokeWidth={2} />
+      <text x={50} y={107} textAnchor="middle" className="fill-foreground text-[11px] font-bold">
+        x
+      </text>
+      <text x={50} y={120} textAnchor="middle" className="fill-muted-foreground text-[8px]">
+        oss
+      </text>
+
+      {/* Three neighbors */}
+      {[
+        { x: 200, y: 50, name: "v1", c: 2, dv: 5 },
+        { x: 220, y: 110, name: "v2", c: 4, dv: 1 },
+        { x: 200, y: 170, name: "v3", c: 1, dv: 9 },
+      ].map((n, i) => (
+        <g key={i}>
+          <circle
+            cx={n.x}
+            cy={n.y}
+            r={18}
+            className="fill-card stroke-foreground/60"
+            strokeWidth={1.5}
+          />
+          <text
+            x={n.x}
+            y={n.y + 3}
+            textAnchor="middle"
+            className="fill-foreground text-[10px] font-bold"
+          >
+            {n.name}
+          </text>
+          {/* link from x to v */}
+          <line
+            x1={70}
+            y1={110}
+            x2={n.x - 16}
+            y2={n.y}
+            className="stroke-foreground/60"
+            strokeWidth={1.2}
+          />
+          {/* cost label */}
+          <text
+            x={(70 + n.x - 16) / 2}
+            y={(110 + n.y) / 2 - 4}
+            textAnchor="middle"
+            className="fill-amber-700 dark:fill-amber-300 text-[9px] font-mono font-semibold"
+          >
+            c={n.c}
+          </text>
+          {/* D_v(y) box from neighbor */}
+          <rect
+            x={n.x + 24}
+            y={n.y - 12}
+            width={64}
+            height={22}
+            rx={3}
+            className="fill-muted/40 stroke-foreground/40"
+            strokeWidth={1}
+          />
+          <text
+            x={n.x + 56}
+            y={n.y + 3}
+            textAnchor="middle"
+            className="fill-foreground text-[9px] font-mono"
+          >
+            D_{n.name}(y)={n.dv}
+          </text>
+          {/* candidate */}
+          <text
+            x={n.x + 56}
+            y={n.y + 22}
+            textAnchor="middle"
+            className="fill-muted-foreground text-[9px] font-mono"
+          >
+            → {n.c}+{n.dv}={n.c + n.dv}
+          </text>
+        </g>
+      ))}
+
+      {/* Result */}
+      <rect
+        x={295}
+        y={95}
+        width={80}
+        height={32}
+        rx={4}
+        className="fill-success/20 stroke-success"
+        strokeWidth={2}
+      />
+      <text
+        x={335}
+        y={108}
+        textAnchor="middle"
+        className="fill-foreground text-[10px] font-semibold"
+      >
+        D_x(y) = 5
+      </text>
+      <text x={335} y={122} textAnchor="middle" className="fill-success text-[9px] font-mono">
+        min(7, 5, 10)
+      </text>
+      <line x1={290} y1={110} x2={296} y2={110} className="stroke-success" strokeWidth={1.5} />
+      <polygon points="293,107 300,110 293,113" className="fill-success" />
+
+      <text
+        x={190}
+        y={205}
+        textAnchor="middle"
+        className="fill-muted-foreground text-[10px] italic"
+      >
+        Velg minste (c+D_v(y)) over alle naboer → ny D_x(y).
+      </text>
+    </svg>
+  );
+}
+
+function CountToInfinityTimelineSvg() {
+  // Timeline of rounds for B and C updating their distance to X
+  const rounds = [
+    { b: "1", c: "2", note: "stabilt" },
+    { b: "∞→3", c: "2", note: "B oppdager tap, ser C=2 → 1+2=3" },
+    { b: "3", c: "4", note: "C: «B sier 3» → 1+3=4" },
+    { b: "5", c: "4", note: "B: «C sier 4» → 1+4=5" },
+    { b: "5", c: "6", note: "C: 1+5=6" },
+    { b: "...", c: "...", note: "klatrer mot 16" },
+    { b: "15", c: "16", note: "RIPs ∞ = 16: stopp" },
+  ];
+  return (
+    <svg
+      viewBox="0 0 540 240"
+      className="w-full h-auto"
+      role="img"
+      aria-label="Count-to-infinity som tidslinje"
+    >
+      {/* Header */}
+      <text
+        x={270}
+        y={14}
+        textAnchor="middle"
+        className="fill-foreground text-[11px] font-semibold"
+      >
+        A — B — C, lenken A—B ryker. C lærte X gjennom A via B.
+      </text>
+
+      {/* Timeline axis */}
+      <line x1={40} y1={200} x2={520} y2={200} className="stroke-foreground/40" strokeWidth={1.5} />
+      <polygon points="516,197 524,200 516,203" className="fill-foreground/40" />
+      <text x={520} y={218} textAnchor="end" className="fill-muted-foreground text-[9px]">
+        tid →
+      </text>
+
+      {/* Row labels */}
+      <text x={32} y={70} textAnchor="end" className="fill-brand text-[10px] font-semibold">
+        D_B(X)
+      </text>
+      <text x={32} y={130} textAnchor="end" className="fill-purple-500 text-[10px] font-semibold">
+        D_C(X)
+      </text>
+
+      {rounds.map((r, i) => {
+        const x = 60 + i * 68;
+        return (
+          <g key={i}>
+            {/* Round marker */}
+            <line
+              x1={x}
+              y1={195}
+              x2={x}
+              y2={205}
+              className="stroke-foreground/60"
+              strokeWidth={1}
+            />
+            <text x={x} y={216} textAnchor="middle" className="fill-muted-foreground text-[8px]">
+              t={i}
+            </text>
+
+            {/* B value */}
+            <rect
+              x={x - 22}
+              y={55}
+              width={44}
+              height={22}
+              rx={3}
+              className="fill-brand/15 stroke-brand"
+              strokeWidth={1}
+            />
+            <text
+              x={x}
+              y={70}
+              textAnchor="middle"
+              className="fill-foreground text-[10px] font-mono font-semibold"
+            >
+              {r.b}
+            </text>
+
+            {/* C value */}
+            <rect
+              x={x - 22}
+              y={115}
+              width={44}
+              height={22}
+              rx={3}
+              className="fill-purple-500/15 stroke-purple-500"
+              strokeWidth={1}
+            />
+            <text
+              x={x}
+              y={130}
+              textAnchor="middle"
+              className="fill-foreground text-[10px] font-mono font-semibold"
+            >
+              {r.c}
+            </text>
+
+            {/* arrow from prev C to current B and prev B to current C */}
+            {i > 0 && (
+              <line
+                x1={x - 68 + 22}
+                y1={i % 2 === 1 ? 126 : 66}
+                x2={x - 22}
+                y2={i % 2 === 1 ? 66 : 126}
+                className="stroke-amber-500/60"
+                strokeWidth={1}
+                strokeDasharray="2 2"
+              />
+            )}
+
+            {/* Note */}
+            <text x={x} y={170} textAnchor="middle" className="fill-muted-foreground text-[8px]">
+              <tspan x={x} dy="0">
+                {r.note.split(",")[0]}
+              </tspan>
+              {r.note.includes(",") && (
+                <tspan x={x} dy="10">
+                  {r.note.split(",")[1]?.trim()}
+                </tspan>
+              )}
+            </text>
+          </g>
+        );
+      })}
+
+      <text x={270} y={234} textAnchor="middle" className="fill-muted-foreground text-[9px] italic">
+        Stiplede piler = «jeg tror på det naboen sa forrige runde». Det er pinen.
+      </text>
+    </svg>
+  );
+}
+
+function OspfAreasColoredSvg() {
+  // 3 areas as colored regions
+  return (
+    <svg
+      viewBox="0 0 460 240"
+      className="w-full h-auto"
+      role="img"
+      aria-label="OSPF-areas som fargede regioner"
+    >
+      {/* Backbone area 0 */}
+      <ellipse
+        cx={230}
+        cy={120}
+        rx={90}
+        ry={55}
+        className="fill-amber-500/15 stroke-amber-500"
+        strokeWidth={1.5}
+      />
+      <text
+        x={230}
+        y={75}
+        textAnchor="middle"
+        className="fill-amber-700 dark:fill-amber-300 text-[10px] font-bold"
+      >
+        Area 0 (backbone)
+      </text>
+
+      {/* Backbone routers */}
+      {[
+        { x: 200, y: 110, name: "R-bb-1" },
+        { x: 260, y: 110, name: "R-bb-2" },
+        { x: 230, y: 145, name: "R-bb-3" },
+      ].map((r, i) => (
+        <g key={i}>
+          <circle
+            cx={r.x}
+            cy={r.y}
+            r={10}
+            className="fill-card stroke-amber-600"
+            strokeWidth={1.5}
+          />
+          <text
+            x={r.x}
+            y={r.y + 3}
+            textAnchor="middle"
+            className="fill-foreground text-[7px] font-semibold"
+          >
+            bb{i + 1}
+          </text>
+        </g>
+      ))}
+      <line x1={200} y1={110} x2={260} y2={110} className="stroke-amber-500/60" strokeWidth={1.2} />
+      <line x1={200} y1={110} x2={230} y2={145} className="stroke-amber-500/60" strokeWidth={1.2} />
+      <line x1={260} y1={110} x2={230} y2={145} className="stroke-amber-500/60" strokeWidth={1.2} />
+
+      {/* Area 1 — left */}
+      <ellipse
+        cx={80}
+        cy={110}
+        rx={56}
+        ry={45}
+        className="fill-brand/15 stroke-brand"
+        strokeWidth={1.5}
+      />
+      <text x={80} y={70} textAnchor="middle" className="fill-brand text-[10px] font-bold">
+        Area 1 (Mo i Rana)
+      </text>
+      {[
+        { x: 60, y: 110 },
+        { x: 100, y: 105 },
+        { x: 80, y: 135 },
+      ].map((r, i) => (
+        <g key={i}>
+          <circle cx={r.x} cy={r.y} r={9} className="fill-card stroke-brand" strokeWidth={1.5} />
+          <text x={r.x} y={r.y + 3} textAnchor="middle" className="fill-foreground text-[7px]">
+            r{i + 1}
+          </text>
+        </g>
+      ))}
+
+      {/* ABR between area 0 and area 1 */}
+      <circle
+        cx={140}
+        cy={110}
+        r={11}
+        className="fill-emerald-500/40 stroke-emerald-600"
+        strokeWidth={2}
+      />
+      <text x={140} y={113} textAnchor="middle" className="fill-foreground text-[7px] font-bold">
+        ABR
+      </text>
+      <line
+        x1={100}
+        y1={105}
+        x2={140}
+        y2={110}
+        className="stroke-foreground/40"
+        strokeWidth={1.2}
+      />
+      <line
+        x1={140}
+        y1={110}
+        x2={200}
+        y2={110}
+        className="stroke-foreground/40"
+        strokeWidth={1.2}
+      />
+
+      {/* Area 2 — right */}
+      <ellipse
+        cx={380}
+        cy={130}
+        rx={56}
+        ry={48}
+        className="fill-purple-500/15 stroke-purple-500"
+        strokeWidth={1.5}
+      />
+      <text
+        x={380}
+        y={85}
+        textAnchor="middle"
+        className="fill-purple-700 dark:fill-purple-300 text-[10px] font-bold"
+      >
+        Area 2 (Tromsø)
+      </text>
+      {[
+        { x: 360, y: 130 },
+        { x: 400, y: 115 },
+        { x: 395, y: 155 },
+      ].map((r, i) => (
+        <g key={i}>
+          <circle
+            cx={r.x}
+            cy={r.y}
+            r={9}
+            className="fill-card stroke-purple-500"
+            strokeWidth={1.5}
+          />
+          <text x={r.x} y={r.y + 3} textAnchor="middle" className="fill-foreground text-[7px]">
+            r{i + 4}
+          </text>
+        </g>
+      ))}
+
+      {/* ABR between area 0 and area 2 */}
+      <circle
+        cx={320}
+        cy={120}
+        r={11}
+        className="fill-emerald-500/40 stroke-emerald-600"
+        strokeWidth={2}
+      />
+      <text x={320} y={123} textAnchor="middle" className="fill-foreground text-[7px] font-bold">
+        ABR
+      </text>
+      <line
+        x1={260}
+        y1={110}
+        x2={320}
+        y2={120}
+        className="stroke-foreground/40"
+        strokeWidth={1.2}
+      />
+      <line
+        x1={320}
+        y1={120}
+        x2={360}
+        y2={130}
+        className="stroke-foreground/40"
+        strokeWidth={1.2}
+      />
+
+      {/* Legend */}
+      <rect
+        x={20}
+        y={195}
+        width={12}
+        height={10}
+        className="fill-brand/30 stroke-brand"
+        strokeWidth={1}
+      />
+      <text x={38} y={204} className="fill-muted-foreground text-[9px]">
+        leaf area
+      </text>
+      <rect
+        x={120}
+        y={195}
+        width={12}
+        height={10}
+        className="fill-amber-500/30 stroke-amber-500"
+        strokeWidth={1}
+      />
+      <text x={138} y={204} className="fill-muted-foreground text-[9px]">
+        Area 0
+      </text>
+      <circle
+        cx={210}
+        cy={200}
+        r={5}
+        className="fill-emerald-500/40 stroke-emerald-600"
+        strokeWidth={1}
+      />
+      <text x={222} y={204} className="fill-muted-foreground text-[9px]">
+        ABR (oversetter LSA-er)
+      </text>
+
+      <text x={230} y={228} textAnchor="middle" className="fill-muted-foreground text-[9px] italic">
+        Type 1/2 flommer kun i hver region. Type 3 (Summary) krysser via ABR.
+      </text>
+    </svg>
+  );
+}
+
+function BgpPathSelectionStepsSvg() {
+  // Decision tree, step by step
+  const steps = [
+    { label: "LOCAL_PREF", crit: "høyest vinner", color: "amber" },
+    { label: "AS_PATH-lengde", crit: "kortest vinner", color: "brand" },
+    { label: "ORIGIN", crit: "IGP < EGP < ?", color: "purple" },
+    { label: "MED", crit: "lavest vinner", color: "emerald" },
+    { label: "eBGP > iBGP", crit: "ekstern vinner", color: "rose" },
+    { label: "IGP-kost", crit: "hot-potato", color: "sky" },
+  ];
+  return (
+    <svg
+      viewBox="0 0 540 260"
+      className="w-full h-auto"
+      role="img"
+      aria-label="BGP path-selection som steg-for-steg beslutningstre"
+    >
+      <text
+        x={270}
+        y={14}
+        textAnchor="middle"
+        className="fill-foreground text-[11px] font-semibold"
+      >
+        Første kriterium som skiller stiene = vinner
+      </text>
+
+      {/* Pipeline of boxes */}
+      {steps.map((s, i) => {
+        const x = 20 + i * 86;
+        const colorMap: Record<string, string> = {
+          amber: "fill-amber-500/15 stroke-amber-500",
+          brand: "fill-brand/15 stroke-brand",
+          purple: "fill-purple-500/15 stroke-purple-500",
+          emerald: "fill-emerald-500/15 stroke-emerald-500",
+          rose: "fill-rose-500/15 stroke-rose-500",
+          sky: "fill-sky-500/15 stroke-sky-500",
+        };
+        return (
+          <g key={i}>
+            <rect
+              x={x}
+              y={40}
+              width={80}
+              height={56}
+              rx={4}
+              className={colorMap[s.color]}
+              strokeWidth={1.5}
+            />
+            <text
+              x={x + 40}
+              y={56}
+              textAnchor="middle"
+              className="fill-muted-foreground text-[9px]"
+            >
+              steg {i + 1}
+            </text>
+            <text
+              x={x + 40}
+              y={72}
+              textAnchor="middle"
+              className="fill-foreground text-[10px] font-bold"
+            >
+              {s.label}
+            </text>
+            <text
+              x={x + 40}
+              y={88}
+              textAnchor="middle"
+              className="fill-muted-foreground text-[8px]"
+            >
+              {s.crit}
+            </text>
+
+            {/* "skiller?" decision below each */}
+            <line
+              x1={x + 40}
+              y1={96}
+              x2={x + 40}
+              y2={112}
+              className="stroke-foreground/60"
+              strokeWidth={1}
+            />
+            <polygon
+              points={`${x + 36},109 ${x + 44},109 ${x + 40},115`}
+              className="fill-foreground/60"
+            />
+
+            {/* "ja → velg" + "nei → neste" */}
+            <text
+              x={x + 18}
+              y={130}
+              textAnchor="middle"
+              className="fill-success text-[8px] font-semibold"
+            >
+              ja
+            </text>
+            <text x={x + 18} y={140} textAnchor="middle" className="fill-success text-[7px]">
+              ↓ velg
+            </text>
+            <text
+              x={x + 62}
+              y={130}
+              textAnchor="middle"
+              className="fill-muted-foreground text-[8px]"
+            >
+              nei
+            </text>
+            <text
+              x={x + 62}
+              y={140}
+              textAnchor="middle"
+              className="fill-muted-foreground text-[7px]"
+            >
+              → neste
+            </text>
+
+            {/* arrow to next */}
+            {i < steps.length - 1 && (
+              <>
+                <line
+                  x1={x + 80}
+                  y1={68}
+                  x2={x + 86}
+                  y2={68}
+                  className="stroke-foreground/60"
+                  strokeWidth={1.2}
+                />
+                <polygon
+                  points={`${x + 84},65 ${x + 90},68 ${x + 84},71`}
+                  className="fill-foreground/60"
+                />
+              </>
+            )}
+
+            {/* result line down */}
+            <line
+              x1={x + 18}
+              y1={140}
+              x2={x + 18}
+              y2={185}
+              className="stroke-success/60"
+              strokeWidth={1}
+              strokeDasharray="2 2"
+            />
+            <rect
+              x={x + 4}
+              y={185}
+              width={28}
+              height={18}
+              rx={3}
+              className="fill-success/20 stroke-success"
+              strokeWidth={1}
+            />
+            <text
+              x={x + 18}
+              y={197}
+              textAnchor="middle"
+              className="fill-success text-[8px] font-semibold"
+            >
+              VINN
+            </text>
+          </g>
+        );
+      })}
+
+      <text
+        x={270}
+        y={230}
+        textAnchor="middle"
+        className="fill-muted-foreground text-[10px] italic"
+      >
+        Når et steg skiller stiene, stopper algoritmen. Resten av kriteriene ses aldri på.
+      </text>
+      <text x={270} y={246} textAnchor="middle" className="fill-muted-foreground text-[9px] italic">
+        Det er hvorfor LOCAL_PREF (forretningspolicy) overstyrer AS_PATH (avstand).
+      </text>
+    </svg>
+  );
+}
+
+function DhcpDora4MessageFlowSvg() {
+  // 4 message swimlane
+  return (
+    <svg
+      viewBox="0 0 480 280"
+      className="w-full h-auto"
+      role="img"
+      aria-label="DHCP DORA — 4 meldinger mellom klient og server"
+    >
+      {/* Lifelines */}
+      <text x={80} y={18} textAnchor="middle" className="fill-foreground text-[11px] font-bold">
+        Klient
+      </text>
+      <text x={80} y={32} textAnchor="middle" className="fill-muted-foreground text-[9px]">
+        ennå ingen IP
+      </text>
+      <text x={400} y={18} textAnchor="middle" className="fill-foreground text-[11px] font-bold">
+        DHCP-server
+      </text>
+      <text x={400} y={32} textAnchor="middle" className="fill-muted-foreground text-[9px]">
+        pool: 10.0.0.128/25
+      </text>
+
+      <line
+        x1={80}
+        y1={38}
+        x2={80}
+        y2={260}
+        className="stroke-foreground/40"
+        strokeWidth={1.5}
+        strokeDasharray="2 3"
+      />
+      <line
+        x1={400}
+        y1={38}
+        x2={400}
+        y2={260}
+        className="stroke-foreground/40"
+        strokeWidth={1.5}
+        strokeDasharray="2 3"
+      />
+
+      {/* Message 1: DISCOVER */}
+      <line x1={82} y1={70} x2={398} y2={70} className="stroke-brand" strokeWidth={2} />
+      <polygon points="394,67 402,70 394,73" className="fill-brand" />
+      <rect
+        x={150}
+        y={50}
+        width={180}
+        height={16}
+        rx={3}
+        className="fill-brand/20 stroke-brand"
+        strokeWidth={1}
+      />
+      <text x={240} y={62} textAnchor="middle" className="fill-foreground text-[10px] font-bold">
+        1. DISCOVER (broadcast)
+      </text>
+      <text x={240} y={82} textAnchor="middle" className="fill-muted-foreground text-[9px]">
+        src=0.0.0.0:68 → dst=255.255.255.255:67
+      </text>
+
+      {/* Message 2: OFFER */}
+      <line x1={398} y1={120} x2={82} y2={120} className="stroke-amber-500" strokeWidth={2} />
+      <polygon points="86,117 78,120 86,123" className="fill-amber-500" />
+      <rect
+        x={150}
+        y={100}
+        width={180}
+        height={16}
+        rx={3}
+        className="fill-amber-500/20 stroke-amber-500"
+        strokeWidth={1}
+      />
+      <text x={240} y={112} textAnchor="middle" className="fill-foreground text-[10px] font-bold">
+        2. OFFER
+      </text>
+      <text x={240} y={132} textAnchor="middle" className="fill-muted-foreground text-[9px]">
+        yiaddr=10.0.0.187, gw=10.0.0.1, lease=3600s
+      </text>
+
+      {/* Message 3: REQUEST */}
+      <line x1={82} y1={170} x2={398} y2={170} className="stroke-purple-500" strokeWidth={2} />
+      <polygon points="394,167 402,170 394,173" className="fill-purple-500" />
+      <rect
+        x={150}
+        y={150}
+        width={180}
+        height={16}
+        rx={3}
+        className="fill-purple-500/20 stroke-purple-500"
+        strokeWidth={1}
+      />
+      <text x={240} y={162} textAnchor="middle" className="fill-foreground text-[10px] font-bold">
+        3. REQUEST (broadcast)
+      </text>
+      <text x={240} y={182} textAnchor="middle" className="fill-muted-foreground text-[9px]">
+        «jeg tar 10.0.0.187 fra server X»
+      </text>
+
+      {/* Message 4: ACK */}
+      <line x1={398} y1={220} x2={82} y2={220} className="stroke-success" strokeWidth={2} />
+      <polygon points="86,217 78,220 86,223" className="fill-success" />
+      <rect
+        x={150}
+        y={200}
+        width={180}
+        height={16}
+        rx={3}
+        className="fill-success/20 stroke-success"
+        strokeWidth={1}
+      />
+      <text x={240} y={212} textAnchor="middle" className="fill-foreground text-[10px] font-bold">
+        4. ACK
+      </text>
+      <text x={240} y={232} textAnchor="middle" className="fill-muted-foreground text-[9px]">
+        bekreftet — du kan bruke IP-en nå
+      </text>
+
+      {/* Time axis */}
+      <text x={20} y={70} className="fill-muted-foreground text-[8px] font-mono">
+        t=0 ms
+      </text>
+      <text x={20} y={120} className="fill-muted-foreground text-[8px] font-mono">
+        t=20
+      </text>
+      <text x={20} y={170} className="fill-muted-foreground text-[8px] font-mono">
+        t=50
+      </text>
+      <text x={20} y={220} className="fill-muted-foreground text-[8px] font-mono">
+        t=80
+      </text>
+
+      <text x={240} y={258} textAnchor="middle" className="fill-muted-foreground text-[9px] italic">
+        Hele dansen ~100 ms — fire broadcasts gir mobilen din nett-tilgang før du rekker å blunke.
+      </text>
+    </svg>
+  );
+}
+
+function OspfVsBgpTopologyCompareSvg() {
+  return (
+    <svg
+      viewBox="0 0 720 280"
+      className="w-full h-auto"
+      role="img"
+      aria-label="OSPF vs BGP — to topologi-bilder side ved side"
+    >
+      {/* OSPF side */}
+      <text x={180} y={18} textAnchor="middle" className="fill-brand text-[12px] font-bold">
+        OSPF — innen ett AS
+      </text>
+      <text x={180} y={32} textAnchor="middle" className="fill-muted-foreground text-[9px]">
+        flat graf med vekter på lenkene
+      </text>
+
+      {/* Box for AS */}
+      <rect
+        x={30}
+        y={45}
+        width={300}
+        height={180}
+        rx={8}
+        className="fill-brand/5 stroke-brand"
+        strokeWidth={1.5}
+        strokeDasharray="4 3"
+      />
+      <text x={45} y={62} className="fill-brand text-[9px] font-semibold">
+        AS 64512
+      </text>
+
+      {/* OSPF routers in a small mesh */}
+      {[
+        { x: 90, y: 100, name: "R1" },
+        { x: 200, y: 90, name: "R2" },
+        { x: 280, y: 130, name: "R3" },
+        { x: 230, y: 190, name: "R4" },
+        { x: 110, y: 180, name: "R5" },
+      ].map((r) => (
+        <g key={r.name}>
+          <circle cx={r.x} cy={r.y} r={14} className="fill-card stroke-brand" strokeWidth={1.8} />
+          <text
+            x={r.x}
+            y={r.y + 4}
+            textAnchor="middle"
+            className="fill-foreground text-[10px] font-bold"
+          >
+            {r.name}
+          </text>
+        </g>
+      ))}
+      {/* OSPF edges with weights */}
+      {[
+        { x1: 90, y1: 100, x2: 200, y2: 90, w: 2 },
+        { x1: 200, y1: 90, x2: 280, y2: 130, w: 1 },
+        { x1: 280, y1: 130, x2: 230, y2: 190, w: 4 },
+        { x1: 230, y1: 190, x2: 110, y2: 180, w: 3 },
+        { x1: 110, y1: 180, x2: 90, y2: 100, w: 5 },
+        { x1: 200, y1: 90, x2: 230, y2: 190, w: 6 },
+      ].map((e, i) => (
+        <g key={i}>
+          <line
+            x1={e.x1}
+            y1={e.y1}
+            x2={e.x2}
+            y2={e.y2}
+            className="stroke-foreground/40"
+            strokeWidth={1.2}
+          />
+          <text
+            x={(e.x1 + e.x2) / 2}
+            y={(e.y1 + e.y2) / 2 - 4}
+            textAnchor="middle"
+            className="fill-amber-700 dark:fill-amber-300 text-[9px] font-mono font-bold"
+          >
+            {e.w}
+          </text>
+        </g>
+      ))}
+
+      <text x={180} y={252} textAnchor="middle" className="fill-muted-foreground text-[9px] italic">
+        Dijkstra over hele grafen → SPT per ruter
+      </text>
+      <text x={180} y={266} textAnchor="middle" className="fill-muted-foreground text-[9px] italic">
+        Sum av vekter er kostnaden
+      </text>
+
+      {/* BGP side */}
+      <text
+        x={540}
+        y={18}
+        textAnchor="middle"
+        className="fill-amber-700 dark:fill-amber-300 text-[12px] font-bold"
+      >
+        BGP — mellom AS-er
+      </text>
+      <text x={540} y={32} textAnchor="middle" className="fill-muted-foreground text-[9px]">
+        AS-graf med policy-relasjoner
+      </text>
+
+      {/* AS clouds */}
+      {[
+        { x: 460, y: 90, name: "AS-1", color: "amber" },
+        { x: 620, y: 90, name: "AS-2", color: "amber" },
+        { x: 540, y: 165, name: "AS-3", color: "amber" },
+        { x: 420, y: 200, name: "AS-4", color: "amber" },
+        { x: 660, y: 200, name: "AS-5", color: "amber" },
+      ].map((c) => (
+        <g key={c.name}>
+          <ellipse
+            cx={c.x}
+            cy={c.y}
+            rx={28}
+            ry={20}
+            className="fill-amber-500/15 stroke-amber-500"
+            strokeWidth={1.5}
+          />
+          <text
+            x={c.x}
+            y={c.y + 4}
+            textAnchor="middle"
+            className="fill-foreground text-[10px] font-bold"
+          >
+            {c.name}
+          </text>
+        </g>
+      ))}
+
+      {/* BGP edges labeled with relations */}
+      <line x1={488} y1={90} x2={592} y2={90} className="stroke-foreground/50" strokeWidth={1.5} />
+      <text
+        x={540}
+        y={84}
+        textAnchor="middle"
+        className="fill-purple-700 dark:fill-purple-300 text-[8px] font-semibold"
+      >
+        peer
+      </text>
+
+      <line
+        x1={460}
+        y1={110}
+        x2={540}
+        y2={150}
+        className="stroke-foreground/50"
+        strokeWidth={1.5}
+      />
+      <text
+        x={490}
+        y={134}
+        textAnchor="middle"
+        className="fill-emerald-700 dark:fill-emerald-300 text-[8px] font-semibold"
+      >
+        provider
+      </text>
+
+      <line
+        x1={620}
+        y1={110}
+        x2={540}
+        y2={150}
+        className="stroke-foreground/50"
+        strokeWidth={1.5}
+      />
+      <text
+        x={590}
+        y={134}
+        textAnchor="middle"
+        className="fill-emerald-700 dark:fill-emerald-300 text-[8px] font-semibold"
+      >
+        provider
+      </text>
+
+      <line
+        x1={540}
+        y1={180}
+        x2={448}
+        y2={200}
+        className="stroke-foreground/50"
+        strokeWidth={1.5}
+      />
+      <text
+        x={486}
+        y={196}
+        textAnchor="middle"
+        className="fill-rose-700 dark:fill-rose-300 text-[8px] font-semibold"
+      >
+        kunde
+      </text>
+
+      <line
+        x1={540}
+        y1={180}
+        x2={632}
+        y2={200}
+        className="stroke-foreground/50"
+        strokeWidth={1.5}
+      />
+      <text
+        x={594}
+        y={196}
+        textAnchor="middle"
+        className="fill-rose-700 dark:fill-rose-300 text-[8px] font-semibold"
+      >
+        kunde
+      </text>
+
+      <text x={540} y={252} textAnchor="middle" className="fill-muted-foreground text-[9px] italic">
+        Path-vector → AS_PATH liste, ikke graf-søk
+      </text>
+      <text x={540} y={266} textAnchor="middle" className="fill-muted-foreground text-[9px] italic">
+        LOCAL_PREF speiler kommersielle relasjoner
+      </text>
+    </svg>
+  );
+}
+
+function DvVsLsAlgoSvg() {
+  return (
+    <svg
+      viewBox="0 0 600 240"
+      className="w-full h-auto"
+      role="img"
+      aria-label="DV vs LS — to algoritmer i animasjon"
+    >
+      {/* DV side */}
+      <text
+        x={150}
+        y={18}
+        textAnchor="middle"
+        className="fill-purple-700 dark:fill-purple-300 text-[11px] font-bold"
+      >
+        Distance-Vector (RIP, Bellman-Ford)
+      </text>
+
+      {/* Node with table */}
+      <circle
+        cx={80}
+        cy={90}
+        r={22}
+        className="fill-purple-500/15 stroke-purple-500"
+        strokeWidth={2}
+      />
+      <text x={80} y={94} textAnchor="middle" className="fill-foreground text-[11px] font-bold">
+        B
+      </text>
+      <rect
+        x={120}
+        y={60}
+        width={130}
+        height={70}
+        rx={4}
+        className="fill-card stroke-purple-500"
+        strokeWidth={1.2}
+      />
+      <text x={185} y={74} textAnchor="middle" className="fill-foreground text-[9px] font-semibold">
+        B&apos;s distance-vektor
+      </text>
+      <line x1={120} y1={80} x2={250} y2={80} className="stroke-purple-500/30" strokeWidth={1} />
+      <text x={130} y={94} className="fill-muted-foreground text-[8px] font-mono">
+        A: 1 via A
+      </text>
+      <text x={130} y={106} className="fill-muted-foreground text-[8px] font-mono">
+        C: 1 via C
+      </text>
+      <text x={130} y={118} className="fill-muted-foreground text-[8px] font-mono">
+        X: 3 via C
+      </text>
+
+      {/* Arrow showing exchange with neighbor */}
+      <line x1={250} y1={95} x2={290} y2={95} className="stroke-amber-500" strokeWidth={2} />
+      <polygon points="286,92 294,95 286,98" className="fill-amber-500" />
+      <text
+        x={270}
+        y={88}
+        textAnchor="middle"
+        className="fill-amber-700 dark:fill-amber-300 text-[8px] font-semibold"
+      >
+        send vektor
+      </text>
+      <text
+        x={270}
+        y={108}
+        textAnchor="middle"
+        className="fill-amber-700 dark:fill-amber-300 text-[8px]"
+      >
+        til naboer
+      </text>
+
+      <text
+        x={150}
+        y={170}
+        textAnchor="middle"
+        className="fill-foreground text-[9px] font-semibold"
+      >
+        Vet IKKE topologi.
+      </text>
+      <text
+        x={150}
+        y={184}
+        textAnchor="middle"
+        className="fill-foreground text-[9px] font-semibold"
+      >
+        Vet kun (dest, dist, neste-hopp).
+      </text>
+      <text x={150} y={206} textAnchor="middle" className="fill-muted-foreground text-[9px] italic">
+        Tror på nabos vektorer.
+      </text>
+      <text x={150} y={220} textAnchor="middle" className="fill-muted-foreground text-[9px] italic">
+        → count-to-infinity mulig.
+      </text>
+
+      {/* Divider */}
+      <line
+        x1={310}
+        y1={30}
+        x2={310}
+        y2={230}
+        className="stroke-foreground/30"
+        strokeWidth={1}
+        strokeDasharray="3 3"
+      />
+
+      {/* LS side */}
+      <text x={450} y={18} textAnchor="middle" className="fill-brand text-[11px] font-bold">
+        Link-State (OSPF, Dijkstra)
+      </text>
+
+      <circle cx={380} cy={90} r={22} className="fill-brand/15 stroke-brand" strokeWidth={2} />
+      <text x={380} y={94} textAnchor="middle" className="fill-foreground text-[11px] font-bold">
+        B
+      </text>
+      <rect
+        x={420}
+        y={50}
+        width={160}
+        height={90}
+        rx={4}
+        className="fill-card stroke-brand"
+        strokeWidth={1.2}
+      />
+      <text x={500} y={62} textAnchor="middle" className="fill-foreground text-[9px] font-semibold">
+        B&apos;s LSDB (komplett kart)
+      </text>
+      <line x1={420} y1={68} x2={580} y2={68} className="stroke-brand/30" strokeWidth={1} />
+      <text x={430} y={82} className="fill-muted-foreground text-[8px] font-mono">
+        A—B: 1
+      </text>
+      <text x={430} y={94} className="fill-muted-foreground text-[8px] font-mono">
+        B—C: 1
+      </text>
+      <text x={430} y={106} className="fill-muted-foreground text-[8px] font-mono">
+        C—X: 2
+      </text>
+      <text x={430} y={118} className="fill-muted-foreground text-[8px] font-mono">
+        A—D: 4, D—X: 1
+      </text>
+      <text x={430} y={132} className="fill-foreground text-[8px] font-mono font-bold">
+        → Dijkstra lokalt
+      </text>
+
+      {/* Arrow showing flooding */}
+      <text
+        x={380}
+        y={144}
+        textAnchor="middle"
+        className="fill-amber-700 dark:fill-amber-300 text-[8px] font-semibold"
+      >
+        flood LSA
+      </text>
+      <text
+        x={380}
+        y={158}
+        textAnchor="middle"
+        className="fill-amber-700 dark:fill-amber-300 text-[8px]"
+      >
+        til ALLE
+      </text>
+
+      <text
+        x={450}
+        y={184}
+        textAnchor="middle"
+        className="fill-foreground text-[9px] font-semibold"
+      >
+        Har KOMPLETT topologi.
+      </text>
+      <text x={450} y={206} textAnchor="middle" className="fill-muted-foreground text-[9px] italic">
+        Ingen «tror på naboen» — alle ser samme kart.
+      </text>
+      <text x={450} y={220} textAnchor="middle" className="fill-muted-foreground text-[9px] italic">
+        Ingen count-to-infinity.
+      </text>
+    </svg>
+  );
+}
+
+function BgpPolicyOverlaySvg() {
+  return (
+    <svg
+      viewBox="0 0 500 240"
+      className="w-full h-auto"
+      role="img"
+      aria-label="BGP shortest-path-myte med policy-overlay"
+    >
+      <text
+        x={250}
+        y={16}
+        textAnchor="middle"
+        className="fill-foreground text-[11px] font-semibold"
+      >
+        To stier til samme prefiks — hvilken velger AS3?
+      </text>
+
+      {/* Source AS3 */}
+      <circle cx={60} cy={120} r={22} className="fill-brand/20 stroke-brand" strokeWidth={2} />
+      <text x={60} y={117} textAnchor="middle" className="fill-foreground text-[11px] font-bold">
+        AS3
+      </text>
+      <text x={60} y={130} textAnchor="middle" className="fill-muted-foreground text-[8px]">
+        oss
+      </text>
+
+      {/* Destination AS-D */}
+      <circle cx={440} cy={120} r={22} className="fill-success/20 stroke-success" strokeWidth={2} />
+      <text x={440} y={117} textAnchor="middle" className="fill-foreground text-[11px] font-bold">
+        AS-D
+      </text>
+      <text x={440} y={130} textAnchor="middle" className="fill-muted-foreground text-[8px]">
+        10.0.0.0/8
+      </text>
+
+      {/* Path A: short — peer (LOCAL_PREF=100) */}
+      <circle
+        cx={250}
+        cy={60}
+        r={18}
+        className="fill-purple-500/20 stroke-purple-500"
+        strokeWidth={1.8}
+      />
+      <text x={250} y={64} textAnchor="middle" className="fill-foreground text-[10px] font-bold">
+        AS-P
+      </text>
+      <line x1={82} y1={115} x2={232} y2={66} className="stroke-foreground/50" strokeWidth={1.5} />
+      <line x1={268} y1={66} x2={418} y2={115} className="stroke-foreground/50" strokeWidth={1.5} />
+      <rect
+        x={170}
+        y={20}
+        width={160}
+        height={26}
+        rx={3}
+        className="fill-purple-500/15 stroke-purple-500"
+        strokeWidth={1}
+      />
+      <text x={250} y={32} textAnchor="middle" className="fill-foreground text-[10px] font-bold">
+        Sti A: 2 AS-hopp
+      </text>
+      <text
+        x={250}
+        y={42}
+        textAnchor="middle"
+        className="fill-purple-700 dark:fill-purple-300 text-[9px] font-mono"
+      >
+        peer · LOCAL_PREF=100
+      </text>
+
+      {/* Path B: long — customer (LOCAL_PREF=200) */}
+      <circle
+        cx={180}
+        cy={185}
+        r={18}
+        className="fill-rose-500/20 stroke-rose-500"
+        strokeWidth={1.8}
+      />
+      <text x={180} y={189} textAnchor="middle" className="fill-foreground text-[10px] font-bold">
+        AS-C1
+      </text>
+      <circle
+        cx={320}
+        cy={185}
+        r={18}
+        className="fill-rose-500/20 stroke-rose-500"
+        strokeWidth={1.8}
+      />
+      <text x={320} y={189} textAnchor="middle" className="fill-foreground text-[10px] font-bold">
+        AS-C2
+      </text>
+      <line x1={80} y1={135} x2={163} y2={180} className="stroke-rose-500" strokeWidth={2.5} />
+      <line x1={198} y1={185} x2={302} y2={185} className="stroke-rose-500" strokeWidth={2.5} />
+      <line x1={337} y1={180} x2={420} y2={135} className="stroke-rose-500" strokeWidth={2.5} />
+      <rect
+        x={150}
+        y={210}
+        width={200}
+        height={26}
+        rx={3}
+        className="fill-rose-500/15 stroke-rose-500"
+        strokeWidth={1}
+      />
+      <text x={250} y={222} textAnchor="middle" className="fill-foreground text-[10px] font-bold">
+        Sti B: 3 AS-hopp (lengre!)
+      </text>
+      <text
+        x={250}
+        y={232}
+        textAnchor="middle"
+        className="fill-rose-700 dark:fill-rose-300 text-[9px] font-mono"
+      >
+        kunde · LOCAL_PREF=200 ← VINNER
+      </text>
+
+      {/* Big arrow showing winner */}
+      <text x={250} y={125} textAnchor="middle" className="fill-success text-[11px] font-semibold">
+        Vinner: B (LOCAL_PREF skiller før AS_PATH)
+      </text>
+      <text x={250} y={155} textAnchor="middle" className="fill-muted-foreground text-[9px] italic">
+        Korteste sti taper når policy sier «kunde først».
+      </text>
+    </svg>
+  );
+}
+
+function Type3LsaBetweenAreasSvg() {
+  return (
+    <svg
+      viewBox="0 0 540 220"
+      className="w-full h-auto"
+      role="img"
+      aria-label="Type 3 LSA mellom areas"
+    >
+      <text
+        x={270}
+        y={14}
+        textAnchor="middle"
+        className="fill-foreground text-[11px] font-semibold"
+      >
+        Hvilke LSA-typer krysser area-grensen?
+      </text>
+
+      {/* Area 1 box */}
+      <rect
+        x={20}
+        y={40}
+        width={200}
+        height={140}
+        rx={8}
+        className="fill-brand/10 stroke-brand"
+        strokeWidth={1.5}
+      />
+      <text x={120} y={56} textAnchor="middle" className="fill-brand text-[10px] font-bold">
+        Area 1
+      </text>
+
+      {/* Inside Area 1: type 1/2 LSAs */}
+      <rect
+        x={40}
+        y={70}
+        width={70}
+        height={20}
+        rx={3}
+        className="fill-emerald-500/20 stroke-emerald-500"
+        strokeWidth={1}
+      />
+      <text x={75} y={84} textAnchor="middle" className="fill-foreground text-[9px] font-mono">
+        Type 1
+      </text>
+      <rect
+        x={130}
+        y={70}
+        width={70}
+        height={20}
+        rx={3}
+        className="fill-emerald-500/20 stroke-emerald-500"
+        strokeWidth={1}
+      />
+      <text x={165} y={84} textAnchor="middle" className="fill-foreground text-[9px] font-mono">
+        Type 2
+      </text>
+      <text x={120} y={108} textAnchor="middle" className="fill-muted-foreground text-[9px]">
+        Router-LSA + Network-LSA
+      </text>
+      <text x={120} y={122} textAnchor="middle" className="fill-muted-foreground text-[8px] italic">
+        flommer kun innen Area 1
+      </text>
+
+      {/* Routers in Area 1 */}
+      <circle cx={60} cy={150} r={9} className="fill-card stroke-brand" strokeWidth={1.2} />
+      <text x={60} y={153} textAnchor="middle" className="fill-foreground text-[8px]">
+        r1
+      </text>
+      <circle cx={120} cy={155} r={9} className="fill-card stroke-brand" strokeWidth={1.2} />
+      <text x={120} y={158} textAnchor="middle" className="fill-foreground text-[8px]">
+        r2
+      </text>
+
+      {/* ABR on boundary */}
+      <circle
+        cx={220}
+        cy={120}
+        r={16}
+        className="fill-amber-500/30 stroke-amber-600"
+        strokeWidth={2.5}
+      />
+      <text x={220} y={117} textAnchor="middle" className="fill-foreground text-[8px] font-bold">
+        ABR
+      </text>
+      <text x={220} y={128} textAnchor="middle" className="fill-foreground text-[7px]">
+        gateway
+      </text>
+
+      {/* X marker on Type 1/2 trying to cross */}
+      <line x1={200} y1={80} x2={216} y2={108} className="stroke-destructive" strokeWidth={1.5} />
+      <text x={196} y={102} className="fill-destructive text-[14px] font-bold">
+        ✗
+      </text>
+      <text x={170} y={102} className="fill-destructive text-[8px] font-semibold">
+        stoppes
+      </text>
+
+      {/* Type 3 LSA crossing — green arrow */}
+      <rect
+        x={250}
+        y={108}
+        width={100}
+        height={24}
+        rx={4}
+        className="fill-purple-500/25 stroke-purple-500"
+        strokeWidth={2}
+      />
+      <text
+        x={300}
+        y={124}
+        textAnchor="middle"
+        className="fill-foreground text-[10px] font-mono font-bold"
+      >
+        Type 3
+      </text>
+      <line x1={236} y1={120} x2={248} y2={120} className="stroke-purple-500" strokeWidth={2} />
+      <line x1={350} y1={120} x2={372} y2={120} className="stroke-purple-500" strokeWidth={2} />
+      <polygon points="370,117 378,120 370,123" className="fill-purple-500" />
+      <text
+        x={300}
+        y={148}
+        textAnchor="middle"
+        className="fill-purple-700 dark:fill-purple-300 text-[8px]"
+      >
+        Summary: «10.20.0.0/16, kost=42»
+      </text>
+      <text x={300} y={162} textAnchor="middle" className="fill-muted-foreground text-[8px] italic">
+        ABR oppsummerer prefiks fra Area 1
+      </text>
+
+      {/* Area 0 */}
+      <rect
+        x={380}
+        y={40}
+        width={140}
+        height={140}
+        rx={8}
+        className="fill-amber-500/10 stroke-amber-500"
+        strokeWidth={1.5}
+      />
+      <text
+        x={450}
+        y={56}
+        textAnchor="middle"
+        className="fill-amber-700 dark:fill-amber-300 text-[10px] font-bold"
+      >
+        Area 0 (backbone)
+      </text>
+      <circle cx={420} cy={150} r={9} className="fill-card stroke-amber-500" strokeWidth={1.2} />
+      <text x={420} y={153} textAnchor="middle" className="fill-foreground text-[8px]">
+        bb1
+      </text>
+      <circle cx={480} cy={155} r={9} className="fill-card stroke-amber-500" strokeWidth={1.2} />
+      <text x={480} y={158} textAnchor="middle" className="fill-foreground text-[8px]">
+        bb2
+      </text>
+      <text x={450} y={195} textAnchor="middle" className="fill-muted-foreground text-[8px] italic">
+        Ser bare prefiks + kost, ikke intern topologi i Area 1
+      </text>
+
+      <text x={270} y={216} textAnchor="middle" className="fill-muted-foreground text-[9px] italic">
+        Hver area har sin egen LSDB. Type 3 er kontrakten mellom dem.
+      </text>
+    </svg>
+  );
+}
+
+function IcmpNameConfusionSvg() {
+  return (
+    <svg
+      viewBox="0 0 540 220"
+      className="w-full h-auto"
+      role="img"
+      aria-label="ICMP — navneforveksling, full forklaring"
+    >
+      <text
+        x={270}
+        y={16}
+        textAnchor="middle"
+        className="fill-foreground text-[11px] font-semibold"
+      >
+        Hva betyr egentlig hver bokstav i ICMP?
+      </text>
+
+      {/* Letters with explanations */}
+      {[
+        {
+          x: 80,
+          letter: "I",
+          full: "Internet",
+          note: "kjøres over IP",
+          wrong: false,
+        },
+        {
+          x: 200,
+          letter: "C",
+          full: "Control",
+          note: "diagnose, ikke ruting!",
+          wrong: false,
+        },
+        {
+          x: 320,
+          letter: "M",
+          full: "Message",
+          note: "← det viktige!",
+          wrong: false,
+        },
+        {
+          x: 440,
+          letter: "P",
+          full: "Protocol",
+          note: "egen IP-protokoll-nr 1",
+          wrong: false,
+        },
+      ].map((l, i) => (
+        <g key={i}>
+          <rect
+            x={l.x - 36}
+            y={40}
+            width={72}
+            height={62}
+            rx={6}
+            className="fill-card stroke-brand"
+            strokeWidth={2}
+          />
+          <text x={l.x} y={70} textAnchor="middle" className="fill-brand text-[22px] font-bold">
+            {l.letter}
+          </text>
+          <text
+            x={l.x}
+            y={92}
+            textAnchor="middle"
+            className="fill-foreground text-[9px] font-semibold"
+          >
+            {l.full}
+          </text>
+          <text x={l.x} y={118} textAnchor="middle" className="fill-muted-foreground text-[9px]">
+            {l.note}
+          </text>
+        </g>
+      ))}
+
+      {/* Highlight on "M" */}
+      <rect
+        x={284}
+        y={36}
+        width={72}
+        height={70}
+        rx={6}
+        className="fill-none stroke-amber-500"
+        strokeWidth={2.5}
+        strokeDasharray="4 2"
+      />
+      <text
+        x={320}
+        y={32}
+        textAnchor="middle"
+        className="fill-amber-700 dark:fill-amber-300 text-[9px] font-bold"
+      >
+        fokus
+      </text>
+
+      {/* Wrong vs right interpretation */}
+      <rect
+        x={40}
+        y={150}
+        width={220}
+        height={50}
+        rx={4}
+        className="fill-destructive/10 stroke-destructive"
+        strokeWidth={1.2}
+      />
+      <text x={50} y={166} className="fill-destructive text-[10px] font-bold">
+        ✗ FEIL: «Internet Control Protocol»
+      </text>
+      <text x={50} y={180} className="fill-muted-foreground text-[9px]">
+        → da ville det vært en control-plane som
+      </text>
+      <text x={50} y={192} className="fill-muted-foreground text-[9px]">
+        bygger ruter (som OSPF). Det gjør ICMP IKKE.
+      </text>
+
+      <rect
+        x={280}
+        y={150}
+        width={220}
+        height={50}
+        rx={4}
+        className="fill-success/10 stroke-success"
+        strokeWidth={1.2}
+      />
+      <text x={290} y={166} className="fill-success text-[10px] font-bold">
+        ✓ RIKTIG: «Internet Control Message Protocol»
+      </text>
+      <text x={290} y={180} className="fill-muted-foreground text-[9px]">
+        → kontroll-MELDINGER (ping, traceroute,
+      </text>
+      <text x={290} y={192} className="fill-muted-foreground text-[9px]">
+        «Destination Unreachable», «TTL Exceeded»).
+      </text>
+    </svg>
+  );
+}
+
+function FiveMinAnker15CardsSvg() {
+  const cards = [
+    { title: "Control vs data", body: "tabell vs per-pakke" },
+    { title: "LS vs DV", body: "Dijkstra vs B-Ford" },
+    { title: "Relax-steg", body: "D(w)+c<D(v)" },
+    { title: "BF-ligning", body: "min_v(c+D_v)" },
+    { title: "Count-to-∞", body: "split / poison / cap" },
+    { title: "OSPF intra-AS", body: "areas, hello 10s" },
+    { title: "LSA-typer", body: "1/2 lokal, 3 ABR" },
+    { title: "BGP inter-AS", body: "policy-basert" },
+    { title: "BGP-rekken", body: "LP→AS→OR→MED" },
+    { title: "Hot-potato", body: "nærmeste NEXT_HOP" },
+    { title: "SDN-controller", body: "OpenFlow flow-mod" },
+    { title: "ICMP", body: "ping / traceroute" },
+    { title: "DHCP DORA", body: "UDP 67/68, broadcast" },
+    { title: "SPOF-tradeoff", body: "distribuert overlever" },
+    { title: "Ordvalg", body: "rute ≠ forward" },
+  ];
+  return (
+    <svg
+      viewBox="0 0 720 220"
+      className="w-full h-auto"
+      role="img"
+      aria-label="15 visuelle anker-kort"
+    >
+      {cards.map((c, i) => {
+        const col = i % 5;
+        const row = Math.floor(i / 5);
+        const x = 10 + col * 142;
+        const y = 10 + row * 68;
+        const colors = [
+          "fill-brand/15 stroke-brand",
+          "fill-amber-500/15 stroke-amber-500",
+          "fill-purple-500/15 stroke-purple-500",
+          "fill-emerald-500/15 stroke-emerald-500",
+          "fill-rose-500/15 stroke-rose-500",
+          "fill-sky-500/15 stroke-sky-500",
+        ];
+        const color = colors[i % colors.length];
+        return (
+          <g key={i}>
+            <rect x={x} y={y} width={130} height={60} rx={6} className={color} strokeWidth={1.5} />
+            <circle
+              cx={x + 14}
+              cy={y + 14}
+              r={9}
+              className="fill-card stroke-foreground"
+              strokeWidth={1}
+            />
+            <text
+              x={x + 14}
+              y={y + 18}
+              textAnchor="middle"
+              className="fill-foreground text-[9px] font-bold"
+            >
+              {i + 1}
+            </text>
+            <text x={x + 30} y={y + 20} className="fill-foreground text-[10px] font-bold">
+              {c.title}
+            </text>
+            <foreignObject x={x + 8} y={y + 28} width={118} height={28}>
+              <div
+                style={{
+                  fontSize: 9,
+                  lineHeight: 1.2,
+                  color: "var(--muted-foreground, #888)",
+                  textAlign: "center",
+                  fontFamily: "monospace",
+                }}
+              >
+                {c.body}
+              </div>
+            </foreignObject>
+          </g>
+        );
+      })}
     </svg>
   );
 }
