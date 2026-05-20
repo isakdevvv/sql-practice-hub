@@ -417,6 +417,25 @@ export const LIBRARY: LibraryItem[] = [
 
   // ───────── LÆR — mini-kurs og lineære løp ─────────
   {
+    slug: "forkurs",
+    title: "Forkurs — bro til DTE-2505 + DTE-2507",
+    kind: "laer",
+    tags: ["os", "nettverk", "python", "krypto", "kurs"],
+    href: "/forkurs",
+    blurb: "11 små biter før semesterstart: VM + terminal, Python, IP/port, Wireshark-intro, binær, krypto-overflate. Dekker fundamentet for begge fag.",
+    Icon: Compass,
+  },
+  {
+    slug: "sikkerhet",
+    title: "Sikkerhetssporet — fra CIA til OWASP",
+    kind: "laer",
+    tags: ["sikkerhet", "krypto", "nettverk", "kurs"],
+    href: "/sikkerhet",
+    blurb: "21 biter på fire faser: krypto-prinsipper, sikker komm (TLS), trusler og angrep, anvendt sikring (brannmur, herding, IDS, wifi, web). DTE-2507-sikkerhetsdelen.",
+    Icon: Shield,
+    subjectSlug: "dte-2507",
+  },
+  {
     slug: "kurose-kurs",
     title: "Kurose-kurset — Computer Networking",
     kind: "laer",
