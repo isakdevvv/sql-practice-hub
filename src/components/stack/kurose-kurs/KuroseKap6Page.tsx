@@ -17,6 +17,113 @@ import { Section63Live } from "./Section63Live";
 import { Section64Live } from "./Section64Live";
 import { Section65Live } from "./Section65Live";
 import { Section66Live } from "./Section66Live";
+import { VisualDefs } from "./VisualDefs";
+import {
+  FrameIcon,
+  EthernetFrameIcon,
+  PreambleIcon,
+  SfdIcon,
+  InterFrameGapIcon,
+  PayloadIcon,
+  JumboFrameIcon,
+  EtherTypeIcon,
+  FcsIcon,
+  MacIcon,
+  DstSrcMacIcon,
+  OuiIcon,
+  IgUlBitIcon,
+  BroadcastMacIcon,
+  ParityIcon,
+  Parity2DIcon,
+  ChecksumIcon,
+  CrcIcon,
+  GeneratorPolyIcon,
+  BurstErrorIcon,
+  Gf2Icon,
+  HammingIcon,
+  FecBecIcon,
+  NodeIcon,
+  FramingIcon,
+  DuplexIcon,
+  MtuIcon,
+  ReliableLinkIcon,
+  PauseIcon,
+  PointToPointIcon,
+  BroadcastMediumIcon,
+  NicIcon,
+  PromiscuousIcon,
+  ChannelPartitionIcon,
+  AlohaIcon,
+  SlotAlohaIcon,
+  CsmaIcon,
+  CsmaCdIcon,
+  BackoffIcon,
+  PollingIcon,
+  TokenRingIcon,
+  PropagationIcon,
+  JamIcon,
+  HiddenTerminalIcon,
+  CsmaCaIcon,
+  CaptureEffectIcon,
+  OfferedLoadIcon,
+  ArpIcon,
+  ArpCacheIcon,
+  IpBroadcastIcon,
+  SwitchTableIcon,
+  SelfLearningIcon,
+  PlugPlayIcon,
+  GratuitousArpIcon,
+  ArpSpoofIcon,
+  FloodingIcon,
+  TableAgingIcon,
+  SpanningTreeIcon,
+  BpduIcon,
+  VrrpIcon,
+  HubIcon,
+  SwitchBoxIcon,
+  SwitchHierarchyIcon,
+  AutoNegotiationIcon,
+  PoeIcon,
+  CamIcon,
+  ManchesterIcon,
+  VlanIcon,
+  VlanTagIcon,
+  TrunkLinkIcon,
+  NativeVlanIcon,
+  InterVlanRoutingIcon,
+  FirewallVlanIcon,
+  VlanHoppingIcon,
+  PrivateVlanIcon,
+  VoiceVlanIcon,
+  VtpIcon,
+  QinqIcon,
+  TorSwitchIcon,
+  ThreeTierIcon,
+  FatTreeIcon,
+  LeafSpineIcon,
+  EcmpIcon,
+  BisectionIcon,
+  OversubscriptionIcon,
+  EastWestIcon,
+  ClosIcon,
+  DcbIcon,
+  RdmaIcon,
+  BgpIcon,
+  VxlanIcon,
+  MplsLabelIcon,
+  LsrIcon,
+  LspIcon,
+  PushSwapPopIcon,
+  FecIcon,
+  LdpIcon,
+  MplsVpnIcon,
+  L3VpnIcon,
+  VplsIcon,
+  TrafficEngIcon,
+  SegmentRoutingIcon,
+  ExpBitIcon,
+  MplsTtlIcon,
+} from "./visualDefIcons.kap6";
 
 type Tab = "intro" | "6.1" | "6.2" | "6.3" | "6.4" | "6.5" | "6.6" | "oppgaver" | "eksamen";
 
@@ -224,30 +331,33 @@ function Section61() {
       </p>
 
       <div className="grid gap-3 lg:grid-cols-2">
-        <Defs
+        <VisualDefs
           items={[
-            { term: "Ramme (frame)", body: "Pakke på link-laget — header + payload + trailer." },
-            { term: "Node", body: "Maskin som snakker link-lag — host, ruter, switch." },
-            { term: "MAC-adresse", body: "48-bit fabrikkbrent ID per nettverkskort." },
-            { term: "Framing", body: "Avgjøre hvor en ramme starter og slutter på kabelen." },
-            { term: "Half- vs full-duplex", body: "Én vei av gangen, vs begge veier samtidig." },
-            { term: "MTU", body: "Maks payload per ramme (Ethernet: 1500 bytes)." },
+            { term: "Ramme (frame)", icon: <FrameIcon />, body: "Pakke på link-laget — header + payload + trailer." },
+            { term: "Node", icon: <NodeIcon />, body: "Maskin som snakker link-lag — host, ruter, switch." },
+            { term: "MAC-adresse", icon: <MacIcon />, body: "48-bit fabrikkbrent ID per nettverkskort." },
+            { term: "Framing", icon: <FramingIcon />, body: "Avgjøre hvor en ramme starter og slutter på kabelen." },
+            { term: "Half- vs full-duplex", icon: <DuplexIcon />, body: "Én vei av gangen, vs begge veier samtidig." },
+            { term: "MTU", icon: <MtuIcon />, body: "Maks payload per ramme (Ethernet: 1500 bytes)." },
             {
               term: "Pålitelig link-levering",
+              icon: <ReliableLinkIcon />,
               body: "Link-laget garanterer feilfri ramme — Ethernet gjør IKKE det.",
             },
             {
               term: "Flytstyring (PAUSE)",
+              icon: <PauseIcon />,
               body: "Mottaker ber sender stoppe — kun per-lenke, ikke ende-til-ende.",
             },
-            { term: "OUI", body: "Første 3 bytes av MAC = produsent (Intel, Apple, …)." },
-            { term: "I/G- og U/L-bit", body: "Markerer multicast og lokalt-administrert MAC." },
+            { term: "OUI", icon: <OuiIcon />, body: "Første 3 bytes av MAC = produsent (Intel, Apple, …)." },
+            { term: "I/G- og U/L-bit", icon: <IgUlBitIcon />, body: "Markerer multicast og lokalt-administrert MAC." },
             {
               term: "Point-to-point vs broadcast-medium",
+              icon: <PointToPointIcon />,
               body: "To noder vs flere som deler én kanal.",
             },
-            { term: "Adapter-modell", body: "NIC pakker/leser ramme i hardware før OS ser den." },
-            { term: "Promiscuous mode", body: "NIC aksepterer ALLE rammer — brukes av Wireshark." },
+            { term: "Adapter-modell", icon: <NicIcon />, body: "NIC pakker/leser ramme i hardware før OS ser den." },
+            { term: "Promiscuous mode", icon: <PromiscuousIcon />, body: "NIC aksepterer ALLE rammer — brukes av Wireshark." },
           ]}
         />
         <div className="space-y-3">
@@ -376,24 +486,25 @@ function Section62() {
       </p>
 
       <div className="grid gap-3 lg:grid-cols-2">
-        <Defs
+        <VisualDefs
           items={[
-            { term: "Paritets-bit", body: "Én bit som gjør antall 1-ere partall/oddetall." },
-            { term: "2D-paritet", body: "Paritet både per rad og kolonne — kan rette 1 feil." },
+            { term: "Paritets-bit", icon: <ParityIcon />, body: "Én bit som gjør antall 1-ere partall/oddetall." },
+            { term: "2D-paritet", icon: <Parity2DIcon />, body: "Paritet både per rad og kolonne — kan rette 1 feil." },
             {
               term: "Internet checksum",
+              icon: <ChecksumIcon />,
               body: "Sum av 16-bit ord — billig software-sjekk i TCP/IP.",
             },
-            { term: "CRC", body: "Rest ved polynom-divisjon — fanger nesten alle feil." },
-            { term: "Generator-polynom G", body: "Felles polynom sender og mottaker deler på." },
-            { term: "Burst-feil", body: "Flere feil i rekke — CRC fanger alle ≤ r bits." },
-            { term: "Even vs odd parity", body: "Partall vs oddetall ettere — samme styrke." },
-            { term: "GF(2)-aritmetikk", body: "Addisjon og subtraksjon er XOR — ingen mente." },
-            { term: "CRC-32 (Ethernet)", body: "33-bit standard-G — fanger 99,999999 %." },
-            { term: "FEC vs BEC", body: "Rett feilen selv vs spør om retransmisjon." },
-            { term: "Hamming-avstand", body: "Antall bits som skiller to ord — bestemmer kraft." },
-            { term: "Hamming(7,4)", body: "4 data + 3 paritet = kan rette én bit-feil." },
-            { term: "Adler-32", body: "Lett checksum brukt i zlib — svakere enn CRC." },
+            { term: "CRC", icon: <CrcIcon />, body: "Rest ved polynom-divisjon — fanger nesten alle feil." },
+            { term: "Generator-polynom G", icon: <GeneratorPolyIcon />, body: "Felles polynom sender og mottaker deler på." },
+            { term: "Burst-feil", icon: <BurstErrorIcon />, body: "Flere feil i rekke — CRC fanger alle ≤ r bits." },
+            { term: "Even vs odd parity", icon: <ParityIcon />, body: "Partall vs oddetall ettere — samme styrke." },
+            { term: "GF(2)-aritmetikk", icon: <Gf2Icon />, body: "Addisjon og subtraksjon er XOR — ingen mente." },
+            { term: "CRC-32 (Ethernet)", icon: <CrcIcon />, body: "33-bit standard-G — fanger 99,999999 %." },
+            { term: "FEC vs BEC", icon: <FecBecIcon />, body: "Rett feilen selv vs spør om retransmisjon." },
+            { term: "Hamming-avstand", icon: <HammingIcon />, body: "Antall bits som skiller to ord — bestemmer kraft." },
+            { term: "Hamming(7,4)", icon: <HammingIcon />, body: "4 data + 3 paritet = kan rette én bit-feil." },
+            { term: "Adler-32", icon: <ChecksumIcon />, body: "Lett checksum brukt i zlib — svakere enn CRC." },
           ]}
         />
         <div className="space-y-3">
@@ -594,35 +705,39 @@ function Section63() {
       </p>
 
       <div className="grid gap-3 lg:grid-cols-2">
-        <Defs
+        <VisualDefs
           items={[
             {
               term: "Channel partitioning",
+              icon: <ChannelPartitionIcon />,
               body: "Del kanalen — TDM, FDM, CDM. Garantert konfliktfritt.",
             },
-            { term: "Pure ALOHA", body: "Send når du vil. Maks 18 % throughput." },
-            { term: "Slot ALOHA", body: "Send kun ved slot-start. Maks 37 %." },
-            { term: "CSMA", body: "Lytt før du sender." },
-            { term: "CSMA/CD", body: "Hør din egen sending — kollisjon? Avbryt og prøv igjen." },
-            { term: "Exponential backoff", body: "Vent {0..2ⁿ−1} slots etter n-te kollisjon." },
+            { term: "Pure ALOHA", icon: <AlohaIcon />, body: "Send når du vil. Maks 18 % throughput." },
+            { term: "Slot ALOHA", icon: <SlotAlohaIcon />, body: "Send kun ved slot-start. Maks 37 %." },
+            { term: "CSMA", icon: <CsmaIcon />, body: "Lytt før du sender." },
+            { term: "CSMA/CD", icon: <CsmaCdIcon />, body: "Hør din egen sending — kollisjon? Avbryt og prøv igjen." },
+            { term: "Exponential backoff", icon: <BackoffIcon />, body: "Vent {0..2ⁿ−1} slots etter n-te kollisjon." },
             {
               term: "Polling",
+              icon: <PollingIcon />,
               body: "Master spør slaver i tur — ingen kollisjon, dårlig redundans.",
             },
-            { term: "Token-ring", body: "Token sirkulerer — den som har det får sende." },
+            { term: "Token-ring", icon: <TokenRingIcon />, body: "Token sirkulerer — den som har det får sende." },
             {
               term: "Propagation-time t_prop",
+              icon: <PropagationIcon />,
               body: "Signal-tid ende-til-ende — bestemmer min-ramme.",
             },
-            { term: "Jam-signal", body: "48 bit støy etter kollisjon — varsler alle." },
+            { term: "Jam-signal", icon: <JamIcon />, body: "48 bit støy etter kollisjon — varsler alle." },
             {
               term: "Binary Exponential Backoff",
+              icon: <BackoffIcon />,
               body: "Vent K·512 bit-tider, gi opp etter 16 forsøk.",
             },
-            { term: "Hidden terminal", body: "A og C hører B men ikke hverandre — radio-fall." },
-            { term: "CSMA/CA (WiFi)", body: "Unngå heller enn oppdage — backoff FØR sending." },
-            { term: "Capture effect", body: "Sterkere signal vinner kollisjon på radio." },
-            { term: "Offered load G", body: "Forsøk per ramme-tid — topp ved G=1 (slot ALOHA)." },
+            { term: "Hidden terminal", icon: <HiddenTerminalIcon />, body: "A og C hører B men ikke hverandre — radio-fall." },
+            { term: "CSMA/CA (WiFi)", icon: <CsmaCaIcon />, body: "Unngå heller enn oppdage — backoff FØR sending." },
+            { term: "Capture effect", icon: <CaptureEffectIcon />, body: "Sterkere signal vinner kollisjon på radio." },
+            { term: "Offered load G", icon: <OfferedLoadIcon />, body: "Forsøk per ramme-tid — topp ved G=1 (slot ALOHA)." },
           ]}
         />
         <div className="space-y-3">
@@ -822,31 +937,34 @@ function Section64ArpSelfLearning() {
       </p>
 
       <div className="grid gap-3 lg:grid-cols-2">
-        <Defs
+        <VisualDefs
           items={[
-            { term: "ARP", body: "«Hvem har IP X?» — broadcast som mapper IP til MAC." },
-            { term: "ARP-cache", body: "Tabell IP→MAC, lever ~20 min lokalt." },
-            { term: "MAC-broadcast", body: "FF:FF:FF:FF:FF:FF — alle på samme link mottar." },
-            { term: "IP-broadcast", body: "Til alle på subnett — pakkes i MAC-broadcast." },
+            { term: "ARP", icon: <ArpIcon />, body: "«Hvem har IP X?» — broadcast som mapper IP til MAC." },
+            { term: "ARP-cache", icon: <ArpCacheIcon />, body: "Tabell IP→MAC, lever ~20 min lokalt." },
+            { term: "MAC-broadcast", icon: <BroadcastMacIcon />, body: "FF:FF:FF:FF:FF:FF — alle på samme link mottar." },
+            { term: "IP-broadcast", icon: <IpBroadcastIcon />, body: "Til alle på subnett — pakkes i MAC-broadcast." },
             {
               term: "Switch forwarding-tabell",
+              icon: <SwitchTableIcon />,
               body: "MAC→port — kjernen i hvordan switchen ruter.",
             },
             {
               term: "Self-learning",
+              icon: <SelfLearningIcon />,
               body: "Switch lærer (kilde-MAC, port) når en ramme kommer inn.",
             },
-            { term: "Plug-and-play", body: "Switch fungerer uten konfigurasjon." },
-            { term: "Gratuitous ARP", body: "Annonser «jeg er X på MAC Y» — sjekker IP-konflikt." },
-            { term: "ARP-spoofing", body: "Angriper svarer falskt — alt går via ham." },
+            { term: "Plug-and-play", icon: <PlugPlayIcon />, body: "Switch fungerer uten konfigurasjon." },
+            { term: "Gratuitous ARP", icon: <GratuitousArpIcon />, body: "Annonser «jeg er X på MAC Y» — sjekker IP-konflikt." },
+            { term: "ARP-spoofing", icon: <ArpSpoofIcon />, body: "Angriper svarer falskt — alt går via ham." },
             {
               term: "Flooding",
+              icon: <FloodingIcon />,
               body: "Ukjent destinasjon → send ut alle porter unntatt inn-porten.",
             },
-            { term: "MAC-table aging", body: "Entry slettes etter ~5 min stillhet." },
-            { term: "Spanning Tree Protocol", body: "Slår av redundante linker — fjerner loops." },
-            { term: "BPDU", body: "Kontroll-ramme STP-switcher snakker sammen med." },
-            { term: "VRRP / HSRP", body: "To rutere deler virtuell IP+MAC for failover." },
+            { term: "MAC-table aging", icon: <TableAgingIcon />, body: "Entry slettes etter ~5 min stillhet." },
+            { term: "Spanning Tree Protocol", icon: <SpanningTreeIcon />, body: "Slår av redundante linker — fjerner loops." },
+            { term: "BPDU", icon: <BpduIcon />, body: "Kontroll-ramme STP-switcher snakker sammen med." },
+            { term: "VRRP / HSRP", icon: <VrrpIcon />, body: "To rutere deler virtuell IP+MAC for failover." },
           ]}
         />
         <div className="space-y-3">
@@ -1021,23 +1139,23 @@ function Section64Ethernet() {
       </p>
 
       <div className="grid gap-3 lg:grid-cols-2">
-        <Defs
+        <VisualDefs
           items={[
-            { term: "Preamble", body: "8 bytes synkronisering — kalibrerer mottaker-klokken." },
-            { term: "Dst/src-MAC", body: "6 bytes hver — unicast, multicast eller broadcast." },
-            { term: "EtherType", body: "2 bytes — sier hvilken protokoll er inni (IPv4, ARP, …)." },
-            { term: "Payload", body: "46–1500 bytes — typisk et IP-datagram." },
-            { term: "CRC (FCS)", body: "4 bytes CRC-32 — sjekkes i hardware på NIC." },
-            { term: "Hub", body: "Passiv flerporter — ett kollisjons-domene. Død i dag." },
-            { term: "Switch", body: "Aktiv enhet, hver port = eget kollisjons-domene." },
-            { term: "Switch-hierarki", body: "Aksess → distribusjons → core i klassisk LAN." },
-            { term: "SFD", body: "Siste byte av preamble — markerer rammens start." },
-            { term: "Inter-Frame Gap", body: "96 bit-tider stillhet mellom rammer." },
-            { term: "Jumbo frames", body: "9000-byte payload — brukes i datasenter." },
-            { term: "Auto-negotiation", body: "Begge sider forhandler hastighet og duplex." },
-            { term: "PoE", body: "Strøm via Ethernet — 15–90 W per port." },
-            { term: "CAM", body: "Hardware-minne med parallell-oppslag på MAC." },
-            { term: "Manchester-koding", body: "Overgang midt-i bit — holder klokken synk." },
+            { term: "Preamble", icon: <PreambleIcon />, body: "8 bytes synkronisering — kalibrerer mottaker-klokken." },
+            { term: "Dst/src-MAC", icon: <DstSrcMacIcon />, body: "6 bytes hver — unicast, multicast eller broadcast." },
+            { term: "EtherType", icon: <EtherTypeIcon />, body: "2 bytes — sier hvilken protokoll er inni (IPv4, ARP, …)." },
+            { term: "Payload", icon: <PayloadIcon />, body: "46–1500 bytes — typisk et IP-datagram." },
+            { term: "CRC (FCS)", icon: <FcsIcon />, body: "4 bytes CRC-32 — sjekkes i hardware på NIC." },
+            { term: "Hub", icon: <HubIcon />, body: "Passiv flerporter — ett kollisjons-domene. Død i dag." },
+            { term: "Switch", icon: <SwitchBoxIcon />, body: "Aktiv enhet, hver port = eget kollisjons-domene." },
+            { term: "Switch-hierarki", icon: <SwitchHierarchyIcon />, body: "Aksess → distribusjons → core i klassisk LAN." },
+            { term: "SFD", icon: <SfdIcon />, body: "Siste byte av preamble — markerer rammens start." },
+            { term: "Inter-Frame Gap", icon: <InterFrameGapIcon />, body: "96 bit-tider stillhet mellom rammer." },
+            { term: "Jumbo frames", icon: <JumboFrameIcon />, body: "9000-byte payload — brukes i datasenter." },
+            { term: "Auto-negotiation", icon: <AutoNegotiationIcon />, body: "Begge sider forhandler hastighet og duplex." },
+            { term: "PoE", icon: <PoeIcon />, body: "Strøm via Ethernet — 15–90 W per port." },
+            { term: "CAM", icon: <CamIcon />, body: "Hardware-minne med parallell-oppslag på MAC." },
+            { term: "Manchester-koding", icon: <ManchesterIcon />, body: "Overgang midt-i bit — holder klokken synk." },
           ]}
         />
         <div className="space-y-3">
@@ -1196,21 +1314,21 @@ function Section64Vlan() {
       </p>
 
       <div className="grid gap-3 lg:grid-cols-2">
-        <Defs
+        <VisualDefs
           items={[
-            { term: "VLAN", body: "Logisk gruppe porter — eget broadcast-domene." },
-            { term: "Port-basert VLAN", body: "Hver port hører til ett bestemt VLAN." },
-            { term: "802.1Q tagging", body: "4-byte tag etter kilde-MAC — 12-bit VLAN-ID." },
-            { term: "Trunk-link", body: "Switch-switch-lenke som bærer flere VLAN tagget." },
-            { term: "Native VLAN", body: "VLAN uten tagg over trunk — ofte VLAN 1." },
-            { term: "Inter-VLAN routing", body: "Krysning av VLAN-grense går via ruter." },
-            { term: "Brannmur per VLAN", body: "Ruter blir naturlig filter mellom VLAN." },
-            { term: "VLAN-hopping", body: "Angrep: bruk dobbel-tag for å nå annet VLAN." },
-            { term: "Private VLAN", body: "Isolerte porter — selv ikke nabo ser deg." },
-            { term: "Voice VLAN", body: "IP-telefon i eget VLAN med QoS — én kabel." },
-            { term: "VTP", body: "Cisco-protokoll for å sync VLAN-liste mellom switcher." },
-            { term: "QinQ", body: "Dobbel 802.1Q — ISP-tag over kunde-tag." },
-            { term: "MAC-basert VLAN", body: "VLAN avgjort av kilde-MAC, ikke port." },
+            { term: "VLAN", icon: <VlanIcon />, body: "Logisk gruppe porter — eget broadcast-domene." },
+            { term: "Port-basert VLAN", icon: <VlanIcon />, body: "Hver port hører til ett bestemt VLAN." },
+            { term: "802.1Q tagging", icon: <VlanTagIcon />, body: "4-byte tag etter kilde-MAC — 12-bit VLAN-ID." },
+            { term: "Trunk-link", icon: <TrunkLinkIcon />, body: "Switch-switch-lenke som bærer flere VLAN tagget." },
+            { term: "Native VLAN", icon: <NativeVlanIcon />, body: "VLAN uten tagg over trunk — ofte VLAN 1." },
+            { term: "Inter-VLAN routing", icon: <InterVlanRoutingIcon />, body: "Krysning av VLAN-grense går via ruter." },
+            { term: "Brannmur per VLAN", icon: <FirewallVlanIcon />, body: "Ruter blir naturlig filter mellom VLAN." },
+            { term: "VLAN-hopping", icon: <VlanHoppingIcon />, body: "Angrep: bruk dobbel-tag for å nå annet VLAN." },
+            { term: "Private VLAN", icon: <PrivateVlanIcon />, body: "Isolerte porter — selv ikke nabo ser deg." },
+            { term: "Voice VLAN", icon: <VoiceVlanIcon />, body: "IP-telefon i eget VLAN med QoS — én kabel." },
+            { term: "VTP", icon: <VtpIcon />, body: "Cisco-protokoll for å sync VLAN-liste mellom switcher." },
+            { term: "QinQ", icon: <QinqIcon />, body: "Dobbel 802.1Q — ISP-tag over kunde-tag." },
+            { term: "MAC-basert VLAN", icon: <MacIcon />, body: "VLAN avgjort av kilde-MAC, ikke port." },
           ]}
         />
         <div className="space-y-3">
@@ -1411,28 +1529,30 @@ function Section65() {
       </p>
 
       <div className="grid gap-3 lg:grid-cols-2">
-        <Defs
+        <VisualDefs
           items={[
-            { term: "ToR-switch", body: "Switch på toppen av server-rack — aksess-laget." },
+            { term: "ToR-switch", icon: <TorSwitchIcon />, body: "Switch på toppen av server-rack — aksess-laget." },
             {
               term: "Klassisk tre-topologi",
+              icon: <ThreeTierIcon />,
               body: "Aksess → distribusjon → core. Trang flaskehals.",
             },
-            { term: "Fat-tree", body: "Tre der lenkene blir tykkere mot toppen — full bisection." },
-            { term: "Leaf-spine", body: "To lag: hver leaf kobles til hver spine. 2 hopp alltid." },
-            { term: "ECMP", body: "Hash-fordel flows over flere like-kost-stier." },
-            { term: "Bisection bandwidth", body: "Kapasitet over et snitt som deler nettet i to." },
-            { term: "Oversubscription", body: "Ned-kapasitet / opp-kapasitet — 1:1 ideelt." },
-            { term: "3-tier vs 2-tier", body: "6 hopp vs 2 hopp på tvers av racker." },
+            { term: "Fat-tree", icon: <FatTreeIcon />, body: "Tre der lenkene blir tykkere mot toppen — full bisection." },
+            { term: "Leaf-spine", icon: <LeafSpineIcon />, body: "To lag: hver leaf kobles til hver spine. 2 hopp alltid." },
+            { term: "ECMP", icon: <EcmpIcon />, body: "Hash-fordel flows over flere like-kost-stier." },
+            { term: "Bisection bandwidth", icon: <BisectionIcon />, body: "Kapasitet over et snitt som deler nettet i to." },
+            { term: "Oversubscription", icon: <OversubscriptionIcon />, body: "Ned-kapasitet / opp-kapasitet — 1:1 ideelt." },
+            { term: "3-tier vs 2-tier", icon: <ThreeTierIcon />, body: "6 hopp vs 2 hopp på tvers av racker." },
             {
               term: "Øst-vest vs nord-sør",
+              icon: <EastWestIcon />,
               body: "Server-til-server vs til internett — 10× mer øst-vest.",
             },
-            { term: "Clos-nettverk", body: "Matematisk familie fat-tree/leaf-spine hører til." },
-            { term: "DCB", body: "Ethernet-utvidelser for lossless storage-trafikk." },
-            { term: "RoCE / RDMA", body: "NIC leser/skriver RAM direkte — ~1 μs latency." },
-            { term: "BGP i datasenter", body: "Internettets ruting-protokoll brukt internt." },
-            { term: "VXLAN", body: "Overlay-nett — 24-bit VNI gir 16M virtuelle nett." },
+            { term: "Clos-nettverk", icon: <ClosIcon />, body: "Matematisk familie fat-tree/leaf-spine hører til." },
+            { term: "DCB", icon: <DcbIcon />, body: "Ethernet-utvidelser for lossless storage-trafikk." },
+            { term: "RoCE / RDMA", icon: <RdmaIcon />, body: "NIC leser/skriver RAM direkte — ~1 μs latency." },
+            { term: "BGP i datasenter", icon: <BgpIcon />, body: "Internettets ruting-protokoll brukt internt." },
+            { term: "VXLAN", icon: <VxlanIcon />, body: "Overlay-nett — 24-bit VNI gir 16M virtuelle nett." },
           ]}
         />
         <div className="space-y-3">
@@ -1624,21 +1744,21 @@ function Section66() {
       </p>
 
       <div className="grid gap-3 lg:grid-cols-2">
-        <Defs
+        <VisualDefs
           items={[
-            { term: "MPLS-label", body: "20-bit ID — slås opp i en tabell på hver ruter." },
-            { term: "LSR", body: "Label Switching Router — bytter ut label per hopp." },
-            { term: "LSP", body: "Label Switched Path — forhåndsdefinert sti gjennom nettet." },
-            { term: "Push / swap / pop", body: "Operasjoner på label-stacken (legg på / bytt / fjern)." },
-            { term: "FEC", body: "Forwarding Equivalence Class — pakker som behandles likt." },
-            { term: "LDP", body: "Label Distribution Protocol — sprer labels mellom rutere." },
-            { term: "MPLS-VPN", body: "Kunde-nett tunnel via outer label = «ditt» trafikk." },
-            { term: "L3VPN", body: "Ruter-nivå-VPN: hver kunde sin VRF + label-stack." },
-            { term: "L2VPN / VPLS", body: "Ethernet-strekk over MPLS-kjerne." },
-            { term: "TE (Traffic Engineering)", body: "Pin LSP-er over ønskede stier — unngå hotspot." },
-            { term: "Segment Routing", body: "MPLS-arvtaker — sti i pakke-headeren, ingen LDP." },
-            { term: "EXP-bit / TC", body: "3 QoS-bit i label — som DSCP i IP." },
-            { term: "TTL i MPLS", body: "Egen TTL i labelen — kopieres ofte fra IP-TTL." },
+            { term: "MPLS-label", icon: <MplsLabelIcon />, body: "20-bit ID — slås opp i en tabell på hver ruter." },
+            { term: "LSR", icon: <LsrIcon />, body: "Label Switching Router — bytter ut label per hopp." },
+            { term: "LSP", icon: <LspIcon />, body: "Label Switched Path — forhåndsdefinert sti gjennom nettet." },
+            { term: "Push / swap / pop", icon: <PushSwapPopIcon />, body: "Operasjoner på label-stacken (legg på / bytt / fjern)." },
+            { term: "FEC", icon: <FecIcon />, body: "Forwarding Equivalence Class — pakker som behandles likt." },
+            { term: "LDP", icon: <LdpIcon />, body: "Label Distribution Protocol — sprer labels mellom rutere." },
+            { term: "MPLS-VPN", icon: <MplsVpnIcon />, body: "Kunde-nett tunnel via outer label = «ditt» trafikk." },
+            { term: "L3VPN", icon: <L3VpnIcon />, body: "Ruter-nivå-VPN: hver kunde sin VRF + label-stack." },
+            { term: "L2VPN / VPLS", icon: <VplsIcon />, body: "Ethernet-strekk over MPLS-kjerne." },
+            { term: "TE (Traffic Engineering)", icon: <TrafficEngIcon />, body: "Pin LSP-er over ønskede stier — unngå hotspot." },
+            { term: "Segment Routing", icon: <SegmentRoutingIcon />, body: "MPLS-arvtaker — sti i pakke-headeren, ingen LDP." },
+            { term: "EXP-bit / TC", icon: <ExpBitIcon />, body: "3 QoS-bit i label — som DSCP i IP." },
+            { term: "TTL i MPLS", icon: <MplsTtlIcon />, body: "Egen TTL i labelen — kopieres ofte fra IP-TTL." },
           ]}
         />
         <div className="space-y-3">
