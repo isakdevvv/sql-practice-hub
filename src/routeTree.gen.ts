@@ -50,6 +50,7 @@ import { Route as VizLesjonIndexRouteImport } from './routes/viz-lesjon.index'
 import { Route as StackIndexRouteImport } from './routes/stack.index'
 import { Route as SporIndexRouteImport } from './routes/spor.index'
 import { Route as MiniKursIndexRouteImport } from './routes/mini-kurs.index'
+import { Route as ForkursIndexRouteImport } from './routes/forkurs.index'
 import { Route as EksamenIndexRouteImport } from './routes/eksamen.index'
 import { Route as VizLesjonSlugRouteImport } from './routes/viz-lesjon.$slug'
 import { Route as StackSlugRouteImport } from './routes/stack.$slug'
@@ -63,6 +64,7 @@ import { Route as PortfolioDte2602SlugRouteImport } from './routes/portfolio-dte
 import { Route as MiniKursSlugRouteImport } from './routes/mini-kurs.$slug'
 import { Route as KarriereKodeLesningRouteImport } from './routes/karriere.kode-lesning'
 import { Route as KarriereDebugJaktRouteImport } from './routes/karriere.debug-jakt'
+import { Route as ForkursSlugRouteImport } from './routes/forkurs.$slug'
 import { Route as EksamenTreningRouteImport } from './routes/eksamen.trening'
 import { Route as Dte2507PcapRouteImport } from './routes/dte2507.pcap'
 import { Route as Dte2505ShellDrillRouteImport } from './routes/dte2505.shell-drill'
@@ -278,6 +280,11 @@ const MiniKursIndexRoute = MiniKursIndexRouteImport.update({
   path: '/',
   getParentRoute: () => MiniKursRoute,
 } as any)
+const ForkursIndexRoute = ForkursIndexRouteImport.update({
+  id: '/forkurs/',
+  path: '/forkurs/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const EksamenIndexRoute = EksamenIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -342,6 +349,11 @@ const KarriereKodeLesningRoute = KarriereKodeLesningRouteImport.update({
 const KarriereDebugJaktRoute = KarriereDebugJaktRouteImport.update({
   id: '/karriere/debug-jakt',
   path: '/karriere/debug-jakt',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ForkursSlugRoute = ForkursSlugRouteImport.update({
+  id: '/forkurs/$slug',
+  path: '/forkurs/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
 const EksamenTreningRoute = EksamenTreningRouteImport.update({
@@ -432,6 +444,7 @@ export interface FileRoutesByFullPath {
   '/dte2505/shell-drill': typeof Dte2505ShellDrillRoute
   '/dte2507/pcap': typeof Dte2507PcapRoute
   '/eksamen/trening': typeof EksamenTreningRoute
+  '/forkurs/$slug': typeof ForkursSlugRoute
   '/karriere/debug-jakt': typeof KarriereDebugJaktRouteWithChildren
   '/karriere/kode-lesning': typeof KarriereKodeLesningRoute
   '/mini-kurs/$slug': typeof MiniKursSlugRoute
@@ -445,6 +458,7 @@ export interface FileRoutesByFullPath {
   '/stack/$slug': typeof StackSlugRoute
   '/viz-lesjon/$slug': typeof VizLesjonSlugRoute
   '/eksamen/': typeof EksamenIndexRoute
+  '/forkurs/': typeof ForkursIndexRoute
   '/mini-kurs/': typeof MiniKursIndexRoute
   '/spor/': typeof SporIndexRoute
   '/stack/': typeof StackIndexRoute
@@ -492,6 +506,7 @@ export interface FileRoutesByTo {
   '/dte2505/shell-drill': typeof Dte2505ShellDrillRoute
   '/dte2507/pcap': typeof Dte2507PcapRoute
   '/eksamen/trening': typeof EksamenTreningRoute
+  '/forkurs/$slug': typeof ForkursSlugRoute
   '/karriere/kode-lesning': typeof KarriereKodeLesningRoute
   '/mini-kurs/$slug': typeof MiniKursSlugRoute
   '/portfolio-dte2602/$slug': typeof PortfolioDte2602SlugRoute
@@ -504,6 +519,7 @@ export interface FileRoutesByTo {
   '/stack/$slug': typeof StackSlugRoute
   '/viz-lesjon/$slug': typeof VizLesjonSlugRoute
   '/eksamen': typeof EksamenIndexRoute
+  '/forkurs': typeof ForkursIndexRoute
   '/mini-kurs': typeof MiniKursIndexRoute
   '/spor': typeof SporIndexRoute
   '/stack': typeof StackIndexRoute
@@ -557,6 +573,7 @@ export interface FileRoutesById {
   '/dte2505/shell-drill': typeof Dte2505ShellDrillRoute
   '/dte2507/pcap': typeof Dte2507PcapRoute
   '/eksamen/trening': typeof EksamenTreningRoute
+  '/forkurs/$slug': typeof ForkursSlugRoute
   '/karriere/debug-jakt': typeof KarriereDebugJaktRouteWithChildren
   '/karriere/kode-lesning': typeof KarriereKodeLesningRoute
   '/mini-kurs/$slug': typeof MiniKursSlugRoute
@@ -570,6 +587,7 @@ export interface FileRoutesById {
   '/stack/$slug': typeof StackSlugRoute
   '/viz-lesjon/$slug': typeof VizLesjonSlugRoute
   '/eksamen/': typeof EksamenIndexRoute
+  '/forkurs/': typeof ForkursIndexRoute
   '/mini-kurs/': typeof MiniKursIndexRoute
   '/spor/': typeof SporIndexRoute
   '/stack/': typeof StackIndexRoute
@@ -624,6 +642,7 @@ export interface FileRouteTypes {
     | '/dte2505/shell-drill'
     | '/dte2507/pcap'
     | '/eksamen/trening'
+    | '/forkurs/$slug'
     | '/karriere/debug-jakt'
     | '/karriere/kode-lesning'
     | '/mini-kurs/$slug'
@@ -637,6 +656,7 @@ export interface FileRouteTypes {
     | '/stack/$slug'
     | '/viz-lesjon/$slug'
     | '/eksamen/'
+    | '/forkurs/'
     | '/mini-kurs/'
     | '/spor/'
     | '/stack/'
@@ -684,6 +704,7 @@ export interface FileRouteTypes {
     | '/dte2505/shell-drill'
     | '/dte2507/pcap'
     | '/eksamen/trening'
+    | '/forkurs/$slug'
     | '/karriere/kode-lesning'
     | '/mini-kurs/$slug'
     | '/portfolio-dte2602/$slug'
@@ -696,6 +717,7 @@ export interface FileRouteTypes {
     | '/stack/$slug'
     | '/viz-lesjon/$slug'
     | '/eksamen'
+    | '/forkurs'
     | '/mini-kurs'
     | '/spor'
     | '/stack'
@@ -748,6 +770,7 @@ export interface FileRouteTypes {
     | '/dte2505/shell-drill'
     | '/dte2507/pcap'
     | '/eksamen/trening'
+    | '/forkurs/$slug'
     | '/karriere/debug-jakt'
     | '/karriere/kode-lesning'
     | '/mini-kurs/$slug'
@@ -761,6 +784,7 @@ export interface FileRouteTypes {
     | '/stack/$slug'
     | '/viz-lesjon/$slug'
     | '/eksamen/'
+    | '/forkurs/'
     | '/mini-kurs/'
     | '/spor/'
     | '/stack/'
@@ -812,6 +836,7 @@ export interface RootRouteChildren {
   VizLesjonRoute: typeof VizLesjonRouteWithChildren
   Dte2505ShellDrillRoute: typeof Dte2505ShellDrillRoute
   Dte2507PcapRoute: typeof Dte2507PcapRoute
+  ForkursSlugRoute: typeof ForkursSlugRoute
   KarriereDebugJaktRoute: typeof KarriereDebugJaktRouteWithChildren
   KarriereKodeLesningRoute: typeof KarriereKodeLesningRoute
   PortfolioDte2602SlugRoute: typeof PortfolioDte2602SlugRoute
@@ -820,6 +845,7 @@ export interface RootRouteChildren {
   PythonComprehensionsRoute: typeof PythonComprehensionsRoute
   PythonKjerneRoute: typeof PythonKjerneRoute
   PythonVisualizerRoute: typeof PythonVisualizerRoute
+  ForkursIndexRoute: typeof ForkursIndexRoute
   PythonIdeNrRoute: typeof PythonIdeNrRoute
   PythonKapNrRoute: typeof PythonKapNrRoute
   PythonKapIndexRoute: typeof PythonKapIndexRoute
@@ -1114,6 +1140,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MiniKursIndexRouteImport
       parentRoute: typeof MiniKursRoute
     }
+    '/forkurs/': {
+      id: '/forkurs/'
+      path: '/forkurs'
+      fullPath: '/forkurs/'
+      preLoaderRoute: typeof ForkursIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/eksamen/': {
       id: '/eksamen/'
       path: '/'
@@ -1203,6 +1236,13 @@ declare module '@tanstack/react-router' {
       path: '/karriere/debug-jakt'
       fullPath: '/karriere/debug-jakt'
       preLoaderRoute: typeof KarriereDebugJaktRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/forkurs/$slug': {
+      id: '/forkurs/$slug'
+      path: '/forkurs/$slug'
+      fullPath: '/forkurs/$slug'
+      preLoaderRoute: typeof ForkursSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/eksamen/trening': {
@@ -1399,6 +1439,7 @@ const rootRouteChildren: RootRouteChildren = {
   VizLesjonRoute: VizLesjonRouteWithChildren,
   Dte2505ShellDrillRoute: Dte2505ShellDrillRoute,
   Dte2507PcapRoute: Dte2507PcapRoute,
+  ForkursSlugRoute: ForkursSlugRoute,
   KarriereDebugJaktRoute: KarriereDebugJaktRouteWithChildren,
   KarriereKodeLesningRoute: KarriereKodeLesningRoute,
   PortfolioDte2602SlugRoute: PortfolioDte2602SlugRoute,
@@ -1407,6 +1448,7 @@ const rootRouteChildren: RootRouteChildren = {
   PythonComprehensionsRoute: PythonComprehensionsRoute,
   PythonKjerneRoute: PythonKjerneRoute,
   PythonVisualizerRoute: PythonVisualizerRoute,
+  ForkursIndexRoute: ForkursIndexRoute,
   PythonIdeNrRoute: PythonIdeNrRoute,
   PythonKapNrRoute: PythonKapNrRoute,
   PythonKapIndexRoute: PythonKapIndexRoute,
