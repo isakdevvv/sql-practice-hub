@@ -12,6 +12,11 @@ import {
 } from "lucide-react";
 import { SectionPager, type SectionNavItem } from "./SectionPager";
 import { Section61Live } from "./Section61Live";
+import { Section62Live } from "./Section62Live";
+import { Section63Live } from "./Section63Live";
+import { Section64Live } from "./Section64Live";
+import { Section65Live } from "./Section65Live";
+import { Section66Live } from "./Section66Live";
 
 type Tab = "intro" | "6.1" | "6.2" | "6.3" | "6.4" | "6.5" | "6.6" | "oppgaver" | "eksamen";
 
@@ -361,6 +366,15 @@ function Section62() {
         det som faktisk brukes i Ethernet.
       </p>
 
+      <Section62Live />
+
+      <p className="text-muted-foreground">
+        I widgeten over kjører de tre algoritmene parallelt på samme data. Klikk på en bit i en av
+        rammene for å flippe den — se hvilke algoritmer som oppdager feilen og hvilke som ikke gjør
+        det. Prøv også «burst-feil» med tre samtidige flips: paritet bommer ofte (hvis antallet
+        flips er partall), checksum bommer ved symmetriske endringer, men CRC fanger nesten alt.
+      </p>
+
       <div className="grid gap-3 lg:grid-cols-2">
         <Defs
           items={[
@@ -567,6 +581,16 @@ function Section63() {
         spørsmålet: hva skjer hvis to noder sender samtidig? Signalene blander seg og begge rammer
         ødelegges — en kollisjon. Multiple-access protokoller er reglene som styrer hvem som får
         sende når.
+      </p>
+
+      <Section63Live />
+
+      <p className="text-muted-foreground">
+        Simulasjonen viser klassisk Ethernet-bus CSMA/CD: alle tre hostene lytter («carrier sense»),
+        ser stille kanal omtrent samtidig, og begynner å sende. Signalene propagerer utover og når
+        de overlapper — kollisjon. Hver host detekterer det, sender et kort JAM, og velger en
+        eksponentiell-backoff-verdi. Etter to-tre kollisjoner finner hostene en rytme der bare én
+        sender om gangen.
       </p>
 
       <div className="grid gap-3 lg:grid-cols-2">
@@ -777,6 +801,15 @@ function Section64ArpSelfLearning() {
         switch, og switchen sender hver ramme bare til riktig port. Vi går gjennom tre sammenkoblede
         tema: (1) ARP og hvordan switchen lærer hvor en MAC sitter, (2) selve Ethernet-rammen og
         switch-hierarkiet, og (3) hvordan VLAN gjør én fysisk switch til mange logiske nett.
+      </p>
+
+      <Section64Live />
+
+      <p className="text-muted-foreground">
+        Send først A→B uten å lære B først. Switchen kjenner ikke B's MAC — den FLOODer rammen til
+        alle andre porter. Send så B→A: nå lærer switchen B også, og fremtidige A↔B-rammer går
+        unicast. Slå på VLAN-modus og send A→C: switchen vet A og C er på ulike VLAN, og rammen blir
+        droppet ved VLAN-grensen.
       </p>
 
       <h3 className="text-base font-semibold mt-2">ARP og switch self-learning</h3>
@@ -1367,6 +1400,16 @@ function Section65() {
         Moderne datasentre bruker bredere topologier som gir mange parallelle stier.
       </p>
 
+      <Section65Live />
+
+      <p className="text-muted-foreground">
+        Topologien over er en 2-tier leaf-spine: 4 leaf-switcher med 2 hosts hver, og 4 spine-switcher
+        på toppen. Hver leaf har en lenke til hver spine — så det finnes alltid 4 like-lange stier
+        mellom to vilkårlige hosts (med mindre de er på samme leaf). ECMP hash-fordeler flows over
+        disse 4 stiene. Legg til flere flows og se hvordan lasten fordeler seg; endre hash-salt for å
+        omfordele.
+      </p>
+
       <div className="grid gap-3 lg:grid-cols-2">
         <Defs
           items={[
@@ -1568,6 +1611,16 @@ function Section66() {
         legges en label på; alle rutere underveis (LSR — Label Switching Routers) ser bare på
         labelen og bytter den ut for neste hopp. Det er switching-hastighet på ruter-funksjonalitet,
         og det er grunnlaget for de fleste store ISP-er og bedrifts-VPN-er.
+      </p>
+
+      <Section66Live />
+
+      <p className="text-muted-foreground">
+        Følg pakka fra kunde A site 1, gjennom MPLS-domenet (ingress LER → 2 LSR-er → egress LER),
+        ut til kunde A site 2. Underveis byttes transport-labelen hopp-for-hopp (swap), og ingen LSR
+        ser noensinne på selve IP-headeren. Toggle L3VPN-modus for å se hvordan en ekstra
+        VPN-label holder kunde A og kunde B adskilt — selv om begge bruker samme private
+        IP-rom 10.0.0.5.
       </p>
 
       <div className="grid gap-3 lg:grid-cols-2">
