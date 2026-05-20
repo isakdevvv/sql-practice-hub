@@ -12,6 +12,10 @@ import {
 } from "lucide-react";
 import { SectionPager, type SectionNavItem } from "./SectionPager";
 import { Section31Live } from "./Section31Live";
+import { Section32Live } from "./Section32Live";
+import { Section33Live } from "./Section33Live";
+import { Section34Live } from "./Section34Live";
+import { Section35Live } from "./Section35Live";
 
 type Tab = "intro" | "3.1" | "3.2" | "3.3" | "3.4" | "3.5" | "3.6" | "3.7" | "3.8";
 
@@ -565,6 +569,8 @@ function Section33() {
         en svakhet, men for visse applikasjoner er det nøyaktig det man trenger.
       </p>
 
+      <Section32Live />
+
       <div className="grid gap-3 lg:grid-cols-2">
         <Defs
           items={[
@@ -741,6 +747,8 @@ function Section34() {
         håndtering av ett nytt problem, og avslutter med RDT 3.0 — en protokoll som faktisk virker
         over en kanal som taper, korrumperer og forsinker.
       </p>
+
+      <Section33Live />
 
       <div className="grid gap-3 lg:grid-cols-2">
         <Defs
@@ -923,6 +931,8 @@ function Section35() {
         og congestion control (siste tema for seg). Det er stream-orientert (bytes, ikke meldinger),
         bruker kumulative ACK-er, og estimerer RTT dynamisk for å sette fornuftige timeout-verdier.
       </p>
+
+      <Section34Live />
 
       <div className="grid gap-3 lg:grid-cols-2">
         <Defs
@@ -1134,6 +1144,8 @@ function Section36() {
         med separate løsninger. Uten congestion control kollapser et hardt belastet internett — det
         var faktisk hva som skjedde i 1986 før Van Jacobson kom med løsningen.
       </p>
+
+      <Section35Live />
 
       <div className="grid gap-3 lg:grid-cols-2">
         <Defs
