@@ -86,7 +86,7 @@ export const FORKURS_BITS: ForkursBit[] = [
     bygger_grunnlag_for: ["F-03", "F-04", "alle OS-lab"],
     fag: "begge",
     estimertTid: "20 min",
-    implementert: false,
+    implementert: true,
   },
   {
     slug: "f03-snapshots",
@@ -99,7 +99,7 @@ export const FORKURS_BITS: ForkursBit[] = [
     bygger_grunnlag_for: ["alle videre lab"],
     fag: "begge",
     estimertTid: "8 min",
-    implementert: false,
+    implementert: true,
   },
   {
     slug: "f04-terminal",
@@ -112,7 +112,7 @@ export const FORKURS_BITS: ForkursBit[] = [
     bygger_grunnlag_for: ["OS-05", "OS-06"],
     fag: "DTE-2505",
     estimertTid: "8 min",
-    implementert: false,
+    implementert: true,
   },
   // ============ FASE F2 ===========================================
   {
@@ -126,7 +126,7 @@ export const FORKURS_BITS: ForkursBit[] = [
     bygger_grunnlag_for: ["F-06", "DK-10"],
     fag: "DTE-2507",
     estimertTid: "25 min",
-    implementert: false,
+    implementert: true,
   },
   {
     slug: "f06-filer-python",
@@ -139,7 +139,7 @@ export const FORKURS_BITS: ForkursBit[] = [
     bygger_grunnlag_for: ["DK-10"],
     fag: "DTE-2507",
     estimertTid: "15 min",
-    implementert: false,
+    implementert: true,
   },
   // ============ FASE F3 ===========================================
   {
@@ -153,7 +153,7 @@ export const FORKURS_BITS: ForkursBit[] = [
     bygger_grunnlag_for: ["DK-01", "DK-06"],
     fag: "DTE-2507",
     estimertTid: "10 min",
-    implementert: false,
+    implementert: true,
   },
   {
     slug: "f08-ip-port",
@@ -166,7 +166,7 @@ export const FORKURS_BITS: ForkursBit[] = [
     bygger_grunnlag_for: ["DK-19", "DK-20"],
     fag: "DTE-2507",
     estimertTid: "10 min",
-    implementert: false,
+    implementert: true,
   },
   {
     slug: "f09-wireshark-ping",
@@ -179,7 +179,7 @@ export const FORKURS_BITS: ForkursBit[] = [
     bygger_grunnlag_for: ["DK-23", "SEC-10"],
     fag: "DTE-2507",
     estimertTid: "15 min",
-    implementert: false,
+    implementert: true,
   },
   // ============ FASE F4 ===========================================
   {
@@ -193,7 +193,7 @@ export const FORKURS_BITS: ForkursBit[] = [
     bygger_grunnlag_for: ["DK-20", "DK-21"],
     fag: "begge",
     estimertTid: "12 min",
-    implementert: false,
+    implementert: true,
   },
   {
     slug: "f11-krypto-intuisjon",
@@ -206,7 +206,7 @@ export const FORKURS_BITS: ForkursBit[] = [
     bygger_grunnlag_for: ["SEC-01", "SEC-02", "SEC-03"],
     fag: "DTE-2507",
     estimertTid: "10 min",
-    implementert: false,
+    implementert: true,
   },
 ];
 
