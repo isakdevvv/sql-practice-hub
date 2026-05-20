@@ -11,6 +11,7 @@ import {
   ExternalLink,
 } from "lucide-react";
 import { SectionPager, type SectionNavItem } from "./SectionPager";
+import { Section31Live } from "./Section31Live";
 
 type Tab = "intro" | "3.1" | "3.2" | "3.3" | "3.4" | "3.5" | "3.6" | "3.7" | "3.8";
 
@@ -212,6 +213,8 @@ function Section31() {
         piler en utvikler trenger å skyte i applikasjonskoden sin.
       </p>
 
+      <Section31Live />
+
       <div className="grid gap-3 lg:grid-cols-2">
         <Defs
           items={[
@@ -380,6 +383,8 @@ function Section32() {
         finner ankommende pakker veien til riktig prosess? Svaret er portnumre, og mekanismen kalles
         demultipleksing.
       </p>
+
+      <Section31Live />
 
       <div className="grid gap-3 lg:grid-cols-2">
         <Defs
