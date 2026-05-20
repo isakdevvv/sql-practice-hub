@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import { SectionPager, type SectionNavItem } from "./SectionPager";
 
-type Tab = "intro" | "2.1" | "2.2" | "2.3" | "2.4" | "2.5" | "2.6" | "2.7";
+type Tab = "intro" | "2.1" | "2.2" | "2.3" | "2.4" | "2.5" | "2.6" | "2.7" | "2.8";
 
 const SECTIONS_2: SectionNavItem[] = [
   { id: "intro", label: "Start her" },
@@ -23,6 +23,7 @@ const SECTIONS_2: SectionNavItem[] = [
   { id: "2.5", label: "2.5 Video & CDN" },
   { id: "2.6", label: "2.6 Sockets" },
   { id: "2.7", label: "2.7 Oppgaver" },
+  { id: "2.8", label: "2.8 Eksamen-fokus" },
 ];
 const NEXT_CHAPTER_2 = { slug: "kurose-kap-3", title: "Transportlaget" };
 
@@ -74,6 +75,9 @@ export function KuroseKap2Page() {
             <TabBtn active={tab === "2.7"} onClick={() => setTab("2.7")} title="Oppgaver">
               Oppg.
             </TabBtn>
+            <TabBtn active={tab === "2.8"} onClick={() => setTab("2.8")} title="Eksamen-fokus">
+              Eksamen
+            </TabBtn>
           </nav>
         </div>
 
@@ -85,6 +89,7 @@ export function KuroseKap2Page() {
         {tab === "2.5" && <Section25 />}
         {tab === "2.6" && <Section26 />}
         {tab === "2.7" && <Section27 />}
+        {tab === "2.8" && <SectionEksamen />}
 
         <SectionPager
           tabs={SECTIONS_2}
@@ -3380,6 +3385,577 @@ function ThreadVsEpollSvg() {
       </text>
       <text x={380} y={175} textAnchor="middle" className="fill-success text-[9px]">
         samme tråd jobber raskt
+      </text>
+    </svg>
+  );
+}
+
+// ============================================================
+// Section 2.8 — Eksamen-fokus
+// ============================================================
+
+function SectionEksamen() {
+  return (
+    <article className="space-y-4 text-sm">
+      <Header num="2.8" title="Eksamen-fokus" />
+      <p className="text-muted-foreground">
+        Kompakt repetisjon for sluttspurten. Cheat sheet med tall og tabeller du må kunne i søvne,
+        sammenligning av HTTP-versjonene, et beslutningstre for hvilken app-protokoll som passer til
+        hvilket scenario, vanlige fallgruver som folk roter med på eksamen, og et 5-minutter-anker
+        du kan resitere før du går inn i salen.
+      </p>
+
+      {/* a) Cheat sheet */}
+      <div className="grid gap-3 lg:grid-cols-2">
+        <Cheat tittel="HTTP-statuskoder — familier">
+          <ul className="space-y-1">
+            <li>
+              <span className="font-mono text-foreground">1xx</span> — informasjon (sjelden brukt;
+              100 Continue når man laster opp store filer)
+            </li>
+            <li>
+              <span className="font-mono text-foreground">2xx</span> — suksess (200 OK, 201 Created,
+              204 No Content)
+            </li>
+            <li>
+              <span className="font-mono text-foreground">3xx</span> — videresending (301 permanent,
+              302 midlertidig, 304 Not Modified ⇒ cache er fortsatt gyldig)
+            </li>
+            <li>
+              <span className="font-mono text-foreground">4xx</span> — klientfeil (400 Bad Request,
+              401 Unauthorized, 403 Forbidden, 404 Not Found, 429 Too Many Requests)
+            </li>
+            <li>
+              <span className="font-mono text-foreground">5xx</span> — serverfeil (500 Internal, 502
+              Bad Gateway, 503 Service Unavailable, 504 Gateway Timeout)
+            </li>
+          </ul>
+        </Cheat>
+
+        <Cheat tittel="HTTP-versjonene i én tabell">
+          <ul className="space-y-1">
+            <li>
+              <span className="font-mono text-foreground">1.0</span> — én request per
+              TCP-forbindelse, ingen keep-alive som default.
+            </li>
+            <li>
+              <span className="font-mono text-foreground">1.1</span> — persistent connections,
+              pipelining (sjelden brukt i praksis), head-of-line-blocking ved tap.
+            </li>
+            <li>
+              <span className="font-mono text-foreground">2</span> — binær framing, multipleksing
+              over én TCP, HPACK-headerkompresjon, server push (deprecated). Fortsatt HoL-blocking
+              på TCP-laget.
+            </li>
+            <li>
+              <span className="font-mono text-foreground">3</span> — kjører over QUIC (UDP),
+              uavhengige strømmer fjerner TCP-HoL, raskere handshake (0-RTT etter første gang),
+              innebygd TLS 1.3.
+            </li>
+          </ul>
+        </Cheat>
+
+        <Cheat tittel="DNS-record-typer">
+          <ul className="space-y-1">
+            <li>
+              <span className="font-mono text-foreground">A</span> — IPv4-adresse for et navn.
+            </li>
+            <li>
+              <span className="font-mono text-foreground">AAAA</span> — IPv6-adresse for et navn.
+            </li>
+            <li>
+              <span className="font-mono text-foreground">CNAME</span> — alias som peker til et
+              annet navn (ikke direkte til IP). Brukes ofte til CDN-er.
+            </li>
+            <li>
+              <span className="font-mono text-foreground">MX</span> — Mail eXchanger; hvilken server
+              tar imot e-post for domenet, med prioritet.
+            </li>
+            <li>
+              <span className="font-mono text-foreground">TXT</span> — fritekst; SPF, DKIM,
+              eierskaps-verifisering.
+            </li>
+            <li>
+              <span className="font-mono text-foreground">NS</span> — Name Server; hvilke
+              DNS-servere er autoritative for sonen.
+            </li>
+            <li>
+              <span className="font-mono text-foreground">SOA</span> — Start Of Authority; meta om
+              sonen (serial, refresh, expire, min TTL).
+            </li>
+          </ul>
+        </Cheat>
+
+        <Cheat tittel="Portnumre du må kunne utenat">
+          <ul className="space-y-1">
+            <li>
+              <span className="font-mono text-foreground">21</span> — FTP (kontroll-kanal)
+            </li>
+            <li>
+              <span className="font-mono text-foreground">22</span> — SSH
+            </li>
+            <li>
+              <span className="font-mono text-foreground">25</span> — SMTP (server-til-server)
+            </li>
+            <li>
+              <span className="font-mono text-foreground">53</span> — DNS (UDP for små svar, TCP for
+              store / zone transfer)
+            </li>
+            <li>
+              <span className="font-mono text-foreground">80</span> — HTTP
+            </li>
+            <li>
+              <span className="font-mono text-foreground">110</span> — POP3
+            </li>
+            <li>
+              <span className="font-mono text-foreground">143</span> — IMAP
+            </li>
+            <li>
+              <span className="font-mono text-foreground">443</span> — HTTPS (og QUIC/HTTP/3)
+            </li>
+            <li>
+              <span className="font-mono text-foreground">587</span> — SMTP submission (klient →
+              mail-server, med STARTTLS)
+            </li>
+            <li>
+              <span className="font-mono text-foreground">993</span> — IMAPS,{" "}
+              <span className="font-mono text-foreground">995</span> — POP3S
+            </li>
+          </ul>
+        </Cheat>
+      </div>
+
+      <Cheat tittel="DNS TTL — trade-off-regel">
+        <p>
+          TTL (Time To Live) avgjør hvor lenge en resolver kan cache et svar. Det er en rett-frem
+          avveining:
+        </p>
+        <ul className="mt-2 space-y-1">
+          <li>
+            <span className="font-semibold text-foreground">Lav TTL</span> (sekunder–minutter) ⇒
+            rask failover når du flytter et navn, men resolverne ringer hjem hyppig ⇒ høyere last og
+            tregere oppslag for sluttbrukere.
+          </li>
+          <li>
+            <span className="font-semibold text-foreground">Høy TTL</span> (timer–dager) ⇒ raske
+            oppslag i stor cache-hit-andel, men endringer i recorden tar lang tid før alle ser den.
+            Senk TTL FØR du planlegger endring, ikke etter.
+          </li>
+          <li>
+            Tommelfingerregel: <span className="font-semibold text-foreground">300 s</span> for
+            tjenester som flytter ofte (load balancer-pek),{" "}
+            <span className="font-semibold text-foreground">3600 s+</span> for stabile
+            A/AAAA-poster.
+          </li>
+        </ul>
+      </Cheat>
+
+      {/* b) Sammenligning HTTP/1.1 vs HTTP/2 vs HTTP/3 */}
+      <Illustration caption="Sammenligning: tre HTTP-generasjoner på fem dimensjoner. HTTP/3 fjerner TCP-HoL ved å bytte transport.">
+        <HttpVersionMatrixSvg />
+      </Illustration>
+
+      {/* c) Beslutningstre */}
+      <Illustration caption="Beslutningstre: gå fra venstre mot høyre — krav først, så protokoll. Sju use-case-blader.">
+        <ProtocolDecisionTreeSvg />
+      </Illustration>
+
+      {/* d) Fallgruver */}
+      <div className="grid gap-3 lg:grid-cols-2">
+        <Fallgruve tittel="«DNS er ett oppslag»">
+          <p>
+            Klassisk feilforestilling. Et førstegangs-oppslag av <code>www.foo.no</code> går typisk
+            via <span className="font-semibold text-foreground">lokal resolver</span> →{" "}
+            <span className="font-semibold text-foreground">root-server</span> ({"."}) →{" "}
+            <span className="font-semibold text-foreground">TLD-server</span> ({".no"}) →{" "}
+            <span className="font-semibold text-foreground">autoritativ server</span> for{" "}
+            <code>foo.no</code>. Det er fire UDP-tur-retur. Påfølgende oppslag treffer cache inntil
+            TTL utløper.
+          </p>
+        </Fallgruve>
+
+        <Fallgruve tittel="«HTTP er stateful fordi vi har innlogging»">
+          <p>
+            HTTP-protokollen er <span className="font-semibold text-foreground">stateless</span> —
+            serveren husker ingenting mellom requests. Innlogging-følelsen kommer fra cookies eller
+            tokens som klienten sender på nytt for hver request. Serveren bygger applikasjons-state
+            med en sesjons-tabell indeksert på cookie-verdien; protokollen i seg selv har ingen
+            anelse.
+          </p>
+        </Fallgruve>
+
+        <Fallgruve tittel="Browser-cache vs proxy-cache vs CDN">
+          <p>
+            Tre forskjellige ting.{" "}
+            <span className="font-semibold text-foreground">Browser-cache</span> ligger på din
+            maskin (private). <span className="font-semibold text-foreground">Proxy-cache</span> er
+            en delt cache i nettverket (f.eks. på universitetet) — bare ressurser merket{" "}
+            <code>Cache-Control: public</code> får ligge der.{" "}
+            <span className="font-semibold text-foreground">CDN</span> er en distribuert proxy-cache
+            som tilbyder-en (Netflix, NRK) selv betaler for; brukeren får svar fra et edge-punkt
+            geografisk nært.
+          </p>
+        </Fallgruve>
+
+        <Fallgruve tittel="«HTTPS er en egen protokoll»">
+          <p>
+            Nei. HTTPS = HTTP <em>over</em> TLS over TCP. Forskjellen fra HTTP er at applikasjons-
+            byteene krypteres av TLS-laget før de når TCP. Status-koder, headere, metoder — alt ser
+            likt ut. HTTP/2 og HTTP/3 forutsetter i praksis kryptert transport, men det er en valgt
+            konvensjon, ikke et formelt protokoll-krav.
+          </p>
+        </Fallgruve>
+
+        <Fallgruve tittel="«SMTP brukes til å hente e-post»">
+          <p>
+            <span className="font-semibold text-foreground">SMTP</span> sender e-post (klient →
+            server og server → server). <span className="font-semibold text-foreground">IMAP</span>{" "}
+            og <span className="font-semibold text-foreground">POP3</span> henter e-post. IMAP
+            holder meldinger på serveren og synker på tvers av enheter; POP3 laster ned og sletter
+            normalt fra serveren.
+          </p>
+        </Fallgruve>
+
+        <Fallgruve tittel="«P2P er alltid raskere»">
+          <p>
+            Det er det ikke. P2P (Peer-to-Peer; klient-noder deler data direkte) skalerer godt for
+            <em> populært</em> innhold med mange seedere, men for ferskt eller sjeldent innhold kan
+            klient-server være raskere fordi den ene serveren har full kapasitet hele tiden.
+            BitTorrent har dessuten <em>tit-for-tat</em>-mekanisme som kan straffe nye noder med
+            lite å bidra.
+          </p>
+        </Fallgruve>
+      </div>
+
+      {/* e) 5-minutter-anker */}
+      <Anker tittel="5-minutter-anker — kjør disse i hodet før eksamen">
+        <ol className="list-decimal pl-5 space-y-1">
+          <li>
+            App-protokoller bestemmer hvilke meldinger som sendes, i hvilken rekkefølge og hva de
+            betyr — transportlaget under tar seg av leveransen.
+          </li>
+          <li>
+            HTTP er request/response, tekstbasert (frem til HTTP/2 som er binær), stateless. State
+            lagres på klient (cookies) eller server (sesjonstabell + cookie-nøkkel).
+          </li>
+          <li>
+            HTTP/1.1 → 2 → 3 fjerner head-of-line-blocking i to steg: HTTP/2 på applikasjons- laget
+            (multipleksing), HTTP/3 ved å bytte til QUIC over UDP.
+          </li>
+          <li>
+            En non-persistent HTTP-side med N objekter tar minst{" "}
+            <span className="font-mono text-foreground">2N · RTT</span> (én TCP + én request per
+            objekt). Persistent + pipelined faller mot{" "}
+            <span className="font-mono text-foreground">(N+2) · RTT</span>.
+          </li>
+          <li>
+            DNS er hierarkisk og rekursivt cachet. Rekkefølgen: lokal resolver → root → TLD →
+            autoritativ. TTL styrer hvor lenge svar gjenbrukes.
+          </li>
+          <li>
+            DNS-record-typene A/AAAA/CNAME/MX/TXT/NS/SOA løser hver sin oppgave — IP-oppslag, alias,
+            e-post-rute, fritekst (SPF/DKIM), delegering, sonemeta.
+          </li>
+          <li>
+            E-post: SMTP sender (port 25 server-server, 587 klient-server). IMAP (143/993) holder
+            mail på serveren; POP3 (110/995) laster ned.
+          </li>
+          <li>
+            P2P-skaleringen: server-tid = max(F/u_s, NF/(u_s + Σu_i)) — fildelernes opplastings-
+            kapasitet teller med, så total tid faller når flere noder hjelper til.
+          </li>
+          <li>
+            Video over HTTPS bruker DASH (Dynamic Adaptive Streaming over HTTP) — manifest +
+            segmenter i flere bitrater, klienten velger bitraten basert på målt båndbredde.
+          </li>
+          <li>
+            CDN (Content Delivery Network) plasserer kopier av innhold nær brukeren — DNS gjør
+            jobben med å rute klienten til nærmeste edge.
+          </li>
+          <li>
+            Sockets er API-et programmet bruker for å åpne en transport-kanal. TCP-socket = stream +
+            connection (connect/accept). UDP-socket = datagram, ingen handshake.
+          </li>
+          <li>
+            En socket adresseres av (IP, port) — eller for TCP av 4-tuppelet (lokal IP, lokal port,
+            ekstern IP, ekstern port). Det er tuppelet som bestemmer hvilken socket en pakke
+            tilhører.
+          </li>
+          <li>
+            Klient-server skalerer ved horisontal duplisering + lastbalansering; P2P skalerer ved at
+            hver ny node også bidrar med kapasitet.
+          </li>
+          <li>
+            For sanntid (lyd/video samtale) brukes UDP-basert protokoller (WebRTC over DTLS+SRTP) —
+            TCPs retransmisjon er for treg, vi vil heller miste et frame enn å vente.
+          </li>
+          <li>
+            Husk forskjellen: portnummer (16 bit) identifiserer prosessen på en host; IP-adresse
+            identifiserer host-en på nettverket. Sammen utgjør de en socket-adresse.
+          </li>
+        </ol>
+      </Anker>
+
+      <RelatedSlugs slugs={["kurose-kap-1", "kurose-kap-3", "dte-2507"]} />
+    </article>
+  );
+}
+
+// ============================================================
+// Eksamen-spesifikke helpers
+// ============================================================
+
+function Fallgruve({ tittel, children }: { tittel: string; children: React.ReactNode }) {
+  return (
+    <div className="rounded-xl border border-rose-500/30 bg-rose-500/5 p-4">
+      <div className="text-[10px] uppercase tracking-wider text-rose-700 dark:text-rose-400 font-semibold mb-1">
+        Fallgruve
+      </div>
+      <div className="font-semibold text-foreground mb-1">{tittel}</div>
+      <div className="text-muted-foreground text-[13px] space-y-2">{children}</div>
+    </div>
+  );
+}
+
+function Cheat({ tittel, children }: { tittel: string; children: React.ReactNode }) {
+  return (
+    <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/5 p-4">
+      <div className="text-[10px] uppercase tracking-wider text-emerald-700 dark:text-emerald-400 font-semibold mb-1">
+        Cheat sheet
+      </div>
+      <div className="font-semibold text-foreground mb-2">{tittel}</div>
+      <div className="text-muted-foreground text-[13px] space-y-1">{children}</div>
+    </div>
+  );
+}
+
+function Anker({ tittel, children }: { tittel: string; children: React.ReactNode }) {
+  return (
+    <div className="rounded-xl border border-indigo-500/30 bg-indigo-500/5 p-4">
+      <div className="text-[10px] uppercase tracking-wider text-indigo-700 dark:text-indigo-400 font-semibold mb-1">
+        5-minutter-anker
+      </div>
+      <div className="font-semibold text-foreground mb-2">{tittel}</div>
+      <div className="text-muted-foreground text-[13px]">{children}</div>
+    </div>
+  );
+}
+
+// ============================================================
+// Eksamen-SVG-er
+// ============================================================
+
+function HttpVersionMatrixSvg() {
+  const rows = [
+    {
+      dim: "Multipleksing",
+      v11: "Nei (én request av gangen)",
+      v2: "Ja (binær framing)",
+      v3: "Ja (uavhengige QUIC-strømmer)",
+    },
+    { dim: "Header-kompresjon", v11: "Ingen", v2: "HPACK", v3: "QPACK" },
+    { dim: "Transport", v11: "TCP", v2: "TCP", v3: "QUIC (UDP)" },
+    { dim: "Encryption", v11: "TLS valgfritt", v2: "TLS de facto", v3: "TLS 1.3 innebygd" },
+    { dim: "Head-of-line-block.", v11: "Ja (appl. + TCP)", v2: "Ja (TCP)", v3: "Nei" },
+  ];
+  const colX = [10, 160, 290, 420];
+  const colW = [140, 130, 130, 140];
+  return (
+    <svg viewBox="0 0 560 220" className="w-full h-auto">
+      <rect x={0} y={0} width={colX[0] + colW[0]} height={28} className="fill-muted/40" />
+      <rect x={colX[1]} y={0} width={colW[1]} height={28} className="fill-brand/10" />
+      <rect x={colX[2]} y={0} width={colW[2]} height={28} className="fill-brand/15" />
+      <rect x={colX[3]} y={0} width={colW[3]} height={28} className="fill-brand/20" />
+      <text x={colX[0] + 8} y={18} className="fill-foreground text-[11px] font-semibold">
+        Dimensjon
+      </text>
+      <text
+        x={colX[1] + colW[1] / 2}
+        y={18}
+        textAnchor="middle"
+        className="fill-foreground text-[11px] font-semibold"
+      >
+        HTTP/1.1
+      </text>
+      <text
+        x={colX[2] + colW[2] / 2}
+        y={18}
+        textAnchor="middle"
+        className="fill-foreground text-[11px] font-semibold"
+      >
+        HTTP/2
+      </text>
+      <text
+        x={colX[3] + colW[3] / 2}
+        y={18}
+        textAnchor="middle"
+        className="fill-foreground text-[11px] font-semibold"
+      >
+        HTTP/3
+      </text>
+      {rows.map((r, i) => {
+        const y = 28 + i * 36;
+        return (
+          <g key={r.dim}>
+            <rect
+              x={0}
+              y={y}
+              width={560}
+              height={36}
+              className={i % 2 === 0 ? "fill-card" : "fill-muted/10"}
+            />
+            <line x1={0} y1={y} x2={560} y2={y} className="stroke-border" strokeWidth={0.5} />
+            <text x={colX[0] + 8} y={y + 22} className="fill-foreground text-[10px] font-semibold">
+              {r.dim}
+            </text>
+            <text x={colX[1] + 6} y={y + 22} className="fill-muted-foreground text-[10px]">
+              {r.v11}
+            </text>
+            <text x={colX[2] + 6} y={y + 22} className="fill-muted-foreground text-[10px]">
+              {r.v2}
+            </text>
+            <text x={colX[3] + 6} y={y + 22} className="fill-success text-[10px]">
+              {r.v3}
+            </text>
+          </g>
+        );
+      })}
+      <line
+        x1={0}
+        y1={28 + rows.length * 36}
+        x2={560}
+        y2={28 + rows.length * 36}
+        className="stroke-border"
+        strokeWidth={0.5}
+      />
+    </svg>
+  );
+}
+
+function ProtocolDecisionTreeSvg() {
+  // Decision tree: root question -> intermediate -> leaf protocols
+  return (
+    <svg viewBox="0 0 720 360" className="w-full h-auto">
+      {/* Root */}
+      <rect
+        x={20}
+        y={150}
+        width={140}
+        height={48}
+        rx={6}
+        className="fill-brand/15 stroke-brand"
+        strokeWidth={1}
+      />
+      <text
+        x={90}
+        y={170}
+        textAnchor="middle"
+        className="fill-foreground text-[11px] font-semibold"
+      >
+        Hva slags use-case?
+      </text>
+      <text x={90} y={186} textAnchor="middle" className="fill-muted-foreground text-[10px]">
+        start her
+      </text>
+
+      {/* Level 1 — 4 categories */}
+      {[
+        { y: 20, label: "Hente dokument", desc: "tekst / bilder / fil" },
+        { y: 100, label: "Sanntids-kommunikasjon", desc: "lav latency, OK å miste pakker" },
+        { y: 180, label: "Strømme media", desc: "video on demand, lyd" },
+        { y: 260, label: "Sende / hente meldinger", desc: "e-post, chat, fildeling" },
+      ].map((cat, i) => (
+        <g key={cat.label}>
+          <line
+            x1={160}
+            y1={174}
+            x2={210}
+            y2={cat.y + 24}
+            className="stroke-muted-foreground"
+            strokeWidth={1}
+          />
+          <rect
+            x={210}
+            y={cat.y}
+            width={170}
+            height={48}
+            rx={6}
+            className="fill-card stroke-border"
+            strokeWidth={1}
+          />
+          <text
+            x={295}
+            y={cat.y + 20}
+            textAnchor="middle"
+            className="fill-foreground text-[10px] font-semibold"
+          >
+            {cat.label}
+          </text>
+          <text
+            x={295}
+            y={cat.y + 35}
+            textAnchor="middle"
+            className="fill-muted-foreground text-[9px]"
+          >
+            {cat.desc}
+          </text>
+        </g>
+      ))}
+
+      {/* Leaves (protocols) */}
+      {[
+        // For each category, list one or more leaves with y position
+        { from: 24, y: 5, label: "HTTP / HTTPS", note: "GET, statisk + dynamisk" },
+        { from: 24, y: 40, label: "BitTorrent", note: "stor fil, mange seedere" },
+        { from: 104, y: 80, label: "WebRTC / SRTP", note: "video-samtale, P2P over UDP" },
+        { from: 104, y: 115, label: "SIP + RTP", note: "VoIP-signalering" },
+        { from: 184, y: 165, label: "HTTPS + DASH", note: "tilpasset bitrate, segmenter" },
+        { from: 184, y: 200, label: "HLS over HTTPS", note: "Apple-stack, segmenter" },
+        { from: 264, y: 245, label: "SMTP + IMAP", note: "e-post send + hent" },
+        { from: 264, y: 280, label: "XMPP / Matrix", note: "chat" },
+        { from: 264, y: 315, label: "FTP / SFTP", note: "fil-overføring" },
+      ].map((leaf) => (
+        <g key={leaf.label + leaf.y}>
+          <line
+            x1={380}
+            y1={leaf.from}
+            x2={490}
+            y2={leaf.y + 18}
+            className="stroke-muted-foreground"
+            strokeWidth={1}
+          />
+          <rect
+            x={490}
+            y={leaf.y}
+            width={210}
+            height={36}
+            rx={6}
+            className="fill-success/10 stroke-success/60"
+            strokeWidth={1}
+          />
+          <text
+            x={595}
+            y={leaf.y + 15}
+            textAnchor="middle"
+            className="fill-foreground text-[10px] font-semibold"
+          >
+            {leaf.label}
+          </text>
+          <text
+            x={595}
+            y={leaf.y + 28}
+            textAnchor="middle"
+            className="fill-muted-foreground text-[9px]"
+          >
+            {leaf.note}
+          </text>
+        </g>
+      ))}
+
+      {/* Legend */}
+      <text x={20} y={345} className="fill-muted-foreground text-[9px] italic">
+        Beslutningstre — krav (midt-kolonne) avgjør protokoll (høyre). Tekst-meldinger og fildeling
+        kan velge mellom flere; sanntid utelukker TCP-retransmit.
       </text>
     </svg>
   );

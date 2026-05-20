@@ -9,7 +9,7 @@ import { Section13Live } from "./Section13Live";
 import { Section14Live } from "./Section14Live";
 import { Section15Live } from "./Section15Live";
 
-type Tab = "intro" | "1.1" | "1.2" | "1.3" | "1.4" | "1.5" | "1.6";
+type Tab = "intro" | "1.1" | "1.2" | "1.3" | "1.4" | "1.5" | "1.6" | "1.7";
 
 const SECTIONS_1: SectionNavItem[] = [
   { id: "intro", label: "Start her" },
@@ -19,6 +19,7 @@ const SECTIONS_1: SectionNavItem[] = [
   { id: "1.4", label: "1.4 Forsinkelse" },
   { id: "1.5", label: "1.5 Lagene" },
   { id: "1.6", label: "1.6 Oppgaver" },
+  { id: "1.7", label: "1.7 Eksamen-fokus" },
 ];
 const NEXT_CHAPTER_1 = { slug: "kurose-kap-2", title: "Applikasjonslaget" };
 
@@ -67,6 +68,9 @@ export function KuroseKap1Page() {
             <TabBtn active={tab === "1.6"} onClick={() => setTab("1.6")} title="Oppgaver">
               Oppg.
             </TabBtn>
+            <TabBtn active={tab === "1.7"} onClick={() => setTab("1.7")} title="Eksamen-fokus">
+              Eksamen
+            </TabBtn>
           </nav>
         </div>
 
@@ -77,6 +81,7 @@ export function KuroseKap1Page() {
         {tab === "1.4" && <Section14 />}
         {tab === "1.5" && <Section15 />}
         {tab === "1.6" && <Section16 />}
+        {tab === "1.7" && <SectionEksamen />}
 
         <SectionPager
           tabs={SECTIONS_1}
@@ -1353,6 +1358,661 @@ function Section16() {
 // ============================================================
 // Felles
 // ============================================================
+
+// ============================================================
+// 1.7 — Eksamen-fokus
+// ============================================================
+function SectionEksamen() {
+  return (
+    <article className="space-y-4 text-sm">
+      <Header num="1.7" title="Eksamen-fokus" />
+
+      <p className="text-muted-foreground">
+        Komprimert studie-pakke for siste runde før eksamen. Bla deg ned: cheat sheet, en
+        side-mot-side-tabell over de to svitsje-typene, et beslutningstre for
+        transport-protokoll-valg, vanlige eksamen-fallgruver, og helt nederst en
+        åtte-til-tolv-punkts liste du kan pugge i pausen rett før du går inn.
+      </p>
+
+      <Cheat tittel="Cheat sheet — det viktigste på én skjerm">
+        <div className="grid gap-3 md:grid-cols-3">
+          <div>
+            <div className="text-[11px] uppercase tracking-wider text-cyan-700 dark:text-cyan-400 font-semibold mb-1">
+              Nøkkelformler
+            </div>
+            <ul className="space-y-1.5 text-[12px]">
+              <li>
+                <strong>Transmisjon:</strong> <code className="text-[11px]">d_trans = L / R</code> —
+                pakkelengde L (bit) delt på lenke-rate R (bit/s).
+              </li>
+              <li>
+                <strong>Propagasjon:</strong>{" "}
+                <code className="text-[11px]">d_prop = avstand / v</code> — typisk{" "}
+                <code className="text-[11px]">v ≈ 2·10⁸ m/s</code> i fiber.
+              </li>
+              <li>
+                <strong>Total ende-til-ende-tid:</strong>{" "}
+                <code className="text-[11px]">d_proc + d_kø + d_trans + d_prop</code> — summen av de
+                fire bidragene per hop, summert over alle hop.
+              </li>
+              <li>
+                <strong>Throughput-flaskehals:</strong>{" "}
+                <code className="text-[11px]">throughput = min(R₁, R₂, …, R_n)</code> — den tregeste
+                lenken på veien setter taket.
+              </li>
+              <li>
+                <strong>Trafikk-intensitet:</strong>{" "}
+                <code className="text-[11px]">I = L·a / R</code> der{" "}
+                <code className="text-[11px]">a</code> er ankomstrate (pakker/s).{" "}
+                <code className="text-[11px]">I → 1</code> betyr at køen eksploderer.
+              </li>
+            </ul>
+          </div>
+
+          <div>
+            <div className="text-[11px] uppercase tracking-wider text-cyan-700 dark:text-cyan-400 font-semibold mb-1">
+              Tall-å-huske
+            </div>
+            <ul className="space-y-1.5 text-[12px]">
+              <li>
+                <strong>Lyshastighet i fiber:</strong> 2·10⁸ m/s — to-tredjedeler av c. Bruk denne
+                når oppgaven sier «fiber-lenke».
+              </li>
+              <li>
+                <strong>Bergen → New York:</strong> 5 700 km gir{" "}
+                <code className="text-[11px]">d_prop ≈ 28 ms</code> én vei,{" "}
+                <code className="text-[11px]">56 ms</code> rundt-tid-minimum.
+              </li>
+              <li>
+                <strong>MTU på Ethernet:</strong> 1 500 byte (= 12 000 bit). Største pakke som får
+                gå urøvet.
+              </li>
+              <li>
+                <strong>1 Gbit/s, 1500-byte pakke:</strong>{" "}
+                <code className="text-[11px]">d_trans = 12 µs</code> — utrolig kort. Propagasjon
+                dominerer over Atlanterhavet.
+              </li>
+              <li>
+                <strong>Geo-stasjonær satellitt:</strong> 36 000 km opp gir ~120 ms enveis bare på
+                propagasjon. Derfor er Zoom over Starlink bedre enn over gammeldags VSAT.
+              </li>
+            </ul>
+          </div>
+
+          <div>
+            <div className="text-[11px] uppercase tracking-wider text-cyan-700 dark:text-cyan-400 font-semibold mb-1">
+              Huskeregler
+            </div>
+            <ul className="space-y-1.5 text-[12px]">
+              <li>
+                <strong>BFE</strong> — «<u>B</u>ygges av lag, <u>F</u>orsinkelser i fire bidrag,{" "}
+                <u>E</u>ndringer skjer via RFC». Tre påstander å ankre kapittelet på.
+              </li>
+              <li>
+                <strong>PKLT</strong> — fem lag fra topp til bunn: <u>P</u>rogram, <u>P</u>
+                akke-ende-til-ende, <u>P</u>akke-rute, <u>L</u>enke, <u>F</u>ysisk. (Tenk «PPP-LF»
+                hvis du foretrekker initialer.)
+              </li>
+              <li>
+                <strong>3-tier-trapp:</strong> hjem-aksess → regional ISP → tier-1-backbone. ISP-er
+                lever av peering-avtaler seg imellom, ikke en sentral myndighet.
+              </li>
+              <li>
+                <strong>«Krets reserverer, pakke konkurrerer»</strong> — fanger hele forskjellen i
+                fem ord.
+              </li>
+              <li>
+                <strong>«Tap når kø er full»</strong> — pakke-svitsjing har ingen reservasjon, så
+                når buffer-en er full, droppes nye pakker. Husk: tap er en konsekvens, ikke en feil.
+              </li>
+            </ul>
+          </div>
+        </div>
+      </Cheat>
+
+      <div className="rounded-xl border border-border bg-card p-4">
+        <h3 className="text-xs uppercase tracking-wider text-muted-foreground mb-3">
+          Sammenligning — krets-svitsjing vs pakke-svitsjing
+        </h3>
+        <div className="overflow-x-auto">
+          <table className="w-full text-[12px] border-collapse">
+            <thead>
+              <tr className="border-b border-border">
+                <th className="text-left py-2 pr-3 font-semibold text-foreground">Egenskap</th>
+                <th className="text-left py-2 pr-3 font-semibold text-blue-700 dark:text-blue-400">
+                  Krets-svitsjing
+                </th>
+                <th className="text-left py-2 font-semibold text-emerald-700 dark:text-emerald-400">
+                  Pakke-svitsjing
+                </th>
+              </tr>
+            </thead>
+            <tbody className="text-muted-foreground">
+              <tr className="border-b border-border/60">
+                <td className="py-2 pr-3 font-medium text-foreground">Reservasjon</td>
+                <td className="py-2 pr-3">
+                  <span className="text-blue-700 dark:text-blue-400">+</span> Båndbredde og buffere
+                  bookes på forhånd langs hele ruten.
+                </td>
+                <td className="py-2">
+                  <span className="text-amber-700 dark:text-amber-400">−</span> Ingen reservasjon —
+                  hver pakke kjemper om plass i øyeblikket.
+                </td>
+              </tr>
+              <tr className="border-b border-border/60">
+                <td className="py-2 pr-3 font-medium text-foreground">Kapasitets-utnyttelse</td>
+                <td className="py-2 pr-3">
+                  <span className="text-amber-700 dark:text-amber-400">−</span> Stille perioder
+                  sløser bort hele kanalen — kretsen står tom men er ikke ledig for andre.
+                </td>
+                <td className="py-2">
+                  <span className="text-emerald-700 dark:text-emerald-400">+</span> Statistisk
+                  multipleksing utnytter samme lenke til mange samtidige strømmer.
+                </td>
+              </tr>
+              <tr className="border-b border-border/60">
+                <td className="py-2 pr-3 font-medium text-foreground">Kø-oppførsel</td>
+                <td className="py-2 pr-3">
+                  <span className="text-blue-700 dark:text-blue-400">+</span> Ingen kø under
+                  samtalen — du har «din» del av lenken.
+                </td>
+                <td className="py-2">
+                  <span className="text-amber-700 dark:text-amber-400">−</span> Kø bygger seg i
+                  rutere når flere strømmer møtes; variabel forsinkelse (jitter).
+                </td>
+              </tr>
+              <tr className="border-b border-border/60">
+                <td className="py-2 pr-3 font-medium text-foreground">Pakketap</td>
+                <td className="py-2 pr-3">
+                  <span className="text-blue-700 dark:text-blue-400">+</span> Mister ikke biter når
+                  samtalen først er satt opp — men kan miste hele oppsetts-forsøket.
+                </td>
+                <td className="py-2">
+                  <span className="text-amber-700 dark:text-amber-400">−</span> Buffer-overflow
+                  drops; ende-vertene må selv oppdage og re-sende.
+                </td>
+              </tr>
+              <tr>
+                <td className="py-2 pr-3 font-medium text-foreground">Hvor brukes det</td>
+                <td className="py-2 pr-3">
+                  Klassisk fasttelefon, gammeldags ISDN, dedikerte leide linjer for finans-handel.
+                </td>
+                <td className="py-2">
+                  Hele internett, mobilnett-databærer, Zoom, Netflix, e-post — alt du faktisk
+                  bruker.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <Illustration caption="Beslutningstre — gitt en ny app, hvilken transport-tjeneste passer best?">
+        <BeslutningstreSvg />
+      </Illustration>
+
+      <div className="rounded-xl border border-border bg-card p-4">
+        <h3 className="text-xs uppercase tracking-wider text-muted-foreground mb-3">
+          Vanlige fallgruver på eksamen
+        </h3>
+        <div className="grid gap-3 md:grid-cols-2">
+          <Fallgruve tittel="d_prop og d_trans er ikke det samme">
+            <p>
+              <code className="text-[11px]">d_trans</code> handler om hvor lang tid det tar å{" "}
+              <em>dytte alle bitene ut</em> på lenken (avhenger av pakkelengde og lenke-rate).{" "}
+              <code className="text-[11px]">d_prop</code> handler om hvor lang tid det tar for
+              første bit å <em>rekke fram</em> til den andre enden (avhenger av avstand og
+              signal-hastighet). På korte lenker med store pakker dominerer transmisjon; på lange
+              lenker med små pakker dominerer propagasjon. Eksamen elsker å gi deg tall der den ene
+              er ti ganger den andre.
+            </p>
+          </Fallgruve>
+
+          <Fallgruve tittel="Throughput er ikke summen av lenkene">
+            <p>
+              Throughput end-to-end er <em>minimum</em> av lenke-ratene langs ruten, ikke summen og
+              ikke gjennomsnittet. Hvis du har 1 Gbit/s hjemme, 10 Gbit/s i ISP-en og 100 Mbit/s på
+              serveren, er taket 100 Mbit/s. Å legge til mer kapasitet et annet sted endrer{" "}
+              <em>ingenting</em> før du fikser flaskehalsen.
+            </p>
+          </Fallgruve>
+
+          <Fallgruve tittel="Lag-modellen krever ikke ekstra rutere">
+            <p>
+              Studenter tror noen ganger at det må finnes en «transport-lag-ruter» eller et
+              «applikasjons-lag-mellomledd». Det stemmer ikke. Lag er{" "}
+              <em>en abstraksjon i programvaren</em> på samme maskin — pakken går gjennom alle fem
+              lagene oppover i mottakeren og nedover i avsenderen, men rutere underveis ser bare ned
+              til lag 3 (nettverk).
+            </p>
+          </Fallgruve>
+
+          <Fallgruve tittel="Pakke-tap er normalt — ikke en feil">
+            <p>
+              Når en eksamen-oppgave forteller om «pakke-tap på 0,5 %», ikke skriv at «nettet er
+              ødelagt». Tap er den normale signal-mekanismen for at en kø er full. TCP bruker det
+              som signal for å bremse seg selv ned. Helt fri-for-tap krever krets-svitsjing, og det
+              er nesten ingen som har det lenger.
+            </p>
+          </Fallgruve>
+
+          <Fallgruve tittel="ISP-tier er en topologi, ikke en pris-klasse">
+            <p>
+              «Tier-1» betyr at en ISP når <em>hele</em> internett uten å betale noen andre for
+              transit — det er et nettverks-topologisk faktum. Det sier <strong>ingenting</strong>{" "}
+              om hvor mye sluttbrukeren betaler eller hvor rask aksess-linjen din er. Telenor Privat
+              er en tier-3-aksess-ISP selv om Telenor-konsernet driver tier-1-backbone andre steder.
+            </p>
+          </Fallgruve>
+
+          <Fallgruve tittel="Statistisk multipleksing er ikke det samme som TDM">
+            <p>
+              <em>Tids-multipleksing</em> (TDM, brukt i krets-svitsjing) gir hver bruker en fast,
+              tilbakevendende tids-luke om hen har data å sende eller ikke.{" "}
+              <em>Statistisk multipleksing</em> (pakke-svitsjing) lar en aktiv bruker bruke hele
+              lenken når andre er stille. Hvis eksamen-oppgaven spør «hva tilsvarer
+              tids-multipleksing?», er svaret <strong>krets-svitsjing</strong>, ikke
+              pakke-svitsjing.
+            </p>
+          </Fallgruve>
+        </div>
+      </div>
+
+      <Anker>
+        <div className="text-[11px] uppercase tracking-wider text-emerald-700 dark:text-emerald-400 font-semibold mb-2">
+          5-minutter-anker — det aller mest grunnleggende
+        </div>
+        <ol className="list-decimal pl-5 space-y-1.5 text-[12px]">
+          <li>
+            <strong>Internett er ISP-er av ISP-er.</strong> En føderert struktur uten sentral eier —
+            bindes sammen av RFC-standarder fra IETF, koblet sammen kommersielt via peering og
+            transit.
+          </li>
+          <li>
+            <strong>To perspektiver:</strong> hardware (hosts + lenker + rutere + svitsjer) og
+            tjeneste (en plattform distribuerte apper kan bruke uten å kjenne kablene).
+          </li>
+          <li>
+            <strong>Edge vs core.</strong> Edge = der appene faktisk kjører (hosts). Core =
+            ruter-meshen som flytter pakker mellom edge-punkter. Aksess-nett er broen mellom de to.
+          </li>
+          <li>
+            <strong>Pakke-svitsjing vant.</strong> Fordi den tåler bursty trafikk og deler lenker
+            statistisk — krets-svitsjing kaster bort kapasitet under stille perioder.
+          </li>
+          <li>
+            <strong>Fire forsinkelses-bidrag per hop:</strong> prosessering, kø, transmisjon,
+            propagasjon. Summer over alle hop for total ende-til-ende-tid.
+          </li>
+          <li>
+            <strong>Throughput = min(R_i).</strong> Den tregeste lenken setter taket; ekstra
+            kapasitet andre steder hjelper ikke.
+          </li>
+          <li>
+            <strong>Pakke-tap skjer når køen er full.</strong> Det er en normal mekanisme, ikke en
+            feil — TCP bruker tap som bremse-signal.
+          </li>
+          <li>
+            <strong>Fem lag, ovenfra og ned:</strong> Applikasjon, Transport, Nettverk, Link,
+            Fysisk. Hver lag tilbyr tjenester til laget over og bruker tjenester fra laget under.
+          </li>
+          <li>
+            <strong>Hvorfor lag?</strong> Modularitet — du kan bytte ut WiFi mot 5G uten å røre TCP,
+            og bytte HTTP/1 mot HTTP/3 uten å røre Ethernet-driveren.
+          </li>
+          <li>
+            <strong>Innkapsling.</strong> Hvert lag legger på sin egen header når pakken går nedover
+            i avsenderen, og fjerner sin egen header når pakken går oppover i mottakeren.
+          </li>
+          <li>
+            <strong>Rutere ser bare opp til lag 3.</strong> Lenke-svitsjer ser opp til lag 2.
+            Ende-hosts er de eneste som kjører alle fem lagene.
+          </li>
+          <li>
+            <strong>Protokoll = avtalt format + rekkefølge.</strong> Begge sider må ha samme RFC.
+            Derfor tar nye versjoner (IPv6, HTTP/3) tiår å rulle ut — alle må oppdatere før det
+            virker overalt.
+          </li>
+        </ol>
+      </Anker>
+
+      <RelatedSlugs slugs={["osi-tcpip", "dte2507-day-in-the-life"]} />
+    </article>
+  );
+}
+
+// ============================================================
+// Beslutningstre — SVG for eksamen-tab
+// ============================================================
+function BeslutningstreSvg() {
+  return (
+    <svg
+      viewBox="0 0 720 380"
+      className="w-full h-auto"
+      role="img"
+      aria-label="Beslutningstre for valg av transport-tjeneste"
+    >
+      <defs>
+        <marker
+          id="bt-arrow"
+          viewBox="0 0 10 10"
+          refX="9"
+          refY="5"
+          markerWidth="6"
+          markerHeight="6"
+          orient="auto-start-reverse"
+        >
+          <path d="M0,0 L10,5 L0,10 z" fill="currentColor" className="text-muted-foreground" />
+        </marker>
+      </defs>
+
+      {/* Rot */}
+      <g>
+        <rect
+          x="270"
+          y="14"
+          width="180"
+          height="44"
+          rx="8"
+          className="fill-card stroke-brand"
+          strokeWidth="1.5"
+        />
+        <text
+          x="360"
+          y="34"
+          textAnchor="middle"
+          className="fill-foreground"
+          fontSize="12"
+          fontWeight="600"
+        >
+          Ny app — hvilken
+        </text>
+        <text
+          x="360"
+          y="50"
+          textAnchor="middle"
+          className="fill-foreground"
+          fontSize="12"
+          fontWeight="600"
+        >
+          transport-tjeneste?
+        </text>
+      </g>
+
+      {/* Spørsmål 1: sann-tid? */}
+      <line
+        x1="360"
+        y1="58"
+        x2="360"
+        y2="84"
+        className="stroke-muted-foreground"
+        strokeWidth="1.5"
+        markerEnd="url(#bt-arrow)"
+      />
+      <g>
+        <rect
+          x="260"
+          y="84"
+          width="200"
+          height="36"
+          rx="6"
+          className="fill-muted/30 stroke-border"
+          strokeWidth="1"
+        />
+        <text x="360" y="107" textAnchor="middle" className="fill-foreground" fontSize="11">
+          Tåler appen små tap, men ikke forsinkelse?
+        </text>
+      </g>
+
+      {/* Ja → UDP (venstre) */}
+      <path
+        d="M 290 120 Q 180 145 130 175"
+        className="stroke-muted-foreground fill-none"
+        strokeWidth="1.5"
+        markerEnd="url(#bt-arrow)"
+      />
+      <text x="200" y="138" className="fill-muted-foreground" fontSize="10" fontStyle="italic">
+        Ja (sann-tid)
+      </text>
+      <g>
+        <rect
+          x="60"
+          y="178"
+          width="140"
+          height="44"
+          rx="8"
+          className="fill-amber-500/10 stroke-amber-500/50"
+          strokeWidth="1.5"
+        />
+        <text
+          x="130"
+          y="200"
+          textAnchor="middle"
+          className="fill-foreground"
+          fontSize="12"
+          fontWeight="600"
+        >
+          UDP
+        </text>
+        <text x="130" y="214" textAnchor="middle" className="fill-muted-foreground" fontSize="10">
+          tale, video, spill
+        </text>
+      </g>
+
+      {/* Nei → spørsmål 2 (høyre/midt) */}
+      <path
+        d="M 430 120 Q 540 145 580 175"
+        className="stroke-muted-foreground fill-none"
+        strokeWidth="1.5"
+        markerEnd="url(#bt-arrow)"
+      />
+      <text x="500" y="138" className="fill-muted-foreground" fontSize="10" fontStyle="italic">
+        Nei
+      </text>
+      <g>
+        <rect
+          x="490"
+          y="178"
+          width="200"
+          height="36"
+          rx="6"
+          className="fill-muted/30 stroke-border"
+          strokeWidth="1"
+        />
+        <text x="590" y="201" textAnchor="middle" className="fill-foreground" fontSize="11">
+          Trengs garantert pålitelig
+        </text>
+        <text x="590" y="213" textAnchor="middle" className="fill-foreground" fontSize="11">
+          levering, i rekkefølge?
+        </text>
+      </g>
+
+      {/* Ja → TCP */}
+      <line
+        x1="540"
+        y1="214"
+        x2="430"
+        y2="252"
+        className="stroke-muted-foreground"
+        strokeWidth="1.5"
+        markerEnd="url(#bt-arrow)"
+      />
+      <text x="455" y="240" className="fill-muted-foreground" fontSize="10" fontStyle="italic">
+        Ja
+      </text>
+      <g>
+        <rect
+          x="330"
+          y="254"
+          width="140"
+          height="44"
+          rx="8"
+          className="fill-emerald-500/10 stroke-emerald-500/50"
+          strokeWidth="1.5"
+        />
+        <text
+          x="400"
+          y="276"
+          textAnchor="middle"
+          className="fill-foreground"
+          fontSize="12"
+          fontWeight="600"
+        >
+          TCP
+        </text>
+        <text x="400" y="290" textAnchor="middle" className="fill-muted-foreground" fontSize="10">
+          web, e-post, fil-overføring
+        </text>
+      </g>
+
+      {/* Nei → spørsmål 3 */}
+      <line
+        x1="640"
+        y1="214"
+        x2="640"
+        y2="252"
+        className="stroke-muted-foreground"
+        strokeWidth="1.5"
+        markerEnd="url(#bt-arrow)"
+      />
+      <text x="650" y="240" className="fill-muted-foreground" fontSize="10" fontStyle="italic">
+        Nei
+      </text>
+      <g>
+        <rect
+          x="540"
+          y="254"
+          width="200"
+          height="36"
+          rx="6"
+          className="fill-muted/30 stroke-border"
+          strokeWidth="1"
+        />
+        <text x="640" y="277" textAnchor="middle" className="fill-foreground" fontSize="11">
+          Skal én sender nå
+        </text>
+        <text x="640" y="289" textAnchor="middle" className="fill-foreground" fontSize="11">
+          mange mottakere samtidig?
+        </text>
+      </g>
+
+      {/* Ja → multicast/broadcast */}
+      <line
+        x1="600"
+        y1="290"
+        x2="540"
+        y2="320"
+        className="stroke-muted-foreground"
+        strokeWidth="1.5"
+        markerEnd="url(#bt-arrow)"
+      />
+      <text x="545" y="312" className="fill-muted-foreground" fontSize="10" fontStyle="italic">
+        Ja, lokalt
+      </text>
+      <g>
+        <rect
+          x="430"
+          y="322"
+          width="160"
+          height="44"
+          rx="8"
+          className="fill-purple-500/10 stroke-purple-500/50"
+          strokeWidth="1.5"
+        />
+        <text
+          x="510"
+          y="344"
+          textAnchor="middle"
+          className="fill-foreground"
+          fontSize="12"
+          fontWeight="600"
+        >
+          Broadcast / multicast
+        </text>
+        <text x="510" y="358" textAnchor="middle" className="fill-muted-foreground" fontSize="10">
+          LAN-discovery, IPTV
+        </text>
+      </g>
+
+      {/* Nei → moderne stack (QUIC) */}
+      <line
+        x1="680"
+        y1="290"
+        x2="680"
+        y2="320"
+        className="stroke-muted-foreground"
+        strokeWidth="1.5"
+        markerEnd="url(#bt-arrow)"
+      />
+      <text x="688" y="312" className="fill-muted-foreground" fontSize="10" fontStyle="italic">
+        Nei
+      </text>
+      <g>
+        <rect
+          x="600"
+          y="322"
+          width="120"
+          height="44"
+          rx="8"
+          className="fill-cyan-500/10 stroke-cyan-500/50"
+          strokeWidth="1.5"
+        />
+        <text
+          x="660"
+          y="344"
+          textAnchor="middle"
+          className="fill-foreground"
+          fontSize="12"
+          fontWeight="600"
+        >
+          QUIC
+        </text>
+        <text x="660" y="358" textAnchor="middle" className="fill-muted-foreground" fontSize="10">
+          moderne web/HTTP/3
+        </text>
+      </g>
+    </svg>
+  );
+}
+
+// ============================================================
+// Hjelpe-komponenter for eksamen-tab
+// ============================================================
+function Cheat({ tittel, children }: { tittel: string; children: React.ReactNode }) {
+  return (
+    <div className="rounded-xl border border-cyan-500/30 bg-cyan-500/5 p-4">
+      <div className="text-[10px] uppercase tracking-wider text-cyan-700 dark:text-cyan-400 font-semibold mb-1">
+        Cheat sheet
+      </div>
+      <div className="font-semibold text-foreground mb-3">{tittel}</div>
+      <div className="text-muted-foreground text-[13px]">{children}</div>
+    </div>
+  );
+}
+
+function Fallgruve({ tittel, children }: { tittel: string; children: React.ReactNode }) {
+  return (
+    <div className="rounded-lg border border-orange-500/40 bg-orange-500/5 p-3">
+      <div className="text-[11px] font-semibold text-orange-700 dark:text-orange-400 mb-1 flex items-center gap-1">
+        <span aria-hidden="true">⚠</span>
+        <span>Pass på! {tittel}</span>
+      </div>
+      <div className="text-muted-foreground text-[12px] space-y-1.5">{children}</div>
+    </div>
+  );
+}
+
+function Anker({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/5 p-4">
+      <div className="text-[10px] uppercase tracking-wider text-emerald-700 dark:text-emerald-400 font-semibold mb-1 flex items-center gap-1">
+        <span aria-hidden="true">⚓</span>
+        <span>Pugge-anker</span>
+      </div>
+      <div className="text-muted-foreground text-[13px]">{children}</div>
+    </div>
+  );
+}
 
 function Header({ num, title }: { num: string; title: string }) {
   return (

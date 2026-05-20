@@ -12,7 +12,19 @@ import {
 } from "lucide-react";
 import { SectionPager, type SectionNavItem } from "./SectionPager";
 
-type Tab = "intro" | "8.1" | "8.2" | "8.3" | "8.4" | "8.5" | "8.6" | "8.7" | "8.8" | "8.9" | "8.10";
+type Tab =
+  | "intro"
+  | "8.1"
+  | "8.2"
+  | "8.3"
+  | "8.4"
+  | "8.5"
+  | "8.6"
+  | "8.7"
+  | "8.8"
+  | "8.9"
+  | "8.10"
+  | "8.11";
 
 const SECTIONS_8: SectionNavItem[] = [
   { id: "intro", label: "Start her" },
@@ -26,6 +38,7 @@ const SECTIONS_8: SectionNavItem[] = [
   { id: "8.8", label: "8.8 IDS & IPS" },
   { id: "8.9", label: "8.9 Web-angrep" },
   { id: "8.10", label: "8.10 Oppgaver" },
+  { id: "8.11", label: "Eksamen-fokus" },
 ];
 const NEXT_CHAPTER_8 = { slug: "kurose-kap-9", title: "Multimedia-nettverk" };
 
@@ -86,6 +99,13 @@ export function KuroseKap8Page() {
             <TabBtn active={tab === "8.10"} onClick={() => setTab("8.10")} title="Oppgaver">
               Oppg.
             </TabBtn>
+            <TabBtn
+              active={tab === "8.11"}
+              onClick={() => setTab("8.11")}
+              title="Eksamen-fokus: cheat sheet, sammenligning, beslutningstre, fallgruver, anker"
+            >
+              Eksamen
+            </TabBtn>
           </nav>
         </div>
 
@@ -100,6 +120,7 @@ export function KuroseKap8Page() {
         {tab === "8.8" && <Section88 />}
         {tab === "8.9" && <Section89 />}
         {tab === "8.10" && <Section810 />}
+        {tab === "8.11" && <SectionEksamen />}
 
         <SectionPager
           tabs={SECTIONS_8}
@@ -4496,6 +4517,846 @@ function SqliSvg() {
           <polygon points="0 0, 6 3, 0 6" className="fill-destructive" />
         </marker>
       </defs>
+    </svg>
+  );
+}
+
+// ===========================================================================
+// SectionEksamen — kompakt eksamen-fokus for kap. 8 (Sikkerhet i nettverk)
+// ===========================================================================
+
+function SectionEksamen() {
+  return (
+    <div className="space-y-6">
+      <Header num="8.11" title="Eksamen-fokus — sikkerhet på 30 minutter" />
+
+      <p className="text-[13px] text-muted-foreground">
+        Dette er det største kapittelet i Kurose, så denne siden er ekstra omfattende. Bruk den til
+        siste-natt-repetisjon: les cheat-arket først, gå gjennom sammenligningen og
+        beslutningstreet, sjekk at du gjenkjenner alle fallgruvene, og avslutt med
+        5-minutter-ankeret rett før eksamenslokalet.
+      </p>
+
+      {/* ============ A) CHEAT SHEET ============ */}
+      <section className="space-y-3">
+        <h3 className="text-sm font-semibold text-foreground">a) Cheat sheet — alt på ett brett</h3>
+
+        <div className="grid md:grid-cols-2 gap-3">
+          <Cheat tittel="Sikkerhets-mål (CIA + 2)">
+            <ul className="list-disc pl-5 space-y-1">
+              <li>
+                <strong>C</strong>onfidentiality — kun mottaker leser. Verktøy: kryptering.
+              </li>
+              <li>
+                <strong>I</strong>ntegrity — meldingen er uendret. Verktøy: hash, MAC, signatur.
+              </li>
+              <li>
+                <strong>A</strong>vailability — tjenesten svarer. Verktøy: redundans, rate-limit,
+                DDoS-mitigering.
+              </li>
+              <li>
+                <strong>Authenticity</strong> — du snakker med rett part. Verktøy: signatur,
+                sertifikat, MAC.
+              </li>
+              <li>
+                <strong>Non-repudiation</strong> — avsender kan ikke benekte etterpå. Krever
+                <em> digital signatur</em> (MAC holder ikke, for begge parter har nøkkelen).
+              </li>
+            </ul>
+          </Cheat>
+
+          <Cheat tittel="Symmetrisk vs. asymmetrisk">
+            <ul className="list-disc pl-5 space-y-1">
+              <li>
+                <strong>Symmetrisk</strong> (AES, ChaCha20): én delt nøkkel. Raskt, små nøkler
+                (128/256 bit). Problem: hvordan dele nøkkelen først?
+              </li>
+              <li>
+                <strong>Asymmetrisk</strong> (RSA, ECC): nøkkelpar (offentlig + privat). Treigt,
+                store nøkler (2048+ bit RSA, 256 bit ECC). Løser nøkkel-fordeling.
+              </li>
+              <li>
+                <strong>Hybrid</strong> (i praksis alltid): bruk asym for å avtale en sym
+                økt-nøkkel, krypter all data symmetrisk.
+              </li>
+            </ul>
+          </Cheat>
+
+          <Cheat tittel="AES-modi">
+            <ul className="list-disc pl-5 space-y-1">
+              <li>
+                <strong>ECB</strong> — krypterer hver blokk uavhengig. Like klartekst-blokker gir
+                like chiffer-blokker → mønstre lekker. <em>Aldri</em> bruk på ekte data.
+              </li>
+              <li>
+                <strong>CBC</strong> — hver blokk XORes med forrige chiffer. Trenger IV. Sekvensiell
+                kryptering (kan ikke parallelliseres).
+              </li>
+              <li>
+                <strong>CTR</strong> — gjør AES om til en strøm-chiffer ved å kryptere en teller.
+                Parallelliserbar, ingen padding.
+              </li>
+              <li>
+                <strong>GCM</strong> — CTR + GMAC. <em>AEAD</em>: gir konfidensialitet OG
+                autentisering i én operasjon. Standard-valg i moderne TLS.
+              </li>
+            </ul>
+          </Cheat>
+
+          <Cheat tittel="Hash-funksjons-egenskaper">
+            <ul className="list-disc pl-5 space-y-1">
+              <li>
+                <strong>Preimage-resistens</strong>: gitt h, vanskelig å finne m så H(m) = h.
+              </li>
+              <li>
+                <strong>Second-preimage</strong>: gitt m₁, vanskelig å finne m₂ ≠ m₁ med samme hash.
+              </li>
+              <li>
+                <strong>Collision-resistens</strong>: vanskelig å finne <em>noe</em> par (m₁, m₂)
+                med kollisjon. Brytes først (bursdags-paradokset → 2^(n/2)-arbeid).
+              </li>
+              <li>
+                SHA-256: 256 bit output → kollisjons-sikkerhet ≈ 2^128. SHA-1 og MD5 er knust.
+              </li>
+            </ul>
+          </Cheat>
+
+          <Cheat tittel="HMAC — formelen">
+            <ul className="list-disc pl-5 space-y-1">
+              <li>
+                <code className="text-[11px]">HMAC(K, m) = H((K ⊕ opad) ‖ H((K ⊕ ipad) ‖ m))</code>
+              </li>
+              <li>
+                <em>opad</em> = 0x5c gjentatt til blokk-størrelse, <em>ipad</em> = 0x36 gjentatt.
+              </li>
+              <li>Dobbelt-hash for å hindre length-extension-angrep mot Merkle–Damgård-hashene.</li>
+              <li>Gir autentisitet + integritet (men IKKE ikke-avvisning — begge har K).</li>
+            </ul>
+          </Cheat>
+
+          <Cheat tittel="TLS 1.3-håndtrykk (1-RTT)">
+            <ul className="list-disc pl-5 space-y-1">
+              <li>
+                <strong>1. ClientHello</strong> — versjon, cipher-suites, <em>key_share</em>{" "}
+                (DH-offentlig nøkkel), random.
+              </li>
+              <li>
+                <strong>2. ServerHello</strong> — valgt suite, server-key_share, +{" "}
+                <em>{`{Certificate, CertificateVerify, Finished}`}</em> kryptert under HS-secret.
+              </li>
+              <li>
+                <strong>3. Klient sender Finished</strong> — håndtrykk verifisert, applikasjons-data
+                kan flyte umiddelbart.
+              </li>
+              <li>Hovedforskjell fra 1.2: kun 1 RTT, all server-respons unntatt SH er kryptert.</li>
+            </ul>
+          </Cheat>
+
+          <Cheat tittel="IPsec — ESP vs. AH">
+            <ul className="list-disc pl-5 space-y-1">
+              <li>
+                <strong>ESP</strong> (Encapsulating Security Payload) — krypterer + autentiserer
+                payload. Brukes i 99% av VPN-er.
+              </li>
+              <li>
+                <strong>AH</strong> (Authentication Header) — kun autentisering av hele pakken
+                (inkl. ytre header). Ingen kryptering. Brytes av NAT.
+              </li>
+              <li>
+                <strong>Transport-modus</strong>: krypterer payload, beholder original IP-header
+                (host-to-host).
+              </li>
+              <li>
+                <strong>Tunnel-modus</strong>: krypterer hele original IP-pakke, ny ytre header
+                (site-to-site VPN).
+              </li>
+            </ul>
+          </Cheat>
+
+          <Cheat tittel="Brannmur-typer">
+            <ul className="list-disc pl-5 space-y-1">
+              <li>
+                <strong>Packet-filter (stateless)</strong>: vurderer hver pakke alene mot regler på
+                IP/port/protokoll. Ingen minne om TCP-tilstand.
+              </li>
+              <li>
+                <strong>Stateful</strong>: holder conntrack-tabell (5-tuple → tilstand). Tillater
+                returtrafikk automatisk når intern part initierer.
+              </li>
+              <li>
+                <strong>Application gateway (proxy)</strong>: ser på lag-7-data. Kan blokkere
+                bestemte HTTP-metoder eller filtrere innhold.
+              </li>
+              <li>
+                <strong>WAF</strong> ≠ brannmur — er en spesialisert app-gateway for web (SQLi-,
+                XSS-mønstre).
+              </li>
+            </ul>
+          </Cheat>
+
+          <Cheat tittel="IDS / IPS — angreps-deteksjon">
+            <ul className="list-disc pl-5 space-y-1">
+              <li>
+                <strong>IDS</strong> = Intrusion Detection System — <em>varsler</em> (passiv,
+                out-of-band, ofte SPAN-port).
+              </li>
+              <li>
+                <strong>IPS</strong> = Intrusion Prevention System — <em>blokkerer</em> (inline, må
+                være rask nok til linjehastighet).
+              </li>
+              <li>
+                <strong>Signatur-basert</strong>: matcher mot kjente mønstre (Snort-regler). Lav
+                false-positive, savner zero-days.
+              </li>
+              <li>
+                <strong>Anomali-basert</strong>: lærer normal-profil, varsler ved avvik. Fanger
+                ukjent, men plages av false-positives.
+              </li>
+              <li>
+                Husk: <em>false positive</em> = falsk alarm; <em>false negative</em> = mistet
+                angrep.
+              </li>
+            </ul>
+          </Cheat>
+        </div>
+      </section>
+
+      {/* ============ B) SAMMENLIGNING — AES vs RSA ============ */}
+      <section className="space-y-3">
+        <h3 className="text-sm font-semibold text-foreground">b) AES vs. RSA — side-ved-side</h3>
+        <div className="rounded-xl border border-border bg-card overflow-x-auto">
+          <table className="w-full text-[12px]">
+            <thead>
+              <tr className="border-b border-border bg-muted/20">
+                <th className="px-3 py-2 text-left font-semibold">Egenskap</th>
+                <th className="px-3 py-2 text-left font-semibold text-brand">AES</th>
+                <th className="px-3 py-2 text-left font-semibold text-amber-700 dark:text-amber-400">
+                  RSA
+                </th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-border">
+              <tr>
+                <td className="px-3 py-2 font-medium">Type</td>
+                <td className="px-3 py-2 text-muted-foreground">
+                  Symmetrisk blokk-chiffer (128-bit blokker)
+                </td>
+                <td className="px-3 py-2 text-muted-foreground">
+                  Asymmetrisk (offentlig + privat nøkkel)
+                </td>
+              </tr>
+              <tr>
+                <td className="px-3 py-2 font-medium">Hastighet</td>
+                <td className="px-3 py-2 text-muted-foreground">
+                  Svært rask (GB/s med AES-NI i CPU)
+                </td>
+                <td className="px-3 py-2 text-muted-foreground">
+                  ~1000× tregere; tunge modulo-eksponentiasjoner
+                </td>
+              </tr>
+              <tr>
+                <td className="px-3 py-2 font-medium">Nøkkellengde</td>
+                <td className="px-3 py-2 text-muted-foreground">128, 192 eller 256 bit</td>
+                <td className="px-3 py-2 text-muted-foreground">
+                  ≥ 2048 bit (3072 anbefalt etter 2030)
+                </td>
+              </tr>
+              <tr>
+                <td className="px-3 py-2 font-medium">Sikkerhets-margin</td>
+                <td className="px-3 py-2 text-muted-foreground">
+                  AES-128 ≈ 2^128 arbeid; ingen praktisk angrep
+                </td>
+                <td className="px-3 py-2 text-muted-foreground">
+                  RSA-2048 ≈ 2^112 arbeid; sårbart for kvante (Shor)
+                </td>
+              </tr>
+              <tr>
+                <td className="px-3 py-2 font-medium">Datamengde per operasjon</td>
+                <td className="px-3 py-2 text-muted-foreground">
+                  Ubegrenset (i en strøm-modus som CTR/GCM)
+                </td>
+                <td className="px-3 py-2 text-muted-foreground">
+                  Begrenset til ~ nøkkel-størrelse (255 byte for 2048-bit)
+                </td>
+              </tr>
+              <tr>
+                <td className="px-3 py-2 font-medium">Hovedbruk</td>
+                <td className="px-3 py-2 text-muted-foreground">
+                  Bulk-kryptering av data (TLS records, disk, VPN-payload)
+                </td>
+                <td className="px-3 py-2 text-muted-foreground">
+                  Nøkkel-transport, signaturer, sertifikater
+                </td>
+              </tr>
+              <tr>
+                <td className="px-3 py-2 font-medium">Rolle i nøkkel-utveksling</td>
+                <td className="px-3 py-2 text-muted-foreground">
+                  Forbrukeren — får økt-nøkkel utlevert
+                </td>
+                <td className="px-3 py-2 text-muted-foreground">
+                  Leverandøren — krypterer/signerer for å avtale økt-nøkkel
+                </td>
+              </tr>
+              <tr>
+                <td className="px-3 py-2 font-medium">Vanlig modus i praksis</td>
+                <td className="px-3 py-2 text-muted-foreground">AES-GCM (AEAD)</td>
+                <td className="px-3 py-2 text-muted-foreground">
+                  RSA-OAEP (krypt), RSA-PSS (signering)
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p className="text-[11px] text-muted-foreground italic">
+          Konklusjon: AES og RSA er ikke konkurrenter — de er komplementære. Hybride protokoller som
+          TLS bruker RSA (eller ECDH) til å avtale en AES-nøkkel, så krypterer all videre trafikk
+          med AES-GCM.
+        </p>
+      </section>
+
+      {/* ============ C) BESLUTNINGSTRE ============ */}
+      <section className="space-y-3">
+        <h3 className="text-sm font-semibold text-foreground">
+          c) Beslutningstre — «hvilken krypto-tilnærming?»
+        </h3>
+        <Illustration caption="Følg svarene på spørsmålene fra rot til blad for å lande på riktig primitiv.">
+          <KryptoBeslutningSvg />
+        </Illustration>
+        <p className="text-[12px] text-muted-foreground">
+          Treet dekker de 6 mest vanlige eksamen-scenarioene: kun konfidensialitet (sym), integritet
+          uten avsender-binding (HMAC), ikke-avvisning (signatur), nøkkel-utveksling over usikker
+          kanal (DH eller RSA-OAEP), passord-lagring (KDF), og full kanal-sikkerhet (TLS/hybrid).
+        </p>
+      </section>
+
+      {/* ============ D) FALLGRUVER ============ */}
+      <section className="space-y-3">
+        <h3 className="text-sm font-semibold text-foreground">
+          d) Vanlige fallgruver — det sensor leter etter
+        </h3>
+        <div className="grid md:grid-cols-2 gap-3">
+          <Fallgruve tittel="ECB lekker mønstre — aldri bruk på ekte data">
+            ECB krypterer hver 16-byte-blokk uavhengig. Like klartekst-blokker gir like
+            chiffer-blokker, så et bilde forblir gjenkjennelig etter «kryptering». Bruk{" "}
+            <strong>CBC, CTR eller GCM</strong> i stedet. Klassisk eksempel: ECB-Penguin.
+          </Fallgruve>
+
+          <Fallgruve tittel="Hash er IKKE kryptering">
+            En hash-funksjon er <em>enveis</em> — du kan ikke «dekryptere» SHA-256. Å si «vi
+            krypterer passordene med SHA-256» avslører misforståelse. Riktig formulering: «vi lagrer
+            en salt+KDF-hash av passordet».
+          </Fallgruve>
+
+          <Fallgruve tittel="Sertifikat ≠ nøkkel">
+            Et X.509-sertifikat er en signert binding mellom identitet (CN/SAN) og en{" "}
+            <strong>offentlig</strong> nøkkel. Den private nøkkelen ligger på serveren, aldri i
+            sertifikatet. Når du «installerer et sertifikat», deler du faktisk to filer: pem-
+            sertifikatet (offentlig) og en privat .key (hemmelig).
+          </Fallgruve>
+
+          <Fallgruve tittel="Perfect Forward Secrecy — bytt nøkkel hver økt">
+            Hvis serveren bruker statisk RSA-nøkkel og noen lagrer chiffertrafikken, kan en
+            framtidig kompromittert privat-nøkkel dekryptere all historisk trafikk. Løsning:{" "}
+            <strong>ephemeral Diffie–Hellman (DHE / ECDHE)</strong> — ny nøkkel hver handshake,
+            gamle øktene forblir trygge selv om RSA-nøkkelen lekker.
+          </Fallgruve>
+
+          <Fallgruve tittel="SQL-injection løses med parametriserte queries">
+            Escape-funksjoner er feil verktøy — de kan glipp av kant-tilfeller (multibyte,
+            kommentar-syntaks). <strong>Parametriserte queries / prepared statements</strong>{" "}
+            skiller kode (mal) fra data (binding) på protokoll-nivå — verdier kan aldri ende opp som
+            SQL-syntaks.
+          </Fallgruve>
+
+          <Fallgruve tittel="HTTPS er ikke ett protokoll — det er en stack">
+            HTTPS = HTTP over TLS over TCP over IP. TLS sikrer kanalen; HTTP-meldingene flyter
+            uendret inne i den. En vanlig feil er å tro at «HTTPS krypterer URL-en helt» — DNS-
+            spørringen, IP-adressen og SNI-feltet er fortsatt synlige.
+          </Fallgruve>
+
+          <Fallgruve tittel="Passord-hashing trenger salt OG en treig KDF">
+            Bare SHA-256 av passordet er knust på minutter med GPU-er. Du trenger:{" "}
+            <strong>(a) unik salt per passord</strong> (forhindrer rainbow-tables) og{" "}
+            <strong>(b) en bevisst treig KDF</strong> som argon2id, bcrypt eller scrypt (gjør hver
+            gjetning kostbar).
+          </Fallgruve>
+
+          <Fallgruve tittel="WAF ≠ brannmur">
+            En brannmur ser på pakker (lag 3–4); en Web Application Firewall ser på HTTP-innhold
+            (lag 7) og kjenner SQLi/XSS-mønstre. De løser ulike problem og er supplementer, ikke
+            erstatninger.
+          </Fallgruve>
+
+          <Fallgruve tittel="IDS varsler, IPS blokkerer">
+            Et IDS er passivt (out-of-band, ofte på en SPAN-port). Et IPS sitter inline og kan
+            droppe pakker. Bytter du IDS til IPS uten å håndtere false-positives, risikerer du å
+            dropp legitim trafikk og lage incidentkø.
+          </Fallgruve>
+
+          <Fallgruve tittel="MAC gir ikke ikke-avvisning">
+            En MAC bruker en delt nøkkel, så <em>begge</em> parter kan ha laget den — du kan ikke
+            bevise overfor en tredjepart hvem som signerte. Trenger du ikke-avvisning, må du bruke{" "}
+            <strong>digital signatur</strong> med privat nøkkel.
+          </Fallgruve>
+
+          <Fallgruve tittel="Diffie–Hellman gir konfidensialitet, ikke autentisitet">
+            Ren DH er åpen for <em>man-in-the-middle</em>: Mallory kjører DH med Alice og DH med Bob
+            hver for seg. Derfor må DH-eksponenten signeres med en autentisert privat nøkkel
+            (sertifikat-kjede), eller du må bruke en pre-shared key.
+          </Fallgruve>
+
+          <Fallgruve tittel="Nonce / IV skal aldri gjenbrukes">
+            For CTR og GCM betyr gjenbruk av (nøkkel, nonce)-par at angriper kan XOR-e to
+            chiffertekster og fjerne nøkkelen — total catastrophe. For ECDSA gir gjenbruk av k ut
+            den private nøkkelen direkte (kjent fra Sony PS3).
+          </Fallgruve>
+        </div>
+      </section>
+
+      {/* ============ E) 5-MINUTTER-ANKER ============ */}
+      <section className="space-y-3">
+        <h3 className="text-sm font-semibold text-foreground">
+          e) 5-minutter-anker — siste sjekk før du leverer
+        </h3>
+        <Anker>
+          <li>
+            <strong>CIA</strong>: Confidentiality (krypt), Integrity (hash/MAC), Availability
+            (redundans). Pluss Authenticity og Non-repudiation.
+          </li>
+          <li>
+            <strong>Symmetrisk = én nøkkel, raskt</strong> (AES).{" "}
+            <strong>Asymmetrisk = to nøkler, treigt</strong> (RSA/ECC). Hybrid i praksis: asym
+            avtaler sym økt-nøkkel.
+          </li>
+          <li>
+            <strong>AES-modi</strong>: ECB usikker, CBC trenger IV, CTR parallell, GCM = AEAD
+            (krypt+autent i ett).
+          </li>
+          <li>
+            <strong>Hash-egenskaper</strong>: preimage, second-preimage, collision-resistans.
+            SHA-256 er gullstandard; MD5 og SHA-1 er knust.
+          </li>
+          <li>
+            <strong>HMAC</strong> bygger MAC av en hash + delt nøkkel. Husk dobbelt-hash-strukturen
+            (opad, ipad).
+          </li>
+          <li>
+            <strong>Digital signatur</strong> = hash(m) kryptert med privat nøkkel. Eneste primitiv
+            som gir <em>ikke-avvisning</em>.
+          </li>
+          <li>
+            <strong>Diffie–Hellman</strong> avtaler delt hemmelighet over usikker kanal. Trenger
+            autentisering på toppen for å unngå MITM.
+          </li>
+          <li>
+            <strong>X.509-sertifikat</strong> = signert binding av (identitet, offentlig nøkkel) fra
+            en CA. Kjede valideres til en trust anchor i klientens nøkkelring.
+          </li>
+          <li>
+            <strong>TLS 1.3-håndtrykk</strong>: 1-RTT, alt etter ServerHello er kryptert. ECDHE gir
+            Perfect Forward Secrecy.
+          </li>
+          <li>
+            <strong>IPsec</strong>: ESP (krypt+auth, oftest brukt) vs AH (kun auth, brytes av NAT).
+            Transport-modus host-til-host, tunnel-modus site-to-site.
+          </li>
+          <li>
+            <strong>Brannmur</strong>: stateless (regler per pakke), stateful (conntrack),
+            app-gateway/proxy (lag-7). WAF er en spesialisert app-gateway for web.
+          </li>
+          <li>
+            <strong>IDS vs IPS</strong>: IDS varsler (passiv), IPS blokkerer (inline). Signatur-
+            (kjente angrep) vs anomali- (avvik fra normal) basert.
+          </li>
+          <li>
+            <strong>SQL-injection</strong> → parametriserte queries. <strong>XSS</strong> →
+            kontekstuell utgang-escaping + CSP. <strong>CSRF</strong> → SameSite-cookies eller
+            anti-CSRF-token.
+          </li>
+          <li>
+            <strong>Passord-lagring</strong>: per-bruker salt + argon2id/bcrypt/scrypt. Aldri ren
+            SHA.
+          </li>
+          <li>
+            <strong>HTTPS-stack</strong>: HTTP ⊂ TLS ⊂ TCP ⊂ IP. DNS og SNI er fortsatt synlige.
+          </li>
+          <li>
+            <strong>Nonce/IV</strong> aldri gjenbruk under samme nøkkel — gjelder GCM, CTR, ECDSA
+            (k-verdi).
+          </li>
+          <li>
+            <strong>Kvanteresistens</strong>: AES-256 og SHA-384 overlever Grover; RSA og ECC faller
+            for Shor. Post-quantum (ML-KEM, ML-DSA) er på vei inn i TLS.
+          </li>
+        </Anker>
+      </section>
+    </div>
+  );
+}
+
+// ===========================================================================
+// Helpers — Fallgruve, Cheat, Anker
+// ===========================================================================
+
+function Fallgruve({ tittel, children }: { tittel: string; children: React.ReactNode }) {
+  return (
+    <div className="rounded-xl border border-destructive/30 bg-destructive/5 p-3.5">
+      <div className="text-[10px] uppercase tracking-wider text-destructive font-semibold mb-1">
+        Fallgruve
+      </div>
+      <div className="font-semibold text-foreground text-[13px] mb-1">{tittel}</div>
+      <div className="text-[12.5px] text-muted-foreground leading-relaxed">{children}</div>
+    </div>
+  );
+}
+
+function Cheat({ tittel, children }: { tittel: string; children: React.ReactNode }) {
+  return (
+    <div className="rounded-xl border border-brand/30 bg-brand/5 p-3.5">
+      <div className="text-[10px] uppercase tracking-wider text-brand font-semibold mb-1.5">
+        Cheat
+      </div>
+      <div className="font-semibold text-foreground text-[13px] mb-1.5">{tittel}</div>
+      <div className="text-[12.5px] text-muted-foreground leading-relaxed">{children}</div>
+    </div>
+  );
+}
+
+function Anker({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="rounded-xl border border-success/30 bg-success/5 p-4">
+      <div className="text-[10px] uppercase tracking-wider text-success font-semibold mb-2">
+        5-minutter-anker
+      </div>
+      <ol className="list-decimal pl-5 space-y-1.5 text-[12.5px] text-muted-foreground">
+        {children}
+      </ol>
+    </div>
+  );
+}
+
+// ===========================================================================
+// Beslutningstre-SVG: «Hvilken krypto-primitiv?»
+// ===========================================================================
+
+function KryptoBeslutningSvg() {
+  // Tre-noder (12 stk): 1 rot + 4 spørsmål + 7 blad
+  const Q = "fill-card stroke-brand"; // spørsmål-noder
+  const L = "fill-success/10 stroke-success"; // blad / primitiv
+  return (
+    <svg
+      viewBox="0 0 920 520"
+      className="w-full h-auto"
+      aria-label="Beslutningstre for krypto-valg"
+    >
+      {/* Rot */}
+      <rect x={360} y={10} width={200} height={48} rx={8} className={Q} strokeWidth={1.5} />
+      <text
+        x={460}
+        y={32}
+        textAnchor="middle"
+        className="fill-foreground text-[12px] font-semibold"
+      >
+        Hva trenger du?
+      </text>
+      <text x={460} y={48} textAnchor="middle" className="fill-muted-foreground text-[10px]">
+        (start)
+      </text>
+
+      {/* Nivå 1 — 4 hovedgrener */}
+      <rect x={20} y={110} width={180} height={56} rx={8} className={Q} strokeWidth={1.5} />
+      <text
+        x={110}
+        y={134}
+        textAnchor="middle"
+        className="fill-foreground text-[11px] font-semibold"
+      >
+        Trenger du å sende
+      </text>
+      <text
+        x={110}
+        y={150}
+        textAnchor="middle"
+        className="fill-foreground text-[11px] font-semibold"
+      >
+        nøkkel over usikker kanal?
+      </text>
+
+      <rect x={230} y={110} width={180} height={56} rx={8} className={Q} strokeWidth={1.5} />
+      <text
+        x={320}
+        y={134}
+        textAnchor="middle"
+        className="fill-foreground text-[11px] font-semibold"
+      >
+        Trenger du at avsender
+      </text>
+      <text
+        x={320}
+        y={150}
+        textAnchor="middle"
+        className="fill-foreground text-[11px] font-semibold"
+      >
+        ikke kan benekte?
+      </text>
+
+      <rect x={440} y={110} width={180} height={56} rx={8} className={Q} strokeWidth={1.5} />
+      <text
+        x={530}
+        y={134}
+        textAnchor="middle"
+        className="fill-foreground text-[11px] font-semibold"
+      >
+        Bare integritet med
+      </text>
+      <text
+        x={530}
+        y={150}
+        textAnchor="middle"
+        className="fill-foreground text-[11px] font-semibold"
+      >
+        delt hemmelighet?
+      </text>
+
+      <rect x={650} y={110} width={180} height={56} rx={8} className={Q} strokeWidth={1.5} />
+      <text
+        x={740}
+        y={134}
+        textAnchor="middle"
+        className="fill-foreground text-[11px] font-semibold"
+      >
+        Lagre passord
+      </text>
+      <text
+        x={740}
+        y={150}
+        textAnchor="middle"
+        className="fill-foreground text-[11px] font-semibold"
+      >
+        sikkert?
+      </text>
+
+      {/* Linjer rot → nivå 1 */}
+      <line
+        x1={460}
+        y1={58}
+        x2={110}
+        y2={110}
+        className="stroke-muted-foreground"
+        strokeWidth={1}
+      />
+      <line
+        x1={460}
+        y1={58}
+        x2={320}
+        y2={110}
+        className="stroke-muted-foreground"
+        strokeWidth={1}
+      />
+      <line
+        x1={460}
+        y1={58}
+        x2={530}
+        y2={110}
+        className="stroke-muted-foreground"
+        strokeWidth={1}
+      />
+      <line
+        x1={460}
+        y1={58}
+        x2={740}
+        y2={110}
+        className="stroke-muted-foreground"
+        strokeWidth={1}
+      />
+
+      {/* Nivå 2 — blader */}
+      {/* Fra «nøkkel-utveksling» → 2 blad: DH eller RSA-OAEP */}
+      <rect x={10} y={230} width={120} height={50} rx={8} className={L} strokeWidth={1.5} />
+      <text
+        x={70}
+        y={252}
+        textAnchor="middle"
+        className="fill-foreground text-[11px] font-semibold"
+      >
+        DH / ECDHE
+      </text>
+      <text x={70} y={268} textAnchor="middle" className="fill-muted-foreground text-[10px]">
+        (forward secrecy)
+      </text>
+
+      <rect x={140} y={230} width={120} height={50} rx={8} className={L} strokeWidth={1.5} />
+      <text
+        x={200}
+        y={252}
+        textAnchor="middle"
+        className="fill-foreground text-[11px] font-semibold"
+      >
+        RSA-OAEP
+      </text>
+      <text x={200} y={268} textAnchor="middle" className="fill-muted-foreground text-[10px]">
+        (klassisk)
+      </text>
+
+      <line
+        x1={110}
+        y1={166}
+        x2={70}
+        y2={230}
+        className="stroke-muted-foreground"
+        strokeWidth={1}
+      />
+      <line
+        x1={110}
+        y1={166}
+        x2={200}
+        y2={230}
+        className="stroke-muted-foreground"
+        strokeWidth={1}
+      />
+
+      {/* Fra «ikke-avvisning» → signatur */}
+      <rect x={270} y={230} width={150} height={50} rx={8} className={L} strokeWidth={1.5} />
+      <text
+        x={345}
+        y={252}
+        textAnchor="middle"
+        className="fill-foreground text-[11px] font-semibold"
+      >
+        Digital signatur
+      </text>
+      <text x={345} y={268} textAnchor="middle" className="fill-muted-foreground text-[10px]">
+        (RSA-PSS / ECDSA / Ed25519)
+      </text>
+
+      <line
+        x1={320}
+        y1={166}
+        x2={345}
+        y2={230}
+        className="stroke-muted-foreground"
+        strokeWidth={1}
+      />
+
+      {/* Fra «integritet med delt nøkkel» → HMAC eller AEAD */}
+      <rect x={440} y={230} width={120} height={50} rx={8} className={L} strokeWidth={1.5} />
+      <text
+        x={500}
+        y={252}
+        textAnchor="middle"
+        className="fill-foreground text-[11px] font-semibold"
+      >
+        HMAC
+      </text>
+      <text x={500} y={268} textAnchor="middle" className="fill-muted-foreground text-[10px]">
+        (kun integritet)
+      </text>
+
+      <rect x={570} y={230} width={150} height={50} rx={8} className={L} strokeWidth={1.5} />
+      <text
+        x={645}
+        y={252}
+        textAnchor="middle"
+        className="fill-foreground text-[11px] font-semibold"
+      >
+        AES-GCM (AEAD)
+      </text>
+      <text x={645} y={268} textAnchor="middle" className="fill-muted-foreground text-[10px]">
+        (krypt + integritet)
+      </text>
+
+      <line
+        x1={530}
+        y1={166}
+        x2={500}
+        y2={230}
+        className="stroke-muted-foreground"
+        strokeWidth={1}
+      />
+      <line
+        x1={530}
+        y1={166}
+        x2={645}
+        y2={230}
+        className="stroke-muted-foreground"
+        strokeWidth={1}
+      />
+
+      {/* Fra «passord» → KDF */}
+      <rect x={730} y={230} width={180} height={50} rx={8} className={L} strokeWidth={1.5} />
+      <text
+        x={820}
+        y={252}
+        textAnchor="middle"
+        className="fill-foreground text-[11px] font-semibold"
+      >
+        salt + argon2id
+      </text>
+      <text x={820} y={268} textAnchor="middle" className="fill-muted-foreground text-[10px]">
+        (bcrypt / scrypt OK)
+      </text>
+
+      <line
+        x1={740}
+        y1={166}
+        x2={820}
+        y2={230}
+        className="stroke-muted-foreground"
+        strokeWidth={1}
+      />
+
+      {/* Nivå 3 — «full kanal» blad nederst sentrert */}
+      <rect x={335} y={420} width={250} height={56} rx={8} className={L} strokeWidth={1.5} />
+      <text
+        x={460}
+        y={445}
+        textAnchor="middle"
+        className="fill-foreground text-[12px] font-semibold"
+      >
+        TLS / hybrid stack
+      </text>
+      <text x={460} y={462} textAnchor="middle" className="fill-muted-foreground text-[10px]">
+        (ECDHE + sertifikat + AES-GCM)
+      </text>
+
+      {/* Forklaring nede */}
+      <text
+        x={460}
+        y={340}
+        textAnchor="middle"
+        className="fill-muted-foreground text-[11px] italic"
+      >
+        Trenger du full kanal-sikkerhet (klient ↔ server, alt på en gang)?
+      </text>
+      <text
+        x={460}
+        y={358}
+        textAnchor="middle"
+        className="fill-muted-foreground text-[11px] italic"
+      >
+        Da kombineres alt over i én ferdig protokoll:
+      </text>
+      <line
+        x1={460}
+        y1={365}
+        x2={460}
+        y2={420}
+        className="stroke-muted-foreground"
+        strokeWidth={1}
+        strokeDasharray="3,3"
+      />
+
+      {/* Tegnforklaring */}
+      <g transform="translate(20, 490)">
+        <rect width={14} height={14} className={Q} strokeWidth={1.2} rx={3} />
+        <text x={20} y={11} className="fill-muted-foreground text-[10px]">
+          Spørsmål
+        </text>
+        <rect x={90} width={14} height={14} className={L} strokeWidth={1.2} rx={3} />
+        <text x={110} y={11} className="fill-muted-foreground text-[10px]">
+          Primitiv-valg (blad)
+        </text>
+      </g>
     </svg>
   );
 }

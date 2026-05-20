@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import { SectionPager, type SectionNavItem } from "./SectionPager";
 
-type Tab = "intro" | "6.1" | "6.2" | "6.3" | "6.4" | "6.5" | "6.6" | "6.7" | "6.8";
+type Tab = "intro" | "6.1" | "6.2" | "6.3" | "6.4" | "6.5" | "6.6" | "6.7" | "6.8" | "6.9";
 
 const SECTIONS_6: SectionNavItem[] = [
   { id: "intro", label: "Start her" },
@@ -24,6 +24,7 @@ const SECTIONS_6: SectionNavItem[] = [
   { id: "6.6", label: "6.6 VLAN" },
   { id: "6.7", label: "6.7 Datasenter" },
   { id: "6.8", label: "6.8 Oppgaver" },
+  { id: "6.9", label: "6.9 Eksamen-fokus" },
 ];
 const NEXT_CHAPTER_6 = { slug: "kurose-kap-7", title: "Trådløst og mobilt" };
 
@@ -78,6 +79,9 @@ export function KuroseKap6Page() {
             <TabBtn active={tab === "6.8"} onClick={() => setTab("6.8")} title="Oppgaver">
               Oppg.
             </TabBtn>
+            <TabBtn active={tab === "6.9"} onClick={() => setTab("6.9")} title="Eksamen-fokus">
+              Eksamen
+            </TabBtn>
           </nav>
         </div>
 
@@ -90,6 +94,7 @@ export function KuroseKap6Page() {
         {tab === "6.6" && <Section66 />}
         {tab === "6.7" && <Section67 />}
         {tab === "6.8" && <Section68 />}
+        {tab === "6.9" && <SectionEksamen />}
 
         <SectionPager
           tabs={SECTIONS_6}
@@ -3820,6 +3825,783 @@ function FatTreeVsLeafSpineSvg() {
       <text x={360} y={196} textAnchor="middle" className="fill-muted-foreground text-[9px]">
         Mange parallelle stier (ECMP)
       </text>
+    </svg>
+  );
+}
+
+// ============================================================
+// 6.9 — Eksamen-fokus
+// ============================================================
+function SectionEksamen() {
+  return (
+    <article className="space-y-5 text-sm">
+      <Header num="6.9" title="Eksamen-fokus — komprimert oppsummering av kap. 6" />
+
+      <p className="text-muted-foreground">
+        Denne delen er ikke ny lærdom — det er den siste passet over stoffet før du går inn til
+        eksamen. Cheat-sheetet samler tall og formler du må kunne i søvne, sammenligning-tabellen
+        gir deg språket for å skille like protokoller, beslutningstreet hjelper deg å begrunne
+        valgene, fallgruvene fanger feil sensor ser igjen og igjen, og 5-minutter-ankeret er det
+        siste du leser før du går inn i salen.
+      </p>
+
+      {/* ---------- a) Cheat sheet ---------- */}
+      <section className="space-y-3">
+        <h3 className="text-base font-semibold flex items-center gap-2">
+          <span className="inline-block w-1.5 h-5 bg-brand rounded" /> a) Cheat sheet
+        </h3>
+
+        <Cheat
+          tittel="Ethernet-ramme (IEEE 802.3, totalt 64–1518 bytes uten VLAN)"
+          body={
+            <div className="space-y-2">
+              <div className="font-mono text-[11px] overflow-x-auto whitespace-nowrap rounded bg-muted/30 p-2">
+                | Preamble 8B | Dest-MAC 6B | Src-MAC 6B | Type/Len 2B | Payload 46–1500B | FCS 4B |
+              </div>
+              <ul className="list-disc pl-5 space-y-0.5">
+                <li>
+                  <b>Preamble</b> (8 bytes): 7 × <code>0xAA</code> + 1 × <code>0xAB</code> (SFD) —
+                  klokke-synk, regnes ikke i ramme-lengden.
+                </li>
+                <li>
+                  <b>Dest- og src-MAC</b> (6+6 bytes): 48-bit fysisk adresse, første 3 bytes er OUI
+                  (organisasjons-prefix).
+                </li>
+                <li>
+                  <b>Type/Length</b> (2 bytes): &gt; 0x0600 = EtherType (0x0800 = IPv4, 0x0806 =
+                  ARP, 0x86DD = IPv6), ellers lengde.
+                </li>
+                <li>
+                  <b>Payload</b>: minimum 46 bytes (pad ved behov) for å garantere
+                  kollisjons-deteksjon, maks 1500 bytes (MTU).
+                </li>
+                <li>
+                  <b>FCS</b> (4 bytes): CRC-32 over alt mellom dest-MAC og payload. Feil FCS → ramme
+                  droppes lydløst, ingen retransmisjon på link-laget.
+                </li>
+              </ul>
+            </div>
+          }
+        />
+
+        <Cheat
+          tittel="CRC — Cyclic Redundancy Check"
+          body={
+            <ul className="list-disc pl-5 space-y-0.5">
+              <li>
+                Sender og mottaker er enige om et <b>generator-polynom</b> G(x) med r+1 bits.
+                Ethernet bruker CRC-32: G(x) = x³² + x²⁶ + … + 1.
+              </li>
+              <li>
+                Sender legger til r null-bits bak data D, regner D·2ʳ mod G, og bruker resten R som
+                FCS. Sendt = D fulgt av R.
+              </li>
+              <li>
+                Mottaker deler (D·2ʳ + R) på G — hvis rest = 0, antas rammen feilfri. Ellers droppes
+                den.
+              </li>
+              <li>
+                Fanger 100 % av enkelt-bit-feil, alle dobbel-bit-feil hvis G har minst tre 1-bit, og
+                alle burst-feil ≤ r bits.
+              </li>
+              <li>
+                Eksempel-regnestykke: D = 101110, G = 1001, r = 3 → D·2³ = 101110000, regner modulo
+                G med XOR-divisjon → R = 011 → sendt = 101110<u>011</u>.
+              </li>
+            </ul>
+          }
+        />
+
+        <Cheat
+          tittel="ALOHA — teoretisk max throughput"
+          body={
+            <ul className="list-disc pl-5 space-y-0.5">
+              <li>
+                <b>Pure (uslottet) ALOHA</b>: send når du har data, uten å lytte. Rammen ødelegges
+                hvis noen sender i et 2T-vindu rundt. Max effektivitet ={" "}
+                <code>1/(2e) ≈ 0,184 = 18 %</code>.
+              </li>
+              <li>
+                <b>Slotted ALOHA</b>: alle sender bare på tidsluke-grenser. Sårbart vindu halveres
+                fra 2T til T. Max effektivitet = <code>1/e ≈ 0,368 = 37 %</code>.
+              </li>
+              <li>
+                Slot ALOHA er <em>dobbelt</em> så effektiv som pure ALOHA — den eneste forskjellen
+                er at klokken er synkronisert.
+              </li>
+              <li>
+                Optimal last per slot er G = 1: én ramme i snitt per slot. P(suksess) = G·e⁻ᴳ
+                maksimeres her.
+              </li>
+            </ul>
+          }
+        />
+
+        <Cheat
+          tittel="CSMA/CD — Carrier Sense Multiple Access with Collision Detection"
+          body={
+            <ol className="list-decimal pl-5 space-y-0.5">
+              <li>
+                <b>Lytt</b> (carrier sense): hvis mediet er ledig, gå til 2. Hvis opptatt, vent til
+                ledig + IFG (inter-frame gap, 96 bit-tider).
+              </li>
+              <li>
+                <b>Send</b> hele rammen mens du fortsetter å lytte.
+              </li>
+              <li>
+                <b>Kollisjons-deteksjon</b>: oppdager du annens signal samtidig som ditt eget?
+                Avbryt umiddelbart.
+              </li>
+              <li>
+                <b>Jam</b>: send 48-bit jam-signal slik at alle andre også oppdager kollisjonen.
+              </li>
+              <li>
+                <b>Binary exponential backoff</b>: efter k-te kollisjon, velg tilfeldig K ∈ {"{"}0,
+                1, …, 2^min(k,10)-1{"}"}, vent K·512 bit-tider, og prøv igjen fra steg 1.
+              </li>
+              <li>Etter 16 mislykkede forsøk: gi opp, rapport feil oppover.</li>
+            </ol>
+          }
+        />
+
+        <Cheat
+          tittel="VLAN-tag — IEEE 802.1Q (4 bytes settes inn etter src-MAC)"
+          body={
+            <div className="space-y-2">
+              <div className="font-mono text-[11px] overflow-x-auto whitespace-nowrap rounded bg-muted/30 p-2">
+                | TPID 16b (0x8100) | PCP 3b | DEI 1b | VID 12b |
+              </div>
+              <ul className="list-disc pl-5 space-y-0.5">
+                <li>
+                  <b>TPID</b> (Tag Protocol Identifier): fast 0x8100 — forteller switchen «her
+                  kommer en VLAN-tag».
+                </li>
+                <li>
+                  <b>PCP</b> (Priority Code Point, 3 bits): 0–7 prioritetsklasser (QoS, 802.1p).
+                </li>
+                <li>
+                  <b>DEI</b> (Drop Eligible Indicator, 1 bit): 1 = «kast meg først ved
+                  overbelastning».
+                </li>
+                <li>
+                  <b>VID</b> (VLAN ID, 12 bits): 0–4095, men 0 og 4095 reservert → 4094 brukbare
+                  VLAN-er. Default er 1.
+                </li>
+                <li>
+                  Trunk-lenker bærer tags, access-porter stripper dem. Native VLAN sendes uten tag.
+                </li>
+              </ul>
+            </div>
+          }
+        />
+
+        <Cheat
+          tittel="Switch self-learning og MAC-tabell"
+          body={
+            <ul className="list-disc pl-5 space-y-0.5">
+              <li>
+                Switchen vedlikeholder en tabell: <code>(MAC-adresse, port, timestamp)</code>.
+              </li>
+              <li>
+                <b>Lær</b>: når en ramme kommer inn på port p med src-MAC = X, legg inn (X, p, tid).
+                Hvis X allerede finnes, oppdater port og tid.
+              </li>
+              <li>
+                <b>Videresend</b>: slå opp dest-MAC. Treff → send kun ut den porten. Bom → flood til
+                alle porter unntatt inn-porten.
+              </li>
+              <li>
+                <b>Timeout</b>: typisk 300 sek (5 min). Eldre entries slettes — derfor må MAC-er
+                relæres etter inaktivitet.
+              </li>
+              <li>
+                Switchen er <em>plug-and-play</em>: ingen konfigurasjon trengs for å bygge tabellen.
+              </li>
+            </ul>
+          }
+        />
+      </section>
+
+      {/* ---------- b) Sammenligning-tabell ---------- */}
+      <section className="space-y-3">
+        <h3 className="text-base font-semibold flex items-center gap-2">
+          <span className="inline-block w-1.5 h-5 bg-brand rounded" /> b)
+          Multiple-access-protokoller side om side
+        </h3>
+
+        <div className="overflow-x-auto rounded-xl border border-border bg-card">
+          <table className="w-full text-[12px]">
+            <thead className="bg-muted/30 text-muted-foreground">
+              <tr>
+                <th className="text-left p-2 font-semibold">Egenskap</th>
+                <th className="text-left p-2 font-semibold">ALOHA (pure/slot)</th>
+                <th className="text-left p-2 font-semibold">CSMA/CD</th>
+                <th className="text-left p-2 font-semibold">CSMA/CA</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-border">
+              <tr>
+                <td className="p-2 font-medium">Lytte før send?</td>
+                <td className="p-2">Nei — send når du vil</td>
+                <td className="p-2">Ja — vent på ledig medium</td>
+                <td className="p-2">Ja — vent + DIFS-mellomrom</td>
+              </tr>
+              <tr>
+                <td className="p-2 font-medium">Kollisjons-deteksjon?</td>
+                <td className="p-2">Nei — sender hele rammen alltid</td>
+                <td className="p-2">Ja — abort + jam ved samtid-signal</td>
+                <td className="p-2">Nei — radio kan ikke høre seg selv</td>
+              </tr>
+              <tr>
+                <td className="p-2 font-medium">Kollisjons-unngåelse?</td>
+                <td className="p-2">Tilfeldig backoff etter ACK-bom</td>
+                <td className="p-2">Binary exponential backoff</td>
+                <td className="p-2">Random backoff + ACK + ev. RTS/CTS</td>
+              </tr>
+              <tr>
+                <td className="p-2 font-medium">Maks throughput (teoretisk)</td>
+                <td className="p-2">18 % pure, 37 % slotted</td>
+                <td className="p-2">~80–90 % ved lav last</td>
+                <td className="p-2">~50–70 % (mye overhead)</td>
+              </tr>
+              <tr>
+                <td className="p-2 font-medium">Hovedmiljø</td>
+                <td className="p-2">Satellitt, lav-last radio</td>
+                <td className="p-2">Kablet Ethernet (legacy hub-LAN)</td>
+                <td className="p-2">Trådløs (Wi-Fi)</td>
+              </tr>
+              <tr>
+                <td className="p-2 font-medium">Eksempel-standard</td>
+                <td className="p-2">ALOHAnet (1971), GSM RACH</td>
+                <td className="p-2">10/100BASE-T med hub</td>
+                <td className="p-2">IEEE 802.11 (Wi-Fi)</td>
+              </tr>
+              <tr>
+                <td className="p-2 font-medium">Hidden-terminal-problem?</td>
+                <td className="p-2">Ikke relevant (ingen lytting)</td>
+                <td className="p-2">Nei — alle hører hverandre</td>
+                <td className="p-2">Ja — løses med RTS/CTS</td>
+              </tr>
+              <tr>
+                <td className="p-2 font-medium">Behov for synkronisering?</td>
+                <td className="p-2">Pure: nei. Slot: ja (felles klokke)</td>
+                <td className="p-2">Nei</td>
+                <td className="p-2">Nei (per-ramme ACK)</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      {/* ---------- c) Beslutningstre ---------- */}
+      <section className="space-y-3">
+        <h3 className="text-base font-semibold flex items-center gap-2">
+          <span className="inline-block w-1.5 h-5 bg-brand rounded" /> c) «Hvilken
+          multiple-access-protokoll passer?»
+        </h3>
+        <div className="rounded-xl border border-border bg-card p-4">
+          <BeslutningstreSvg />
+          <p className="text-xs text-muted-foreground mt-3 italic">
+            Treet er en grov tommel-finger-regel — virkeligheten har gråsoner. På eksamen forklar
+            <em>hvilken</em> egenskap som gjør at en protokoll passer eller ikke (lytting,
+            deteksjon, hidden terminals, last).
+          </p>
+        </div>
+      </section>
+
+      {/* ---------- d) Vanlige fallgruver ---------- */}
+      <section className="space-y-3">
+        <h3 className="text-base font-semibold flex items-center gap-2">
+          <span className="inline-block w-1.5 h-5 bg-brand rounded" /> d) Vanlige fallgruver
+          sensorer ser igjen
+        </h3>
+
+        <Fallgruve
+          feil="«MAC-adressen forteller hvor i nettet en maskin er»"
+          riktig="MAC er en lokal, flat identifikator brent inn på nettverkskortet. Den endrer seg når kortet flyttes, men ikke når maskinen flytter mellom subnett. IP-adressen er den hierarkiske, ruterbare adressen som sier hvor maskinen er logisk plassert."
+        />
+        <Fallgruve
+          feil="«Switch og ruter gjør egentlig det samme»"
+          riktig="Nei. Switch jobber på lag 2 (link), slår opp på MAC-adresse, lager broadcast-domener. Ruter jobber på lag 3 (nettverk), slår opp på IP-prefiks, separerer broadcast-domener og ruter mellom subnett. En switch ser aldri på IP-headeren."
+        />
+        <Fallgruve
+          feil="«VLAN gir full isolering mellom nett»"
+          riktig="VLAN isolerer broadcast-domener på lag 2 — ARP-storms, broadcast-pakker og MAC-flooding krysser ikke VLAN-grenser. Men trafikk mellom VLAN-er rutes på lag 3, så VLAN gir IKKE sikkerhetsmessig nett-segregering uten en brannvegg/ACL i mellom."
+        />
+        <Fallgruve
+          feil="«ARP brukes til å slå opp IP-adressen til en host»"
+          riktig="Motsatt. ARP-request går ut når du allerede kjenner IP-en, men trenger MAC-en for å bygge link-laget. ARP er IP→MAC, ikke MAC→IP (det heter RARP og er deprecated; moderne erstatning er DHCP)."
+        />
+        <Fallgruve
+          feil="«CRC retter feil»"
+          riktig="CRC oppdager feil — den retter dem ikke. Ved CRC-feil dropper Ethernet rammen lydløst og lar høyere lag (TCP) merke pakketapet og retransmittere. Feilrettende koder (Hamming, Reed-Solomon) er en annen sak og brukes mer i fysisk lag og lagring."
+        />
+        <Fallgruve
+          feil="«Pure ALOHA og slotted ALOHA er omtrent like effektive»"
+          riktig="Slot ALOHA er nøyaktig dobbelt så effektiv (37 % vs 18 %), fordi det sårbare vinduet halveres når alle sender på slot-grenser. På eksamen — kan du gjengi 1/e og 1/(2e)?"
+        />
+        <Fallgruve
+          feil="«CSMA/CD og CSMA/CA er bare to navn på samme ting»"
+          riktig="CD = Collision Detection (oppdage at det skjedde — kabel-Ethernet). CA = Collision Avoidance (prøve å unngå at det skjer — Wi-Fi). Radio-sender kan ikke høre seg selv mens den sender, derfor kan ikke Wi-Fi gjøre CD og må heller bruke ACK-er og RTS/CTS."
+        />
+        <Fallgruve
+          feil="«En switch må konfigureres for å lære hvilke MAC-er som finnes hvor»"
+          riktig="Nei — self-learning skjer automatisk fra src-MAC i innkommende rammer. Den eneste «konfigurasjonen» en standard L2-switch trenger er strøm. VLAN-trunking, STP og portsikkerhet krever oppsett, men ikke selve MAC-læringen."
+        />
+        <Fallgruve
+          feil="«Minimum payload på 46 bytes er for å hindre at korte rammer kastes»"
+          riktig="Det er for å sikre at en kollisjon kan detekteres før senderen er ferdig. Med kortere rammer på et 2500m-segment (klassisk 10BASE5) ville senderen kunne lukke sendingen FØR signalet rakk fram og kollisjonen ble synlig, og dermed gå glipp av deteksjonen."
+        />
+        <Fallgruve
+          feil="«FCS dekker hele rammen inkludert preamble»"
+          riktig="FCS dekker dest-MAC, src-MAC, type/length og payload — men IKKE preamble eller SFD (de er for klokke-synk og defineres ikke som en del av rammen). Dermed er FCS over typisk 60–1514 bytes, ikke 64–1518."
+        />
+      </section>
+
+      {/* ---------- e) 5-minutter-anker ---------- */}
+      <section className="space-y-3">
+        <h3 className="text-base font-semibold flex items-center gap-2">
+          <span className="inline-block w-1.5 h-5 bg-brand rounded" /> e) 5-minutter-anker — det
+          siste du leser
+        </h3>
+
+        <Anker
+          punkter={[
+            "Link-laget tar et IP-datagram, pakker det i en ramme, sender det ÉN hopp, og dropper det stille hvis FCS slår ut.",
+            "Ethernet-ramme: 8B preamble | 6B dest-MAC | 6B src-MAC | 2B type/len | 46-1500B payload | 4B FCS.",
+            "MAC er 48 bits, flat, lokal, brent inn. IP er hierarkisk, ruterbar, global. ARP knytter IP→MAC innenfor ett subnett.",
+            "CRC oppdager feil (ikke retter): rest av D·2ʳ mod G(x), Ethernet bruker CRC-32. Burst-feil ≤ r alltid fanget.",
+            "Pure ALOHA: 1/(2e) ≈ 18%. Slotted ALOHA: 1/e ≈ 37%. Forskjellen er klokke-synk og halvert sårbart vindu.",
+            "CSMA/CD = lytt, send, oppdag kollisjon, jam, binary exponential backoff (K ∈ 0…2^min(k,10)-1).",
+            "CSMA/CA er Wi-Fi — radio kan ikke høre seg selv, så bruker ACK, DIFS/SIFS og RTS/CTS i stedet for kollisjons-deteksjon.",
+            "Switch er self-learning på lag 2: (MAC, port) lagres fra src-MAC, treff videresender én port, bom flooder alle.",
+            "Switch ≠ ruter. Switch slipper broadcast gjennom VLAN-domenet sitt. Ruter blokkerer broadcasts og separerer subnett.",
+            "802.1Q VLAN-tag: 4 bytes (TPID 0x8100 | PCP 3b | DEI 1b | VID 12b) — gir 4094 brukbare VLAN-er.",
+            "Trunk-port bærer flere VLAN-er taggete, access-port bærer ett VLAN utaggete. Native VLAN går utaggete på trunk.",
+            "ARP er IP→MAC, broadcast-request, unicast-reply, caches i 1-20 min. Bom på ARP = ingen pakke sendes på lag 2.",
+            "Min payload 46B er for kollisjons-deteksjon (sender må fortsatt sende når kollisjonen er synlig), ikke for ramme-fil-størrelse.",
+            "Datasenter: fat-tree / leaf-spine, ECMP, mange parallelle stier — øst-vest-trafikk dominerer, klassisk tre var ikke nok.",
+            "Hvis du må velge én tabell å huske: ALOHA vs CSMA/CD vs CSMA/CA på (lytte, deteksjon, miljø, max-throughput).",
+          ]}
+        />
+      </section>
+    </article>
+  );
+}
+
+// ---- Hjelpe-komponenter for eksamen-fokus ----
+
+function Cheat({ tittel, body }: { tittel: string; body: React.ReactNode }) {
+  return (
+    <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/5 p-4">
+      <div className="text-[10px] uppercase tracking-wider text-emerald-700 dark:text-emerald-400 font-semibold mb-1">
+        Cheat sheet
+      </div>
+      <div className="font-semibold text-foreground mb-2">{tittel}</div>
+      <div className="text-muted-foreground text-[13px] space-y-1">{body}</div>
+    </div>
+  );
+}
+
+function Fallgruve({ feil, riktig }: { feil: string; riktig: string }) {
+  return (
+    <div className="rounded-xl border border-rose-500/30 bg-rose-500/5 p-4">
+      <div className="text-[10px] uppercase tracking-wider text-rose-700 dark:text-rose-400 font-semibold mb-1">
+        Fallgruve
+      </div>
+      <div className="text-[13px]">
+        <div className="text-foreground mb-1">
+          <span className="font-semibold text-rose-700 dark:text-rose-400">Misforståelse:</span>{" "}
+          {feil}
+        </div>
+        <div className="text-muted-foreground">
+          <span className="font-semibold text-foreground">Riktig:</span> {riktig}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Anker({ punkter }: { punkter: string[] }) {
+  return (
+    <div className="rounded-xl border border-sky-500/30 bg-sky-500/5 p-4">
+      <div className="text-[10px] uppercase tracking-wider text-sky-700 dark:text-sky-400 font-semibold mb-2">
+        5-minutter-anker
+      </div>
+      <ol className="list-decimal pl-5 space-y-1 text-[13px] text-muted-foreground marker:text-sky-600 dark:marker:text-sky-400">
+        {punkter.map((p, i) => (
+          <li key={i}>{p}</li>
+        ))}
+      </ol>
+    </div>
+  );
+}
+
+function BeslutningstreSvg() {
+  return (
+    <svg viewBox="0 0 720 440" className="w-full h-auto" role="img" aria-label="Beslutningstre">
+      <defs>
+        <marker
+          id="kap6-arrow"
+          viewBox="0 0 10 10"
+          refX="8"
+          refY="5"
+          markerWidth="6"
+          markerHeight="6"
+          orient="auto-start-reverse"
+        >
+          <path d="M0,0 L10,5 L0,10 z" className="fill-muted-foreground" />
+        </marker>
+      </defs>
+
+      {/* Node 1: rot */}
+      <g>
+        <rect
+          x="270"
+          y="10"
+          width="180"
+          height="46"
+          rx="8"
+          className="fill-card stroke-brand"
+          strokeWidth="1.5"
+        />
+        <text
+          x="360"
+          y="30"
+          textAnchor="middle"
+          className="fill-foreground text-[11px] font-semibold"
+        >
+          Er topologien delt
+        </text>
+        <text x="360" y="46" textAnchor="middle" className="fill-foreground text-[11px]">
+          medium eller punkt-til-punkt?
+        </text>
+      </g>
+
+      {/* Branch til "delt medium" og "p2p" */}
+      <line
+        x1="320"
+        y1="56"
+        x2="170"
+        y2="90"
+        className="stroke-muted-foreground"
+        strokeWidth="1"
+        markerEnd="url(#kap6-arrow)"
+      />
+      <line
+        x1="400"
+        y1="56"
+        x2="560"
+        y2="90"
+        className="stroke-muted-foreground"
+        strokeWidth="1"
+        markerEnd="url(#kap6-arrow)"
+      />
+      <text x="220" y="76" className="fill-muted-foreground text-[10px]">
+        delt
+      </text>
+      <text x="490" y="76" className="fill-muted-foreground text-[10px]">
+        p2p
+      </text>
+
+      {/* Node 2a: delt medium → klokke-synk? */}
+      <g>
+        <rect
+          x="60"
+          y="92"
+          width="220"
+          height="46"
+          rx="8"
+          className="fill-card stroke-muted-foreground"
+          strokeWidth="1"
+        />
+        <text
+          x="170"
+          y="112"
+          textAnchor="middle"
+          className="fill-foreground text-[11px] font-semibold"
+        >
+          Er det streng oppgjøretid /
+        </text>
+        <text x="170" y="128" textAnchor="middle" className="fill-foreground text-[11px]">
+          deterministisk slot-tildeling?
+        </text>
+      </g>
+
+      {/* Node 2b: p2p → enkel link */}
+      <g>
+        <rect
+          x="460"
+          y="92"
+          width="220"
+          height="46"
+          rx="8"
+          className="fill-emerald-500/10 stroke-emerald-500"
+          strokeWidth="1.2"
+        />
+        <text
+          x="570"
+          y="112"
+          textAnchor="middle"
+          className="fill-foreground text-[11px] font-semibold"
+        >
+          Trenger ikke MAC-protokoll
+        </text>
+        <text x="570" y="128" textAnchor="middle" className="fill-muted-foreground text-[11px]">
+          (PPP, dedikert fiber)
+        </text>
+      </g>
+
+      {/* Node 2a split: ja → TDMA, nei → carrier sense? */}
+      <line
+        x1="120"
+        y1="138"
+        x2="80"
+        y2="172"
+        className="stroke-muted-foreground"
+        strokeWidth="1"
+        markerEnd="url(#kap6-arrow)"
+      />
+      <line
+        x1="220"
+        y1="138"
+        x2="280"
+        y2="172"
+        className="stroke-muted-foreground"
+        strokeWidth="1"
+        markerEnd="url(#kap6-arrow)"
+      />
+      <text x="80" y="158" className="fill-muted-foreground text-[10px]">
+        ja
+      </text>
+      <text x="252" y="158" className="fill-muted-foreground text-[10px]">
+        nei
+      </text>
+
+      {/* Node 3a: TDMA */}
+      <g>
+        <rect
+          x="10"
+          y="174"
+          width="170"
+          height="46"
+          rx="8"
+          className="fill-emerald-500/10 stroke-emerald-500"
+          strokeWidth="1.2"
+        />
+        <text
+          x="95"
+          y="194"
+          textAnchor="middle"
+          className="fill-foreground text-[11px] font-semibold"
+        >
+          TDMA / Token-passing
+        </text>
+        <text x="95" y="210" textAnchor="middle" className="fill-muted-foreground text-[11px]">
+          (sanntid, kollisjonsfri)
+        </text>
+      </g>
+
+      {/* Node 3b: kan du lytte før send? */}
+      <g>
+        <rect
+          x="200"
+          y="174"
+          width="240"
+          height="46"
+          rx="8"
+          className="fill-card stroke-muted-foreground"
+          strokeWidth="1"
+        />
+        <text
+          x="320"
+          y="194"
+          textAnchor="middle"
+          className="fill-foreground text-[11px] font-semibold"
+        >
+          Kan alle høre alle andre
+        </text>
+        <text x="320" y="210" textAnchor="middle" className="fill-foreground text-[11px]">
+          før de begynner å sende?
+        </text>
+      </g>
+
+      {/* Node 3b split: ja → kabel? nei → ALOHA-stil */}
+      <line
+        x1="280"
+        y1="220"
+        x2="220"
+        y2="252"
+        className="stroke-muted-foreground"
+        strokeWidth="1"
+        markerEnd="url(#kap6-arrow)"
+      />
+      <line
+        x1="360"
+        y1="220"
+        x2="440"
+        y2="252"
+        className="stroke-muted-foreground"
+        strokeWidth="1"
+        markerEnd="url(#kap6-arrow)"
+      />
+      <text x="220" y="240" className="fill-muted-foreground text-[10px]">
+        ja
+      </text>
+      <text x="412" y="240" className="fill-muted-foreground text-[10px]">
+        nei (radio / hidden terminals)
+      </text>
+
+      {/* Node 4a: CSMA/CD */}
+      <g>
+        <rect
+          x="110"
+          y="254"
+          width="230"
+          height="46"
+          rx="8"
+          className="fill-card stroke-muted-foreground"
+          strokeWidth="1"
+        />
+        <text
+          x="225"
+          y="274"
+          textAnchor="middle"
+          className="fill-foreground text-[11px] font-semibold"
+        >
+          Kan senderen detektere
+        </text>
+        <text x="225" y="290" textAnchor="middle" className="fill-foreground text-[11px]">
+          kollisjon underveis (kabel)?
+        </text>
+      </g>
+
+      {/* Node 4b: CSMA/CA */}
+      <g>
+        <rect
+          x="380"
+          y="254"
+          width="230"
+          height="46"
+          rx="8"
+          className="fill-emerald-500/10 stroke-emerald-500"
+          strokeWidth="1.2"
+        />
+        <text
+          x="495"
+          y="274"
+          textAnchor="middle"
+          className="fill-foreground text-[11px] font-semibold"
+        >
+          CSMA/CA (Wi-Fi)
+        </text>
+        <text x="495" y="290" textAnchor="middle" className="fill-muted-foreground text-[11px]">
+          ACK + ev. RTS/CTS
+        </text>
+      </g>
+
+      {/* CSMA/CD split */}
+      <line
+        x1="180"
+        y1="300"
+        x2="120"
+        y2="332"
+        className="stroke-muted-foreground"
+        strokeWidth="1"
+        markerEnd="url(#kap6-arrow)"
+      />
+      <line
+        x1="270"
+        y1="300"
+        x2="320"
+        y2="332"
+        className="stroke-muted-foreground"
+        strokeWidth="1"
+        markerEnd="url(#kap6-arrow)"
+      />
+      <text x="120" y="320" className="fill-muted-foreground text-[10px]">
+        ja
+      </text>
+      <text x="290" y="320" className="fill-muted-foreground text-[10px]">
+        nei
+      </text>
+
+      {/* Node 5a: CSMA/CD endeløsning */}
+      <g>
+        <rect
+          x="10"
+          y="334"
+          width="220"
+          height="46"
+          rx="8"
+          className="fill-emerald-500/10 stroke-emerald-500"
+          strokeWidth="1.2"
+        />
+        <text
+          x="120"
+          y="354"
+          textAnchor="middle"
+          className="fill-foreground text-[11px] font-semibold"
+        >
+          CSMA/CD (kablet Ethernet)
+        </text>
+        <text x="120" y="370" textAnchor="middle" className="fill-muted-foreground text-[11px]">
+          legacy hub-LAN
+        </text>
+      </g>
+
+      {/* Node 5b: slotted? */}
+      <g>
+        <rect
+          x="240"
+          y="334"
+          width="220"
+          height="46"
+          rx="8"
+          className="fill-card stroke-muted-foreground"
+          strokeWidth="1"
+        />
+        <text
+          x="350"
+          y="354"
+          textAnchor="middle"
+          className="fill-foreground text-[11px] font-semibold"
+        >
+          Har du synkront klokke-slot?
+        </text>
+        <text x="350" y="370" textAnchor="middle" className="fill-foreground text-[11px]">
+          ja → Slot-ALOHA | nei → Pure
+        </text>
+      </g>
+
+      {/* CSMA/CA-koblingen fra node 3b nei-arm */}
+      <text x="540" y="320" className="fill-emerald-700 dark:fill-emerald-400 text-[10px] italic">
+        ↑ valgt allerede
+      </text>
+
+      {/* legend */}
+      <g>
+        <rect
+          x="10"
+          y="396"
+          width="14"
+          height="14"
+          className="fill-emerald-500/10 stroke-emerald-500"
+        />
+        <text x="30" y="407" className="fill-muted-foreground text-[10px]">
+          endenode = svar
+        </text>
+        <rect
+          x="170"
+          y="396"
+          width="14"
+          height="14"
+          className="fill-card stroke-muted-foreground"
+        />
+        <text x="190" y="407" className="fill-muted-foreground text-[10px]">
+          beslutnings-spørsmål
+        </text>
+      </g>
     </svg>
   );
 }
