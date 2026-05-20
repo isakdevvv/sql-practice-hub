@@ -2,6 +2,16 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { SiteHeader } from "@/components/SiteHeader";
 import { Button } from "@/components/ui/button";
 import { BookOpen, Grid3x3, Play, Pause, RotateCcw } from "lucide-react";
+import { VisualDefs } from "@/components/stack/kurose-kurs/VisualDefs";
+import {
+  ModelFreeIcon,
+  QTableIcon,
+  AlphaIcon,
+  GammaIcon,
+  TdErrorIcon,
+  QUpdateIcon,
+  EpsilonGreedyIcon,
+} from "@/components/stack/mlIcons";
 
 type Tab = "intro" | "qlearning";
 
@@ -96,45 +106,63 @@ function Intro({ onPick }: { onPick: (t: Tab) => void }) {
         </p>
       </div>
 
-      <div className="rounded-xl border border-border bg-card p-4">
-        <h2 className="text-base font-semibold mb-2">Nye ord vi trenger</h2>
-        <dl className="space-y-2.5 text-[13px]">
-          <Def term="Modell-fri (model-free)">
-            Agenten kjenner IKKE sannsynlighetene <code>P(s' | s, a)</code> eller belønningene på
-            forhånd. Den må prøve seg fram og lære av faktiske opplevelser. (Motsatt: «model-based»
-            = value iteration har modellen.)
-          </Def>
-          <Def term="Q-verdi Q(s, a)">
-            «Hvor god er det å være i tilstand s og velge handling a, hvis jeg deretter spiller
-            optimalt?» Et tall per (tilstand, handling)-par. Tabell med rader = tilstander, kolonner
-            = handlinger.
-          </Def>
-          <Def term="α (alpha) — læringsrate">
-            Hvor mye agenten justerer Q etter hver nye opplevelse. α = 1.0 betyr «glem alt jeg
-            trodde, ta det nye estimatet». α = 0.1 betyr «bland 10% nytt med 90% gammelt». Mellom 0
-            og 1.
-          </Def>
-          <Def term="γ (gamma) — discount-faktor">
-            Hvor mye agenten bryr seg om fremtidige belønninger vs nåværende. γ = 0.9 betyr «en
-            belønning om 1 steg er verdt 0.9 av den samme nå». Mellom 0 og 1. Lavt γ = kortsynt;
-            høyt γ = tålmodig.
-          </Def>
-          <Def term="TD-error (temporal-difference error)">
-            Forskjellen mellom det vi trodde Q(s, a) var, og det den nye opplevelsen sier:{" "}
-            <code>δ = r + γ·max_a' Q(s', a') − Q(s, a)</code>. Hvis δ er positiv var det BEDRE enn
-            vi trodde, og vi øker Q.
-          </Def>
-          <Def term="Q-learning oppdateringsregel">
-            Etter hver handling: <code>Q(s, a) ← Q(s, a) + α·δ</code>. Det er hele algoritmen.
-            Gjenta til Q-tabellen stabiliserer seg.
-          </Def>
-          <Def term="ε-greedy">
-            Med sannsynlighet ε velger agenten en helt tilfeldig handling (explore). Med
-            sannsynlighet 1−ε velger den den med høyest Q-verdi (exploit). Som vi så i
-            bandits-modulen.
-          </Def>
-        </dl>
-      </div>
+      <VisualDefs
+        title="Nye ord vi trenger"
+        items={[
+          {
+            term: "Modell-fri (model-free)",
+            icon: <ModelFreeIcon />,
+            body: (
+              <>
+                Agenten kjenner IKKE sannsynlighetene <code>P(s' | s, a)</code> eller belønningene
+                på forhånd. Den må prøve seg fram og lære av faktiske opplevelser. (Motsatt:
+                «model-based» = value iteration har modellen.)
+              </>
+            ),
+          },
+          {
+            term: "Q-verdi Q(s, a)",
+            icon: <QTableIcon />,
+            body: "«Hvor god er det å være i tilstand s og velge handling a, hvis jeg deretter spiller optimalt?» Et tall per (tilstand, handling)-par. Tabell med rader = tilstander, kolonner = handlinger.",
+          },
+          {
+            term: "α (alpha) — læringsrate",
+            icon: <AlphaIcon />,
+            body: "Hvor mye agenten justerer Q etter hver nye opplevelse. α = 1.0 betyr «glem alt jeg trodde, ta det nye estimatet». α = 0.1 betyr «bland 10% nytt med 90% gammelt». Mellom 0 og 1.",
+          },
+          {
+            term: "γ (gamma) — discount-faktor",
+            icon: <GammaIcon />,
+            body: "Hvor mye agenten bryr seg om fremtidige belønninger vs nåværende. γ = 0.9 betyr «en belønning om 1 steg er verdt 0.9 av den samme nå». Mellom 0 og 1. Lavt γ = kortsynt; høyt γ = tålmodig.",
+          },
+          {
+            term: "TD-error (temporal-difference error)",
+            icon: <TdErrorIcon />,
+            body: (
+              <>
+                Forskjellen mellom det vi trodde Q(s, a) var, og det den nye opplevelsen sier:{" "}
+                <code>δ = r + γ·max_a' Q(s', a') − Q(s, a)</code>. Hvis δ er positiv var det BEDRE
+                enn vi trodde, og vi øker Q.
+              </>
+            ),
+          },
+          {
+            term: "Q-learning oppdateringsregel",
+            icon: <QUpdateIcon />,
+            body: (
+              <>
+                Etter hver handling: <code>Q(s, a) ← Q(s, a) + α·δ</code>. Det er hele algoritmen.
+                Gjenta til Q-tabellen stabiliserer seg.
+              </>
+            ),
+          },
+          {
+            term: "ε-greedy",
+            icon: <EpsilonGreedyIcon />,
+            body: "Med sannsynlighet ε velger agenten en helt tilfeldig handling (explore). Med sannsynlighet 1−ε velger den den med høyest Q-verdi (exploit). Som vi så i bandits-modulen.",
+          },
+        ]}
+      />
 
       <div className="rounded-xl border border-border bg-card p-4">
         <h2 className="text-base font-semibold mb-2">Hvordan modulen er bygd opp</h2>
@@ -150,15 +178,6 @@ function Intro({ onPick }: { onPick: (t: Tab) => void }) {
           </Button>
         </div>
       </div>
-    </div>
-  );
-}
-
-function Def({ term, children }: { term: string; children: React.ReactNode }) {
-  return (
-    <div>
-      <dt className="font-semibold text-foreground">{term}</dt>
-      <dd className="text-muted-foreground mt-0.5">{children}</dd>
     </div>
   );
 }

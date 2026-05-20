@@ -2,6 +2,16 @@ import { useMemo, useState } from "react";
 import { SiteHeader } from "@/components/SiteHeader";
 import { Button } from "@/components/ui/button";
 import { BookOpen, GitBranch } from "lucide-react";
+import { VisualDefs } from "@/components/stack/kurose-kurs/VisualDefs";
+import {
+  TimestepIcon,
+  InputXIcon,
+  HiddenHIcon,
+  RnnCellIcon,
+  WeightsIcon,
+  OutputYIcon,
+  VanishingGradIcon,
+} from "@/components/stack/mlIcons";
 
 type Tab = "intro" | "live";
 
@@ -103,65 +113,83 @@ function Intro({ onPick }: { onPick: (t: Tab) => void }) {
         </p>
       </div>
 
-      <div className="rounded-xl border border-border bg-card p-4">
-        <h2 className="text-base font-semibold mb-2">Ordbok</h2>
-        <dl className="space-y-2.5 text-[13px]">
-          <Def term="Tidssteg t">
-            Ett trinn i en sekvens. For tekst er hvert ord (eller bokstav) ett tidssteg. For lyd er
-            hvert sample. Vi indekserer t = 1, 2, 3, ...
-          </Def>
-          <Def term="Input x_t">
-            Det vi mater inn ved tidssteg t. F.eks. det t-te ordet i setningen, kodet som en vektor
-            (one-hot eller embedding).
-          </Def>
-          <Def term="Hidden state h_t">
-            Nettets «minne» ved tidssteg t. En vektor med faste lengder. Den oppdateres ved hvert
-            tidssteg basert på h_{`{t−1}`} og x_t.
-          </Def>
-          <Def term="RNN-oppdaterings-regel">
-            <code>h_t = tanh(W_xh·x_t + W_hh·h_{`{t−1}`} + b_h)</code>. Lest: «den nye hukommelsen
-            er en blanding av (forrige hukommelse) og (ny input), kjørt gjennom en aktivering».
-          </Def>
-          <Def term="W_xh, W_hh, b_h">
-            <ul className="list-disc pl-5 mt-1">
-              <li>
-                <code>W_xh</code>: vekt-matrise fra input til hidden.
-              </li>
-              <li>
-                <code>W_hh</code>: vekt-matrise fra forrige hidden til ny hidden («loopen»).
-              </li>
-              <li>
-                <code>b_h</code>: bias-vektor.
-              </li>
-            </ul>
-            Disse er like for alle tidssteg — det er det som gjør RNN «recurrent».
-          </Def>
-          <Def term="Output y_t">
-            Hva vi spår ved tidssteg t. F.eks. neste ord, eller en klassifisering av hele sekvensen.{" "}
-            <code>y_t = W_hy·h_t + b_y</code>.
-          </Def>
-          <Def term="Vanishing gradient">
-            Når vi trener RNN over LANGE sekvenser, kan gradientene bli astronomisk små bakover i
-            tid — modellen klarer ikke å lære lange sammenhenger. Det er DET LSTM/GRU prøver å løse
-            (komplett i en senere modul).
-          </Def>
-        </dl>
-      </div>
+      <VisualDefs
+        title="Ordbok"
+        items={[
+          {
+            term: "Tidssteg t",
+            icon: <TimestepIcon />,
+            body: "Ett trinn i en sekvens. For tekst er hvert ord (eller bokstav) ett tidssteg. For lyd er hvert sample. Vi indekserer t = 1, 2, 3, ...",
+          },
+          {
+            term: "Input x_t",
+            icon: <InputXIcon />,
+            body: "Det vi mater inn ved tidssteg t. F.eks. det t-te ordet i setningen, kodet som en vektor (one-hot eller embedding).",
+          },
+          {
+            term: "Hidden state h_t",
+            icon: <HiddenHIcon />,
+            body: (
+              <>
+                Nettets «minne» ved tidssteg t. En vektor med faste lengder. Den oppdateres ved
+                hvert tidssteg basert på h_{`{t−1}`} og x_t.
+              </>
+            ),
+          },
+          {
+            term: "RNN-oppdaterings-regel",
+            icon: <RnnCellIcon />,
+            body: (
+              <>
+                <code>h_t = tanh(W_xh·x_t + W_hh·h_{`{t−1}`} + b_h)</code>. Lest: «den nye
+                hukommelsen er en blanding av (forrige hukommelse) og (ny input), kjørt gjennom en
+                aktivering».
+              </>
+            ),
+          },
+          {
+            term: "W_xh, W_hh, b_h",
+            icon: <WeightsIcon />,
+            body: (
+              <>
+                <ul className="list-disc pl-5 mt-1">
+                  <li>
+                    <code>W_xh</code>: vekt-matrise fra input til hidden.
+                  </li>
+                  <li>
+                    <code>W_hh</code>: vekt-matrise fra forrige hidden til ny hidden («loopen»).
+                  </li>
+                  <li>
+                    <code>b_h</code>: bias-vektor.
+                  </li>
+                </ul>
+                Disse er like for alle tidssteg — det er det som gjør RNN «recurrent».
+              </>
+            ),
+          },
+          {
+            term: "Output y_t",
+            icon: <OutputYIcon />,
+            body: (
+              <>
+                Hva vi spår ved tidssteg t. F.eks. neste ord, eller en klassifisering av hele
+                sekvensen. <code>y_t = W_hy·h_t + b_y</code>.
+              </>
+            ),
+          },
+          {
+            term: "Vanishing gradient",
+            icon: <VanishingGradIcon />,
+            body: "Når vi trener RNN over LANGE sekvenser, kan gradientene bli astronomisk små bakover i tid — modellen klarer ikke å lære lange sammenhenger. Det er DET LSTM/GRU prøver å løse (komplett i en senere modul).",
+          },
+        ]}
+      />
 
       <div className="flex gap-2">
         <Button size="sm" onClick={() => onPick("live")}>
           Start på modul 1 →
         </Button>
       </div>
-    </div>
-  );
-}
-
-function Def({ term, children }: { term: string; children: React.ReactNode }) {
-  return (
-    <div>
-      <dt className="font-semibold text-foreground">{term}</dt>
-      <dd className="text-muted-foreground mt-0.5">{children}</dd>
     </div>
   );
 }

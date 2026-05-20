@@ -11,6 +11,23 @@ import {
   Package,
   ShieldQuestion,
 } from "lucide-react";
+import { VisualDefs } from "@/components/stack/kurose-kurs/VisualDefs";
+import {
+  AlgorithmIcon,
+  GreedyIcon,
+  OptimalIcon,
+  BruteForceIcon,
+  NSymbolIcon,
+  BigOIcon,
+  PolyTimeIcon,
+  PclassIcon,
+  NpClassIcon,
+  NpHardIcon,
+  ApproxIcon,
+  HarmonicIcon,
+  LogNIcon,
+  TriangleIneqIcon,
+} from "@/components/stack/mlIcons";
 
 type Tab = "intro" | "setcover" | "tsp" | "knapsack" | "pvsnp";
 
@@ -88,89 +105,143 @@ export function GreedyNpVizPage() {
 function IntroModule({ onPick }: { onPick: (t: Tab) => void }) {
   return (
     <div className="space-y-4 text-sm">
-      <div className="rounded-xl border border-border bg-card p-4">
-        <h2 className="text-base font-semibold mb-2">Ordbok — slå opp ord du møter senere</h2>
-        <dl className="space-y-3 text-[13px]">
-          <Def term="Algoritme">
-            En liste oppskrifter datamaskinen følger for å løse et problem. «Sorter denne lista»
-            eller «finn kortest vei».
-          </Def>
-          <Def term="Greedy (grådig)">
-            En algoritme-strategi: i hvert steg, ta valget som ser best ut
-            <em> akkurat nå</em>, uten å tenke på fremtiden. Rask, men ikke alltid optimal.
-          </Def>
-          <Def term="Optimum / optimal løsning">
-            Det beste mulige svaret. F.eks. det kortest mulige TSP-toget gjennom alle byer. Greedy
-            gir ofte <em>ikke</em> optimum, men noe nær.
-          </Def>
-          <Def term="Brute force">
-            «Prøv absolutt alle muligheter og velg det beste». Garantert optimum, men eksplosivt
-            tregt når problemet vokser.
-          </Def>
-          <Def term="n (kursivt n)">
-            Antall input-elementer. Hvis du sorterer 100 tall er <code>n = 100</code>. Vi måler hvor
-            mange operasjoner algoritmen bruker som funksjon av n.
-          </Def>
-          <Def term="O(...) — Big-O">
-            En «hastighets-merkelapp» som forteller hvor mange operasjoner i verste fall. Eksempler:
-            <ul className="mt-1 list-disc pl-5">
-              <li>
-                <code>O(n)</code> = vokser proporsjonalt med n. 100 elementer → 100 operasjoner.
-              </li>
-              <li>
-                <code>O(n²)</code> = vokser med n²: 100 elementer → 10 000 operasjoner.
-              </li>
-              <li>
-                <code>O(n log n)</code> = litt mer enn lineær. God sortering.
-              </li>
-              <li>
-                <code>O(2ⁿ)</code> = eksponentiell. 30 elementer → 1 milliard operasjoner.
-              </li>
-              <li>
-                <code>O(n!)</code> = «n fakultet» = 1·2·3·...·n. 10! = 3.6 millioner. 20! = 2.4
-                trillioner.
-              </li>
-            </ul>
-          </Def>
-          <Def term="Polynom tid">
-            Algoritmer hvis kjøretid er <code>O(n^k)</code> for et fast tall k:
-            <code>O(n)</code>, <code>O(n²)</code>, <code>O(n³)</code> osv. «Raskt nok» til at det
-            skalerer i praksis.
-          </Def>
-          <Def term="P">
-            Mengden problemer du kan løse i polynom tid. Sortering, søk, korteste vei (Dijkstra) er
-            i P.
-          </Def>
-          <Def term="NP">
-            Mengden problemer du kan <em>verifisere</em> en gitt løsning på i polynom tid.
-            («Verifisere» betyr sjekke at svaret stemmer.) Alle P-problemer er i NP, men NP har også
-            problemer vi ikke vet hvordan å løse raskt.
-          </Def>
-          <Def term="NP-hardt / NP-komplett">
-            Problemer som er «minst like vanskelige» som de hardeste i NP. Hvis du fant en
-            polynom-algoritme for ett av dem, ville alle NP-problemer bli polynome (det er det
-            berømte P=NP-spørsmålet). Eksempler: set cover, TSP, subset sum, SAT. Alle disse fire er
-            det vi leker med.
-          </Def>
-          <Def term="Approksimasjon">
-            «Vi finner ikke optimum raskt, men vi finner noe garantert nær». F.eks. en
-            1.5-approksimasjon for TSP betyr at svaret vi gir er høyst 1.5 ganger optimum.
-          </Def>
-          <Def term="H_n — harmonisk sum">
-            Tallet <code>H_n = 1 + 1/2 + 1/3 + ... + 1/n</code>. For store n er{" "}
-            <code>H_n ≈ ln(n)</code> (naturlig logaritme). Dukker opp som greedy-garantien for set
-            cover.
-          </Def>
-          <Def term="ln(n) — naturlig logaritme">
-            Inversen av <code>e^x</code> der <code>e ≈ 2.718</code>. <code>ln(100) ≈ 4.6</code>,
-            <code>ln(1000) ≈ 6.9</code>. Vokser <em>veldig</em> sakte.
-          </Def>
-          <Def term="Trekant-ulikheten">
-            For tre punkter A, B, C: avstanden A→C er aldri lengre enn å gå A→B→C. Holder for
-            vanlige avstander (Euklid, taxi-cab).
-          </Def>
-        </dl>
-      </div>
+      <VisualDefs
+        title="Ordbok — slå opp ord du møter senere"
+        items={[
+          {
+            term: "Algoritme",
+            icon: <AlgorithmIcon />,
+            body: "En liste oppskrifter datamaskinen følger for å løse et problem. «Sorter denne lista» eller «finn kortest vei».",
+          },
+          {
+            term: "Greedy (grådig)",
+            icon: <GreedyIcon />,
+            body: (
+              <>
+                En algoritme-strategi: i hvert steg, ta valget som ser best ut
+                <em> akkurat nå</em>, uten å tenke på fremtiden. Rask, men ikke alltid optimal.
+              </>
+            ),
+          },
+          {
+            term: "Optimum / optimal løsning",
+            icon: <OptimalIcon />,
+            body: (
+              <>
+                Det beste mulige svaret. F.eks. det kortest mulige TSP-toget gjennom alle byer.
+                Greedy gir ofte <em>ikke</em> optimum, men noe nær.
+              </>
+            ),
+          },
+          {
+            term: "Brute force",
+            icon: <BruteForceIcon />,
+            body: "«Prøv absolutt alle muligheter og velg det beste». Garantert optimum, men eksplosivt tregt når problemet vokser.",
+          },
+          {
+            term: "n (kursivt n)",
+            icon: <NSymbolIcon />,
+            body: (
+              <>
+                Antall input-elementer. Hvis du sorterer 100 tall er <code>n = 100</code>. Vi måler
+                hvor mange operasjoner algoritmen bruker som funksjon av n.
+              </>
+            ),
+          },
+          {
+            term: "O(...) — Big-O",
+            icon: <BigOIcon />,
+            body: (
+              <>
+                En «hastighets-merkelapp» som forteller hvor mange operasjoner i verste fall.
+                Eksempler:
+                <ul className="mt-1 list-disc pl-5">
+                  <li>
+                    <code>O(n)</code> = vokser proporsjonalt med n. 100 elementer → 100 operasjoner.
+                  </li>
+                  <li>
+                    <code>O(n²)</code> = vokser med n²: 100 elementer → 10 000 operasjoner.
+                  </li>
+                  <li>
+                    <code>O(n log n)</code> = litt mer enn lineær. God sortering.
+                  </li>
+                  <li>
+                    <code>O(2ⁿ)</code> = eksponentiell. 30 elementer → 1 milliard operasjoner.
+                  </li>
+                  <li>
+                    <code>O(n!)</code> = «n fakultet» = 1·2·3·...·n. 10! = 3.6 millioner. 20! = 2.4
+                    trillioner.
+                  </li>
+                </ul>
+              </>
+            ),
+          },
+          {
+            term: "Polynom tid",
+            icon: <PolyTimeIcon />,
+            body: (
+              <>
+                Algoritmer hvis kjøretid er <code>O(n^k)</code> for et fast tall k:{" "}
+                <code>O(n)</code>, <code>O(n²)</code>, <code>O(n³)</code> osv. «Raskt nok» til at
+                det skalerer i praksis.
+              </>
+            ),
+          },
+          {
+            term: "P",
+            icon: <PclassIcon />,
+            body: "Mengden problemer du kan løse i polynom tid. Sortering, søk, korteste vei (Dijkstra) er i P.",
+          },
+          {
+            term: "NP",
+            icon: <NpClassIcon />,
+            body: (
+              <>
+                Mengden problemer du kan <em>verifisere</em> en gitt løsning på i polynom tid.
+                («Verifisere» betyr sjekke at svaret stemmer.) Alle P-problemer er i NP, men NP har
+                også problemer vi ikke vet hvordan å løse raskt.
+              </>
+            ),
+          },
+          {
+            term: "NP-hardt / NP-komplett",
+            icon: <NpHardIcon />,
+            body: "Problemer som er «minst like vanskelige» som de hardeste i NP. Hvis du fant en polynom-algoritme for ett av dem, ville alle NP-problemer bli polynome (det er det berømte P=NP-spørsmålet). Eksempler: set cover, TSP, subset sum, SAT. Alle disse fire er det vi leker med.",
+          },
+          {
+            term: "Approksimasjon",
+            icon: <ApproxIcon />,
+            body: "«Vi finner ikke optimum raskt, men vi finner noe garantert nær». F.eks. en 1.5-approksimasjon for TSP betyr at svaret vi gir er høyst 1.5 ganger optimum.",
+          },
+          {
+            term: "H_n — harmonisk sum",
+            icon: <HarmonicIcon />,
+            body: (
+              <>
+                Tallet <code>H_n = 1 + 1/2 + 1/3 + ... + 1/n</code>. For store n er{" "}
+                <code>H_n ≈ ln(n)</code> (naturlig logaritme). Dukker opp som greedy-garantien for
+                set cover.
+              </>
+            ),
+          },
+          {
+            term: "ln(n) — naturlig logaritme",
+            icon: <LogNIcon />,
+            body: (
+              <>
+                Inversen av <code>e^x</code> der <code>e ≈ 2.718</code>.{" "}
+                <code>ln(100) ≈ 4.6</code>, <code>ln(1000) ≈ 6.9</code>. Vokser <em>veldig</em>{" "}
+                sakte.
+              </>
+            ),
+          },
+          {
+            term: "Trekant-ulikheten",
+            icon: <TriangleIneqIcon />,
+            body: "For tre punkter A, B, C: avstanden A→C er aldri lengre enn å gå A→B→C. Holder for vanlige avstander (Euklid, taxi-cab).",
+          },
+        ]}
+      />
 
       <div className="rounded-xl border border-border bg-card p-4">
         <h2 className="text-base font-semibold mb-2">Sånn er det bygd opp</h2>
@@ -200,15 +271,6 @@ function IntroModule({ onPick }: { onPick: (t: Tab) => void }) {
           </Button>
         </div>
       </div>
-    </div>
-  );
-}
-
-function Def({ term, children }: { term: string; children: React.ReactNode }) {
-  return (
-    <div>
-      <dt className="font-semibold text-foreground">{term}</dt>
-      <dd className="text-muted-foreground mt-0.5">{children}</dd>
     </div>
   );
 }

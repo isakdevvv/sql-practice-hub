@@ -2,6 +2,17 @@ import { useEffect, useState } from "react";
 import { SiteHeader } from "@/components/SiteHeader";
 import { Button } from "@/components/ui/button";
 import { BookOpen, Radio, Play, Pause, RotateCcw } from "lucide-react";
+import { VisualDefs } from "@/components/stack/kurose-kurs/VisualDefs";
+import {
+  HiddenStateIcon,
+  ObservationIcon,
+  MotionModelIcon,
+  SensorModelIcon,
+  BeliefIcon,
+  PredictUpdateIcon,
+  ParticleFilterIcon,
+  ResampleIcon,
+} from "@/components/stack/mlIcons";
 
 type Tab = "intro" | "live";
 
@@ -66,15 +77,6 @@ function TabBtn({
     </button>
   );
 }
-function Def({ term, children }: { term: string; children: React.ReactNode }) {
-  return (
-    <div>
-      <dt className="font-semibold text-foreground">{term}</dt>
-      <dd className="text-muted-foreground mt-0.5">{children}</dd>
-    </div>
-  );
-}
-
 function Intro({ onPick }: { onPick: (t: Tab) => void }) {
   return (
     <div className="space-y-4 text-sm">
@@ -102,52 +104,65 @@ function Intro({ onPick }: { onPick: (t: Tab) => void }) {
         </p>
       </div>
 
-      <div className="rounded-xl border border-border bg-card p-4">
-        <h2 className="text-base font-semibold mb-2">Ordbok</h2>
-        <dl className="space-y-2.5 text-[13px]">
-          <Def term="Skjult tilstand (hidden state) x_t">
-            Den «sanne» variabelen vi vil estimere — her: robotens posisjon på tidssteg t.
-          </Def>
-          <Def term="Observasjon y_t">
-            Hva sensoren faktisk rapporterer. «dør» eller «ingen dør». Støyete — kan være feil.
-          </Def>
-          <Def term="Bevegelses-modell P(x_t | x_{t-1}, action_t)">
-            Hvordan tilstanden endrer seg over tid, gitt en handling (her: «gå én tile høyre»). Også
-            støyete — kanskje robot står stille eller hopper to.
-          </Def>
-          <Def term="Sensor-modell P(y_t | x_t)">
-            Hvor sannsynlig er det å observere y_t, gitt at sann tilstand er x_t. F.eks. P(«dør» |
-            står på dør-tile) = 0.9 (10% feil), P(«dør» | står ikke på dør-tile) = 0.1.
-          </Def>
-          <Def term="Belief b_t(x)">
-            Vår nåværende sannsynlighets-fordeling over tilstander. Et tall per mulig tilstand.
-            Summer til 1.
-          </Def>
-          <Def term="Forutsigelse + oppdatering">
-            To trinn per tidssteg:
-            <ul className="list-disc pl-5 mt-1">
-              <li>
-                <strong>Forutsi:</strong> b_t(x) = Σ P(x | x', action) · b_{`{t-1}`}(x') — diffunder
-                belief gjennom bevegelses-modellen.
-              </li>
-              <li>
-                <strong>Oppdater:</strong> b_t(x) ∝ P(y_t | x) · b_t(x) — multiplisér med
-                sensor-likelihoodet, normaliser.
-              </li>
-            </ul>
-          </Def>
-          <Def term="Particle filter">
-            I stedet for å lagre belief som ett tall per tilstand, representer den som N «partikler»
-            (samples). Hver partikkel = en hypotese om sann tilstand. Tetthet av partikler i et
-            område = sannsynligheten av at tilstanden er der.
-          </Def>
-          <Def term="Resampling">
-            Etter sensor-oppdatering: kopier partikler proporsjonalt med likelihood. Partikler i
-            lite sannsynlige posisjoner forsvinner; partikler i sannsynlige posisjoner får mange
-            kopier.
-          </Def>
-        </dl>
-      </div>
+      <VisualDefs
+        title="Ordbok"
+        items={[
+          {
+            term: "Skjult tilstand (hidden state) x_t",
+            icon: <HiddenStateIcon />,
+            body: "Den «sanne» variabelen vi vil estimere — her: robotens posisjon på tidssteg t.",
+          },
+          {
+            term: "Observasjon y_t",
+            icon: <ObservationIcon />,
+            body: "Hva sensoren faktisk rapporterer. «dør» eller «ingen dør». Støyete — kan være feil.",
+          },
+          {
+            term: "Bevegelses-modell P(x_t | x_{t-1}, action_t)",
+            icon: <MotionModelIcon />,
+            body: "Hvordan tilstanden endrer seg over tid, gitt en handling (her: «gå én tile høyre»). Også støyete — kanskje robot står stille eller hopper to.",
+          },
+          {
+            term: "Sensor-modell P(y_t | x_t)",
+            icon: <SensorModelIcon />,
+            body: "Hvor sannsynlig er det å observere y_t, gitt at sann tilstand er x_t. F.eks. P(«dør» | står på dør-tile) = 0.9 (10% feil), P(«dør» | står ikke på dør-tile) = 0.1.",
+          },
+          {
+            term: "Belief b_t(x)",
+            icon: <BeliefIcon />,
+            body: "Vår nåværende sannsynlighets-fordeling over tilstander. Et tall per mulig tilstand. Summer til 1.",
+          },
+          {
+            term: "Forutsigelse + oppdatering",
+            icon: <PredictUpdateIcon />,
+            body: (
+              <>
+                To trinn per tidssteg:
+                <ul className="list-disc pl-5 mt-1">
+                  <li>
+                    <strong>Forutsi:</strong> b_t(x) = Σ P(x | x', action) · b_{`{t-1}`}(x') —
+                    diffunder belief gjennom bevegelses-modellen.
+                  </li>
+                  <li>
+                    <strong>Oppdater:</strong> b_t(x) ∝ P(y_t | x) · b_t(x) — multiplisér med
+                    sensor-likelihoodet, normaliser.
+                  </li>
+                </ul>
+              </>
+            ),
+          },
+          {
+            term: "Particle filter",
+            icon: <ParticleFilterIcon />,
+            body: "I stedet for å lagre belief som ett tall per tilstand, representer den som N «partikler» (samples). Hver partikkel = en hypotese om sann tilstand. Tetthet av partikler i et område = sannsynligheten av at tilstanden er der.",
+          },
+          {
+            term: "Resampling",
+            icon: <ResampleIcon />,
+            body: "Etter sensor-oppdatering: kopier partikler proporsjonalt med likelihood. Partikler i lite sannsynlige posisjoner forsvinner; partikler i sannsynlige posisjoner får mange kopier.",
+          },
+        ]}
+      />
       <div className="flex gap-2">
         <Button size="sm" onClick={() => onPick("live")}>
           Start på modul 1 →
