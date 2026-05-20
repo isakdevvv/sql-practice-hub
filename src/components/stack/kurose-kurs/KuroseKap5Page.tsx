@@ -16,6 +16,112 @@ import { Section52Live } from "./Section52Live";
 import { Section53Live } from "./Section53Live";
 import { Section54Live } from "./Section54Live";
 import { Section55Live } from "./Section55Live";
+import { VisualDefs } from "./VisualDefs";
+import {
+  DataPlaneIcon,
+  ControlPlaneIcon,
+  DistributedIcon,
+  SdnControllerIcon,
+  RoutingVsForwardingIcon,
+  ForwardingTableIcon,
+  RibFibIcon,
+  ConvergenceIcon,
+  RoutingLoopIcon,
+  BlackHoleIcon,
+  TopologyDbIcon,
+  SoftStateIcon,
+  LinkStateIcon,
+  DijkstraIcon,
+  VisitedSetIcon,
+  DistTableIcon,
+  RelaxIcon,
+  DistanceVectorIcon,
+  BellmanFordIcon,
+  AsyncIcon,
+  CountInfinityIcon,
+  SplitHorizonIcon,
+  PoisonReverseIcon,
+  RipLimitIcon,
+  ComplexityIcon,
+  AsIcon,
+  OspfIcon,
+  LsaIcon,
+  RouterLsaIcon,
+  NetworkLsaIcon,
+  SummaryLsaIcon,
+  AsbrIcon,
+  FloodingIcon,
+  LsdbIcon,
+  AreasIcon,
+  BackboneIcon,
+  StubAreaIcon,
+  HelloIcon,
+  EcmpIcon,
+  BgpIcon,
+  EbgpIbgpIcon,
+  PrefixAdvertIcon,
+  WithdrawalIcon,
+  AsPathIcon,
+  PrependingIcon,
+  OriginIcon,
+  LocalPrefIcon,
+  MedIcon,
+  NextHopIcon,
+  DecisionTreeIcon,
+  CustomerPolicyIcon,
+  PeerPolicyIcon,
+  ProviderPolicyIcon,
+  GaoRexfordIcon,
+  SdnIcon,
+  SdnArchIcon,
+  OpenFlowIcon,
+  FlowEntryIcon,
+  MatchFieldsIcon,
+  ActionSetIcon,
+  ProactiveReactiveIcon,
+  LogicalCentralIcon,
+  NorthSouthApiIcon,
+  NetworkOsIcon,
+  DataCenterIcon,
+  IcmpIcon,
+  TypeCodeIcon,
+  PingIcon,
+  DestUnreachableIcon,
+  PacketTooBigIcon,
+  TimeExceededIcon,
+  SourceQuenchIcon,
+  RedirectIcon,
+  RouterSolicitIcon,
+  TracerouteIcon,
+  RateLimitIcon,
+  SecurityIcon,
+  SnmpIcon,
+  NmsIcon,
+  AgentIcon,
+  MibTreeIcon,
+  OidIcon,
+  SnmpGetIcon,
+  SnmpSetIcon,
+  TrapIcon,
+  SnmpWalkIcon,
+  SnmpVersionsIcon,
+  CommunityStringIcon,
+  Asn1Icon,
+  DhcpIcon,
+  DhcpServerIcon,
+  DoraIcon,
+  DiscoverIcon,
+  OfferIcon,
+  RequestIcon,
+  AckIcon,
+  BroadcastIcon,
+  LeaseTimeIcon,
+  T1T2Icon,
+  RelayAgentIcon,
+  DhcpOptionsIcon,
+  DeclineReleaseIcon,
+  LinkLocalIcon,
+} from "./visualDefIcons.kap5";
 
 type Tab = "intro" | "5.1" | "5.2" | "5.3" | "5.4" | "5.5" | "oppg" | "eksamen";
 
@@ -216,29 +322,20 @@ function ControlPlaneOverview() {
       </p>
 
       <div className="grid gap-3 lg:grid-cols-2">
-        <Defs
+        <VisualDefs
           items={[
-            { term: "Data-plane", body: "Per-pakke videresending i ASIC — nanosekunder." },
-            { term: "Control-plane", body: "Bygger forwarding-tabellen — millisekunder, CPU." },
-            {
-              term: "Distribuert control-plane",
-              body: "Hver ruter regner selv, snakker med naboer.",
-            },
-            {
-              term: "Sentralisert (SDN)",
-              body: "Én controller pusher tabeller til alle switcher.",
-            },
-            {
-              term: "Routing vs forwarding",
-              body: "Forwarding = per-pakke. Routing = beregne stiene.",
-            },
-            { term: "Forwarding-tabell", body: "Prefiks → ut-port, slått opp i TCAM." },
-            { term: "RIB vs FIB", body: "RIB = alle ruter (CPU). FIB = beste (ASIC)." },
-            { term: "Konvergens", body: "Tiden til alle rutere er enige igjen." },
-            { term: "Routing-loop", body: "R1 og R2 sender til hverandre i ring." },
-            { term: "Black hole", body: "Ruter annonserer prefiks men forkaster pakkene." },
-            { term: "Topologi-database", body: "Ruterens interne kart over nettet." },
-            { term: "Soft-state", body: "Info forvitrer hvis ikke fornyet — selvhelbreder." },
+            { term: "Data-plane", icon: <DataPlaneIcon />, body: "Per-pakke videresending i ASIC — nanosekunder." },
+            { term: "Control-plane", icon: <ControlPlaneIcon />, body: "Bygger forwarding-tabellen — millisekunder, CPU." },
+            { term: "Distribuert control-plane", icon: <DistributedIcon />, body: "Hver ruter regner selv, snakker med naboer." },
+            { term: "Sentralisert (SDN)", icon: <SdnControllerIcon />, body: "Én controller pusher tabeller til alle switcher." },
+            { term: "Routing vs forwarding", icon: <RoutingVsForwardingIcon />, body: "Forwarding = per-pakke. Routing = beregne stiene." },
+            { term: "Forwarding-tabell", icon: <ForwardingTableIcon />, body: "Prefiks → ut-port, slått opp i TCAM." },
+            { term: "RIB vs FIB", icon: <RibFibIcon />, body: "RIB = alle ruter (CPU). FIB = beste (ASIC)." },
+            { term: "Konvergens", icon: <ConvergenceIcon />, body: "Tiden til alle rutere er enige igjen." },
+            { term: "Routing-loop", icon: <RoutingLoopIcon />, body: "R1 og R2 sender til hverandre i ring." },
+            { term: "Black hole", icon: <BlackHoleIcon />, body: "Ruter annonserer prefiks men forkaster pakkene." },
+            { term: "Topologi-database", icon: <TopologyDbIcon />, body: "Ruterens interne kart over nettet." },
+            { term: "Soft-state", icon: <SoftStateIcon />, body: "Info forvitrer hvis ikke fornyet — selvhelbreder." },
           ]}
         />
         <Illustration caption="Distribuert control-plane: hver ruter regner selv. SDN control-plane: én controller regner for alle.">
@@ -383,37 +480,22 @@ function RoutingAlgsContent() {
       </p>
 
       <div className="grid gap-3 lg:grid-cols-2">
-        <Defs
+        <VisualDefs
           items={[
-            { term: "Link-state (LS)", body: "Flood lenke-kost til alle, kjør Dijkstra lokalt." },
-            { term: "Dijkstras algoritme", body: "Utvid mengden N med nærmeste ubesøkte node." },
-            { term: "Visited-sett N", body: "Noder med endelig kjent korteste avstand." },
-            { term: "Dist-tabell D(y), p(y)", body: "Tentativ avstand + forgjenger på beste sti." },
-            { term: "Relax-steg", body: "Sjekk om ny node gir kortere vei til naboer." },
-            {
-              term: "Distance-vector (DV)",
-              body: "Hold avstand per destinasjon, send til naboer.",
-            },
-            { term: "Bellman-Ford-likning", body: "d_x(y) = min over naboer av c(x,v)+d_v(y)." },
-            {
-              term: "Bellman-Ford-iterasjon",
-              body: "Motta nabos vektor, oppdater, send hvis endret.",
-            },
-            {
-              term: "Asynkron oppdatering",
-              body: "Hver ruter sender på egen takt — ingen klokke.",
-            },
-            {
-              term: "Count-to-infinity",
-              body: "DV-rutere bytter stadig økende, falske avstander.",
-            },
-            { term: "Split horizon", body: "Ikke annonser rute tilbake til den du lærte fra." },
-            { term: "Poisoned reverse", body: "Si aktivt «kost = ∞» tilbake — stopper sløyfen." },
-            { term: "RIPs ∞ = 16", body: "Begrenser sløyfer, men maks 15 hopp." },
-            {
-              term: "Kompleksitet",
-              body: "LS: O((N+E) log N). DV: lite minne, dårlig konvergens.",
-            },
+            { term: "Link-state (LS)", icon: <LinkStateIcon />, body: "Flood lenke-kost til alle, kjør Dijkstra lokalt." },
+            { term: "Dijkstras algoritme", icon: <DijkstraIcon />, body: "Utvid mengden N med nærmeste ubesøkte node." },
+            { term: "Visited-sett N", icon: <VisitedSetIcon />, body: "Noder med endelig kjent korteste avstand." },
+            { term: "Dist-tabell D(y), p(y)", icon: <DistTableIcon />, body: "Tentativ avstand + forgjenger på beste sti." },
+            { term: "Relax-steg", icon: <RelaxIcon />, body: "Sjekk om ny node gir kortere vei til naboer." },
+            { term: "Distance-vector (DV)", icon: <DistanceVectorIcon />, body: "Hold avstand per destinasjon, send til naboer." },
+            { term: "Bellman-Ford-likning", icon: <BellmanFordIcon />, body: "d_x(y) = min over naboer av c(x,v)+d_v(y)." },
+            { term: "Bellman-Ford-iterasjon", icon: <BellmanFordIcon />, body: "Motta nabos vektor, oppdater, send hvis endret." },
+            { term: "Asynkron oppdatering", icon: <AsyncIcon />, body: "Hver ruter sender på egen takt — ingen klokke." },
+            { term: "Count-to-infinity", icon: <CountInfinityIcon />, body: "DV-rutere bytter stadig økende, falske avstander." },
+            { term: "Split horizon", icon: <SplitHorizonIcon />, body: "Ikke annonser rute tilbake til den du lærte fra." },
+            { term: "Poisoned reverse", icon: <PoisonReverseIcon />, body: "Si aktivt «kost = ∞» tilbake — stopper sløyfen." },
+            { term: "RIPs ∞ = 16", icon: <RipLimitIcon />, body: "Begrenser sløyfer, men maks 15 hopp." },
+            { term: "Kompleksitet", icon: <ComplexityIcon />, body: "LS: O((N+E) log N). DV: lite minne, dårlig konvergens." },
           ]}
         />
         <Illustration caption="Dijkstra på en 5-node graf: i hvert steg legges noden med lavest tentativ avstand inn i shortest-path-treet.">
@@ -565,23 +647,23 @@ function Section53() {
       </p>
 
       <div className="grid gap-3 lg:grid-cols-2">
-        <Defs
+        <VisualDefs
           items={[
-            { term: "Autonomt system (AS)", body: "Rutere under én adm. enhet — eget ASN." },
-            { term: "OSPF", body: "Link-state inne i et AS, Dijkstra-basert." },
-            { term: "LSA", body: "«Mine naboer og kost»-melding flooded til alle." },
-            { term: "Type 1 (Router-LSA)", body: "Egne lenker beskrevet innen et area." },
-            { term: "Type 2 (Network-LSA)", body: "DR forteller om felles ethernet-segment." },
-            { term: "Type 3 (Summary)", body: "ABR annonserer prefiks mellom areas." },
-            { term: "Type 4 og 5", body: "ASBR + eksterne ruter (typisk fra BGP)." },
-            { term: "Flooding", body: "Send LSA på alle porter, sekv.nr stopper løkke." },
-            { term: "LSDB", body: "Ruterens lokale topologi-kart fra alle LSA-er." },
-            { term: "Areas", body: "Del AS opp — flooding stoppes ved ABR." },
-            { term: "Area 0 (backbone)", body: "Sentral area alle andre må koble til." },
-            { term: "Stub area", body: "Aksepterer ikke eksterne LSA — bruker default-rute." },
-            { term: "NSSA", body: "Stub som likevel kan ha egen ekstern peering." },
-            { term: "Hello (10s/40s)", body: "Nabo-deteksjon: hello hvert 10s, død etter 40s." },
-            { term: "ECMP + auth", body: "Load-balance over like kost-stier, signerte pakker." },
+            { term: "Autonomt system (AS)", icon: <AsIcon />, body: "Rutere under én adm. enhet — eget ASN." },
+            { term: "OSPF", icon: <OspfIcon />, body: "Link-state inne i et AS, Dijkstra-basert." },
+            { term: "LSA", icon: <LsaIcon />, body: "«Mine naboer og kost»-melding flooded til alle." },
+            { term: "Type 1 (Router-LSA)", icon: <RouterLsaIcon />, body: "Egne lenker beskrevet innen et area." },
+            { term: "Type 2 (Network-LSA)", icon: <NetworkLsaIcon />, body: "DR forteller om felles ethernet-segment." },
+            { term: "Type 3 (Summary)", icon: <SummaryLsaIcon />, body: "ABR annonserer prefiks mellom areas." },
+            { term: "Type 4 og 5", icon: <AsbrIcon />, body: "ASBR + eksterne ruter (typisk fra BGP)." },
+            { term: "Flooding", icon: <FloodingIcon />, body: "Send LSA på alle porter, sekv.nr stopper løkke." },
+            { term: "LSDB", icon: <LsdbIcon />, body: "Ruterens lokale topologi-kart fra alle LSA-er." },
+            { term: "Areas", icon: <AreasIcon />, body: "Del AS opp — flooding stoppes ved ABR." },
+            { term: "Area 0 (backbone)", icon: <BackboneIcon />, body: "Sentral area alle andre må koble til." },
+            { term: "Stub area", icon: <StubAreaIcon />, body: "Aksepterer ikke eksterne LSA — bruker default-rute." },
+            { term: "NSSA", icon: <StubAreaIcon />, body: "Stub som likevel kan ha egen ekstern peering." },
+            { term: "Hello (10s/40s)", icon: <HelloIcon />, body: "Nabo-deteksjon: hello hvert 10s, død etter 40s." },
+            { term: "ECMP + auth", icon: <EcmpIcon />, body: "Load-balance over like kost-stier, signerte pakker." },
           ]}
         />
         <Illustration caption="Et AS delt i tre OSPF-areas. Area 0 (backbone) binder area 1 og area 2 via ABR-er.">
@@ -724,23 +806,23 @@ function Section54() {
       </p>
 
       <div className="grid gap-3 lg:grid-cols-2">
-        <Defs
+        <VisualDefs
           items={[
-            { term: "BGP-4", body: "Inter-AS over TCP/179, inkrementelle oppdateringer." },
-            { term: "eBGP vs iBGP", body: "Mellom AS vs internt innen eget AS." },
-            { term: "Prefiks-annonsering", body: "«Send trafikk til 1.2.3.0/24 til meg»." },
-            { term: "Withdrawal", body: "«Glem ruten — jeg når ikke lenger prefiks»." },
-            { term: "AS_PATH", body: "Lista over AS-er ruten har passert." },
-            { term: "AS_PATH-prepending", body: "Repeter eget ASN — gjør stien mindre attraktiv." },
-            { term: "ORIGIN", body: "Hvor ble ruten lært: IGP/EGP/Incomplete." },
-            { term: "LOCAL_PREF", body: "Lokal prioritet — sterkeste tie-breaker." },
-            { term: "MED", body: "Hint til nabo om hvilken inngang å foretrekke." },
-            { term: "NEXT_HOP", body: "IP til siste eBGP-talker langs ruten." },
-            { term: "Rute-seleksjons-rekken", body: "LP → AS_PATH → ORIGIN → MED → eBGP → IGP." },
-            { term: "Kunde-policy", body: "Annonser til alle, høyest LOCAL_PREF." },
-            { term: "Peer-policy", body: "Annonser bare til kunder — ikke gratis transit." },
-            { term: "Provider-policy", body: "Du betaler — bruk kun når nødvendig." },
-            { term: "Gao-Rexford", body: "Kunde > peer > provider; garanterer konvergens." },
+            { term: "BGP-4", icon: <BgpIcon />, body: "Inter-AS over TCP/179, inkrementelle oppdateringer." },
+            { term: "eBGP vs iBGP", icon: <EbgpIbgpIcon />, body: "Mellom AS vs internt innen eget AS." },
+            { term: "Prefiks-annonsering", icon: <PrefixAdvertIcon />, body: "«Send trafikk til 1.2.3.0/24 til meg»." },
+            { term: "Withdrawal", icon: <WithdrawalIcon />, body: "«Glem ruten — jeg når ikke lenger prefiks»." },
+            { term: "AS_PATH", icon: <AsPathIcon />, body: "Lista over AS-er ruten har passert." },
+            { term: "AS_PATH-prepending", icon: <PrependingIcon />, body: "Repeter eget ASN — gjør stien mindre attraktiv." },
+            { term: "ORIGIN", icon: <OriginIcon />, body: "Hvor ble ruten lært: IGP/EGP/Incomplete." },
+            { term: "LOCAL_PREF", icon: <LocalPrefIcon />, body: "Lokal prioritet — sterkeste tie-breaker." },
+            { term: "MED", icon: <MedIcon />, body: "Hint til nabo om hvilken inngang å foretrekke." },
+            { term: "NEXT_HOP", icon: <NextHopIcon />, body: "IP til siste eBGP-talker langs ruten." },
+            { term: "Rute-seleksjons-rekken", icon: <DecisionTreeIcon />, body: "LP → AS_PATH → ORIGIN → MED → eBGP → IGP." },
+            { term: "Kunde-policy", icon: <CustomerPolicyIcon />, body: "Annonser til alle, høyest LOCAL_PREF." },
+            { term: "Peer-policy", icon: <PeerPolicyIcon />, body: "Annonser bare til kunder — ikke gratis transit." },
+            { term: "Provider-policy", icon: <ProviderPolicyIcon />, body: "Du betaler — bruk kun når nødvendig." },
+            { term: "Gao-Rexford", icon: <GaoRexfordIcon />, body: "Kunde > peer > provider; garanterer konvergens." },
           ]}
         />
         <Illustration caption="To AS-er som peerer, hvert med flere kunder. AS_PATH bygges opp ved hver eBGP-grense.">
@@ -889,26 +971,20 @@ function Section55() {
       </p>
 
       <div className="grid gap-3 lg:grid-cols-2">
-        <Defs
+        <VisualDefs
           items={[
-            { term: "SDN", body: "Control-plane flyttes til ekstern, programmerbar controller." },
-            { term: "SDN-arkitektur", body: "Tre lag: infrastruktur, controller, applikasjoner." },
-            { term: "OpenFlow", body: "Sør-bound API: controller installerer flow-entries." },
-            { term: "Flow-entry", body: "Match-felter → action (forward/drop/modify)." },
-            { term: "Match-felter", body: "12-40 headers: IP, MAC, port, VLAN m.fl." },
-            { term: "Action-set", body: "Forward, drop, set-field, group, push/pop label." },
-            { term: "Match-action", body: "Generalisert forwarding på vilkårlige headers." },
-            {
-              term: "Proactive vs reactive",
-              body: "Push i forkant, eller PACKET_IN ved ukjent flow.",
-            },
-            {
-              term: "Logisk sentralisering",
-              body: "Én abstraksjon — kjører som Raft-cluster bak.",
-            },
-            { term: "Nord/sør-bound API", body: "App ↔ controller ↔ switch — bytte uten endring." },
-            { term: "Network OS", body: "ONOS, OpenDaylight, NSX — apps mot abstraksjon." },
-            { term: "SDN vant datasentre", body: "Én eier, homogen utstyr, raske konfig-skift." },
+            { term: "SDN", icon: <SdnIcon />, body: "Control-plane flyttes til ekstern, programmerbar controller." },
+            { term: "SDN-arkitektur", icon: <SdnArchIcon />, body: "Tre lag: infrastruktur, controller, applikasjoner." },
+            { term: "OpenFlow", icon: <OpenFlowIcon />, body: "Sør-bound API: controller installerer flow-entries." },
+            { term: "Flow-entry", icon: <FlowEntryIcon />, body: "Match-felter → action (forward/drop/modify)." },
+            { term: "Match-felter", icon: <MatchFieldsIcon />, body: "12-40 headers: IP, MAC, port, VLAN m.fl." },
+            { term: "Action-set", icon: <ActionSetIcon />, body: "Forward, drop, set-field, group, push/pop label." },
+            { term: "Match-action", icon: <FlowEntryIcon />, body: "Generalisert forwarding på vilkårlige headers." },
+            { term: "Proactive vs reactive", icon: <ProactiveReactiveIcon />, body: "Push i forkant, eller PACKET_IN ved ukjent flow." },
+            { term: "Logisk sentralisering", icon: <LogicalCentralIcon />, body: "Én abstraksjon — kjører som Raft-cluster bak." },
+            { term: "Nord/sør-bound API", icon: <NorthSouthApiIcon />, body: "App ↔ controller ↔ switch — bytte uten endring." },
+            { term: "Network OS", icon: <NetworkOsIcon />, body: "ONOS, OpenDaylight, NSX — apps mot abstraksjon." },
+            { term: "SDN vant datasentre", icon: <DataCenterIcon />, body: "Én eier, homogen utstyr, raske konfig-skift." },
           ]}
         />
         <Illustration caption="OpenFlow-melding fra controller til switch installerer en ny flow-entry. Pakker som matcher får valgt action.">
@@ -1075,20 +1151,20 @@ function SectionSnmp() {
       </p>
 
       <div className="grid gap-3 lg:grid-cols-2">
-        <Defs
+        <VisualDefs
           items={[
-            { term: "SNMP", body: "Manager-agent-protokoll over UDP 161 / 162 (trap)." },
-            { term: "Manager / NMS", body: "Sentral server som spør og samler — Nagios, Zabbix, Cacti." },
-            { term: "Agent", body: "Liten daemon i ruteren som svarer på SNMP-spørsmål." },
-            { term: "MIB", body: "Management Information Base — hierarki av variabler." },
-            { term: "OID", body: "Object Identifier — punktum-separert sti i MIB, f.eks. 1.3.6.1.2.1.1.3.0." },
-            { term: "GET / GETNEXT", body: "Manager spør om verdien til en OID, eller neste i treet." },
-            { term: "SET", body: "Manager skriver en verdi — sjelden brukt, sikkerhets-følsomt." },
-            { term: "TRAP / INFORM", body: "Agent pusher en hendelse til manager uoppfordret." },
-            { term: "Walk", body: "GETNEXT-sløyfe som dumper hele subtreet — vanlig diagnose-verktøy." },
-            { term: "v1 / v2c / v3", body: "v1+v2c bruker community-string i klartekst; v3 har auth/encryption." },
-            { term: "Community-string", body: "«public» / «private» — som passord, ofte feil-konfigurert." },
-            { term: "ASN.1 / BER", body: "Hvordan SNMP-meldinger serialiseres på tråden." },
+            { term: "SNMP", icon: <SnmpIcon />, body: "Manager-agent-protokoll over UDP 161 / 162 (trap)." },
+            { term: "Manager / NMS", icon: <NmsIcon />, body: "Sentral server som spør og samler — Nagios, Zabbix, Cacti." },
+            { term: "Agent", icon: <AgentIcon />, body: "Liten daemon i ruteren som svarer på SNMP-spørsmål." },
+            { term: "MIB", icon: <MibTreeIcon />, body: "Management Information Base — hierarki av variabler." },
+            { term: "OID", icon: <OidIcon />, body: "Object Identifier — punktum-separert sti i MIB, f.eks. 1.3.6.1.2.1.1.3.0." },
+            { term: "GET / GETNEXT", icon: <SnmpGetIcon />, body: "Manager spør om verdien til en OID, eller neste i treet." },
+            { term: "SET", icon: <SnmpSetIcon />, body: "Manager skriver en verdi — sjelden brukt, sikkerhets-følsomt." },
+            { term: "TRAP / INFORM", icon: <TrapIcon />, body: "Agent pusher en hendelse til manager uoppfordret." },
+            { term: "Walk", icon: <SnmpWalkIcon />, body: "GETNEXT-sløyfe som dumper hele subtreet — vanlig diagnose-verktøy." },
+            { term: "v1 / v2c / v3", icon: <SnmpVersionsIcon />, body: "v1+v2c bruker community-string i klartekst; v3 har auth/encryption." },
+            { term: "Community-string", icon: <CommunityStringIcon />, body: "«public» / «private» — som passord, ofte feil-konfigurert." },
+            { term: "ASN.1 / BER", icon: <Asn1Icon />, body: "Hvordan SNMP-meldinger serialiseres på tråden." },
           ]}
         />
         <div className="rounded-xl border border-border bg-card p-4">
@@ -1205,24 +1281,21 @@ function Section56() {
       </p>
 
       <div className="grid gap-3 lg:grid-cols-2">
-        <Defs
+        <VisualDefs
           items={[
-            { term: "ICMP", body: "Feilmelding-kanal oppå IP — ikke transport." },
-            { term: "Type + kode", body: "Hovedtype + sub-type, ca 30 kombinasjoner." },
-            { term: "Echo Req/Reply (8/0)", body: "Pings byggesteiner — måler RTT." },
-            { term: "Dest Unreachable (3)", body: "«Kan ikke levere» med kode-detalj." },
-            { term: "Type 3, kode 4", body: "Pakke for stor, fragmentering nektet." },
-            {
-              term: "Time Exceeded (11)",
-              body: "TTL nådde 0 — pakke kastet. Brukes av traceroute.",
-            },
-            { term: "Source Quench (4)", body: "Deprekert — TCP styrer congestion nå." },
-            { term: "Redirect (5)", body: "«Bruk en annen first-hop» — ofte deaktivert." },
-            { term: "Router Solicit/Adv (9/10)", body: "Host finner rutere; sentralt i IPv6." },
-            { term: "Ping", body: "Echo Request → Reply, tell sekvensnummer." },
-            { term: "Traceroute", body: "Stigende TTL → hver ruter svarer Time Exceeded." },
-            { term: "Rate-limiting", body: "ICMP genereres i CPU — begrenset, derfor «*»." },
-            { term: "ICMP-sikkerhet", body: "Kan spoofes; mange firewalls filtrerer." },
+            { term: "ICMP", icon: <IcmpIcon />, body: "Feilmelding-kanal oppå IP — ikke transport." },
+            { term: "Type + kode", icon: <TypeCodeIcon />, body: "Hovedtype + sub-type, ca 30 kombinasjoner." },
+            { term: "Echo Req/Reply (8/0)", icon: <PingIcon />, body: "Pings byggesteiner — måler RTT." },
+            { term: "Dest Unreachable (3)", icon: <DestUnreachableIcon />, body: "«Kan ikke levere» med kode-detalj." },
+            { term: "Type 3, kode 4", icon: <PacketTooBigIcon />, body: "Pakke for stor, fragmentering nektet." },
+            { term: "Time Exceeded (11)", icon: <TimeExceededIcon />, body: "TTL nådde 0 — pakke kastet. Brukes av traceroute." },
+            { term: "Source Quench (4)", icon: <SourceQuenchIcon />, body: "Deprekert — TCP styrer congestion nå." },
+            { term: "Redirect (5)", icon: <RedirectIcon />, body: "«Bruk en annen first-hop» — ofte deaktivert." },
+            { term: "Router Solicit/Adv (9/10)", icon: <RouterSolicitIcon />, body: "Host finner rutere; sentralt i IPv6." },
+            { term: "Ping", icon: <PingIcon />, body: "Echo Request → Reply, tell sekvensnummer." },
+            { term: "Traceroute", icon: <TracerouteIcon />, body: "Stigende TTL → hver ruter svarer Time Exceeded." },
+            { term: "Rate-limiting", icon: <RateLimitIcon />, body: "ICMP genereres i CPU — begrenset, derfor «*»." },
+            { term: "ICMP-sikkerhet", icon: <SecurityIcon />, body: "Kan spoofes; mange firewalls filtrerer." },
           ]}
         />
         <Illustration caption="Traceroute: pakker med TTL 1, 2, 3 trigger Time Exceeded fra hver ruter underveis.">
@@ -1366,22 +1439,22 @@ function Section57() {
       </p>
 
       <div className="grid gap-3 lg:grid-cols-2">
-        <Defs
+        <VisualDefs
           items={[
-            { term: "DHCP", body: "Dynamisk IP-tildeling over UDP 67/68." },
-            { term: "DHCP-server", body: "Eier pool, leier IP-er til klienter." },
-            { term: "DORA", body: "Discover, Offer, Request, Ack — 4-stegs dans." },
-            { term: "Discover (1)", body: "Klient broadcaster «finnes server her?»." },
-            { term: "Offer (2)", body: "Server tilbyr IP + gateway + DNS + lease." },
-            { term: "Request (3)", body: "Klient velger tilbud, broadcaster bekreftelse." },
-            { term: "Ack (5)", body: "Server bekrefter — klient kan bruke IP-en." },
-            { term: "Hvorfor broadcast", body: "Klient har ingen IP enda — kan ikke unicaste." },
-            { term: "Lease-tid", body: "Typisk 1-24 timer; må fornyes før utløp." },
-            { term: "T1 og T2", body: "50% renewal unicast, 87.5% rebind broadcast." },
-            { term: "Relay Agent", body: "Ruter videresender Discover til sentral server." },
-            { term: "DHCP-opsjoner", body: "Subnet, gateway, DNS, NTP, domain — alt mulig." },
-            { term: "DECLINE/RELEASE", body: "IP er i bruk / frigi adresse tidlig." },
-            { term: "Link-local 169.254", body: "Auto-fallback når DHCP feiler helt." },
+            { term: "DHCP", icon: <DhcpIcon />, body: "Dynamisk IP-tildeling over UDP 67/68." },
+            { term: "DHCP-server", icon: <DhcpServerIcon />, body: "Eier pool, leier IP-er til klienter." },
+            { term: "DORA", icon: <DoraIcon />, body: "Discover, Offer, Request, Ack — 4-stegs dans." },
+            { term: "Discover (1)", icon: <DiscoverIcon />, body: "Klient broadcaster «finnes server her?»." },
+            { term: "Offer (2)", icon: <OfferIcon />, body: "Server tilbyr IP + gateway + DNS + lease." },
+            { term: "Request (3)", icon: <RequestIcon />, body: "Klient velger tilbud, broadcaster bekreftelse." },
+            { term: "Ack (5)", icon: <AckIcon />, body: "Server bekrefter — klient kan bruke IP-en." },
+            { term: "Hvorfor broadcast", icon: <BroadcastIcon />, body: "Klient har ingen IP enda — kan ikke unicaste." },
+            { term: "Lease-tid", icon: <LeaseTimeIcon />, body: "Typisk 1-24 timer; må fornyes før utløp." },
+            { term: "T1 og T2", icon: <T1T2Icon />, body: "50% renewal unicast, 87.5% rebind broadcast." },
+            { term: "Relay Agent", icon: <RelayAgentIcon />, body: "Ruter videresender Discover til sentral server." },
+            { term: "DHCP-opsjoner", icon: <DhcpOptionsIcon />, body: "Subnet, gateway, DNS, NTP, domain — alt mulig." },
+            { term: "DECLINE/RELEASE", icon: <DeclineReleaseIcon />, body: "IP er i bruk / frigi adresse tidlig." },
+            { term: "Link-local 169.254", icon: <LinkLocalIcon />, body: "Auto-fallback når DHCP feiler helt." },
           ]}
         />
         <Illustration caption="DORA: fire broadcasts mellom klient og server gir klienten en IP-adresse på under et sekund.">
