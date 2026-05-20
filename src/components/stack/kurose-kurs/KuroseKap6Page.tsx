@@ -237,6 +237,9 @@ function Section61() {
           ]}
         />
         <div className="space-y-3">
+          <Illustration caption="Lag-stacken med link nederst — IP-laget gir et datagram ned, link pakker det inn.">
+            <LagStackSvg />
+          </Illustration>
           <Illustration caption="Link-laget tar et IP-datagram og pakker det inn med MAC-header + trailer før det går ut på fysisk medium.">
             <FrameSvg />
           </Illustration>
@@ -373,6 +376,9 @@ function Section62() {
         <div className="space-y-3">
           <Illustration caption="CRC: del databitene + tilhørende r nuller på G; resten er CRC-verdien som henges på.">
             <CrcSvg />
+          </Illustration>
+          <Illustration caption="Paritet-grid: feilen ligger der rad-paritet og kolonne-paritet begge slår ut.">
+            <ParitetGridMiniSvg />
           </Illustration>
           <Illustration caption="2D-paritet: krysset mellom feil rad og feil kolonne avslører hvilken bit som flippet.">
             <Paritet2DSvg />
@@ -587,6 +593,9 @@ function Section63() {
           ]}
         />
         <div className="space-y-3">
+          <Illustration caption="Tre protokoller side-ved-side: pure ALOHA, slot ALOHA og CSMA/CD med ulik throughput-tak.">
+            <TreProtokollerSvg />
+          </Illustration>
           <Illustration caption="Pure ALOHA-kollisjon: ramme A overlapper med starten av B. Begge må retransmitteres.">
             <AlohaSvg />
           </Illustration>
@@ -783,6 +792,9 @@ function Section64() {
           <Illustration caption="Switch self-learning: ramme fra MAC X på port 1 lærer switchen at X sitter på port 1.">
             <SwitchLearningSvg />
           </Illustration>
+          <Illustration caption="ARP-oppslag-flyt: broadcast-request på lag 2, unicast-reply tilbake. Resultatet caches.">
+            <ArpFlytSvg />
+          </Illustration>
           <Illustration caption="ARP-håndtrykk: PC broadcaster «hvem har 10.0.0.10?» — skriveren svarer med sin MAC unicast.">
             <ArpSvg />
           </Illustration>
@@ -968,6 +980,9 @@ function Section65() {
           ]}
         />
         <div className="space-y-3">
+          <Illustration caption="Byte-eksakt Ethernet-ramme: alle felter med bredde, EtherType-koder, og hva FCS dekker.">
+            <EthernetByteLayoutSvg />
+          </Illustration>
           <Illustration caption="Ethernet-ramme: preamble · dst · src · type · payload · CRC. Alle felt har faste posisjoner.">
             <EthernetFrameSvg />
           </Illustration>
@@ -1138,6 +1153,9 @@ function Section66() {
           ]}
         />
         <div className="space-y-3">
+          <Illustration caption="Trunk-port bærer tags mellom switcher, access-porter stripper tag før host ser rammen.">
+            <VlanTrunkSvg />
+          </Illustration>
           <Illustration caption="Én fysisk switch deles i to VLANer. Trunk-lenken bærer tagget trafikk fra begge.">
             <VlanSvg />
           </Illustration>
@@ -1347,6 +1365,9 @@ function Section67() {
           ]}
         />
         <div className="space-y-3">
+          <Illustration caption="Tre datasenter-topologier side-ved-side: 3-tier, leaf-spine, fat-tree i samme skala.">
+            <DcTopologierSvg />
+          </Illustration>
           <Illustration caption="Leaf-spine: hver leaf kobles til hver spine. To leaf-switcher kommuniserer alltid via én spine, ECMP fordeler last.">
             <LeafSpineSvg />
           </Illustration>
@@ -3830,6 +3851,2213 @@ function FatTreeVsLeafSpineSvg() {
 }
 
 // ============================================================
+// NYE SVG-er — original-tegnet for tekst-tunge områder
+// ============================================================
+
+// 6.1 — Lag-stack med link nederst
+function LagStackSvg() {
+  return (
+    <svg
+      viewBox="0 0 360 220"
+      className="w-full h-auto"
+      role="img"
+      aria-label="OSI-stack med link nederst"
+    >
+      <text
+        x={180}
+        y={16}
+        textAnchor="middle"
+        className="fill-foreground text-[11px] font-semibold"
+      >
+        Hvor sitter link-laget i stacken?
+      </text>
+      {[
+        { y: 30, label: "Applikasjon", sub: "HTTP, SMTP", color: "fill-muted stroke-border" },
+        { y: 60, label: "Transport", sub: "TCP, UDP", color: "fill-muted stroke-border" },
+        { y: 90, label: "Nettverk", sub: "IP, ICMP", color: "fill-muted stroke-border" },
+        {
+          y: 120,
+          label: "Link",
+          sub: "Ethernet, WiFi  ← her!",
+          color: "fill-brand/25 stroke-brand",
+        },
+        { y: 150, label: "Fysisk", sub: "kobber, fiber, radio", color: "fill-muted stroke-border" },
+      ].map((row) => (
+        <g key={row.y}>
+          <rect x={40} y={row.y} width={280} height={26} className={row.color} strokeWidth={1.2} />
+          <text x={60} y={row.y + 17} className="fill-foreground text-[11px] font-semibold">
+            {row.label}
+          </text>
+          <text x={200} y={row.y + 17} className="fill-muted-foreground text-[10px]">
+            {row.sub}
+          </text>
+        </g>
+      ))}
+      <text
+        x={180}
+        y={195}
+        textAnchor="middle"
+        className="fill-muted-foreground text-[10px] italic"
+      >
+        Link-laget tar IP-datagram fra nettverkslaget og flytter det ÉTT hopp.
+      </text>
+    </svg>
+  );
+}
+
+// 6.2 — Paritet-grid (mini)
+function ParitetGridMiniSvg() {
+  return (
+    <svg viewBox="0 0 340 200" className="w-full h-auto" role="img" aria-label="Paritet-grid">
+      <text
+        x={170}
+        y={16}
+        textAnchor="middle"
+        className="fill-foreground text-[11px] font-semibold"
+      >
+        2D-paritet: feilen ligger i krysset rad×kolonne
+      </text>
+      {/* 4×4 grid + parity row + col */}
+      {[
+        [1, 0, 1, 1, 1],
+        [0, 1, 0, 1, 0],
+        [1, 1, 1, 0, 1],
+        [0, 0, 1, 1, 0],
+      ].map((row, ri) =>
+        row.map((v, ci) => {
+          const flipped = ri === 1 && ci === 2;
+          return (
+            <g key={`${ri}-${ci}`}>
+              <rect
+                x={50 + ci * 36}
+                y={28 + ri * 28}
+                width={32}
+                height={24}
+                className={
+                  flipped
+                    ? "fill-destructive/40 stroke-destructive"
+                    : ci === 4 || ri === 3
+                      ? "fill-amber-500/25 stroke-amber-500"
+                      : "fill-card stroke-border"
+                }
+                strokeWidth={1}
+              />
+              <text
+                x={66 + ci * 36}
+                y={45 + ri * 28}
+                textAnchor="middle"
+                className="fill-foreground text-[11px] font-mono"
+              >
+                {v}
+              </text>
+            </g>
+          );
+        }),
+      )}
+      {/* col-parity row */}
+      {[0, 0, 1, 1, 0].map((v, ci) => (
+        <g key={`cp-${ci}`}>
+          <rect
+            x={50 + ci * 36}
+            y={140}
+            width={32}
+            height={24}
+            className={
+              ci === 2
+                ? "fill-destructive/30 stroke-destructive"
+                : "fill-amber-500/25 stroke-amber-500"
+            }
+            strokeWidth={1}
+          />
+          <text
+            x={66 + ci * 36}
+            y={157}
+            textAnchor="middle"
+            className="fill-foreground text-[11px] font-mono"
+          >
+            {v}
+          </text>
+        </g>
+      ))}
+      {/* arrow markers — rad 2 (ri=1) klager, kol 3 (ci=2) klager */}
+      <text x={36} y={73} textAnchor="end" className="fill-destructive text-[10px]">
+        klager →
+      </text>
+      <text x={66 + 2 * 36} y={184} textAnchor="middle" className="fill-destructive text-[10px]">
+        ↑ klager
+      </text>
+      <text x={170} y={196} textAnchor="middle" className="fill-muted-foreground text-[9px] italic">
+        Krysset = bit som flippet — flipp tilbake uten retransmisjon.
+      </text>
+    </svg>
+  );
+}
+
+// 6.3 — Tre multiple-access-protokoller side-ved-side
+function TreProtokollerSvg() {
+  return (
+    <svg viewBox="0 0 500 220" className="w-full h-auto" role="img" aria-label="Tre protokoller">
+      <text
+        x={250}
+        y={16}
+        textAnchor="middle"
+        className="fill-foreground text-[12px] font-semibold"
+      >
+        Pure ALOHA · Slot ALOHA · CSMA/CD — samme medium, ulik strategi
+      </text>
+      {[
+        {
+          x: 20,
+          tittel: "Pure ALOHA",
+          undertittel: "send når du vil",
+          maks: "18 %",
+          farge: "destructive",
+        },
+        {
+          x: 180,
+          tittel: "Slot ALOHA",
+          undertittel: "send på slot-start",
+          maks: "37 %",
+          farge: "amber-500",
+        },
+        {
+          x: 340,
+          tittel: "CSMA/CD",
+          undertittel: "lytt før send",
+          maks: "80–90 %",
+          farge: "success",
+        },
+      ].map((col) => (
+        <g key={col.tittel}>
+          <rect
+            x={col.x}
+            y={30}
+            width={140}
+            height={170}
+            rx={6}
+            className={`fill-${col.farge}/5 stroke-${col.farge}`}
+            strokeWidth={1.2}
+          />
+          <text
+            x={col.x + 70}
+            y={50}
+            textAnchor="middle"
+            className="fill-foreground text-[11px] font-semibold"
+          >
+            {col.tittel}
+          </text>
+          <text
+            x={col.x + 70}
+            y={66}
+            textAnchor="middle"
+            className="fill-muted-foreground text-[9px]"
+          >
+            {col.undertittel}
+          </text>
+        </g>
+      ))}
+      {/* Pure ALOHA timelines */}
+      <line x1={30} y1={130} x2={150} y2={130} className="stroke-foreground/60" />
+      <rect
+        x={50}
+        y={80}
+        width={40}
+        height={14}
+        className="fill-brand/40 stroke-brand"
+        strokeWidth={1}
+      />
+      <rect
+        x={75}
+        y={100}
+        width={40}
+        height={14}
+        className="fill-destructive/40 stroke-destructive"
+        strokeWidth={1}
+      />
+      <text x={90} y={154} textAnchor="middle" className="fill-destructive text-[9px]">
+        kollisjon
+      </text>
+      <text x={90} y={170} textAnchor="middle" className="fill-muted-foreground text-[9px]">
+        ingen lytting
+      </text>
+      <text
+        x={90}
+        y={188}
+        textAnchor="middle"
+        className="fill-foreground text-[10px] font-semibold"
+      >
+        maks 18 %
+      </text>
+
+      {/* Slot ALOHA timelines (slot-grenser) */}
+      <line x1={190} y1={130} x2={310} y2={130} className="stroke-foreground/60" />
+      {[200, 230, 260, 290].map((sx) => (
+        <line
+          key={sx}
+          x1={sx}
+          y1={75}
+          x2={sx}
+          y2={130}
+          className="stroke-muted-foreground/40"
+          strokeDasharray="2 2"
+        />
+      ))}
+      <rect
+        x={200}
+        y={80}
+        width={30}
+        height={14}
+        className="fill-brand/40 stroke-brand"
+        strokeWidth={1}
+      />
+      <rect
+        x={260}
+        y={100}
+        width={30}
+        height={14}
+        className="fill-amber-500/40 stroke-amber-500"
+        strokeWidth={1}
+      />
+      <text
+        x={250}
+        y={154}
+        textAnchor="middle"
+        className="fill-amber-700 dark:fill-amber-400 text-[9px]"
+      >
+        slot-grid
+      </text>
+      <text x={250} y={170} textAnchor="middle" className="fill-muted-foreground text-[9px]">
+        klokke-synk
+      </text>
+      <text
+        x={250}
+        y={188}
+        textAnchor="middle"
+        className="fill-foreground text-[10px] font-semibold"
+      >
+        maks 37 %
+      </text>
+
+      {/* CSMA/CD: lytt, send, kort kollisjon, jam, backoff */}
+      <line x1={350} y1={130} x2={470} y2={130} className="stroke-foreground/60" />
+      <text x={360} y={95} className="fill-muted-foreground text-[8px]">
+        lytt
+      </text>
+      <rect
+        x={380}
+        y={80}
+        width={50}
+        height={14}
+        className="fill-success/40 stroke-success"
+        strokeWidth={1}
+      />
+      <rect
+        x={425}
+        y={100}
+        width={10}
+        height={14}
+        className="fill-destructive/40 stroke-destructive"
+        strokeWidth={1}
+      />
+      <text x={440} y={112} className="fill-destructive text-[8px]">
+        jam
+      </text>
+      <text x={410} y={154} textAnchor="middle" className="fill-success text-[9px]">
+        oppdager
+      </text>
+      <text x={410} y={170} textAnchor="middle" className="fill-muted-foreground text-[9px]">
+        binær backoff
+      </text>
+      <text
+        x={410}
+        y={188}
+        textAnchor="middle"
+        className="fill-foreground text-[10px] font-semibold"
+      >
+        maks 80–90 %
+      </text>
+    </svg>
+  );
+}
+
+// 6.4 — ARP-oppslag-flyt (steg-for-steg)
+function ArpFlytSvg() {
+  return (
+    <svg viewBox="0 0 500 220" className="w-full h-auto" role="img" aria-label="ARP-flyt">
+      <text
+        x={250}
+        y={16}
+        textAnchor="middle"
+        className="fill-foreground text-[12px] font-semibold"
+      >
+        ARP: «hvem har IP X? si til min MAC»
+      </text>
+      {/* Step 1: PC */}
+      <rect
+        x={20}
+        y={70}
+        width={100}
+        height={50}
+        rx={6}
+        className="fill-brand/15 stroke-brand"
+        strokeWidth={1.2}
+      />
+      <text x={70} y={88} textAnchor="middle" className="fill-foreground text-[11px] font-semibold">
+        PC
+      </text>
+      <text x={70} y={102} textAnchor="middle" className="fill-muted-foreground text-[9px]">
+        IP 10.0.0.5
+      </text>
+      <text x={70} y={114} textAnchor="middle" className="fill-muted-foreground text-[9px]">
+        MAC AA:01
+      </text>
+      {/* Switch in middle (cloud) */}
+      <ellipse
+        cx={250}
+        cy={95}
+        rx={70}
+        ry={32}
+        className="fill-muted stroke-border"
+        strokeWidth={1.2}
+      />
+      <text
+        x={250}
+        y={92}
+        textAnchor="middle"
+        className="fill-foreground text-[11px] font-semibold"
+      >
+        LAN
+      </text>
+      <text x={250} y={108} textAnchor="middle" className="fill-muted-foreground text-[9px]">
+        delt broadcast-domene
+      </text>
+      {/* Skriver right */}
+      <rect
+        x={380}
+        y={70}
+        width={100}
+        height={50}
+        rx={6}
+        className="fill-success/15 stroke-success"
+        strokeWidth={1.2}
+      />
+      <text
+        x={430}
+        y={88}
+        textAnchor="middle"
+        className="fill-foreground text-[11px] font-semibold"
+      >
+        Skriver
+      </text>
+      <text x={430} y={102} textAnchor="middle" className="fill-muted-foreground text-[9px]">
+        IP 10.0.0.10
+      </text>
+      <text x={430} y={114} textAnchor="middle" className="fill-muted-foreground text-[9px]">
+        MAC BB:02
+      </text>
+      {/* Arrow 1: broadcast request */}
+      <line
+        x1={120}
+        y1={88}
+        x2={180}
+        y2={88}
+        className="stroke-amber-500"
+        strokeWidth={1.8}
+        markerEnd="url(#kap6-arrow-arp)"
+      />
+      <line
+        x1={320}
+        y1={88}
+        x2={380}
+        y2={88}
+        className="stroke-amber-500"
+        strokeWidth={1.8}
+        markerEnd="url(#kap6-arrow-arp)"
+      />
+      <text
+        x={250}
+        y={56}
+        textAnchor="middle"
+        className="fill-amber-700 dark:fill-amber-400 text-[10px] font-semibold"
+      >
+        1. ARP-request (broadcast FF:FF:…)
+      </text>
+      <text x={250} y={70} textAnchor="middle" className="fill-muted-foreground text-[9px]">
+        «hvem har 10.0.0.10? si til AA:01»
+      </text>
+      {/* Arrow 2: unicast reply */}
+      <line
+        x1={380}
+        y1={138}
+        x2={320}
+        y2={138}
+        className="stroke-success"
+        strokeWidth={1.8}
+        markerEnd="url(#kap6-arrow-arp)"
+      />
+      <line
+        x1={180}
+        y1={138}
+        x2={120}
+        y2={138}
+        className="stroke-success"
+        strokeWidth={1.8}
+        markerEnd="url(#kap6-arrow-arp)"
+      />
+      <text x={250} y={156} textAnchor="middle" className="fill-success text-[10px] font-semibold">
+        2. ARP-reply (unicast til AA:01)
+      </text>
+      <text x={250} y={170} textAnchor="middle" className="fill-muted-foreground text-[9px]">
+        «10.0.0.10 er på BB:02»
+      </text>
+      <text x={250} y={196} textAnchor="middle" className="fill-muted-foreground text-[9px] italic">
+        PC cacher (10.0.0.10 → BB:02) i ~20 min — slipper å spørre igjen.
+      </text>
+      <defs>
+        <marker
+          id="kap6-arrow-arp"
+          viewBox="0 0 10 10"
+          refX="8"
+          refY="5"
+          markerWidth="6"
+          markerHeight="6"
+          orient="auto"
+        >
+          <path d="M0,0 L10,5 L0,10 z" className="fill-amber-500" />
+        </marker>
+      </defs>
+    </svg>
+  );
+}
+
+// 6.5 — Ethernet ramme byte-layout (presis)
+function EthernetByteLayoutSvg() {
+  return (
+    <svg
+      viewBox="0 0 540 200"
+      className="w-full h-auto"
+      role="img"
+      aria-label="Ethernet byte-layout"
+    >
+      <text
+        x={270}
+        y={16}
+        textAnchor="middle"
+        className="fill-foreground text-[12px] font-semibold"
+      >
+        Ethernet II-ramme — byte for byte (64–1518 bytes på kabelen)
+      </text>
+      {[
+        { x: 10, w: 60, label: "Preamble", bytes: "8 B", color: "fill-muted stroke-border" },
+        { x: 72, w: 60, label: "Dest-MAC", bytes: "6 B", color: "fill-brand/20 stroke-brand" },
+        { x: 134, w: 60, label: "Src-MAC", bytes: "6 B", color: "fill-brand/20 stroke-brand" },
+        { x: 196, w: 40, label: "Type", bytes: "2 B", color: "fill-amber-500/25 stroke-amber-500" },
+        {
+          x: 238,
+          w: 220,
+          label: "Payload (IP-datagram)",
+          bytes: "46–1500 B",
+          color: "fill-success/20 stroke-success",
+        },
+        { x: 460, w: 50, label: "FCS", bytes: "4 B", color: "fill-rose-500/20 stroke-rose-500" },
+      ].map((f) => (
+        <g key={f.label}>
+          <rect x={f.x} y={50} width={f.w} height={50} className={f.color} strokeWidth={1.3} />
+          <text
+            x={f.x + f.w / 2}
+            y={70}
+            textAnchor="middle"
+            className="fill-foreground text-[9.5px] font-semibold"
+          >
+            {f.label}
+          </text>
+          <text
+            x={f.x + f.w / 2}
+            y={86}
+            textAnchor="middle"
+            className="fill-muted-foreground text-[9px] font-mono"
+          >
+            {f.bytes}
+          </text>
+        </g>
+      ))}
+      {/* CRC dekker */}
+      <line x1={72} y1={115} x2={458} y2={115} className="stroke-rose-500" strokeWidth={1.5} />
+      <line x1={72} y1={112} x2={72} y2={118} className="stroke-rose-500" strokeWidth={1.5} />
+      <line x1={458} y1={112} x2={458} y2={118} className="stroke-rose-500" strokeWidth={1.5} />
+      <text
+        x={265}
+        y={130}
+        textAnchor="middle"
+        className="fill-rose-600 dark:fill-rose-400 text-[9px]"
+      >
+        FCS (CRC-32) dekker dest-MAC → payload, ikke preamble
+      </text>
+      {/* MTU-merke */}
+      <text x={345} y={148} textAnchor="middle" className="fill-success text-[9px] font-semibold">
+        MTU = 1500 bytes (maks payload)
+      </text>
+      <text x={345} y={162} textAnchor="middle" className="fill-muted-foreground text-[9px]">
+        Min payload = 46 B (slik kollisjon kan rekkes oppdaget før send er ferdig)
+      </text>
+      <text x={270} y={186} textAnchor="middle" className="fill-muted-foreground text-[9px] italic">
+        Type ≥ 0x0600 = EtherType (0x0800 IPv4, 0x0806 ARP, 0x86DD IPv6); ellers lengde.
+      </text>
+    </svg>
+  );
+}
+
+// 6.6 — VLAN trunk + access-porter
+function VlanTrunkSvg() {
+  return (
+    <svg
+      viewBox="0 0 520 220"
+      className="w-full h-auto"
+      role="img"
+      aria-label="VLAN trunk og access"
+    >
+      <text
+        x={260}
+        y={16}
+        textAnchor="middle"
+        className="fill-foreground text-[12px] font-semibold"
+      >
+        Access-porter strippe tag, trunk-porter bærer tags
+      </text>
+      {/* Switch A */}
+      <rect
+        x={70}
+        y={70}
+        width={120}
+        height={50}
+        rx={6}
+        className="fill-card stroke-foreground/40"
+        strokeWidth={1.3}
+      />
+      <text
+        x={130}
+        y={88}
+        textAnchor="middle"
+        className="fill-foreground text-[11px] font-semibold"
+      >
+        Switch A
+      </text>
+      <text x={130} y={102} textAnchor="middle" className="fill-muted-foreground text-[9px]">
+        VLAN 10 (HR), VLAN 20 (gjest)
+      </text>
+      {/* Switch B */}
+      <rect
+        x={330}
+        y={70}
+        width={120}
+        height={50}
+        rx={6}
+        className="fill-card stroke-foreground/40"
+        strokeWidth={1.3}
+      />
+      <text
+        x={390}
+        y={88}
+        textAnchor="middle"
+        className="fill-foreground text-[11px] font-semibold"
+      >
+        Switch B
+      </text>
+      <text x={390} y={102} textAnchor="middle" className="fill-muted-foreground text-[9px]">
+        VLAN 10 (HR), VLAN 20 (gjest)
+      </text>
+      {/* Trunk link */}
+      <line x1={190} y1={95} x2={330} y2={95} className="stroke-amber-500" strokeWidth={2.5} />
+      <text
+        x={260}
+        y={88}
+        textAnchor="middle"
+        className="fill-amber-700 dark:fill-amber-400 text-[10px] font-semibold"
+      >
+        TRUNK
+      </text>
+      <text x={260} y={110} textAnchor="middle" className="fill-muted-foreground text-[9px]">
+        tagged VLAN 10 + 20
+      </text>
+
+      {/* Access-porter på A */}
+      <g>
+        <line x1={100} y1={120} x2={80} y2={160} className="stroke-brand" strokeWidth={1.5} />
+        <line x1={130} y1={120} x2={130} y2={160} className="stroke-rose-500" strokeWidth={1.5} />
+        <rect
+          x={60}
+          y={162}
+          width={40}
+          height={28}
+          rx={3}
+          className="fill-brand/20 stroke-brand"
+          strokeWidth={1}
+        />
+        <text x={80} y={180} textAnchor="middle" className="fill-foreground text-[10px]">
+          HR-PC
+        </text>
+        <rect
+          x={110}
+          y={162}
+          width={40}
+          height={28}
+          rx={3}
+          className="fill-rose-500/20 stroke-rose-500"
+          strokeWidth={1}
+        />
+        <text x={130} y={180} textAnchor="middle" className="fill-foreground text-[10px]">
+          Gjest
+        </text>
+        <text x={80} y={205} textAnchor="middle" className="fill-brand text-[9px]">
+          access VLAN 10
+        </text>
+        <text x={130} y={205} textAnchor="middle" className="fill-rose-500 text-[9px]">
+          access VLAN 20
+        </text>
+      </g>
+      {/* Access-porter på B */}
+      <g>
+        <line x1={360} y1={120} x2={350} y2={160} className="stroke-brand" strokeWidth={1.5} />
+        <line x1={420} y1={120} x2={430} y2={160} className="stroke-rose-500" strokeWidth={1.5} />
+        <rect
+          x={330}
+          y={162}
+          width={40}
+          height={28}
+          rx={3}
+          className="fill-brand/20 stroke-brand"
+          strokeWidth={1}
+        />
+        <text x={350} y={180} textAnchor="middle" className="fill-foreground text-[10px]">
+          HR-PC
+        </text>
+        <rect
+          x={410}
+          y={162}
+          width={40}
+          height={28}
+          rx={3}
+          className="fill-rose-500/20 stroke-rose-500"
+          strokeWidth={1}
+        />
+        <text x={430} y={180} textAnchor="middle" className="fill-foreground text-[10px]">
+          Gjest
+        </text>
+        <text x={350} y={205} textAnchor="middle" className="fill-brand text-[9px]">
+          access VLAN 10
+        </text>
+        <text x={430} y={205} textAnchor="middle" className="fill-rose-500 text-[9px]">
+          access VLAN 20
+        </text>
+      </g>
+      {/* Tag-bobler over trunk */}
+      <rect
+        x={210}
+        y={50}
+        width={40}
+        height={14}
+        rx={2}
+        className="fill-brand/30 stroke-brand"
+        strokeWidth={1}
+      />
+      <text x={230} y={61} textAnchor="middle" className="fill-foreground text-[8px] font-mono">
+        VID=10
+      </text>
+      <rect
+        x={270}
+        y={50}
+        width={40}
+        height={14}
+        rx={2}
+        className="fill-rose-500/30 stroke-rose-500"
+        strokeWidth={1}
+      />
+      <text x={290} y={61} textAnchor="middle" className="fill-foreground text-[8px] font-mono">
+        VID=20
+      </text>
+    </svg>
+  );
+}
+
+// 6.7 — Fat-tree / leaf-spine / 3-tier kompakt i én SVG
+function DcTopologierSvg() {
+  return (
+    <svg
+      viewBox="0 0 540 230"
+      className="w-full h-auto"
+      role="img"
+      aria-label="Datasenter-topologier"
+    >
+      <text
+        x={270}
+        y={16}
+        textAnchor="middle"
+        className="fill-foreground text-[12px] font-semibold"
+      >
+        Tre datasenter-topologier i samme skala
+      </text>
+      {/* 3-tier */}
+      <text
+        x={90}
+        y={36}
+        textAnchor="middle"
+        className="fill-destructive text-[10px] font-semibold uppercase"
+      >
+        3-tier
+      </text>
+      <rect
+        x={75}
+        y={45}
+        width={30}
+        height={14}
+        className="fill-brand/30 stroke-brand"
+        strokeWidth={1}
+      />
+      <text x={90} y={56} textAnchor="middle" className="fill-foreground text-[8px]">
+        core
+      </text>
+      {[60, 110].map((x) => (
+        <rect
+          key={x}
+          x={x}
+          y={88}
+          width={20}
+          height={12}
+          className="fill-amber-500/30 stroke-amber-500"
+          strokeWidth={1}
+        />
+      ))}
+      <text x={90} y={110} textAnchor="middle" className="fill-foreground text-[8px]">
+        agg agg
+      </text>
+      {[45, 80, 110, 140].map((x) => (
+        <rect
+          key={x}
+          x={x}
+          y={125}
+          width={16}
+          height={12}
+          className="fill-success/30 stroke-success"
+          strokeWidth={1}
+        />
+      ))}
+      <line x1={90} y1={59} x2={70} y2={88} className="stroke-foreground/40" />
+      <line x1={90} y1={59} x2={120} y2={88} className="stroke-foreground/40" />
+      <line x1={70} y1={100} x2={53} y2={125} className="stroke-foreground/40" />
+      <line x1={70} y1={100} x2={88} y2={125} className="stroke-foreground/40" />
+      <line x1={120} y1={100} x2={118} y2={125} className="stroke-foreground/40" />
+      <line x1={120} y1={100} x2={148} y2={125} className="stroke-foreground/40" />
+      <text
+        x={90}
+        y={160}
+        textAnchor="middle"
+        className="fill-destructive text-[9px] font-semibold"
+      >
+        opp 3 hopp
+      </text>
+      <text x={90} y={174} textAnchor="middle" className="fill-muted-foreground text-[9px]">
+        trang nakke
+      </text>
+
+      {/* Leaf-spine */}
+      <text
+        x={270}
+        y={36}
+        textAnchor="middle"
+        className="fill-amber-600 dark:fill-amber-400 text-[10px] font-semibold uppercase"
+      >
+        Leaf-spine
+      </text>
+      {[230, 270, 310].map((x) => (
+        <rect
+          key={x}
+          x={x}
+          y={50}
+          width={20}
+          height={14}
+          className="fill-brand/30 stroke-brand"
+          strokeWidth={1}
+        />
+      ))}
+      <text x={270} y={73} textAnchor="middle" className="fill-foreground text-[8px]">
+        3 spine
+      </text>
+      {[220, 260, 300].map((x) => (
+        <rect
+          key={x}
+          x={x}
+          y={120}
+          width={20}
+          height={14}
+          className="fill-success/30 stroke-success"
+          strokeWidth={1}
+        />
+      ))}
+      <text x={270} y={148} textAnchor="middle" className="fill-foreground text-[8px]">
+        3 leaf
+      </text>
+      {[230, 270, 310].map((sx) =>
+        [230, 270, 310].map((lx) => (
+          <line
+            key={`${sx}-${lx}`}
+            x1={sx + 10}
+            y1={64}
+            x2={lx + 0}
+            y2={120}
+            className="stroke-foreground/35"
+            strokeWidth={0.7}
+          />
+        )),
+      )}
+      <text x={270} y={170} textAnchor="middle" className="fill-success text-[9px] font-semibold">
+        2 hopp, full mesh
+      </text>
+      <text x={270} y={184} textAnchor="middle" className="fill-muted-foreground text-[9px]">
+        ECMP fordeler
+      </text>
+
+      {/* Fat-tree (k=4 forenklet) */}
+      <text
+        x={450}
+        y={36}
+        textAnchor="middle"
+        className="fill-success text-[10px] font-semibold uppercase"
+      >
+        Fat-tree (k=4)
+      </text>
+      {[395, 420, 445, 470, 495].map((x, i) => (
+        <rect
+          key={i}
+          x={x}
+          y={45}
+          width={16}
+          height={10}
+          className="fill-brand/30 stroke-brand"
+          strokeWidth={0.8}
+        />
+      ))}
+      <text x={445} y={68} textAnchor="middle" className="fill-foreground text-[8px]">
+        core
+      </text>
+      {[395, 425, 460, 490].map((x, i) => (
+        <rect
+          key={i}
+          x={x}
+          y={88}
+          width={16}
+          height={10}
+          className="fill-amber-500/30 stroke-amber-500"
+          strokeWidth={0.8}
+        />
+      ))}
+      <text x={445} y={108} textAnchor="middle" className="fill-foreground text-[8px]">
+        agg
+      </text>
+      {[395, 425, 460, 490].map((x, i) => (
+        <rect
+          key={i}
+          x={x}
+          y={125}
+          width={16}
+          height={10}
+          className="fill-success/30 stroke-success"
+          strokeWidth={0.8}
+        />
+      ))}
+      <text x={445} y={148} textAnchor="middle" className="fill-foreground text-[8px]">
+        edge
+      </text>
+      {/* mesh (sparse) */}
+      {[395, 425, 460, 490].map((ax) =>
+        [395, 420, 445, 470, 495].map((cx, i) => (
+          <line
+            key={`${ax}-${i}`}
+            x1={ax + 8}
+            y1={88}
+            x2={cx + 8}
+            y2={55}
+            className="stroke-foreground/30"
+            strokeWidth={0.5}
+          />
+        )),
+      )}
+      {[395, 425, 460, 490].map((x) => (
+        <line
+          key={x}
+          x1={x + 8}
+          y1={98}
+          x2={x + 8}
+          y2={125}
+          className="stroke-foreground/40"
+          strokeWidth={0.7}
+        />
+      ))}
+      <text x={445} y={170} textAnchor="middle" className="fill-success text-[9px] font-semibold">
+        full bisection
+      </text>
+      <text x={445} y={184} textAnchor="middle" className="fill-muted-foreground text-[9px]">
+        k³/4 servere
+      </text>
+
+      <text x={270} y={216} textAnchor="middle" className="fill-muted-foreground text-[9px] italic">
+        Klassisk 3-tier tvinger trafikk gjennom core. Leaf-spine og fat-tree gir mange parallelle
+        stier.
+      </text>
+    </svg>
+  );
+}
+
+// 6.9 cheat — Ethernet byte (kompakt)
+function EthernetCheatSvg() {
+  return (
+    <svg
+      viewBox="0 0 520 110"
+      className="w-full h-auto"
+      role="img"
+      aria-label="Ethernet cheat byte"
+    >
+      {[
+        { x: 10, w: 56, label: "Preamble", b: "8" },
+        { x: 70, w: 70, label: "Dest-MAC", b: "6" },
+        { x: 144, w: 70, label: "Src-MAC", b: "6" },
+        { x: 218, w: 36, label: "Type", b: "2" },
+        { x: 258, w: 200, label: "Payload", b: "46–1500" },
+        { x: 462, w: 48, label: "FCS", b: "4" },
+      ].map((f, i) => (
+        <g key={i}>
+          <rect
+            x={f.x}
+            y={20}
+            width={f.w}
+            height={42}
+            className={
+              [
+                "fill-muted stroke-border",
+                "fill-brand/20 stroke-brand",
+                "fill-brand/20 stroke-brand",
+                "fill-amber-500/25 stroke-amber-500",
+                "fill-success/20 stroke-success",
+                "fill-rose-500/20 stroke-rose-500",
+              ][i]
+            }
+            strokeWidth={1.2}
+          />
+          <text
+            x={f.x + f.w / 2}
+            y={37}
+            textAnchor="middle"
+            className="fill-foreground text-[9.5px] font-semibold"
+          >
+            {f.label}
+          </text>
+          <text
+            x={f.x + f.w / 2}
+            y={52}
+            textAnchor="middle"
+            className="fill-muted-foreground text-[9px] font-mono"
+          >
+            {f.b} B
+          </text>
+        </g>
+      ))}
+      <text
+        x={260}
+        y={80}
+        textAnchor="middle"
+        className="fill-rose-600 dark:fill-rose-400 text-[9px]"
+      >
+        FCS (CRC-32) dekker dest-MAC → payload
+      </text>
+      <text x={260} y={96} textAnchor="middle" className="fill-muted-foreground text-[9px] italic">
+        Type ≥ 0x0600 = EtherType (0x0800 IPv4, 0x0806 ARP, 0x86DD IPv6)
+      </text>
+    </svg>
+  );
+}
+
+// 6.9 cheat — CRC som divisjon
+function CrcDivisjonSvg() {
+  return (
+    <svg viewBox="0 0 500 170" className="w-full h-auto" role="img" aria-label="CRC divisjon">
+      <text
+        x={250}
+        y={16}
+        textAnchor="middle"
+        className="fill-foreground text-[11px] font-semibold"
+      >
+        CRC = rest når D · 2ʳ deles på G (mod 2)
+      </text>
+      {/* divisjon-mock */}
+      <text x={50} y={50} className="fill-foreground text-[12px] font-mono">
+        D · 2ʳ
+      </text>
+      <line x1={120} y1={42} x2={120} y2={58} className="stroke-foreground" strokeWidth={1.2} />
+      <text x={140} y={50} className="fill-foreground text-[12px] font-mono">
+        G
+      </text>
+      <text x={170} y={50} className="fill-foreground text-[12px] font-mono">
+        →
+      </text>
+      <text x={200} y={50} className="fill-foreground text-[12px] font-mono font-semibold">
+        kvotient + REST (r bit)
+      </text>
+      {/* Eksempel */}
+      <text x={50} y={84} className="fill-muted-foreground text-[10px] font-mono">
+        D = 101110, r = 3, G = 1001 →
+      </text>
+      <text x={250} y={84} className="fill-foreground text-[10px] font-mono">
+        D·2³ = 101110000
+      </text>
+      <text x={50} y={102} className="fill-muted-foreground text-[10px] font-mono">
+        101110000 ÷ 1001 (XOR) →
+      </text>
+      <rect
+        x={250}
+        y={90}
+        width={50}
+        height={16}
+        className="fill-success/30 stroke-success"
+        strokeWidth={1}
+      />
+      <text x={275} y={102} textAnchor="middle" className="fill-foreground text-[10px] font-mono">
+        rest = 011
+      </text>
+      {/* Sendt */}
+      <text x={50} y={130} className="fill-foreground text-[10px] font-mono">
+        Sender: 101110
+      </text>
+      <text x={130} y={130} className="fill-success text-[10px] font-mono font-semibold">
+        011
+      </text>
+      <text x={150} y={130} className="fill-muted-foreground text-[10px]">
+        (data fulgt av CRC)
+      </text>
+      <text x={250} y={155} textAnchor="middle" className="fill-muted-foreground text-[9px] italic">
+        Mottaker deler hele strengen på G; rest = 0 ⇒ feilfri. Ellers droppes rammen.
+      </text>
+    </svg>
+  );
+}
+
+// 6.9 cheat — ALOHA throughput-kurve
+function AlohaKurveSvg() {
+  // S_pure(G) = G * e^(-2G); S_slot(G) = G * e^(-G)
+  // sample 30 points G in [0, 3]
+  const pts = (slot: boolean) => {
+    const arr: string[] = [];
+    for (let i = 0; i <= 30; i++) {
+      const G = (i / 30) * 3;
+      const S = slot ? G * Math.exp(-G) : G * Math.exp(-2 * G);
+      const x = 50 + (G / 3) * 380;
+      const y = 170 - S * 350;
+      arr.push(`${x.toFixed(1)},${y.toFixed(1)}`);
+    }
+    return arr.join(" ");
+  };
+  return (
+    <svg
+      viewBox="0 0 460 200"
+      className="w-full h-auto"
+      role="img"
+      aria-label="ALOHA throughput-kurve"
+    >
+      <text
+        x={230}
+        y={14}
+        textAnchor="middle"
+        className="fill-foreground text-[11px] font-semibold"
+      >
+        Throughput S(G): pure ALOHA vs slotted ALOHA
+      </text>
+      {/* akser */}
+      <line x1={50} y1={170} x2={440} y2={170} className="stroke-foreground/60" />
+      <line x1={50} y1={30} x2={50} y2={170} className="stroke-foreground/60" />
+      <text x={245} y={188} textAnchor="middle" className="fill-muted-foreground text-[10px]">
+        offered load G
+      </text>
+      <text x={40} y={100} textAnchor="end" className="fill-muted-foreground text-[10px]">
+        S(G)
+      </text>
+      {/* topp-merker */}
+      <line
+        x1={50 + (1 / 3) * 380}
+        y1={30}
+        x2={50 + (1 / 3) * 380}
+        y2={170}
+        className="stroke-muted-foreground/30"
+        strokeDasharray="2 2"
+      />
+      <text
+        x={50 + (1 / 3) * 380}
+        y={186}
+        textAnchor="middle"
+        className="fill-muted-foreground text-[9px]"
+      >
+        G=1
+      </text>
+      {/* 37 % linje */}
+      <line
+        x1={50}
+        y1={170 - 0.368 * 350}
+        x2={440}
+        y2={170 - 0.368 * 350}
+        className="stroke-amber-500/40"
+        strokeDasharray="3 3"
+      />
+      <text
+        x={444}
+        y={170 - 0.368 * 350 + 4}
+        className="fill-amber-700 dark:fill-amber-400 text-[9px]"
+      >
+        1/e ≈ 37 %
+      </text>
+      {/* 18 % linje */}
+      <line
+        x1={50}
+        y1={170 - 0.184 * 350}
+        x2={440}
+        y2={170 - 0.184 * 350}
+        className="stroke-rose-500/40"
+        strokeDasharray="3 3"
+      />
+      <text
+        x={444}
+        y={170 - 0.184 * 350 + 4}
+        className="fill-rose-600 dark:fill-rose-400 text-[9px]"
+      >
+        1/(2e) ≈ 18 %
+      </text>
+      {/* kurver */}
+      <polyline points={pts(true)} className="fill-none stroke-amber-500" strokeWidth={1.8} />
+      <polyline points={pts(false)} className="fill-none stroke-rose-500" strokeWidth={1.8} />
+      {/* legend */}
+      <rect x={60} y={36} width={10} height={3} className="fill-amber-500" />
+      <text x={75} y={40} className="fill-foreground text-[9px]">
+        slotted (S = G·e⁻ᴳ)
+      </text>
+      <rect x={60} y={50} width={10} height={3} className="fill-rose-500" />
+      <text x={75} y={54} className="fill-foreground text-[9px]">
+        pure (S = G·e⁻²ᴳ)
+      </text>
+    </svg>
+  );
+}
+
+// 6.9 cheat — CSMA/CD timeline
+function CsmaCdTimelineSvg() {
+  return (
+    <svg viewBox="0 0 540 180" className="w-full h-auto" role="img" aria-label="CSMA/CD timeline">
+      <text
+        x={270}
+        y={14}
+        textAnchor="middle"
+        className="fill-foreground text-[11px] font-semibold"
+      >
+        CSMA/CD: lytt → send → kollisjon → jam → backoff → prøv igjen
+      </text>
+      <line x1={20} y1={100} x2={520} y2={100} className="stroke-foreground/60" />
+      <polygon points="520,100 514,96 514,104" className="fill-foreground/60" />
+      <text x={525} y={104} className="fill-muted-foreground text-[10px]">
+        t
+      </text>
+      {/* 1. lytt */}
+      <rect
+        x={30}
+        y={70}
+        width={60}
+        height={26}
+        rx={3}
+        className="fill-muted stroke-border"
+        strokeWidth={1}
+      />
+      <text x={60} y={86} textAnchor="middle" className="fill-foreground text-[9px]">
+        1. lytt
+      </text>
+      {/* 2. send */}
+      <rect
+        x={95}
+        y={70}
+        width={120}
+        height={26}
+        rx={3}
+        className="fill-success/30 stroke-success"
+        strokeWidth={1}
+      />
+      <text x={155} y={86} textAnchor="middle" className="fill-foreground text-[9px]">
+        2. sender ramme
+      </text>
+      {/* annens ramme overlap */}
+      <rect
+        x={170}
+        y={50}
+        width={70}
+        height={20}
+        rx={3}
+        className="fill-brand/30 stroke-brand"
+        strokeWidth={1}
+      />
+      <text x={205} y={64} textAnchor="middle" className="fill-foreground text-[9px]">
+        nabos sending
+      </text>
+      {/* 3. kollisjon */}
+      <rect
+        x={195}
+        y={70}
+        width={20}
+        height={26}
+        className="fill-destructive/40 stroke-destructive"
+        strokeWidth={1}
+      />
+      <text
+        x={205}
+        y={120}
+        textAnchor="middle"
+        className="fill-destructive text-[9px] font-semibold"
+      >
+        3. kollisjon!
+      </text>
+      {/* 4. jam */}
+      <rect
+        x={218}
+        y={70}
+        width={28}
+        height={26}
+        className="fill-amber-500/40 stroke-amber-500"
+        strokeWidth={1}
+      />
+      <text x={232} y={86} textAnchor="middle" className="fill-foreground text-[8px]">
+        4. jam
+      </text>
+      {/* 5. backoff (tom periode) */}
+      <line
+        x1={250}
+        y1={83}
+        x2={370}
+        y2={83}
+        className="stroke-muted-foreground/60"
+        strokeDasharray="4 3"
+      />
+      <text x={310} y={75} textAnchor="middle" className="fill-muted-foreground text-[9px]">
+        5. backoff K·512 bt
+      </text>
+      <text x={310} y={120} textAnchor="middle" className="fill-muted-foreground text-[9px]">
+        K ∈ {`{0..2^min(n,10)−1}`}
+      </text>
+      {/* 6. prøv igjen */}
+      <rect
+        x={375}
+        y={70}
+        width={110}
+        height={26}
+        rx={3}
+        className="fill-success/30 stroke-success"
+        strokeWidth={1}
+      />
+      <text x={430} y={86} textAnchor="middle" className="fill-foreground text-[9px]">
+        6. prøv på nytt
+      </text>
+      <text x={270} y={148} textAnchor="middle" className="fill-muted-foreground text-[9px] italic">
+        Etter 16 mislykkede forsøk: gi opp, rapporter feil oppover.
+      </text>
+      <text x={270} y={164} textAnchor="middle" className="fill-muted-foreground text-[9px] italic">
+        IFG (96 bt) mellom rammer; min-ramme 64 B sikrer at kollisjon rekker å oppdages.
+      </text>
+    </svg>
+  );
+}
+
+// 6.9 cheat — VLAN-tag 4-byte detalj
+function VlanTagCheatSvg() {
+  return (
+    <svg viewBox="0 0 520 130" className="w-full h-auto" role="img" aria-label="VLAN-tag detalj">
+      <text
+        x={260}
+        y={14}
+        textAnchor="middle"
+        className="fill-foreground text-[11px] font-semibold"
+      >
+        802.1Q-tag: 4 bytes (32 bit) settes inn etter src-MAC
+      </text>
+      {/* TPID 16 bit */}
+      <rect
+        x={20}
+        y={30}
+        width={200}
+        height={50}
+        className="fill-brand/20 stroke-brand"
+        strokeWidth={1.3}
+      />
+      <text
+        x={120}
+        y={50}
+        textAnchor="middle"
+        className="fill-foreground text-[10px] font-semibold"
+      >
+        TPID
+      </text>
+      <text x={120} y={65} textAnchor="middle" className="fill-foreground text-[10px] font-mono">
+        16 bit
+      </text>
+      <text
+        x={120}
+        y={78}
+        textAnchor="middle"
+        className="fill-muted-foreground text-[9px] font-mono"
+      >
+        0x8100
+      </text>
+      {/* PCP 3 bit */}
+      <rect
+        x={222}
+        y={30}
+        width={70}
+        height={50}
+        className="fill-amber-500/25 stroke-amber-500"
+        strokeWidth={1.3}
+      />
+      <text
+        x={257}
+        y={50}
+        textAnchor="middle"
+        className="fill-foreground text-[10px] font-semibold"
+      >
+        PCP
+      </text>
+      <text x={257} y={65} textAnchor="middle" className="fill-foreground text-[10px] font-mono">
+        3 bit
+      </text>
+      <text x={257} y={78} textAnchor="middle" className="fill-muted-foreground text-[9px]">
+        prio 0–7
+      </text>
+      {/* DEI 1 bit */}
+      <rect
+        x={294}
+        y={30}
+        width={40}
+        height={50}
+        className="fill-rose-500/25 stroke-rose-500"
+        strokeWidth={1.3}
+      />
+      <text
+        x={314}
+        y={50}
+        textAnchor="middle"
+        className="fill-foreground text-[10px] font-semibold"
+      >
+        DEI
+      </text>
+      <text x={314} y={65} textAnchor="middle" className="fill-foreground text-[10px] font-mono">
+        1 bit
+      </text>
+      {/* VID 12 bit */}
+      <rect
+        x={336}
+        y={30}
+        width={170}
+        height={50}
+        className="fill-success/25 stroke-success"
+        strokeWidth={1.3}
+      />
+      <text
+        x={421}
+        y={50}
+        textAnchor="middle"
+        className="fill-foreground text-[10px] font-semibold"
+      >
+        VID — VLAN-ID
+      </text>
+      <text x={421} y={65} textAnchor="middle" className="fill-foreground text-[10px] font-mono">
+        12 bit
+      </text>
+      <text x={421} y={78} textAnchor="middle" className="fill-muted-foreground text-[9px]">
+        0–4095 (4094 brukbare)
+      </text>
+      <text x={260} y={104} textAnchor="middle" className="fill-muted-foreground text-[9px] italic">
+        TPID 0x8100 forteller switchen «her kommer en VLAN-tag». PCP gir QoS-prioritet, DEI markerer
+        drop-first.
+      </text>
+    </svg>
+  );
+}
+
+// 6.9 cheat — switch self-learning MAC-tabell oppdatering
+function SwitchMacOppdateringSvg() {
+  return (
+    <svg
+      viewBox="0 0 540 220"
+      className="w-full h-auto"
+      role="img"
+      aria-label="MAC-tabell oppdatering"
+    >
+      <text
+        x={270}
+        y={14}
+        textAnchor="middle"
+        className="fill-foreground text-[11px] font-semibold"
+      >
+        Self-learning: src-MAC + inn-port → tabell, dst-MAC → port-oppslag
+      </text>
+      {/* Switch i midten */}
+      <rect
+        x={210}
+        y={50}
+        width={120}
+        height={70}
+        rx={6}
+        className="fill-card stroke-foreground/40"
+        strokeWidth={1.3}
+      />
+      <text
+        x={270}
+        y={70}
+        textAnchor="middle"
+        className="fill-foreground text-[11px] font-semibold"
+      >
+        Switch
+      </text>
+      <text x={270} y={85} textAnchor="middle" className="fill-muted-foreground text-[9px]">
+        port 1, 2, 3, 4
+      </text>
+      <text x={270} y={105} textAnchor="middle" className="fill-muted-foreground text-[9px] italic">
+        tabell oppdateres
+      </text>
+      {/* Rammen kommer inn */}
+      <rect
+        x={50}
+        y={70}
+        width={130}
+        height={28}
+        rx={3}
+        className="fill-brand/20 stroke-brand"
+        strokeWidth={1.2}
+      />
+      <text x={115} y={86} textAnchor="middle" className="fill-foreground text-[10px] font-mono">
+        src=X | dst=Y
+      </text>
+      <line
+        x1={180}
+        y1={84}
+        x2={210}
+        y2={84}
+        className="stroke-brand"
+        strokeWidth={1.5}
+        markerEnd="url(#kap6-arrow-tbl)"
+      />
+      <text x={195} y={66} textAnchor="middle" className="fill-muted-foreground text-[9px]">
+        port 1
+      </text>
+      {/* Etter rammen — tabellen */}
+      <text
+        x={400}
+        y={42}
+        textAnchor="middle"
+        className="fill-foreground text-[10px] font-semibold uppercase tracking-wider"
+      >
+        MAC-tabell etter rammen
+      </text>
+      <rect
+        x={350}
+        y={50}
+        width={170}
+        height={26}
+        className="fill-muted stroke-border"
+        strokeWidth={1}
+      />
+      <text x={365} y={68} className="fill-foreground text-[9.5px] font-mono font-semibold">
+        MAC
+      </text>
+      <text x={430} y={68} className="fill-foreground text-[9.5px] font-mono font-semibold">
+        port
+      </text>
+      <text x={485} y={68} className="fill-foreground text-[9.5px] font-mono font-semibold">
+        alder
+      </text>
+      <rect
+        x={350}
+        y={76}
+        width={170}
+        height={22}
+        className="fill-success/15 stroke-success"
+        strokeWidth={1}
+      />
+      <text x={365} y={91} className="fill-foreground text-[10px] font-mono">
+        X
+      </text>
+      <text x={430} y={91} className="fill-foreground text-[10px] font-mono">
+        1
+      </text>
+      <text x={485} y={91} className="fill-foreground text-[10px] font-mono">
+        0 s
+      </text>
+      <text x={520} y={91} className="fill-success text-[10px] font-semibold">
+        ← ny
+      </text>
+      <rect
+        x={350}
+        y={98}
+        width={170}
+        height={22}
+        className="fill-card stroke-border"
+        strokeWidth={1}
+      />
+      <text x={365} y={113} className="fill-muted-foreground text-[10px] font-mono">
+        (Y mangler)
+      </text>
+      <text x={430} y={113} className="fill-muted-foreground text-[10px] font-mono">
+        ?
+      </text>
+      <text x={485} y={113} className="fill-muted-foreground text-[10px]">
+        flood
+      </text>
+      {/* Forwarding-resultat */}
+      <text
+        x={270}
+        y={150}
+        textAnchor="middle"
+        className="fill-foreground text-[10px] font-semibold"
+      >
+        Resultat: lær X→1, flood Y ut alle porter unntatt port 1
+      </text>
+      {[330, 390, 450].map((x, i) => (
+        <g key={i}>
+          <line x1={x} y1={120} x2={x} y2={172} className="stroke-foreground/40" />
+          <rect
+            x={x - 12}
+            y={172}
+            width={24}
+            height={20}
+            className="fill-amber-500/20 stroke-amber-500"
+            strokeWidth={1}
+          />
+          <text x={x} y={186} textAnchor="middle" className="fill-foreground text-[9px]">
+            p{i + 2}
+          </text>
+        </g>
+      ))}
+      <text x={270} y={210} textAnchor="middle" className="fill-muted-foreground text-[9px] italic">
+        Timeout typisk 300 sek — eldre entries slettes hvis MAC-en blir taus.
+      </text>
+      <defs>
+        <marker
+          id="kap6-arrow-tbl"
+          viewBox="0 0 10 10"
+          refX="8"
+          refY="5"
+          markerWidth="6"
+          markerHeight="6"
+          orient="auto"
+        >
+          <path d="M0,0 L10,5 L0,10 z" className="fill-brand" />
+        </marker>
+      </defs>
+    </svg>
+  );
+}
+
+// 6.9 — Tre protokoller side-ved-side tidslinjer
+function TreSporTidslinjeSvg() {
+  return (
+    <svg
+      viewBox="0 0 540 230"
+      className="w-full h-auto"
+      role="img"
+      aria-label="Tre protokoll-tidslinjer"
+    >
+      <text
+        x={270}
+        y={14}
+        textAnchor="middle"
+        className="fill-foreground text-[12px] font-semibold"
+      >
+        ALOHA · CSMA/CD · CSMA/CA på samme tidsakse
+      </text>
+      {/* tre rader */}
+      {[
+        { y: 40, navn: "ALOHA", ekstra: "ingen lytting" },
+        { y: 105, navn: "CSMA/CD", ekstra: "lytt + oppdag" },
+        { y: 170, navn: "CSMA/CA", ekstra: "lytt + unngå" },
+      ].map((row) => (
+        <g key={row.navn}>
+          <text x={10} y={row.y + 18} className="fill-foreground text-[10px] font-semibold">
+            {row.navn}
+          </text>
+          <text x={10} y={row.y + 32} className="fill-muted-foreground text-[9px]">
+            {row.ekstra}
+          </text>
+          <line x1={80} y1={row.y + 28} x2={520} y2={row.y + 28} className="stroke-foreground/50" />
+        </g>
+      ))}
+      {/* ALOHA — A og B ramme overlapper, ingen lytt */}
+      <rect
+        x={120}
+        y={42}
+        width={70}
+        height={18}
+        className="fill-brand/40 stroke-brand"
+        strokeWidth={1}
+      />
+      <rect
+        x={170}
+        y={62}
+        width={70}
+        height={18}
+        className="fill-rose-500/40 stroke-rose-500"
+        strokeWidth={1}
+      />
+      <text x={205} y={92} textAnchor="middle" className="fill-destructive text-[9px]">
+        kollisjon — ingen vet før ACK uteblir
+      </text>
+
+      {/* CSMA/CD — A lytter, sender; B sender, kollisjon, jam, backoff */}
+      <rect
+        x={90}
+        y={108}
+        width={20}
+        height={18}
+        className="fill-muted stroke-border"
+        strokeWidth={1}
+      />
+      <text x={100} y={123} textAnchor="middle" className="fill-foreground text-[8px]">
+        lytt
+      </text>
+      <rect
+        x={112}
+        y={108}
+        width={80}
+        height={18}
+        className="fill-success/40 stroke-success"
+        strokeWidth={1}
+      />
+      <rect
+        x={175}
+        y={108}
+        width={18}
+        height={18}
+        className="fill-destructive/40 stroke-destructive"
+        strokeWidth={1}
+      />
+      <rect
+        x={195}
+        y={108}
+        width={22}
+        height={18}
+        className="fill-amber-500/40 stroke-amber-500"
+        strokeWidth={1}
+      />
+      <text x={206} y={123} textAnchor="middle" className="fill-foreground text-[8px]">
+        jam
+      </text>
+      <line
+        x1={220}
+        y1={117}
+        x2={310}
+        y2={117}
+        className="stroke-muted-foreground/60"
+        strokeDasharray="3 2"
+      />
+      <text x={265} y={111} textAnchor="middle" className="fill-muted-foreground text-[8px]">
+        backoff
+      </text>
+      <rect
+        x={315}
+        y={108}
+        width={80}
+        height={18}
+        className="fill-success/40 stroke-success"
+        strokeWidth={1}
+      />
+      <text x={355} y={122} textAnchor="middle" className="fill-foreground text-[8px]">
+        retransmit
+      </text>
+      <text x={270} y={148} textAnchor="middle" className="fill-success text-[9px]">
+        oppdager kollisjon underveis, sender jam, prøver igjen
+      </text>
+
+      {/* CSMA/CA — DIFS, backoff, sender, SIFS, ACK */}
+      <rect
+        x={90}
+        y={173}
+        width={20}
+        height={18}
+        className="fill-muted stroke-border"
+        strokeWidth={1}
+      />
+      <text x={100} y={188} textAnchor="middle" className="fill-foreground text-[8px]">
+        DIFS
+      </text>
+      <line
+        x1={112}
+        y1={182}
+        x2={170}
+        y2={182}
+        className="stroke-muted-foreground/60"
+        strokeDasharray="3 2"
+      />
+      <text x={141} y={177} textAnchor="middle" className="fill-muted-foreground text-[8px]">
+        random-backoff
+      </text>
+      <rect
+        x={172}
+        y={173}
+        width={100}
+        height={18}
+        className="fill-success/40 stroke-success"
+        strokeWidth={1}
+      />
+      <text x={222} y={187} textAnchor="middle" className="fill-foreground text-[8px]">
+        data
+      </text>
+      <rect
+        x={274}
+        y={173}
+        width={20}
+        height={18}
+        className="fill-muted stroke-border"
+        strokeWidth={1}
+      />
+      <text x={284} y={188} textAnchor="middle" className="fill-foreground text-[8px]">
+        SIFS
+      </text>
+      <rect
+        x={296}
+        y={173}
+        width={40}
+        height={18}
+        className="fill-brand/40 stroke-brand"
+        strokeWidth={1}
+      />
+      <text x={316} y={187} textAnchor="middle" className="fill-foreground text-[8px]">
+        ACK
+      </text>
+      <text x={336} y={213} textAnchor="start" className="fill-muted-foreground text-[9px] italic">
+        Radio kan ikke detektere kollisjon — bruker ACK + RTS/CTS som proxy.
+      </text>
+    </svg>
+  );
+}
+
+// 6.9 — 15 visuelle 5-min-anker-kort
+function AnkerKortSvg() {
+  const items: { title: string; sub: string; color: string }[] = [
+    { title: "1 hopp", sub: "link = nabo", color: "brand" },
+    { title: "8·6·6·2·payload·4", sub: "Ethernet-bytes", color: "brand" },
+    { title: "MAC ≠ IP", sub: "flat vs hierarki", color: "amber-500" },
+    { title: "CRC oppdager", sub: "retter ikke", color: "rose-500" },
+    { title: "18 % vs 37 %", sub: "pure vs slot", color: "amber-500" },
+    { title: "lytt·send·jam·backoff", sub: "CSMA/CD", color: "success" },
+    { title: "ACK + RTS/CTS", sub: "CSMA/CA", color: "success" },
+    { title: "(MAC, port)", sub: "switch lærer", color: "brand" },
+    { title: "switch ≠ ruter", sub: "L2 vs L3", color: "amber-500" },
+    { title: "4 B 802.1Q", sub: "TPID|PCP|DEI|VID", color: "brand" },
+    { title: "trunk tagger", sub: "access stripper", color: "amber-500" },
+    { title: "IP → MAC", sub: "ARP-retning", color: "rose-500" },
+    { title: "min 46 B", sub: "kollisjons-deteksjon", color: "amber-500" },
+    { title: "leaf-spine 2 hopp", sub: "ECMP", color: "success" },
+    { title: "ALOHA<CSMA/CD<CA", sub: "huk én tabell", color: "brand" },
+  ];
+  return (
+    <svg viewBox="0 0 540 320" className="w-full h-auto" role="img" aria-label="Anker-kort">
+      <text
+        x={270}
+        y={14}
+        textAnchor="middle"
+        className="fill-foreground text-[11px] font-semibold"
+      >
+        15 visuelle anker — én ramme per nøkkel-fakta
+      </text>
+      {items.map((it, i) => {
+        const col = i % 5;
+        const row = Math.floor(i / 5);
+        const x = 15 + col * 105;
+        const y = 30 + row * 90;
+        return (
+          <g key={i}>
+            <rect
+              x={x}
+              y={y}
+              width={95}
+              height={78}
+              rx={6}
+              className={`fill-${it.color}/10 stroke-${it.color}`}
+              strokeWidth={1.2}
+            />
+            <text
+              x={x + 47.5}
+              y={y + 14}
+              textAnchor="middle"
+              className={`fill-${it.color} text-[9px] uppercase tracking-wider font-semibold`}
+            >
+              #{i + 1}
+            </text>
+            <text
+              x={x + 47.5}
+              y={y + 36}
+              textAnchor="middle"
+              className="fill-foreground text-[10px] font-semibold"
+            >
+              {it.title}
+            </text>
+            <text
+              x={x + 47.5}
+              y={y + 56}
+              textAnchor="middle"
+              className="fill-muted-foreground text-[9px]"
+            >
+              {it.sub}
+            </text>
+          </g>
+        );
+      })}
+    </svg>
+  );
+}
+
+// Fallgruve-illustrasjoner
+function MacVsIpVisualSvg() {
+  return (
+    <svg viewBox="0 0 500 150" className="w-full h-auto" role="img" aria-label="MAC vs IP">
+      {/* MAC — fabrikk, lokal */}
+      <rect
+        x={20}
+        y={30}
+        width={220}
+        height={90}
+        rx={6}
+        className="fill-amber-500/10 stroke-amber-500"
+        strokeWidth={1.2}
+      />
+      <text
+        x={130}
+        y={52}
+        textAnchor="middle"
+        className="fill-amber-700 dark:fill-amber-400 text-[11px] font-semibold uppercase"
+      >
+        MAC = lokal, flat
+      </text>
+      <text x={130} y={72} textAnchor="middle" className="fill-foreground text-[10px] font-mono">
+        AA:BB:CC:DD:EE:FF
+      </text>
+      <text x={130} y={90} textAnchor="middle" className="fill-muted-foreground text-[9px]">
+        brent inn på NIC ved produksjon
+      </text>
+      <text x={130} y={104} textAnchor="middle" className="fill-muted-foreground text-[9px]">
+        synlig kun innenfor ett broadcast-domene
+      </text>
+      <text x={130} y={138} textAnchor="middle" className="fill-foreground text-[9px] italic">
+        ≈ fødselsnummer
+      </text>
+      {/* IP — hierarkisk, global */}
+      <rect
+        x={260}
+        y={30}
+        width={220}
+        height={90}
+        rx={6}
+        className="fill-brand/10 stroke-brand"
+        strokeWidth={1.2}
+      />
+      <text
+        x={370}
+        y={52}
+        textAnchor="middle"
+        className="fill-brand text-[11px] font-semibold uppercase"
+      >
+        IP = global, hierarkisk
+      </text>
+      <text x={370} y={72} textAnchor="middle" className="fill-foreground text-[10px] font-mono">
+        10.0.0.5 / 24
+      </text>
+      <text x={370} y={90} textAnchor="middle" className="fill-muted-foreground text-[9px]">
+        endres når host flytter subnett
+      </text>
+      <text x={370} y={104} textAnchor="middle" className="fill-muted-foreground text-[9px]">
+        ruterbar — prefiks gir vei
+      </text>
+      <text x={370} y={138} textAnchor="middle" className="fill-foreground text-[9px] italic">
+        ≈ postadresse
+      </text>
+    </svg>
+  );
+}
+
+function SwitchVsRuterVisualSvg() {
+  return (
+    <svg viewBox="0 0 500 160" className="w-full h-auto" role="img" aria-label="Switch vs ruter">
+      {/* Switch — L2 */}
+      <rect
+        x={20}
+        y={20}
+        width={220}
+        height={120}
+        rx={6}
+        className="fill-brand/10 stroke-brand"
+        strokeWidth={1.3}
+      />
+      <text
+        x={130}
+        y={40}
+        textAnchor="middle"
+        className="fill-brand text-[10px] uppercase font-semibold tracking-wider"
+      >
+        Switch — Lag 2
+      </text>
+      <text x={130} y={58} textAnchor="middle" className="fill-foreground text-[10px]">
+        slår opp på MAC
+      </text>
+      <text x={130} y={74} textAnchor="middle" className="fill-foreground text-[10px]">
+        broadcast slipper gjennom
+      </text>
+      <text x={130} y={90} textAnchor="middle" className="fill-foreground text-[10px]">
+        plug-and-play (self-learn)
+      </text>
+      <text x={130} y={106} textAnchor="middle" className="fill-foreground text-[10px]">
+        VLAN = lag-2-isolasjon
+      </text>
+      <text x={130} y={128} textAnchor="middle" className="fill-muted-foreground text-[9px] italic">
+        ser aldri IP-headeren
+      </text>
+      {/* Ruter — L3 */}
+      <rect
+        x={260}
+        y={20}
+        width={220}
+        height={120}
+        rx={6}
+        className="fill-success/10 stroke-success"
+        strokeWidth={1.3}
+      />
+      <text
+        x={370}
+        y={40}
+        textAnchor="middle"
+        className="fill-success text-[10px] uppercase font-semibold tracking-wider"
+      >
+        Ruter — Lag 3
+      </text>
+      <text x={370} y={58} textAnchor="middle" className="fill-foreground text-[10px]">
+        slår opp på IP-prefiks
+      </text>
+      <text x={370} y={74} textAnchor="middle" className="fill-foreground text-[10px]">
+        broadcast STOPPES
+      </text>
+      <text x={370} y={90} textAnchor="middle" className="fill-foreground text-[10px]">
+        bytter MAC-header per hopp
+      </text>
+      <text x={370} y={106} textAnchor="middle" className="fill-foreground text-[10px]">
+        separerer subnett
+      </text>
+      <text x={370} y={128} textAnchor="middle" className="fill-muted-foreground text-[9px] italic">
+        leverer broadcast-domener
+      </text>
+    </svg>
+  );
+}
+
+function VlanIsolasjonVisualSvg() {
+  return (
+    <svg viewBox="0 0 500 170" className="w-full h-auto" role="img" aria-label="VLAN isolasjon">
+      <text
+        x={250}
+        y={16}
+        textAnchor="middle"
+        className="fill-foreground text-[11px] font-semibold"
+      >
+        VLAN isolerer broadcast — IKKE sikkerhet uten ACL
+      </text>
+      {/* 2 VLAN i samme switch */}
+      <rect
+        x={40}
+        y={50}
+        width={420}
+        height={80}
+        rx={6}
+        className="fill-card stroke-foreground/40"
+        strokeWidth={1.3}
+      />
+      <text
+        x={250}
+        y={68}
+        textAnchor="middle"
+        className="fill-foreground text-[10px] font-semibold"
+      >
+        Switch (samme fysisk boks)
+      </text>
+      <rect
+        x={60}
+        y={78}
+        width={180}
+        height={40}
+        rx={4}
+        className="fill-brand/15 stroke-brand"
+        strokeWidth={1}
+      />
+      <text
+        x={150}
+        y={94}
+        textAnchor="middle"
+        className="fill-foreground text-[10px] font-semibold"
+      >
+        VLAN 10 — HR
+      </text>
+      <text x={150} y={108} textAnchor="middle" className="fill-muted-foreground text-[9px]">
+        broadcast forblir her
+      </text>
+      <rect
+        x={260}
+        y={78}
+        width={180}
+        height={40}
+        rx={4}
+        className="fill-rose-500/15 stroke-rose-500"
+        strokeWidth={1}
+      />
+      <text
+        x={350}
+        y={94}
+        textAnchor="middle"
+        className="fill-foreground text-[10px] font-semibold"
+      >
+        VLAN 20 — Gjest
+      </text>
+      <text x={350} y={108} textAnchor="middle" className="fill-muted-foreground text-[9px]">
+        broadcast forblir her
+      </text>
+      {/* Mellom-vei: ruter med brannmur */}
+      <line
+        x1={240}
+        y1={98}
+        x2={260}
+        y2={98}
+        className="stroke-foreground/30"
+        strokeWidth={1}
+        strokeDasharray="2 2"
+      />
+      <text
+        x={250}
+        y={148}
+        textAnchor="middle"
+        className="fill-rose-700 dark:fill-rose-400 text-[10px] font-semibold"
+      >
+        Trafikk mellom VLAN går via ruter (L3) — krever ACL/brannmur for sikkerhet
+      </text>
+      <text x={250} y={162} textAnchor="middle" className="fill-muted-foreground text-[9px] italic">
+        VLAN ≠ kryptografisk separasjon. Misconf'd ruter = full bypass.
+      </text>
+    </svg>
+  );
+}
+
+function ArpRetningSvg() {
+  return (
+    <svg viewBox="0 0 500 130" className="w-full h-auto" role="img" aria-label="ARP-retning">
+      <text
+        x={250}
+        y={16}
+        textAnchor="middle"
+        className="fill-foreground text-[11px] font-semibold"
+      >
+        ARP er IP → MAC, ikke MAC → IP
+      </text>
+      {/* Riktig retning */}
+      <rect
+        x={20}
+        y={40}
+        width={110}
+        height={50}
+        rx={6}
+        className="fill-brand/15 stroke-brand"
+        strokeWidth={1.2}
+      />
+      <text x={75} y={58} textAnchor="middle" className="fill-foreground text-[10px] font-mono">
+        IP 10.0.0.10
+      </text>
+      <text x={75} y={76} textAnchor="middle" className="fill-foreground text-[9px]">
+        (jeg har dette)
+      </text>
+      <line
+        x1={140}
+        y1={65}
+        x2={220}
+        y2={65}
+        className="stroke-success"
+        strokeWidth={2}
+        markerEnd="url(#kap6-arrow-arp-dir)"
+      />
+      <text x={180} y={58} textAnchor="middle" className="fill-success text-[10px] font-semibold">
+        ARP
+      </text>
+      <text x={180} y={80} textAnchor="middle" className="fill-success text-[9px]">
+        finn MAC til denne IP
+      </text>
+      <rect
+        x={230}
+        y={40}
+        width={110}
+        height={50}
+        rx={6}
+        className="fill-success/15 stroke-success"
+        strokeWidth={1.2}
+      />
+      <text x={285} y={58} textAnchor="middle" className="fill-foreground text-[10px] font-mono">
+        MAC BB:02
+      </text>
+      <text x={285} y={76} textAnchor="middle" className="fill-foreground text-[9px]">
+        (svar)
+      </text>
+      {/* Feil retning */}
+      <line
+        x1={360}
+        y1={65}
+        x2={460}
+        y2={65}
+        className="stroke-destructive"
+        strokeWidth={2}
+        strokeDasharray="4 3"
+        markerEnd="url(#kap6-arrow-arp-dir-x)"
+      />
+      <text
+        x={410}
+        y={58}
+        textAnchor="middle"
+        className="fill-destructive text-[10px] font-semibold"
+      >
+        IKKE ARP
+      </text>
+      <text x={410} y={80} textAnchor="middle" className="fill-destructive text-[9px]">
+        (motsatt = RARP, deprecated)
+      </text>
+      <text x={250} y={114} textAnchor="middle" className="fill-muted-foreground text-[9px] italic">
+        Du kjenner IP-en — trenger MAC for å bygge link-lag-headeren. Ikke omvendt.
+      </text>
+      <defs>
+        <marker
+          id="kap6-arrow-arp-dir"
+          viewBox="0 0 10 10"
+          refX="8"
+          refY="5"
+          markerWidth="6"
+          markerHeight="6"
+          orient="auto"
+        >
+          <path d="M0,0 L10,5 L0,10 z" className="fill-success" />
+        </marker>
+        <marker
+          id="kap6-arrow-arp-dir-x"
+          viewBox="0 0 10 10"
+          refX="8"
+          refY="5"
+          markerWidth="6"
+          markerHeight="6"
+          orient="auto"
+        >
+          <path d="M0,0 L10,5 L0,10 z" className="fill-destructive" />
+        </marker>
+      </defs>
+    </svg>
+  );
+}
+
+// ============================================================
 // 6.9 — Eksamen-fokus
 // ============================================================
 function SectionEksamen() {
@@ -3855,6 +6083,7 @@ function SectionEksamen() {
           tittel="Ethernet-ramme (IEEE 802.3, totalt 64–1518 bytes uten VLAN)"
           body={
             <div className="space-y-2">
+              <EthernetCheatSvg />
               <div className="font-mono text-[11px] overflow-x-auto whitespace-nowrap rounded bg-muted/30 p-2">
                 | Preamble 8B | Dest-MAC 6B | Src-MAC 6B | Type/Len 2B | Payload 46–1500B | FCS 4B |
               </div>
@@ -3887,80 +6116,89 @@ function SectionEksamen() {
         <Cheat
           tittel="CRC — Cyclic Redundancy Check"
           body={
-            <ul className="list-disc pl-5 space-y-0.5">
-              <li>
-                Sender og mottaker er enige om et <b>generator-polynom</b> G(x) med r+1 bits.
-                Ethernet bruker CRC-32: G(x) = x³² + x²⁶ + … + 1.
-              </li>
-              <li>
-                Sender legger til r null-bits bak data D, regner D·2ʳ mod G, og bruker resten R som
-                FCS. Sendt = D fulgt av R.
-              </li>
-              <li>
-                Mottaker deler (D·2ʳ + R) på G — hvis rest = 0, antas rammen feilfri. Ellers droppes
-                den.
-              </li>
-              <li>
-                Fanger 100 % av enkelt-bit-feil, alle dobbel-bit-feil hvis G har minst tre 1-bit, og
-                alle burst-feil ≤ r bits.
-              </li>
-              <li>
-                Eksempel-regnestykke: D = 101110, G = 1001, r = 3 → D·2³ = 101110000, regner modulo
-                G med XOR-divisjon → R = 011 → sendt = 101110<u>011</u>.
-              </li>
-            </ul>
+            <>
+              <CrcDivisjonSvg />
+              <ul className="list-disc pl-5 space-y-0.5">
+                <li>
+                  Sender og mottaker er enige om et <b>generator-polynom</b> G(x) med r+1 bits.
+                  Ethernet bruker CRC-32: G(x) = x³² + x²⁶ + … + 1.
+                </li>
+                <li>
+                  Sender legger til r null-bits bak data D, regner D·2ʳ mod G, og bruker resten R
+                  som FCS. Sendt = D fulgt av R.
+                </li>
+                <li>
+                  Mottaker deler (D·2ʳ + R) på G — hvis rest = 0, antas rammen feilfri. Ellers
+                  droppes den.
+                </li>
+                <li>
+                  Fanger 100 % av enkelt-bit-feil, alle dobbel-bit-feil hvis G har minst tre 1-bit,
+                  og alle burst-feil ≤ r bits.
+                </li>
+                <li>
+                  Eksempel-regnestykke: D = 101110, G = 1001, r = 3 → D·2³ = 101110000, regner
+                  modulo G med XOR-divisjon → R = 011 → sendt = 101110<u>011</u>.
+                </li>
+              </ul>
+            </>
           }
         />
 
         <Cheat
           tittel="ALOHA — teoretisk max throughput"
           body={
-            <ul className="list-disc pl-5 space-y-0.5">
-              <li>
-                <b>Pure (uslottet) ALOHA</b>: send når du har data, uten å lytte. Rammen ødelegges
-                hvis noen sender i et 2T-vindu rundt. Max effektivitet ={" "}
-                <code>1/(2e) ≈ 0,184 = 18 %</code>.
-              </li>
-              <li>
-                <b>Slotted ALOHA</b>: alle sender bare på tidsluke-grenser. Sårbart vindu halveres
-                fra 2T til T. Max effektivitet = <code>1/e ≈ 0,368 = 37 %</code>.
-              </li>
-              <li>
-                Slot ALOHA er <em>dobbelt</em> så effektiv som pure ALOHA — den eneste forskjellen
-                er at klokken er synkronisert.
-              </li>
-              <li>
-                Optimal last per slot er G = 1: én ramme i snitt per slot. P(suksess) = G·e⁻ᴳ
-                maksimeres her.
-              </li>
-            </ul>
+            <>
+              <AlohaKurveSvg />
+              <ul className="list-disc pl-5 space-y-0.5">
+                <li>
+                  <b>Pure (uslottet) ALOHA</b>: send når du har data, uten å lytte. Rammen ødelegges
+                  hvis noen sender i et 2T-vindu rundt. Max effektivitet ={" "}
+                  <code>1/(2e) ≈ 0,184 = 18 %</code>.
+                </li>
+                <li>
+                  <b>Slotted ALOHA</b>: alle sender bare på tidsluke-grenser. Sårbart vindu halveres
+                  fra 2T til T. Max effektivitet = <code>1/e ≈ 0,368 = 37 %</code>.
+                </li>
+                <li>
+                  Slot ALOHA er <em>dobbelt</em> så effektiv som pure ALOHA — den eneste forskjellen
+                  er at klokken er synkronisert.
+                </li>
+                <li>
+                  Optimal last per slot er G = 1: én ramme i snitt per slot. P(suksess) = G·e⁻ᴳ
+                  maksimeres her.
+                </li>
+              </ul>
+            </>
           }
         />
 
         <Cheat
           tittel="CSMA/CD — Carrier Sense Multiple Access with Collision Detection"
           body={
-            <ol className="list-decimal pl-5 space-y-0.5">
-              <li>
-                <b>Lytt</b> (carrier sense): hvis mediet er ledig, gå til 2. Hvis opptatt, vent til
-                ledig + IFG (inter-frame gap, 96 bit-tider).
-              </li>
-              <li>
-                <b>Send</b> hele rammen mens du fortsetter å lytte.
-              </li>
-              <li>
-                <b>Kollisjons-deteksjon</b>: oppdager du annens signal samtidig som ditt eget?
-                Avbryt umiddelbart.
-              </li>
-              <li>
-                <b>Jam</b>: send 48-bit jam-signal slik at alle andre også oppdager kollisjonen.
-              </li>
-              <li>
-                <b>Binary exponential backoff</b>: efter k-te kollisjon, velg tilfeldig K ∈ {"{"}0,
-                1, …, 2^min(k,10)-1{"}"}, vent K·512 bit-tider, og prøv igjen fra steg 1.
-              </li>
-              <li>Etter 16 mislykkede forsøk: gi opp, rapport feil oppover.</li>
-            </ol>
+            <>
+              <CsmaCdTimelineSvg />
+              <ol className="list-decimal pl-5 space-y-0.5">
+                <li>
+                  <b>Lytt</b> (carrier sense): hvis mediet er ledig, gå til 2. Hvis opptatt, vent
+                  til ledig + IFG (inter-frame gap, 96 bit-tider).
+                </li>
+                <li>
+                  <b>Send</b> hele rammen mens du fortsetter å lytte.
+                </li>
+                <li>
+                  <b>Kollisjons-deteksjon</b>: oppdager du annens signal samtidig som ditt eget?
+                  Avbryt umiddelbart.
+                </li>
+                <li>
+                  <b>Jam</b>: send 48-bit jam-signal slik at alle andre også oppdager kollisjonen.
+                </li>
+                <li>
+                  <b>Binary exponential backoff</b>: efter k-te kollisjon, velg tilfeldig K ∈ {"{"}
+                  0, 1, …, 2^min(k,10)-1{"}"}, vent K·512 bit-tider, og prøv igjen fra steg 1.
+                </li>
+                <li>Etter 16 mislykkede forsøk: gi opp, rapport feil oppover.</li>
+              </ol>
+            </>
           }
         />
 
@@ -3968,6 +6206,7 @@ function SectionEksamen() {
           tittel="VLAN-tag — IEEE 802.1Q (4 bytes settes inn etter src-MAC)"
           body={
             <div className="space-y-2">
+              <VlanTagCheatSvg />
               <div className="font-mono text-[11px] overflow-x-auto whitespace-nowrap rounded bg-muted/30 p-2">
                 | TPID 16b (0x8100) | PCP 3b | DEI 1b | VID 12b |
               </div>
@@ -3998,26 +6237,30 @@ function SectionEksamen() {
         <Cheat
           tittel="Switch self-learning og MAC-tabell"
           body={
-            <ul className="list-disc pl-5 space-y-0.5">
-              <li>
-                Switchen vedlikeholder en tabell: <code>(MAC-adresse, port, timestamp)</code>.
-              </li>
-              <li>
-                <b>Lær</b>: når en ramme kommer inn på port p med src-MAC = X, legg inn (X, p, tid).
-                Hvis X allerede finnes, oppdater port og tid.
-              </li>
-              <li>
-                <b>Videresend</b>: slå opp dest-MAC. Treff → send kun ut den porten. Bom → flood til
-                alle porter unntatt inn-porten.
-              </li>
-              <li>
-                <b>Timeout</b>: typisk 300 sek (5 min). Eldre entries slettes — derfor må MAC-er
-                relæres etter inaktivitet.
-              </li>
-              <li>
-                Switchen er <em>plug-and-play</em>: ingen konfigurasjon trengs for å bygge tabellen.
-              </li>
-            </ul>
+            <>
+              <SwitchMacOppdateringSvg />
+              <ul className="list-disc pl-5 space-y-0.5">
+                <li>
+                  Switchen vedlikeholder en tabell: <code>(MAC-adresse, port, timestamp)</code>.
+                </li>
+                <li>
+                  <b>Lær</b>: når en ramme kommer inn på port p med src-MAC = X, legg inn (X, p,
+                  tid). Hvis X allerede finnes, oppdater port og tid.
+                </li>
+                <li>
+                  <b>Videresend</b>: slå opp dest-MAC. Treff → send kun ut den porten. Bom → flood
+                  til alle porter unntatt inn-porten.
+                </li>
+                <li>
+                  <b>Timeout</b>: typisk 300 sek (5 min). Eldre entries slettes — derfor må MAC-er
+                  relæres etter inaktivitet.
+                </li>
+                <li>
+                  Switchen er <em>plug-and-play</em>: ingen konfigurasjon trengs for å bygge
+                  tabellen.
+                </li>
+              </ul>
+            </>
           }
         />
       </section>
@@ -4028,6 +6271,13 @@ function SectionEksamen() {
           <span className="inline-block w-1.5 h-5 bg-brand rounded" /> b)
           Multiple-access-protokoller side om side
         </h3>
+
+        <div className="rounded-xl border border-border bg-card p-3">
+          <TreSporTidslinjeSvg />
+          <p className="text-xs text-muted-foreground mt-2 text-center italic">
+            Tre tidslinje-spor: hvor protokollene reagerer ulikt på samme samtidige-send-situasjon.
+          </p>
+        </div>
 
         <div className="overflow-x-auto rounded-xl border border-border bg-card">
           <table className="w-full text-[12px]">
@@ -4116,18 +6366,42 @@ function SectionEksamen() {
           sensorer ser igjen
         </h3>
 
+        <div className="rounded-xl border border-border bg-card p-3">
+          <MacVsIpVisualSvg />
+          <p className="text-[11px] text-muted-foreground mt-1 text-center italic">
+            MAC = lokal/flat (fødselsnummer) · IP = global/hierarkisk (postadresse).
+          </p>
+        </div>
         <Fallgruve
           feil="«MAC-adressen forteller hvor i nettet en maskin er»"
           riktig="MAC er en lokal, flat identifikator brent inn på nettverkskortet. Den endrer seg når kortet flyttes, men ikke når maskinen flytter mellom subnett. IP-adressen er den hierarkiske, ruterbare adressen som sier hvor maskinen er logisk plassert."
         />
+        <div className="rounded-xl border border-border bg-card p-3">
+          <SwitchVsRuterVisualSvg />
+          <p className="text-[11px] text-muted-foreground mt-1 text-center italic">
+            Switch = lag 2 (MAC, broadcast slipper) · ruter = lag 3 (IP, broadcast stoppes).
+          </p>
+        </div>
         <Fallgruve
           feil="«Switch og ruter gjør egentlig det samme»"
           riktig="Nei. Switch jobber på lag 2 (link), slår opp på MAC-adresse, lager broadcast-domener. Ruter jobber på lag 3 (nettverk), slår opp på IP-prefiks, separerer broadcast-domener og ruter mellom subnett. En switch ser aldri på IP-headeren."
         />
+        <div className="rounded-xl border border-border bg-card p-3">
+          <VlanIsolasjonVisualSvg />
+          <p className="text-[11px] text-muted-foreground mt-1 text-center italic">
+            VLAN isolerer broadcast — ikke sikkerhetsmessig segregert uten ACL/brannmur.
+          </p>
+        </div>
         <Fallgruve
           feil="«VLAN gir full isolering mellom nett»"
           riktig="VLAN isolerer broadcast-domener på lag 2 — ARP-storms, broadcast-pakker og MAC-flooding krysser ikke VLAN-grenser. Men trafikk mellom VLAN-er rutes på lag 3, så VLAN gir IKKE sikkerhetsmessig nett-segregering uten en brannvegg/ACL i mellom."
         />
+        <div className="rounded-xl border border-border bg-card p-3">
+          <ArpRetningSvg />
+          <p className="text-[11px] text-muted-foreground mt-1 text-center italic">
+            ARP er IP→MAC. Motsatt retning er RARP (deprecated).
+          </p>
+        </div>
         <Fallgruve
           feil="«ARP brukes til å slå opp IP-adressen til en host»"
           riktig="Motsatt. ARP-request går ut når du allerede kjenner IP-en, men trenger MAC-en for å bygge link-laget. ARP er IP→MAC, ikke MAC→IP (det heter RARP og er deprecated; moderne erstatning er DHCP)."
@@ -4164,6 +6438,13 @@ function SectionEksamen() {
           <span className="inline-block w-1.5 h-5 bg-brand rounded" /> e) 5-minutter-anker — det
           siste du leser
         </h3>
+
+        <div className="rounded-xl border border-sky-500/30 bg-sky-500/5 p-4">
+          <AnkerKortSvg />
+          <p className="text-[11px] text-muted-foreground mt-2 text-center italic">
+            15 visuelle kort — én pr punkt under. La øyet feste seg på dem før eksamen.
+          </p>
+        </div>
 
         <Anker
           punkter={[

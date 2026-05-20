@@ -474,6 +474,14 @@ function Section22() {
         </Illustration>
       </div>
 
+      <Illustration caption="Side-ved-side: hvordan 3 ressurser fra finn.no hentes i hver HTTP-versjon. HTTP/3 sparer en hel TLS-runde.">
+        <HttpVersionFlowSideBySideSvg />
+      </Illustration>
+
+      <Illustration caption="Conditional GET-flyt mot vg.no: 80 kB body første gang, 150 bytes 304 ved gjenbesøk.">
+        <HttpCachingTimelineSvg />
+      </Illustration>
+
       <Example title="Eksempel: hvor mange RTT-er bruker en side med 6 ressurser?">
         <p>
           En side består av 1 HTML + 6 bilder. RTT mellom klient og server er 80 ms. Vi ignorerer
@@ -685,6 +693,15 @@ function Section23() {
         </Illustration>
       </div>
 
+      <div className="grid gap-3 lg:grid-cols-2">
+        <Illustration caption="Resolver-cache som tre: TLDer i midten, sub-domener under, varierende TTL nedover.">
+          <DnsCacheTreeSvg />
+        </Illustration>
+        <Illustration caption="Steg-for-steg-tidslinje for et oppslag av finn.no — fra cache-miss til ferdig svar på 75 ms.">
+          <DnsLookupTimelineSvg />
+        </Illustration>
+      </div>
+
       <Example title="Eksempel: TTL-trade-off for en stor tjeneste">
         <p>
           En stor norsk avis har 5 millioner DNS-oppslag per dag mot navnet www.avisa.no. De
@@ -888,6 +905,14 @@ function Section24() {
         </Illustration>
       </div>
 
+      <Illustration caption="Klient-server (nrk.no, Oslo) vs P2P-swarm (BitTorrent) — to konkrete norske topologier ved siden av hverandre.">
+        <ArchComparisonVisualSvg />
+      </Illustration>
+
+      <Illustration caption="Swarm-snapshot: hvilke biter har hver peer, og hvilken bør P4 hente først (rarest-first)?">
+        <P2PSwarmSnapshotSvg />
+      </Illustration>
+
       <Example title="Eksempel: server vs P2P for å distribuere en 10 GB fil til 1000 brukere">
         <p>Server har 100 Mbps opplastings-kapasitet. Hver bruker har 50 Mbps ned og 5 Mbps opp.</p>
         <ul className="list-disc pl-5 mt-1">
@@ -1078,6 +1103,10 @@ function Section25() {
           <CacheWarmingSvg />
         </Illustration>
       </div>
+
+      <Illustration caption="CDN-edge-noder i norske byer: origin i Dublin, edges i Tromsø/Bodø/Trondheim/Bergen/Stavanger/Kristiansand/Oslo serverer lokale brukere.">
+        <CdnNorgeKartSvg />
+      </Illustration>
 
       <Example title="Eksempel: DASH-klient som tilpasser seg en flaskehals">
         <p>
@@ -1273,6 +1302,10 @@ function Section26() {
           <ThreadVsEpollSvg />
         </Illustration>
       </div>
+
+      <Illustration caption="Socket-flytdiagram: server- og klient-side ved siden av hverandre — kallene som tar deg fra én tilstand til neste.">
+        <SocketStateFlowSvg />
+      </Illustration>
 
       <Example title="Eksempel: et ørlite ekko-server-skjelett i Python (TCP)">
         <pre className="text-[12px] font-mono whitespace-pre-wrap bg-background border border-border rounded p-2">{`import socket
@@ -3405,6 +3438,20 @@ function SectionEksamen() {
         du kan resitere før du går inn i salen.
       </p>
 
+      {/* Visuelle cheat-sheets */}
+      <div className="grid gap-3 lg:grid-cols-2">
+        <Illustration caption="HTTP/1.1, HTTP/2 og HTTP/3 som pakke-strøm-timeline — hver versjon kutter en RTT eller eliminerer HoL.">
+          <HttpVersionTimelineSvg />
+        </Illustration>
+        <Illustration caption="DNS-record-typene som visuelle kort — A, AAAA, CNAME, MX, TXT, NS, SOA, PTR.">
+          <DnsRecordCardsSvg />
+        </Illustration>
+      </div>
+
+      <Illustration caption="Port-numre som ikon-grid — SSH, SMTP, DNS, HTTP, IMAP, HTTPS, og alle de andre du må kunne utenat.">
+        <PortNumbersGridSvg />
+      </Illustration>
+
       {/* a) Cheat sheet */}
       <div className="grid gap-3 lg:grid-cols-2">
         <Cheat tittel="HTTP-statuskoder — familier">
@@ -3562,7 +3609,7 @@ function SectionEksamen() {
 
       {/* d) Fallgruver */}
       <div className="grid gap-3 lg:grid-cols-2">
-        <Fallgruve tittel="«DNS er ett oppslag»">
+        <Fallgruve tittel="«DNS er ett oppslag»" illustration={<FallgruvIconSvg kind="dns" />}>
           <p>
             Klassisk feilforestilling. Et førstegangs-oppslag av <code>www.foo.no</code> går typisk
             via <span className="font-semibold text-foreground">lokal resolver</span> →{" "}
@@ -3574,7 +3621,10 @@ function SectionEksamen() {
           </p>
         </Fallgruve>
 
-        <Fallgruve tittel="«HTTP er stateful fordi vi har innlogging»">
+        <Fallgruve
+          tittel="«HTTP er stateful fordi vi har innlogging»"
+          illustration={<FallgruvIconSvg kind="stateful" />}
+        >
           <p>
             HTTP-protokollen er <span className="font-semibold text-foreground">stateless</span> —
             serveren husker ingenting mellom requests. Innlogging-følelsen kommer fra cookies eller
@@ -3584,7 +3634,10 @@ function SectionEksamen() {
           </p>
         </Fallgruve>
 
-        <Fallgruve tittel="Browser-cache vs proxy-cache vs CDN">
+        <Fallgruve
+          tittel="Browser-cache vs proxy-cache vs CDN"
+          illustration={<FallgruvIconSvg kind="cache" />}
+        >
           <p>
             Tre forskjellige ting.{" "}
             <span className="font-semibold text-foreground">Browser-cache</span> ligger på din
@@ -3597,7 +3650,10 @@ function SectionEksamen() {
           </p>
         </Fallgruve>
 
-        <Fallgruve tittel="«HTTPS er en egen protokoll»">
+        <Fallgruve
+          tittel="«HTTPS er en egen protokoll»"
+          illustration={<FallgruvIconSvg kind="https" />}
+        >
           <p>
             Nei. HTTPS = HTTP <em>over</em> TLS over TCP. Forskjellen fra HTTP er at applikasjons-
             byteene krypteres av TLS-laget før de når TCP. Status-koder, headere, metoder — alt ser
@@ -3606,7 +3662,10 @@ function SectionEksamen() {
           </p>
         </Fallgruve>
 
-        <Fallgruve tittel="«SMTP brukes til å hente e-post»">
+        <Fallgruve
+          tittel="«SMTP brukes til å hente e-post»"
+          illustration={<FallgruvIconSvg kind="smtp" />}
+        >
           <p>
             <span className="font-semibold text-foreground">SMTP</span> sender e-post (klient →
             server og server → server). <span className="font-semibold text-foreground">IMAP</span>{" "}
@@ -3616,7 +3675,7 @@ function SectionEksamen() {
           </p>
         </Fallgruve>
 
-        <Fallgruve tittel="«P2P er alltid raskere»">
+        <Fallgruve tittel="«P2P er alltid raskere»" illustration={<FallgruvIconSvg kind="p2p" />}>
           <p>
             Det er det ikke. P2P (Peer-to-Peer; klient-noder deler data direkte) skalerer godt for
             <em> populært</em> innhold med mange seedere, men for ferskt eller sjeldent innhold kan
@@ -3627,7 +3686,11 @@ function SectionEksamen() {
         </Fallgruve>
       </div>
 
-      {/* e) 5-minutter-anker */}
+      {/* e) 5-minutter-anker — visuelt grid */}
+      <Illustration caption="5-minutter-anker som 15 ikon-kort — rask visuell rep før du går inn i salen.">
+        <FiveMinAnchorGridSvg />
+      </Illustration>
+
       <Anker tittel="5-minutter-anker — kjør disse i hodet før eksamen">
         <ol className="list-decimal pl-5 space-y-1">
           <li>
@@ -3705,13 +3768,26 @@ function SectionEksamen() {
 // Eksamen-spesifikke helpers
 // ============================================================
 
-function Fallgruve({ tittel, children }: { tittel: string; children: React.ReactNode }) {
+function Fallgruve({
+  tittel,
+  children,
+  illustration,
+}: {
+  tittel: string;
+  children: React.ReactNode;
+  illustration?: React.ReactNode;
+}) {
   return (
     <div className="rounded-xl border border-rose-500/30 bg-rose-500/5 p-4">
       <div className="text-[10px] uppercase tracking-wider text-rose-700 dark:text-rose-400 font-semibold mb-1">
         Fallgruve
       </div>
       <div className="font-semibold text-foreground mb-1">{tittel}</div>
+      {illustration && (
+        <div className="my-2 rounded bg-background/40 p-2 border border-rose-500/20">
+          {illustration}
+        </div>
+      )}
       <div className="text-muted-foreground text-[13px] space-y-2">{children}</div>
     </div>
   );
@@ -3957,6 +4033,1580 @@ function ProtocolDecisionTreeSvg() {
         Beslutningstre — krav (midt-kolonne) avgjør protokoll (høyre). Tekst-meldinger og fildeling
         kan velge mellom flere; sanntid utelukker TCP-retransmit.
       </text>
+    </svg>
+  );
+}
+
+// ============================================================
+// Nye SVG-er (tillegg) — eksamen-cheat, mini-illustrasjoner per seksjon
+// ============================================================
+
+function HttpVersionTimelineSvg() {
+  // Tre rader: pakke-strømmer for HTTP/1.1, HTTP/2, HTTP/3 mot vg.no
+  const rows = [
+    {
+      label: "HTTP/1.1",
+      cls: "fill-amber-500/25 stroke-amber-500",
+      packets: [
+        { x: 60, w: 14, lbl: "SYN" },
+        { x: 78, w: 14, lbl: "ACK" },
+        { x: 100, w: 28, lbl: "GET /" },
+        { x: 138, w: 50, lbl: "HTML" },
+        { x: 195, w: 28, lbl: "GET css" },
+        { x: 230, w: 40, lbl: "CSS" },
+        { x: 280, w: 28, lbl: "GET js" },
+        { x: 315, w: 50, lbl: "JS" },
+      ],
+      note: "seriell — hver request venter på forrige",
+    },
+    {
+      label: "HTTP/2",
+      cls: "fill-brand/25 stroke-brand",
+      packets: [
+        { x: 60, w: 14, lbl: "SYN" },
+        { x: 78, w: 14, lbl: "TLS" },
+        { x: 100, w: 24, lbl: "GET×3" },
+        { x: 132, w: 60, lbl: "HTML | CSS | JS multiplekset" },
+      ],
+      note: "én forbindelse, mange streams parallelt",
+    },
+    {
+      label: "HTTP/3",
+      cls: "fill-success/25 stroke-success",
+      packets: [
+        { x: 60, w: 30, lbl: "QUIC+TLS+GET×3" },
+        { x: 100, w: 70, lbl: "HTML | CSS | JS uavhengige" },
+      ],
+      note: "0-1 RTT setup, ingen TCP-HoL",
+    },
+  ];
+  return (
+    <svg viewBox="0 0 460 200" className="w-full h-auto">
+      <text
+        x={230}
+        y={14}
+        textAnchor="middle"
+        className="fill-foreground text-[11px] font-semibold"
+      >
+        vg.no — pakke-strøm per HTTP-versjon (samme side)
+      </text>
+      {rows.map((r, i) => {
+        const y = 40 + i * 50;
+        return (
+          <g key={r.label}>
+            <text x={10} y={y + 4} className="fill-foreground text-[10px] font-semibold">
+              {r.label}
+            </text>
+            <line
+              x1={50}
+              y1={y}
+              x2={440}
+              y2={y}
+              className="stroke-border"
+              strokeWidth={0.8}
+              strokeDasharray="2 3"
+            />
+            {r.packets.map((p, j) => (
+              <g key={j}>
+                <rect
+                  x={p.x}
+                  y={y - 8}
+                  width={p.w}
+                  height={16}
+                  rx={2}
+                  className={r.cls}
+                  strokeWidth={1}
+                />
+                <text
+                  x={p.x + p.w / 2}
+                  y={y + 3}
+                  textAnchor="middle"
+                  className="fill-foreground text-[7px] font-mono"
+                >
+                  {p.lbl}
+                </text>
+              </g>
+            ))}
+            <text x={50} y={y + 23} className="fill-muted-foreground text-[8px] italic">
+              {r.note}
+            </text>
+          </g>
+        );
+      })}
+      <line x1={50} y1={195} x2={440} y2={195} className="stroke-foreground/40" strokeWidth={1} />
+      <polygon points="440,195 432,191 432,199" className="fill-foreground/40" />
+      <text x={245} y={188} textAnchor="middle" className="fill-muted-foreground text-[8px]">
+        tid →
+      </text>
+    </svg>
+  );
+}
+
+function DnsRecordCardsSvg() {
+  const cards = [
+    {
+      type: "A",
+      color: "fill-brand/20 stroke-brand",
+      text: "fill-brand",
+      ex: "finn.no → 213.236.x.x",
+    },
+    { type: "AAAA", color: "fill-brand/15 stroke-brand", text: "fill-brand", ex: "IPv6-adresse" },
+    {
+      type: "CNAME",
+      color: "fill-purple-500/15 stroke-purple-500",
+      text: "fill-purple-700 dark:fill-purple-400",
+      ex: "shop → cdn.com",
+    },
+    {
+      type: "MX",
+      color: "fill-success/15 stroke-success",
+      text: "fill-success",
+      ex: "10 mail.uit.no",
+    },
+    {
+      type: "TXT",
+      color: "fill-amber-500/15 stroke-amber-500",
+      text: "fill-amber-700 dark:fill-amber-400",
+      ex: "v=spf1 ...",
+    },
+    {
+      type: "NS",
+      color: "fill-cyan-500/15 stroke-cyan-500",
+      text: "fill-cyan-700 dark:fill-cyan-400",
+      ex: "ns1.norid.no",
+    },
+    {
+      type: "SOA",
+      color: "fill-rose-500/15 stroke-rose-500",
+      text: "fill-rose-700 dark:fill-rose-400",
+      ex: "sone-meta",
+    },
+    {
+      type: "PTR",
+      color: "fill-indigo-500/15 stroke-indigo-500",
+      text: "fill-indigo-700 dark:fill-indigo-400",
+      ex: "IP → navn",
+    },
+  ];
+  return (
+    <svg viewBox="0 0 480 220" className="w-full h-auto">
+      <text
+        x={240}
+        y={14}
+        textAnchor="middle"
+        className="fill-foreground text-[11px] font-semibold"
+      >
+        DNS-record-typer som visuelle kort
+      </text>
+      {cards.map((c, i) => {
+        const col = i % 4;
+        const row = Math.floor(i / 4);
+        const x = 20 + col * 115;
+        const y = 30 + row * 92;
+        return (
+          <g key={c.type}>
+            <rect
+              x={x}
+              y={y}
+              width={100}
+              height={78}
+              rx={6}
+              className={c.color}
+              strokeWidth={1.5}
+            />
+            <text
+              x={x + 50}
+              y={y + 28}
+              textAnchor="middle"
+              className={`${c.text} text-[18px] font-bold font-mono`}
+            >
+              {c.type}
+            </text>
+            <line
+              x1={x + 12}
+              y1={y + 38}
+              x2={x + 88}
+              y2={y + 38}
+              className="stroke-border"
+              strokeWidth={0.6}
+            />
+            <text x={x + 50} y={y + 56} textAnchor="middle" className="fill-foreground text-[9px]">
+              eksempel:
+            </text>
+            <text
+              x={x + 50}
+              y={y + 70}
+              textAnchor="middle"
+              className="fill-muted-foreground text-[8px] font-mono"
+            >
+              {c.ex}
+            </text>
+          </g>
+        );
+      })}
+      <text x={240} y={216} textAnchor="middle" className="fill-muted-foreground text-[8px] italic">
+        samme navn kan ha flere record-typer — hver svarer på sitt eget spørsmål
+      </text>
+    </svg>
+  );
+}
+
+function PortNumbersGridSvg() {
+  const ports = [
+    { p: "22", name: "SSH", icon: "lock", color: "fill-success/20 stroke-success" },
+    { p: "25", name: "SMTP", icon: "mail", color: "fill-brand/20 stroke-brand" },
+    { p: "53", name: "DNS", icon: "compass", color: "fill-purple-500/20 stroke-purple-500" },
+    { p: "80", name: "HTTP", icon: "globe", color: "fill-amber-500/20 stroke-amber-500" },
+    { p: "110", name: "POP3", icon: "inbox", color: "fill-cyan-500/20 stroke-cyan-500" },
+    { p: "143", name: "IMAP", icon: "inbox", color: "fill-cyan-500/20 stroke-cyan-500" },
+    { p: "443", name: "HTTPS", icon: "shield", color: "fill-success/20 stroke-success" },
+    { p: "587", name: "SMTP-sub", icon: "mail", color: "fill-brand/20 stroke-brand" },
+    { p: "993", name: "IMAPS", icon: "shield", color: "fill-success/20 stroke-success" },
+    { p: "995", name: "POP3S", icon: "shield", color: "fill-success/20 stroke-success" },
+  ];
+  function renderIcon(icon: string, cx: number, cy: number) {
+    switch (icon) {
+      case "lock":
+        return (
+          <g key={`${cx}-${cy}`}>
+            <rect x={cx - 5} y={cy - 2} width={10} height={8} rx={1} className="fill-foreground" />
+            <path
+              d={`M${cx - 3} ${cy - 2} v-3 a3 3 0 0 1 6 0 v3`}
+              className="fill-none stroke-foreground"
+              strokeWidth={1.2}
+            />
+          </g>
+        );
+      case "mail":
+        return (
+          <g>
+            <rect
+              x={cx - 7}
+              y={cy - 4}
+              width={14}
+              height={10}
+              rx={1}
+              className="fill-none stroke-foreground"
+              strokeWidth={1.2}
+            />
+            <path
+              d={`M${cx - 7} ${cy - 4} L${cx} ${cy + 2} L${cx + 7} ${cy - 4}`}
+              className="fill-none stroke-foreground"
+              strokeWidth={1.2}
+            />
+          </g>
+        );
+      case "compass":
+        return (
+          <g>
+            <circle
+              cx={cx}
+              cy={cy + 1}
+              r={6}
+              className="fill-none stroke-foreground"
+              strokeWidth={1.2}
+            />
+            <path
+              d={`M${cx - 3} ${cy + 4} L${cx} ${cy - 2} L${cx + 3} ${cy + 4} Z`}
+              className="fill-foreground"
+            />
+          </g>
+        );
+      case "globe":
+        return (
+          <g>
+            <circle
+              cx={cx}
+              cy={cy + 1}
+              r={6}
+              className="fill-none stroke-foreground"
+              strokeWidth={1.2}
+            />
+            <line
+              x1={cx - 6}
+              y1={cy + 1}
+              x2={cx + 6}
+              y2={cy + 1}
+              className="stroke-foreground"
+              strokeWidth={1}
+            />
+            <ellipse
+              cx={cx}
+              cy={cy + 1}
+              rx={3}
+              ry={6}
+              className="fill-none stroke-foreground"
+              strokeWidth={1}
+            />
+          </g>
+        );
+      case "inbox":
+        return (
+          <g>
+            <path
+              d={`M${cx - 7} ${cy} L${cx - 7} ${cy + 6} L${cx + 7} ${cy + 6} L${cx + 7} ${cy}`}
+              className="fill-none stroke-foreground"
+              strokeWidth={1.2}
+            />
+            <path
+              d={`M${cx - 7} ${cy} L${cx - 4} ${cy - 4} L${cx + 4} ${cy - 4} L${cx + 7} ${cy}`}
+              className="fill-none stroke-foreground"
+              strokeWidth={1.2}
+            />
+          </g>
+        );
+      case "shield":
+        return (
+          <g>
+            <path
+              d={`M${cx} ${cy - 5} L${cx + 6} ${cy - 2} L${cx + 6} ${cy + 3} Q${cx + 6} ${cy + 6} ${cx} ${cy + 7} Q${cx - 6} ${cy + 6} ${cx - 6} ${cy + 3} L${cx - 6} ${cy - 2} Z`}
+              className="fill-none stroke-foreground"
+              strokeWidth={1.2}
+            />
+          </g>
+        );
+    }
+    return null;
+  }
+  return (
+    <svg viewBox="0 0 500 200" className="w-full h-auto">
+      <text
+        x={250}
+        y={14}
+        textAnchor="middle"
+        className="fill-foreground text-[11px] font-semibold"
+      >
+        Port-numre du må kunne — ikon-grid
+      </text>
+      {ports.map((p, i) => {
+        const col = i % 5;
+        const row = Math.floor(i / 5);
+        const x = 20 + col * 95;
+        const y = 30 + row * 80;
+        return (
+          <g key={p.p}>
+            <rect x={x} y={y} width={80} height={66} rx={6} className={p.color} strokeWidth={1.5} />
+            <g transform={`translate(${x + 40} ${y + 22})`}>{renderIcon(p.icon, 0, 0)}</g>
+            <text
+              x={x + 40}
+              y={y + 50}
+              textAnchor="middle"
+              className="fill-foreground text-[12px] font-bold font-mono"
+            >
+              {p.p}
+            </text>
+            <text
+              x={x + 40}
+              y={y + 61}
+              textAnchor="middle"
+              className="fill-muted-foreground text-[8px]"
+            >
+              {p.name}
+            </text>
+          </g>
+        );
+      })}
+      <text x={250} y={195} textAnchor="middle" className="fill-muted-foreground text-[8px] italic">
+        ports 0–1023 er well-known — reservert for kjente tjenester
+      </text>
+    </svg>
+  );
+}
+
+function FiveMinAnchorGridSvg() {
+  const items = [
+    { lbl: "App-protokoll = meldingsformat + rekkefølge", icon: "msg" },
+    { lbl: "HTTP request/response, stateless", icon: "req" },
+    { lbl: "HTTP/1.1→2→3: fjerner HoL i 2 steg", icon: "steps" },
+    { lbl: "Non-persistent: 2N·RTT", icon: "calc" },
+    { lbl: "DNS: lokal → root → TLD → auth", icon: "tree" },
+    { lbl: "Record: A/AAAA/CNAME/MX/TXT/NS/SOA", icon: "tag" },
+    { lbl: "SMTP send 25/587, IMAP 143/993", icon: "mail" },
+    { lbl: "P2P: T = max(F/u_s, NF/Σu_i)", icon: "p2p" },
+    { lbl: "DASH = manifest + segmenter + ABR", icon: "video" },
+    { lbl: "CDN: edge nær bruker via DNS", icon: "cdn" },
+    { lbl: "Socket = IP+port; TCP=stream, UDP=datagram", icon: "socket" },
+    { lbl: "4-tuppel = (lokalIP, lokalport, eksternIP, eksternport)", icon: "tuple" },
+    { lbl: "Klient-server skalerer vha duplisering", icon: "scale" },
+    { lbl: "Sanntid (WebRTC) = UDP+SRTP, ikke TCP", icon: "fast" },
+    { lbl: "Port = prosess; IP = host", icon: "addr" },
+  ];
+  return (
+    <svg viewBox="0 0 600 380" className="w-full h-auto">
+      <text
+        x={300}
+        y={14}
+        textAnchor="middle"
+        className="fill-foreground text-[11px] font-semibold"
+      >
+        5-minutter-anker — 15 ikon-kort
+      </text>
+      {items.map((it, i) => {
+        const col = i % 3;
+        const row = Math.floor(i / 3);
+        const x = 20 + col * 195;
+        const y = 30 + row * 68;
+        return (
+          <g key={i}>
+            <rect
+              x={x}
+              y={y}
+              width={180}
+              height={56}
+              rx={6}
+              className="fill-indigo-500/10 stroke-indigo-500/60"
+              strokeWidth={1.2}
+            />
+            <circle
+              cx={x + 22}
+              cy={y + 28}
+              r={14}
+              className="fill-indigo-500/25 stroke-indigo-500"
+              strokeWidth={1.2}
+            />
+            <text
+              x={x + 22}
+              y={y + 32}
+              textAnchor="middle"
+              className="fill-indigo-700 dark:fill-indigo-300 text-[10px] font-bold font-mono"
+            >
+              {i + 1}
+            </text>
+            <text x={x + 44} y={y + 24} className="fill-foreground text-[8.5px] font-semibold">
+              {it.lbl.length > 28 ? it.lbl.slice(0, 26) + "…" : it.lbl}
+            </text>
+            <text x={x + 44} y={y + 38} className="fill-muted-foreground text-[8px]">
+              {it.lbl.length > 28 ? it.lbl.slice(26) : ""}
+            </text>
+            <text x={x + 44} y={y + 48} className="fill-muted-foreground text-[7.5px] italic">
+              [{it.icon}]
+            </text>
+          </g>
+        );
+      })}
+    </svg>
+  );
+}
+
+function FallgruvIconSvg({
+  kind,
+}: {
+  kind: "dns" | "stateful" | "cache" | "https" | "smtp" | "p2p";
+}) {
+  // Liten 80×60 illustrasjon per fallgruve
+  const common = "w-full h-auto";
+  switch (kind) {
+    case "dns":
+      return (
+        <svg viewBox="0 0 120 60" className={common}>
+          <text
+            x={6}
+            y={10}
+            className="fill-rose-700 dark:fill-rose-400 text-[7px] uppercase font-semibold"
+          >
+            ikke ett oppslag — fire hopp
+          </text>
+          {[
+            { x: 10, l: "klient" },
+            { x: 38, l: "resolver" },
+            { x: 66, l: "root" },
+            { x: 92, l: "TLD" },
+            { x: 114, l: "auth" },
+          ].map((n, i) => (
+            <g key={i}>
+              <circle
+                cx={n.x}
+                cy={32}
+                r={4}
+                className="fill-rose-500/30 stroke-rose-500"
+                strokeWidth={1}
+              />
+              <text x={n.x} y={50} textAnchor="middle" className="fill-muted-foreground text-[5px]">
+                {n.l}
+              </text>
+              {i < 4 && (
+                <line
+                  x1={n.x + 4}
+                  y1={32}
+                  x2={[38, 66, 92, 114][i] - 4}
+                  y2={32}
+                  className="stroke-rose-500"
+                  strokeWidth={0.7}
+                />
+              )}
+            </g>
+          ))}
+        </svg>
+      );
+    case "stateful":
+      return (
+        <svg viewBox="0 0 120 60" className={common}>
+          <text
+            x={6}
+            y={10}
+            className="fill-rose-700 dark:fill-rose-400 text-[7px] uppercase font-semibold"
+          >
+            server husker ingenting
+          </text>
+          <rect
+            x={10}
+            y={20}
+            width={26}
+            height={28}
+            rx={3}
+            className="fill-rose-500/15 stroke-rose-500"
+            strokeWidth={1}
+          />
+          <text x={23} y={32} textAnchor="middle" className="fill-foreground text-[6px]">
+            klient
+          </text>
+          <text x={23} y={42} textAnchor="middle" className="fill-foreground text-[5px] font-mono">
+            🍪 sid
+          </text>
+          <line x1={36} y1={34} x2={84} y2={34} className="stroke-rose-500" strokeWidth={1} />
+          <rect
+            x={84}
+            y={20}
+            width={26}
+            height={28}
+            rx={3}
+            className="fill-muted/30 stroke-border"
+            strokeWidth={1}
+          />
+          <text x={97} y={36} textAnchor="middle" className="fill-foreground text-[6px]">
+            server
+          </text>
+          <text
+            x={97}
+            y={44}
+            textAnchor="middle"
+            className="fill-muted-foreground text-[5px] italic"
+          >
+            (blank)
+          </text>
+        </svg>
+      );
+    case "cache":
+      return (
+        <svg viewBox="0 0 120 60" className={common}>
+          <text
+            x={6}
+            y={10}
+            className="fill-rose-700 dark:fill-rose-400 text-[7px] uppercase font-semibold"
+          >
+            3 forskjellige cacher
+          </text>
+          {[
+            { x: 14, l: "browser", c: "fill-amber-500/30 stroke-amber-500" },
+            { x: 56, l: "proxy", c: "fill-purple-500/30 stroke-purple-500" },
+            { x: 98, l: "CDN", c: "fill-success/30 stroke-success" },
+          ].map((b, i) => (
+            <g key={i}>
+              <rect
+                x={b.x - 14}
+                y={22}
+                width={28}
+                height={20}
+                rx={3}
+                className={b.c}
+                strokeWidth={1}
+              />
+              <text x={b.x} y={34} textAnchor="middle" className="fill-foreground text-[6px]">
+                {b.l}
+              </text>
+              <text x={b.x} y={52} textAnchor="middle" className="fill-muted-foreground text-[5px]">
+                {["privat", "delt", "leverandør"][i]}
+              </text>
+            </g>
+          ))}
+        </svg>
+      );
+    case "https":
+      return (
+        <svg viewBox="0 0 120 60" className={common}>
+          <text
+            x={6}
+            y={10}
+            className="fill-rose-700 dark:fill-rose-400 text-[7px] uppercase font-semibold"
+          >
+            HTTPS = HTTP / TLS / TCP
+          </text>
+          {[
+            { y: 16, l: "HTTP (samme meldinger)", c: "fill-brand/25 stroke-brand" },
+            { y: 28, l: "TLS (krypterer)", c: "fill-purple-500/25 stroke-purple-500" },
+            { y: 40, l: "TCP", c: "fill-success/25 stroke-success" },
+          ].map((b, i) => (
+            <g key={i}>
+              <rect x={12} y={b.y} width={96} height={10} rx={2} className={b.c} strokeWidth={1} />
+              <text x={60} y={b.y + 7} textAnchor="middle" className="fill-foreground text-[6px]">
+                {b.l}
+              </text>
+            </g>
+          ))}
+        </svg>
+      );
+    case "smtp":
+      return (
+        <svg viewBox="0 0 120 60" className={common}>
+          <text
+            x={6}
+            y={10}
+            className="fill-rose-700 dark:fill-rose-400 text-[7px] uppercase font-semibold"
+          >
+            SMTP sender, IMAP henter
+          </text>
+          <rect
+            x={10}
+            y={20}
+            width={22}
+            height={20}
+            rx={2}
+            className="fill-rose-500/20 stroke-rose-500"
+            strokeWidth={1}
+          />
+          <text x={21} y={32} textAnchor="middle" className="fill-foreground text-[6px]">
+            Ola
+          </text>
+          <rect
+            x={50}
+            y={20}
+            width={22}
+            height={20}
+            rx={2}
+            className="fill-success/20 stroke-success"
+            strokeWidth={1}
+          />
+          <text x={61} y={32} textAnchor="middle" className="fill-foreground text-[6px]">
+            server
+          </text>
+          <rect
+            x={90}
+            y={20}
+            width={22}
+            height={20}
+            rx={2}
+            className="fill-brand/20 stroke-brand"
+            strokeWidth={1}
+          />
+          <text x={101} y={32} textAnchor="middle" className="fill-foreground text-[6px]">
+            Kari
+          </text>
+          <line x1={32} y1={30} x2={50} y2={30} className="stroke-success" strokeWidth={1} />
+          <text x={41} y={49} textAnchor="middle" className="fill-success text-[5px]">
+            SMTP →
+          </text>
+          <line x1={90} y1={30} x2={72} y2={30} className="stroke-brand" strokeWidth={1} />
+          <text x={81} y={49} textAnchor="middle" className="fill-brand text-[5px]">
+            ← IMAP
+          </text>
+        </svg>
+      );
+    case "p2p":
+      return (
+        <svg viewBox="0 0 120 60" className={common}>
+          <text
+            x={6}
+            y={10}
+            className="fill-rose-700 dark:fill-rose-400 text-[7px] uppercase font-semibold"
+          >
+            P2P er ikke alltid raskest
+          </text>
+          {[
+            { x: 25, y: 32, r: 5, c: "fill-success/30 stroke-success", l: "server" },
+            { x: 70, y: 24, r: 3, c: "fill-rose-500/30 stroke-rose-500", l: "p" },
+            { x: 85, y: 32, r: 3, c: "fill-rose-500/30 stroke-rose-500", l: "p" },
+            { x: 95, y: 44, r: 3, c: "fill-rose-500/30 stroke-rose-500", l: "p" },
+            { x: 70, y: 44, r: 3, c: "fill-rose-500/30 stroke-rose-500", l: "p" },
+          ].map((p, i) => (
+            <circle key={i} cx={p.x} cy={p.y} r={p.r} className={p.c} strokeWidth={1} />
+          ))}
+          <text x={25} y={48} textAnchor="middle" className="fill-foreground text-[5px]">
+            full kapasitet
+          </text>
+          <text
+            x={82}
+            y={56}
+            textAnchor="middle"
+            className="fill-muted-foreground text-[5px] italic"
+          >
+            fersk fil = lite swarm
+          </text>
+        </svg>
+      );
+  }
+}
+
+function ArchComparisonVisualSvg() {
+  return (
+    <svg viewBox="0 0 500 220" className="w-full h-auto">
+      <text
+        x={250}
+        y={14}
+        textAnchor="middle"
+        className="fill-foreground text-[11px] font-semibold"
+      >
+        Klient-server vs P2P — to konkrete nettverks-tegninger
+      </text>
+      {/* Venstre side: klient-server med nrk.no som server */}
+      <text
+        x={120}
+        y={36}
+        textAnchor="middle"
+        className="fill-success text-[10px] uppercase tracking-wider font-semibold"
+      >
+        Klient-server (nrk.no)
+      </text>
+      <rect
+        x={90}
+        y={45}
+        width={60}
+        height={32}
+        rx={4}
+        className="fill-success/25 stroke-success"
+        strokeWidth={1.5}
+      />
+      <text x={120} y={61} textAnchor="middle" className="fill-foreground text-[9px] font-semibold">
+        nrk-server
+      </text>
+      <text x={120} y={72} textAnchor="middle" className="fill-muted-foreground text-[7px]">
+        Oslo
+      </text>
+      {[
+        { x: 40, y: 130, l: "Tromsø" },
+        { x: 95, y: 165, l: "Bergen" },
+        { x: 145, y: 165, l: "Stavanger" },
+        { x: 200, y: 130, l: "Trondheim" },
+        { x: 40, y: 195, l: "Bodø" },
+        { x: 200, y: 195, l: "Kr.sand" },
+      ].map((k, i) => (
+        <g key={i}>
+          <circle cx={k.x} cy={k.y} r={8} className="fill-brand/30 stroke-brand" strokeWidth={1} />
+          <text x={k.x} y={k.y + 2} textAnchor="middle" className="fill-foreground text-[7px]">
+            K{i + 1}
+          </text>
+          <text
+            x={k.x}
+            y={k.y + 17}
+            textAnchor="middle"
+            className="fill-muted-foreground text-[6px]"
+          >
+            {k.l}
+          </text>
+          <line
+            x1={k.x}
+            y1={k.y - 6}
+            x2={120}
+            y2={75}
+            className="stroke-success/50"
+            strokeWidth={0.7}
+          />
+        </g>
+      ))}
+      <text x={120} y={215} textAnchor="middle" className="fill-muted-foreground text-[8px] italic">
+        all trafikk gjennom Oslo
+      </text>
+
+      {/* Skille */}
+      <line x1={250} y1={30} x2={250} y2={215} className="stroke-border" strokeDasharray="3 3" />
+
+      {/* Høyre side: P2P-swarm */}
+      <text
+        x={380}
+        y={36}
+        textAnchor="middle"
+        className="fill-purple-700 dark:fill-purple-400 text-[10px] uppercase tracking-wider font-semibold"
+      >
+        P2P (BitTorrent linux.iso)
+      </text>
+      {[
+        { x: 300, y: 70, l: "Tromsø" },
+        { x: 380, y: 60, l: "Trondheim" },
+        { x: 460, y: 70, l: "Oslo" },
+        { x: 320, y: 130, l: "Bergen" },
+        { x: 440, y: 130, l: "Stavanger" },
+        { x: 340, y: 180, l: "Bodø" },
+        { x: 420, y: 180, l: "Kr.sand" },
+      ].map((p, i) => (
+        <g key={i}>
+          <circle
+            cx={p.x}
+            cy={p.y}
+            r={9}
+            className="fill-purple-500/30 stroke-purple-500"
+            strokeWidth={1}
+          />
+          <text x={p.x} y={p.y + 3} textAnchor="middle" className="fill-foreground text-[7px]">
+            P{i + 1}
+          </text>
+          <text
+            x={p.x}
+            y={p.y + 19}
+            textAnchor="middle"
+            className="fill-muted-foreground text-[6px]"
+          >
+            {p.l}
+          </text>
+        </g>
+      ))}
+      {(() => {
+        const peers: [number, number][] = [
+          [300, 70],
+          [380, 60],
+          [460, 70],
+          [320, 130],
+          [440, 130],
+          [340, 180],
+          [420, 180],
+        ];
+        const lines: React.ReactElement[] = [];
+        for (let i = 0; i < peers.length; i++) {
+          for (let j = i + 1; j < peers.length; j++) {
+            lines.push(
+              <line
+                key={`${i}-${j}`}
+                x1={peers[i][0]}
+                y1={peers[i][1]}
+                x2={peers[j][0]}
+                y2={peers[j][1]}
+                className="stroke-purple-500/30"
+                strokeWidth={0.5}
+              />,
+            );
+          }
+        }
+        return lines;
+      })()}
+      <text x={380} y={215} textAnchor="middle" className="fill-muted-foreground text-[8px] italic">
+        alle deler direkte med alle
+      </text>
+    </svg>
+  );
+}
+
+function DnsCacheTreeSvg() {
+  // Tre-struktur som viser hva en lokal resolver typisk har cached
+  return (
+    <svg viewBox="0 0 500 220" className="w-full h-auto">
+      <text
+        x={250}
+        y={14}
+        textAnchor="middle"
+        className="fill-foreground text-[11px] font-semibold"
+      >
+        Lokal resolver-cache som tre (UiT-resolver mandag morgen)
+      </text>
+      {/* Root */}
+      <rect
+        x={210}
+        y={30}
+        width={80}
+        height={26}
+        rx={4}
+        className="fill-success/20 stroke-success"
+        strokeWidth={1.5}
+      />
+      <text x={250} y={47} textAnchor="middle" className="fill-foreground text-[10px] font-mono">
+        . (root)
+      </text>
+      <text x={295} y={48} className="fill-muted-foreground text-[8px]">
+        TTL: 5d
+      </text>
+      {/* TLDs */}
+      {[
+        { x: 90, l: ".no", ttl: "23h" },
+        { x: 250, l: ".com", ttl: "12h" },
+        { x: 410, l: ".org", ttl: "8h" },
+      ].map((t, i) => (
+        <g key={i}>
+          <line
+            x1={250}
+            y1={56}
+            x2={t.x}
+            y2={75}
+            className="stroke-foreground/40"
+            strokeWidth={1}
+          />
+          <rect
+            x={t.x - 35}
+            y={75}
+            width={70}
+            height={22}
+            rx={4}
+            className="fill-brand/15 stroke-brand"
+            strokeWidth={1}
+          />
+          <text x={t.x} y={89} textAnchor="middle" className="fill-foreground text-[9px] font-mono">
+            {t.l}
+          </text>
+          <text x={t.x + 40} y={90} className="fill-muted-foreground text-[7px]">
+            {t.ttl}
+          </text>
+        </g>
+      ))}
+      {/* Sub-domains */}
+      {[
+        { px: 90, x: 40, l: "uit.no", ttl: "45m" },
+        { px: 90, x: 130, l: "vg.no", ttl: "20m" },
+        { px: 250, x: 200, l: "github.com", ttl: "55m" },
+        { px: 250, x: 290, l: "google.com", ttl: "3m" },
+        { px: 410, x: 380, l: "wikipedia.org", ttl: "40m" },
+        { px: 410, x: 470, l: "norid.org", ttl: "1h" },
+      ].map((s, i) => (
+        <g key={i}>
+          <line
+            x1={s.px}
+            y1={97}
+            x2={s.x}
+            y2={115}
+            className="stroke-foreground/40"
+            strokeWidth={1}
+          />
+          <rect
+            x={s.x - 35}
+            y={115}
+            width={70}
+            height={22}
+            rx={3}
+            className="fill-amber-500/15 stroke-amber-500"
+            strokeWidth={1}
+          />
+          <text
+            x={s.x}
+            y={128}
+            textAnchor="middle"
+            className="fill-foreground text-[8px] font-mono"
+          >
+            {s.l}
+          </text>
+          <text x={s.x} y={147} textAnchor="middle" className="fill-muted-foreground text-[7px]">
+            TTL: {s.ttl}
+          </text>
+        </g>
+      ))}
+      {/* Leaves: A-records */}
+      {[
+        { px: 40, x: 30, l: "www" },
+        { px: 40, x: 70, l: "mail" },
+        { px: 200, x: 175, l: "api" },
+        { px: 290, x: 290, l: "(utgått)", expired: true },
+      ].map((leaf, i) => (
+        <g key={i}>
+          <line
+            x1={leaf.px}
+            y1={137}
+            x2={leaf.x}
+            y2={165}
+            className="stroke-foreground/30"
+            strokeWidth={0.7}
+          />
+          <circle
+            cx={leaf.x}
+            cy={172}
+            r={9}
+            className={
+              leaf.expired ? "fill-rose-500/20 stroke-rose-500" : "fill-success/20 stroke-success"
+            }
+            strokeWidth={1}
+          />
+          <text x={leaf.x} y={175} textAnchor="middle" className="fill-foreground text-[7px]">
+            {leaf.l}
+          </text>
+        </g>
+      ))}
+      <text x={250} y={210} textAnchor="middle" className="fill-muted-foreground text-[8px] italic">
+        grønt = gyldig A-record, rødt = utgått (må refreshes). Jo dypere, jo kortere TTL typisk.
+      </text>
+    </svg>
+  );
+}
+
+function DnsLookupTimelineSvg() {
+  // Example-timeline: oppslag av finn.no
+  const steps = [
+    { t: 0, lbl: "0 ms", desc: "klient → resolver", color: "fill-brand stroke-brand" },
+    {
+      t: 1,
+      lbl: "5 ms",
+      desc: "resolver: cache-miss → root",
+      color: "fill-amber-500 stroke-amber-500",
+    },
+    { t: 2, lbl: "25 ms", desc: "root → .no NS", color: "fill-amber-500 stroke-amber-500" },
+    { t: 3, lbl: "45 ms", desc: ".no → finn.no NS", color: "fill-amber-500 stroke-amber-500" },
+    {
+      t: 4,
+      lbl: "70 ms",
+      desc: "finn.no NS → A 213.236.x.x",
+      color: "fill-success stroke-success",
+    },
+    {
+      t: 5,
+      lbl: "75 ms",
+      desc: "resolver → klient (cached)",
+      color: "fill-success stroke-success",
+    },
+  ];
+  return (
+    <svg viewBox="0 0 500 180" className="w-full h-auto">
+      <text
+        x={250}
+        y={14}
+        textAnchor="middle"
+        className="fill-foreground text-[11px] font-semibold"
+      >
+        DNS-oppslag for finn.no — første gang (75 ms total)
+      </text>
+      <line x1={30} y1={100} x2={470} y2={100} className="stroke-foreground/40" strokeWidth={1.5} />
+      <polygon points="470,100 462,96 462,104" className="fill-foreground/40" />
+      {steps.map((s, i) => {
+        const x = 50 + i * 78;
+        return (
+          <g key={i}>
+            <circle cx={x} cy={100} r={6} className={s.color} strokeWidth={1.5} />
+            <text
+              x={x}
+              y={104}
+              textAnchor="middle"
+              className="fill-foreground text-[7px] font-bold"
+            >
+              {i + 1}
+            </text>
+            <text
+              x={x}
+              y={84}
+              textAnchor="middle"
+              className="fill-foreground text-[8px] font-mono font-semibold"
+            >
+              {s.lbl}
+            </text>
+            <text
+              x={x}
+              y={i % 2 === 0 ? 125 : 145}
+              textAnchor="middle"
+              className="fill-muted-foreground text-[7.5px]"
+            >
+              {s.desc.split(" → ")[0]}
+            </text>
+            <text
+              x={x}
+              y={i % 2 === 0 ? 137 : 157}
+              textAnchor="middle"
+              className="fill-muted-foreground text-[7.5px]"
+            >
+              {s.desc.includes(" → ") ? "→ " + s.desc.split(" → ")[1] : ""}
+            </text>
+          </g>
+        );
+      })}
+      <text x={250} y={172} textAnchor="middle" className="fill-muted-foreground text-[8px] italic">
+        Neste oppslag av finn.no innen TTL: ~1 ms (resolver-cache treff)
+      </text>
+    </svg>
+  );
+}
+
+function HttpCachingTimelineSvg() {
+  return (
+    <svg viewBox="0 0 500 200" className="w-full h-auto">
+      <text
+        x={250}
+        y={14}
+        textAnchor="middle"
+        className="fill-foreground text-[11px] font-semibold"
+      >
+        GET /style.css mot vg.no — første besøk vs gjenbesøk
+      </text>
+      {/* Første besøk */}
+      <text x={20} y={36} className="fill-brand text-[10px] uppercase tracking-wider font-semibold">
+        første besøk
+      </text>
+      <line x1={70} y1={50} x2={70} y2={90} className="stroke-foreground/40" strokeWidth={1} />
+      <line x1={430} y1={50} x2={430} y2={90} className="stroke-foreground/40" strokeWidth={1} />
+      <text x={70} y={47} textAnchor="middle" className="fill-foreground text-[8px]">
+        nettleser
+      </text>
+      <text x={430} y={47} textAnchor="middle" className="fill-foreground text-[8px]">
+        vg.no
+      </text>
+      <line x1={70} y1={60} x2={430} y2={70} className="stroke-brand" strokeWidth={1.2} />
+      <polygon points="430,70 422,66 422,74" className="fill-brand" />
+      <text x={250} y={57} textAnchor="middle" className="fill-foreground text-[8px]">
+        GET /style.css
+      </text>
+      <line x1={430} y1={80} x2={70} y2={88} className="stroke-success" strokeWidth={1.2} />
+      <polygon points="70,88 78,84 78,92" className="fill-success" />
+      <text x={250} y={77} textAnchor="middle" className="fill-success text-[8px]">
+        200 OK + ETag "x7q" + 80 kB body
+      </text>
+
+      {/* Linje */}
+      <line x1={15} y1={102} x2={485} y2={102} className="stroke-border" strokeDasharray="3 3" />
+
+      {/* Gjenbesøk */}
+      <text
+        x={20}
+        y={120}
+        className="fill-success text-[10px] uppercase tracking-wider font-semibold"
+      >
+        gjenbesøk (cache hit / 304)
+      </text>
+      <line x1={70} y1={134} x2={70} y2={185} className="stroke-foreground/40" strokeWidth={1} />
+      <line x1={430} y1={134} x2={430} y2={185} className="stroke-foreground/40" strokeWidth={1} />
+      <line x1={70} y1={144} x2={430} y2={154} className="stroke-brand" strokeWidth={1.2} />
+      <polygon points="430,154 422,150 422,158" className="fill-brand" />
+      <text x={250} y={141} textAnchor="middle" className="fill-foreground text-[8px]">
+        GET /style.css + If-None-Match: "x7q"
+      </text>
+      <line x1={430} y1={166} x2={70} y2={172} className="stroke-success" strokeWidth={1.2} />
+      <polygon points="70,172 78,168 78,176" className="fill-success" />
+      <text x={250} y={163} textAnchor="middle" className="fill-success text-[8px]">
+        304 Not Modified (~150 byte, ingen body)
+      </text>
+      <text x={250} y={192} textAnchor="middle" className="fill-muted-foreground text-[8px] italic">
+        Conditional GET → server-svaret krymper fra 80 kB til 150 byte
+      </text>
+    </svg>
+  );
+}
+
+function CdnNorgeKartSvg() {
+  return (
+    <svg viewBox="0 0 360 320" className="w-full h-auto">
+      <text
+        x={180}
+        y={14}
+        textAnchor="middle"
+        className="fill-foreground text-[11px] font-semibold"
+      >
+        CDN-edge-noder i Norge (forenklet kart)
+      </text>
+      {/* Forenklet Norge-omriss */}
+      <path
+        d="M 180 30 Q 200 50 195 70 Q 210 90 205 110 Q 220 130 210 155 Q 230 175 220 200 Q 240 220 225 245 Q 200 270 175 290 Q 160 305 145 295 Q 130 280 135 260 Q 120 240 130 220 Q 110 200 120 180 Q 100 165 115 145 Q 100 125 115 105 Q 105 85 125 70 Q 115 50 140 35 Q 160 25 180 30 Z"
+        className="fill-card stroke-border"
+        strokeWidth={1.2}
+      />
+      {/* Origin (utenfor Norge) */}
+      <rect
+        x={290}
+        y={150}
+        width={60}
+        height={28}
+        rx={4}
+        className="fill-success/20 stroke-success"
+        strokeWidth={1.5}
+      />
+      <text
+        x={320}
+        y={167}
+        textAnchor="middle"
+        className="fill-foreground text-[9px] font-semibold"
+      >
+        origin
+      </text>
+      <text x={320} y={177} textAnchor="middle" className="fill-muted-foreground text-[7px]">
+        Dublin
+      </text>
+      {/* Edge-noder i norske byer */}
+      {[
+        { x: 165, y: 62, l: "Tromsø", users: 4 },
+        { x: 155, y: 110, l: "Bodø", users: 2 },
+        { x: 160, y: 155, l: "Trondheim", users: 5 },
+        { x: 150, y: 205, l: "Bergen", users: 6 },
+        { x: 175, y: 245, l: "Stavanger", users: 4 },
+        { x: 195, y: 235, l: "Kristiansand", users: 3 },
+        { x: 200, y: 220, l: "Oslo", users: 8 },
+      ].map((c, i) => (
+        <g key={i}>
+          {/* Linje fra origin */}
+          <line
+            x1={290}
+            y1={164}
+            x2={c.x}
+            y2={c.y}
+            className="stroke-muted-foreground/30"
+            strokeWidth={0.6}
+            strokeDasharray="2 2"
+          />
+          {/* Edge */}
+          <rect
+            x={c.x - 14}
+            y={c.y - 6}
+            width={28}
+            height={14}
+            rx={2}
+            className="fill-amber-500/25 stroke-amber-500"
+            strokeWidth={1}
+          />
+          <text
+            x={c.x}
+            y={c.y + 4}
+            textAnchor="middle"
+            className="fill-foreground text-[7px] font-bold"
+          >
+            edge
+          </text>
+          <text x={c.x} y={c.y + 18} textAnchor="middle" className="fill-foreground text-[7px]">
+            {c.l}
+          </text>
+          {/* Brukere */}
+          {Array.from({ length: c.users }).map((_, j) => {
+            const angle = (j / c.users) * Math.PI * 2;
+            const ux = c.x + Math.cos(angle) * 16;
+            const uy = c.y + 6 + Math.sin(angle) * 10;
+            return <circle key={j} cx={ux} cy={uy} r={1.5} className="fill-brand" />;
+          })}
+        </g>
+      ))}
+      <text x={180} y={310} textAnchor="middle" className="fill-muted-foreground text-[8px] italic">
+        Hver edge serverer lokale brukere; origin holdes utenom for varme objekter
+      </text>
+    </svg>
+  );
+}
+
+function SocketStateFlowSvg() {
+  // Mer detaljert flow-chart enn SocketStateSvg
+  return (
+    <svg viewBox="0 0 500 240" className="w-full h-auto">
+      <text
+        x={250}
+        y={14}
+        textAnchor="middle"
+        className="fill-foreground text-[11px] font-semibold"
+      >
+        Socket-tilstander som flytdiagram — server- og klient-side
+      </text>
+      {/* Server side */}
+      <text
+        x={100}
+        y={36}
+        textAnchor="middle"
+        className="fill-brand text-[9px] uppercase tracking-wider font-semibold"
+      >
+        Server
+      </text>
+      {[
+        { y: 50, lbl: "socket()", state: "CLOSED" },
+        { y: 80, lbl: "bind()", state: "BOUND" },
+        { y: 110, lbl: "listen()", state: "LISTEN" },
+        { y: 140, lbl: "accept()", state: "ESTABLISHED" },
+        { y: 170, lbl: "recv/send", state: "..." },
+        { y: 200, lbl: "close()", state: "TIME_WAIT" },
+      ].map((s, i) => (
+        <g key={i}>
+          <rect
+            x={30}
+            y={s.y}
+            width={140}
+            height={22}
+            rx={3}
+            className={
+              i === 5 ? "fill-amber-500/20 stroke-amber-500" : "fill-brand/15 stroke-brand"
+            }
+            strokeWidth={1}
+          />
+          <text x={50} y={s.y + 14} className="fill-foreground text-[9px] font-mono">
+            {s.lbl}
+          </text>
+          <text
+            x={160}
+            y={s.y + 14}
+            textAnchor="end"
+            className="fill-muted-foreground text-[8px] italic"
+          >
+            {s.state}
+          </text>
+          {i < 5 && (
+            <g>
+              <line
+                x1={100}
+                y1={s.y + 22}
+                x2={100}
+                y2={s.y + 30}
+                className="stroke-brand"
+                strokeWidth={1}
+              />
+              <polygon
+                points={`100,${s.y + 30} 96,${s.y + 26} 104,${s.y + 26}`}
+                className="fill-brand"
+              />
+            </g>
+          )}
+        </g>
+      ))}
+
+      {/* Skille */}
+      <line x1={250} y1={30} x2={250} y2={230} className="stroke-border" strokeDasharray="3 3" />
+
+      {/* Klient side */}
+      <text
+        x={400}
+        y={36}
+        textAnchor="middle"
+        className="fill-success text-[9px] uppercase tracking-wider font-semibold"
+      >
+        Klient
+      </text>
+      {[
+        { y: 50, lbl: "socket()", state: "CLOSED" },
+        { y: 95, lbl: "connect()", state: "SYN_SENT → ESTABLISHED" },
+        { y: 140, lbl: "send/recv", state: "..." },
+        { y: 200, lbl: "close()", state: "FIN_WAIT" },
+      ].map((s, i) => (
+        <g key={i}>
+          <rect
+            x={330}
+            y={s.y}
+            width={140}
+            height={22}
+            rx={3}
+            className={
+              i === 3 ? "fill-amber-500/20 stroke-amber-500" : "fill-success/15 stroke-success"
+            }
+            strokeWidth={1}
+          />
+          <text x={350} y={s.y + 14} className="fill-foreground text-[9px] font-mono">
+            {s.lbl}
+          </text>
+          <text
+            x={460}
+            y={s.y + 14}
+            textAnchor="end"
+            className="fill-muted-foreground text-[8px] italic"
+          >
+            {s.state}
+          </text>
+          {i < 3 && (
+            <line
+              x1={400}
+              y1={s.y + 22}
+              x2={400}
+              y2={s.y + 45}
+              className="stroke-success"
+              strokeWidth={1}
+            />
+          )}
+        </g>
+      ))}
+      <text x={250} y={232} textAnchor="middle" className="fill-muted-foreground text-[8px] italic">
+        Server holder lytte-socketen alive; hver accept gir en ny conn-socket
+      </text>
+    </svg>
+  );
+}
+
+function P2PSwarmSnapshotSvg() {
+  return (
+    <svg viewBox="0 0 500 200" className="w-full h-auto">
+      <text
+        x={250}
+        y={14}
+        textAnchor="middle"
+        className="fill-foreground text-[11px] font-semibold"
+      >
+        Swarm-snapshot: hvilke biter har hver peer? (8 biter, 6 peers)
+      </text>
+      <text x={20} y={36} className="fill-brand text-[9px] uppercase tracking-wider font-semibold">
+        Peer
+      </text>
+      {Array.from({ length: 8 }).map((_, i) => (
+        <text
+          key={i}
+          x={120 + i * 35}
+          y={36}
+          textAnchor="middle"
+          className="fill-brand text-[8px] font-mono"
+        >
+          bit {i + 1}
+        </text>
+      ))}
+      <line x1={15} y1={42} x2={485} y2={42} className="stroke-border" />
+      {[
+        { name: "Seeder", bits: [1, 1, 1, 1, 1, 1, 1, 1], cls: "fill-success/30" },
+        { name: "P1", bits: [1, 1, 1, 0, 0, 0, 0, 0], cls: "fill-brand/30" },
+        { name: "P2", bits: [1, 0, 1, 1, 1, 0, 0, 0], cls: "fill-brand/30" },
+        { name: "P3", bits: [0, 1, 1, 1, 0, 1, 0, 0], cls: "fill-brand/30" },
+        { name: "P4 (ny)", bits: [0, 0, 0, 0, 0, 0, 0, 0], cls: "fill-amber-500/30" },
+        { name: "P5", bits: [1, 1, 0, 0, 1, 1, 1, 0], cls: "fill-brand/30" },
+      ].map((row, i) => {
+        const y = 60 + i * 22;
+        return (
+          <g key={row.name}>
+            <text x={20} y={y + 4} className="fill-foreground text-[9px]">
+              {row.name}
+            </text>
+            {row.bits.map((b, j) => (
+              <g key={j}>
+                <rect
+                  x={120 + j * 35 - 12}
+                  y={y - 8}
+                  width={24}
+                  height={14}
+                  rx={2}
+                  className={b ? `${row.cls} stroke-foreground/30` : "fill-muted/30 stroke-border"}
+                  strokeWidth={0.8}
+                />
+                <text
+                  x={120 + j * 35}
+                  y={y + 2}
+                  textAnchor="middle"
+                  className={
+                    b ? "fill-foreground text-[8px] font-bold" : "fill-muted-foreground text-[8px]"
+                  }
+                >
+                  {b ? "✓" : "·"}
+                </text>
+              </g>
+            ))}
+          </g>
+        );
+      })}
+      <text x={250} y={195} textAnchor="middle" className="fill-muted-foreground text-[8px] italic">
+        Bit 8 finnes bare hos Seeder — P4 bør bruke rarest-first og hente den FØRST
+      </text>
+    </svg>
+  );
+}
+
+function HttpVersionFlowSideBySideSvg() {
+  // Tre side-ved-side request/response-flyt for 1.1/2/3
+  const cols = [
+    {
+      x: 30,
+      title: "HTTP/1.1",
+      color: "stroke-amber-500",
+      fill: "fill-amber-500",
+      events: [
+        { y: 50, lbl: "TCP SYN", side: "→" },
+        { y: 65, lbl: "SYN-ACK", side: "←" },
+        { y: 80, lbl: "TLS hello", side: "→" },
+        { y: 95, lbl: "TLS done", side: "←" },
+        { y: 115, lbl: "GET 1", side: "→" },
+        { y: 130, lbl: "200", side: "←" },
+        { y: 150, lbl: "GET 2", side: "→" },
+        { y: 165, lbl: "200", side: "←" },
+        { y: 185, lbl: "GET 3", side: "→" },
+        { y: 200, lbl: "200", side: "←" },
+      ],
+      note: "seriell — RTT × N",
+    },
+    {
+      x: 180,
+      title: "HTTP/2",
+      color: "stroke-brand",
+      fill: "fill-brand",
+      events: [
+        { y: 50, lbl: "TCP SYN", side: "→" },
+        { y: 65, lbl: "SYN-ACK", side: "←" },
+        { y: 80, lbl: "TLS hello", side: "→" },
+        { y: 95, lbl: "TLS done", side: "←" },
+        { y: 115, lbl: "GET 1+2+3", side: "→" },
+        { y: 145, lbl: "stream 1", side: "←" },
+        { y: 160, lbl: "stream 2", side: "←" },
+        { y: 175, lbl: "stream 3", side: "←" },
+      ],
+      note: "multipleksing — 1 RTT app",
+    },
+    {
+      x: 340,
+      title: "HTTP/3 (QUIC)",
+      color: "stroke-success",
+      fill: "fill-success",
+      events: [
+        { y: 50, lbl: "QUIC init", side: "→" },
+        { y: 70, lbl: "QUIC+TLS", side: "←" },
+        { y: 90, lbl: "GET 1+2+3", side: "→" },
+        { y: 120, lbl: "stream 1", side: "←" },
+        { y: 135, lbl: "stream 2", side: "←" },
+        { y: 150, lbl: "stream 3", side: "←" },
+      ],
+      note: "0-1 RTT, ingen HoL",
+    },
+  ];
+  return (
+    <svg viewBox="0 0 500 230" className="w-full h-auto">
+      <text
+        x={250}
+        y={14}
+        textAnchor="middle"
+        className="fill-foreground text-[11px] font-semibold"
+      >
+        3 ressurser fra finn.no — request/response-flyt per HTTP-versjon
+      </text>
+      {cols.map((c) => (
+        <g key={c.title}>
+          <text
+            x={c.x + 60}
+            y={32}
+            textAnchor="middle"
+            className={`${c.fill} text-[10px] uppercase tracking-wider font-semibold`}
+          >
+            {c.title}
+          </text>
+          <line
+            x1={c.x + 10}
+            y1={40}
+            x2={c.x + 10}
+            y2={210}
+            className="stroke-foreground/40"
+            strokeWidth={1}
+          />
+          <line
+            x1={c.x + 110}
+            y1={40}
+            x2={c.x + 110}
+            y2={210}
+            className="stroke-foreground/40"
+            strokeWidth={1}
+          />
+          <text
+            x={c.x + 10}
+            y={45}
+            textAnchor="middle"
+            className="fill-muted-foreground text-[7px]"
+          >
+            klient
+          </text>
+          <text
+            x={c.x + 110}
+            y={45}
+            textAnchor="middle"
+            className="fill-muted-foreground text-[7px]"
+          >
+            server
+          </text>
+          {c.events.map((e, j) => {
+            const fwd = e.side === "→";
+            const x1 = fwd ? c.x + 10 : c.x + 110;
+            const x2 = fwd ? c.x + 110 : c.x + 10;
+            return (
+              <g key={j}>
+                <line x1={x1} y1={e.y} x2={x2} y2={e.y} className={c.color} strokeWidth={1} />
+                <polygon
+                  points={`${x2},${e.y} ${x2 + (fwd ? -4 : 4)},${e.y - 2} ${x2 + (fwd ? -4 : 4)},${e.y + 2}`}
+                  className={c.fill}
+                />
+                <text
+                  x={c.x + 60}
+                  y={e.y - 2}
+                  textAnchor="middle"
+                  className="fill-foreground text-[6.5px] font-mono"
+                >
+                  {e.lbl}
+                </text>
+              </g>
+            );
+          })}
+          <text
+            x={c.x + 60}
+            y={222}
+            textAnchor="middle"
+            className="fill-muted-foreground text-[7px] italic"
+          >
+            {c.note}
+          </text>
+        </g>
+      ))}
     </svg>
   );
 }

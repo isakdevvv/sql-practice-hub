@@ -263,9 +263,14 @@ function Section71() {
             },
           ]}
         />
-        <Illustration caption="Hidden terminal: A og C hører begge AP, men ikke hverandre. AP får krasjete signaler.">
-          <HiddenTerminalSvg />
-        </Illustration>
+        <div className="space-y-3">
+          <Illustration caption="Hidden terminal: A og C hører begge AP, men ikke hverandre. AP får krasjete signaler.">
+            <HiddenTerminalSvg />
+          </Illustration>
+          <Illustration caption="Signal-amplitude faller med avstanden, med multipath-hull oppå — det er fading.">
+            <DefSignalFadingSvg />
+          </Illustration>
+        </div>
       </div>
 
       <div className="grid gap-3 lg:grid-cols-2">
@@ -1210,6 +1215,9 @@ function Section76() {
           rate-reduksjonen. Hjelper, men løser ikke grunnproblemet: TCP og radio-laget snakker ikke
           samme språk.
         </p>
+        <div className="mt-3 rounded bg-background/60 p-2">
+          <ExampleSpuriousTimeoutSvg />
+        </div>
       </Example>
 
       <Hvorfor title="Hvorfor sliter klassisk TCP fundamentalt med trådløse lenker?">
@@ -1595,32 +1603,105 @@ function SectionEksamen() {
         items={[
           {
             label: "Path loss",
-            body: "Signalstyrken faller med avstanden² i fritt rom — i dB blir det ca. −6 dB per dobling av avstand. Innendørs (vegger, møbler) ligger eksponenten ofte mellom 3 og 5, så tapet er enda raskere. FSPL ≈ 20·log d + 20·log f + 32.45 i dB.",
+            body: (
+              <>
+                <p>
+                  Signalstyrken faller med avstanden² i fritt rom — i dB blir det ca. −6 dB per
+                  dobling av avstand. Innendørs (vegger, møbler) ligger eksponenten ofte mellom 3 og
+                  5, så tapet er enda raskere. FSPL ≈ 20·log d + 20·log f + 32.45 i dB.
+                </p>
+                <div className="mt-2 rounded bg-background/60 p-2">
+                  <CheatPathLossMiniSvg />
+                </div>
+              </>
+            ),
           },
           {
             label: "CSMA/CA-timing",
-            body: "Stasjonen venter DIFS (≈ 50 μs) etter at lufta ble stille, deretter teller den ned en tilfeldig backoff-teller i slots. Mottakeren venter bare SIFS (≈ 10 μs) før den sender ACK — slik at ACK alltid vinner over en ny DIFS-sender. Rekkefølge: DIFS → backoff → DATA → SIFS → ACK.",
+            body: (
+              <>
+                <p>
+                  Stasjonen venter DIFS (≈ 50 μs) etter at lufta ble stille, deretter teller den ned
+                  en tilfeldig backoff-teller i slots. Mottakeren venter bare SIFS (≈ 10 μs) før den
+                  sender ACK — slik at ACK alltid vinner over en ny DIFS-sender. Rekkefølge: DIFS →
+                  backoff → DATA → SIFS → ACK.
+                </p>
+                <div className="mt-2 rounded bg-background/60 p-2">
+                  <CheatCsmaCaTimingSvg />
+                </div>
+              </>
+            ),
           },
           {
             label: "RTS/CTS",
-            body: "Liten Request-To-Send fra sender + Clear-To-Send fra AP reserverer lufta før selve DATA-rammen. CTS-en høres av alle som er innenfor AP-en, også de som ikke hører senderen — derfor løser den hidden terminal. Brukes typisk bare for DATA over en størrelse-grense (RTS-threshold), siden RTS+CTS er overhead.",
+            body: (
+              <>
+                <p>
+                  Liten Request-To-Send fra sender + Clear-To-Send fra AP reserverer lufta før selve
+                  DATA-rammen. CTS-en høres av alle som er innenfor AP-en, også de som ikke hører
+                  senderen — derfor løser den hidden terminal. Brukes typisk bare for DATA over en
+                  størrelse-grense (RTS-threshold), siden RTS+CTS er overhead.
+                </p>
+                <div className="mt-2 rounded bg-background/60 p-2">
+                  <CheatRtsCtsSequenceSvg />
+                </div>
+              </>
+            ),
           },
           {
             label: "802.11-versjoner",
-            body: "a (5 GHz, OFDM, opp til 54 Mbps) · b (2.4 GHz, DSSS, 11 Mbps) · g (2.4 GHz, OFDM, 54 Mbps) · n (2.4/5 GHz, MIMO, opp til 600 Mbps) · ac (5 GHz, wider channels + MU-MIMO, 1+ Gbps) · ax = WiFi 6 (OFDMA + spatial reuse, lavere ventetid i tette miljø).",
+            body: (
+              <>
+                <p>
+                  a (5 GHz, OFDM, opp til 54 Mbps) · b (2.4 GHz, DSSS, 11 Mbps) · g (2.4 GHz, OFDM,
+                  54 Mbps) · n (2.4/5 GHz, MIMO, opp til 600 Mbps) · ac (5 GHz, wider channels +
+                  MU-MIMO, 1+ Gbps) · ax = WiFi 6 (OFDMA + spatial reuse, lavere ventetid i tette
+                  miljø).
+                </p>
+                <div className="mt-2 rounded bg-background/60 p-2">
+                  <Cheat80211TableSvg />
+                </div>
+              </>
+            ),
           },
           {
             label: "Cellular-generasjoner",
-            body: "2G: GSM (TDMA-stemme) / IS-95 (CDMA). 3G: UMTS / HSPA — pakkedata oppå krets-svitsjet. 4G: LTE — OFDM nedlink, SC-FDMA opplink, all-IP kjerne (EPC). 5G: NR — mm-bølger + sub-6 GHz, massiv MIMO, network slicing, kjerne 5GC.",
+            body: (
+              <>
+                <p>
+                  2G: GSM (TDMA-stemme) / IS-95 (CDMA). 3G: UMTS / HSPA — pakkedata oppå
+                  krets-svitsjet. 4G: LTE — OFDM nedlink, SC-FDMA opplink, all-IP kjerne (EPC). 5G:
+                  NR — mm-bølger + sub-6 GHz, massiv MIMO, network slicing, kjerne 5GC.
+                </p>
+                <div className="mt-2 rounded bg-background/60 p-2">
+                  <CellGenTimelineSvg />
+                </div>
+              </>
+            ),
           },
           {
             label: "Mobile IP",
-            body: "Home agent (HA) i hjemmenettet fanger pakker til den permanente hjemme-adressen. Foreign agent (FA) i besøksnettet annonserer en care-of address (CoA). HA tunnellerer pakker til CoA — som er triangle routing fordi svaret kan gå direkte tilbake fra hosten til avsender uten å passere HA.",
+            body: (
+              <>
+                <p>
+                  Home agent (HA) i hjemmenettet fanger pakker til den permanente hjemme-adressen.
+                  Foreign agent (FA) i besøksnettet annonserer en care-of address (CoA). HA
+                  tunnellerer pakker til CoA — som er triangle routing fordi svaret kan gå direkte
+                  tilbake fra hosten til avsender uten å passere HA.
+                </p>
+                <div className="mt-2 rounded bg-background/60 p-2">
+                  <CheatMobileIpTriangleSvg />
+                </div>
+              </>
+            ),
           },
         ]}
       />
 
       {/* b) SAMMENLIGNING — CSMA/CD vs CSMA/CA */}
+      <Illustration caption="CSMA/CD (kabel-buss, deteksjon) vs CSMA/CA (radio, unngåelse) — side-ved-side.">
+        <CsmaCdVsCaSvg />
+      </Illustration>
       <div className="rounded-xl border border-border bg-card p-4">
         <h3 className="text-xs uppercase tracking-wider text-muted-foreground mb-3">
           CSMA/CD (Ethernet) vs CSMA/CA (WiFi)
@@ -1716,6 +1797,9 @@ function SectionEksamen() {
             oppdage en kollisjon i fart, bare lese fraværet av en ACK i ettertid. Derfor er det
             CSMA/CA («collision avoidance»), ikke /CD («collision detection»).
           </p>
+          <div className="mt-2 rounded bg-background/60 p-2">
+            <FallgruveCsmaCdRadioSvg />
+          </div>
         </Fallgruve>
 
         <Fallgruve tittel="TCP tolker radio-tap som congestion">
@@ -1725,6 +1809,9 @@ function SectionEksamen() {
             ren wireless-strekning er det helt feil reaksjon — det er ikke trengsel, bare støy.
             Resultatet er undermåls throughput på ellers ledige radio-kanaler.
           </p>
+          <div className="mt-2 rounded bg-background/60 p-2">
+            <FallgruveTcpInterpretSvg />
+          </div>
         </Fallgruve>
 
         <Fallgruve tittel="WiFi-celler MÅ overlappe">
@@ -1734,6 +1821,9 @@ function SectionEksamen() {
             overlapp har du ingen «mellomperiode» der klienten kan associere til den nye AP-en, og
             håndover blir et brutalt drop-and-reconnect.
           </p>
+          <div className="mt-2 rounded bg-background/60 p-2">
+            <FallgruveWifiOverlapSvg />
+          </div>
         </Fallgruve>
 
         <Fallgruve tittel="Hidden terminal kan ikke høres av senderne selv">
@@ -1743,6 +1833,9 @@ function SectionEksamen() {
             mellom dem får krasjete signaler. RTS/CTS via AP-en gjør at begge får et felles
             «opptatt-signal» de KAN høre.
           </p>
+          <div className="mt-2 rounded bg-background/60 p-2">
+            <HiddenTerminalSvg />
+          </div>
         </Fallgruve>
 
         <Fallgruve tittel="Mobile IP triangle routing er ikke alltid en feil">
@@ -1783,6 +1876,9 @@ function SectionEksamen() {
       </div>
 
       {/* e) 5-MINUTTER-ANKER */}
+      <Illustration caption="15 visuelle kort — det totale anker-bildet før eksamen. Bla med øyet før du leser teksten.">
+        <AnkerVisualGridSvg />
+      </Illustration>
       <Anker
         tittel="5-minutter-anker — kjernepunkter for kap. 7"
         punkter={[
@@ -3632,6 +3728,1062 @@ function MathisCurveSvg() {
       </text>
       <text x={250} y={65} textAnchor="middle" className="fill-muted-foreground text-[9px] italic">
         CUBIC/Reno er bundet av denne kurven — BBR omgår den
+      </text>
+    </svg>
+  );
+}
+
+// ============================================================
+// Nye SVG-er (kap. 7 — visuell tetting av cheat / fallgruver / examples / anker)
+// ============================================================
+
+function CheatPathLossMiniSvg() {
+  // Mini decay-curve: free-space exp 2 vs indoor exp 4
+  const free: string[] = [];
+  const indoor: string[] = [];
+  for (let i = 1; i <= 50; i++) {
+    const d = i / 5; // 0.2 .. 10 m
+    const fsLoss = 20 * Math.log10(d) + 40; // ref +40 dB offset for plot
+    const inLoss = 40 * Math.log10(d) + 40;
+    const x = 20 + i * 4.4;
+    free.push(`${x},${130 - (80 - fsLoss) * 1.2}`);
+    indoor.push(`${x},${130 - (80 - inLoss) * 1.2}`);
+  }
+  return (
+    <svg viewBox="0 0 260 150" className="w-full h-auto" role="img" aria-label="Path loss mini">
+      <text
+        x={130}
+        y={12}
+        textAnchor="middle"
+        className="fill-foreground text-[10px] font-semibold"
+      >
+        Path loss vs avstand
+      </text>
+      <line x1={20} y1={130} x2={240} y2={130} className="stroke-foreground/60" />
+      <line x1={20} y1={30} x2={20} y2={130} className="stroke-foreground/60" />
+      <polyline points={free.join(" ")} className="fill-none stroke-brand" strokeWidth={1.6} />
+      <polyline
+        points={indoor.join(" ")}
+        className="fill-none stroke-rose-500"
+        strokeWidth={1.6}
+        strokeDasharray="3 2"
+      />
+      <text x={130} y={146} textAnchor="middle" className="fill-muted-foreground text-[8px]">
+        avstand (log)
+      </text>
+      <text x={8} y={80} className="fill-muted-foreground text-[8px]" transform="rotate(-90 8 80)">
+        tap (dB)
+      </text>
+      <line x1={170} y1={40} x2={185} y2={40} className="stroke-brand" strokeWidth={2} />
+      <text x={190} y={43} className="fill-foreground text-[8px]">
+        fritt rom (n=2)
+      </text>
+      <line
+        x1={170}
+        y1={52}
+        x2={185}
+        y2={52}
+        className="stroke-rose-500"
+        strokeWidth={2}
+        strokeDasharray="3 2"
+      />
+      <text x={190} y={55} className="fill-foreground text-[8px]">
+        innendørs (n=4)
+      </text>
+      <text x={130} y={28} textAnchor="middle" className="fill-muted-foreground text-[8px] italic">
+        −6 dB per dobling i fritt rom
+      </text>
+    </svg>
+  );
+}
+
+function CheatCsmaCaTimingSvg() {
+  return (
+    <svg viewBox="0 0 280 110" className="w-full h-auto" role="img" aria-label="CSMA/CA timing">
+      <text
+        x={140}
+        y={12}
+        textAnchor="middle"
+        className="fill-foreground text-[10px] font-semibold"
+      >
+        CSMA/CA-timing: DIFS · backoff · DATA · SIFS · ACK
+      </text>
+      <line x1={10} y1={80} x2={270} y2={80} className="stroke-foreground/60" />
+      {/* DIFS */}
+      <rect
+        x={10}
+        y={50}
+        width={30}
+        height={30}
+        className="fill-muted-foreground/30 stroke-muted-foreground"
+      />
+      <text x={25} y={68} textAnchor="middle" className="fill-foreground text-[8px]">
+        DIFS
+      </text>
+      <text x={25} y={95} textAnchor="middle" className="fill-muted-foreground text-[7px]">
+        34 μs
+      </text>
+      {/* Backoff slots */}
+      {[0, 1, 2, 3, 4].map((i) => (
+        <g key={i}>
+          <rect
+            x={40 + i * 10}
+            y={50}
+            width={9}
+            height={30}
+            className="fill-amber-500/20 stroke-amber-500"
+          />
+        </g>
+      ))}
+      <text
+        x={65}
+        y={45}
+        textAnchor="middle"
+        className="fill-amber-700 dark:fill-amber-400 text-[8px]"
+      >
+        backoff (rand · 9 μs)
+      </text>
+      {/* DATA */}
+      <rect x={90} y={50} width={90} height={30} className="fill-brand/30 stroke-brand" />
+      <text x={135} y={68} textAnchor="middle" className="fill-foreground text-[9px] font-semibold">
+        DATA-frame
+      </text>
+      {/* SIFS */}
+      <rect
+        x={180}
+        y={50}
+        width={14}
+        height={30}
+        className="fill-muted-foreground/30 stroke-muted-foreground"
+      />
+      <text x={187} y={68} textAnchor="middle" className="fill-foreground text-[7px]">
+        SIFS
+      </text>
+      <text x={187} y={95} textAnchor="middle" className="fill-muted-foreground text-[7px]">
+        16 μs
+      </text>
+      {/* ACK */}
+      <rect x={194} y={50} width={36} height={30} className="fill-success/30 stroke-success" />
+      <text x={212} y={68} textAnchor="middle" className="fill-foreground text-[8px] font-semibold">
+        ACK
+      </text>
+      <text x={140} y={105} textAnchor="middle" className="fill-muted-foreground text-[8px] italic">
+        SIFS &lt; DIFS — derfor vinner ACK alltid over ny sender
+      </text>
+    </svg>
+  );
+}
+
+function CheatRtsCtsSequenceSvg() {
+  return (
+    <svg viewBox="0 0 280 150" className="w-full h-auto" role="img" aria-label="RTS/CTS sequence">
+      <text
+        x={140}
+        y={12}
+        textAnchor="middle"
+        className="fill-foreground text-[10px] font-semibold"
+      >
+        RTS/CTS-sekvens
+      </text>
+      {/* Lifelines */}
+      <text x={30} y={28} textAnchor="middle" className="fill-foreground text-[9px] font-semibold">
+        Sender A
+      </text>
+      <text x={140} y={28} textAnchor="middle" className="fill-foreground text-[9px] font-semibold">
+        AP
+      </text>
+      <text x={250} y={28} textAnchor="middle" className="fill-foreground text-[9px] font-semibold">
+        Skjult B
+      </text>
+      <line
+        x1={30}
+        y1={32}
+        x2={30}
+        y2={140}
+        className="stroke-foreground/40"
+        strokeDasharray="2 2"
+      />
+      <line
+        x1={140}
+        y1={32}
+        x2={140}
+        y2={140}
+        className="stroke-foreground/40"
+        strokeDasharray="2 2"
+      />
+      <line
+        x1={250}
+        y1={32}
+        x2={250}
+        y2={140}
+        className="stroke-foreground/40"
+        strokeDasharray="2 2"
+      />
+      {/* RTS A → AP */}
+      <line
+        x1={30}
+        y1={45}
+        x2={140}
+        y2={50}
+        className="stroke-brand"
+        strokeWidth={1.5}
+        markerEnd="url(#arr7)"
+      />
+      <text x={85} y={43} textAnchor="middle" className="fill-brand text-[8px]">
+        RTS
+      </text>
+      {/* CTS AP → alle */}
+      <line
+        x1={140}
+        y1={70}
+        x2={30}
+        y2={75}
+        className="stroke-amber-500"
+        strokeWidth={1.5}
+        markerEnd="url(#arr7)"
+      />
+      <line
+        x1={140}
+        y1={70}
+        x2={250}
+        y2={75}
+        className="stroke-amber-500"
+        strokeWidth={1.5}
+        markerEnd="url(#arr7)"
+      />
+      <text
+        x={85}
+        y={68}
+        textAnchor="middle"
+        className="fill-amber-600 dark:fill-amber-400 text-[8px]"
+      >
+        CTS
+      </text>
+      <text
+        x={195}
+        y={68}
+        textAnchor="middle"
+        className="fill-amber-600 dark:fill-amber-400 text-[8px]"
+      >
+        CTS (B hører!)
+      </text>
+      {/* B setter NAV */}
+      <rect x={235} y={80} width={30} height={20} className="fill-rose-500/15 stroke-rose-500/50" />
+      <text
+        x={250}
+        y={94}
+        textAnchor="middle"
+        className="fill-rose-700 dark:fill-rose-400 text-[7px]"
+      >
+        NAV-stille
+      </text>
+      {/* DATA */}
+      <line
+        x1={30}
+        y1={110}
+        x2={140}
+        y2={115}
+        className="stroke-brand"
+        strokeWidth={2}
+        markerEnd="url(#arr7)"
+      />
+      <text x={85} y={108} textAnchor="middle" className="fill-brand text-[8px] font-semibold">
+        DATA
+      </text>
+      {/* ACK */}
+      <line
+        x1={140}
+        y1={130}
+        x2={30}
+        y2={135}
+        className="stroke-success"
+        strokeWidth={1.5}
+        markerEnd="url(#arr7)"
+      />
+      <text x={85} y={128} textAnchor="middle" className="fill-success text-[8px]">
+        ACK
+      </text>
+      <defs>
+        <marker
+          id="arr7"
+          viewBox="0 0 8 8"
+          refX={7}
+          refY={4}
+          markerWidth={6}
+          markerHeight={6}
+          orient="auto"
+        >
+          <path d="M0,0 L8,4 L0,8 z" className="fill-foreground" />
+        </marker>
+      </defs>
+    </svg>
+  );
+}
+
+function Cheat80211TableSvg() {
+  const rows = [
+    { ver: "a", band: "5 GHz", mod: "OFDM", rate: "54 Mbps", color: "fill-muted-foreground/20" },
+    { ver: "b", band: "2.4 GHz", mod: "DSSS", rate: "11 Mbps", color: "fill-muted-foreground/20" },
+    { ver: "g", band: "2.4 GHz", mod: "OFDM", rate: "54 Mbps", color: "fill-muted-foreground/20" },
+    { ver: "n", band: "2.4 + 5", mod: "MIMO", rate: "600 Mbps", color: "fill-amber-500/20" },
+    { ver: "ac", band: "5 GHz", mod: "MU-MIMO", rate: "≥ 1 Gbps", color: "fill-brand/20" },
+    {
+      ver: "ax (WiFi 6)",
+      band: "2.4 + 5 + 6",
+      mod: "OFDMA",
+      rate: "9.6 Gbps",
+      color: "fill-success/20",
+    },
+  ];
+  return (
+    <svg viewBox="0 0 320 200" className="w-full h-auto" role="img" aria-label="802.11 versjoner">
+      <text
+        x={160}
+        y={12}
+        textAnchor="middle"
+        className="fill-foreground text-[10px] font-semibold"
+      >
+        802.11-versjoner
+      </text>
+      {/* Header */}
+      <rect x={10} y={22} width={300} height={20} className="fill-card stroke-border" />
+      <text x={40} y={36} textAnchor="middle" className="fill-foreground text-[9px] font-semibold">
+        ver
+      </text>
+      <text x={110} y={36} textAnchor="middle" className="fill-foreground text-[9px] font-semibold">
+        bånd
+      </text>
+      <text x={190} y={36} textAnchor="middle" className="fill-foreground text-[9px] font-semibold">
+        modulasjon
+      </text>
+      <text x={270} y={36} textAnchor="middle" className="fill-foreground text-[9px] font-semibold">
+        topprate
+      </text>
+      {rows.map((r, i) => (
+        <g key={r.ver}>
+          <rect
+            x={10}
+            y={42 + i * 24}
+            width={300}
+            height={24}
+            className={`${r.color} stroke-border`}
+          />
+          <text
+            x={40}
+            y={58 + i * 24}
+            textAnchor="middle"
+            className="fill-foreground text-[9px] font-mono"
+          >
+            {r.ver}
+          </text>
+          <text x={110} y={58 + i * 24} textAnchor="middle" className="fill-foreground text-[9px]">
+            {r.band}
+          </text>
+          <text x={190} y={58 + i * 24} textAnchor="middle" className="fill-foreground text-[9px]">
+            {r.mod}
+          </text>
+          <text
+            x={270}
+            y={58 + i * 24}
+            textAnchor="middle"
+            className="fill-foreground text-[9px] font-semibold"
+          >
+            {r.rate}
+          </text>
+        </g>
+      ))}
+      <text x={160} y={196} textAnchor="middle" className="fill-muted-foreground text-[8px] italic">
+        Hver generasjon: bredere kanaler + smartere modulasjon
+      </text>
+    </svg>
+  );
+}
+
+function CheatMobileIpTriangleSvg() {
+  return (
+    <svg viewBox="0 0 280 170" className="w-full h-auto" role="img" aria-label="Mobile IP triangle">
+      <text
+        x={140}
+        y={12}
+        textAnchor="middle"
+        className="fill-foreground text-[10px] font-semibold"
+      >
+        Triangle routing
+      </text>
+      {/* Korrespondent */}
+      <rect x={10} y={70} width={56} height={30} className="fill-brand/20 stroke-brand" />
+      <text x={38} y={88} textAnchor="middle" className="fill-foreground text-[9px] font-semibold">
+        Avsender
+      </text>
+      <text x={38} y={108} textAnchor="middle" className="fill-muted-foreground text-[8px]">
+        i Bergen
+      </text>
+      {/* Home Agent */}
+      <rect x={112} y={25} width={56} height={30} className="fill-amber-500/30 stroke-amber-500" />
+      <text x={140} y={43} textAnchor="middle" className="fill-foreground text-[9px] font-semibold">
+        Home Agent
+      </text>
+      <text x={140} y={20} textAnchor="middle" className="fill-muted-foreground text-[8px]">
+        Tromsø (hjemme)
+      </text>
+      {/* Mobile */}
+      <rect x={214} y={70} width={56} height={30} className="fill-success/20 stroke-success" />
+      <text x={242} y={88} textAnchor="middle" className="fill-foreground text-[9px] font-semibold">
+        Mobil-host
+      </text>
+      <text x={242} y={108} textAnchor="middle" className="fill-muted-foreground text-[8px]">
+        i Bodø (COA)
+      </text>
+      {/* Pakke 1: avsender → HA */}
+      <line
+        x1={66}
+        y1={80}
+        x2={112}
+        y2={50}
+        className="stroke-brand"
+        strokeWidth={1.6}
+        markerEnd="url(#arr8)"
+      />
+      <text x={75} y={62} className="fill-brand text-[8px]">
+        1. til hjem-IP
+      </text>
+      {/* Pakke 2: HA → mobil (tunnel) */}
+      <line
+        x1={168}
+        y1={50}
+        x2={214}
+        y2={80}
+        className="stroke-amber-500"
+        strokeWidth={1.6}
+        strokeDasharray="3 2"
+        markerEnd="url(#arr8)"
+      />
+      <text x={195} y={62} className="fill-amber-700 dark:fill-amber-400 text-[8px]">
+        2. tunnel
+      </text>
+      {/* Svar direkte: mobil → avsender */}
+      <line
+        x1={214}
+        y1={95}
+        x2={66}
+        y2={95}
+        className="stroke-success"
+        strokeWidth={1.6}
+        markerEnd="url(#arr8)"
+      />
+      <text x={140} y={108} textAnchor="middle" className="fill-success text-[8px]">
+        3. svar direkte (triangle)
+      </text>
+      <text x={140} y={150} textAnchor="middle" className="fill-muted-foreground text-[8px] italic">
+        Pakke inn: avsender → HA → mobil. Svar ut: mobil → avsender.
+      </text>
+      <text x={140} y={162} textAnchor="middle" className="fill-muted-foreground text-[8px]">
+        Sparer halv lengde — men HA er fortsatt et omveis-anker.
+      </text>
+      <defs>
+        <marker
+          id="arr8"
+          viewBox="0 0 8 8"
+          refX={7}
+          refY={4}
+          markerWidth={6}
+          markerHeight={6}
+          orient="auto"
+        >
+          <path d="M0,0 L8,4 L0,8 z" className="fill-foreground" />
+        </marker>
+      </defs>
+    </svg>
+  );
+}
+
+function CsmaCdVsCaSvg() {
+  return (
+    <svg viewBox="0 0 560 220" className="w-full h-auto" role="img" aria-label="CSMA/CD vs CSMA/CA">
+      <text
+        x={280}
+        y={14}
+        textAnchor="middle"
+        className="fill-foreground text-[11px] font-semibold"
+      >
+        CSMA/CD (kabel) vs CSMA/CA (radio) — side-ved-side
+      </text>
+      {/* Venstre boks: CD */}
+      <rect
+        x={10}
+        y={25}
+        width={260}
+        height={185}
+        rx={6}
+        className="fill-brand/5 stroke-brand/40"
+      />
+      <text
+        x={140}
+        y={42}
+        textAnchor="middle"
+        className="fill-foreground text-[10px] font-semibold"
+      >
+        CSMA/CD — Ethernet-buss
+      </text>
+      {/* Buss */}
+      <line x1={30} y1={90} x2={250} y2={90} className="stroke-foreground/80" strokeWidth={2} />
+      <circle cx={70} cy={90} r={6} className="fill-brand stroke-foreground" />
+      <text x={70} y={108} textAnchor="middle" className="fill-foreground text-[9px]">
+        A
+      </text>
+      <circle cx={140} cy={90} r={6} className="fill-brand stroke-foreground" />
+      <text x={140} y={108} textAnchor="middle" className="fill-foreground text-[9px]">
+        B
+      </text>
+      <circle cx={210} cy={90} r={6} className="fill-brand stroke-foreground" />
+      <text x={210} y={108} textAnchor="middle" className="fill-foreground text-[9px]">
+        C
+      </text>
+      {/* Kollisjon vises */}
+      <path
+        d="M 70 90 L 210 90"
+        className="stroke-rose-500"
+        strokeWidth={3}
+        strokeDasharray="4 2"
+      />
+      <text
+        x={140}
+        y={78}
+        textAnchor="middle"
+        className="fill-rose-600 dark:fill-rose-400 text-[8px] font-semibold"
+      >
+        kollisjon = spennings-spike
+      </text>
+      <text x={140} y={130} textAnchor="middle" className="fill-foreground text-[9px]">
+        Senderen LYTTER mens den sender
+      </text>
+      <text x={140} y={144} textAnchor="middle" className="fill-foreground text-[9px]">
+        → detekterer kollisjon, aborterer
+      </text>
+      <text x={140} y={162} textAnchor="middle" className="fill-muted-foreground text-[8px]">
+        Strategi: <tspan className="fill-brand font-semibold">detect-and-abort</tspan>
+      </text>
+      <text x={140} y={176} textAnchor="middle" className="fill-muted-foreground text-[8px]">
+        Ingen lag-2 ACK trengs
+      </text>
+      <text x={140} y={195} textAnchor="middle" className="fill-success text-[8px] font-semibold">
+        ✓ alle hører alle, signal forutsigbart
+      </text>
+
+      {/* Høyre boks: CA */}
+      <rect
+        x={290}
+        y={25}
+        width={260}
+        height={185}
+        rx={6}
+        className="fill-amber-500/5 stroke-amber-500/40"
+      />
+      <text
+        x={420}
+        y={42}
+        textAnchor="middle"
+        className="fill-foreground text-[10px] font-semibold"
+      >
+        CSMA/CA — WiFi-radio
+      </text>
+      {/* AP i midten */}
+      <rect x={400} y={80} width={40} height={20} className="fill-amber-500/30 stroke-amber-500" />
+      <text x={420} y={94} textAnchor="middle" className="fill-foreground text-[8px] font-semibold">
+        AP
+      </text>
+      {/* Klienter */}
+      <circle cx={320} cy={90} r={6} className="fill-amber-500/40 stroke-foreground" />
+      <text x={320} y={108} textAnchor="middle" className="fill-foreground text-[9px]">
+        A
+      </text>
+      <circle cx={520} cy={90} r={6} className="fill-amber-500/40 stroke-foreground" />
+      <text x={520} y={108} textAnchor="middle" className="fill-foreground text-[9px]">
+        C
+      </text>
+      {/* Rekkevidde-stiplet */}
+      <circle
+        cx={320}
+        cy={90}
+        r={45}
+        className="fill-none stroke-amber-500/40"
+        strokeDasharray="2 2"
+      />
+      <circle
+        cx={520}
+        cy={90}
+        r={45}
+        className="fill-none stroke-amber-500/40"
+        strokeDasharray="2 2"
+      />
+      <text
+        x={420}
+        y={70}
+        textAnchor="middle"
+        className="fill-rose-600 dark:fill-rose-400 text-[8px]"
+      >
+        A og C hører ikke hverandre!
+      </text>
+      <text x={420} y={130} textAnchor="middle" className="fill-foreground text-[9px]">
+        Half-duplex: kan IKKE lytte
+      </text>
+      <text x={420} y={144} textAnchor="middle" className="fill-foreground text-[9px]">
+        mens den sender → ingen detect
+      </text>
+      <text x={420} y={162} textAnchor="middle" className="fill-muted-foreground text-[8px]">
+        Strategi:{" "}
+        <tspan className="fill-amber-700 dark:fill-amber-400 font-semibold">
+          avoid-up-front (backoff)
+        </tspan>
+      </text>
+      <text x={420} y={176} textAnchor="middle" className="fill-muted-foreground text-[8px]">
+        Hver DATA krever positiv ACK
+      </text>
+      <text
+        x={420}
+        y={195}
+        textAnchor="middle"
+        className="fill-rose-600 dark:fill-rose-400 text-[8px] font-semibold"
+      >
+        ✗ hidden terminals, fading, støy
+      </text>
+    </svg>
+  );
+}
+
+function AnkerVisualGridSvg() {
+  // 15 mini-kort, 5 kolonner × 3 rader
+  const cards: { ic: string; t: string; sub: string }[] = [
+    { ic: "📡", t: "Radio ≠ kabel", sub: "half-duplex, fading" },
+    { ic: "📉", t: "Path loss", sub: "−6 dB / dobling" },
+    { ic: "⏱", t: "CSMA/CA", sub: "DIFS → backoff → DATA → SIFS → ACK" },
+    { ic: "🔁", t: "Mistet ACK", sub: "CW dobles, prøv igjen" },
+    { ic: "🛡", t: "RTS/CTS", sub: "AP løser hidden terminal" },
+    { ic: "📶", t: "802.11-evo", sub: "DSSS→OFDM→OFDMA + MIMO" },
+    { ic: "📞", t: "Cellular 2G→5G", sub: "krets→pakke→all-IP" },
+    { ic: "🏗", t: "LTE/5G-kjerne", sub: "EPC/5GC, pakke-svitsjet" },
+    { ic: "🏠", t: "Mobile IP", sub: "hjem-IP + COA + tunnel" },
+    { ic: "🤝", t: "Hard vs soft", sub: "break-vs-make-before-break" },
+    { ic: "🔗", t: "Stabil IP", sub: "tunnel-endepunkt flytter" },
+    { ic: "⚠", t: "TCP straffer radio", sub: "tap ≠ alltid congestion" },
+    { ic: "🛡", t: "Lokal ARQ", sub: "skjuler tap, øker jitter" },
+    { ic: "🔍", t: "Diagnose", sub: "signal → interferens → auth → øvre" },
+    { ic: "📜", t: "Spektrum", sub: "2.4/5 GHz ulisensiert · cell lisensiert" },
+  ];
+  return (
+    <svg viewBox="0 0 560 240" className="w-full h-auto" role="img" aria-label="15-punkts anker">
+      <text
+        x={280}
+        y={14}
+        textAnchor="middle"
+        className="fill-foreground text-[11px] font-semibold"
+      >
+        15-punkts visuelt anker — kap. 7
+      </text>
+      {cards.map((c, i) => {
+        const col = i % 5;
+        const row = Math.floor(i / 5);
+        const x = 10 + col * 110;
+        const y = 24 + row * 70;
+        return (
+          <g key={i}>
+            <rect x={x} y={y} width={105} height={62} rx={6} className="fill-card stroke-border" />
+            <text x={x + 12} y={y + 22} className="fill-foreground text-[14px]">
+              {c.ic}
+            </text>
+            <text x={x + 30} y={y + 22} className="fill-foreground text-[9px] font-semibold">
+              {c.t}
+            </text>
+            <foreignObject x={x + 6} y={y + 28} width={95} height={32}>
+              <div
+                style={{
+                  fontSize: "8px",
+                  lineHeight: "1.15",
+                  color: "var(--muted-foreground, #888)",
+                }}
+              >
+                {c.sub}
+              </div>
+            </foreignObject>
+          </g>
+        );
+      })}
+    </svg>
+  );
+}
+
+function FallgruveCsmaCdRadioSvg() {
+  return (
+    <svg
+      viewBox="0 0 320 140"
+      className="w-full h-auto"
+      role="img"
+      aria-label="CSMA/CD virker ikke i radio"
+    >
+      <text
+        x={160}
+        y={14}
+        textAnchor="middle"
+        className="fill-foreground text-[10px] font-semibold"
+      >
+        CSMA/CD i radio — fysisk umulig
+      </text>
+      {/* Radio med stor utgang */}
+      <circle cx={80} cy={75} r={20} className="fill-rose-500/30 stroke-rose-500" />
+      <text x={80} y={79} textAnchor="middle" className="fill-foreground text-[10px] font-bold">
+        TX
+      </text>
+      <text x={80} y={106} textAnchor="middle" className="fill-foreground text-[9px]">
+        +15 dBm
+      </text>
+      <text x={80} y={118} textAnchor="middle" className="fill-muted-foreground text-[8px]">
+        egen sender
+      </text>
+      {/* Fjern signal */}
+      <circle cx={240} cy={75} r={6} className="fill-brand/40 stroke-brand" />
+      <text x={240} y={106} textAnchor="middle" className="fill-foreground text-[9px]">
+        −70 dBm
+      </text>
+      <text x={240} y={118} textAnchor="middle" className="fill-muted-foreground text-[8px]">
+        fjern frame
+      </text>
+      {/* Forskjell-merking */}
+      <path
+        d="M 100 75 L 230 75"
+        className="stroke-foreground/40"
+        strokeWidth={1}
+        strokeDasharray="3 2"
+      />
+      <text
+        x={165}
+        y={68}
+        textAnchor="middle"
+        className="fill-rose-600 dark:fill-rose-400 text-[9px] font-bold"
+      >
+        85 dB forskjell (≈ 300 mill×)
+      </text>
+      {/* Stor X over hele */}
+      <line x1={40} y1={30} x2={280} y2={130} className="stroke-rose-500" strokeWidth={4} />
+      <line x1={40} y1={130} x2={280} y2={30} className="stroke-rose-500" strokeWidth={4} />
+      <text
+        x={160}
+        y={134}
+        textAnchor="middle"
+        className="fill-rose-600 dark:fill-rose-400 text-[8px] italic"
+      >
+        Egen utgang drukner alt — radio MÅ være CSMA/CA
+      </text>
+    </svg>
+  );
+}
+
+function FallgruveTcpInterpretSvg() {
+  return (
+    <svg
+      viewBox="0 0 420 180"
+      className="w-full h-auto"
+      role="img"
+      aria-label="TCP tolkning av tap"
+    >
+      <text
+        x={210}
+        y={14}
+        textAnchor="middle"
+        className="fill-foreground text-[10px] font-semibold"
+      >
+        Pakketap: TCP-senderens to verdener
+      </text>
+      {/* Venstre: kabel */}
+      <rect
+        x={10}
+        y={25}
+        width={190}
+        height={140}
+        rx={6}
+        className="fill-brand/5 stroke-brand/40"
+      />
+      <text x={105} y={42} textAnchor="middle" className="fill-foreground text-[9px] font-semibold">
+        Kabel: tap = full kø
+      </text>
+      {/* Kø-stack */}
+      <rect x={45} y={55} width={20} height={12} className="fill-brand/30 stroke-brand" />
+      <rect x={45} y={68} width={20} height={12} className="fill-brand/30 stroke-brand" />
+      <rect x={45} y={81} width={20} height={12} className="fill-brand/30 stroke-brand" />
+      <rect x={45} y={94} width={20} height={12} className="fill-brand/30 stroke-brand" />
+      <text x={75} y={86} className="fill-foreground text-[8px]">
+        full ruterkø
+      </text>
+      <text x={105} y={132} textAnchor="middle" className="fill-foreground text-[8px]">
+        ↓ TCP halverer cwnd
+      </text>
+      <text x={105} y={148} textAnchor="middle" className="fill-success text-[8px] font-semibold">
+        ✓ riktig: skap luft i køen
+      </text>
+      <text x={105} y={160} textAnchor="middle" className="fill-muted-foreground text-[7px] italic">
+        BER 10⁻¹², radio-feil neglisjerbart
+      </text>
+
+      {/* Høyre: radio */}
+      <rect
+        x={215}
+        y={25}
+        width={195}
+        height={140}
+        rx={6}
+        className="fill-rose-500/5 stroke-rose-500/40"
+      />
+      <text x={312} y={42} textAnchor="middle" className="fill-foreground text-[9px] font-semibold">
+        Radio: tap = støy/fading/handover
+      </text>
+      {/* Bølge med kantete */}
+      <path
+        d="M 240 80 Q 250 60 260 80 T 280 80 T 300 80 T 320 80 T 340 80 T 360 80 T 380 80"
+        className="fill-none stroke-rose-500"
+        strokeWidth={1.5}
+      />
+      <text
+        x={312}
+        y={102}
+        textAnchor="middle"
+        className="fill-rose-600 dark:fill-rose-400 text-[8px]"
+      >
+        BER 10⁻⁵, fading-hull
+      </text>
+      <text x={312} y={132} textAnchor="middle" className="fill-foreground text-[8px]">
+        ↓ TCP halverer cwnd LIKE FULLT
+      </text>
+      <text
+        x={312}
+        y={148}
+        textAnchor="middle"
+        className="fill-rose-600 dark:fill-rose-400 text-[8px] font-semibold"
+      >
+        ✗ feil: lenken er ledig!
+      </text>
+      <text x={312} y={160} textAnchor="middle" className="fill-muted-foreground text-[7px] italic">
+        Resultat: kronisk under-utnyttelse
+      </text>
+    </svg>
+  );
+}
+
+function FallgruveWifiOverlapSvg() {
+  return (
+    <svg
+      viewBox="0 0 460 180"
+      className="w-full h-auto"
+      role="img"
+      aria-label="WiFi-celler må overlappe"
+    >
+      <text
+        x={230}
+        y={14}
+        textAnchor="middle"
+        className="fill-foreground text-[10px] font-semibold"
+      >
+        WiFi-celler MÅ overlappe — ellers brutalt drop
+      </text>
+      {/* Galt: ingen overlapp */}
+      <text
+        x={110}
+        y={32}
+        textAnchor="middle"
+        className="fill-rose-600 dark:fill-rose-400 text-[9px] font-semibold"
+      >
+        ✗ Galt: skarpe grenser
+      </text>
+      <circle cx={60} cy={80} r={30} className="fill-amber-500/15 stroke-amber-500" />
+      <text x={60} y={84} textAnchor="middle" className="fill-foreground text-[9px]">
+        AP1
+      </text>
+      <circle cx={160} cy={80} r={30} className="fill-amber-500/15 stroke-amber-500" />
+      <text x={160} y={84} textAnchor="middle" className="fill-foreground text-[9px]">
+        AP2
+      </text>
+      {/* Død sone */}
+      <rect
+        x={92}
+        y={70}
+        width={36}
+        height={20}
+        className="fill-rose-500/30 stroke-rose-500"
+        strokeDasharray="2 2"
+      />
+      <text
+        x={110}
+        y={84}
+        textAnchor="middle"
+        className="fill-rose-700 dark:fill-rose-400 text-[7px] font-bold"
+      >
+        død
+      </text>
+      {/* Klient i død sone */}
+      <text x={110} y={130} textAnchor="middle" className="fill-foreground text-[14px]">
+        📱
+      </text>
+      <text
+        x={110}
+        y={148}
+        textAnchor="middle"
+        className="fill-rose-600 dark:fill-rose-400 text-[7px]"
+      >
+        ingen AP → re-assoc fra null
+      </text>
+      <text x={110} y={160} textAnchor="middle" className="fill-muted-foreground text-[7px]">
+        DHCP + auth = 2–5 sek
+      </text>
+
+      {/* Riktig: overlapp */}
+      <text x={340} y={32} textAnchor="middle" className="fill-success text-[9px] font-semibold">
+        ✓ Riktig: 15–20 % overlapp
+      </text>
+      <circle cx={300} cy={80} r={36} className="fill-success/15 stroke-success" />
+      <text x={300} y={84} textAnchor="middle" className="fill-foreground text-[9px]">
+        AP1
+      </text>
+      <circle cx={380} cy={80} r={36} className="fill-success/15 stroke-success" />
+      <text x={380} y={84} textAnchor="middle" className="fill-foreground text-[9px]">
+        AP2
+      </text>
+      {/* Overlapp-sone */}
+      <ellipse cx={340} cy={80} rx={20} ry={28} className="fill-success/30 stroke-success" />
+      <text x={340} y={84} textAnchor="middle" className="fill-success text-[7px] font-bold">
+        begge
+      </text>
+      <text x={340} y={130} textAnchor="middle" className="fill-foreground text-[14px]">
+        📱
+      </text>
+      <text x={340} y={148} textAnchor="middle" className="fill-success text-[7px]">
+        ser begge — sømløs roam
+      </text>
+      <text x={340} y={160} textAnchor="middle" className="fill-muted-foreground text-[7px]">
+        802.11r: &lt; 30 ms
+      </text>
+    </svg>
+  );
+}
+
+function ExampleSpuriousTimeoutSvg() {
+  // Tidslinje 0..280 ms — viser handover-blackout, RTO, retransmit, dup-ACK
+  const ev = [
+    { t: 0, lab: "SEQ=10000 sendt", color: "fill-brand" },
+    { t: 1, lab: "handover starter", color: "fill-amber-500" },
+    { t: 100, lab: "RTO! cwnd /2, retransmit", color: "fill-rose-500" },
+    { t: 160, lab: "handover ferdig", color: "fill-amber-500" },
+    { t: 220, lab: "ACK (original)", color: "fill-success" },
+    { t: 280, lab: "dup-ACK (ignorert)", color: "fill-muted-foreground" },
+  ];
+  return (
+    <svg viewBox="0 0 560 200" className="w-full h-auto" role="img" aria-label="Spurious timeout">
+      <text
+        x={280}
+        y={14}
+        textAnchor="middle"
+        className="fill-foreground text-[11px] font-semibold"
+      >
+        Spurious timeout under handover — tidslinje (ms)
+      </text>
+      {/* Axis */}
+      <line x1={30} y1={120} x2={530} y2={120} className="stroke-foreground/70" strokeWidth={1.5} />
+      {[0, 50, 100, 150, 200, 250, 280].map((m) => (
+        <g key={m}>
+          <line
+            x1={30 + (m / 280) * 500}
+            y1={117}
+            x2={30 + (m / 280) * 500}
+            y2={124}
+            className="stroke-foreground/60"
+          />
+          <text
+            x={30 + (m / 280) * 500}
+            y={138}
+            textAnchor="middle"
+            className="fill-muted-foreground text-[8px]"
+          >
+            {m}
+          </text>
+        </g>
+      ))}
+      {/* Blackout-band */}
+      <rect
+        x={30 + (1 / 280) * 500}
+        y={70}
+        width={((160 - 1) / 280) * 500}
+        height={40}
+        className="fill-amber-500/15 stroke-amber-500/40"
+      />
+      <text
+        x={30 + (80 / 280) * 500}
+        y={66}
+        textAnchor="middle"
+        className="fill-amber-700 dark:fill-amber-400 text-[8px]"
+      >
+        radio-blackout (1–160 ms)
+      </text>
+      {/* RTO-grense */}
+      <line
+        x1={30 + (100 / 280) * 500}
+        y1={50}
+        x2={30 + (100 / 280) * 500}
+        y2={120}
+        className="stroke-rose-500"
+        strokeDasharray="3 2"
+      />
+      <text
+        x={30 + (100 / 280) * 500}
+        y={47}
+        textAnchor="middle"
+        className="fill-rose-600 dark:fill-rose-400 text-[8px]"
+      >
+        RTO = 100 ms
+      </text>
+      {/* Events */}
+      {ev.map((e, i) => {
+        const x = 30 + (e.t / 280) * 500;
+        const yLab = 155 + (i % 2) * 18;
+        return (
+          <g key={i}>
+            <circle cx={x} cy={120} r={4} className={`${e.color}`} />
+            <line
+              x1={x}
+              y1={124}
+              x2={x}
+              y2={yLab - 6}
+              className="stroke-foreground/40"
+              strokeDasharray="1 2"
+            />
+            <text x={x} y={yLab} textAnchor="middle" className="fill-foreground text-[8px]">
+              {e.lab}
+            </text>
+          </g>
+        );
+      })}
+      <text x={280} y={195} textAnchor="middle" className="fill-muted-foreground text-[8px] italic">
+        cwnd ble halvert helt unødvendig — F-RTO i Linux angrer kondisjonelt
+      </text>
+    </svg>
+  );
+}
+
+function DefSignalFadingSvg() {
+  // Lite kort med signal som dør gradvis + fading-hull
+  const pts: string[] = [];
+  for (let i = 0; i < 60; i++) {
+    const t = i / 59;
+    const env = Math.exp(-t * 1.4);
+    const fade = 1 - Math.abs(Math.sin(i * 0.55)) * 0.5;
+    const y = 70 - env * fade * 50;
+    pts.push(`${10 + t * 220},${y}`);
+  }
+  return (
+    <svg viewBox="0 0 240 90" className="w-full h-auto" role="img" aria-label="Fading-envelope">
+      <text x={120} y={12} textAnchor="middle" className="fill-foreground text-[9px] font-semibold">
+        Signal-amplitude vs avstand + fading
+      </text>
+      <line x1={10} y1={75} x2={230} y2={75} className="stroke-foreground/50" />
+      <polyline points={pts.join(" ")} className="fill-none stroke-brand" strokeWidth={1.5} />
+      <text x={120} y={86} textAnchor="middle" className="fill-muted-foreground text-[7px] italic">
+        envelope = path loss · multipath-fade-hull
       </text>
     </svg>
   );

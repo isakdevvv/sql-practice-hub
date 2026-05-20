@@ -1062,6 +1062,9 @@ function Section45() {
           Laptop (192.168.1.34) på hjemme-nett åpner en TCP-forbindelse til en webserver
           (203.0.113.45:443). Hjemme-ruterens offentlige adresse er 84.55.12.7.
         </p>
+        <div className="mt-2 rounded bg-background/60 p-2">
+          <NatTimelineSvg />
+        </div>
         <p className="mt-2 font-mono text-[12px]">
           <strong>Steg 1 — utgående TCP SYN, før NAT:</strong>
           <br />
@@ -1939,6 +1942,9 @@ function SectionEksamen() {
             <div className="font-semibold text-foreground mb-1">
               IPv4-header — feltene som dukker opp på eksamen
             </div>
+            <div className="rounded bg-background/60 p-2 mb-2">
+              <Ipv4HeaderGridSvg />
+            </div>
             <ul className="list-disc pl-5 space-y-0.5">
               <li>
                 <span className="font-mono">TTL</span> (8 bits): dekrementeres av hver ruter. Når
@@ -2017,6 +2023,9 @@ function SectionEksamen() {
 
           <div>
             <div className="font-semibold text-foreground mb-1">CIDR — binær-trikset</div>
+            <div className="rounded bg-background/60 p-2 mb-2">
+              <CidrBitBarSvg />
+            </div>
             <ul className="list-disc pl-5 space-y-0.5">
               <li>
                 Prefiks-bitene (venstre del) er <em>felles</em> for alle adressene i blokken.
@@ -2039,6 +2048,9 @@ function SectionEksamen() {
           <div>
             <div className="font-semibold text-foreground mb-1">
               NAT-typer — fra streng til løs filtrering
+            </div>
+            <div className="rounded bg-background/60 p-2 mb-2">
+              <NatTypesSvg />
             </div>
             <ul className="list-disc pl-5 space-y-0.5">
               <li>
@@ -2063,6 +2075,9 @@ function SectionEksamen() {
 
           <div>
             <div className="font-semibold text-foreground mb-1">SDN — kjernen i én setning</div>
+            <div className="rounded bg-background/60 p-2 mb-2">
+              <SdnPipelineSvg />
+            </div>
             <ul className="list-disc pl-5 space-y-0.5">
               <li>
                 Switchen er en <em>match-action-pipeline</em>: flow-tabellen sjekker header-felt
@@ -2082,6 +2097,9 @@ function SectionEksamen() {
 
           <div>
             <div className="font-semibold text-foreground mb-1">IPv6 — tellingen</div>
+            <div className="rounded bg-background/60 p-2 mb-2">
+              <Ipv6AddressLayoutSvg />
+            </div>
             <ul className="list-disc pl-5 space-y-0.5">
               <li>
                 128 bits totalt = 8 grupper × 16 bits = 8 grupper × 4 hex-tegn. Adressen skrives{" "}
@@ -2108,6 +2126,9 @@ function SectionEksamen() {
         </div>
         <div className="font-semibold text-foreground mb-2">
           IPv4 vs IPv6 — hva skiller dem reelt
+        </div>
+        <div className="rounded bg-background/60 p-2 mb-3">
+          <Ipv4VsIpv6Svg />
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-[12px] border border-border">
@@ -2196,22 +2217,34 @@ function SectionEksamen() {
             tabellen droppes er en bivirkning, ikke et sikkerhetsdesign. En ekte brannmur har
             policy, logging og bevisst stateful inspection. Bruker du NAT som FW har du ingen policy
             — bare standardoppførselen til en mapping-tabell.
+            <div className="mt-2 rounded bg-background/60 p-2">
+              <NatVsFwSvg />
+            </div>
           </Fallgruve>
           <Fallgruve tittel="Subnetting og supernetting forveksles">
             Subnetting = dele en blokk i mindre deler (lengre prefiks: /16 → /18, /18, /18, /18).
             Supernetting / CIDR-aggregering = slå sammen flere små blokker til én (kortere prefiks:
             fire /24 → ett /22). Eksamensspørsmål bruker ofte «aggregering» for det siste — pass på
             retningen.
+            <div className="mt-2 rounded bg-background/60 p-2">
+              <SubnetSupernetSvg />
+            </div>
           </Fallgruve>
           <Fallgruve tittel="«IP-fragmentering skjer i transport-laget»">
             Nei — IP-fragmentering er rent et nettverkslag-fenomen og skjer på pakke-nivå. TCP gjør
             sin egen segmentering (basert på MSS) for å unngå å havne i IP-fragmentering, men det er
             to ulike mekanismer. UDP fragmenteres på IP-nivå hvis datagrammet er for stort.
+            <div className="mt-2 rounded bg-background/60 p-2">
+              <LayerPyramidSvg />
+            </div>
           </Fallgruve>
           <Fallgruve tittel="«Lengste prefiks» = lengste streng">
             Longest Prefix Match (LPM) sammenligner antall match-bits, ikke antall sifre i
             tekstrepresentasjonen. <span className="font-mono">10.0.0.0/24</span> har lengre prefiks
             enn <span className="font-mono">10.0.0.0/16</span>, ikke kortere.
+            <div className="mt-2 rounded bg-background/60 p-2">
+              <LpmBinarySvg />
+            </div>
           </Fallgruve>
           <Fallgruve tittel="Glemmer å trekke fra 2 i host-tellingen">
             En /24 har 256 adresser totalt, men kun 254 brukbare host-adresser — .0 er
@@ -2243,6 +2276,9 @@ function SectionEksamen() {
 
       {/* e) 5-minutter-anker */}
       <Anker tittel="5-minutter-anker — 12 kjernepunkter">
+        <div className="rounded bg-background/60 p-2 mb-3">
+          <AnkerCardsSvg />
+        </div>
         <ol className="list-decimal pl-5 space-y-1.5">
           <li>
             <strong>Data-plane = per-pakke i hardware</strong> (forward, drop). Control-plane =
@@ -4809,6 +4845,1817 @@ function SlaacSvg() {
       <defs>
         <marker
           id="arrSL"
+          viewBox="0 0 10 10"
+          refX={9}
+          refY={5}
+          markerWidth={6}
+          markerHeight={6}
+          orient="auto"
+        >
+          <path d="M0 0 L10 5 L0 10 z" className="fill-foreground" />
+        </marker>
+      </defs>
+    </svg>
+  );
+}
+
+// ============================================================
+// NYE SVG-er — kap 4 visualiseringer
+// ============================================================
+
+// 32-bit grid med IPv4-feltene plassert som faktisk bredde
+function Ipv4HeaderGridSvg() {
+  // 32 kolonner. Hver rad er 32 bits.
+  const W = 640;
+  const colW = (W - 40) / 32;
+  const rowH = 34;
+  const x0 = 20;
+  const y0 = 30;
+  // rows: [{ fields: [{start,len,label,sub?}] }]
+  const rows = [
+    [
+      { s: 0, l: 4, label: "Ver", c: "fill-sky-500/15 stroke-sky-500" },
+      { s: 4, l: 4, label: "IHL", c: "fill-sky-500/15 stroke-sky-500" },
+      { s: 8, l: 8, label: "DSCP/ECN", c: "fill-emerald-500/15 stroke-emerald-500" },
+      { s: 16, l: 16, label: "Total Length", c: "fill-amber-500/15 stroke-amber-500" },
+    ],
+    [
+      { s: 0, l: 16, label: "Identification", c: "fill-rose-500/15 stroke-rose-500" },
+      { s: 16, l: 3, label: "Flg", c: "fill-rose-500/15 stroke-rose-500" },
+      { s: 19, l: 13, label: "Fragment Offset", c: "fill-rose-500/15 stroke-rose-500" },
+    ],
+    [
+      { s: 0, l: 8, label: "TTL", c: "fill-purple-500/15 stroke-purple-500" },
+      { s: 8, l: 8, label: "Protocol", c: "fill-purple-500/15 stroke-purple-500" },
+      { s: 16, l: 16, label: "Header Checksum", c: "fill-purple-500/15 stroke-purple-500" },
+    ],
+    [{ s: 0, l: 32, label: "Source IP (32 bits)", c: "fill-brand/15 stroke-brand" }],
+    [{ s: 0, l: 32, label: "Destination IP (32 bits)", c: "fill-brand/15 stroke-brand" }],
+    [
+      {
+        s: 0,
+        l: 32,
+        label: "Options + Padding (sjelden, slår av fast-path)",
+        c: "fill-muted/20 stroke-border",
+      },
+    ],
+  ];
+
+  return (
+    <svg viewBox={`0 0 ${W} ${y0 + rows.length * rowH + 50}`} className="w-full h-auto">
+      {/* bit-skala på topp */}
+      {Array.from({ length: 33 }, (_, i) => i)
+        .filter((i) => i % 4 === 0)
+        .map((i) => (
+          <g key={i}>
+            <line
+              x1={x0 + i * colW}
+              y1={y0 - 8}
+              x2={x0 + i * colW}
+              y2={y0}
+              className="stroke-muted-foreground"
+              strokeWidth={0.6}
+            />
+            <text
+              x={x0 + i * colW}
+              y={y0 - 12}
+              textAnchor="middle"
+              className="fill-muted-foreground text-[8.5px]"
+            >
+              {i}
+            </text>
+          </g>
+        ))}
+      <text x={x0} y={14} className="fill-foreground text-[11px] font-semibold">
+        IPv4 header — 32 bits per rad
+      </text>
+
+      {rows.map((row, ri) =>
+        row.map((f, fi) => (
+          <g key={`${ri}-${fi}`}>
+            <rect
+              x={x0 + f.s * colW}
+              y={y0 + ri * rowH}
+              width={f.l * colW}
+              height={rowH - 2}
+              className={f.c}
+              strokeWidth={1.2}
+              rx={2}
+            />
+            <text
+              x={x0 + f.s * colW + (f.l * colW) / 2}
+              y={y0 + ri * rowH + rowH / 2 + 4}
+              textAnchor="middle"
+              className="fill-foreground text-[10.5px] font-medium"
+            >
+              {f.label}
+            </text>
+          </g>
+        )),
+      )}
+
+      <text x={x0} y={y0 + rows.length * rowH + 24} className="fill-muted-foreground text-[10px]">
+        Hver rute er proporsjonal til antall bits — TTL = 8 av 32 = en kvart rad.
+      </text>
+      <text x={x0} y={y0 + rows.length * rowH + 38} className="fill-muted-foreground text-[10px]">
+        Source + Dest IP står tilsammen for 8 av 20 bytes (40 %) av headeren.
+      </text>
+    </svg>
+  );
+}
+
+// CIDR som visuell bit-bar
+function CidrBitBarSvg() {
+  const W = 640;
+  const x0 = 20;
+  const barW = W - 100;
+  const rowH = 36;
+  const rows = [
+    { p: "/8", net: 8, label: "10.0.0.0/8 — RFC 1918 stor blokk", hosts: "16,7 M" },
+    { p: "/16", net: 16, label: "172.20.0.0/16 — kampusnett", hosts: "65 534" },
+    { p: "/22", net: 22, label: "10.50.0.0/22 — UiT-bygg", hosts: "1 022" },
+    { p: "/24", net: 24, label: "192.168.7.0/24 — etasje", hosts: "254" },
+    { p: "/27", net: 27, label: "10.0.0.0/27 — labbgruppe", hosts: "30" },
+    { p: "/30", net: 30, label: "172.16.99.0/30 — punkt-til-punkt", hosts: "2" },
+  ];
+
+  return (
+    <svg viewBox={`0 0 ${W} ${30 + rows.length * rowH + 30}`} className="w-full h-auto">
+      <text x={x0} y={16} className="fill-foreground text-[11px] font-semibold">
+        CIDR — prefiks-bits (mørk) vs host-bits (lys)
+      </text>
+      <text x={x0 + 380} y={16} className="fill-muted-foreground text-[10px]">
+        ← felles · varierer →
+      </text>
+
+      {rows.map((r, i) => {
+        const y = 30 + i * rowH;
+        const netW = (barW * r.net) / 32;
+        const hostW = barW - netW;
+        return (
+          <g key={r.p}>
+            <text x={x0} y={y + 18} className="fill-foreground text-[11px] font-mono font-semibold">
+              {r.p}
+            </text>
+            {/* network bits */}
+            <rect
+              x={x0 + 40}
+              y={y + 4}
+              width={netW}
+              height={20}
+              className="fill-brand/70 stroke-brand"
+              strokeWidth={0.8}
+            />
+            {/* host bits */}
+            <rect
+              x={x0 + 40 + netW}
+              y={y + 4}
+              width={hostW}
+              height={20}
+              className="fill-amber-500/30 stroke-amber-500"
+              strokeWidth={0.8}
+            />
+            {/* hosts label */}
+            <text
+              x={x0 + 40 + netW + hostW / 2}
+              y={y + 18}
+              textAnchor="middle"
+              className="fill-foreground text-[9.5px]"
+            >
+              {r.hosts} brukbare
+            </text>
+            {/* description */}
+            <text x={x0 + 40} y={y + 33} className="fill-muted-foreground text-[9.5px]">
+              {r.label}
+            </text>
+          </g>
+        );
+      })}
+
+      <text x={x0} y={30 + rows.length * rowH + 18} className="fill-muted-foreground text-[10px]">
+        Felles regel: brukbare hosts = 2^(32 − prefiks) − 2 (trekk fra nett + broadcast).
+      </text>
+    </svg>
+  );
+}
+
+// Fire NAT-typer som 4 boks-illustrasjoner med flow-diagrammer
+function NatTypesSvg() {
+  // Hver type er en 2x2 grid. Hver celle: 220x150
+  const cellW = 220;
+  const cellH = 165;
+  const W = cellW * 2 + 30;
+  const H = cellH * 2 + 40;
+
+  function Cell({
+    x,
+    y,
+    title,
+    sub,
+    color,
+    children,
+  }: {
+    x: number;
+    y: number;
+    title: string;
+    sub: string;
+    color: string;
+    children?: React.ReactNode;
+  }) {
+    return (
+      <g>
+        <rect
+          x={x}
+          y={y}
+          width={cellW}
+          height={cellH}
+          rx={6}
+          className={`${color} stroke-border`}
+          strokeWidth={1}
+        />
+        <text x={x + 10} y={y + 16} className="fill-foreground text-[11px] font-semibold">
+          {title}
+        </text>
+        <text x={x + 10} y={y + 30} className="fill-muted-foreground text-[9.5px]">
+          {sub}
+        </text>
+        {children}
+      </g>
+    );
+  }
+
+  // Generic intern-box og extern-pil. (intern)→[NAT]→(ekstern)
+  function FlowMini({
+    cx,
+    cy,
+    extPort,
+    extColor,
+    note,
+  }: {
+    cx: number;
+    cy: number;
+    extPort: string;
+    extColor: string;
+    note: string;
+  }) {
+    return (
+      <g>
+        {/* intern */}
+        <rect
+          x={cx - 95}
+          y={cy - 10}
+          width={48}
+          height={20}
+          rx={3}
+          className="fill-sky-500/20 stroke-sky-500"
+          strokeWidth={0.8}
+        />
+        <text
+          x={cx - 71}
+          y={cy + 4}
+          textAnchor="middle"
+          className="fill-foreground text-[9px] font-mono"
+        >
+          A:5000
+        </text>
+        {/* NAT */}
+        <rect
+          x={cx - 35}
+          y={cy - 12}
+          width={36}
+          height={24}
+          rx={3}
+          className="fill-purple-500/20 stroke-purple-500"
+          strokeWidth={0.8}
+        />
+        <text
+          x={cx - 17}
+          y={cy + 3}
+          textAnchor="middle"
+          className="fill-foreground text-[9px] font-semibold"
+        >
+          NAT
+        </text>
+        {/* ekstern */}
+        <rect
+          x={cx + 15}
+          y={cy - 10}
+          width={70}
+          height={20}
+          rx={3}
+          className={`${extColor} stroke-current`}
+          strokeWidth={0.8}
+        />
+        <text
+          x={cx + 50}
+          y={cy + 4}
+          textAnchor="middle"
+          className="fill-foreground text-[9px] font-mono"
+        >
+          {extPort}
+        </text>
+        {/* arrows */}
+        <line
+          x1={cx - 47}
+          y1={cy}
+          x2={cx - 36}
+          y2={cy}
+          className="stroke-foreground"
+          strokeWidth={0.8}
+          markerEnd="url(#natArr)"
+        />
+        <line
+          x1={cx + 1}
+          y1={cy}
+          x2={cx + 14}
+          y2={cy}
+          className="stroke-foreground"
+          strokeWidth={0.8}
+          markerEnd="url(#natArr)"
+        />
+        <text x={cx - 50} y={cy + 30} className="fill-muted-foreground text-[8.5px]">
+          {note}
+        </text>
+      </g>
+    );
+  }
+
+  return (
+    <svg viewBox={`0 0 ${W} ${H}`} className="w-full h-auto">
+      <defs>
+        <marker
+          id="natArr"
+          viewBox="0 0 10 10"
+          refX={8}
+          refY={5}
+          markerWidth={6}
+          markerHeight={6}
+          orient="auto"
+        >
+          <path d="M0 0 L10 5 L0 10 z" className="fill-foreground" />
+        </marker>
+      </defs>
+
+      <text x={15} y={16} className="fill-foreground text-[11.5px] font-semibold">
+        Fire NAT-typer — fra slappest til strengest
+      </text>
+
+      {/* Full-cone */}
+      <Cell
+        x={15}
+        y={28}
+        title="Full-cone"
+        sub="Én intern → fast ekstern. Hvem som helst på utsiden kan svare."
+        color="fill-emerald-500/5"
+      >
+        <FlowMini
+          cx={130}
+          cy={90}
+          extPort="84.X:62001"
+          extColor="fill-emerald-500/20 text-emerald-700"
+          note="alle utsider OK"
+        />
+        <text x={25} y={148} className="fill-muted-foreground text-[8.5px]">
+          P2P enkel — én utgående pakke åpner en dør for alle.
+        </text>
+      </Cell>
+
+      {/* Restricted-cone */}
+      <Cell
+        x={15 + cellW + 15}
+        y={28}
+        title="Restricted-cone"
+        sub="Ekstern må først ha mottatt pakke fra interne IP."
+        color="fill-sky-500/5"
+      >
+        <FlowMini
+          cx={130 + cellW + 15}
+          cy={90}
+          extPort="84.X:62001"
+          extColor="fill-sky-500/20 text-sky-700"
+          note="kun kjente IP"
+        />
+        <text x={25 + cellW + 15} y={148} className="fill-muted-foreground text-[8.5px]">
+          Port er fri, men kun fra IP du har snakket med.
+        </text>
+      </Cell>
+
+      {/* Port-restricted-cone */}
+      <Cell
+        x={15}
+        y={28 + cellH + 10}
+        title="Port-restricted"
+        sub="IP + port må matche tidligere utgående."
+        color="fill-amber-500/5"
+      >
+        <FlowMini
+          cx={130}
+          cy={28 + cellH + 10 + 62}
+          extPort="84.X:62001"
+          extColor="fill-amber-500/20 text-amber-700"
+          note="kun (IP, port) kjent"
+        />
+        <text x={25} y={28 + cellH + 10 + 120} className="fill-muted-foreground text-[8.5px]">
+          Strengere; krever STUN for å åpne hull mot ny part.
+        </text>
+      </Cell>
+
+      {/* Symmetric */}
+      <Cell
+        x={15 + cellW + 15}
+        y={28 + cellH + 10}
+        title="Symmetric"
+        sub="Ny ekstern port per destinasjon."
+        color="fill-rose-500/5"
+      >
+        {/* draw two flows */}
+        <g>
+          {/* intern */}
+          <rect
+            x={15 + cellW + 15 + 25}
+            y={28 + cellH + 10 + 50}
+            width={45}
+            height={18}
+            rx={3}
+            className="fill-sky-500/20 stroke-sky-500"
+            strokeWidth={0.8}
+          />
+          <text
+            x={15 + cellW + 15 + 47}
+            y={28 + cellH + 10 + 63}
+            textAnchor="middle"
+            className="fill-foreground text-[8.5px] font-mono"
+          >
+            A:5000
+          </text>
+          {/* NAT */}
+          <rect
+            x={15 + cellW + 15 + 85}
+            y={28 + cellH + 10 + 45}
+            width={32}
+            height={28}
+            rx={3}
+            className="fill-purple-500/20 stroke-purple-500"
+            strokeWidth={0.8}
+          />
+          <text
+            x={15 + cellW + 15 + 101}
+            y={28 + cellH + 10 + 62}
+            textAnchor="middle"
+            className="fill-foreground text-[8.5px] font-semibold"
+          >
+            NAT
+          </text>
+          {/* two externals */}
+          <rect
+            x={15 + cellW + 15 + 130}
+            y={28 + cellH + 10 + 35}
+            width={75}
+            height={18}
+            rx={3}
+            className="fill-rose-500/20 stroke-rose-500"
+            strokeWidth={0.8}
+          />
+          <text
+            x={15 + cellW + 15 + 167}
+            y={28 + cellH + 10 + 48}
+            textAnchor="middle"
+            className="fill-foreground text-[8.5px] font-mono"
+          >
+            →VG: :62001
+          </text>
+          <rect
+            x={15 + cellW + 15 + 130}
+            y={28 + cellH + 10 + 60}
+            width={75}
+            height={18}
+            rx={3}
+            className="fill-rose-500/20 stroke-rose-500"
+            strokeWidth={0.8}
+          />
+          <text
+            x={15 + cellW + 15 + 167}
+            y={28 + cellH + 10 + 73}
+            textAnchor="middle"
+            className="fill-foreground text-[8.5px] font-mono"
+          >
+            →NRK: :62072
+          </text>
+          <line
+            x1={15 + cellW + 15 + 70}
+            y1={28 + cellH + 10 + 59}
+            x2={15 + cellW + 15 + 84}
+            y2={28 + cellH + 10 + 59}
+            className="stroke-foreground"
+            strokeWidth={0.7}
+            markerEnd="url(#natArr)"
+          />
+          <line
+            x1={15 + cellW + 15 + 117}
+            y1={28 + cellH + 10 + 55}
+            x2={15 + cellW + 15 + 130}
+            y2={28 + cellH + 10 + 44}
+            className="stroke-foreground"
+            strokeWidth={0.7}
+            markerEnd="url(#natArr)"
+          />
+          <line
+            x1={15 + cellW + 15 + 117}
+            y1={28 + cellH + 10 + 63}
+            x2={15 + cellW + 15 + 130}
+            y2={28 + cellH + 10 + 69}
+            className="stroke-foreground"
+            strokeWidth={0.7}
+            markerEnd="url(#natArr)"
+          />
+        </g>
+        <text
+          x={25 + cellW + 15}
+          y={28 + cellH + 10 + 110}
+          className="fill-muted-foreground text-[8.5px]"
+        >
+          Verst for hole-punching — to ulike eksterne ser to porter.
+        </text>
+        <text
+          x={25 + cellW + 15}
+          y={28 + cellH + 10 + 122}
+          className="fill-muted-foreground text-[8.5px]"
+        >
+          P2P krever TURN (relay) som siste utvei.
+        </text>
+      </Cell>
+    </svg>
+  );
+}
+
+// SDN match-action pipeline
+function SdnPipelineSvg() {
+  const W = 720;
+  const tableW = 180;
+  const tableH = 110;
+  const gap = 30;
+  const y0 = 50;
+  return (
+    <svg viewBox={`0 0 ${W} 240`} className="w-full h-auto">
+      <text x={15} y={18} className="fill-foreground text-[11.5px] font-semibold">
+        OpenFlow multi-table pipeline — pakken passerer flere tabeller i serie
+      </text>
+
+      {/* Pakke inn */}
+      <rect
+        x={10}
+        y={y0 + 20}
+        width={60}
+        height={70}
+        rx={4}
+        className="fill-sky-500/20 stroke-sky-500"
+        strokeWidth={1}
+      />
+      <text
+        x={40}
+        y={y0 + 50}
+        textAnchor="middle"
+        className="fill-foreground text-[10px] font-semibold"
+      >
+        Pakke
+      </text>
+      <text x={40} y={y0 + 65} textAnchor="middle" className="fill-muted-foreground text-[8.5px]">
+        bits inn
+      </text>
+
+      {/* Tabeller */}
+      {[
+        {
+          title: "Tabell 0",
+          sub: "Klassifisering",
+          rows: ["match: in_port=1-8", "→ meta=tenant_A", "match: in_port=9-16", "→ meta=tenant_B"],
+          c: "fill-emerald-500/10 stroke-emerald-500",
+        },
+        {
+          title: "Tabell 1",
+          sub: "ACL / policy",
+          rows: ["match: meta=A,", "dst=10.20/16 → drop", "match: * → goto 2", "priority styrer"],
+          c: "fill-amber-500/10 stroke-amber-500",
+        },
+        {
+          title: "Tabell 2",
+          sub: "Forwarding",
+          rows: ["match: dst=10.0/16", "→ out port 24", "match: dst=10.1/16", "→ out port 25"],
+          c: "fill-purple-500/10 stroke-purple-500",
+        },
+      ].map((t, i) => {
+        const x = 90 + i * (tableW + gap);
+        return (
+          <g key={t.title}>
+            <rect
+              x={x}
+              y={y0}
+              width={tableW}
+              height={tableH}
+              rx={5}
+              className={t.c}
+              strokeWidth={1}
+            />
+            <text x={x + 8} y={y0 + 14} className="fill-foreground text-[10.5px] font-semibold">
+              {t.title}
+            </text>
+            <text x={x + 8} y={y0 + 26} className="fill-muted-foreground text-[9px]">
+              {t.sub}
+            </text>
+            {t.rows.map((r, ri) => (
+              <text
+                key={ri}
+                x={x + 8}
+                y={y0 + 42 + ri * 14}
+                className="fill-foreground text-[8.5px] font-mono"
+              >
+                {r}
+              </text>
+            ))}
+            {/* arrow to next */}
+            {i < 2 && (
+              <line
+                x1={x + tableW}
+                y1={y0 + tableH / 2}
+                x2={x + tableW + gap - 2}
+                y2={y0 + tableH / 2}
+                className="stroke-foreground"
+                strokeWidth={1.2}
+                markerEnd="url(#sdnArr)"
+              />
+            )}
+          </g>
+        );
+      })}
+
+      {/* Out */}
+      <line
+        x1={90 + 3 * (tableW + gap) - gap}
+        y1={y0 + tableH / 2}
+        x2={W - 70}
+        y2={y0 + tableH / 2}
+        className="stroke-foreground"
+        strokeWidth={1.2}
+        markerEnd="url(#sdnArr)"
+      />
+      <rect
+        x={W - 65}
+        y={y0 + 20}
+        width={55}
+        height={70}
+        rx={4}
+        className="fill-brand/15 stroke-brand"
+        strokeWidth={1}
+      />
+      <text
+        x={W - 37}
+        y={y0 + 50}
+        textAnchor="middle"
+        className="fill-foreground text-[10px] font-semibold"
+      >
+        Ut-port
+      </text>
+      <text
+        x={W - 37}
+        y={y0 + 65}
+        textAnchor="middle"
+        className="fill-muted-foreground text-[8.5px]"
+      >
+        link 24 / 25
+      </text>
+
+      {/* Priority bar */}
+      <text x={15} y={y0 + tableH + 35} className="fill-muted-foreground text-[10px] font-semibold">
+        Priority — høyere vinner ved flere match:
+      </text>
+      {[
+        { p: 100, color: "fill-rose-500/40", label: "drop tenant_A → admin (specific)" },
+        { p: 50, color: "fill-amber-500/40", label: "forward 10.0.0.42 (mid)" },
+        { p: 1, color: "fill-emerald-500/30", label: "default catch-all" },
+      ].map((row, i) => {
+        const y = y0 + tableH + 45 + i * 18;
+        return (
+          <g key={i}>
+            <rect
+              x={250}
+              y={y - 10}
+              width={(row.p / 100) * 250}
+              height={14}
+              className={row.color}
+              rx={2}
+            />
+            <text
+              x={205}
+              y={y + 1}
+              textAnchor="end"
+              className="fill-foreground text-[9px] font-mono"
+            >
+              prio {row.p}
+            </text>
+            <text x={260} y={y + 1} className="fill-foreground text-[9px]">
+              {row.label}
+            </text>
+          </g>
+        );
+      })}
+
+      <defs>
+        <marker
+          id="sdnArr"
+          viewBox="0 0 10 10"
+          refX={9}
+          refY={5}
+          markerWidth={6}
+          markerHeight={6}
+          orient="auto"
+        >
+          <path d="M0 0 L10 5 L0 10 z" className="fill-foreground" />
+        </marker>
+      </defs>
+    </svg>
+  );
+}
+
+// IPv4 vs IPv6 side-ved-side header
+function Ipv4VsIpv6Svg() {
+  const W = 720;
+  const colW = 320;
+  const x4 = 30;
+  const x6 = x4 + colW + 40;
+  const cellH = 22;
+  const startY = 40;
+
+  type Cell = { lbl: string; w: number };
+  type Row = { items: Cell[] };
+  // IPv4 layout — sum of "widths" should reflect 32-bit rad. (simplified)
+  const v4: Row[] = [
+    {
+      items: [
+        { lbl: "Ver", w: 0.125 },
+        { lbl: "IHL", w: 0.125 },
+        { lbl: "DSCP", w: 0.25 },
+        { lbl: "Total Length", w: 0.5 },
+      ],
+    },
+    {
+      items: [
+        { lbl: "Identification", w: 0.5 },
+        { lbl: "Flg", w: 0.094 },
+        { lbl: "Frag Offset", w: 0.406 },
+      ],
+    },
+    {
+      items: [
+        { lbl: "TTL", w: 0.25 },
+        { lbl: "Proto", w: 0.25 },
+        { lbl: "Header Checksum", w: 0.5 },
+      ],
+    },
+    { items: [{ lbl: "Source IP", w: 1 }] },
+    { items: [{ lbl: "Destination IP", w: 1 }] },
+    { items: [{ lbl: "Options (variabel)", w: 1 }] },
+  ];
+
+  // IPv6 layout
+  const v6: Row[] = [
+    {
+      items: [
+        { lbl: "Ver", w: 0.125 },
+        { lbl: "Traffic Class", w: 0.25 },
+        { lbl: "Flow Label", w: 0.625 },
+      ],
+    },
+    {
+      items: [
+        { lbl: "Payload Length", w: 0.5 },
+        { lbl: "Next Hdr", w: 0.25 },
+        { lbl: "Hop Limit", w: 0.25 },
+      ],
+    },
+    { items: [{ lbl: "Source Addr (1/4)", w: 1 }] },
+    { items: [{ lbl: "Source Addr (4/4)", w: 1 }] },
+    { items: [{ lbl: "Dest Addr (1/4)", w: 1 }] },
+    { items: [{ lbl: "Dest Addr (4/4)", w: 1 }] },
+  ];
+
+  function renderHeader(rows: Row[], x: number, label: string, accent: string) {
+    return (
+      <g>
+        <text x={x} y={20} className="fill-foreground text-[11.5px] font-semibold">
+          {label}
+        </text>
+        {rows.map((r, ri) => {
+          let acc = 0;
+          return (
+            <g key={ri}>
+              {r.items.map((cell, ii) => {
+                const cw = colW * cell.w;
+                const cx = x + acc;
+                acc += cw;
+                return (
+                  <g key={`${ri}-${ii}`}>
+                    <rect
+                      x={cx}
+                      y={startY + ri * cellH}
+                      width={cw - 1}
+                      height={cellH - 2}
+                      rx={2}
+                      className={accent}
+                      strokeWidth={0.8}
+                    />
+                    <text
+                      x={cx + cw / 2}
+                      y={startY + ri * cellH + cellH / 2 + 3}
+                      textAnchor="middle"
+                      className="fill-foreground text-[9px]"
+                    >
+                      {cell.lbl}
+                    </text>
+                  </g>
+                );
+              })}
+            </g>
+          );
+        })}
+      </g>
+    );
+  }
+
+  return (
+    <svg viewBox={`0 0 ${W} ${startY + 6 * cellH + 100}`} className="w-full h-auto">
+      {renderHeader(
+        v4,
+        x4,
+        "IPv4 — 20 byte min, variabel m/Options",
+        "fill-sky-500/15 stroke-sky-500",
+      )}
+      {renderHeader(v6, x6, "IPv6 — 40 byte fast", "fill-emerald-500/15 stroke-emerald-500")}
+
+      {/* hilight de fjernede feltene */}
+      <line
+        x1={x4 + colW + 5}
+        y1={startY + 14}
+        x2={x6 - 5}
+        y2={startY + 14}
+        className="stroke-rose-500"
+        strokeDasharray="2 2"
+        strokeWidth={0.8}
+      />
+
+      <text
+        x={x4}
+        y={startY + 6 * cellH + 18}
+        className="fill-foreground text-[10px] font-semibold"
+      >
+        Hva forsvant i IPv6:
+      </text>
+      <text x={x4} y={startY + 6 * cellH + 32} className="fill-muted-foreground text-[9.5px]">
+        • Header checksum (lag-2 og lag-4 dekker det)
+      </text>
+      <text x={x4} y={startY + 6 * cellH + 44} className="fill-muted-foreground text-[9.5px]">
+        • Identification / Flags / Fragment Offset (kun sender klipper)
+      </text>
+      <text x={x4} y={startY + 6 * cellH + 56} className="fill-muted-foreground text-[9.5px]">
+        • IHL (lengde er fast — alltid 40 byte)
+      </text>
+      <text x={x4} y={startY + 6 * cellH + 68} className="fill-muted-foreground text-[9.5px]">
+        • Options (flyttet til Extension Headers utenfor fast-path)
+      </text>
+
+      <text
+        x={x6}
+        y={startY + 6 * cellH + 18}
+        className="fill-foreground text-[10px] font-semibold"
+      >
+        Hva er nytt:
+      </text>
+      <text x={x6} y={startY + 6 * cellH + 32} className="fill-muted-foreground text-[9.5px]">
+        • Flow Label — QoS uten payload-parsing
+      </text>
+      <text x={x6} y={startY + 6 * cellH + 44} className="fill-muted-foreground text-[9.5px]">
+        • Adresser 4× lengre (16 byte hver)
+      </text>
+      <text x={x6} y={startY + 6 * cellH + 56} className="fill-muted-foreground text-[9.5px]">
+        • Next Header — lenket liste av extensions
+      </text>
+      <text x={x6} y={startY + 6 * cellH + 68} className="fill-muted-foreground text-[9.5px]">
+        • Hop Limit (ærlig navn på TTL)
+      </text>
+    </svg>
+  );
+}
+
+// IPv6 128-bit visuell layout med 8 grupper
+function Ipv6AddressLayoutSvg() {
+  const W = 720;
+  const groupW = 78;
+  const x0 = 20;
+  const y0 = 50;
+
+  // Eksempel: 2001:0db8:cafe:0042:0000:0000:0000:7334 (UiT-fiktivt)
+  const groups = ["2001", "0db8", "cafe", "0042", "0000", "0000", "0000", "7334"];
+  const colors = [
+    "fill-brand/25 stroke-brand",
+    "fill-brand/25 stroke-brand",
+    "fill-brand/25 stroke-brand",
+    "fill-sky-500/25 stroke-sky-500",
+    "fill-amber-500/25 stroke-amber-500",
+    "fill-amber-500/25 stroke-amber-500",
+    "fill-amber-500/25 stroke-amber-500",
+    "fill-amber-500/25 stroke-amber-500",
+  ];
+
+  return (
+    <svg viewBox={`0 0 ${W} 220`} className="w-full h-auto">
+      <text x={x0} y={18} className="fill-foreground text-[11.5px] font-semibold">
+        IPv6 — 128 bits = 8 grupper × 16 bits (4 hex-tegn per gruppe)
+      </text>
+      <text x={x0} y={32} className="fill-muted-foreground text-[10px]">
+        Eksempel: en UiT-host i 2001:db8:cafe:42::7334
+      </text>
+
+      {groups.map((g, i) => (
+        <g key={i}>
+          <rect
+            x={x0 + i * (groupW + 4)}
+            y={y0}
+            width={groupW}
+            height={42}
+            rx={4}
+            className={colors[i]}
+            strokeWidth={1}
+          />
+          <text
+            x={x0 + i * (groupW + 4) + groupW / 2}
+            y={y0 + 27}
+            textAnchor="middle"
+            className="fill-foreground text-[14px] font-mono font-semibold"
+          >
+            {g}
+          </text>
+          <text
+            x={x0 + i * (groupW + 4) + groupW / 2}
+            y={y0 + 56}
+            textAnchor="middle"
+            className="fill-muted-foreground text-[8.5px]"
+          >
+            16 bits
+          </text>
+        </g>
+      ))}
+
+      {/* bracket: prefix vs subnet vs interface ID */}
+      <line
+        x1={x0}
+        y1={y0 + 72}
+        x2={x0 + 3 * (groupW + 4) - 4}
+        y2={y0 + 72}
+        className="stroke-brand"
+        strokeWidth={2}
+      />
+      <text
+        x={x0 + (3 * (groupW + 4)) / 2}
+        y={y0 + 86}
+        textAnchor="middle"
+        className="fill-foreground text-[10px] font-semibold"
+      >
+        Globalt prefiks (48 bits)
+      </text>
+      <text
+        x={x0 + (3 * (groupW + 4)) / 2}
+        y={y0 + 98}
+        textAnchor="middle"
+        className="fill-muted-foreground text-[9px]"
+      >
+        ISP/RIR tildeler
+      </text>
+
+      <line
+        x1={x0 + 3 * (groupW + 4)}
+        y1={y0 + 72}
+        x2={x0 + 4 * (groupW + 4) - 4}
+        y2={y0 + 72}
+        className="stroke-sky-500"
+        strokeWidth={2}
+      />
+      <text
+        x={x0 + 3 * (groupW + 4) + groupW / 2}
+        y={y0 + 86}
+        textAnchor="middle"
+        className="fill-foreground text-[10px] font-semibold"
+      >
+        Subnett (16)
+      </text>
+      <text
+        x={x0 + 3 * (groupW + 4) + groupW / 2}
+        y={y0 + 98}
+        textAnchor="middle"
+        className="fill-muted-foreground text-[9px]"
+      >
+        organisasjon
+      </text>
+
+      <line
+        x1={x0 + 4 * (groupW + 4)}
+        y1={y0 + 72}
+        x2={x0 + 8 * (groupW + 4) - 4}
+        y2={y0 + 72}
+        className="stroke-amber-500"
+        strokeWidth={2}
+      />
+      <text
+        x={x0 + 6 * (groupW + 4)}
+        y={y0 + 86}
+        textAnchor="middle"
+        className="fill-foreground text-[10px] font-semibold"
+      >
+        Interface-ID (64 bits)
+      </text>
+      <text
+        x={x0 + 6 * (groupW + 4)}
+        y={y0 + 98}
+        textAnchor="middle"
+        className="fill-muted-foreground text-[9px]"
+      >
+        SLAAC / MAC-basert / tilfeldig
+      </text>
+
+      {/* Komprimering */}
+      <text x={x0} y={190} className="fill-foreground text-[10px] font-semibold">
+        Komprimering:
+      </text>
+      <text x={x0 + 90} y={190} className="fill-muted-foreground text-[10px] font-mono">
+        2001:0db8:cafe:0042:0000:0000:0000:7334
+      </text>
+      <text x={x0} y={205} className="fill-muted-foreground text-[10px]">
+        → drop ledende nuller, kollapse løp av :0000: til ::
+      </text>
+      <text x={x0 + 320} y={205} className="fill-brand text-[10px] font-mono font-semibold">
+        2001:db8:cafe:42::7334
+      </text>
+    </svg>
+  );
+}
+
+// 12 anker-kort
+function AnkerCardsSvg() {
+  const W = 720;
+  const cardW = 170;
+  const cardH = 78;
+  const cols = 4;
+  const gap = 10;
+  const x0 = 10;
+  const y0 = 10;
+
+  const cards = [
+    { n: 1, t: "Data-plane", b: "per-pakke i HW", c: "fill-emerald-500/15 stroke-emerald-500" },
+    {
+      n: 2,
+      t: "Ruter-arkitektur",
+      b: "input→fabric→output",
+      c: "fill-emerald-500/15 stroke-emerald-500",
+    },
+    { n: 3, t: "LPM på input", b: "lengste prefiks vinner", c: "fill-sky-500/15 stroke-sky-500" },
+    { n: 4, t: "Output gjør køing", b: "FIFO/prio/WFQ/WRED", c: "fill-sky-500/15 stroke-sky-500" },
+    {
+      n: 5,
+      t: "IPv4-header 20 B",
+      b: "TTL & checksum/hop",
+      c: "fill-amber-500/15 stroke-amber-500",
+    },
+    { n: 6, t: "CIDR-bits", b: "hosts = 2^h − 2", c: "fill-amber-500/15 stroke-amber-500" },
+    {
+      n: 7,
+      t: "Subnet vs aggregér",
+      b: "/16→/18·4 vs /24·4→/22",
+      c: "fill-purple-500/15 stroke-purple-500",
+    },
+    {
+      n: 8,
+      t: "NAT(IP:port) bytte",
+      b: "tabell — drop uten match",
+      c: "fill-purple-500/15 stroke-purple-500",
+    },
+    {
+      n: 9,
+      t: "NAT bryter E2E",
+      b: "P2P, IPsec, SIP sliter",
+      c: "fill-rose-500/15 stroke-rose-500",
+    },
+    {
+      n: 10,
+      t: "SDN match-action",
+      b: "OpenFlow, controller",
+      c: "fill-rose-500/15 stroke-rose-500",
+    },
+    {
+      n: 11,
+      t: "IPv6 = 128 bits",
+      b: "fast 40 B, ingen broadcast",
+      c: "fill-brand/15 stroke-brand",
+    },
+    { n: 12, t: "Dual-stack", b: "Happy Eyeballs velger", c: "fill-brand/15 stroke-brand" },
+  ];
+
+  return (
+    <svg viewBox={`0 0 ${W} ${y0 + 3 * (cardH + gap) + 10}`} className="w-full h-auto">
+      {cards.map((c, i) => {
+        const col = i % cols;
+        const row = Math.floor(i / cols);
+        const x = x0 + col * (cardW + gap);
+        const y = y0 + row * (cardH + gap);
+        return (
+          <g key={c.n}>
+            <rect
+              x={x}
+              y={y}
+              width={cardW}
+              height={cardH}
+              rx={6}
+              className={c.c}
+              strokeWidth={1.2}
+            />
+            <circle
+              cx={x + 16}
+              cy={y + 16}
+              r={11}
+              className="fill-background stroke-foreground"
+              strokeWidth={0.8}
+            />
+            <text
+              x={x + 16}
+              y={y + 20}
+              textAnchor="middle"
+              className="fill-foreground text-[11px] font-semibold"
+            >
+              {c.n}
+            </text>
+            <text x={x + 34} y={y + 22} className="fill-foreground text-[11px] font-semibold">
+              {c.t}
+            </text>
+            <text x={x + 12} y={y + 50} className="fill-muted-foreground text-[10px]">
+              {c.b}
+            </text>
+            <text x={x + 12} y={y + 65} className="fill-muted-foreground text-[8.5px] italic">
+              {ankerSubtle(c.n)}
+            </text>
+          </g>
+        );
+      })}
+    </svg>
+  );
+}
+function ankerSubtle(n: number): string {
+  return [
+    "forward/drop på ns",
+    "hver del kan flaskehalse",
+    "ikke lengste streng",
+    "RED markerer før drop",
+    "checksum re-beregnes",
+    "prefiks låser venstre N",
+    "begge testes på eksamen",
+    "default-drop ved miss",
+    "STUN/TURN trengs",
+    "miss → packet_in",
+    "fast header = fast-path",
+    "300 ms → fallback IPv4",
+  ][n - 1];
+}
+
+// Fallgruve: NAT vs FW
+function NatVsFwSvg() {
+  return (
+    <svg viewBox="0 0 640 200" className="w-full h-auto">
+      <text x={20} y={18} className="fill-foreground text-[11px] font-semibold">
+        «NAT er ikke en brannmur»
+      </text>
+
+      {/* venstre: vakt uten regelbok = NAT */}
+      <rect
+        x={20}
+        y={30}
+        width={290}
+        height={150}
+        rx={6}
+        className="fill-rose-500/5 stroke-rose-500"
+        strokeWidth={1}
+      />
+      <text x={30} y={48} className="fill-foreground text-[10.5px] font-semibold">
+        NAT alene — vakt uten regelbok
+      </text>
+      {/* vakt */}
+      <circle
+        cx={70}
+        cy={100}
+        r={20}
+        className="fill-amber-500/30 stroke-amber-500"
+        strokeWidth={1}
+      />
+      <text x={70} y={104} textAnchor="middle" className="fill-foreground text-[10px]">
+        vakt
+      </text>
+      {/* mapping table */}
+      <rect
+        x={110}
+        y={80}
+        width={170}
+        height={40}
+        rx={3}
+        className="fill-card stroke-border"
+        strokeWidth={0.8}
+      />
+      <text x={120} y={94} className="fill-foreground text-[9px] font-mono">
+        51200 ↔ 62001 ↔ VG:443
+      </text>
+      <text x={120} y={108} className="fill-foreground text-[9px] font-mono">
+        48100 ↔ 62003 ↔ VG:443
+      </text>
+      <text x={120} y={118} className="fill-muted-foreground text-[8px]">
+        kun bivirkning: ingen rad = drop
+      </text>
+      <text x={30} y={148} className="fill-muted-foreground text-[9px]">
+        Slipper inn alt som matcher tabellen.
+      </text>
+      <text x={30} y={162} className="fill-muted-foreground text-[9px]">
+        Ingen policy, ingen logg, ingen inspeksjon.
+      </text>
+
+      {/* høyre: ekte firewall */}
+      <rect
+        x={330}
+        y={30}
+        width={290}
+        height={150}
+        rx={6}
+        className="fill-emerald-500/5 stroke-emerald-500"
+        strokeWidth={1}
+      />
+      <text x={340} y={48} className="fill-foreground text-[10.5px] font-semibold">
+        Stateful FW — vakt + regelbok
+      </text>
+      <circle
+        cx={380}
+        cy={100}
+        r={20}
+        className="fill-emerald-500/30 stroke-emerald-500"
+        strokeWidth={1}
+      />
+      <text x={380} y={104} textAnchor="middle" className="fill-foreground text-[10px]">
+        vakt
+      </text>
+      {/* shield/wall */}
+      <rect
+        x={355}
+        y={80}
+        width={50}
+        height={45}
+        className="fill-none stroke-emerald-500"
+        strokeWidth={2}
+        strokeDasharray="3 2"
+        rx={4}
+      />
+      {/* regelbok */}
+      <rect
+        x={420}
+        y={70}
+        width={180}
+        height={70}
+        rx={3}
+        className="fill-card stroke-border"
+        strokeWidth={0.8}
+      />
+      <text x={430} y={84} className="fill-foreground text-[9px] font-semibold">
+        Policy:
+      </text>
+      <text x={430} y={97} className="fill-foreground text-[9px] font-mono">
+        allow tcp 443 from any
+      </text>
+      <text x={430} y={109} className="fill-foreground text-[9px] font-mono">
+        deny tcp 22 except VPN
+      </text>
+      <text x={430} y={121} className="fill-foreground text-[9px] font-mono">
+        log denials → SIEM
+      </text>
+      <text x={430} y={133} className="fill-foreground text-[9px] font-mono">
+        IDS inspect L7
+      </text>
+      <text x={340} y={162} className="fill-muted-foreground text-[9px]">
+        Eksplisitt policy, logging, L7-inspeksjon.
+      </text>
+    </svg>
+  );
+}
+
+// Fallgruve: subnetting vs supernetting visualisering
+function SubnetSupernetSvg() {
+  return (
+    <svg viewBox="0 0 640 220" className="w-full h-auto">
+      <text x={20} y={18} className="fill-foreground text-[11px] font-semibold">
+        Subnetting ≠ Supernetting (CIDR-aggregering)
+      </text>
+
+      {/* Subnetting: stor → mange små */}
+      <text x={20} y={42} className="fill-foreground text-[10px] font-semibold">
+        Subnetting — lengre prefiks
+      </text>
+      <rect
+        x={20}
+        y={50}
+        width={280}
+        height={28}
+        className="fill-brand/30 stroke-brand"
+        strokeWidth={1}
+        rx={3}
+      />
+      <text x={160} y={68} textAnchor="middle" className="fill-foreground text-[10px] font-mono">
+        10.0.0.0/22 (1024 adresser)
+      </text>
+      {/* arrow ned */}
+      <line
+        x1={160}
+        y1={82}
+        x2={160}
+        y2={100}
+        className="stroke-foreground"
+        strokeWidth={1}
+        markerEnd="url(#ssArr)"
+      />
+      {/* fire /24 */}
+      {[0, 1, 2, 3].map((i) => (
+        <g key={i}>
+          <rect
+            x={20 + i * 70}
+            y={105}
+            width={66}
+            height={28}
+            className="fill-sky-500/30 stroke-sky-500"
+            strokeWidth={1}
+            rx={3}
+          />
+          <text
+            x={20 + i * 70 + 33}
+            y={123}
+            textAnchor="middle"
+            className="fill-foreground text-[9px] font-mono"
+          >
+            10.0.{i}.0/24
+          </text>
+        </g>
+      ))}
+      <text x={20} y={150} className="fill-muted-foreground text-[9px]">
+        Pluss-2 bits prefiks → ×4 mindre subnett.
+      </text>
+
+      {/* Supernetting: mange små → én stor */}
+      <text x={340} y={42} className="fill-foreground text-[10px] font-semibold">
+        Supernetting — kortere prefiks
+      </text>
+      {[0, 1, 2, 3].map((i) => (
+        <g key={i}>
+          <rect
+            x={340 + i * 70}
+            y={50}
+            width={66}
+            height={28}
+            className="fill-sky-500/30 stroke-sky-500"
+            strokeWidth={1}
+            rx={3}
+          />
+          <text
+            x={340 + i * 70 + 33}
+            y={68}
+            textAnchor="middle"
+            className="fill-foreground text-[9px] font-mono"
+          >
+            193.156.{40 + i}.0/24
+          </text>
+        </g>
+      ))}
+      <line
+        x1={480}
+        y1={82}
+        x2={480}
+        y2={100}
+        className="stroke-foreground"
+        strokeWidth={1}
+        markerEnd="url(#ssArr)"
+      />
+      <rect
+        x={340}
+        y={105}
+        width={280}
+        height={28}
+        className="fill-emerald-500/30 stroke-emerald-500"
+        strokeWidth={1}
+        rx={3}
+      />
+      <text x={480} y={123} textAnchor="middle" className="fill-foreground text-[10px] font-mono">
+        193.156.40.0/22 (1 BGP-rad)
+      </text>
+      <text x={340} y={150} className="fill-muted-foreground text-[9px]">
+        Minus-2 bits prefiks → 1 rad i nabo-ruteren.
+      </text>
+
+      {/* Memo */}
+      <rect
+        x={20}
+        y={170}
+        width={600}
+        height={42}
+        rx={5}
+        className="fill-amber-500/10 stroke-amber-500"
+        strokeWidth={1}
+      />
+      <text x={30} y={185} className="fill-foreground text-[10px] font-semibold">
+        Huskeregel:
+      </text>
+      <text x={30} y={200} className="fill-foreground text-[10px]">
+        Lengre prefiks = mer spesifikk = SUBNETTING. Kortere prefiks = bredere =
+        SUPERNETTING/aggregering.
+      </text>
+
+      <defs>
+        <marker
+          id="ssArr"
+          viewBox="0 0 10 10"
+          refX={8}
+          refY={5}
+          markerWidth={6}
+          markerHeight={6}
+          orient="auto"
+        >
+          <path d="M0 0 L10 5 L0 10 z" className="fill-foreground" />
+        </marker>
+      </defs>
+    </svg>
+  );
+}
+
+// Fallgruve: lag-pyramide for fragmentering
+function LayerPyramidSvg() {
+  return (
+    <svg viewBox="0 0 640 220" className="w-full h-auto">
+      <text x={20} y={18} className="fill-foreground text-[11px] font-semibold">
+        Hvor i stakken skjer fragmentering?
+      </text>
+
+      {/* Pyramide / stack */}
+      {[
+        {
+          y: 35,
+          w: 100,
+          label: "Applikasjon",
+          note: "(ingen fragmentering her)",
+          c: "fill-muted/20 stroke-border",
+        },
+        {
+          y: 65,
+          w: 140,
+          label: "Transport (TCP/UDP)",
+          note: "TCP segmenterer (MSS)",
+          c: "fill-amber-500/15 stroke-amber-500",
+        },
+        {
+          y: 95,
+          w: 180,
+          label: "Nettverk (IP)",
+          note: "✓ IP-fragmentering skjer HER",
+          c: "fill-emerald-500/30 stroke-emerald-500",
+        },
+        {
+          y: 125,
+          w: 220,
+          label: "Link (Ethernet/WiFi)",
+          note: "MTU setter grensen",
+          c: "fill-sky-500/15 stroke-sky-500",
+        },
+        { y: 155, w: 260, label: "Fysisk", note: "bits", c: "fill-muted/20 stroke-border" },
+      ].map((l, i) => (
+        <g key={i}>
+          <rect
+            x={320 - l.w / 2}
+            y={l.y}
+            width={l.w}
+            height={26}
+            rx={4}
+            className={l.c}
+            strokeWidth={1.2}
+          />
+          <text
+            x={320}
+            y={l.y + 17}
+            textAnchor="middle"
+            className="fill-foreground text-[10px] font-semibold"
+          >
+            {l.label}
+          </text>
+          <text
+            x={l.label === "Nettverk (IP)" ? 470 : l.w / 2 + 320 + 10}
+            y={l.y + 17}
+            className="fill-muted-foreground text-[9.5px] italic"
+          >
+            {l.note}
+          </text>
+        </g>
+      ))}
+
+      {/* Riktig svar */}
+      <line
+        x1={130}
+        y1={108}
+        x2={210}
+        y2={108}
+        className="stroke-emerald-500"
+        strokeWidth={1.5}
+        markerEnd="url(#lpArr)"
+      />
+      <text
+        x={30}
+        y={105}
+        className="fill-emerald-700 dark:fill-emerald-400 text-[10px] font-semibold"
+      >
+        IP-fragmentering = lag 3
+      </text>
+      <text x={30} y={117} className="fill-muted-foreground text-[9.5px]">
+        per-pakke i hver ruter (sjeldnere i IPv6).
+      </text>
+
+      {/* Vanlig misforståelse */}
+      <line
+        x1={510}
+        y1={78}
+        x2={460}
+        y2={78}
+        className="stroke-rose-500"
+        strokeWidth={1.5}
+        markerEnd="url(#lpArr)"
+      />
+      <text x={520} y={75} className="fill-rose-700 dark:fill-rose-400 text-[10px] font-semibold">
+        Vanlig feil:
+      </text>
+      <text x={520} y={87} className="fill-muted-foreground text-[9.5px]">
+        «TCP-segmentering»
+      </text>
+      <text x={520} y={99} className="fill-muted-foreground text-[9.5px]">
+        ≠ IP-fragmentering.
+      </text>
+
+      <text x={20} y={205} className="fill-muted-foreground text-[9px] italic">
+        TCP unngår fragmentering ved å velge MSS ≤ MTU − header; UDP-pakker fragmenteres på IP-nivå.
+      </text>
+
+      <defs>
+        <marker
+          id="lpArr"
+          viewBox="0 0 10 10"
+          refX={9}
+          refY={5}
+          markerWidth={6}
+          markerHeight={6}
+          orient="auto"
+        >
+          <path d="M0 0 L10 5 L0 10 z" className="fill-foreground" />
+        </marker>
+      </defs>
+    </svg>
+  );
+}
+
+// Fallgruve: LPM binær-prefiks-match
+function LpmBinarySvg() {
+  // Pakke: 10.4.130.7 — vis binær 10.4.130 første tre oktetter
+  // Rad 1: 10.0.0.0/8     (8 bits match)
+  // Rad 2: 10.4.0.0/16    (16 bits match)
+  // Rad 3: 10.4.128.0/17  (17 bits match — vinner)
+  // Rad 4: 10.0.0.0/24 (ikke match)
+  return (
+    <svg viewBox="0 0 720 220" className="w-full h-auto">
+      <text x={20} y={18} className="fill-foreground text-[11px] font-semibold">
+        Longest-Prefix-Match — sammenligner BITS, ikke sifre
+      </text>
+
+      {/* Pakke */}
+      <text x={20} y={45} className="fill-foreground text-[10px] font-semibold">
+        Pakke til 10.4.130.7:
+      </text>
+      <text x={170} y={45} className="fill-foreground text-[10px] font-mono">
+        00001010
+      </text>
+      <text x={235} y={45} className="fill-foreground text-[10px] font-mono">
+        .00000100
+      </text>
+      <text x={310} y={45} className="fill-foreground text-[10px] font-mono">
+        .10000010
+      </text>
+      <text x={385} y={45} className="fill-foreground text-[10px] font-mono">
+        .00000111
+      </text>
+
+      {/* Rader */}
+      {[
+        {
+          route: "10.0.0.0/8",
+          match: 8,
+          win: false,
+          bits: "00001010 . xxxxxxxx . xxxxxxxx . xxxxxxxx",
+        },
+        {
+          route: "10.4.0.0/16",
+          match: 16,
+          win: false,
+          bits: "00001010 . 00000100 . xxxxxxxx . xxxxxxxx",
+        },
+        {
+          route: "10.4.128.0/17",
+          match: 17,
+          win: true,
+          bits: "00001010 . 00000100 . 1xxxxxxx . xxxxxxxx",
+        },
+        {
+          route: "10.0.0.0/24",
+          match: 0,
+          win: false,
+          bits: "(ingen match — prefiks krever 10.0.0.x)",
+        },
+      ].map((r, i) => {
+        const y = 70 + i * 30;
+        return (
+          <g key={i}>
+            <rect
+              x={20}
+              y={y - 14}
+              width={680}
+              height={24}
+              rx={3}
+              className={
+                r.win ? "fill-emerald-500/20 stroke-emerald-500" : "fill-card stroke-border"
+              }
+              strokeWidth={1}
+            />
+            <text x={28} y={y + 2} className="fill-foreground text-[10px] font-mono font-semibold">
+              {r.route}
+            </text>
+            <text x={170} y={y + 2} className="fill-muted-foreground text-[9.5px] font-mono">
+              {r.bits}
+            </text>
+            <text
+              x={685}
+              y={y + 2}
+              textAnchor="end"
+              className={
+                r.win
+                  ? "fill-emerald-700 dark:fill-emerald-400 text-[10px] font-semibold"
+                  : "fill-muted-foreground text-[9.5px]"
+              }
+            >
+              {r.match > 0 ? `${r.match} bits` : "—"}
+              {r.win ? " ✓ vinner" : ""}
+            </text>
+          </g>
+        );
+      })}
+
+      <text x={20} y={195} className="fill-muted-foreground text-[10px] italic">
+        /17 vinner over /16 og /8 — 17 match-bits er flest. «Lengste streng i tekst» er ikke
+        kriteriet.
+      </text>
+      <text x={20} y={208} className="fill-muted-foreground text-[9.5px]">
+        10.0.0.0/24 ser kortere ut, men har faktisk LENGRE prefiks (24) — den matcher bare ikke
+        pakken.
+      </text>
+    </svg>
+  );
+}
+
+// Timeline for worked example: NAT pakke-trace
+function NatTimelineSvg() {
+  // Horizontal swimlane: Laptop · NAT · Server
+  const W = 720;
+  const laneH = 38;
+  return (
+    <svg viewBox={`0 0 ${W} 230`} className="w-full h-auto">
+      <text x={20} y={16} className="fill-foreground text-[11px] font-semibold">
+        Timeline — NAT pakke-trace fra laptop til server og tilbake
+      </text>
+
+      {/* Lanes */}
+      {["Laptop 192.168.1.34", "NAT-ruter 84.55.12.7", "Server 203.0.113.45"].map((l, i) => {
+        const y = 35 + i * laneH;
+        return (
+          <g key={i}>
+            <rect
+              x={20}
+              y={y}
+              width={150}
+              height={laneH - 4}
+              rx={3}
+              className="fill-card stroke-border"
+              strokeWidth={1}
+            />
+            <text
+              x={95}
+              y={y + laneH / 2 + 2}
+              textAnchor="middle"
+              className="fill-foreground text-[10px] font-semibold"
+            >
+              {l}
+            </text>
+            <line
+              x1={170}
+              y1={y + laneH / 2}
+              x2={W - 20}
+              y2={y + laneH / 2}
+              className="stroke-border"
+              strokeWidth={0.6}
+              strokeDasharray="2 2"
+            />
+          </g>
+        );
+      })}
+
+      {/* Steg 1: Laptop → NAT, ut-pakke før omskriving */}
+      <line
+        x1={180}
+        y1={50}
+        x2={350}
+        y2={73}
+        className="stroke-sky-500"
+        strokeWidth={1.4}
+        markerEnd="url(#tlArr)"
+      />
+      <text x={185} y={50} className="fill-sky-700 dark:fill-sky-400 text-[9px] font-mono">
+        ① src=192.168.1.34:51400 dst=203.0.113.45:443
+      </text>
+
+      {/* Steg 2: NAT skriver om, → server */}
+      <line
+        x1={400}
+        y1={91}
+        x2={620}
+        y2={111}
+        className="stroke-emerald-500"
+        strokeWidth={1.4}
+        markerEnd="url(#tlArr)"
+      />
+      <text x={405} y={88} className="fill-emerald-700 dark:fill-emerald-400 text-[9px] font-mono">
+        ② src=84.55.12.7:62100 dst=203.0.113.45:443
+      </text>
+      <text x={405} y={100} className="fill-muted-foreground text-[8.5px]">
+        (mapping lagret: .34:51400 ↔ .7:62100)
+      </text>
+
+      {/* Steg 3: server → NAT (SYN-ACK) */}
+      <line
+        x1={620}
+        y1={130}
+        x2={400}
+        y2={107}
+        className="stroke-amber-500"
+        strokeWidth={1.4}
+        markerEnd="url(#tlArr)"
+      />
+      <text x={460} y={135} className="fill-amber-700 dark:fill-amber-400 text-[9px] font-mono">
+        ③ src=203.0.113.45:443 dst=84.55.12.7:62100
+      </text>
+
+      {/* Steg 4: NAT → laptop, reversert */}
+      <line
+        x1={350}
+        y1={110}
+        x2={180}
+        y2={55}
+        className="stroke-rose-500"
+        strokeWidth={1.4}
+        markerEnd="url(#tlArr)"
+      />
+      <text x={185} y={150} className="fill-rose-700 dark:fill-rose-400 text-[9px] font-mono">
+        ④ src=203.0.113.45:443 dst=192.168.1.34:51400
+      </text>
+
+      {/* Notes */}
+      <rect
+        x={20}
+        y={170}
+        width={W - 40}
+        height={50}
+        rx={4}
+        className="fill-muted/15 stroke-border"
+        strokeWidth={0.8}
+      />
+      <text x={30} y={188} className="fill-foreground text-[10px] font-semibold">
+        Hver pakke i flyten oversettes på samme måte:
+      </text>
+      <text x={30} y={202} className="fill-muted-foreground text-[9.5px]">
+        Ut: src endres (laptop-IP → NAT-IP). Inn: dst endres (NAT-IP → laptop-IP). Port på inn-veien
+        reverseres fra tabellen.
+      </text>
+      <text x={30} y={214} className="fill-muted-foreground text-[9.5px]">
+        Mappingen holdes så lenge TCP-forbindelsen lever + noen minutter timeout.
+      </text>
+
+      <defs>
+        <marker
+          id="tlArr"
           viewBox="0 0 10 10"
           refX={9}
           refY={5}

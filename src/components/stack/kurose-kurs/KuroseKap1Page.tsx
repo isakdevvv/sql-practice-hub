@@ -236,6 +236,15 @@ function Section11() {
         ]}
       />
 
+      <div className="grid gap-3 sm:grid-cols-2">
+        <Illustration caption="Ruter = boks som leser destinasjon i headeren og sender pakken videre på rett ut-lenke.">
+          <RouterIconSvg />
+        </Illustration>
+        <Illustration caption="Protokoll = avtalt rekkefølge: begge sider må kunne stegene.">
+          <ProtocolHandshakeSvg />
+        </Illustration>
+      </div>
+
       <Illustration caption="ISP-hierarki: tier-1-backbone på toppen, regionale ISP-er midt, aksess-nett nederst.">
         <IspHierarchySvg />
       </Illustration>
@@ -290,21 +299,11 @@ function Section11() {
           Du skriver «vg.no» i nettleseren på Tromsø Universitet. Det som skjer er et stafett av
           protokoller:
         </p>
-        <ol className="list-decimal pl-5 mt-1 space-y-0.5 text-[12px]">
-          <li>
-            DNS-protokollen oversetter <code>vg.no</code> til IP-adressen 195.88.55.16.
-          </li>
-          <li>Nettleseren åpner en TCP-tilkobling til den IP-en på port 443.</li>
-          <li>TLS-protokollen forhandler en kryptert kanal.</li>
-          <li>HTTP-protokollen sender en GET-forespørsel og mottar HTML-svaret.</li>
-          <li>
-            HTML-en refererer 60+ andre filer (bilder, CSS, JavaScript) — punkt 1-4 gjentas for
-            hver.
-          </li>
-        </ol>
+        <VgRequestTimelineSvg />
         <p className="mt-2 text-muted-foreground">
           Fem ulike protokoller måtte enes om format og rekkefølge for at du skulle se forsiden.
-          Hver av dem er bare en avtale skrevet ned i en RFC.
+          Hver av dem er bare en avtale skrevet ned i en RFC. HTML-en henter siden 60+ andre filer
+          (bilder, CSS, JS) — alle stegene gjentas for hver.
         </p>
       </Example>
 
@@ -593,6 +592,10 @@ function Section13() {
         <CircuitVsPacketSvg />
       </Illustration>
 
+      <Illustration caption="Side-ved-side: øverst krets med reservert sti (alle andre blokkert), nederst pakker fra mange brukere som deler.">
+        <CircuitVsPacketComparisonSvg />
+      </Illustration>
+
       <Metafor tittel="Telefon-sentralen vs postvesenet">
         <p>
           Krets-svitsjing er som å ringe en venn fra en gammeldags telefon-sentral. Operatøren
@@ -663,6 +666,7 @@ function Section13() {
           En pakke på 5 000 bits skal fra A til D via to mellom-rutere B og C. Hver lenke er 1 Mbps.
           Anta null propagasjon og null prosessering.
         </p>
+        <StoreForwardTimelineSvg />
         <ul className="list-disc pl-5 mt-1 font-mono text-[12px]">
           <li>A → B: 5000 / 10⁶ = 5 ms (hele pakken må inn på B)</li>
           <li>B → C: 5 ms (hele pakken må inn på C)</li>
@@ -776,6 +780,10 @@ function Section14() {
         <DelaySvg />
       </Illustration>
 
+      <Illustration caption="Relativ størrelse på de fire bidragene Bergen→NY: propagasjon dominerer over Atlanteren.">
+        <FourDelaysBarsSvg />
+      </Illustration>
+
       <Metafor tittel="Fire forsinkelser i kassakøen på Rema 1000">
         <p>
           Tenk på pakken din som en handlekurv på vei gjennom Rema. Du opplever fire ventetider som
@@ -832,6 +840,7 @@ function Section14() {
           hjemme-ruter → 100 Mbps lokal-lenke (10 km) → 1 Gbps backbone-lenke (5500 km undersjøisk
           fiber) → kunde-ruter.
         </p>
+        <WorldMapBergenNYSvg />
         <p className="mt-2">Med tomme køer og 1 ms prosessering per hopp:</p>
         <ul className="list-disc pl-5 mt-1 font-mono text-[12px]">
           <li>d_trans lokal: 12000 / 10⁸ = 120 μs</li>
@@ -1002,6 +1011,15 @@ function Section15() {
       <Illustration caption="Innkapsling: hvert lag legger til sin header på vei nedover stakken.">
         <EncapsulationSvg />
       </Illustration>
+
+      <div className="grid gap-3 lg:grid-cols-2">
+        <Illustration caption="Stakken som bygning — appen i toppetasjen, fiberen i kjelleren.">
+          <StackFlagBuildingSvg />
+        </Illustration>
+        <Illustration caption="Innkapsling som matrjosjka: 30 B app-data ender som 88 B på lenken — 66 % overhead.">
+          <MatryoshkaEncapsulationSvg />
+        </Illustration>
+      </div>
 
       <Metafor tittel="Lag-modellen som norsk postvesen">
         <p>
@@ -1375,95 +1393,56 @@ function SectionEksamen() {
       </p>
 
       <Cheat tittel="Cheat sheet — det viktigste på én skjerm">
-        <div className="grid gap-3 md:grid-cols-3">
+        <div className="space-y-4">
           <div>
-            <div className="text-[11px] uppercase tracking-wider text-cyan-700 dark:text-cyan-400 font-semibold mb-1">
-              Nøkkelformler
+            <div className="text-[11px] uppercase tracking-wider text-cyan-700 dark:text-cyan-400 font-semibold mb-2">
+              Nøkkelformler (visuelt)
             </div>
-            <ul className="space-y-1.5 text-[12px]">
-              <li>
-                <strong>Transmisjon:</strong> <code className="text-[11px]">d_trans = L / R</code> —
-                pakkelengde L (bit) delt på lenke-rate R (bit/s).
-              </li>
-              <li>
-                <strong>Propagasjon:</strong>{" "}
-                <code className="text-[11px]">d_prop = avstand / v</code> — typisk{" "}
-                <code className="text-[11px]">v ≈ 2·10⁸ m/s</code> i fiber.
-              </li>
-              <li>
-                <strong>Total ende-til-ende-tid:</strong>{" "}
-                <code className="text-[11px]">d_proc + d_kø + d_trans + d_prop</code> — summen av de
-                fire bidragene per hop, summert over alle hop.
-              </li>
-              <li>
-                <strong>Throughput-flaskehals:</strong>{" "}
-                <code className="text-[11px]">throughput = min(R₁, R₂, …, R_n)</code> — den tregeste
-                lenken på veien setter taket.
-              </li>
-              <li>
-                <strong>Trafikk-intensitet:</strong>{" "}
-                <code className="text-[11px]">I = L·a / R</code> der{" "}
-                <code className="text-[11px]">a</code> er ankomstrate (pakker/s).{" "}
-                <code className="text-[11px]">I → 1</code> betyr at køen eksploderer.
-              </li>
-            </ul>
+            <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
+              <FormulaCardTransSvg />
+              <FormulaCardPropSvg />
+              <FormulaCardBottleneckSvg />
+              <FormulaCardIntensitySvg />
+            </div>
           </div>
 
           <div>
-            <div className="text-[11px] uppercase tracking-wider text-cyan-700 dark:text-cyan-400 font-semibold mb-1">
+            <div className="text-[11px] uppercase tracking-wider text-cyan-700 dark:text-cyan-400 font-semibold mb-2">
               Tall-å-huske
             </div>
-            <ul className="space-y-1.5 text-[12px]">
-              <li>
-                <strong>Lyshastighet i fiber:</strong> 2·10⁸ m/s — to-tredjedeler av c. Bruk denne
-                når oppgaven sier «fiber-lenke».
-              </li>
-              <li>
-                <strong>Bergen → New York:</strong> 5 700 km gir{" "}
-                <code className="text-[11px]">d_prop ≈ 28 ms</code> én vei,{" "}
-                <code className="text-[11px]">56 ms</code> rundt-tid-minimum.
-              </li>
-              <li>
-                <strong>MTU på Ethernet:</strong> 1 500 byte (= 12 000 bit). Største pakke som får
-                gå urøvet.
-              </li>
-              <li>
-                <strong>1 Gbit/s, 1500-byte pakke:</strong>{" "}
-                <code className="text-[11px]">d_trans = 12 µs</code> — utrolig kort. Propagasjon
-                dominerer over Atlanterhavet.
-              </li>
-              <li>
-                <strong>Geo-stasjonær satellitt:</strong> 36 000 km opp gir ~120 ms enveis bare på
-                propagasjon. Derfor er Zoom over Starlink bedre enn over gammeldags VSAT.
-              </li>
-            </ul>
+            <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+              <NumberCardLightFiberSvg />
+              <NumberCardMTUSvg />
+              <NumberCardGeoSatSvg />
+            </div>
+            <div className="grid gap-2 sm:grid-cols-2 mt-2 text-[11px] text-muted-foreground">
+              <div className="rounded border border-border bg-card p-2">
+                <strong className="text-foreground">Bergen → New York:</strong> 5 700 km ⇒ d_prop ≈
+                28 ms enveis, 56 ms RTT-min.
+              </div>
+              <div className="rounded border border-border bg-card p-2">
+                <strong className="text-foreground">1 Gbit/s, 1500-byte pakke:</strong> d_trans = 12
+                µs — utrolig kort.
+              </div>
+            </div>
           </div>
 
           <div>
-            <div className="text-[11px] uppercase tracking-wider text-cyan-700 dark:text-cyan-400 font-semibold mb-1">
+            <div className="text-[11px] uppercase tracking-wider text-cyan-700 dark:text-cyan-400 font-semibold mb-2">
               Huskeregler
             </div>
             <ul className="space-y-1.5 text-[12px]">
               <li>
                 <strong>BFE</strong> — «<u>B</u>ygges av lag, <u>F</u>orsinkelser i fire bidrag,{" "}
-                <u>E</u>ndringer skjer via RFC». Tre påstander å ankre kapittelet på.
+                <u>E</u>ndringer skjer via RFC».
               </li>
               <li>
-                <strong>PKLT</strong> — fem lag fra topp til bunn: <u>P</u>rogram, <u>P</u>
-                akke-ende-til-ende, <u>P</u>akke-rute, <u>L</u>enke, <u>F</u>ysisk. (Tenk «PPP-LF»
-                hvis du foretrekker initialer.)
-              </li>
-              <li>
-                <strong>3-tier-trapp:</strong> hjem-aksess → regional ISP → tier-1-backbone. ISP-er
-                lever av peering-avtaler seg imellom, ikke en sentral myndighet.
-              </li>
-              <li>
-                <strong>«Krets reserverer, pakke konkurrerer»</strong> — fanger hele forskjellen i
-                fem ord.
+                <strong>«Krets reserverer, pakke konkurrerer»</strong> — fanger forskjellen i fem
+                ord.
               </li>
               <li>
                 <strong>«Tap når kø er full»</strong> — pakke-svitsjing har ingen reservasjon, så
-                når buffer-en er full, droppes nye pakker. Husk: tap er en konsekvens, ikke en feil.
+                fulle buffere dropper pakker. Tap er en konsekvens, ikke en feil.
               </li>
             </ul>
           </div>
@@ -1474,76 +1453,58 @@ function SectionEksamen() {
         <h3 className="text-xs uppercase tracking-wider text-muted-foreground mb-3">
           Sammenligning — krets-svitsjing vs pakke-svitsjing
         </h3>
-        <div className="overflow-x-auto">
-          <table className="w-full text-[12px] border-collapse">
-            <thead>
-              <tr className="border-b border-border">
-                <th className="text-left py-2 pr-3 font-semibold text-foreground">Egenskap</th>
-                <th className="text-left py-2 pr-3 font-semibold text-blue-700 dark:text-blue-400">
-                  Krets-svitsjing
-                </th>
-                <th className="text-left py-2 font-semibold text-emerald-700 dark:text-emerald-400">
-                  Pakke-svitsjing
-                </th>
-              </tr>
-            </thead>
-            <tbody className="text-muted-foreground">
-              <tr className="border-b border-border/60">
-                <td className="py-2 pr-3 font-medium text-foreground">Reservasjon</td>
-                <td className="py-2 pr-3">
-                  <span className="text-blue-700 dark:text-blue-400">+</span> Båndbredde og buffere
-                  bookes på forhånd langs hele ruten.
-                </td>
-                <td className="py-2">
-                  <span className="text-amber-700 dark:text-amber-400">−</span> Ingen reservasjon —
-                  hver pakke kjemper om plass i øyeblikket.
-                </td>
-              </tr>
-              <tr className="border-b border-border/60">
-                <td className="py-2 pr-3 font-medium text-foreground">Kapasitets-utnyttelse</td>
-                <td className="py-2 pr-3">
-                  <span className="text-amber-700 dark:text-amber-400">−</span> Stille perioder
-                  sløser bort hele kanalen — kretsen står tom men er ikke ledig for andre.
-                </td>
-                <td className="py-2">
-                  <span className="text-emerald-700 dark:text-emerald-400">+</span> Statistisk
-                  multipleksing utnytter samme lenke til mange samtidige strømmer.
-                </td>
-              </tr>
-              <tr className="border-b border-border/60">
-                <td className="py-2 pr-3 font-medium text-foreground">Kø-oppførsel</td>
-                <td className="py-2 pr-3">
-                  <span className="text-blue-700 dark:text-blue-400">+</span> Ingen kø under
-                  samtalen — du har «din» del av lenken.
-                </td>
-                <td className="py-2">
-                  <span className="text-amber-700 dark:text-amber-400">−</span> Kø bygger seg i
-                  rutere når flere strømmer møtes; variabel forsinkelse (jitter).
-                </td>
-              </tr>
-              <tr className="border-b border-border/60">
-                <td className="py-2 pr-3 font-medium text-foreground">Pakketap</td>
-                <td className="py-2 pr-3">
-                  <span className="text-blue-700 dark:text-blue-400">+</span> Mister ikke biter når
-                  samtalen først er satt opp — men kan miste hele oppsetts-forsøket.
-                </td>
-                <td className="py-2">
-                  <span className="text-amber-700 dark:text-amber-400">−</span> Buffer-overflow
-                  drops; ende-vertene må selv oppdage og re-sende.
-                </td>
-              </tr>
-              <tr>
-                <td className="py-2 pr-3 font-medium text-foreground">Hvor brukes det</td>
-                <td className="py-2 pr-3">
-                  Klassisk fasttelefon, gammeldags ISDN, dedikerte leide linjer for finans-handel.
-                </td>
-                <td className="py-2">
-                  Hele internett, mobilnett-databærer, Zoom, Netflix, e-post — alt du faktisk
-                  bruker.
-                </td>
-              </tr>
-            </tbody>
-          </table>
+        <div className="rounded bg-muted/20 p-3 mb-3">
+          <CircuitVsPacketComparisonSvg />
+        </div>
+        <div className="grid gap-2 md:grid-cols-2 text-[12px]">
+          <div className="rounded-lg border border-blue-500/30 bg-blue-500/5 p-3 space-y-1.5">
+            <div className="text-[10px] uppercase tracking-wider text-blue-700 dark:text-blue-400 font-semibold">
+              Krets-svitsjing
+            </div>
+            <div>
+              <span className="text-blue-700 dark:text-blue-400">+</span> Båndbredde reservert hele
+              veien
+            </div>
+            <div>
+              <span className="text-blue-700 dark:text-blue-400">+</span> Konstant forsinkelse,
+              ingen kø under samtalen
+            </div>
+            <div>
+              <span className="text-amber-700 dark:text-amber-400">−</span> Stille perioder sløses
+              bort
+            </div>
+            <div>
+              <span className="text-amber-700 dark:text-amber-400">−</span> Bryter helt ved
+              enkeltfeil
+            </div>
+            <div className="text-muted-foreground pt-1 border-t border-blue-500/20">
+              Brukes i fasttelefon, ISDN, dedikerte finans-linjer.
+            </div>
+          </div>
+          <div className="rounded-lg border border-emerald-500/30 bg-emerald-500/5 p-3 space-y-1.5">
+            <div className="text-[10px] uppercase tracking-wider text-emerald-700 dark:text-emerald-400 font-semibold">
+              Pakke-svitsjing
+            </div>
+            <div>
+              <span className="text-emerald-700 dark:text-emerald-400">+</span> Statistisk mux — høy
+              kapasitets-utnyttelse
+            </div>
+            <div>
+              <span className="text-emerald-700 dark:text-emerald-400">+</span> Robust: ruter rundt
+              brutte lenker
+            </div>
+            <div>
+              <span className="text-amber-700 dark:text-amber-400">−</span> Variabel forsinkelse
+              (jitter)
+            </div>
+            <div>
+              <span className="text-amber-700 dark:text-amber-400">−</span> Buffer-overflow drops;
+              endene må re-sende
+            </div>
+            <div className="text-muted-foreground pt-1 border-t border-emerald-500/20">
+              Hele internett, mobil, Zoom, Netflix — alt du faktisk bruker.
+            </div>
+          </div>
         </div>
       </div>
 
@@ -1557,6 +1518,7 @@ function SectionEksamen() {
         </h3>
         <div className="grid gap-3 md:grid-cols-2">
           <Fallgruve tittel="d_prop og d_trans er ikke det samme">
+            <WarnIconPropVsTrans />
             <p>
               <code className="text-[11px]">d_trans</code> handler om hvor lang tid det tar å{" "}
               <em>dytte alle bitene ut</em> på lenken (avhenger av pakkelengde og lenke-rate).{" "}
@@ -1569,6 +1531,7 @@ function SectionEksamen() {
           </Fallgruve>
 
           <Fallgruve tittel="Throughput er ikke summen av lenkene">
+            <WarnIconBottleneck />
             <p>
               Throughput end-to-end er <em>minimum</em> av lenke-ratene langs ruten, ikke summen og
               ikke gjennomsnittet. Hvis du har 1 Gbit/s hjemme, 10 Gbit/s i ISP-en og 100 Mbit/s på
@@ -1578,6 +1541,7 @@ function SectionEksamen() {
           </Fallgruve>
 
           <Fallgruve tittel="Lag-modellen krever ikke ekstra rutere">
+            <WarnIconNoLayerRouter />
             <p>
               Studenter tror noen ganger at det må finnes en «transport-lag-ruter» eller et
               «applikasjons-lag-mellomledd». Det stemmer ikke. Lag er{" "}
@@ -1588,6 +1552,7 @@ function SectionEksamen() {
           </Fallgruve>
 
           <Fallgruve tittel="Pakke-tap er normalt — ikke en feil">
+            <WarnIconLossNormal />
             <p>
               Når en eksamen-oppgave forteller om «pakke-tap på 0,5 %», ikke skriv at «nettet er
               ødelagt». Tap er den normale signal-mekanismen for at en kø er full. TCP bruker det
@@ -1597,6 +1562,7 @@ function SectionEksamen() {
           </Fallgruve>
 
           <Fallgruve tittel="ISP-tier er en topologi, ikke en pris-klasse">
+            <WarnIconTierTopology />
             <p>
               «Tier-1» betyr at en ISP når <em>hele</em> internett uten å betale noen andre for
               transit — det er et nettverks-topologisk faktum. Det sier <strong>ingenting</strong>{" "}
@@ -1606,6 +1572,7 @@ function SectionEksamen() {
           </Fallgruve>
 
           <Fallgruve tittel="Statistisk multipleksing er ikke det samme som TDM">
+            <WarnIconTDMvsStat />
             <p>
               <em>Tids-multipleksing</em> (TDM, brukt i krets-svitsjing) gir hver bruker en fast,
               tilbakevendende tids-luke om hen har data å sende eller ikke.{" "}
@@ -1622,58 +1589,44 @@ function SectionEksamen() {
         <div className="text-[11px] uppercase tracking-wider text-emerald-700 dark:text-emerald-400 font-semibold mb-2">
           5-minutter-anker — det aller mest grunnleggende
         </div>
-        <ol className="list-decimal pl-5 space-y-1.5 text-[12px]">
-          <li>
-            <strong>Internett er ISP-er av ISP-er.</strong> En føderert struktur uten sentral eier —
-            bindes sammen av RFC-standarder fra IETF, koblet sammen kommersielt via peering og
-            transit.
-          </li>
-          <li>
-            <strong>To perspektiver:</strong> hardware (hosts + lenker + rutere + svitsjer) og
-            tjeneste (en plattform distribuerte apper kan bruke uten å kjenne kablene).
-          </li>
-          <li>
-            <strong>Edge vs core.</strong> Edge = der appene faktisk kjører (hosts). Core =
-            ruter-meshen som flytter pakker mellom edge-punkter. Aksess-nett er broen mellom de to.
-          </li>
-          <li>
-            <strong>Pakke-svitsjing vant.</strong> Fordi den tåler bursty trafikk og deler lenker
-            statistisk — krets-svitsjing kaster bort kapasitet under stille perioder.
-          </li>
-          <li>
-            <strong>Fire forsinkelses-bidrag per hop:</strong> prosessering, kø, transmisjon,
-            propagasjon. Summer over alle hop for total ende-til-ende-tid.
-          </li>
-          <li>
-            <strong>Throughput = min(R_i).</strong> Den tregeste lenken setter taket; ekstra
-            kapasitet andre steder hjelper ikke.
-          </li>
-          <li>
-            <strong>Pakke-tap skjer når køen er full.</strong> Det er en normal mekanisme, ikke en
-            feil — TCP bruker tap som bremse-signal.
-          </li>
-          <li>
-            <strong>Fem lag, ovenfra og ned:</strong> Applikasjon, Transport, Nettverk, Link,
-            Fysisk. Hver lag tilbyr tjenester til laget over og bruker tjenester fra laget under.
-          </li>
-          <li>
-            <strong>Hvorfor lag?</strong> Modularitet — du kan bytte ut WiFi mot 5G uten å røre TCP,
-            og bytte HTTP/1 mot HTTP/3 uten å røre Ethernet-driveren.
-          </li>
-          <li>
-            <strong>Innkapsling.</strong> Hvert lag legger på sin egen header når pakken går nedover
-            i avsenderen, og fjerner sin egen header når pakken går oppover i mottakeren.
-          </li>
-          <li>
-            <strong>Rutere ser bare opp til lag 3.</strong> Lenke-svitsjer ser opp til lag 2.
-            Ende-hosts er de eneste som kjører alle fem lagene.
-          </li>
-          <li>
-            <strong>Protokoll = avtalt format + rekkefølge.</strong> Begge sider må ha samme RFC.
-            Derfor tar nye versjoner (IPv6, HTTP/3) tiår å rulle ut — alle må oppdatere før det
-            virker overalt.
-          </li>
-        </ol>
+        <div className="grid gap-2 grid-cols-2 sm:grid-cols-3 lg:grid-cols-4">
+          <AnkerIconCard n={1} title="ISP-er av ISP-er">
+            <IconISPs />
+          </AnkerIconCard>
+          <AnkerIconCard n={2} title="To perspektiver: HW + tjeneste">
+            <IconTwoPerspectives />
+          </AnkerIconCard>
+          <AnkerIconCard n={3} title="Edge vs core">
+            <IconEdgeCore />
+          </AnkerIconCard>
+          <AnkerIconCard n={4} title="Pakke-svitsjing vant">
+            <IconPacketWon />
+          </AnkerIconCard>
+          <AnkerIconCard n={5} title="Fire forsinkelses-bidrag">
+            <IconFourDelays />
+          </AnkerIconCard>
+          <AnkerIconCard n={6} title="Throughput = min(R)">
+            <IconBottleneck />
+          </AnkerIconCard>
+          <AnkerIconCard n={7} title="Tap når kø er full">
+            <IconLossFullQueue />
+          </AnkerIconCard>
+          <AnkerIconCard n={8} title="Fem lag, oppe → ned">
+            <IconFiveLayers />
+          </AnkerIconCard>
+          <AnkerIconCard n={9} title="Modularitet: bytt ett lag">
+            <IconModularity />
+          </AnkerIconCard>
+          <AnkerIconCard n={10} title="Innkapsling per lag">
+            <IconEncapsulation />
+          </AnkerIconCard>
+          <AnkerIconCard n={11} title="Rutere ser bare L3">
+            <IconRouterL3 />
+          </AnkerIconCard>
+          <AnkerIconCard n={12} title="Protokoll = avtalt format">
+            <IconProtocol />
+          </AnkerIconCard>
+        </div>
       </Anker>
 
       <RelatedSlugs slugs={["osi-tcpip", "dte2507-day-in-the-life"]} />
@@ -3112,6 +3065,2005 @@ function QueueDelayCurveSvg() {
       </text>
       <text x={449} y={50} textAnchor="middle" className="fill-destructive text-[8px]">
         Sprenger
+      </text>
+    </svg>
+  );
+}
+
+// ============================================================
+// NYE SVG-illustrasjoner (lagt til for tekst-redusering)
+// ============================================================
+
+// 1.1 — Mini-ikon for ruter (en boks med inn/ut-piler)
+function RouterIconSvg() {
+  return (
+    <svg
+      viewBox="0 0 240 120"
+      className="w-full h-auto"
+      role="img"
+      aria-label="Ruter med inn- og ut-piler"
+    >
+      <rect
+        x={80}
+        y={35}
+        width={80}
+        height={50}
+        rx={8}
+        className="fill-brand/15 stroke-brand"
+        strokeWidth={2}
+      />
+      <text
+        x={120}
+        y={58}
+        textAnchor="middle"
+        className="fill-foreground text-[11px] font-semibold"
+      >
+        Ruter
+      </text>
+      <text x={120} y={72} textAnchor="middle" className="fill-muted-foreground text-[8px]">
+        leser IP-header
+      </text>
+      {/* Inn-piler */}
+      <line
+        x1={10}
+        y1={45}
+        x2={75}
+        y2={50}
+        className="stroke-amber-500"
+        strokeWidth={2}
+        markerEnd="url(#ri-arr)"
+      />
+      <line
+        x1={10}
+        y1={75}
+        x2={75}
+        y2={70}
+        className="stroke-amber-500"
+        strokeWidth={2}
+        markerEnd="url(#ri-arr)"
+      />
+      {/* Ut-piler */}
+      <line
+        x1={165}
+        y1={50}
+        x2={230}
+        y2={40}
+        className="stroke-success"
+        strokeWidth={2}
+        markerEnd="url(#ri-arr)"
+      />
+      <line
+        x1={165}
+        y1={70}
+        x2={230}
+        y2={80}
+        className="stroke-success"
+        strokeWidth={2}
+        markerEnd="url(#ri-arr)"
+      />
+      <defs>
+        <marker
+          id="ri-arr"
+          viewBox="0 0 10 10"
+          refX="9"
+          refY="5"
+          markerWidth="6"
+          markerHeight="6"
+          orient="auto-start-reverse"
+        >
+          <path d="M0,0 L10,5 L0,10 z" className="fill-foreground" />
+        </marker>
+      </defs>
+      <text x={42} y={32} textAnchor="middle" className="fill-muted-foreground text-[8px]">
+        inn
+      </text>
+      <text x={198} y={32} textAnchor="middle" className="fill-muted-foreground text-[8px]">
+        ut
+      </text>
+    </svg>
+  );
+}
+
+// 1.1 — Protokoll-håndtrykk (mini)
+function ProtocolHandshakeSvg() {
+  const steps: { y: number; txt: string; dir: "r" | "l"; cls: string }[] = [
+    { y: 60, txt: "1. SYN", dir: "r", cls: "stroke-brand" },
+    { y: 80, txt: "2. SYN-ACK", dir: "l", cls: "stroke-success" },
+    { y: 100, txt: "3. ACK", dir: "r", cls: "stroke-brand" },
+    { y: 120, txt: "4. HTTP GET /", dir: "r", cls: "stroke-amber-500" },
+    { y: 140, txt: "5. HTTP 200 OK", dir: "l", cls: "stroke-success" },
+  ];
+  return (
+    <svg
+      viewBox="0 0 400 160"
+      className="w-full h-auto"
+      role="img"
+      aria-label="Protokoll som dansetrinn — to maskiner i avtalt rekkefølge"
+    >
+      <rect
+        x={20}
+        y={20}
+        width={70}
+        height={32}
+        rx={4}
+        className="fill-brand/15 stroke-brand"
+        strokeWidth={1.5}
+      />
+      <text x={55} y={40} textAnchor="middle" className="fill-foreground text-[10px] font-semibold">
+        Klient
+      </text>
+      <rect
+        x={310}
+        y={20}
+        width={70}
+        height={32}
+        rx={4}
+        className="fill-success/15 stroke-success"
+        strokeWidth={1.5}
+      />
+      <text
+        x={345}
+        y={40}
+        textAnchor="middle"
+        className="fill-foreground text-[10px] font-semibold"
+      >
+        Server
+      </text>
+      {steps.map((s, i) => (
+        <g key={i}>
+          {s.dir === "r" ? (
+            <line
+              x1={92}
+              y1={s.y}
+              x2={308}
+              y2={s.y}
+              className={s.cls}
+              strokeWidth={1.5}
+              markerEnd="url(#ph-arr)"
+            />
+          ) : (
+            <line
+              x1={308}
+              y1={s.y}
+              x2={92}
+              y2={s.y}
+              className={s.cls}
+              strokeWidth={1.5}
+              markerEnd="url(#ph-arr)"
+            />
+          )}
+          <text
+            x={200}
+            y={s.y - 3}
+            textAnchor="middle"
+            className="fill-foreground text-[9px] font-mono"
+          >
+            {s.txt}
+          </text>
+        </g>
+      ))}
+      <defs>
+        <marker
+          id="ph-arr"
+          viewBox="0 0 10 10"
+          refX="9"
+          refY="5"
+          markerWidth="5"
+          markerHeight="5"
+          orient="auto-start-reverse"
+        >
+          <path d="M0,0 L10,5 L0,10 z" className="fill-foreground" />
+        </marker>
+      </defs>
+    </svg>
+  );
+}
+
+// 1.1 — Example timeline: forespørselen til vg.no
+function VgRequestTimelineSvg() {
+  const steps = [
+    { x: 50, label: "DNS", note: "vg.no → 195.88.55.16", cls: "fill-brand/20 stroke-brand" },
+    { x: 145, label: "TCP", note: "3-veis håndtrykk", cls: "fill-success/20 stroke-success" },
+    { x: 240, label: "TLS", note: "kryptert kanal", cls: "fill-amber-500/20 stroke-amber-500" },
+    { x: 335, label: "HTTP", note: "GET / → HTML", cls: "fill-destructive/20 stroke-destructive" },
+    {
+      x: 430,
+      label: "60+ filer",
+      note: "bilder, CSS, JS",
+      cls: "fill-purple-500/20 stroke-purple-500",
+    },
+  ];
+  return (
+    <svg
+      viewBox="0 0 500 140"
+      className="w-full h-auto"
+      role="img"
+      aria-label="Stafett av protokoller når du henter vg.no"
+    >
+      <line
+        x1={30}
+        y1={70}
+        x2={470}
+        y2={70}
+        className="stroke-muted-foreground/50"
+        strokeWidth={1.5}
+      />
+      {steps.map((s, i) => (
+        <g key={i}>
+          <circle cx={s.x} cy={70} r={20} className={s.cls} strokeWidth={1.5} />
+          <text
+            x={s.x}
+            y={73}
+            textAnchor="middle"
+            className="fill-foreground text-[10px] font-semibold"
+          >
+            {s.label}
+          </text>
+          <text x={s.x} y={104} textAnchor="middle" className="fill-muted-foreground text-[8px]">
+            {s.note}
+          </text>
+          {i < steps.length - 1 && (
+            <text
+              x={s.x + 47.5}
+              y={66}
+              textAnchor="middle"
+              className="fill-muted-foreground text-[10px]"
+            >
+              →
+            </text>
+          )}
+        </g>
+      ))}
+      <text
+        x={250}
+        y={20}
+        textAnchor="middle"
+        className="fill-foreground text-[11px] font-semibold"
+      >
+        Fem protokoller for én forsides-visning
+      </text>
+      <text x={250} y={130} textAnchor="middle" className="fill-muted-foreground text-[9px] italic">
+        Tid fra «trykk Enter» til siden er ferdig lastet — typisk 1–3 sek
+      </text>
+    </svg>
+  );
+}
+
+// 1.2 — Verdenskart med Bergen-NY linje
+function WorldMapBergenNYSvg() {
+  return (
+    <svg
+      viewBox="0 0 500 220"
+      className="w-full h-auto"
+      role="img"
+      aria-label="Bergen til New York over Atlanteren"
+    >
+      {/* Stilisert Atlanterhav */}
+      <rect x={0} y={0} width={500} height={220} className="fill-brand/5" />
+      {/* Europa-omriss */}
+      <path
+        d="M 290 70 Q 320 60 350 80 Q 360 110 340 140 Q 310 150 290 130 Z"
+        className="fill-success/20 stroke-success/50"
+        strokeWidth={1.5}
+      />
+      <text x={320} y={108} textAnchor="middle" className="fill-foreground text-[9px]">
+        Europa
+      </text>
+      {/* Nord-Amerika-omriss */}
+      <path
+        d="M 80 60 Q 130 50 170 75 Q 190 110 160 145 Q 110 155 80 130 Z"
+        className="fill-amber-500/20 stroke-amber-500/50"
+        strokeWidth={1.5}
+      />
+      <text x={130} y={108} textAnchor="middle" className="fill-foreground text-[9px]">
+        USA
+      </text>
+      {/* Bergen */}
+      <circle cx={300} cy={85} r={4} className="fill-brand" />
+      <text x={300} y={76} textAnchor="middle" className="fill-foreground text-[9px] font-semibold">
+        Bergen
+      </text>
+      {/* NY */}
+      <circle cx={150} cy={120} r={4} className="fill-destructive" />
+      <text
+        x={150}
+        y={136}
+        textAnchor="middle"
+        className="fill-foreground text-[9px] font-semibold"
+      >
+        New York
+      </text>
+      {/* Sjøkabel-bue */}
+      <path
+        d="M 300 85 Q 225 30 150 120"
+        className="fill-none stroke-brand stroke-2"
+        strokeDasharray="5 3"
+      />
+      <text x={225} y={48} textAnchor="middle" className="fill-brand text-[9px] font-semibold">
+        5 700 km undersjøisk fiber
+      </text>
+      <text
+        x={250}
+        y={195}
+        textAnchor="middle"
+        className="fill-foreground text-[11px] font-mono font-semibold"
+      >
+        d_prop = 5 700 km / (2·10⁸ m/s) ≈ 28 ms
+      </text>
+      <text x={250} y={210} textAnchor="middle" className="fill-muted-foreground text-[9px] italic">
+        Minste rund-tid mellom Bergen og NY er 56 ms — lyset selv tar tiden
+      </text>
+    </svg>
+  );
+}
+
+// 1.3 — Krets vs Pakke side-ved-side visualisering
+function CircuitVsPacketComparisonSvg() {
+  return (
+    <svg
+      viewBox="0 0 720 360"
+      className="w-full h-auto"
+      role="img"
+      aria-label="Krets-svitsjing vs pakke-svitsjing side ved side"
+    >
+      {/* Krets — øvre panel */}
+      <rect
+        x={10}
+        y={10}
+        width={700}
+        height={160}
+        rx={8}
+        className="fill-brand/5 stroke-brand/40"
+        strokeWidth={1.5}
+      />
+      <text x={20} y={28} className="fill-brand text-[11px] uppercase tracking-wider font-semibold">
+        Krets-svitsjing — én reservert sti
+      </text>
+      <text x={20} y={42} className="fill-muted-foreground text-[9px]">
+        Båndbredden er din alene til samtalen slutter — andre brukere må vente
+      </text>
+      {/* Telefon A */}
+      <rect
+        x={30}
+        y={70}
+        width={50}
+        height={60}
+        rx={4}
+        className="fill-card stroke-brand"
+        strokeWidth={1.5}
+      />
+      <text x={55} y={94} textAnchor="middle" className="fill-foreground text-[9px]">
+        📞
+      </text>
+      <text x={55} y={112} textAnchor="middle" className="fill-foreground text-[9px] font-semibold">
+        A
+      </text>
+      {/* Telefon B */}
+      <rect
+        x={640}
+        y={70}
+        width={50}
+        height={60}
+        rx={4}
+        className="fill-card stroke-brand"
+        strokeWidth={1.5}
+      />
+      <text x={665} y={94} textAnchor="middle" className="fill-foreground text-[9px]">
+        📞
+      </text>
+      <text
+        x={665}
+        y={112}
+        textAnchor="middle"
+        className="fill-foreground text-[9px] font-semibold"
+      >
+        B
+      </text>
+      {/* Tre rutere */}
+      {[200, 360, 520].map((x, i) => (
+        <g key={i}>
+          <circle cx={x} cy={100} r={18} className="fill-brand/30 stroke-brand" strokeWidth={2} />
+          <text x={x} y={104} textAnchor="middle" className="fill-foreground text-[9px]">
+            R{i + 1}
+          </text>
+        </g>
+      ))}
+      {/* Reservert sti — tykk lysende linje */}
+      <line x1={80} y1={100} x2={182} y2={100} className="stroke-brand" strokeWidth={5} />
+      <line x1={218} y1={100} x2={342} y2={100} className="stroke-brand" strokeWidth={5} />
+      <line x1={378} y1={100} x2={502} y2={100} className="stroke-brand" strokeWidth={5} />
+      <line x1={538} y1={100} x2={640} y2={100} className="stroke-brand" strokeWidth={5} />
+      {/* Blokkerte brukere */}
+      <text x={360} y={150} textAnchor="middle" className="fill-destructive text-[9px] italic">
+        ✗ Andre brukere blokkert — lenken er reservert
+      </text>
+
+      {/* Pakke — nedre panel */}
+      <rect
+        x={10}
+        y={185}
+        width={700}
+        height={165}
+        rx={8}
+        className="fill-success/5 stroke-success/40"
+        strokeWidth={1.5}
+      />
+      <text
+        x={20}
+        y={203}
+        className="fill-success text-[11px] uppercase tracking-wider font-semibold"
+      >
+        Pakke-svitsjing — pakker fra mange kilder blandes
+      </text>
+      <text x={20} y={217} className="fill-muted-foreground text-[9px]">
+        Ingen reservasjon — lenken deles statistisk, full kapasitet til den som har data nå
+      </text>
+      {/* Endene */}
+      <rect
+        x={30}
+        y={245}
+        width={50}
+        height={60}
+        rx={4}
+        className="fill-card stroke-success"
+        strokeWidth={1.5}
+      />
+      <text x={55} y={269} textAnchor="middle" className="fill-foreground text-[9px]">
+        💻
+      </text>
+      <text x={55} y={287} textAnchor="middle" className="fill-foreground text-[9px] font-semibold">
+        A
+      </text>
+      <rect
+        x={640}
+        y={245}
+        width={50}
+        height={60}
+        rx={4}
+        className="fill-card stroke-success"
+        strokeWidth={1.5}
+      />
+      <text x={665} y={269} textAnchor="middle" className="fill-foreground text-[9px]">
+        💻
+      </text>
+      <text
+        x={665}
+        y={287}
+        textAnchor="middle"
+        className="fill-foreground text-[9px] font-semibold"
+      >
+        B
+      </text>
+      {/* Tre rutere */}
+      {[200, 360, 520].map((x, i) => (
+        <g key={i}>
+          <circle
+            cx={x}
+            cy={275}
+            r={18}
+            className="fill-success/30 stroke-success"
+            strokeWidth={2}
+          />
+          <text x={x} y={279} textAnchor="middle" className="fill-foreground text-[9px]">
+            R{i + 1}
+          </text>
+        </g>
+      ))}
+      {/* Lenker (grå) */}
+      <line
+        x1={80}
+        y1={275}
+        x2={182}
+        y2={275}
+        className="stroke-muted-foreground/40"
+        strokeWidth={2}
+      />
+      <line
+        x1={218}
+        y1={275}
+        x2={342}
+        y2={275}
+        className="stroke-muted-foreground/40"
+        strokeWidth={2}
+      />
+      <line
+        x1={378}
+        y1={275}
+        x2={502}
+        y2={275}
+        className="stroke-muted-foreground/40"
+        strokeWidth={2}
+      />
+      <line
+        x1={538}
+        y1={275}
+        x2={640}
+        y2={275}
+        className="stroke-muted-foreground/40"
+        strokeWidth={2}
+      />
+      {/* Pakker fra mange brukere */}
+      {[
+        { x: 100, cls: "fill-brand" },
+        { x: 120, cls: "fill-amber-500" },
+        { x: 140, cls: "fill-purple-500" },
+        { x: 240, cls: "fill-success" },
+        { x: 260, cls: "fill-brand" },
+        { x: 280, cls: "fill-amber-500" },
+        { x: 400, cls: "fill-purple-500" },
+        { x: 420, cls: "fill-brand" },
+        { x: 440, cls: "fill-amber-500" },
+        { x: 560, cls: "fill-success" },
+        { x: 580, cls: "fill-purple-500" },
+        { x: 600, cls: "fill-brand" },
+      ].map((p, i) => (
+        <rect key={i} x={p.x} y={269} width={12} height={12} rx={1} className={p.cls} />
+      ))}
+      <text x={360} y={325} textAnchor="middle" className="fill-success text-[9px] italic">
+        ✓ Ulike farger = ulike avsendere som deler samme lenker
+      </text>
+    </svg>
+  );
+}
+
+// 1.3 — Store-and-forward timeline (Example 2)
+function StoreForwardTimelineSvg() {
+  return (
+    <svg
+      viewBox="0 0 500 200"
+      className="w-full h-auto"
+      role="img"
+      aria-label="Store-and-forward over tre hopp"
+    >
+      <text
+        x={250}
+        y={16}
+        textAnchor="middle"
+        className="fill-foreground text-[11px] font-semibold"
+      >
+        5 000-bits pakke over 3 hopp à 1 Mbps — total 15 ms
+      </text>
+      {/* Y-akse: hopp */}
+      {["A→B", "B→C", "C→D"].map((label, i) => (
+        <g key={i}>
+          <text
+            x={35}
+            y={70 + i * 35}
+            textAnchor="end"
+            className="fill-muted-foreground text-[10px] font-mono"
+          >
+            {label}
+          </text>
+          {/* Tom track */}
+          <rect
+            x={50}
+            y={58 + i * 35}
+            width={420}
+            height={18}
+            rx={2}
+            className="fill-muted/20 stroke-border"
+            strokeWidth={0.8}
+          />
+          {/* Aktiv tid */}
+          <rect
+            x={50 + i * 140}
+            y={58 + i * 35}
+            width={140}
+            height={18}
+            rx={2}
+            className={
+              i === 0
+                ? "fill-brand/40 stroke-brand"
+                : i === 1
+                  ? "fill-success/40 stroke-success"
+                  : "fill-amber-500/40 stroke-amber-500"
+            }
+            strokeWidth={1}
+          />
+          <text
+            x={120 + i * 140}
+            y={71 + i * 35}
+            textAnchor="middle"
+            className="fill-foreground text-[9px] font-mono"
+          >
+            5 ms
+          </text>
+        </g>
+      ))}
+      {/* X-akse */}
+      <line x1={50} y1={170} x2={470} y2={170} className="stroke-foreground/60" strokeWidth={1.2} />
+      {[0, 5, 10, 15].map((t) => (
+        <g key={t}>
+          <line
+            x1={50 + (t / 15) * 420}
+            y1={170}
+            x2={50 + (t / 15) * 420}
+            y2={175}
+            className="stroke-foreground/60"
+            strokeWidth={1}
+          />
+          <text
+            x={50 + (t / 15) * 420}
+            y={186}
+            textAnchor="middle"
+            className="fill-muted-foreground text-[8px] font-mono"
+          >
+            {t} ms
+          </text>
+        </g>
+      ))}
+      <text x={250} y={196} textAnchor="middle" className="fill-muted-foreground text-[9px] italic">
+        Hver ruter må motta hele pakken før den begynner å videresende
+      </text>
+    </svg>
+  );
+}
+
+// 1.4 — Fire forsinkelses-stolper (proc, kø, trans, prop)
+function FourDelaysBarsSvg() {
+  const bars = [
+    { label: "d_proc", value: 5, cls: "fill-amber-500/40 stroke-amber-500", desc: "ruter-CPU" },
+    { label: "d_kø", value: 35, cls: "fill-brand/40 stroke-brand", desc: "ventetid" },
+    { label: "d_trans", value: 15, cls: "fill-success/40 stroke-success", desc: "dytte bits ut" },
+    {
+      label: "d_prop",
+      value: 60,
+      cls: "fill-destructive/40 stroke-destructive",
+      desc: "lys i fiber",
+    },
+  ];
+  const maxV = 60;
+  return (
+    <svg
+      viewBox="0 0 500 220"
+      className="w-full h-auto"
+      role="img"
+      aria-label="Fire forsinkelses-bidrag som stolper"
+    >
+      <text
+        x={250}
+        y={16}
+        textAnchor="middle"
+        className="fill-foreground text-[11px] font-semibold"
+      >
+        Fire kilder til forsinkelse — relativ størrelse Bergen→NY
+      </text>
+      {bars.map((b, i) => {
+        const x = 60 + i * 105;
+        const h = (b.value / maxV) * 130;
+        const y = 170 - h;
+        return (
+          <g key={b.label}>
+            <rect x={x} y={y} width={70} height={h} rx={3} className={b.cls} strokeWidth={1.5} />
+            <text
+              x={x + 35}
+              y={y - 6}
+              textAnchor="middle"
+              className="fill-foreground text-[10px] font-mono font-semibold"
+            >
+              {b.value} ms*
+            </text>
+            <text
+              x={x + 35}
+              y={188}
+              textAnchor="middle"
+              className="fill-foreground text-[10px] font-mono"
+            >
+              {b.label}
+            </text>
+            <text
+              x={x + 35}
+              y={202}
+              textAnchor="middle"
+              className="fill-muted-foreground text-[9px]"
+            >
+              {b.desc}
+            </text>
+          </g>
+        );
+      })}
+      <line x1={50} y1={170} x2={470} y2={170} className="stroke-foreground/60" strokeWidth={1.2} />
+      <text x={250} y={216} textAnchor="middle" className="fill-muted-foreground text-[8px] italic">
+        *Illustrative tall — propagasjon dominerer på lange strekninger
+      </text>
+    </svg>
+  );
+}
+
+// 1.5 — TCP/IP-stack som flagg-bygning (vertikal)
+function StackFlagBuildingSvg() {
+  const layers = [
+    {
+      name: "5. Applikasjon",
+      note: "HTTP, DNS, SMTP — appens språk",
+      fill: "fill-brand/25",
+      stroke: "stroke-brand",
+    },
+    {
+      name: "4. Transport",
+      note: "TCP/UDP — portnumre, pålitelighet",
+      fill: "fill-success/25",
+      stroke: "stroke-success",
+    },
+    {
+      name: "3. Nettverk",
+      note: "IP — host-til-host via mange rutere",
+      fill: "fill-amber-500/25",
+      stroke: "stroke-amber-500",
+    },
+    {
+      name: "2. Link",
+      note: "Ethernet/WiFi — én hopp om gangen",
+      fill: "fill-destructive/25",
+      stroke: "stroke-destructive",
+    },
+    {
+      name: "1. Fysisk",
+      note: "Bits som lys, spenning, radio",
+      fill: "fill-muted/40",
+      stroke: "stroke-foreground/60",
+    },
+  ];
+  return (
+    <svg
+      viewBox="0 0 500 290"
+      className="w-full h-auto"
+      role="img"
+      aria-label="TCP/IP-stack som vertikalt bygg"
+    >
+      <text
+        x={250}
+        y={16}
+        textAnchor="middle"
+        className="fill-foreground text-[11px] font-semibold"
+      >
+        Stakken som bygning — appen bor i toppetasjen, fiberen i kjelleren
+      </text>
+      {/* Mast */}
+      <line x1={250} y1={25} x2={250} y2={45} className="stroke-foreground/60" strokeWidth={2} />
+      <circle cx={250} cy={25} r={4} className="fill-brand" />
+      {layers.map((l, i) => {
+        const y = 50 + i * 45;
+        return (
+          <g key={l.name}>
+            <rect
+              x={80}
+              y={y}
+              width={340}
+              height={38}
+              rx={4}
+              className={`${l.fill} ${l.stroke}`}
+              strokeWidth={1.5}
+            />
+            <text x={100} y={y + 16} className="fill-foreground text-[11px] font-semibold">
+              {l.name}
+            </text>
+            <text x={100} y={y + 31} className="fill-muted-foreground text-[9px]">
+              {l.note}
+            </text>
+            {/* Sidekant for å gi flagg-følelsen */}
+            <polygon
+              points={`80,${y} 70,${y + 19} 80,${y + 38}`}
+              className={`${l.fill} ${l.stroke}`}
+              strokeWidth={1.5}
+            />
+          </g>
+        );
+      })}
+      <text x={250} y={282} textAnchor="middle" className="fill-muted-foreground text-[9px] italic">
+        Hvert lag bruker tjenester fra laget under og tilbyr tjenester til laget over
+      </text>
+    </svg>
+  );
+}
+
+// 1.5 — Innkapsling-matrjosjka
+function MatryoshkaEncapsulationSvg() {
+  return (
+    <svg
+      viewBox="0 0 500 200"
+      className="w-full h-auto"
+      role="img"
+      aria-label="Innkapsling som russiske dukker"
+    >
+      <text
+        x={250}
+        y={16}
+        textAnchor="middle"
+        className="fill-foreground text-[11px] font-semibold"
+      >
+        Innkapsling: hver lag pakker innholdet inn i sitt eget skall
+      </text>
+      {/* Ytre Eth */}
+      <rect
+        x={30}
+        y={45}
+        width={440}
+        height={130}
+        rx={8}
+        className="fill-destructive/15 stroke-destructive"
+        strokeWidth={1.5}
+      />
+      <text x={50} y={62} className="fill-destructive text-[10px] font-semibold">
+        Eth-ramme
+      </text>
+      <text x={50} y={170} className="fill-muted-foreground text-[8px]">
+        + 14 B header + 4 B trailer
+      </text>
+      {/* IP */}
+      <rect
+        x={70}
+        y={75}
+        width={360}
+        height={85}
+        rx={6}
+        className="fill-amber-500/20 stroke-amber-500"
+        strokeWidth={1.5}
+      />
+      <text x={90} y={92} className="fill-amber-700 dark:fill-amber-400 text-[10px] font-semibold">
+        IP-datagram
+      </text>
+      <text x={90} y={155} className="fill-muted-foreground text-[8px]">
+        + 20 B header
+      </text>
+      {/* TCP */}
+      <rect
+        x={110}
+        y={102}
+        width={280}
+        height={50}
+        rx={5}
+        className="fill-success/25 stroke-success"
+        strokeWidth={1.5}
+      />
+      <text x={130} y={119} className="fill-success text-[10px] font-semibold">
+        TCP-segment
+      </text>
+      <text x={130} y={147} className="fill-muted-foreground text-[8px]">
+        + 20 B header
+      </text>
+      {/* App */}
+      <rect
+        x={150}
+        y={125}
+        width={200}
+        height={20}
+        rx={3}
+        className="fill-brand/30 stroke-brand"
+        strokeWidth={1.5}
+      />
+      <text
+        x={250}
+        y={139}
+        textAnchor="middle"
+        className="fill-foreground text-[10px] font-semibold"
+      >
+        «hei» (30 B app-data)
+      </text>
+      <text x={250} y={192} textAnchor="middle" className="fill-muted-foreground text-[9px] italic">
+        30 B nyttig data → 88 B på lenken: 66 % er overhead
+      </text>
+    </svg>
+  );
+}
+
+// Eksamen — Cheat-sheet visuelle kort (formel-bilder)
+function FormulaCardTransSvg() {
+  return (
+    <svg
+      viewBox="0 0 240 130"
+      className="w-full h-auto"
+      role="img"
+      aria-label="Transmisjon-formel som diagram"
+    >
+      <rect
+        x={2}
+        y={2}
+        width={236}
+        height={126}
+        rx={6}
+        className="fill-success/5 stroke-success/40"
+        strokeWidth={1}
+      />
+      <text
+        x={120}
+        y={20}
+        textAnchor="middle"
+        className="fill-success text-[10px] font-semibold uppercase tracking-wider"
+      >
+        d_trans
+      </text>
+      {/* Pakke som strekker seg ut */}
+      <rect
+        x={30}
+        y={45}
+        width={180}
+        height={20}
+        rx={3}
+        className="fill-success/30 stroke-success"
+        strokeWidth={1.2}
+      />
+      <text x={120} y={59} textAnchor="middle" className="fill-foreground text-[9px] font-mono">
+        L bits
+      </text>
+      {/* Pil ned */}
+      <line
+        x1={120}
+        y1={70}
+        x2={120}
+        y2={85}
+        className="stroke-foreground/60"
+        strokeWidth={1}
+        markerEnd="url(#fct-arr)"
+      />
+      <text
+        x={120}
+        y={100}
+        textAnchor="middle"
+        className="fill-foreground text-[12px] font-mono font-semibold"
+      >
+        L / R
+      </text>
+      <text x={120} y={115} textAnchor="middle" className="fill-muted-foreground text-[8px]">
+        bits delt på bit/s
+      </text>
+      <defs>
+        <marker
+          id="fct-arr"
+          viewBox="0 0 10 10"
+          refX="9"
+          refY="5"
+          markerWidth="5"
+          markerHeight="5"
+          orient="auto-start-reverse"
+        >
+          <path d="M0,0 L10,5 L0,10 z" className="fill-foreground" />
+        </marker>
+      </defs>
+    </svg>
+  );
+}
+
+function FormulaCardPropSvg() {
+  return (
+    <svg
+      viewBox="0 0 240 130"
+      className="w-full h-auto"
+      role="img"
+      aria-label="Propagasjon-formel som diagram"
+    >
+      <rect
+        x={2}
+        y={2}
+        width={236}
+        height={126}
+        rx={6}
+        className="fill-destructive/5 stroke-destructive/40"
+        strokeWidth={1}
+      />
+      <text
+        x={120}
+        y={20}
+        textAnchor="middle"
+        className="fill-destructive text-[10px] font-semibold uppercase tracking-wider"
+      >
+        d_prop
+      </text>
+      {/* Lang lenke */}
+      <line x1={20} y1={55} x2={220} y2={55} className="stroke-foreground/60" strokeWidth={2} />
+      <circle cx={20} cy={55} r={4} className="fill-brand" />
+      <circle cx={220} cy={55} r={4} className="fill-success" />
+      <text x={120} y={48} textAnchor="middle" className="fill-muted-foreground text-[9px]">
+        avstand d
+      </text>
+      {/* Bit som beveger seg */}
+      <rect x={90} y={50} width={10} height={10} className="fill-amber-500" />
+      <text
+        x={120}
+        y={86}
+        textAnchor="middle"
+        className="fill-foreground text-[12px] font-mono font-semibold"
+      >
+        d / v
+      </text>
+      <text x={120} y={100} textAnchor="middle" className="fill-muted-foreground text-[8px]">
+        v ≈ 2·10⁸ m/s i fiber
+      </text>
+      <text x={120} y={118} textAnchor="middle" className="fill-muted-foreground text-[8px] italic">
+        Settes ikke ned med raskere ruter
+      </text>
+    </svg>
+  );
+}
+
+function FormulaCardBottleneckSvg() {
+  return (
+    <svg
+      viewBox="0 0 240 130"
+      className="w-full h-auto"
+      role="img"
+      aria-label="Throughput-flaskehals som rør"
+    >
+      <rect
+        x={2}
+        y={2}
+        width={236}
+        height={126}
+        rx={6}
+        className="fill-brand/5 stroke-brand/40"
+        strokeWidth={1}
+      />
+      <text
+        x={120}
+        y={20}
+        textAnchor="middle"
+        className="fill-brand text-[10px] font-semibold uppercase tracking-wider"
+      >
+        Throughput
+      </text>
+      {/* Tre rør, midten smalt */}
+      <rect
+        x={20}
+        y={45}
+        width={60}
+        height={40}
+        rx={4}
+        className="fill-brand/30 stroke-brand"
+        strokeWidth={1.2}
+      />
+      <text x={50} y={68} textAnchor="middle" className="fill-foreground text-[8px] font-mono">
+        1 Gbps
+      </text>
+      <rect
+        x={90}
+        y={58}
+        width={60}
+        height={15}
+        rx={3}
+        className="fill-destructive/40 stroke-destructive"
+        strokeWidth={1.2}
+      />
+      <text x={120} y={68} textAnchor="middle" className="fill-foreground text-[7px] font-mono">
+        100 Mbps
+      </text>
+      <rect
+        x={160}
+        y={50}
+        width={60}
+        height={30}
+        rx={4}
+        className="fill-brand/30 stroke-brand"
+        strokeWidth={1.2}
+      />
+      <text x={190} y={68} textAnchor="middle" className="fill-foreground text-[8px] font-mono">
+        500 Mbps
+      </text>
+      <text
+        x={120}
+        y={100}
+        textAnchor="middle"
+        className="fill-foreground text-[11px] font-mono font-semibold"
+      >
+        min(R₁, R₂, …)
+      </text>
+      <text x={120} y={118} textAnchor="middle" className="fill-muted-foreground text-[8px]">
+        smaleste rør setter taket
+      </text>
+    </svg>
+  );
+}
+
+function FormulaCardIntensitySvg() {
+  return (
+    <svg
+      viewBox="0 0 240 130"
+      className="w-full h-auto"
+      role="img"
+      aria-label="Trafikk-intensitet ρ"
+    >
+      <rect
+        x={2}
+        y={2}
+        width={236}
+        height={126}
+        rx={6}
+        className="fill-amber-500/5 stroke-amber-500/40"
+        strokeWidth={1}
+      />
+      <text
+        x={120}
+        y={20}
+        textAnchor="middle"
+        className="fill-amber-700 dark:fill-amber-400 text-[10px] font-semibold uppercase tracking-wider"
+      >
+        Trafikk-intensitet ρ
+      </text>
+      {/* Beger som fylles */}
+      <rect
+        x={70}
+        y={35}
+        width={100}
+        height={60}
+        rx={3}
+        className="fill-none stroke-foreground/60"
+        strokeWidth={1.5}
+      />
+      <rect x={72} y={70} width={96} height={23} className="fill-amber-500/40" />
+      <text x={120} y={86} textAnchor="middle" className="fill-foreground text-[9px] font-mono">
+        ρ = 0.5
+      </text>
+      <text
+        x={120}
+        y={110}
+        textAnchor="middle"
+        className="fill-foreground text-[11px] font-mono font-semibold"
+      >
+        L · a / R
+      </text>
+      <text x={120} y={122} textAnchor="middle" className="fill-muted-foreground text-[8px]">
+        ρ → 1: køen sprenger
+      </text>
+    </svg>
+  );
+}
+
+// Cheat — tall-å-huske visuelle kort
+function NumberCardLightFiberSvg() {
+  return (
+    <svg
+      viewBox="0 0 240 100"
+      className="w-full h-auto"
+      role="img"
+      aria-label="Lyshastighet i fiber"
+    >
+      <rect
+        x={2}
+        y={2}
+        width={236}
+        height={96}
+        rx={6}
+        className="fill-card stroke-border"
+        strokeWidth={1}
+      />
+      <text
+        x={120}
+        y={20}
+        textAnchor="middle"
+        className="fill-muted-foreground text-[8px] uppercase tracking-wider"
+      >
+        Lys i fiber
+      </text>
+      <line x1={20} y1={50} x2={220} y2={50} className="stroke-foreground/60" strokeWidth={1.5} />
+      <rect x={100} y={45} width={14} height={10} className="fill-amber-500" />
+      <text
+        x={120}
+        y={75}
+        textAnchor="middle"
+        className="fill-foreground text-[14px] font-mono font-bold"
+      >
+        2·10⁸ m/s
+      </text>
+      <text x={120} y={90} textAnchor="middle" className="fill-muted-foreground text-[8px]">
+        = ⅔ av c
+      </text>
+    </svg>
+  );
+}
+
+function NumberCardMTUSvg() {
+  return (
+    <svg viewBox="0 0 240 100" className="w-full h-auto" role="img" aria-label="MTU på Ethernet">
+      <rect
+        x={2}
+        y={2}
+        width={236}
+        height={96}
+        rx={6}
+        className="fill-card stroke-border"
+        strokeWidth={1}
+      />
+      <text
+        x={120}
+        y={20}
+        textAnchor="middle"
+        className="fill-muted-foreground text-[8px] uppercase tracking-wider"
+      >
+        MTU på Ethernet
+      </text>
+      <rect
+        x={40}
+        y={35}
+        width={160}
+        height={20}
+        rx={2}
+        className="fill-brand/30 stroke-brand"
+        strokeWidth={1.2}
+      />
+      <text x={120} y={49} textAnchor="middle" className="fill-foreground text-[8px] font-mono">
+        1 ramme
+      </text>
+      <text
+        x={120}
+        y={75}
+        textAnchor="middle"
+        className="fill-foreground text-[14px] font-mono font-bold"
+      >
+        1 500 byte
+      </text>
+      <text x={120} y={89} textAnchor="middle" className="fill-muted-foreground text-[8px]">
+        = 12 000 bit, største urøvet
+      </text>
+    </svg>
+  );
+}
+
+function NumberCardGeoSatSvg() {
+  return (
+    <svg
+      viewBox="0 0 240 100"
+      className="w-full h-auto"
+      role="img"
+      aria-label="Geostasjonær satellitt-forsinkelse"
+    >
+      <rect
+        x={2}
+        y={2}
+        width={236}
+        height={96}
+        rx={6}
+        className="fill-card stroke-border"
+        strokeWidth={1}
+      />
+      <text
+        x={120}
+        y={16}
+        textAnchor="middle"
+        className="fill-muted-foreground text-[8px] uppercase tracking-wider"
+      >
+        Geo-satellitt enveis
+      </text>
+      <circle
+        cx={120}
+        cy={75}
+        r={15}
+        className="fill-success/30 stroke-success"
+        strokeWidth={1.2}
+      />
+      <text x={120} y={79} textAnchor="middle" className="fill-foreground text-[7px]">
+        Jord
+      </text>
+      <circle cx={120} cy={30} r={4} className="fill-amber-500" />
+      <line
+        x1={120}
+        y1={60}
+        x2={120}
+        y2={34}
+        className="stroke-foreground/60"
+        strokeDasharray="2 2"
+        strokeWidth={1}
+      />
+      <text x={155} y={47} className="fill-foreground text-[12px] font-mono font-bold">
+        ≈ 120 ms
+      </text>
+      <text x={155} y={59} className="fill-muted-foreground text-[7px]">
+        36 000 km opp
+      </text>
+    </svg>
+  );
+}
+
+// 5-minutter-anker — 12 ikon-kort i grid (SVG-rad rendres som React-grid)
+function AnkerIconCard({
+  n,
+  title,
+  children,
+}: {
+  n: number;
+  title: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="rounded-lg border border-emerald-500/40 bg-emerald-500/5 p-2 flex flex-col items-center text-center">
+      <div className="text-[9px] uppercase tracking-wider text-emerald-700 dark:text-emerald-400 font-semibold">
+        #{n}
+      </div>
+      <div className="my-1 w-full">{children}</div>
+      <div className="text-[10px] font-semibold text-foreground leading-tight">{title}</div>
+    </div>
+  );
+}
+
+function IconISPs() {
+  return (
+    <svg viewBox="0 0 80 50" className="w-full h-auto" role="img" aria-label="ISP-er av ISP-er">
+      <circle cx={40} cy={12} r={6} className="fill-brand/30 stroke-brand" strokeWidth={1.2} />
+      <circle cx={20} cy={30} r={5} className="fill-success/30 stroke-success" strokeWidth={1.2} />
+      <circle cx={60} cy={30} r={5} className="fill-success/30 stroke-success" strokeWidth={1.2} />
+      <circle
+        cx={10}
+        cy={42}
+        r={3}
+        className="fill-amber-500/40 stroke-amber-500"
+        strokeWidth={1}
+      />
+      <circle
+        cx={30}
+        cy={42}
+        r={3}
+        className="fill-amber-500/40 stroke-amber-500"
+        strokeWidth={1}
+      />
+      <circle
+        cx={50}
+        cy={42}
+        r={3}
+        className="fill-amber-500/40 stroke-amber-500"
+        strokeWidth={1}
+      />
+      <circle
+        cx={70}
+        cy={42}
+        r={3}
+        className="fill-amber-500/40 stroke-amber-500"
+        strokeWidth={1}
+      />
+      <line x1={40} y1={18} x2={20} y2={25} className="stroke-foreground/40" strokeWidth={0.8} />
+      <line x1={40} y1={18} x2={60} y2={25} className="stroke-foreground/40" strokeWidth={0.8} />
+    </svg>
+  );
+}
+
+function IconTwoPerspectives() {
+  return (
+    <svg viewBox="0 0 80 50" className="w-full h-auto" role="img" aria-label="To perspektiver">
+      <rect
+        x={6}
+        y={10}
+        width={28}
+        height={30}
+        rx={3}
+        className="fill-amber-500/20 stroke-amber-500"
+        strokeWidth={1.2}
+      />
+      <text x={20} y={29} textAnchor="middle" className="fill-foreground text-[8px]">
+        HW
+      </text>
+      <rect
+        x={46}
+        y={10}
+        width={28}
+        height={30}
+        rx={3}
+        className="fill-brand/20 stroke-brand"
+        strokeWidth={1.2}
+      />
+      <text x={60} y={29} textAnchor="middle" className="fill-foreground text-[8px]">
+        app
+      </text>
+    </svg>
+  );
+}
+
+function IconEdgeCore() {
+  return (
+    <svg viewBox="0 0 80 50" className="w-full h-auto" role="img" aria-label="Edge vs core">
+      <circle
+        cx={12}
+        cy={25}
+        r={5}
+        className="fill-amber-500/30 stroke-amber-500"
+        strokeWidth={1.2}
+      />
+      <circle
+        cx={68}
+        cy={25}
+        r={5}
+        className="fill-amber-500/30 stroke-amber-500"
+        strokeWidth={1.2}
+      />
+      <circle cx={32} cy={25} r={4} className="fill-brand/30 stroke-brand" strokeWidth={1.2} />
+      <circle cx={48} cy={25} r={4} className="fill-brand/30 stroke-brand" strokeWidth={1.2} />
+      <line x1={17} y1={25} x2={28} y2={25} className="stroke-foreground/50" strokeWidth={1} />
+      <line x1={36} y1={25} x2={44} y2={25} className="stroke-foreground/50" strokeWidth={1} />
+      <line x1={52} y1={25} x2={63} y2={25} className="stroke-foreground/50" strokeWidth={1} />
+    </svg>
+  );
+}
+
+function IconPacketWon() {
+  return (
+    <svg viewBox="0 0 80 50" className="w-full h-auto" role="img" aria-label="Pakke-svitsjing vant">
+      <rect x={10} y={20} width={10} height={10} className="fill-brand" />
+      <rect x={24} y={20} width={10} height={10} className="fill-amber-500" />
+      <rect x={38} y={20} width={10} height={10} className="fill-success" />
+      <rect x={52} y={20} width={10} height={10} className="fill-purple-500" />
+      <text x={40} y={45} textAnchor="middle" className="fill-success text-[8px] font-bold">
+        ✓ vant
+      </text>
+    </svg>
+  );
+}
+
+function IconFourDelays() {
+  return (
+    <svg
+      viewBox="0 0 80 50"
+      className="w-full h-auto"
+      role="img"
+      aria-label="Fire forsinkelses-bidrag"
+    >
+      <rect
+        x={8}
+        y={30}
+        width={12}
+        height={12}
+        className="fill-amber-500/50 stroke-amber-500"
+        strokeWidth={0.8}
+      />
+      <rect
+        x={24}
+        y={20}
+        width={12}
+        height={22}
+        className="fill-brand/50 stroke-brand"
+        strokeWidth={0.8}
+      />
+      <rect
+        x={40}
+        y={26}
+        width={12}
+        height={16}
+        className="fill-success/50 stroke-success"
+        strokeWidth={0.8}
+      />
+      <rect
+        x={56}
+        y={10}
+        width={12}
+        height={32}
+        className="fill-destructive/50 stroke-destructive"
+        strokeWidth={0.8}
+      />
+    </svg>
+  );
+}
+
+function IconBottleneck() {
+  return (
+    <svg
+      viewBox="0 0 80 50"
+      className="w-full h-auto"
+      role="img"
+      aria-label="Throughput-flaskehals"
+    >
+      <rect
+        x={5}
+        y={15}
+        width={20}
+        height={20}
+        className="fill-brand/30 stroke-brand"
+        strokeWidth={1}
+      />
+      <rect
+        x={30}
+        y={22}
+        width={20}
+        height={6}
+        className="fill-destructive/40 stroke-destructive"
+        strokeWidth={1}
+      />
+      <rect
+        x={55}
+        y={17}
+        width={20}
+        height={16}
+        className="fill-brand/30 stroke-brand"
+        strokeWidth={1}
+      />
+    </svg>
+  );
+}
+
+function IconLossFullQueue() {
+  return (
+    <svg
+      viewBox="0 0 80 50"
+      className="w-full h-auto"
+      role="img"
+      aria-label="Pakke-tap når kø er full"
+    >
+      <rect
+        x={10}
+        y={15}
+        width={50}
+        height={20}
+        rx={2}
+        className="fill-card stroke-border"
+        strokeWidth={1}
+      />
+      <rect x={12} y={17} width={8} height={16} className="fill-brand" />
+      <rect x={22} y={17} width={8} height={16} className="fill-amber-500" />
+      <rect x={32} y={17} width={8} height={16} className="fill-success" />
+      <rect x={42} y={17} width={8} height={16} className="fill-purple-500" />
+      <rect x={52} y={17} width={8} height={16} className="fill-destructive" />
+      <text x={70} y={29} className="fill-destructive text-[12px]">
+        ✗
+      </text>
+    </svg>
+  );
+}
+
+function IconFiveLayers() {
+  return (
+    <svg viewBox="0 0 80 50" className="w-full h-auto" role="img" aria-label="Fem lag">
+      {[0, 1, 2, 3, 4].map((i) => (
+        <rect
+          key={i}
+          x={15}
+          y={6 + i * 8}
+          width={50}
+          height={6}
+          className={
+            [
+              "fill-brand/30 stroke-brand",
+              "fill-success/30 stroke-success",
+              "fill-amber-500/30 stroke-amber-500",
+              "fill-destructive/30 stroke-destructive",
+              "fill-muted/40 stroke-foreground/50",
+            ][i]
+          }
+          strokeWidth={0.8}
+        />
+      ))}
+    </svg>
+  );
+}
+
+function IconModularity() {
+  return (
+    <svg viewBox="0 0 80 50" className="w-full h-auto" role="img" aria-label="Modularitet">
+      <rect
+        x={10}
+        y={10}
+        width={20}
+        height={10}
+        className="fill-brand/30 stroke-brand"
+        strokeWidth={0.8}
+      />
+      <rect
+        x={10}
+        y={22}
+        width={20}
+        height={10}
+        className="fill-success/30 stroke-success"
+        strokeWidth={0.8}
+      />
+      <rect
+        x={10}
+        y={34}
+        width={20}
+        height={10}
+        className="fill-amber-500/30 stroke-amber-500"
+        strokeWidth={0.8}
+      />
+      <line
+        x1={32}
+        y1={25}
+        x2={48}
+        y2={25}
+        className="stroke-foreground/50"
+        strokeWidth={1}
+        markerEnd="url(#im-arr)"
+      />
+      <rect
+        x={50}
+        y={10}
+        width={20}
+        height={10}
+        className="fill-brand/30 stroke-brand"
+        strokeWidth={0.8}
+      />
+      <rect
+        x={50}
+        y={22}
+        width={20}
+        height={10}
+        className="fill-success/30 stroke-success"
+        strokeWidth={0.8}
+      />
+      <rect
+        x={50}
+        y={34}
+        width={20}
+        height={10}
+        className="fill-purple-500/30 stroke-purple-500"
+        strokeWidth={0.8}
+      />
+      <defs>
+        <marker
+          id="im-arr"
+          viewBox="0 0 10 10"
+          refX="9"
+          refY="5"
+          markerWidth="4"
+          markerHeight="4"
+          orient="auto-start-reverse"
+        >
+          <path d="M0,0 L10,5 L0,10 z" className="fill-foreground" />
+        </marker>
+      </defs>
+    </svg>
+  );
+}
+
+function IconEncapsulation() {
+  return (
+    <svg viewBox="0 0 80 50" className="w-full h-auto" role="img" aria-label="Innkapsling">
+      <rect
+        x={5}
+        y={10}
+        width={70}
+        height={30}
+        rx={3}
+        className="fill-destructive/15 stroke-destructive"
+        strokeWidth={0.8}
+      />
+      <rect
+        x={13}
+        y={15}
+        width={54}
+        height={20}
+        rx={2}
+        className="fill-amber-500/20 stroke-amber-500"
+        strokeWidth={0.8}
+      />
+      <rect
+        x={21}
+        y={20}
+        width={38}
+        height={10}
+        rx={2}
+        className="fill-success/25 stroke-success"
+        strokeWidth={0.8}
+      />
+      <rect x={29} y={23} width={22} height={4} className="fill-brand" />
+    </svg>
+  );
+}
+
+function IconRouterL3() {
+  return (
+    <svg
+      viewBox="0 0 80 50"
+      className="w-full h-auto"
+      role="img"
+      aria-label="Rutere bare opp til lag 3"
+    >
+      <rect
+        x={20}
+        y={15}
+        width={40}
+        height={25}
+        rx={3}
+        className="fill-brand/15 stroke-brand"
+        strokeWidth={1}
+      />
+      <text x={40} y={28} textAnchor="middle" className="fill-foreground text-[8px]">
+        ruter
+      </text>
+      <text x={40} y={37} textAnchor="middle" className="fill-foreground text-[7px] font-mono">
+        L3
+      </text>
+    </svg>
+  );
+}
+
+function IconProtocol() {
+  return (
+    <svg viewBox="0 0 80 50" className="w-full h-auto" role="img" aria-label="Protokoll-avtale">
+      <circle cx={18} cy={25} r={8} className="fill-brand/30 stroke-brand" strokeWidth={1} />
+      <circle cx={62} cy={25} r={8} className="fill-success/30 stroke-success" strokeWidth={1} />
+      <path
+        d="M 26 22 L 54 22"
+        className="stroke-foreground/60"
+        strokeWidth={1.2}
+        markerEnd="url(#ip-arr)"
+      />
+      <path
+        d="M 54 30 L 26 30"
+        className="stroke-foreground/60"
+        strokeWidth={1.2}
+        markerEnd="url(#ip-arr)"
+      />
+      <defs>
+        <marker
+          id="ip-arr"
+          viewBox="0 0 10 10"
+          refX="9"
+          refY="5"
+          markerWidth="4"
+          markerHeight="4"
+          orient="auto-start-reverse"
+        >
+          <path d="M0,0 L10,5 L0,10 z" className="fill-foreground" />
+        </marker>
+      </defs>
+    </svg>
+  );
+}
+
+// Fallgruve-ikoner (små advarsel-ikoner)
+function WarnIconPropVsTrans() {
+  return (
+    <svg viewBox="0 0 120 60" className="w-full h-auto" role="img" aria-label="d_prop vs d_trans">
+      {/* d_trans: pakke strekker seg over kabel */}
+      <line x1={5} y1={15} x2={55} y2={15} className="stroke-foreground/50" strokeWidth={1} />
+      <rect
+        x={10}
+        y={11}
+        width={40}
+        height={8}
+        className="fill-success/50 stroke-success"
+        strokeWidth={0.8}
+      />
+      <text x={30} y={28} textAnchor="middle" className="fill-foreground text-[7px] font-mono">
+        d_trans
+      </text>
+      {/* d_prop: én bit flyr */}
+      <line x1={65} y1={15} x2={115} y2={15} className="stroke-foreground/50" strokeWidth={1} />
+      <rect x={88} y={11} width={6} height={8} className="fill-destructive" />
+      <text x={90} y={28} textAnchor="middle" className="fill-foreground text-[7px] font-mono">
+        d_prop
+      </text>
+      <text
+        x={60}
+        y={50}
+        textAnchor="middle"
+        className="fill-orange-700 dark:fill-orange-400 text-[8px] font-semibold"
+      >
+        ulike fenomener
+      </text>
+    </svg>
+  );
+}
+
+function WarnIconBottleneck() {
+  return (
+    <svg
+      viewBox="0 0 120 60"
+      className="w-full h-auto"
+      role="img"
+      aria-label="Throughput = min, ikke sum"
+    >
+      <rect
+        x={5}
+        y={18}
+        width={25}
+        height={24}
+        className="fill-brand/30 stroke-brand"
+        strokeWidth={1}
+      />
+      <text x={17} y={32} textAnchor="middle" className="fill-foreground text-[7px] font-mono">
+        1G
+      </text>
+      <rect
+        x={35}
+        y={26}
+        width={25}
+        height={8}
+        className="fill-destructive/40 stroke-destructive"
+        strokeWidth={1}
+      />
+      <text x={48} y={32} textAnchor="middle" className="fill-foreground text-[7px] font-mono">
+        100M
+      </text>
+      <rect
+        x={65}
+        y={20}
+        width={25}
+        height={20}
+        className="fill-brand/30 stroke-brand"
+        strokeWidth={1}
+      />
+      <text x={77} y={32} textAnchor="middle" className="fill-foreground text-[7px] font-mono">
+        500M
+      </text>
+      <text
+        x={60}
+        y={55}
+        textAnchor="middle"
+        className="fill-orange-700 dark:fill-orange-400 text-[8px] font-semibold"
+      >
+        = 100 Mbps
+      </text>
+    </svg>
+  );
+}
+
+function WarnIconNoLayerRouter() {
+  return (
+    <svg
+      viewBox="0 0 120 60"
+      className="w-full h-auto"
+      role="img"
+      aria-label="Lag er programvare, ikke ruter"
+    >
+      <rect
+        x={20}
+        y={10}
+        width={80}
+        height={10}
+        className="fill-brand/30 stroke-brand"
+        strokeWidth={0.8}
+      />
+      <rect
+        x={20}
+        y={22}
+        width={80}
+        height={10}
+        className="fill-success/30 stroke-success"
+        strokeWidth={0.8}
+      />
+      <rect
+        x={20}
+        y={34}
+        width={80}
+        height={10}
+        className="fill-amber-500/30 stroke-amber-500"
+        strokeWidth={0.8}
+      />
+      <text
+        x={60}
+        y={56}
+        textAnchor="middle"
+        className="fill-orange-700 dark:fill-orange-400 text-[8px] font-semibold"
+      >
+        kun i programvare
+      </text>
+    </svg>
+  );
+}
+
+function WarnIconLossNormal() {
+  return (
+    <svg
+      viewBox="0 0 120 60"
+      className="w-full h-auto"
+      role="img"
+      aria-label="Pakke-tap er normal mekanisme"
+    >
+      <rect
+        x={10}
+        y={15}
+        width={60}
+        height={20}
+        rx={2}
+        className="fill-card stroke-border"
+        strokeWidth={1}
+      />
+      <rect x={12} y={17} width={10} height={16} className="fill-brand" />
+      <rect x={24} y={17} width={10} height={16} className="fill-amber-500" />
+      <rect x={36} y={17} width={10} height={16} className="fill-success" />
+      <rect x={48} y={17} width={10} height={16} className="fill-purple-500" />
+      <rect x={60} y={17} width={10} height={16} className="fill-destructive" />
+      <text x={86} y={28} className="fill-destructive text-[14px]">
+        ✗
+      </text>
+      <text
+        x={60}
+        y={52}
+        textAnchor="middle"
+        className="fill-orange-700 dark:fill-orange-400 text-[8px] font-semibold"
+      >
+        kø-full → drop
+      </text>
+    </svg>
+  );
+}
+
+function WarnIconTierTopology() {
+  return (
+    <svg
+      viewBox="0 0 120 60"
+      className="w-full h-auto"
+      role="img"
+      aria-label="Tier er topologi, ikke pris"
+    >
+      <ellipse
+        cx={60}
+        cy={15}
+        rx={30}
+        ry={5}
+        className="fill-brand/30 stroke-brand"
+        strokeWidth={1}
+      />
+      <text x={60} y={18} textAnchor="middle" className="fill-foreground text-[6px]">
+        tier-1
+      </text>
+      <ellipse
+        cx={35}
+        cy={32}
+        rx={18}
+        ry={4}
+        className="fill-success/30 stroke-success"
+        strokeWidth={1}
+      />
+      <ellipse
+        cx={85}
+        cy={32}
+        rx={18}
+        ry={4}
+        className="fill-success/30 stroke-success"
+        strokeWidth={1}
+      />
+      <text x={35} y={34} textAnchor="middle" className="fill-foreground text-[6px]">
+        tier-2
+      </text>
+      <text x={85} y={34} textAnchor="middle" className="fill-foreground text-[6px]">
+        tier-2
+      </text>
+      <text
+        x={60}
+        y={55}
+        textAnchor="middle"
+        className="fill-orange-700 dark:fill-orange-400 text-[8px] font-semibold"
+      >
+        ≠ pris-klasse
+      </text>
+    </svg>
+  );
+}
+
+function WarnIconTDMvsStat() {
+  return (
+    <svg
+      viewBox="0 0 120 60"
+      className="w-full h-auto"
+      role="img"
+      aria-label="TDM vs statistisk mux"
+    >
+      {/* TDM: faste slots */}
+      <rect
+        x={5}
+        y={10}
+        width={50}
+        height={18}
+        className="fill-card stroke-border"
+        strokeWidth={0.8}
+      />
+      <line x1={17} y1={10} x2={17} y2={28} className="stroke-foreground/50" strokeWidth={0.5} />
+      <line x1={29} y1={10} x2={29} y2={28} className="stroke-foreground/50" strokeWidth={0.5} />
+      <line x1={41} y1={10} x2={41} y2={28} className="stroke-foreground/50" strokeWidth={0.5} />
+      <rect x={6} y={11} width={10} height={16} className="fill-brand" />
+      <rect x={30} y={11} width={10} height={16} className="fill-amber-500" />
+      <text x={30} y={40} textAnchor="middle" className="fill-foreground text-[7px]">
+        TDM
+      </text>
+      {/* Stat */}
+      <rect
+        x={65}
+        y={10}
+        width={50}
+        height={18}
+        className="fill-card stroke-border"
+        strokeWidth={0.8}
+      />
+      <rect x={66} y={11} width={8} height={16} className="fill-brand" />
+      <rect x={74} y={11} width={8} height={16} className="fill-brand" />
+      <rect x={82} y={11} width={8} height={16} className="fill-amber-500" />
+      <rect x={90} y={11} width={8} height={16} className="fill-success" />
+      <rect x={98} y={11} width={8} height={16} className="fill-brand" />
+      <rect x={106} y={11} width={8} height={16} className="fill-purple-500" />
+      <text x={90} y={40} textAnchor="middle" className="fill-foreground text-[7px]">
+        stat
+      </text>
+      <text
+        x={60}
+        y={55}
+        textAnchor="middle"
+        className="fill-orange-700 dark:fill-orange-400 text-[8px] font-semibold"
+      >
+        ulike strategier
       </text>
     </svg>
   );
