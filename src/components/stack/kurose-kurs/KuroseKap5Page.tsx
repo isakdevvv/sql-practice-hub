@@ -12,6 +12,10 @@ import {
 } from "lucide-react";
 import { SectionPager, type SectionNavItem } from "./SectionPager";
 import { Section51Live } from "./Section51Live";
+import { Section52Live } from "./Section52Live";
+import { Section53Live } from "./Section53Live";
+import { Section54Live } from "./Section54Live";
+import { Section55Live } from "./Section55Live";
 
 type Tab = "intro" | "5.1" | "5.2" | "5.3" | "5.4" | "5.5" | "oppg" | "eksamen";
 
@@ -545,7 +549,14 @@ function RoutingAlgsContent() {
 function Section53() {
   return (
     <article className="space-y-4 text-sm">
-      <Header num="5.3" title="Intra-AS ruting — OSPF" />
+      <Header num="5.2" title="Intra-AS ruting — OSPF" />
+
+      <p className="text-muted-foreground">
+        Den interaktive simulatoren under viser OSPF-areas og LSA-flooding. Bla gjennom stegene
+        for å se hvordan en Router-LSA (type 1) flommer kun innenfor sitt eget area, mens en
+        Summary-LSA (type 3) krysser area-grenser via ABR-er.
+      </p>
+      <Section52Live />
 
       <p className="text-muted-foreground">
         Internett deles inn i autonome systemer (AS). Innenfor ett AS — typisk et selskap, et
@@ -697,7 +708,14 @@ function Section53() {
 function Section54() {
   return (
     <article className="space-y-4 text-sm">
-      <Header num="5.4" title="Inter-AS ruting — BGP" />
+      <Header num="5.3" title="Inter-AS ruting — BGP" />
+
+      <p className="text-muted-foreground">
+        Den interaktive simulatoren under viser BGP-policy i praksis. Toggle mellom «shortest
+        AS-path» og «preferred provider» — se hvordan AS1 sin valgte rute endrer seg selv om begge
+        alternativene er like korte. Internett rutes etter penger, ikke optimum.
+      </p>
+      <Section53Live />
 
       <p className="text-muted-foreground">
         BGP (Border Gateway Protocol) er protokollen som limer internettet sammen. Den lar AS-er
@@ -853,7 +871,15 @@ function Section54() {
 function Section55() {
   return (
     <article className="space-y-4 text-sm">
-      <Header num="5.5" title="SDN control-plane — OpenFlow og logisk sentralisering" />
+      <Header num="5.4" title="SDN control-plane — OpenFlow og logisk sentralisering" />
+
+      <p className="text-muted-foreground">
+        Den interaktive simulatoren under viser hvordan SDN-controlleren reagerer på en
+        lenke-feil ved å re-beregne forwarding og pushe nye flow-regler til switchene innen
+        ms. Toggle til «distribuert» modus for å se hvor mye treigere klassisk OSPF/BGP
+        konvergerer.
+      </p>
+      <Section54Live />
 
       <p className="text-muted-foreground">
         Software-Defined Networking flytter control-plane ut av hver switch og inn i en logisk
@@ -1021,6 +1047,16 @@ function Section55() {
 function Section5IcmpSnmp() {
   return (
     <div className="space-y-6">
+      <article className="space-y-4 text-sm">
+        <Header num="5.5" title="ICMP og SNMP — diagnostikk og overvåking" />
+        <p className="text-muted-foreground">
+          Den interaktive simulatoren under har to deler. (a) ICMP-modus viser hvordan
+          <span className="font-mono"> traceroute</span> sender pakker med økende TTL og bruker
+          ICMP «Time Exceeded»-svar til å avsløre hvert hop. (b) SNMP-modus viser polling med
+          GET/Response og asynkrone TRAP-meldinger fra agent til manager.
+        </p>
+        <Section55Live />
+      </article>
       <Section56 />
       <SectionSnmp />
     </div>
