@@ -1,101 +1,182 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
+import {
+  ReactFlow,
+  ReactFlowProvider,
+  Background,
+  Controls,
+  MiniMap,
+  Handle,
+  Position,
+  type Node,
+  type Edge,
+  type NodeProps,
+  useReactFlow,
+  useNodesState,
+} from "@xyflow/react";
+import "@xyflow/react/dist/style.css";
 import { RotateCcw } from "lucide-react";
 
-// CellulaViz — fullskala interaktiv for 7.3.
-// Heksagonalt nett av basestasjoner. Brukeren kan dra mobil-ikonet og se
-// signalstyrken fra hver basestasjon i sanntid. Mobilen er alltid koblet til
-// sterkeste basestasjon — beveger man seg over en cellegrense, skjer en
-// håndover (markert med animasjon og en logg-linje).
+// CellulaViz — fullskala interaktiv for 7.3, bygget på @xyflow/react.
 //
-// Pedagogisk hovedpoeng:
-//   - signal faller med 1/r² (path loss)
-//   - hver basestasjon dekker en celle, og to nabo-celler bruker ULIKE frekvenser
-//     for å unngå interferens (frekvensgjenbruk-mønster 1/3 her)
-//   - håndover er ren bok-føring — ingen pakker tapes hvis det skjer i tide
+// Heksagonalt cellenett med frekvensgjenbruk 1/3. Brukeren kan:
+//   • dra mobilen mellom celler (overlay-lag over flow-canvas)
+//   • dra basestasjonene rundt for å eksperimentere med layout
+//   • zoome/panorere hele diagrammet
+//
+// Pedagogisk: signal faller med 1/r², beste BS vinner, krysning av celle-
+// grenser trigger håndover.
 
-type Cell = {
+const CELL_R = 70; // omkrets-radius
+
+type CellData = {
   id: string;
-  cx: number;
-  cy: number;
-  groupId: 1 | 2 | 3; // frekvensgruppe
+  groupId: 1 | 2 | 3;
+  isBest?: boolean;
+  isSecond?: boolean;
 };
 
-const SVG_W = 720;
-const SVG_H = 360;
-const CELL_R = 70; // omkrets-radius for heksagon (senter til hjørne)
+const GROUP_COLOR: Record<1 | 2 | 3, string> = {
+  1: "#3b82f6",
+  2: "#10b981",
+  3: "#f59e0b",
+};
 
-// Bygg et lite heksagonalt grid (3 grupper, frekvensgjenbruk 1/3)
-function buildCells(): Cell[] {
-  const w = Math.sqrt(3) * CELL_R; // horisontal step mellom to celler i samme rad
-  const h = 1.5 * CELL_R; // vertikal step mellom rader
-  const startX = 100;
-  const startY = 80;
-  const out: Cell[] = [];
+// ---------- Build hexagonal grid ----------
+
+function buildCells(): Node<CellData>[] {
+  const w = Math.sqrt(3) * CELL_R;
+  const h = 1.5 * CELL_R;
+  const startX = 60;
+  const startY = 60;
+  const out: Node<CellData>[] = [];
   let i = 0;
   for (let row = 0; row < 3; row++) {
-    const cols = row % 2 === 0 ? 4 : 4;
-    for (let col = 0; col < cols; col++) {
+    for (let col = 0; col < 4; col++) {
       const offset = row % 2 === 0 ? 0 : w / 2;
       const cx = startX + col * w + offset;
       const cy = startY + row * h;
-      if (cx > SVG_W - 60 || cy > SVG_H - 30) continue;
-      // Tildel én av 3 grupper basert på rad+kol så naboer ikke har samme
       const groupId = (((row * 2 + col) % 3) + 1) as 1 | 2 | 3;
-      out.push({ id: `c${i++}`, cx, cy, groupId });
+      out.push({
+        id: `c${i}`,
+        type: "cell",
+        position: { x: cx, y: cy },
+        data: { id: `c${i}`, groupId },
+        draggable: true,
+      });
+      i++;
     }
   }
   return out;
 }
 
-const GROUP_COLORS = {
-  1: "#3b82f6", // blå
-  2: "#10b981", // grønn
-  3: "#f59e0b", // oransje
-};
+// ---------- Custom node: hexagonal cell ----------
 
-function hexPath(cx: number, cy: number, r: number): string {
+function CellNode({ data }: NodeProps) {
+  const d = data as CellData;
+  const color = GROUP_COLOR[d.groupId];
+  const r = CELL_R;
   const pts: string[] = [];
   for (let i = 0; i < 6; i++) {
-    const a = (Math.PI / 3) * i + Math.PI / 6; // start fra topp
-    pts.push(`${cx + r * Math.cos(a)},${cy + r * Math.sin(a)}`);
+    const a = (Math.PI / 3) * i + Math.PI / 6;
+    pts.push(`${r + r * Math.cos(a)},${r + r * Math.sin(a)}`);
   }
-  return `M ${pts.join(" L ")} Z`;
+  return (
+    <div style={{ width: r * 2, height: r * 2, position: "relative" }}>
+      <Handle type="target" position={Position.Top} style={{ opacity: 0 }} />
+      <Handle type="source" position={Position.Bottom} style={{ opacity: 0 }} />
+      <svg width={r * 2} height={r * 2} style={{ position: "absolute", inset: 0 }}>
+        <polygon
+          points={pts.join(" ")}
+          fill={color}
+          fillOpacity={d.isBest ? 0.28 : 0.1}
+          stroke={color}
+          strokeWidth={d.isBest ? 2.5 : 1.2}
+          strokeOpacity={d.isBest ? 0.95 : 0.55}
+        />
+        {/* basestasjon i sentrum */}
+        <g transform={`translate(${r},${r})`}>
+          <circle r={7} fill={color} stroke="white" strokeWidth={1.5} />
+          <line x1={0} y1={-12} x2={0} y2={-7} stroke={color} strokeWidth={2} />
+          <path d="M -8 -16 Q 0 -22 8 -16" fill="none" stroke={color} strokeWidth={1.5} />
+        </g>
+        <text
+          x={r}
+          y={r + 26}
+          fontSize={10}
+          fill="currentColor"
+          opacity={d.isBest ? 0.95 : 0.55}
+          textAnchor="middle"
+          fontWeight={d.isBest ? "bold" : "normal"}
+        >
+          BS-{d.id.slice(1)} · f{d.groupId}
+          {d.isSecond ? " (2.)" : ""}
+        </text>
+      </svg>
+    </div>
+  );
 }
 
-function dist(x1: number, y1: number, x2: number, y2: number): number {
+const nodeTypes = { cell: CellNode };
+
+// ---------- Signal-modell ----------
+
+function dist(x1: number, y1: number, x2: number, y2: number) {
   return Math.hypot(x1 - x2, y1 - y2);
 }
-
-// Signal-styrke: enkelt invers-kvadrat-modell normalisert til 0..1
-function signal(userX: number, userY: number, cellX: number, cellY: number): number {
+function signal(userX: number, userY: number, cellX: number, cellY: number) {
   const d = dist(userX, userY, cellX, cellY);
-  // Strong at d=0, dropping fast. Maks rekkevidde ~150 px før det blir < 5 %.
-  const s = 1 / (1 + (d / 30) ** 2);
-  return s;
+  return 1 / (1 + (d / 30) ** 2);
 }
 
-export function CellulaViz() {
-  const cells = useMemo(() => buildCells(), []);
-  const svgRef = useRef<SVGSVGElement | null>(null);
-  const [user, setUser] = useState({ x: 200, y: 180 });
+// ---------- Hovedkomponent ----------
+
+function FlowInner() {
+  const initial = useMemo(() => buildCells(), []);
+  const [nodes, setNodes, onNodesChange] = useNodesState(initial);
+  const edges: Edge[] = useMemo(() => [], []);
+  const [user, setUser] = useState({ x: 220, y: 200 });
   const draggingRef = useRef(false);
   const [moveCount, setMoveCount] = useState(0);
   const [handovers, setHandovers] = useState<{ from: string; to: string; at: number }[]>([]);
   const lastBestRef = useRef<string | null>(null);
+  const rfWrapperRef = useRef<HTMLDivElement | null>(null);
+  const rf = useReactFlow();
+  const [vpTick, setVpTick] = useState(0);
 
-  // Signal per celle
-  const signals = useMemo(
-    () =>
-      cells
-        .map((c) => ({ cell: c, s: signal(user.x, user.y, c.cx, c.cy) }))
-        .sort((a, b) => b.s - a.s),
-    [cells, user.x, user.y]
-  );
+  // Polling-trigger så overlay følger zoom/pan
+  useEffect(() => {
+    const id = setInterval(() => setVpTick((t) => t + 1), 50);
+    return () => clearInterval(id);
+  }, []);
 
-  const best = signals[0]?.cell;
-  const second = signals[1]?.cell;
+  // Signal per celle basert på nåværende node-posisjoner
+  const signals = useMemo(() => {
+    return nodes
+      .map((n) => {
+        const cx = n.position.x + CELL_R;
+        const cy = n.position.y + CELL_R;
+        return { id: n.id, groupId: (n.data as CellData).groupId, s: signal(user.x, user.y, cx, cy) };
+      })
+      .sort((a, b) => b.s - a.s);
+  }, [nodes, user.x, user.y]);
 
-  // Logg håndover når best endrer seg
+  const best = signals[0];
+  const second = signals[1];
+
+  // Oppdater best/2.-flagg på nodene
+  useEffect(() => {
+    setNodes((nds) =>
+      nds.map((n) => {
+        const d = n.data as CellData;
+        const isBest = n.id === best?.id;
+        const isSecond = n.id === second?.id;
+        if (d.isBest === isBest && d.isSecond === isSecond) return n;
+        return { ...n, data: { ...d, isBest, isSecond } };
+      }),
+    );
+  }, [best?.id, second?.id, setNodes]);
+
+  // Logg håndover
   useEffect(() => {
     if (!best) return;
     const prev = lastBestRef.current;
@@ -107,35 +188,47 @@ export function CellulaViz() {
     lastBestRef.current = best.id;
   }, [best?.id, moveCount]);
 
-  // Drag-håndtering — bruker ref for å unngå closure-race på dragging
-  const onPointerDown = (e: React.PointerEvent) => {
-    draggingRef.current = true;
-    (e.target as Element).setPointerCapture?.(e.pointerId);
-  };
-  const onPointerMove = (e: React.PointerEvent) => {
-    if (!draggingRef.current || !svgRef.current) return;
-    const pt = svgRef.current.createSVGPoint();
-    pt.x = e.clientX;
-    pt.y = e.clientY;
-    const screenCTM = svgRef.current.getScreenCTM();
-    if (!screenCTM) return;
-    const loc = pt.matrixTransform(screenCTM.inverse());
-    setUser({
-      x: Math.max(20, Math.min(SVG_W - 20, loc.x)),
-      y: Math.max(20, Math.min(SVG_H - 20, loc.y)),
-    });
-    setMoveCount((c) => c + 1);
-  };
-  const onPointerUp = () => {
-    draggingRef.current = false;
-  };
-
   const reset = () => {
-    setUser({ x: 200, y: 180 });
+    setNodes(initial);
+    setUser({ x: 220, y: 200 });
     setHandovers([]);
     setMoveCount(0);
     lastBestRef.current = null;
   };
+
+  // Mobil-drag i flow-koordinater
+  const onMobilePointerDown = (e: React.PointerEvent) => {
+    draggingRef.current = true;
+    (e.target as Element).setPointerCapture?.(e.pointerId);
+    e.stopPropagation();
+  };
+  const onMobilePointerMove = (e: React.PointerEvent) => {
+    if (!draggingRef.current || !rfWrapperRef.current) return;
+    const rect = rfWrapperRef.current.getBoundingClientRect();
+    const screenX = e.clientX - rect.left;
+    const screenY = e.clientY - rect.top;
+    const vp = rf.getViewport();
+    const flowX = (screenX - vp.x) / vp.zoom;
+    const flowY = (screenY - vp.y) / vp.zoom;
+    setUser({ x: flowX, y: flowY });
+    setMoveCount((c) => c + 1);
+  };
+  const onMobilePointerUp = () => {
+    draggingRef.current = false;
+  };
+
+  // Skjerm-koordinater for overlays
+  const vp = rf.getViewport();
+  void vpTick; // få komponenten til å re-rendere
+  const mobileScreenX = user.x * vp.zoom + vp.x;
+  const mobileScreenY = user.y * vp.zoom + vp.y;
+  const bestNode = nodes.find((n) => n.id === best?.id);
+  const bestScreen = bestNode
+    ? {
+        x: (bestNode.position.x + CELL_R) * vp.zoom + vp.x,
+        y: (bestNode.position.y + CELL_R) * vp.zoom + vp.y,
+      }
+    : null;
 
   return (
     <div className="rounded-lg border border-border bg-card p-4 space-y-4">
@@ -143,8 +236,8 @@ export function CellulaViz() {
         <div>
           <h3 className="font-semibold">CellulaViz — celler, signal og håndover</h3>
           <p className="text-xs text-muted-foreground mt-0.5">
-            Dra mobilen rundt. Cellen med sterkest signal vinner. Krysser du grensen, skjer en
-            håndover.
+            Dra mobilen rundt. Dra også basestasjonene for å eksperimentere. Zoom og panorer
+            diagrammet med musen.
           </p>
         </div>
         <button
@@ -155,84 +248,95 @@ export function CellulaViz() {
         </button>
       </div>
 
-      {/* Hovedplot */}
-      <div className="rounded-md border border-border bg-background p-2 overflow-x-auto">
-        <svg
-          ref={svgRef}
-          viewBox={`0 0 ${SVG_W} ${SVG_H}`}
-          className="w-full h-auto min-w-[640px] touch-none select-none"
-          onPointerMove={onPointerMove}
-          onPointerUp={onPointerUp}
-          onPointerCancel={onPointerUp}
+      {/* Flow + overlay */}
+      <div
+        ref={rfWrapperRef}
+        style={{ height: 420 }}
+        className="relative rounded-md border border-border bg-background overflow-hidden"
+        onPointerMove={onMobilePointerMove}
+        onPointerUp={onMobilePointerUp}
+        onPointerCancel={onMobilePointerUp}
+      >
+        <ReactFlow
+          nodes={nodes}
+          onNodesChange={onNodesChange}
+          edges={edges}
+          nodeTypes={nodeTypes}
+          fitView
+          fitViewOptions={{ padding: 0.15 }}
+          proOptions={{ hideAttribution: true }}
+          nodesConnectable={false}
         >
-          {/* Celler (heksagoner) */}
-          {cells.map((c) => {
-            const isBest = best?.id === c.id;
-            const isSecond = second?.id === c.id;
-            const color = GROUP_COLORS[c.groupId];
-            return (
-              <g key={c.id}>
-                <path
-                  d={hexPath(c.cx, c.cy, CELL_R - 2)}
-                  fill={color}
-                  fillOpacity={isBest ? 0.22 : 0.08}
-                  stroke={color}
-                  strokeWidth={isBest ? 2.5 : 1}
-                  strokeOpacity={isBest ? 0.9 : 0.5}
-                />
-                {/* Basestasjon-symbol */}
-                <g transform={`translate(${c.cx},${c.cy})`}>
-                  <circle r={6} fill={color} stroke="white" strokeWidth={1.5} />
-                  <line x1={0} y1={-12} x2={0} y2={-6} stroke={color} strokeWidth={2} />
-                  <path
-                    d="M -7 -16 Q 0 -22 7 -16"
-                    fill="none"
-                    stroke={color}
-                    strokeWidth={1.5}
-                  />
-                </g>
-                <text
-                  x={c.cx}
-                  y={c.cy + 22}
-                  fontSize={9}
-                  fill="currentColor"
-                  opacity={isBest ? 0.9 : 0.5}
-                  textAnchor="middle"
-                  fontWeight={isBest ? "bold" : "normal"}
-                >
-                  BS-{c.id.slice(1)} · f{c.groupId}
-                  {isSecond ? " (2.)" : ""}
-                </text>
-              </g>
-            );
-          })}
+          <Background gap={20} size={1} color="rgb(0 0 0 / 0.05)" />
+          <Controls showInteractive={false} />
+          <MiniMap
+            nodeColor={(n) => GROUP_COLOR[(n.data as CellData).groupId]}
+            pannable
+            zoomable
+            position="bottom-right"
+          />
+        </ReactFlow>
 
-          {/* Linje fra bruker til beste basestasjon */}
-          {best && (
+        {/* Aktiv linje fra mobil til beste BS */}
+        {bestScreen && bestNode && (
+          <svg
+            style={{
+              position: "absolute",
+              inset: 0,
+              pointerEvents: "none",
+              zIndex: 5,
+            }}
+            width="100%"
+            height="100%"
+          >
             <line
-              x1={user.x}
-              y1={user.y}
-              x2={best.cx}
-              y2={best.cy}
-              stroke={GROUP_COLORS[best.groupId]}
+              x1={mobileScreenX}
+              y1={mobileScreenY}
+              x2={bestScreen.x}
+              y2={bestScreen.y}
+              stroke={GROUP_COLOR[(bestNode.data as CellData).groupId]}
               strokeWidth={2}
               strokeDasharray="4 3"
               opacity={0.7}
             />
-          )}
+          </svg>
+        )}
 
-          {/* Brukeren (mobil) */}
-          <g
-            transform={`translate(${user.x},${user.y})`}
-            onPointerDown={onPointerDown}
-            style={{ cursor: "grab" }}
+        {/* Mobile (drag-target) */}
+        <div
+          onPointerDown={onMobilePointerDown}
+          style={{
+            position: "absolute",
+            left: mobileScreenX,
+            top: mobileScreenY,
+            transform: "translate(-50%, -50%)",
+            cursor: "grab",
+            zIndex: 6,
+            userSelect: "none",
+            touchAction: "none",
+          } as CSSProperties}
+        >
+          <div
+            style={{
+              width: 22 * vp.zoom,
+              height: 32 * vp.zoom,
+              background: "#111827",
+              borderRadius: 4 * vp.zoom,
+              padding: 2 * vp.zoom,
+              boxShadow: "0 4px 12px rgba(0,0,0,0.3)",
+              border: "2px solid white",
+            }}
           >
-            <circle r={14} fill="currentColor" opacity={0.05} />
-            <rect x={-7} y={-11} width={14} height={22} rx={3} fill="#111827" />
-            <rect x={-5.5} y={-9} width={11} height={15} fill="#3b82f6" />
-            <circle cx={0} cy={8} r={1.5} fill="#9ca3af" />
-          </g>
-        </svg>
+            <div
+              style={{
+                width: "100%",
+                height: "100%",
+                background: "#3b82f6",
+                borderRadius: 2 * vp.zoom,
+              }}
+            />
+          </div>
+        </div>
       </div>
 
       {/* Signal-tabell + håndover-logg */}
@@ -242,19 +346,19 @@ export function CellulaViz() {
             Signalstyrke (top 4)
           </div>
           <div className="space-y-1.5">
-            {signals.slice(0, 4).map(({ cell, s }, i) => (
-              <div key={cell.id} className="flex items-center gap-2 text-xs">
+            {signals.slice(0, 4).map(({ id, groupId, s }, i) => (
+              <div key={id} className="flex items-center gap-2 text-xs">
                 <span
                   className="inline-block h-2.5 w-2.5 rounded"
-                  style={{ background: GROUP_COLORS[cell.groupId] }}
+                  style={{ background: GROUP_COLOR[groupId] }}
                 />
-                <span className="w-16 font-mono">BS-{cell.id.slice(1)}</span>
+                <span className="w-16 font-mono">BS-{id.slice(1)}</span>
                 <div className="flex-1 h-2 rounded bg-muted overflow-hidden">
                   <div
                     className="h-full"
                     style={{
                       width: `${s * 100}%`,
-                      background: GROUP_COLORS[cell.groupId],
+                      background: GROUP_COLOR[groupId],
                       opacity: i === 0 ? 1 : 0.5,
                     }}
                   />
@@ -316,5 +420,13 @@ export function CellulaViz() {
         </div>
       </details>
     </div>
+  );
+}
+
+export function CellulaViz() {
+  return (
+    <ReactFlowProvider>
+      <FlowInner />
+    </ReactFlowProvider>
   );
 }
