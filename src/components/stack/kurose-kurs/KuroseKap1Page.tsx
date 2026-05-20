@@ -8,6 +8,75 @@ import { Section12Live } from "./Section12Live";
 import { Section13Live } from "./Section13Live";
 import { Section14Live } from "./Section14Live";
 import { Section15Live } from "./Section15Live";
+import { VisualDefs } from "./VisualDefs";
+import {
+  HostIcon,
+  ClientServerIcon,
+  LinkCableIcon,
+  PacketIcon,
+  RouterIcon,
+  SwitchIcon,
+  ProtocolIcon,
+  ApiSocketIcon,
+  IspCloudIcon,
+  IxpCrossroadIcon,
+  TierPyramidIcon,
+  RfcDocIcon,
+  DistributedAppIcon,
+  AccessHouseIcon,
+  LastMileRulerIcon,
+  FiberIcon,
+  DslPhoneIcon,
+  HfcCoaxIcon,
+  WifiIcon,
+  CoreRouterIcon,
+  BackboneIcon,
+  DataCenterIcon,
+  PeeringIcon,
+  TransitIcon,
+  MultiHomingIcon,
+  PopIcon,
+  CircuitSwitchIcon,
+  PacketSwitchIcon,
+  FdmIcon,
+  TdmIcon,
+  StatMuxDiceIcon,
+  StoreForwardIcon,
+  CutThroughIcon,
+  QueueIcon,
+  BufferIcon,
+  HandshakeIcon,
+  VirtualCircuitIcon,
+  BurstIcon,
+  QosLaneIcon,
+  ProcDelayIcon,
+  QueueDelayIcon,
+  TransDelayIcon,
+  PropDelayIcon,
+  SumSigmaIcon,
+  TrafficIntensityIcon,
+  ThroughputPipeIcon,
+  BdpIcon,
+  LossIcon,
+  RttLoopIcon,
+  JitterIcon,
+  GoodputIcon,
+  TracerouteIcon,
+  AppLayerIcon,
+  TransportLayerIcon,
+  NetworkLayerIcon,
+  LinkLayerIcon,
+  PhysicalLayerIcon,
+  EncapsulationIcon,
+  HeaderPayloadIcon,
+  PduIcon,
+  ServiceModelIcon,
+  HoriVertArrowsIcon,
+  OsiSevenLayerIcon,
+  SessionPresIcon,
+  DemuxIcon,
+  EndToEndIcon,
+} from "./visualDefIcons";
 
 type Tab = "intro" | "1.1" | "1.2" | "1.3" | "1.4" | "1.5" | "1.6" | "1.7";
 
@@ -182,55 +251,71 @@ function Section11() {
 
       <Section11Live />
 
-      <Defs
+      <VisualDefs
         items={[
           {
-            term: "Host (også: end-system)",
+            term: "Host (end-system)",
+            icon: <HostIcon />,
             body: "Maskin som kjører apper — laptop, mobil, server, IoT.",
           },
           {
             term: "Klient og server",
+            icon: <ClientServerIcon />,
             body: "Klient spør; server svarer. Samme maskin kan være begge.",
           },
-          { term: "Lenke", body: "Det fysiske mediet: kobber, fiber, radio eller satellitt." },
           {
-            term: "Pakke (også: datagram, segment, ramme)",
+            term: "Lenke",
+            icon: <LinkCableIcon />,
+            body: "Det fysiske mediet: kobber, fiber, radio eller satellitt.",
+          },
+          {
+            term: "Pakke (datagram/segment/ramme)",
+            icon: <PacketIcon />,
             body: "Selvstendig data-enhet med adresse, lik konvolutt i posten.",
           },
           {
             term: "Ruter",
+            icon: <RouterIcon />,
             body: "Maskin som leser destinasjon og sender pakker videre på rett lenke.",
           },
           {
             term: "Svitsj (link-svitsj)",
+            icon: <SwitchIcon />,
             body: "Jobber kun på lokalnettet via MAC; ruter kobler nett sammen via IP.",
           },
           {
             term: "Protokoll",
+            icon: <ProtocolIcon />,
             body: "Avtale om format og rekkefølge i samtalen mellom to maskiner.",
           },
           {
-            term: "API (Application Programming Interface)",
+            term: "API (sockets)",
+            icon: <ApiSocketIcon />,
             body: "Grensesnittet appen bruker for å gi data til nettet — typisk sockets.",
           },
           {
-            term: "ISP (Internet Service Provider)",
-            body: "Selskap som driver et nettverk og selger tilkobling (f.eks. Telenor).",
+            term: "ISP",
+            icon: <IspCloudIcon />,
+            body: "Internet Service Provider — selskap som driver et nettverk og selger tilkobling (f.eks. Telenor).",
           },
           {
-            term: "IXP (Internet Exchange Point)",
-            body: "Møteplass der ISP-er bytter trafikk direkte. Norge har NIX i Oslo.",
+            term: "IXP",
+            icon: <IxpCrossroadIcon />,
+            body: "Internet Exchange Point — møteplass der ISP-er bytter trafikk direkte. Norge har NIX i Oslo.",
           },
           {
-            term: "Tier-1, tier-2, tier-3",
-            body: "Rangering av ISP-er: globale, regionale, lokale tilkoblings-ISP-er.",
+            term: "Tier 1, 2, 3",
+            icon: <TierPyramidIcon />,
+            body: "Rangering av ISP-er: globale (1), regionale (2), lokale aksess (3).",
           },
           {
             term: "IETF og RFC",
-            body: "Organet som lager protokoller; hver standard er et nummerert RFC-dokument.",
+            icon: <RfcDocIcon />,
+            body: "IETF lager protokoller; hver standard er et nummerert RFC-dokument.",
           },
           {
-            term: "Distribuert applikasjon",
+            term: "Distribuert app",
+            icon: <DistributedAppIcon />,
             body: "Program som kjører delt på flere hosts og snakker over nettet.",
           },
         ]}
@@ -368,47 +453,72 @@ function Section12() {
 
       <Section12Live />
 
-      <Defs
+      <VisualDefs
         items={[
           {
             term: "Aksess-nettverk",
+            icon: <AccessHouseIcon />,
             body: "Nettet som kobler hosten din til nærmeste ruter; ofte det tregeste leddet.",
           },
-          { term: "Last-mile", body: "«Siste kilometer» — fra ISP-en og inn i hjemmet ditt." },
           {
-            term: "FTTH (Fiber To The Home)",
-            body: "Fiber helt inn i boligen. Symmetrisk og rask (1–10 Gbps).",
+            term: "Last-mile",
+            icon: <LastMileRulerIcon />,
+            body: "«Siste kilometer» — fra ISP-en og inn i hjemmet ditt.",
           },
           {
-            term: "DSL (Digital Subscriber Line)",
-            body: "Bredbånd over telefon-kobberen. Treigere jo lenger fra sentralen.",
+            term: "FTTH (fiber)",
+            icon: <FiberIcon />,
+            body: "Fiber To The Home — fiber helt inn i boligen. Symmetrisk og rask (1–10 Gbps).",
           },
           {
-            term: "HFC (Hybrid Fiber-Coax)",
-            body: "Fiber til lokal node, koaks-kabel inn i huset; delt mellom naboer.",
+            term: "DSL (kobber)",
+            icon: <DslPhoneIcon />,
+            body: "Digital Subscriber Line — bredbånd over telefon-kobberen. Treigere jo lenger fra sentralen.",
           },
           {
-            term: "Trådløse aksessnett (WiFi, 4G/5G)",
+            term: "HFC (koaks)",
+            icon: <HfcCoaxIcon />,
+            body: "Hybrid Fiber-Coax — fiber til lokal node, koaks-kabel inn i huset; delt mellom naboer.",
+          },
+          {
+            term: "Trådløst (WiFi, 4G/5G)",
+            icon: <WifiIcon />,
             body: "Radio-baserte aksess-nett. Deler spektrum mellom mange brukere.",
           },
-          { term: "Core router", body: "Backbone-ruter optimalisert for terabits per sekund." },
-          { term: "Backbone", body: "Langdistanse-fibre mellom store byer eller landsdeler." },
+          {
+            term: "Core router",
+            icon: <CoreRouterIcon />,
+            body: "Backbone-ruter optimalisert for terabits per sekund.",
+          },
+          {
+            term: "Backbone",
+            icon: <BackboneIcon />,
+            body: "Langdistanse-fibre mellom store byer eller landsdeler.",
+          },
           {
             term: "Datasenter",
+            icon: <DataCenterIcon />,
             body: "Tusenvis av servere samlet med eget høy-hastighets internt nett.",
           },
-          { term: "Peering", body: "To ISP-er bytter trafikk gratis fordi det gagner begge." },
+          {
+            term: "Peering",
+            icon: <PeeringIcon />,
+            body: "To ISP-er bytter trafikk gratis fordi det gagner begge.",
+          },
           {
             term: "Transit",
+            icon: <TransitIcon />,
             body: "ISP A betaler ISP B for å bære trafikken videre til resten av nettet.",
           },
           {
             term: "Multi-homing",
+            icon: <MultiHomingIcon />,
             body: "Kunde kobler seg til flere ISP-er samtidig for redundans.",
           },
           {
-            term: "POP (Point of Presence)",
-            body: "Fysisk samlingssted der en ISP har sitt utstyr og peerer.",
+            term: "POP",
+            icon: <PopIcon />,
+            body: "Point of Presence — fysisk samlingssted der en ISP har sitt utstyr og peerer.",
           },
         ]}
       />
@@ -534,56 +644,72 @@ function Section13() {
 
       <Section13Live />
 
-      <Defs
+      <VisualDefs
         items={[
           {
             term: "Krets-svitsjing",
+            icon: <CircuitSwitchIcon />,
             body: "Reserverer en dedikert sti før samtalen, holder den hele tiden.",
           },
           {
             term: "Pakke-svitsjing",
+            icon: <PacketSwitchIcon />,
             body: "Data deles i pakker som rutes uavhengig uten forhånds-reservasjon.",
           },
           {
-            term: "FDM (Frequency-Division Multiplexing)",
-            body: "Deler båndbredden i frekvens-bånd — som FM-radio-kanaler.",
+            term: "FDM",
+            icon: <FdmIcon />,
+            body: "Frequency-Division Multiplexing — deler båndbredden i frekvens-bånd som FM-radio-kanaler.",
           },
           {
-            term: "TDM (Time-Division Multiplexing)",
-            body: "Deler lenken i tids-slots, ett per krets.",
+            term: "TDM",
+            icon: <TdmIcon />,
+            body: "Time-Division Multiplexing — deler lenken i tids-slots, ett per krets.",
           },
           {
-            term: "Statistisk multipleksing",
+            term: "Statistisk muxing",
+            icon: <StatMuxDiceIcon />,
             body: "Mange brukere deler én lenke fordi få er aktive samtidig.",
           },
           {
             term: "Store-and-forward",
+            icon: <StoreForwardIcon />,
             body: "Ruter mottar hele pakken før den begynner å videresende.",
           },
           {
-            term: "Cut-through-svitsjing",
+            term: "Cut-through",
+            icon: <CutThroughIcon />,
             body: "Videresender før hele pakken er mottatt — sparer forsinkelse.",
           },
           {
-            term: "Køing og pakketap",
+            term: "Køing og tap",
+            icon: <QueueIcon />,
             body: "Pakker venter når lenken er opptatt; full kø droppes.",
           },
-          { term: "Buffer (kø-buffer)", body: "Minne i ruteren der ventende pakker står på rad." },
           {
-            term: "Connection-oriented vs connectionless",
-            body: "Med eller uten oppsett før første pakke sendes.",
+            term: "Buffer",
+            icon: <BufferIcon />,
+            body: "Minne i ruteren der ventende pakker står på rad.",
+          },
+          {
+            term: "Connection-oriented",
+            icon: <HandshakeIcon />,
+            body: "Med eller uten oppsett før første pakke sendes (vs connectionless).",
           },
           {
             term: "Virtual circuit",
+            icon: <VirtualCircuitIcon />,
             body: "Pakke-nett som etterligner krets ved å sette opp logisk sti først.",
           },
           {
             term: "Burst-trafikk",
+            icon: <BurstIcon />,
             body: "Data i støt med lange stillheter — typisk for nettlesing og e-post.",
           },
           {
-            term: "QoS (Quality of Service)",
-            body: "Mekanismer som gir prioritet til viktige pakker (VoIP, video).",
+            term: "QoS",
+            icon: <QosLaneIcon />,
+            body: "Quality of Service — mekanismer som gir prioritet til viktige pakker (VoIP, video).",
           },
         ]}
       />
@@ -718,59 +844,76 @@ function Section14() {
 
       <Section14Live />
 
-      <Defs
+      <VisualDefs
         items={[
           {
-            term: "Prosesserings-forsinkelse (d_proc)",
+            term: "d_proc (prosessering)",
+            icon: <ProcDelayIcon />,
             body: "Tiden ruteren bruker på å lese header og finne ut-lenke.",
           },
           {
-            term: "Kø-forsinkelse (d_kø)",
+            term: "d_kø (kø)",
+            icon: <QueueDelayIcon />,
             body: "Hvor lenge pakken venter i kø før den slipper ut på lenken.",
           },
           {
-            term: "Transmisjons-forsinkelse (d_trans)",
+            term: "d_trans (transmisjon)",
+            icon: <TransDelayIcon />,
             body: "Tid å klemme ut bitene: L / R (pakke-størrelse delt på lenke-rate).",
           },
           {
-            term: "Propagasjons-forsinkelse (d_prop)",
+            term: "d_prop (propagasjon)",
+            icon: <PropDelayIcon />,
             body: "Tid for én bit å reise fra ene enden til den andre — avstand / lyshastighet.",
           },
           {
-            term: "Total nodal forsinkelse",
+            term: "Total nodal",
+            icon: <SumSigmaIcon />,
             body: "Summen: d_proc + d_kø + d_trans + d_prop per hopp.",
           },
           {
-            term: "Trafikk-intensitet (ρ = La / R)",
-            body: "Hvor full lenken er i snitt. ρ → 1 sprenger køen.",
+            term: "Trafikk-intensitet ρ",
+            icon: <TrafficIntensityIcon />,
+            body: "ρ = La / R — hvor full lenken er i snitt. ρ → 1 sprenger køen.",
           },
           {
             term: "Throughput",
+            icon: <ThroughputPipeIcon />,
             body: "Bits per sekund som faktisk strømmer; begrenset av tregeste lenke.",
           },
           {
             term: "Throughput vs båndbredde",
+            icon: <ThroughputPipeIcon />,
             body: "Båndbredde = teoretisk maks; throughput = faktisk oppnådd rate.",
           },
           {
-            term: "Bandwidth-delay product (BDP)",
-            body: "Throughput × RTT — antall bits «i transitt» på lenken.",
+            term: "BDP",
+            icon: <BdpIcon />,
+            body: "Bandwidth-delay product — throughput × RTT, antall bits «i transitt» på lenken.",
           },
           {
-            term: "Pakketap-rate (loss rate)",
+            term: "Pakketap-rate",
+            icon: <LossIcon />,
             body: "Andel sendte pakker som ikke kommer fram, ofte fra full kø.",
           },
-          { term: "RTT (Round-Trip Time)", body: "Tid fram + tid tilbake; det ping måler." },
+          {
+            term: "RTT",
+            icon: <RttLoopIcon />,
+            body: "Round-Trip Time — tid fram + tid tilbake; det ping måler.",
+          },
           {
             term: "Jitter",
+            icon: <JitterIcon />,
             body: "Variasjon i forsinkelse mellom pakker. Ødelegger sann-tid lyd/video.",
           },
           {
             term: "Goodput",
+            icon: <GoodputIcon />,
             body: "Faktisk nyttig app-rate, eksklusive headere og retransmisjoner.",
           },
           {
             term: "Traceroute / ping",
+            icon: <TracerouteIcon />,
             body: "Verktøy som måler RTT og kartlegger ruten hopp for hopp.",
           },
         ]}
@@ -947,62 +1090,76 @@ function Section15() {
 
       <Section15Live />
 
-      <Defs
+      <VisualDefs
         items={[
           {
             term: "Applikasjonslaget",
+            icon: <AppLayerIcon />,
             body: "HTTP, SMTP, DNS — her lever meldingene applikasjoner forstår.",
           },
           {
             term: "Transportlaget",
+            icon: <TransportLayerIcon />,
             body: "TCP/UDP. Deler i segmenter, bruker portnumre, gir (kanskje) pålitelighet.",
           },
           {
             term: "Nettverkslaget",
+            icon: <NetworkLayerIcon />,
             body: "IP. Leverer datagrammer host-til-host via mange rutere.",
           },
           {
             term: "Linklaget",
+            icon: <LinkLayerIcon />,
             body: "Ethernet/WiFi. Flytter pakker fra én node til neste over én lenke.",
           },
           {
             term: "Fysisk lag",
+            icon: <PhysicalLayerIcon />,
             body: "Selve representasjonen av bits: spenning, lys, radiobølger.",
           },
           {
-            term: "Innkapsling (encapsulation)",
+            term: "Innkapsling",
+            icon: <EncapsulationIcon />,
             body: "Hvert lag legger sitt eget header foran meldingen på vei ned.",
           },
           {
             term: "Header vs payload",
+            icon: <HeaderPayloadIcon />,
             body: "Header er metadata; payload er selve dataene fra laget over.",
           },
           {
-            term: "PDU (Protocol Data Unit)",
-            body: "Navn på pakken per lag: melding, segment, datagram, ramme.",
+            term: "PDU",
+            icon: <PduIcon />,
+            body: "Protocol Data Unit — navn på pakken per lag: melding, segment, datagram, ramme.",
           },
           {
             term: "Service model",
+            icon: <ServiceModelIcon />,
             body: "Tjenesten et lag tilbyr laget over: pålitelig, ordnet, best-effort osv.",
           },
           {
-            term: "Horisontal vs vertikal kommunikasjon",
+            term: "Horisontal / vertikal",
+            icon: <HoriVertArrowsIcon />,
             body: "Lag snakker med naboen over/under lokalt og med samme lag på den andre hosten via header.",
           },
           {
-            term: "OSI-modellen (7 lag)",
+            term: "OSI (7 lag)",
+            icon: <OsiSevenLayerIcon />,
             body: "Akademisk standard med 7 lag; vant aldri i praksis.",
           },
           {
-            term: "Session-lag og presentation-lag",
+            term: "Session / presentation",
+            icon: <SessionPresIcon />,
             body: "OSI-lag som TCP/IP slo sammen med applikasjonslaget.",
           },
           {
             term: "Demultipleksing",
+            icon: <DemuxIcon />,
             body: "Riktig protokoll/app får pakken via type-felt og portnumre.",
           },
           {
-            term: "End-to-end-prinsippet",
+            term: "End-to-end",
+            icon: <EndToEndIcon />,
             body: "Legg smarthet på endene, ikke i rutere. Holder kjernen enkel.",
           },
         ]}
