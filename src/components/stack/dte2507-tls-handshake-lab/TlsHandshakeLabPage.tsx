@@ -2,6 +2,12 @@ import { Link } from "@tanstack/react-router";
 import { Lightbulb } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
+import { VisualDefs } from "@/components/stack/kurose-kurs/VisualDefs";
+import {
+  AsymmetricKeyIcon,
+  KdfIcon,
+  TranscriptHashIcon,
+} from "@/components/stack/sikkerhet/securityIcons";
 import { TlsHandshakeAnimator } from "./TlsHandshakeAnimator";
 import { CertChainValidator } from "./CertChainValidator";
 import { MitmAttackSimulator } from "./MitmAttackSimulator";
@@ -60,24 +66,39 @@ export function TlsHandshakeLabPage() {
             kryptert.
           </p>
           <TlsHandshakeAnimator />
-          <div className="mt-4 rounded-lg border border-border bg-muted/20 p-4 text-[12px]">
-            <strong>Tre nøkkelbegreper å feste seg ved:</strong>
-            <ul className="mt-2 list-disc pl-5 space-y-1 text-muted-foreground">
-              <li>
-                <strong>ECDHE</strong> — Elliptic Curve Diffie-Hellman Ephemeral. Klient (c) og
-                server (s) genererer nye nøkler for hver sesjon. shared_secret = ECDH(c, g^s) =
-                ECDH(s, g^c), men sendes <em>aldri</em>.
-              </li>
-              <li>
-                <strong>HKDF</strong> — HMAC-based KDF. Fra ett shared_secret avledes flere
-                spesialnøkler: handshake-trafikk, finished, applikasjons-trafikk, resumption.
-              </li>
-              <li>
-                <strong>Transcript hash</strong> — løpende SHA-hash av alle handshake-meldinger.
-                Brukes i CertificateVerify (signaturen binder hele dialogen) og i Finished
-                (begge sider beviser at de så samme handshake).
-              </li>
-            </ul>
+          <div className="mt-4">
+            <VisualDefs
+              title="Tre nøkkelbegreper å feste seg ved"
+              items={[
+                {
+                  term: "ECDHE",
+                  icon: <AsymmetricKeyIcon />,
+                  body: (
+                    <>
+                      Elliptic Curve Diffie-Hellman Ephemeral. Klient (c) og server (s) genererer nye nøkler for hver sesjon. shared_secret = ECDH(c, g^s) = ECDH(s, g^c), men sendes <em>aldri</em>.
+                    </>
+                  ),
+                },
+                {
+                  term: "HKDF",
+                  icon: <KdfIcon />,
+                  body: (
+                    <>
+                      HMAC-based KDF. Fra ett shared_secret avledes flere spesialnøkler: handshake-trafikk, finished, applikasjons-trafikk, resumption.
+                    </>
+                  ),
+                },
+                {
+                  term: "Transcript hash",
+                  icon: <TranscriptHashIcon />,
+                  body: (
+                    <>
+                      Løpende SHA-hash av alle handshake-meldinger. Brukes i CertificateVerify (signaturen binder hele dialogen) og i Finished (begge sider beviser at de så samme handshake).
+                    </>
+                  ),
+                },
+              ]}
+            />
           </div>
         </section>
 

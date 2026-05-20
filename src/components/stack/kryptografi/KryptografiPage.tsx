@@ -2,6 +2,12 @@ import { Link } from "@tanstack/react-router";
 import { ArrowRight, Lightbulb } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
+import { VisualDefs } from "@/components/stack/kurose-kurs/VisualDefs";
+import {
+  ConfidentialityIcon,
+  IntegrityIcon,
+  AuthenticityIcon,
+} from "@/components/stack/sikkerhet/securityIcons";
 import { AesGcmDemo } from "./AesGcmDemo";
 import { AesBlockModes } from "./AesBlockModes";
 import { HashAndHmac } from "./HashAndHmac";
@@ -68,39 +74,44 @@ export function KryptografiPage() {
             Krypto-løsning skal alltid være en respons til en konkret trussel. Først: forstå
             CIA-trekanten.
           </p>
-          <div className="grid sm:grid-cols-3 gap-3">
-            <div className="rounded-xl border border-border bg-card p-4">
-              <div className="text-xs uppercase tracking-wider text-brand font-semibold mb-2">
-                Konfidensialitet
-              </div>
-              <p className="text-sm text-foreground">Ingen uautoriserte kan LESE.</p>
-              <p className="mt-2 text-xs text-muted-foreground">
-                Trussel: avlytting (eavesdropping). Verktøy: kryptering.
-              </p>
-            </div>
-            <div className="rounded-xl border border-border bg-card p-4">
-              <div className="text-xs uppercase tracking-wider text-brand font-semibold mb-2">
-                Integritet
-              </div>
-              <p className="text-sm text-foreground">
-                Ingen uautoriserte kan ENDRE — eller du oppdager det.
-              </p>
-              <p className="mt-2 text-xs text-muted-foreground">
-                Trussel: tampering. Verktøy: hash + MAC.
-              </p>
-            </div>
-            <div className="rounded-xl border border-border bg-card p-4">
-              <div className="text-xs uppercase tracking-wider text-brand font-semibold mb-2">
-                Autentisitet
-              </div>
-              <p className="text-sm text-foreground">
-                Du VET hvem som sendte (eller hvem du snakker med).
-              </p>
-              <p className="mt-2 text-xs text-muted-foreground">
-                Trussel: impersonation. Verktøy: signatur, sertifikat.
-              </p>
-            </div>
-          </div>
+          <VisualDefs
+            title="CIA-trekanten"
+            items={[
+              {
+                term: "Konfidensialitet",
+                icon: <ConfidentialityIcon />,
+                body: (
+                  <>
+                    Ingen uautoriserte kan LESE.
+                    <br />
+                    Trussel: avlytting (eavesdropping). Verktøy: kryptering.
+                  </>
+                ),
+              },
+              {
+                term: "Integritet",
+                icon: <IntegrityIcon />,
+                body: (
+                  <>
+                    Ingen uautoriserte kan ENDRE — eller du oppdager det.
+                    <br />
+                    Trussel: tampering. Verktøy: hash + MAC.
+                  </>
+                ),
+              },
+              {
+                term: "Autentisitet",
+                icon: <AuthenticityIcon />,
+                body: (
+                  <>
+                    Du VET hvem som sendte (eller hvem du snakker med).
+                    <br />
+                    Trussel: impersonation. Verktøy: signatur, sertifikat.
+                  </>
+                ),
+              },
+            ]}
+          />
         </section>
 
         <section id="krypto-visualizer" className="mb-10">
