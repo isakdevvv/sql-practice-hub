@@ -7,6 +7,12 @@ import { NormaliseringDrill } from "./NormaliseringDrill";
 import { RelatedVisualizers } from "@/components/stack/RelatedVisualizers";
 import { lazy, Suspense } from "react";
 import { VisualizerSkeleton } from "@/components/visualizer-shell";
+import { VisualDefs } from "@/components/stack/kurose-kurs/VisualDefs";
+import {
+  FuncDepIcon,
+  DeterminantIcon,
+  CandidateKeyIcon,
+} from "@/components/stack/dbWebIcons";
 
 const NormalizationVisualizer = lazy(() =>
   import("./NormalizationVisualizer").then((m) => ({ default: m.NormalizationVisualizer })),
@@ -112,24 +118,42 @@ export function NormaliseringPage() {
         {/* Begreper */}
         <section id="begreper" className="mb-10">
           <h2 className="text-xl font-semibold mb-3">Tre begreper du må kunne</h2>
-          <div className="rounded-xl border border-border bg-card p-5 space-y-3 text-sm">
-            <div>
-              <strong>Funksjonell avhengighet (FD):</strong>{" "}
-              <code>X → Y</code> betyr «verdien til X bestemmer verdien til Y entydig».
-              Eks: <code>kundeNr → navn</code> — gitt et kundenummer, finnes det bare ett
-              riktig navn.
-            </div>
-            <div>
-              <strong>Determinant:</strong> venstresiden i en FD (X i{" "}
-              <code>X → Y</code>). Det er feltet (eller kombinasjonen) som «bestemmer» et
-              annet felt.
-            </div>
-            <div>
-              <strong>Kandidatnøkkel:</strong> MINIMAL kombinasjon av felter som
-              identifiserer hver rad unikt. PK er én av kandidatnøklene — de andre får
-              UNIQUE.
-            </div>
-          </div>
+          <VisualDefs
+            title="Begreper"
+            items={[
+              {
+                term: "Funksjonell avhengighet (FD)",
+                icon: <FuncDepIcon />,
+                body: (
+                  <>
+                    <code>X → Y</code> betyr «verdien til X bestemmer verdien til Y
+                    entydig». Eks: <code>kundeNr → navn</code> — gitt et kundenummer,
+                    finnes det bare ett riktig navn.
+                  </>
+                ),
+              },
+              {
+                term: "Determinant",
+                icon: <DeterminantIcon />,
+                body: (
+                  <>
+                    Venstresiden i en FD (X i <code>X → Y</code>). Det er feltet
+                    (eller kombinasjonen) som «bestemmer» et annet felt.
+                  </>
+                ),
+              },
+              {
+                term: "Kandidatnøkkel",
+                icon: <CandidateKeyIcon />,
+                body: (
+                  <>
+                    MINIMAL kombinasjon av felter som identifiserer hver rad unikt.
+                    PK er én av kandidatnøklene — de andre får UNIQUE.
+                  </>
+                ),
+              },
+            ]}
+          />
         </section>
 
         {/* Utgangspunkt */}
