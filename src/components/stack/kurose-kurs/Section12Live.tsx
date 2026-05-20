@@ -101,31 +101,90 @@ type Step = {
 };
 
 const STEPS: Step[] = [
+  // ---------- Scenario 1: Laptop A → Server X (forward path med forwarding-table-lookup på hver hop) ----------
   {
-    title: "1. Laptop A ber om en video fra Server X",
+    title: "1. Laptop A sender pakken til sin gateway",
     description:
-      "Trines laptop (edge) sender en pakke til video-tjenesten Server X (også edge). Pakken går først via aksess-ruteren, deretter rett gjennom kjernen: K1 → K4, og ut til Server X. Edge-noder snakker aldri direkte med hverandre — de må alltid gjennom core.",
-    path: ["laptopA", "accA", "c1", "c4", "accX", "serverX"],
+      "Trines laptop har bare ett valg: send pakken til default gateway (aksess-ruteren). Den vet ingenting om internett-topologien — den stoler på at gatewayen tar over resten. Pakken har destinasjon = Server X sin IP-adresse.",
+    path: ["laptopA", "accA"],
     color: "blue",
   },
   {
-    title: "2. Mobil B kobler seg til Server Y",
+    title: "2. Aksess-ruteren slår opp i forwarding-tabellen",
     description:
-      "Jonas i Bergen åpner et spill. Mobilen er en annen edge-host og bruker en annen aksess-ruter (4G), men den treffer samme core-nett. Pakken tar her stien K2 → K5 — kortest mulig gjennom kjernen til Server Y.",
+      "Aksess-ruteren ser destinasjons-IP i pakken og slår opp i sin forwarding-tabell: «mot 195.x.x.x → send ut på lenke til K1». Tabellen er fylt på forhånd av OSPF/BGP. Pakken videresendes til K1.",
+    path: ["accA", "c1"],
+    color: "blue",
+  },
+  {
+    title: "3. K1 ruter pakken videre mot K4",
+    description:
+      "K1 gjør samme oppslag: destinasjons-IP matcher Server X. Tabellen sier: «korteste vei dit går via K4». K1 setter pakken på output-køen til K4 og sender den ut.",
+    path: ["c1", "c4"],
+    color: "blue",
+  },
+  {
+    title: "4. K4 leverer til aksess-ruteren, som sender til Server X",
+    description:
+      "K4 ser at neste hop ligger lokalt — sender til accX. AccX gjør link-layer-bytte (Ethernet med MAC-adresser) og leverer endelig til Server X. Hele forwardingen tok 5 hops på kanskje 30 ms.",
+    path: ["c4", "accX", "serverX"],
+    color: "blue",
+  },
+  {
+    title: "5. Server X svarer — pakken tar samme vei tilbake",
+    description:
+      "Svaret følger samme rute speilvendt. Internett bruker hop-by-hop forwarding — hver ruter tar sin egen beslutning basert på destinasjons-IP, så returveien er ikke garantert lik. I praksis er den ofte symmetrisk når topologien er enkel.",
+    path: ["serverX", "accX", "c4", "c1", "accA", "laptopA"],
+    color: "blue",
+  },
+
+  // ---------- Scenario 2: Mobil B → Server Y (parallell trafikk på samme core) ----------
+  {
+    title: "6. Mobil B til Server Y — samme core, andre lenker",
+    description:
+      "Jonas i Bergen åpner et spill. Mobilen treffer en helt annen aksess-ruter (4G) og bruker en annen rute gjennom core (K2 → K5). Likevel deler de fysisk samme core-nett — bare ulike lenker er aktive samtidig. Slik skaleres internett: én core, mange parallelle pakkestrømmer.",
     path: ["mobilB", "accB", "c2", "c5", "accY", "serverY"],
     color: "amber",
   },
+
+  // ---------- Scenario 3: Edge-til-edge på samme side ----------
   {
-    title: "3. Laptop A sender melding til Mobil B",
+    title: "7. Laptop A sender melding til Mobil B",
     description:
-      "Selv om begge er edge-hosts på samme side av tegningen, må pakken inn i core og ut igjen. Det finnes ingen direkte kabel mellom Trine og Jonas — core-nettet er det som binder kanten sammen. Ruten her er K1 → K3 → K2.",
+      "Selv om begge er på «venstre side» av tegningen, finnes det ingen direkte kabel mellom dem. Pakken må inn i core. Forwarding-tabellen i K1 sier nå: «mot mobilB → via K3 → K2». K3 er den kortest stien gjennom mesh-en.",
     path: ["laptopA", "accA", "c1", "c3", "c2", "accB", "mobilB"],
     color: "purple",
   },
+
+  // ---------- Scenario 4: K3 faller ut — OSPF-konvergens og re-ruting ----------
   {
-    title: "4. K3 faller ut — pakken finner ny vei",
+    title: "8. K3 faller ut (strømbrudd)",
     description:
-      "Tenk at midt-ruteren K3 går ned (strømbrudd). Rutere i core snakker sammen og oppdager dette i løpet av sekunder. Pakken fra Laptop A til Server Y må nå rundt: K1 → K4 → K5. Dette er styrken til et mesh-aktig core — flere veier å velge mellom.",
+      "Plutselig mister K3 strømmen. Naboene K1, K2, K4, K5 har sendt periodiske «Hello»-pakker (hvert 10. sek i OSPF) — nå slutter K3 å svare. Innen 30–40 sekunder erklærer naboene at K3 er nede.",
+    path: ["c1", "c3"],
+    downNodes: ["c3"],
+    color: "red",
+  },
+  {
+    title: "9. LSA-flooding: K1 forteller resten av core",
+    description:
+      "Når K1 oppdager at K3 er nede, lager den en Link State Advertisement og flooder den til alle naboer (K2, K4). De flooder videre. På sekunder vet hele core at lenkene K1–K3, K2–K3, K4–K3, K5–K3 er borte.",
+    path: ["c1", "c2", "c5"],
+    downNodes: ["c3"],
+    color: "purple",
+  },
+  {
+    title: "10. Dijkstra: hver ruter regner ut nye korteste stier",
+    description:
+      "Med oppdatert topologi-kart kjører hver core-ruter Dijkstras algoritme i sitt eget hode og bygger en ny forwarding-tabell. For trafikk fra K1 mot K2 er den nye stien nå K1 → K4 → K5 → K2. Konvergens tar typisk 1–10 sekunder i en moderne OSPF-domene.",
+    path: ["c1", "c4", "c5", "c2"],
+    downNodes: ["c3"],
+    color: "purple",
+  },
+  {
+    title: "11. Ny pakke fra Laptop A til Server Y går rundt K3",
+    description:
+      "Trine sender en ny pakke — denne gangen mot Server Y (som tilfeldigvis er på samme side som Server X). Med oppdaterte forwarding-tabeller går pakken K1 → K4 → K5. Det er styrken til mesh-core: flere veier, og når én forsvinner finner protokollene en ny innen sekunder.",
     path: ["laptopA", "accA", "c1", "c4", "c5", "accY", "serverY"],
     downNodes: ["c3"],
     color: "red",
