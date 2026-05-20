@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import { SectionPager, type SectionNavItem } from "./SectionPager";
 
-type Tab = "intro" | "3.1" | "3.2" | "3.3" | "3.4" | "3.5" | "3.6" | "3.7";
+type Tab = "intro" | "3.1" | "3.2" | "3.3" | "3.4" | "3.5" | "3.6" | "3.7" | "3.8";
 
 const SECTIONS_3: SectionNavItem[] = [
   { id: "intro", label: "Start her" },
@@ -23,6 +23,7 @@ const SECTIONS_3: SectionNavItem[] = [
   { id: "3.5", label: "3.5 TCP" },
   { id: "3.6", label: "3.6 Congestion control" },
   { id: "3.7", label: "3.7 Oppgaver" },
+  { id: "3.8", label: "Eksamen-fokus" },
 ];
 const NEXT_CHAPTER_3 = { slug: "kurose-kap-4", title: "Nettverkslaget — data-plane" };
 
@@ -82,6 +83,13 @@ export function KuroseKap3Page() {
             <TabBtn active={tab === "3.7"} onClick={() => setTab("3.7")} title="Oppgaver">
               Oppg.
             </TabBtn>
+            <TabBtn
+              active={tab === "3.8"}
+              onClick={() => setTab("3.8")}
+              title="Eksamen-fokus: cheat sheet, sammenligning, fallgruver, anker"
+            >
+              Eksamen
+            </TabBtn>
           </nav>
         </div>
 
@@ -93,6 +101,7 @@ export function KuroseKap3Page() {
         {tab === "3.5" && <Section35 />}
         {tab === "3.6" && <Section36 />}
         {tab === "3.7" && <Section37 />}
+        {tab === "3.8" && <SectionEksamen />}
 
         <SectionPager
           tabs={SECTIONS_3}
@@ -3639,5 +3648,567 @@ function TrafikkE18Svg() {
         Etter mange runder konvergerer alle mot lik fart over flaskehalsen
       </text>
     </svg>
+  );
+}
+
+// ============================================================
+// 3.8 — Eksamen-fokus
+// ============================================================
+function SectionEksamen() {
+  return (
+    <article className="space-y-5 text-sm">
+      <Header num="3.8" title="Eksamen-fokus — kompakt repetisjon" />
+
+      <p className="text-muted-foreground">
+        Denne delen er bygget for å hentes fram dagen før eksamen og pugges raskt. Her er ikke målet
+        å forstå fra bunnen av — det har de seks foregående seksjonene allerede dekket. Her er målet
+        å holde alt sammen, skille likner som ofte forveksles, og ha klare verktøy for å velge
+        protokoll og lese feil-signaler under press.
+      </p>
+
+      {/* (a) Cheat sheet */}
+      <section className="space-y-3">
+        <h3 className="text-base font-semibold">a) Cheat sheet for kap. 3</h3>
+        <div className="grid gap-3 lg:grid-cols-2">
+          <Cheat tittel="RTT-estimering (TCP timeout)">
+            <Formel>EstimatedRTT = (1 − α) · EstimatedRTT + α · SampleRTT</Formel>
+            <Formel>DevRTT = (1 − β) · DevRTT + β · |SampleRTT − EstimatedRTT|</Formel>
+            <Formel>TimeoutInterval = EstimatedRTT + 4 · DevRTT</Formel>
+            <p>
+              Standard-verdier: α = 0,125 og β = 0,25. EstimatedRTT er et glidende snitt; DevRTT er
+              glidende snitt over avviket — altså «hvor mye varierer RTT?». 4·DevRTT-margenen gir
+              slingringsmonn slik at en tilfeldig forsinket ACK ikke trigger unødig retransmisjon.
+            </p>
+          </Cheat>
+
+          <Cheat tittel="TCP-tilstands-spor (vanlig sti)">
+            <p className="font-semibold">Klient (aktiv åpning):</p>
+            <Formel>
+              CLOSED → SYN_SENT → ESTABLISHED → FIN_WAIT_1 → FIN_WAIT_2 → TIME_WAIT → CLOSED
+            </Formel>
+            <p className="font-semibold">Server (passiv åpning):</p>
+            <Formel>
+              CLOSED → LISTEN → SYN_RCVD → ESTABLISHED → CLOSE_WAIT → LAST_ACK → CLOSED
+            </Formel>
+            <p>
+              TIME_WAIT varer i 2·MSL (Maximum Segment Lifetime) for å fange ekko-segmenter og
+              bekrefte at siste ACK kom fram. Det er derfor du ikke kan starte ny tjener på samme
+              port med en gang etter at den er stengt.
+            </p>
+          </Cheat>
+
+          <Cheat tittel="TCP-flagg (6 bits i header)">
+            <ul className="space-y-1 list-disc list-inside">
+              <li>
+                <b>SYN</b> — synkroniser sekvens-nummer (åpning).
+              </li>
+              <li>
+                <b>ACK</b> — bekrefter mottatte byte; ACK-feltet er meningsfullt.
+              </li>
+              <li>
+                <b>FIN</b> — sender har ingen mer data å sende (avslutning).
+              </li>
+              <li>
+                <b>RST</b> — reset; abort uten å forhandle (port stengt, illegal tilstand).
+              </li>
+              <li>
+                <b>PSH</b> — push opp til appen umiddelbart (ikke vent i mottak-buffer).
+              </li>
+              <li>
+                <b>URG</b> — urgent pointer-feltet er gyldig (sjeldent brukt i praksis).
+              </li>
+            </ul>
+          </Cheat>
+
+          <Cheat tittel="AIMD — Additive Increase, Multiplicative Decrease">
+            <ul className="space-y-1 list-disc list-inside">
+              <li>
+                <b>+1 MSS per RTT</b> mens alt går bra (additiv økning).
+              </li>
+              <li>
+                <b>÷2</b> ved tap (multiplikativ reduksjon — halver cwnd).
+              </li>
+              <li>Tegner et karakteristisk sag-tann-mønster i cwnd over tid.</li>
+              <li>Rasjonalet: konvergerer til rettferdig fordeling, sterk respons på trengsel.</li>
+            </ul>
+          </Cheat>
+
+          <Cheat tittel="Slow start vs. congestion avoidance">
+            <ul className="space-y-1 list-disc list-inside">
+              <li>
+                <b>cwnd &lt; ssthresh</b> → slow start: cwnd dobles per RTT (eksponentiell).
+              </li>
+              <li>
+                <b>cwnd ≥ ssthresh</b> → congestion avoidance: cwnd + 1 MSS per RTT (lineær).
+              </li>
+              <li>Ved timeout: ssthresh = cwnd/2, cwnd = 1, tilbake til slow start.</li>
+              <li>
+                Ved 3 dup-ACK (fast retransmit): ssthresh = cwnd/2, cwnd = ssthresh, fortsett i
+                congestion avoidance (TCP Reno).
+              </li>
+            </ul>
+          </Cheat>
+
+          <Cheat tittel="UDP-header — 4 felter, 8 byte totalt">
+            <ul className="space-y-1 list-disc list-inside">
+              <li>
+                <b>Source port</b> (16 bit) — kan settes til 0 hvis ingen retur ønskes.
+              </li>
+              <li>
+                <b>Destination port</b> (16 bit) — hvilken prosess på mottaker.
+              </li>
+              <li>
+                <b>Length</b> (16 bit) — header + data i byte (min 8).
+              </li>
+              <li>
+                <b>Checksum</b> (16 bit) — over header + data + IP-pseudoheader; valgfri på IPv4,
+                obligatorisk på IPv6.
+              </li>
+            </ul>
+            <p className="italic">
+              Sammenlign med TCP sin 20-byte minimum-header (og opptil 60 med options).
+            </p>
+          </Cheat>
+        </div>
+      </section>
+
+      {/* (b) Sammenligning */}
+      <section className="space-y-3">
+        <h3 className="text-base font-semibold">b) TCP vs UDP — direkte sammenligning</h3>
+        <div className="overflow-x-auto rounded-xl border border-border bg-card">
+          <table className="w-full text-[13px]">
+            <thead className="bg-muted/40">
+              <tr className="text-left">
+                <th className="px-3 py-2 font-semibold">Egenskap</th>
+                <th className="px-3 py-2 font-semibold text-sky-700 dark:text-sky-400">TCP</th>
+                <th className="px-3 py-2 font-semibold text-amber-700 dark:text-amber-400">UDP</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-border">
+              <SammenlignRad
+                trekk="Pålitelighet"
+                tcp="Garantert leveranse via ACK + retransmisjon"
+                udp="Ingen garanti — pakker kan forsvinne ubemerket"
+              />
+              <SammenlignRad
+                trekk="Ordring av data"
+                tcp="Sekvens-numre rekonstruerer rekkefølge"
+                udp="Pakker leveres i den rekkefølgen de kommer (eller ikke)"
+              />
+              <SammenlignRad
+                trekk="Header-størrelse"
+                tcp="20–60 byte (vanlig 20)"
+                udp="8 byte (fast)"
+              />
+              <SammenlignRad
+                trekk="ACK + timeout"
+                tcp="Hvert byte bekreftes; timer per ubekreftet segment"
+                udp="Ingen ACK, ingen timer — fire and forget"
+              />
+              <SammenlignRad
+                trekk="Flow control"
+                tcp="rwnd i header — mottaker bremser sender"
+                udp="Ingen — sender kan oversvømme mottaker"
+              />
+              <SammenlignRad
+                trekk="Congestion control"
+                tcp="cwnd, AIMD, slow start, fast retransmit"
+                udp="Ingen — app må selv håndtere trengsel"
+              />
+              <SammenlignRad
+                trekk="Forbindelse"
+                tcp="3-veis handshake + 4-veis tear-down"
+                udp="Forbindelsesløs — første pakke er også den siste"
+              />
+              <SammenlignRad
+                trekk="Bytestrøm vs datagram"
+                tcp="Bytestrøm — grensene mellom send() forsvinner"
+                udp="Bevarer pakke-grenser fra hvert sendto()"
+              />
+              <SammenlignRad
+                trekk="Bruks-tilfeller"
+                tcp="Web (HTTP/1.1/2), e-post, SSH, filoverføring, DB"
+                udp="DNS-spørringer, NTP, sann-tid video/audio, QUIC-laget under HTTP/3, spill"
+              />
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      {/* (c) Beslutningstre */}
+      <section className="space-y-3">
+        <h3 className="text-base font-semibold">
+          c) Beslutningstre: «Hvilken transport-protokoll skal jeg velge?»
+        </h3>
+        <Illustration caption="Følg piler fra topp-noden. Hvert spørsmål er ja/nei. Bladene viser den vanligste anbefalingen — men en app kan ofte bygge påliteligheten den trenger oppå UDP hvis ytelse er kritisk.">
+          <BeslutningstreSvg />
+        </Illustration>
+      </section>
+
+      {/* (d) Fallgruver */}
+      <section className="space-y-3">
+        <h3 className="text-base font-semibold">d) Vanlige fallgruver på eksamen</h3>
+        <div className="grid gap-3 lg:grid-cols-2">
+          <Fallgruve tittel="Forveksle dup-ACK med timeout">
+            Begge er tap-signaler, men de fører til ulik respons. <b>Tre dup-ACK</b> trigger fast
+            retransmit + fast recovery: ssthresh = cwnd/2 og cwnd = ssthresh (TCP Reno). En ren{" "}
+            <b>timeout</b> tolker TCP som mye verre — full reset: ssthresh = cwnd/2, cwnd = 1 MSS,
+            tilbake til slow start. Logikken: dup-ACK betyr at noe kom fram (kanalen virker),
+            timeout betyr at ingen ACK kommer i det hele tatt.
+          </Fallgruve>
+
+          <Fallgruve tittel="Tro at TCP justerer rwnd ved trengsel">
+            TCP justerer <b>cwnd</b> (congestion window) ved tap. <b>rwnd</b> (receive window) er
+            mottakerens egen melding om hvor mye buffer-plass hen har igjen, og endres bare når
+            mottaker leser data ut av buffer. Sender bruker <code>min(cwnd, rwnd)</code> som faktisk
+            send-vindu. Forvirring her gir feil svar på «hvem styrer ratejusteringen?».
+          </Fallgruve>
+
+          <Fallgruve tittel="Tro at handshake er 2-veis">
+            TCP-oppsett er <b>3-veis</b>: SYN → SYN+ACK → ACK. To-veis ville vært sårbart for gamle,
+            forsinkede SYN-segmenter som dukker opp og åpner en spøkelses-forbindelse. Det tredje
+            ACK-et lar serveren være sikker på at klienten faktisk er der og «mente» det. Tear-down
+            er deretter <b>4-veis</b> (FIN, ACK, FIN, ACK) fordi hver retning lukkes uavhengig.
+          </Fallgruve>
+
+          <Fallgruve tittel="Glemme +1 i sekvens-numre for SYN og FIN">
+            SYN og FIN «teller som én byte» i sekvens-rommet selv om de ikke bærer data. Hvis klient
+            sender SYN med seq=x, så bekrefter server med ack=x+1. Når server senere sender FIN med
+            seq=y, bekrefter klient ack=y+1. Misser man dette, blir alle sekvens-regnestykker på
+            eksamen forskjøvet med 1.
+          </Fallgruve>
+
+          <Fallgruve tittel="Tro at UDP-checksum gir pålitelighet">
+            UDP-checksum sjekker bare om data er <i>korrupt</i> — den retransmitterer ingenting. En
+            korrupt pakke blir kastet stille. Mottaker-app vet ikke at noe forsvant. Pålitelig
+            leveranse krever ACK + timer + sekvens-numre, ikke bare en checksum.
+          </Fallgruve>
+
+          <Fallgruve tittel="Forveksle Go-Back-N med Selective Repeat">
+            <b>Go-Back-N</b>: kumulative ACK; ved tap retransmitteres alt fra og med tapt segment.
+            Mottaker er enkel (godtar bare neste-i-rekka, kaster resten). <b>Selective Repeat</b>:
+            individuelle ACK; sender retransmitterer kun det som faktisk mangler. Mottaker buffrer
+            ut-av-rekka segmenter. TCP er en blanding: kumulativ ACK (som GBN), men fast retransmit
+            ved 3 dup-ACK gjør at bare ett segment sendes på nytt (som SR).
+          </Fallgruve>
+
+          <Fallgruve tittel="Glemme at TCP er full-duplex">
+            En TCP-forbindelse har <b>to uavhengige byte-strømmer</b> — én i hver retning. De har
+            hvert sitt sekvens-nummer-rom, hver sin flow-window, og kan lukkes uavhengig (derfor FIN
+            i hver retning ved tear-down). Det er hyppig feil å tegne én pil på diagram.
+          </Fallgruve>
+
+          <Fallgruve tittel="Tro at Nagle og forsinket ACK alltid hjelper">
+            Begge er optimeringer for mange små segmenter, men sammen kan de gi 200 ms ekstra latens
+            på interaktive protokoller (telnet, RPC). Nagle holder igjen til den har en full MSS
+            eller en ACK; forsinket ACK venter for å piggybacke. Resultat: deadlock-aktig
+            ventespill. Derfor sett <code>TCP_NODELAY</code> for latens-følsomme apper.
+          </Fallgruve>
+
+          <Fallgruve tittel="Tro at port-nummer identifiserer prosess globalt">
+            Port alene er ikke nok. <b>Demux</b> på UDP bruker (dst-IP, dst-port). På TCP brukes
+            <b> 4-tuppelen</b> (src-IP, src-port, dst-IP, dst-port) — derfor kan to ulike klienter
+            koble seg til samme server-port samtidig og ende i to forskjellige sockets på serveren.
+            Port alene er som «leilighet nr. 4» uten husnummer.
+          </Fallgruve>
+
+          <Fallgruve tittel="Blande sammen MSS, MTU og window-størrelse">
+            <b>MTU</b> (Maximum Transmission Unit) er link-lagets pakke-tak, typisk 1500 byte for
+            Ethernet. <b>MSS</b> (Maximum Segment Size) er TCP-data per segment — typisk MTU − 40 =
+            1460 byte (trekk fra IP + TCP-header). <b>Window</b> er antall byte sender kan ha
+            ubekreftet på en gang, helt urelatert til segment-størrelse.
+          </Fallgruve>
+        </div>
+      </section>
+
+      {/* (e) 5-minutter-anker */}
+      <section className="space-y-3">
+        <h3 className="text-base font-semibold">e) 5-minutter-anker</h3>
+        <p className="text-muted-foreground">
+          Hvis du har fem minutter igjen før eksamen og bare kan repetere én ting fra kap. 3, les
+          denne lista. Den er ment som siste sjekk — alt under bør være selvinnlysende.
+        </p>
+        <Anker>
+          <AnkerPunkt n={1}>
+            <b>Transportlaget</b> gir prosess-til-prosess på toppen av IP sin host-til-host. Bare
+            endepunktene har transport, rutere bare IP.
+          </AnkerPunkt>
+          <AnkerPunkt n={2}>
+            <b>Mux</b> = legge til (src-port, dst-port) på sender. <b>Demux</b> = velge socket på
+            mottaker. TCP demuxer på 4-tuppel; UDP demuxer på 2-tuppel (dst-IP, dst-port).
+          </AnkerPunkt>
+          <AnkerPunkt n={3}>
+            <b>UDP</b> = 8-byte header (src-port, dst-port, length, checksum). Forbindelsesløs.
+            Pakke-grenser bevares. Ingen ACK, ingen retransmisjon, ingen flow/congestion control.
+          </AnkerPunkt>
+          <AnkerPunkt n={4}>
+            <b>TCP</b> = bytestrøm, pålitelig, ordnet, full-duplex. 20-byte minimum header. Setup
+            via 3-veis handshake, tear-down via 4-veis (FIN i hver retning).
+          </AnkerPunkt>
+          <AnkerPunkt n={5}>
+            <b>Pålitelig leveranse</b> krever: ACK, sekvens-numre, timer, retransmisjon. Velg én
+            blant Stop-and-Wait, Go-Back-N (kumulativ ACK), Selective Repeat (individuell ACK).
+          </AnkerPunkt>
+          <AnkerPunkt n={6}>
+            <b>TCP-timer</b>: TimeoutInterval = EstimatedRTT + 4·DevRTT, glidende snitt med α =
+            0,125 og β = 0,25.
+          </AnkerPunkt>
+          <AnkerPunkt n={7}>
+            <b>Fast retransmit</b>: 3 duplikat-ACK på samme byte → retransmitter umiddelbart, ikke
+            vent på timer.
+          </AnkerPunkt>
+          <AnkerPunkt n={8}>
+            <b>Flow control</b> (rwnd) beskytter mottaker mot oversvømmelse.{" "}
+            <b>Congestion control</b> (cwnd) beskytter nettverket. Faktisk send-vindu = min(cwnd,
+            rwnd).
+          </AnkerPunkt>
+          <AnkerPunkt n={9}>
+            <b>AIMD</b>: +1 MSS per RTT i godvær, ÷2 ved tap. Gir sag-tann i cwnd og konvergerer mot
+            rettferdig fordeling.
+          </AnkerPunkt>
+          <AnkerPunkt n={10}>
+            <b>Slow start</b>: cwnd dobles per RTT mens cwnd &lt; ssthresh. Ved cwnd ≥ ssthresh slår
+            man over til lineær økning (congestion avoidance).
+          </AnkerPunkt>
+          <AnkerPunkt n={11}>
+            <b>Timeout</b> = nullstill til slow start (cwnd = 1). <b>3 dup-ACK</b> = milder respons
+            (fast recovery, cwnd halveres men holder seg i congestion avoidance) — TCP
+            Reno-oppførsel.
+          </AnkerPunkt>
+          <AnkerPunkt n={12}>
+            <b>Velg UDP</b> når: sann-tids-krav, multicast, små engangs-spørringer (DNS), eller
+            applikasjonen vil bygge egen pålitelighet (QUIC).
+          </AnkerPunkt>
+          <AnkerPunkt n={13}>
+            <b>Velg TCP</b> når: tap er uakseptabelt, ordring er kritisk, og forsinkelse er
+            akseptabel — alt fra HTTP til SSH til filoverføring.
+          </AnkerPunkt>
+        </Anker>
+      </section>
+    </article>
+  );
+}
+
+// --- Eksamen-helpers ---
+
+function Cheat({ tittel, children }: { tittel: string; children: React.ReactNode }) {
+  return (
+    <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/5 p-4">
+      <div className="text-[10px] uppercase tracking-wider text-emerald-700 dark:text-emerald-400 font-semibold mb-1">
+        Cheat
+      </div>
+      <div className="font-semibold text-foreground mb-2">{tittel}</div>
+      <div className="text-muted-foreground text-[13px] space-y-2">{children}</div>
+    </div>
+  );
+}
+
+function Formel({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="rounded bg-muted/40 px-2 py-1.5 font-mono text-[12px] text-foreground">
+      {children}
+    </div>
+  );
+}
+
+function SammenlignRad({ trekk, tcp, udp }: { trekk: string; tcp: string; udp: string }) {
+  return (
+    <tr>
+      <td className="px-3 py-2 font-semibold text-foreground align-top">{trekk}</td>
+      <td className="px-3 py-2 text-muted-foreground align-top">{tcp}</td>
+      <td className="px-3 py-2 text-muted-foreground align-top">{udp}</td>
+    </tr>
+  );
+}
+
+function Fallgruve({ tittel, children }: { tittel: string; children: React.ReactNode }) {
+  return (
+    <div className="rounded-xl border border-destructive/40 bg-destructive/5 p-4">
+      <div className="text-[10px] uppercase tracking-wider text-destructive font-semibold mb-1">
+        ⚠ Fallgruve
+      </div>
+      <div className="font-semibold text-foreground mb-1">{tittel}</div>
+      <div className="text-muted-foreground text-[13px] space-y-2">{children}</div>
+    </div>
+  );
+}
+
+function Anker({ children }: { children: React.ReactNode }) {
+  return (
+    <ol className="rounded-xl border border-brand/30 bg-brand/5 p-4 space-y-2 text-[13px]">
+      {children}
+    </ol>
+  );
+}
+
+function AnkerPunkt({ n, children }: { n: number; children: React.ReactNode }) {
+  return (
+    <li className="flex gap-2">
+      <span className="inline-flex shrink-0 h-5 w-5 items-center justify-center rounded-full bg-brand/20 text-brand text-[10px] font-bold">
+        {n}
+      </span>
+      <span className="text-muted-foreground">{children}</span>
+    </li>
+  );
+}
+
+function BeslutningstreSvg() {
+  // Decision tree: choose transport protocol.
+  // Layout: root at top, branches downward.
+  return (
+    <svg viewBox="0 0 600 440" className="w-full h-auto">
+      {/* Root */}
+      <TreNode x={300} y={28} label="Velg transport-protokoll" tone="root" />
+
+      {/* Level 1: real-time? */}
+      <TreLinje x1={300} y1={48} x2={300} y2={78} />
+      <TreNode x={300} y={92} label="Real-time / lav latens?" tone="q" />
+
+      {/* Yes (left) → multicast? */}
+      <TreGren x1={300} y1={112} x2={140} y2={158} label="Ja" />
+      <TreNode x={140} y={172} label="Multicast eller broadcast?" tone="q" />
+
+      {/* multicast yes → UDP */}
+      <TreGren x1={140} y1={192} x2={60} y2={238} label="Ja" />
+      <TreNode x={60} y={252} label="UDP" tone="udp" />
+      <TreNote x={60} y={278} text="kun UDP støtter dette" />
+
+      {/* multicast no → can app tolerate loss? */}
+      <TreGren x1={140} y1={192} x2={220} y2={238} label="Nei" />
+      <TreNode x={220} y={252} label="Tåler app små tap?" tone="q" />
+
+      {/* tolerate loss yes → UDP */}
+      <TreGren x1={220} y1={272} x2={150} y2={318} label="Ja" />
+      <TreNode x={150} y={332} label="UDP" tone="udp" />
+      <TreNote x={150} y={358} text="DNS, NTP, RTP, spill" />
+
+      {/* tolerate loss no → QUIC/custom */}
+      <TreGren x1={220} y1={272} x2={300} y2={318} label="Nei" />
+      <TreNode x={300} y={332} label="UDP + egen pålitelighet" tone="udp" />
+      <TreNote x={300} y={358} text="QUIC, app-lag retransmit" />
+
+      {/* No (right) → reliability needed? */}
+      <TreGren x1={300} y1={112} x2={460} y2={158} label="Nei" />
+      <TreNode x={460} y={172} label="Trenger pålitelig + ordnet?" tone="q" />
+
+      {/* reliability yes → TCP */}
+      <TreGren x1={460} y1={192} x2={460} y2={238} label="Ja" />
+      <TreNode x={460} y={252} label="TCP" tone="tcp" />
+      <TreNote x={460} y={278} text="HTTP, SSH, e-post, DB" />
+
+      {/* reliability no → tiny single message? */}
+      <TreGren x1={460} y1={192} x2={550} y2={238} label="Nei" />
+      <TreNode x={550} y={252} label="UDP" tone="udp" />
+      <TreNote x={550} y={278} text="liten engangs-spørring" />
+
+      {/* Legend */}
+      <g transform="translate(20, 405)">
+        <rect width={12} height={12} rx={3} className="fill-sky-500/80" />
+        <text x={18} y={10} className="fill-muted-foreground text-[10px]">
+          TCP-blad
+        </text>
+        <rect x={88} width={12} height={12} rx={3} className="fill-amber-500/80" />
+        <text x={106} y={10} className="fill-muted-foreground text-[10px]">
+          UDP-blad
+        </text>
+        <rect x={176} width={12} height={12} rx={3} className="fill-muted" />
+        <text x={194} y={10} className="fill-muted-foreground text-[10px]">
+          spørsmål
+        </text>
+      </g>
+    </svg>
+  );
+}
+
+function TreNode({
+  x,
+  y,
+  label,
+  tone,
+}: {
+  x: number;
+  y: number;
+  label: string;
+  tone: "root" | "q" | "tcp" | "udp";
+}) {
+  const w = Math.max(110, label.length * 6.6);
+  const fill =
+    tone === "tcp"
+      ? "fill-sky-500/80"
+      : tone === "udp"
+        ? "fill-amber-500/80"
+        : tone === "root"
+          ? "fill-brand/80"
+          : "fill-card";
+  const stroke =
+    tone === "tcp"
+      ? "stroke-sky-600"
+      : tone === "udp"
+        ? "stroke-amber-600"
+        : tone === "root"
+          ? "stroke-brand"
+          : "stroke-border";
+  const textCls = tone === "q" ? "fill-foreground" : "fill-white dark:fill-white";
+  return (
+    <g>
+      <rect
+        x={x - w / 2}
+        y={y - 11}
+        width={w}
+        height={22}
+        rx={6}
+        className={`${fill} ${stroke}`}
+        strokeWidth={1.2}
+      />
+      <text x={x} y={y + 4} textAnchor="middle" className={`${textCls} text-[10px] font-semibold`}>
+        {label}
+      </text>
+    </g>
+  );
+}
+
+function TreLinje({ x1, y1, x2, y2 }: { x1: number; y1: number; x2: number; y2: number }) {
+  return <line x1={x1} y1={y1} x2={x2} y2={y2} className="stroke-border" strokeWidth={1.2} />;
+}
+
+function TreGren({
+  x1,
+  y1,
+  x2,
+  y2,
+  label,
+}: {
+  x1: number;
+  y1: number;
+  x2: number;
+  y2: number;
+  label: string;
+}) {
+  const mx = (x1 + x2) / 2;
+  const my = (y1 + y2) / 2;
+  return (
+    <g>
+      <line x1={x1} y1={y1} x2={x2} y2={y2} className="stroke-border" strokeWidth={1.2} />
+      <rect
+        x={mx - 11}
+        y={my - 7}
+        width={22}
+        height={13}
+        rx={3}
+        className="fill-background stroke-border"
+        strokeWidth={0.8}
+      />
+      <text x={mx} y={my + 3} textAnchor="middle" className="fill-muted-foreground text-[9px]">
+        {label}
+      </text>
+    </g>
+  );
+}
+
+function TreNote({ x, y, text }: { x: number; y: number; text: string }) {
+  return (
+    <text x={x} y={y} textAnchor="middle" className="fill-muted-foreground text-[9px] italic">
+      {text}
+    </text>
   );
 }

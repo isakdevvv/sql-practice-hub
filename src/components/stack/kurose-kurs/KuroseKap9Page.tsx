@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import { SectionPager, type SectionNavItem } from "./SectionPager";
 
-type Tab = "intro" | "9.1" | "9.2" | "9.3" | "9.4" | "9.5" | "9.6";
+type Tab = "intro" | "9.1" | "9.2" | "9.3" | "9.4" | "9.5" | "9.6" | "9.7";
 
 const SECTIONS_9: SectionNavItem[] = [
   { id: "intro", label: "Start her" },
@@ -21,6 +21,7 @@ const SECTIONS_9: SectionNavItem[] = [
   { id: "9.4", label: "9.4 RTP/RTSP" },
   { id: "9.5", label: "9.5 QoS" },
   { id: "9.6", label: "9.6 Oppgaver" },
+  { id: "9.7", label: "9.7 Eksamen-fokus" },
 ];
 const NEXT_CHAPTER_9 = null;
 
@@ -69,6 +70,9 @@ export function KuroseKap9Page() {
             <TabBtn active={tab === "9.6"} onClick={() => setTab("9.6")} title="Oppgaver">
               Oppg.
             </TabBtn>
+            <TabBtn active={tab === "9.7"} onClick={() => setTab("9.7")} title="Eksamen-fokus">
+              Eksamen
+            </TabBtn>
           </nav>
         </div>
 
@@ -79,6 +83,7 @@ export function KuroseKap9Page() {
         {tab === "9.4" && <Section94 />}
         {tab === "9.5" && <Section95 />}
         {tab === "9.6" && <Section96 />}
+        {tab === "9.7" && <SectionEksamen />}
 
         <SectionPager
           tabs={SECTIONS_9}
@@ -1404,6 +1409,661 @@ function Section96() {
         }
       />
     </article>
+  );
+}
+
+// ============================================================
+// Seksjon 9.7 — Eksamen-fokus
+// ============================================================
+
+function SectionEksamen() {
+  return (
+    <article className="space-y-6">
+      <Header num="9.7" title="Eksamen-fokus: cheat sheet, fallgruver og 5-minutter-anker" />
+
+      <p className="text-[13px] text-muted-foreground">
+        Denne seksjonen samler det du faktisk trenger å huske utenat på eksamensdagen for kap. 9.
+        Bruk den til siste-minutten-repetisjon: et kompakt cheat sheet, en sammenligning av DASH og
+        RTP, et beslutningstre over hvilken multimedia-tilnærming du velger, en liste over klassiske
+        fallgruver, og et 5-minutter-anker med kjernepunktene.
+      </p>
+
+      {/* a) Cheat sheet */}
+      <Cheat
+        tittel="Cheat sheet — kap. 9 nøkkelfakta"
+        rader={[
+          {
+            spor: "Multimedia-typer",
+            kort: "Lagret video · live streaming · samtidsinteraktiv (VoIP/video-konf)",
+            note: "Latens-krav skiller dem: lagret tåler sekunder, live tåler ~10 s, interaktiv krever < 150-400 ms.",
+          },
+          {
+            spor: "Jitter ≠ delay",
+            kort: "Delay = absolutt tid mellom send og motta. Jitter = variasjon i delay mellom pakker.",
+            note: "Konstant 200 ms delay = 0 jitter. Vekslende 100/300 ms = stor jitter selv om snittet er 200 ms.",
+          },
+          {
+            spor: "MOS-skalaen (Mean Opinion Score)",
+            kort: "5 utmerket · 4 god · 3 rimelig · 2 dårlig · 1 uakseptabel",
+            note: "Subjektiv kvalitet fra lyttetester. Toll-kvalitet ≈ 4.0. Under 3.5 oppleves som dårlig samtale.",
+          },
+          {
+            spor: "DASH-arkitektur",
+            kort: "Manifest (MPD-fil i XML) lister segmenter og bitrater. Klient kjører ABR (adaptive bitrate) over HTTPS.",
+            note: "Segmenter er som regel 2-10 s. ABR velger neste segments bitrate basert på målt throughput og buffer-fylling.",
+          },
+          {
+            spor: "RTP-header (minimum 12 bytes)",
+            kort: "V (2 bit) · P · X · CC (4 bit) · M · PT (7 bit) · SEQ (16 bit) · TS (32 bit) · SSRC (32 bit)",
+            note: "PT = payload-type (codec). SEQ teller pakker (deteksjon av tap/omstokking). TS = sampling-tidsstempel (rekonstruere playout). SSRC identifiserer kilden.",
+          },
+          {
+            spor: "RTCP-pakke-typer",
+            kort: "SR (sender report) · RR (receiver report) · SDES (kilde-beskrivelse) · BYE · APP (app-spesifikk)",
+            note: "RTCP går på odde port-nummer ved siden av RTP. Brukes til synk (lyd+video), tap-statistikk og deltakerliste.",
+          },
+          {
+            spor: "QoS-modeller",
+            kort: "DiffServ: DSCP-bits i IP-header velger per-hop behavior (PHB) per pakke. IntServ: RSVP reserverer ressurser per flow.",
+            note: "DiffServ skalerer (klassebasert, ingen flow-state i kjernen). IntServ gir harde garantier men holder per-flow-state — derfor sjelden brukt i kjernen i dag.",
+          },
+          {
+            spor: "Token-bøtte (trafikk-shaping)",
+            kort: "Bøtte med kapasitet b tokens, fylles med rate r tokens/s. Pakke krever 1 token for å sendes.",
+            note: "Tillater short-term burst opp til b og long-term rate ≤ r. Forskjellig fra leaky bucket som tvinger jevn ut-rate.",
+          },
+        ]}
+      />
+
+      {/* b) Sammenligning-tabell DASH vs RTP-streaming */}
+      <div className="rounded-xl border border-border bg-card p-4">
+        <div className="text-[10px] uppercase tracking-wider text-brand font-semibold mb-2">
+          Sammenligning
+        </div>
+        <h3 className="text-base font-semibold mb-3">DASH vs RTP-streaming</h3>
+        <div className="overflow-x-auto">
+          <table className="w-full text-[12px] border-collapse">
+            <thead>
+              <tr className="border-b border-border">
+                <th className="text-left py-2 pr-3 font-semibold text-muted-foreground">Aspekt</th>
+                <th className="text-left py-2 pr-3 font-semibold text-foreground">
+                  DASH (HTTP-streaming)
+                </th>
+                <th className="text-left py-2 font-semibold text-foreground">RTP-streaming</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-border">
+              <tr>
+                <td className="py-2 pr-3 font-semibold">Transport</td>
+                <td className="py-2 pr-3 text-muted-foreground">
+                  TCP via HTTPS — pålitelig, går gjennom NAT og brannmurer som hvilken som helst
+                  websession.
+                </td>
+                <td className="py-2 text-muted-foreground">
+                  UDP. Ingen retransmissions; tapte pakker blir borte. Slipper hode-blokkering, men
+                  kan slite mot brannmurer.
+                </td>
+              </tr>
+              <tr>
+                <td className="py-2 pr-3 font-semibold">Adaptiv bitrate (ABR)</td>
+                <td className="py-2 pr-3 text-muted-foreground">
+                  Klient-styrt: leser MPD, velger neste segments bitrate fra «laddern» basert på
+                  målt throughput og buffer-nivå.
+                </td>
+                <td className="py-2 text-muted-foreground">
+                  Server- eller hybrid-styrt. RTP selv har ingen ABR-mekanisme; må implementeres
+                  over RTCP-feedback eller separat protokoll.
+                </td>
+              </tr>
+              <tr>
+                <td className="py-2 pr-3 font-semibold">Sesjons-kontroll</td>
+                <td className="py-2 pr-3 text-muted-foreground">
+                  Ingen — hver segment-forespørsel er en uavhengig HTTP GET. State holdes hos
+                  klienten.
+                </td>
+                <td className="py-2 text-muted-foreground">
+                  RTSP håndterer play/pause/seek (separat kanal). RTP bærer mediet. RTCP gir
+                  rapportering.
+                </td>
+              </tr>
+              <tr>
+                <td className="py-2 pr-3 font-semibold">Fordeler</td>
+                <td className="py-2 pr-3 text-muted-foreground">
+                  Cacher i CDN-er som vanlig HTTP. Tåler vekslende båndbredde. Krever ingen
+                  spesial-infrastruktur hos ISP-en.
+                </td>
+                <td className="py-2 text-muted-foreground">
+                  Lavere end-to-end-latens (ingen TCP-retransmit-pauser). Egner seg for live og
+                  samtidsinteraktive sesjoner.
+                </td>
+              </tr>
+              <tr>
+                <td className="py-2 pr-3 font-semibold">Ulemper</td>
+                <td className="py-2 pr-3 text-muted-foreground">
+                  Høyere latens (typisk 10-30 s for live) pga. buffer + segment-størrelse. ABR kan
+                  oscillere hvis throughput-målinger er ustabile.
+                </td>
+                <td className="py-2 text-muted-foreground">
+                  Pakketap gir hørbare/synlige artefakter. NAT/brannmur-traversal er vanskelig.
+                  Mindre CDN-vennlig.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* c) Beslutningstre */}
+      <Illustration caption="Beslutningstre — velg riktig multimedia-tilnærming basert på interaktivitet og publikum.">
+        <BeslutningstreSvg />
+      </Illustration>
+
+      {/* d) Fallgruver */}
+      <div className="space-y-3">
+        <div className="text-[10px] uppercase tracking-wider text-rose-700 dark:text-rose-400 font-semibold">
+          Klassiske fallgruver
+        </div>
+        <Fallgruve tittel="Forveksle latens med jitter">
+          <p>
+            På eksamen ser man ofte spørsmål av typen «jitter er 30 ms» — som ikke betyr at delayet
+            er 30 ms, men at <em>variasjonen</em> i delay er 30 ms. Et nett kan ha 5 ms delay og 20
+            ms jitter (verre for VoIP enn 200 ms konstant delay), eller 300 ms delay og 1 ms jitter
+            (greit for video, men ubrukelig for samtidsinteraktiv lyd).
+          </p>
+        </Fallgruve>
+        <Fallgruve tittel="Tro RTP gir pålitelig levering">
+          <p>
+            RTP kjører over UDP. Det er <strong>ingen</strong> retransmit, ingen leveringsgaranti,
+            ingen connection-state. Det RTP gir deg er: sekvensnummer (du <em>oppdager</em> tap),
+            tidsstempel (du kan rekonstruere playout-tid), og payload-type (du vet hvilken codec).
+            Pålitelighet — hvis du vil ha det — må du bygge selv via FEC, interleaving eller
+            RTCP-feedback-loops.
+          </p>
+        </Fallgruve>
+        <Fallgruve tittel="Tror DASH justerer kvalitet basert på link-rate">
+          <p>
+            DASH-klienten kjenner ikke link-raten din. Den måler{" "}
+            <strong>end-to-end throughput</strong> for hver segment-nedlasting (segment-bytes delt
+            på nedlastingstid) og bruker det estimatet til neste segment-valg. Det er derfor en
+            full-fart 1 Gbit/s fiber kan oppleve dårlig DASH-kvalitet hvis serveren eller en
+            mellom-hop er flaskehalsen.
+          </p>
+        </Fallgruve>
+        <Fallgruve tittel="Anta at QoS-merking respekteres hele veien">
+          <p>
+            DSCP-bits du setter i headeren gjelder i din egen ISP-domene (hvis du har en SLA). Ved
+            domene-overgang strippes eller remappes ofte DSCP-bittene — internett som helhet er
+            best-effort. QoS er et kontrakts-spørsmål, ikke en protokoll-garanti.
+          </p>
+        </Fallgruve>
+        <Fallgruve tittel="Blande token bucket og leaky bucket">
+          <p>Begge regulerer trafikk, men oppfører seg forskjellig:</p>
+          <ul className="list-disc pl-5 mt-1 space-y-0.5">
+            <li>
+              <strong>Token bucket</strong> tillater burst opp til bøttestørrelse b og long-term
+              rate ≤ r. Du kan sende b pakker raskt etter en stille periode.
+            </li>
+            <li>
+              <strong>Leaky bucket</strong> tvinger jevn ut-rate uansett. Burst-pakker står i kø; de
+              slippes ut én og én med konstant rate.
+            </li>
+          </ul>
+          <p className="mt-1">
+            Token bucket er greiere for VBR-video (variable bitrate); leaky bucket er strengere og
+            bedre der nedstrøms-enheter forventer konstant rate.
+          </p>
+        </Fallgruve>
+        <Fallgruve tittel="Forveksle SR og RR i RTCP">
+          <p>
+            <strong>Sender Report (SR)</strong> sendes av en deltaker som aktivt sender RTP-pakker —
+            den inkluderer både sender-info (NTP/RTP-tidsstempel for synk) og mottaker-rapport.{" "}
+            <strong>Receiver Report (RR)</strong> sendes av deltakere som kun mottar — kun
+            mottaker-statistikk. Hvis du svarer «en mottaker sender SR» er det galt.
+          </p>
+        </Fallgruve>
+        <Fallgruve tittel="Tror playout-buffer fjerner all jitter">
+          <p>
+            Et statisk buffer på b ms eliminerer all jitter mindre enn b ms — men koster b ms ekstra
+            forsinkelse. Hvis nettets jitter overstiger b, kommer pakker «for sent» og kastes,
+            akkurat som tap. Adaptive buffere prøver å justere b dynamisk, men har alltid en
+            innebygd avveining mellom tap og delay.
+          </p>
+        </Fallgruve>
+        <Fallgruve tittel="Glemme at multicast krever støtte i nettet">
+          <p>
+            En-til-mange-live (f.eks. IPTV) bruker IP-multicast for effektivitet, men rutere må
+            kjøre IGMP/PIM. På åpent internett finnes dette praktisk talt ikke — så «multicast» blir
+            som regel application-layer-multicast (CDN-fan-out, RTMP-relay) i praksis.
+          </p>
+        </Fallgruve>
+      </div>
+
+      {/* e) 5-minutter-anker */}
+      <Anker
+        tittel="5-minutter-anker — kjernepunkter du må ha"
+        punkter={[
+          "Tre kategorier multimedia: lagret (DASH), live (DASH/RTMP/multicast), samtidsinteraktiv (VoIP/WebRTC). Kategorien velges av latens-toleranse.",
+          "Mund-til-øre-grense for interaktiv lyd: ~150 ms (god), ~400 ms (akseptabel), over det blir samtalen tregt.",
+          "Jitter er variasjon i delay, ikke delay selv. Måles ofte som standardavvik for inter-arrival-tider.",
+          "MOS er en subjektiv 1-5-skala. Toll-kvalitet ≈ 4.0. Codecs evalueres med MOS, ikke kun bitrate.",
+          "DASH = klient-styrt HTTP-streaming over TCP. MPD-manifest + segmenter + ABR-laddervalg basert på målt throughput og buffer-nivå.",
+          "RTP-header har 12 byte minimum: V/P/X/CC/M/PT (1. ord), SEQ (sekvensnummer), TS (tidsstempel), SSRC (kilde-id).",
+          "RTP gir IKKE pålitelighet — det gjør UDP heller ikke. Tap håndteres via FEC, interleaving eller PLC (packet loss concealment).",
+          "RTCP-pakke-typer: SR (aktiv sender), RR (kun mottaker), SDES, BYE, APP. Brukes til synk og statistikk.",
+          "DiffServ: stateless klassebasert (DSCP-merking i IP-header gir PHB). IntServ: stateful per-flow (RSVP) — gir garantier, men skalerer dårlig.",
+          "Token bucket regulerer burst og long-term rate; leaky bucket tvinger konstant ut-rate. Ulik bruk.",
+          "Playout-buffer trader delay mot tap. Statisk = enkelt men dårlig adaptert. Adaptivt ≈ middel-delay + k·σ_jitter.",
+          "Adaptiv playout justerer typisk mellom talespurts (under pausene). Innenfor en spurt er bufferet konstant for å unngå tone-forvrengning.",
+          "WebRTC bruker SRTP (sikker RTP) + ICE/STUN/TURN for NAT-traversal og DTLS for nøkkelutveksling. Mål: under 200 ms ende-til-ende.",
+          "ABR-algoritmer faller i tre familier: throughput-baserte, buffer-baserte (BOLA), og hybrid (MPC). Avveining mellom kvalitet og rebuffering.",
+          "QoS-marking gjelder bare innen din ISP-domene med SLA. Ved domene-grense strippes eller remappes DSCP — internett som helhet er best-effort.",
+        ]}
+      />
+    </article>
+  );
+}
+
+// ============================================================
+// Helpers for 9.7
+// ============================================================
+
+function Fallgruve({ tittel, children }: { tittel: string; children: React.ReactNode }) {
+  return (
+    <div className="rounded-xl border border-rose-500/30 bg-rose-500/5 p-4">
+      <div className="text-[10px] uppercase tracking-wider text-rose-700 dark:text-rose-400 font-semibold mb-1">
+        Fallgruve
+      </div>
+      <div className="font-semibold text-foreground mb-1">{tittel}</div>
+      <div className="text-muted-foreground text-[13px] space-y-2">{children}</div>
+    </div>
+  );
+}
+
+function Cheat({
+  tittel,
+  rader,
+}: {
+  tittel: string;
+  rader: { spor: string; kort: React.ReactNode; note?: React.ReactNode }[];
+}) {
+  return (
+    <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/5 p-4">
+      <div className="text-[10px] uppercase tracking-wider text-emerald-700 dark:text-emerald-400 font-semibold mb-1">
+        Cheat sheet
+      </div>
+      <div className="font-semibold text-foreground mb-3">{tittel}</div>
+      <dl className="space-y-3 text-[12.5px]">
+        {rader.map((r) => (
+          <div key={r.spor} className="border-l-2 border-emerald-500/40 pl-3">
+            <dt className="font-semibold text-foreground">{r.spor}</dt>
+            <dd className="text-foreground/90 mt-0.5">{r.kort}</dd>
+            {r.note && (
+              <dd className="text-muted-foreground text-[11.5px] mt-1 italic">{r.note}</dd>
+            )}
+          </div>
+        ))}
+      </dl>
+    </div>
+  );
+}
+
+function Anker({ tittel, punkter }: { tittel: string; punkter: string[] }) {
+  return (
+    <div className="rounded-xl border border-indigo-500/30 bg-indigo-500/5 p-4">
+      <div className="text-[10px] uppercase tracking-wider text-indigo-700 dark:text-indigo-400 font-semibold mb-1">
+        5-minutter-anker
+      </div>
+      <div className="font-semibold text-foreground mb-2">{tittel}</div>
+      <ol className="list-decimal pl-5 space-y-1.5 text-[12.5px] text-foreground/90">
+        {punkter.map((p, i) => (
+          <li key={i}>{p}</li>
+        ))}
+      </ol>
+    </div>
+  );
+}
+
+function BeslutningstreSvg() {
+  return (
+    <svg viewBox="0 0 760 480" className="w-full h-auto">
+      {/* Rotnode */}
+      <rect
+        x={290}
+        y={20}
+        width={180}
+        height={48}
+        rx={8}
+        className="fill-card stroke-foreground/40"
+        strokeWidth={1.2}
+      />
+      <text
+        x={380}
+        y={42}
+        textAnchor="middle"
+        className="fill-foreground text-[12px] font-semibold"
+      >
+        Hvilken multimedia-
+      </text>
+      <text
+        x={380}
+        y={58}
+        textAnchor="middle"
+        className="fill-foreground text-[12px] font-semibold"
+      >
+        tilnærming?
+      </text>
+
+      {/* Spørsmål-1: interaktiv? */}
+      <line x1={380} y1={68} x2={380} y2={100} className="stroke-foreground/40" strokeWidth={1.2} />
+      <rect
+        x={290}
+        y={100}
+        width={180}
+        height={44}
+        rx={8}
+        className="fill-muted/40 stroke-foreground/40"
+        strokeWidth={1.2}
+      />
+      <text x={380} y={120} textAnchor="middle" className="fill-foreground text-[11.5px]">
+        Krever samtidsinteraksjon
+      </text>
+      <text x={380} y={134} textAnchor="middle" className="fill-foreground text-[11.5px]">
+        (&lt; 400 ms)?
+      </text>
+
+      {/* Forgrening: ja (venstre) — interaktiv */}
+      <line
+        x1={380}
+        y1={144}
+        x2={170}
+        y2={180}
+        className="stroke-foreground/40"
+        strokeWidth={1.2}
+      />
+      <text
+        x={250}
+        y={168}
+        className="fill-emerald-600 dark:fill-emerald-400 text-[11px] font-semibold"
+      >
+        ja
+      </text>
+      <rect
+        x={70}
+        y={180}
+        width={200}
+        height={44}
+        rx={8}
+        className="fill-muted/40 stroke-foreground/40"
+        strokeWidth={1.2}
+      />
+      <text x={170} y={200} textAnchor="middle" className="fill-foreground text-[11.5px]">
+        Trenger ultra-lav latens
+      </text>
+      <text x={170} y={214} textAnchor="middle" className="fill-foreground text-[11.5px]">
+        (&lt; 200 ms, P2P)?
+      </text>
+
+      <line x1={120} y1={224} x2={80} y2={260} className="stroke-foreground/40" strokeWidth={1.2} />
+      <text x={70} y={246} className="fill-emerald-600 dark:fill-emerald-400 text-[10.5px]">
+        ja
+      </text>
+      <rect
+        x={20}
+        y={260}
+        width={130}
+        height={56}
+        rx={8}
+        className="fill-emerald-500/15 stroke-emerald-500/50"
+        strokeWidth={1.2}
+      />
+      <text
+        x={85}
+        y={280}
+        textAnchor="middle"
+        className="fill-foreground text-[11.5px] font-semibold"
+      >
+        WebRTC
+      </text>
+      <text x={85} y={295} textAnchor="middle" className="fill-muted-foreground text-[10.5px]">
+        SRTP + ICE + DTLS
+      </text>
+      <text x={85} y={308} textAnchor="middle" className="fill-muted-foreground text-[10.5px]">
+        P2P-mesh / SFU
+      </text>
+
+      <line
+        x1={220}
+        y1={224}
+        x2={260}
+        y2={260}
+        className="stroke-foreground/40"
+        strokeWidth={1.2}
+      />
+      <text x={252} y={246} className="fill-rose-600 dark:fill-rose-400 text-[10.5px]">
+        nei
+      </text>
+      <rect
+        x={190}
+        y={260}
+        width={140}
+        height={56}
+        rx={8}
+        className="fill-emerald-500/15 stroke-emerald-500/50"
+        strokeWidth={1.2}
+      />
+      <text
+        x={260}
+        y={280}
+        textAnchor="middle"
+        className="fill-foreground text-[11.5px] font-semibold"
+      >
+        VoIP / SIP
+      </text>
+      <text x={260} y={295} textAnchor="middle" className="fill-muted-foreground text-[10.5px]">
+        UDP + RTP/RTCP
+      </text>
+      <text x={260} y={308} textAnchor="middle" className="fill-muted-foreground text-[10.5px]">
+        adaptiv playout
+      </text>
+
+      {/* Forgrening: nei (høyre) — ikke-interaktiv */}
+      <line
+        x1={380}
+        y1={144}
+        x2={590}
+        y2={180}
+        className="stroke-foreground/40"
+        strokeWidth={1.2}
+      />
+      <text x={500} y={168} className="fill-rose-600 dark:fill-rose-400 text-[11px] font-semibold">
+        nei
+      </text>
+      <rect
+        x={490}
+        y={180}
+        width={200}
+        height={44}
+        rx={8}
+        className="fill-muted/40 stroke-foreground/40"
+        strokeWidth={1.2}
+      />
+      <text x={590} y={200} textAnchor="middle" className="fill-foreground text-[11.5px]">
+        Live (alle ser samme stream
+      </text>
+      <text x={590} y={214} textAnchor="middle" className="fill-foreground text-[11.5px]">
+        nesten samtidig)?
+      </text>
+
+      <line
+        x1={540}
+        y1={224}
+        x2={500}
+        y2={260}
+        className="stroke-foreground/40"
+        strokeWidth={1.2}
+      />
+      <text x={490} y={246} className="fill-emerald-600 dark:fill-emerald-400 text-[10.5px]">
+        ja
+      </text>
+      <rect
+        x={430}
+        y={260}
+        width={140}
+        height={56}
+        rx={8}
+        className="fill-emerald-500/15 stroke-emerald-500/50"
+        strokeWidth={1.2}
+      />
+      <text
+        x={500}
+        y={280}
+        textAnchor="middle"
+        className="fill-foreground text-[11.5px] font-semibold"
+      >
+        Multicast / RTMP
+      </text>
+      <text x={500} y={295} textAnchor="middle" className="fill-muted-foreground text-[10.5px]">
+        IGMP/PIM i lukket nett
+      </text>
+      <text x={500} y={308} textAnchor="middle" className="fill-muted-foreground text-[10.5px]">
+        ellers CDN-fan-out
+      </text>
+
+      <line
+        x1={640}
+        y1={224}
+        x2={680}
+        y2={260}
+        className="stroke-foreground/40"
+        strokeWidth={1.2}
+      />
+      <text x={672} y={246} className="fill-rose-600 dark:fill-rose-400 text-[10.5px]">
+        nei
+      </text>
+      <rect
+        x={610}
+        y={260}
+        width={140}
+        height={56}
+        rx={8}
+        className="fill-emerald-500/15 stroke-emerald-500/50"
+        strokeWidth={1.2}
+      />
+      <text
+        x={680}
+        y={280}
+        textAnchor="middle"
+        className="fill-foreground text-[11.5px] font-semibold"
+      >
+        DASH / HLS
+      </text>
+      <text x={680} y={295} textAnchor="middle" className="fill-muted-foreground text-[10.5px]">
+        HTTPS + segmenter
+      </text>
+      <text x={680} y={308} textAnchor="middle" className="fill-muted-foreground text-[10.5px]">
+        ABR i klienten
+      </text>
+
+      {/* Nederste hint-rad */}
+      <line
+        x1={40}
+        y1={350}
+        x2={720}
+        y2={350}
+        className="stroke-foreground/20"
+        strokeDasharray="3 3"
+      />
+      <text
+        x={380}
+        y={372}
+        textAnchor="middle"
+        className="fill-muted-foreground text-[10.5px] italic"
+      >
+        Latens-budsjett øker fra venstre mot høyre — desto strengere krav, desto mer skreddersydd
+        protokoll.
+      </text>
+
+      <rect
+        x={40}
+        y={390}
+        width={200}
+        height={70}
+        rx={8}
+        className="fill-card stroke-foreground/30"
+        strokeWidth={1}
+      />
+      <text
+        x={140}
+        y={410}
+        textAnchor="middle"
+        className="fill-foreground text-[11px] font-semibold"
+      >
+        Interaktiv (P2P/grupper)
+      </text>
+      <text x={140} y={426} textAnchor="middle" className="fill-muted-foreground text-[10.5px]">
+        Latens-budsjett: &lt; 200-400 ms
+      </text>
+      <text x={140} y={442} textAnchor="middle" className="fill-muted-foreground text-[10.5px]">
+        Pakketap: PLC/FEC
+      </text>
+      <text x={140} y={456} textAnchor="middle" className="fill-muted-foreground text-[10.5px]">
+        Adaptiv playout-buffer
+      </text>
+
+      <rect
+        x={280}
+        y={390}
+        width={200}
+        height={70}
+        rx={8}
+        className="fill-card stroke-foreground/30"
+        strokeWidth={1}
+      />
+      <text
+        x={380}
+        y={410}
+        textAnchor="middle"
+        className="fill-foreground text-[11px] font-semibold"
+      >
+        Live broadcast
+      </text>
+      <text x={380} y={426} textAnchor="middle" className="fill-muted-foreground text-[10.5px]">
+        Latens-budsjett: 2-30 s
+      </text>
+      <text x={380} y={442} textAnchor="middle" className="fill-muted-foreground text-[10.5px]">
+        Skalering: multicast / CDN
+      </text>
+      <text x={380} y={456} textAnchor="middle" className="fill-muted-foreground text-[10.5px]">
+        Ofte HTTPS-segmenter
+      </text>
+
+      <rect
+        x={520}
+        y={390}
+        width={200}
+        height={70}
+        rx={8}
+        className="fill-card stroke-foreground/30"
+        strokeWidth={1}
+      />
+      <text
+        x={620}
+        y={410}
+        textAnchor="middle"
+        className="fill-foreground text-[11px] font-semibold"
+      >
+        Lagret (on-demand)
+      </text>
+      <text x={620} y={426} textAnchor="middle" className="fill-muted-foreground text-[10.5px]">
+        Latens-budsjett: sekunder
+      </text>
+      <text x={620} y={442} textAnchor="middle" className="fill-muted-foreground text-[10.5px]">
+        ABR + stor klient-buffer
+      </text>
+      <text x={620} y={456} textAnchor="middle" className="fill-muted-foreground text-[10.5px]">
+        CDN-cache er normalt
+      </text>
+    </svg>
   );
 }
 

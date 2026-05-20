@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import { SectionPager, type SectionNavItem } from "./SectionPager";
 
-type Tab = "intro" | "7.1" | "7.2" | "7.3" | "7.4" | "7.5" | "7.6" | "7.7";
+type Tab = "intro" | "7.1" | "7.2" | "7.3" | "7.4" | "7.5" | "7.6" | "7.7" | "7.8";
 
 const SECTIONS_7: SectionNavItem[] = [
   { id: "intro", label: "Start her" },
@@ -23,6 +23,7 @@ const SECTIONS_7: SectionNavItem[] = [
   { id: "7.5", label: "7.5 Håndover" },
   { id: "7.6", label: "7.6 TCP & wireless" },
   { id: "7.7", label: "7.7 Oppgaver" },
+  { id: "7.8", label: "7.8 Eksamen-fokus" },
 ];
 const NEXT_CHAPTER_7 = { slug: "kurose-kap-8", title: "Sikkerhet i nettverk" };
 
@@ -78,6 +79,9 @@ export function KuroseKap7Page() {
             <TabBtn active={tab === "7.7"} onClick={() => setTab("7.7")} title="Oppgaver">
               Oppg.
             </TabBtn>
+            <TabBtn active={tab === "7.8"} onClick={() => setTab("7.8")} title="Eksamen-fokus">
+              Eksamen
+            </TabBtn>
           </nav>
         </div>
 
@@ -89,6 +93,7 @@ export function KuroseKap7Page() {
         {tab === "7.5" && <Section75 />}
         {tab === "7.6" && <Section76 />}
         {tab === "7.7" && <Section77 />}
+        {tab === "7.8" && <SectionEksamen />}
 
         <SectionPager
           tabs={SECTIONS_7}
@@ -1549,6 +1554,563 @@ function Section77() {
         }
       />
     </article>
+  );
+}
+
+// ============================================================
+// 7.8 — Eksamen-fokus
+// ============================================================
+function SectionEksamen() {
+  return (
+    <article className="space-y-4 text-sm">
+      <Header num="7.8" title="Eksamen-fokus" />
+
+      <p className="text-muted-foreground">
+        Komprimert oppslagsverk for kap. 7. Bruk dette etter at du har vært gjennom seksjonene
+        7.1–7.6 og prøvd oppgavene i 7.7. Her samler vi formlene, tabellene, beslutningstrærne, de
+        typiske fallgruvene og 5-minutter-ankeret du går gjennom rett før eksamen.
+      </p>
+
+      {/* a) CHEAT SHEET */}
+      <Cheat
+        tittel="Cheat sheet — kap. 7"
+        items={[
+          {
+            label: "Path loss",
+            body: "Signalstyrken faller med avstanden² i fritt rom — i dB blir det ca. −6 dB per dobling av avstand. Innendørs (vegger, møbler) ligger eksponenten ofte mellom 3 og 5, så tapet er enda raskere. FSPL ≈ 20·log d + 20·log f + 32.45 i dB.",
+          },
+          {
+            label: "CSMA/CA-timing",
+            body: "Stasjonen venter DIFS (≈ 50 μs) etter at lufta ble stille, deretter teller den ned en tilfeldig backoff-teller i slots. Mottakeren venter bare SIFS (≈ 10 μs) før den sender ACK — slik at ACK alltid vinner over en ny DIFS-sender. Rekkefølge: DIFS → backoff → DATA → SIFS → ACK.",
+          },
+          {
+            label: "RTS/CTS",
+            body: "Liten Request-To-Send fra sender + Clear-To-Send fra AP reserverer lufta før selve DATA-rammen. CTS-en høres av alle som er innenfor AP-en, også de som ikke hører senderen — derfor løser den hidden terminal. Brukes typisk bare for DATA over en størrelse-grense (RTS-threshold), siden RTS+CTS er overhead.",
+          },
+          {
+            label: "802.11-versjoner",
+            body: "a (5 GHz, OFDM, opp til 54 Mbps) · b (2.4 GHz, DSSS, 11 Mbps) · g (2.4 GHz, OFDM, 54 Mbps) · n (2.4/5 GHz, MIMO, opp til 600 Mbps) · ac (5 GHz, wider channels + MU-MIMO, 1+ Gbps) · ax = WiFi 6 (OFDMA + spatial reuse, lavere ventetid i tette miljø).",
+          },
+          {
+            label: "Cellular-generasjoner",
+            body: "2G: GSM (TDMA-stemme) / IS-95 (CDMA). 3G: UMTS / HSPA — pakkedata oppå krets-svitsjet. 4G: LTE — OFDM nedlink, SC-FDMA opplink, all-IP kjerne (EPC). 5G: NR — mm-bølger + sub-6 GHz, massiv MIMO, network slicing, kjerne 5GC.",
+          },
+          {
+            label: "Mobile IP",
+            body: "Home agent (HA) i hjemmenettet fanger pakker til den permanente hjemme-adressen. Foreign agent (FA) i besøksnettet annonserer en care-of address (CoA). HA tunnellerer pakker til CoA — som er triangle routing fordi svaret kan gå direkte tilbake fra hosten til avsender uten å passere HA.",
+          },
+        ]}
+      />
+
+      {/* b) SAMMENLIGNING — CSMA/CD vs CSMA/CA */}
+      <div className="rounded-xl border border-border bg-card p-4">
+        <h3 className="text-xs uppercase tracking-wider text-muted-foreground mb-3">
+          CSMA/CD (Ethernet) vs CSMA/CA (WiFi)
+        </h3>
+        <div className="overflow-x-auto">
+          <table className="w-full text-[12px] border-collapse">
+            <thead>
+              <tr className="border-b border-border">
+                <th className="text-left py-1.5 pr-3 font-semibold text-foreground">Dimensjon</th>
+                <th className="text-left py-1.5 pr-3 font-semibold text-foreground">
+                  CSMA/CD — kabel
+                </th>
+                <th className="text-left py-1.5 font-semibold text-foreground">CSMA/CA — radio</th>
+              </tr>
+            </thead>
+            <tbody className="text-muted-foreground">
+              <tr className="border-b border-border/50">
+                <td className="py-1.5 pr-3 font-medium text-foreground">Kollisjons-deteksjon</td>
+                <td className="py-1.5 pr-3">
+                  Ja — senderen lytter mens den sender og oppdager spennings-feil på kabelen.
+                </td>
+                <td className="py-1.5">
+                  Nei — radioen er half-duplex og drukner i sin egen utgang, kan ikke høre om noen
+                  andre roper samtidig.
+                </td>
+              </tr>
+              <tr className="border-b border-border/50">
+                <td className="py-1.5 pr-3 font-medium text-foreground">Strategi for unngåelse</td>
+                <td className="py-1.5 pr-3">
+                  Detect-and-abort: så snart kollisjonen oppdages, stopp og send jam-signal.
+                </td>
+                <td className="py-1.5">
+                  Avoid-up-front: vent DIFS + tilfeldig backoff før hver overføring slik at to som
+                  hører «klart» ikke starter samtidig.
+                </td>
+              </tr>
+              <tr className="border-b border-border/50">
+                <td className="py-1.5 pr-3 font-medium text-foreground">Miljø</td>
+                <td className="py-1.5 pr-3">
+                  Delt elektrisk buss / hub — alle hører alle og signalet er forutsigbart.
+                </td>
+                <td className="py-1.5">
+                  Delt radio-kanal med skygger, fading og hidden terminals — «alle hører alle»
+                  gjelder ikke.
+                </td>
+              </tr>
+              <tr className="border-b border-border/50">
+                <td className="py-1.5 pr-3 font-medium text-foreground">Kontroll-rammer</td>
+                <td className="py-1.5 pr-3">
+                  Ingen — preamble + payload + FCS er alt som trengs i en kollisjons-fri verden.
+                </td>
+                <td className="py-1.5">
+                  Mange: Beacon, RTS, CTS, ACK, plus management-rammer for association og
+                  authentication.
+                </td>
+              </tr>
+              <tr className="border-b border-border/50">
+                <td className="py-1.5 pr-3 font-medium text-foreground">Bruk av ACK</td>
+                <td className="py-1.5 pr-3">
+                  Ingen lag-2-ACK — vellykket sending antas så lenge ingen kollisjon ble oppdaget.
+                </td>
+                <td className="py-1.5">
+                  Hver enkelt unicast-DATA krever positiv ACK fra mottaker, ellers retransmisjon med
+                  voksende backoff.
+                </td>
+              </tr>
+              <tr>
+                <td className="py-1.5 pr-3 font-medium text-foreground">Kollisjons-håndtering</td>
+                <td className="py-1.5 pr-3">
+                  Binær eksponentiell backoff etter abort: ny tilfeldig venting i 0..2^k slots.
+                </td>
+                <td className="py-1.5">
+                  Manglende ACK = «antatt kollisjon»: doble CW-vinduet, trekk ny tilfeldig backoff
+                  og forsøk på nytt.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* c) BESLUTNINGSTRE */}
+      <Illustration caption="Beslutningstre for diagnose av trådløse problemer — start på toppen, følg svar-greinen.">
+        <DiagnoseTreeSvg />
+      </Illustration>
+
+      {/* d) FALLGRUVER */}
+      <div className="grid gap-3 lg:grid-cols-2">
+        <Fallgruve tittel="CSMA/CD funker IKKE i radio">
+          <p>
+            Mange skriver på eksamen at WiFi bruker CSMA/CD. Det er feil. Radioen er half-duplex —
+            mens den sender, overdøver dens egen utgang alt annet på samme frekvens. Den kan ikke
+            oppdage en kollisjon i fart, bare lese fraværet av en ACK i ettertid. Derfor er det
+            CSMA/CA («collision avoidance»), ikke /CD («collision detection»).
+          </p>
+        </Fallgruve>
+
+        <Fallgruve tittel="TCP tolker radio-tap som congestion">
+          <p>
+            Når en pakke faller bort i lufta på grunn av fading eller interferens, ser TCP-senderen
+            bare manglende ACK. Den antar at en kø et sted i kjernen er full og halverer cwnd. På en
+            ren wireless-strekning er det helt feil reaksjon — det er ikke trengsel, bare støy.
+            Resultatet er undermåls throughput på ellers ledige radio-kanaler.
+          </p>
+        </Fallgruve>
+
+        <Fallgruve tittel="WiFi-celler MÅ overlappe">
+          <p>
+            En vanlig misforståelse er at AP-er skal plasseres med skarpe celle-grenser. Tvert imot
+            — de må overlappe nok til at en klient ser begge før den mister den første. Uten
+            overlapp har du ingen «mellomperiode» der klienten kan associere til den nye AP-en, og
+            håndover blir et brutalt drop-and-reconnect.
+          </p>
+        </Fallgruve>
+
+        <Fallgruve tittel="Hidden terminal kan ikke høres av senderne selv">
+          <p>
+            Klassisk fallgruve: «hvis A ikke hører C, så vet A jo bare ikke at den eksisterer».
+            Riktig — og det er hele poenget. Begge tror lufta er klar, sender samtidig, og AP-en
+            mellom dem får krasjete signaler. RTS/CTS via AP-en gjør at begge får et felles
+            «opptatt-signal» de KAN høre.
+          </p>
+        </Fallgruve>
+
+        <Fallgruve tittel="Mobile IP triangle routing er ikke alltid en feil">
+          <p>
+            Det er fristende å se triangle routing — pakke inn må svinge innom HA, svar går rett ut
+            — som ineffektivt og defekt. Men det betyr at hosten ikke trenger å fortelle hver
+            samtaler om sin nye care-of address, og den slipper også å reforhandle TCP-tilkoblinger.
+            Optimaliseringer som «route optimization» finnes, men de bryter den fine
+            adresse-skjulingen.
+          </p>
+        </Fallgruve>
+
+        <Fallgruve tittel="Soft handover er ikke en gratis upgrade">
+          <p>
+            Soft handover (klienten snakker med to celler samtidig en kort stund) gir sømløs
+            overgang, men koster radio-ressurser i to celler samtidig og kompliserer
+            nett-planlegging. Hard handover (først bryt, så koble til ny) er enklere og brukt i
+            WiFi/GSM, og er ofte godt nok når avbruddet er kortere enn TCP-tidsavbruddet.
+          </p>
+        </Fallgruve>
+
+        <Fallgruve tittel="dBm og dB er ikke det samme">
+          <p>
+            dBm er en absolutt effekt-måling referert til 1 mW: −80 dBm betyr 10⁻⁸ mW. dB alene er
+            et forhold (gain eller tap). Eksamen blander dem ofte: «antennen har 15 dB» er
+            ufullstendig, det skal være enten 15 dBi (gain) eller 15 dB demping. Pass på enheten.
+          </p>
+        </Fallgruve>
+
+        <Fallgruve tittel="«Mer båndbredde» er ikke alltid løsningen">
+          <p>
+            En klient som sliter med høy ping og pakkesvinn vil ofte hjelpes mer av å bytte til en
+            mindre overfylt kanal enn å oppgradere til et raskere standard. WiFi 6 hjelper lite hvis
+            40 naboer deler de samme 2.4 GHz-kanalene. Spektrum-rensligheten betyr ofte mer enn rå
+            link-rate.
+          </p>
+        </Fallgruve>
+      </div>
+
+      {/* e) 5-MINUTTER-ANKER */}
+      <Anker
+        tittel="5-minutter-anker — kjernepunkter for kap. 7"
+        punkter={[
+          "Radio er fundamentalt forskjellig fra kabel — half-duplex, multipath-fading, ekstern interferens og hidden terminals tvinger fram nye protokoll-mønstre.",
+          "Path loss følger ca. avstand² i fritt rom (−6 dB per dobling); innendørs er eksponenten ofte 3–5 på grunn av vegger og møbler.",
+          "CSMA/CA-rekkefølgen er: lytt → DIFS → backoff → DATA → SIFS → ACK. SIFS er kortere enn DIFS slik at ACK alltid vinner over et nytt forsøk.",
+          "Manglende ACK i WiFi tolkes som kollisjon, og contention window dobles — binær eksponentiell backoff men på avoid-siden, ikke detect-siden.",
+          "RTS/CTS løser hidden terminal ved at AP-ens CTS er hørbar for alle innenfor AP-en, også de senderne ikke hører hverandre.",
+          "802.11-versjoner skiller seg på frekvensbånd, modulasjon (DSSS → OFDM → OFDMA), MIMO-spatial-streams og kanal-bredde — derav den voksende link-raten.",
+          "Cellular-utviklingen går fra krets-svitsjet stemme (2G) gjennom pakkedata-overlegg (3G) til all-IP kjerne (4G LTE) og service-baserte arkitekturer + mm-bølger (5G).",
+          "I LTE og 5G erstatter en pakke-svitsjet kjerne (EPC/5GC) den gamle krets-kjernen, og stemmeoverføring går som VoIP (VoLTE) over IMS.",
+          "Mobile IP gir hosten en permanent hjemme-adresse + en flyttbar care-of address; HA tunnellerer trafikk inn, hosten svarer ofte direkte (triangle routing).",
+          "Hard handover = «break-before-make», typisk i WiFi og GSM. Soft handover = «make-before-break», typisk i CDMA-baserte 3G-nettverk.",
+          "For at en aktiv TCP-strøm skal overleve en handover må IP-adressen være stabil for de øvre lagene — derav tunnellerings-trikset i Mobile IP og GTP-tunnelene i mobilkjernen.",
+          "TCP straffer radio: tap som skyldes støy ikke trengsel utløser like fullt cwnd-halvering, og en lang RTT på mobil gjør gjenoppbyggingen treig.",
+          "Link-laget kan skjule radio-tap fra TCP ved aggressiv lokal retransmisjon (ARQ over WiFi/cellular), men det øker jitter og ventetid.",
+          "Diagnose-rekkefølge ved trådløse problemer: signalstyrke → interferens → association/auth → ruting → øvre lag. Ikke hopp til toppen før bunnen er ryddet.",
+          "Spektrum er en delt ressurs som er underlagt regulering: 2.4 GHz og 5 GHz er ulisensiert, mens cellulær bruker lisensierte bånd som operatøren har eksklusiv rett til.",
+        ]}
+      />
+
+      <RelatedSlugs slugs={["kurose-kap-8"]} />
+    </article>
+  );
+}
+
+// ============================================================
+// Eksamen-helpers
+// ============================================================
+function Cheat({
+  tittel,
+  items,
+}: {
+  tittel: string;
+  items: { label: string; body: React.ReactNode }[];
+}) {
+  return (
+    <div className="rounded-xl border border-sky-500/30 bg-sky-500/5 p-4">
+      <div className="text-[10px] uppercase tracking-wider text-sky-700 dark:text-sky-400 font-semibold mb-1">
+        Cheat sheet
+      </div>
+      <div className="font-semibold text-foreground mb-2">{tittel}</div>
+      <dl className="space-y-2 text-[13px]">
+        {items.map((it) => (
+          <div key={it.label} className="grid grid-cols-[minmax(7rem,9rem)_1fr] gap-3">
+            <dt className="font-semibold text-foreground">{it.label}</dt>
+            <dd className="text-muted-foreground">{it.body}</dd>
+          </div>
+        ))}
+      </dl>
+    </div>
+  );
+}
+
+function Fallgruve({ tittel, children }: { tittel: string; children: React.ReactNode }) {
+  return (
+    <div className="rounded-xl border border-rose-500/30 bg-rose-500/5 p-4">
+      <div className="text-[10px] uppercase tracking-wider text-rose-700 dark:text-rose-400 font-semibold mb-1">
+        Fallgruve
+      </div>
+      <div className="font-semibold text-foreground mb-1">{tittel}</div>
+      <div className="text-muted-foreground text-[13px] space-y-2">{children}</div>
+    </div>
+  );
+}
+
+function Anker({ tittel, punkter }: { tittel: string; punkter: string[] }) {
+  return (
+    <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/5 p-4">
+      <div className="text-[10px] uppercase tracking-wider text-emerald-700 dark:text-emerald-400 font-semibold mb-1">
+        5-minutter-anker
+      </div>
+      <div className="font-semibold text-foreground mb-2">{tittel}</div>
+      <ol className="list-decimal pl-5 text-muted-foreground text-[13px] space-y-1">
+        {punkter.map((p, i) => (
+          <li key={i}>{p}</li>
+        ))}
+      </ol>
+    </div>
+  );
+}
+
+function DiagnoseTreeSvg() {
+  return (
+    <svg viewBox="0 0 720 460" className="w-full h-auto" role="img" aria-label="Diagnose-tre">
+      {/* Rot */}
+      <g>
+        <rect
+          x="280"
+          y="10"
+          width="160"
+          height="38"
+          rx="6"
+          className="fill-brand/15 stroke-brand"
+        />
+        <text
+          x="360"
+          y="34"
+          textAnchor="middle"
+          className="fill-foreground text-[12px] font-semibold"
+        >
+          Trådløst problem?
+        </text>
+      </g>
+
+      {/* Tre hovedgreiner */}
+      {/* gren 1: lav throughput */}
+      <line
+        x1="360"
+        y1="48"
+        x2="120"
+        y2="90"
+        className="stroke-muted-foreground"
+        strokeWidth="1.5"
+      />
+      <text x="220" y="72" className="fill-muted-foreground text-[10px]" textAnchor="middle">
+        Lav throughput
+      </text>
+      <rect x="40" y="90" width="170" height="38" rx="6" className="fill-card stroke-border" />
+      <text x="125" y="114" textAnchor="middle" className="fill-foreground text-[11px]">
+        Båndbredde eller interferens?
+      </text>
+
+      <line
+        x1="80"
+        y1="128"
+        x2="50"
+        y2="170"
+        className="stroke-muted-foreground"
+        strokeWidth="1.5"
+      />
+      <line
+        x1="170"
+        y1="128"
+        x2="200"
+        y2="170"
+        className="stroke-muted-foreground"
+        strokeWidth="1.5"
+      />
+      <text x="45" y="150" className="fill-muted-foreground text-[9px]" textAnchor="middle">
+        Interferens
+      </text>
+      <text x="205" y="150" className="fill-muted-foreground text-[9px]" textAnchor="middle">
+        Båndbredde
+      </text>
+
+      <rect x="0" y="172" width="120" height="48" rx="6" className="fill-card stroke-border" />
+      <text x="60" y="190" textAnchor="middle" className="fill-foreground text-[10px]">
+        Bytt kanal /
+      </text>
+      <text x="60" y="204" textAnchor="middle" className="fill-foreground text-[10px]">
+        skru på RTS/CTS /
+      </text>
+      <text x="60" y="216" textAnchor="middle" className="fill-foreground text-[10px]">
+        flytt AP
+      </text>
+
+      <rect x="140" y="172" width="130" height="48" rx="6" className="fill-card stroke-border" />
+      <text x="205" y="190" textAnchor="middle" className="fill-foreground text-[10px]">
+        Skift til 5 GHz /
+      </text>
+      <text x="205" y="204" textAnchor="middle" className="fill-foreground text-[10px]">
+        bredere kanal /
+      </text>
+      <text x="205" y="216" textAnchor="middle" className="fill-foreground text-[10px]">
+        nyere standard
+      </text>
+
+      {/* gren 2: ingen tilkobling */}
+      <line
+        x1="360"
+        y1="48"
+        x2="360"
+        y2="90"
+        className="stroke-muted-foreground"
+        strokeWidth="1.5"
+      />
+      <text x="380" y="72" className="fill-muted-foreground text-[10px]" textAnchor="start">
+        Ingen tilkobling
+      </text>
+      <rect x="275" y="90" width="170" height="38" rx="6" className="fill-card stroke-border" />
+      <text x="360" y="114" textAnchor="middle" className="fill-foreground text-[11px]">
+        Association eller auth?
+      </text>
+
+      <line
+        x1="320"
+        y1="128"
+        x2="290"
+        y2="170"
+        className="stroke-muted-foreground"
+        strokeWidth="1.5"
+      />
+      <line
+        x1="400"
+        y1="128"
+        x2="430"
+        y2="170"
+        className="stroke-muted-foreground"
+        strokeWidth="1.5"
+      />
+      <text x="280" y="150" className="fill-muted-foreground text-[9px]" textAnchor="middle">
+        Association
+      </text>
+      <text x="445" y="150" className="fill-muted-foreground text-[9px]" textAnchor="middle">
+        Auth
+      </text>
+
+      <rect x="230" y="172" width="120" height="48" rx="6" className="fill-card stroke-border" />
+      <text x="290" y="190" textAnchor="middle" className="fill-foreground text-[10px]">
+        Sjekk SSID /
+      </text>
+      <text x="290" y="204" textAnchor="middle" className="fill-foreground text-[10px]">
+        AP-rekkevidde /
+      </text>
+      <text x="290" y="216" textAnchor="middle" className="fill-foreground text-[10px]">
+        beacon-frames
+      </text>
+
+      <rect x="370" y="172" width="130" height="48" rx="6" className="fill-card stroke-border" />
+      <text x="435" y="190" textAnchor="middle" className="fill-foreground text-[10px]">
+        Passord /
+      </text>
+      <text x="435" y="204" textAnchor="middle" className="fill-foreground text-[10px]">
+        WPA2/3-suite /
+      </text>
+      <text x="435" y="216" textAnchor="middle" className="fill-foreground text-[10px]">
+        RADIUS-server
+      </text>
+
+      {/* gren 3: mobilitet */}
+      <line
+        x1="360"
+        y1="48"
+        x2="600"
+        y2="90"
+        className="stroke-muted-foreground"
+        strokeWidth="1.5"
+      />
+      <text x="500" y="72" className="fill-muted-foreground text-[10px]" textAnchor="middle">
+        Mobil flytter seg
+      </text>
+      <rect x="510" y="90" width="170" height="38" rx="6" className="fill-card stroke-border" />
+      <text x="595" y="114" textAnchor="middle" className="fill-foreground text-[11px]">
+        Handover-problem?
+      </text>
+
+      <line
+        x1="555"
+        y1="128"
+        x2="525"
+        y2="170"
+        className="stroke-muted-foreground"
+        strokeWidth="1.5"
+      />
+      <line
+        x1="635"
+        y1="128"
+        x2="665"
+        y2="170"
+        className="stroke-muted-foreground"
+        strokeWidth="1.5"
+      />
+      <text x="515" y="150" className="fill-muted-foreground text-[9px]" textAnchor="middle">
+        Hard
+      </text>
+      <text x="675" y="150" className="fill-muted-foreground text-[9px]" textAnchor="middle">
+        Soft
+      </text>
+
+      <rect x="465" y="172" width="120" height="48" rx="6" className="fill-card stroke-border" />
+      <text x="525" y="190" textAnchor="middle" className="fill-foreground text-[10px]">
+        Re-associer /
+      </text>
+      <text x="525" y="204" textAnchor="middle" className="fill-foreground text-[10px]">
+        DHCP-renew /
+      </text>
+      <text x="525" y="216" textAnchor="middle" className="fill-foreground text-[10px]">
+        TCP retry
+      </text>
+
+      <rect x="605" y="172" width="115" height="48" rx="6" className="fill-card stroke-border" />
+      <text x="662" y="190" textAnchor="middle" className="fill-foreground text-[10px]">
+        Macro-diversity /
+      </text>
+      <text x="662" y="204" textAnchor="middle" className="fill-foreground text-[10px]">
+        kombiner ramme
+      </text>
+      <text x="662" y="216" textAnchor="middle" className="fill-foreground text-[10px]">
+        fra to celler
+      </text>
+
+      {/* Felles bunnsteg */}
+      <line
+        x1="360"
+        y1="240"
+        x2="360"
+        y2="290"
+        className="stroke-muted-foreground"
+        strokeDasharray="4 3"
+      />
+      <text x="360" y="262" textAnchor="middle" className="fill-muted-foreground text-[10px]">
+        Hvis fortsatt problem
+      </text>
+      <rect
+        x="220"
+        y="290"
+        width="280"
+        height="40"
+        rx="6"
+        className="fill-amber-500/10 stroke-amber-500/40"
+      />
+      <text
+        x="360"
+        y="316"
+        textAnchor="middle"
+        className="fill-foreground text-[11px] font-semibold"
+      >
+        Sjekk øvre lag: TCP CWND, DNS, MTU
+      </text>
+
+      <line
+        x1="360"
+        y1="330"
+        x2="360"
+        y2="370"
+        className="stroke-muted-foreground"
+        strokeDasharray="4 3"
+      />
+      <rect
+        x="220"
+        y="370"
+        width="280"
+        height="40"
+        rx="6"
+        className="fill-rose-500/10 stroke-rose-500/40"
+      />
+      <text
+        x="360"
+        y="396"
+        textAnchor="middle"
+        className="fill-foreground text-[11px] font-semibold"
+      >
+        Mål med tcpdump / iperf, ikke gjett
+      </text>
+    </svg>
   );
 }
 

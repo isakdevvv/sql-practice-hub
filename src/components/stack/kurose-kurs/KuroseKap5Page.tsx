@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import { SectionPager, type SectionNavItem } from "./SectionPager";
 
-type Tab = "intro" | "5.1" | "5.2" | "5.3" | "5.4" | "5.5" | "5.6" | "5.7" | "5.8";
+type Tab = "intro" | "5.1" | "5.2" | "5.3" | "5.4" | "5.5" | "5.6" | "5.7" | "5.8" | "5.9";
 
 const SECTIONS_5: SectionNavItem[] = [
   { id: "intro", label: "Start her" },
@@ -24,6 +24,7 @@ const SECTIONS_5: SectionNavItem[] = [
   { id: "5.6", label: "5.6 ICMP" },
   { id: "5.7", label: "5.7 DHCP" },
   { id: "5.8", label: "5.8 Oppgaver" },
+  { id: "5.9", label: "5.9 Eksamen-fokus" },
 ];
 const NEXT_CHAPTER_5 = { slug: "kurose-kap-6", title: "Link-laget og LAN" };
 
@@ -78,6 +79,9 @@ export function KuroseKap5Page() {
             <TabBtn active={tab === "5.8"} onClick={() => setTab("5.8")} title="Oppgaver">
               Oppg.
             </TabBtn>
+            <TabBtn active={tab === "5.9"} onClick={() => setTab("5.9")} title="Eksamen-fokus">
+              Eksamen
+            </TabBtn>
           </nav>
         </div>
 
@@ -90,6 +94,7 @@ export function KuroseKap5Page() {
         {tab === "5.6" && <Section56 />}
         {tab === "5.7" && <Section57 />}
         {tab === "5.8" && <Section58 />}
+        {tab === "5.9" && <SectionEksamen />}
 
         <SectionPager
           tabs={SECTIONS_5}
@@ -3626,6 +3631,743 @@ function DhcpLeaseTimelineSvg() {
 
       <text x={250} y={215} textAnchor="middle" className="fill-muted-foreground text-[9px] italic">
         Hvis ingen svarer før 100%: dropp adressen, kjør full DORA på nytt.
+      </text>
+    </svg>
+  );
+}
+
+// ============================================================
+// 5.9 — Eksamen-fokus
+// ============================================================
+function SectionEksamen() {
+  return (
+    <article className="space-y-4 text-sm">
+      <Header num="5.9" title="Eksamen-fokus — siste sjekk før prøven" />
+
+      <p className="text-muted-foreground">
+        Denne delen er destillert til det du faktisk blir spurt om: pseudokode du må kunne
+        reprodusere på papir, beslutninger du må kunne forsvare med riktig kriterium, og
+        misforståelser sensor leter etter. Bruk den siste timen før eksamen her — ikke i kapittel
+        5.1.
+      </p>
+
+      {/* ---------- a) Cheat sheet ---------- */}
+      <Cheat tittel="Cheat sheet — kap. 5">
+        <div className="grid gap-3 lg:grid-cols-2">
+          <div>
+            <h4 className="font-semibold text-foreground mb-1">Dijkstra (link-state)</h4>
+            <pre className="rounded bg-muted/40 p-2 text-[11px] font-mono leading-snug whitespace-pre overflow-x-auto">{`Init:
+  N' = {u}                       // u = denne ruteren
+  for hver node v:
+    D(v) = c(u,v) hvis nabo, ellers ∞
+    p(v) = u hvis nabo, ellers udef.
+
+while N' ≠ alle noder:
+  velg w ∉ N' med minst D(w)
+  legg w til N'
+  for hver nabo v av w som ikke er i N':
+    if D(w) + c(w,v) < D(v):
+      D(v) = D(w) + c(w,v)        // relax
+      p(v) = w                    // forgjenger
+`}</pre>
+            <p className="text-[12px] text-muted-foreground mt-1">
+              Når løkka er ferdig: D(v) er korteste avstand u→v, p(v) gir baklengs sti.
+              Kompleksitet: O(n²) naivt, O(n log n) med min-heap.
+            </p>
+          </div>
+
+          <div>
+            <h4 className="font-semibold text-foreground mb-1">Bellman-Ford (distance-vector)</h4>
+            <pre className="rounded bg-muted/40 p-2 text-[11px] font-mono leading-snug whitespace-pre overflow-x-auto">{`Hver node x holder D_x(y) for alle y.
+
+Initielt:
+  D_x(x) = 0
+  D_x(y) = c(x,y) hvis nabo, ellers ∞
+
+Når nabo v sender sin vektor D_v(*):
+  for hver destinasjon y:
+    D_x(y) = min over alle naboer v av
+             ( c(x,v) + D_v(y) )
+
+Hvis D_x(*) endret seg: send ny vektor til naboer.
+Stabil tilstand: ingen endringer på en runde.
+`}</pre>
+            <p className="text-[12px] text-muted-foreground mt-1">
+              Ligningen «D_x(y) = min_v ( c(x,v) + D_v(y) )» er Bellman-Ford-essensen — alltid det
+              minste av (kost til naboen) + (det naboen selv klarer).
+            </p>
+          </div>
+        </div>
+
+        <div className="mt-3">
+          <h4 className="font-semibold text-foreground mb-1">Count-to-infinity-problemet</h4>
+          <p className="text-[12px]">
+            Når en lenke i DV ryker, kan to naboer fortsette å «tro» de når destinasjonen via
+            hverandre. Hver runde øker hop-tellingen med 1 før de innser det. Demping:
+          </p>
+          <ul className="list-disc pl-5 text-[12px] mt-1 space-y-0.5">
+            <li>
+              <strong>Split horizon:</strong> ikke annonser en rute tilbake til naboen du lærte den
+              fra.
+            </li>
+            <li>
+              <strong>Poisoned reverse:</strong> annonser med kost ∞ tilbake til kilden — eksplisitt
+              «ikke gå via meg».
+            </li>
+            <li>
+              <strong>Hop-count-tak:</strong> RIP setter ∞ = 16, så telling termineres på et hardt
+              tall.
+            </li>
+          </ul>
+        </div>
+
+        <div className="mt-3 grid gap-3 lg:grid-cols-2">
+          <div>
+            <h4 className="font-semibold text-foreground mb-1">OSPF — innen-AS link-state</h4>
+            <ul className="list-disc pl-5 text-[12px] space-y-0.5">
+              <li>
+                <strong>Hello-pakker:</strong> sendes typisk hvert 10 s, dead-interval ~40 s;
+                identifiserer nabo og holder adjacency i live.
+              </li>
+              <li>
+                <strong>Areas:</strong> AS deles i områder rundt en sentral backbone (area 0).
+                LSA-flooding holdes innenfor området — det skalerer.
+              </li>
+              <li>
+                <strong>LSA-typer du må gjenkjenne:</strong>
+                <ul className="list-disc pl-5 mt-0.5">
+                  <li>Type 1 — Router LSA (en ruters egne lenker innen area)</li>
+                  <li>Type 2 — Network LSA (multi-access-segment, sendt av designated router)</li>
+                  <li>
+                    Type 3 — Summary LSA (prefiks fra et annet area, sendt av area border router)
+                  </li>
+                  <li>Type 4 — ASBR Summary (lokasjon av en AS-grenseruter)</li>
+                  <li>Type 5 — External LSA (ruter lært utenfra AS, f.eks. fra BGP)</li>
+                </ul>
+              </li>
+              <li>Konvergens: sekunder; alle ASBR/ABR ser samme topologi-database.</li>
+            </ul>
+          </div>
+
+          <div>
+            <h4 className="font-semibold text-foreground mb-1">
+              BGP path-selection (i rekkefølge)
+            </h4>
+            <ol className="list-decimal pl-5 text-[12px] space-y-0.5">
+              <li>
+                <strong>LOCAL_PREF</strong> — høyest vinner. Settes av deg innenfor AS-et; uttrykker
+                policy («foretrekk Telia framfor NORDU»).
+              </li>
+              <li>
+                <strong>AS_PATH-lengde</strong> — kortest vinner. Først her dukker «hop-count» opp.
+              </li>
+              <li>
+                <strong>ORIGIN</strong> — IGP &lt; EGP &lt; INCOMPLETE; foretrekk det som ble lært
+                via egen IGP.
+              </li>
+              <li>
+                <strong>MED (Multi-Exit Discriminator)</strong> — laveste vinner; gir naboen lov til
+                å hint om hvilken inngang de selv foretrekker.
+              </li>
+              <li>
+                <strong>eBGP &gt; iBGP</strong> — ekstern peering vinner over intern, fordi den
+                ligger nærmere kanten.
+              </li>
+              <li>
+                <strong>NEXT_HOP IGP-kost</strong> — den nærmeste BGP next-hop ifølge IGP (OSPF)
+                vinner — «hot potato»-routing.
+              </li>
+              <li>
+                <strong>Tie-breaker</strong> — lavest router-ID / eldste sesjon. Deterministisk,
+                ikke meningsfullt.
+              </li>
+            </ol>
+            <p className="text-[12px] mt-1 italic">
+              Husk: BGP er <strong>policy</strong>-basert, ikke shortest-path. Steg 1 (LOCAL_PREF)
+              kan overstyre alt annet, og det er der pengene tjenes.
+            </p>
+          </div>
+        </div>
+
+        <div className="mt-3">
+          <h4 className="font-semibold text-foreground mb-1">DHCP DORA</h4>
+          <ol className="list-decimal pl-5 text-[12px] space-y-0.5">
+            <li>
+              <strong>D — Discover:</strong> klient broadcast «hvem kan gi meg en adresse?» (src
+              0.0.0.0, dst 255.255.255.255, UDP 67).
+            </li>
+            <li>
+              <strong>O — Offer:</strong> en eller flere servere svarer med foreslått adresse,
+              lease-tid, gateway, DNS.
+            </li>
+            <li>
+              <strong>R — Request:</strong> klient broadcaster valget («jeg tar 10.0.0.42 fra server
+              X») — andre servere ser at de ble forbigått.
+            </li>
+            <li>
+              <strong>A — Ack:</strong> valgt server bekrefter; klienten kan nå bruke adressen til
+              lease utløper.
+            </li>
+          </ol>
+          <p className="text-[12px] mt-1">
+            Hvorfor broadcast på Request: alle servere må vite om beslutningen så de slipper å holde
+            adressen reservert. Renewal etter halv lease-tid skjer unicast direkte til serveren.
+          </p>
+        </div>
+      </Cheat>
+
+      {/* ---------- b) Sammenligning OSPF vs BGP ---------- */}
+      <Illustration caption="OSPF (innen-AS) mot BGP (mellom-AS): samme jobb i navnet, totalt ulike egenskaper.">
+        <div className="overflow-x-auto">
+          <table className="w-full text-[12px] border-collapse">
+            <thead>
+              <tr className="border-b border-border">
+                <th className="text-left py-1 pr-3 font-semibold">Egenskap</th>
+                <th className="text-left py-1 pr-3 font-semibold text-brand">OSPF</th>
+                <th className="text-left py-1 font-semibold text-amber-700 dark:text-amber-400">
+                  BGP
+                </th>
+              </tr>
+            </thead>
+            <tbody className="text-muted-foreground">
+              <tr className="border-b border-border/50">
+                <td className="py-1 pr-3 font-medium text-foreground">Skala</td>
+                <td className="py-1 pr-3">
+                  Ett AS — typisk titusenvis av prefiks, hundrevis av rutere
+                </td>
+                <td className="py-1">Hele internett — millioner av prefiks, ~75 000 AS</td>
+              </tr>
+              <tr className="border-b border-border/50">
+                <td className="py-1 pr-3 font-medium text-foreground">Algoritme</td>
+                <td className="py-1 pr-3">Link-state, Dijkstra over hele topologien</td>
+                <td className="py-1">Path-vector — full AS-sti per rute, ingen graf-søk</td>
+              </tr>
+              <tr className="border-b border-border/50">
+                <td className="py-1 pr-3 font-medium text-foreground">Hvor brukes det</td>
+                <td className="py-1 pr-3">Innenfor et autonomt system (intra-AS / IGP)</td>
+                <td className="py-1">Mellom autonome systemer (inter-AS / EGP)</td>
+              </tr>
+              <tr className="border-b border-border/50">
+                <td className="py-1 pr-3 font-medium text-foreground">Valg-kriterier</td>
+                <td className="py-1 pr-3">Summen av lenke-vekter — administratorens metric</td>
+                <td className="py-1">LOCAL_PREF → AS_PATH → ORIGIN → MED → eBGP/iBGP → IGP-kost</td>
+              </tr>
+              <tr className="border-b border-border/50">
+                <td className="py-1 pr-3 font-medium text-foreground">Policy-uttrykk</td>
+                <td className="py-1 pr-3">Begrenset til vekt-justering per lenke</td>
+                <td className="py-1">Rik — import/export-filtre, community, LOCAL_PREF</td>
+              </tr>
+              <tr>
+                <td className="py-1 pr-3 font-medium text-foreground">Konvergens</td>
+                <td className="py-1 pr-3">
+                  Sekunder til ti-talls sekunder (LSA-flooding + ny Dijkstra)
+                </td>
+                <td className="py-1">Minutter — globale endringer rippler gjennom verden</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </Illustration>
+
+      {/* ---------- c) Beslutningstre ---------- */}
+      <Illustration caption="Beslutningstre: hvilken routing-protokoll passer for ditt use-case?">
+        <ProtocolDecisionTreeSvg />
+      </Illustration>
+
+      {/* ---------- d) Vanlige fallgruver ---------- */}
+      <div className="space-y-2">
+        <h3 className="text-base font-semibold flex items-center gap-2">
+          Vanlige fallgruver — hva sensor leter etter
+        </h3>
+
+        <Fallgruve tittel="Forveksle distance-vector med link-state">
+          DV-noder kjenner kun avstand til hver destinasjon og hvilken nabo som er neste hopp — de
+          har <em>ingen</em> intern topologi-tegning. LS-noder flooder hele lenke-databasen og
+          kjører Dijkstra selv. Hvis du skriver «OSPF sender sin distance-vektor til naboer», har du
+          blandet det.
+        </Fallgruve>
+
+        <Fallgruve tittel="Tro at BGP velger korteste sti">
+          AS_PATH er bare steg 2 i beslutningskjeden, og selv da måles det i AS-hopp (ikke
+          geografisk distanse, ikke båndbredde, ikke ms forsinkelse). Det avgjørende steget er
+          LOCAL_PREF, satt manuelt for å reflektere kommersielle avtaler — «vi foretrekker å sende
+          via kunden vi tjener penger på» kan trumfe en kortere sti gjennom transit-leverandøren.
+        </Fallgruve>
+
+        <Fallgruve tittel="Glemme at OSPF area-grenser bruker Type 3 LSA">
+          Innen et area flommer Type 1/2 fritt. På tvers av areas må prefiks oppsummeres av en area
+          border router (ABR) og re-injiseres som Type 3 Summary LSA. Hvis du sier «alle OSPF-rutere
+          ser samme database overalt», stemmer det bare innen ett area — backbone og leaf-areas har
+          ulik intern detalj.
+        </Fallgruve>
+
+        <Fallgruve tittel="Tro at ICMP står for «Internet Control Protocol»">
+          Det er <strong>Internet Control Message Protocol</strong>. Det er ikke en control-plane-
+          protokoll i Kuroses forstand — det bygger ikke ruter, det rapporterer feil og brukes til
+          diagnostikk (ping, traceroute, «Destination Unreachable», «Time Exceeded»). Tabben ligger
+          i kap. 5 fordi den lever ved siden av IP, ikke fordi den hjelper med ruting.
+        </Fallgruve>
+
+        <Fallgruve tittel="Si at DHCP bruker TCP">
+          DHCP kjører UDP — porter 67 (server) og 68 (klient). Det måtte være forbindelses-løst
+          fordi klienten <em>ikke har en IP-adresse ennå</em>; TCPs treveis-håndtrykk forutsetter
+          adresser fra start.
+        </Fallgruve>
+
+        <Fallgruve tittel="Blande SDN-controlleren med en ruter">
+          SDN-controlleren videresender ingen pakker. Den sitter på en server med komplett
+          topologi-view og pusher forwarding-tabeller (OpenFlow flow-mods) ned til simple switcher.
+          Hvis controlleren ramler, fortsetter eksisterende flows å virke — men nye flows har ingen
+          beslutning bak seg.
+        </Fallgruve>
+
+        <Fallgruve tittel="Tro at split horizon løser count-to-infinity helt">
+          Split horizon hindrer kun den simpleste varianten (to noder som speiler hverandre i ring).
+          Med tre eller flere noder kan tellingen fortsatt eskalere via en omvei. Hop-count-tak
+          (RIP: 16) er det som garantert stopper sløyfen.
+        </Fallgruve>
+
+        <Fallgruve tittel="Forveksle eBGP og iBGP-rolle">
+          eBGP er sesjonen <em>mellom</em> to AS — ekte ruting-eksport på tvers av grenser. iBGP er
+          sesjonen <em>internt</em> i et AS for å distribuere de eksternt lærte rutene videre til
+          alle BGP-talende rutere innenfor. Reglene for hva som re-annonseres er ulike: iBGP
+          re-annonserer ikke til andre iBGP-naboer (det er derfor man trenger full mesh eller route
+          reflectors).
+        </Fallgruve>
+      </div>
+
+      {/* ---------- e) 5-minutter-anker ---------- */}
+      <Anker tittel="5-minutter-anker — les disse rett før du går inn">
+        <ol className="list-decimal pl-5 text-[13px] space-y-1.5">
+          <li>
+            <strong>Control-plane bygger tabellen, data-plane bruker den.</strong> Hastighetene
+            skiller seg med faktor ~10⁶ — derfor lever de på ulike chiper.
+          </li>
+          <li>
+            <strong>Link-state = global topologi + Dijkstra lokalt.</strong> Distance-vector = kun
+            nabo-info + Bellman-Ford-iterasjoner. Førstnevnte konvergerer raskere, sistnevnte er
+            enklere å implementere.
+          </li>
+          <li>
+            <strong>Dijkstras kjerne er relax-steget:</strong> for hver nabo v av nylig-besøkt w,
+            sjekk om D(w) + c(w,v) er mindre enn nåværende D(v); hvis ja, oppdater.
+          </li>
+          <li>
+            <strong>Bellman-Ford-essens: D_x(y) = min_v ( c(x,v) + D_v(y) ).</strong> Alltid det
+            minste over alle naboer av (kost til naboen) + (det naboen selv klarer).
+          </li>
+          <li>
+            <strong>Count-to-infinity</strong> oppstår når dårlige nyheter «sirkulerer». Demping:
+            split horizon, poisoned reverse, hop-count-tak.
+          </li>
+          <li>
+            <strong>OSPF</strong> brukes innen ett AS, deler det i areas rundt en backbone (area 0),
+            flooder LSA, kjører Dijkstra. Hello hvert ~10 s, dead-interval ~40 s.
+          </li>
+          <li>
+            <strong>
+              LSA Type 1/2 lokalt, Type 3 mellom areas (ABR), Type 4/5 om eksterne ruter.
+            </strong>
+          </li>
+          <li>
+            <strong>BGP</strong> brukes mellom AS, er path-vector, og velger etter policy. Steg 1 i
+            beslutningen er LOCAL_PREF — der ligger pengene.
+          </li>
+          <li>
+            <strong>Hele BGP-rekkefølgen:</strong> LOCAL_PREF → AS_PATH → ORIGIN → MED → eBGP &gt;
+            iBGP → NEXT_HOP IGP-kost → tie-breaker (router-ID).
+          </li>
+          <li>
+            <strong>Hot-potato routing</strong> = «kast pakken ut av AS-et så raskt som mulig» —
+            tilsvarer steg 6 i BGP, der nærmeste NEXT_HOP ifølge IGP vinner.
+          </li>
+          <li>
+            <strong>SDN-control-plane</strong> sentraliserer beslutningen: én controller pusher
+            flow-tabeller (OpenFlow) til alle switcher. Konvergens i titalls millisekunder, ingen
+            distribuert konsensus.
+          </li>
+          <li>
+            <strong>ICMP</strong> rapporterer feil (Destination Unreachable, Time Exceeded). Ping
+            bruker Echo Request/Reply. Traceroute setter TTL = 1, 2, 3 … og samler «Time Exceeded»
+            fra hver hop.
+          </li>
+          <li>
+            <strong>DHCP DORA</strong> over UDP 67/68: Discover (broadcast) → Offer → Request
+            (broadcast) → Ack. Renewal halvveis i lease, unicast direkte til server.
+          </li>
+          <li>
+            <strong>
+              Distribuert (OSPF/BGP) overlever uten sjef; sentralisert (SDN) konvergerer raskere men
+              taper alt om controlleren faller.
+            </strong>
+          </li>
+          <li>
+            <strong>Skille forwarding fra routing</strong> i ordvalget ditt — det er en klassisk
+            tap-poeng på eksamen om du sier «ruteren forwarder med Dijkstra».
+          </li>
+        </ol>
+      </Anker>
+
+      <RelatedSlugs slugs={["dte2507-ruting"]} />
+    </article>
+  );
+}
+
+// ============================================================
+// Helpers for Eksamen-fokus-tabben
+// ============================================================
+function Fallgruve({ tittel, children }: { tittel: string; children: React.ReactNode }) {
+  return (
+    <div className="rounded-xl border border-destructive/30 bg-destructive/5 p-4">
+      <div className="text-[10px] uppercase tracking-wider text-destructive font-semibold mb-1">
+        Fallgruve
+      </div>
+      <div className="font-semibold text-foreground mb-1">{tittel}</div>
+      <div className="text-muted-foreground text-[13px] space-y-2">{children}</div>
+    </div>
+  );
+}
+
+function Cheat({ tittel, children }: { tittel: string; children: React.ReactNode }) {
+  return (
+    <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/5 p-4">
+      <div className="text-[10px] uppercase tracking-wider text-emerald-700 dark:text-emerald-400 font-semibold mb-1">
+        Cheat sheet
+      </div>
+      <div className="font-semibold text-foreground mb-2">{tittel}</div>
+      <div className="text-muted-foreground text-[13px] space-y-2">{children}</div>
+    </div>
+  );
+}
+
+function Anker({ tittel, children }: { tittel: string; children: React.ReactNode }) {
+  return (
+    <div className="rounded-xl border border-indigo-500/30 bg-indigo-500/5 p-4">
+      <div className="text-[10px] uppercase tracking-wider text-indigo-700 dark:text-indigo-400 font-semibold mb-1">
+        5-minutter-anker
+      </div>
+      <div className="font-semibold text-foreground mb-2">{tittel}</div>
+      <div className="text-muted-foreground text-[13px] space-y-2">{children}</div>
+    </div>
+  );
+}
+
+function ProtocolDecisionTreeSvg() {
+  return (
+    <svg
+      viewBox="0 0 720 440"
+      className="w-full h-auto"
+      role="img"
+      aria-label="Beslutningstre for routing-protokoll"
+    >
+      {/* Root */}
+      <rect
+        x={280}
+        y={10}
+        width={160}
+        height={42}
+        rx={6}
+        className="fill-card stroke-foreground"
+        strokeWidth={1.5}
+      />
+      <text
+        x={360}
+        y={28}
+        textAnchor="middle"
+        className="fill-foreground text-[11px] font-semibold"
+      >
+        Hvor skal rutingen skje?
+      </text>
+      <text x={360} y={42} textAnchor="middle" className="fill-muted-foreground text-[10px]">
+        (start her)
+      </text>
+
+      {/* Level 1 split: intra vs inter vs datasenter */}
+      <line x1={360} y1={52} x2={140} y2={100} className="stroke-foreground" strokeWidth={1.2} />
+      <line x1={360} y1={52} x2={360} y2={100} className="stroke-foreground" strokeWidth={1.2} />
+      <line x1={360} y1={52} x2={580} y2={100} className="stroke-foreground" strokeWidth={1.2} />
+
+      <text x={230} y={78} textAnchor="middle" className="fill-muted-foreground text-[10px] italic">
+        innen ett AS
+      </text>
+      <text x={360} y={78} textAnchor="middle" className="fill-muted-foreground text-[10px] italic">
+        mellom AS
+      </text>
+      <text x={485} y={78} textAnchor="middle" className="fill-muted-foreground text-[10px] italic">
+        datasenter / fabric
+      </text>
+
+      {/* Intra-AS box */}
+      <rect
+        x={70}
+        y={100}
+        width={140}
+        height={42}
+        rx={6}
+        className="fill-card stroke-foreground"
+        strokeWidth={1.2}
+      />
+      <text
+        x={140}
+        y={118}
+        textAnchor="middle"
+        className="fill-foreground text-[11px] font-semibold"
+      >
+        Innen-AS
+      </text>
+      <text x={140} y={132} textAnchor="middle" className="fill-muted-foreground text-[10px]">
+        hvor stort er nettet?
+      </text>
+
+      {/* Inter-AS leaf: BGP */}
+      <rect
+        x={290}
+        y={100}
+        width={140}
+        height={56}
+        rx={6}
+        className="fill-amber-500/20 stroke-amber-500"
+        strokeWidth={1.5}
+      />
+      <text
+        x={360}
+        y={120}
+        textAnchor="middle"
+        className="fill-amber-700 dark:fill-amber-300 text-[12px] font-bold"
+      >
+        BGP
+      </text>
+      <text x={360} y={136} textAnchor="middle" className="fill-foreground text-[10px]">
+        path-vector, policy-basert
+      </text>
+      <text x={360} y={150} textAnchor="middle" className="fill-muted-foreground text-[10px]">
+        eBGP mellom AS-kanter
+      </text>
+
+      {/* Datasenter box */}
+      <rect
+        x={510}
+        y={100}
+        width={140}
+        height={42}
+        rx={6}
+        className="fill-card stroke-foreground"
+        strokeWidth={1.2}
+      />
+      <text
+        x={580}
+        y={118}
+        textAnchor="middle"
+        className="fill-foreground text-[11px] font-semibold"
+      >
+        Datasenter
+      </text>
+      <text x={580} y={132} textAnchor="middle" className="fill-muted-foreground text-[10px]">
+        eier du hele nettet?
+      </text>
+
+      {/* Intra-AS sub-split: small vs large */}
+      <line x1={140} y1={142} x2={70} y2={200} className="stroke-foreground" strokeWidth={1.2} />
+      <line x1={140} y1={142} x2={210} y2={200} className="stroke-foreground" strokeWidth={1.2} />
+      <text x={95} y={170} textAnchor="middle" className="fill-muted-foreground text-[10px] italic">
+        lite / enkelt
+      </text>
+      <text
+        x={185}
+        y={170}
+        textAnchor="middle"
+        className="fill-muted-foreground text-[10px] italic"
+      >
+        stort / hierarkisk
+      </text>
+
+      {/* RIP leaf */}
+      <rect
+        x={10}
+        y={200}
+        width={120}
+        height={56}
+        rx={6}
+        className="fill-emerald-500/20 stroke-emerald-500"
+        strokeWidth={1.5}
+      />
+      <text
+        x={70}
+        y={220}
+        textAnchor="middle"
+        className="fill-emerald-700 dark:fill-emerald-300 text-[12px] font-bold"
+      >
+        RIP
+      </text>
+      <text x={70} y={236} textAnchor="middle" className="fill-foreground text-[10px]">
+        distance-vector
+      </text>
+      <text x={70} y={250} textAnchor="middle" className="fill-muted-foreground text-[10px]">
+        hop-count ≤ 15
+      </text>
+
+      {/* OSPF / IS-IS leaf */}
+      <rect
+        x={150}
+        y={200}
+        width={140}
+        height={56}
+        rx={6}
+        className="fill-brand/20 stroke-brand"
+        strokeWidth={1.5}
+      />
+      <text x={220} y={220} textAnchor="middle" className="fill-brand text-[12px] font-bold">
+        OSPF / IS-IS
+      </text>
+      <text x={220} y={236} textAnchor="middle" className="fill-foreground text-[10px]">
+        link-state, areas
+      </text>
+      <text x={220} y={250} textAnchor="middle" className="fill-muted-foreground text-[10px]">
+        skala &amp; konvergens
+      </text>
+
+      {/* Datasenter sub-split */}
+      <line x1={580} y1={142} x2={510} y2={200} className="stroke-foreground" strokeWidth={1.2} />
+      <line x1={580} y1={142} x2={650} y2={200} className="stroke-foreground" strokeWidth={1.2} />
+      <text
+        x={535}
+        y={170}
+        textAnchor="middle"
+        className="fill-muted-foreground text-[10px] italic"
+      >
+        ja, sentralisert
+      </text>
+      <text
+        x={625}
+        y={170}
+        textAnchor="middle"
+        className="fill-muted-foreground text-[10px] italic"
+      >
+        tradisjonell
+      </text>
+
+      {/* SDN / ECMP leaf */}
+      <rect
+        x={450}
+        y={200}
+        width={140}
+        height={56}
+        rx={6}
+        className="fill-purple-500/20 stroke-purple-500"
+        strokeWidth={1.5}
+      />
+      <text
+        x={520}
+        y={220}
+        textAnchor="middle"
+        className="fill-purple-700 dark:fill-purple-300 text-[12px] font-bold"
+      >
+        SDN + ECMP
+      </text>
+      <text x={520} y={236} textAnchor="middle" className="fill-foreground text-[10px]">
+        OpenFlow / leaf-spine
+      </text>
+      <text x={520} y={250} textAnchor="middle" className="fill-muted-foreground text-[10px]">
+        controller pusher flows
+      </text>
+
+      {/* OSPF-fabric leaf */}
+      <rect
+        x={600}
+        y={200}
+        width={110}
+        height={56}
+        rx={6}
+        className="fill-brand/20 stroke-brand"
+        strokeWidth={1.5}
+      />
+      <text x={655} y={220} textAnchor="middle" className="fill-brand text-[12px] font-bold">
+        OSPF-fabric
+      </text>
+      <text x={655} y={236} textAnchor="middle" className="fill-foreground text-[10px]">
+        distribuert IGP
+      </text>
+      <text x={655} y={250} textAnchor="middle" className="fill-muted-foreground text-[10px]">
+        som klassisk WAN
+      </text>
+
+      {/* BGP sub-split: full-table vs default */}
+      <line x1={360} y1={156} x2={290} y2={310} className="stroke-foreground" strokeWidth={1.2} />
+      <line x1={360} y1={156} x2={430} y2={310} className="stroke-foreground" strokeWidth={1.2} />
+      <text
+        x={290}
+        y={240}
+        textAnchor="middle"
+        className="fill-muted-foreground text-[10px] italic"
+      >
+        multi-homed
+      </text>
+      <text
+        x={430}
+        y={240}
+        textAnchor="middle"
+        className="fill-muted-foreground text-[10px] italic"
+      >
+        single transit
+      </text>
+
+      {/* eBGP full-table */}
+      <rect
+        x={220}
+        y={310}
+        width={140}
+        height={56}
+        rx={6}
+        className="fill-amber-500/15 stroke-amber-500"
+        strokeWidth={1.2}
+      />
+      <text
+        x={290}
+        y={330}
+        textAnchor="middle"
+        className="fill-amber-700 dark:fill-amber-300 text-[11px] font-bold"
+      >
+        eBGP full table
+      </text>
+      <text x={290} y={346} textAnchor="middle" className="fill-foreground text-[10px]">
+        policy + LOCAL_PREF
+      </text>
+      <text x={290} y={360} textAnchor="middle" className="fill-muted-foreground text-[10px]">
+        ~1M ruter i RIB
+      </text>
+
+      {/* eBGP default-route */}
+      <rect
+        x={360}
+        y={310}
+        width={140}
+        height={56}
+        rx={6}
+        className="fill-amber-500/15 stroke-amber-500"
+        strokeWidth={1.2}
+      />
+      <text
+        x={430}
+        y={330}
+        textAnchor="middle"
+        className="fill-amber-700 dark:fill-amber-300 text-[11px] font-bold"
+      >
+        eBGP default-only
+      </text>
+      <text x={430} y={346} textAnchor="middle" className="fill-foreground text-[10px]">
+        én oppstrøms-pek
+      </text>
+      <text x={430} y={360} textAnchor="middle" className="fill-muted-foreground text-[10px]">
+        minimalt minne
+      </text>
+
+      {/* Legend */}
+      <text x={20} y={400} className="fill-muted-foreground text-[10px] italic">
+        Boksene viser typiske valg — ikke fasit. I praksis kjører store nett OSPF + iBGP + eBGP
+        samtidig.
+      </text>
+      <text x={20} y={418} className="fill-muted-foreground text-[10px] italic">
+        Grønn = distance-vector · blå = link-state · oransje = path-vector · lilla = sentralisert.
       </text>
     </svg>
   );

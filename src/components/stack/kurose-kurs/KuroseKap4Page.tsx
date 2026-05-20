@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import { SectionPager, type SectionNavItem } from "./SectionPager";
 
-type Tab = "intro" | "4.1" | "4.2" | "4.3" | "4.4" | "4.5" | "4.6" | "4.7" | "4.8";
+type Tab = "intro" | "4.1" | "4.2" | "4.3" | "4.4" | "4.5" | "4.6" | "4.7" | "4.8" | "4.9";
 
 const SECTIONS_4: SectionNavItem[] = [
   { id: "intro", label: "Start her" },
@@ -24,6 +24,7 @@ const SECTIONS_4: SectionNavItem[] = [
   { id: "4.6", label: "4.6 SDN" },
   { id: "4.7", label: "4.7 IPv6" },
   { id: "4.8", label: "4.8 Oppgaver" },
+  { id: "4.9", label: "4.9 Eksamen-fokus" },
 ];
 const NEXT_CHAPTER_4 = { slug: "kurose-kap-5", title: "Nettverkslaget — control-plane" };
 
@@ -78,6 +79,9 @@ export function KuroseKap4Page() {
             <TabBtn active={tab === "4.8"} onClick={() => setTab("4.8")} title="Oppgaver">
               Oppg.
             </TabBtn>
+            <TabBtn active={tab === "4.9"} onClick={() => setTab("4.9")} title="Eksamen-fokus">
+              Eksamen
+            </TabBtn>
           </nav>
         </div>
 
@@ -90,6 +94,7 @@ export function KuroseKap4Page() {
         {tab === "4.6" && <Section46 />}
         {tab === "4.7" && <Section47 />}
         {tab === "4.8" && <Section48 />}
+        {tab === "4.9" && <SectionEksamen />}
 
         <SectionPager
           tabs={SECTIONS_4}
@@ -1911,6 +1916,747 @@ function Section48() {
         }
       />
     </article>
+  );
+}
+
+// ============================================================
+// Section 4.9 — Eksamen-fokus
+// ============================================================
+
+function SectionEksamen() {
+  return (
+    <article className="space-y-4 text-sm">
+      <Header num="4.9" title="Eksamen-fokus" />
+      <p className="text-muted-foreground">
+        Kompakt repetisjon for hele kap. 4. Bruk dette etter at du har jobbet deg gjennom 4.1–4.7 og
+        prøvd oppgavene i 4.8 — det er ikke en snarvei, men en kondensering.
+      </p>
+
+      {/* a) Cheat sheet */}
+      <Cheat tittel="Cheat sheet — data-plane på én side">
+        <div className="space-y-3">
+          <div>
+            <div className="font-semibold text-foreground mb-1">
+              IPv4-header — feltene som dukker opp på eksamen
+            </div>
+            <ul className="list-disc pl-5 space-y-0.5">
+              <li>
+                <span className="font-mono">TTL</span> (8 bits): dekrementeres av hver ruter. Når
+                den blir 0 droppes pakken og ICMP «Time Exceeded» returneres. Stopper looper.
+              </li>
+              <li>
+                <span className="font-mono">Protocol</span> (8 bits): hvilket transport-protokoll
+                payload tilhører. 6 = TCP, 17 = UDP, 1 = ICMP.
+              </li>
+              <li>
+                <span className="font-mono">Header Checksum</span> (16 bits): bare over header-en,
+                ikke payload. Må regnes på nytt av hver ruter fordi TTL endrer seg.
+              </li>
+              <li>
+                <span className="font-mono">Source IP / Destination IP</span> (32 bits hver):
+                endepunkts-adresser. Forwarding-beslutningen bruker dest. ip mot LPM-tabellen.
+              </li>
+              <li>
+                <span className="font-mono">Identification / Flags / Fragment Offset</span>:
+                fragmentering, brukes hvis pakken er større enn link-MTU.
+              </li>
+            </ul>
+          </div>
+
+          <div>
+            <div className="font-semibold text-foreground mb-1">
+              CIDR-tabell — host-tellinger å pugge
+            </div>
+            <table className="w-full text-[12px] font-mono border border-border">
+              <thead className="bg-muted/30">
+                <tr>
+                  <th className="border border-border px-2 py-1 text-left">Prefiks</th>
+                  <th className="border border-border px-2 py-1 text-left">Host-bits</th>
+                  <th className="border border-border px-2 py-1 text-left">Totalt</th>
+                  <th className="border border-border px-2 py-1 text-left">Brukbare hosts</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td className="border border-border px-2 py-1">/8</td>
+                  <td className="border border-border px-2 py-1">24</td>
+                  <td className="border border-border px-2 py-1">16 777 216</td>
+                  <td className="border border-border px-2 py-1">≈ 16,7 M</td>
+                </tr>
+                <tr>
+                  <td className="border border-border px-2 py-1">/16</td>
+                  <td className="border border-border px-2 py-1">16</td>
+                  <td className="border border-border px-2 py-1">65 536</td>
+                  <td className="border border-border px-2 py-1">65 534</td>
+                </tr>
+                <tr>
+                  <td className="border border-border px-2 py-1">/24</td>
+                  <td className="border border-border px-2 py-1">8</td>
+                  <td className="border border-border px-2 py-1">256</td>
+                  <td className="border border-border px-2 py-1">254</td>
+                </tr>
+                <tr>
+                  <td className="border border-border px-2 py-1">/27</td>
+                  <td className="border border-border px-2 py-1">5</td>
+                  <td className="border border-border px-2 py-1">32</td>
+                  <td className="border border-border px-2 py-1">30</td>
+                </tr>
+                <tr>
+                  <td className="border border-border px-2 py-1">/30</td>
+                  <td className="border border-border px-2 py-1">2</td>
+                  <td className="border border-border px-2 py-1">4</td>
+                  <td className="border border-border px-2 py-1">2</td>
+                </tr>
+              </tbody>
+            </table>
+            <div className="text-[11px] text-muted-foreground mt-1">
+              Brukbare hosts = 2^(host-bits) − 2 (nettverks-adressen + broadcast er reservert). For
+              /31 og /30 brukes spesialregler på punkt-til-punkt-lenker.
+            </div>
+          </div>
+
+          <div>
+            <div className="font-semibold text-foreground mb-1">CIDR — binær-trikset</div>
+            <ul className="list-disc pl-5 space-y-0.5">
+              <li>
+                Prefiks-bitene (venstre del) er <em>felles</em> for alle adressene i blokken.
+                Host-bitene (høyre del) <em>varierer</em>.
+              </li>
+              <li>
+                Eksempel: <span className="font-mono">192.168.4.0/22</span>. /22 betyr de 22 første
+                bits er låst. I tredje oktet <span className="font-mono">00000100</span> er de
+                første 6 bits prefiks (=000001), de to siste bits + hele fjerde oktet er host — dvs.
+                blokken dekker .4.0 til .7.255.
+              </li>
+              <li>
+                <strong>Snarvei:</strong> blokkstørrelsen i siste fri oktet er 2^(8 −
+                bits-i-den-oktetten). For /22 har tredje oktet 6 prefiks-bits → 2 host-bits →
+                blokk-størrelse 4.
+              </li>
+            </ul>
+          </div>
+
+          <div>
+            <div className="font-semibold text-foreground mb-1">
+              NAT-typer — fra streng til løs filtrering
+            </div>
+            <ul className="list-disc pl-5 space-y-0.5">
+              <li>
+                <strong>Full-cone:</strong> én intern (IP:port) → fast ekstern (IP:port). Hvem som
+                helst på utsiden kan sende inn til den eksterne (IP:port).
+              </li>
+              <li>
+                <strong>Restricted-cone:</strong> som over, men ekstern part må først ha mottatt en
+                pakke fra den interne IP-en før den får svare.
+              </li>
+              <li>
+                <strong>Port-restricted-cone:</strong> stramt versjonen — ekstern part må ha mottatt
+                pakke fra eksakt samme (IP:port) på innsiden.
+              </li>
+              <li>
+                <strong>Symmetric:</strong> nyt eksternt (IP:port) tildelt per destinasjon. Verst
+                for hole-punching og P2P — to forskjellige tjenester ser to forskjellige
+                kilde-portene.
+              </li>
+            </ul>
+          </div>
+
+          <div>
+            <div className="font-semibold text-foreground mb-1">SDN — kjernen i én setning</div>
+            <ul className="list-disc pl-5 space-y-0.5">
+              <li>
+                Switchen er en <em>match-action-pipeline</em>: flow-tabellen sjekker header-felt
+                (match), og hvis treff utfører action (forward, drop, modify, send-til-controller).
+              </li>
+              <li>
+                <strong>OpenFlow</strong> er protokollen mellom switch og controller. Controlleren
+                installerer flow-entries proaktivt eller reaktivt («packet-in» når ingen entry
+                matchet).
+              </li>
+              <li>
+                Det er <em>logisk sentralisert</em>, ikke fysisk — controlleren kan være klynge med
+                høy-tilgjengelighet.
+              </li>
+            </ul>
+          </div>
+
+          <div>
+            <div className="font-semibold text-foreground mb-1">IPv6 — tellingen</div>
+            <ul className="list-disc pl-5 space-y-0.5">
+              <li>
+                128 bits totalt = 8 grupper × 16 bits = 8 grupper × 4 hex-tegn. Adressen skrives{" "}
+                <span className="font-mono">xxxx:xxxx:xxxx:xxxx:xxxx:xxxx:xxxx:xxxx</span>.
+              </li>
+              <li>
+                Forkortelser: lederose nuller i hver gruppe kan droppes, og ett sammenhengende løp
+                av null-grupper kan kollapses til <span className="font-mono">::</span> (men bare
+                ett slikt løp per adresse — ellers blir det tvetydig).
+              </li>
+              <li>
+                Header er <em>40 bytes fast</em> (mot IPv4 sin variable 20+ bytes). Extension
+                headers ligger etter, hopper man over på fast path.
+              </li>
+            </ul>
+          </div>
+        </div>
+      </Cheat>
+
+      {/* b) Sammenligning IPv4 vs IPv6 */}
+      <div className="rounded-xl border border-border bg-card p-4">
+        <div className="text-[10px] uppercase tracking-wider text-brand font-semibold mb-2">
+          Sammenligning
+        </div>
+        <div className="font-semibold text-foreground mb-2">
+          IPv4 vs IPv6 — hva skiller dem reelt
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full text-[12px] border border-border">
+            <thead className="bg-muted/30">
+              <tr>
+                <th className="border border-border px-2 py-1 text-left">Aspekt</th>
+                <th className="border border-border px-2 py-1 text-left">IPv4</th>
+                <th className="border border-border px-2 py-1 text-left">IPv6</th>
+              </tr>
+            </thead>
+            <tbody className="text-foreground">
+              <tr>
+                <td className="border border-border px-2 py-1 font-semibold">Adresse-størrelse</td>
+                <td className="border border-border px-2 py-1">32 bits ≈ 4,3 milliarder unike</td>
+                <td className="border border-border px-2 py-1">
+                  128 bits ≈ 3,4 × 10³⁸ unike — praktisk uendelig
+                </td>
+              </tr>
+              <tr>
+                <td className="border border-border px-2 py-1 font-semibold">
+                  Header-størrelse og felt
+                </td>
+                <td className="border border-border px-2 py-1">
+                  20–60 bytes, variabelt (Options-felt), 13 felt
+                </td>
+                <td className="border border-border px-2 py-1">
+                  40 bytes fast, 8 felt + extension headers utenfor fast-path
+                </td>
+              </tr>
+              <tr>
+                <td className="border border-border px-2 py-1 font-semibold">Fragmentering</td>
+                <td className="border border-border px-2 py-1">
+                  Både endepunkt og rutere kan fragmentere (Identification, Flags, Offset)
+                </td>
+                <td className="border border-border px-2 py-1">
+                  Kun endepunkt fragmenterer; rutere dropper for store pakker og sender ICMPv6
+                  «Packet Too Big»
+                </td>
+              </tr>
+              <tr>
+                <td className="border border-border px-2 py-1 font-semibold">Behov for NAT</td>
+                <td className="border border-border px-2 py-1">
+                  Nesten universell pga. adresseknapphet — én offentlig IP deler ofte mange hosts
+                </td>
+                <td className="border border-border px-2 py-1">
+                  Ikke nødvendig i prinsippet; hver enhet kan ha global adresse
+                </td>
+              </tr>
+              <tr>
+                <td className="border border-border px-2 py-1 font-semibold">Sikkerhet</td>
+                <td className="border border-border px-2 py-1">
+                  IPsec er valgfritt tillegg; mange enheter har det ikke konfigurert
+                </td>
+                <td className="border border-border px-2 py-1">
+                  IPsec-rammeverk del av spec-en, men i praksis fortsatt valgfritt å bruke
+                </td>
+              </tr>
+              <tr>
+                <td className="border border-border px-2 py-1 font-semibold">Deployment-status</td>
+                <td className="border border-border px-2 py-1">
+                  Dominerende i eldre nett, dypt rotfestet i applikasjoner og config
+                </td>
+                <td className="border border-border px-2 py-1">
+                  Vokser jevnt (≈ 40–45 % i flere store ISP-er i 2025), dual-stack er normalen i
+                  overgangsperioden
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* c) Beslutningstre — hvor i ruteren skjer dette? */}
+      <Illustration caption="Beslutningstre: hvilken del av ruteren håndterer dette? Spør deg selv: skjer det per-pakke (data-plane) eller per-event (control-plane)?">
+        <RuterBeslutningstreSvg />
+      </Illustration>
+
+      {/* d) Vanlige fallgruver */}
+      <div className="rounded-xl border border-border bg-card p-4">
+        <div className="text-[10px] uppercase tracking-wider text-rose-700 dark:text-rose-400 font-semibold mb-2">
+          Vanlige fallgruver
+        </div>
+        <div className="space-y-3">
+          <Fallgruve tittel="«NAT er en brannmur»">
+            NAT er pragmatisk adresse-deling, ikke sikkerhet. At innkommende pakker uten tilstand i
+            tabellen droppes er en bivirkning, ikke et sikkerhetsdesign. En ekte brannmur har
+            policy, logging og bevisst stateful inspection. Bruker du NAT som FW har du ingen policy
+            — bare standardoppførselen til en mapping-tabell.
+          </Fallgruve>
+          <Fallgruve tittel="Subnetting og supernetting forveksles">
+            Subnetting = dele en blokk i mindre deler (lengre prefiks: /16 → /18, /18, /18, /18).
+            Supernetting / CIDR-aggregering = slå sammen flere små blokker til én (kortere prefiks:
+            fire /24 → ett /22). Eksamensspørsmål bruker ofte «aggregering» for det siste — pass på
+            retningen.
+          </Fallgruve>
+          <Fallgruve tittel="«IP-fragmentering skjer i transport-laget»">
+            Nei — IP-fragmentering er rent et nettverkslag-fenomen og skjer på pakke-nivå. TCP gjør
+            sin egen segmentering (basert på MSS) for å unngå å havne i IP-fragmentering, men det er
+            to ulike mekanismer. UDP fragmenteres på IP-nivå hvis datagrammet er for stort.
+          </Fallgruve>
+          <Fallgruve tittel="«Lengste prefiks» = lengste streng">
+            Longest Prefix Match (LPM) sammenligner antall match-bits, ikke antall sifre i
+            tekstrepresentasjonen. <span className="font-mono">10.0.0.0/24</span> har lengre prefiks
+            enn <span className="font-mono">10.0.0.0/16</span>, ikke kortere.
+          </Fallgruve>
+          <Fallgruve tittel="Glemmer å trekke fra 2 i host-tellingen">
+            En /24 har 256 adresser totalt, men kun 254 brukbare host-adresser — .0 er
+            nettverksadressen og .255 er broadcast. Eksamensoppgaver er nådeløse på denne
+            differansen.
+          </Fallgruve>
+          <Fallgruve tittel="«SDN-controlleren tar hver pakke»">
+            Bare miss-pakker (uten match i flow-tabellen) sendes til controller. Hovedstrømmen
+            følger pre-installerte flow-entries og kjører i hardware-fart på switchen. Controlleren
+            er for policy, ikke for per-pakke-prosessering.
+          </Fallgruve>
+          <Fallgruve tittel="«TTL teller millisekunder»">
+            TTL er navn-historisk — feltet teller hop, ikke tid. Hver ruter som videresender pakken
+            dekrementerer TTL med 1; når den treffer 0 droppes pakken. Initialverdier er typisk 64,
+            128 eller 255.
+          </Fallgruve>
+          <Fallgruve tittel="Antar at NAT bevarer port-numre">
+            Mange NAT-implementasjoner bytter port for å unngå kollisjon (to interne hosts som begge
+            bruker kilde-port 5000). En tjeneste som hardkoder port på utsiden vil derfor ikke
+            fungere — det er det STUN, TURN og hole-punching er til for.
+          </Fallgruve>
+          <Fallgruve tittel="«IPv6 adresser er bare lengre IPv4»">
+            IPv6 endrer flere ting enn lengden: ingen header-checksum, ingen ruter-fragmentering,
+            ingen broadcast (multicast erstatter), SLAAC for autokonfigurasjon, extension headers i
+            stedet for Options. Mange protokoller (ARP → NDP, DHCP → DHCPv6) byttes også ut.
+          </Fallgruve>
+        </div>
+      </div>
+
+      {/* e) 5-minutter-anker */}
+      <Anker tittel="5-minutter-anker — 12 kjernepunkter">
+        <ol className="list-decimal pl-5 space-y-1.5">
+          <li>
+            <strong>Data-plane = per-pakke i hardware</strong> (forward, drop). Control-plane =
+            per-event i software (oppdater tabellen).
+          </li>
+          <li>
+            <strong>Ruter-arkitektur:</strong> input-port → switching fabric → output-port. Hver del
+            kan være flaskehals.
+          </li>
+          <li>
+            <strong>Input-port gjør Longest Prefix Match</strong> mot forwarding-tabellen og avgjør
+            utgang.
+          </li>
+          <li>
+            <strong>Output-port gjør køing og scheduling</strong> (FIFO, prioritet, fair queueing,
+            WRED).
+          </li>
+          <li>
+            <strong>IPv4-header er 20 bytes</strong> minimum, med TTL og Header Checksum som endrer
+            seg per hop.
+          </li>
+          <li>
+            <strong>CIDR-prefiks låser de venstre N bitene;</strong> resten er host-bits. Brukbare
+            hosts = 2^(host-bits) − 2.
+          </li>
+          <li>
+            <strong>Subnetting deler en blokk;</strong> aggregering slår sammen flere — eksamen
+            tester begge retninger.
+          </li>
+          <li>
+            <strong>NAT erstatter (IP:port) på vei ut</strong> og slår opp i mapping-tabellen på vei
+            inn. Pakker uten mapping droppes (default).
+          </li>
+          <li>
+            <strong>NAT bryter ende-til-ende-prinsippet</strong> og lager problemer for P2P, IPsec
+            og protokoller med IP-adresser i payload (FTP, SIP).
+          </li>
+          <li>
+            <strong>SDN flytter logikken til controller via OpenFlow;</strong> switchen forblir en
+            dum, men rask, match-action-motor.
+          </li>
+          <li>
+            <strong>IPv6 = 128 bits</strong> i 8 hex-grupper, fast 40-byte-header, ingen
+            ruter-fragmentering, ingen broadcast.
+          </li>
+          <li>
+            <strong>Dual-stack</strong> er hovedstrategien i overgangen: enheter snakker både IPv4
+            og IPv6, og velger per destinasjon.
+          </li>
+        </ol>
+      </Anker>
+    </article>
+  );
+}
+
+// Helpers for eksamen-tab
+function Cheat({ tittel, children }: { tittel: string; children: React.ReactNode }) {
+  return (
+    <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/5 p-4">
+      <div className="text-[10px] uppercase tracking-wider text-emerald-700 dark:text-emerald-400 font-semibold mb-1">
+        Cheat sheet
+      </div>
+      <div className="font-semibold text-foreground mb-2">{tittel}</div>
+      <div className="text-[13px] text-foreground space-y-2">{children}</div>
+    </div>
+  );
+}
+
+function Fallgruve({ tittel, children }: { tittel: string; children: React.ReactNode }) {
+  return (
+    <div className="rounded-lg border border-rose-500/30 bg-rose-500/5 p-3">
+      <div className="font-semibold text-rose-700 dark:text-rose-400 text-[13px] mb-1">
+        ⚠ {tittel}
+      </div>
+      <div className="text-[12.5px] text-muted-foreground">{children}</div>
+    </div>
+  );
+}
+
+function Anker({ tittel, children }: { tittel: string; children: React.ReactNode }) {
+  return (
+    <div className="rounded-xl border border-sky-500/30 bg-sky-500/5 p-4">
+      <div className="text-[10px] uppercase tracking-wider text-sky-700 dark:text-sky-400 font-semibold mb-1">
+        5-minutter-anker
+      </div>
+      <div className="font-semibold text-foreground mb-2">{tittel}</div>
+      <div className="text-[13px] text-foreground">{children}</div>
+    </div>
+  );
+}
+
+// Beslutningstre SVG: hvor i ruteren skjer dette?
+function RuterBeslutningstreSvg() {
+  // Layout: root at top center, three children for plane choice, then leaves for stages.
+  return (
+    <svg viewBox="0 0 760 420" className="w-full h-auto">
+      {/* Root */}
+      <rect
+        x={300}
+        y={10}
+        width={160}
+        height={42}
+        rx={6}
+        className="fill-brand/10 stroke-brand"
+        strokeWidth={1.5}
+      />
+      <text
+        x={380}
+        y={28}
+        textAnchor="middle"
+        className="fill-foreground text-[11px] font-semibold"
+      >
+        Hvor i ruteren?
+      </text>
+      <text x={380} y={42} textAnchor="middle" className="fill-muted-foreground text-[10px]">
+        Per-pakke eller per-event?
+      </text>
+
+      {/* Branches */}
+      <line x1={380} y1={52} x2={130} y2={90} className="stroke-border" strokeWidth={1.5} />
+      <line x1={380} y1={52} x2={380} y2={90} className="stroke-border" strokeWidth={1.5} />
+      <line x1={380} y1={52} x2={630} y2={90} className="stroke-border" strokeWidth={1.5} />
+
+      <text x={235} y={75} className="fill-muted-foreground text-[10px]" textAnchor="middle">
+        per-pakke, mottatt
+      </text>
+      <text x={380} y={75} className="fill-muted-foreground text-[10px]" textAnchor="middle">
+        per-pakke, sendt
+      </text>
+      <text x={510} y={75} className="fill-muted-foreground text-[10px]" textAnchor="middle">
+        per-event
+      </text>
+
+      {/* Level 2 nodes: Input port, Output port, Control plane */}
+      <rect
+        x={50}
+        y={90}
+        width={160}
+        height={40}
+        rx={6}
+        className="fill-card stroke-border"
+        strokeWidth={1.5}
+      />
+      <text
+        x={130}
+        y={108}
+        textAnchor="middle"
+        className="fill-foreground text-[11px] font-semibold"
+      >
+        Input-port
+      </text>
+      <text x={130} y={122} textAnchor="middle" className="fill-muted-foreground text-[10px]">
+        Data-plane
+      </text>
+
+      <rect
+        x={300}
+        y={90}
+        width={160}
+        height={40}
+        rx={6}
+        className="fill-card stroke-border"
+        strokeWidth={1.5}
+      />
+      <text
+        x={380}
+        y={108}
+        textAnchor="middle"
+        className="fill-foreground text-[11px] font-semibold"
+      >
+        Switching fabric → Output-port
+      </text>
+      <text x={380} y={122} textAnchor="middle" className="fill-muted-foreground text-[10px]">
+        Data-plane
+      </text>
+
+      <rect
+        x={550}
+        y={90}
+        width={160}
+        height={40}
+        rx={6}
+        className="fill-card stroke-border"
+        strokeWidth={1.5}
+      />
+      <text
+        x={630}
+        y={108}
+        textAnchor="middle"
+        className="fill-foreground text-[11px] font-semibold"
+      >
+        Kontrollplan
+      </text>
+      <text x={630} y={122} textAnchor="middle" className="fill-muted-foreground text-[10px]">
+        CPU / SDN-controller
+      </text>
+
+      {/* Leaves under Input-port */}
+      <line x1={130} y1={130} x2={70} y2={170} className="stroke-border" strokeWidth={1.2} />
+      <line x1={130} y1={130} x2={195} y2={170} className="stroke-border" strokeWidth={1.2} />
+      <rect
+        x={10}
+        y={170}
+        width={120}
+        height={50}
+        rx={5}
+        className="fill-emerald-500/10 stroke-emerald-500"
+        strokeWidth={1.2}
+      />
+      <text
+        x={70}
+        y={188}
+        textAnchor="middle"
+        className="fill-foreground text-[10.5px] font-semibold"
+      >
+        LPM-oppslag
+      </text>
+      <text x={70} y={203} textAnchor="middle" className="fill-muted-foreground text-[9.5px]">
+        Velg utgangsport
+      </text>
+      <text x={70} y={214} textAnchor="middle" className="fill-muted-foreground text-[9.5px]">
+        basert på dest. IP
+      </text>
+
+      <rect
+        x={140}
+        y={170}
+        width={130}
+        height={50}
+        rx={5}
+        className="fill-emerald-500/10 stroke-emerald-500"
+        strokeWidth={1.2}
+      />
+      <text
+        x={205}
+        y={188}
+        textAnchor="middle"
+        className="fill-foreground text-[10.5px] font-semibold"
+      >
+        TTL-dekrement
+      </text>
+      <text x={205} y={203} textAnchor="middle" className="fill-muted-foreground text-[9.5px]">
+        + ny header-checksum
+      </text>
+      <text x={205} y={214} textAnchor="middle" className="fill-muted-foreground text-[9.5px]">
+        før forwarding
+      </text>
+
+      {/* Leaves under Switching/Output */}
+      <line x1={380} y1={130} x2={320} y2={170} className="stroke-border" strokeWidth={1.2} />
+      <line x1={380} y1={130} x2={445} y2={170} className="stroke-border" strokeWidth={1.2} />
+      <rect
+        x={260}
+        y={170}
+        width={120}
+        height={50}
+        rx={5}
+        className="fill-emerald-500/10 stroke-emerald-500"
+        strokeWidth={1.2}
+      />
+      <text
+        x={320}
+        y={188}
+        textAnchor="middle"
+        className="fill-foreground text-[10.5px] font-semibold"
+      >
+        Køing
+      </text>
+      <text x={320} y={203} textAnchor="middle" className="fill-muted-foreground text-[9.5px]">
+        FIFO / prioritet /
+      </text>
+      <text x={320} y={214} textAnchor="middle" className="fill-muted-foreground text-[9.5px]">
+        drop-policy (WRED)
+      </text>
+
+      <rect
+        x={390}
+        y={170}
+        width={120}
+        height={50}
+        rx={5}
+        className="fill-emerald-500/10 stroke-emerald-500"
+        strokeWidth={1.2}
+      />
+      <text
+        x={450}
+        y={188}
+        textAnchor="middle"
+        className="fill-foreground text-[10.5px] font-semibold"
+      >
+        Scheduling
+      </text>
+      <text x={450} y={203} textAnchor="middle" className="fill-muted-foreground text-[9.5px]">
+        round-robin /
+      </text>
+      <text x={450} y={214} textAnchor="middle" className="fill-muted-foreground text-[9.5px]">
+        weighted fair queueing
+      </text>
+
+      {/* Leaves under Kontrollplan */}
+      <line x1={630} y1={130} x2={570} y2={170} className="stroke-border" strokeWidth={1.2} />
+      <line x1={630} y1={130} x2={695} y2={170} className="stroke-border" strokeWidth={1.2} />
+      <rect
+        x={510}
+        y={170}
+        width={120}
+        height={50}
+        rx={5}
+        className="fill-sky-500/10 stroke-sky-500"
+        strokeWidth={1.2}
+      />
+      <text
+        x={570}
+        y={188}
+        textAnchor="middle"
+        className="fill-foreground text-[10.5px] font-semibold"
+      >
+        Tabell-oppdatering
+      </text>
+      <text x={570} y={203} textAnchor="middle" className="fill-muted-foreground text-[9.5px]">
+        RIP, OSPF, BGP
+      </text>
+      <text x={570} y={214} textAnchor="middle" className="fill-muted-foreground text-[9.5px]">
+        eller OpenFlow-install
+      </text>
+
+      <rect
+        x={640}
+        y={170}
+        width={110}
+        height={50}
+        rx={5}
+        className="fill-sky-500/10 stroke-sky-500"
+        strokeWidth={1.2}
+      />
+      <text
+        x={695}
+        y={188}
+        textAnchor="middle"
+        className="fill-foreground text-[10.5px] font-semibold"
+      >
+        ICMP-respons
+      </text>
+      <text x={695} y={203} textAnchor="middle" className="fill-muted-foreground text-[9.5px]">
+        Time Exceeded,
+      </text>
+      <text x={695} y={214} textAnchor="middle" className="fill-muted-foreground text-[9.5px]">
+        Dest Unreachable
+      </text>
+
+      {/* Bottom: examples row */}
+      <rect
+        x={10}
+        y={250}
+        width={740}
+        height={150}
+        rx={8}
+        className="fill-muted/10 stroke-border"
+        strokeWidth={1}
+        strokeDasharray="3 3"
+      />
+      <text x={20} y={270} className="fill-foreground text-[11px] font-semibold">
+        Eksempler — hvor havner spørsmålet?
+      </text>
+
+      <text x={20} y={290} className="fill-muted-foreground text-[10.5px]">
+        «Pakken har dest. 10.4.2.7 — hvilken port skal den ut på?» →
+      </text>
+      <text
+        x={20}
+        y={304}
+        className="fill-emerald-700 dark:fill-emerald-400 text-[10.5px] font-semibold"
+      >
+        Input-port (LPM).
+      </text>
+
+      <text x={20} y={324} className="fill-muted-foreground text-[10.5px]">
+        «Lenken er full — hvilken pakke droppes?» →
+      </text>
+      <text
+        x={20}
+        y={338}
+        className="fill-emerald-700 dark:fill-emerald-400 text-[10.5px] font-semibold"
+      >
+        Output-port (kø + drop-policy).
+      </text>
+
+      <text x={400} y={290} className="fill-muted-foreground text-[10.5px]">
+        «En ny BGP-rute kom inn fra naboruteren» →
+      </text>
+      <text x={400} y={304} className="fill-sky-700 dark:fill-sky-400 text-[10.5px] font-semibold">
+        Kontrollplan (oppdater forwarding).
+      </text>
+
+      <text x={400} y={324} className="fill-muted-foreground text-[10.5px]">
+        «TTL ble 0 — hva skjer?» →
+      </text>
+      <text
+        x={400}
+        y={338}
+        className="fill-emerald-700 dark:fill-emerald-400 text-[10.5px] font-semibold"
+      >
+        Input-port dropper + kontrollplan
+      </text>
+      <text x={400} y={352} className="fill-sky-700 dark:fill-sky-400 text-[10.5px] font-semibold">
+        sender ICMP Time Exceeded.
+      </text>
+
+      <text x={20} y={378} className="fill-muted-foreground text-[10px] italic">
+        Tommelfingerregel: trenger beslutningen oppslag i forwarding-tabellen og må gjøres i
+        hardware-fart → data-plane. Endrer den tabellen, eller er den per-event/sjelden →
+        kontrollplan.
+      </text>
+    </svg>
   );
 }
 
