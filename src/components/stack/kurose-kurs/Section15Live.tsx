@@ -77,7 +77,35 @@ type Step = {
   headers: HeaderStack;
   /** Om laget akkurat nå legger på (add) eller skreller av (strip) en header. */
   action: "create" | "add" | "wire" | "strip" | "deliver";
+  /**
+   * Byte-rad-tilstand: hvilke blokker er fullt synlige ved SLUTT av steget,
+   * hvilke vokser inn (entering) og hvilke krymper ut (exiting) i løpet av
+   * steget. Brukes til å bygge den horisontale byte-strimmelen under SVG-en.
+   */
+  bytes: {
+    full: BlockKey[];
+    entering: BlockKey[];
+    exiting: BlockKey[];
+    /** Kort delta-tekst som vises over byte-strimmelen, f.eks. «+20 B TCP». */
+    delta: string;
+  };
 };
+
+// Blokker i byte-strimmelen: fem stykker i rekkefølge fra ytterst-til-venstre
+// til ytterst-til-høyre på en Ethernet-ramme.
+type BlockKey = "ethH" | "ip" | "tcp" | "app" | "ethT";
+
+type BlockDef = { key: BlockKey; color: HeaderColor; label: string; bytes: number };
+
+const BLOCKS: BlockDef[] = [
+  { key: "ethH", color: "eth", label: "Eth-header", bytes: 14 },
+  { key: "ip", color: "ip", label: "IP-header", bytes: 20 },
+  { key: "tcp", color: "tcp", label: "TCP-header", bytes: 20 },
+  { key: "app", color: "app", label: "HTTP-data", bytes: 30 },
+  { key: "ethT", color: "eth", label: "Eth-trailer", bytes: 4 },
+];
+
+const BLOCK_TOTAL_BYTES = BLOCKS.reduce((s, b) => s + b.bytes, 0); // 88
 
 const STEPS: Step[] = [
   {
@@ -88,6 +116,12 @@ const STEPS: Step[] = [
     layer: "app",
     headers: ["app"],
     action: "create",
+    bytes: {
+      full: ["app"],
+      entering: [],
+      exiting: [],
+      delta: "30 B HTTP-data (nyttelast som appen produserer)",
+    },
   },
   {
     title: "2. Transport pakker inn (TCP)",
@@ -97,6 +131,12 @@ const STEPS: Step[] = [
     layer: "transport",
     headers: ["tcp", "app"],
     action: "add",
+    bytes: {
+      full: ["tcp", "app"],
+      entering: ["tcp"],
+      exiting: [],
+      delta: "+20 B TCP-header (portnumre, sekvensnummer, ACK-felt)",
+    },
   },
   {
     title: "3. Nettverk pakker inn (IP)",
@@ -106,6 +146,12 @@ const STEPS: Step[] = [
     layer: "network",
     headers: ["ip", "tcp", "app"],
     action: "add",
+    bytes: {
+      full: ["ip", "tcp", "app"],
+      entering: ["ip"],
+      exiting: [],
+      delta: "+20 B IP-header (kilde-IP, mål-IP, TTL)",
+    },
   },
   {
     title: "4. Link pakker inn (Ethernet)",
@@ -115,6 +161,12 @@ const STEPS: Step[] = [
     layer: "link",
     headers: ["eth", "ip", "tcp", "app"],
     action: "add",
+    bytes: {
+      full: ["ethH", "ip", "tcp", "app", "ethT"],
+      entering: ["ethH", "ethT"],
+      exiting: [],
+      delta: "+14 B Eth-header (MAC-adresser) + 4 B trailer (CRC) = +18 B",
+    },
   },
   {
     title: "5. Fysisk lag sender bits over linja",
@@ -124,6 +176,12 @@ const STEPS: Step[] = [
     layer: "physical",
     headers: ["eth", "ip", "tcp", "app"],
     action: "wire",
+    bytes: {
+      full: ["ethH", "ip", "tcp", "app", "ethT"],
+      entering: [],
+      exiting: [],
+      delta: "88 B sendes som bits — 30 B nyttig + 58 B overhead (66 %)",
+    },
   },
   {
     title: "6. Mottaker — link skreller av Ethernet",
@@ -133,6 +191,12 @@ const STEPS: Step[] = [
     layer: "link",
     headers: ["ip", "tcp", "app"],
     action: "strip",
+    bytes: {
+      full: ["ip", "tcp", "app"],
+      entering: [],
+      exiting: ["ethH", "ethT"],
+      delta: "−18 B Eth-ramme fjernet (header + trailer)",
+    },
   },
   {
     title: "7. Mottaker — nettverk og transport skreller av",
@@ -142,6 +206,12 @@ const STEPS: Step[] = [
     layer: "transport",
     headers: ["app"],
     action: "strip",
+    bytes: {
+      full: ["app"],
+      entering: [],
+      exiting: ["ip", "tcp"],
+      delta: "−20 B IP-header − 20 B TCP-header = −40 B",
+    },
   },
   {
     title: "8. Applikasjon leverer meldingen",
@@ -151,6 +221,12 @@ const STEPS: Step[] = [
     layer: "app",
     headers: ["app"],
     action: "deliver",
+    bytes: {
+      full: ["app"],
+      entering: [],
+      exiting: [],
+      delta: "30 B HTTP-data levert — identisk med det avsenderen sendte",
+    },
   },
 ];
 
@@ -347,6 +423,8 @@ export function Section15Live() {
           />
         )}
       </svg>
+
+      <BytesBar step={step} progress={progress} />
 
       <div className="px-4 py-3 text-sm text-muted-foreground border-t border-border">
         {step.description}
@@ -609,6 +687,96 @@ function FlowArrows({ currentStep }: { currentStep: Step }) {
 
 function LegendDot({ color }: { color: HeaderColor }) {
   return <span className={`inline-block w-2 h-2 rounded-full ${BG_CLASS[color]}`} />;
+}
+
+// Byte-strimmel som bygges opp/skrelles ned i takt med animasjonen.
+// Hver blokk er proporsjonal med antall bytes den representerer; blokker
+// som legges til vokser inn fra bredde 0, og blokker som skrelles av
+// krymper ut til 0 over samme stegs framdrift.
+function BytesBar({ step, progress }: { step: Step; progress: number }) {
+  // Hvilke blokker skal vises i det hele tatt i dette steget?
+  // Union av full og exiting (entering ⊂ full).
+  const visibleKeys = new Set<BlockKey>([...step.bytes.full, ...step.bytes.exiting]);
+
+  // Totalt byte-tall akkurat nå (interpolert via progress for entering/exiting).
+  let liveBytes = 0;
+  for (const b of BLOCKS) {
+    if (!visibleKeys.has(b.key)) continue;
+    if (step.bytes.entering.includes(b.key)) liveBytes += b.bytes * progress;
+    else if (step.bytes.exiting.includes(b.key)) liveBytes += b.bytes * (1 - progress);
+    else liveBytes += b.bytes;
+  }
+  const liveBytesRounded = Math.round(liveBytes);
+  const overheadBytes = Math.max(0, liveBytesRounded - 30); // alt over de 30 B app-data er overhead
+
+  return (
+    <div className="px-4 py-3 border-t border-border bg-muted/10">
+      <div className="flex items-baseline justify-between gap-3 mb-1.5">
+        <div className="text-[11px] uppercase tracking-wide text-muted-foreground font-semibold">
+          Byte-rad
+        </div>
+        <div className="text-[11px] text-muted-foreground font-mono tabular-nums">
+          {step.bytes.delta}
+        </div>
+      </div>
+
+      {/* Selve strimmelen — full bredde tilsvarer maks (88 B). Tomme områder
+          vises som tynn stiplet linje sånn at brukeren ser hvor mye som mangler. */}
+      <div className="relative h-9 rounded border border-border bg-card/40 overflow-hidden">
+        <div className="absolute inset-y-0 left-0 right-0 flex items-stretch">
+          {BLOCKS.map((b) => {
+            if (!visibleKeys.has(b.key)) {
+              return (
+                <div
+                  key={b.key}
+                  style={{ flexBasis: `${(b.bytes / BLOCK_TOTAL_BYTES) * 100}%` }}
+                  className="border-r border-dashed border-border/40 last:border-r-0"
+                />
+              );
+            }
+            const isEntering = step.bytes.entering.includes(b.key);
+            const isExiting = step.bytes.exiting.includes(b.key);
+            const scale = isEntering ? progress : isExiting ? 1 - progress : 1;
+            const slotPct = (b.bytes / BLOCK_TOTAL_BYTES) * 100;
+            return (
+              <div
+                key={b.key}
+                style={{ flexBasis: `${slotPct}%` }}
+                className="relative border-r border-border/40 last:border-r-0"
+              >
+                <div
+                  style={{ width: `${scale * 100}%` }}
+                  className={`absolute inset-y-0 left-0 ${BG_CLASS[b.color]} transition-none flex items-center justify-center ${
+                    isEntering || isExiting ? "ring-1 ring-foreground/30" : ""
+                  }`}
+                >
+                  {scale > 0.35 && (
+                    <span className="text-[9px] font-bold text-background font-mono tabular-nums whitespace-nowrap px-1">
+                      {HEADER_LABEL[b.color]} {b.bytes} B
+                    </span>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Totalsum-strip under selve baren. */}
+      <div className="mt-1.5 flex items-center justify-between text-[10px] text-muted-foreground font-mono tabular-nums">
+        <span>30 B nyttig data</span>
+        <span>
+          <span className="text-foreground font-semibold">{liveBytesRounded} B</span> på lenken
+          {liveBytesRounded > 30 && (
+            <span className="ml-2 text-muted-foreground/80">
+              {" "}({overheadBytes} B overhead ={" "}
+              {Math.round((overheadBytes / liveBytesRounded) * 100)} %)
+            </span>
+          )}
+        </span>
+      </div>
+    </div>
+  );
 }
 
 // --- Hjelpefunksjoner ---
