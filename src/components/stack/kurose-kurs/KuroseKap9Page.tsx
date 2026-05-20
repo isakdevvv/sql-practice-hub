@@ -11,6 +11,10 @@ import {
 } from "lucide-react";
 import { SectionPager, type SectionNavItem } from "./SectionPager";
 import { Section91Live } from "./Section91Live";
+import { Section92Live } from "./Section92Live";
+import { Section93Live } from "./Section93Live";
+import { Section94Live } from "./Section94Live";
+import { Section95Live } from "./Section95Live";
 
 type Tab = "intro" | "9.1" | "9.2" | "9.3" | "9.4" | "9.5" | "9.6" | "9.7";
 
@@ -382,6 +386,8 @@ function Section92() {
         velge hvilken variant den vil ha for hvert nye segment.
       </p>
 
+      <Section92Live />
+
       <div className="grid gap-3 lg:grid-cols-2">
         <Defs
           items={[
@@ -573,6 +579,8 @@ function Section93() {
         nett → buffer → dekoder → høyttaler må holde total delay under ca. 150 ms for å føles
         naturlig.
       </p>
+
+      <Section93Live />
 
       <div className="grid gap-3 lg:grid-cols-2">
         <Defs
@@ -767,8 +775,11 @@ function Section94() {
         Når vi sender lyd eller video over UDP får vi ingen sekvens-nummer, ingen tids-info, ingen
         måte å identifisere kilden hvis flere strømmer blandes. RTP (Real-time Transport Protocol,
         RFC 3550) er et tynt lag mellom applikasjonen og UDP som legger til akkurat de feltene. RTCP
-        er parløpet — kontroll- og statistikk-pakker som rapporterer kvalitet underveis.
+        er parløpet — kontroll- og statistikk-pakker som rapporterer kvalitet underveis. SIP står
+        for selve økt-oppsettet: hvordan finner Alice og Bob hverandre i utgangspunktet?
       </p>
+
+      <Section94Live />
 
       <div className="grid gap-3 lg:grid-cols-2">
         <Defs
@@ -955,6 +966,8 @@ function Section95() {
         steder, men når lenker blir trange ønsker vi at en VoIP-pakke skal gå foran en stor
         nedlasting. QoS-mekanismer gir oss det.
       </p>
+
+      <Section95Live />
 
       <div className="grid gap-3 lg:grid-cols-2">
         <Defs
