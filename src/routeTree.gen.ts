@@ -49,12 +49,14 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as VizLesjonIndexRouteImport } from './routes/viz-lesjon.index'
 import { Route as StackIndexRouteImport } from './routes/stack.index'
 import { Route as SporIndexRouteImport } from './routes/spor.index'
+import { Route as SikkerhetIndexRouteImport } from './routes/sikkerhet.index'
 import { Route as MiniKursIndexRouteImport } from './routes/mini-kurs.index'
 import { Route as ForkursIndexRouteImport } from './routes/forkurs.index'
 import { Route as EksamenIndexRouteImport } from './routes/eksamen.index'
 import { Route as VizLesjonSlugRouteImport } from './routes/viz-lesjon.$slug'
 import { Route as StackSlugRouteImport } from './routes/stack.$slug'
 import { Route as SporSlugRouteImport } from './routes/spor.$slug'
+import { Route as SikkerhetSlugRouteImport } from './routes/sikkerhet.$slug'
 import { Route as PythonVisualizerRouteImport } from './routes/python_.visualizer'
 import { Route as PythonKjerneRouteImport } from './routes/python_.kjerne'
 import { Route as PythonComprehensionsRouteImport } from './routes/python_.comprehensions'
@@ -275,6 +277,11 @@ const SporIndexRoute = SporIndexRouteImport.update({
   path: '/',
   getParentRoute: () => SporRoute,
 } as any)
+const SikkerhetIndexRoute = SikkerhetIndexRouteImport.update({
+  id: '/sikkerhet/',
+  path: '/sikkerhet/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const MiniKursIndexRoute = MiniKursIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -304,6 +311,11 @@ const SporSlugRoute = SporSlugRouteImport.update({
   id: '/$slug',
   path: '/$slug',
   getParentRoute: () => SporRoute,
+} as any)
+const SikkerhetSlugRoute = SikkerhetSlugRouteImport.update({
+  id: '/sikkerhet/$slug',
+  path: '/sikkerhet/$slug',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const PythonVisualizerRoute = PythonVisualizerRouteImport.update({
   id: '/python_/visualizer',
@@ -454,12 +466,14 @@ export interface FileRoutesByFullPath {
   '/python/comprehensions': typeof PythonComprehensionsRoute
   '/python/kjerne': typeof PythonKjerneRoute
   '/python/visualizer': typeof PythonVisualizerRoute
+  '/sikkerhet/$slug': typeof SikkerhetSlugRoute
   '/spor/$slug': typeof SporSlugRoute
   '/stack/$slug': typeof StackSlugRoute
   '/viz-lesjon/$slug': typeof VizLesjonSlugRoute
   '/eksamen/': typeof EksamenIndexRoute
   '/forkurs/': typeof ForkursIndexRoute
   '/mini-kurs/': typeof MiniKursIndexRoute
+  '/sikkerhet/': typeof SikkerhetIndexRoute
   '/spor/': typeof SporIndexRoute
   '/stack/': typeof StackIndexRoute
   '/viz-lesjon/': typeof VizLesjonIndexRoute
@@ -515,12 +529,14 @@ export interface FileRoutesByTo {
   '/python/comprehensions': typeof PythonComprehensionsRoute
   '/python/kjerne': typeof PythonKjerneRoute
   '/python/visualizer': typeof PythonVisualizerRoute
+  '/sikkerhet/$slug': typeof SikkerhetSlugRoute
   '/spor/$slug': typeof SporSlugRoute
   '/stack/$slug': typeof StackSlugRoute
   '/viz-lesjon/$slug': typeof VizLesjonSlugRoute
   '/eksamen': typeof EksamenIndexRoute
   '/forkurs': typeof ForkursIndexRoute
   '/mini-kurs': typeof MiniKursIndexRoute
+  '/sikkerhet': typeof SikkerhetIndexRoute
   '/spor': typeof SporIndexRoute
   '/stack': typeof StackIndexRoute
   '/viz-lesjon': typeof VizLesjonIndexRoute
@@ -583,12 +599,14 @@ export interface FileRoutesById {
   '/python_/comprehensions': typeof PythonComprehensionsRoute
   '/python_/kjerne': typeof PythonKjerneRoute
   '/python_/visualizer': typeof PythonVisualizerRoute
+  '/sikkerhet/$slug': typeof SikkerhetSlugRoute
   '/spor/$slug': typeof SporSlugRoute
   '/stack/$slug': typeof StackSlugRoute
   '/viz-lesjon/$slug': typeof VizLesjonSlugRoute
   '/eksamen/': typeof EksamenIndexRoute
   '/forkurs/': typeof ForkursIndexRoute
   '/mini-kurs/': typeof MiniKursIndexRoute
+  '/sikkerhet/': typeof SikkerhetIndexRoute
   '/spor/': typeof SporIndexRoute
   '/stack/': typeof StackIndexRoute
   '/viz-lesjon/': typeof VizLesjonIndexRoute
@@ -652,12 +670,14 @@ export interface FileRouteTypes {
     | '/python/comprehensions'
     | '/python/kjerne'
     | '/python/visualizer'
+    | '/sikkerhet/$slug'
     | '/spor/$slug'
     | '/stack/$slug'
     | '/viz-lesjon/$slug'
     | '/eksamen/'
     | '/forkurs/'
     | '/mini-kurs/'
+    | '/sikkerhet/'
     | '/spor/'
     | '/stack/'
     | '/viz-lesjon/'
@@ -713,12 +733,14 @@ export interface FileRouteTypes {
     | '/python/comprehensions'
     | '/python/kjerne'
     | '/python/visualizer'
+    | '/sikkerhet/$slug'
     | '/spor/$slug'
     | '/stack/$slug'
     | '/viz-lesjon/$slug'
     | '/eksamen'
     | '/forkurs'
     | '/mini-kurs'
+    | '/sikkerhet'
     | '/spor'
     | '/stack'
     | '/viz-lesjon'
@@ -780,12 +802,14 @@ export interface FileRouteTypes {
     | '/python_/comprehensions'
     | '/python_/kjerne'
     | '/python_/visualizer'
+    | '/sikkerhet/$slug'
     | '/spor/$slug'
     | '/stack/$slug'
     | '/viz-lesjon/$slug'
     | '/eksamen/'
     | '/forkurs/'
     | '/mini-kurs/'
+    | '/sikkerhet/'
     | '/spor/'
     | '/stack/'
     | '/viz-lesjon/'
@@ -845,7 +869,9 @@ export interface RootRouteChildren {
   PythonComprehensionsRoute: typeof PythonComprehensionsRoute
   PythonKjerneRoute: typeof PythonKjerneRoute
   PythonVisualizerRoute: typeof PythonVisualizerRoute
+  SikkerhetSlugRoute: typeof SikkerhetSlugRoute
   ForkursIndexRoute: typeof ForkursIndexRoute
+  SikkerhetIndexRoute: typeof SikkerhetIndexRoute
   PythonIdeNrRoute: typeof PythonIdeNrRoute
   PythonKapNrRoute: typeof PythonKapNrRoute
   PythonKapIndexRoute: typeof PythonKapIndexRoute
@@ -1133,6 +1159,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SporIndexRouteImport
       parentRoute: typeof SporRoute
     }
+    '/sikkerhet/': {
+      id: '/sikkerhet/'
+      path: '/sikkerhet'
+      fullPath: '/sikkerhet/'
+      preLoaderRoute: typeof SikkerhetIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/mini-kurs/': {
       id: '/mini-kurs/'
       path: '/'
@@ -1174,6 +1207,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/spor/$slug'
       preLoaderRoute: typeof SporSlugRouteImport
       parentRoute: typeof SporRoute
+    }
+    '/sikkerhet/$slug': {
+      id: '/sikkerhet/$slug'
+      path: '/sikkerhet/$slug'
+      fullPath: '/sikkerhet/$slug'
+      preLoaderRoute: typeof SikkerhetSlugRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/python_/visualizer': {
       id: '/python_/visualizer'
@@ -1448,7 +1488,9 @@ const rootRouteChildren: RootRouteChildren = {
   PythonComprehensionsRoute: PythonComprehensionsRoute,
   PythonKjerneRoute: PythonKjerneRoute,
   PythonVisualizerRoute: PythonVisualizerRoute,
+  SikkerhetSlugRoute: SikkerhetSlugRoute,
   ForkursIndexRoute: ForkursIndexRoute,
+  SikkerhetIndexRoute: SikkerhetIndexRoute,
   PythonIdeNrRoute: PythonIdeNrRoute,
   PythonKapNrRoute: PythonKapNrRoute,
   PythonKapIndexRoute: PythonKapIndexRoute,
