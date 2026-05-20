@@ -635,7 +635,7 @@ function TreeSvg({
                 y1={p.cy}
                 x2={cp.cx}
                 y2={cp.cy}
-                stroke="hsl(var(--border))"
+                stroke="var(--border)"
                 strokeWidth={1.5}
                 style={{ transition: "x1 0.35s ease, y1 0.35s ease, x2 0.35s ease, y2 0.35s ease" }}
               />
@@ -658,13 +658,13 @@ function TreeSvg({
                 r={20}
                 fill={
                   isActive
-                    ? "hsl(var(--brand))"
+                    ? "var(--brand)"
                     : isVisited
-                    ? "hsl(var(--brand) / 0.18)"
-                    : "hsl(var(--card))"
+                    ? "color-mix(in oklch, var(--brand) 18%, transparent)"
+                    : "var(--card)"
                 }
                 stroke={
-                  isActive || isVisited ? "hsl(var(--brand))" : "hsl(var(--border))"
+                  isActive || isVisited ? "var(--brand)" : "var(--border)"
                 }
                 strokeWidth={2}
                 style={{
@@ -681,8 +681,8 @@ function TreeSvg({
                 fontWeight={600}
                 fill={
                   isActive
-                    ? "hsl(var(--brand-foreground))"
-                    : "hsl(var(--foreground))"
+                    ? "var(--brand-foreground)"
+                    : "var(--foreground)"
                 }
                 style={{ transition: "x 0.35s ease, y 0.35s ease, fill 0.25s ease" }}
               >
