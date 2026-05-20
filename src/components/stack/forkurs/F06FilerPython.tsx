@@ -13,6 +13,13 @@ import {
   RotateCcw,
 } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
+import { VisualDefs } from "@/components/stack/kurose-kurs/VisualDefs";
+import {
+  OpenFileIcon,
+  CloseFileIcon,
+  WithBlockIcon,
+  FilstiIcon,
+} from "./forkursIcons";
 
 type FilModus = "r" | "w" | "a";
 
@@ -228,13 +235,37 @@ function Metafor() {
         <code className="text-brand">with</code> er foretrukket framfor manuell{" "}
         <code className="text-brand">close()</code>.
       </p>
-      <div className="rounded-md border border-border bg-card/40 p-4 text-xs text-muted-foreground">
-        Ordliste så langt: <strong>open</strong> = lån filen ut.{" "}
-        <strong>close</strong> = lever tilbake. <strong>with</strong> =
-        automatisk innlevering. <strong>filsti</strong> = adressen til boka i
-        biblioteket (f.eks.{" "}
-        <code>./data.txt</code> eller <code>/home/student/notes.txt</code>).
-      </div>
+      <VisualDefs
+        title="Ordliste så langt"
+        items={[
+          {
+            term: "open()",
+            icon: <OpenFileIcon />,
+            body: "Lån filen ut — be operativsystemet om tilgang. Returnerer et fil-objekt (kvitteringen) du leser eller skriver gjennom.",
+          },
+          {
+            term: "close()",
+            icon: <CloseFileIcon />,
+            body: "Lever tilbake. Frigjør fil-håndtaket. Glemmer du den, lekker du ressurser.",
+          },
+          {
+            term: "with",
+            icon: <WithBlockIcon />,
+            body: "Automatisk innlevering. Når blokka slutter, kalles close() for deg — også hvis det oppstår en feil. Foretrukket framfor manuell close().",
+          },
+          {
+            term: "filsti",
+            icon: <FilstiIcon />,
+            body: (
+              <>
+                Adressen til boka i biblioteket — f.eks.{" "}
+                <code className="font-mono">./data.txt</code> eller{" "}
+                <code className="font-mono">/home/student/notes.txt</code>.
+              </>
+            ),
+          },
+        ]}
+      />
     </div>
   );
 }

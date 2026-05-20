@@ -1,10 +1,10 @@
+import * as React from "react";
 import { useState } from "react";
 import { Link } from "@tanstack/react-router";
 import {
   ArrowRight,
   BookOpen,
   Building2,
-  DoorOpen,
   Globe,
   Home,
   MapPin,
@@ -12,21 +12,30 @@ import {
   Wifi,
 } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
+import { VisualDefs } from "@/components/stack/kurose-kurs/VisualDefs";
+import {
+  SshKeyIcon,
+  SmtpEnvelopeIcon,
+  DnsMagnifierIcon,
+  HttpGlobeIcon,
+  HttpsLockIcon,
+  MysqlDbIcon,
+} from "./forkursIcons";
 
 type PortInfo = {
   nummer: number;
   navn: string;
   beskrivelse: string;
-  ikon: string;
+  icon: React.ReactNode;
 };
 
 const KJENTE_PORTER: PortInfo[] = [
-  { nummer: 22, navn: "SSH", beskrivelse: "Fjernlogin til en server. Du får terminalprompt på en maskin som står et annet sted.", ikon: "🔐" },
-  { nummer: 25, navn: "SMTP", beskrivelse: "Sending av e-post. Når du sender mail, prater klienten din SMTP på port 25.", ikon: "✉️" },
-  { nummer: 53, navn: "DNS", beskrivelse: "Telefonkatalog-oppslag (navn → IP-adresse). Du så denne i F-07.", ikon: "📖" },
-  { nummer: 80, navn: "HTTP", beskrivelse: "Vanlig (usikret) web-trafikk. Det meste flyttes nå til 443.", ikon: "🌐" },
-  { nummer: 443, navn: "HTTPS", beskrivelse: "Sikker web-trafikk (kryptert). Alle moderne sider bruker dette.", ikon: "🔒" },
-  { nummer: 3306, navn: "MySQL", beskrivelse: "MySQL-databaseserver lytter her som standard.", ikon: "🗄️" },
+  { nummer: 22, navn: "SSH", beskrivelse: "Fjernlogin til en server. Du får terminalprompt på en maskin som står et annet sted.", icon: <SshKeyIcon /> },
+  { nummer: 25, navn: "SMTP", beskrivelse: "Sending av e-post. Når du sender mail, prater klienten din SMTP på port 25.", icon: <SmtpEnvelopeIcon /> },
+  { nummer: 53, navn: "DNS", beskrivelse: "Telefonkatalog-oppslag (navn → IP-adresse). Du så denne i F-07.", icon: <DnsMagnifierIcon /> },
+  { nummer: 80, navn: "HTTP", beskrivelse: "Vanlig (usikret) web-trafikk. Det meste flyttes nå til 443.", icon: <HttpGlobeIcon /> },
+  { nummer: 443, navn: "HTTPS", beskrivelse: "Sikker web-trafikk (kryptert). Alle moderne sider bruker dette.", icon: <HttpsLockIcon /> },
+  { nummer: 3306, navn: "MySQL", beskrivelse: "MySQL-databaseserver lytter her som standard.", icon: <MysqlDbIcon /> },
 ];
 
 /**
@@ -130,16 +139,14 @@ function Metafor() {
 }
 
 function BygningSim() {
-  const [valgt, setValgt] = useState<number | null>(443);
-  const aktivPort = KJENTE_PORTER.find((p) => p.nummer === valgt);
   return (
     <div className="my-6">
       <p className="text-sm leading-relaxed mb-4">
         Her er bygningen vår. Bare et lite utvalg av de 65535 leilighetene har faste «leieboere» — programmer som tradisjonelt lytter der. Klikk på en port for å se hvem som bor der.
       </p>
-      <div className="rounded-xl border border-border bg-card/30 p-6">
+      <div className="rounded-xl border border-border bg-card/30 p-6 space-y-5">
         {/* Bygning */}
-        <div className="flex justify-center mb-6">
+        <div className="flex justify-center">
           <div className="inline-flex flex-col items-center">
             <Building2 className="h-10 w-10 text-brand mb-2" />
             <div className="text-xs text-muted-foreground mb-2">IP: 195.88.55.16</div>
@@ -148,47 +155,23 @@ function BygningSim() {
             </div>
           </div>
         </div>
-        {/* Knapper */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-          {KJENTE_PORTER.map((p) => {
-            const er = valgt === p.nummer;
-            return (
-              <button
-                key={p.nummer}
-                onClick={() => setValgt(p.nummer)}
-                className={`rounded-lg border px-3 py-3 text-left text-xs transition ${
-                  er
-                    ? "border-brand bg-brand/20 ring-2 ring-brand/40"
-                    : "border-border bg-background hover:bg-muted/40"
-                }`}
-              >
-                <div className="flex items-center justify-between mb-0.5">
-                  <span className="font-mono font-bold text-brand">:{p.nummer}</span>
-                  <span>{p.ikon}</span>
+        {/* Port-katalog som visuelle defs-kort */}
+        <VisualDefs
+          title="Kjente leieboere"
+          items={KJENTE_PORTER.map((p) => ({
+            term: `:${p.nummer} ${p.navn}`,
+            icon: p.icon,
+            body: (
+              <>
+                {p.beskrivelse}
+                <div className="mt-2 font-mono text-[11px] text-muted-foreground">
+                  Eksempel: 195.88.55.16:{p.nummer}
                 </div>
-                <div className="font-semibold text-foreground">{p.navn}</div>
-              </button>
-            );
-          })}
-        </div>
-        {/* Detalj */}
-        {aktivPort && (
-          <div className="mt-4 rounded-lg border border-brand/30 bg-brand/5 p-4 flex gap-3 items-start">
-            <DoorOpen className="h-5 w-5 text-brand shrink-0 mt-0.5" />
-            <div>
-              <div className="font-semibold text-sm">
-                Port {aktivPort.nummer} — {aktivPort.navn}
-              </div>
-              <div className="text-xs text-muted-foreground mt-1 leading-relaxed">
-                {aktivPort.beskrivelse}
-              </div>
-              <div className="mt-2 text-[11px] text-muted-foreground font-mono">
-                Eksempel: 195.88.55.16:{aktivPort.nummer}
-              </div>
-            </div>
-          </div>
-        )}
-        <div className="mt-4 text-xs text-muted-foreground space-y-2">
+              </>
+            ),
+          }))}
+        />
+        <div className="text-xs text-muted-foreground space-y-2">
           <p>
             <strong className="text-foreground">0–1023</strong> er «well-known» porter — reservert for kjente standardtjenester (som de over).
           </p>

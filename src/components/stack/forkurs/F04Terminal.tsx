@@ -12,6 +12,12 @@ import {
   Server,
 } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
+import { VisualDefs } from "@/components/stack/kurose-kurs/VisualDefs";
+import {
+  PromptIcon,
+  ShellIcon,
+  KommandoIcon,
+} from "./forkursIcons";
 
 type Linje = { kommando: string; svar: string };
 
@@ -131,9 +137,26 @@ function RobotMetafor() {
       <p>
         Den forstår ikke norsk og ikke spørsmål. Den forstår <strong>kommando-navn</strong> som <code className="text-brand">pwd</code> (print working directory — "skriv nåværende mappe") og <code className="text-brand">ls</code> (list — "vis innholdet"). Heldigvis er det rundt 20 kommandoer som dekker 95 % av det du trenger.
       </p>
-      <div className="rounded-md border border-border bg-card/40 p-4 text-xs text-muted-foreground">
-        Tre ord du vil møte: <strong>ledetekst</strong> (også kalt <em>prompt</em>) = teksten foran skrivemerket som forteller hvor du er. <strong>shell</strong> = selve roboten — programmet som tolker kommandoene dine. På Ubuntu heter den ofte <em>bash</em> eller <em>zsh</em>. <strong>kommando</strong> = den ene linja du skriver før du trykker Enter.
-      </div>
+      <VisualDefs
+        title="Tre ord du vil møte"
+        items={[
+          {
+            term: "ledetekst (prompt)",
+            icon: <PromptIcon />,
+            body: "Teksten foran skrivemerket som forteller hvor du er — typisk noe som $ eller bruker@maskin:~$. Også kalt prompt på engelsk.",
+          },
+          {
+            term: "shell",
+            icon: <ShellIcon />,
+            body: "Selve roboten — programmet som tolker kommandoene dine. På Ubuntu heter den ofte bash eller zsh.",
+          },
+          {
+            term: "kommando",
+            icon: <KommandoIcon />,
+            body: "Den ene linja du skriver før du trykker Enter — f.eks. ls -la eller pwd.",
+          },
+        ]}
+      />
     </div>
   );
 }

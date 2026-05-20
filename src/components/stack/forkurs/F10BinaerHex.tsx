@@ -10,6 +10,13 @@ import {
   Lightbulb,
 } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
+import { VisualDefs } from "@/components/stack/kurose-kurs/VisualDefs";
+import {
+  BitIcon,
+  ByteIcon,
+  BinaerIcon,
+  DesimalIcon,
+} from "./forkursIcons";
 
 /**
  * F-10 Binær og heksadesimal — base 2, base 16, bit, byte.
@@ -115,9 +122,31 @@ function HvorforBinaer() {
       <p>
         Derfor grupperer vi 8 bits sammen og kaller det en <strong>byte</strong>. Med 8 bits kan vi lage 256 forskjellige kombinasjoner (2⁸ = 256) — nok til å representere én bokstav, ett tall fra 0 til 255, eller én fargekanal.
       </p>
-      <div className="rounded-md border border-border bg-card/40 p-4 text-xs text-muted-foreground">
-        Ordliste så langt: <strong>bit</strong> = ett 0 eller 1. <strong>byte</strong> = 8 bits = ett tall mellom 0 og 255. <strong>base 2 / binær</strong> = tallsystem med to siffer (0, 1). <strong>base 10 / desimal</strong> = tallsystemet vi bruker til daglig (0–9).
-      </div>
+      <VisualDefs
+        title="Ordliste så langt"
+        items={[
+          {
+            term: "bit",
+            icon: <BitIcon />,
+            body: "Ett 0 eller 1 — én bryter på eller av. Minste mulige enhet av informasjon.",
+          },
+          {
+            term: "byte",
+            icon: <ByteIcon />,
+            body: "8 bits gruppert sammen = ett tall mellom 0 og 255 (2⁸ = 256 kombinasjoner). Nok til én bokstav eller én fargekanal.",
+          },
+          {
+            term: "base 2 / binær",
+            icon: <BinaerIcon />,
+            body: "Tallsystem med to siffer (0, 1). Maskinens eget alfabet.",
+          },
+          {
+            term: "base 10 / desimal",
+            icon: <DesimalIcon />,
+            body: "Tallsystemet vi bruker til daglig (0–9). Det vi pleier å regne i.",
+          },
+        ]}
+      />
     </div>
   );
 }

@@ -14,6 +14,12 @@ import {
   Layers,
 } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
+import { VisualDefs } from "@/components/stack/kurose-kurs/VisualDefs";
+import {
+  CameraSnapshotIcon,
+  RollbackIcon,
+  TilstandIcon,
+} from "./forkursIcons";
 
 type Tilstand = {
   navn: string;
@@ -125,9 +131,26 @@ function Metafor() {
       <p>
         Snapshots er nøyaktig det samme. Du står foran en kommando du ikke stoler på (kanskje fordi en tutorial sier <code className="text-brand">sudo apt-get install et-eller-annet</code> og du vil sjekke hva den faktisk gjør). Du tar snapshot. Du kjører kommandoen. Hvis det går galt, ruller du tilbake til snapshotet — du er tilbake til samme posisjon, samme prosesser kjørende, samme musepeker-posisjon hvis du tok snapshot mens VM-en var aktiv.
       </p>
-      <div className="rounded-md border border-border bg-card/40 p-4 text-xs text-muted-foreground">
-        Tre ord du vil møte: <strong>snapshot</strong> = lagring av hele VM-tilstanden. <strong>rollback</strong> = å rulle tilbake til et tidligere snapshot. <strong>tilstand</strong> = alt VM-en "vet" akkurat nå — filer, kjørende programmer, og om den er midt i en boot.
-      </div>
+      <VisualDefs
+        title="Tre ord du vil møte"
+        items={[
+          {
+            term: "snapshot",
+            icon: <CameraSnapshotIcon />,
+            body: "Lagring av hele VM-tilstanden — filer, kjørende programmer, minne. Som et lagrings-punkt i et spill.",
+          },
+          {
+            term: "rollback",
+            icon: <RollbackIcon />,
+            body: "Å rulle tilbake til et tidligere snapshot. VM-en lastes inn nøyaktig slik den var da snapshotet ble tatt.",
+          },
+          {
+            term: "tilstand",
+            icon: <TilstandIcon />,
+            body: "Alt VM-en \"vet\" akkurat nå — filer, kjørende programmer, og om den er midt i en boot.",
+          },
+        ]}
+      />
     </div>
   );
 }

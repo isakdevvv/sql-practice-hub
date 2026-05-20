@@ -2,6 +2,8 @@ import { useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { ArrowRight, Server, Cpu, HardDrive, Shield, Zap, BookOpen, AlertTriangle, CheckCircle2 } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
+import { VisualDefs } from "@/components/stack/kurose-kurs/VisualDefs";
+import { HostIcon, GuestIcon, HypervisorIcon } from "./forkursIcons";
 
 type GuestState = "fungerer" | "kraesjet" | "infisert";
 
@@ -107,9 +109,26 @@ function Metafor() {
       <p>
         Magien skjer i et lag mellom de to: <strong>hypervisoren</strong>. Hypervisoren er "byggherre" og "vakt" i ett — den setter opp dukkehuset, oversetter alt dukkehuset prøver å gjøre til ekte operasjoner på den ekte maskinen, og passer på at dukkehuset ikke kommer seg ut.
       </p>
-      <div className="rounded-md border border-border bg-card/40 p-4 text-xs text-muted-foreground">
-        Ordliste så langt: <strong>host</strong> = den ekte maskinen (leiligheten). <strong>guest</strong> = den virtuelle maskinen (dukkehuset). <strong>hypervisor</strong> = laget som lar dem leve sammen.
-      </div>
+      <VisualDefs
+        title="Ordliste så langt"
+        items={[
+          {
+            term: "host",
+            icon: <HostIcon />,
+            body: "Den ekte maskinen (leiligheten) — laptopen din med Windows/macOS/Linux.",
+          },
+          {
+            term: "guest",
+            icon: <GuestIcon />,
+            body: "Den virtuelle maskinen (dukkehuset) — Ubuntu eller annet OS som tror det kjører på ekte maskinvare.",
+          },
+          {
+            term: "hypervisor",
+            icon: <HypervisorIcon />,
+            body: "Laget som lar host og guest leve sammen — oversetter guest sine forespørsler til ekte operasjoner på host.",
+          },
+        ]}
+      />
     </div>
   );
 }

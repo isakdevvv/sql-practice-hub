@@ -11,6 +11,15 @@ import {
   Play,
 } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
+import { VisualDefs } from "@/components/stack/kurose-kurs/VisualDefs";
+import {
+  IntIcon,
+  StrIcon,
+  FloatIcon,
+  BoolIcon,
+  ListIcon,
+  DictIcon,
+} from "./forkursIcons";
 
 /**
  * F-05 Python-grunnstein — variabel, datatype, if/else, løkke, funksjon, liste, dict.
@@ -290,14 +299,71 @@ function VariabelSeksjon() {
         <code className="text-brand">x</code> en int. Typen følger{" "}
         <em>verdien</em>, ikke navnet.
       </p>
-      <div className="flex flex-wrap gap-2 text-xs">
-        <TypeBox type="int" eksempel="x = 5" desc="heltall" />
-        <TypeBox type="str" eksempel='s = "hei"' desc="streng (tekst)" />
-        <TypeBox type="float" eksempel="f = 3.14" desc="desimaltall" />
-        <TypeBox type="bool" eksempel="b = True" desc="sann/usann" />
-        <TypeBox type="list" eksempel="l = [1, 2, 3]" desc="ordnet samling" />
-        <TypeBox type="dict" eksempel='d = {"a": 1}' desc="nøkkel→verdi" />
-      </div>
+      <VisualDefs
+        title="Datatyper i Python"
+        items={[
+          {
+            term: "int",
+            icon: <IntIcon />,
+            body: (
+              <>
+                Heltall. Eksempel:{" "}
+                <code className="font-mono text-foreground">x = 5</code>
+              </>
+            ),
+          },
+          {
+            term: "str",
+            icon: <StrIcon />,
+            body: (
+              <>
+                Streng (tekst). Eksempel:{" "}
+                <code className="font-mono text-foreground">s = &quot;hei&quot;</code>
+              </>
+            ),
+          },
+          {
+            term: "float",
+            icon: <FloatIcon />,
+            body: (
+              <>
+                Desimaltall. Eksempel:{" "}
+                <code className="font-mono text-foreground">f = 3.14</code>
+              </>
+            ),
+          },
+          {
+            term: "bool",
+            icon: <BoolIcon />,
+            body: (
+              <>
+                Sann/usann. Eksempel:{" "}
+                <code className="font-mono text-foreground">b = True</code>
+              </>
+            ),
+          },
+          {
+            term: "list",
+            icon: <ListIcon />,
+            body: (
+              <>
+                Ordnet samling. Eksempel:{" "}
+                <code className="font-mono text-foreground">l = [1, 2, 3]</code>
+              </>
+            ),
+          },
+          {
+            term: "dict",
+            icon: <DictIcon />,
+            body: (
+              <>
+                Nøkkel→verdi-tabell. Eksempel:{" "}
+                <code className="font-mono text-foreground">d = {"{"}&quot;a&quot;: 1{"}"}</code>
+              </>
+            ),
+          },
+        ]}
+      />
       <Forutsi
         kode={['x = 5', 'y = "5"', "print(x + x)", "print(y + y)"]}
         valg={["10 og 10", "10 og 55", '"5" og "5"', "Feil — kan ikke addere"]}
@@ -306,26 +372,6 @@ function VariabelSeksjon() {
           "x er int (5+5=10). y er str (streng). + på strenger limer dem sammen, så y+y er '55'."
         }
       />
-    </div>
-  );
-}
-
-function TypeBox({
-  type,
-  eksempel,
-  desc,
-}: {
-  type: "int" | "str" | "float" | "bool" | "list" | "dict";
-  eksempel: string;
-  desc: string;
-}) {
-  return (
-    <div className="rounded-md border border-border bg-card/40 px-3 py-2 flex flex-col gap-1 min-w-[140px]">
-      <div className="flex items-center gap-2">
-        <TypeTag type={type} />
-        <span className="text-[10px] text-muted-foreground">{desc}</span>
-      </div>
-      <code className="font-mono text-[11px] text-foreground">{eksempel}</code>
     </div>
   );
 }

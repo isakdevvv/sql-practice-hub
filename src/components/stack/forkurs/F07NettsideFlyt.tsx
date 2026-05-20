@@ -13,6 +13,13 @@ import {
   XCircle,
 } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
+import { VisualDefs } from "@/components/stack/kurose-kurs/VisualDefs";
+import {
+  KlientLaptopIcon,
+  IspCloudIcon,
+  DnsLookupIcon,
+  ServerRackIcon,
+} from "./forkursIcons";
 
 type StegId = 0 | 1 | 2 | 3 | 4;
 
@@ -96,42 +103,36 @@ function SectionTitle({ id, nr, tittel }: { id: string; nr: string; tittel: stri
 }
 
 function Aktorer() {
-  const akt = [
-    {
-      ikon: <Laptop className="h-5 w-5" />,
-      navn: "Du (klienten)",
-      forklaring: "Laptopen, telefonen, nettleseren. Den som vil HA noe — i dette tilfellet en nettside.",
-    },
-    {
-      ikon: <Network className="h-5 w-5" />,
-      navn: "Internett-tilbyder (ISP) + ruter",
-      forklaring: "Hjemme-ruteren din og firmaet du betaler internett til (Telenor/Telia/Altibox...). De får trafikken din ut i verden.",
-    },
-    {
-      ikon: <Search className="h-5 w-5" />,
-      navn: "DNS-server",
-      forklaring: "En slags telefonkatalog. Vet hvilken IP-adresse som hører til hvert navn, f.eks. vg.no → 195.88.55.16.",
-    },
-    {
-      ikon: <Server className="h-5 w-5" />,
-      navn: "Web-serveren (vg.no)",
-      forklaring: "En faktisk datamaskin et sted som har VG-sidene lagret og venter på spørsmål.",
-    },
-  ];
   return (
     <div className="my-6 space-y-3">
       <p className="text-sm leading-relaxed">
         Før vi tegner flyten, må vi vite hvem som er med. Det er fire roller:
       </p>
-      {akt.map((a) => (
-        <div key={a.navn} className="rounded-lg border border-border bg-card/30 p-4 flex gap-4 items-start">
-          <div className="rounded-md border border-brand/30 bg-brand/5 p-2 text-brand">{a.ikon}</div>
-          <div>
-            <div className="font-semibold text-sm">{a.navn}</div>
-            <div className="text-xs text-muted-foreground mt-1 leading-relaxed">{a.forklaring}</div>
-          </div>
-        </div>
-      ))}
+      <VisualDefs
+        title="Aktørene"
+        items={[
+          {
+            term: "Du (klienten)",
+            icon: <KlientLaptopIcon />,
+            body: "Laptopen, telefonen, nettleseren. Den som vil HA noe — i dette tilfellet en nettside.",
+          },
+          {
+            term: "ISP + ruter",
+            icon: <IspCloudIcon />,
+            body: "Hjemme-ruteren din og firmaet du betaler internett til (Telenor/Telia/Altibox...). De får trafikken din ut i verden.",
+          },
+          {
+            term: "DNS-server",
+            icon: <DnsLookupIcon />,
+            body: "En slags telefonkatalog. Vet hvilken IP-adresse som hører til hvert navn, f.eks. vg.no → 195.88.55.16.",
+          },
+          {
+            term: "Web-serveren (vg.no)",
+            icon: <ServerRackIcon />,
+            body: "En faktisk datamaskin et sted som har VG-sidene lagret og venter på spørsmål.",
+          },
+        ]}
+      />
       <div className="rounded-md border border-border bg-card/40 p-3 text-xs text-muted-foreground">
         Metafor: dette er som å bestille pizza. Du = den sultne. ISP = veiene. DNS = nummeropplysningen som finner riktig pizzeria-nummer. Web-server = pizzeriaet.
       </div>
