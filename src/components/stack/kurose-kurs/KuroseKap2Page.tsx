@@ -12,6 +12,11 @@ import {
 } from "lucide-react";
 import { SectionPager, type SectionNavItem } from "./SectionPager";
 import { Section21Live } from "./Section21Live";
+import { Section22Live } from "./Section22Live";
+import { Section23Live } from "./Section23Live";
+import { Section24Live } from "./Section24Live";
+import { Section25Live } from "./Section25Live";
+import { Section26Live } from "./Section26Live";
 
 type Tab = "intro" | "2.1" | "2.2" | "2.3" | "2.4" | "2.5" | "2.6" | "2.7" | "2.8";
 
@@ -380,6 +385,8 @@ function Section22() {
         multiplekset), HTTP/3 (2022, kjører på QUIC over UDP).
       </p>
 
+      <Section22Live />
+
       <div className="grid gap-3 lg:grid-cols-2">
         <Defs
           items={[
@@ -604,6 +611,8 @@ function Section23() {
         kjører trofast for hver eneste request du gjør.
       </p>
 
+      <Section23Live />
+
       <div className="grid gap-3 lg:grid-cols-2">
         <Defs
           items={[
@@ -819,6 +828,8 @@ function Section24() {
         hvordan man skalerer ved å la deltakerne dele arbeidet.
       </p>
 
+      <Section24Live />
+
       <div className="grid gap-3 lg:grid-cols-2">
         <Defs
           items={[
@@ -1024,6 +1035,8 @@ function Section25() {
         (CDN).
       </p>
 
+      <Section25Live />
+
       <div className="grid gap-3 lg:grid-cols-2">
         <Defs
           items={[
@@ -1222,6 +1235,8 @@ function Section26() {
         og motta bytes over nettverket. Det er to typer som dekker ~99 % av all app-trafikk: TCP og
         UDP.
       </p>
+
+      <Section26Live />
 
       <div className="grid gap-3 lg:grid-cols-2">
         <Defs
