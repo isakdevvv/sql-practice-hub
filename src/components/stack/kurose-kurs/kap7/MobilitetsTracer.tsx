@@ -1,11 +1,27 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
+import {
+  ReactFlow,
+  ReactFlowProvider,
+  Background,
+  Controls,
+  MiniMap,
+  Handle,
+  Position,
+  type Node,
+  type Edge,
+  type NodeProps,
+  useReactFlow,
+  useNodesState,
+} from "@xyflow/react";
+import "@xyflow/react/dist/style.css";
 import { Play, RotateCcw, Server, Home, Globe } from "lucide-react";
 
-// MobilitetsTracer — fullskala interaktiv for 7.4.
-// En pakke reiser fra en "Correspondent" (f.eks. Teams-server) til en mobil
+// MobilitetsTracer — fullskala interaktiv for 7.4, bygget på @xyflow/react.
+//
+// En pakke reiser fra en "Korrespondent" (f.eks. Teams-server) til en mobil
 // host som befinner seg på et fremmed nett. Bruker kan flytte hosten mellom
 // hjem-nett og to fremmed-nett, og toggle indirekt (via HA) vs direkte
-// (route-optimization) ruting.
+// (route-optimization) ruting. Noder kan dras rundt; pakke-stien følger.
 //
 // Pedagogisk hovedpoeng:
 //   - hjem-IP står stille selv om hosten flytter seg
@@ -28,32 +44,154 @@ const COA: Record<Network, string> = {
 
 const HOME_IP = "10.0.0.15";
 
-type NodePos = { x: number; y: number };
+type Mode = "indirect" | "direct";
+type NodeKind = "correspondent" | "internet" | "ha" | "fa" | "host";
 
-const NODES: Record<string, NodePos & { label: string; sub?: string }> = {
-  correspondent: { x: 60, y: 60, label: "Korrespondent", sub: "vg.no · 195.88.55.16" },
-  internet: { x: 280, y: 60, label: "Internett" },
-  ha: { x: 280, y: 200, label: "Home Agent", sub: "10.0.0.1" },
-  fa_a: { x: 480, y: 60, label: "Foreign Agent A", sub: "192.168.5.1" },
-  fa_b: { x: 480, y: 340, label: "Foreign Agent B", sub: "192.168.9.1" },
-  home_host: { x: 280, y: 340, label: "Mobile host @ hjem", sub: HOME_IP },
-  fA_host: { x: 660, y: 60, label: "Mobile host @ A", sub: HOME_IP },
-  fB_host: { x: 660, y: 340, label: "Mobile host @ B", sub: HOME_IP },
+type MobData = {
+  label: string;
+  sub?: string;
+  kind: NodeKind;
 };
 
-type Mode = "indirect" | "direct";
+// Senterposisjon for hver node i flow-koordinater. Vi plasserer flow-noden
+// slik at dens *senter* lander her (offsetter med halve node-størrelsen ved
+// initialisering).
+const CENTER: Record<string, { x: number; y: number }> = {
+  correspondent: { x: 60, y: 60 },
+  internet: { x: 280, y: 60 },
+  ha: { x: 280, y: 200 },
+  fa_a: { x: 480, y: 60 },
+  fa_b: { x: 480, y: 340 },
+  home_host: { x: 280, y: 340 },
+  fA_host: { x: 660, y: 60 },
+  fB_host: { x: 660, y: 340 },
+};
 
-export function MobilitetsTracer() {
+const NODE_SIZE = 64; // px (samme bredde og høyde for rund/host)
+
+const META: Record<string, { label: string; sub?: string; kind: NodeKind }> = {
+  correspondent: { label: "Korrespondent", sub: "vg.no · 195.88.55.16", kind: "correspondent" },
+  internet: { label: "Internett", kind: "internet" },
+  ha: { label: "Home Agent", sub: "10.0.0.1", kind: "ha" },
+  fa_a: { label: "Foreign Agent A", sub: "192.168.5.1", kind: "fa" },
+  fa_b: { label: "Foreign Agent B", sub: "192.168.9.1", kind: "fa" },
+  home_host: { label: "Mobile host @ hjem", sub: HOME_IP, kind: "host" },
+  fA_host: { label: "Mobile host @ A", sub: HOME_IP, kind: "host" },
+  fB_host: { label: "Mobile host @ B", sub: HOME_IP, kind: "host" },
+};
+
+// ---------- Custom noder ----------
+
+function MobNode({ data }: NodeProps) {
+  const d = data as MobData;
+  const r = NODE_SIZE / 2;
+  const isHost = d.kind === "host";
+  return (
+    <div style={{ width: NODE_SIZE, height: NODE_SIZE + 28, position: "relative" }}>
+      <Handle type="target" position={Position.Top} style={{ opacity: 0 }} />
+      <Handle type="source" position={Position.Bottom} style={{ opacity: 0 }} />
+      <Handle type="target" position={Position.Left} id="l" style={{ opacity: 0 }} />
+      <Handle type="source" position={Position.Right} id="r" style={{ opacity: 0 }} />
+      <svg width={NODE_SIZE} height={NODE_SIZE + 28}>
+        <circle cx={r} cy={r} r={18} fill="white" stroke="#374151" strokeWidth={1.5} />
+        {isHost ? (
+          <rect x={r - 6} y={r - 9} width={12} height={18} fill="#3b82f6" rx={2} />
+        ) : d.kind === "correspondent" ? (
+          <g transform={`translate(${r - 7},${r - 7})`}>
+            <rect x={0} y={2} width={14} height={10} rx={1.5} fill="none" stroke="#374151" strokeWidth={1.5} />
+            <line x1={2} y1={5} x2={2.5} y2={5} stroke="#374151" strokeWidth={1.5} />
+            <line x1={2} y1={8} x2={2.5} y2={8} stroke="#374151" strokeWidth={1.5} />
+          </g>
+        ) : d.kind === "internet" ? (
+          <g transform={`translate(${r},${r})`}>
+            <circle r={7} fill="none" stroke="#374151" strokeWidth={1.5} />
+            <ellipse cx={0} cy={0} rx={3} ry={7} fill="none" stroke="#374151" strokeWidth={1} />
+            <line x1={-7} y1={0} x2={7} y2={0} stroke="#374151" strokeWidth={1} />
+          </g>
+        ) : d.kind === "ha" ? (
+          <text x={r} y={r + 4} fontSize={11} textAnchor="middle" fontWeight="bold" fill="#111827">
+            HA
+          </text>
+        ) : (
+          <text x={r} y={r + 4} fontSize={10} textAnchor="middle" fontWeight="bold" fill="#111827">
+            FA
+          </text>
+        )}
+        <text x={r} y={NODE_SIZE - 6} fontSize={9} textAnchor="middle" fontWeight="bold" fill="currentColor">
+          {d.label}
+        </text>
+        {d.sub && (
+          <text x={r} y={NODE_SIZE + 6} fontSize={8} textAnchor="middle" opacity={0.6} fill="currentColor">
+            {d.sub}
+          </text>
+        )}
+      </svg>
+    </div>
+  );
+}
+
+const nodeTypes = { mob: MobNode };
+
+// ---------- Hjelpefunksjoner ----------
+
+function makeInitialNodes(location: Network): Node<MobData>[] {
+  const out: Node<MobData>[] = [];
+  for (const [id, meta] of Object.entries(META)) {
+    // Skjul host-noder som ikke er aktuelle og FA-noder som ikke er aktuelle
+    if (id === "home_host" && location !== "home") continue;
+    if (id === "fA_host" && location !== "fA") continue;
+    if (id === "fB_host" && location !== "fB") continue;
+    if (id === "fa_a" && location === "fB") continue;
+    if (id === "fa_b" && location !== "fB") continue;
+    const c = CENTER[id];
+    out.push({
+      id,
+      type: "mob",
+      position: { x: c.x - NODE_SIZE / 2, y: c.y - NODE_SIZE / 2 },
+      data: { label: meta.label, sub: meta.sub, kind: meta.kind },
+      draggable: true,
+    });
+  }
+  return out;
+}
+
+function nodeCenter(n: Node<MobData>): { x: number; y: number } {
+  // Senter er position + halve flow-node størrelse. MobNode er NODE_SIZE bred
+  // og NODE_SIZE+28 høy, men "logisk" senter er midten av sirkelen (y = r).
+  const r = NODE_SIZE / 2;
+  return { x: n.position.x + r, y: n.position.y + r };
+}
+
+// ---------- Hovedkomponent ----------
+
+function FlowInner() {
   const [location, setLocation] = useState<Network>("fA");
   const [mode, setMode] = useState<Mode>("indirect");
   const [playing, setPlaying] = useState(false);
   const [progress, setProgress] = useState(0); // 0..1 langs valgt path
   const rafRef = useRef<number | null>(null);
 
+  const initial = useMemo(() => makeInitialNodes(location), [location]);
+  const [nodes, setNodes, onNodesChange] = useNodesState(initial);
+
+  // Når location endres må vi laste inn riktige nodes (vis ny host/FA, skjul gamle)
+  useEffect(() => {
+    setNodes(makeInitialNodes(location));
+  }, [location, setNodes]);
+
+  const rf = useReactFlow();
+  const rfWrapperRef = useRef<HTMLDivElement | null>(null);
+  const [vpTick, setVpTick] = useState(0);
+
+  useEffect(() => {
+    const id = setInterval(() => setVpTick((t) => t + 1), 50);
+    return () => clearInterval(id);
+  }, []);
+
   const hostKey = location === "home" ? "home_host" : location === "fA" ? "fA_host" : "fB_host";
 
   // Bygg path: list av node-IDer som pakken hopper gjennom
-  const path = (() => {
+  const path = useMemo<string[]>(() => {
     if (location === "home") return ["correspondent", "internet", "ha", "home_host"];
     if (mode === "indirect") {
       return [
@@ -64,24 +202,47 @@ export function MobilitetsTracer() {
         hostKey,
       ];
     }
-    // direct
     return ["correspondent", "internet", location === "fA" ? "fa_a" : "fa_b", hostKey];
-  })();
+  }, [location, mode, hostKey]);
 
-  // hvilke segmenter er "tunneled" (ytre IP = COA)?
-  // i indirect: HA → FA er tunnel; alt før HA er "vanlig" til hjem-IP; etter FA er det inner pakke til hjem-IP
-  const tunneledSegments = new Set<number>();
-  if (location !== "home" && mode === "indirect") {
-    const haIdx = path.indexOf("ha");
-    const faIdx = path.indexOf(location === "fA" ? "fa_a" : "fa_b");
-    if (haIdx >= 0 && faIdx > haIdx) tunneledSegments.add(haIdx); // segment after HA
-  }
+  // tunneled segments
+  const tunneledSegments = useMemo(() => {
+    const s = new Set<number>();
+    if (location !== "home" && mode === "indirect") {
+      const haIdx = path.indexOf("ha");
+      const faIdx = path.indexOf(location === "fA" ? "fa_a" : "fa_b");
+      if (haIdx >= 0 && faIdx > haIdx) s.add(haIdx);
+    }
+    return s;
+  }, [location, mode, path]);
 
-  // Animasjons-loop
+  // Edges som xyflow-edges (highlightede er aktive path-segmenter)
+  const edges: Edge[] = useMemo(() => {
+    const out: Edge[] = [];
+    for (let i = 0; i < path.length - 1; i++) {
+      const from = path[i];
+      const to = path[i + 1];
+      const tun = tunneledSegments.has(i);
+      out.push({
+        id: `e-${from}-${to}`,
+        source: from,
+        target: to,
+        animated: playing,
+        style: {
+          stroke: tun ? "#10b981" : "#3b82f6",
+          strokeWidth: 2.5,
+          strokeDasharray: tun ? "6 3" : undefined,
+        },
+      });
+    }
+    return out;
+  }, [path, tunneledSegments, playing]);
+
+  // Animasjon
   useEffect(() => {
     if (!playing) return;
     const start = performance.now();
-    const dur = 4000; // ms total
+    const dur = 4000;
     const loop = (now: number) => {
       const p = Math.min(1, (now - start) / dur);
       setProgress(p);
@@ -97,15 +258,30 @@ export function MobilitetsTracer() {
     };
   }, [playing, path.length]);
 
-  // Pakke-posisjon
-  const segCount = path.length - 1;
+  // Slå opp gjeldende posisjoner via nodes (slik at drag flytter pakke-stien)
+  const nodeById = useMemo(() => {
+    const m = new Map<string, Node<MobData>>();
+    for (const n of nodes) m.set(n.id, n);
+    return m;
+  }, [nodes]);
+
+  // Pakke-posisjon i flow-koordinater
+  const segCount = Math.max(1, path.length - 1);
   const segIdx = Math.min(segCount - 1, Math.floor(progress * segCount));
   const segLocal = progress * segCount - segIdx;
-  const a = NODES[path[segIdx]];
-  const b = NODES[path[segIdx + 1]];
-  const px = a.x + (b.x - a.x) * segLocal;
-  const py = a.y + (b.y - a.y) * segLocal;
+  const aNode = nodeById.get(path[segIdx]);
+  const bNode = nodeById.get(path[segIdx + 1]);
+  const a = aNode ? nodeCenter(aNode) : { x: 0, y: 0 };
+  const b = bNode ? nodeCenter(bNode) : { x: 0, y: 0 };
+  const pxFlow = a.x + (b.x - a.x) * segLocal;
+  const pyFlow = a.y + (b.y - a.y) * segLocal;
   const isTunnel = tunneledSegments.has(segIdx);
+
+  // Skjerm-koordinater for pakke-overlay (følger viewport-transform)
+  const vp = rf.getViewport();
+  void vpTick;
+  const pkScreenX = pxFlow * vp.zoom + vp.x;
+  const pkScreenY = pyFlow * vp.zoom + vp.y;
 
   const play = () => {
     setProgress(0);
@@ -123,7 +299,7 @@ export function MobilitetsTracer() {
           <h3 className="font-semibold">MobilitetsTracer — pakker til en host som flytter seg</h3>
           <p className="text-xs text-muted-foreground mt-0.5">
             Velg hvor mobilen er, og hvordan pakkene skal rute. Spill av og se IP-headerene endre seg
-            underveis.
+            underveis. Dra nodene rundt og zoom diagrammet.
           </p>
         </div>
         <div className="inline-flex gap-2">
@@ -204,95 +380,55 @@ export function MobilitetsTracer() {
         </div>
       </div>
 
-      {/* Hovedplot */}
-      <div className="rounded-md border border-border bg-background p-2 overflow-x-auto">
-        <svg viewBox="0 0 720 400" className="w-full h-auto min-w-[640px]">
-          {/* Nettverks-bakgrunner */}
-          <rect x={20} y={20} width={160} height={80} rx={6} fill="#3b82f6" fillOpacity={0.06} stroke="#3b82f6" strokeOpacity={0.3} strokeDasharray="4 3" />
-          <text x={30} y={36} fontSize={9} fill="#3b82f6" opacity={0.7}>
-            Korrespondent-nett
-          </text>
+      {/* Hovedplot — ReactFlow + pakke-overlay */}
+      <div
+        ref={rfWrapperRef}
+        style={{ height: 420 }}
+        className="relative rounded-md border border-border bg-background overflow-hidden"
+      >
+        <ReactFlow
+          nodes={nodes}
+          onNodesChange={onNodesChange}
+          edges={edges}
+          nodeTypes={nodeTypes}
+          fitView
+          fitViewOptions={{ padding: 0.18 }}
+          proOptions={{ hideAttribution: true }}
+          nodesConnectable={false}
+        >
+          <Background gap={20} size={1} color="rgb(0 0 0 / 0.05)" />
+          <Controls showInteractive={false} />
+          <MiniMap
+            nodeColor={(n) => {
+              const k = (n.data as MobData).kind;
+              if (k === "host") return "#3b82f6";
+              if (k === "ha") return "#10b981";
+              if (k === "fa") return "#f59e0b";
+              if (k === "internet") return "#8b5cf6";
+              return "#6b7280";
+            }}
+            pannable
+            zoomable
+            position="bottom-right"
+          />
+        </ReactFlow>
 
-          <rect x={220} y={160} width={160} height={80} rx={6} fill="#10b981" fillOpacity={0.06} stroke="#10b981" strokeOpacity={0.3} strokeDasharray="4 3" />
-          <text x={230} y={176} fontSize={9} fill="#10b981" opacity={0.7}>
-            {NET_LABEL.home}
-          </text>
-
-          <rect x={420} y={20} width={260} height={80} rx={6} fill="#f59e0b" fillOpacity={0.06} stroke="#f59e0b" strokeOpacity={0.3} strokeDasharray="4 3" />
-          <text x={430} y={36} fontSize={9} fill="#f59e0b" opacity={0.7}>
-            {NET_LABEL.fA}
-          </text>
-
-          <rect x={420} y={300} width={260} height={80} rx={6} fill="#8b5cf6" fillOpacity={0.06} stroke="#8b5cf6" strokeOpacity={0.3} strokeDasharray="4 3" />
-          <text x={430} y={316} fontSize={9} fill="#8b5cf6" opacity={0.7}>
-            {NET_LABEL.fB}
-          </text>
-
-          {/* Linker mellom noder (visualiser path) */}
-          {path.slice(0, -1).map((id, i) => {
-            const from = NODES[id];
-            const to = NODES[path[i + 1]];
-            const tun = tunneledSegments.has(i);
-            return (
-              <line
-                key={i}
-                x1={from.x}
-                y1={from.y}
-                x2={to.x}
-                y2={to.y}
-                stroke={tun ? "#10b981" : "#3b82f6"}
-                strokeWidth={2.5}
-                strokeOpacity={0.4}
-                strokeDasharray={tun ? "6 3" : ""}
-              />
-            );
-          })}
-
-          {/* Noder */}
-          {Object.entries(NODES).map(([key, n]) => {
-            // Hide host nodes that aren't the current location
-            if (key === "home_host" && location !== "home") return null;
-            if (key === "fA_host" && location !== "fA") return null;
-            if (key === "fB_host" && location !== "fB") return null;
-            if (key === "fa_a" && location === "fB") return null;
-            if (key === "fa_b" && location !== "fB") return null;
-            const isHost = key.endsWith("_host");
-            return (
-              <g key={key} transform={`translate(${n.x},${n.y})`}>
-                <circle r={18} fill="#fff" stroke="#374151" strokeWidth={1.5} />
-                {isHost ? (
-                  <rect x={-6} y={-9} width={12} height={18} fill="#3b82f6" rx={2} />
-                ) : key === "correspondent" ? (
-                  <Server className="h-3 w-3" x={-6} y={-6} />
-                ) : key === "internet" ? (
-                  <Globe className="h-3 w-3" x={-6} y={-6} />
-                ) : key === "ha" ? (
-                  <text x={0} y={4} fontSize={11} textAnchor="middle" fontWeight="bold">
-                    HA
-                  </text>
-                ) : (
-                  <text x={0} y={4} fontSize={10} textAnchor="middle" fontWeight="bold">
-                    FA
-                  </text>
-                )}
-                <text x={0} y={32} fontSize={9} textAnchor="middle" fontWeight="bold">
-                  {n.label}
-                </text>
-                {n.sub && (
-                  <text x={0} y={43} fontSize={8} textAnchor="middle" opacity={0.6}>
-                    {n.sub}
-                  </text>
-                )}
-              </g>
-            );
-          })}
-
-          {/* Pakken */}
-          {progress > 0 && progress < 1 && (
-            <g transform={`translate(${px},${py})`}>
+        {/* Pakke-overlay (følger viewport) */}
+        {progress > 0 && progress < 1 && aNode && bNode && (
+          <div
+            style={{
+              position: "absolute",
+              left: pkScreenX,
+              top: pkScreenY,
+              transform: "translate(-50%, -50%)",
+              pointerEvents: "none",
+              zIndex: 6,
+            } as CSSProperties}
+          >
+            <svg width={40 * vp.zoom} height={22 * vp.zoom} viewBox="0 0 40 22">
               <rect
-                x={-18}
-                y={-10}
+                x={2}
+                y={1}
                 width={36}
                 height={20}
                 rx={3}
@@ -300,13 +436,13 @@ export function MobilitetsTracer() {
                 stroke="white"
                 strokeWidth={1.5}
               />
-              <text x={0} y={3} fontSize={8} fill="white" textAnchor="middle" fontWeight="bold">
+              <text x={20} y={14} fontSize={8} fill="white" textAnchor="middle" fontWeight="bold">
                 PKT
               </text>
               {isTunnel && (
                 <rect
-                  x={-12}
-                  y={-6}
+                  x={8}
+                  y={5}
                   width={24}
                   height={12}
                   rx={2}
@@ -314,9 +450,9 @@ export function MobilitetsTracer() {
                   fillOpacity={0.9}
                 />
               )}
-            </g>
-          )}
-        </svg>
+            </svg>
+          </div>
+        )}
       </div>
 
       {/* Pakke-headers */}
@@ -380,6 +516,26 @@ export function MobilitetsTracer() {
         )}
       </div>
 
+      {/* Nett-legend */}
+      <div className="flex flex-wrap gap-3 text-[10px] text-muted-foreground">
+        <span className="inline-flex items-center gap-1">
+          <span className="inline-block h-2 w-2 rounded" style={{ background: "#3b82f6" }} />
+          {NET_LABEL.home.split(" (")[0]}
+        </span>
+        <span className="inline-flex items-center gap-1">
+          <span className="inline-block h-2 w-2 rounded" style={{ background: "#f59e0b" }} />
+          {NET_LABEL.fA.split(" (")[0]}
+        </span>
+        <span className="inline-flex items-center gap-1">
+          <span className="inline-block h-2 w-2 rounded" style={{ background: "#8b5cf6" }} />
+          {NET_LABEL.fB.split(" (")[0]}
+        </span>
+        <span className="inline-flex items-center gap-1">
+          <span className="inline-block h-2 w-2 rounded" style={{ background: "#10b981" }} />
+          Tunnel-segment (HA→FA)
+        </span>
+      </div>
+
       {/* Triangelruting-forklaring */}
       <details className="rounded-md border border-dashed border-border p-3">
         <summary className="text-sm font-medium cursor-pointer">
@@ -407,5 +563,13 @@ export function MobilitetsTracer() {
         </div>
       </details>
     </div>
+  );
+}
+
+export function MobilitetsTracer() {
+  return (
+    <ReactFlowProvider>
+      <FlowInner />
+    </ReactFlowProvider>
   );
 }
