@@ -17,6 +17,92 @@ import { CellulaViz } from "./kap7/CellulaViz";
 import { MobilitetsTracer } from "./kap7/MobilitetsTracer";
 import { HandoverTidslinje } from "./kap7/HandoverTidslinje";
 import { TCPRadioLab } from "./kap7/TCPRadioLab";
+import { VisualDefs } from "./VisualDefs";
+import {
+  // 7.1
+  PathLossIcon,
+  MultipathIcon,
+  SnrIcon,
+  InterferenceIcon,
+  HiddenTerminalIcon,
+  ExposedTerminalIcon,
+  HalfDuplexIcon,
+  ShadowFadingIcon,
+  CoChannelIcon,
+  AdjacentChannelIcon,
+  FsplIcon,
+  ModulationIcon,
+  AntennaGainIcon,
+  // 7.2
+  CsmaCaIcon,
+  DifsIcon,
+  SifsIcon,
+  BackoffIcon,
+  RtsCtsIcon,
+  BeaconIcon,
+  AssociationIcon,
+  AuthIcon,
+  NavTimerIcon,
+  SlotTimeIcon,
+  Wifi80211Icon,
+  ExpBackoffIcon,
+  MuMimoIcon,
+  // 7.3
+  CelleIcon,
+  BaseStationIcon,
+  CoreNetIcon,
+  Gsm2GIcon,
+  Lte4GIcon,
+  FiveGIcon,
+  FreqReuseIcon,
+  NodeBIcon,
+  HssIcon,
+  MmeIcon,
+  GatewayIcon,
+  OfdmaIcon,
+  SimCardIcon,
+  // 7.4
+  HomeNetIcon,
+  HomeAgentIcon,
+  ForeignAgentIcon,
+  CoaIcon,
+  TunnelingIcon,
+  TriangleRoutingIcon,
+  GtpTunnelIcon,
+  CorrespondentIcon,
+  RegistrationIcon,
+  ColocatedCoaIcon,
+  ReverseTunnelIcon,
+  SoftStateIcon,
+  EncapOverheadIcon,
+  // 7.5
+  HardHandoverIcon,
+  SoftHandoverIcon,
+  MeasureReportIcon,
+  FreqSwitchIcon,
+  WifiRoamingIcon,
+  ContextTransferIcon,
+  RsrpIcon,
+  TttIcon,
+  ControlMobileNetIcon,
+  X2InterfaceIcon,
+  ChoIcon,
+  PingPongIcon,
+  FastRoamIcon,
+  // 7.6
+  BitErrorIcon,
+  LinkArqIcon,
+  SpuriousTimeoutIcon,
+  PepIcon,
+  CubicBbrIcon,
+  JitterMobIcon,
+  BufferbloatIcon,
+  SnoopIcon,
+  SplitTcpIcon,
+  ElnIcon,
+  SackIcon,
+  SlowStartIcon,
+} from "./visualDefIcons.kap7";
 
 type Tab = "intro" | "7.1" | "7.2" | "7.3" | "7.4" | "7.5" | "7.6" | "7.7" | "7.8";
 
@@ -213,52 +299,63 @@ function Section71() {
       <M1Sinus />
 
       <div className="grid gap-3 lg:grid-cols-2">
-        <Defs
+        <VisualDefs
           items={[
-            { term: "Path loss", body: "Signal faller med avstanden² — dobbel avstand = −6 dB." },
+            { term: "Path loss", icon: <PathLossIcon />, body: "Signal faller med avstanden² — dobbel avstand = −6 dB." },
             {
               term: "Multipath-fading",
+              icon: <MultipathIcon />,
               body: "Flere refleksjons-veier kanselleres i destruktiv addering.",
             },
             {
               term: "SNR (signal-to-noise ratio)",
+              icon: <SnrIcon />,
               body: "Signal vs støy i dB — styrer valgt modulasjon.",
             },
             {
               term: "Ekstern interferens",
+              icon: <InterferenceIcon />,
               body: "Bluetooth, mikrobølgeovn, babymonitor — utenfor CSMA.",
             },
             {
               term: "Hidden terminal",
+              icon: <HiddenTerminalIcon />,
               body: "To sendere hører ikke hverandre, kolliderer hos mottaker.",
             },
             {
               term: "Exposed terminal",
+              icon: <ExposedTerminalIcon />,
               body: "Speilbildet — konservativ CSMA gir tapt kapasitet.",
             },
             {
               term: "Half-duplex radio",
+              icon: <HalfDuplexIcon />,
               body: "Kan ikke lytte mens den sender — egen utgang drukner.",
             },
-            { term: "Shadow fading", body: "Treg svekning fra mur, kropp eller lastebil." },
+            { term: "Shadow fading", icon: <ShadowFadingIcon />, body: "Treg svekning fra mur, kropp eller lastebil." },
             {
               term: "Co-channel-interferens",
+              icon: <CoChannelIcon />,
               body: "Naboer på samme kanal hører hverandre som støy.",
             },
             {
               term: "Adjacent-channel",
+              icon: <AdjacentChannelIcon />,
               body: "Spillover til kanal X±1 — derav 1/6/11-regelen i 2.4 GHz.",
             },
             {
               term: "Free-space path loss",
+              icon: <FsplIcon />,
               body: "FSPL = 20·log d + 20·log f + 32.45 (fritt rom).",
             },
             {
               term: "Modulasjon",
+              icon: <ModulationIcon />,
               body: "Bits per radio-symbol: BPSK=1, QPSK=2, 16-QAM=4, 256-QAM=8.",
             },
             {
               term: "Antenne-gain",
+              icon: <AntennaGainIcon />,
               body: "Fokus-grad i dBi — laptop ~2 dBi, mast-antenne ~15 dBi.",
             },
           ]}
@@ -415,21 +512,21 @@ function Section72() {
       <SpektrumViz />
 
       <div className="grid gap-3 lg:grid-cols-2">
-        <Defs
+        <VisualDefs
           items={[
-            { term: "CSMA/CA", body: "Lytt, vent DIFS, tilfeldig backoff, send, vent ACK." },
-            { term: "DIFS", body: "Obligatorisk stille-pause ~34 μs etter ledig luft." },
-            { term: "SIFS", body: "Kort pause ~16 μs mellom data og ACK." },
-            { term: "Backoff-vindu (CW)", body: "Tilfeldig telle-ned i slot-tider før sending." },
-            { term: "RTS/CTS", body: "Liten reservasjon mot hidden terminal — alle hører CTS." },
-            { term: "Beacon-frame", body: "AP kringkaster SSID hver ~100 ms." },
-            { term: "Assosiasjon", body: "Probe → autentiser → assosiere før første data-frame." },
-            { term: "Autentisering", body: "Nøkkel-handshake (WPA2/WPA3) før assosiasjon." },
-            { term: "NAV", body: "Virtuell timer som tvinger stillhet selv uten å høre signal." },
-            { term: "Slot-tid", body: "Grunntakten i backoff-telling, ~9 μs i 802.11n+." },
-            { term: "802.11 a/b/g/n/ac/ax", body: "Hver generasjon: ny modulasjon + MIMO/OFDMA." },
-            { term: "Eksponentiell backoff", body: "CW dobles etter hver kollisjon: 15→31→63→…" },
-            { term: "MU-MIMO", body: "AP sender til flere klienter parallelt via beamforming." },
+            { term: "CSMA/CA", icon: <CsmaCaIcon />, body: "Lytt, vent DIFS, tilfeldig backoff, send, vent ACK." },
+            { term: "DIFS", icon: <DifsIcon />, body: "Obligatorisk stille-pause ~34 μs etter ledig luft." },
+            { term: "SIFS", icon: <SifsIcon />, body: "Kort pause ~16 μs mellom data og ACK." },
+            { term: "Backoff-vindu (CW)", icon: <BackoffIcon />, body: "Tilfeldig telle-ned i slot-tider før sending." },
+            { term: "RTS/CTS", icon: <RtsCtsIcon />, body: "Liten reservasjon mot hidden terminal — alle hører CTS." },
+            { term: "Beacon-frame", icon: <BeaconIcon />, body: "AP kringkaster SSID hver ~100 ms." },
+            { term: "Assosiasjon", icon: <AssociationIcon />, body: "Probe → autentiser → assosiere før første data-frame." },
+            { term: "Autentisering", icon: <AuthIcon />, body: "Nøkkel-handshake (WPA2/WPA3) før assosiasjon." },
+            { term: "NAV", icon: <NavTimerIcon />, body: "Virtuell timer som tvinger stillhet selv uten å høre signal." },
+            { term: "Slot-tid", icon: <SlotTimeIcon />, body: "Grunntakten i backoff-telling, ~9 μs i 802.11n+." },
+            { term: "802.11 a/b/g/n/ac/ax", icon: <Wifi80211Icon />, body: "Hver generasjon: ny modulasjon + MIMO/OFDMA." },
+            { term: "Eksponentiell backoff", icon: <ExpBackoffIcon />, body: "CW dobles etter hver kollisjon: 15→31→63→…" },
+            { term: "MU-MIMO", icon: <MuMimoIcon />, body: "AP sender til flere klienter parallelt via beamforming." },
           ]}
         />
         <Illustration caption="CSMA/CA-sekvens: lytt → DIFS → backoff → send → SIFS → ACK.">
@@ -569,24 +666,25 @@ function Section73() {
       <CellulaViz />
 
       <div className="grid gap-3 lg:grid-cols-2">
-        <Defs
+        <VisualDefs
           items={[
-            { term: "Celle", body: "Geografisk område dekket av én basestasjon." },
-            { term: "Basestasjon", body: "BTS/NodeB/eNodeB/gNodeB — radio + fiber-kobling." },
+            { term: "Celle", icon: <CelleIcon />, body: "Geografisk område dekket av én basestasjon." },
+            { term: "Basestasjon", icon: <BaseStationIcon />, body: "BTS/NodeB/eNodeB/gNodeB — radio + fiber-kobling." },
             {
               term: "Kjernenettet",
+              icon: <CoreNetIcon />,
               body: "Faste switcher, gateways og databaser bak basestasjonene.",
             },
-            { term: "GSM (2G)", body: "Krets-svitsjet tale + GPRS-pakker som tilleggsmodul." },
-            { term: "LTE (4G)", body: "All-IP, OFDMA på radio, VoLTE for tale." },
-            { term: "5G", body: "Mer kapasitet (mmWave), <10 ms forsinkelse, network slicing." },
-            { term: "Frequency reuse", body: "Samme frekvenser gjenbrukt i ikke-nabo-celler." },
-            { term: "BTS/NodeB/eNodeB/gNodeB", body: "Generasjons-navn på basestasjons-radioen." },
-            { term: "HSS / UDM", body: "Sentral abonnent-database med krypto-nøkler." },
-            { term: "MME / AMF", body: "Mobility manager — holder rede på hvilken celle du er i." },
-            { term: "S-GW / P-GW / UPF", body: "Data-plane-gateway — eier IP-adressen din." },
-            { term: "OFDMA-subbærere", body: "20 MHz delt i 1200 smale bærere à 15 kHz." },
-            { term: "SIM/eSIM", body: "Tamper-resistent nøkkel-kort for autentisering." },
+            { term: "GSM (2G)", icon: <Gsm2GIcon />, body: "Krets-svitsjet tale + GPRS-pakker som tilleggsmodul." },
+            { term: "LTE (4G)", icon: <Lte4GIcon />, body: "All-IP, OFDMA på radio, VoLTE for tale." },
+            { term: "5G", icon: <FiveGIcon />, body: "Mer kapasitet (mmWave), <10 ms forsinkelse, network slicing." },
+            { term: "Frequency reuse", icon: <FreqReuseIcon />, body: "Samme frekvenser gjenbrukt i ikke-nabo-celler." },
+            { term: "BTS/NodeB/eNodeB/gNodeB", icon: <NodeBIcon />, body: "Generasjons-navn på basestasjons-radioen." },
+            { term: "HSS / UDM", icon: <HssIcon />, body: "Sentral abonnent-database med krypto-nøkler." },
+            { term: "MME / AMF", icon: <MmeIcon />, body: "Mobility manager — holder rede på hvilken celle du er i." },
+            { term: "S-GW / P-GW / UPF", icon: <GatewayIcon />, body: "Data-plane-gateway — eier IP-adressen din." },
+            { term: "OFDMA-subbærere", icon: <OfdmaIcon />, body: "20 MHz delt i 1200 smale bærere à 15 kHz." },
+            { term: "SIM/eSIM", icon: <SimCardIcon />, body: "Tamper-resistent nøkkel-kort for autentisering." },
           ]}
         />
         <Illustration caption="Sekskant-mønsteret med fargede frekvens-grupper og kjernens kobling ut på internett.">
@@ -747,34 +845,39 @@ function Section74() {
       <MobilitetsTracer />
 
       <div className="grid gap-3 lg:grid-cols-2">
-        <Defs
+        <VisualDefs
           items={[
-            { term: "Home network", body: "Der den permanente IP-adressen hører hjemme." },
+            { term: "Home network", icon: <HomeNetIcon />, body: "Der den permanente IP-adressen hører hjemme." },
             {
               term: "Home agent (HA)",
+              icon: <HomeAgentIcon />,
               body: "Ruter som videresender pakker til hosten der den er nå.",
             },
             {
               term: "Foreign network / FA",
+              icon: <ForeignAgentIcon />,
               body: "Nettet hosten besøker; lokal ruter mottar tunnel.",
             },
-            { term: "Care-of-address (COA)", body: "Midlertidig adresse på besøks-nettet." },
-            { term: "Tunneling", body: "Pakk innpakket i ny ytre IP med COA som destinasjon." },
+            { term: "Care-of-address (COA)", icon: <CoaIcon />, body: "Midlertidig adresse på besøks-nettet." },
+            { term: "Tunneling", icon: <TunnelingIcon />, body: "Pakk innpakket i ny ytre IP med COA som destinasjon." },
             {
               term: "Triangle routing",
+              icon: <TriangleRoutingIcon />,
               body: "Trafikk-omvei via HA — løses av route optimization.",
             },
-            { term: "GTP-tunnel", body: "Mobilkjernens versjon — tunnel mellom eNB og gateway." },
-            { term: "Korrespondent (CN)", body: "Server som snakker med mobil-hosten." },
-            { term: "Registrering med HA", body: "Si fra om ny COA hver gang du flytter deg." },
-            { term: "Co-located COA", body: "Hosten tar selv DHCP-adresse, dropper FA." },
+            { term: "GTP-tunnel", icon: <GtpTunnelIcon />, body: "Mobilkjernens versjon — tunnel mellom eNB og gateway." },
+            { term: "Korrespondent (CN)", icon: <CorrespondentIcon />, body: "Server som snakker med mobil-hosten." },
+            { term: "Registrering med HA", icon: <RegistrationIcon />, body: "Si fra om ny COA hver gang du flytter deg." },
+            { term: "Co-located COA", icon: <ColocatedCoaIcon />, body: "Hosten tar selv DHCP-adresse, dropper FA." },
             {
               term: "Reverse tunneling",
+              icon: <ReverseTunnelIcon />,
               body: "Utgående trafikk via HA for å passere ingress-filter.",
             },
-            { term: "Soft-state", body: "Bindinger utløper hvis ikke fornyet jevnlig." },
+            { term: "Soft-state", icon: <SoftStateIcon />, body: "Bindinger utløper hvis ikke fornyet jevnlig." },
             {
               term: "Encapsulation-overhead",
+              icon: <EncapOverheadIcon />,
               body: "20–40 byte ekstra IP-header per tunnelert pakke.",
             },
           ]}
@@ -917,33 +1020,37 @@ function Section75() {
       <HandoverTidslinje />
 
       <div className="grid gap-3 lg:grid-cols-2">
-        <Defs
+        <VisualDefs
           items={[
-            { term: "Hard handover", body: "Break-before-make — kort gap, 50–200 ms i LTE." },
-            { term: "Soft handover", body: "Make-before-break — kun mulig i 3G CDMA." },
-            { term: "Måle-rapporter", body: "Telefonen rapporterer RSRP/RSRQ til nettet jevnlig." },
-            { term: "Frekvens-bytte", body: "Retune radio når ny celle er på annen frekvens." },
+            { term: "Hard handover", icon: <HardHandoverIcon />, body: "Break-before-make — kort gap, 50–200 ms i LTE." },
+            { term: "Soft handover", icon: <SoftHandoverIcon />, body: "Make-before-break — kun mulig i 3G CDMA." },
+            { term: "Måle-rapporter", icon: <MeasureReportIcon />, body: "Telefonen rapporterer RSRP/RSRQ til nettet jevnlig." },
+            { term: "Frekvens-bytte", icon: <FreqSwitchIcon />, body: "Retune radio når ny celle er på annen frekvens." },
             {
               term: "WiFi roaming",
+              icon: <WifiRoamingIcon />,
               body: "Klienten alene bestemmer — disassociate + re-associate.",
             },
-            { term: "Kontekst-overføring", body: "Nøkler + buffere flyttes via X2/Xn." },
-            { term: "RSRP / RSRQ", body: "Styrke (dBm) og kvalitet (dB) — begge brukes." },
+            { term: "Kontekst-overføring", icon: <ContextTransferIcon />, body: "Nøkler + buffere flyttes via X2/Xn." },
+            { term: "RSRP / RSRQ", icon: <RsrpIcon />, body: "Styrke (dBm) og kvalitet (dB) — begge brukes." },
             {
               term: "Time-to-Trigger (TTT)",
+              icon: <TttIcon />,
               body: "Hvor lenge terskel må holdes før bytte utløses.",
             },
             {
               term: "Mobile- vs network-controlled",
+              icon: <ControlMobileNetIcon />,
               body: "WiFi: klient bestemmer; LTE/5G: nettet bestemmer.",
             },
-            { term: "X2/Xn-grensesnitt", body: "Direkte tunnel mellom nabo-basestasjoner." },
+            { term: "X2/Xn-grensesnitt", icon: <X2InterfaceIcon />, body: "Direkte tunnel mellom nabo-basestasjoner." },
             {
               term: "Conditional handover (CHO)",
+              icon: <ChoIcon />,
               body: "5G: forhåndsforberedt bytte — gap <10 ms.",
             },
-            { term: "Ping-pong-effekt", body: "Veksler mellom to celler ved grenseflimmer." },
-            { term: "802.11r FT", body: "Forhåndsdelt PMK gir <30 ms WiFi-roam." },
+            { term: "Ping-pong-effekt", icon: <PingPongIcon />, body: "Veksler mellom to celler ved grenseflimmer." },
+            { term: "802.11r FT", icon: <FastRoamIcon />, body: "Forhåndsdelt PMK gir <30 ms WiFi-roam." },
           ]}
         />
         <Illustration caption="Tidslinje for soft vs hard håndover — overlapp eller gap mellom gammel og ny.">
@@ -1080,38 +1187,44 @@ function Section76() {
       <TCPRadioLab />
 
       <div className="grid gap-3 lg:grid-cols-2">
-        <Defs
+        <VisualDefs
           items={[
             {
               term: "Bit-feil vs pakketap",
+              icon: <BitErrorIcon />,
               body: "Radio: BER 10⁻⁵; kobber 10⁻¹² — TCP merker forskjellen.",
             },
-            { term: "Link-layer ARQ", body: "WiFi/LTE retransmitterer lokalt; gir variabel RTT." },
+            { term: "Link-layer ARQ", icon: <LinkArqIcon />, body: "WiFi/LTE retransmitterer lokalt; gir variabel RTT." },
             {
               term: "Spurious timeouts",
+              icon: <SpuriousTimeoutIcon />,
               body: "Handover-pause utløser TCP-retransmit som ikke trengs.",
             },
             {
               term: "PEP (Performance Enhancing Proxy)",
+              icon: <PepIcon />,
               body: "Splitter TCP — kvitterer fra mellom-rute.",
             },
-            { term: "CUBIC vs BBR", body: "CUBIC reagerer på tap; BBR måler BW+RTT direkte." },
-            { term: "Mobilitets-jitter", body: "RTT-variasjoner forvirrer RTO-estimatet." },
+            { term: "CUBIC vs BBR", icon: <CubicBbrIcon />, body: "CUBIC reagerer på tap; BBR måler BW+RTT direkte." },
+            { term: "Mobilitets-jitter", icon: <JitterMobIcon />, body: "RTT-variasjoner forvirrer RTO-estimatet." },
             {
               term: "Bufferbloat",
+              icon: <BufferbloatIcon />,
               body: "Stor radio-kø → kunstig høy RTT → TCP overdriver vindu.",
             },
-            { term: "Snoop-protokoll", body: "Basestasjon cacher segmenter, skjuler radio-tap." },
-            { term: "Split-TCP", body: "Eksplisitt to TCP-sesjoner — bryter ende-til-ende." },
+            { term: "Snoop-protokoll", icon: <SnoopIcon />, body: "Basestasjon cacher segmenter, skjuler radio-tap." },
+            { term: "Split-TCP", icon: <SplitTcpIcon />, body: "Eksplisitt to TCP-sesjoner — bryter ende-til-ende." },
             {
               term: "Explicit loss notification",
+              icon: <ElnIcon />,
               body: "«Tap = radio-feil, ikke congestion» — aldri standardisert.",
             },
             {
               term: "Selective ACK (SACK)",
+              icon: <SackIcon />,
               body: "Mottaker rapporterer eksakte hull i mottatt strøm.",
             },
-            { term: "Slow start på mobil", body: "Lang oppvarmingsfase til full BDP er fylt." },
+            { term: "Slow start på mobil", icon: <SlowStartIcon />, body: "Lang oppvarmingsfase til full BDP er fylt." },
           ]}
         />
         <Illustration caption="Kabelmessig: tap = congestion. Radio: tap kan komme fra støy, fading, eller handover — TCP vet ikke forskjellen.">
