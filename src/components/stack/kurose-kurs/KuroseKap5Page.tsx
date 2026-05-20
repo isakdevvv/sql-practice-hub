@@ -11,20 +11,19 @@ import {
   ExternalLink,
 } from "lucide-react";
 import { SectionPager, type SectionNavItem } from "./SectionPager";
+import { Section51Live } from "./Section51Live";
 
-type Tab = "intro" | "5.1" | "5.2" | "5.3" | "5.4" | "5.5" | "5.6" | "5.7" | "5.8" | "5.9";
+type Tab = "intro" | "5.1" | "5.2" | "5.3" | "5.4" | "5.5" | "oppg" | "eksamen";
 
 const SECTIONS_5: SectionNavItem[] = [
   { id: "intro", label: "Start her" },
-  { id: "5.1", label: "5.1 Overview" },
-  { id: "5.2", label: "5.2 Algoritmer" },
-  { id: "5.3", label: "5.3 OSPF" },
-  { id: "5.4", label: "5.4 BGP" },
-  { id: "5.5", label: "5.5 SDN" },
-  { id: "5.6", label: "5.6 ICMP" },
-  { id: "5.7", label: "5.7 DHCP" },
-  { id: "5.8", label: "5.8 Oppgaver" },
-  { id: "5.9", label: "5.9 Eksamen-fokus" },
+  { id: "5.1", label: "5.1 Routing-algoritmer" },
+  { id: "5.2", label: "5.2 OSPF" },
+  { id: "5.3", label: "5.3 BGP" },
+  { id: "5.4", label: "5.4 SDN" },
+  { id: "5.5", label: "5.5 ICMP & SNMP" },
+  { id: "oppg", label: "Oppgaver" },
+  { id: "eksamen", label: "Eksamen-fokus" },
 ];
 const NEXT_CHAPTER_5 = { slug: "kurose-kap-6", title: "Link-laget og LAN" };
 
@@ -55,31 +54,33 @@ export function KuroseKap5Page() {
             <TabBtn active={tab === "intro"} onClick={() => setTab("intro")}>
               Start
             </TabBtn>
-            <TabBtn active={tab === "5.1"} onClick={() => setTab("5.1")} title="Overview">
+            <TabBtn
+              active={tab === "5.1"}
+              onClick={() => setTab("5.1")}
+              title="Routing-algoritmer (DV vs LS)"
+            >
               5.1
             </TabBtn>
-            <TabBtn active={tab === "5.2"} onClick={() => setTab("5.2")} title="Algoritmer">
+            <TabBtn active={tab === "5.2"} onClick={() => setTab("5.2")} title="Intra-AS: OSPF">
               5.2
             </TabBtn>
-            <TabBtn active={tab === "5.3"} onClick={() => setTab("5.3")} title="OSPF">
+            <TabBtn active={tab === "5.3"} onClick={() => setTab("5.3")} title="Inter-AS: BGP">
               5.3
             </TabBtn>
-            <TabBtn active={tab === "5.4"} onClick={() => setTab("5.4")} title="BGP">
+            <TabBtn active={tab === "5.4"} onClick={() => setTab("5.4")} title="SDN / OpenFlow">
               5.4
             </TabBtn>
-            <TabBtn active={tab === "5.5"} onClick={() => setTab("5.5")} title="SDN">
+            <TabBtn
+              active={tab === "5.5"}
+              onClick={() => setTab("5.5")}
+              title="ICMP og nettverks-administrasjon (SNMP)"
+            >
               5.5
             </TabBtn>
-            <TabBtn active={tab === "5.6"} onClick={() => setTab("5.6")} title="ICMP">
-              5.6
-            </TabBtn>
-            <TabBtn active={tab === "5.7"} onClick={() => setTab("5.7")} title="DHCP">
-              5.7
-            </TabBtn>
-            <TabBtn active={tab === "5.8"} onClick={() => setTab("5.8")} title="Oppgaver">
+            <TabBtn active={tab === "oppg"} onClick={() => setTab("oppg")} title="Oppgaver">
               Oppg.
             </TabBtn>
-            <TabBtn active={tab === "5.9"} onClick={() => setTab("5.9")} title="Eksamen-fokus">
+            <TabBtn active={tab === "eksamen"} onClick={() => setTab("eksamen")} title="Eksamen-fokus">
               Eksamen
             </TabBtn>
           </nav>
@@ -87,14 +88,12 @@ export function KuroseKap5Page() {
 
         {tab === "intro" && <Intro onPick={setTab} />}
         {tab === "5.1" && <Section51 />}
-        {tab === "5.2" && <Section52 />}
-        {tab === "5.3" && <Section53 />}
-        {tab === "5.4" && <Section54 />}
-        {tab === "5.5" && <Section55 />}
-        {tab === "5.6" && <Section56 />}
-        {tab === "5.7" && <Section57 />}
-        {tab === "5.8" && <Section58 />}
-        {tab === "5.9" && <SectionEksamen />}
+        {tab === "5.2" && <Section53 />}
+        {tab === "5.3" && <Section54 />}
+        {tab === "5.4" && <Section55 />}
+        {tab === "5.5" && <Section5IcmpSnmp />}
+        {tab === "oppg" && <Section58 />}
+        {tab === "eksamen" && <SectionEksamen />}
 
         <SectionPager
           tabs={SECTIONS_5}
@@ -135,72 +134,76 @@ function TabBtn({
 
 function Intro({ onPick }: { onPick: (t: Tab) => void }) {
   return (
-    <div className="grid gap-3 sm:grid-cols-2 text-sm">
-      <div className="rounded-xl border border-border bg-card p-4">
-        <h2 className="text-base font-semibold mb-2 flex items-center gap-2">
-          <BookOpen className="h-4 w-4" /> Læringsmål
-        </h2>
-        <ul className="list-disc pl-5 text-muted-foreground space-y-1">
-          <li>
-            Skille data-plane (per-pakke videresending) fra control-plane (å beregne tabellene), og
-            forstå hvorfor de logisk separeres.
-          </li>
-          <li>
-            Kjøre Dijkstras algoritme manuelt på en liten graf, og forklare hvorfor link-state
-            konvergerer raskt.
-          </li>
-          <li>
-            Forklare Bellman-Ford distance-vector, count-to-infinity-problemet, og hvordan poisoned
-            reverse og split horizon prøver å dempe det.
-          </li>
-          <li>
-            Vite hva OSPF gjør innenfor et autonomt system: LSA-flooding, areas, hierarkisk ruting.
-          </li>
-          <li>
-            Forklare hvorfor BGP er policy-basert (ikke shortest-path), og kjenne attributtene
-            LOCAL_PREF, AS_PATH, MED og NEXT_HOP.
-          </li>
-          <li>
-            Beskrive SDN-arkitekturen — separasjon av controller og switch — og hvorfor den vant i
-            moderne datasentre.
-          </li>
-          <li>Forklare hva ICMP er, og hvordan ping og traceroute utnytter den.</li>
-          <li>
-            Beskrive DHCP DORA-utvekslingen som lar en host få IP-adresse uten manuell
-            konfigurasjon.
-          </li>
-        </ul>
-      </div>
+    <div className="space-y-4 text-sm">
+      <div className="grid gap-3 sm:grid-cols-2">
+        <div className="rounded-xl border border-border bg-card p-4">
+          <h2 className="text-base font-semibold mb-2 flex items-center gap-2">
+            <BookOpen className="h-4 w-4" /> Læringsmål
+          </h2>
+          <ul className="list-disc pl-5 text-muted-foreground space-y-1">
+            <li>
+              Skille data-plane (per-pakke videresending) fra control-plane (å beregne tabellene),
+              og forstå hvorfor de logisk separeres.
+            </li>
+            <li>
+              Kjøre Dijkstras algoritme manuelt på en liten graf, og forklare hvorfor link-state
+              konvergerer raskt.
+            </li>
+            <li>
+              Forklare Bellman-Ford distance-vector, count-to-infinity-problemet, og hvordan
+              poisoned reverse og split horizon prøver å dempe det.
+            </li>
+            <li>
+              Vite hva OSPF gjør innenfor et autonomt system: LSA-flooding, areas, hierarkisk
+              ruting.
+            </li>
+            <li>
+              Forklare hvorfor BGP er policy-basert (ikke shortest-path), og kjenne attributtene
+              LOCAL_PREF, AS_PATH, MED og NEXT_HOP.
+            </li>
+            <li>
+              Beskrive SDN-arkitekturen — separasjon av controller og switch — og hvorfor den vant
+              i moderne datasentre.
+            </li>
+            <li>Forklare hva ICMP er, og hvordan ping og traceroute utnytter den.</li>
+            <li>
+              Vite hva SNMP er og hvorfor det er den dominerende administrasjons-protokollen for
+              IP-utstyr.
+            </li>
+          </ul>
+        </div>
 
-      <div className="rounded-xl border border-border bg-card p-4">
-        <h2 className="text-base font-semibold mb-2">Kapittelets struktur</h2>
-        <ol className="list-decimal pl-5 text-muted-foreground space-y-1">
-          <li>Overview — sentralisert vs distribuert control-plane</li>
-          <li>Routing-algoritmer — link-state og distance-vector</li>
-          <li>Intra-AS ruting — OSPF</li>
-          <li>Inter-AS ruting — BGP</li>
-          <li>SDN control-plane — OpenFlow</li>
-          <li>ICMP — feilmeldinger og diagnostikk</li>
-          <li>DHCP — dynamisk adresse-tildeling</li>
-          <li>Oppgaver — sjekk forståelsen din</li>
-        </ol>
-        <div className="mt-3 flex gap-2">
-          <Button size="sm" onClick={() => onPick("5.1")}>
-            Start på 5.1 →
-          </Button>
+        <div className="rounded-xl border border-border bg-card p-4">
+          <h2 className="text-base font-semibold mb-2">Kapittelets struktur</h2>
+          <ol className="list-decimal pl-5 text-muted-foreground space-y-1">
+            <li>5.1 Routing-algoritmer — link-state vs distance-vector (interaktivt)</li>
+            <li>5.2 Intra-AS ruting — OSPF</li>
+            <li>5.3 Inter-AS ruting — BGP</li>
+            <li>5.4 SDN control-plane — OpenFlow</li>
+            <li>5.5 ICMP og nettverks-administrasjon (SNMP)</li>
+            <li>Oppgaver — sjekk forståelsen din</li>
+            <li>Eksamen-fokus — kjernestoff samlet</li>
+          </ol>
+          <div className="mt-3 flex gap-2">
+            <Button size="sm" onClick={() => onPick("5.1")}>
+              Start på 5.1 →
+            </Button>
+          </div>
         </div>
       </div>
+
+      <ControlPlaneOverview />
     </div>
   );
 }
 
 // ============================================================
-// 5.1 — Overview
+// Bakgrunn — control-plane overview (vises på Start her-tab)
 // ============================================================
-function Section51() {
+function ControlPlaneOverview() {
   return (
     <article className="space-y-4 text-sm">
-      <Header num="5.1" title="Control-plane: sentralisert vs distribuert" />
+      <Header num="bakgrunn" title="Control-plane: sentralisert vs distribuert" />
 
       <p className="text-muted-foreground">
         Forrige kapittel handlet om data-plane: hvordan en enkelt ruter ser på en pakke og slenger
@@ -347,12 +350,27 @@ function Section51() {
 }
 
 // ============================================================
-// 5.2 — Routing-algoritmer
+// 5.1 — Routing-algoritmer (med levende DV vs LS-interaktiv)
 // ============================================================
-function Section52() {
+function Section51() {
   return (
     <article className="space-y-4 text-sm">
-      <Header num="5.2" title="Routing-algoritmer — link-state og distance-vector" />
+      <Header num="5.1" title="Routing-algoritmer — DV vs LS (link-state vs distance-vector)" />
+      <p className="text-muted-foreground">
+        Den interaktive simulatoren under viser samme topologi i to moduser. Bytt mellom dem og se
+        hvordan link-state og distance-vector bygger forwarding-tabellene på helt ulike måter — og
+        hvorfor distance-vector er sårbar for count-to-infinity.
+      </p>
+      <Section51Live />
+      <RoutingAlgsContent />
+    </article>
+  );
+}
+
+function RoutingAlgsContent() {
+  return (
+    <article className="space-y-4 text-sm">
+      <Header num="5.1 (utdypning)" title="Link-state og distance-vector — definisjoner og eksempler" />
 
       <p className="text-muted-foreground">
         Distribuert routing bygger på to klassiske algoritmer fra grafteorien. Link-state er
@@ -989,6 +1007,145 @@ function Section55() {
           load-bevissthet, segment routing, micro-segmentation-firewall) som krever
           tverr-rutere-koordinering. Pris-en er at SDN passer best for én eier (datasenter, en
           enkelt ISP-backbone) — det er hvorfor internett-core forblir BGP-distribuert.
+        </p>
+      </Hvorfor>
+
+      <RelatedSlugs slugs={["dte2507-ruting"]} />
+    </article>
+  );
+}
+
+// ============================================================
+// 5.5 — ICMP og nettverks-administrasjon (SNMP)
+// ============================================================
+function Section5IcmpSnmp() {
+  return (
+    <div className="space-y-6">
+      <Section56 />
+      <SectionSnmp />
+    </div>
+  );
+}
+
+function SectionSnmp() {
+  return (
+    <article className="space-y-4 text-sm">
+      <Header num="5.5 (forts.)" title="SNMP — nettverks-administrasjon" />
+
+      <p className="text-muted-foreground">
+        ICMP rapporterer feil for én pakke. Men hvis du eier 500 rutere og 10 000 switcher, trenger
+        du noe annet: en måte å hente status-statistikker (CPU-last, pakker droppet, lenke-tilstand)
+        og motta varsler proaktivt. Det er SNMP — Simple Network Management Protocol.
+      </p>
+
+      <div className="grid gap-3 lg:grid-cols-2">
+        <Defs
+          items={[
+            { term: "SNMP", body: "Manager-agent-protokoll over UDP 161 / 162 (trap)." },
+            { term: "Manager / NMS", body: "Sentral server som spør og samler — Nagios, Zabbix, Cacti." },
+            { term: "Agent", body: "Liten daemon i ruteren som svarer på SNMP-spørsmål." },
+            { term: "MIB", body: "Management Information Base — hierarki av variabler." },
+            { term: "OID", body: "Object Identifier — punktum-separert sti i MIB, f.eks. 1.3.6.1.2.1.1.3.0." },
+            { term: "GET / GETNEXT", body: "Manager spør om verdien til en OID, eller neste i treet." },
+            { term: "SET", body: "Manager skriver en verdi — sjelden brukt, sikkerhets-følsomt." },
+            { term: "TRAP / INFORM", body: "Agent pusher en hendelse til manager uoppfordret." },
+            { term: "Walk", body: "GETNEXT-sløyfe som dumper hele subtreet — vanlig diagnose-verktøy." },
+            { term: "v1 / v2c / v3", body: "v1+v2c bruker community-string i klartekst; v3 har auth/encryption." },
+            { term: "Community-string", body: "«public» / «private» — som passord, ofte feil-konfigurert." },
+            { term: "ASN.1 / BER", body: "Hvordan SNMP-meldinger serialiseres på tråden." },
+          ]}
+        />
+        <div className="rounded-xl border border-border bg-card p-4">
+          <h3 className="text-xs uppercase tracking-wider text-muted-foreground mb-3">
+            Typisk SNMP-flyt
+          </h3>
+          <ol className="list-decimal pl-5 space-y-1.5 text-[13px] text-muted-foreground">
+            <li>
+              <strong>Polling:</strong> NMS-en (manager) sender GET-requests hvert 60. sekund til
+              hver ruter — «hva er nåværende bytes-inn på port 3?». Agenten svarer.
+            </li>
+            <li>
+              <strong>Graf:</strong> NMS-en plotter tidsserien — operatøren ser CPU-bruk, lenke-
+              utilisering, droppede pakker i sanntid.
+            </li>
+            <li>
+              <strong>Trap:</strong> Hvis noe alvorlig skjer (lenke ned, autentisering feilet,
+              tunnel ned), sender ruteren en TRAP uten å vente på spørsmål. NMS-en kan trigge
+              alarm — SMS, e-post, PagerDuty.
+            </li>
+            <li>
+              <strong>SET (sjelden):</strong> Operatør kan skrive verdier (slå av port). De fleste
+              shop-er deaktiverer SET fordi det er for farlig — heller bruker NETCONF/RESTCONF
+              eller manuelle SSH-økter for konfig.
+            </li>
+          </ol>
+        </div>
+      </div>
+
+      <Metafor tittel="SNMP = inspektør med klikkbrett">
+        <p>
+          Tenk SNMP-manageren som en inspektør som hver morgen går rundt på fabrikken og spør hver
+          maskin: «Hvor mange enheter har du produsert? Hva er temperaturen? Var det noen feil?»
+          Maskinen (agenten) har en standard liste av tall klar (MIB) og leverer svaret. Inspektøren
+          skriver det inn i regnearket sitt og plotter trender.
+        </p>
+        <p>
+          Trap-en er motsatt: hvis det begynner å brenne i maskinen, ringer den selv til inspektøren
+          uten å vente på morgenrunden. Det er hvordan operatørsenteret får «Lenke ned!»-varsel
+          umiddelbart, ikke etter neste polling-runde.
+        </p>
+      </Metafor>
+
+      <Metafor tittel="MIB = bibliotekets Dewey-system">
+        <p>
+          Hvert «variabel-tall» i en ruter (sysName, ifInOctets, ipForwarding) har en lang adresse
+          som ser ut som <code className="font-mono">1.3.6.1.2.1.2.2.1.10.3</code>. Det er en sti
+          ned i et felles standardisert hierarki, akkurat som Dewey-systemet i et bibliotek:
+          1.3.6.1.2.1 = «standard internet MIB», 2 = «interfaces», 2.1 = «interface table», 10 =
+          «ifInOctets», 3 = «port 3».
+        </p>
+        <p>
+          Det er hvorfor du kan kjøre <code className="font-mono">snmpwalk</code> mot en Cisco og en
+          Juniper og få sammenlignbare data — begge implementerer MIB-2 (RFC 1213) på samme sted i
+          treet.
+        </p>
+      </Metafor>
+
+      <Example title="Eksempel: snmpget mot en switch">
+        <p className="font-mono text-[12px]">
+          $ snmpget -v2c -c public sw-stack-01 SNMPv2-MIB::sysUpTime.0
+          <br />
+          SNMPv2-MIB::sysUpTime.0 = Timeticks: (4827300) 13:24:33.00
+          <br />
+          <br />
+          $ snmpwalk -v2c -c public sw-stack-01 IF-MIB::ifInOctets
+          <br />
+          IF-MIB::ifInOctets.1 = Counter32: 2890123456
+          <br />
+          IF-MIB::ifInOctets.2 = Counter32: 1023487654
+          <br />
+          IF-MIB::ifInOctets.3 = Counter32: 78654321
+        </p>
+        <p className="mt-2">
+          Operatøren kjører dette én gang for å lære at switchen har vært oppe i 13 timer 24 min, og
+          så lar NMS-en polle ifInOctets hvert minutt og regne ut (verdi-nå − verdi-forrige) ÷ 60 s =
+          bytes/s. Det blir grafene du ser på Grafana eller LibreNMS.
+        </p>
+      </Example>
+
+      <Hvorfor title="Hvorfor er SNMP fortsatt overalt, til tross for at det er en 30-årig protokoll?">
+        <p>
+          SNMP er ikke vakker — UDP-basert, klartekst-community-strings i v1/v2c, MIB-strukturen er
+          OpenLISP. Men det er overalt. Hver eneste IP-enhet (rutere, switcher, UPS-er, printere,
+          IP-kameraer) har en SNMP-agent. Det er den eneste protokollen alle leverandører støtter på
+          tvers av leverandører, modeller og firmware-versjoner.
+        </p>
+        <p>
+          Etterfølgerne (NETCONF, RESTCONF, gNMI, OpenConfig) er bedre konstruerte — strukturerte
+          YANG-modeller, transaksjoner, streaming-telemetri — men de er fortsatt ikke universelt
+          implementerte. Så i 2025 er bildet at moderne datasentre bytter til streaming-telemetri,
+          mens enterprise-nettverk fortsatt henger på SNMP for de fleste poll-bruksområder. Trap-en
+          fra en 15 år gammel switch er fortsatt det første en operatør ser på vakta.
         </p>
       </Hvorfor>
 
