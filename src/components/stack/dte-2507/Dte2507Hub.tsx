@@ -499,6 +499,28 @@ export function Dte2507Hub() {
           </p>
         </div>
 
+        {/* Forkurs-CTA — bro fra ingenting til fundamentet (Python, Wireshark-intro, IP/port, binær, krypto) */}
+        <Link
+          to="/forkurs"
+          className="mb-8 group flex items-start gap-4 rounded-xl border border-green-500/30 bg-gradient-to-r from-green-500/10 to-brand/5 hover:border-green-500/60 hover:from-green-500/15 transition-colors p-5"
+        >
+          <div className="rounded-lg bg-green-500/15 p-2 shrink-0">
+            <PlayCircle className="h-5 w-5 text-green-300" />
+          </div>
+          <div className="flex-1">
+            <div className="text-[10px] uppercase tracking-wider font-semibold text-green-300 mb-1">
+              Ikke startet ennå? · Forkurs
+            </div>
+            <h3 className="font-semibold text-foreground leading-tight">
+              Bro fra ingenting til DTE-2505 + DTE-2507
+            </h3>
+            <p className="text-sm text-muted-foreground leading-snug mt-1">
+              11 små biter (Python, IP/port, Wireshark-intro, binær, krypto-overflate) — alt du trenger før Kurose-pensumet starter. Anbefalt før du starter på protokoll-modusene under.
+            </p>
+          </div>
+          <ArrowRight className="h-4 w-4 text-green-300 shrink-0 mt-2 group-hover:translate-x-0.5 transition-transform" />
+        </Link>
+
         {/* Modus-rad */}
         <nav
           aria-label="Velg modus"
