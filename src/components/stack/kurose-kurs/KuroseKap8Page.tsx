@@ -11,6 +11,7 @@ import {
   ExternalLink,
 } from "lucide-react";
 import { SectionPager, type SectionNavItem } from "./SectionPager";
+import { Section81Live } from "./Section81Live";
 
 type Tab =
   | "intro"
@@ -240,6 +241,8 @@ function Section81() {
         Ingen av dem dekkes av et enkelt verktøy — du må stable flere mekanismer for å oppnå alle
         fire. Vi starter med å definere rammeverket før vi går løs på selve verktøyene.
       </p>
+
+      <Section81Live />
 
       <div className="grid gap-3 lg:grid-cols-2">
         <Defs
