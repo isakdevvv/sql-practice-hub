@@ -1,9 +1,84 @@
 import { useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { ArrowRight, BookOpen, ShieldCheck, Lock, FileEdit, Server, KeyRound, AlertTriangle, CheckCircle2 } from "lucide-react";
+import { ArrowRight, BookOpen, ShieldCheck, AlertTriangle, CheckCircle2 } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
+import { VisualDefs } from "@/components/stack/kurose-kurs/VisualDefs";
+import {
+  ConfidentialityIcon,
+  IntegrityIcon,
+  AvailabilityIcon,
+  KnowFactorIcon,
+  HaveFactorIcon,
+  BeFactorIcon,
+} from "./securityIcons";
 
 type CiaKategori = "K" | "I" | "T";
+
+const CIA_DEFS = [
+  {
+    term: "Konfidensialitet (K)",
+    icon: <ConfidentialityIcon />,
+    body: (
+      <span>
+        Bare riktig mottaker skal kunne lese. Eksempler: krypter e-post, beskytt
+        passord, sørg for at bare HR ser lønnsdata.
+      </span>
+    ),
+  },
+  {
+    term: "Integritet (I)",
+    icon: <IntegrityIcon />,
+    body: (
+      <span>
+        Data skal ikke endres uten at det oppdages. Eksempler: hash av nedlastet
+        fil, signert programvare, bankoverføring som ikke kan tukles med.
+      </span>
+    ),
+  },
+  {
+    term: "Tilgjengelighet (T)",
+    icon: <AvailabilityIcon />,
+    body: (
+      <span>
+        Tjenesten skal fungere når brukerne trenger den. Eksempler: webserver
+        oppe i eksamensuka, backup hvis disken dør, redundans mot DoS.
+      </span>
+    ),
+  },
+];
+
+const FAKTOR_DEFS = [
+  {
+    term: "Noe du VET",
+    icon: <KnowFactorIcon />,
+    body: (
+      <span>
+        Passord, PIN-kode, svar på sikkerhetsspørsmål. Svakhet: kan deles,
+        gjettes, lures fra deg via phishing.
+      </span>
+    ),
+  },
+  {
+    term: "Noe du HAR",
+    icon: <HaveFactorIcon />,
+    body: (
+      <span>
+        BankID-kort, USB-nøkkel, smarttelefon med kode-app. Svakhet: kan stjeles
+        eller mistes. Ekstra tryggere kombinert med VET.
+      </span>
+    ),
+  },
+  {
+    term: "Noe du ER",
+    icon: <BeFactorIcon />,
+    body: (
+      <span>
+        Fingeravtrykk, ansikt, iris. Svakhet: vanskelig å bytte hvis
+        kompromittert — fingeren din er ikke et nytt passord.
+      </span>
+    ),
+  },
+];
 
 /**
  * SEC-01 Hva sikkerhet betyr — CIA og autentisering.
@@ -84,49 +159,12 @@ function SectionTitle({ nr, tittel }: { nr: string; tittel: string }) {
 }
 
 function CiaIntro() {
-  const ciaItems: { tag: CiaKategori; navn: string; sub: string; eks: string; Icon: typeof Lock }[] = [
-    {
-      tag: "K",
-      navn: "Konfidensialitet",
-      sub: "Bare riktig mottaker skal kunne lese.",
-      eks: "Krypter e-post, beskytt passord, sørg for at bare HR ser lønnsdata.",
-      Icon: Lock,
-    },
-    {
-      tag: "I",
-      navn: "Integritet",
-      sub: "Data skal ikke endres uten at det oppdages.",
-      eks: "Hash av nedlastet fil, signert programvare, bankoverføring som ikke kan tukles med.",
-      Icon: FileEdit,
-    },
-    {
-      tag: "T",
-      navn: "Tilgjengelighet",
-      sub: "Tjenesten skal fungere når brukerne trenger den.",
-      eks: "Webserver oppe i eksamensuka, backup hvis disken dør, redundans mot DoS.",
-      Icon: Server,
-    },
-  ];
   return (
     <div className="space-y-3">
       <p className="text-sm leading-relaxed text-muted-foreground">
         Hvert sikkerhetsmål kan brytes ned til én av disse tre. Lær dem nå — du kommer til å sortere etter dem hele resten av kurset.
       </p>
-      <div className="grid sm:grid-cols-3 gap-3">
-        {ciaItems.map((item) => (
-          <div key={item.tag} className="rounded-lg border border-border bg-card/40 p-4">
-            <div className="flex items-center gap-2 mb-2">
-              <span className="rounded bg-brand/15 text-brand text-xs font-mono px-2 py-0.5">
-                {item.tag}
-              </span>
-              <item.Icon className="h-4 w-4 text-brand" />
-              <span className="font-semibold text-sm">{item.navn}</span>
-            </div>
-            <div className="text-xs text-muted-foreground mb-2 italic">{item.sub}</div>
-            <div className="text-xs text-muted-foreground leading-relaxed">{item.eks}</div>
-          </div>
-        ))}
-      </div>
+      <VisualDefs items={CIA_DEFS} title="CIA — tre bokstaver" />
     </div>
   );
 }
@@ -241,53 +279,13 @@ function TrusselRad({
   );
 }
 
-type Faktor = "vet" | "har" | "er";
-
-const FAKTORER: { tag: Faktor; navn: string; eks: string[]; svakhet: string }[] = [
-  {
-    tag: "vet",
-    navn: "Noe du VET",
-    eks: ["passord", "PIN-kode", "svar på sikkerhetsspørsmål"],
-    svakhet: "Kan deles, gjettes, lures fra deg via phishing.",
-  },
-  {
-    tag: "har",
-    navn: "Noe du HAR",
-    eks: ["BankID-kort", "USB-nøkkel", "smarttelefon med kode-app"],
-    svakhet: "Kan stjeles eller mistes. Ekstra tryggere hvis kombinert med VET.",
-  },
-  {
-    tag: "er",
-    navn: "Noe du ER",
-    eks: ["fingeravtrykk", "ansikt", "iris"],
-    svakhet: "Vanskelig å bytte hvis kompromittert — fingeren din er ikke et nytt passord.",
-  },
-];
-
 function AutentiseringStige() {
   return (
     <div className="my-4 space-y-3">
       <p className="text-sm leading-relaxed text-muted-foreground">
         Autentisering er beviset på at du er den du sier du er. Tre typer faktorer — og <strong>totrinns</strong> betyr at du kombinerer to ulike typer (ikke to passord, men f.eks. passord + telefon-kode).
       </p>
-      <div className="grid sm:grid-cols-3 gap-3">
-        {FAKTORER.map((f) => (
-          <div key={f.tag} className="rounded-lg border border-border bg-card/40 p-4">
-            <div className="text-xs font-mono text-brand uppercase mb-1">{f.tag}</div>
-            <div className="font-semibold text-sm mb-2">{f.navn}</div>
-            <div className="text-xs text-muted-foreground mb-2">
-              {f.eks.map((e, i) => (
-                <span key={i} className="inline-block mr-1.5 rounded bg-muted/40 px-1.5 py-0.5">
-                  {e}
-                </span>
-              ))}
-            </div>
-            <div className="text-xs text-muted-foreground leading-relaxed">
-              <span className="font-medium text-orange-300">Svakhet:</span> {f.svakhet}
-            </div>
-          </div>
-        ))}
-      </div>
+      <VisualDefs items={FAKTOR_DEFS} title="Tre autentiseringsfaktorer" />
       <div className="rounded-md border border-brand/30 bg-brand/5 p-3 text-xs text-muted-foreground">
         <strong className="text-brand">Totrinns (2FA):</strong> kombiner to faktorer fra ULIKE rader. Passord + SMS-kode er VET + HAR. To passord er BARE VET — ikke 2FA.
       </div>

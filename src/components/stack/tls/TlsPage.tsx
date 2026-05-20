@@ -2,6 +2,12 @@ import { Link } from "@tanstack/react-router";
 import { ArrowRight, Lightbulb } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
+import { VisualDefs } from "@/components/stack/kurose-kurs/VisualDefs";
+import {
+  ConfidentialityIcon,
+  IntegrityIcon,
+  AuthenticityIcon,
+} from "@/components/stack/sikkerhet/securityIcons";
 import { CertificateInspector } from "./CertificateInspector";
 
 const STEPS = [
@@ -50,32 +56,30 @@ export function TlsPage() {
             TLS (Transport Layer Security, etterfølgeren til SSL) gir tre garantier
             mellom klient og server:
           </p>
-          <div className="grid sm:grid-cols-3 gap-3">
-            <div className="rounded-xl border border-border bg-card p-4">
-              <div className="text-xs uppercase tracking-wider text-brand font-semibold mb-2">
-                Konfidensialitet
-              </div>
-              <p className="text-sm text-foreground">
-                Bytene mellom dere er kryptert. Avlyttere ser bare ubrukelig støy.
-              </p>
-            </div>
-            <div className="rounded-xl border border-border bg-card p-4">
-              <div className="text-xs uppercase tracking-wider text-brand font-semibold mb-2">
-                Integritet
-              </div>
-              <p className="text-sm text-foreground">
-                Ingen kan endre bytene underveis uten at det oppdages.
-              </p>
-            </div>
-            <div className="rounded-xl border border-border bg-card p-4">
-              <div className="text-xs uppercase tracking-wider text-brand font-semibold mb-2">
-                Autentisitet (server)
-              </div>
-              <p className="text-sm text-foreground">
-                Du vet at du faktisk snakker med <code>nettbank.no</code>, ikke en angriper.
-              </p>
-            </div>
-          </div>
+          <VisualDefs
+            title="TLS-garantier"
+            items={[
+              {
+                term: "Konfidensialitet",
+                icon: <ConfidentialityIcon />,
+                body: "Bytene mellom dere er kryptert. Avlyttere ser bare ubrukelig støy.",
+              },
+              {
+                term: "Integritet",
+                icon: <IntegrityIcon />,
+                body: "Ingen kan endre bytene underveis uten at det oppdages.",
+              },
+              {
+                term: "Autentisitet (server)",
+                icon: <AuthenticityIcon />,
+                body: (
+                  <>
+                    Du vet at du faktisk snakker med <code>nettbank.no</code>, ikke en angriper.
+                  </>
+                ),
+              },
+            ]}
+          />
           <p className="mt-3 text-xs text-muted-foreground">
             <strong>Hva TLS IKKE gjør:</strong> beviser hvem KLIENTEN er (med mindre du
             bruker client certificates — sjeldent), beskytter mot serveren selv, eller

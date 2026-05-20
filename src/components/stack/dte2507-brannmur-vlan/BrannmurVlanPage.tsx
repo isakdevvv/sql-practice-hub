@@ -2,6 +2,16 @@ import { Link } from "@tanstack/react-router";
 import {Lightbulb, ArrowLeft } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
+import { VisualDefs } from "@/components/stack/kurose-kurs/VisualDefs";
+import {
+  FirewallDropIcon,
+  FirewallRejectIcon,
+  FirewallAcceptIcon,
+  HostFirewallIcon,
+  NetworkFirewallIcon,
+  AccessPortIcon,
+  TrunkPortIcon,
+} from "@/components/stack/sikkerhet/securityIcons";
 import { NetworkTopology } from "@/components/stack/dte2507-praksis/NetworkTopology";
 
 const STEPS = [
@@ -54,20 +64,26 @@ export function BrannmurVlanPage() {
             n&oslash;kkelen — i 99 % av tilfellene skal det v&aelig;re{" "}
             <code>DENY</code> (whitelist), ikke <code>ALLOW</code> (blacklist).
           </p>
-          <div className="grid sm:grid-cols-3 gap-3 text-sm">
-            <div className="rounded-lg border border-border bg-card p-4">
-              <div className="text-xs uppercase tracking-wider text-brand font-semibold mb-1">DROP</div>
-              <p className="text-muted-foreground">Pakken kastes uten svar. Avsenderen ser timeout — vanskelig &aring; portskanne.</p>
-            </div>
-            <div className="rounded-lg border border-border bg-card p-4">
-              <div className="text-xs uppercase tracking-wider text-brand font-semibold mb-1">REJECT</div>
-              <p className="text-muted-foreground">Pakken kastes med ICMP-svar («Destination Unreachable»). H&oslash;flig, men bekrefter at vi finnes.</p>
-            </div>
-            <div className="rounded-lg border border-border bg-card p-4">
-              <div className="text-xs uppercase tracking-wider text-brand font-semibold mb-1">ACCEPT</div>
-              <p className="text-muted-foreground">Pakken slippes gjennom. Tilstands-tabell oppdateres p&aring; stateful brannmurer.</p>
-            </div>
-          </div>
+          <VisualDefs
+            title="Tre brannmur-actions"
+            items={[
+              {
+                term: "DROP",
+                icon: <FirewallDropIcon />,
+                body: "Pakken kastes uten svar. Avsenderen ser timeout — vanskelig å portskanne.",
+              },
+              {
+                term: "REJECT",
+                icon: <FirewallRejectIcon />,
+                body: "Pakken kastes med ICMP-svar («Destination Unreachable»). Høflig, men bekrefter at vi finnes.",
+              },
+              {
+                term: "ACCEPT",
+                icon: <FirewallAcceptIcon />,
+                body: "Pakken slippes gjennom. Tilstands-tabell oppdateres på stateful brannmurer.",
+              },
+            ]}
+          />
         </section>
 
         <section id="typer" className="mb-10">
@@ -174,15 +190,22 @@ FW har tre interface: WAN, DMZ, LAN.
 To brannmurer i serie. Hvis FW1 kompromitteres, m&aring; angriperen ogsa
 bryte FW2 for &aring; komme til LAN. Brukes for high-stakes-milj&oslash;er.`}</pre>
           </div>
-          <div className="mt-4 grid sm:grid-cols-2 gap-3 text-sm">
-            <div className="rounded-lg border border-border bg-card p-4">
-              <h3 className="font-semibold mb-1">Host-based brannmur</h3>
-              <p className="text-muted-foreground">P&aring; selve maskinen — iptables, Windows Defender Firewall. Beskytter mot trusler INNE pa nettet (lateral movement).</p>
-            </div>
-            <div className="rounded-lg border border-border bg-card p-4">
-              <h3 className="font-semibold mb-1">Network-based brannmur</h3>
-              <p className="text-muted-foreground">P&aring; perimeter-en. Cisco ASA, FortiGate, pfSense. Beskytter MANGE maskiner pa en gang.</p>
-            </div>
+          <div className="mt-4">
+            <VisualDefs
+              title="To plasseringer"
+              items={[
+                {
+                  term: "Host-based brannmur",
+                  icon: <HostFirewallIcon />,
+                  body: "På selve maskinen — iptables, Windows Defender Firewall. Beskytter mot trusler INNE på nettet (lateral movement).",
+                },
+                {
+                  term: "Network-based brannmur",
+                  icon: <NetworkFirewallIcon />,
+                  body: "På perimeter-en. Cisco ASA, FortiGate, pfSense. Beskytter MANGE maskiner på én gang.",
+                },
+              ]}
+            />
           </div>
           <p className="mt-3 text-xs text-muted-foreground">
             Best practice: <strong>begge deler</strong>. Network-brannmuren
@@ -260,22 +283,21 @@ Hvorfor:
             IEEE 802.1Q legger en 4-byte tag i Ethernet-frame som forteller
             hvilket VLAN den tilh&oslash;rer. To moduser pa en switch-port:
           </p>
-          <div className="grid sm:grid-cols-2 gap-3 text-sm">
-            <div className="rounded-lg border border-border bg-card p-4">
-              <h3 className="font-semibold mb-1">Untagged (access port)</h3>
-              <p className="text-muted-foreground">
-                Klient-PC-en ser ingen tag. Switchen legger pa VLAN-tag pa vei inn,
-                fjerner pa vei ut. Vanlig for sluttbrukere.
-              </p>
-            </div>
-            <div className="rounded-lg border border-border bg-card p-4">
-              <h3 className="font-semibold mb-1">Tagged (trunk port)</h3>
-              <p className="text-muted-foreground">
-                Beholder taggen i framen. Brukes mellom switcher og til
-                hypervisor-noder som server flere VLAN samtidig.
-              </p>
-            </div>
-          </div>
+          <VisualDefs
+            title="To switch-port-moduser"
+            items={[
+              {
+                term: "Untagged (access port)",
+                icon: <AccessPortIcon />,
+                body: "Klient-PC-en ser ingen tag. Switchen legger på VLAN-tag på vei inn, fjerner på vei ut. Vanlig for sluttbrukere.",
+              },
+              {
+                term: "Tagged (trunk port)",
+                icon: <TrunkPortIcon />,
+                body: "Beholder taggen i framen. Brukes mellom switcher og til hypervisor-noder som server flere VLAN samtidig.",
+              },
+            ]}
+          />
           <p className="mt-3 text-xs text-muted-foreground">
             <strong>Klassisk feilkonfig:</strong> «VLAN hopping» — angriper sender
             en double-tagged frame som passerer en feil-konfigurert trunk. Forsvar:

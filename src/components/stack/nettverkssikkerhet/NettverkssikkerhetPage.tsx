@@ -1,7 +1,17 @@
+import * as React from "react";
 import { Link } from "@tanstack/react-router";
-import { ArrowRight, Lightbulb, ShieldAlert } from "lucide-react";
+import { ArrowRight, Lightbulb } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
+import { VisualDefs } from "@/components/stack/kurose-kurs/VisualDefs";
+import {
+  ArpSpoofIcon,
+  DnsSpoofIcon,
+  SynFloodIcon,
+  DdosIcon,
+  PortScanIcon,
+  WifiSniffIcon,
+} from "@/components/stack/sikkerhet/securityIcons";
 
 const STEPS = [
   { title: "Forsvarsdyp — flere lag", anchor: "forsvarsdyp" },
@@ -17,6 +27,7 @@ type Angrep = {
   navn: string;
   hvordan: string;
   forsvar: string;
+  icon: React.ReactNode;
 };
 
 const ANGREP: Angrep[] = [
@@ -24,31 +35,37 @@ const ANGREP: Angrep[] = [
     navn: "ARP spoofing / MITM",
     hvordan: "Angriperen sender falske ARP-svar så trafikken går gjennom hans maskin før den når riktig destinasjon.",
     forsvar: "Static ARP, dynamic ARP inspection på switch, TLS som beskytter selv om trafikken sniffes.",
+    icon: <ArpSpoofIcon />,
   },
   {
     navn: "DNS-spoofing",
     hvordan: "Falske DNS-svar sendes til klienten så «nettbank.no» peker på angriperens IP.",
     forsvar: "DNSSEC (signerte DNS-svar), DoH/DoT (DNS over HTTPS/TLS), HSTS i nettleseren.",
+    icon: <DnsSpoofIcon />,
   },
   {
     navn: "TCP SYN flood",
     hvordan: "Angriperen sender millioner av SYN uten å fullføre håndtrykket — servervaler ligger i half-open.",
     forsvar: "SYN cookies, rate limiting, brannmur som dropper.",
+    icon: <SynFloodIcon />,
   },
   {
     navn: "DDoS",
     hvordan: "Mange maskiner (botnet) sender trafikk samtidig for å overbelaste serveren.",
     forsvar: "CDN/anti-DDoS-tjenester (Cloudflare), rate limiting, kapasitets-overdimensjonering.",
+    icon: <DdosIcon />,
   },
   {
     navn: "Port scanning",
     hvordan: "Angriperen prober alle porter på en maskin for å finne åpne tjenester.",
     forsvar: "Brannmur som dropper (ikke rejecter) ukjent trafikk, port knocking, fail2ban.",
+    icon: <PortScanIcon />,
   },
   {
     navn: "Sniffing på open WiFi",
     hvordan: "Annen klient på samme nett kan lese all uknyttert trafikk.",
     forsvar: "Alltid HTTPS, VPN på utrygge nett, WPA3 på AP-en.",
+    icon: <WifiSniffIcon />,
   },
 ];
 
@@ -261,22 +278,20 @@ iptables -P INPUT DROP`}</pre>
 
         <section id="angrep" className="mb-10">
           <h2 className="text-xl font-semibold mb-3">5. Vanlige nettverksangrep</h2>
-          <div className="space-y-3">
-            {ANGREP.map((a) => (
-              <div key={a.navn} className="rounded-xl border border-border bg-card p-5">
-                <div className="flex items-center gap-2 mb-2">
-                  <ShieldAlert className="h-4 w-4 text-destructive" />
-                  <h3 className="font-semibold text-sm">{a.navn}</h3>
-                </div>
-                <p className="text-sm text-foreground mb-2">
-                  <strong>Hvordan:</strong> <span className="text-muted-foreground">{a.hvordan}</span>
-                </p>
-                <p className="text-sm text-foreground">
-                  <strong>Forsvar:</strong> <span className="text-muted-foreground">{a.forsvar}</span>
-                </p>
-              </div>
-            ))}
-          </div>
+          <VisualDefs
+            title="Angreps-katalog"
+            items={ANGREP.map((a) => ({
+              term: a.navn,
+              icon: a.icon,
+              body: (
+                <>
+                  <strong>Hvordan:</strong> {a.hvordan}
+                  <br />
+                  <strong>Forsvar:</strong> {a.forsvar}
+                </>
+              ),
+            }))}
+          />
         </section>
 
         <section id="webserver" className="mb-10">
