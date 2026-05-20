@@ -12,6 +12,13 @@ import {
 } from "lucide-react";
 import { SectionPager, type SectionNavItem } from "./SectionPager";
 import { Section81Live } from "./Section81Live";
+import { Section82Live } from "./Section82Live";
+import { Section83Live } from "./Section83Live";
+import { Section84Live } from "./Section84Live";
+import { Section85Live } from "./Section85Live";
+import { Section86Live } from "./Section86Live";
+import { Section87Live } from "./Section87Live";
+import { Section88Live } from "./Section88Live";
 
 type Tab =
   | "intro"
@@ -362,6 +369,8 @@ function Section82() {
     <article className="space-y-4 text-sm">
       <Header num="8.2" title="Kryptografi-prinsipper" />
 
+      <Section82Live />
+
       <p className="text-muted-foreground">
         Kryptografi gir oss konfidensialitet (og som vi skal se senere — andre mål også). Det finnes
         to fundamentalt forskjellige paradigmer: symmetrisk krypto, der begge parter har samme
@@ -550,6 +559,8 @@ function Section83() {
     <article className="space-y-4 text-sm">
       <Header num="8.3" title="Meldings-integritet — hash, MAC, signering" />
 
+      <Section83Live />
+
       <p className="text-muted-foreground">
         Kryptering skjuler innholdet, men gir ingen garanti for at det ikke er blitt endret. I
         CTR-modus, for eksempel, kan en angriper flippe vilkårlige bit i klarteksten ved å flippe
@@ -681,6 +692,15 @@ function Section83() {
         </p>
       </Example>
 
+      <div className="rounded-lg border border-border bg-muted/20 p-3">
+        <div className="text-sm font-semibold text-foreground mb-1">Praksis: PGP — signering + kryptering kombinert</div>
+        <p className="text-xs text-muted-foreground mb-2">
+          Signering og kryptering brukes som regel sammen i ekte protokoller. PGP («Pretty Good Privacy») er
+          standardeksempelet på end-to-end-kryptert e-post som kombinerer hash, signering, AES og RSA i én pakke.
+        </p>
+        <Section85Live />
+      </div>
+
       <RelatedSlugs slugs={["dte2507-fra-checksum-til-hmac"]} />
     </article>
   );
@@ -693,6 +713,8 @@ function Section84() {
   return (
     <article className="space-y-4 text-sm">
       <Header num="8.4" title="Endepunkts-autentisering" />
+
+      <Section84Live />
 
       <p className="text-muted-foreground">
         Hvordan kan Bob være sikker på at han faktisk snakker med Alice — og ikke med Trudy som
@@ -823,6 +845,17 @@ function Section84() {
         </p>
       </Example>
 
+      <div className="rounded-lg border border-border bg-muted/20 p-3">
+        <div className="text-sm font-semibold text-foreground mb-1">Praksis: WiFi-handshakes — WEP, WPA2, WPA3</div>
+        <p className="text-xs text-muted-foreground mb-2">
+          Endepunkts-autentisering er ikke bare for HTTPS. Hver gang du kobler en laptop til WiFi, kjører det en
+          handshake mellom klient og access point. Tre generasjoner viser hvordan tenkningen har modnet:
+          fra en statisk delt nøkkel (WEP, knust) via 4-way handshake (WPA2, sårbar for offline-dict) til SAE
+          i WPA3 (motstandsdyktig).
+        </p>
+        <Section88Live />
+      </div>
+
       <RelatedSlugs slugs={["nettverkssikkerhet"]} />
     </article>
   );
@@ -835,6 +868,8 @@ function Section85() {
   return (
     <article className="space-y-4 text-sm">
       <Header num="8.5" title="TLS — sikker transport for alt" />
+
+      <Section86Live />
 
       <p className="text-muted-foreground">
         TLS er det praktiske resultatet av kapittelets første halvdel. Den kombinerer asymmetrisk
@@ -1009,6 +1044,8 @@ function Section86() {
   return (
     <article className="space-y-4 text-sm">
       <Header num="8.6" title="IPsec og VPN" />
+
+      <Section87Live />
 
       <p className="text-muted-foreground">
         TLS sikrer applikasjons-laget — du må programmere det inn i hver app. IPsec sikrer
