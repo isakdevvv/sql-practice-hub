@@ -17,6 +17,82 @@ import { Section23Live } from "./Section23Live";
 import { Section24Live } from "./Section24Live";
 import { Section25Live } from "./Section25Live";
 import { Section26Live } from "./Section26Live";
+import { VisualDefs } from "./VisualDefs";
+import {
+  ClientServerArchIcon,
+  P2PArchIcon,
+  HybridArchIcon,
+  SocketPlugIcon,
+  AddrPortIcon,
+  TransportMenuIcon,
+  ProtocolDocIcon,
+  PortNumberIcon,
+  ThroughputJitterIcon,
+  RttLoopIcon,
+  StateMemoryIcon,
+  PushPullIcon,
+  BdpPipeIcon,
+  ReqResIcon,
+  PersistentChainIcon,
+  HolBlockIcon,
+  Http2Icon,
+  Http3QuicIcon,
+  CookieIcon,
+  HttpMethodIcon,
+  StatusBadgeIcon,
+  ConditionalGetIcon,
+  ProxyCacheIcon,
+  CorsIcon,
+  HttpsLockIcon,
+  HierarchyTreeIcon,
+  RootServerIcon,
+  IterRecurIcon,
+  TtlClockIcon,
+  DnsRecordIcon,
+  GlueIcon,
+  StubResolverIcon,
+  ReverseArrowIcon,
+  AuthoritativeIcon,
+  NegativeCacheIcon,
+  SignedShieldIcon,
+  Edns0Icon,
+  SmtpServerIcon,
+  ImapMailboxIcon,
+  MimeAttachmentIcon,
+  SwarmIcon,
+  ExchangeIcon,
+  DhtRingIcon,
+  HandshakeLinesIcon,
+  EnvelopeHeaderIcon,
+  SpfDmarcIcon,
+  ChunkPieceIcon,
+  RarestFirstIcon,
+  TrackerListIcon,
+  ChokingIcon,
+  BitrateLadderIcon,
+  ManifestIcon,
+  CdnGlobeIcon,
+  CdnWhyIcon,
+  DnsMapIcon,
+  CacheLayerIcon,
+  BufferBarIcon,
+  OriginShieldIcon,
+  CacheWarmIcon,
+  LiveBroadcastIcon,
+  CodecChipIcon,
+  AnycastIcon,
+  TcpServerCallIcon,
+  TcpClientCallIcon,
+  UdpPacketIcon,
+  StreamRiverIcon,
+  BlockingIcon,
+  PartialBufferIcon,
+  PortReuseIcon,
+  NagleIcon,
+  EpollPanelIcon,
+  MtuRulerIcon,
+  RawIpIcon,
+} from "./visualDefIcons.kap2";
 
 type Tab = "intro" | "2.1" | "2.2" | "2.3" | "2.4" | "2.5" | "2.6" | "2.7" | "2.8";
 
@@ -201,36 +277,73 @@ function Section21() {
       <Section21Live />
 
       <div className="grid gap-3 lg:grid-cols-2">
-        <Defs
+        <VisualDefs
           items={[
-            { term: "Klient-server", body: "Én alltid-på server, mange tilkoblende klienter." },
-            { term: "P2P (peer-to-peer)", body: "Likeverdige peers; ingen sentral server." },
-            { term: "Hybrid", body: "Sentral kontrollplan, distribuert dataplan." },
-            { term: "Socket", body: "API-døra mellom appen din og transport-laget." },
-            { term: "Adresse + port", body: "IP velger maskin, port velger prosess." },
+            {
+              term: "Klient-server",
+              icon: <ClientServerArchIcon />,
+              body: "Én alltid-på server, mange tilkoblende klienter.",
+            },
+            {
+              term: "P2P (peer-to-peer)",
+              icon: <P2PArchIcon />,
+              body: "Likeverdige peers; ingen sentral server.",
+            },
+            {
+              term: "Hybrid",
+              icon: <HybridArchIcon />,
+              body: "Sentral kontrollplan, distribuert dataplan.",
+            },
+            {
+              term: "Socket",
+              icon: <SocketPlugIcon />,
+              body: "API-døra mellom appen din og transport-laget.",
+            },
+            {
+              term: "Adresse + port",
+              icon: <AddrPortIcon />,
+              body: "IP velger maskin, port velger prosess.",
+            },
             {
               term: "Transport-tjenester",
+              icon: <TransportMenuIcon />,
               body: "Pålitelighet, throughput, timing, sikkerhet — fire knapper.",
             },
             {
               term: "App-protokoll",
+              icon: <ProtocolDocIcon />,
               body: "Meldingsformat + rekkefølge + semantikk (HTTP, DNS, SMTP).",
             },
             {
               term: "Well-known ports",
+              icon: <PortNumberIcon />,
               body: "0–1023 reservert (22 SSH, 80 HTTP, 443 HTTPS, 53 DNS).",
             },
             {
               term: "Throughput / latency / jitter",
+              icon: <ThroughputJitterIcon />,
               body: "Mengde per tid / tid per pakke / varians i tid.",
             },
             {
               term: "RTT (round-trip time)",
+              icon: <RttLoopIcon />,
               body: "Tid til server og tilbake — gulv for hvert request-svar.",
             },
-            { term: "Stateful vs stateless", body: "Husker mellom requests vs glemmer alt." },
-            { term: "Push vs pull", body: "Server dytter til klient vs klient drar fra server." },
-            { term: "BDP", body: "Båndbredde × RTT = bits «underveis» samtidig." },
+            {
+              term: "Stateful vs stateless",
+              icon: <StateMemoryIcon />,
+              body: "Husker mellom requests vs glemmer alt.",
+            },
+            {
+              term: "Push vs pull",
+              icon: <PushPullIcon />,
+              body: "Server dytter til klient vs klient drar fra server.",
+            },
+            {
+              term: "BDP",
+              icon: <BdpPipeIcon />,
+              body: "Båndbredde × RTT = bits «underveis» samtidig.",
+            },
           ]}
         />
         <Illustration caption="To prosesser snakker via sockets — applikasjonen bryr seg ikke om hvordan transport-laget faktisk leverer dataene.">
@@ -388,40 +501,71 @@ function Section22() {
       <Section22Live />
 
       <div className="grid gap-3 lg:grid-cols-2">
-        <Defs
+        <VisualDefs
           items={[
             {
               term: "Request / response",
+              icon: <ReqResIcon />,
               body: "Startlinje + headers + body; svar har statuslinje.",
             },
-            { term: "Stateless", body: "Server glemmer alt mellom requests — bevisst valg." },
+            {
+              term: "Stateless",
+              icon: <StateMemoryIcon />,
+              body: "Server glemmer alt mellom requests — bevisst valg.",
+            },
             {
               term: "Persistent forbindelse",
+              icon: <PersistentChainIcon />,
               body: "Holder TCP åpen for flere requests (keep-alive).",
             },
             {
               term: "Pipelining / HOL-blocking",
+              icon: <HolBlockIcon />,
               body: "Send flere på rad; sakte svar blokkerer raske.",
             },
-            { term: "HTTP/2", body: "Binær, mange streams over én TCP-forbindelse." },
+            {
+              term: "HTTP/2",
+              icon: <Http2Icon />,
+              body: "Binær, mange streams over én TCP-forbindelse.",
+            },
             {
               term: "HTTP/3 (QUIC)",
+              icon: <Http3QuicIcon />,
               body: "Streams uavhengige også på transportlaget; UDP-basert.",
             },
-            { term: "Cookies", body: "Server-satt tekst som klienten gir tilbake hver request." },
+            {
+              term: "Cookies",
+              icon: <CookieIcon />,
+              body: "Server-satt tekst som klienten gir tilbake hver request.",
+            },
             {
               term: "Metoder",
+              icon: <HttpMethodIcon />,
               body: "GET hent, POST opprett, PUT erstatt, PATCH endre, DELETE slett.",
             },
-            { term: "Statuskoder", body: "2xx ok, 3xx redirect, 4xx du-feil, 5xx jeg-feil." },
-            { term: "Conditional GET", body: "If-None-Match → server svarer 304 (uendret)." },
+            {
+              term: "Statuskoder",
+              icon: <StatusBadgeIcon />,
+              body: "2xx ok, 3xx redirect, 4xx du-feil, 5xx jeg-feil.",
+            },
+            {
+              term: "Conditional GET",
+              icon: <ConditionalGetIcon />,
+              body: "If-None-Match → server svarer 304 (uendret).",
+            },
             {
               term: "Proxy / web-cache",
+              icon: <ProxyCacheIcon />,
               body: "Bedrifts-mellom-server som cacher for sine brukere.",
             },
-            { term: "CORS", body: "Headers som lar fremmed domene lese svaret i nettleseren." },
+            {
+              term: "CORS",
+              icon: <CorsIcon />,
+              body: "Headers som lar fremmed domene lese svaret i nettleseren.",
+            },
             {
               term: "HTTPS / TLS",
+              icon: <HttpsLockIcon />,
               body: "HTTP over TLS over TCP — autentisering, kryptering, integritet.",
             },
           ]}
@@ -614,39 +758,73 @@ function Section23() {
       <Section23Live />
 
       <div className="grid gap-3 lg:grid-cols-2">
-        <Defs
+        <VisualDefs
           items={[
-            { term: "Hierarkisk navnerom", body: "Leses høyre→venstre; ansvar deles per nivå." },
-            { term: "Root-servere", body: "13 logiske, hundrevis fysisk via anycast — toppen." },
+            {
+              term: "Hierarkisk navnerom",
+              icon: <HierarchyTreeIcon />,
+              body: "Leses høyre→venstre; ansvar deles per nivå.",
+            },
+            {
+              term: "Root-servere",
+              icon: <RootServerIcon />,
+              body: "13 logiske, hundrevis fysisk via anycast — toppen.",
+            },
             {
               term: "Iterativt vs rekursivt",
+              icon: <IterRecurIcon />,
               body: "Klient→resolver rekursivt; resolver→auth iterativt.",
             },
             {
               term: "Caching + TTL",
+              icon: <TtlClockIcon />,
               body: "Lokal lagring i N sekunder — det som gjør DNS skalerbar.",
             },
             {
               term: "Record-typer",
+              icon: <DnsRecordIcon />,
               body: "A=IPv4, AAAA=IPv6, CNAME=alias, MX=mail, NS=navneserver, TXT=fri tekst.",
             },
             {
               term: "Glue records",
+              icon: <GlueIcon />,
               body: "Følger med delegering så du unngår sirkulær avhengighet.",
             },
-            { term: "Stub-resolver", body: "OS-biblioteket som bare spør lokal resolver." },
-            { term: "Reverse DNS (PTR)", body: "IP → navn, via in-addr.arpa-sonen." },
-            { term: "Autoritativ svar", body: "Fra sonens egen server (AA-flagg) vs cache." },
+            {
+              term: "Stub-resolver",
+              icon: <StubResolverIcon />,
+              body: "OS-biblioteket som bare spør lokal resolver.",
+            },
+            {
+              term: "Reverse DNS (PTR)",
+              icon: <ReverseArrowIcon />,
+              body: "IP → navn, via in-addr.arpa-sonen.",
+            },
+            {
+              term: "Autoritativ svar",
+              icon: <AuthoritativeIcon />,
+              body: "Fra sonens egen server (AA-flagg) vs cache.",
+            },
             {
               term: "Negativ caching",
+              icon: <NegativeCacheIcon />,
               body: "NXDOMAIN huskes også — derfor henger feil-svar igjen.",
             },
-            { term: "DoH / DoT", body: "Krypterer DNS-spørringen mellom stub og resolver." },
+            {
+              term: "DoH / DoT",
+              icon: <HttpsLockIcon />,
+              body: "Krypterer DNS-spørringen mellom stub og resolver.",
+            },
             {
               term: "DNSSEC",
+              icon: <SignedShieldIcon />,
               body: "Signaturer i hierarki-kjede — root signerer TLD signerer ...",
             },
-            { term: "EDNS0", body: "Utvider UDP-svar fra 512 til 4096 bytes." },
+            {
+              term: "EDNS0",
+              icon: <Edns0Icon />,
+              body: "Utvider UDP-svar fra 512 til 4096 bytes.",
+            },
           ]}
         />
         <Illustration caption="Iterativt DNS-oppslag for www.uit.no fra en lokal resolver — fire trinn, deretter cached.">
@@ -831,37 +1009,71 @@ function Section24() {
       <Section24Live />
 
       <div className="grid gap-3 lg:grid-cols-2">
-        <Defs
+        <VisualDefs
           items={[
-            { term: "SMTP", body: "Server→server-protokoll for å levere mail (port 25/587)." },
-            { term: "IMAP / POP3", body: "Klient henter sin egen postkasse fra serveren." },
-            { term: "MIME", body: "Pakker vedlegg/bilder/HTML inn i ASCII (Base64)." },
-            { term: "BitTorrent", body: "P2P-fildeling: fil i biter, alle deler med alle." },
-            { term: "Tit-for-tat", body: "Send mest til dem som sender mest til deg." },
-            { term: "DHT (Kademlia)", body: "Distribuert peer-katalog uten sentral tracker." },
+            {
+              term: "SMTP",
+              icon: <SmtpServerIcon />,
+              body: "Server→server-protokoll for å levere mail (port 25/587).",
+            },
+            {
+              term: "IMAP / POP3",
+              icon: <ImapMailboxIcon />,
+              body: "Klient henter sin egen postkasse fra serveren.",
+            },
+            {
+              term: "MIME",
+              icon: <MimeAttachmentIcon />,
+              body: "Pakker vedlegg/bilder/HTML inn i ASCII (Base64).",
+            },
+            {
+              term: "BitTorrent",
+              icon: <SwarmIcon />,
+              body: "P2P-fildeling: fil i biter, alle deler med alle.",
+            },
+            {
+              term: "Tit-for-tat",
+              icon: <ExchangeIcon />,
+              body: "Send mest til dem som sender mest til deg.",
+            },
+            {
+              term: "DHT (Kademlia)",
+              icon: <DhtRingIcon />,
+              body: "Distribuert peer-katalog uten sentral tracker.",
+            },
             {
               term: "SMTP-handshake",
+              icon: <HandshakeLinesIcon />,
               body: "Klartekst-linjer: HELO, MAIL FROM, RCPT TO, DATA, ..",
             },
             {
               term: "Envelope vs header",
+              icon: <EnvelopeHeaderIcon />,
               body: "Konvolutt (ruting) vs brev-innhold (From:-feltet).",
             },
             {
               term: "SPF / DKIM / DMARC",
+              icon: <SpfDmarcIcon />,
               body: "DNS-baserte signaturer som avslører forfalskning.",
             },
             {
               term: "Biter og blocks",
+              icon: <ChunkPieceIcon />,
               body: "Bit = 256 kB med SHA-hash; blokk = 16 kB som sendes.",
             },
-            { term: "Rarest-first", body: "Last ned det færrest har — sprer risiko." },
+            {
+              term: "Rarest-first",
+              icon: <RarestFirstIcon />,
+              body: "Last ned det færrest har — sprer risiko.",
+            },
             {
               term: "Tracker vs DHT",
+              icon: <TrackerListIcon />,
               body: "Sentral peer-liste vs distribuert via magnet-lenker.",
             },
             {
               term: "Choking",
+              icon: <ChokingIcon />,
               body: "Stopper å sende til dem som ikke gir tilbake; unchoker periodisk.",
             },
           ]}
@@ -1038,33 +1250,73 @@ function Section25() {
       <Section25Live />
 
       <div className="grid gap-3 lg:grid-cols-2">
-        <Defs
+        <VisualDefs
           items={[
-            { term: "DASH", body: "Flere bitrate-versjoner; klient velger kvalitet per segment." },
-            { term: "Manifest", body: "Liste over hvilke bitrater og segmenter som finnes." },
-            { term: "CDN", body: "Kant-servere nær brukeren — innhold kopieres ut." },
+            {
+              term: "DASH",
+              icon: <BitrateLadderIcon />,
+              body: "Flere bitrate-versjoner; klient velger kvalitet per segment.",
+            },
+            {
+              term: "Manifest",
+              icon: <ManifestIcon />,
+              body: "Liste over hvilke bitrater og segmenter som finnes.",
+            },
+            {
+              term: "CDN",
+              icon: <CdnGlobeIcon />,
+              body: "Kant-servere nær brukeren — innhold kopieres ut.",
+            },
             {
               term: "Hvorfor CDN funker",
+              icon: <CdnWhyIcon />,
               body: "Kortere RTT, mindre origin-trafikk, raskere TCP-vekst.",
             },
             {
               term: "DNS-mapping",
+              icon: <DnsMapIcon />,
               body: "CDN-DNS svarer med nærmeste edge basert på resolver-IP.",
             },
-            { term: "Cache-hierarki", body: "Edge → regional → origin; 99 %+ stoppes på edge." },
-            { term: "Segment-lengde", body: "2 s = raskt bytte, 10 s = mindre overhead." },
-            { term: "Buffer-fyll", body: "Stor buffer = trygt; lav buffer = panikk-bytte ned." },
+            {
+              term: "Cache-hierarki",
+              icon: <CacheLayerIcon />,
+              body: "Edge → regional → origin; 99 %+ stoppes på edge.",
+            },
+            {
+              term: "Segment-lengde",
+              icon: <TtlClockIcon />,
+              body: "2 s = raskt bytte, 10 s = mindre overhead.",
+            },
+            {
+              term: "Buffer-fyll",
+              icon: <BufferBarIcon />,
+              body: "Stor buffer = trygt; lav buffer = panikk-bytte ned.",
+            },
             {
               term: "Origin shield",
+              icon: <OriginShieldIcon />,
               body: "Ekstra cache-lag — beskytter origin mot thundering herd.",
             },
-            { term: "Cache-warming", body: "Pre-populer edge før storserie-slipp." },
+            {
+              term: "Cache-warming",
+              icon: <CacheWarmIcon />,
+              body: "Pre-populer edge før storserie-slipp.",
+            },
             {
               term: "Live-distribusjon",
+              icon: <LiveBroadcastIcon />,
               body: "Encode → ingest → regional → edge i nær sann-tid.",
             },
-            { term: "Codec-valg", body: "H.264 universell, H.265/AV1 sparer båndbredde." },
-            { term: "Anycast", body: "Samme IP fra mange steder; BGP velger nærmeste automatisk." },
+            {
+              term: "Codec-valg",
+              icon: <CodecChipIcon />,
+              body: "H.264 universell, H.265/AV1 sparer båndbredde.",
+            },
+            {
+              term: "Anycast",
+              icon: <AnycastIcon />,
+              body: "Samme IP fra mange steder; BGP velger nærmeste automatisk.",
+            },
           ]}
         />
         <Illustration caption="CDN-arkitektur: bruker går til lokal edge, edge spør regional, regional eventuelt origin.">
@@ -1239,32 +1491,68 @@ function Section26() {
       <Section26Live />
 
       <div className="grid gap-3 lg:grid-cols-2">
-        <Defs
+        <VisualDefs
           items={[
             {
               term: "Socket",
+              icon: <SocketPlugIcon />,
               body: "OS-handle for en endpoint: (proto, lokal IP+port, ekstern IP+port).",
             },
-            { term: "TCP server-kall", body: "socket → bind → listen → accept-loop." },
-            { term: "TCP klient-kall", body: "socket → connect → send/recv → close." },
-            { term: "UDP-socket", body: "socket → bind → sendto / recvfrom; ingen forbindelse." },
+            {
+              term: "TCP server-kall",
+              icon: <TcpServerCallIcon />,
+              body: "socket → bind → listen → accept-loop.",
+            },
+            {
+              term: "TCP klient-kall",
+              icon: <TcpClientCallIcon />,
+              body: "socket → connect → send/recv → close.",
+            },
+            {
+              term: "UDP-socket",
+              icon: <UdpPacketIcon />,
+              body: "socket → bind → sendto / recvfrom; ingen forbindelse.",
+            },
             {
               term: "Stream vs datagram",
+              icon: <StreamRiverIcon />,
               body: "TCP = bytestrøm uten grenser, UDP = atomiske pakker.",
             },
             {
               term: "Blocking vs non-blocking",
+              icon: <BlockingIcon />,
               body: "Vent passivt vs spør «er det noe?» og fortsett.",
             },
             {
               term: "send() returnerer mindre",
+              icon: <PartialBufferIcon />,
               body: "Kernel-buffer full → du må loope resten selv.",
             },
-            { term: "SO_REUSEADDR", body: "Ta porten selv om forrige forbindelse er i TIME_WAIT." },
-            { term: "Nagle / TCP_NODELAY", body: "Samler små send-er; skru av for chat/spill." },
-            { term: "epoll / kqueue", body: "Vent på 10 000 sockets fra én tråd, O(1)." },
-            { term: "MTU", body: "Største pakke uten fragmentering (Ethernet 1500 byte)." },
-            { term: "Raw socket", body: "Sende egne IP-pakker; brukes av ping, traceroute." },
+            {
+              term: "SO_REUSEADDR",
+              icon: <PortReuseIcon />,
+              body: "Ta porten selv om forrige forbindelse er i TIME_WAIT.",
+            },
+            {
+              term: "Nagle / TCP_NODELAY",
+              icon: <NagleIcon />,
+              body: "Samler små send-er; skru av for chat/spill.",
+            },
+            {
+              term: "epoll / kqueue",
+              icon: <EpollPanelIcon />,
+              body: "Vent på 10 000 sockets fra én tråd, O(1).",
+            },
+            {
+              term: "MTU",
+              icon: <MtuRulerIcon />,
+              body: "Største pakke uten fragmentering (Ethernet 1500 byte).",
+            },
+            {
+              term: "Raw socket",
+              icon: <RawIpIcon />,
+              body: "Sende egne IP-pakker; brukes av ping, traceroute.",
+            },
           ]}
         />
         <Illustration caption="TCP-server-loop: accept() lager en ny socket per klient, det opprinnelige fortsetter å lytte.">
