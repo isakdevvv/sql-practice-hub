@@ -15,6 +15,80 @@ import { Section92Live } from "./Section92Live";
 import { Section93Live } from "./Section93Live";
 import { Section94Live } from "./Section94Live";
 import { Section95Live } from "./Section95Live";
+import { VisualDefs } from "./VisualDefs";
+import {
+  VodStreamIcon,
+  VoipCallIcon,
+  LiveBroadcastIcon,
+  IotSensorIcon,
+  CloudGamingIcon,
+  JitterIcon,
+  ProcJitterIcon,
+  LossToleranceIcon,
+  MosScoreIcon,
+  GlassToGlassIcon,
+  BestEffortIcon,
+  CodecDialIcon,
+  MpdManifestIcon,
+  SegmentIcon,
+  GopFramesIcon,
+  BitrateLadderIcon,
+  AdaptationSetIcon,
+  AbrLoopIcon,
+  ThroughputAbrIcon,
+  BufferFillIcon,
+  AbrAlgoIcon,
+  OscillationIcon,
+  StallIcon,
+  StartupDelayIcon,
+  CdnIcon,
+  PcmSampleIcon,
+  GCodecIcon,
+  OpusIcon,
+  VideoCodecIcon,
+  PlcPatchIcon,
+  FecIcon,
+  InterleavingIcon,
+  PlayoutBufferIcon,
+  FixedBufferIcon,
+  AdaptiveBufferIcon,
+  VadIcon,
+  MouthToEarIcon,
+  BitFieldIcon,
+  PaddingIcon,
+  ExtensionIcon,
+  CsrcCountIcon,
+  MarkerBitIcon,
+  PayloadTypeIcon,
+  SeqNumIcon,
+  TimestampIcon,
+  SsrcIcon,
+  CsrcListIcon,
+  RtcpSrIcon,
+  RtcpRrIcon,
+  SdesIcon,
+  ByeIcon,
+  RtcpAppIcon,
+  RtspIcon,
+  SrtpIcon,
+  RsvpIcon,
+  SoftStateIcon,
+  DiffservIcon,
+  DscpIcon,
+  ExpeditedIcon,
+  AssuredIcon,
+  BeDefaultIcon,
+  MarkingIcon,
+  PolicingIcon,
+  ShapingIcon,
+  LeakyBucketIcon,
+  TokenBucketIcon,
+  PriorityQueueIcon,
+  WfqIcon,
+  RedDropIcon,
+  AdmissionIcon,
+  SlaIcon,
+} from "./visualDefIcons.kap9";
 
 type Tab = "intro" | "9.1" | "9.2" | "9.3" | "9.4" | "9.5" | "9.6" | "9.7";
 
@@ -197,57 +271,73 @@ function Section91() {
       <Section91Live />
 
       <div className="grid gap-3 lg:grid-cols-2">
-        <Defs
+        <VisualDefs
           items={[
             {
               term: "Lagret strømmende video (Netflix, YouTube VOD)",
+              icon: <VodStreamIcon />,
               body: "Ferdig på server, tåler stor oppstarts-buffer — TCP er greit.",
             },
             {
               term: "Sann-tids samtale (VoIP, video-møte)",
+              icon: <VoipCallIcon />,
               body: "Under 150 ms mund-til-øre; tåler 5–10 % tap med PLC.",
             },
             {
               term: "Live streaming (sport, konsert)",
+              icon: <LiveBroadcastIcon />,
               body: "Glass-to-glass 2–10 s for DASH/HLS; WebRTC under 1 s.",
             },
             {
               term: "IoT-sensor / telemetri",
+              icon: <IotSensorIcon />,
               body: "Små pakker, jevnt tempo; MQTT/CoAP, 200–500 ms tåles.",
             },
             {
               term: "Sky-spill (cloud gaming)",
+              icon: <CloudGamingIcon />,
               body: "Strengeste delay-krav — under 80 ms motion-to-photon.",
             },
             {
               term: "Jitter (network jitter)",
+              icon: <JitterIcon />,
               body: "Variasjon i pakke-ankomster fra varierende kø-fyll.",
             },
             {
               term: "Processing jitter",
+              icon: <ProcJitterIcon />,
               body: "Variasjon fra endesystem-koding/dekoding, ikke fra nettet.",
             },
             {
               term: "Tap-toleranse",
+              icon: <LossToleranceIcon />,
               body: "Hvor mange % pakker som kan tapes uten hørbar forringelse.",
             },
             {
               term: "Mean Opinion Score (MOS)",
+              icon: <MosScoreIcon />,
               body: "Subjektiv 1–5-skala; E-modellen estimerer fra delay+tap+jitter.",
             },
             {
               term: "End-to-end vs interaktiv delay",
+              icon: <GlassToGlassIcon />,
               body: "Total tid mikrofon-til-høyttaler vs én-veis konversasjons-pause.",
             },
             {
               term: "Glass-to-glass-latens",
+              icon: <GlassToGlassIcon />,
               body: "Foton-til-skjerm: koding + transport + buffering kombinert.",
             },
             {
               term: "Best-effort-kjernen",
+              icon: <BestEffortIcon />,
               body: "IP gir ingen garantier — appen må håndtere variasjon selv.",
             },
-            { term: "Codec", body: "Coder-decoder: komprimerer rå media til bits og tilbake." },
+            {
+              term: "Codec",
+              icon: <CodecDialIcon />,
+              body: "Coder-decoder: komprimerer rå media til bits og tilbake.",
+            },
           ]}
         />
         <Illustration caption="Krav-rom: hver applikasjons-type plassert etter delay-budsjett og tap-toleranse.">
@@ -389,50 +479,76 @@ function Section92() {
       <Section92Live />
 
       <div className="grid gap-3 lg:grid-cols-2">
-        <Defs
+        <VisualDefs
           items={[
             {
               term: "MPD (Media Presentation Description)",
+              icon: <MpdManifestIcon />,
               body: "XML-«meny» som lister varianter, lengder og URL-mønster.",
             },
-            { term: "Segment", body: "Selvstendig bit video (2–10 s) som kan dekodes alene." },
+            {
+              term: "Segment",
+              icon: <SegmentIcon />,
+              body: "Selvstendig bit video (2–10 s) som kan dekodes alene.",
+            },
             {
               term: "GOP (Group of Pictures)",
+              icon: <GopFramesIcon />,
               body: "I-ramme + P/B-rammer; segment må starte på I-ramme.",
             },
             {
               term: "Bitrate-varianter (representations)",
+              icon: <BitrateLadderIcon />,
               body: "Samme video, N ulike kvalitetsnivåer som separate filer.",
             },
             {
               term: "Adaptation set",
+              icon: <AdaptationSetIcon />,
               body: "MPD-grupper relaterte varianter (alle video, alle lydspor).",
             },
             {
               term: "ABR-algoritme (Adaptive Bitrate)",
+              icon: <AbrLoopIcon />,
               body: "Klient-logikken som plukker bitrate per segment.",
             },
             {
               term: "Throughput-basert ABR",
+              icon: <ThroughputAbrIcon />,
               body: "Måler forrige nedlasting; velger neste under estimatet.",
             },
-            { term: "Buffer-basert ABR", body: "Stort buffer → hev bitrate; lite buffer → senk." },
-            { term: "BOLA", body: "Hybrid-ABR med Lyapunov-funksjon; standard i dash.js." },
+            {
+              term: "Buffer-basert ABR",
+              icon: <BufferFillIcon />,
+              body: "Stort buffer → hev bitrate; lite buffer → senk.",
+            },
+            {
+              term: "BOLA",
+              icon: <AbrAlgoIcon />,
+              body: "Hybrid-ABR med Lyapunov-funksjon; standard i dash.js.",
+            },
             {
               term: "MPC ABR (Model Predictive Control)",
+              icon: <AbrAlgoIcon />,
               body: "Simulerer N segmenter framover; velger beste bane.",
             },
             {
               term: "Bitrate-oscillation",
+              icon: <OscillationIcon />,
               body: "Hyppige kvalitets-bytter; dempes med EWMA eller hysterese.",
             },
             {
               term: "Stall / re-buffering",
+              icon: <StallIcon />,
               body: "Buffer tomt; playback stopper. Verste brukeropplevelse.",
             },
-            { term: "Startup delay", body: "Fra play-trykk til første ramme — typisk 1–3 s." },
+            {
+              term: "Startup delay",
+              icon: <StartupDelayIcon />,
+              body: "Fra play-trykk til første ramme — typisk 1–3 s.",
+            },
             {
               term: "CDN (Content Delivery Network)",
+              icon: <CdnIcon />,
               body: "Cache-servere nær brukeren; gjør DASH skalerbart.",
             },
           ]}
@@ -583,53 +699,91 @@ function Section93() {
       <Section93Live />
 
       <div className="grid gap-3 lg:grid-cols-2">
-        <Defs
+        <VisualDefs
           items={[
-            { term: "Codec", body: "Coder-decoder: kompresjon ↔ rekonstruksjon av lyd/video." },
+            {
+              term: "Codec",
+              icon: <CodecDialIcon />,
+              body: "Coder-decoder: kompresjon ↔ rekonstruksjon av lyd/video.",
+            },
             {
               term: "PCM (Pulse-Code Modulation)",
+              icon: <PcmSampleIcon />,
               body: "Rå digital lyd: sample + kvantiser. Ingen kompresjon.",
             },
             {
               term: "G.711 (PCMU / PCMA)",
+              icon: <GCodecIcon />,
               body: "Klassisk telefon-codec, 64 kbps; sårbar for tap.",
             },
-            { term: "G.729", body: "8 kbps CELP-tale-codec; smal båndbredde, ikke musikk." },
-            { term: "Opus", body: "Moderne åpen codec; 6–510 kbps, robust mot tap via FEC." },
-            { term: "H.264 / AVC", body: "HD-video-codec; 1080p på 4–8 Mbps, universell støtte." },
-            { term: "H.265 / HEVC", body: "Etterfølger; ~50 % bedre kompresjon, dyrere lisens." },
-            { term: "VP9", body: "Googles åpne HEVC-konkurrent; brukt på YouTube 4K." },
-            { term: "AV1", body: "Ny åpen codec; 20–30 % bedre enn HEVC, voksende utbredelse." },
+            {
+              term: "G.729",
+              icon: <GCodecIcon />,
+              body: "8 kbps CELP-tale-codec; smal båndbredde, ikke musikk.",
+            },
+            {
+              term: "Opus",
+              icon: <OpusIcon />,
+              body: "Moderne åpen codec; 6–510 kbps, robust mot tap via FEC.",
+            },
+            {
+              term: "H.264 / AVC",
+              icon: <VideoCodecIcon />,
+              body: "HD-video-codec; 1080p på 4–8 Mbps, universell støtte.",
+            },
+            {
+              term: "H.265 / HEVC",
+              icon: <VideoCodecIcon />,
+              body: "Etterfølger; ~50 % bedre kompresjon, dyrere lisens.",
+            },
+            {
+              term: "VP9",
+              icon: <VideoCodecIcon />,
+              body: "Googles åpne HEVC-konkurrent; brukt på YouTube 4K.",
+            },
+            {
+              term: "AV1",
+              icon: <VideoCodecIcon />,
+              body: "Ny åpen codec; 20–30 % bedre enn HEVC, voksende utbredelse.",
+            },
             {
               term: "PLC (Packet Loss Concealment)",
+              icon: <PlcPatchIcon />,
               body: "Generer manglende lyd ved å gjenta/interpolere naboer.",
             },
             {
               term: "FEC (Forward Error Correction)",
+              icon: <FecIcon />,
               body: "Pakk inn ekstra-data så tap kan rekonstrueres umiddelbart.",
             },
             {
               term: "Interleaving",
+              icon: <InterleavingIcon />,
               body: "Sprer tap som mange små feil i stedet for ett stort hull.",
             },
             {
               term: "Fixed playout-buffer",
+              icon: <FixedBufferIcon />,
               body: "Fast forsinkelse hele samtalen; enkelt, ofte suboptimalt.",
             },
             {
               term: "Adaptive playout-buffer",
+              icon: <AdaptiveBufferIcon />,
               body: "Buffer ≈ middel + k·σ_jitter; vokser/krymper løpende.",
             },
             {
               term: "Playout-buffer (jitter-buffer)",
+              icon: <PlayoutBufferIcon />,
               body: "Mottakerkø som jevner ut ankomst-jitter til fast takt.",
             },
             {
               term: "Silence suppression / VAD",
+              icon: <VadIcon />,
               body: "Stopper sending under stillhet; sparer båndbredde.",
             },
             {
               term: "Mund-til-øre-delay (mouth-to-ear)",
+              icon: <MouthToEarIcon />,
               body: "Total en-veis delay; mål: under 150 ms.",
             },
           ]}
@@ -782,62 +936,91 @@ function Section94() {
       <Section94Live />
 
       <div className="grid gap-3 lg:grid-cols-2">
-        <Defs
+        <VisualDefs
           items={[
-            { term: "V — Version (2 bit)", body: "Versjonen, alltid 2 i dagens RTP." },
+            {
+              term: "V — Version (2 bit)",
+              icon: <BitFieldIcon />,
+              body: "Versjonen, alltid 2 i dagens RTP.",
+            },
             {
               term: "P — Padding (1 bit)",
+              icon: <PaddingIcon />,
               body: "Hvis 1: padding-bytes på slutten, antall i siste byte.",
             },
             {
               term: "X — Extension (1 bit)",
+              icon: <ExtensionIcon />,
               body: "Hvis 1: utvidelses-header etter de 12 obligatoriske bytene.",
             },
             {
               term: "CC — CSRC Count (4 bit)",
+              icon: <CsrcCountIcon />,
               body: "Antall CSRC-er som følger; 0 utenom mixer-bruk.",
             },
-            { term: "M — Marker (1 bit)", body: "Codec-flagg: «her starter ramme/talespurt»." },
+            {
+              term: "M — Marker (1 bit)",
+              icon: <MarkerBitIcon />,
+              body: "Codec-flagg: «her starter ramme/talespurt».",
+            },
             {
               term: "PT — Payload Type (7 bit)",
+              icon: <PayloadTypeIcon />,
               body: "Hvilken codec; 0=G.711µ, 8=G.711A, 96–127=dynamisk.",
             },
             {
               term: "SEQ — Sequence number (16 bit)",
+              icon: <SeqNumIcon />,
               body: "Inkrementeres per pakke; oppdager tap og rekkefølge.",
             },
             {
               term: "TS — Timestamp (32 bit)",
+              icon: <TimestampIcon />,
               body: "Codec-tid for når innholdet ble laget; styrer avspilling.",
             },
             {
               term: "SSRC — Synchronization Source (32 bit)",
+              icon: <SsrcIcon />,
               body: "Unik kilde-ID; skiller strømmer på samme port.",
             },
             {
               term: "CSRC — Contributing Source list",
+              icon: <CsrcListIcon />,
               body: "Mixer-bidrags-IDer; tom for direkte ende-til-ende.",
             },
             {
               term: "RTCP Sender Report (SR)",
+              icon: <RtcpSrIcon />,
               body: "NTP-tid + RTP-ts; lar mottaker synke lyd og video.",
             },
             {
               term: "RTCP Receiver Report (RR)",
+              icon: <RtcpRrIcon />,
               body: "Mottakerens målte jitter/tap/seq tilbake til sender.",
             },
             {
               term: "RTCP SDES (Source Description)",
+              icon: <SdesIcon />,
               body: "CNAME + tekstlig kilde-info; obligatorisk for CNAME.",
             },
-            { term: "RTCP BYE", body: "«Jeg forlater økten» — fjern SSRC umiddelbart." },
-            { term: "RTCP APP", body: "Applikasjons-spesifikk escape hatch for utvidelser." },
+            {
+              term: "RTCP BYE",
+              icon: <ByeIcon />,
+              body: "«Jeg forlater økten» — fjern SSRC umiddelbart.",
+            },
+            {
+              term: "RTCP APP",
+              icon: <RtcpAppIcon />,
+              body: "Applikasjons-spesifikk escape hatch for utvidelser.",
+            },
             {
               term: "RTSP (Real-Time Streaming Protocol)",
+              icon: <RtspIcon />,
               body: "Fjernkontroll: SETUP/PLAY/PAUSE/TEARDOWN over TCP.",
             },
             {
               term: "SRTP (Secure RTP)",
+              icon: <SrtpIcon />,
               body: "AES-kryptert payload + HMAC-autentisering; brukt i WebRTC.",
             },
           ]}
@@ -970,60 +1153,96 @@ function Section95() {
       <Section95Live />
 
       <div className="grid gap-3 lg:grid-cols-2">
-        <Defs
+        <VisualDefs
           items={[
-            { term: "Best-effort", body: "Én FIFO-kø per lenke; alle pakker likeverdige." },
+            {
+              term: "Best-effort",
+              icon: <BestEffortIcon />,
+              body: "Én FIFO-kø per lenke; alle pakker likeverdige.",
+            },
             {
               term: "IntServ / RSVP",
+              icon: <RsvpIcon />,
               body: "Per-strøm reservasjon; harde garantier, skalerer dårlig.",
             },
             {
               term: "RSVP soft-state",
+              icon: <SoftStateIcon />,
               body: "Reservasjon dør hvis ikke refreshet hvert 30. sekund.",
             },
-            { term: "DiffServ", body: "Per-klasse prioritering via DSCP-merke; skalerer godt." },
+            {
+              term: "DiffServ",
+              icon: <DiffservIcon />,
+              body: "Per-klasse prioritering via DSCP-merke; skalerer godt.",
+            },
             {
               term: "DSCP (Differentiated Services Code Point)",
+              icon: <DscpIcon />,
               body: "6 bits i IP-header; velger Per-Hop Behavior.",
             },
             {
               term: "EF (Expedited Forwarding, DSCP 46)",
+              icon: <ExpeditedIcon />,
               body: "Tids-kritisk klasse; priority-kø, lavt delay/tap.",
             },
             {
               term: "AF (Assured Forwarding)",
+              icon: <AssuredIcon />,
               body: "4 klasser × 3 drop-nivåer; minimums-båndbredde garantert.",
             },
             {
               term: "BE (Best Effort, DSCP 0)",
+              icon: <BeDefaultIcon />,
               body: "Default; får det som er igjen etter EF/AF.",
             },
-            { term: "Marking", body: "Sett DSCP ved nett-inngangen; indre rutere stoler på den." },
+            {
+              term: "Marking",
+              icon: <MarkingIcon />,
+              body: "Sett DSCP ved nett-inngangen; indre rutere stoler på den.",
+            },
             {
               term: "Policing",
+              icon: <PolicingIcon />,
               body: "Drop/re-mark overskudd ved nett-grensa; ofte token-bucket.",
             },
             {
               term: "Shaping",
+              icon: <ShapingIcon />,
               body: "Hold overskudd i kø og slipp ut jevnt; bytter tap mot delay.",
             },
-            { term: "Leaky bucket", body: "Konstant utgangs-rate; ingen burst slipper gjennom." },
-            { term: "Token bucket", body: "Burst opp til bøtte b; langtids-snitt = rate r." },
+            {
+              term: "Leaky bucket",
+              icon: <LeakyBucketIcon />,
+              body: "Konstant utgangs-rate; ingen burst slipper gjennom.",
+            },
+            {
+              term: "Token bucket",
+              icon: <TokenBucketIcon />,
+              body: "Burst opp til bøtte b; langtids-snitt = rate r.",
+            },
             {
               term: "Priority queueing (PQ)",
+              icon: <PriorityQueueIcon />,
               body: "Høy-prioritet alltid først; kan sulte lav-prioritet.",
             },
             {
               term: "WFQ (Weighted Fair Queueing)",
+              icon: <WfqIcon />,
               body: "Hver kø sin vekt; ingen kø blir helt sulta ut.",
             },
             {
               term: "RED (Random Early Detection)",
+              icon: <RedDropIcon />,
               body: "Drop tilfeldig pakke før full kø; bremser TCP tidlig.",
             },
-            { term: "Admission control", body: "Si nei til ny strøm når nettet er fullt." },
+            {
+              term: "Admission control",
+              icon: <AdmissionIcon />,
+              body: "Si nei til ny strøm når nettet er fullt.",
+            },
             {
               term: "SLA (Service Level Agreement)",
+              icon: <SlaIcon />,
               body: "ISP-kontrakt: maks delay/tap per klasse.",
             },
           ]}
