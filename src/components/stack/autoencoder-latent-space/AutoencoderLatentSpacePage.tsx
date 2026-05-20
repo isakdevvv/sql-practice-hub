@@ -2,6 +2,16 @@ import { useMemo, useState } from "react";
 import { SiteHeader } from "@/components/SiteHeader";
 import { Button } from "@/components/ui/button";
 import { BookOpen, Shrink } from "lucide-react";
+import { VisualDefs } from "@/components/stack/kurose-kurs/VisualDefs";
+import {
+  LatentSpaceIcon,
+  AutoencoderIcon,
+  EncoderIcon,
+  DecoderIcon,
+  ReconstructionIcon,
+  UnderOverCompleteIcon,
+  PcaIcon,
+} from "@/components/stack/statIcons";
 
 type Tab = "intro" | "live";
 
@@ -64,15 +74,6 @@ function TabBtn({
     </button>
   );
 }
-function Def({ term, children }: { term: string; children: React.ReactNode }) {
-  return (
-    <div>
-      <dt className="font-semibold text-foreground">{term}</dt>
-      <dd className="text-muted-foreground mt-0.5">{children}</dd>
-    </div>
-  );
-}
-
 function Intro({ onPick }: { onPick: (t: Tab) => void }) {
   return (
     <div className="space-y-4 text-sm">
@@ -131,39 +132,83 @@ function Intro({ onPick }: { onPick: (t: Tab) => void }) {
         </ul>
       </div>
 
-      <div className="rounded-xl border border-border bg-card p-4">
-        <h2 className="text-base font-semibold mb-2">Ordbok</h2>
-        <dl className="space-y-2.5 text-[13px]">
-          <Def term="Latent-rom">
-            Det k-dimensjonale rommet i midten av nettet. «Latent» = skjult — disse k tallene fanger
-            essensen av input.
-          </Def>
-          <Def term="Latent-dimensjon k">
-            Antall tall i flaskehalsen. Lite k = mye kompresjon, men dårligere rekonstruksjon. Stort
-            k = god rekonstruksjon, men ingen kompresjon (kan bare være identity-funksjonen).
-          </Def>
-          <Def term="Encoder f">
-            Funksjonen som tar n-dim input og produserer k-dim latent. Typisk: noen sammenkoblede
-            lag med aktivering.
-          </Def>
-          <Def term="Decoder g">
-            Funksjonen som tar k-dim latent og produserer n-dim rekonstruksjon. Typisk speil-bilde
-            av encoder.
-          </Def>
-          <Def term="Rekonstruksjons-tap">
-            L = (1/n) Σ (x_i - g(f(x))_i)². Vanlig MSE. Nettet trenes til å minimere dette.
-          </Def>
-          <Def term="Undercomplete vs overcomplete">
-            Undercomplete: k &lt; n (vanlig). Tvinger nettet til å komprimere. Overcomplete: k &gt;
-            n (kan lære identity = nyttig kun med regularisering, f.eks. sparse autoencoder).
-          </Def>
-          <Def term="PCA = lineær autoencoder">
-            Hvis encoder/decoder er lineære og loss er MSE, så er den optimale løsningen identisk
-            med PCA på input-dataen. Autoencoder med ikke-lineære aktiveringer kan gjøre mer enn
-            PCA.
-          </Def>
-        </dl>
-      </div>
+      <VisualDefs
+        title="Ordbok"
+        items={[
+          {
+            term: "Latent-rom",
+            icon: <LatentSpaceIcon />,
+            body: (
+              <>
+                Det k-dimensjonale rommet i midten av nettet. «Latent» = skjult — disse k tallene
+                fanger essensen av input.
+              </>
+            ),
+          },
+          {
+            term: "Latent-dimensjon k",
+            icon: <AutoencoderIcon />,
+            body: (
+              <>
+                Antall tall i flaskehalsen. Lite k = mye kompresjon, men dårligere rekonstruksjon.
+                Stort k = god rekonstruksjon, men ingen kompresjon (kan bare være
+                identity-funksjonen).
+              </>
+            ),
+          },
+          {
+            term: "Encoder f",
+            icon: <EncoderIcon />,
+            body: (
+              <>
+                Funksjonen som tar n-dim input og produserer k-dim latent. Typisk: noen
+                sammenkoblede lag med aktivering.
+              </>
+            ),
+          },
+          {
+            term: "Decoder g",
+            icon: <DecoderIcon />,
+            body: (
+              <>
+                Funksjonen som tar k-dim latent og produserer n-dim rekonstruksjon. Typisk
+                speil-bilde av encoder.
+              </>
+            ),
+          },
+          {
+            term: "Rekonstruksjons-tap",
+            icon: <ReconstructionIcon />,
+            body: (
+              <>
+                L = (1/n) Σ (x_i - g(f(x))_i)². Vanlig MSE. Nettet trenes til å minimere dette.
+              </>
+            ),
+          },
+          {
+            term: "Under/overcomplete",
+            icon: <UnderOverCompleteIcon />,
+            body: (
+              <>
+                Undercomplete: k &lt; n (vanlig). Tvinger nettet til å komprimere. Overcomplete: k
+                &gt; n (kan lære identity = nyttig kun med regularisering, f.eks. sparse
+                autoencoder).
+              </>
+            ),
+          },
+          {
+            term: "PCA = lineær AE",
+            icon: <PcaIcon />,
+            body: (
+              <>
+                Hvis encoder/decoder er lineære og loss er MSE, så er den optimale løsningen
+                identisk med PCA på input-dataen. Autoencoder med ikke-lineære aktiveringer kan
+                gjøre mer enn PCA.
+              </>
+            ),
+          },
+        ]}
+      />
       <div className="flex gap-2">
         <Button size="sm" onClick={() => onPick("live")}>
           Start på modul 1 →

@@ -2,6 +2,16 @@ import { useEffect, useMemo, useState } from "react";
 import { SiteHeader } from "@/components/SiteHeader";
 import { Button } from "@/components/ui/button";
 import { BookOpen, Atom, Play, Pause, RotateCcw } from "lucide-react";
+import { VisualDefs } from "@/components/stack/kurose-kurs/VisualDefs";
+import {
+  GmmIcon,
+  MixingCoefIcon,
+  MuIcon,
+  SigmaIcon,
+  ResponsibilityIcon,
+  EmAlgoIcon,
+  LogLikelihoodIcon,
+} from "@/components/stack/statIcons";
 
 type Tab = "intro" | "live";
 
@@ -63,15 +73,6 @@ function TabBtn({
     </button>
   );
 }
-function Def({ term, children }: { term: string; children: React.ReactNode }) {
-  return (
-    <div>
-      <dt className="font-semibold text-foreground">{term}</dt>
-      <dd className="text-muted-foreground mt-0.5">{children}</dd>
-    </div>
-  );
-}
-
 function Intro({ onPick }: { onPick: (t: Tab) => void }) {
   return (
     <div className="space-y-4 text-sm">
@@ -104,47 +105,87 @@ function Intro({ onPick }: { onPick: (t: Tab) => void }) {
         </p>
       </div>
 
-      <div className="rounded-xl border border-border bg-card p-4">
-        <h2 className="text-base font-semibold mb-2">Ordbok</h2>
-        <dl className="space-y-2.5 text-[13px]">
-          <Def term="Mixture model">
-            Antakelsen er at data er trukket fra en blanding av flere fordelinger. Hver fordeling
-            kalles en «komponent» — har sin egen vekt (mixing coefficient) som sier hvor sannsynlig
-            den er.
-          </Def>
-          <Def term="Mixing coefficient π_k">
-            Sannsynligheten for at et tilfeldig punkt kom fra komponent k. π_1 + π_2 + ... + π_K =
-            1.
-          </Def>
-          <Def term="μ_k (mu)">Sentrum av komponent k. For 2D data: et punkt (x, y).</Def>
-          <Def term="Σ_k (sigma, kovariansmatrise)">
-            Form og orientering av komponent k. For 2D: en 2×2 matrise. Diagonal Σ = aksjuste
-            ellipse. Full Σ = roterer ellipsen.
-          </Def>
-          <Def term="Responsibility γ(z_nk)">
-            Sannsynligheten for at punkt n kom fra komponent k, gitt nåværende parametre. Et tall
-            mellom 0 og 1. Summerer til 1 over k.
-          </Def>
-          <Def term="EM-algoritmen (Expectation-Maximization)">
-            Itererer to trinn til konvergens:
-            <ul className="list-disc pl-5 mt-1">
-              <li>
-                <strong>E-step:</strong> regn ut responsibilities γ(z_nk) for hvert punkt og hver
-                komponent gitt nåværende parametre.
-              </li>
-              <li>
-                <strong>M-step:</strong> oppdater π_k, μ_k, Σ_k slik at de maksimerer likelihood
-                gitt nåværende responsibilities.
-              </li>
-            </ul>
-          </Def>
-          <Def term="Log-likelihood">
-            Mål på hvor godt modellen forklarer dataene:{" "}
-            <code>L = Σ log(Σ π_k · N(x_n | μ_k, Σ_k))</code>. EM garanterer at L øker for hver
-            iterasjon, til konvergens i et lokalt maksimum.
-          </Def>
-        </dl>
-      </div>
+      <VisualDefs
+        title="Ordbok"
+        items={[
+          {
+            term: "Mixture model",
+            icon: <GmmIcon />,
+            body: (
+              <>
+                Antakelsen er at data er trukket fra en blanding av flere fordelinger. Hver
+                fordeling kalles en «komponent» — har sin egen vekt (mixing coefficient) som sier
+                hvor sannsynlig den er.
+              </>
+            ),
+          },
+          {
+            term: "Mixing coefficient π_k",
+            icon: <MixingCoefIcon />,
+            body: (
+              <>
+                Sannsynligheten for at et tilfeldig punkt kom fra komponent k. π_1 + π_2 + ... +
+                π_K = 1.
+              </>
+            ),
+          },
+          {
+            term: "μ_k (mu)",
+            icon: <MuIcon />,
+            body: <>Sentrum av komponent k. For 2D data: et punkt (x, y).</>,
+          },
+          {
+            term: "Σ_k (kovarians)",
+            icon: <SigmaIcon />,
+            body: (
+              <>
+                Form og orientering av komponent k. For 2D: en 2×2 matrise. Diagonal Σ = aksjuste
+                ellipse. Full Σ = roterer ellipsen.
+              </>
+            ),
+          },
+          {
+            term: "Responsibility γ(z_nk)",
+            icon: <ResponsibilityIcon />,
+            body: (
+              <>
+                Sannsynligheten for at punkt n kom fra komponent k, gitt nåværende parametre. Et
+                tall mellom 0 og 1. Summerer til 1 over k.
+              </>
+            ),
+          },
+          {
+            term: "EM-algoritmen",
+            icon: <EmAlgoIcon />,
+            body: (
+              <>
+                Itererer to trinn til konvergens:
+                <ul className="list-disc pl-5 mt-1">
+                  <li>
+                    <strong>E-step:</strong> regn ut responsibilities γ(z_nk) for hvert punkt og
+                    hver komponent gitt nåværende parametre.
+                  </li>
+                  <li>
+                    <strong>M-step:</strong> oppdater π_k, μ_k, Σ_k slik at de maksimerer
+                    likelihood gitt nåværende responsibilities.
+                  </li>
+                </ul>
+              </>
+            ),
+          },
+          {
+            term: "Log-likelihood",
+            icon: <LogLikelihoodIcon />,
+            body: (
+              <>
+                Mål på hvor godt modellen forklarer dataene:{" "}
+                <code>L = Σ log(Σ π_k · N(x_n | μ_k, Σ_k))</code>. EM garanterer at L øker for hver
+                iterasjon, til konvergens i et lokalt maksimum.
+              </>
+            ),
+          },
+        ]}
+      />
       <div className="flex gap-2">
         <Button size="sm" onClick={() => onPick("live")}>
           Start på modul 1 →
