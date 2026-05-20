@@ -11,6 +11,7 @@ import {
   ExternalLink,
 } from "lucide-react";
 import { SectionPager, type SectionNavItem } from "./SectionPager";
+import { Section21Live } from "./Section21Live";
 
 type Tab = "intro" | "2.1" | "2.2" | "2.3" | "2.4" | "2.5" | "2.6" | "2.7" | "2.8";
 
@@ -191,6 +192,8 @@ function Section21() {
         arkitekturen: skal én part «eie» tjenesten (klient-server), eller skal alle deltakerne være
         likeverdige (P2P)? Det andre valget er hvilken transport du skal bygge på.
       </p>
+
+      <Section21Live />
 
       <div className="grid gap-3 lg:grid-cols-2">
         <Defs
