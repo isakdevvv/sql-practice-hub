@@ -92,29 +92,75 @@ type Step = {
 };
 
 const STEPS: Step[] = [
+  // ---------- KRETS-SVITSJING: hele livssyklusen ----------
   {
-    title: "1. Krets-svitsjing: en sti reserveres",
+    title: "1. Krets-setup: A ber om en kanal til X",
     description:
-      "Før A i det hele tatt får sende et bit til X, må nettet sette opp en dedikert kanal: A→R1→R2→R4→X. Lenkene langs ruten øremerkes for denne samtalen — ingen andre får bruke kapasiteten der, selv om det skulle være ledig. Tenk på det som en jernbaneskinne lagt ned bare for ett tog.",
+      "A sender en setup-melding hop-for-hop: «jeg vil sette opp en samtale til X». Hver ruter på veien reserverer en tidsslot eller frekvenskanal og videresender setup-en. Stien er ikke klar enda — vi venter på bekreftelse.",
     mode: "krets",
-    reservedPath: ["kildeA", "r1", "r2", "r4", "destX"],
     flows: [{ source: "A", path: ["kildeA", "r1", "r2", "r4", "destX"], offset: 0, laps: 1 }],
   },
   {
-    title: "2. Krets-svitsjing: stille — kapasiteten sløses",
+    title: "2. Reservasjon: hver ruter ser av en slot",
     description:
-      "A og X snakker ikke kontinuerlig. I pausene står den reserverte stien tom, men ingen andre har lov til å bruke den. B og C har data å sende, men de må vente eller få sin egen kanal et annet sted. Dette er kjerneproblemet med krets-svitsjing: garantert kapasitet betyr garantert sløsing når trafikken er burstig.",
+      "Når setup-meldingen kommer fram til X, svarer X med en bekreftelse tilbake. Hver ruter ser av sin lille bit av kapasiteten på lenken (f.eks. 1/24 av en TDM-trunk). Stien A→R1→R2→R4→X er nå reservert — ingen andre kan bruke disse slots'ene selv om de står tomme.",
+    mode: "krets",
+    reservedPath: ["kildeA", "r1", "r2", "r4", "destX"],
+    flows: [{ source: "A", path: ["destX", "r4", "r2", "r1", "kildeA"], offset: 0, laps: 1 }],
+  },
+  {
+    title: "3. Krets-svitsjing: data flyter med garantert kapasitet",
+    description:
+      "Nå har A en garantert bitstrøm til X. Pakkene trenger ikke header med destinasjon — bare slot-nummeret bestemmer hvor de skal. Ingen kø, ingen tap, alltid samme forsinkelse. Telefon-nettet (PSTN) virket slik fra 1960-tallet til 2000-tallet.",
     mode: "krets",
     reservedPath: ["kildeA", "r1", "r2", "r4", "destX"],
     flows: [
-      // Én enkelt pakke som beveger seg sakte — resten av tiden er stille.
+      { source: "A", path: ["kildeA", "r1", "r2", "r4", "destX"], offset: 0.0, laps: 2 },
+      { source: "A", path: ["kildeA", "r1", "r2", "r4", "destX"], offset: 0.5, laps: 2 },
+    ],
+  },
+  {
+    title: "4. Stille — den reserverte stien står tom",
+    description:
+      "A og X snakker ikke kontinuerlig. I pausene står stien tom, men ingen andre har lov til å bruke den. B og C har data å sende, men de må vente. Dette er kjerneproblemet med krets-svitsjing: garantert kapasitet betyr garantert sløsing når trafikken er burstig.",
+    mode: "krets",
+    reservedPath: ["kildeA", "r1", "r2", "r4", "destX"],
+    flows: [
       { source: "A", path: ["kildeA", "r1", "r2", "r4", "destX"], offset: 0, laps: 0.35 },
     ],
   },
   {
-    title: "3. Pakke-svitsjing: statistisk multipleksing",
+    title: "5. Teardown — kretsen rives og slots frigjøres",
     description:
-      "Nå sender A, B og C samtidig. Hver pakke står på egne ben — den får ruter-adresse-hodet sitt, og ruterne videresender den når den ankommer. Pakker fra alle tre kildene flettes inn på de samme lenkene. Ingen reserverer noe på forhånd; lenkene utnyttes så mye som mulig.",
+      "Når samtalen er ferdig sender A en teardown-melding. Hver ruter frigjør sin slot, og kapasiteten er igjen tilgjengelig for andre samtaler. Hele livssyklusen (setup → data → teardown) er overhead — for korte forbindelser er det dyrt.",
+    mode: "krets",
+    flows: [{ source: "A", path: ["kildeA", "r1", "r2", "r4", "destX"], offset: 0, laps: 1 }],
+  },
+
+  // ---------- PAKKE-SVITSJING: per-hop forwarding ----------
+  {
+    title: "6. Pakke-svitsjing: A sender uten å reservere noe",
+    description:
+      "I pakke-svitsjet nett (internett) er det ingen setup. A pakker dataen sin i en pakke med destinasjons-adresse i header-en og sender den ut. Hver pakke står på egne ben — ingen tilstand er etablert i ruterne på forhånd.",
+    mode: "pakke",
+    flows: [
+      { source: "A", path: ["kildeA", "r1", "r2", "r4", "destX"], offset: 0, laps: 1 },
+    ],
+  },
+  {
+    title: "7. R1 ruter per pakke — uavhengig beslutning",
+    description:
+      "R1 leser destinasjon i hver pakke og slår opp i forwarding-tabellen sin. To pakker fra samme A kan ende opp på ulike utgående lenker hvis lasten endrer seg — eller hvis ECMP (equal-cost multi-path) er aktivert. Helt ulikt krets-svitsjing der alle pakker følger samme reserverte sti.",
+    mode: "pakke",
+    flows: [
+      { source: "A", path: ["kildeA", "r1", "r2", "r4", "destX"], offset: 0, laps: 1 },
+      { source: "A", path: ["kildeA", "r1", "r3", "r4", "destX"], offset: 0.5, laps: 1 },
+    ],
+  },
+  {
+    title: "8. Statistisk multipleksing — A, B og C deler lenkene",
+    description:
+      "Når A, B og C sender samtidig, flettes pakkene deres inn på de samme lenkene basert på når de ankommer. Ingen reservasjon — bare ankomst-rekkefølge. Når en av dem er stille, kan de andre bruke kapasiteten. Det er hele grunnen til at internett er billigere enn telefonnettet var.",
     mode: "pakke",
     flows: [
       { source: "A", path: ["kildeA", "r1", "r2", "r4", "destX"], offset: 0.0, laps: 1.6 },
@@ -126,9 +172,9 @@ const STEPS: Step[] = [
     ],
   },
   {
-    title: "4. Pakke-svitsjing: køen vokser, pakker kan mistes",
+    title: "9. Burst — køen i R1 vokser og pakker mistes",
     description:
-      "Hva skjer hvis alle tre kildene plutselig sender for mye samtidig? R1 må holde pakker i et minne-buffer mens utgående lenke er opptatt. Bufferet er endelig — overstiger trafikken kapasiteten, må ruteren droppe pakker. Du ser kø-telleren vokse, og noen pakker forsvinner underveis (rød ring).",
+      "Hva skjer hvis alle tre kildene plutselig sender for mye samtidig? R1 må holde pakker i et minne-buffer mens utgående lenke er opptatt. Bufferet er endelig — overstiger trafikken kapasiteten, må ruteren droppe pakker (tail drop). Du ser kø-telleren vokse, og noen pakker forsvinner underveis (rød ring).",
     mode: "pakke",
     flows: [
       { source: "A", path: ["kildeA", "r1", "r2", "r4", "destX"], offset: 0.0, laps: 1.4 },
@@ -154,6 +200,19 @@ const STEPS: Step[] = [
     ],
     queueAt: "r1",
     queueMax: 8,
+  },
+  {
+    title: "10. TCP backer av — senderne reduserer raten etter tap",
+    description:
+      "Når TCP-senderne i A, B og C oppdager at pakker mistes (timeout eller tre dup-ACK-er), halverer de sin congestion-window. Trafikken faller, køen i R1 tømmes, og pakkene begynner å komme fram igjen. Internett regulerer seg selv — sluttsystemene tar ansvaret for å unngå kollaps. Det fungerer fordi de fleste sender TCP, ikke ren UDP.",
+    mode: "pakke",
+    flows: [
+      { source: "A", path: ["kildeA", "r1", "r2", "r4", "destX"], offset: 0.0, laps: 1.2 },
+      { source: "B", path: ["kildeB", "r1", "r3", "r4", "destY"], offset: 0.5, laps: 1.2 },
+      { source: "C", path: ["kildeC", "r1", "r2", "r4", "destZ"], offset: 0.25, laps: 1.2 },
+    ],
+    queueAt: "r1",
+    queueMax: 3,
   },
 ];
 
