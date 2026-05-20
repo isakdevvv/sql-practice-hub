@@ -5,7 +5,17 @@ import { Play, Pause, SkipForward, SkipBack, RotateCcw } from "lucide-react";
 // når du åpner vg.no?»-walkthrough. Erstatter den statiske SVG-en og det
 // tekst-baserte eksemplet i den opprinnelige Section11.
 
-type NodeId = "mobil" | "homeRouter" | "accessIsp" | "ispDns" | "tier1" | "vgIsp" | "vgServer";
+type NodeId =
+  | "mobil"
+  | "homeRouter"
+  | "accessIsp"
+  | "ispDns"
+  | "tier1"
+  | "vgIsp"
+  | "vgServer"
+  | "rootDns"
+  | "tldDns"
+  | "authDns";
 
 type Node = {
   id: NodeId;
@@ -20,8 +30,11 @@ const NODES: Node[] = [
   { id: "mobil", label: "Din mobil", sublabel: "host", x: 60, y: 200, kind: "host" },
   { id: "homeRouter", label: "Hjemme-ruter", x: 170, y: 200, kind: "router" },
   { id: "accessIsp", label: "Aksess-ISP", sublabel: "Altibox", x: 290, y: 200, kind: "router" },
-  { id: "ispDns", label: "DNS-server", sublabel: "ISP", x: 290, y: 90, kind: "dns" },
+  { id: "ispDns", label: "DNS-server", sublabel: "ISP recursive", x: 290, y: 90, kind: "dns" },
   { id: "tier1", label: "Tier-1 backbone", x: 440, y: 200, kind: "router" },
+  { id: "rootDns", label: "Root DNS", sublabel: ".", x: 440, y: 60, kind: "dns" },
+  { id: "tldDns", label: "TLD DNS", sublabel: ".no", x: 560, y: 60, kind: "dns" },
+  { id: "authDns", label: "Authoritative", sublabel: "ns.vg.no", x: 700, y: 60, kind: "dns" },
   { id: "vgIsp", label: "VG sin ISP", x: 580, y: 200, kind: "router" },
   { id: "vgServer", label: "VG-server", sublabel: "vg.no", x: 700, y: 200, kind: "server" },
 ];
@@ -33,6 +46,9 @@ const EDGES: [NodeId, NodeId][] = [
   ["accessIsp", "tier1"],
   ["tier1", "vgIsp"],
   ["vgIsp", "vgServer"],
+  ["tier1", "rootDns"],
+  ["tier1", "tldDns"],
+  ["tier1", "authDns"],
 ];
 
 type Step = {
@@ -40,68 +56,225 @@ type Step = {
   description: string;
   /** Path som pakken animeres langs (node-IDer). */
   path: NodeId[];
-  /** Farge på pakken — DNS = lilla, TCP/TLS = oransje, HTTP = grønn. */
-  color: "dns" | "tcp" | "tls" | "http" | "data";
+  /** Farge på pakken — DNS lilla, TCP/TLS oransje/cyan, HTTP brand, DHCP gul, ARP grå, FIN rød. */
+  color: "dns" | "tcp" | "tls" | "http" | "data" | "dhcp" | "arp" | "fin";
   /** Hvilke definisjoner som er relevante — for fremheving senere. */
   relatedTerms: string[];
 };
 
 const STEPS: Step[] = [
+  // -------- DHCP: få en IP-adresse fra nettet --------
   {
-    title: "1. Mobilen slår opp vg.no i DNS",
+    title: "1. DHCP Discover (broadcast)",
     description:
-      "Før vi kan kontakte serveren må vi vite IP-adressen. Mobilen sender en DNS-spørring til ISP-ens DNS-server: «Hva er IP-en til vg.no?»",
-    path: ["mobil", "homeRouter", "accessIsp", "ispDns"],
-    color: "dns",
-    relatedTerms: ["Host (også: end-system)", "ISP (Internet Service Provider)"],
+      "Mobilen har nettopp koblet seg til WiFi-en og har ingen IP. Den sender en broadcast («til alle på nettet») som spør «er det en DHCP-server her som kan gi meg konfigurasjon?»",
+    path: ["mobil", "homeRouter"],
+    color: "dhcp",
+    relatedTerms: ["Host (også: end-system)"],
   },
   {
-    title: "2. DNS-svaret kommer tilbake",
+    title: "2. DHCP Offer",
     description:
-      "DNS-serveren slår opp vg.no og returnerer IP-adressen (f.eks. 195.88.55.16). Mobilen kan nå adressere pakker direkte til VG-serveren.",
-    path: ["ispDns", "accessIsp", "homeRouter", "mobil"],
+      "Hjemme-ruteren (som også er DHCP-server) tilbyr en IP, gateway, og DNS-server. F.eks. «du får 192.168.1.42, gateway er meg, DNS er 192.168.1.1».",
+    path: ["homeRouter", "mobil"],
+    color: "dhcp",
+    relatedTerms: ["Ruter"],
+  },
+  {
+    title: "3. DHCP Request",
+    description:
+      "Mobilen ber formelt om tilbudet. (Hvis flere DHCP-servere finnes, velger den én og avslår de andre.)",
+    path: ["mobil", "homeRouter"],
+    color: "dhcp",
+    relatedTerms: ["Protokoll"],
+  },
+  {
+    title: "4. DHCP Ack",
+    description:
+      "Hjemme-ruteren bekrefter tildelingen. Nå har mobilen en gyldig IP og vet hvem default gateway er.",
+    path: ["homeRouter", "mobil"],
+    color: "dhcp",
+    relatedTerms: ["Protokoll"],
+  },
+
+  // -------- ARP: finn MAC-adressen til gateway --------
+  {
+    title: "5. ARP Request (broadcast)",
+    description:
+      "Mobilen vet IP-en til hjemme-ruteren (gateway), men ikke MAC-adressen. Den må vite MAC-en for å sende én eneste ramme på lokalnettet. Den sender en ARP-broadcast: «hvem har 192.168.1.1?»",
+    path: ["mobil", "homeRouter"],
+    color: "arp",
+    relatedTerms: ["Lenke"],
+  },
+  {
+    title: "6. ARP Reply",
+    description:
+      "Hjemme-ruteren svarer unicast tilbake til mobilen: «jeg har 192.168.1.1, og MAC-en min er aa:bb:cc:11:22:33». Mobilen cacher dette i ARP-tabellen for noen minutter.",
+    path: ["homeRouter", "mobil"],
+    color: "arp",
+    relatedTerms: ["Lenke"],
+  },
+
+  // -------- DNS: oversett vg.no til IP via rekursiv oppslag --------
+  {
+    title: "7. DNS-spørring til ISP-DNS",
+    description:
+      "Mobilen sender en rekursiv DNS-spørring til ISP-en sin DNS-server: «hva er IP-en til vg.no?»",
+    path: ["mobil", "homeRouter", "accessIsp", "ispDns"],
     color: "dns",
     relatedTerms: ["ISP (Internet Service Provider)", "Protokoll"],
   },
   {
-    title: "3. TCP-handshake: SYN",
+    title: "8. ISP-DNS spør root-serveren",
     description:
-      "Mobilen åpner en TCP-forbindelse til VG-serveren på port 443. Første pakke heter SYN og ber om å starte en samtale.",
+      "ISP-en sin DNS har ikke vg.no i cache. Den spør først én av de 13 root-DNS-serverne: «hvem håndterer .no?»",
+    path: ["ispDns", "accessIsp", "tier1", "rootDns"],
+    color: "dns",
+    relatedTerms: ["ISP (Internet Service Provider)"],
+  },
+  {
+    title: "9. Root svarer: «spør TLD-en .no»",
+    description:
+      "Root-serveren peker videre: «.no TLD-en svarer på det, spør dem». ISP-DNS holder igjen, klar til å spørre TLD.",
+    path: ["rootDns", "tier1", "ispDns"],
+    color: "dns",
+    relatedTerms: ["IETF og RFC"],
+  },
+  {
+    title: "10. ISP-DNS spør TLD (.no)",
+    description:
+      "ISP-DNS spør .no-TLD-serveren: «hvem håndterer vg.no?»",
+    path: ["ispDns", "accessIsp", "tier1", "tldDns"],
+    color: "dns",
+    relatedTerms: ["IETF og RFC"],
+  },
+  {
+    title: "11. TLD svarer: «spør ns.vg.no»",
+    description:
+      "TLD peker til vg.no sin authoritative DNS-server (eid av VG selv eller deres leverandør).",
+    path: ["tldDns", "tier1", "ispDns"],
+    color: "dns",
+    relatedTerms: ["IETF og RFC"],
+  },
+  {
+    title: "12. ISP-DNS spør authoritative",
+    description:
+      "ISP-DNS spør endelig den authoritative serveren: «hva er IP-en til vg.no?»",
+    path: ["ispDns", "accessIsp", "tier1", "authDns"],
+    color: "dns",
+    relatedTerms: ["Protokoll"],
+  },
+  {
+    title: "13. Authoritative svarer med IP",
+    description:
+      "vg.no sin DNS-server svarer: «vg.no er 195.88.55.16». ISP-DNS cacher svaret en stund (TTL) så neste bruker slipper hele runden.",
+    path: ["authDns", "tier1", "ispDns"],
+    color: "dns",
+    relatedTerms: ["Protokoll"],
+  },
+  {
+    title: "14. DNS-svaret videresendes til mobilen",
+    description:
+      "ISP-DNS sender det endelige svaret tilbake til mobilen. Hele DNS-leddet kunne ta 50–200 ms hvis ikke cached.",
+    path: ["ispDns", "accessIsp", "homeRouter", "mobil"],
+    color: "dns",
+    relatedTerms: ["Host (også: end-system)"],
+  },
+
+  // -------- TCP 3-veis handshake --------
+  {
+    title: "15. TCP-handshake: SYN",
+    description:
+      "Mobilen åpner en TCP-forbindelse til vg.no på port 443. Første pakke er en SYN («synchronize») som ber om å starte en samtale.",
     path: ["mobil", "homeRouter", "accessIsp", "tier1", "vgIsp", "vgServer"],
     color: "tcp",
     relatedTerms: ["Ruter", "Protokoll"],
   },
   {
-    title: "4. TCP-handshake: SYN-ACK + ACK",
+    title: "16. TCP-handshake: SYN-ACK",
     description:
-      "Serveren svarer SYN-ACK, mobilen svarer ACK. Nå er forbindelsen åpen — begge parter har bekreftet at den andre er der.",
+      "Serveren bekrefter SYN-en og sender sin egen SYN tilbake. Én pakke som bærer to flagg samtidig.",
     path: ["vgServer", "vgIsp", "tier1", "accessIsp", "homeRouter", "mobil"],
     color: "tcp",
     relatedTerms: ["Protokoll", "Ruter"],
   },
   {
-    title: "5. TLS-handshake forhandler kryptering",
+    title: "17. TCP-handshake: ACK",
     description:
-      "Før HTTP-en sendes må vi avtale en krypteringsnøkkel. TLS gjør dette med et par ekstra round-trips — sertifikatet sjekkes, og en delt nøkkel etableres.",
+      "Mobilen sender en ren ACK. Nå er TCP-forbindelsen etablert begge veier — begge parter har bekreftet at den andre er der.",
+    path: ["mobil", "homeRouter", "accessIsp", "tier1", "vgIsp", "vgServer"],
+    color: "tcp",
+    relatedTerms: ["Protokoll"],
+  },
+
+  // -------- TLS handshake (i tre deler) --------
+  {
+    title: "18. TLS ClientHello",
+    description:
+      "Mobilen starter krypteringen ved å sende en ClientHello: liste over støttede chiffer, en tilfeldig nonce, og evt. SNI («vg.no»).",
     path: ["mobil", "homeRouter", "accessIsp", "tier1", "vgIsp", "vgServer"],
     color: "tls",
     relatedTerms: ["Protokoll", "IETF og RFC"],
   },
   {
-    title: "6. HTTP GET-request",
+    title: "19. TLS ServerHello + sertifikat",
     description:
-      "Endelig sender mobilen en HTTP-request: «GET / HTTP/2». Den går gjennom 8–15 rutere på vei, men kanaliseres som ett logisk endepunkt-til-endepunkt-strøm.",
+      "Serveren velger ett chiffer, sender sin egen nonce, og inkluderer X.509-sertifikatet (signert av en CA mobilen stoler på).",
+    path: ["vgServer", "vgIsp", "tier1", "accessIsp", "homeRouter", "mobil"],
+    color: "tls",
+    relatedTerms: ["Protokoll"],
+  },
+  {
+    title: "20. TLS Key Exchange + Finished",
+    description:
+      "Mobilen verifiserer sertifikatet, generer en master-nøkkel, og sender en kryptert «Finished». Nå har begge en delt nøkkel — TLS er klar.",
+    path: ["mobil", "homeRouter", "accessIsp", "tier1", "vgIsp", "vgServer"],
+    color: "tls",
+    relatedTerms: ["Protokoll"],
+  },
+
+  // -------- HTTP request / response --------
+  {
+    title: "21. HTTP GET /",
+    description:
+      "Endelig sender mobilen en HTTP-request: «GET / HTTP/2». Krypterte over TLS-tunnelen.",
     path: ["mobil", "homeRouter", "accessIsp", "tier1", "vgIsp", "vgServer"],
     color: "http",
     relatedTerms: ["Protokoll", "Ruter"],
   },
   {
-    title: "7. Serveren svarer med HTML",
+    title: "22. Serveren svarer med HTML",
     description:
-      "Serveren returnerer forsidens HTML. Mobilen parser HTML-en og oppdager at den trenger flere ressurser (bilder, CSS, JavaScript) — som starter nye GET-requester.",
+      "Serveren returnerer forsidens HTML. Mobilen begynner å parse, og oppdager raskt at den trenger flere ressurser.",
     path: ["vgServer", "vgIsp", "tier1", "accessIsp", "homeRouter", "mobil"],
     color: "data",
     relatedTerms: ["Host (også: end-system)", "Lenke"],
+  },
+  {
+    title: "23. Last resten av siden (60+ GET-er parallelt)",
+    description:
+      "HTML refererer 60+ andre filer — CSS, JavaScript, bilder, font-er. Mobilen åpner flere TCP-forbindelser (eller multiplexer over HTTP/2) og henter alt parallelt.",
+    path: ["mobil", "homeRouter", "accessIsp", "tier1", "vgIsp", "vgServer"],
+    color: "http",
+    relatedTerms: ["Protokoll", "Distribuert applikasjon"],
+  },
+
+  // -------- TCP teardown --------
+  {
+    title: "24. TCP FIN",
+    description:
+      "Når siden er ferdig lastet, sender mobilen et FIN-flagg som signaliserer «ingen flere data fra meg». TCP-forbindelser lukkes uavhengig i hver retning.",
+    path: ["mobil", "homeRouter", "accessIsp", "tier1", "vgIsp", "vgServer"],
+    color: "fin",
+    relatedTerms: ["Protokoll"],
+  },
+  {
+    title: "25. TCP FIN-ACK + close",
+    description:
+      "Serveren bekrefter FIN-en og sender sin egen FIN. Mobilen ACK-er. Forbindelsen er nå helt lukket. (I praksis holdes ofte HTTP/2-forbindelser åpne en stund for gjenbruk.)",
+    path: ["vgServer", "vgIsp", "tier1", "accessIsp", "homeRouter", "mobil"],
+    color: "fin",
+    relatedTerms: ["Protokoll"],
   },
 ];
 
@@ -111,6 +284,9 @@ const COLOR_CLASS: Record<Step["color"], string> = {
   tls: "fill-cyan-500",
   http: "fill-brand",
   data: "fill-success",
+  dhcp: "fill-yellow-500",
+  arp: "fill-slate-500",
+  fin: "fill-red-500",
 };
 const COLOR_LABEL: Record<Step["color"], string> = {
   dns: "DNS",
@@ -118,6 +294,9 @@ const COLOR_LABEL: Record<Step["color"], string> = {
   tls: "TLS",
   http: "HTTP",
   data: "HTML",
+  dhcp: "DHCP",
+  arp: "ARP",
+  fin: "FIN",
 };
 // bg-* varianter for legend-prikker (<span>). fill-* virker kun i SVG.
 const BG_CLASS: Record<Step["color"], string> = {
@@ -126,6 +305,9 @@ const BG_CLASS: Record<Step["color"], string> = {
   tls: "bg-cyan-500",
   http: "bg-brand",
   data: "bg-success",
+  dhcp: "bg-yellow-500",
+  arp: "bg-slate-500",
+  fin: "bg-red-500",
 };
 
 export function Section11Live() {
@@ -309,11 +491,14 @@ export function Section11Live() {
 
       {/* Legend */}
       <div className="px-4 py-2 flex flex-wrap items-center gap-3 text-[10px] text-muted-foreground border-t border-border">
+        <LegendDot color="dhcp" /> DHCP
+        <LegendDot color="arp" /> ARP
         <LegendDot color="dns" /> DNS
         <LegendDot color="tcp" /> TCP
         <LegendDot color="tls" /> TLS
         <LegendDot color="http" /> HTTP
         <LegendDot color="data" /> HTML
+        <LegendDot color="fin" /> FIN
       </div>
     </div>
   );
