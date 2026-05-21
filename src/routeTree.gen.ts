@@ -27,6 +27,7 @@ import { Route as OvRouteImport } from './routes/ov'
 import { Route as MiniKursRouteImport } from './routes/mini-kurs'
 import { Route as MineFagRouteImport } from './routes/mine-fag'
 import { Route as MacDrillRouteImport } from './routes/mac-drill'
+import { Route as LinuxDrillRouteImport } from './routes/linux-drill'
 import { Route as LekRouteImport } from './routes/lek'
 import { Route as LearnRouteImport } from './routes/learn'
 import { Route as LarRouteImport } from './routes/lar'
@@ -165,6 +166,11 @@ const MineFagRoute = MineFagRouteImport.update({
 const MacDrillRoute = MacDrillRouteImport.update({
   id: '/mac-drill',
   path: '/mac-drill',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LinuxDrillRoute = LinuxDrillRouteImport.update({
+  id: '/linux-drill',
+  path: '/linux-drill',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LekRoute = LekRouteImport.update({
@@ -434,6 +440,7 @@ export interface FileRoutesByFullPath {
   '/lar': typeof LarRoute
   '/learn': typeof LearnRoute
   '/lek': typeof LekRoute
+  '/linux-drill': typeof LinuxDrillRoute
   '/mac-drill': typeof MacDrillRoute
   '/mine-fag': typeof MineFagRoute
   '/mini-kurs': typeof MiniKursRouteWithChildren
@@ -502,6 +509,7 @@ export interface FileRoutesByTo {
   '/lar': typeof LarRoute
   '/learn': typeof LearnRoute
   '/lek': typeof LekRoute
+  '/linux-drill': typeof LinuxDrillRoute
   '/mac-drill': typeof MacDrillRoute
   '/mine-fag': typeof MineFagRoute
   '/ov': typeof OvRoute
@@ -567,6 +575,7 @@ export interface FileRoutesById {
   '/lar': typeof LarRoute
   '/learn': typeof LearnRoute
   '/lek': typeof LekRoute
+  '/linux-drill': typeof LinuxDrillRoute
   '/mac-drill': typeof MacDrillRoute
   '/mine-fag': typeof MineFagRoute
   '/mini-kurs': typeof MiniKursRouteWithChildren
@@ -638,6 +647,7 @@ export interface FileRouteTypes {
     | '/lar'
     | '/learn'
     | '/lek'
+    | '/linux-drill'
     | '/mac-drill'
     | '/mine-fag'
     | '/mini-kurs'
@@ -706,6 +716,7 @@ export interface FileRouteTypes {
     | '/lar'
     | '/learn'
     | '/lek'
+    | '/linux-drill'
     | '/mac-drill'
     | '/mine-fag'
     | '/ov'
@@ -770,6 +781,7 @@ export interface FileRouteTypes {
     | '/lar'
     | '/learn'
     | '/lek'
+    | '/linux-drill'
     | '/mac-drill'
     | '/mine-fag'
     | '/mini-kurs'
@@ -840,6 +852,7 @@ export interface RootRouteChildren {
   LarRoute: typeof LarRoute
   LearnRoute: typeof LearnRoute
   LekRoute: typeof LekRoute
+  LinuxDrillRoute: typeof LinuxDrillRoute
   MacDrillRoute: typeof MacDrillRoute
   MineFagRoute: typeof MineFagRoute
   MiniKursRoute: typeof MiniKursRouteWithChildren
@@ -1003,6 +1016,13 @@ declare module '@tanstack/react-router' {
       path: '/mac-drill'
       fullPath: '/mac-drill'
       preLoaderRoute: typeof MacDrillRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/linux-drill': {
+      id: '/linux-drill'
+      path: '/linux-drill'
+      fullPath: '/linux-drill'
+      preLoaderRoute: typeof LinuxDrillRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/lek': {
@@ -1459,6 +1479,7 @@ const rootRouteChildren: RootRouteChildren = {
   LarRoute: LarRoute,
   LearnRoute: LearnRoute,
   LekRoute: LekRoute,
+  LinuxDrillRoute: LinuxDrillRoute,
   MacDrillRoute: MacDrillRoute,
   MineFagRoute: MineFagRoute,
   MiniKursRoute: MiniKursRouteWithChildren,
