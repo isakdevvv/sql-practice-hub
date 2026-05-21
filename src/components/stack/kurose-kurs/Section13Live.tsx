@@ -617,8 +617,8 @@ function LegendDot({ source }: { source: Source }) {
   return <span className={`inline-block w-2 h-2 rounded-full ${BG_CLASS[source]}`} />;
 }
 
-function nodeById(id: NodeId): Node {
-  return NODES.find((n) => n.id === id)!;
+function nodeById(id: NodeId): Node | undefined {
+  return NODES.find((n) => n.id === id);
 }
 
 function pathToEdges(path: NodeId[]): [NodeId, NodeId][] {
@@ -628,16 +628,19 @@ function pathToEdges(path: NodeId[]): [NodeId, NodeId][] {
 }
 
 function packetPosition(path: NodeId[], progress: number): { x: number; y: number } {
+  if (!path || path.length === 0) return { x: 0, y: 0 };
   if (path.length < 2) {
     const a = nodeById(path[0]);
-    return { x: a.x, y: a.y };
+    return a ? { x: a.x, y: a.y } : { x: 0, y: 0 };
   }
   const segments = path.length - 1;
-  const t = Math.min(progress, 0.9999) * segments;
-  const segIdx = Math.floor(t);
+  const safeProgress = Number.isFinite(progress) ? Math.max(0, Math.min(progress, 0.9999)) : 0;
+  const t = safeProgress * segments;
+  const segIdx = Math.min(Math.floor(t), segments - 1);
   const segT = t - segIdx;
   const a = nodeById(path[segIdx]);
   const b = nodeById(path[segIdx + 1]);
+  if (!a || !b) return { x: a?.x ?? b?.x ?? 0, y: a?.y ?? b?.y ?? 0 };
   return {
     x: a.x + (b.x - a.x) * segT,
     y: a.y + (b.y - a.y) * segT,
