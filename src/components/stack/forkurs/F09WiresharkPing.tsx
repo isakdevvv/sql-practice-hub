@@ -263,7 +263,7 @@ function PingSim() {
             <div className="text-muted-foreground italic">Trykk «Kjør ping» for å starte.</div>
           )}
           {linjer.map((l, i) => (
-            <div key={i} className={l.startsWith("64 bytes") ? "text-green-300" : ""}>
+            <div key={i} className={(l ?? "").startsWith("64 bytes") ? "text-green-300" : ""}>
               {l || " "}
             </div>
           ))}
