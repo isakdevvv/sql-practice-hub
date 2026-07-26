@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
-import {Lightbulb, ArrowLeft } from "lucide-react";
+import { Lightbulb, ArrowLeft } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
+import { SimpsonsParadoks } from "./SimpsonsParadoks";
 import { CourseOutline } from "@/components/stack/CourseOutline";
 import { Tex, TexBlock } from "@/components/Tex";
 import { InteractiveDistributionPlayground } from "./InteractiveDistributionPlayground";
@@ -26,10 +27,7 @@ const STEPS = [
 
 export function Tek1DeskriptivPage() {
   return (
-    <StackPageShell
-      title="Modul 1 — Deskriptiv statistikk"
-      group="eksamen"
-    >
+    <StackPageShell title="Modul 1 — Deskriptiv statistikk" group="eksamen">
       <div className="container mx-auto px-4 py-12 max-w-3xl">
         <div className="mb-8">
           <div className="text-xs uppercase tracking-wider text-brand font-semibold mb-2">
@@ -39,11 +37,10 @@ export function Tek1DeskriptivPage() {
             Deskriptiv statistikk — sammenfatt dataene
           </h1>
           <p className="mt-3 text-muted-foreground">
-            Før vi modellerer noe må vi se på rå-dataene. Deskriptiv statistikk
-            er verktøykassa for å beskrive et utvalg med få tall: hvor ligger
-            dataene typisk (sentralmål), hvor mye varierer de (spredning), og
-            hvordan ser de ut (visualisering). Det er fundamentet alt annet i
-            kurset hviler på.
+            Før vi modellerer noe må vi se på rå-dataene. Deskriptiv statistikk er verktøykassa for
+            å beskrive et utvalg med få tall: hvor ligger dataene typisk (sentralmål), hvor mye
+            varierer de (spredning), og hvordan ser de ut (visualisering). Det er fundamentet alt
+            annet i kurset hviler på.
           </p>
           <div className="mt-4 rounded-lg border border-brand/30 bg-brand/5 p-4 flex items-start gap-3">
             <Lightbulb className="h-4 w-4 text-brand mt-0.5 shrink-0" />
@@ -56,8 +53,7 @@ export function Tek1DeskriptivPage() {
               <Link to="/python" className="text-brand hover:underline">
                 Python-øvelsene
               </Link>{" "}
-              under «Statistikk-grunnlag» — beregn snitt/std/median fra ekte
-              datasett.
+              under «Statistikk-grunnlag» — beregn snitt/std/median fra ekte datasett.
             </div>
           </div>
         </div>
@@ -67,21 +63,19 @@ export function Tek1DeskriptivPage() {
         <section id="motivasjon" className="mb-10">
           <h2 className="text-xl font-semibold mb-3">1. Hvorfor deskriptiv statistikk?</h2>
           <p className="text-sm text-muted-foreground mb-4">
-            Du har et datasett med 200 målinger av tykkelse på en stålplate. Du
-            kan ikke vise alle 200 tall til sjefen — du må sammenfatte. Med to
-            tall (snitt og std) får du fortalt mesteparten: «målingene ligger
-            rundt 12.4 mm, med spredning på ±0.3 mm». Det er deskriptiv
-            statistikk.
+            Du har et datasett med 200 målinger av tykkelse på en stålplate. Du kan ikke vise alle
+            200 tall til sjefen — du må sammenfatte. Med to tall (snitt og std) får du fortalt
+            mesteparten: «målingene ligger rundt 12.4 mm, med spredning på ±0.3 mm». Det er
+            deskriptiv statistikk.
           </p>
           <div className="rounded-xl border-2 border-brand/40 bg-brand/5 p-5">
             <div className="text-xs uppercase tracking-wider text-brand font-semibold mb-2">
               Tommelfingerregel
             </div>
             <p className="text-sm text-foreground">
-              Et utvalg beskrives alltid med to ting: <strong>lokasjon</strong>{" "}
-              (sentralmål — hvor er midten?) og <strong>spredning</strong> (hvor
-              langt fra midten ligger typisk verdi?). Pluss et bilde
-              (visualisering) for å se formen.
+              Et utvalg beskrives alltid med to ting: <strong>lokasjon</strong> (sentralmål — hvor
+              er midten?) og <strong>spredning</strong> (hvor langt fra midten ligger typisk
+              verdi?). Pluss et bilde (visualisering) for å se formen.
             </p>
           </div>
         </section>
@@ -89,31 +83,38 @@ export function Tek1DeskriptivPage() {
         <section id="sentral" className="mb-10">
           <h2 className="text-xl font-semibold mb-3">2. Sentralmål</h2>
           <p className="text-sm text-muted-foreground mb-4">
-            «Hvor ligger midten av dataene?» Tre vanlige svar — hvert med sine
-            styrker og svakheter.
+            «Hvor ligger midten av dataene?» Tre vanlige svar — hvert med sine styrker og svakheter.
           </p>
           <div className="rounded-xl border border-border bg-card p-5 space-y-4">
             <div>
-              <div className="font-semibold text-sm mb-1">Gjennomsnitt (mean, <Tex>{"\\bar{x}"}</Tex>):</div>
+              <div className="font-semibold text-sm mb-1">
+                Gjennomsnitt (mean, <Tex>{"\\bar{x}"}</Tex>):
+              </div>
               <TexBlock>{"\\bar{x} = \\frac{1}{n} \\sum_{i=1}^{n} x_i"}</TexBlock>
               <p className="text-xs text-muted-foreground mt-2">
-                Pros: matematisk håndterbart, bruker ALL info.<br />
+                Pros: matematisk håndterbart, bruker ALL info.
+                <br />
                 Cons: TREKKES KRAFTIG av ekstreme verdier (outliers).
               </p>
             </div>
             <div>
               <div className="font-semibold text-sm mb-1">Median:</div>
               <p className="text-xs text-muted-foreground">
-                Sorter dataene. Median = midtre verdi (eller snittet av de to midtre hvis n er partall).<br />
-                Pros: ROBUST mot outliers. Riktig sentralmål for skjeve fordelinger.<br />
+                Sorter dataene. Median = midtre verdi (eller snittet av de to midtre hvis n er
+                partall).
+                <br />
+                Pros: ROBUST mot outliers. Riktig sentralmål for skjeve fordelinger.
+                <br />
                 Cons: bruker bare midt-info, ikke alle verdier.
               </p>
             </div>
             <div>
               <div className="font-semibold text-sm mb-1">Modus:</div>
               <p className="text-xs text-muted-foreground">
-                Verdien som forekommer oftest.<br />
-                Pros: eneste som funker for kategoriske data ("blå", "rød", ...).<br />
+                Verdien som forekommer oftest.
+                <br />
+                Pros: eneste som funker for kategoriske data ("blå", "rød", ...).
+                <br />
                 Cons: kan være ikke-unik eller ikke eksistere.
               </p>
             </div>
@@ -138,18 +139,16 @@ export function Tek1DeskriptivPage() {
             3. Playground — dra punktene, se statistikkene live
           </h2>
           <p className="text-sm text-muted-foreground mb-4">
-            Det enkleste måten å bygge intuisjon er å manipulere dataene
-            direkte. Dra hvert punkt langs x-aksen og observer hvordan{" "}
-            <em>hver</em> deskriptiv statistikk reagerer. Bytt til histogram
-            for å se formen, eller til boksplott for å se 5-tallsoppsummeringen.
+            Det enkleste måten å bygge intuisjon er å manipulere dataene direkte. Dra hvert punkt
+            langs x-aksen og observer hvordan <em>hver</em> deskriptiv statistikk reagerer. Bytt til
+            histogram for å se formen, eller til boksplott for å se 5-tallsoppsummeringen.
           </p>
           <InteractiveDistributionPlayground />
           <div className="mt-3 text-xs text-muted-foreground">
             Prøv: dra ett punkt langt til høyre. Se hvor mye{" "}
-            <span className="text-emerald-500 font-medium">mean</span> flytter
-            seg sammenlignet med{" "}
-            <span className="text-amber-500 font-medium">median</span>. Klem
-            alle punktene sammen og se std krympe.
+            <span className="text-emerald-500 font-medium">mean</span> flytter seg sammenlignet med{" "}
+            <span className="text-amber-500 font-medium">median</span>. Klem alle punktene sammen og
+            se std krympe.
           </div>
         </section>
 
@@ -199,17 +198,26 @@ IQR (Interkvartilbredde) = Q3 - Q1
               <p className="text-xs text-muted-foreground mt-1">Enkleste, men outlier-sensitiv.</p>
             </div>
             <div>
-              <div className="font-semibold text-sm mb-1">Varians (stikkprøve, <Tex>{"s^2"}</Tex>):</div>
+              <div className="font-semibold text-sm mb-1">
+                Varians (stikkprøve, <Tex>{"s^2"}</Tex>):
+              </div>
               <TexBlock>{"s^2 = \\frac{1}{n-1} \\sum_{i=1}^{n} (x_i - \\bar{x})^2"}</TexBlock>
               <p className="text-xs text-muted-foreground mt-1">
-                MERK: <Tex>{"n-1"}</Tex>, ikke <Tex>{"n"}</Tex>. Vi har brukt opp én "frihetsgrad" på <Tex>{"\\bar{x}"}</Tex>.
-                Det gjør <Tex>{"s^2"}</Tex> forventningsrett (unbiased) for <Tex>{"\\sigma^2"}</Tex>.
+                MERK: <Tex>{"n-1"}</Tex>, ikke <Tex>{"n"}</Tex>. Vi har brukt opp én "frihetsgrad"
+                på <Tex>{"\\bar{x}"}</Tex>. Det gjør <Tex>{"s^2"}</Tex> forventningsrett (unbiased)
+                for <Tex>{"\\sigma^2"}</Tex>.
               </p>
             </div>
             <div>
-              <div className="font-semibold text-sm mb-1">Standardavvik (stikkprøve, <Tex>{"s"}</Tex>):</div>
-              <TexBlock>{"s = \\sqrt{s^2} = \\sqrt{\\frac{1}{n-1} \\sum_{i=1}^{n} (x_i - \\bar{x})^2}"}</TexBlock>
-              <p className="text-xs text-muted-foreground mt-1">Samme enhet som dataene. Lettere å tolke enn varians.</p>
+              <div className="font-semibold text-sm mb-1">
+                Standardavvik (stikkprøve, <Tex>{"s"}</Tex>):
+              </div>
+              <TexBlock>
+                {"s = \\sqrt{s^2} = \\sqrt{\\frac{1}{n-1} \\sum_{i=1}^{n} (x_i - \\bar{x})^2}"}
+              </TexBlock>
+              <p className="text-xs text-muted-foreground mt-1">
+                Samme enhet som dataene. Lettere å tolke enn varians.
+              </p>
             </div>
             <div>
               <div className="font-semibold text-sm mb-1">IQR (interkvartilbredde):</div>
@@ -218,12 +226,11 @@ IQR (Interkvartilbredde) = Q3 - Q1
             </div>
           </div>
           <div className="mt-4 rounded-xl border border-amber-500/30 bg-amber-500/5 p-4 text-sm">
-            <strong>Klassisk eksamen-felle:</strong> blande sammen{" "}
-            <em>populasjons-varians</em> (deler på n) og{" "}
-            <em>stikkprøve-varians</em> (deler på n-1). I TEK-1501 oppgaver er
-            datasettet nesten alltid et stikkprøveutvalg — bruk{" "}
-            <code className="text-xs">n-1</code>. I numpy: <code className="text-xs">np.var(x, ddof=1)</code>{" "}
-            for stikkprøve, <code className="text-xs">ddof=0</code> for populasjon.
+            <strong>Klassisk eksamen-felle:</strong> blande sammen <em>populasjons-varians</em>{" "}
+            (deler på n) og <em>stikkprøve-varians</em> (deler på n-1). I TEK-1501 oppgaver er
+            datasettet nesten alltid et stikkprøveutvalg — bruk <code className="text-xs">n-1</code>
+            . I numpy: <code className="text-xs">np.var(x, ddof=1)</code> for stikkprøve,{" "}
+            <code className="text-xs">ddof=0</code> for populasjon.
           </div>
           <div className="mt-4 rounded-xl border border-border bg-card p-5">
             <div className="text-xs uppercase tracking-wider text-brand font-semibold mb-2">
@@ -245,11 +252,10 @@ IQR (Interkvartilbredde) = Q3 - Q1
             6. Outlier-effekten — hvorfor median er robust og mean ikke
           </h2>
           <p className="text-sm text-muted-foreground mb-4">
-            Vi starter med en symmetrisk N(50, 5²)-fordeling. Klikk &quot;+ outlier&quot;
-            og se hva som skjer med hver av de fire metrikkene. <em>Mean</em> og{" "}
-            <em>std</em> flytter seg dramatisk; <em>median</em> og <em>IQR</em>{" "}
-            knapt. Det er denne forskjellen som gjør at vi sier{" "}
-            &quot;median er robust&quot;.
+            Vi starter med en symmetrisk N(50, 5²)-fordeling. Klikk &quot;+ outlier&quot; og se hva
+            som skjer med hver av de fire metrikkene. <em>Mean</em> og <em>std</em> flytter seg
+            dramatisk; <em>median</em> og <em>IQR</em> knapt. Det er denne forskjellen som gjør at
+            vi sier &quot;median er robust&quot;.
           </p>
           <OutlierImpactDemo />
         </section>
@@ -259,11 +265,11 @@ IQR (Interkvartilbredde) = Q3 - Q1
             7. Skjevhet (skewness) og halevekt (kurtosis)
           </h2>
           <p className="text-sm text-muted-foreground mb-4">
-            <strong>Skewness</strong> måler om fordelingen lener mot venstre eller
-            høyre. <strong>Kurtosis</strong> (excess) måler om halene er tunge
-            (mange ekstremverdier) eller lette sammenlignet med en normalfordeling.
-            Bla mellom de fire forhåndsdefinerte fordelingene, eller bruk slideren
-            til å morfe en symmetrisk fordeling gradvis mot høyre-skjev.
+            <strong>Skewness</strong> måler om fordelingen lener mot venstre eller høyre.{" "}
+            <strong>Kurtosis</strong> (excess) måler om halene er tunge (mange ekstremverdier) eller
+            lette sammenlignet med en normalfordeling. Bla mellom de fire forhåndsdefinerte
+            fordelingene, eller bruk slideren til å morfe en symmetrisk fordeling gradvis mot
+            høyre-skjev.
           </p>
           <SkewnessKurtosisViz />
         </section>
@@ -271,16 +277,14 @@ IQR (Interkvartilbredde) = Q3 - Q1
         <section id="visual" className="mb-10">
           <h2 className="text-xl font-semibold mb-3">8. Visualisering</h2>
           <p className="text-sm text-muted-foreground mb-4">
-            Tall sammenfatter, men bilder avslører. Disse er obligatoriske å
-            kjenne.
+            Tall sammenfatter, men bilder avslører. Disse er obligatoriske å kjenne.
           </p>
           <div className="space-y-3">
             <div className="rounded-xl border border-border bg-card p-5">
               <h3 className="font-semibold text-sm mb-2">Histogram</h3>
               <p className="text-sm text-muted-foreground mb-2">
-                Del verdiområdet i intervaller (bins). Tegn én søyle per
-                intervall, høyde = antall observasjoner. Viser formen på
-                fordelingen: symmetrisk, skjev, bimodal?
+                Del verdiområdet i intervaller (bins). Tegn én søyle per intervall, høyde = antall
+                observasjoner. Viser formen på fordelingen: symmetrisk, skjev, bimodal?
               </p>
               <pre className="font-mono text-xs overflow-x-auto whitespace-pre rounded bg-background border border-border p-3">{`Bins:  [0-2)  [2-4)  [4-6)  [6-8)  [8-10)
 Antall:   3      8     12      6      1
@@ -292,9 +296,9 @@ Antall:   3      8     12      6      1
             <div className="rounded-xl border border-border bg-card p-5">
               <h3 className="font-semibold text-sm mb-2">Boksplott (boxplot)</h3>
               <p className="text-sm text-muted-foreground mb-2">
-                Visualiserer 5-tallsoppsummeringen. Boksen går fra Q1 til Q3,
-                strek inni = median, «whiskers» strekker seg til siste verdi
-                innenfor 1.5×IQR. Punkter utenfor = outliers.
+                Visualiserer 5-tallsoppsummeringen. Boksen går fra Q1 til Q3, strek inni = median,
+                «whiskers» strekker seg til siste verdi innenfor 1.5×IQR. Punkter utenfor =
+                outliers.
               </p>
               <pre className="font-mono text-xs overflow-x-auto whitespace-pre rounded bg-background border border-border p-3">{`     min     Q1       median       Q3     max
       |---------[============|============]---------|
@@ -305,16 +309,15 @@ Antall:   3      8     12      6      1
             <div className="rounded-xl border border-border bg-card p-5">
               <h3 className="font-semibold text-sm mb-2">Scatter plot</h3>
               <p className="text-sm text-muted-foreground mb-2">
-                Hvert datapunkt = (x, y)-koordinat. Brukes for å se sammenheng
-                mellom to variabler. Grunnlaget for korrelasjon og regresjon
-                (Modul 4).
+                Hvert datapunkt = (x, y)-koordinat. Brukes for å se sammenheng mellom to variabler.
+                Grunnlaget for korrelasjon og regresjon (Modul 4).
               </p>
             </div>
             <div className="rounded-xl border border-border bg-card p-5">
               <h3 className="font-semibold text-sm mb-2">Frekvenstabell</h3>
               <p className="text-sm text-muted-foreground mb-2">
-                For kategoriske data: en tabell med kategori → antall (og evt.
-                prosent). Visualiseres som søylediagram eller kakediagram.
+                For kategoriske data: en tabell med kategori → antall (og evt. prosent).
+                Visualiseres som søylediagram eller kakediagram.
               </p>
             </div>
           </div>
@@ -325,9 +328,8 @@ Antall:   3      8     12      6      1
             9. Velg riktig diagram — guidet beslutningstre
           </h2>
           <p className="text-sm text-muted-foreground mb-4">
-            Tre spørsmål, ett anbefalt diagram. Klikk gjennom og lær mønsteret —
-            datatype → antall variabler → budskap. Du vil finne at hvert valg
-            har en kanonisk visualisering.
+            Tre spørsmål, ett anbefalt diagram. Klikk gjennom og lær mønsteret — datatype → antall
+            variabler → budskap. Du vil finne at hvert valg har en kanonisk visualisering.
           </p>
           <ChartChoiceDecisionTree />
         </section>
@@ -338,20 +340,14 @@ Antall:   3      8     12      6      1
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>
-                  <th className="text-left font-semibold px-4 py-2 w-1/2">
-                    Situasjon
-                  </th>
-                  <th className="text-left font-semibold px-4 py-2">
-                    Anbefalt mål
-                  </th>
+                  <th className="text-left font-semibold px-4 py-2 w-1/2">Situasjon</th>
+                  <th className="text-left font-semibold px-4 py-2">Anbefalt mål</th>
                 </tr>
               </thead>
               <tbody>
                 <tr className="border-t border-border">
                   <td className="px-4 py-3">Symmetrisk fordeling, ingen outliers</td>
-                  <td className="px-4 py-3 text-muted-foreground">
-                    Mean + std
-                  </td>
+                  <td className="px-4 py-3 text-muted-foreground">Mean + std</td>
                 </tr>
                 <tr className="border-t border-border">
                   <td className="px-4 py-3">Skjev fordeling (inntekt, ventetid)</td>
@@ -359,21 +355,15 @@ Antall:   3      8     12      6      1
                 </tr>
                 <tr className="border-t border-border">
                   <td className="px-4 py-3">Datasett med åpenbare outliers</td>
-                  <td className="px-4 py-3 text-muted-foreground">
-                    Median + IQR (robust)
-                  </td>
+                  <td className="px-4 py-3 text-muted-foreground">Median + IQR (robust)</td>
                 </tr>
                 <tr className="border-t border-border">
                   <td className="px-4 py-3">Kategoriske data (farger, merker)</td>
-                  <td className="px-4 py-3 text-muted-foreground">
-                    Modus + frekvenstabell
-                  </td>
+                  <td className="px-4 py-3 text-muted-foreground">Modus + frekvenstabell</td>
                 </tr>
                 <tr className="border-t border-border">
                   <td className="px-4 py-3">Sammenligne to grupper</td>
-                  <td className="px-4 py-3 text-muted-foreground">
-                    Boksplott + median
-                  </td>
+                  <td className="px-4 py-3 text-muted-foreground">Boksplott + median</td>
                 </tr>
                 <tr className="border-t border-border">
                   <td className="px-4 py-3">Se formen på fordelingen</td>
@@ -392,22 +382,24 @@ Antall:   3      8     12      6      1
           <h2 className="text-xl font-semibold mb-3">11. Eksamen-feller</h2>
           <div className="space-y-3 text-sm">
             <div className="rounded-lg border border-amber-500/30 bg-amber-500/5 p-4">
-              <strong>n vs. n−1 i nevner.</strong> For stikkprøve-varians bruker
-              vi n−1. For populasjons-varians (sjeldent på eksamen) bruker vi n.
-              Default er ALLTID n−1 i TEK-1501-kontekst.
+              <strong>n vs. n−1 i nevner.</strong> For stikkprøve-varians bruker vi n−1. For
+              populasjons-varians (sjeldent på eksamen) bruker vi n. Default er ALLTID n−1 i
+              TEK-1501-kontekst.
             </div>
             <div className="rounded-lg border border-amber-500/30 bg-amber-500/5 p-4">
-              <strong>Mean påvirkes av ALLE verdier.</strong> Én ekstremverdi kan
-              flytte snittet kraftig. Median påvirkes bare av rekkefølgen.
+              <strong>Mean påvirkes av ALLE verdier.</strong> Én ekstremverdi kan flytte snittet
+              kraftig. Median påvirkes bare av rekkefølgen.
             </div>
             <div className="rounded-lg border border-amber-500/30 bg-amber-500/5 p-4">
-              <strong>Standardavvik <Tex>{"\\neq"}</Tex> standardfeil.</strong> <Tex>{"s"}</Tex> = utvalgets
-              spredning. <Tex>{"SE = s/\\sqrt{n}"}</Tex> = usikkerheten i snittet. De forveksles ofte.
-              Mer om SE i Modul 4.
+              <strong>
+                Standardavvik <Tex>{"\\neq"}</Tex> standardfeil.
+              </strong>{" "}
+              <Tex>{"s"}</Tex> = utvalgets spredning. <Tex>{"SE = s/\\sqrt{n}"}</Tex> = usikkerheten
+              i snittet. De forveksles ofte. Mer om SE i Modul 4.
             </div>
             <div className="rounded-lg border border-amber-500/30 bg-amber-500/5 p-4">
-              <strong>Bins påvirker histogrammet.</strong> For få bins skjuler
-              struktur, for mange viser støy. Vanlig tommelregel: <Tex>{"\\text{bins} \\approx \\sqrt{n}"}</Tex> eller
+              <strong>Bins påvirker histogrammet.</strong> For få bins skjuler struktur, for mange
+              viser støy. Vanlig tommelregel: <Tex>{"\\text{bins} \\approx \\sqrt{n}"}</Tex> eller
               Sturges' formel <Tex>{"\\lceil \\log_2(n) + 1 \\rceil"}</Tex>.
             </div>
           </div>
@@ -418,9 +410,8 @@ Antall:   3      8     12      6      1
             12. Anvendt: hvilken statistikk i hvilket scenario?
           </h2>
           <p className="text-sm text-muted-foreground mb-4">
-            Åtte realistiske scenarier. For hver: hvilket sentralmål, hvilken
-            visualisering, hvordan rapportere? Velg svar, og les forklaringen
-            etterpå. Sikt mot 7/8 før du går videre.
+            Åtte realistiske scenarier. For hver: hvilket sentralmål, hvilken visualisering, hvordan
+            rapportere? Velg svar, og les forklaringen etterpå. Sikt mot 7/8 før du går videre.
           </p>
           <DescriptiveStatsQuiz />
         </section>
@@ -432,8 +423,7 @@ Antall:   3      8     12      6      1
               <Link to="/drag" className="text-brand hover:underline">
                 Drag-oppgaver
               </Link>{" "}
-              under «Deskriptiv statistikk» — beregn snitt/median/IQR for små
-              datasett.
+              under «Deskriptiv statistikk» — beregn snitt/median/IQR for små datasett.
             </li>
             <li>
               <Link to="/python" className="text-brand hover:underline">
@@ -454,7 +444,10 @@ Antall:   3      8     12      6      1
             </li>
           </ul>
         </div>
-              <div className="mt-6">
+        <div className="my-8">
+          <SimpsonsParadoks />
+        </div>
+        <div className="mt-6">
           <Link
             to="/stack/$slug"
             params={{ slug: "tek-1501" }}
@@ -464,7 +457,7 @@ Antall:   3      8     12      6      1
             Tilbake til TEK-1501-hub
           </Link>
         </div>
-</div>
+      </div>
     </StackPageShell>
   );
 }

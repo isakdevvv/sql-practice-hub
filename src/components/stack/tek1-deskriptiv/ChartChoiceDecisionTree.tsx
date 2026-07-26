@@ -188,8 +188,8 @@ function Result({ dt, vc, goal }: { dt: DataType; vc: VarCount; goal: Goal }) {
         <r.Example />
       </div>
       <div className="mt-3 text-[11px] text-muted-foreground">
-        Valg: <span className="font-mono">{dt}</span> · <span className="font-mono">{vc}</span>{" "}
-        · <span className="font-mono">{goal}</span>
+        Valg: <span className="font-mono">{dt}</span> · <span className="font-mono">{vc}</span> ·{" "}
+        <span className="font-mono">{goal}</span>
       </div>
     </div>
   );
@@ -224,7 +224,17 @@ function Choices({
   );
 }
 
-function Step({ n, label, active, done }: { n: number; label: string; active: boolean; done: boolean }) {
+function Step({
+  n,
+  label,
+  active,
+  done,
+}: {
+  n: number;
+  label: string;
+  active: boolean;
+  done: boolean;
+}) {
   return (
     <div
       className={`flex items-center gap-1.5 text-xs ${
@@ -233,7 +243,11 @@ function Step({ n, label, active, done }: { n: number; label: string; active: bo
     >
       <span
         className={`inline-flex items-center justify-center w-5 h-5 rounded-full border text-[10px] ${
-          active ? "border-brand bg-brand/10" : done ? "border-emerald-500 bg-emerald-500/10" : "border-border"
+          active
+            ? "border-brand bg-brand/10"
+            : done
+              ? "border-emerald-500 bg-emerald-500/10"
+              : "border-border"
         }`}
       >
         {n}
@@ -265,7 +279,14 @@ function HistEx() {
           opacity={0.7}
         />
       ))}
-      <line x1={5} y1={70} x2={195} y2={70} stroke="currentColor" className="text-muted-foreground" />
+      <line
+        x1={5}
+        y1={70}
+        x2={195}
+        y2={70}
+        stroke="currentColor"
+        className="text-muted-foreground"
+      />
     </svg>
   );
 }
@@ -290,7 +311,13 @@ function BarEx() {
             fill="#22c55e"
             opacity={0.7}
           />
-          <text x={36 + i * 42} y={78} fontSize={8} className="fill-muted-foreground" textAnchor="middle">
+          <text
+            x={36 + i * 42}
+            y={78}
+            fontSize={8}
+            className="fill-muted-foreground"
+            textAnchor="middle"
+          >
             {c.lbl}
           </text>
         </g>
@@ -302,9 +329,30 @@ function BarEx() {
 function BoxEx() {
   return (
     <svg viewBox="0 0 200 60" className="w-full">
-      <line x1={30} y1={30} x2={170} y2={30} stroke="currentColor" className="text-muted-foreground" />
-      <line x1={30} y1={20} x2={30} y2={40} stroke="currentColor" className="text-muted-foreground" />
-      <line x1={170} y1={20} x2={170} y2={40} stroke="currentColor" className="text-muted-foreground" />
+      <line
+        x1={30}
+        y1={30}
+        x2={170}
+        y2={30}
+        stroke="currentColor"
+        className="text-muted-foreground"
+      />
+      <line
+        x1={30}
+        y1={20}
+        x2={30}
+        y2={40}
+        stroke="currentColor"
+        className="text-muted-foreground"
+      />
+      <line
+        x1={170}
+        y1={20}
+        x2={170}
+        y2={40}
+        stroke="currentColor"
+        className="text-muted-foreground"
+      />
       <rect x={70} y={15} width={70} height={30} fill="#3b82f6" opacity={0.25} stroke="#3b82f6" />
       <line x1={105} y1={15} x2={105} y2={45} stroke="#f59e0b" strokeWidth={2} />
     </svg>
@@ -328,8 +376,22 @@ function ScatterEx() {
   ];
   return (
     <svg viewBox="0 0 200 80" className="w-full">
-      <line x1={10} y1={70} x2={190} y2={70} stroke="currentColor" className="text-muted-foreground" />
-      <line x1={10} y1={10} x2={10} y2={70} stroke="currentColor" className="text-muted-foreground" />
+      <line
+        x1={10}
+        y1={70}
+        x2={190}
+        y2={70}
+        stroke="currentColor"
+        className="text-muted-foreground"
+      />
+      <line
+        x1={10}
+        y1={10}
+        x2={10}
+        y2={70}
+        stroke="currentColor"
+        className="text-muted-foreground"
+      />
       {pts.map(([x, y], i) => (
         <circle key={i} cx={x} cy={y} r={3} fill="#3b82f6" />
       ))}
@@ -342,7 +404,14 @@ function LineEx() {
   const path = ys.map((y, i) => `${i === 0 ? "M" : "L"}${15 + i * 18},${y + 10}`).join(" ");
   return (
     <svg viewBox="0 0 200 80" className="w-full">
-      <line x1={10} y1={70} x2={190} y2={70} stroke="currentColor" className="text-muted-foreground" />
+      <line
+        x1={10}
+        y1={70}
+        x2={190}
+        y2={70}
+        stroke="currentColor"
+        className="text-muted-foreground"
+      />
       <path d={path} fill="none" stroke="#22c55e" strokeWidth={2} />
       {ys.map((y, i) => (
         <circle key={i} cx={15 + i * 18} cy={y + 10} r={2.5} fill="#22c55e" />
@@ -354,19 +423,40 @@ function LineEx() {
 function GroupedBoxEx() {
   const make = (x: number, q1: number, med: number, q3: number) => (
     <g>
-      <rect x={x - 14} y={q1} width={28} height={q3 - q1} fill="#3b82f6" opacity={0.3} stroke="#3b82f6" />
+      <rect
+        x={x - 14}
+        y={q1}
+        width={28}
+        height={q3 - q1}
+        fill="#3b82f6"
+        opacity={0.3}
+        stroke="#3b82f6"
+      />
       <line x1={x - 14} y1={med} x2={x + 14} y2={med} stroke="#f59e0b" strokeWidth={2} />
     </g>
   );
   return (
     <svg viewBox="0 0 200 80" className="w-full">
-      <line x1={10} y1={70} x2={190} y2={70} stroke="currentColor" className="text-muted-foreground" />
+      <line
+        x1={10}
+        y1={70}
+        x2={190}
+        y2={70}
+        stroke="currentColor"
+        className="text-muted-foreground"
+      />
       {make(50, 30, 40, 55)}
       {make(100, 20, 32, 50)}
       {make(150, 35, 48, 60)}
-      <text x={50} y={78} fontSize={8} className="fill-muted-foreground" textAnchor="middle">A</text>
-      <text x={100} y={78} fontSize={8} className="fill-muted-foreground" textAnchor="middle">B</text>
-      <text x={150} y={78} fontSize={8} className="fill-muted-foreground" textAnchor="middle">C</text>
+      <text x={50} y={78} fontSize={8} className="fill-muted-foreground" textAnchor="middle">
+        A
+      </text>
+      <text x={100} y={78} fontSize={8} className="fill-muted-foreground" textAnchor="middle">
+        B
+      </text>
+      <text x={150} y={78} fontSize={8} className="fill-muted-foreground" textAnchor="middle">
+        C
+      </text>
     </svg>
   );
 }
@@ -400,7 +490,13 @@ function ScatterMatrixEx() {
       {[0, 1, 2].map((r) =>
         [0, 1, 2].map((c) => (
           <g key={`${r}${c}`} transform={`translate(${10 + c * 62}, ${5 + r * 24})`}>
-            <rect width={56} height={20} fill="none" stroke="currentColor" className="text-muted-foreground/30" />
+            <rect
+              width={56}
+              height={20}
+              fill="none"
+              stroke="currentColor"
+              className="text-muted-foreground/30"
+            />
             {Array.from({ length: 6 }, (_, i) => (
               <circle
                 key={i}

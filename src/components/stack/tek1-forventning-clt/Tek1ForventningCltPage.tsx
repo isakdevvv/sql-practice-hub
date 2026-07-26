@@ -3,6 +3,7 @@ import { Link } from "@tanstack/react-router";
 import { Lightbulb, ArrowLeft } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 import { StackPageShell } from "@/components/stack/StackPageShell";
+import { GaltonBrett } from "./GaltonBrett";
 import { StandardfeilBygger } from "./StandardfeilBygger";
 import { Tex, TexBlock } from "@/components/Tex";
 
@@ -441,6 +442,9 @@ export function Tek1ForventningCltPage() {
         </div>
         <div className="my-8">
           <StandardfeilBygger />
+        </div>
+        <div className="my-8">
+          <GaltonBrett />
         </div>
         <div className="mt-6">
           <Link

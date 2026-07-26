@@ -22,8 +22,8 @@ import {
 type ViewMode = "scatter" | "histogram" | "boxplot";
 
 const INITIAL: number[] = [
-  2.1, 3.0, 3.4, 3.9, 4.2, 4.6, 4.8, 5.1, 5.3, 5.6,
-  5.9, 6.1, 6.4, 6.8, 7.0, 7.4, 7.9, 8.4, 9.0, 9.7,
+  2.1, 3.0, 3.4, 3.9, 4.2, 4.6, 4.8, 5.1, 5.3, 5.6, 5.9, 6.1, 6.4, 6.8, 7.0, 7.4, 7.9, 8.4, 9.0,
+  9.7,
 ];
 
 const X_MIN = 0;
@@ -87,9 +87,7 @@ export function InteractiveDistributionPlayground() {
   return (
     <div className="rounded-xl border-2 border-brand/40 bg-brand/5 p-4 space-y-4">
       <div className="flex flex-wrap items-center gap-2">
-        <span className="text-xs font-semibold uppercase tracking-wider text-brand">
-          Visning:
-        </span>
+        <span className="text-xs font-semibold uppercase tracking-wider text-brand">Visning:</span>
         {(["scatter", "histogram", "boxplot"] as ViewMode[]).map((v) => (
           <button
             key={v}
@@ -317,8 +315,22 @@ export function InteractiveDistributionPlayground() {
                         stroke="currentColor"
                         className="text-muted-foreground"
                       />
-                      <line x1={sx(lo)} y1={yMid - 14} x2={sx(lo)} y2={yMid + 14} stroke="currentColor" className="text-muted-foreground" />
-                      <line x1={sx(hi)} y1={yMid - 14} x2={sx(hi)} y2={yMid + 14} stroke="currentColor" className="text-muted-foreground" />
+                      <line
+                        x1={sx(lo)}
+                        y1={yMid - 14}
+                        x2={sx(lo)}
+                        y2={yMid + 14}
+                        stroke="currentColor"
+                        className="text-muted-foreground"
+                      />
+                      <line
+                        x1={sx(hi)}
+                        y1={yMid - 14}
+                        x2={sx(hi)}
+                        y2={yMid + 14}
+                        stroke="currentColor"
+                        className="text-muted-foreground"
+                      />
                       <rect
                         x={sx(q1)}
                         y={yMid - 22}
@@ -371,15 +383,25 @@ export function InteractiveDistributionPlayground() {
             {/* legend */}
             <g transform={`translate(${PAD_L}, 8)`}>
               <rect width={10} height={10} fill="#22c55e" />
-              <text x={14} y={9} fontSize={10} className="fill-muted-foreground">mean</text>
+              <text x={14} y={9} fontSize={10} className="fill-muted-foreground">
+                mean
+              </text>
               <rect x={62} width={10} height={10} fill="#f59e0b" />
-              <text x={76} y={9} fontSize={10} className="fill-muted-foreground">median</text>
+              <text x={76} y={9} fontSize={10} className="fill-muted-foreground">
+                median
+              </text>
               <rect x={132} width={10} height={10} fill="#f43f5e" />
-              <text x={146} y={9} fontSize={10} className="fill-muted-foreground">modus</text>
+              <text x={146} y={9} fontSize={10} className="fill-muted-foreground">
+                modus
+              </text>
               <rect x={196} width={10} height={10} fill="#3b82f6" opacity={0.5} />
-              <text x={210} y={9} fontSize={10} className="fill-muted-foreground">±1σ-bånd</text>
+              <text x={210} y={9} fontSize={10} className="fill-muted-foreground">
+                ±1σ-bånd
+              </text>
               <rect x={282} width={10} height={10} fill="none" stroke="#a855f7" />
-              <text x={296} y={9} fontSize={10} className="fill-muted-foreground">IQR-boks</text>
+              <text x={296} y={9} fontSize={10} className="fill-muted-foreground">
+                IQR-boks
+              </text>
             </g>
           </svg>
           <div className="text-[11px] text-muted-foreground mt-1">
