@@ -33,11 +33,24 @@ export function KonseptSjekk({
     setMestret(isSectionMastered(lessonSlug, sjekk.id));
   }, [lessonSlug, sjekk.id]);
 
-  const alleBesvart = valgt.every((v) => v !== null);
-  const antallRiktige = valgt.reduce<number>(
-    (sum, vi, qi) => sum + (vi !== null && sjekk.sporsmal[qi].valg[vi].riktig ? 1 : 0),
-    0,
+  // Tall-svar («anslå så sjekk») holdes som tekst mens man skriver, slik at
+  // et halvskrevet tall ikke tolkes som et anslag.
+  const [tallSvar, setTallSvar] = useState<string[]>(() => sjekk.sporsmal.map(() => ""));
+
+  const alleBesvart = sjekk.sporsmal.every((q, i) =>
+    q.type === "tall"
+      ? tallSvar[i].trim() !== "" && !Number.isNaN(Number(tallSvar[i]))
+      : valgt[i] !== null,
   );
+
+  const antallRiktige = sjekk.sporsmal.reduce<number>((sum, q, i) => {
+    if (q.type === "tall") {
+      const n = Number(tallSvar[i]);
+      return sum + (!Number.isNaN(n) && Math.abs(n - q.fasit) <= q.toleranse ? 1 : 0);
+    }
+    const vi = valgt[i];
+    return sum + (vi !== null && q.valg[vi].riktig ? 1 : 0);
+  }, 0);
   const alleRiktige = antallRiktige === sjekk.sporsmal.length;
 
   useEffect(() => {
@@ -49,6 +62,7 @@ export function KonseptSjekk({
 
   function prøvIgjen() {
     setValgt(sjekk.sporsmal.map(() => null));
+    setTallSvar(sjekk.sporsmal.map(() => ""));
     setFase("laer");
   }
 
@@ -98,8 +112,19 @@ export function KonseptSjekk({
                   <span className="mr-1.5 font-mono text-xs text-brand">{qi + 1}.</span>
                   {q.sporsmal}
                 </div>
-                <div className="space-y-1.5">
-                  {q.valg.map((v, vi) => {
+
+                {/* Anslå-så-sjekk: låst tall før fasit */}
+                {q.type === "tall" && (
+                  <TallSvar
+                    q={q}
+                    verdi={tallSvar[qi]}
+                    settVerdi={(v) => setTallSvar((a) => a.map((x, i) => (i === qi ? v : x)))}
+                    vis={fase === "fasit"}
+                  />
+                )}
+
+                <div className={q.type === "tall" ? "hidden" : "space-y-1.5"}>
+                  {(q.type === "tall" ? [] : q.valg).map((v, vi) => {
                     const erValgt = valgt[qi] === vi;
                     const vis = fase === "fasit";
                     return (
@@ -201,5 +226,69 @@ export function KonseptSjekker({
         <KonseptSjekk key={s.id} lessonSlug={lessonSlug} sjekk={s} />
       ))}
     </>
+  );
+}
+
+/**
+ * Tall-svar for «anslå så sjekk». Feltet låses når fasiten vises, slik at
+ * anslaget står igjen ved siden av det riktige svaret — det er selve
+ * læringsøyeblikket: å se hvor langt unna man var, og hvorfor.
+ */
+function TallSvar({
+  q,
+  verdi,
+  settVerdi,
+  vis,
+}: {
+  q: Extract<import("@/lib/core/checks").SjekkSporsmal, { type: "tall" }>;
+  verdi: string;
+  settVerdi: (v: string) => void;
+  vis: boolean;
+}) {
+  const n = Number(verdi);
+  const gyldig = verdi.trim() !== "" && !Number.isNaN(n);
+  const traff = gyldig && Math.abs(n - q.fasit) <= q.toleranse;
+
+  return (
+    <div>
+      <div className="flex flex-wrap items-center gap-2">
+        <input
+          type="number"
+          inputMode="decimal"
+          disabled={vis}
+          value={verdi}
+          onChange={(e) => settVerdi(e.target.value)}
+          placeholder="Ditt anslag"
+          className={`h-9 w-32 rounded-md border bg-background px-2 font-mono text-sm focus:outline-none disabled:opacity-70 ${
+            vis
+              ? traff
+                ? "border-success bg-success/10"
+                : "border-destructive bg-destructive/10"
+              : "border-border focus:border-brand"
+          }`}
+        />
+        {q.enhet && <span className="text-sm text-muted-foreground">{q.enhet}</span>}
+        {!vis && q.min != null && q.max != null && (
+          <span className="text-[11px] text-muted-foreground">
+            (et sted mellom {q.min} og {q.max})
+          </span>
+        )}
+        {vis && (
+          <span className="text-sm">
+            Fasit:{" "}
+            <span className="font-mono font-bold text-success">
+              {q.fasit}
+              {q.enhet ? ` ${q.enhet}` : ""}
+            </span>
+            {!traff && gyldig && (
+              <span className="ml-2 text-muted-foreground">
+                du bommet med {Math.abs(n - q.fasit).toFixed(1)}
+              </span>
+            )}
+          </span>
+        )}
+      </div>
+      {vis && <p className="mt-2 text-xs text-muted-foreground">{q.forklaring}</p>}
+    </div>
   );
 }

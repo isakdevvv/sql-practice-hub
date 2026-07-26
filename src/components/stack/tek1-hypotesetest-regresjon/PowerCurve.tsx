@@ -19,11 +19,8 @@ function normCdf(z: number): number {
   const t = 1 / (1 + 0.3275911 * az);
   const y =
     1 -
-    (((((1.061405429 * t - 1.453152027) * t + 1.421413741) * t -
-      0.284496736) *
-      t +
-      0.254829592) *
-      t) *
+    ((((1.061405429 * t - 1.453152027) * t + 1.421413741) * t - 0.284496736) * t + 0.254829592) *
+      t *
       Math.exp(-az * az);
   return 0.5 * (1 + sign * y);
 }
@@ -134,9 +131,8 @@ export function PowerCurve() {
         Power-kurver — n = 10, 30, 100
       </div>
       <p className="text-xs text-muted-foreground">
-        Power (1 − β) som funksjon av effektstørrelse <Tex>{"d"}</Tex> for en
-        ensidig z-test med α = 0.05. Vil du oppdage en liten effekt? Du trenger
-        stor n.
+        Power (1 − β) som funksjon av effektstørrelse <Tex>{"d"}</Tex> for en ensidig z-test med α =
+        0.05. Vil du oppdage en liten effekt? Du trenger stor n.
       </p>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
@@ -274,8 +270,8 @@ export function PowerCurve() {
         <div className="rounded-lg border border-brand/30 bg-brand/5 p-3 text-xs space-y-1">
           <div className="font-semibold">Sample-size kalkulator</div>
           <div>
-            For å oppdage <Tex>{"d"}</Tex> = {chosenD.toFixed(2)} med power{" "}
-            {targetPower.toFixed(2)}:
+            For å oppdage <Tex>{"d"}</Tex> = {chosenD.toFixed(2)} med power {targetPower.toFixed(2)}
+            :
           </div>
           <div className="font-mono text-brand text-sm">
             n ≥ {Number.isFinite(nForChosenD) ? nForChosenD : "—"}
@@ -290,17 +286,14 @@ export function PowerCurve() {
         <div className="font-semibold">Lese-tips</div>
         <ul className="list-disc pl-5 text-muted-foreground space-y-1">
           <li>
-            <strong>Power 0.8</strong> er konvensjonell minstegrense før du
-            kjører studien.
+            <strong>Power 0.8</strong> er konvensjonell minstegrense før du kjører studien.
           </li>
           <li>
-            For å halvere effekten du klarer å oppdage må du fire-doble n
-            (kvadratisk forhold).
+            For å halvere effekten du klarer å oppdage må du fire-doble n (kvadratisk forhold).
           </li>
           <li>
-            «Liten» effekt d=0.2 krever ~200 obs for 80 % power. «Stor» effekt
-            d=0.8 trenger bare ~15. Effekt-størrelse spiser eksamens-poeng om
-            du glemmer det.
+            «Liten» effekt d=0.2 krever ~200 obs for 80 % power. «Stor» effekt d=0.8 trenger bare
+            ~15. Effekt-størrelse spiser eksamens-poeng om du glemmer det.
           </li>
         </ul>
       </div>

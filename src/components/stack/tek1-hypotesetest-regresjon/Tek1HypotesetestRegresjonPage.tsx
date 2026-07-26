@@ -1,7 +1,8 @@
 import { useState, useMemo, useRef, useEffect } from "react";
 import { Link } from "@tanstack/react-router";
-import {Lightbulb, ArrowLeft } from "lucide-react";
+import { Lightbulb, ArrowLeft } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
+import { PermutasjonsTest } from "./PermutasjonsTest";
 import { Tex, TexBlock } from "@/components/Tex";
 import { Type1Type2ErrorAreas } from "./Type1Type2ErrorAreas";
 import { PowerCurve } from "./PowerCurve";
@@ -19,10 +20,7 @@ function normCdf(x: number, mu = 0, sigma = 1): number {
   const t = 1 / (1 + 0.3275911 * az);
   const y =
     1 -
-    (((((1.061405429 * t - 1.453152027) * t) + 1.421413741) * t -
-      0.284496736) *
-      t +
-      0.254829592) *
+    ((((1.061405429 * t - 1.453152027) * t + 1.421413741) * t - 0.284496736) * t + 0.254829592) *
       t *
       Math.exp(-az * az);
   const erf = sign * y;
@@ -101,9 +99,7 @@ function HypotheseTestVisual() {
         <path
           d={
             "M" +
-            data
-              .map((p, i) => `${i === 0 ? "M" : "L"}${xPx(p.x)},${yPx(p.h1)}`)
-              .join("") +
+            data.map((p, i) => `${i === 0 ? "M" : "L"}${xPx(p.x)},${yPx(p.h1)}`).join("") +
             ` L${xPx(xMax)},${H} L${xPx(xMin)},${H} Z`
           }
           fill="hsl(0 70% 60% / 0.18)"
@@ -114,9 +110,7 @@ function HypotheseTestVisual() {
         <path
           d={
             "M" +
-            data
-              .map((p, i) => `${i === 0 ? "M" : "L"}${xPx(p.x)},${yPx(p.h0)}`)
-              .join("") +
+            data.map((p, i) => `${i === 0 ? "M" : "L"}${xPx(p.x)},${yPx(p.h0)}`).join("") +
             ` L${xPx(xMax)},${H} L${xPx(xMin)},${H} Z`
           }
           fill="hsl(220 70% 60% / 0.18)"
@@ -148,8 +142,18 @@ function HypotheseTestVisual() {
           fill="hsl(280 70% 55% / 0.5)"
         />
         {/* critical line */}
-        <line x1={xPx(crit)} y1={0} x2={xPx(crit)} y2={H} stroke="hsl(0 0% 30%)" strokeWidth={1.5} strokeDasharray="4 4" />
-        <text x={xPx(crit) + 4} y={12} fontSize={10} fill="hsl(0 0% 30%)">c = {crit.toFixed(2)}</text>
+        <line
+          x1={xPx(crit)}
+          y1={0}
+          x2={xPx(crit)}
+          y2={H}
+          stroke="hsl(0 0% 30%)"
+          strokeWidth={1.5}
+          strokeDasharray="4 4"
+        />
+        <text x={xPx(crit) + 4} y={12} fontSize={10} fill="hsl(0 0% 30%)">
+          c = {crit.toFixed(2)}
+        </text>
         {/* axes */}
         <line x1={0} y1={H} x2={W} y2={H} stroke="hsl(0 0% 70%)" strokeWidth={0.5} />
       </svg>
@@ -261,12 +265,7 @@ function ScatterRegression() {
     const ratioX = W / rect.width;
     const ratioY = H / rect.height;
     const { x, y } = fromPx(sx * ratioX, sy * ratioY);
-    if (
-      x >= xMin &&
-      x <= xMax &&
-      y >= yMin &&
-      y <= yMax
-    ) {
+    if (x >= xMin && x <= xMax && y >= yMin && y <= yMax) {
       setPoints((p) => [...p, { x, y }]);
     }
   }
@@ -288,8 +287,8 @@ function ScatterRegression() {
         Drag-bar scatter med live regresjonslinje
       </div>
       <div className="text-xs text-muted-foreground">
-        Dra punktene for å se hvordan regresjonslinjen og R² endrer seg. Klikk
-        i tom plass for å legge til et nytt punkt.
+        Dra punktene for å se hvordan regresjonslinjen og R² endrer seg. Klikk i tom plass for å
+        legge til et nytt punkt.
       </div>
       <svg
         ref={svgRef}
@@ -400,16 +399,13 @@ function ScatterRegression() {
       </div>
 
       <div className="text-xs font-mono space-y-0.5">
-        <div>
-          n = {points.length} punkter
-        </div>
+        <div>n = {points.length} punkter</div>
         <div>
           y = {reg.a.toFixed(3)} + {reg.b.toFixed(3)} · x
         </div>
         <div>r (Pearson) = {reg.r.toFixed(4)}</div>
         <div className="text-brand">
-          R² = {reg.r2.toFixed(4)} ({(reg.r2 * 100).toFixed(1)} % av variasjonen
-          forklart)
+          R² = {reg.r2.toFixed(4)} ({(reg.r2 * 100).toFixed(1)} % av variasjonen forklart)
         </div>
       </div>
     </div>
@@ -424,23 +420,18 @@ export function Tek1HypotesetestRegresjonPage() {
           <div className="text-xs uppercase tracking-wider text-brand font-semibold mb-2">
             TEK-1501 · Modul 4b · Eksamens-tyngdepunkt
           </div>
-          <h1 className="text-3xl font-bold tracking-tight">
-            Hypotesetest, kji² og regresjon
-          </h1>
+          <h1 className="text-3xl font-bold tracking-tight">Hypotesetest, kji² og regresjon</h1>
           <p className="mt-3 text-muted-foreground">
-            En hypotesetest er en formell prosedyre for å avgjøre om data
-            støtter en bestemt påstand om en parameter. Vi setter opp en
-            nullhypotese (H₀), regner en teststatistikk, sammenligner med en
-            kritisk verdi (eller p-verdi), og forkaster eller beholder H₀.
-            Også kji²-tester og lineær regresjon dekkes her — alle på samme
-            inferens-rammeverk.
+            En hypotesetest er en formell prosedyre for å avgjøre om data støtter en bestemt påstand
+            om en parameter. Vi setter opp en nullhypotese (H₀), regner en teststatistikk,
+            sammenligner med en kritisk verdi (eller p-verdi), og forkaster eller beholder H₀. Også
+            kji²-tester og lineær regresjon dekkes her — alle på samme inferens-rammeverk.
           </p>
           <div className="mt-4 rounded-lg border border-brand/30 bg-brand/5 p-4 flex items-start gap-3">
             <Lightbulb className="h-4 w-4 text-brand mt-0.5 shrink-0" />
             <div className="text-sm">
-              p-verdi {">"} α betyr IKKE at H₀ er sann. Den betyr bare at vi
-              ikke har bevis sterkt nok til å forkaste. «Fravær av bevis er
-              ikke bevis for fravær.»
+              p-verdi {">"} α betyr IKKE at H₀ er sann. Den betyr bare at vi ikke har bevis sterkt
+              nok til å forkaste. «Fravær av bevis er ikke bevis for fravær.»
             </div>
           </div>
         </div>
@@ -450,12 +441,12 @@ export function Tek1HypotesetestRegresjonPage() {
           <div className="rounded-xl border border-border bg-card p-5">
             <ol className="text-sm space-y-2 list-decimal pl-5">
               <li>
-                <strong>Formuler H₀ og H₁.</strong> H₀ er status quo (μ = 100),
-                H₁ er det vi vil vise (μ ≠ 100, μ {">"} 100, eller μ {"<"} 100).
+                <strong>Formuler H₀ og H₁.</strong> H₀ er status quo (μ = 100), H₁ er det vi vil
+                vise (μ ≠ 100, μ {">"} 100, eller μ {"<"} 100).
               </li>
               <li>
-                <strong>Velg signifikansnivå α</strong> (vanligvis 0.05 eller
-                0.01). Dette er sannsynligheten for Type I-feil.
+                <strong>Velg signifikansnivå α</strong> (vanligvis 0.05 eller 0.01). Dette er
+                sannsynligheten for Type I-feil.
               </li>
               <li>
                 <strong>Beregn teststatistikk</strong> fra data (z, t, χ², F).
@@ -503,9 +494,7 @@ Større n → mindre β for samme α (bedre styrke).`}</pre>
         </section>
 
         <section className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">
-            2c. Power-kurver og sample-size-kalkulator
-          </h2>
+          <h2 className="text-xl font-semibold mb-3">2c. Power-kurver og sample-size-kalkulator</h2>
           <PowerCurve />
         </section>
 
@@ -513,22 +502,45 @@ Større n → mindre β for samme α (bedre styrke).`}</pre>
           <h2 className="text-xl font-semibold mb-3">3. t-test for én og to utvalg</h2>
           <div className="rounded-xl border border-border bg-card p-5 space-y-3 text-sm">
             <div className="font-semibold">Én-utvalgs t-test:</div>
-            <p className="text-xs text-muted-foreground"><Tex>{"H_0: \\mu = \\mu_0"}</Tex></p>
-            <TexBlock>{"T = \\frac{\\bar{x} - \\mu_0}{s / \\sqrt{n}} \\;\\sim\\; t(n - 1) \\text{ under } H_0"}</TexBlock>
-            <p className="text-xs text-muted-foreground">Forkast <Tex>{"H_0"}</Tex> hvis <Tex>{"|T| > t_{\\alpha/2,\\, n-1}"}</Tex>.</p>
-
-            <div className="font-semibold pt-3">To-utvalgs t-test (lik varians):</div>
-            <p className="text-xs text-muted-foreground"><Tex>{"H_0: \\mu_1 = \\mu_2"}</Tex></p>
-            <TexBlock>{"T = \\frac{\\bar{x}_1 - \\bar{x}_2}{s_p \\sqrt{\\tfrac{1}{n_1} + \\tfrac{1}{n_2}}} \\;\\sim\\; t(n_1 + n_2 - 2)"}</TexBlock>
-            <p className="text-xs text-muted-foreground">Pooled varians:</p>
-            <TexBlock>{"s_p^2 = \\frac{(n_1 - 1) s_1^2 + (n_2 - 1) s_2^2}{n_1 + n_2 - 2}"}</TexBlock>
             <p className="text-xs text-muted-foreground">
-              Welch-t (ulik varians): bruk separate <Tex>{"s_1^2, s_2^2"}</Tex>. <Tex>{"\\mathrm{df}"}</Tex> beregnes med Welch–Satterthwaite. Default i scipy.
+              <Tex>{"H_0: \\mu = \\mu_0"}</Tex>
+            </p>
+            <TexBlock>
+              {
+                "T = \\frac{\\bar{x} - \\mu_0}{s / \\sqrt{n}} \\;\\sim\\; t(n - 1) \\text{ under } H_0"
+              }
+            </TexBlock>
+            <p className="text-xs text-muted-foreground">
+              Forkast <Tex>{"H_0"}</Tex> hvis <Tex>{"|T| > t_{\\alpha/2,\\, n-1}"}</Tex>.
             </p>
 
-            <div className="font-semibold pt-3">Eksempel: <Tex>{"\\bar{x} = 102, s = 10, n = 25"}</Tex>, test <Tex>{"H_0: \\mu = 100"}</Tex>:</div>
+            <div className="font-semibold pt-3">To-utvalgs t-test (lik varians):</div>
+            <p className="text-xs text-muted-foreground">
+              <Tex>{"H_0: \\mu_1 = \\mu_2"}</Tex>
+            </p>
+            <TexBlock>
+              {
+                "T = \\frac{\\bar{x}_1 - \\bar{x}_2}{s_p \\sqrt{\\tfrac{1}{n_1} + \\tfrac{1}{n_2}}} \\;\\sim\\; t(n_1 + n_2 - 2)"
+              }
+            </TexBlock>
+            <p className="text-xs text-muted-foreground">Pooled varians:</p>
+            <TexBlock>
+              {"s_p^2 = \\frac{(n_1 - 1) s_1^2 + (n_2 - 1) s_2^2}{n_1 + n_2 - 2}"}
+            </TexBlock>
+            <p className="text-xs text-muted-foreground">
+              Welch-t (ulik varians): bruk separate <Tex>{"s_1^2, s_2^2"}</Tex>.{" "}
+              <Tex>{"\\mathrm{df}"}</Tex> beregnes med Welch–Satterthwaite. Default i scipy.
+            </p>
+
+            <div className="font-semibold pt-3">
+              Eksempel: <Tex>{"\\bar{x} = 102, s = 10, n = 25"}</Tex>, test{" "}
+              <Tex>{"H_0: \\mu = 100"}</Tex>:
+            </div>
             <TexBlock>{"T = \\frac{102 - 100}{10 / \\sqrt{25}} = 1.00"}</TexBlock>
-            <p className="text-xs text-muted-foreground"><Tex>{"t_{0.025,\\, 24} = 2.064"}</Tex>; <Tex>{"|1.00| < 2.064 \\Rightarrow"}</Tex> behold <Tex>{"H_0"}</Tex>. p-verdi <Tex>{"\\approx 0.327"}</Tex>.</p>
+            <p className="text-xs text-muted-foreground">
+              <Tex>{"t_{0.025,\\, 24} = 2.064"}</Tex>; <Tex>{"|1.00| < 2.064 \\Rightarrow"}</Tex>{" "}
+              behold <Tex>{"H_0"}</Tex>. p-verdi <Tex>{"\\approx 0.327"}</Tex>.
+            </p>
           </div>
         </section>
 
@@ -536,39 +548,76 @@ Større n → mindre β for samme α (bedre styrke).`}</pre>
           <h2 className="text-xl font-semibold mb-3">4. Kji²-test</h2>
           <div className="rounded-xl border border-border bg-card p-5 space-y-3 text-sm">
             <div className="font-semibold">Goodness-of-fit:</div>
-            <TexBlock>{"\\chi^2 = \\sum_{i=1}^k \\frac{(O_i - E_i)^2}{E_i} \\;\\sim\\; \\chi^2(k - 1 - p)"}</TexBlock>
-            <p className="text-xs text-muted-foreground"><Tex>{"k"}</Tex> = antall kategorier, <Tex>{"p"}</Tex> = antall estimerte parametere.</p>
+            <TexBlock>
+              {"\\chi^2 = \\sum_{i=1}^k \\frac{(O_i - E_i)^2}{E_i} \\;\\sim\\; \\chi^2(k - 1 - p)"}
+            </TexBlock>
+            <p className="text-xs text-muted-foreground">
+              <Tex>{"k"}</Tex> = antall kategorier, <Tex>{"p"}</Tex> = antall estimerte parametere.
+            </p>
 
-            <div className="font-semibold pt-2">Test for uavhengighet (<Tex>{"r \\times c"}</Tex>):</div>
-            <TexBlock>{"E_{ij} = \\frac{(\\text{rad}_i\\,\\text{sum}) \\cdot (\\text{kol}_j\\,\\text{sum})}{n}"}</TexBlock>
-            <TexBlock>{"\\chi^2 = \\sum_{i, j} \\frac{(O_{ij} - E_{ij})^2}{E_{ij}} \\;\\sim\\; \\chi^2\\big((r - 1)(c - 1)\\big)"}</TexBlock>
-            <p className="text-xs text-muted-foreground">Krav: <Tex>{"E_i \\geq 5"}</Tex>. Forkast hvis <Tex>{"\\chi^2 > \\chi^2_{\\alpha,\\, \\mathrm{df}}"}</Tex>.</p>
+            <div className="font-semibold pt-2">
+              Test for uavhengighet (<Tex>{"r \\times c"}</Tex>):
+            </div>
+            <TexBlock>
+              {
+                "E_{ij} = \\frac{(\\text{rad}_i\\,\\text{sum}) \\cdot (\\text{kol}_j\\,\\text{sum})}{n}"
+              }
+            </TexBlock>
+            <TexBlock>
+              {
+                "\\chi^2 = \\sum_{i, j} \\frac{(O_{ij} - E_{ij})^2}{E_{ij}} \\;\\sim\\; \\chi^2\\big((r - 1)(c - 1)\\big)"
+              }
+            </TexBlock>
+            <p className="text-xs text-muted-foreground">
+              Krav: <Tex>{"E_i \\geq 5"}</Tex>. Forkast hvis{" "}
+              <Tex>{"\\chi^2 > \\chi^2_{\\alpha,\\, \\mathrm{df}}"}</Tex>.
+            </p>
 
-            <div className="font-semibold pt-2">Eksempel: terning kastet 60 ganger, observert [8, 12, 9, 11, 10, 10]:</div>
-            <TexBlock>{"\\chi^2 = \\frac{(8-10)^2}{10} + \\frac{(12-10)^2}{10} + \\cdots = 1.0"}</TexBlock>
-            <p className="text-xs text-muted-foreground"><Tex>{"\\mathrm{df} = 5"}</Tex>, <Tex>{"\\chi^2_{0.05,\\, 5} = 11.07"}</Tex>; <Tex>{"1.0 < 11.07 \\Rightarrow"}</Tex> behold <Tex>{"H_0"}</Tex>.</p>
+            <div className="font-semibold pt-2">
+              Eksempel: terning kastet 60 ganger, observert [8, 12, 9, 11, 10, 10]:
+            </div>
+            <TexBlock>
+              {"\\chi^2 = \\frac{(8-10)^2}{10} + \\frac{(12-10)^2}{10} + \\cdots = 1.0"}
+            </TexBlock>
+            <p className="text-xs text-muted-foreground">
+              <Tex>{"\\mathrm{df} = 5"}</Tex>, <Tex>{"\\chi^2_{0.05,\\, 5} = 11.07"}</Tex>;{" "}
+              <Tex>{"1.0 < 11.07 \\Rightarrow"}</Tex> behold <Tex>{"H_0"}</Tex>.
+            </p>
           </div>
         </section>
 
         <section className="mb-10">
           <h2 className="text-xl font-semibold mb-3">5. Lineær regresjon og R²</h2>
           <p className="text-sm text-muted-foreground mb-3">
-            Pearson-korrelasjon r måler styrken av lineær sammenheng. Lineær
-            regresjon (minste kvadraters metode) finner linjen y = a + b·x som
-            minimerer Σ(yᵢ − ŷᵢ)². Dra punktene under og se R² endre seg.
+            Pearson-korrelasjon r måler styrken av lineær sammenheng. Lineær regresjon (minste
+            kvadraters metode) finner linjen y = a + b·x som minimerer Σ(yᵢ − ŷᵢ)². Dra punktene
+            under og se R² endre seg.
           </p>
           <ScatterRegression />
           <div className="rounded-xl border border-border bg-card p-5 mt-4 space-y-3 text-sm">
             <div className="font-semibold">Hellingstall:</div>
-            <TexBlock>{"b = \\frac{\\sum_i (x_i - \\bar{x})(y_i - \\bar{y})}{\\sum_i (x_i - \\bar{x})^2}"}</TexBlock>
+            <TexBlock>
+              {"b = \\frac{\\sum_i (x_i - \\bar{x})(y_i - \\bar{y})}{\\sum_i (x_i - \\bar{x})^2}"}
+            </TexBlock>
             <div className="font-semibold">Skjæringspunkt:</div>
             <TexBlock>{"a = \\bar{y} - b\\, \\bar{x}"}</TexBlock>
-            <div className="font-semibold">Pearson <Tex>{"r"}</Tex>:</div>
-            <TexBlock>{"r = \\frac{\\sum_i (x_i - \\bar{x})(y_i - \\bar{y})}{\\sqrt{\\sum_i (x_i - \\bar{x})^2 \\cdot \\sum_i (y_i - \\bar{y})^2}}"}</TexBlock>
+            <div className="font-semibold">
+              Pearson <Tex>{"r"}</Tex>:
+            </div>
+            <TexBlock>
+              {
+                "r = \\frac{\\sum_i (x_i - \\bar{x})(y_i - \\bar{y})}{\\sqrt{\\sum_i (x_i - \\bar{x})^2 \\cdot \\sum_i (y_i - \\bar{y})^2}}"
+              }
+            </TexBlock>
             <div className="font-semibold">Determinasjonskoeffisient:</div>
             <TexBlock>{"R^2 = r^2 \\in [0, 1]"}</TexBlock>
-            <p className="text-xs text-muted-foreground">Andel av variasjonen i <Tex>{"y"}</Tex> som forklares av lineær sammenheng med <Tex>{"x"}</Tex>.</p>
-            <div className="font-semibold pt-2">Hypotesetest for hellingen (<Tex>{"b \\neq 0"}</Tex>?):</div>
+            <p className="text-xs text-muted-foreground">
+              Andel av variasjonen i <Tex>{"y"}</Tex> som forklares av lineær sammenheng med{" "}
+              <Tex>{"x"}</Tex>.
+            </p>
+            <div className="font-semibold pt-2">
+              Hypotesetest for hellingen (<Tex>{"b \\neq 0"}</Tex>?):
+            </div>
             <TexBlock>{"T = \\frac{b}{\\mathrm{SE}(b)} \\;\\sim\\; t(n - 2)"}</TexBlock>
           </div>
         </section>
@@ -577,28 +626,26 @@ Større n → mindre β for samme α (bedre styrke).`}</pre>
           <h2 className="text-xl font-semibold mb-3">6. Eksamen-feller</h2>
           <div className="space-y-3 text-sm">
             <div className="rounded-lg border border-amber-500/30 bg-amber-500/5 p-4">
-              <strong>p-verdi-tolkning.</strong> p {"<"} 0.05 betyr ikke «H₁ er
-              sann med 95 % sannsynlighet». Det betyr «hvis H₀ var sann, ville
-              vi observert resultat dette ekstreme med sannsynlighet {"<"} 5 %».
+              <strong>p-verdi-tolkning.</strong> p {"<"} 0.05 betyr ikke «H₁ er sann med 95 %
+              sannsynlighet». Det betyr «hvis H₀ var sann, ville vi observert resultat dette
+              ekstreme med sannsynlighet {"<"} 5 %».
             </div>
             <div className="rounded-lg border border-amber-500/30 bg-amber-500/5 p-4">
-              <strong>R² = 0.9 betyr ikke kausalitet.</strong> Korrelasjon kan
-              skyldes felles årsak (confounder) eller tilfeldighet. Ingenting
-              i regresjonsanalyse beviser at x forårsaker y.
+              <strong>R² = 0.9 betyr ikke kausalitet.</strong> Korrelasjon kan skyldes felles årsak
+              (confounder) eller tilfeldighet. Ingenting i regresjonsanalyse beviser at x forårsaker
+              y.
             </div>
             <div className="rounded-lg border border-amber-500/30 bg-amber-500/5 p-4">
-              <strong>Ekstrapolering.</strong> En regresjonsmodell er bare
-              gyldig innenfor x-intervallet du har data for. Aldri ekstrapolér.
+              <strong>Ekstrapolering.</strong> En regresjonsmodell er bare gyldig innenfor
+              x-intervallet du har data for. Aldri ekstrapolér.
             </div>
             <div className="rounded-lg border border-amber-500/30 bg-amber-500/5 p-4">
-              <strong>Kji²-krav: Eᵢ ≥ 5.</strong> Hvis noen forventede tellinger
-              er {"<"} 5, slå sammen kategorier. Ellers gir testen feil
-              p-verdi.
+              <strong>Kji²-krav: Eᵢ ≥ 5.</strong> Hvis noen forventede tellinger er {"<"} 5, slå
+              sammen kategorier. Ellers gir testen feil p-verdi.
             </div>
             <div className="rounded-lg border border-amber-500/30 bg-amber-500/5 p-4">
-              <strong>To-sidig vs én-sidig.</strong> Default er to-sidig (μ ≠ μ₀).
-              Velg én-sidig BARE hvis du på forhånd vet retningen. Halverer
-              p-verdien — kan være misvisende.
+              <strong>To-sidig vs én-sidig.</strong> Default er to-sidig (μ ≠ μ₀). Velg én-sidig
+              BARE hvis du på forhånd vet retningen. Halverer p-verdien — kan være misvisende.
             </div>
           </div>
         </section>
@@ -613,8 +660,8 @@ Større n → mindre β for samme α (bedre styrke).`}</pre>
                 className="text-brand hover:underline"
               >
                 Python-drill (15 kjørbare øvelser)
-              </Link>
-              {" "}— verifisér hånd­regning med <code className="text-xs">scipy.stats.ttest_1samp</code>,
+              </Link>{" "}
+              — verifisér hånd­regning med <code className="text-xs">scipy.stats.ttest_1samp</code>,
               <code className="text-xs">chi2_contingency</code>, og
               <code className="text-xs">linregress</code>.
             </li>
@@ -622,12 +669,15 @@ Større n → mindre β for samme α (bedre styrke).`}</pre>
               <Link to="/drag" className="text-brand hover:underline">
                 Drag-oppgaver
               </Link>{" "}
-              under «Sannsynlighet & statistikk» — hypotesetest-stegene,
-              p-verdi-tolkning, regresjons-feller.
+              under «Sannsynlighet & statistikk» — hypotesetest-stegene, p-verdi-tolkning,
+              regresjons-feller.
             </li>
           </ul>
         </div>
-              <div className="mt-6">
+        <div className="my-8">
+          <PermutasjonsTest />
+        </div>
+        <div className="mt-6">
           <Link
             to="/stack/$slug"
             params={{ slug: "tek-1501" }}
@@ -637,7 +687,7 @@ Større n → mindre β for samme α (bedre styrke).`}</pre>
             Tilbake til TEK-1501-hub
           </Link>
         </div>
-</div>
+      </div>
     </StackPageShell>
   );
 }

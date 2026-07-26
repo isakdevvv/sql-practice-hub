@@ -44,7 +44,11 @@ function runMany(n: number, doors: number, strategy: Strategy): number {
 
 export function MontyHallSimulator() {
   const [numDoors, setNumDoors] = useState(3);
-  const [results, setResults] = useState<{ switchWins: number; stayWins: number; trials: number } | null>(null);
+  const [results, setResults] = useState<{
+    switchWins: number;
+    stayWins: number;
+    trials: number;
+  } | null>(null);
   const [busy, setBusy] = useState(false);
 
   function runSim(trials: number) {
@@ -63,8 +67,18 @@ export function MontyHallSimulator() {
 
   const treeNodes = useMemo(
     () => [
-      { label: `Bilen bak din dør (${(stayTheoretical * 100).toFixed(1)} %)`, behold: "VINN", bytt: "TAP", p: stayTheoretical },
-      { label: `Bilen IKKE bak din dør (${(switchTheoretical * 100).toFixed(1)} %)`, behold: "TAP", bytt: "VINN", p: switchTheoretical },
+      {
+        label: `Bilen bak din dør (${(stayTheoretical * 100).toFixed(1)} %)`,
+        behold: "VINN",
+        bytt: "TAP",
+        p: stayTheoretical,
+      },
+      {
+        label: `Bilen IKKE bak din dør (${(switchTheoretical * 100).toFixed(1)} %)`,
+        behold: "TAP",
+        bytt: "VINN",
+        p: switchTheoretical,
+      },
     ],
     [stayTheoretical, switchTheoretical],
   );
@@ -100,14 +114,22 @@ export function MontyHallSimulator() {
                 <span className="text-muted-foreground">p={tn.p.toFixed(3)} ·</span> {tn.label}
               </div>
               <div className="text-center">
-                <div className="text-[10px] text-muted-foreground uppercase tracking-wider">Behold</div>
-                <span className={`font-bold font-mono ${tn.behold === "VINN" ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"}`}>
+                <div className="text-[10px] text-muted-foreground uppercase tracking-wider">
+                  Behold
+                </div>
+                <span
+                  className={`font-bold font-mono ${tn.behold === "VINN" ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"}`}
+                >
                   {tn.behold}
                 </span>
               </div>
               <div className="text-center">
-                <div className="text-[10px] text-muted-foreground uppercase tracking-wider">Bytt</div>
-                <span className={`font-bold font-mono ${tn.bytt === "VINN" ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"}`}>
+                <div className="text-[10px] text-muted-foreground uppercase tracking-wider">
+                  Bytt
+                </div>
+                <span
+                  className={`font-bold font-mono ${tn.bytt === "VINN" ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"}`}
+                >
                   {tn.bytt}
                 </span>
               </div>
@@ -116,11 +138,17 @@ export function MontyHallSimulator() {
         </div>
         <div className="mt-3 grid grid-cols-2 gap-3 text-xs">
           <div className="rounded-md border border-border p-2">
-            <div className="text-[10px] uppercase tracking-wider text-muted-foreground">Teoretisk — behold</div>
-            <div className="font-mono font-bold text-lg tabular-nums">{(stayTheoretical * 100).toFixed(2)} %</div>
+            <div className="text-[10px] uppercase tracking-wider text-muted-foreground">
+              Teoretisk — behold
+            </div>
+            <div className="font-mono font-bold text-lg tabular-nums">
+              {(stayTheoretical * 100).toFixed(2)} %
+            </div>
           </div>
           <div className="rounded-md border border-emerald-500/40 bg-emerald-500/5 p-2">
-            <div className="text-[10px] uppercase tracking-wider text-emerald-700 dark:text-emerald-400">Teoretisk — bytt</div>
+            <div className="text-[10px] uppercase tracking-wider text-emerald-700 dark:text-emerald-400">
+              Teoretisk — bytt
+            </div>
             <div className="font-mono font-bold text-lg tabular-nums text-emerald-700 dark:text-emerald-400">
               {(switchTheoretical * 100).toFixed(2)} %
             </div>
@@ -155,7 +183,10 @@ export function MontyHallSimulator() {
               {results.stayWins} vinn / {results.trials}
             </div>
             <div className="h-2 mt-2 rounded-full bg-muted overflow-hidden border border-border">
-              <div className="h-full bg-muted-foreground" style={{ width: `${(results.stayWins / results.trials) * 100}%` }} />
+              <div
+                className="h-full bg-muted-foreground"
+                style={{ width: `${(results.stayWins / results.trials) * 100}%` }}
+              />
             </div>
           </div>
           <div className="rounded-lg border border-emerald-500/40 bg-emerald-500/5 p-3">
@@ -169,17 +200,20 @@ export function MontyHallSimulator() {
               {results.switchWins} vinn / {results.trials}
             </div>
             <div className="h-2 mt-2 rounded-full bg-muted overflow-hidden border border-border">
-              <div className="h-full bg-emerald-500" style={{ width: `${(results.switchWins / results.trials) * 100}%` }} />
+              <div
+                className="h-full bg-emerald-500"
+                style={{ width: `${(results.switchWins / results.trials) * 100}%` }}
+              />
             </div>
           </div>
         </div>
       )}
 
       <div className="rounded-md border border-brand/30 bg-brand/5 p-3 text-[11px] leading-relaxed">
-        <strong>Hvorfor virker dette?</strong> Sjansen for at du gjettet riktig i førstevalget er 1/{numDoors}.
-        Vert åpner alle øvrige geite-dører, så all den gjenværende sannsynligheten (
-        {((numDoors - 1) / numDoors * 100).toFixed(1)} %) konsentreres på den ene døren du KAN bytte til. Med
-        100 dører blir effekten ekstrem — bytte vinner i 99 % av tilfellene.
+        <strong>Hvorfor virker dette?</strong> Sjansen for at du gjettet riktig i førstevalget er 1/
+        {numDoors}. Vert åpner alle øvrige geite-dører, så all den gjenværende sannsynligheten (
+        {(((numDoors - 1) / numDoors) * 100).toFixed(1)} %) konsentreres på den ene døren du KAN
+        bytte til. Med 100 dører blir effekten ekstrem — bytte vinner i 99 % av tilfellene.
       </div>
     </div>
   );

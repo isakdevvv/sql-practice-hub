@@ -15,11 +15,8 @@ function normCdf(x: number, mu = 0, sigma = 1): number {
   const t = 1 / (1 + 0.3275911 * az);
   const y =
     1 -
-    (((((1.061405429 * t - 1.453152027) * t + 1.421413741) * t -
-      0.284496736) *
-      t +
-      0.254829592) *
-      t) *
+    ((((1.061405429 * t - 1.453152027) * t + 1.421413741) * t - 0.284496736) * t + 0.254829592) *
+      t *
       Math.exp(-az * az);
   const erf = sign * y;
   return 0.5 * (1 + erf);
@@ -113,10 +110,9 @@ export function Type1Type2ErrorAreas() {
         Type I-feil (α) og Type II-feil (β) — draløse arealer
       </div>
       <p className="text-xs text-muted-foreground">
-        To overlappende fordelinger for <Tex>{"\\bar{X}"}</Tex>: under{" "}
-        <Tex>{"H_0"}</Tex> (blå) og <Tex>{"H_1"}</Tex> (rød). Skyv den
-        kritiske grensa c og se hvordan α og β bytter — du kan ikke krympe
-        begge samtidig uten å øke n.
+        To overlappende fordelinger for <Tex>{"\\bar{X}"}</Tex>: under <Tex>{"H_0"}</Tex> (blå) og{" "}
+        <Tex>{"H_1"}</Tex> (rød). Skyv den kritiske grensa c og se hvordan α og β bytter — du kan
+        ikke krympe begge samtidig uten å øke n.
       </p>
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-sm">
@@ -135,9 +131,7 @@ export function Type1Type2ErrorAreas() {
           />
         </label>
         <label>
-          <span className="block text-xs text-muted-foreground mb-1">
-            Utvalgsstørrelse n = {n}
-          </span>
+          <span className="block text-xs text-muted-foreground mb-1">Utvalgsstørrelse n = {n}</span>
           <input
             type="range"
             min={2}
@@ -164,11 +158,7 @@ export function Type1Type2ErrorAreas() {
         </label>
       </div>
 
-      <svg
-        viewBox={`0 0 ${W} ${H}`}
-        className="w-full h-auto"
-        preserveAspectRatio="xMidYMid meet"
-      >
+      <svg viewBox={`0 0 ${W} ${H}`} className="w-full h-auto" preserveAspectRatio="xMidYMid meet">
         {/* gridlines */}
         {[-1, 0, 1, 2].map((g) => (
           <line
@@ -236,12 +226,7 @@ export function Type1Type2ErrorAreas() {
           strokeWidth={1.8}
           strokeDasharray="5 3"
         />
-        <text
-          x={xPx(crit) + 5}
-          y={padT + 10}
-          fontSize={10}
-          className="fill-foreground"
-        >
+        <text x={xPx(crit) + 5} y={padT + 10} fontSize={10} className="fill-foreground">
           c = {crit.toFixed(2)}
         </text>
 
@@ -276,8 +261,7 @@ export function Type1Type2ErrorAreas() {
           <div className="flex items-center gap-2">
             <span className="inline-block h-3 w-3 rounded-sm bg-[hsl(220_75%_60%_/_0.35)] border border-[hsl(220_70%_55%)]" />
             <span>
-              H₀: μ = 0 — fordeling av <Tex>{"\\bar{X}"}</Tex> hvis null er
-              sann
+              H₀: μ = 0 — fordeling av <Tex>{"\\bar{X}"}</Tex> hvis null er sann
             </span>
           </div>
           <div className="flex items-center gap-2">
@@ -295,8 +279,7 @@ export function Type1Type2ErrorAreas() {
         </div>
         <div className="rounded-lg border border-border bg-background p-3 font-mono text-[11px] space-y-0.5">
           <div>
-            standardfeil <Tex>{"\\sigma_{\\bar{X}} = \\sigma/\\sqrt{n}"}</Tex>{" "}
-            = {seMean.toFixed(3)}
+            standardfeil <Tex>{"\\sigma_{\\bar{X}} = \\sigma/\\sqrt{n}"}</Tex> = {seMean.toFixed(3)}
           </div>
           <div className="text-[hsl(330_80%_50%)]">
             α = {alpha.toFixed(4)} ({(alpha * 100).toFixed(2)} %)
@@ -314,21 +297,22 @@ export function Type1Type2ErrorAreas() {
         <div className="font-semibold">Hva ser du?</div>
         <ul className="list-disc pl-5 space-y-1 text-muted-foreground">
           <li>
-            <strong>Skyv c til høyre</strong> → α krymper (færre falske
-            forkast), men β vokser (mister flere reelle effekter).
+            <strong>Skyv c til høyre</strong> → α krymper (færre falske forkast), men β vokser
+            (mister flere reelle effekter).
           </li>
           <li>
-            <strong>Øk n</strong> → begge kurvene krymper rundt sine sentre,
-            så samme c gir både mindre α <em>og</em> mindre β. Mer data slår
-            trade-off-en.
+            <strong>Øk n</strong> → begge kurvene krymper rundt sine sentre, så samme c gir både
+            mindre α <em>og</em> mindre β. Mer data slår trade-off-en.
           </li>
           <li>
-            <strong>Øk effektstørrelse d</strong> → H₁ flytter seg lenger
-            unna H₀, overlapp minker, β faller, styrke stiger.
+            <strong>Øk effektstørrelse d</strong> → H₁ flytter seg lenger unna H₀, overlapp minker,
+            β faller, styrke stiger.
           </li>
         </ul>
         <TexBlock>
-          {"\\alpha = P(\\bar{X} > c \\mid H_0),\\quad \\beta = P(\\bar{X} \\leq c \\mid H_1),\\quad \\text{Power} = 1 - \\beta"}
+          {
+            "\\alpha = P(\\bar{X} > c \\mid H_0),\\quad \\beta = P(\\bar{X} \\leq c \\mid H_1),\\quad \\text{Power} = 1 - \\beta"
+          }
         </TexBlock>
       </div>
     </div>
