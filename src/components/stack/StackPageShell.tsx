@@ -1,6 +1,8 @@
-import { Link } from "@tanstack/react-router";
+import { Link, useLocation } from "@tanstack/react-router";
 import { SiteHeader } from "@/components/SiteHeader";
 import { PrereqBanner } from "@/components/stack/PrereqBanner";
+import { KonseptSjekker } from "@/components/stack/KonseptSjekk";
+import { CHECKS_BY_LESSON } from "@/lib/core/checks";
 import type { TrinnGroup } from "@/lib/stack/types";
 
 export function StackPageShell({
@@ -29,6 +31,26 @@ export function StackPageShell({
       </div>
       <PrereqBanner />
       <main>{children}</main>
+      <LessonChecks />
+    </div>
+  );
+}
+
+/**
+ * Konsept-sjekkene for leksjonen man står på, hentet fra registeret på slug.
+ * Ligger her framfor i hver enkelt side, slik at det å ta i bruk sjekker for
+ * en ny leksjon bare krever en oppføring i `core/checks.ts`.
+ */
+function LessonChecks() {
+  const pathname = useLocation({ select: (l) => l.pathname });
+  const slug = pathname.startsWith("/stack/")
+    ? pathname.slice("/stack/".length).replace(/\/$/, "")
+    : null;
+  const sjekker = slug ? (CHECKS_BY_LESSON[slug] ?? []) : [];
+  if (sjekker.length === 0) return null;
+  return (
+    <div className="container mx-auto px-4 pb-4 max-w-3xl">
+      <KonseptSjekker lessonSlug={slug!} sjekker={sjekker} />
     </div>
   );
 }

@@ -143,8 +143,10 @@ function FagPage() {
     setFoundations(phaseFoundations(slug));
   }, [slug]);
 
+  // Neste kloss = første som ikke er mestret. Der sjekker finnes teller
+  // mestring, ellers faller vi tilbake på «sett».
   const nextBlock = useMemo(() => {
-    const idx = blocks.findIndex((b) => !b.seen);
+    const idx = blocks.findIndex((b) => (b.hasChecks ? !b.mastered : !b.seen));
     return idx === -1 ? null : { block: blocks[idx], index: idx };
   }, [blocks]);
 
@@ -308,27 +310,54 @@ function FagPage() {
             )}
 
             {/* Byggekloss-stripe: én rute per leksjon, i studierekkefølge.
-                Fylt = sett, ring = neste kloss. Gjør stien fysisk synlig. */}
+                Mestret = fylt grønn, sett-men-usjekket = blek grønn,
+                stiplet = låst til konseptet foran sitter. */}
             {blocks.length > 0 && (
               <div className="mt-4">
                 <div className="mb-1.5 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
                   Byggeklossene i faget
                 </div>
                 <div className="flex flex-wrap gap-1">
-                  {blocks.map((b, i) => (
-                    <a
-                      key={b.slug}
-                      href={`/stack/${b.slug}`}
-                      title={`${i + 1}. ${b.title}${b.seen ? " ✓" : ""}`}
-                      className={`h-4 w-4 rounded-sm border transition-colors ${
-                        b.seen
-                          ? "border-success bg-success/70 hover:bg-success"
+                  {blocks.map((b, i) => {
+                    const status =
+                      b.mastered && b.hasChecks
+                        ? "mestret"
+                        : b.locked
+                          ? "låst"
                           : nextBlock?.block.slug === b.slug
-                            ? "border-brand bg-brand/20 ring-2 ring-brand/40 hover:bg-brand/40"
-                            : "border-border bg-muted/40 hover:border-brand/60"
-                      }`}
-                    />
-                  ))}
+                            ? "her er du"
+                            : b.seen
+                              ? "sett, ikke sjekket"
+                              : "åpen";
+                    return (
+                      <a
+                        key={b.slug}
+                        href={`/stack/${b.slug}`}
+                        title={`${i + 1}. ${b.title} — ${status}`}
+                        className={`h-4 w-4 rounded-sm border transition-colors ${
+                          status === "mestret"
+                            ? "border-success bg-success hover:bg-success/80"
+                            : status === "sett, ikke sjekket"
+                              ? "border-success/60 bg-success/40 hover:bg-success/60"
+                              : status === "her er du"
+                                ? "border-brand bg-brand/20 ring-2 ring-brand/40 hover:bg-brand/40"
+                                : status === "låst"
+                                  ? "border-dashed border-muted-foreground/50 bg-transparent opacity-50 hover:opacity-90"
+                                  : "border-border bg-muted/40 hover:border-brand/60"
+                        }`}
+                      />
+                    );
+                  })}
+                </div>
+                <div className="mt-1.5 flex flex-wrap gap-x-3 gap-y-1 text-[10px] text-muted-foreground">
+                  <Tegnforklaring cls="border-success bg-success">mestret</Tegnforklaring>
+                  <Tegnforklaring cls="border-success/60 bg-success/40">
+                    sett, ikke sjekket
+                  </Tegnforklaring>
+                  <Tegnforklaring cls="border-brand bg-brand/20">her er du</Tegnforklaring>
+                  <Tegnforklaring cls="border-dashed border-muted-foreground/50 opacity-60">
+                    låst til konseptet foran sitter
+                  </Tegnforklaring>
                 </div>
               </div>
             )}
@@ -467,5 +496,15 @@ function FagPage() {
         </div>
       </footer>
     </div>
+  );
+}
+
+/** Liten fargeprikk + tekst for tegnforklaringen under kloss-stripa. */
+function Tegnforklaring({ cls, children }: { cls: string; children: React.ReactNode }) {
+  return (
+    <span className="flex items-center gap-1">
+      <span className={`inline-block h-2.5 w-2.5 rounded-sm border ${cls}`} />
+      {children}
+    </span>
   );
 }
