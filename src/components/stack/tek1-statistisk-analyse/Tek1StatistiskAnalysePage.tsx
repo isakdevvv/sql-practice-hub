@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
-import {Lightbulb, ArrowLeft } from "lucide-react";
+import { Lightbulb, ArrowLeft } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
+import { InferensMaskinen } from "./InferensMaskinen";
 import { CourseOutline } from "@/components/stack/CourseOutline";
 
 const STEPS = [
@@ -16,10 +17,7 @@ const STEPS = [
 
 export function Tek1StatistiskAnalysePage() {
   return (
-    <StackPageShell
-      title="Modul 4 — Statistisk inferens og regresjon"
-      group="eksamen"
-    >
+    <StackPageShell title="Modul 4 — Statistisk inferens og regresjon" group="eksamen">
       <div className="container mx-auto px-4 py-12 max-w-3xl">
         <div className="mb-8">
           <div className="text-xs uppercase tracking-wider text-brand font-semibold mb-2">
@@ -29,10 +27,9 @@ export function Tek1StatistiskAnalysePage() {
             Inferens og regresjon — trekk konklusjoner fra data
           </h1>
           <p className="mt-3 text-muted-foreground">
-            Vi har observert et utvalg — hva kan vi si om den underliggende
-            populasjonen? To verktøy: konfidensintervall (CI — gi et intervall
-            for μ) og hypotesetest (kan vi forkaste et bestemt utsagn om μ?).
-            Pluss korrelasjon og lineær regresjon for å modellere
+            Vi har observert et utvalg — hva kan vi si om den underliggende populasjonen? To
+            verktøy: konfidensintervall (CI — gi et intervall for μ) og hypotesetest (kan vi
+            forkaste et bestemt utsagn om μ?). Pluss korrelasjon og lineær regresjon for å modellere
             sammenhengen mellom to variabler.
           </p>
           <div className="mt-4 rounded-lg border border-brand/30 bg-brand/5 p-4 flex items-start gap-3">
@@ -57,8 +54,8 @@ export function Tek1StatistiskAnalysePage() {
         <section id="estimator" className="mb-10">
           <h2 className="text-xl font-semibold mb-3">1. Estimatorer og punktestimat</h2>
           <p className="text-sm text-muted-foreground mb-4">
-            En estimator er en funksjon av utvalget som bestemmer en verdi
-            («gjet») for en ukjent populasjonsparameter.
+            En estimator er en funksjon av utvalget som bestemmer en verdi («gjet») for en ukjent
+            populasjonsparameter.
           </p>
           <div className="rounded-xl border border-border bg-card p-5">
             <pre className="font-mono text-xs overflow-x-auto whitespace-pre">{`Vokabular:
@@ -85,9 +82,8 @@ Intervallestimat: et intervall (CI) som med høy sannsynlighet
         <section id="ci-mu" className="mb-10">
           <h2 className="text-xl font-semibold mb-3">2. Konfidensintervall for μ</h2>
           <p className="text-sm text-muted-foreground mb-4">
-            «Gi et 95 % CI for μ» betyr: et intervall konstruert slik at hvis vi
-            gjentok eksperimentet uendelig mange ganger, ville 95 % av
-            intervallene inneholde det sanne μ.
+            «Gi et 95 % CI for μ» betyr: et intervall konstruert slik at hvis vi gjentok
+            eksperimentet uendelig mange ganger, ville 95 % av intervallene inneholde det sanne μ.
           </p>
           <div className="rounded-xl border border-border bg-card p-5 mb-4">
             <h3 className="font-semibold text-sm mb-2">Tilfelle 1: σ kjent (eller n stor)</h3>
@@ -345,41 +341,37 @@ Prediksjon for 8 etasjer: ŷ = -0.4 + 16 = 15.6 mnd.`}</pre>
           <h2 className="text-xl font-semibold mb-3">8. Eksamen-typiske oppgaver</h2>
           <div className="space-y-3 text-sm">
             <div className="rounded-lg border border-border bg-card p-4">
-              <strong>Oppgave A:</strong> «Konstruér 95 % CI for μ». Steg: identifisér
-              om σ er kjent. Hvis ja: bruk z. Hvis nei: bruk t med n-1
-              frihetsgrader. Skriv ut formelen, regn ut, oppgi intervallet.
+              <strong>Oppgave A:</strong> «Konstruér 95 % CI for μ». Steg: identifisér om σ er
+              kjent. Hvis ja: bruk z. Hvis nei: bruk t med n-1 frihetsgrader. Skriv ut formelen,
+              regn ut, oppgi intervallet.
             </div>
             <div className="rounded-lg border border-border bg-card p-4">
-              <strong>Oppgave B:</strong> «Test om μ er lik X med α = 0.05». Sett opp
-              H₀ og H₁, regn ut teststatistikk, sammenlign med kritisk verdi, gi
-              konklusjon på norsk.
+              <strong>Oppgave B:</strong> «Test om μ er lik X med α = 0.05». Sett opp H₀ og H₁, regn
+              ut teststatistikk, sammenlign med kritisk verdi, gi konklusjon på norsk.
             </div>
             <div className="rounded-lg border border-border bg-card p-4">
-              <strong>Oppgave C:</strong> «Beregn korrelasjon og regresjonslinje». Lag
-              tabell med (xᵢ-x̄), (yᵢ-ȳ), produktene og kvadratene. Sett inn i
-              formel. Tegn linja over scatter-plottet.
+              <strong>Oppgave C:</strong> «Beregn korrelasjon og regresjonslinje». Lag tabell med
+              (xᵢ-x̄), (yᵢ-ȳ), produktene og kvadratene. Sett inn i formel. Tegn linja over
+              scatter-plottet.
             </div>
             <div className="rounded-lg border border-border bg-card p-4">
-              <strong>Oppgave D:</strong> «Test om to kategoriske variabler er
-              uavhengige». Sett opp kontingenstabell, regn forventede verdier,
-              bruk kji-kvadrat-formelen, sammenlign med kritisk χ²-verdi.
+              <strong>Oppgave D:</strong> «Test om to kategoriske variabler er uavhengige». Sett opp
+              kontingenstabell, regn forventede verdier, bruk kji-kvadrat-formelen, sammenlign med
+              kritisk χ²-verdi.
             </div>
             <div className="rounded-lg border border-amber-500/30 bg-amber-500/5 p-4">
-              <strong>Felle:</strong> p-verdi {">"} 0.05 betyr IKKE at H₀ er sann.
-              Det betyr at vi ikke har nok bevis til å forkaste den. Stor n + lite
-              avvik kan likevel gi p {"<"} 0.05 selv om effekten er praktisk
-              ubetydelig.
+              <strong>Felle:</strong> p-verdi {">"} 0.05 betyr IKKE at H₀ er sann. Det betyr at vi
+              ikke har nok bevis til å forkaste den. Stor n + lite avvik kan likevel gi p {"<"} 0.05
+              selv om effekten er praktisk ubetydelig.
             </div>
             <div className="rounded-lg border border-amber-500/30 bg-amber-500/5 p-4">
-              <strong>Felle:</strong> R² = 0 betyr at den LINEÆRE modellen ikke
-              forklarer noe — men det kan likevel være en sterk ikke-lineær
-              sammenheng. Sjekk residual-plot.
+              <strong>Felle:</strong> R² = 0 betyr at den LINEÆRE modellen ikke forklarer noe — men
+              det kan likevel være en sterk ikke-lineær sammenheng. Sjekk residual-plot.
             </div>
             <div className="rounded-lg border border-amber-500/30 bg-amber-500/5 p-4">
-              <strong>Felle:</strong> CI tolket feil. «95 % CI = [10, 14]» betyr
-              IKKE at μ ligger i [10, 14] med 95 % sannsynlighet — μ er fast.
-              Det betyr at PROSEDYREN gir et intervall som fanger μ i 95 % av
-              forsøkene.
+              <strong>Felle:</strong> CI tolket feil. «95 % CI = [10, 14]» betyr IKKE at μ ligger i
+              [10, 14] med 95 % sannsynlighet — μ er fast. Det betyr at PROSEDYREN gir et intervall
+              som fanger μ i 95 % av forsøkene.
             </div>
           </div>
         </section>
@@ -391,15 +383,14 @@ Prediksjon for 8 etasjer: ŷ = -0.4 + 16 = 15.6 mnd.`}</pre>
               <Link to="/drag" className="text-brand hover:underline">
                 Drag-oppgaver
               </Link>{" "}
-              under «Statistisk analyse» — CI-formel-fyll, hypotesetest-
-              rekkefølge, regresjon-quizzer.
+              under «Statistisk analyse» — CI-formel-fyll, hypotesetest- rekkefølge,
+              regresjon-quizzer.
             </li>
             <li>
               <Link to="/python" className="text-brand hover:underline">
                 Python-øvelser
               </Link>{" "}
-              — kjør hele eksamen-pakka:{" "}
-              <code className="text-xs">scipy.stats.ttest_1samp</code>,{" "}
+              — kjør hele eksamen-pakka: <code className="text-xs">scipy.stats.ttest_1samp</code>,{" "}
               <code className="text-xs">linregress</code>,{" "}
               <code className="text-xs">chi2_contingency</code>.
             </li>
@@ -416,7 +407,10 @@ Prediksjon for 8 etasjer: ŷ = -0.4 + 16 = 15.6 mnd.`}</pre>
             </li>
           </ul>
         </div>
-              <div className="mt-6">
+        <div className="my-8">
+          <InferensMaskinen />
+        </div>
+        <div className="mt-6">
           <Link
             to="/stack/$slug"
             params={{ slug: "tek-1501" }}
@@ -426,7 +420,7 @@ Prediksjon for 8 etasjer: ŷ = -0.4 + 16 = 15.6 mnd.`}</pre>
             Tilbake til TEK-1501-hub
           </Link>
         </div>
-</div>
+      </div>
     </StackPageShell>
   );
 }
