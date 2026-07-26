@@ -8,8 +8,8 @@
 // å innføre ny lagring.
 // ---------------------------------------------------------------------------
 
-import { phaseOfSlug } from "@/lib/stack/curriculum";
 import { computeModulProgress } from "@/lib/stack/moduleProgress";
+import { lessonSlugsForSubject } from "./path";
 import { flashcardFsrs } from "@/lib/learn/fsrs";
 import { FLASHCARDS } from "@/lib/learn/flashcards";
 import { loadProgress } from "@/lib/progress/storage";
@@ -17,8 +17,8 @@ import { PROBLEMS } from "@/lib/problems/data";
 import { dueCounts } from "./due";
 
 export interface SubjectSnapshot {
-  /** Leksjoner i fagets curriculum-fase: sett / totalt. 0/0 hvis faget ikke
-   *  er hub for en fase. */
+  /** Leksjoner i fagets curriculum-faser: sett / totalt. 0/0 hvis faget ikke
+   *  eier noen fase. */
   lessonsSeen: number;
   lessonsTotal: number;
   /** Flashcards som tilhører faget og har vært gjennom minst én repetisjon. */
@@ -36,10 +36,8 @@ function cardSubject(category: string): string {
 }
 
 export function subjectSnapshot(slug: string, now: number = Date.now()): SubjectSnapshot {
-  // Leksjoner: fagets curriculum-fase (kun når faget selv er fasens hub).
-  const phase = phaseOfSlug(slug);
-  const lessonSlugs = phase && phase.slugs[0] === slug ? [...phase.slugs] : [];
-  const lessons = computeModulProgress(lessonSlugs);
+  // Leksjoner: alle trinn i fasene faget eier (se phasesForSubject).
+  const lessons = computeModulProgress(lessonSlugsForSubject(slug));
 
   // Kort: fagets flashcards, "lært" = FSRS-tilstand utover "new".
   const subjectCards = FLASHCARDS.filter((c) => cardSubject(c.category) === slug);

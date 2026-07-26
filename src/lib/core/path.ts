@@ -12,6 +12,10 @@
 //  - nextBlockForSubject(): første usette kloss — «fortsett her»
 //  - prereqStatus(): en leksjons prerequisites med sett-status
 //  - phaseFoundations(): fasene faget bygger på, med fremdrift
+//
+// phasesForSubject() er den ene kilden til hvilke curriculum-faser et fag
+// eier. Alt annet her — og fremdriftstallene i core/subjectProgress.ts og på
+// /fag/:slug — bygger på den.
 // ---------------------------------------------------------------------------
 
 import { PHASES, phaseOfSlug, type CurriculumPhase } from "@/lib/stack/curriculum";
@@ -24,19 +28,41 @@ export interface Block {
   seen: boolean;
 }
 
-/** Fasen et fag er hub for, eller null. Klossene til et fag er fasens
- *  ready-trinn (stubs og selve hub-siden er ikke klosser). */
-function subjectPhase(subjectSlug: string): CurriculumPhase | null {
+// Fag som eier faser de ikke står først i. Konvensjonen ellers er at et fag
+// er hub for fasen der fagets egen slug er første slug (dte-2505 → os,
+// dte-2507 → nettverk osv.). DTE-2509 bryter den: det dekker to faser, og
+// begge starter på en leksjon (`er-mapping`, `http-anatomi`) i stedet for på
+// fagets slug. Uten denne mappingen ville databaser og web vært faglose —
+// ingen klosser i stripen på /fag/dte-2509 og 0 av 0 sider i fremdriften.
+const SUBJECT_PHASE_IDS: Record<string, readonly string[]> = {
+  "dte-2509": ["database", "web"],
+};
+
+/** Curriculum-fasene et fag eier, i studierekkefølge. Tom liste for fag uten
+ *  eget løp (og for faser som ikke tilhører noe fag, som `hardware`). */
+export function phasesForSubject(subjectSlug: string): CurriculumPhase[] {
+  const explicit = SUBJECT_PHASE_IDS[subjectSlug];
+  if (explicit) {
+    return explicit
+      .map((id) => PHASES.find((p) => p.id === id))
+      .filter((p): p is CurriculumPhase => !!p)
+      .sort((a, b) => a.num - b.num);
+  }
   const p = phaseOfSlug(subjectSlug);
-  return p && p.slugs[0] === subjectSlug ? p : null;
+  return p && p.slugs[0] === subjectSlug ? [p] : [];
 }
 
-/** Fagets byggeklosser i studierekkefølge, med sett-status. */
+/** Alle leksjons-slugs i fagets faser, i studierekkefølge. Inkluderer stubs —
+ *  brukes til fremdriftstall, ikke til klosser. */
+export function lessonSlugsForSubject(subjectSlug: string): string[] {
+  return phasesForSubject(subjectSlug).flatMap((p) => [...p.slugs]);
+}
+
+/** Fagets byggeklosser i studierekkefølge, med sett-status. Klossene er
+ *  fasenes ready-trinn (stubs og selve hub-siden er ikke klosser). */
 export function blocksForSubject(subjectSlug: string): Block[] {
-  const phase = subjectPhase(subjectSlug);
-  if (!phase) return [];
   const out: Block[] = [];
-  for (const slug of phase.slugs) {
+  for (const slug of lessonSlugsForSubject(subjectSlug)) {
     if (slug === subjectSlug) continue; // hub-siden er ikke en kloss
     const trinn = getTrinnBySlug(slug);
     if (!trinn) continue; // stub eller uregistrert
@@ -75,16 +101,23 @@ export interface Foundation {
   total: number;
 }
 
-/** Fasene faget bygger på (curriculum dependsOn), med fremdrift. */
+/** Fasene faget bygger på (curriculum dependsOn), med fremdrift. Faser faget
+ *  eier selv utelates — når web bygger på database og begge er DTE-2509, er
+ *  database en del av faget, ikke en grunnmur under det. */
 export function phaseFoundations(subjectSlug: string): Foundation[] {
-  const phase = subjectPhase(subjectSlug);
-  if (!phase || !phase.dependsOn || phase.dependsOn.length === 0) return [];
+  const own = phasesForSubject(subjectSlug);
+  const ownIds = new Set(own.map((p) => p.id));
   const out: Foundation[] = [];
-  for (const depId of phase.dependsOn) {
-    const dep = PHASES.find((p) => p.id === depId);
-    if (!dep) continue;
-    const progress = computeModulProgress([...dep.slugs]);
-    out.push({ phase: dep, seen: progress.seen, total: progress.total });
+  const seenIds = new Set<string>();
+  for (const phase of own) {
+    for (const depId of phase.dependsOn ?? []) {
+      if (ownIds.has(depId) || seenIds.has(depId)) continue;
+      const dep = PHASES.find((p) => p.id === depId);
+      if (!dep) continue;
+      seenIds.add(depId);
+      const progress = computeModulProgress([...dep.slugs]);
+      out.push({ phase: dep, seen: progress.seen, total: progress.total });
+    }
   }
-  return out;
+  return out.sort((a, b) => a.phase.num - b.phase.num);
 }
