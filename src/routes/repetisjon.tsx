@@ -1,25 +1,16 @@
-// Samlet "Due i dag"-side. Trekker fra alle fire FSRS-namespacene
-// (flashcards, drag, JOIN, SQL-problemer) og viser en mikset kø sortert etter
-// hvor lenge oppgavene har vært overforfalt.
-//
-// Klikk på en linje sender brukeren til riktig verktøy. For SQL-problemer
-// pre-velger vi oppgaven via `?id=` (practice-ruta støtter dette allerede).
-// For drag/JOIN/flashcards finnes det ingen per-oppgave deep-link enda, så
-// vi sender brukeren til verktøyets studiemodus i staden.
+// Samlet "Due i dag"-side, bygget på core-engine-registeret: køen itererer
+// PRACTICE_MODULES i stedet for å hardkode hver FSRS-silo, og kan filtreres
+// per fag via modulenes fag-avledning. Nye øvingsmoduler dukker opp her
+// automatisk når de registreres i src/lib/core/registry.ts.
 
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import { Brain, Layers, GitMerge, Code2, Target } from "lucide-react";
+import { Target } from "lucide-react";
 import { SiteHeader } from "@/components/SiteHeader";
 import { Button } from "@/components/ui/button";
-import { flashcardFsrs } from "@/lib/learn/fsrs";
-import { dragFsrs } from "@/lib/learn/dragProgress";
-import { joinFsrs } from "@/lib/learn/joinProgress";
-import { problemFsrs } from "@/lib/progress/storage";
-import { FLASHCARDS } from "@/lib/learn/flashcards";
-import { DRAG_EXERCISES } from "@/lib/learn/dragExercises";
-import { JOIN_EXERCISES } from "@/lib/learn/joinExercises";
-import { PROBLEMS } from "@/lib/problems/data";
+import { PRACTICE_MODULES } from "@/lib/core/registry";
+import { collectDue, subjectsWithDue } from "@/lib/core/due";
+import { SUBJECT_BY_SLUG } from "@/lib/subjects/catalog";
 
 export const Route = createFileRoute("/repetisjon")({
   head: () => ({
@@ -28,49 +19,12 @@ export const Route = createFileRoute("/repetisjon")({
       {
         name: "description",
         content:
-          "Samlet spaced-repetition kø: alle oppgaver (flashcards, drag, JOIN, SQL) som er due i dag, basert på FSRS-4.5.",
+          "Samlet spaced-repetition kø: alt som er due i dag på tvers av øvingsmodulene, basert på FSRS-4.5. Filtrer per fag.",
       },
     ],
   }),
   component: RepetisjonPage,
 });
-
-type ToolKind = "flashcard" | "drag" | "join" | "sql";
-
-interface DueItem {
-  id: string;
-  tool: ToolKind;
-  title: string;
-  due: number;
-  /** Where clicking the row sends the user. */
-  to: string;
-  /** Optional search params for TanStack Router. */
-  search?: Record<string, string>;
-}
-
-const TOOL_META: Record<ToolKind, { label: string; icon: typeof Brain; color: string }> = {
-  flashcard: { label: "Flashcard", icon: Brain, color: "text-brand" },
-  drag: { label: "Drag", icon: Layers, color: "text-success" },
-  join: { label: "JOIN", icon: GitMerge, color: "text-warning" },
-  sql: { label: "SQL", icon: Code2, color: "text-info" },
-};
-
-function flashcardTitle(id: string): string {
-  const c = FLASHCARDS.find((x) => x.id === id);
-  return c?.question ?? id;
-}
-function dragTitle(id: string): string {
-  const e = DRAG_EXERCISES.find((x) => x.id === id);
-  return e?.title ?? id;
-}
-function joinTitle(id: string): string {
-  const e = JOIN_EXERCISES.find((x) => x.id === id);
-  return e?.title ?? id;
-}
-function sqlTitle(id: string): string {
-  const p = PROBLEMS.find((x) => x.id === id);
-  return p?.title ?? id;
-}
 
 function formatOverdue(ms: number): string {
   const abs = Math.abs(ms);
@@ -82,66 +36,24 @@ function formatOverdue(ms: number): string {
   return `${Math.round(d)} d`;
 }
 
-function collectDue(now: number): DueItem[] {
-  const items: DueItem[] = [];
-
-  for (const s of Object.values(flashcardFsrs.getAllStates())) {
-    if (s.state === "new" || s.due > now) continue;
-    items.push({
-      id: s.id,
-      tool: "flashcard",
-      title: flashcardTitle(s.id),
-      due: s.due,
-      to: "/cards",
-      search: { mode: "study" },
-    });
-  }
-
-  for (const s of Object.values(dragFsrs.getAllStates())) {
-    if (s.state === "new" || s.due > now) continue;
-    items.push({
-      id: s.id,
-      tool: "drag",
-      title: dragTitle(s.id),
-      due: s.due,
-      to: "/drag",
-    });
-  }
-
-  for (const s of Object.values(joinFsrs.getAllStates())) {
-    if (s.state === "new" || s.due > now) continue;
-    items.push({
-      id: s.id,
-      tool: "join",
-      title: joinTitle(s.id),
-      due: s.due,
-      to: "/joins",
-    });
-  }
-
-  for (const s of Object.values(problemFsrs.getAllStates())) {
-    if (s.state === "new" || s.due > now) continue;
-    items.push({
-      id: s.id,
-      tool: "sql",
-      title: sqlTitle(s.id),
-      due: s.due,
-      to: "/practice",
-      search: { id: s.id },
-    });
-  }
-
-  items.sort((a, b) => a.due - b.due);
-  return items;
-}
-
 function RepetisjonPage() {
   // Re-read on mount only; the queue is essentially static during a visit.
   // Users return here after solving something — that mount re-runs this.
   const [now, setNow] = useState<number | null>(null);
   useEffect(() => setNow(Date.now()), []);
 
-  const items = useMemo(() => (now != null ? collectDue(now) : []), [now]);
+  const [subjectFilter, setSubjectFilter] = useState<string | null>(null);
+
+  const allItems = useMemo(() => (now != null ? collectDue(now) : []), [now]);
+  const subjects = useMemo(() => (now != null ? subjectsWithDue(now) : []), [now]);
+
+  const items = useMemo(
+    () =>
+      subjectFilter == null
+        ? allItems
+        : allItems.filter((e) => e.item.subjectSlug === subjectFilter),
+    [allItems, subjectFilter],
+  );
 
   if (now == null) {
     return (
@@ -154,13 +66,9 @@ function RepetisjonPage() {
     );
   }
 
-  const counts = items.reduce<Record<ToolKind, number>>(
-    (acc, it) => {
-      acc[it.tool] = (acc[it.tool] ?? 0) + 1;
-      return acc;
-    },
-    { flashcard: 0, drag: 0, join: 0, sql: 0 },
-  );
+  const counts: Record<string, number> = {};
+  for (const m of PRACTICE_MODULES) counts[m.id] = 0;
+  for (const e of items) counts[e.module.id] += 1;
 
   return (
     <div className="min-h-screen bg-background">
@@ -173,9 +81,8 @@ function RepetisjonPage() {
               Due i dag
             </h1>
             <p className="text-sm text-muted-foreground mt-1 max-w-2xl">
-              Spaced repetition (FSRS-4.5) på tvers av flashcards, drag-oppgaver,
-              JOIN-oppgaver og SQL-problemer. Listen viser alt som er klart for
-              repetisjon nå, sortert etter eldste due-dato først.
+              Spaced repetition (FSRS-4.5) på tvers av alle øvingsmodulene. Listen viser alt som er
+              klart for repetisjon nå, sortert etter eldste due-dato først.
             </p>
           </div>
           <Link to="/dashboard">
@@ -185,27 +92,55 @@ function RepetisjonPage() {
           </Link>
         </div>
 
-        {/* Per-tool count cards */}
+        {/* Fag-filter — vises bare når køen inneholder fag-taggede items */}
+        {subjects.length > 0 && (
+          <div className="mt-5 flex flex-wrap gap-1.5">
+            <button
+              type="button"
+              onClick={() => setSubjectFilter(null)}
+              className={`rounded-full border px-2.5 py-1 text-xs transition-colors ${
+                subjectFilter == null
+                  ? "border-brand bg-brand text-brand-foreground"
+                  : "border-border bg-card text-foreground hover:bg-accent"
+              }`}
+            >
+              Alle fag ({allItems.length})
+            </button>
+            {subjects.map((slug) => {
+              const subject = SUBJECT_BY_SLUG[slug];
+              const count = allItems.filter((e) => e.item.subjectSlug === slug).length;
+              return (
+                <button
+                  key={slug}
+                  type="button"
+                  onClick={() => setSubjectFilter(subjectFilter === slug ? null : slug)}
+                  className={`rounded-full border px-2.5 py-1 text-xs transition-colors ${
+                    subjectFilter === slug
+                      ? "border-brand bg-brand text-brand-foreground"
+                      : "border-border bg-card text-foreground hover:bg-accent"
+                  }`}
+                >
+                  {subject?.code ?? slug} ({count})
+                </button>
+              );
+            })}
+          </div>
+        )}
+
+        {/* Per-modul count cards */}
         <div className="mt-6 grid grid-cols-2 sm:grid-cols-4 gap-3">
-          {(Object.keys(TOOL_META) as ToolKind[]).map((kind) => {
-            const meta = TOOL_META[kind];
-            const Icon = meta.icon;
-            return (
-              <div
-                key={kind}
-                className="rounded-xl border border-border bg-card p-4"
-              >
-                <div className="flex items-center justify-between">
-                  <span className="text-xs uppercase tracking-wider text-muted-foreground">
-                    {meta.label}
-                  </span>
-                  <Icon className={`h-4 w-4 ${meta.color}`} />
-                </div>
-                <div className="mt-2 text-2xl font-bold">{counts[kind]}</div>
-                <div className="text-xs text-muted-foreground mt-0.5">due</div>
+          {PRACTICE_MODULES.map((m) => (
+            <div key={m.id} className="rounded-xl border border-border bg-card p-4">
+              <div className="flex items-center justify-between">
+                <span className="text-xs uppercase tracking-wider text-muted-foreground">
+                  {m.label}
+                </span>
+                <m.Icon className={`h-4 w-4 ${m.color}`} />
               </div>
-            );
-          })}
+              <div className="mt-2 text-2xl font-bold">{counts[m.id]}</div>
+              <div className="text-xs text-muted-foreground mt-0.5">due</div>
+            </div>
+          ))}
         </div>
 
         {/* Queue */}
@@ -213,62 +148,53 @@ function RepetisjonPage() {
           <h2 className="font-semibold mb-3 flex items-baseline gap-2">
             <span>Kø ({items.length})</span>
             {items.length > 50 && (
-              <span className="text-xs font-normal text-muted-foreground">
-                viser de første 50
-              </span>
+              <span className="text-xs font-normal text-muted-foreground">viser de første 50</span>
             )}
           </h2>
           {items.length === 0 ? (
             <div className="rounded-xl border border-dashed border-border bg-card/50 p-8 text-center">
               <p className="text-sm text-muted-foreground">
-                Ingen ting due akkurat nå. Løs noen oppgaver — så dukker de opp
-                her når FSRS sier de er klare for repetisjon.
+                {subjectFilter
+                  ? "Ingen ting due i dette faget akkurat nå."
+                  : "Ingen ting due akkurat nå. Løs noen oppgaver — så dukker de opp her når FSRS sier de er klare for repetisjon."}
               </p>
               <div className="mt-4 flex flex-wrap gap-2 justify-center">
-                <Link to="/cards">
-                  <Button size="sm" variant="outline">
-                    Flashcards
-                  </Button>
-                </Link>
-                <Link to="/drag">
-                  <Button size="sm" variant="outline">
-                    Drag
-                  </Button>
-                </Link>
-                <Link to="/joins">
-                  <Button size="sm" variant="outline">
-                    JOIN
-                  </Button>
-                </Link>
-                <Link to="/practice">
-                  <Button size="sm" variant="outline">
-                    SQL-problemer
-                  </Button>
-                </Link>
+                {PRACTICE_MODULES.map((m) => (
+                  <a key={m.id} href={m.href}>
+                    <Button size="sm" variant="outline">
+                      {m.label}
+                    </Button>
+                  </a>
+                ))}
               </div>
             </div>
           ) : (
             <ul className="rounded-xl border border-border bg-card overflow-hidden divide-y divide-border">
-              {items.slice(0, 50).map((it) => {
-                const meta = TOOL_META[it.tool];
-                const Icon = meta.icon;
-                const overdueMs = now - it.due;
+              {items.slice(0, 50).map((e) => {
+                const Icon = e.module.Icon;
+                const overdueMs = now - e.due;
+                const subject = e.item.subjectSlug ? SUBJECT_BY_SLUG[e.item.subjectSlug] : null;
                 return (
-                  <li key={`${it.tool}-${it.id}`}>
+                  <li key={`${e.module.id}-${e.item.id}`}>
                     <Link
-                      to={it.to}
-                      search={it.search as never}
+                      to={e.item.to}
+                      search={e.item.search as never}
                       className="flex items-center gap-3 px-4 py-3 hover:bg-muted/40 transition-colors"
                     >
-                      <Icon className={`h-4 w-4 shrink-0 ${meta.color}`} />
+                      <Icon className={`h-4 w-4 shrink-0 ${e.module.color}`} />
                       <span
-                        className={`text-[10px] uppercase tracking-wider font-mono shrink-0 w-16 ${meta.color}`}
+                        className={`text-[10px] uppercase tracking-wider font-mono shrink-0 w-16 ${e.module.color}`}
                       >
-                        {meta.label}
+                        {e.module.label}
                       </span>
-                      <span className="flex-1 text-sm truncate" title={it.title}>
-                        {it.title}
+                      <span className="flex-1 text-sm truncate" title={e.item.title}>
+                        {e.item.title}
                       </span>
+                      {subject && (
+                        <span className="hidden sm:inline text-[10px] font-mono uppercase tracking-wider text-muted-foreground shrink-0">
+                          {subject.code}
+                        </span>
+                      )}
                       <span className="text-xs text-muted-foreground shrink-0 tabular-nums">
                         {overdueMs >= 0
                           ? `${formatOverdue(overdueMs)} over`

@@ -45,6 +45,7 @@ import { Route as DragRouteImport } from './routes/drag'
 import { Route as DiagnoseRouteImport } from './routes/diagnose'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as CardsRouteImport } from './routes/cards'
+import { Route as BibliotekRouteImport } from './routes/bibliotek'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as VizLesjonIndexRouteImport } from './routes/viz-lesjon.index'
 import { Route as StackIndexRouteImport } from './routes/stack.index'
@@ -258,6 +259,11 @@ const CardsRoute = CardsRouteImport.update({
   path: '/cards',
   getParentRoute: () => rootRouteImport,
 } as any)
+const BibliotekRoute = BibliotekRouteImport.update({
+  id: '/bibliotek',
+  path: '/bibliotek',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -422,6 +428,7 @@ const KarriereDebugJaktBugIdRoute = KarriereDebugJaktBugIdRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/bibliotek': typeof BibliotekRoute
   '/cards': typeof CardsRoute
   '/dashboard': typeof DashboardRoute
   '/diagnose': typeof DiagnoseRoute
@@ -492,6 +499,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/bibliotek': typeof BibliotekRoute
   '/cards': typeof CardsRoute
   '/dashboard': typeof DashboardRoute
   '/diagnose': typeof DiagnoseRoute
@@ -557,6 +565,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/bibliotek': typeof BibliotekRoute
   '/cards': typeof CardsRoute
   '/dashboard': typeof DashboardRoute
   '/diagnose': typeof DiagnoseRoute
@@ -629,6 +638,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/bibliotek'
     | '/cards'
     | '/dashboard'
     | '/diagnose'
@@ -699,6 +709,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/bibliotek'
     | '/cards'
     | '/dashboard'
     | '/diagnose'
@@ -763,6 +774,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/bibliotek'
     | '/cards'
     | '/dashboard'
     | '/diagnose'
@@ -834,6 +846,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  BibliotekRoute: typeof BibliotekRoute
   CardsRoute: typeof CardsRoute
   DashboardRoute: typeof DashboardRoute
   DiagnoseRoute: typeof DiagnoseRoute
@@ -1142,6 +1155,13 @@ declare module '@tanstack/react-router' {
       path: '/cards'
       fullPath: '/cards'
       preLoaderRoute: typeof CardsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/bibliotek': {
+      id: '/bibliotek'
+      path: '/bibliotek'
+      fullPath: '/bibliotek'
+      preLoaderRoute: typeof BibliotekRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -1461,6 +1481,7 @@ const KarriereDebugJaktRouteWithChildren =
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  BibliotekRoute: BibliotekRoute,
   CardsRoute: CardsRoute,
   DashboardRoute: DashboardRoute,
   DiagnoseRoute: DiagnoseRoute,
