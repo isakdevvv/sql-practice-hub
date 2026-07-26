@@ -27,12 +27,7 @@ const QUESTIONS: Q[] = [
     scenario:
       "En produksjonslinje måler diameter på 500 aksler. Fordelingen er tilnærmet symmetrisk og normal-aktig, ingen outliers.",
     question: "Hvilken par rapporterer du i en kvalitetskontroll-rapport?",
-    options: [
-      "Median + IQR",
-      "Mean + standardavvik",
-      "Modus + range",
-      "Min og max alene",
-    ],
+    options: ["Median + IQR", "Mean + standardavvik", "Modus + range", "Min og max alene"],
     correct: 1,
     explanation:
       "Symmetrisk fordeling uten outliers ⇒ mean + std er meningsfullt OG brukes som input til kontroll-grenser (μ ± 3σ).",
@@ -97,12 +92,7 @@ const QUESTIONS: Q[] = [
     scenario:
       "Du skal vise hvordan inntekt henger sammen med utdanningsnivå (år utdanning). Begge er numeriske.",
     question: "Hvilken visualisering er førstevalget?",
-    options: [
-      "Søylediagram",
-      "Histogram",
-      "Scatter plot",
-      "Kakediagram",
-    ],
+    options: ["Søylediagram", "Histogram", "Scatter plot", "Kakediagram"],
     correct: 2,
     explanation:
       "To kontinuerlige variabler ⇒ scatter plot. Det viser sammenhengen direkte og er grunnlaget for korrelasjon/regresjon.",

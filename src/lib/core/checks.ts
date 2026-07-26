@@ -41,6 +41,60 @@ export const CHECKS_BY_LESSON: Record<string, KonseptSjekkDef[]> = {
   // ─────────────── TEK-1501 — grunnmuren ───────────────
   "tek1-deskriptiv": [
     {
+      id: "simpsons-paradoks",
+      tittel: "Når totalen lyver — konfundering",
+      laer: "En andel regnet over blandede grupper er bare meningsfull hvis gruppene er sammenlignbare. Er de ikke det, kan en behandling være best i hver enkelt gruppe og likevel se dårligst ut totalt — Simpsons paradoks. Årsaken er en konfunderende variabel: noe som påvirker både hvilken gruppe man havner i og hvordan det går. Randomisering er kuren, fordi den fordeler de vanskelige tilfellene jevnt.",
+      sporsmal: [
+        {
+          sporsmal:
+            "Behandling A har høyest suksessrate både på små og store nyresteiner, men lavest totalt. Hva er forklaringen?",
+          valg: [
+            {
+              tekst: "A fikk en mye større andel av de vanskelige tilfellene",
+              riktig: true,
+              begrunnelse:
+                "Totalen vekter gruppene etter hvor mange pasienter hver behandling fikk fra dem. Får A mest av det vanskelige, trekkes totalsnittet ned selv om A vinner overalt.",
+            },
+            {
+              tekst: "Det må være en regnefeil — dette er umulig",
+              riktig: false,
+              begrunnelse:
+                "Det er fullt mulig og velkjent. Tallene i eksempelet er fra en ekte studie (Charig m.fl., 1986).",
+            },
+            {
+              tekst: "Utvalget er for lite til at ratene betyr noe",
+              riktig: false,
+              begrunnelse:
+                "Paradokset handler ikke om tilfeldig variasjon. Det oppstår også med vilkårlig store utvalg, fordi det er et vektingsproblem.",
+            },
+          ],
+        },
+        {
+          sporsmal: "Hvilken variabel er den konfunderende i dette eksempelet?",
+          valg: [
+            {
+              tekst: "Steinstørrelsen — den påvirker både behandlingsvalg og utfall",
+              riktig: true,
+              begrunnelse:
+                "Nettopp definisjonen på konfundering: den henger sammen med både det vi sammenligner og det vi måler.",
+            },
+            {
+              tekst: "Suksessraten",
+              riktig: false,
+              begrunnelse:
+                "Suksessraten er utfallet vi måler, ikke noe som forstyrrer sammenligningen.",
+            },
+            {
+              tekst: "Antall pasienter",
+              riktig: false,
+              begrunnelse:
+                "Gruppestørrelsene er mekanismen som gjør reverseringen synlig, men det er steinstørrelsen som er den underliggende forklaringsvariabelen.",
+            },
+          ],
+        },
+      ],
+    },
+    {
       id: "sentral-spredning",
       tittel: "Gjennomsnitt, median og robusthet",
       laer: "Gjennomsnittet bruker verdien til hver observasjon, så én ekstrem verdi drar det med seg. Medianen bruker bare rekkefølgen, og bryr seg ikke om hvor ekstrem ytterpunktet er. Derfor sier vi at medianen er robust mot uteliggere. Standardavviket har samme svakhet som gjennomsnittet, siden det måler avstand fra nettopp gjennomsnittet.",

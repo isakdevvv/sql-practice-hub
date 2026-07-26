@@ -1,14 +1,5 @@
 import { useMemo, useState } from "react";
-import {
-  iqr,
-  mean,
-  median,
-  mulberry32,
-  quantile,
-  randn,
-  stdDev,
-  trimmedMean,
-} from "./descUtils";
+import { iqr, mean, median, mulberry32, quantile, randn, stdDev, trimmedMean } from "./descUtils";
 
 /**
  * OutlierImpactDemo — viser hvor mye outliers påvirker hver metrikk.
@@ -92,11 +83,7 @@ export function OutlierImpactDemo() {
           + outlier (lavt)
         </button>
         <label className="flex items-center gap-1.5 text-[11px] text-muted-foreground ml-2">
-          <input
-            type="checkbox"
-            checked={trim}
-            onChange={(e) => setTrim(e.target.checked)}
-          />
+          <input type="checkbox" checked={trim} onChange={(e) => setTrim(e.target.checked)} />
           Vis 10% trimmed mean
         </label>
         <button
@@ -108,11 +95,7 @@ export function OutlierImpactDemo() {
         </button>
       </div>
 
-      <svg
-        width="100%"
-        viewBox={`0 0 ${W} ${H}`}
-        className="block bg-background rounded"
-      >
+      <svg width="100%" viewBox={`0 0 ${W} ${H}`} className="block bg-background rounded">
         {/* x-akse */}
         <line
           x1={PAD_L}
@@ -136,17 +119,41 @@ export function OutlierImpactDemo() {
         ))}
         {/* base-punkter */}
         {base.map((v, i) => (
-          <circle key={`b${i}`} cx={sx(v)} cy={Y_AXIS - 8} r={4} fill="#3b82f6" opacity={0.7} />
+          <circle
+            key={`b${i}`}
+            cx={sx(v).toFixed(2)}
+            cy={Y_AXIS - 8}
+            r={4}
+            fill="#3b82f6"
+            opacity={0.7}
+          />
         ))}
         {/* outliers */}
         {extras.map((v, i) => (
-          <circle key={`o${i}`} cx={sx(v)} cy={Y_AXIS - 8} r={5} fill="#f43f5e" stroke="#fff" strokeWidth={1} />
+          <circle
+            key={`o${i}`}
+            cx={sx(v).toFixed(2)}
+            cy={Y_AXIS - 8}
+            r={5}
+            fill="#f43f5e"
+            stroke="#fff"
+            strokeWidth={1}
+          />
         ))}
 
         {/* mean */}
         <g>
-          <line x1={sx(liveStats.mean)} y1={20} x2={sx(liveStats.mean)} y2={Y_AXIS} stroke="#22c55e" strokeWidth={2} />
-          <text x={sx(liveStats.mean) + 4} y={26} fontSize={10} className="fill-emerald-500">mean</text>
+          <line
+            x1={sx(liveStats.mean)}
+            y1={20}
+            x2={sx(liveStats.mean)}
+            y2={Y_AXIS}
+            stroke="#22c55e"
+            strokeWidth={2}
+          />
+          <text x={sx(liveStats.mean) + 4} y={26} fontSize={10} className="fill-emerald-500">
+            mean
+          </text>
         </g>
         {/* median */}
         <g>
@@ -159,7 +166,9 @@ export function OutlierImpactDemo() {
             strokeWidth={2}
             strokeDasharray="5 4"
           />
-          <text x={sx(liveStats.median) + 4} y={40} fontSize={10} className="fill-amber-500">median</text>
+          <text x={sx(liveStats.median) + 4} y={40} fontSize={10} className="fill-amber-500">
+            median
+          </text>
         </g>
         {/* trimmed */}
         {trim && (
@@ -173,7 +182,9 @@ export function OutlierImpactDemo() {
               strokeWidth={2}
               strokeDasharray="2 3"
             />
-            <text x={sx(liveStats.tmean) + 4} y={54} fontSize={10} className="fill-purple-500">trim 10%</text>
+            <text x={sx(liveStats.tmean) + 4} y={54} fontSize={10} className="fill-purple-500">
+              trim 10%
+            </text>
           </g>
         )}
         {/* IQR-boks */}
@@ -191,12 +202,15 @@ export function OutlierImpactDemo() {
       </svg>
 
       <div className="grid sm:grid-cols-2 gap-3 text-xs">
-        <Block title="Baseline (ingen outliers)" rows={[
-          ["mean", baseStats.mean.toFixed(2)],
-          ["median", baseStats.median.toFixed(2)],
-          ["std", baseStats.std.toFixed(2)],
-          ["IQR", baseStats.iqr.toFixed(2)],
-        ]} />
+        <Block
+          title="Baseline (ingen outliers)"
+          rows={[
+            ["mean", baseStats.mean.toFixed(2)],
+            ["median", baseStats.median.toFixed(2)],
+            ["std", baseStats.std.toFixed(2)],
+            ["IQR", baseStats.iqr.toFixed(2)],
+          ]}
+        />
         <Block
           title={`Live (${extras.length} outlier${extras.length === 1 ? "" : "s"})`}
           rows={[
@@ -204,16 +218,23 @@ export function OutlierImpactDemo() {
             ["median", liveStats.median.toFixed(2), liveStats.median - baseStats.median],
             ["std", liveStats.std.toFixed(2), liveStats.std - baseStats.std],
             ["IQR", liveStats.iqr.toFixed(2), liveStats.iqr - baseStats.iqr],
-            ...(trim ? [["trim 10%", liveStats.tmean.toFixed(2), liveStats.tmean - baseStats.tmean] as [string, string, number]] : []),
+            ...(trim
+              ? [
+                  ["trim 10%", liveStats.tmean.toFixed(2), liveStats.tmean - baseStats.tmean] as [
+                    string,
+                    string,
+                    number,
+                  ],
+                ]
+              : []),
           ]}
         />
       </div>
 
       <div className="rounded-lg border border-emerald-500/30 bg-emerald-500/5 p-3 text-xs text-foreground">
-        <strong>Observasjon:</strong> mean og std reagerer dramatisk på hver outlier
-        (skala med antall og avstand). Median og IQR knapt rikker seg.
-        Trimmed mean (kutt 10% i hver hale før gjennomsnitt) er en mellomting:
-        bruker mer info enn median, men er robust mot få outliers.
+        <strong>Observasjon:</strong> mean og std reagerer dramatisk på hver outlier (skala med
+        antall og avstand). Median og IQR knapt rikker seg. Trimmed mean (kutt 10% i hver hale før
+        gjennomsnitt) er en mellomting: bruker mer info enn median, men er robust mot få outliers.
       </div>
     </div>
   );

@@ -86,7 +86,9 @@ export function SkewnessKurtosisViz() {
       </div>
 
       <div className="rounded-xl border border-border bg-card p-4 space-y-3">
-        <div className="text-sm font-semibold">B · Morf en symmetrisk fordeling mot høyre-skjev</div>
+        <div className="text-sm font-semibold">
+          B · Morf en symmetrisk fordeling mot høyre-skjev
+        </div>
         <label className="flex items-center gap-2 text-[11px] text-muted-foreground">
           Skewness-parameter k
           <input
@@ -100,11 +102,14 @@ export function SkewnessKurtosisViz() {
           />
           <span className="tabular-nums w-10 text-right">{k.toFixed(2)}</span>
         </label>
-        <DistPlot xs={morphData} caption={`Når k øker, blir høyre-halen tyngre og mean trekkes til høyre for median.`} />
+        <DistPlot
+          xs={morphData}
+          caption={`Når k øker, blir høyre-halen tyngre og mean trekkes til høyre for median.`}
+        />
         <div className="rounded-lg border border-amber-500/30 bg-amber-500/5 p-3 text-xs">
-          <strong>Tommelfingerregel:</strong> mean &gt; median ⇒ <em>høyre-skjev</em> (positiv skew).
-          mean &lt; median ⇒ <em>venstre-skjev</em> (negativ skew).
-          Symmetrisk ⇒ mean ≈ median.
+          <strong>Tommelfingerregel:</strong> mean &gt; median ⇒ <em>høyre-skjev</em> (positiv
+          skew). mean &lt; median ⇒ <em>venstre-skjev</em> (negativ skew). Symmetrisk ⇒ mean ≈
+          median.
         </div>
       </div>
     </div>
@@ -112,8 +117,7 @@ export function SkewnessKurtosisViz() {
 }
 
 function presetDescription(p: Preset): string {
-  if (p === "symmetric")
-    return "N(5, 1.4²). Mean ≈ median, skew ≈ 0, kurtosis (excess) ≈ 0.";
+  if (p === "symmetric") return "N(5, 1.4²). Mean ≈ median, skew ≈ 0, kurtosis (excess) ≈ 0.";
   if (p === "right")
     return "Typisk lønnsfordeling: lang høyre-hale. Mean dras opp av topp-lønninger; median er mer representativ for 'typisk' lønn.";
   if (p === "left")
