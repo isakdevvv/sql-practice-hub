@@ -153,7 +153,12 @@ type Leaf = {
   leafProb: number;
 };
 
-function collectLeaves(node: Branch, parentPath: string[] = [], parentProbs: number[] = [], parentP = 1): Leaf[] {
+function collectLeaves(
+  node: Branch,
+  parentPath: string[] = [],
+  parentProbs: number[] = [],
+  parentP = 1,
+): Leaf[] {
   if (!node.children || node.children.length === 0) {
     return [
       {
@@ -165,19 +170,43 @@ function collectLeaves(node: Branch, parentPath: string[] = [], parentProbs: num
   }
   const out: Leaf[] = [];
   for (const child of node.children) {
-    out.push(...collectLeaves(child, [...parentPath, node.label], [...parentProbs, node.p], parentP * node.p));
+    out.push(
+      ...collectLeaves(
+        child,
+        [...parentPath, node.label],
+        [...parentProbs, node.p],
+        parentP * node.p,
+      ),
+    );
   }
   return out;
 }
 
 // Render SVG tree by computing positions in a vertical layout (root at left, leaves at right).
-type Pos = { x: number; y: number; node: Branch; parentY?: number; parentX?: number; pathToRoot: number[]; depth: number };
+type Pos = {
+  x: number;
+  y: number;
+  node: Branch;
+  parentY?: number;
+  parentX?: number;
+  pathToRoot: number[];
+  depth: number;
+};
 
 function layoutTree(root: Branch, width: number, height: number) {
   const leaves = collectLeaves(root);
   const leafCount = leaves.length;
   const positions: Pos[] = [];
-  const links: { x1: number; y1: number; x2: number; y2: number; label: string; pBranch: number; midX: number; midY: number }[] = [];
+  const links: {
+    x1: number;
+    y1: number;
+    x2: number;
+    y2: number;
+    label: string;
+    pBranch: number;
+    midX: number;
+    midY: number;
+  }[] = [];
 
   // Determine depth
   function maxDepth(n: Branch, d = 0): number {
@@ -191,7 +220,12 @@ function layoutTree(root: Branch, width: number, height: number) {
   let leafIdx = 0;
   const leafSpacing = height / Math.max(leafCount, 1);
 
-  function place(node: Branch, d: number, parentY: number | null, parentX: number | null): { y: number; x: number } {
+  function place(
+    node: Branch,
+    d: number,
+    parentY: number | null,
+    parentX: number | null,
+  ): { y: number; x: number } {
     const x = 20 + d * layerWidth;
     let y: number;
     if (!node.children || node.children.length === 0) {
@@ -215,7 +249,15 @@ function layoutTree(root: Branch, width: number, height: number) {
         });
       });
     }
-    positions.push({ x, y, node, depth: d, pathToRoot: [], parentY: parentY ?? undefined, parentX: parentX ?? undefined });
+    positions.push({
+      x,
+      y,
+      node,
+      depth: d,
+      pathToRoot: [],
+      parentY: parentY ?? undefined,
+      parentX: parentX ?? undefined,
+    });
     return { x, y };
   }
   place(root, 0, null, null);
@@ -235,11 +277,20 @@ function updateBranch(root: Branch, indexPath: number[], newP: number): Branch {
   return cloned;
 }
 
-function flattenForControls(node: Branch, indexPath: number[] = [], depth = 0): { branch: Branch; indexPath: number[]; depth: number; parentLabel: string }[] {
+function flattenForControls(
+  node: Branch,
+  indexPath: number[] = [],
+  depth = 0,
+): { branch: Branch; indexPath: number[]; depth: number; parentLabel: string }[] {
   const out: { branch: Branch; indexPath: number[]; depth: number; parentLabel: string }[] = [];
   if (node.children) {
     node.children.forEach((c, i) => {
-      out.push({ branch: c, indexPath: [...indexPath, i], depth: depth + 1, parentLabel: node.label });
+      out.push({
+        branch: c,
+        indexPath: [...indexPath, i],
+        depth: depth + 1,
+        parentLabel: node.label,
+      });
       out.push(...flattenForControls(c, [...indexPath, i], depth + 1));
     });
   }
@@ -359,7 +410,8 @@ export function ProbabilityTreeDiagram() {
               <div key={c.indexPath.join("-")} className="text-[11px]">
                 <div className="flex items-center justify-between gap-2">
                   <span className="truncate font-mono">
-                    <span className="text-muted-foreground">{c.parentLabel} →</span> {c.branch.label}
+                    <span className="text-muted-foreground">{c.parentLabel} →</span>{" "}
+                    {c.branch.label}
                   </span>
                   <span className="tabular-nums">{c.branch.p.toFixed(3)}</span>
                 </div>
@@ -378,7 +430,10 @@ export function ProbabilityTreeDiagram() {
           <div className="text-[11px] space-y-1">
             <div className="text-muted-foreground">Søsken-summer:</div>
             {sums.map((s, i) => (
-              <div key={i} className={`flex justify-between font-mono ${Math.abs(s.sum - 1) > 0.01 ? "text-rose-600 dark:text-rose-400 font-semibold" : "text-emerald-600 dark:text-emerald-400"}`}>
+              <div
+                key={i}
+                className={`flex justify-between font-mono ${Math.abs(s.sum - 1) > 0.01 ? "text-rose-600 dark:text-rose-400 font-semibold" : "text-emerald-600 dark:text-emerald-400"}`}
+              >
                 <span>Σ-nivå {s.parentPath.length + 1}</span>
                 <span className="tabular-nums">{s.sum.toFixed(3)}</span>
               </div>
@@ -388,7 +443,9 @@ export function ProbabilityTreeDiagram() {
       </div>
 
       <div>
-        <div className="text-xs font-semibold mb-2">Blad-sannsynligheter (P(blad) = ∏ p langs vei)</div>
+        <div className="text-xs font-semibold mb-2">
+          Blad-sannsynligheter (P(blad) = ∏ p langs vei)
+        </div>
         <div className="overflow-x-auto rounded-lg border border-border">
           <table className="w-full text-xs">
             <thead className="bg-muted/50">
@@ -403,7 +460,10 @@ export function ProbabilityTreeDiagram() {
                 <tr key={i} className="border-t border-border">
                   <td className="px-3 py-1.5 font-mono">{l.path.slice(1).join(" → ")}</td>
                   <td className="px-3 py-1.5 text-right font-mono text-muted-foreground">
-                    {l.pathProbs.slice(1).map((p) => p.toFixed(2)).join(" × ")}
+                    {l.pathProbs
+                      .slice(1)
+                      .map((p) => p.toFixed(2))
+                      .join(" × ")}
                   </td>
                   <td className="px-3 py-1.5 text-right font-mono font-semibold tabular-nums">
                     {l.leafProb.toFixed(4)}
@@ -413,7 +473,9 @@ export function ProbabilityTreeDiagram() {
               <tr className="border-t border-border bg-muted/30">
                 <td className="px-3 py-1.5 font-semibold">Σ alle blad</td>
                 <td className="px-3 py-1.5"></td>
-                <td className={`px-3 py-1.5 text-right font-mono font-bold tabular-nums ${totalOff ? "text-rose-600 dark:text-rose-400" : "text-emerald-600 dark:text-emerald-400"}`}>
+                <td
+                  className={`px-3 py-1.5 text-right font-mono font-bold tabular-nums ${totalOff ? "text-rose-600 dark:text-rose-400" : "text-emerald-600 dark:text-emerald-400"}`}
+                >
                   {totalLeafSum.toFixed(4)}
                 </td>
               </tr>

@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
-import {Lightbulb, ArrowLeft } from "lucide-react";
+import { Lightbulb, ArrowLeft } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
+import { NaturligeFrekvenser } from "./NaturligeFrekvenser";
 import { CourseOutline } from "@/components/stack/CourseOutline";
 import { ProbabilityTreeDiagram } from "./ProbabilityTreeDiagram";
 import { BayesUpdater } from "./BayesUpdater";
@@ -26,10 +27,7 @@ const STEPS = [
 
 export function Tek1SannsynlighetPage() {
   return (
-    <StackPageShell
-      title="Modul 2 — Sannsynlighet og kombinatorikk"
-      group="eksamen"
-    >
+    <StackPageShell title="Modul 2 — Sannsynlighet og kombinatorikk" group="eksamen">
       <div className="container mx-auto px-4 py-12 max-w-3xl">
         <div className="mb-8">
           <div className="text-xs uppercase tracking-wider text-brand font-semibold mb-2">
@@ -39,11 +37,10 @@ export function Tek1SannsynlighetPage() {
             Sannsynlighet — kvantifisér usikkerheten
           </h1>
           <p className="mt-3 text-muted-foreground">
-            En sannsynlighet er et tall mellom 0 og 1 som måler hvor sikkert noe
-            er. Alt annet i kurset hviler på dette. Vi bygger fra utfallsrom og
-            mengdelære → aksiomer → betinget sannsynlighet → Bayes → telleregler
-            (kombinatorikk). Hver eksamen har minst én Bayes-oppgave og minst én
-            kombinatorikk-oppgave.
+            En sannsynlighet er et tall mellom 0 og 1 som måler hvor sikkert noe er. Alt annet i
+            kurset hviler på dette. Vi bygger fra utfallsrom og mengdelære → aksiomer → betinget
+            sannsynlighet → Bayes → telleregler (kombinatorikk). Hver eksamen har minst én
+            Bayes-oppgave og minst én kombinatorikk-oppgave.
           </p>
           <div className="mt-4 rounded-lg border border-brand/30 bg-brand/5 p-4 flex items-start gap-3">
             <Lightbulb className="h-4 w-4 text-brand mt-0.5 shrink-0" />
@@ -52,8 +49,8 @@ export function Tek1SannsynlighetPage() {
               <Link to="/drag" className="text-brand hover:underline">
                 drag-oppgavene
               </Link>{" "}
-              under «Sannsynlighet & kombinatorikk» — Bayes-regning,
-              mengdelære, og permutasjons-/kombinasjons-tellinger.
+              under «Sannsynlighet & kombinatorikk» — Bayes-regning, mengdelære, og
+              permutasjons-/kombinasjons-tellinger.
             </div>
           </div>
         </div>
@@ -63,28 +60,24 @@ export function Tek1SannsynlighetPage() {
         <section id="motivasjon" className="mb-10">
           <h2 className="text-xl font-semibold mb-3">1. Hvorfor sannsynlighet?</h2>
           <p className="text-sm text-muted-foreground mb-4">
-            Et fly har 2 motorer. Hver motor har 0.1 % sannsynlighet for å feile
-            pr. flytur. Hva er sannsynligheten for at flyet faller ned (begge
-            motorer feiler)? Hva med 4 motorer? Dette krever sannsynlighet —
-            magefølelse holder ikke. Ingeniør-praksis: kvalitetskontroll,
+            Et fly har 2 motorer. Hver motor har 0.1 % sannsynlighet for å feile pr. flytur. Hva er
+            sannsynligheten for at flyet faller ned (begge motorer feiler)? Hva med 4 motorer? Dette
+            krever sannsynlighet — magefølelse holder ikke. Ingeniør-praksis: kvalitetskontroll,
             risiko-vurdering, pålitelighetsanalyse, signal/støy.
           </p>
           <div className="rounded-xl border-2 border-brand/40 bg-brand/5 p-5 text-sm">
             <div className="text-xs uppercase tracking-wider text-brand font-semibold mb-2">
               Sentral idé
             </div>
-            Sannsynlighet er ikke alltid intuisjon. Vi trenger formelle regler
-            (aksiomer) som garanterer at hverandre selvmotsigende svar er
-            umulige. Pluss telleregler som skalerer til problemer der enumerering
-            er upraktisk.
+            Sannsynlighet er ikke alltid intuisjon. Vi trenger formelle regler (aksiomer) som
+            garanterer at hverandre selvmotsigende svar er umulige. Pluss telleregler som skalerer
+            til problemer der enumerering er upraktisk.
           </div>
         </section>
 
         <section id="utfallsrom" className="mb-10">
           <h2 className="text-xl font-semibold mb-3">2. Utfallsrom, hendelser, mengdelære</h2>
-          <p className="text-sm text-muted-foreground mb-4">
-            Vokabularet du må eie:
-          </p>
+          <p className="text-sm text-muted-foreground mb-4">Vokabularet du må eie:</p>
           <div className="rounded-xl border border-border bg-card p-5">
             <pre className="font-mono text-xs overflow-x-auto whitespace-pre">{`Ω (omega)       = utfallsrom — mengden av ALLE mulige utfall
 ω ∈ Ω           = ett enkelt utfall (elementært utfall)
@@ -175,10 +168,9 @@ Total sannsynlighet (når B₁..Bₙ er en partisjon av Ω):
   P(A) = Σᵢ P(A | Bᵢ) · P(Bᵢ)`}</pre>
           </div>
           <div className="mt-4 rounded-xl border border-amber-500/30 bg-amber-500/5 p-4 text-sm">
-            <strong>Pass på:</strong> «disjunkte» og «uavhengige» er IKKE det
-            samme. Hvis A og B er disjunkte og begge har P {">"} 0, så er de
-            <em> nødvendigvis avhengige</em> — hvis B har skjedd, vet vi at A
-            ikke kan ha skjedd.
+            <strong>Pass på:</strong> «disjunkte» og «uavhengige» er IKKE det samme. Hvis A og B er
+            disjunkte og begge har P {">"} 0, så er de
+            <em> nødvendigvis avhengige</em> — hvis B har skjedd, vet vi at A ikke kan ha skjedd.
           </div>
         </section>
 
@@ -187,11 +179,10 @@ Total sannsynlighet (når B₁..Bₙ er en partisjon av Ω):
             4b. Interaktivt — betinget sannsynlighet i 100-grid
           </h2>
           <p className="text-sm text-muted-foreground mb-3">
-            100 farger-firkanter = 100 individer fra en populasjon. Hver
-            har to binære attributter (A og B). Tellingene gir deg P(A),
-            P(B), P(A∩B), P(A|B) og P(B|A) direkte. Veksle preset for å se
-            sterk korrelasjon (røyking-kreft), svak korrelasjon (vaksine),
-            og uavhengighet (kontroll).
+            100 farger-firkanter = 100 individer fra en populasjon. Hver har to binære attributter
+            (A og B). Tellingene gir deg P(A), P(B), P(A∩B), P(A|B) og P(B|A) direkte. Veksle preset
+            for å se sterk korrelasjon (røyking-kreft), svak korrelasjon (vaksine), og uavhengighet
+            (kontroll).
           </p>
           <ConditionalProbabilityGrid />
         </section>
@@ -199,8 +190,7 @@ Total sannsynlighet (når B₁..Bₙ er en partisjon av Ω):
         <section id="bayes" className="mb-10">
           <h2 className="text-xl font-semibold mb-3">5. Bayes' teorem</h2>
           <p className="text-sm text-muted-foreground mb-4">
-            Snur betingingen. Du har P(B | A) — du vil ha P(A | B). Bayes
-            bygger en bro.
+            Snur betingingen. Du har P(B | A) — du vil ha P(A | B). Bayes bygger en bro.
           </p>
           <div className="rounded-xl border border-border bg-card p-5">
             <pre className="font-mono text-xs overflow-x-auto whitespace-pre">{`Bayes' teorem:
@@ -251,9 +241,7 @@ Intuisjon: tross "99 % sensitiv" test, en positiv prøve betyr bare
               Oppskrift for Bayes-oppgaver
             </div>
             <ol className="text-sm space-y-1.5 list-decimal pl-5">
-              <li>
-                Identifisér A (det du vil vite) og B (det du har observert).
-              </li>
+              <li>Identifisér A (det du vil vite) og B (det du har observert).</li>
               <li>Skriv ned P(A), P(Aᶜ), P(B|A), P(B|Aᶜ).</li>
               <li>Beregn P(B) med total sannsynlighet.</li>
               <li>Sett inn i Bayes-formelen.</li>
@@ -267,11 +255,10 @@ Intuisjon: tross "99 % sensitiv" test, en positiv prøve betyr bare
             5b. Interaktivt — Bayes-oppdaterer (positiv prediktiv verdi)
           </h2>
           <p className="text-sm text-muted-foreground mb-3">
-            Skyv prevalens, sensitivitet og spesifisitet. P(D|+) — det vi
-            virkelig vil vite — oppdateres live. Skru på «1000-personer»
-            for å se hvorfor svaret blir så mye lavere enn du tror.
-            «To uavhengige tester» viser hvordan konfidensen klatrer når
-            samme prøve gjentas.
+            Skyv prevalens, sensitivitet og spesifisitet. P(D|+) — det vi virkelig vil vite —
+            oppdateres live. Skru på «1000-personer» for å se hvorfor svaret blir så mye lavere enn
+            du tror. «To uavhengige tester» viser hvordan konfidensen klatrer når samme prøve
+            gjentas.
           </p>
           <BayesUpdater />
         </section>
@@ -281,23 +268,19 @@ Intuisjon: tross "99 % sensitiv" test, en positiv prøve betyr bare
             5c. Interaktivt — tre-diagram for hierarkiske sannsynligheter
           </h2>
           <p className="text-sm text-muted-foreground mb-3">
-            Sannsynligheter multipliseres langs grener; blader summerer til
-            1. Velg en preset (medisinsk test, kortstokk, Monty Hall, fødsel)
-            og justér grenene med slidersene. Søsken-summen viser om en
-            gruppe er gyldig (Σ = 1) eller har en glemt utfall (rødt).
+            Sannsynligheter multipliseres langs grener; blader summerer til 1. Velg en preset
+            (medisinsk test, kortstokk, Monty Hall, fødsel) og justér grenene med slidersene.
+            Søsken-summen viser om en gruppe er gyldig (Σ = 1) eller har en glemt utfall (rødt).
           </p>
           <ProbabilityTreeDiagram />
         </section>
 
         <section id="viz-monty" className="mb-10">
-          <h2 className="text-xl font-semibold mb-3">
-            5d. Interaktivt — Monty Hall-simulator
-          </h2>
+          <h2 className="text-xl font-semibold mb-3">5d. Interaktivt — Monty Hall-simulator</h2>
           <p className="text-sm text-muted-foreground mb-3">
-            Bytter du dør eller beholder du? Sannsynlighetstreet viser at
-            BYTTE vinner i (n−1)/n av tilfellene. Monte Carlo med 10 000
-            runder bekrefter resultatet, og 100-dørers-varianten gjør
-            intuisjonen brennende klar.
+            Bytter du dør eller beholder du? Sannsynlighetstreet viser at BYTTE vinner i (n−1)/n av
+            tilfellene. Monte Carlo med 10 000 runder bekrefter resultatet, og 100-dørers-varianten
+            gjør intuisjonen brennende klar.
           </p>
           <MontyHallSimulator />
         </section>
@@ -305,8 +288,8 @@ Intuisjon: tross "99 % sensitiv" test, en positiv prøve betyr bare
         <section id="kombinatorikk" className="mb-10">
           <h2 className="text-xl font-semibold mb-3">6. Kombinatorikk — telleregler</h2>
           <p className="text-sm text-muted-foreground mb-4">
-            For å regne ut sannsynlighet med likestilte utfall trenger vi å
-            telle: hvor mange muligheter er det? Tre formler dekker det meste.
+            For å regne ut sannsynlighet med likestilte utfall trenger vi å telle: hvor mange
+            muligheter er det? Tre formler dekker det meste.
           </p>
           <div className="rounded-xl border border-border bg-card p-5">
             <pre className="font-mono text-xs overflow-x-auto whitespace-pre">{`Multiplikasjonsprinsippet:
@@ -348,8 +331,8 @@ Kombinasjoner (UTVALG — rekkefølge teller IKKE):
                 <strong>kombinasjon</strong>
               </li>
               <li>
-                Hvis du er i tvil: <strong>kombinasjon-først</strong>, så ganger
-                med antall rekkefølger om nødvendig.
+                Hvis du er i tvil: <strong>kombinasjon-først</strong>, så ganger med antall
+                rekkefølger om nødvendig.
               </li>
             </ul>
           </div>
@@ -358,8 +341,7 @@ Kombinasjoner (UTVALG — rekkefølge teller IKKE):
         <section id="trekning" className="mb-10">
           <h2 className="text-xl font-semibold mb-3">7. Trekninger med og uten tilbakelegging</h2>
           <p className="text-sm text-muted-foreground mb-4">
-            To grunnleggende modeller — eksamen-relevant for å velge riktig
-            fordeling i Modul 3.
+            To grunnleggende modeller — eksamen-relevant for å velge riktig fordeling i Modul 3.
           </p>
           <div className="rounded-xl border border-border bg-card p-5">
             <pre className="font-mono text-xs overflow-x-auto whitespace-pre">{`Med tilbakelegging (independent draws):
@@ -401,29 +383,27 @@ Hva med 6 rette (av 7 mulige rette)?
           <h2 className="text-xl font-semibold mb-3">8. Eksamen-feller</h2>
           <div className="space-y-3 text-sm">
             <div className="rounded-lg border border-amber-500/30 bg-amber-500/5 p-4">
-              <strong>Disjunkt ≠ uavhengig.</strong> «Det regner» og «det er
-              tørt» er DISJUNKTE, ikke uavhengige. Klassisk fallgruve.
+              <strong>Disjunkt ≠ uavhengig.</strong> «Det regner» og «det er tørt» er DISJUNKTE,
+              ikke uavhengige. Klassisk fallgruve.
             </div>
             <div className="rounded-lg border border-amber-500/30 bg-amber-500/5 p-4">
-              <strong>Forveksle P(A|B) og P(B|A).</strong> «99 % av syke tester
-              positivt» (sensitivity) er ikke det samme som «99 % av positive er
-              syke» (precision). Bayes er nødvendig for å snu.
+              <strong>Forveksle P(A|B) og P(B|A).</strong> «99 % av syke tester positivt»
+              (sensitivity) er ikke det samme som «99 % av positive er syke» (precision). Bayes er
+              nødvendig for å snu.
             </div>
             <div className="rounded-lg border border-amber-500/30 bg-amber-500/5 p-4">
               <strong>Inklusjon-eksklusjon glemt.</strong>{" "}
-              <code className="text-xs">P(A∪B) = P(A) + P(B) − P(A∩B)</code>.
-              Glemmer du å trekke fra snittet for overlappende hendelser, blir
-              svaret for stort.
+              <code className="text-xs">P(A∪B) = P(A) + P(B) − P(A∩B)</code>. Glemmer du å trekke
+              fra snittet for overlappende hendelser, blir svaret for stort.
             </div>
             <div className="rounded-lg border border-amber-500/30 bg-amber-500/5 p-4">
-              <strong>Tilbakelegging eller ikke.</strong> Les oppgaven nøye. «Tar
-              ut 3 kuler ETTER HVERANDRE» er typisk uten tilbakelegging. «Kaster
-              en mynt 3 ganger» er alltid uavhengige trekninger.
+              <strong>Tilbakelegging eller ikke.</strong> Les oppgaven nøye. «Tar ut 3 kuler ETTER
+              HVERANDRE» er typisk uten tilbakelegging. «Kaster en mynt 3 ganger» er alltid
+              uavhengige trekninger.
             </div>
             <div className="rounded-lg border border-amber-500/30 bg-amber-500/5 p-4">
-              <strong>Permutasjon vs kombinasjon.</strong> Spør deg selv:
-              «Spiller rekkefølgen rolle for problemet?» Hvis ja → permutasjon.
-              Hvis nei → kombinasjon.
+              <strong>Permutasjon vs kombinasjon.</strong> Spør deg selv: «Spiller rekkefølgen rolle
+              for problemet?» Hvis ja → permutasjon. Hvis nei → kombinasjon.
             </div>
           </div>
         </section>
@@ -433,11 +413,10 @@ Hva med 6 rette (av 7 mulige rette)?
             9. Quiz — 10 scenarier (klassiske og kontraintuitive)
           </h2>
           <p className="text-sm text-muted-foreground mb-3">
-            Eksamen-relevant blanding: komplement, inklusjon-eksklusjon, Bayes
-            med høy og lav prevalens, Boy-Boy-paradokset, taxi-problemet,
-            bursdag-paradokset, og forskjellen mellom permutasjon/kombinasjon
-            og trekninger med/uten tilbakelegging. Hvert spørsmål gir
-            full forklaring etter svar.
+            Eksamen-relevant blanding: komplement, inklusjon-eksklusjon, Bayes med høy og lav
+            prevalens, Boy-Boy-paradokset, taxi-problemet, bursdag-paradokset, og forskjellen mellom
+            permutasjon/kombinasjon og trekninger med/uten tilbakelegging. Hvert spørsmål gir full
+            forklaring etter svar.
           </p>
           <ProbabilityQuiz />
         </section>
@@ -449,8 +428,8 @@ Hva med 6 rette (av 7 mulige rette)?
               <Link to="/drag" className="text-brand hover:underline">
                 Drag-oppgaver
               </Link>{" "}
-              under «Sannsynlighet & kombinatorikk» — Bayes-quiz,
-              mengdelære-match og kombinatorikk-fill.
+              under «Sannsynlighet & kombinatorikk» — Bayes-quiz, mengdelære-match og
+              kombinatorikk-fill.
             </li>
             <li>
               <Link to="/python" className="text-brand hover:underline">
@@ -472,7 +451,10 @@ Hva med 6 rette (av 7 mulige rette)?
             </li>
           </ul>
         </div>
-              <div className="mt-6">
+        <div className="my-8">
+          <NaturligeFrekvenser />
+        </div>
+        <div className="mt-6">
           <Link
             to="/stack/$slug"
             params={{ slug: "tek-1501" }}
@@ -482,7 +464,7 @@ Hva med 6 rette (av 7 mulige rette)?
             Tilbake til TEK-1501-hub
           </Link>
         </div>
-</div>
+      </div>
     </StackPageShell>
   );
 }

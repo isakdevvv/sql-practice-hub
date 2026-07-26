@@ -67,8 +67,7 @@ const PRESETS: Preset[] = [
     pA: 0.1,
     pB: 0.5,
     pBgivenA: 0.5,
-    story:
-      "Disse to har ingen kjent sammenheng — P(B|A) ≈ P(B) ≈ 0.5. Bra kontrolleksempel.",
+    story: "Disse to har ingen kjent sammenheng — P(B|A) ≈ P(B) ≈ 0.5. Bra kontrolleksempel.",
   },
 ];
 
@@ -147,13 +146,14 @@ export function ConditionalProbabilityGrid() {
         <div>
           <div className="grid grid-cols-10 gap-[2px] w-fit">
             {cells.map((c, i) => {
-              const color = c.a && c.b
-                ? "bg-violet-500"
-                : c.a
-                ? "bg-sky-500"
-                : c.b
-                ? "bg-rose-400"
-                : "bg-muted";
+              const color =
+                c.a && c.b
+                  ? "bg-violet-500"
+                  : c.a
+                    ? "bg-sky-500"
+                    : c.b
+                      ? "bg-rose-400"
+                      : "bg-muted";
               return (
                 <div
                   key={i}
@@ -193,28 +193,38 @@ export function ConditionalProbabilityGrid() {
                 <tr className="border-t border-border">
                   <td className="px-3 py-1.5 font-mono">A = {preset.labelA}</td>
                   <td className="px-3 py-1.5 text-right tabular-nums">{stats.a} / 100</td>
-                  <td className="px-3 py-1.5 text-right font-mono tabular-nums">P(A) = {stats.pA.toFixed(2)}</td>
+                  <td className="px-3 py-1.5 text-right font-mono tabular-nums">
+                    P(A) = {stats.pA.toFixed(2)}
+                  </td>
                 </tr>
                 <tr className="border-t border-border">
                   <td className="px-3 py-1.5 font-mono">B = {preset.labelB}</td>
                   <td className="px-3 py-1.5 text-right tabular-nums">{stats.b} / 100</td>
-                  <td className="px-3 py-1.5 text-right font-mono tabular-nums">P(B) = {stats.pB.toFixed(2)}</td>
+                  <td className="px-3 py-1.5 text-right font-mono tabular-nums">
+                    P(B) = {stats.pB.toFixed(2)}
+                  </td>
                 </tr>
                 <tr className="border-t border-border">
                   <td className="px-3 py-1.5 font-mono">A ∩ B</td>
                   <td className="px-3 py-1.5 text-right tabular-nums">{stats.ab} / 100</td>
-                  <td className="px-3 py-1.5 text-right font-mono tabular-nums">P(A∩B) = {stats.pAB.toFixed(2)}</td>
+                  <td className="px-3 py-1.5 text-right font-mono tabular-nums">
+                    P(A∩B) = {stats.pAB.toFixed(2)}
+                  </td>
                 </tr>
                 <tr className="border-t border-border bg-muted/30">
                   <td className="px-3 py-1.5 font-mono">A | B</td>
-                  <td className="px-3 py-1.5 text-right tabular-nums">{stats.ab} / {stats.b || 0}</td>
+                  <td className="px-3 py-1.5 text-right tabular-nums">
+                    {stats.ab} / {stats.b || 0}
+                  </td>
                   <td className="px-3 py-1.5 text-right font-mono font-semibold tabular-nums">
                     P(A|B) = {stats.pAgivenB.toFixed(3)}
                   </td>
                 </tr>
                 <tr className="border-t border-border bg-muted/30">
                   <td className="px-3 py-1.5 font-mono">B | A</td>
-                  <td className="px-3 py-1.5 text-right tabular-nums">{stats.ab} / {stats.a || 0}</td>
+                  <td className="px-3 py-1.5 text-right tabular-nums">
+                    {stats.ab} / {stats.a || 0}
+                  </td>
                   <td className="px-3 py-1.5 text-right font-mono font-semibold tabular-nums">
                     P(B|A) = {stats.pBgivenA.toFixed(3)}
                   </td>
@@ -230,8 +240,8 @@ export function ConditionalProbabilityGrid() {
                 : "border-amber-500/40 bg-amber-500/5"
             }`}
           >
-            <strong>Uavhengighet-sjekk:</strong> P(A|B) = {stats.pAgivenB.toFixed(3)}, P(A) = {stats.pA.toFixed(3)}.
-            Differanse = {Math.abs(stats.pAgivenB - stats.pA).toFixed(3)}.
+            <strong>Uavhengighet-sjekk:</strong> P(A|B) = {stats.pAgivenB.toFixed(3)}, P(A) ={" "}
+            {stats.pA.toFixed(3)}. Differanse = {Math.abs(stats.pAgivenB - stats.pA).toFixed(3)}.
             {stats.independent
               ? " → A og B ser ut til å være tilnærmet uavhengige i dette utvalget."
               : " → A og B er ASSOSIERTE: kunnskap om B endrer P(A) merkbart."}

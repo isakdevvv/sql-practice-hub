@@ -24,14 +24,12 @@ const SCENARIOS: Scenario[] = [
     question: "Du kaster en terning. Hva er P(IKKE 6)?",
     options: ["1/6", "5/6", "1/2", "0"],
     correctIdx: 1,
-    explanation:
-      "P(IKKE A) = 1 − P(A) = 1 − 1/6 = 5/6. Komplementregelen.",
+    explanation: "P(IKKE A) = 1 − P(A) = 1 − 1/6 = 5/6. Komplementregelen.",
   },
   {
     id: "q2",
     title: "Boy-Boy-paradokset (Gardner)",
-    question:
-      "En familie har 2 barn. Du får vite at MINST ett er en gutt. Hva er P(begge gutter)?",
+    question: "En familie har 2 barn. Du får vite at MINST ett er en gutt. Hva er P(begge gutter)?",
     options: ["1/2", "1/3", "1/4", "2/3"],
     correctIdx: 1,
     explanation:
@@ -52,12 +50,7 @@ const SCENARIOS: Scenario[] = [
     title: "Disjunkt vs uavhengig",
     question:
       "Hendelsene A og B er DISJUNKTE (gjensidig utelukkende) og P(A) > 0, P(B) > 0. Er de uavhengige?",
-    options: [
-      "Ja, alltid",
-      "Nei, aldri",
-      "Bare hvis P(A) = P(B)",
-      "Kommer an på Ω",
-    ],
+    options: ["Ja, alltid", "Nei, aldri", "Bare hvis P(A) = P(B)", "Kommer an på Ω"],
     correctIdx: 1,
     explanation:
       "Disjunkte med positive sannsynligheter er NØDVENDIGVIS avhengige: vet du at B skjedde, vet du at A IKKE skjedde. Formelt: P(A∩B) = 0 ≠ P(A)·P(B) > 0.",
@@ -65,8 +58,7 @@ const SCENARIOS: Scenario[] = [
   {
     id: "q5",
     title: "Inklusjon-eksklusjon",
-    question:
-      "P(A) = 0.6, P(B) = 0.5, P(A ∩ B) = 0.3. Hva er P(A ∪ B)?",
+    question: "P(A) = 0.6, P(B) = 0.5, P(A ∩ B) = 0.3. Hva er P(A ∪ B)?",
     options: ["1.1", "0.8", "0.5", "0.9"],
     correctIdx: 1,
     explanation:
@@ -75,8 +67,7 @@ const SCENARIOS: Scenario[] = [
   {
     id: "q6",
     title: "Minst én suksess",
-    question:
-      "En enhet feiler med P = 0.01 per dag. Hva er P(minst én feil i 30 dager)?",
+    question: "En enhet feiler med P = 0.01 per dag. Hva er P(minst én feil i 30 dager)?",
     options: ["0.30", "≈ 0.26", "≈ 0.74", "≈ 0.01"],
     correctIdx: 1,
     explanation:
@@ -107,7 +98,12 @@ const SCENARIOS: Scenario[] = [
     title: "Kombinasjon eller permutasjon?",
     question:
       "Du skal velge 3 personer av 10 til en komité (alle likestilte). Antall mulige komiteer?",
-    options: ["10! / 7! = 720", "C(10,3) = 120", "10^3 = 1000", "10 · 9 · 8 / 6 = 120 (samme svar som B)"],
+    options: [
+      "10! / 7! = 720",
+      "C(10,3) = 120",
+      "10^3 = 1000",
+      "10 · 9 · 8 / 6 = 120 (samme svar som B)",
+    ],
     correctIdx: 1,
     explanation:
       "Rekkefølge spiller ingen rolle ⇒ kombinasjon. C(10,3) = 10!/(3!·7!) = 120. (D er teknisk samme tall som B — riktig formel: kombinasjon, ikke permutasjon.)",
@@ -149,10 +145,16 @@ export function ProbabilityQuiz() {
     <div className="rounded-xl border border-border bg-card p-5 space-y-4">
       <div className="flex items-center justify-between gap-3 text-xs">
         <div className="text-muted-foreground">
-          Besvart: <span className="font-mono font-semibold">{answered}/{total}</span>
+          Besvart:{" "}
+          <span className="font-mono font-semibold">
+            {answered}/{total}
+          </span>
           {revealedCount > 0 && (
             <>
-              {" · "}Rett: <span className="font-mono font-semibold text-emerald-600 dark:text-emerald-400">{correct}/{revealedCount}</span>
+              {" · "}Rett:{" "}
+              <span className="font-mono font-semibold text-emerald-600 dark:text-emerald-400">
+                {correct}/{revealedCount}
+              </span>
             </>
           )}
         </div>
@@ -185,7 +187,9 @@ export function ProbabilityQuiz() {
                   {i + 1}. {s.title}
                 </h3>
                 {isRevealed && (
-                  <span className={`text-xs font-mono ${isRight ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"}`}>
+                  <span
+                    className={`text-xs font-mono ${isRight ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"}`}
+                  >
                     {isRight ? "RIKTIG" : "FEIL"}
                   </span>
                 )}
@@ -205,10 +209,10 @@ export function ProbabilityQuiz() {
                         showCorrect
                           ? "border-emerald-500/60 bg-emerald-500/10 text-foreground"
                           : showWrong
-                          ? "border-rose-500/60 bg-rose-500/10 text-foreground"
-                          : selected
-                          ? "border-brand bg-brand/10 text-foreground"
-                          : "border-border bg-background hover:bg-muted/50 text-muted-foreground"
+                            ? "border-rose-500/60 bg-rose-500/10 text-foreground"
+                            : selected
+                              ? "border-brand bg-brand/10 text-foreground"
+                              : "border-border bg-background hover:bg-muted/50 text-muted-foreground"
                       } disabled:cursor-not-allowed`}
                     >
                       <span className="font-mono mr-2">{String.fromCharCode(65 + idx)}.</span>
@@ -242,8 +246,8 @@ export function ProbabilityQuiz() {
           {correct >= 8
             ? " Sterk forståelse — Bayes-intuisjonen sitter."
             : correct >= 5
-            ? " Solid grunnlag. Repetér Bayes og Boy-Boy-paradokset."
-            : " Repetér grunnaksiomene og Bayes-eksemplene over."}
+              ? " Solid grunnlag. Repetér Bayes og Boy-Boy-paradokset."
+              : " Repetér grunnaksiomene og Bayes-eksemplene over."}
         </div>
       )}
     </div>

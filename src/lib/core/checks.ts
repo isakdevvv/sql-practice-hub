@@ -22,10 +22,38 @@ export interface SjekkValg {
   begrunnelse?: string;
 }
 
-export interface SjekkSporsmal {
+/** Klassisk flervalg. Uten `type` antas dette, så eldre oppføringer virker. */
+export interface SjekkFlervalg {
+  type?: "flervalg";
   sporsmal: string;
   valg: SjekkValg[];
 }
+
+/**
+ * Anslå-så-sjekk: brukeren må forplikte seg til et tall FØR fasiten vises.
+ *
+ * Dette er den mest virkningsfulle oppgavetypen i undervisningsforskningen
+ * (peer instruction, Berkeley Data 8): når du har gjettet, er du investert,
+ * og et bomskudd avdekker misforståelsen din før forklaringen kommer. Særlig
+ * verdifullt i statistikk, der intuisjonen systematisk bommer — base rate,
+ * kraften i små utvalg, hvor bredt et konfidensintervall faktisk er.
+ */
+export interface SjekkTall {
+  type: "tall";
+  sporsmal: string;
+  /** Riktig svar. */
+  fasit: number;
+  /** Hvor langt unna man kan være og fortsatt regnes som truffet. */
+  toleranse: number;
+  enhet?: string;
+  /** Vises etter at anslaget er låst — hvorfor svaret er som det er. */
+  forklaring: string;
+  /** Valgfritt hint om hvilket intervall svaret ligger i. */
+  min?: number;
+  max?: number;
+}
+
+export type SjekkSporsmal = SjekkFlervalg | SjekkTall;
 
 export interface KonseptSjekkDef {
   /** Stabil id — matcher seksjonsankeret i leksjonen. */
@@ -38,6 +66,51 @@ export interface KonseptSjekkDef {
 }
 
 export const CHECKS_BY_LESSON: Record<string, KonseptSjekkDef[]> = {
+  "tek1-sannsynlighet": [
+    {
+      id: "base-rate",
+      tittel: "Base rate — hva positiv test faktisk betyr",
+      laer: "Når en sykdom er sjelden, finnes det mange flere friske enn syke. Selv en test som tar feil på bare noen få prosent av de friske, produserer da flere falske alarmer enn det finnes ekte tilfeller. «Testen er 90 % sikker» er derfor en meningsløs setning uten forekomsten: sannsynligheten for å være syk gitt positiv test avhenger like mye av hvor vanlig sykdommen er som av hvor god testen er.",
+      sporsmal: [
+        {
+          type: "tall",
+          sporsmal:
+            "1 % har sykdommen. Testen fanger opp 90 % av de syke, og gir riktig negativt svar for 91 % av de friske. Av 1000 testede: hvor mange prosent av dem som tester positivt er faktisk syke? Anslå før du regner.",
+          fasit: 9.2,
+          toleranse: 2.5,
+          enhet: "%",
+          min: 0,
+          max: 100,
+          forklaring:
+            "Av 1000: 10 syke, hvorav 9 tester positivt. 990 friske, hvorav 9 % — altså 89 — også tester positivt. Til sammen 98 positive, og bare 9 av dem er syke: 9/98 ≈ 9,2 %. De fleste gjetter rundt 90 %, fordi de forveksler «andel av syke som tester positivt» med «andel av positive som er syke».",
+        },
+        {
+          sporsmal: "Hva skjer med denne andelen hvis sykdommen blir mye vanligere?",
+          valg: [
+            {
+              tekst: "Den stiger — flere av de positive blir ekte tilfeller",
+              riktig: true,
+              begrunnelse:
+                "Med høyere forekomst er det færre friske å produsere falske alarmer fra, og flere syke å fange opp. Derfor er testing av folk med symptomer noe helt annet enn screening av friske.",
+            },
+            {
+              tekst: "Den er uendret — den bestemmes av testens kvalitet",
+              riktig: false,
+              begrunnelse:
+                "Dette er selve base rate-fellen. Sensitivitet og spesifisitet er egenskaper ved testen, men svaret avhenger også av hvem den brukes på.",
+            },
+            {
+              tekst: "Den synker",
+              riktig: false,
+              begrunnelse:
+                "Motsatt vei: flere ekte tilfeller gir en høyere andel ekte blant de positive.",
+            },
+          ],
+        },
+      ],
+    },
+  ],
+
   // ─────────────── TEK-1501 — grunnmuren ───────────────
   "tek1-deskriptiv": [
     {
