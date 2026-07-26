@@ -23,6 +23,7 @@ import { phaseOfSlug } from "@/lib/stack/curriculum";
 import { useModulProgress } from "@/lib/stack/moduleProgress";
 import { usePinnedSubjects, toggleSubject } from "@/lib/userSubjects";
 import { subjectSnapshot, type SubjectSnapshot } from "@/lib/core/subjectProgress";
+import { blocksForSubject, phaseFoundations, type Block, type Foundation } from "@/lib/core/path";
 
 export const Route = createFileRoute("/fag/$slug")({
   head: () => ({
@@ -124,12 +125,21 @@ function FagPage() {
     return map;
   }, [slug]);
 
-  // Engine-tall (kort, oppgaver, due) leser localStorage — kun etter mount,
-  // så SSR og klient rendrer likt.
+  // Engine-tall (kort, oppgaver, due) og kloss-stien leser localStorage —
+  // kun etter mount, så SSR og klient rendrer likt.
   const [snapshot, setSnapshot] = useState<SubjectSnapshot | null>(null);
+  const [blocks, setBlocks] = useState<Block[]>([]);
+  const [foundations, setFoundations] = useState<Foundation[]>([]);
   useEffect(() => {
     setSnapshot(subjectSnapshot(slug));
+    setBlocks(blocksForSubject(slug));
+    setFoundations(phaseFoundations(slug));
   }, [slug]);
+
+  const nextBlock = useMemo(() => {
+    const idx = blocks.findIndex((b) => !b.seen);
+    return idx === -1 ? null : { block: blocks[idx], index: idx };
+  }, [blocks]);
 
   if (!subject) return null;
   const Icon = subject.Icon;
@@ -183,15 +193,35 @@ function FagPage() {
             </div>
 
             <div className="mt-5 flex flex-wrap items-center gap-3">
-              <Link
-                to="/stack/$slug"
-                params={{ slug }}
-                className="inline-flex items-center gap-1.5 rounded-lg bg-brand px-4 py-2 text-sm font-semibold text-brand-foreground hover:opacity-90 transition-opacity"
-              >
-                <GraduationCap className="h-4 w-4" />
-                Åpne kurset
-                <ArrowRight className="h-3.5 w-3.5" />
-              </Link>
+              {nextBlock ? (
+                <>
+                  <a
+                    href={`/stack/${nextBlock.block.slug}`}
+                    className="inline-flex items-center gap-1.5 rounded-lg bg-brand px-4 py-2 text-sm font-semibold text-brand-foreground hover:opacity-90 transition-opacity"
+                  >
+                    <GraduationCap className="h-4 w-4" />
+                    {nextBlock.index === 0 ? "Start her" : "Fortsett her"}: {nextBlock.block.title}
+                    <ArrowRight className="h-3.5 w-3.5" />
+                  </a>
+                  <Link
+                    to="/stack/$slug"
+                    params={{ slug }}
+                    className="inline-flex items-center gap-1 rounded-lg border border-border bg-card px-3 py-2 text-sm text-foreground hover:border-brand/60 transition-colors"
+                  >
+                    Kursoversikt
+                  </Link>
+                </>
+              ) : (
+                <Link
+                  to="/stack/$slug"
+                  params={{ slug }}
+                  className="inline-flex items-center gap-1.5 rounded-lg bg-brand px-4 py-2 text-sm font-semibold text-brand-foreground hover:opacity-90 transition-opacity"
+                >
+                  <GraduationCap className="h-4 w-4" />
+                  Åpne kurset
+                  <ArrowRight className="h-3.5 w-3.5" />
+                </Link>
+              )}
 
               {meta && (
                 <span
@@ -236,6 +266,58 @@ function FagPage() {
                     })()}
                   </p>
                 )}
+              </div>
+            )}
+
+            {/* Byggekloss-stripe: én rute per leksjon, i studierekkefølge.
+                Fylt = sett, ring = neste kloss. Gjør stien fysisk synlig. */}
+            {blocks.length > 0 && (
+              <div className="mt-4">
+                <div className="mb-1.5 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                  Byggeklossene i faget
+                </div>
+                <div className="flex flex-wrap gap-1">
+                  {blocks.map((b, i) => (
+                    <a
+                      key={b.slug}
+                      href={`/stack/${b.slug}`}
+                      title={`${i + 1}. ${b.title}${b.seen ? " ✓" : ""}`}
+                      className={`h-4 w-4 rounded-sm border transition-colors ${
+                        b.seen
+                          ? "border-success bg-success/70 hover:bg-success"
+                          : nextBlock?.block.slug === b.slug
+                            ? "border-brand bg-brand/20 ring-2 ring-brand/40 hover:bg-brand/40"
+                            : "border-border bg-muted/40 hover:border-brand/60"
+                      }`}
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Grunnmuren: fasene dette faget bygger på, med fremdrift */}
+            {foundations.length > 0 && (
+              <div className="mt-4 flex flex-wrap items-center gap-2 text-xs">
+                <span className="text-muted-foreground">Bygger på:</span>
+                {foundations.map((f) => (
+                  <a
+                    key={f.phase.id}
+                    href={`/stack#${f.phase.id}`}
+                    className={`rounded-full border px-2.5 py-1 transition-colors ${
+                      f.total > 0 && f.seen === 0
+                        ? "border-warning/50 bg-warning/10 text-foreground hover:border-warning"
+                        : "border-border bg-card text-foreground hover:border-brand/60"
+                    }`}
+                    title={f.phase.why}
+                  >
+                    {f.phase.title}
+                    {f.total > 0 && (
+                      <span className="ml-1 tabular-nums text-muted-foreground">
+                        {Math.round((f.seen / f.total) * 100)}%
+                      </span>
+                    )}
+                  </a>
+                ))}
               </div>
             )}
 
