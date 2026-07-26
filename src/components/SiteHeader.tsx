@@ -9,15 +9,15 @@ import { XpToast } from "@/components/XpToast";
 
 type HubLink = { label: string; to: string; params?: Record<string, string> };
 
-// Tre primær-tabs. Lek = simulatorer/sandkasser, Lær = mini-kurs,
-// Test = oppgaver/drill/flashcards. /mine-fag er fortsatt tilgjengelig
-// via profil-popoveren for de som vil pinne emner og se eksamen-nedtelling.
-// Gamle ruter (/lar, /stack, /mini-kurs, /eksamen, /practice etc.) lever
-// videre som detalj-sider og åpnes via kort i gridene.
+// Fag-først-navigasjon: Mine fag er hjemmet (fag-sider med alt per emne),
+// Øv i dag er den samlede repetisjonskøen fra core-enginen, og Bibliotek
+// er alt innhold med Lek/Lær/Test som filter i stedet for topp-nivå.
+// Gamle ruter (/lek, /laer, /test, /stack, /practice etc.) lever videre
+// som detalj-sider og åpnes via kort og lenker.
 const HUBS: HubLink[] = [
-  { label: "Lek", to: "/lek" },
-  { label: "Lær", to: "/laer" },
-  { label: "Test", to: "/test" },
+  { label: "Mine fag", to: "/mine-fag" },
+  { label: "Øv i dag", to: "/repetisjon" },
+  { label: "Bibliotek", to: "/bibliotek" },
 ];
 
 export function SiteHeader() {

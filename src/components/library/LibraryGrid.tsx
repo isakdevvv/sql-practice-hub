@@ -1,11 +1,26 @@
 import { useMemo, useState } from "react";
 import { Search, X } from "lucide-react";
-import { libraryByKind, libraryTags, type LibraryKind } from "@/lib/library";
+import { LIBRARY, libraryByKind, libraryTags, type LibraryKind } from "@/lib/library";
 import { tagLabel } from "@/lib/library/tags";
 import { LibraryCard } from "./LibraryCard";
 
-export function LibraryGrid({ kind }: { kind: LibraryKind }) {
-  const allItems = useMemo(() => libraryByKind(kind), [kind]);
+// Uten `kind` vises hele biblioteket med Lek/Lær/Test som filter-chips —
+// aktivitetstype er da et filter, ikke et topp-nivå. Med `kind` (de gamle
+// /lek-, /laer- og /test-sidene) er grid-en låst til én type som før.
+const KIND_FILTER: { value: LibraryKind; label: string }[] = [
+  { value: "laer", label: "Lær — kurs" },
+  { value: "lek", label: "Lek — simulatorer" },
+  { value: "test", label: "Test — oppgaver" },
+];
+
+export function LibraryGrid({ kind }: { kind?: LibraryKind }) {
+  const [activeKind, setActiveKind] = useState<LibraryKind | null>(null);
+  const effectiveKind = kind ?? activeKind;
+
+  const allItems = useMemo(
+    () => (effectiveKind ? libraryByKind(effectiveKind) : LIBRARY),
+    [effectiveKind],
+  );
   const allTags = useMemo(() => libraryTags(allItems), [allItems]);
 
   const [query, setQuery] = useState("");
@@ -18,9 +33,7 @@ export function LibraryGrid({ kind }: { kind: LibraryKind }) {
         for (const t of activeTags) if (!it.tags.includes(t)) return false;
       }
       if (!q) return true;
-      const hay = [it.title, it.blurb ?? "", ...it.tags.map(tagLabel)]
-        .join(" ")
-        .toLowerCase();
+      const hay = [it.title, it.blurb ?? "", ...it.tags.map(tagLabel)].join(" ").toLowerCase();
       return hay.includes(q);
     });
   }, [allItems, query, activeTags]);
@@ -37,9 +50,11 @@ export function LibraryGrid({ kind }: { kind: LibraryKind }) {
   function clear() {
     setActiveTags(new Set());
     setQuery("");
+    if (!kind) setActiveKind(null);
   }
 
-  const hasFilters = activeTags.size > 0 || query.trim().length > 0;
+  const hasFilters =
+    activeTags.size > 0 || query.trim().length > 0 || (!kind && activeKind != null);
 
   return (
     <div className="space-y-4">
@@ -61,6 +76,27 @@ export function LibraryGrid({ kind }: { kind: LibraryKind }) {
           </button>
         )}
       </div>
+
+      {!kind && (
+        <div className="flex flex-wrap gap-1.5">
+          {KIND_FILTER.map(({ value, label }) => {
+            const active = activeKind === value;
+            return (
+              <button
+                key={value}
+                onClick={() => setActiveKind(active ? null : value)}
+                className={`rounded-full border px-3 py-1.5 text-xs font-semibold transition-colors ${
+                  active
+                    ? "border-brand bg-brand text-brand-foreground"
+                    : "border-border bg-card text-foreground hover:bg-accent"
+                }`}
+              >
+                {label}
+              </button>
+            );
+          })}
+        </div>
+      )}
 
       {allTags.length > 0 && (
         <div className="flex flex-wrap gap-1.5">

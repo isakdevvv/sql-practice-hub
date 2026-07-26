@@ -1,5 +1,5 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   ArrowLeft,
   ArrowRight,
@@ -22,6 +22,7 @@ import { examUrgency, formatDaysUntil, type ExamUrgency } from "@/lib/subjects/e
 import { phaseOfSlug } from "@/lib/stack/curriculum";
 import { useModulProgress } from "@/lib/stack/moduleProgress";
 import { usePinnedSubjects, toggleSubject } from "@/lib/userSubjects";
+import { subjectSnapshot, type SubjectSnapshot } from "@/lib/core/subjectProgress";
 
 export const Route = createFileRoute("/fag/$slug")({
   head: () => ({
@@ -123,6 +124,13 @@ function FagPage() {
     return map;
   }, [slug]);
 
+  // Engine-tall (kort, oppgaver, due) leser localStorage — kun etter mount,
+  // så SSR og klient rendrer likt.
+  const [snapshot, setSnapshot] = useState<SubjectSnapshot | null>(null);
+  useEffect(() => {
+    setSnapshot(subjectSnapshot(slug));
+  }, [slug]);
+
   if (!subject) return null;
   const Icon = subject.Icon;
   const pinned = pinnedSlugs.includes(slug);
@@ -217,8 +225,59 @@ function FagPage() {
                     style={{ width: `${Math.round((progress.seen / progress.total) * 100)}%` }}
                   />
                 </div>
+                {/* Eksamensplan: hva må tempoet være for å rekke gjennom alt? */}
+                {u.days != null && u.days > 0 && progress.seen < progress.total && (
+                  <p className="mt-1.5 text-[11px] text-muted-foreground">
+                    {(() => {
+                      const weeks = Math.max(1, Math.ceil(u.days / 7));
+                      const left = progress.total - progress.seen;
+                      const pace = Math.ceil(left / weeks);
+                      return `${left} sider igjen på ${weeks} uker til eksamen — ca. ${pace} ${pace === 1 ? "side" : "sider"} i uka.`;
+                    })()}
+                  </p>
+                )}
               </div>
             )}
+
+            {/* Engine-tall: kort, oppgaver, due — samlet status på tvers av modulene */}
+            {snapshot &&
+              (snapshot.cardsTotal > 0 || snapshot.problemsTotal > 0 || snapshot.dueNow > 0) && (
+                <div className="mt-4 flex flex-wrap gap-2">
+                  {snapshot.cardsTotal > 0 && (
+                    <a
+                      href="/cards?mode=study"
+                      className="rounded-lg border border-border bg-card px-3 py-2 text-xs hover:border-brand/60 transition-colors"
+                    >
+                      <span className="font-bold tabular-nums">
+                        {snapshot.cardsLearned}/{snapshot.cardsTotal}
+                      </span>{" "}
+                      <span className="text-muted-foreground">kort i læring</span>
+                    </a>
+                  )}
+                  {snapshot.problemsTotal > 0 && (
+                    <a
+                      href="/practice"
+                      className="rounded-lg border border-border bg-card px-3 py-2 text-xs hover:border-brand/60 transition-colors"
+                    >
+                      <span className="font-bold tabular-nums">
+                        {snapshot.problemsSolved}/{snapshot.problemsTotal}
+                      </span>{" "}
+                      <span className="text-muted-foreground">oppgaver løst</span>
+                    </a>
+                  )}
+                  <a
+                    href="/repetisjon"
+                    className={`rounded-lg border px-3 py-2 text-xs transition-colors ${
+                      snapshot.dueNow > 0
+                        ? "border-brand/50 bg-brand/10 text-brand hover:bg-brand/20"
+                        : "border-border bg-card text-muted-foreground hover:border-brand/60"
+                    }`}
+                  >
+                    <span className="font-bold tabular-nums">{snapshot.dueNow}</span> due for
+                    repetisjon nå
+                  </a>
+                </div>
+              )}
           </div>
         </section>
 
