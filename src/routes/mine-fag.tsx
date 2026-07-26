@@ -220,7 +220,7 @@ function MineFagPage() {
         {nextExam && nextExam.u.days != null && (
           <section className="container mx-auto px-4 pt-6 max-w-5xl">
             <Link
-              to="/stack/$slug"
+              to="/fag/$slug"
               params={{ slug: nextExam.subject.slug }}
               className={`group flex items-center gap-3 rounded-xl border-2 px-4 py-3.5 transition-colors hover:border-foreground/40 ${urgencyClasses(nextExam.u.urgency).pill}`}
             >
@@ -381,7 +381,7 @@ function PinnedSubjectCard({ subject, visitedCount }: { subject: Subject; visite
       className="group relative rounded-xl border-2 border-brand/40 bg-gradient-to-br from-brand/5 via-card to-success/5 hover:border-brand p-5 transition-colors shadow-sm hover:shadow-md hover:shadow-brand/10 scroll-mt-24 target:border-brand target:ring-2 target:ring-brand/40"
     >
       <PinToggleButton slug={subject.slug} pinned={true} />
-      <Link to="/stack/$slug" params={{ slug: subject.slug }} className="block">
+      <Link to="/fag/$slug" params={{ slug: subject.slug }} className="block">
         <div className="flex items-center gap-2 mb-3 pr-8">
           <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-brand/15">
             <Icon className="h-4.5 w-4.5 text-brand" />
@@ -460,7 +460,7 @@ function SubjectCard({
         className={`absolute inset-0 -z-10 opacity-0 group-hover:opacity-100 transition-opacity bg-gradient-to-br ${accent}`}
       />
       <PinToggleButton slug={subject.slug} pinned={pinned} />
-      <Link to="/stack/$slug" params={{ slug: subject.slug }} className="block">
+      <Link to="/fag/$slug" params={{ slug: subject.slug }} className="block">
         <div className="flex items-center gap-2 mb-2 pr-8">
           <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-brand/10">
             <Icon className="h-4 w-4 text-brand" />

@@ -82,10 +82,7 @@ export function isPinned(slug: string): boolean {
 
 export function recordVisit(slug: string) {
   if (typeof window === "undefined") return;
-  window.localStorage.setItem(
-    LAST_VISITED_KEY,
-    JSON.stringify({ slug, at: Date.now() }),
-  );
+  window.localStorage.setItem(LAST_VISITED_KEY, JSON.stringify({ slug, at: Date.now() }));
   window.dispatchEvent(new CustomEvent(EVENT));
 }
 
@@ -99,10 +96,15 @@ function subscribe(cb: () => void) {
   };
 }
 
+// Server-snapshots må være referansestabile — React advarer ("should be
+// cached") og kan ende i evig re-render hvis de returnerer nytt objekt per kall.
+const serverPinned = () => EMPTY;
+const serverLastVisited = () => null;
+
 export function usePinnedSubjects(): string[] {
-  return useSyncExternalStore(subscribe, readPinned, () => [] as string[]);
+  return useSyncExternalStore(subscribe, readPinned, serverPinned);
 }
 
 export function useLastVisitedSubject(): { slug: string; at: number } | null {
-  return useSyncExternalStore(subscribe, readLastVisited, () => null);
+  return useSyncExternalStore(subscribe, readLastVisited, serverLastVisited);
 }

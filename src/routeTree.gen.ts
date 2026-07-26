@@ -67,6 +67,7 @@ import { Route as MiniKursSlugRouteImport } from './routes/mini-kurs.$slug'
 import { Route as KarriereKodeLesningRouteImport } from './routes/karriere.kode-lesning'
 import { Route as KarriereDebugJaktRouteImport } from './routes/karriere.debug-jakt'
 import { Route as ForkursSlugRouteImport } from './routes/forkurs.$slug'
+import { Route as FagSlugRouteImport } from './routes/fag.$slug'
 import { Route as EksamenTreningRouteImport } from './routes/eksamen.trening'
 import { Route as Dte2507PcapRouteImport } from './routes/dte2507.pcap'
 import { Route as Dte2505ShellDrillRouteImport } from './routes/dte2505.shell-drill'
@@ -368,6 +369,11 @@ const ForkursSlugRoute = ForkursSlugRouteImport.update({
   path: '/forkurs/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const FagSlugRoute = FagSlugRouteImport.update({
+  id: '/fag/$slug',
+  path: '/fag/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const EksamenTreningRoute = EksamenTreningRouteImport.update({
   id: '/trening',
   path: '/trening',
@@ -456,6 +462,7 @@ export interface FileRoutesByFullPath {
   '/dte2505/shell-drill': typeof Dte2505ShellDrillRoute
   '/dte2507/pcap': typeof Dte2507PcapRoute
   '/eksamen/trening': typeof EksamenTreningRoute
+  '/fag/$slug': typeof FagSlugRoute
   '/forkurs/$slug': typeof ForkursSlugRoute
   '/karriere/debug-jakt': typeof KarriereDebugJaktRouteWithChildren
   '/karriere/kode-lesning': typeof KarriereKodeLesningRoute
@@ -520,6 +527,7 @@ export interface FileRoutesByTo {
   '/dte2505/shell-drill': typeof Dte2505ShellDrillRoute
   '/dte2507/pcap': typeof Dte2507PcapRoute
   '/eksamen/trening': typeof EksamenTreningRoute
+  '/fag/$slug': typeof FagSlugRoute
   '/forkurs/$slug': typeof ForkursSlugRoute
   '/karriere/kode-lesning': typeof KarriereKodeLesningRoute
   '/mini-kurs/$slug': typeof MiniKursSlugRoute
@@ -589,6 +597,7 @@ export interface FileRoutesById {
   '/dte2505/shell-drill': typeof Dte2505ShellDrillRoute
   '/dte2507/pcap': typeof Dte2507PcapRoute
   '/eksamen/trening': typeof EksamenTreningRoute
+  '/fag/$slug': typeof FagSlugRoute
   '/forkurs/$slug': typeof ForkursSlugRoute
   '/karriere/debug-jakt': typeof KarriereDebugJaktRouteWithChildren
   '/karriere/kode-lesning': typeof KarriereKodeLesningRoute
@@ -660,6 +669,7 @@ export interface FileRouteTypes {
     | '/dte2505/shell-drill'
     | '/dte2507/pcap'
     | '/eksamen/trening'
+    | '/fag/$slug'
     | '/forkurs/$slug'
     | '/karriere/debug-jakt'
     | '/karriere/kode-lesning'
@@ -724,6 +734,7 @@ export interface FileRouteTypes {
     | '/dte2505/shell-drill'
     | '/dte2507/pcap'
     | '/eksamen/trening'
+    | '/fag/$slug'
     | '/forkurs/$slug'
     | '/karriere/kode-lesning'
     | '/mini-kurs/$slug'
@@ -792,6 +803,7 @@ export interface FileRouteTypes {
     | '/dte2505/shell-drill'
     | '/dte2507/pcap'
     | '/eksamen/trening'
+    | '/fag/$slug'
     | '/forkurs/$slug'
     | '/karriere/debug-jakt'
     | '/karriere/kode-lesning'
@@ -860,6 +872,7 @@ export interface RootRouteChildren {
   VizLesjonRoute: typeof VizLesjonRouteWithChildren
   Dte2505ShellDrillRoute: typeof Dte2505ShellDrillRoute
   Dte2507PcapRoute: typeof Dte2507PcapRoute
+  FagSlugRoute: typeof FagSlugRoute
   ForkursSlugRoute: typeof ForkursSlugRoute
   KarriereDebugJaktRoute: typeof KarriereDebugJaktRouteWithChildren
   KarriereKodeLesningRoute: typeof KarriereKodeLesningRoute
@@ -1285,6 +1298,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ForkursSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/fag/$slug': {
+      id: '/fag/$slug'
+      path: '/fag/$slug'
+      fullPath: '/fag/$slug'
+      preLoaderRoute: typeof FagSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/eksamen/trening': {
       id: '/eksamen/trening'
       path: '/trening'
@@ -1479,6 +1499,7 @@ const rootRouteChildren: RootRouteChildren = {
   VizLesjonRoute: VizLesjonRouteWithChildren,
   Dte2505ShellDrillRoute: Dte2505ShellDrillRoute,
   Dte2507PcapRoute: Dte2507PcapRoute,
+  FagSlugRoute: FagSlugRoute,
   ForkursSlugRoute: ForkursSlugRoute,
   KarriereDebugJaktRoute: KarriereDebugJaktRouteWithChildren,
   KarriereKodeLesningRoute: KarriereKodeLesningRoute,
