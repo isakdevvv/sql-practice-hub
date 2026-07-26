@@ -2,6 +2,8 @@ import { ArrowLeft, ArrowRight, CheckCircle2, FolderOpen, Layers } from "lucide-
 import { CURRICULUM_ORDER } from "@/lib/stack/curriculum";
 import { getTrinnBySlug } from "@/lib/stack/content";
 import { courseHubForSlug } from "@/lib/stack/courseHub";
+import { RelatedTestLinks } from "@/components/stack/RelatedTestLinks";
+import { relatedTestsFor } from "@/lib/related";
 
 // Footer-pager helt nederst på hver /stack/$slug-side. Bruker den
 // kanoniske rekkefølgen i CURRICULUM_ORDER for å finne forrige/neste
@@ -34,11 +36,12 @@ export function StackPagerFooter({ slug }: { slug: string }) {
   const nextTrinn = next ? getTrinnBySlug(next) : null;
   const hub = courseHubForSlug(slug);
 
-  if (!prevTrinn && !nextTrinn && !hub) return null;
+  if (!prevTrinn && !nextTrinn && !hub && relatedTestsFor(slug).length === 0) return null;
 
   return (
     <footer className="border-t border-border bg-card/30 mt-6">
       <div className="container mx-auto px-4 py-3 max-w-4xl">
+        <RelatedTestLinks slug={slug} />
         {hub && (
           <a
             href={`/stack/${hub.hubSlug}`}
