@@ -1,14 +1,14 @@
-// Parser for EXAM_META.eksamen-strenger i catalog.ts.
+// Dato-håndtering for eksamener i catalog.ts.
 //
-// Stringene er menneske-skrevne og varierer:
-//   "14.12.2026 (3t skriftlig)"
-//   "02.12.2026 (2t skriftlig)"
-//   "30.11.2026 (2 × 2t)"
-//   "Hjemmeeksamen + mappe (3t × 2)"        — ingen entydig dato
-//   "09.12.2026 (3t hjemme) + mappe 16.12"  — to datoer, plukker den første
-//
+// To kilder: den strukturerte `events`-lista (presis — fra oppmeldingen) og
+// den menneske-skrevne `eksamen`-strengen (fallback for fag uten events).
+// Strengene varierer:
+//   "14.12.2026 — 3t skriftlig"
+//   "Hjemmeeksamen + mappe (3t × 2)"   — ingen entydig dato
 // Parseren henter ut første "dd.mm.yyyy" hvis den finnes, og returnerer
-// null for "Hjemmeeksamen + mappe"-typen som ikke har noen tradisjonell dato.
+// null for typen uten tradisjonell dato.
+
+import type { ExamEvent } from "./catalog";
 
 const DATE_RE = /(\d{1,2})\.(\d{1,2})\.(\d{4})/;
 
@@ -53,6 +53,51 @@ export function examUrgency(
   if (days < 30) return { urgency: "urgent", days, date };
   if (days < 90) return { urgency: "soon", days, date };
   return { urgency: "later", days, date };
+}
+
+/** Tidspunktet en eksamenshendelse faktisk er over: innleveringsfrist der
+ *  den finnes, ellers start + varighet, ellers slutten av dagen. */
+export function examEventEnd(ev: ExamEvent): Date {
+  const [y, m, d] = ev.date.split("-").map(Number);
+  if (ev.deadline) {
+    const [hh, mm] = ev.deadline.split(":").map(Number);
+    return new Date(y, m - 1, d, hh, mm);
+  }
+  if (ev.start) {
+    const [hh, mm] = ev.start.split(":").map(Number);
+    return new Date(y, m - 1, d, hh + (ev.hours ?? 0), mm);
+  }
+  return new Date(y, m - 1, d, 23, 59);
+}
+
+/** Første hendelse som ikke er over ennå. Null når alle er passert. */
+export function nextExamEvent(
+  events: ExamEvent[] | undefined,
+  now: Date = new Date(),
+): ExamEvent | null {
+  if (!events || events.length === 0) return null;
+  return (
+    events
+      .map((ev) => ({ ev, end: examEventEnd(ev) }))
+      .filter((x) => x.end.getTime() >= now.getTime())
+      .sort((a, b) => a.end.getTime() - b.end.getTime())[0]?.ev ?? null
+  );
+}
+
+/** «fre 30. nov · 09:00 (2t) · Bodø» — kompakt linje for én hendelse. */
+export function formatExamEvent(ev: ExamEvent): string {
+  const [y, m, d] = ev.date.split("-").map(Number);
+  const dato = new Date(y, m - 1, d).toLocaleDateString("nb-NO", {
+    weekday: "short",
+    day: "numeric",
+    month: "short",
+  });
+  const bits: string[] = [dato];
+  if (ev.start) bits.push(ev.hours ? `${ev.start} (${ev.hours}t)` : ev.start);
+  else if (ev.hours) bits.push(`${ev.hours}t`);
+  if (ev.deadline) bits.push(`frist ${ev.deadline}`);
+  if (ev.campus) bits.push(ev.campus);
+  return bits.join(" · ");
 }
 
 /** Kort menneskelig "X dager / mnd" for visning. */

@@ -50,6 +50,14 @@ const BY_PHASE: Record<string, (RelatedTestLink | null)[]> = {
       "Repetisjonskort for sannsynlighet og statistikk.",
     ),
   ],
+  statistikk: [
+    kort(
+      "Statistikk-kort",
+      "/cards?category=statistikk",
+      "Repetisjonskort for sannsynlighet og statistikk.",
+    ),
+    oppgaver("Python-notebook", "/python-notebook", "Regn på egne tall med scipy.stats og pandas."),
+  ],
   algoritmer: [
     drill("big-o"),
     oppgaver("Predict-trener", "/predict", "Gjett resultatet av en query før du kjører den."),
