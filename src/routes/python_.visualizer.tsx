@@ -23,7 +23,7 @@ import {
 export const Route = createFileRoute("/python_/visualizer")({
   head: () => ({
     meta: [
-      { title: "Python-visualizer — SQL Sandbox" },
+      { title: "Python-visualizer — Kodeverkstedet" },
       {
         name: "description",
         content:

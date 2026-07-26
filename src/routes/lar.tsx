@@ -74,7 +74,7 @@ function VerktoyHub() {
       tools: [
         {
           href: "/",
-          title: "SQL Sandbox",
+          title: "Kodeverkstedet",
           body: "Et reelt skjema, full SQL, ingen begrensninger. Test idéer, lim inn eksamensoppgaver.",
           Icon: Beaker,
           prominent: true,

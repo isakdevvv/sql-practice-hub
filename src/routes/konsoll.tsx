@@ -13,7 +13,7 @@ import { Send, Loader2, Plus, X, Database } from "lucide-react";
 export const Route = createFileRoute("/konsoll")({
   head: () => ({
     meta: [
-      { title: "API-konsoll — SQL Sandbox" },
+      { title: "API-konsoll — Kodeverkstedet" },
       {
         name: "description",
         content:

@@ -44,7 +44,7 @@ export const LIBRARY: LibraryItem[] = [
   // ───────── LEK — interaktive simulatorer/sandkasser ─────────
   {
     slug: "sql-sandbox",
-    title: "SQL Sandbox",
+    title: "Kodeverkstedet",
     kind: "lek",
     tags: ["sql", "database", "sandkasse"],
     href: "/",

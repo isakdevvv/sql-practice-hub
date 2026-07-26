@@ -44,7 +44,7 @@ function saveSubjectFilter(v: SubjectFilter) {
 export const Route = createFileRoute("/drag")({
   head: () => ({
     meta: [
-      { title: "Drag-oppgaver — SQL Sandbox" },
+      { title: "Drag-oppgaver — Kodeverkstedet" },
       {
         name: "description",
         content:

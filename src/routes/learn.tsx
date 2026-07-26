@@ -8,7 +8,7 @@ import { Layers, Move, GitMerge, ArrowRight } from "lucide-react";
 export const Route = createFileRoute("/learn")({
   head: () => ({
     meta: [
-      { title: "Lær — SQL Sandbox" },
+      { title: "Lær — Kodeverkstedet" },
       {
         name: "description",
         content:

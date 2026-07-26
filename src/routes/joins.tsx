@@ -13,7 +13,7 @@ import { cn } from "@/lib/utils";
 export const Route = createFileRoute("/joins")({
   head: () => ({
     meta: [
-      { title: "Visuelle JOIN-oppgaver — SQL Sandbox" },
+      { title: "Visuelle JOIN-oppgaver — Kodeverkstedet" },
       {
         name: "description",
         content:

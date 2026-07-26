@@ -61,7 +61,7 @@ export const Route = createFileRoute("/cards")({
   validateSearch: searchSchema,
   head: () => ({
     meta: [
-      { title: "Repetisjonskort — SQL Sandbox" },
+      { title: "Repetisjonskort — Kodeverkstedet" },
       {
         name: "description",
         content:

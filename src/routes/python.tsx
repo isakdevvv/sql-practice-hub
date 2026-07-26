@@ -43,7 +43,7 @@ import {
 export const Route = createFileRoute("/python")({
   head: () => ({
     meta: [
-      { title: "Python — SQL Sandbox" },
+      { title: "Python — Kodeverkstedet" },
       {
         name: "description",
         content:

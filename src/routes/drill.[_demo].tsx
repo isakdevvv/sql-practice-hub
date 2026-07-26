@@ -25,7 +25,7 @@ import { cn } from "@/lib/utils";
 export const Route = createFileRoute("/drill/_demo")({
   head: () => ({
     meta: [
-      { title: "DrillShell-demo (intern) — SQL Sandbox" },
+      { title: "DrillShell-demo (intern) — Kodeverkstedet" },
       {
         name: "description",
         content:

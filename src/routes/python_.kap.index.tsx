@@ -7,7 +7,7 @@ import { BookOpen, Code2 } from "lucide-react";
 export const Route = createFileRoute("/python_/kap/")({
   head: () => ({
     meta: [
-      { title: "Python-kapitler — SQL Sandbox" },
+      { title: "Python-kapitler — Kodeverkstedet" },
       {
         name: "description",
         content:

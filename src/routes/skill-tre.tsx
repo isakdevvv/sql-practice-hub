@@ -33,7 +33,7 @@ export const Route = createFileRoute("/skill-tre")({
   }),
   head: () => ({
     meta: [
-      { title: "Skill-tre — SQL Sandbox" },
+      { title: "Skill-tre — Kodeverkstedet" },
       {
         name: "description",
         content:

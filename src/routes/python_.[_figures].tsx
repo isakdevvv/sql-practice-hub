@@ -26,7 +26,7 @@ import * as Figures from "@/components/learn/python-figures/PythonFigures";
 export const Route = createFileRoute("/python_/_figures")({
   head: () => ({
     meta: [
-      { title: "Python-figurer (intern indeks) — SQL Sandbox" },
+      { title: "Python-figurer (intern indeks) — Kodeverkstedet" },
       {
         name: "description",
         content:

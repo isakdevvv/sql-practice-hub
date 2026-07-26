@@ -1,9 +1,11 @@
-# SQL Sandbox — DTE-2509-1 26V Databaser og webapplikasjoner 1
+# Kodeverkstedet
 
-> Studentlaget øvingsverktøy for faget **DTE-2509-1 26V — Databaser og webapplikasjoner 1**.
+> Studentlaget øvingsverktøy for IT-fagene i bachelorløpet.
 > Ikke et offisielt kursmateriale, men ment som forberedelse til eksamen.
 
-En SQL-praksis-app som kjører i nettleseren — ekte SQLite (WebAssembly), realistiske datasett, oppgaver med hint og fasit, søk overalt, og en **Eksamen-modus** som pre-fyller fasit i editoren.
+En praktisk læringsapp som kjører i nettleseren: SQL med ekte SQLite (WebAssembly),
+Python i Pyodide, interaktive simulatorer, mini-kurs, flashcards, oppgaver med
+hint og fasit, og søk overalt.
 
 ## Last ned og kjør på din egen PC
 
@@ -29,6 +31,7 @@ start.cmd
 ```
 
 Skriptet:
+
 - **henter siste versjon fra GitHub** (`git pull`) hvis du allerede har klonet,
 - installerer [Bun](https://bun.sh) hvis det mangler,
 - henter alle avhengigheter (`bun install`),

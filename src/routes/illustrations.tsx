@@ -31,7 +31,7 @@ import {
 export const Route = createFileRoute("/illustrations")({
   head: () => ({
     meta: [
-      { title: "Illustrasjonsbibliotek — SQL Sandbox" },
+      { title: "Illustrasjonsbibliotek — Kodeverkstedet" },
       {
         name: "description",
         content:

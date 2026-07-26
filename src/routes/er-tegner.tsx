@@ -72,7 +72,7 @@ function compareSql(user: string, target: string): { matched: number; total: num
 export const Route = createFileRoute("/er-tegner")({
   head: () => ({
     meta: [
-      { title: "ER-tegner — SQL Sandbox" },
+      { title: "ER-tegner — Kodeverkstedet" },
       {
         name: "description",
         content:

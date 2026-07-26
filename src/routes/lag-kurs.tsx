@@ -15,7 +15,7 @@ import { Check } from "lucide-react";
 export const Route = createFileRoute("/lag-kurs")({
   head: () => ({
     meta: [
-      { title: "Lag ditt eget kurs — SQL Sandbox" },
+      { title: "Lag ditt eget kurs — Kodeverkstedet" },
       {
         name: "description",
         content:

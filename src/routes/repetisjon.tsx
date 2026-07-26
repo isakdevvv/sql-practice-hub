@@ -24,7 +24,7 @@ import { PROBLEMS } from "@/lib/problems/data";
 export const Route = createFileRoute("/repetisjon")({
   head: () => ({
     meta: [
-      { title: "Due i dag — SQL Sandbox" },
+      { title: "Due i dag — Kodeverkstedet" },
       {
         name: "description",
         content:

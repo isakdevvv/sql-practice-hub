@@ -20,7 +20,7 @@ const STORAGE_KEY = "tutor-conversation-v1";
 export const Route = createFileRoute("/tutor")({
   head: () => ({
     meta: [
-      { title: "AI-tutor — SQL Sandbox" },
+      { title: "AI-tutor — Kodeverkstedet" },
       {
         name: "description",
         content:

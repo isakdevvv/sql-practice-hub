@@ -39,7 +39,7 @@ import type { DatasetId } from "@/lib/db/datasets";
 export const Route = createFileRoute("/predict")({
   head: () => ({
     meta: [
-      { title: "Predict & Trace — SQL Sandbox" },
+      { title: "Predict & Trace — Kodeverkstedet" },
       {
         name: "description",
         content:

@@ -35,10 +35,10 @@ export function SiteHeader() {
     <header className="sticky top-0 z-40 w-full border-b border-border bg-background/80 backdrop-blur-md">
       <div className="container mx-auto flex h-14 items-center gap-3 px-4">
         <Link to="/" className="flex items-center gap-2 shrink-0">
-          <div className="flex h-7 w-7 items-center justify-center rounded-md bg-brand text-brand-foreground font-bold text-sm">
-            S
+          <div className="flex h-7 w-7 items-center justify-center rounded-md bg-brand text-brand-foreground font-bold text-xs">
+            KV
           </div>
-          <span className="font-semibold tracking-tight hidden sm:inline">SQL Sandbox</span>
+          <span className="font-semibold hidden sm:inline">Kodeverkstedet</span>
         </Link>
 
         <GlobalSearch />
@@ -102,7 +102,9 @@ export function SiteHeader() {
                 params={p.params as any}
                 onClick={() => setMobileOpen(false)}
                 className="rounded-md px-3 py-2 text-sm text-foreground hover:bg-accent transition-colors"
-                activeProps={{ className: "rounded-md px-3 py-2 text-sm text-foreground bg-accent font-semibold" }}
+                activeProps={{
+                  className: "rounded-md px-3 py-2 text-sm text-foreground bg-accent font-semibold",
+                }}
               >
                 {p.label}
               </Link>

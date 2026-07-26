@@ -74,13 +74,13 @@ export const Route = createFileRoute("/practice")({
   },
   head: () => ({
     meta: [
-      { title: "Practice — SQL Sandbox" },
+      { title: "Practice — Kodeverkstedet" },
       {
         name: "description",
         content:
           "Practice SQL on a realistic e-commerce dataset. 50 problems with instant feedback, in your browser.",
       },
-      { property: "og:title", content: "Practice — SQL Sandbox" },
+      { property: "og:title", content: "Practice — Kodeverkstedet" },
       {
         property: "og:description",
         content:
