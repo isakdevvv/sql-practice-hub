@@ -18,7 +18,13 @@ import { SiteHeader } from "@/components/SiteHeader";
 import { LibraryCard } from "@/components/library/LibraryCard";
 import { LIBRARY, type LibraryItem, type LibraryKind } from "@/lib/library";
 import { SUBJECT_BY_SLUG, EXAM_META } from "@/lib/subjects/catalog";
-import { examUrgency, formatDaysUntil, type ExamUrgency } from "@/lib/subjects/examDate";
+import {
+  examUrgency,
+  formatDaysUntil,
+  formatExamEvent,
+  nextExamEvent,
+  type ExamUrgency,
+} from "@/lib/subjects/examDate";
 import { phaseOfSlug } from "@/lib/stack/curriculum";
 import { useModulProgress } from "@/lib/stack/moduleProgress";
 import { usePinnedSubjects, toggleSubject } from "@/lib/userSubjects";
@@ -106,6 +112,7 @@ function FagPage() {
 
   const meta = EXAM_META[slug];
   const u = examUrgency(meta?.eksamen);
+  const nextEvent = useMemo(() => nextExamEvent(meta?.events), [meta]);
 
   // Fagets curriculum-fase — brukes til fremdrift ("X av Y sider sett").
   // Kun meningsfullt når faget selv er hub-en (første slug) i fasen.
@@ -239,6 +246,37 @@ function FagPage() {
                 </span>
               )}
             </div>
+
+            {/* Full eksamensplan der vi har den fra oppmeldingen. Flere deler
+                og innleveringer er lette å overse i en enkelt datolinje. */}
+            {meta?.events && meta.events.length > 0 && (
+              <ul className="mt-3 space-y-1">
+                {meta.events.map((ev, i) => {
+                  const isNext = nextEvent === ev;
+                  return (
+                    <li
+                      key={`${ev.date}-${i}`}
+                      className={`flex flex-wrap items-center gap-2 text-xs ${
+                        isNext ? "text-foreground font-medium" : "text-muted-foreground"
+                      }`}
+                    >
+                      <span
+                        className={`inline-block h-1.5 w-1.5 shrink-0 rounded-full ${
+                          isNext ? "bg-brand" : "bg-muted-foreground/40"
+                        }`}
+                      />
+                      <span>{ev.label}</span>
+                      <span className="tabular-nums">{formatExamEvent(ev)}</span>
+                      {ev.campus && (
+                        <span className="rounded border border-border bg-card px-1.5 py-0.5 text-[10px]">
+                          oppmøte 30 min før
+                        </span>
+                      )}
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
 
             {/* Fremdrift i fagets læringsløp */}
             {phase && progress.total > 0 && (

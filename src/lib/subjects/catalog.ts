@@ -32,15 +32,113 @@ export type Sektor = {
   subjects: Subject[];
 };
 
-// Ekstra metadata for fag som inngår i høst 2026 — vises kun hvis brukeren
-// pinner et av disse fagene. Andre pinnede fag viser bare basis-info.
-export const EXAM_META: Record<string, { stp: number; eksamen: string }> = {
-  "tek-1501": { stp: 5, eksamen: "14.12.2026 (3t skriftlig)" },
-  "dte-2505": { stp: 5, eksamen: "02.12.2026 (2t skriftlig)" },
+export type ExamKind = "skoleeksamen" | "hjemme" | "mappe";
+
+/** Én konkret eksamenshendelse. Et fag kan ha flere: DTE-2507 har to
+ *  skoledeler samme dag, DTE-2602 har hjemmeeksamen + mappeinnlevering
+ *  to dager senere. */
+export interface ExamEvent {
+  /** ISO-dato, YYYY-MM-DD. */
+  date: string;
+  kind: ExamKind;
+  /** Kort etikett, f.eks. "Del 1" eller "Mappeinnlevering". */
+  label: string;
+  /** Oppstart/uttak, HH:MM. */
+  start?: string;
+  /** Varighet i timer. */
+  hours?: number;
+  /** Innleveringsfrist, HH:MM — for hjemmeeksamen og mappe. */
+  deadline?: string;
+  /** Campus for skoleeksamen (oppmøte 30 min før start). */
+  campus?: string;
+}
+
+export interface ExamMeta {
+  stp: number;
+  /** Kort visningstekst. Første dd.mm.yyyy her driver nedtellingen. */
+  eksamen: string;
+  /** Strukturert plan der vi har den fra oppmeldingen (WISEflow). */
+  events?: ExamEvent[];
+}
+
+// Eksamensdata for høst 2026, hentet fra faktisk oppmelding.
+// Kandidatnumre er bevisst ikke lagret her — repoet er offentlig.
+export const EXAM_META: Record<string, ExamMeta> = {
+  "dte-2507": {
+    stp: 10,
+    eksamen: "30.11.2026 — 2 × 2t skriftlig (09:00 + 13:00), Bodø",
+    events: [
+      {
+        date: "2026-11-30",
+        kind: "skoleeksamen",
+        label: "Del 1 — skriftlig",
+        start: "09:00",
+        hours: 2,
+        campus: "Bodø",
+      },
+      {
+        date: "2026-11-30",
+        kind: "skoleeksamen",
+        label: "Del 2 — skriftlig",
+        start: "13:00",
+        hours: 2,
+        campus: "Bodø",
+      },
+    ],
+  },
+  "dte-2505": {
+    stp: 5,
+    eksamen: "02.12.2026 kl 09:00 — 2t skriftlig, Narvik",
+    events: [
+      {
+        date: "2026-12-02",
+        kind: "skoleeksamen",
+        label: "Skriftlig skoleeksamen",
+        start: "09:00",
+        hours: 2,
+        campus: "Narvik",
+      },
+    ],
+  },
+  "dte-2602": {
+    stp: 10,
+    eksamen: "09.12.2026 — 3t hjemmeeksamen + mappe 11.12",
+    events: [
+      {
+        date: "2026-12-09",
+        kind: "hjemme",
+        label: "Hjemmeeksamen",
+        start: "09:00",
+        hours: 3,
+        deadline: "12:00",
+      },
+      {
+        date: "2026-12-11",
+        kind: "mappe",
+        label: "Mappevurdering (papirbasert)",
+        deadline: "14:00",
+      },
+    ],
+  },
+  "tek-1501": {
+    stp: 5,
+    eksamen: "14.12.2026 — 3t skriftlig",
+    events: [
+      {
+        date: "2026-12-14",
+        kind: "skoleeksamen",
+        label: "Skriftlig skoleeksamen",
+        hours: 3,
+      },
+    ],
+  },
+  // Ikke oppmeldt høst 2026 — beholdt for fag-siden, uten dato.
   "dte-2501": { stp: 10, eksamen: "Hjemmeeksamen + mappe (3t × 2)" },
-  "dte-2507": { stp: 10, eksamen: "30.11.2026 (2 × 2t)" },
-  "dte-2602": { stp: 10, eksamen: "09.12.2026 (3t hjemme) + mappe 16.12" },
 };
+
+/** Fagene brukeren faktisk har eksamen i denne sesongen, i kronologisk
+ *  rekkefølge. Driver «eksamen nærmer seg»-prioritering. */
+export const EXAM_SEASON_SLUGS: string[] = ["dte-2507", "dte-2505", "dte-2602", "tek-1501"];
 
 export const SEKTORER: Sektor[] = [
   {
@@ -60,8 +158,7 @@ export const SEKTORER: Sektor[] = [
         slug: "dte-2802",
         code: "DTE-2802",
         navn: "Web Applikasjoner 2",
-        blurb:
-          "Fem mini-kurs: C#, ASP.NET MVC, Web API, EF Core og Blazor.",
+        blurb: "Fem mini-kurs: C#, ASP.NET MVC, Web API, EF Core og Blazor.",
         Icon: Globe,
       },
     ],
@@ -83,8 +180,7 @@ export const SEKTORER: Sektor[] = [
         slug: "dte-2602",
         code: "DTE-2602",
         navn: "Introduksjon maskinlæring og AI",
-        blurb:
-          "Fire mini-kurs: ML-grunnlag, supervised, unsupervised, og nevrale nett.",
+        blurb: "Fire mini-kurs: ML-grunnlag, supervised, unsupervised, og nevrale nett.",
         Icon: Layers,
       },
       {
@@ -114,8 +210,7 @@ export const SEKTORER: Sektor[] = [
         slug: "dte-2507",
         code: "DTE-2507",
         navn: "Datakommunikasjon og sikkerhet",
-        blurb:
-          "Fem mini-kurs: OSI/TCP-IP, transport, kryptografi, TLS og nettverkssikkerhet.",
+        blurb: "Fem mini-kurs: OSI/TCP-IP, transport, kryptografi, TLS og nettverkssikkerhet.",
         Icon: Network,
       },
     ],
@@ -152,8 +247,7 @@ export const SEKTORER: Sektor[] = [
         slug: "dte-2604",
         code: "DTE-2604",
         navn: "Systemutvikling",
-        blurb:
-          "Fire mini-kurs: smidige metodikker, brukerhistorier, UML, og prosjekt-praksis.",
+        blurb: "Fire mini-kurs: smidige metodikker, brukerhistorier, UML, og prosjekt-praksis.",
         Icon: Boxes,
       },
     ],
