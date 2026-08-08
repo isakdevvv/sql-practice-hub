@@ -71,6 +71,7 @@ import { content as dte2505VirtueltMinne } from "./dte2505-virtuelt-minne";
 import { content as dte2505Konkurrens } from "./dte2505-konkurrens";
 import { content as dte2505BashScripts } from "./dte2505-bash-scripts";
 import { content as dte2505Obliger } from "./dte2505-obliger";
+import { content as dte2505Moduler } from "./dte2505-moduler";
 import { content as dte2505ProsesserSignaler } from "./dte2505-prosesser-signaler";
 import { content as dte2505RwxKalkulator } from "./dte2505-rwx-kalkulator";
 import { content as dte2505ThreadVsProsess } from "./dte2505-thread-vs-prosess";
@@ -279,7 +280,7 @@ export const TRINN: TrinnContent[] = [
   dte2505, osHistorikk, osGrunnlag, linuxBruk, shellScripting, brukereRettigheter, virtualisering,
   dte2505ObligerGuide,
   dte2505SchedulingDrill, dte2505ThreadState, dte2505VirtueltMinne, dte2505Konkurrens,
-  dte2505BashScripts, dte2505Obliger, dte2505ProsesserSignaler, dte2505RwxKalkulator,
+  dte2505BashScripts, dte2505Obliger, dte2505Moduler, dte2505ProsesserSignaler, dte2505RwxKalkulator,
   dte2505ThreadVsProsess, dte2505Kontekstbytte,
   trinn1, trinn2, trinn3, trinn4, trinn5, trinn6, trinn7, trinn8, trinn9, trinn10,
   dte2802, csharpGrunnlag, aspnetMvc, aspnetWebapi, efCore, blazor,
