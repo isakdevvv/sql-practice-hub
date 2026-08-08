@@ -198,14 +198,16 @@ merkes som det i appen.
 
 ## 7. Byggerekkefølge
 
-**Bølge 1 (nå):** modul-rammer + første moduler i alle fire fag.
+**Bølge 1:** modul-rammer + første moduler. **Én agent om gangen** — køen under
+kjøres sekvensielt, ikke parallelt. Neste agent starter først når forrige har
+rapportert.
 
-| Agent | Fag | Leveranse | Eier |
-|---|---|---|---|
-| A | DTE-2505 | Modul-for-modul-visning, Canvas-korrekte obliger + frister | `dte-2505/`, `dte2505-obliger/` |
-| B | DTE-2505 | Modul 2 (hjelpesystemer) som pilot for de fem oppgavetypene | `dte2505-hjelpesystemer/` (ny) |
-| C | TEK-1501 | Modul-ramme + Spor A/B med oppgavetypene | `tek-1501/`, `tek1-modul*/` (ny) |
-| D | DTE-2602 | Modul-ramme + Fase 1–2 med oppgavetypene | `dte-2602/`, `dte2602-modul*/` (ny) |
+| # | Fag | Leveranse | Eier | Status |
+|---|---|---|---|---|
+| A | DTE-2505 | Modul-for-modul-visning, Canvas-korrekte obliger + frister | `dte-2505/`, `dte2505-obliger/` | ✅ ferdig, `feat/dte2505-moduler` (umerget) |
+| B | DTE-2505 | Modul 2 (hjelpesystemer) som pilot for de fem oppgavetypene | `dte2505-hjelpesystemer/` (ny) | 🔄 kjører |
+| C | TEK-1501 | Modul-ramme + Spor A/B med oppgavetypene | `tek-1501/`, `tek1-modul*/` (ny) | ⏸️ delvis — oppgave-arkitekturen committet (`4f55688`), modul 1 ucommittet |
+| D | DTE-2602 | Modul-ramme + Fase 1–2 med oppgavetypene | `dte-2602/`, `dte2602-modul*/` (ny) | ⏸️ påbegynt, ingenting committet |
 
 **Bølge 2 (senere):** tilstandsbasert mock-shell, modul 1b + 6 i DTE-2505,
 DTE-2507 etter Canvas-gjennomgang, integrasjonsoppgaver, felles FSRS-kø.
