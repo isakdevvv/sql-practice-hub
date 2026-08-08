@@ -182,6 +182,7 @@ export const PHASES: readonly CurriculumPhase[] = [
       "dte2505-io-management",
       "dte2505-lagring",
       "dte2505-lfs",
+      "dte2505-hjelpesystemer",
     ],
   },
   {

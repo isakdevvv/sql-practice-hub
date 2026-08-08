@@ -1,0 +1,126 @@
+import { useState } from "react";
+import { HelpCircle, ChevronRight, ChevronLeft, Sparkles, RotateCcw } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { PREDICT_ITEMS } from "@/lib/dte2505/hjelpesystemerAnslag";
+
+// ---------------------------------------------------------------------------
+// Oppgavetype 1 — ANSLÅ-SÅ-SJEKK.
+//
+// Ligger FØR forklaringene i modulen. Ingen poengsum og ingen «feil»-stempel:
+// et anslag som bommer gjør akkurat den jobben det skal, nemlig å gjøre
+// forklaringen etterpå interessant. Derfor er språket i tilbakemeldingen
+// «du anslo X — det som skjer er Y», ikke «riktig/galt».
+// ---------------------------------------------------------------------------
+
+export function AnslaSjekk() {
+  const [idx, setIdx] = useState(0);
+  const [guesses, setGuesses] = useState<Record<string, string>>({});
+
+  const item = PREDICT_ITEMS[idx];
+  const guess = guesses[item.id];
+  const revealed = Boolean(guess);
+  const hit = guess === item.correct;
+  const answered = Object.keys(guesses).length;
+
+  function pick(optionId: string) {
+    if (revealed) return;
+    setGuesses((g) => ({ ...g, [item.id]: optionId }));
+  }
+
+  return (
+    <div className="rounded-xl border-2 border-brand/30 bg-card">
+      <div className="flex items-center justify-between border-b px-4 py-2.5">
+        <div className="flex items-center gap-2 text-sm font-semibold">
+          <HelpCircle className="h-4 w-4 text-brand" />
+          Anslå først
+          <span className="text-xs font-normal text-muted-foreground">
+            {idx + 1} / {PREDICT_ITEMS.length}
+          </span>
+        </div>
+        <div className="flex items-center gap-3">
+          <span className="text-xs text-muted-foreground">{answered} anslått</span>
+          {answered > 0 && (
+            <button
+              onClick={() => setGuesses({})}
+              className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground"
+            >
+              <RotateCcw className="h-3 w-3" /> Nullstill
+            </button>
+          )}
+        </div>
+      </div>
+
+      <div className="p-4">
+        <p className="text-xs text-muted-foreground leading-relaxed">{item.setup}</p>
+        <p className="mt-2 font-medium leading-relaxed">{item.question}</p>
+
+        <div className="mt-3 grid gap-2">
+          {item.options.map((o) => {
+            const isGuess = guess === o.id;
+            const isCorrect = o.id === item.correct;
+            return (
+              <button
+                key={o.id}
+                onClick={() => pick(o.id)}
+                disabled={revealed}
+                className={cn(
+                  "rounded-lg border px-3 py-2 text-left text-sm transition-colors",
+                  !revealed && "hover:bg-accent",
+                  revealed && isCorrect && "border-emerald-500/70 bg-emerald-500/10",
+                  revealed && isGuess && !isCorrect && "border-amber-500/70 bg-amber-500/10",
+                  revealed && !isCorrect && !isGuess && "opacity-50",
+                )}
+              >
+                <span className="mr-2 font-mono text-xs text-muted-foreground">{o.id}.</span>
+                {o.label}
+                {revealed && isGuess && (
+                  <span className="ml-2 text-[10px] uppercase tracking-wider text-muted-foreground">
+                    ditt anslag
+                  </span>
+                )}
+                {revealed && isCorrect && (
+                  <span className="ml-2 text-[10px] uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
+                    det som skjer
+                  </span>
+                )}
+              </button>
+            );
+          })}
+        </div>
+
+        {revealed && (
+          <div className="mt-4 rounded-lg border border-brand/40 bg-brand/5 p-3">
+            <div className="flex items-center gap-1.5 text-xs font-semibold text-brand">
+              <Sparkles className="h-3.5 w-3.5" />
+              {hit ? "Du traff — men grunnen er det viktige" : "Ikke det du trodde"}
+            </div>
+            <p className="mt-2 text-sm leading-relaxed">{item.reveal}</p>
+            <p className="mt-2 border-t border-brand/20 pt-2 text-sm font-medium">{item.punch}</p>
+          </div>
+        )}
+
+        {!revealed && (
+          <p className="mt-3 text-xs text-muted-foreground">
+            Velg det du tror skjer. Du kan ikke svare feil her — poenget er å ha en mening før
+            forklaringen kommer.
+          </p>
+        )}
+
+        <div className="mt-4 flex items-center justify-between border-t pt-3">
+          <button
+            onClick={() => setIdx((i) => (i - 1 + PREDICT_ITEMS.length) % PREDICT_ITEMS.length)}
+            className="inline-flex items-center gap-1 rounded-md border bg-card px-3 py-1.5 text-sm hover:bg-accent"
+          >
+            <ChevronLeft className="h-4 w-4" /> Forrige
+          </button>
+          <button
+            onClick={() => setIdx((i) => (i + 1) % PREDICT_ITEMS.length)}
+            className="inline-flex items-center gap-1 rounded-md bg-brand px-3 py-1.5 text-sm text-brand-foreground hover:bg-brand/90"
+          >
+            Neste <ChevronRight className="h-4 w-4" />
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
