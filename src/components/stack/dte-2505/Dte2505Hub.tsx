@@ -364,6 +364,32 @@ export function Dte2505Hub() {
           <ArrowRight className="h-4 w-4 text-green-300 shrink-0 mt-2 group-hover:translate-x-0.5 transition-transform" />
         </Link>
 
+        {/* Canvas-modulene — sporet som følger undervisningen uke for uke */}
+        <Link
+          to="/stack/$slug"
+          params={{ slug: "dte2505-moduler" }}
+          className="mb-8 group flex items-start gap-4 rounded-xl border border-brand/40 bg-gradient-to-r from-brand/10 to-amber-500/5 hover:border-brand transition-colors p-5"
+        >
+          <div className="rounded-lg bg-brand/15 p-2 shrink-0">
+            <Calendar className="h-5 w-5 text-brand" />
+          </div>
+          <div className="flex-1">
+            <div className="text-[10px] uppercase tracking-wider font-semibold text-brand mb-1">
+              Følger du undervisningen? · Canvas-modul 1a–6
+            </div>
+            <h3 className="font-semibold text-foreground leading-tight">
+              Modul for modul, med obligfrister
+            </h3>
+            <p className="text-sm text-muted-foreground leading-snug mt-1">
+              De sju modulene i Canvas-rekkefølge: hva hver handler om, hvilket innhold
+              her som dekker den, obligen med frist og poeng — og hvilke moduler som
+              fortsatt er hull. Seksjonene under er sortert på tema; denne er sortert på
+              når det skjer.
+            </p>
+          </div>
+          <ArrowRight className="h-4 w-4 text-brand shrink-0 mt-2 group-hover:translate-x-0.5 transition-transform" />
+        </Link>
+
         {/* Modus-rad — anker-knapper til seksjonene under. Sticky så de følger med når du scroller. */}
         <nav
           aria-label="Velg modus"
@@ -663,12 +689,12 @@ export function Dte2505Hub() {
               <div className="flex items-center gap-2 mb-2">
                 <ClipboardCheck className="h-4 w-4 text-brand" />
                 <h3 className="font-semibold text-foreground leading-tight">
-                  Speil-obliger (5 stk)
+                  Speil-obliger (6 stk)
                 </h3>
                 <ModulStatusBadge trinnSlugs={["dte2505-obliger"]} />
               </div>
               <p className="text-sm text-muted-foreground leading-relaxed">
-                Faktiske drill-obliger: installasjon, navigasjon, pakker, rettigheter, bash — steg-svar med auto-sjekk.
+                Canvas-obligene 1.1, 1.2, 2, 3, 4 og 5 — med riktige frister og poeng. Steg-svar med auto-sjekk.
               </p>
               <div className="mt-3 flex items-center text-xs text-muted-foreground group-hover:text-foreground transition-colors">
                 Åpne
