@@ -27,6 +27,7 @@ import {
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { LearningPath } from "@/components/stack/LearningPath";
 import { ModulStatusBadge, ModulProgressBar } from "@/components/stack/HubShared";
+import { Tek1501ModulOversikt } from "@/components/stack/tek-1501/Tek1501ModulOversikt";
 import { EXAM_META } from "@/lib/subjects/catalog";
 import { useModulProgress } from "@/lib/stack/moduleProgress";
 
@@ -232,6 +233,7 @@ const PENSUM_REGEX = [
 ];
 
 const MODE_ANCHORS: { id: string; label: string; Icon: typeof BarChart3 }[] = [
+  { id: "moduler", label: "Moduler", Icon: Calendar },
   { id: "les", label: "Les", Icon: BookOpen },
   { id: "visualiser", label: "Visualiser", Icon: Eye },
   { id: "ov", label: "Øv", Icon: Wrench },
@@ -346,6 +348,9 @@ export function Tek1501Hub() {
             </div>
           </div>
         </div>
+
+        {/* Modul-for-modul — undervisningsrekkefølgen */}
+        <Tek1501ModulOversikt />
 
         {/* Læringssti */}
         <section className="mb-12">
