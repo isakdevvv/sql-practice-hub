@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { Link } from "@tanstack/react-router";
 import { Check, X, Lightbulb, RotateCcw, ChevronRight, ChevronLeft, Eye, BookOpen, Dumbbell } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -95,6 +96,17 @@ export function ShellDrill() {
           å se kanonisk løsning + forklaring. Bytt til{" "}
           <span className="text-foreground">Drill-modus</span> når du vil teste deg selv. Brukes
           alene eller sammen med <span className="text-foreground">DTE-2505 Oblig-guide</span>.
+        </p>
+        <p className="mt-3 rounded-lg border border-brand/30 bg-brand/5 p-3 text-sm leading-relaxed text-muted-foreground">
+          Scenariene her sjekker <em>kommandostrengen</em> du skriver, og godtar derfor bare de
+          skrivemåtene som er lagt inn på forhånd. Vil du i stedet bli sjekket på{" "}
+          <span className="text-foreground">tilstanden du oppnår</span> — der alle veier til målet
+          godtas, og tilbakemeldingen sier nøyaktig hva som skilte når du er nesten framme — så gå
+          til{" "}
+          <Link to="/dte2505/mal-shell" className="text-brand underline underline-offset-2">
+            måloppgavene med tilstandssjekk
+          </Link>
+          .
         </p>
       </div>
 
