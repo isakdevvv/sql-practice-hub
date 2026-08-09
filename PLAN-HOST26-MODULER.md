@@ -205,7 +205,7 @@ rapportert.
 | # | Fag | Leveranse | Eier | Status |
 |---|---|---|---|---|
 | A | DTE-2505 | Modul-for-modul-visning, Canvas-korrekte obliger + frister | `dte-2505/`, `dte2505-obliger/` | ✅ ferdig, `feat/dte2505-moduler` (umerget) |
-| B | DTE-2505 | Modul 2 (hjelpesystemer) som pilot for de fem oppgavetypene | `dte2505-hjelpesystemer/` (ny) | 🔄 kjører |
+| B | DTE-2505 | Modul 2 (hjelpesystemer) som pilot for de fem oppgavetypene | `dte2505-hjelpesystemer/` (ny) | ✅ ferdig, `feat/dte2505-hjelpesystemer` (umerget) |
 | C | TEK-1501 | Modul-ramme + Spor A/B med oppgavetypene | `tek-1501/`, `tek1-modul*/` (ny) | ⏸️ delvis — oppgave-arkitekturen committet (`4f55688`), modul 1 ucommittet |
 | D | DTE-2602 | Modul-ramme + Fase 1–2 med oppgavetypene | `dte-2602/`, `dte2602-modul*/` (ny) | ⏸️ påbegynt, ingenting committet |
 
