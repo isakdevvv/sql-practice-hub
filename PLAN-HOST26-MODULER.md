@@ -207,9 +207,9 @@ rapportert.
 | A | DTE-2505 | Modul-for-modul-visning, Canvas-korrekte obliger + frister | `dte-2505/`, `dte2505-obliger/` | ✅ **merget** (`bddca26`) |
 | B | DTE-2505 | Modul 2 (hjelpesystemer) som pilot for de fem oppgavetypene | `dte2505-hjelpesystemer/` (ny) | ✅ **merget** (`80be4c5`) |
 | C | TEK-1501 | Modul-ramme + Modul 1–2 med oppgavetypene | `tek-1501/`, `tek1-modul*/` (ny) | ✅ **merget** |
-| D | DTE-2602 | Modul-ramme + Fase 1–2 med oppgavetypene | `dte-2602/`, `dte2602-modul*/` (ny) | ⏸️ avbrutt, ingenting committet — worktree `../sql-practice-hub-dte2602-moduler` har ucommittet arbeid |
+| D | DTE-2602 | Modul-ramme + Fase 1–2 med oppgavetypene | `dte-2602/`, `dte2602-modul*/` (ny) | ✅ **merget** (`71f16b1`) |
 
-Bølge 1 er merget lokalt i main (ikke pushet). Rester som bør ryddes:
+**Bølge 1 er komplett** og merget lokalt i main (ikke pushet). Rester som bør ryddes:
 - `EXAM_TOPICS` i `Tek1501Hub.tsx` peker fortsatt bare på de gamle temasidene,
   ikke de nye modulsidene — liten inkonsistens etter C.
 - Modulsider for TEK-1501 modul 3 og 4 er ikke bygget (rammen viser dem ærlig
