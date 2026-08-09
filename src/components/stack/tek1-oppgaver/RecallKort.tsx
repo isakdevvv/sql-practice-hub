@@ -1,13 +1,5 @@
 import { useMemo, useState, type ReactNode } from "react";
-import {
-  Brain,
-  ChevronLeft,
-  ChevronRight,
-  Eye,
-  EyeOff,
-  RotateCcw,
-  Shuffle,
-} from "lucide-react";
+import { Brain, ChevronLeft, ChevronRight, Eye, EyeOff, RotateCcw, Shuffle } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 // ---------------------------------------------------------------------------
@@ -68,9 +60,7 @@ export function RecallKortSeksjon({
   intro?: ReactNode;
   kort: RecallKort[];
 }) {
-  const [rekkefolge, setRekkefolge] = useState<number[]>(() =>
-    kort.map((_, i) => i),
-  );
+  const [rekkefolge, setRekkefolge] = useState<number[]>(() => kort.map((_, i) => i));
   const [pos, setPos] = useState(0);
   const [vis, setVis] = useState(false);
 
@@ -116,10 +106,9 @@ export function RecallKortSeksjon({
       <p className="mb-4 text-sm text-muted-foreground">
         {intro ?? (
           <>
-            Bevisst kort liste. Statistikk læres av å manipulere fordelingene, ikke av
-            å pugge kort — så her ligger bare det du <em>ikke</em> rekker å utlede på en
-            3-timers eksamen: formler og når-brukes-hva-valg. Alt annet står i
-            seksjonene over.
+            Bevisst kort liste. Statistikk læres av å manipulere fordelingene, ikke av å pugge kort
+            — så her ligger bare det du <em>ikke</em> rekker å utlede på en 3-timers eksamen:
+            formler og når-brukes-hva-valg. Alt annet står i seksjonene over.
           </>
         )}
       </p>

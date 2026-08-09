@@ -59,24 +59,21 @@ const LABS: Lab[] = [
   {
     slug: "tek1-diskrete-fordelinger",
     title: "Diskrete fordelinger live",
-    blurb:
-      "Binomisk, Poisson, hypergeometrisk. Live PMF-plot — se hvordan n og p endrer formen.",
+    blurb: "Binomisk, Poisson, hypergeometrisk. Live PMF-plot — se hvordan n og p endrer formen.",
     Icon: BarChart3,
     taggar: ["modul 3"],
   },
   {
     slug: "tek1-kontinuerlige-fordelinger",
     title: "Kontinuerlige fordelinger",
-    blurb:
-      "Normal, eksp, t, χ². PDF med drag-bart areal — tren intuisjonen for P(a<X<b).",
+    blurb: "Normal, eksp, t, χ². PDF med drag-bart areal — tren intuisjonen for P(a<X<b).",
     Icon: LineChart,
     taggar: ["modul 3"],
   },
   {
     slug: "tek1-forventning-clt",
     title: "Forventning, varians & CLT",
-    blurb:
-      "Simulator for sentralgrenseteoremet med 4 ulike grunnfordelinger — se konvergensen.",
+    blurb: "Simulator for sentralgrenseteoremet med 4 ulike grunnfordelinger — se konvergensen.",
     Icon: Activity,
     taggar: ["modul 3", "CLT"],
   },
@@ -91,24 +88,21 @@ const LABS: Lab[] = [
   {
     slug: "tek1-estimering-ki",
     title: "Konfidensintervall-sim",
-    blurb:
-      "100-utvalg-simulator viser hvorfor 95 % KI ikke garanterer 95 % i hvert tilfelle.",
+    blurb: "100-utvalg-simulator viser hvorfor 95 % KI ikke garanterer 95 % i hvert tilfelle.",
     Icon: Target,
     taggar: ["modul 4", "inferens"],
   },
   {
     slug: "tek1-hypotesetest-regresjon",
     title: "Hypotesetest + regresjon",
-    blurb:
-      "H₀/H₁-overlapp med skyvbar kritisk grense, drag-bar scatter med live R².",
+    blurb: "H₀/H₁-overlapp med skyvbar kritisk grense, drag-bar scatter med live R².",
     Icon: TrendingUp,
     taggar: ["modul 4", "test"],
   },
   {
     slug: "tek1-p-verdi-kalkulator",
     title: "p-verdi-kalkulator",
-    blurb:
-      "Skriv inn testverdi, fordeling og side — få p-verdi + grafisk areal-illustrasjon.",
+    blurb: "Skriv inn testverdi, fordeling og side — få p-verdi + grafisk areal-illustrasjon.",
     Icon: Calculator,
     taggar: ["modul 4", "p-verdi"],
   },
@@ -254,10 +248,7 @@ export function Tek1501Hub() {
   const allDone = total > 0 && seen === total;
 
   return (
-    <StackPageShell
-      title="TEK-1501 Sannsynlighet og statistikk for ingeniører"
-      group="eksamen"
-    >
+    <StackPageShell title="TEK-1501 Sannsynlighet og statistikk for ingeniører" group="eksamen">
       <div className="container mx-auto px-4 py-10 max-w-4xl">
         {/* Hero */}
         <div className="mb-8">
@@ -276,13 +267,10 @@ export function Tek1501Hub() {
               Live PMF/PDF
             </span>
           </div>
-          <h1 className="text-4xl font-bold tracking-tight">
-            Sannsynlighet og statistikk
-          </h1>
+          <h1 className="text-4xl font-bold tracking-tight">Sannsynlighet og statistikk</h1>
           <p className="mt-3 text-muted-foreground max-w-2xl">
-            Data → sannsynlighet → fordelinger → inferens. Eksamen er 3-timers
-            skriftlig — tyngdepunktet er Modul 2 (sannsynlighet) og Modul 3
-            (fordelinger). Velg modus under.
+            Data → sannsynlighet → fordelinger → inferens. Eksamen er 3-timers skriftlig —
+            tyngdepunktet er Modul 2 (sannsynlighet) og Modul 3 (fordelinger). Velg modus under.
           </p>
         </div>
 
@@ -337,10 +325,7 @@ export function Tek1501Hub() {
               Din framdrift
             </div>
             <div className="text-2xl font-semibold tabular-nums">
-              {seen}{" "}
-              <span className="text-muted-foreground text-base font-normal">
-                / {total}
-              </span>
+              {seen} <span className="text-muted-foreground text-base font-normal">/ {total}</span>
             </div>
             <ModulProgressBar trinnSlugs={allConceptSlugs} />
             <div className="mt-3 text-[11px] text-muted-foreground">
@@ -368,9 +353,21 @@ export function Tek1501Hub() {
                 intro:
                   "Lær å sammenfatte målinger med tall og bilder. Før vi modellerer noe, må vi se hva vi faktisk har.",
                 steps: [
-                  { slug: "tek1-deskriptiv", title: "Sentralmål, spredning og visualisering", blurb: "Mean, median, varians, IQR + histogram med live bin-slider." },
-                  { slug: "tek1-sannsynlighet", title: "Sannsynlighet, mengdelære, Bayes", blurb: "Venn-diagram, betinget P, og Bayes — bygg intuisjon før formler." },
-                  { slug: "tek1-kombinatorikk", title: "Kombinatorikk", blurb: "Permutasjon, kombinasjon, m/uten tilbakelegging — interaktiv trekksim." },
+                  {
+                    slug: "tek1-deskriptiv",
+                    title: "Sentralmål, spredning og visualisering",
+                    blurb: "Mean, median, varians, IQR + histogram med live bin-slider.",
+                  },
+                  {
+                    slug: "tek1-sannsynlighet",
+                    title: "Sannsynlighet, mengdelære, Bayes",
+                    blurb: "Venn-diagram, betinget P, og Bayes — bygg intuisjon før formler.",
+                  },
+                  {
+                    slug: "tek1-kombinatorikk",
+                    title: "Kombinatorikk",
+                    blurb: "Permutasjon, kombinasjon, m/uten tilbakelegging — interaktiv trekksim.",
+                  },
                 ],
               },
               {
@@ -378,9 +375,21 @@ export function Tek1501Hub() {
                 intro:
                   "Når dataene er forstått, putter vi dem inn i sannsynlighetsfordelinger. Slik kan vi regne ut hva som er sannsynlig før vi har sett det.",
                 steps: [
-                  { slug: "tek1-diskrete-fordelinger", title: "Binomisk, Poisson, hypergeometrisk", blurb: "Live PMF-plot — se hvordan n og p endrer formen." },
-                  { slug: "tek1-kontinuerlige-fordelinger", title: "Normal, eksp, t, χ²", blurb: "PDF med drag-bart areal — tren intuisjonen for P(a<X<b)." },
-                  { slug: "tek1-forventning-clt", title: "Forventning, varians, CLT", blurb: "Simulator for sentralgrenseteoremet." },
+                  {
+                    slug: "tek1-diskrete-fordelinger",
+                    title: "Binomisk, Poisson, hypergeometrisk",
+                    blurb: "Live PMF-plot — se hvordan n og p endrer formen.",
+                  },
+                  {
+                    slug: "tek1-kontinuerlige-fordelinger",
+                    title: "Normal, eksp, t, χ²",
+                    blurb: "PDF med drag-bart areal — tren intuisjonen for P(a<X<b).",
+                  },
+                  {
+                    slug: "tek1-forventning-clt",
+                    title: "Forventning, varians, CLT",
+                    blurb: "Simulator for sentralgrenseteoremet.",
+                  },
                 ],
               },
               {
@@ -388,9 +397,23 @@ export function Tek1501Hub() {
                 intro:
                   "Når modellen sitter, bruker vi den til å si noe vi ikke visste: hvor sikre er vi, og er forskjellen reell?",
                 steps: [
-                  { slug: "tek1-estimering-ki", title: "Konfidensintervaller", blurb: "100-utvalg-simulator viser hvorfor 95 % KI ikke garanterer 95 % i hvert tilfelle." },
-                  { slug: "tek1-hypotesetest-regresjon", title: "Hypotesetest + regresjon", blurb: "H₀/H₁-overlapp med skyvbar kritisk grense, drag-bar scatter med live R²." },
-                  { slug: "tek1-statistisk-analyse", title: "Komplett analyse", blurb: "Bredt sammenfattende kurs — koble alle teknikkene." },
+                  {
+                    slug: "tek1-estimering-ki",
+                    title: "Konfidensintervaller",
+                    blurb:
+                      "100-utvalg-simulator viser hvorfor 95 % KI ikke garanterer 95 % i hvert tilfelle.",
+                  },
+                  {
+                    slug: "tek1-hypotesetest-regresjon",
+                    title: "Hypotesetest + regresjon",
+                    blurb:
+                      "H₀/H₁-overlapp med skyvbar kritisk grense, drag-bar scatter med live R².",
+                  },
+                  {
+                    slug: "tek1-statistisk-analyse",
+                    title: "Komplett analyse",
+                    blurb: "Bredt sammenfattende kurs — koble alle teknikkene.",
+                  },
                 ],
               },
             ]}
@@ -404,8 +427,7 @@ export function Tek1501Hub() {
             <h2 className="text-xl font-semibold">Les — konsept-leksjoner</h2>
           </div>
           <p className="text-sm text-muted-foreground mb-4">
-            Tekst-tunge introduksjoner. For interaktive plottere — se Visualiser-seksjonen
-            under.
+            Tekst-tunge introduksjoner. For interaktive plottere — se Visualiser-seksjonen under.
           </p>
           <div className="grid sm:grid-cols-2 gap-3">
             {CONCEPT_COURSES.map((c) => {
@@ -419,9 +441,7 @@ export function Tek1501Hub() {
                 >
                   <div className="flex items-center gap-2 mb-2">
                     <Icon className="h-4 w-4 text-brand" />
-                    <h3 className="font-semibold text-foreground leading-tight">
-                      {c.title}
-                    </h3>
+                    <h3 className="font-semibold text-foreground leading-tight">{c.title}</h3>
                     <ModulStatusBadge trinnSlugs={[c.slug]} />
                   </div>
                   <p className="text-sm text-muted-foreground leading-relaxed">
@@ -447,8 +467,8 @@ export function Tek1501Hub() {
             </span>
           </div>
           <p className="text-sm text-muted-foreground mb-4">
-            Statistikk lærer man best ved å manipulere fordelingene selv. Drag i
-            arealer, skyv parametere, simulér eksperimentet 100 ganger.
+            Statistikk lærer man best ved å manipulere fordelingene selv. Drag i arealer, skyv
+            parametere, simulér eksperimentet 100 ganger.
           </p>
           <div className="grid sm:grid-cols-2 gap-3">
             {LABS.map((lab) => {
@@ -462,14 +482,10 @@ export function Tek1501Hub() {
                 >
                   <div className="flex items-center gap-2 mb-2 flex-wrap">
                     <Icon className="h-4 w-4 text-success" />
-                    <h3 className="font-semibold text-foreground leading-tight">
-                      {lab.title}
-                    </h3>
+                    <h3 className="font-semibold text-foreground leading-tight">{lab.title}</h3>
                     <ModulStatusBadge trinnSlugs={[lab.slug]} />
                   </div>
-                  <p className="text-sm text-muted-foreground leading-relaxed">
-                    {lab.blurb}
-                  </p>
+                  <p className="text-sm text-muted-foreground leading-relaxed">{lab.blurb}</p>
                   <div className="mt-3 flex items-center justify-between flex-wrap gap-2">
                     <div className="flex flex-wrap gap-1">
                       {lab.taggar.map((t) => (
@@ -499,8 +515,8 @@ export function Tek1501Hub() {
             <h2 className="text-xl font-semibold">Øv — gjør, ikke bare les</h2>
           </div>
           <p className="text-sm text-muted-foreground mb-4">
-            Pyodide kjører numpy + scipy.stats i nettleseren — verifiser
-            håndregningen din mot Python.
+            Pyodide kjører numpy + scipy.stats i nettleseren — verifiser håndregningen din mot
+            Python.
           </p>
           <div className="grid sm:grid-cols-2 gap-3">
             <Link
@@ -514,8 +530,7 @@ export function Tek1501Hub() {
                 </h3>
               </div>
               <p className="text-sm text-muted-foreground leading-relaxed">
-                Snitt/std, t-tester, lineær regresjon, χ² — alt uten lokal
-                installasjon.
+                Snitt/std, t-tester, lineær regresjon, χ² — alt uten lokal installasjon.
               </p>
               <div className="mt-3 flex items-center text-xs text-brand font-medium">
                 Åpne
@@ -528,13 +543,11 @@ export function Tek1501Hub() {
             >
               <div className="flex items-center gap-2 mb-2">
                 <GitBranch className="h-4 w-4 text-brand" />
-                <h3 className="font-semibold text-foreground leading-tight">
-                  Drag-oppgaver
-                </h3>
+                <h3 className="font-semibold text-foreground leading-tight">Drag-oppgaver</h3>
               </div>
               <p className="text-sm text-muted-foreground leading-relaxed">
-                55+ kortere oppgaver: fyll-inn formler, match fordelinger til
-                scenarier, sortér hypotesetest-stegene.
+                55+ kortere oppgaver: fyll-inn formler, match fordelinger til scenarier, sortér
+                hypotesetest-stegene.
               </p>
               <div className="mt-3 flex items-center text-xs text-muted-foreground group-hover:text-foreground transition-colors">
                 Åpne
@@ -547,9 +560,7 @@ export function Tek1501Hub() {
             >
               <div className="flex items-center gap-2 mb-2">
                 <Lightbulb className="h-4 w-4 text-brand" />
-                <h3 className="font-semibold text-foreground leading-tight">
-                  Flashcards
-                </h3>
+                <h3 className="font-semibold text-foreground leading-tight">Flashcards</h3>
               </div>
               <p className="text-sm text-muted-foreground leading-relaxed">
                 40+ kort over begreper, formler, og fordelings-parametere.
@@ -565,13 +576,10 @@ export function Tek1501Hub() {
             >
               <div className="flex items-center gap-2 mb-2">
                 <Boxes className="h-4 w-4 text-brand" />
-                <h3 className="font-semibold text-foreground leading-tight">
-                  Tidsbasert trening
-                </h3>
+                <h3 className="font-semibold text-foreground leading-tight">Tidsbasert trening</h3>
               </div>
               <p className="text-sm text-muted-foreground leading-relaxed">
-                Press-test deg selv. Velg statistikk-kategorier, kjør under
-                tidspress.
+                Press-test deg selv. Velg statistikk-kategorier, kjør under tidspress.
               </p>
               <div className="mt-3 flex items-center text-xs text-muted-foreground group-hover:text-foreground transition-colors">
                 Åpne
@@ -591,22 +599,17 @@ export function Tek1501Hub() {
             </span>
           </div>
           <p className="text-sm text-muted-foreground mb-4">
-            Strukturen følger UiT-emnebeskrivelsen for TEK-1501. Modul 2 og 3 er
-            tyngdepunktet på skriftlig.
+            Strukturen følger UiT-emnebeskrivelsen for TEK-1501. Modul 2 og 3 er tyngdepunktet på
+            skriftlig.
           </p>
           <div className="grid sm:grid-cols-2 gap-3 mb-6">
             {EXAM_TOPICS.map((t) => {
               const Icon = t.Icon;
               return (
-                <div
-                  key={t.topic}
-                  className="rounded-xl border border-border bg-card p-4"
-                >
+                <div key={t.topic} className="rounded-xl border border-border bg-card p-4">
                   <div className="flex items-center gap-2 mb-2">
                     <Icon className="h-4 w-4 text-brand" />
-                    <h3 className="font-semibold text-foreground text-sm">
-                      {t.topic}
-                    </h3>
+                    <h3 className="font-semibold text-foreground text-sm">{t.topic}</h3>
                   </div>
                   <div className="flex flex-wrap gap-1.5">
                     {t.slugs.map((s) => (
@@ -671,9 +674,9 @@ export function Tek1501Hub() {
                 </span>
               </div>
               <p className="text-sm text-muted-foreground leading-snug">
-                Få forklart hvorfor p &gt; 0.05 IKKE betyr at H₀ er sann, eller
-                hvordan CLT gjør at vi kan bruke normalfordelingen selv når
-                grunnfordelingen er skjev. Tutoren ser hva du har gjort.
+                Få forklart hvorfor p &gt; 0.05 IKKE betyr at H₀ er sann, eller hvordan CLT gjør at
+                vi kan bruke normalfordelingen selv når grunnfordelingen er skjev. Tutoren ser hva
+                du har gjort.
               </p>
               <div className="mt-2 flex items-center text-xs font-medium text-brand">
                 Åpne tutor
@@ -691,8 +694,8 @@ export function Tek1501Hub() {
           </h2>
           <ul className="space-y-2 text-muted-foreground list-disc pl-5">
             <li>
-              <strong className="text-foreground">Først:</strong> identifiser
-              hvilken fordeling som passer. Diskret eller kontinuerlig? Bruk{" "}
+              <strong className="text-foreground">Først:</strong> identifiser hvilken fordeling som
+              passer. Diskret eller kontinuerlig? Bruk{" "}
               <Link
                 to="/stack/$slug"
                 params={{ slug: "tek1-fordelinger" }}
@@ -703,13 +706,13 @@ export function Tek1501Hub() {
               .
             </li>
             <li>
-              <strong className="text-foreground">Deretter:</strong> sett opp
-              formelen. Skriv ut hva n, p, μ, σ er FØR du tar fram kalkulator.
+              <strong className="text-foreground">Deretter:</strong> sett opp formelen. Skriv ut hva
+              n, p, μ, σ er FØR du tar fram kalkulator.
             </li>
             <li>
-              <strong className="text-foreground">Til slutt:</strong> sjekk om
-              svaret er rimelig. Sannsynlighet ∈ [0,1]. KI inneholder
-              punktestimatet. p-verdi &gt; 0.05 betyr IKKE at H₀ er sann.
+              <strong className="text-foreground">Til slutt:</strong> sjekk om svaret er rimelig.
+              Sannsynlighet ∈ [0,1]. KI inneholder punktestimatet. p-verdi &gt; 0.05 betyr IKKE at
+              H₀ er sann.
             </li>
           </ul>
         </div>

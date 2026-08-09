@@ -51,8 +51,7 @@ export function KvartilProkkrekke() {
     if (!svg) return MIN;
     const boks = svg.getBoundingClientRect();
     const relativ = ((clientX - boks.left) / boks.width) * V_BREDDE;
-    const andel =
-      (relativ - M_VENSTRE) / (V_BREDDE - M_VENSTRE - M_HOYRE);
+    const andel = (relativ - M_VENSTRE) / (V_BREDDE - M_VENSTRE - M_HOYRE);
     const v = MIN + andel * (MAX - MIN);
     return Math.round(Math.min(MAX, Math.max(MIN, v)));
   }
@@ -89,10 +88,9 @@ export function KvartilProkkrekke() {
         </h3>
       </div>
       <p className="mb-3 text-sm text-muted-foreground">
-        Hver prikk er én måling. Dra i dem. Følg med på de to tallene nederst:
-        gjennomsnittet henger etter hver eneste bevegelse, mens medianen bare bryr
-        seg om hvilken observasjon som ligger i midten — ikke hvor langt ute de
-        ytterste er.
+        Hver prikk er én måling. Dra i dem. Følg med på de to tallene nederst: gjennomsnittet henger
+        etter hver eneste bevegelse, mens medianen bare bryr seg om hvilken observasjon som ligger i
+        midten — ikke hvor langt ute de ytterste er.
       </p>
 
       <svg
@@ -141,13 +139,28 @@ export function KvartilProkkrekke() {
           stroke="var(--brand)"
           strokeWidth={3}
         />
-        <text x={xAv(q2)} y={BOKS_Y - 6} textAnchor="middle" className="fill-brand text-[11px] font-semibold">
+        <text
+          x={xAv(q2)}
+          y={BOKS_Y - 6}
+          textAnchor="middle"
+          className="fill-brand text-[11px] font-semibold"
+        >
           median {q2}
         </text>
-        <text x={xAv(q1)} y={BOKS_Y + BOKS_H + 14} textAnchor="middle" className="fill-muted-foreground text-[10px]">
+        <text
+          x={xAv(q1)}
+          y={BOKS_Y + BOKS_H + 14}
+          textAnchor="middle"
+          className="fill-muted-foreground text-[10px]"
+        >
           Q1 {q1}
         </text>
-        <text x={xAv(q3)} y={BOKS_Y + BOKS_H + 14} textAnchor="middle" className="fill-muted-foreground text-[10px]">
+        <text
+          x={xAv(q3)}
+          y={BOKS_Y + BOKS_H + 14}
+          textAnchor="middle"
+          className="fill-muted-foreground text-[10px]"
+        >
           Q3 {q3}
         </text>
 
@@ -177,8 +190,20 @@ export function KvartilProkkrekke() {
         />
         {[0, 25, 50, 75, 100].map((t) => (
           <g key={t}>
-            <line x1={xAv(t)} x2={xAv(t)} y1={AKSE_Y} y2={AKSE_Y + 5} stroke="currentColor" className="text-border" />
-            <text x={xAv(t)} y={AKSE_Y + 18} textAnchor="middle" className="fill-muted-foreground text-[10px]">
+            <line
+              x1={xAv(t)}
+              x2={xAv(t)}
+              y1={AKSE_Y}
+              y2={AKSE_Y + 5}
+              stroke="currentColor"
+              className="text-border"
+            />
+            <text
+              x={xAv(t)}
+              y={AKSE_Y + 18}
+              textAnchor="middle"
+              className="fill-muted-foreground text-[10px]"
+            >
               {t}
             </text>
           </g>
@@ -236,11 +261,7 @@ export function KvartilProkkrekke() {
       <div className="mt-3 grid gap-2 text-sm sm:grid-cols-3">
         <Tall label="Gjennomsnitt x̄" verdi={snitt.toFixed(2)} tone="amber" />
         <Tall label="Median Q2" verdi={String(q2)} tone="brand" />
-        <Tall
-          label="Kvartilbredde IQR = Q3 − Q1"
-          verdi={`${iqr} (${q1}–${q3})`}
-          tone="nøytral"
-        />
+        <Tall label="Kvartilbredde IQR = Q3 − Q1" verdi={`${iqr} (${q1}–${q3})`} tone="nøytral" />
       </div>
 
       <div className="mt-3 overflow-x-auto rounded-lg border border-border">
@@ -257,9 +278,7 @@ export function KvartilProkkrekke() {
           </thead>
           <tbody>
             <tr className="border-t border-border font-mono">
-              <td className="px-2 py-1.5 font-sans text-muted-foreground">
-                n = {data.length}
-              </td>
+              <td className="px-2 py-1.5 font-sans text-muted-foreground">n = {data.length}</td>
               <td className="px-2 py-1.5">{min}</td>
               <td className="px-2 py-1.5">{q1}</td>
               <td className="px-2 py-1.5">{q2}</td>
@@ -271,11 +290,11 @@ export function KvartilProkkrekke() {
       </div>
 
       <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-        <strong className="text-foreground">Legg merke til:</strong> når du drar den
-        høyeste observasjonen mot 100, spretter x̄ etter, mens boksen (Q1 til Q3) står
-        nesten helt stille. Boksen bygger bare på <em>rekkefølgen</em> til
-        observasjonene, ikke på hvor store de er. Derfor er median og IQR de trygge
-        målene når dataene har lange haler — inntekt, ventetid, huspriser.
+        <strong className="text-foreground">Legg merke til:</strong> når du drar den høyeste
+        observasjonen mot 100, spretter x̄ etter, mens boksen (Q1 til Q3) står nesten helt stille.
+        Boksen bygger bare på <em>rekkefølgen</em> til observasjonene, ikke på hvor store de er.
+        Derfor er median og IQR de trygge målene når dataene har lange haler — inntekt, ventetid,
+        huspriser.
       </p>
     </div>
   );
@@ -301,9 +320,7 @@ function Tall({
       <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
         {label}
       </div>
-      <div className="mt-0.5 font-mono text-base font-semibold text-foreground">
-        {verdi}
-      </div>
+      <div className="mt-0.5 font-mono text-base font-semibold text-foreground">{verdi}</div>
     </div>
   );
 }

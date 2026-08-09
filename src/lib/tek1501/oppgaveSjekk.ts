@@ -149,9 +149,7 @@ export function sjekkMaloppgave(input: SjekkInput): SjekkResultat {
   const naerme = !tallOk && avvik <= fasit.toleranse * 10;
 
   const valgt = metoder.find((m) => m.id === valgtMetodeId);
-  const feilMetodeForklaring = valgt?.hvorforFeil
-    ? ` ${valgt.hvorforFeil}`
-    : "";
+  const feilMetodeForklaring = valgt?.hvorforFeil ? ` ${valgt.hvorforFeil}` : "";
 
   if (metodeOk && tallOk) {
     return {

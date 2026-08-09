@@ -9,14 +9,8 @@ import {
 } from "@/components/stack/tek1-oppgaver/Symboltavle";
 import { AnslaSaSjekk, type Anslag } from "@/components/stack/tek1-oppgaver/AnslaSaSjekk";
 import { Maloppgaver, type MaloppgaveData } from "@/components/stack/tek1-oppgaver/Maloppgave";
-import {
-  Feilsokingsoppgaver,
-  type Feilsoking,
-} from "@/components/stack/tek1-oppgaver/Feilsoking";
-import {
-  RecallKortSeksjon,
-  type RecallKort,
-} from "@/components/stack/tek1-oppgaver/RecallKort";
+import { Feilsokingsoppgaver, type Feilsoking } from "@/components/stack/tek1-oppgaver/Feilsoking";
+import { RecallKortSeksjon, type RecallKort } from "@/components/stack/tek1-oppgaver/RecallKort";
 // Gjenbruk av eksisterende visualizere framfor å bygge nye (PLAN §3, type 2).
 // Disse ligger i tek1-deskriptiv og eies av den modulen — vi importerer dem,
 // vi endrer dem ikke.
@@ -69,8 +63,8 @@ const SYMBOLER: SymbolRad[] = [
     uttale: "x-strek",
     betydning: (
       <>
-        Gjennomsnittet av observasjonene i utvalget: legg sammen alle og del på n.
-        Streken over betyr «snitt av».
+        Gjennomsnittet av observasjonene i utvalget: legg sammen alle og del på n. Streken over
+        betyr «snitt av».
       </>
     ),
     verden: "utvalg",
@@ -80,8 +74,8 @@ const SYMBOLER: SymbolRad[] = [
     uttale: "my (gresk m)",
     betydning: (
       <>
-        Det sanne gjennomsnittet i hele populasjonen. Vi kjenner det aldri — x̄ er
-        gjetningen vår på det.
+        Det sanne gjennomsnittet i hele populasjonen. Vi kjenner det aldri — x̄ er gjetningen vår på
+        det.
       </>
     ),
     verden: "populasjon",
@@ -91,8 +85,8 @@ const SYMBOLER: SymbolRad[] = [
     uttale: "s-i-andre",
     betydning: (
       <>
-        Stikkprøvevariansen: gjennomsnittlig kvadrert avstand fra x̄, med n − 1 i
-        nevneren. Måler hvor mye observasjonene spriker.
+        Stikkprøvevariansen: gjennomsnittlig kvadrert avstand fra x̄, med n − 1 i nevneren. Måler
+        hvor mye observasjonene spriker.
       </>
     ),
     verden: "utvalg",
@@ -102,8 +96,8 @@ const SYMBOLER: SymbolRad[] = [
     uttale: "s",
     betydning: (
       <>
-        Stikkprøvens standardavvik — kvadratroten av s². Fordelen framfor s² er at
-        s har samme enhet som dataene (kroner, ikke kroner²).
+        Stikkprøvens standardavvik — kvadratroten av s². Fordelen framfor s² er at s har samme enhet
+        som dataene (kroner, ikke kroner²).
       </>
     ),
     verden: "utvalg",
@@ -124,10 +118,7 @@ const SYMBOLER: SymbolRad[] = [
     tegn: "Σ",
     uttale: "stor sigma",
     betydning: (
-      <>
-        «Legg sammen alle». Σ(x − x̄)² betyr: regn ut (x − x̄)² for hver observasjon,
-        og summer.
-      </>
+      <>«Legg sammen alle». Σ(x − x̄)² betyr: regn ut (x − x̄)² for hver observasjon, og summer.</>
     ),
     verden: "generelt",
   },
@@ -136,8 +127,7 @@ const SYMBOLER: SymbolRad[] = [
     uttale: "kvartil én, to, tre",
     betydning: (
       <>
-        Skillene som deler den sorterte rekka i fire like store deler. Q2 er det
-        samme som medianen.
+        Skillene som deler den sorterte rekka i fire like store deler. Q2 er det samme som medianen.
       </>
     ),
     verden: "utvalg",
@@ -147,8 +137,8 @@ const SYMBOLER: SymbolRad[] = [
     uttale: "kvartilbredde",
     betydning: (
       <>
-        Interkvartilbredden, Q3 − Q1: bredden på den midterste halvparten av
-        dataene. Et spredningsmål som ikke bryr seg om uteliggere.
+        Interkvartilbredden, Q3 − Q1: bredden på den midterste halvparten av dataene. Et
+        spredningsmål som ikke bryr seg om uteliggere.
       </>
     ),
     verden: "utvalg",
@@ -165,9 +155,9 @@ const ANSLAG: Anslag[] = [
     tema: "Median vs. gjennomsnitt",
     sporsmal: (
       <>
-        Et utvalg på 10 personer har årsinntekter mellom 400 000 og 700 000 kroner.
-        Medianen er 520 000. Nå legger vi til <strong>én person til med 50 millioner</strong>{" "}
-        i årsinntekt. Hva skjer med <strong>medianen</strong>?
+        Et utvalg på 10 personer har årsinntekter mellom 400 000 og 700 000 kroner. Medianen er 520
+        000. Nå legger vi til <strong>én person til med 50 millioner</strong> i årsinntekt. Hva
+        skjer med <strong>medianen</strong>?
       </>
     ),
     alternativer: [
@@ -179,19 +169,18 @@ const ANSLAG: Anslag[] = [
     riktigId: "c",
     fasit: (
       <>
-        Nesten ingenting skjer. Medianen er posisjonen midt i den sorterte rekka. Med
-        10 personer lå den mellom person nr. 5 og 6; med 11 personer er den nøyaktig
-        person nr. 6. Den flytter seg altså <em>ett hakk oppover i køen</em> — typisk
-        noen tusenlapper. At den nye personen tjener 50 millioner og ikke 800 000
-        spiller ingen rolle: medianen ser bare at hun står bakerst i køen, ikke hvor
-        langt bak.
+        Nesten ingenting skjer. Medianen er posisjonen midt i den sorterte rekka. Med 10 personer lå
+        den mellom person nr. 5 og 6; med 11 personer er den nøyaktig person nr. 6. Den flytter seg
+        altså <em>ett hakk oppover i køen</em> — typisk noen tusenlapper. At den nye personen tjener
+        50 millioner og ikke 800 000 spiller ingen rolle: medianen ser bare at hun står bakerst i
+        køen, ikke hvor langt bak.
       </>
     ),
     hvorforBommerIntuisjonen: (
       <>
-        Vi er vant til at «et stort tall trekker snittet opp», og overfører den regelen
-        til alle sentralmål. Men gjennomsnittet bruker <em>verdiene</em>, mens medianen
-        bare bruker <em>rekkefølgen</em>. Samme datasett — helt ulik følsomhet.
+        Vi er vant til at «et stort tall trekker snittet opp», og overfører den regelen til alle
+        sentralmål. Men gjennomsnittet bruker <em>verdiene</em>, mens medianen bare bruker{" "}
+        <em>rekkefølgen</em>. Samme datasett — helt ulik følsomhet.
       </>
     ),
   },
@@ -200,8 +189,8 @@ const ANSLAG: Anslag[] = [
     tema: "Gjennomsnittet i samme situasjon",
     sporsmal: (
       <>
-        Samme utvalg: 10 personer med gjennomsnittsinntekt 540 000. Vi legger til
-        personen med 50 millioner. Hva blir det nye gjennomsnittet, omtrent?
+        Samme utvalg: 10 personer med gjennomsnittsinntekt 540 000. Vi legger til personen med 50
+        millioner. Hva blir det nye gjennomsnittet, omtrent?
       </>
     ),
     alternativer: [
@@ -213,17 +202,16 @@ const ANSLAG: Anslag[] = [
     riktigId: "b",
     fasit: (
       <>
-        Summen var 10 × 540 000 = 5,4 millioner. Nå blir den 55,4 millioner, fordelt på
-        11 personer: omtrent <strong>5,04 millioner</strong>. Gjennomsnittet er altså
-        nesten ti ganger så høyt som før — og nå er det <em>ingen</em> i utvalget som
-        tjener i nærheten av «gjennomsnittet». Ti av elleve ligger langt under det.
+        Summen var 10 × 540 000 = 5,4 millioner. Nå blir den 55,4 millioner, fordelt på 11 personer:
+        omtrent <strong>5,04 millioner</strong>. Gjennomsnittet er altså nesten ti ganger så høyt
+        som før — og nå er det <em>ingen</em> i utvalget som tjener i nærheten av «gjennomsnittet».
+        Ti av elleve ligger langt under det.
       </>
     ),
     hvorforBommerIntuisjonen: (
       <>
-        Vi tenker på gjennomsnittet som «det vanlige». Men det er et tyngdepunkt, og et
-        tyngdepunkt kan godt ligge et sted der det ikke finnes noen observasjoner i det
-        hele tatt.
+        Vi tenker på gjennomsnittet som «det vanlige». Men det er et tyngdepunkt, og et tyngdepunkt
+        kan godt ligge et sted der det ikke finnes noen observasjoner i det hele tatt.
       </>
     ),
   },
@@ -233,8 +221,7 @@ const ANSLAG: Anslag[] = [
     sporsmal: (
       <>
         Samme utvalg igjen, med millionæren inkludert. Hva skjer med{" "}
-        <strong>kvartilbredden IQR</strong> — bredden på den midterste halvparten av
-        dataene?
+        <strong>kvartilbredden IQR</strong> — bredden på den midterste halvparten av dataene?
       </>
     ),
     alternativer: [
@@ -246,11 +233,10 @@ const ANSLAG: Anslag[] = [
     riktigId: "b",
     fasit: (
       <>
-        Knapt noe skjer. IQR er avstanden fra Q1 til Q3 — altså mellom personen 25 % inn
-        i køen og personen 75 % inn i køen. Millionæren står helt bakerst og påvirker
-        ingen av de to posisjonene nevneverdig. Det er nettopp derfor boksplottet tegner
-        uteliggere som løse prikker <em>utenfor</em> boksen: boksen skal beskrive
-        hovedtyngden, ikke ytterpunktene.
+        Knapt noe skjer. IQR er avstanden fra Q1 til Q3 — altså mellom personen 25 % inn i køen og
+        personen 75 % inn i køen. Millionæren står helt bakerst og påvirker ingen av de to
+        posisjonene nevneverdig. Det er nettopp derfor boksplottet tegner uteliggere som løse
+        prikker <em>utenfor</em> boksen: boksen skal beskrive hovedtyngden, ikke ytterpunktene.
       </>
     ),
   },
@@ -259,8 +245,8 @@ const ANSLAG: Anslag[] = [
     tema: "Å legge til en konstant",
     sporsmal: (
       <>
-        Alle ansatte får nøyaktig <strong>10 000 kroner</strong> i lønnstillegg — alle får
-        det samme beløpet. Hva skjer med <strong>standardavviket s</strong>?
+        Alle ansatte får nøyaktig <strong>10 000 kroner</strong> i lønnstillegg — alle får det samme
+        beløpet. Hva skjer med <strong>standardavviket s</strong>?
       </>
     ),
     alternativer: [
@@ -272,17 +258,17 @@ const ANSLAG: Anslag[] = [
     riktigId: "c",
     fasit: (
       <>
-        Helt uendret. Standardavviket måler <em>avstandene mellom</em> observasjonene,
-        ikke hvor de ligger på tallinja. Når alle flyttes like langt, er alle avstander
-        de samme som før. Formelt: hvert ledd (x − x̄) er uforandret, fordi både x og x̄
-        økte med 10 000, og differansen spiser opp tillegget.
+        Helt uendret. Standardavviket måler <em>avstandene mellom</em> observasjonene, ikke hvor de
+        ligger på tallinja. Når alle flyttes like langt, er alle avstander de samme som før.
+        Formelt: hvert ledd (x − x̄) er uforandret, fordi både x og x̄ økte med 10 000, og differansen
+        spiser opp tillegget.
       </>
     ),
     hvorforBommerIntuisjonen: (
       <>
-        «Alle tallene ble større, altså ble spredningen større» er en naturlig, men gal
-        slutning. Sentrum og spredning er to uavhengige egenskaper ved et datasett — du
-        kan flytte det ene uten å røre det andre.
+        «Alle tallene ble større, altså ble spredningen større» er en naturlig, men gal slutning.
+        Sentrum og spredning er to uavhengige egenskaper ved et datasett — du kan flytte det ene
+        uten å røre det andre.
       </>
     ),
   },
@@ -291,8 +277,8 @@ const ANSLAG: Anslag[] = [
     tema: "Å gange med en konstant",
     sporsmal: (
       <>
-        I stedet gis alle et tillegg på <strong>10 %</strong> — altså ganges hver lønn med
-        1,1. Hva skjer med <strong>variansen s²</strong>?
+        I stedet gis alle et tillegg på <strong>10 %</strong> — altså ganges hver lønn med 1,1. Hva
+        skjer med <strong>variansen s²</strong>?
       </>
     ),
     alternativer: [
@@ -304,11 +290,10 @@ const ANSLAG: Anslag[] = [
     riktigId: "b",
     fasit: (
       <>
-        Variansen ganges med <strong>1,1² = 1,21</strong>. Grunnen er kvadreringen: hvert
-        ledd (x − x̄) ganges med 1,1, og når leddet så kvadreres, ganges bidraget med
-        1,1². Standardavviket s, derimot, ganges bare med 1,1 — fordi kvadratroten
-        opphever kvadreringen. Det er én av de gode grunnene til å oppgi s framfor s²:
-        s skalerer på samme måte som dataene.
+        Variansen ganges med <strong>1,1² = 1,21</strong>. Grunnen er kvadreringen: hvert ledd (x −
+        x̄) ganges med 1,1, og når leddet så kvadreres, ganges bidraget med 1,1². Standardavviket s,
+        derimot, ganges bare med 1,1 — fordi kvadratroten opphever kvadreringen. Det er én av de
+        gode grunnene til å oppgi s framfor s²: s skalerer på samme måte som dataene.
       </>
     ),
   },
@@ -317,9 +302,9 @@ const ANSLAG: Anslag[] = [
     tema: "Hvorfor n − 1",
     sporsmal: (
       <>
-        Vi trekker mange små utvalg fra en populasjon der vi <em>vet</em> at variansen er
-        225, og regner variansen i hvert utvalg ved å dele kvadratsummen på n. Hva ser vi
-        når vi tar gjennomsnittet av alle disse svarene?
+        Vi trekker mange små utvalg fra en populasjon der vi <em>vet</em> at variansen er 225, og
+        regner variansen i hvert utvalg ved å dele kvadratsummen på n. Hva ser vi når vi tar
+        gjennomsnittet av alle disse svarene?
       </>
     ),
     alternativer: [
@@ -331,12 +316,12 @@ const ANSLAG: Anslag[] = [
     riktigId: "b",
     fasit: (
       <>
-        Systematisk under — og det er ikke uflaks, det er innebygd i regnestykket. Vi
-        måler avstandene fra utvalgets eget gjennomsnitt x̄, og x̄ er per definisjon det
-        punktet som gjør kvadratsummen så liten som mulig for akkurat disse tallene. Den
-        sanne μ ville gitt en større kvadratsum. Vi måler altså alltid litt for kort. Å
-        dele på n − 1 i stedet for n blåser svaret opp med akkurat nok til å rette opp
-        skjevheten. Du får se det i simulatoren lenger nede.
+        Systematisk under — og det er ikke uflaks, det er innebygd i regnestykket. Vi måler
+        avstandene fra utvalgets eget gjennomsnitt x̄, og x̄ er per definisjon det punktet som gjør
+        kvadratsummen så liten som mulig for akkurat disse tallene. Den sanne μ ville gitt en større
+        kvadratsum. Vi måler altså alltid litt for kort. Å dele på n − 1 i stedet for n blåser
+        svaret opp med akkurat nok til å rette opp skjevheten. Du får se det i simulatoren lenger
+        nede.
       </>
     ),
   },
@@ -352,8 +337,8 @@ const MALOPPGAVER: MaloppgaveData[] = [
     tittel: "Stikkprøvevarians for hånd",
     oppgave: (
       <>
-        Du har målt reaksjonstiden til <strong>åtte tilfeldig utvalgte</strong> deltakere i
-        et forsøk. De åtte er et utvalg fra en mye større gruppe. Regn ut{" "}
+        Du har målt reaksjonstiden til <strong>åtte tilfeldig utvalgte</strong> deltakere i et
+        forsøk. De åtte er et utvalg fra en mye større gruppe. Regn ut{" "}
         <strong>stikkprøvevariansen s²</strong>.
       </>
     ),
@@ -386,20 +371,19 @@ const MALOPPGAVER: MaloppgaveData[] = [
           <span className="font-mono">x̄ = 5</span>
         </p>
         <p className="mt-1">
-          <strong>2. Kvadrerte avvik fra x̄:</strong> (2−5)² = 9, (4−5)² = 1 tre ganger,
-          (5−5)² = 0 to ganger, (7−5)² = 4, (9−5)² = 16
+          <strong>2. Kvadrerte avvik fra x̄:</strong> (2−5)² = 9, (4−5)² = 1 tre ganger, (5−5)² = 0
+          to ganger, (7−5)² = 4, (9−5)² = 16
         </p>
         <p className="mt-1">
           <strong>3. Kvadratsummen:</strong> 9 + 1 + 1 + 1 + 0 + 0 + 4 + 16 ={" "}
           <span className="font-mono">Σ(x − x̄)² = 32</span>
         </p>
         <p className="mt-1">
-          <strong>4. Del på n − 1 = 7:</strong> 32 / 7 ={" "}
-          <span className="font-mono">4,571</span>
+          <strong>4. Del på n − 1 = 7:</strong> 32 / 7 = <span className="font-mono">4,571</span>
         </p>
         <p className="mt-2 text-muted-foreground">
-          Legg merke til at deling på n ville gitt akkurat 4,00 — et pent tall som er
-          fristende å tro på. At svaret ble stygt er ikke et tegn på at du regnet feil.
+          Legg merke til at deling på n ville gitt akkurat 4,00 — et pent tall som er fristende å
+          tro på. At svaret ble stygt er ikke et tegn på at du regnet feil.
         </p>
       </>
     ),
@@ -409,9 +393,9 @@ const MALOPPGAVER: MaloppgaveData[] = [
     tittel: "Populasjon, ikke utvalg",
     oppgave: (
       <>
-        En liten bedrift har nøyaktig <strong>seks ansatte</strong>, og du har alderen til
-        alle seks. Du skal beskrive spredningen i <em>denne bedriften</em> — ikke gjette på
-        noen større gruppe. Regn ut variansen.
+        En liten bedrift har nøyaktig <strong>seks ansatte</strong>, og du har alderen til alle
+        seks. Du skal beskrive spredningen i <em>denne bedriften</em> — ikke gjette på noen større
+        gruppe. Regn ut variansen.
       </>
     ),
     data: <>3, 5, 5, 7, 8, 8 (år i bedriften)</>,
@@ -434,8 +418,8 @@ const MALOPPGAVER: MaloppgaveData[] = [
       <>
         <p>
           <strong>1. Gjennomsnittet:</strong> (3 + 5 + 5 + 7 + 8 + 8) / 6 = 36 / 6 ={" "}
-          <span className="font-mono">μ = 6</span>. Vi skriver μ og ikke x̄, fordi dette
-          faktisk <em>er</em> populasjonsgjennomsnittet.
+          <span className="font-mono">μ = 6</span>. Vi skriver μ og ikke x̄, fordi dette faktisk{" "}
+          <em>er</em> populasjonsgjennomsnittet.
         </p>
         <p className="mt-1">
           <strong>2. Kvadratsummen:</strong> 9 + 1 + 1 + 1 + 4 + 4 ={" "}
@@ -445,8 +429,8 @@ const MALOPPGAVER: MaloppgaveData[] = [
           <strong>3. Del på n = 6:</strong> 20 / 6 = <span className="font-mono">3,333</span>
         </p>
         <p className="mt-2 text-muted-foreground">
-          Denne og forrige oppgave er speilbilder av hverandre. Samme regnestykke fram til
-          siste linje — og der avgjør ett eneste spørsmål hva du deler på:{" "}
+          Denne og forrige oppgave er speilbilder av hverandre. Samme regnestykke fram til siste
+          linje — og der avgjør ett eneste spørsmål hva du deler på:{" "}
           <em>har jeg hele populasjonen, eller et utvalg fra den?</em>
         </p>
       </>
@@ -458,8 +442,8 @@ const MALOPPGAVER: MaloppgaveData[] = [
     oppgave: (
       <>
         Ti kunder ventet følgende antall minutter i kø. Finn <strong>kvartilbredden IQR</strong>.
-        Bruk «median av halvdelene»-metoden: del den sorterte rekka i to like halvdeler,
-        og ta medianen av hver.
+        Bruk «median av halvdelene»-metoden: del den sorterte rekka i to like halvdeler, og ta
+        medianen av hver.
       </>
     ),
     data: <>31, 24, 40, 27, 21, 52, 33, 25, 36, 30</>,
@@ -488,9 +472,8 @@ const MALOPPGAVER: MaloppgaveData[] = [
           <span className="font-mono">21, 24, 25, 27, 30, 31, 33, 36, 40, 52</span>
         </p>
         <p className="mt-1">
-          <strong>2. Del i to halvdeler</strong> (n = 10 er partall, så ingen observasjon
-          holdes utenfor): nedre halvdel = 21, 24, 25, 27, 30 · øvre halvdel = 31, 33, 36,
-          40, 52
+          <strong>2. Del i to halvdeler</strong> (n = 10 er partall, så ingen observasjon holdes
+          utenfor): nedre halvdel = 21, 24, 25, 27, 30 · øvre halvdel = 31, 33, 36, 40, 52
         </p>
         <p className="mt-1">
           <strong>3. Median av hver halvdel:</strong> Q1 = 25, Q3 = 36
@@ -499,9 +482,8 @@ const MALOPPGAVER: MaloppgaveData[] = [
           <strong>4. IQR:</strong> 36 − 25 = <span className="font-mono">11 minutter</span>
         </p>
         <p className="mt-2 text-muted-foreground">
-          Den midterste halvparten av kundene ventet altså innenfor et spenn på 11
-          minutter — selv om den mest uheldige ventet 52. Det er den setningen IQR er laget
-          for å kunne si.
+          Den midterste halvparten av kundene ventet altså innenfor et spenn på 11 minutter — selv
+          om den mest uheldige ventet 52. Det er den setningen IQR er laget for å kunne si.
         </p>
       </>
     ),
@@ -512,8 +494,8 @@ const MALOPPGAVER: MaloppgaveData[] = [
     oppgave: (
       <>
         Ni ansatte i en liten bedrift har følgende årslønn i tusen kroner. Du skal oppgi{" "}
-        <strong>ett tall</strong> som svar på spørsmålet «hva tjener en typisk ansatt her?».
-        Velg mål, og regn det ut.
+        <strong>ett tall</strong> som svar på spørsmålet «hva tjener en typisk ansatt her?». Velg
+        mål, og regn det ut.
       </>
     ),
     data: <>320, 340, 355, 360, 380, 395, 410, 430, 2900</>,
@@ -541,14 +523,13 @@ const MALOPPGAVER: MaloppgaveData[] = [
     utregning: (
       <>
         <p>
-          Dataene er allerede sortert, og n = 9 er et oddetall. Medianen er da observasjon
-          nummer (9 + 1)/2 = 5, altså <span className="font-mono">380</span>.
+          Dataene er allerede sortert, og n = 9 er et oddetall. Medianen er da observasjon nummer (9
+          + 1)/2 = 5, altså <span className="font-mono">380</span>.
         </p>
         <p className="mt-1">
-          Til sammenligning: gjennomsnittet er 5890 / 9 ={" "}
-          <span className="font-mono">654,4</span>. Åtte av ni ansatte tjener mindre enn
-          det. Når de to målene spriker så kraftig, er det i seg selv en opplysning verdt å
-          nevne i svaret: fordelingen er sterkt høyreskjev.
+          Til sammenligning: gjennomsnittet er 5890 / 9 = <span className="font-mono">654,4</span>.
+          Åtte av ni ansatte tjener mindre enn det. Når de to målene spriker så kraftig, er det i
+          seg selv en opplysning verdt å nevne i svaret: fordelingen er sterkt høyreskjev.
         </p>
       </>
     ),
@@ -558,9 +539,8 @@ const MALOPPGAVER: MaloppgaveData[] = [
     tittel: "Fra varians til standardavvik",
     oppgave: (
       <>
-        Fem tilfeldig utvalgte pakker veies (i kilo). Regn ut{" "}
-        <strong>standardavviket s</strong> for utvalget. Husk at svaret skal ha samme enhet
-        som dataene.
+        Fem tilfeldig utvalgte pakker veies (i kilo). Regn ut <strong>standardavviket s</strong> for
+        utvalget. Husk at svaret skal ha samme enhet som dataene.
       </>
     ),
     data: <>12, 15, 18, 19, 21</>,
@@ -596,8 +576,7 @@ const MALOPPGAVER: MaloppgaveData[] = [
           <strong>3. Varians:</strong> 50 / 4 = <span className="font-mono">s² = 12,5 kg²</span>
         </p>
         <p className="mt-1">
-          <strong>4. Standardavvik:</strong> √12,5 ={" "}
-          <span className="font-mono">3,536 kg</span>
+          <strong>4. Standardavvik:</strong> √12,5 = <span className="font-mono">3,536 kg</span>
         </p>
       </>
     ),
@@ -615,9 +594,8 @@ const FEILSOKING: Feilsoking[] = [
     feilnavn: "Gjennomsnitt på skjeve data",
     situasjon: (
       <>
-        En bedrift med ni ansatte (lønningene fra oppgave 4 over) skal svare på en
-        undersøkelse om lønnsnivå. HR skriver følgende i svaret. Konklusjonen er
-        villedende — hvor går det galt?
+        En bedrift med ni ansatte (lønningene fra oppgave 4 over) skal svare på en undersøkelse om
+        lønnsnivå. HR skriver følgende i svaret. Konklusjonen er villedende — hvor går det galt?
       </>
     ),
     ledd: [
@@ -655,13 +633,11 @@ const FEILSOKING: Feilsoking[] = [
     feilLeddId: "l4",
     riktigResonnement: (
       <>
-        Oppgi <strong>medianen (380 000)</strong> som svar på «typisk», og nevn
-        gjennomsnittet ved siden av med en forklaring: «medianlønn 380 000,
-        gjennomsnittslønn 654 000 — forskjellen skyldes én ledende stilling». At de to
-        målene spriker er ikke støy som skal skjules, det er den viktigste
-        opplysningen om fordelingen. Tommelfingerregel: når gjennomsnittet ligger
-        merkbart over medianen, har du en hale mot høyre, og da beskriver medianen
-        «typisk» bedre.
+        Oppgi <strong>medianen (380 000)</strong> som svar på «typisk», og nevn gjennomsnittet ved
+        siden av med en forklaring: «medianlønn 380 000, gjennomsnittslønn 654 000 — forskjellen
+        skyldes én ledende stilling». At de to målene spriker er ikke støy som skal skjules, det er
+        den viktigste opplysningen om fordelingen. Tommelfingerregel: når gjennomsnittet ligger
+        merkbart over medianen, har du en hale mot høyre, og da beskriver medianen «typisk» bedre.
       </>
     ),
   },
@@ -671,8 +647,8 @@ const FEILSOKING: Feilsoking[] = [
     feilnavn: "Uteligger fjernet uten faglig grunn",
     situasjon: (
       <>
-        Et labforsøk måler utslipp fra tolv sensorer. Én sensor viser en langt høyere
-        verdi enn de andre. Studenten skriver følgende i metodedelen.
+        Et labforsøk måler utslipp fra tolv sensorer. Én sensor viser en langt høyere verdi enn de
+        andre. Studenten skriver følgende i metodedelen.
       </>
     ),
     ledd: [
@@ -684,7 +660,8 @@ const FEILSOKING: Feilsoking[] = [
       },
       {
         id: "l2",
-        tekst: "Observasjonen lå mer enn 1,5 × IQR over Q3, og regnes derfor formelt som en uteligger.",
+        tekst:
+          "Observasjonen lå mer enn 1,5 × IQR over Q3, og regnes derfor formelt som en uteligger.",
         vurdering:
           "Dette holder. 1,5 × IQR-regelen er den vanlige konvensjonen for å flagge uteliggere i et boksplott. Merk ordet «flagge»: regelen sier at observasjonen fortjener et blikk, ikke at den er feil.",
       },
@@ -704,13 +681,12 @@ const FEILSOKING: Feilsoking[] = [
     feilLeddId: "l3",
     riktigResonnement: (
       <>
-        Undersøk sensoren først. Finner du en dokumenterbar årsak (kalibreringsfeil,
-        løs kontakt, avlesning på feil enhet), fjern observasjonen og{" "}
-        <strong>skriv i rapporten at du gjorde det, og hvorfor</strong>. Finner du ingen
-        årsak, behold den — og bruk median og IQR i stedet for gjennomsnitt og
-        standardavvik, siden de er robuste mot nettopp dette. Alternativt: rapporter
-        begge analysene, med og uten, og la leseren se hvor mye konklusjonen henger på
-        det ene punktet.
+        Undersøk sensoren først. Finner du en dokumenterbar årsak (kalibreringsfeil, løs kontakt,
+        avlesning på feil enhet), fjern observasjonen og{" "}
+        <strong>skriv i rapporten at du gjorde det, og hvorfor</strong>. Finner du ingen årsak,
+        behold den — og bruk median og IQR i stedet for gjennomsnitt og standardavvik, siden de er
+        robuste mot nettopp dette. Alternativt: rapporter begge analysene, med og uten, og la
+        leseren se hvor mye konklusjonen henger på det ene punktet.
       </>
     ),
   },
@@ -720,8 +696,8 @@ const FEILSOKING: Feilsoking[] = [
     feilnavn: "Median forvekslet med gjennomsnitt",
     situasjon: (
       <>
-        En artikkel om boligpriser i en bydel inneholder dette resonnementet.
-        Gjennomsnittsprisen er 6,2 millioner og medianprisen er 4,8 millioner.
+        En artikkel om boligpriser i en bydel inneholder dette resonnementet. Gjennomsnittsprisen er
+        6,2 millioner og medianprisen er 4,8 millioner.
       </>
     ),
     ledd: [
@@ -753,12 +729,11 @@ const FEILSOKING: Feilsoking[] = [
     feilLeddId: "l3",
     riktigResonnement: (
       <>
-        «Halvparten ligger over» er en påstand om <strong>medianen</strong>, og bare om
-        den: per definisjon ligger 50 % av observasjonene på hver side av Q2. For
-        gjennomsnittet finnes ingen tilsvarende regel. I en høyreskjev fordeling —
-        boligpriser, inntekt, ventetid — ligger typisk <em>godt under</em> halvparten
-        over gjennomsnittet. Sjekk selv i simulatoren over: dra én prikk langt ut til
-        høyre og se hvor få prikker som ender opp over det gule x̄-merket.
+        «Halvparten ligger over» er en påstand om <strong>medianen</strong>, og bare om den: per
+        definisjon ligger 50 % av observasjonene på hver side av Q2. For gjennomsnittet finnes ingen
+        tilsvarende regel. I en høyreskjev fordeling — boligpriser, inntekt, ventetid — ligger
+        typisk <em>godt under</em> halvparten over gjennomsnittet. Sjekk selv i simulatoren over:
+        dra én prikk langt ut til høyre og se hvor få prikker som ender opp over det gule x̄-merket.
       </>
     ),
   },
@@ -768,9 +743,8 @@ const FEILSOKING: Feilsoking[] = [
     feilnavn: "n − 1 brukt på hele populasjonen",
     situasjon: (
       <>
-        En student skal beskrive spredningen i alderen til de seks ansatte i en bedrift
-        (samme tall som i måloppgave 2). Oppgaven ber om spredningen{" "}
-        <em>i denne bedriften</em>.
+        En student skal beskrive spredningen i alderen til de seks ansatte i en bedrift (samme tall
+        som i måloppgave 2). Oppgaven ber om spredningen <em>i denne bedriften</em>.
       </>
     ),
     ledd: [
@@ -788,7 +762,8 @@ const FEILSOKING: Feilsoking[] = [
       },
       {
         id: "l3",
-        tekst: "Vi deler på n − 1 = 5, siden man alltid skal dele på n − 1 for å få en forventningsrett varians.",
+        tekst:
+          "Vi deler på n − 1 = 5, siden man alltid skal dele på n − 1 for å få en forventningsrett varians.",
         vurdering:
           "Her er feilen. Ordet «alltid» er det som svikter. n − 1 retter opp en skjevhet som bare oppstår når vi bruker et utvalg til å gjette på en ukjent populasjon. Her er de seks HELE populasjonen — det finnes ingenting å gjette på, og dermed heller ingen skjevhet å korrigere. Da blåser n − 1 bare svaret kunstig opp.",
       },
@@ -803,11 +778,14 @@ const FEILSOKING: Feilsoking[] = [
     riktigResonnement: (
       <>
         Still ett spørsmål før du velger nevner:{" "}
-        <strong>er tallene mine hele gruppen jeg vil uttale meg om, eller er de et utvalg
-        fra en større gruppe?</strong> Hele gruppen → del på n, og kall svaret σ². Utvalg
-        → del på n − 1, og kall svaret s². Merk at det ikke er størrelsen på datasettet
-        som avgjør: seks observasjoner kan være en hel populasjon, og ti tusen kan være
-        et utvalg. Det er <em>hvem du vil uttale deg om</em> som avgjør.
+        <strong>
+          er tallene mine hele gruppen jeg vil uttale meg om, eller er de et utvalg fra en større
+          gruppe?
+        </strong>{" "}
+        Hele gruppen → del på n, og kall svaret σ². Utvalg → del på n − 1, og kall svaret s². Merk
+        at det ikke er størrelsen på datasettet som avgjør: seks observasjoner kan være en hel
+        populasjon, og ti tusen kan være et utvalg. Det er <em>hvem du vil uttale deg om</em> som
+        avgjør.
       </>
     ),
   },
@@ -824,8 +802,8 @@ const RECALL: RecallKort[] = [
     sporsmal: "Skriv formelen for stikkprøvevariansen s².",
     svar: (
       <>
-        <span className="font-mono">s² = Σ(x − x̄)² / (n − 1)</span> — summér de kvadrerte
-        avstandene fra gjennomsnittet, og del på antall observasjoner minus én.
+        <span className="font-mono">s² = Σ(x − x̄)² / (n − 1)</span> — summér de kvadrerte avstandene
+        fra gjennomsnittet, og del på antall observasjoner minus én.
       </>
     ),
     hvorforUtenat:
@@ -838,9 +816,8 @@ const RECALL: RecallKort[] = [
     svar: (
       <>
         <strong>n</strong> når dataene ER hele populasjonen du vil uttale deg om (σ²).{" "}
-        <strong>n − 1</strong> når dataene er et utvalg som skal si noe om en større,
-        ukjent populasjon (s²). Størrelsen på datasettet avgjør ikke — det gjør hvem du
-        vil uttale deg om.
+        <strong>n − 1</strong> når dataene er et utvalg som skal si noe om en større, ukjent
+        populasjon (s²). Størrelsen på datasettet avgjør ikke — det gjør hvem du vil uttale deg om.
       </>
     ),
     hvorforUtenat:
@@ -852,10 +829,10 @@ const RECALL: RecallKort[] = [
     sporsmal: "Når velger du median framfor gjennomsnitt?",
     svar: (
       <>
-        Når fordelingen er skjev eller har uteliggere — inntekt, boligpriser, ventetid,
-        levetid. Signalet er at gjennomsnitt og median spriker merkbart. Ved symmetriske
-        fordelinger uten uteliggere gir de omtrent samme svar, og da er gjennomsnittet å
-        foretrekke fordi det bruker all informasjonen.
+        Når fordelingen er skjev eller har uteliggere — inntekt, boligpriser, ventetid, levetid.
+        Signalet er at gjennomsnitt og median spriker merkbart. Ved symmetriske fordelinger uten
+        uteliggere gir de omtrent samme svar, og da er gjennomsnittet å foretrekke fordi det bruker
+        all informasjonen.
       </>
     ),
   },
@@ -865,9 +842,9 @@ const RECALL: RecallKort[] = [
     sporsmal: "Hva er IQR, og hvordan finner du den?",
     svar: (
       <>
-        Kvartilbredden <span className="font-mono">IQR = Q3 − Q1</span>: bredden på den
-        midterste halvparten av dataene. Sortér, del rekka i to halvdeler, og ta medianen
-        av hver halvdel. Ved oddetall n holdes medianen utenfor begge halvdelene.
+        Kvartilbredden <span className="font-mono">IQR = Q3 − Q1</span>: bredden på den midterste
+        halvparten av dataene. Sortér, del rekka i to halvdeler, og ta medianen av hver halvdel. Ved
+        oddetall n holdes medianen utenfor begge halvdelene.
       </>
     ),
   },
@@ -878,12 +855,11 @@ const RECALL: RecallKort[] = [
       "Hva skjer med x̄, s² og s når du (a) legger til en konstant c, og (b) ganger alt med en konstant k?",
     svar: (
       <>
-        <strong>(a) Legge til c:</strong> x̄ øker med c. s² og s er uendret — avstandene
-        mellom observasjonene er de samme.
+        <strong>(a) Legge til c:</strong> x̄ øker med c. s² og s er uendret — avstandene mellom
+        observasjonene er de samme.
         <br />
-        <strong>(b) Gange med k:</strong> x̄ ganges med k, s ganges med |k|, og s² ganges
-        med k². Kvadreringen er grunnen til at variansen skalerer annerledes enn
-        standardavviket.
+        <strong>(b) Gange med k:</strong> x̄ ganges med k, s ganges med |k|, og s² ganges med k².
+        Kvadreringen er grunnen til at variansen skalerer annerledes enn standardavviket.
       </>
     ),
     hvorforUtenat:
@@ -895,9 +871,9 @@ const RECALL: RecallKort[] = [
     sporsmal: "Hva skiller σ fra s, og μ fra x̄?",
     svar: (
       <>
-        Greske bokstaver (μ, σ, σ²) er de <em>sanne, ukjente</em> tallene for hele
-        populasjonen. Latinske (x̄, s, s²) er tallene vi har <em>regnet ut fra utvalget</em>.
-        Resten av faget handler om hvor godt de latinske gjetter på de greske.
+        Greske bokstaver (μ, σ, σ²) er de <em>sanne, ukjente</em> tallene for hele populasjonen.
+        Latinske (x̄, s, s²) er tallene vi har <em>regnet ut fra utvalget</em>. Resten av faget
+        handler om hvor godt de latinske gjetter på de greske.
       </>
     ),
   },
@@ -908,9 +884,9 @@ const RECALL: RecallKort[] = [
       "Hvorfor er «halvparten ligger over gjennomsnittet» galt, og hva er den riktige setningen?",
     svar: (
       <>
-        Det er <strong>medianen</strong> som per definisjon deler datasettet i to like
-        halvdeler. Gjennomsnittet har ingen slik egenskap. I en høyreskjev fordeling
-        ligger som regel klart mindre enn halvparten over gjennomsnittet.
+        Det er <strong>medianen</strong> som per definisjon deler datasettet i to like halvdeler.
+        Gjennomsnittet har ingen slik egenskap. I en høyreskjev fordeling ligger som regel klart
+        mindre enn halvparten over gjennomsnittet.
       </>
     ),
     hvorforUtenat: "Klassisk formuleringsfelle som gjør et ellers riktig svar galt.",
@@ -921,9 +897,9 @@ const RECALL: RecallKort[] = [
     sporsmal: "Hva gjør du med en observasjon som 1,5 × IQR-regelen flagger som uteligger?",
     svar: (
       <>
-        Undersøker den. Regelen flagger, den dømmer ikke. Kan du dokumentere en målefeil,
-        fjern observasjonen <em>og skriv at du gjorde det</em>. Kan du ikke det, behold
-        den og bruk median og IQR, som er robuste mot den.
+        Undersøker den. Regelen flagger, den dømmer ikke. Kan du dokumentere en målefeil, fjern
+        observasjonen <em>og skriv at du gjorde det</em>. Kan du ikke det, behold den og bruk median
+        og IQR, som er robuste mot den.
       </>
     ),
   },
@@ -945,18 +921,17 @@ export function Modul1DataPage() {
             Data — å beskrive det du faktisk har målt
           </h1>
           <p className="mt-3 leading-relaxed text-muted-foreground">
-            Før vi kan si noe om sannsynlighet, fordelinger eller hypoteser, må vi kunne
-            beskrive en haug med målinger med noen få tall. Denne modulen handler om de
-            tallene: hvor dataene ligger, hvor mye de spriker, og — viktigst — når hvert
-            av målene lyver. Statistisk intuisjon bommer systematisk her, så vi begynner
-            med å la deg bomme med vilje.
+            Før vi kan si noe om sannsynlighet, fordelinger eller hypoteser, må vi kunne beskrive en
+            haug med målinger med noen få tall. Denne modulen handler om de tallene: hvor dataene
+            ligger, hvor mye de spriker, og — viktigst — når hvert av målene lyver. Statistisk
+            intuisjon bommer systematisk her, så vi begynner med å la deg bomme med vilje.
           </p>
           <div className="mt-4 rounded-lg border border-brand/30 bg-brand/5 p-4 text-sm">
-            <strong className="text-foreground">Slik er modulen bygget:</strong> du{" "}
-            <em>anslår</em> først, uten hjelp. Så <em>ser</em> du hva som skjer i
-            simulatorene. Så <em>regner</em> du selv, med sjekk på både metodevalg og tall.
-            Til slutt <em>feilsøker</em> du ferdige resonnementer som er gale. Kortene
-            nederst er bare sluttsjekken — de er ikke der du lærer stoffet.
+            <strong className="text-foreground">Slik er modulen bygget:</strong> du <em>anslår</em>{" "}
+            først, uten hjelp. Så <em>ser</em> du hva som skjer i simulatorene. Så <em>regner</em>{" "}
+            du selv, med sjekk på både metodevalg og tall. Til slutt <em>feilsøker</em> du ferdige
+            resonnementer som er gale. Kortene nederst er bare sluttsjekken — de er ikke der du
+            lærer stoffet.
           </div>
           <ProvisoriskKapittelnote className="mt-3" />
         </header>
@@ -976,22 +951,20 @@ export function Modul1DataPage() {
             <Layers className="h-5 w-5 text-brand" /> Utvalg og populasjon
           </h2>
           <p className="leading-relaxed">
-            <strong>Populasjonen</strong> er hele gruppen du egentlig vil si noe om: alle
-            innbyggere i Norge, alle pakker som noen gang produseres på fabrikken, alle
-            mulige målinger sensoren kan gjøre. Den er nesten alltid for stor til å måle,
-            og ofte uendelig.
+            <strong>Populasjonen</strong> er hele gruppen du egentlig vil si noe om: alle innbyggere
+            i Norge, alle pakker som noen gang produseres på fabrikken, alle mulige målinger
+            sensoren kan gjøre. Den er nesten alltid for stor til å måle, og ofte uendelig.
           </p>
           <p className="mt-2 leading-relaxed">
-            <strong>Utvalget</strong> er de konkrete observasjonene du sitter med. Det er
-            endelig, det er målt, og det er alt du har. Hele statistikkfaget er et forsøk
-            på å si noe troverdig om populasjonen med bare utvalget i hånda.
+            <strong>Utvalget</strong> er de konkrete observasjonene du sitter med. Det er endelig,
+            det er målt, og det er alt du har. Hele statistikkfaget er et forsøk på å si noe
+            troverdig om populasjonen med bare utvalget i hånda.
           </p>
           <p className="mt-2 leading-relaxed">
-            Skillet er ikke akademisk pirk — det avgjør konkrete regnestykker. Når du
-            senere i denne modulen skal velge om du deler på n eller n − 1, er det{" "}
-            <em>utelukkende</em> dette spørsmålet som bestemmer svaret. Og det er derfor
-            notasjonen skiller så strengt mellom greske og latinske bokstaver: μ og σ
-            hører til populasjonen, x̄ og s hører til utvalget.
+            Skillet er ikke akademisk pirk — det avgjør konkrete regnestykker. Når du senere i denne
+            modulen skal velge om du deler på n eller n − 1, er det <em>utelukkende</em> dette
+            spørsmålet som bestemmer svaret. Og det er derfor notasjonen skiller så strengt mellom
+            greske og latinske bokstaver: μ og σ hører til populasjonen, x̄ og s hører til utvalget.
           </p>
         </section>
 
@@ -1001,11 +974,11 @@ export function Modul1DataPage() {
           </h2>
           <p className="mb-3 leading-relaxed">
             Det finnes tre svar på «hvor ligger dataene typisk», og de er uenige så snart
-            fordelingen er skjev. <strong>Gjennomsnittet x̄</strong> er tyngdepunktet: legg
-            sammen alt, del på n. <strong>Medianen</strong> er observasjonen midt i den
-            sorterte rekka. <strong>Modus</strong> er den verdien som går igjen oftest — mest
-            nyttig for kategorier, som skostørrelse. Kvartilene Q1 og Q3 er samme idé som
-            medianen, bare 25 % og 75 % inn i køen.
+            fordelingen er skjev. <strong>Gjennomsnittet x̄</strong> er tyngdepunktet: legg sammen
+            alt, del på n. <strong>Medianen</strong> er observasjonen midt i den sorterte rekka.{" "}
+            <strong>Modus</strong> er den verdien som går igjen oftest — mest nyttig for kategorier,
+            som skostørrelse. Kvartilene Q1 og Q3 er samme idé som medianen, bare 25 % og 75 % inn i
+            køen.
           </p>
           <p className="mb-4 leading-relaxed">
             Dra i prikkene under, og legg spesielt merke til forskjellen i hvordan den gule
@@ -1019,8 +992,8 @@ export function Modul1DataPage() {
             <Eye className="h-5 w-5 text-brand" /> Én uteligger, to helt ulike svar
           </h2>
           <p className="mb-4 leading-relaxed">
-            Samme poeng, sett fra en annen vinkel: hva én ekstrem observasjon gjør med hvert
-            av målene. Dette er fasiten på de tre første anslagene dine.
+            Samme poeng, sett fra en annen vinkel: hva én ekstrem observasjon gjør med hvert av
+            målene. Dette er fasiten på de tre første anslagene dine.
           </p>
           <OutlierImpactDemo />
         </section>
@@ -1028,11 +1001,11 @@ export function Modul1DataPage() {
         <section id="skjevhet" className="mb-12 scroll-mt-28">
           <h2 className="mb-3 text-xl font-semibold">Skjevhet — når halen bestemmer</h2>
           <p className="mb-4 leading-relaxed">
-            En fordeling er <strong>høyreskjev</strong> når den har en lang hale mot høyre:
-            de fleste observasjonene ligger lavt, men noen få ligger svært høyt. Inntekt,
-            boligpriser og ventetid er nesten alltid høyreskjeve. Kjennetegnet du kan bruke
-            uten å tegne noe: gjennomsnittet ligger merkbart <em>over</em> medianen. Ved
-            venstreskjevhet er det motsatt.
+            En fordeling er <strong>høyreskjev</strong> når den har en lang hale mot høyre: de
+            fleste observasjonene ligger lavt, men noen få ligger svært høyt. Inntekt, boligpriser
+            og ventetid er nesten alltid høyreskjeve. Kjennetegnet du kan bruke uten å tegne noe:
+            gjennomsnittet ligger merkbart <em>over</em> medianen. Ved venstreskjevhet er det
+            motsatt.
           </p>
           <SkewnessKurtosisViz />
         </section>
@@ -1045,18 +1018,18 @@ export function Modul1DataPage() {
           </p>
           <ul className="mt-3 space-y-2 pl-5 text-sm leading-relaxed">
             <li className="list-disc">
-              <strong>Variansen s²</strong> — gjennomsnittlig kvadrert avstand fra x̄. Vi
-              kvadrerer for at avvik over og under ikke skal oppheve hverandre. Prisen er at
-              enheten blir kvadrert også: kroner², som ingen har intuisjon for.
+              <strong>Variansen s²</strong> — gjennomsnittlig kvadrert avstand fra x̄. Vi kvadrerer
+              for at avvik over og under ikke skal oppheve hverandre. Prisen er at enheten blir
+              kvadrert også: kroner², som ingen har intuisjon for.
             </li>
             <li className="list-disc">
-              <strong>Standardavviket s</strong> — kvadratroten av s², som gir oss enheten
-              tilbake. Dette er tallet du rapporterer.
+              <strong>Standardavviket s</strong> — kvadratroten av s², som gir oss enheten tilbake.
+              Dette er tallet du rapporterer.
             </li>
             <li className="list-disc">
-              <strong>Kvartilbredden IQR</strong> — Q3 − Q1. Ser bare på posisjoner i den
-              sorterte rekka, og er derfor upåvirket av hvor ekstreme ytterpunktene er.
-              Førstevalget når dataene er skjeve.
+              <strong>Kvartilbredden IQR</strong> — Q3 − Q1. Ser bare på posisjoner i den sorterte
+              rekka, og er derfor upåvirket av hvor ekstreme ytterpunktene er. Førstevalget når
+              dataene er skjeve.
             </li>
           </ul>
         </section>
@@ -1064,9 +1037,9 @@ export function Modul1DataPage() {
         <section id="n-minus-en" className="mb-12 scroll-mt-28">
           <h2 className="mb-3 text-xl font-semibold">Hvorfor n − 1?</h2>
           <p className="mb-4 leading-relaxed">
-            Dette er modulens ene virkelig kontraintuitive punkt, og forklaringen «vi brukte
-            opp én frihetsgrad på å estimere x̄» overbeviser sjelden noen første gang. Så la
-            oss i stedet se skjevheten skje.
+            Dette er modulens ene virkelig kontraintuitive punkt, og forklaringen «vi brukte opp én
+            frihetsgrad på å estimere x̄» overbeviser sjelden noen første gang. Så la oss i stedet se
+            skjevheten skje.
           </p>
           <NMinusEnSim />
         </section>
@@ -1076,10 +1049,10 @@ export function Modul1DataPage() {
             <BarChart3 className="h-5 w-5 text-brand" /> Se på dataene før du regner
           </h2>
           <p className="mb-4 leading-relaxed">
-            Histogram viser formen, boksplott viser sentrum og uteliggere, spredningsplott
-            viser sammenhengen mellom to variabler. Alle tre bør tegnes før du regner ut et
-            eneste tall — nettopp fordi tallene ikke røper skjevhet og uteliggere av seg
-            selv. Justér fordelingen under og se hvordan målene beveger seg.
+            Histogram viser formen, boksplott viser sentrum og uteliggere, spredningsplott viser
+            sammenhengen mellom to variabler. Alle tre bør tegnes før du regner ut et eneste tall —
+            nettopp fordi tallene ikke røper skjevhet og uteliggere av seg selv. Justér fordelingen
+            under og se hvordan målene beveger seg.
           </p>
           <InteractiveDistributionPlayground />
         </section>

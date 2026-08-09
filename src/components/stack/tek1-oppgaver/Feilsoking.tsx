@@ -76,11 +76,10 @@ export function Feilsokingsoppgaver({
       <div className="mb-4 rounded-lg border border-border bg-muted/30 p-4 text-sm text-muted-foreground">
         {intro ?? (
           <>
-            Hver oppgave viser et resonnement som ender i feil konklusjon. Feilen kan
-            ligge hvor som helst: i dataene, i metodevalget, i utregningen eller i
-            tolkningen til slutt. Klikk på det <strong className="text-foreground">første</strong>{" "}
-            leddet som ikke holder. Klikker du på et gyldig ledd, får du høre hvorfor
-            det faktisk holder — det er også nyttig.
+            Hver oppgave viser et resonnement som ender i feil konklusjon. Feilen kan ligge hvor som
+            helst: i dataene, i metodevalget, i utregningen eller i tolkningen til slutt. Klikk på
+            det <strong className="text-foreground">første</strong> leddet som ikke holder. Klikker
+            du på et gyldig ledd, får du høre hvorfor det faktisk holder — det er også nyttig.
           </>
         )}
       </div>

@@ -88,10 +88,9 @@ export function AnslaSaSjekk({
           <div>
             {intro ?? (
               <>
-                Gjett før du leser videre. Det er meningen at noen av disse skal
-                overraske deg — statistisk intuisjon bommer systematisk, og det er
-                nettopp derfor faget finnes. Ingenting telles, og et bom her er mer
-                verdt enn en riktig gjetning.
+                Gjett før du leser videre. Det er meningen at noen av disse skal overraske deg —
+                statistisk intuisjon bommer systematisk, og det er nettopp derfor faget finnes.
+                Ingenting telles, og et bom her er mer verdt enn en riktig gjetning.
               </>
             )}
           </div>
@@ -104,10 +103,7 @@ export function AnslaSaSjekk({
           const vist = Boolean(avslort[a.id]);
           const traff = vist && mitt === a.riktigId;
           return (
-            <div
-              key={a.id}
-              className="rounded-xl border border-border bg-card p-4"
-            >
+            <div key={a.id} className="rounded-xl border border-border bg-card p-4">
               <div className="mb-2 flex flex-wrap items-center gap-2">
                 <span className="flex h-5 w-5 items-center justify-center rounded-full bg-brand/15 text-[11px] font-bold text-brand">
                   {i + 1}
@@ -116,9 +112,7 @@ export function AnslaSaSjekk({
                   {a.tema}
                 </span>
               </div>
-              <div className="text-sm leading-relaxed text-foreground">
-                {a.sporsmal}
-              </div>
+              <div className="text-sm leading-relaxed text-foreground">{a.sporsmal}</div>
 
               <div className="mt-3 grid gap-1.5 sm:grid-cols-2">
                 {a.alternativer.map((alt) => {
@@ -177,9 +171,7 @@ export function AnslaSaSjekk({
                   <div
                     className={cn(
                       "rounded-lg border p-3 text-sm",
-                      traff
-                        ? "border-success/40 bg-success/5"
-                        : "border-brand/40 bg-brand/5",
+                      traff ? "border-success/40 bg-success/5" : "border-brand/40 bg-brand/5",
                     )}
                   >
                     <div className="mb-1 text-xs font-semibold uppercase tracking-wider text-muted-foreground">

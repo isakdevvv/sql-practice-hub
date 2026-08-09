@@ -1,13 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import {
-  ArrowRight,
-  BarChart3,
-  CalendarClock,
-  Dice5,
-  Sigma,
-  Sparkles,
-  Target,
-} from "lucide-react";
+import { ArrowRight, BarChart3, CalendarClock, Dice5, Sigma, Sparkles, Target } from "lucide-react";
 import { ModulStatusBadge, ModulProgressBar } from "@/components/stack/HubShared";
 import { ProvisoriskKapittelnote } from "@/components/stack/tek1-oppgaver/Symboltavle";
 
@@ -214,9 +206,7 @@ const OVERBYGNING = {
     "Å lage konfidensintervaller ved å trekke nye utvalg fra dataene du allerede har, i stedet for å slå opp en formel.",
   hvorforVerdtTiden:
     "Det gjør konfidensintervallet konkret: du ser fordelingen bli bygget opp foran deg i stedet for å stole på en formel du ikke kan utlede. Kommer ikke på eksamen, men gjør modul 4 lettere å tro på.",
-  lenker: [
-    { slug: "tek1-estimering-ki", label: "Bootstrap-simulatoren (i estimering og KI)" },
-  ],
+  lenker: [{ slug: "tek1-estimering-ki", label: "Bootstrap-simulatoren (i estimering og KI)" }],
 };
 
 const BYGG_STIL: Record<ByggStatus, { label: string; cls: string }> = {
@@ -247,10 +237,10 @@ export function Tek1501ModulOversikt() {
         </span>
       </div>
       <p className="mb-4 max-w-2xl text-sm text-muted-foreground">
-        Fire moduler i undervisningsrekkefølge. Hver av dem er ferdig først når du kan
-        gjøre det som står under «du skal kunne» — ikke når temaet er lest. Modul 1 og 2
-        har egne modulsider som tar deg gjennom hele runden: anslå, simulér, regn,
-        feilsøk, repetér. Modul 3 og 4 har foreløpig temasidene sine direkte.
+        Fire moduler i undervisningsrekkefølge. Hver av dem er ferdig først når du kan gjøre det som
+        står under «du skal kunne» — ikke når temaet er lest. Modul 1 og 2 har egne modulsider som
+        tar deg gjennom hele runden: anslå, simulér, regn, feilsøk, repetér. Modul 3 og 4 har
+        foreløpig temasidene sine direkte.
       </p>
 
       <div className="mb-6 rounded-xl border border-border bg-card p-4">
@@ -284,9 +274,7 @@ export function Tek1501ModulOversikt() {
                 </span>
               </div>
 
-              <p className="text-sm leading-relaxed text-muted-foreground">
-                {m.handlerOm}
-              </p>
+              <p className="text-sm leading-relaxed text-muted-foreground">{m.handlerOm}</p>
 
               <div className="mt-3 rounded-lg border border-brand/25 bg-brand/5 p-3 text-sm">
                 <div className="mb-1 text-[10px] font-semibold uppercase tracking-wider text-brand">
@@ -309,9 +297,7 @@ export function Tek1501ModulOversikt() {
                     >
                       <span
                         className={
-                          l.primaer
-                            ? "font-medium text-brand"
-                            : "font-medium text-foreground"
+                          l.primaer ? "font-medium text-brand" : "font-medium text-foreground"
                         }
                       >
                         {l.label}
@@ -341,9 +327,7 @@ export function Tek1501ModulOversikt() {
               {BYGG_STIL.overbygning.label}
             </span>
           </div>
-          <p className="text-sm leading-relaxed text-muted-foreground">
-            {OVERBYGNING.handlerOm}
-          </p>
+          <p className="text-sm leading-relaxed text-muted-foreground">{OVERBYGNING.handlerOm}</p>
           <p className="mt-2 text-sm leading-relaxed text-foreground">
             <strong>Hvorfor det er verdt tiden:</strong> {OVERBYGNING.hvorforVerdtTiden}
           </p>

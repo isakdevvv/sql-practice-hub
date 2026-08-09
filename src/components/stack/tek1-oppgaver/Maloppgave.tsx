@@ -77,11 +77,11 @@ export function Maloppgaver({
       <div className="mb-4 rounded-lg border border-border bg-muted/30 p-4 text-sm text-muted-foreground">
         {intro ?? (
           <>
-            Her sjekkes to ting hver for seg: <strong className="text-foreground">hvilken metode</strong>{" "}
-            du mener gjelder, og <strong className="text-foreground">tallet</strong> du lander på.
-            Velger du riktig metode men bommer i tredje desimal, får du beskjed om
-            nøyaktig det — det er en regnefeil, ikke en forståelsesfeil, og de to
-            skal rettes på hver sin måte.
+            Her sjekkes to ting hver for seg:{" "}
+            <strong className="text-foreground">hvilken metode</strong> du mener gjelder, og{" "}
+            <strong className="text-foreground">tallet</strong> du lander på. Velger du riktig
+            metode men bommer i tredje desimal, får du beskjed om nøyaktig det — det er en
+            regnefeil, ikke en forståelsesfeil, og de to skal rettes på hver sin måte.
           </>
         )}
       </div>
@@ -284,9 +284,7 @@ function MaloppgaveKort({
             )}
             <div className="text-sm">
               <div className="font-semibold text-foreground">{resultat.tittel}</div>
-              <p className="mt-0.5 leading-relaxed text-muted-foreground">
-                {resultat.melding}
-              </p>
+              <p className="mt-0.5 leading-relaxed text-muted-foreground">{resultat.melding}</p>
               {resultat.status !== "ufullstendig" && (
                 <div className="mt-2 flex flex-wrap gap-2 text-[11px]">
                   <StatusPille ok={resultat.metodeOk} label="Metode" />
@@ -304,14 +302,10 @@ function MaloppgaveKort({
           <summary className="flex cursor-pointer list-none items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
             <ChevronDown className="h-3.5 w-3.5" /> Utregning steg for steg
           </summary>
-          <div className="mt-2 text-sm leading-relaxed text-foreground">
-            {data.utregning}
-          </div>
+          <div className="mt-2 text-sm leading-relaxed text-foreground">{data.utregning}</div>
           <div className="mt-2 border-t border-border pt-2 text-sm">
             <span className="text-muted-foreground">Fasit: </span>
-            <strong className="font-mono text-foreground">
-              {formatterFasit(data.fasit)}
-            </strong>
+            <strong className="font-mono text-foreground">{formatterFasit(data.fasit)}</strong>
           </div>
         </details>
       )}

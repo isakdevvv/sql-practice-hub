@@ -60,8 +60,7 @@ export function Symboltavle({
   symboler: SymbolRad[];
 }) {
   const harBeggeVerdener =
-    symboler.some((s) => s.verden === "populasjon") &&
-    symboler.some((s) => s.verden === "utvalg");
+    symboler.some((s) => s.verden === "populasjon") && symboler.some((s) => s.verden === "utvalg");
 
   return (
     <section id={id} className="mb-10 scroll-mt-28">
@@ -73,8 +72,8 @@ export function Symboltavle({
       <p className="mb-3 text-sm text-muted-foreground">
         {intro ?? (
           <>
-            Ingen av tegnene under brukes i teksten før de står her. Slå tilbake hit
-            når et symbol dukker opp du ikke kjenner igjen.
+            Ingen av tegnene under brukes i teksten før de står her. Slå tilbake hit når et symbol
+            dukker opp du ikke kjenner igjen.
           </>
         )}
       </p>
@@ -83,11 +82,10 @@ export function Symboltavle({
         <div className="mb-3 flex items-start gap-2 rounded-lg border border-brand/30 bg-brand/5 p-3 text-sm">
           <Info className="mt-0.5 h-4 w-4 shrink-0 text-brand" />
           <div className="text-foreground">
-            <strong>Den ene regelen som forklarer halve notasjonen:</strong> greske
-            bokstaver beskriver <em>populasjonen</em> — de sanne tallene vi aldri får
-            se. Latinske bokstaver beskriver <em>utvalget</em> — tallene vi selv har
-            regnet ut fra dataene i hånda. Hele resten av faget handler om hvor godt
-            de latinske gjetter på de greske.
+            <strong>Den ene regelen som forklarer halve notasjonen:</strong> greske bokstaver
+            beskriver <em>populasjonen</em> — de sanne tallene vi aldri får se. Latinske bokstaver
+            beskriver <em>utvalget</em> — tallene vi selv har regnet ut fra dataene i hånda. Hele
+            resten av faget handler om hvor godt de latinske gjetter på de greske.
           </div>
         </div>
       )}
@@ -111,9 +109,7 @@ export function Symboltavle({
                     {s.tegn}
                   </td>
                   <td className="px-3 py-2.5 text-muted-foreground">{s.uttale}</td>
-                  <td className="px-3 py-2.5 leading-relaxed text-foreground">
-                    {s.betydning}
-                  </td>
+                  <td className="px-3 py-2.5 leading-relaxed text-foreground">{s.betydning}</td>
                   <td className="px-3 py-2.5">
                     <span
                       className={`inline-flex whitespace-nowrap rounded-full border px-2 py-0.5 text-[10px] font-medium ${stil.cls}`}
@@ -145,9 +141,8 @@ export function ProvisoriskKapittelnote({ className = "" }: { className?: string
   return (
     <p className={`text-[11px] leading-relaxed text-muted-foreground ${className}`}>
       <Info className="mr-1 inline h-3 w-3 align-[-1px]" />
-      Modulene er ordnet etter tema, ikke etter kapitlene i Kristensen &amp; Wikan.
-      Rekkefølgen mot boka er derfor foreløpig, og vi oppgir bevisst ingen
-      kapittelnumre.
+      Modulene er ordnet etter tema, ikke etter kapitlene i Kristensen &amp; Wikan. Rekkefølgen mot
+      boka er derfor foreløpig, og vi oppgir bevisst ingen kapittelnumre.
     </p>
   );
 }

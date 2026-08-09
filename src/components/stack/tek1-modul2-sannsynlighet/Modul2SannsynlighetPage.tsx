@@ -9,14 +9,8 @@ import {
 } from "@/components/stack/tek1-oppgaver/Symboltavle";
 import { AnslaSaSjekk, type Anslag } from "@/components/stack/tek1-oppgaver/AnslaSaSjekk";
 import { Maloppgaver, type MaloppgaveData } from "@/components/stack/tek1-oppgaver/Maloppgave";
-import {
-  Feilsokingsoppgaver,
-  type Feilsoking,
-} from "@/components/stack/tek1-oppgaver/Feilsoking";
-import {
-  RecallKortSeksjon,
-  type RecallKort,
-} from "@/components/stack/tek1-oppgaver/RecallKort";
+import { Feilsokingsoppgaver, type Feilsoking } from "@/components/stack/tek1-oppgaver/Feilsoking";
+import { RecallKortSeksjon, type RecallKort } from "@/components/stack/tek1-oppgaver/RecallKort";
 
 // Gjenbrukte simulatorer fra de eksisterende temasidene. Modulen redigerer dem
 // ikke — den setter dem inn i riktig rekkefølge i forhold til anslagene.
@@ -69,8 +63,8 @@ const SYMBOLER: SymbolRad[] = [
     verden: "generelt",
     betydning: (
       <>
-        <strong>Utfallsrommet</strong> — mengden av alt som i det hele tatt kan skje i
-        forsøket. Ett terningkast har Ω = {"{1, 2, 3, 4, 5, 6}"}.
+        <strong>Utfallsrommet</strong> — mengden av alt som i det hele tatt kan skje i forsøket. Ett
+        terningkast har Ω = {"{1, 2, 3, 4, 5, 6}"}.
       </>
     ),
   },
@@ -80,8 +74,8 @@ const SYMBOLER: SymbolRad[] = [
     verden: "generelt",
     betydning: (
       <>
-        <strong>Hendelser</strong> — delmengder av Ω, altså «noe av det som kan skje».
-        «Terningen viser partall» er hendelsen {"{2, 4, 6}"}.
+        <strong>Hendelser</strong> — delmengder av Ω, altså «noe av det som kan skje». «Terningen
+        viser partall» er hendelsen {"{2, 4, 6}"}.
       </>
     ),
   },
@@ -89,11 +83,7 @@ const SYMBOLER: SymbolRad[] = [
     tegn: "P(A)",
     uttale: "pe av a",
     verden: "generelt",
-    betydning: (
-      <>
-        Sannsynligheten for at hendelsen A inntreffer. Alltid et tall mellom 0 og 1.
-      </>
-    ),
+    betydning: <>Sannsynligheten for at hendelsen A inntreffer. Alltid et tall mellom 0 og 1.</>,
   },
   {
     tegn: "Aᶜ",
@@ -101,9 +91,9 @@ const SYMBOLER: SymbolRad[] = [
     verden: "generelt",
     betydning: (
       <>
-        <strong>Komplementet</strong> — alt i Ω som <em>ikke</em> er A. Det gjelder alltid
-        at <span className="font-mono">P(Aᶜ) = 1 − P(A)</span>, og den ene linja løser
-        overraskende mange oppgaver.
+        <strong>Komplementet</strong> — alt i Ω som <em>ikke</em> er A. Det gjelder alltid at{" "}
+        <span className="font-mono">P(Aᶜ) = 1 − P(A)</span>, og den ene linja løser overraskende
+        mange oppgaver.
       </>
     ),
   },
@@ -123,8 +113,8 @@ const SYMBOLER: SymbolRad[] = [
     verden: "generelt",
     betydning: (
       <>
-        <strong>Unionen</strong> — minst én av dem inntreffer. På norsk: «A <em>eller</em>{" "}
-        B», og «eller» inkluderer her at begge skjer.
+        <strong>Unionen</strong> — minst én av dem inntreffer. På norsk: «A <em>eller</em> B», og
+        «eller» inkluderer her at begge skjer.
       </>
     ),
   },
@@ -134,9 +124,9 @@ const SYMBOLER: SymbolRad[] = [
     verden: "generelt",
     betydning: (
       <>
-        <strong>Betinget sannsynlighet</strong> — sannsynligheten for A når vi allerede
-        vet at B har skjedd. Loddrett strek leses «gitt». Merk at dette er et helt annet
-        tall enn P(B | A); å bytte om på dem er modulens dyreste feil.
+        <strong>Betinget sannsynlighet</strong> — sannsynligheten for A når vi allerede vet at B har
+        skjedd. Loddrett strek leses «gitt». Merk at dette er et helt annet tall enn P(B | A); å
+        bytte om på dem er modulens dyreste feil.
       </>
     ),
   },
@@ -146,8 +136,8 @@ const SYMBOLER: SymbolRad[] = [
     verden: "generelt",
     betydning: (
       <>
-        Produktet av alle heltall fra 1 til n: 5! = 5·4·3·2·1 = 120. Antall måter å stille
-        n ulike ting i rekkefølge. Per definisjon er 0! = 1.
+        Produktet av alle heltall fra 1 til n: 5! = 5·4·3·2·1 = 120. Antall måter å stille n ulike
+        ting i rekkefølge. Per definisjon er 0! = 1.
       </>
     ),
   },
@@ -158,8 +148,7 @@ const SYMBOLER: SymbolRad[] = [
     betydning: (
       <>
         Antall <strong>ordnede</strong> utvalg av k blant n:{" "}
-        <span className="font-mono">n! / (n − k)!</span>. Bruk den når rekkefølgen betyr
-        noe.
+        <span className="font-mono">n! / (n − k)!</span>. Bruk den når rekkefølgen betyr noe.
       </>
     ),
   },
@@ -187,10 +176,10 @@ const ANSLAG: Anslag[] = [
     tema: "Betinget sannsynlighet — medisinsk test",
     sporsmal: (
       <>
-        En sykdom finnes hos <strong>0,5 %</strong> av befolkningen. En test finner
-        sykdommen hos <strong>99 %</strong> av dem som har den, og gir riktig svar hos{" "}
-        <strong>95 %</strong> av dem som ikke har den. Du tester tilfeldig positivt. Hvor
-        sannsynlig er det at du faktisk er syk?
+        En sykdom finnes hos <strong>0,5 %</strong> av befolkningen. En test finner sykdommen hos{" "}
+        <strong>99 %</strong> av dem som har den, og gir riktig svar hos <strong>95 %</strong> av
+        dem som ikke har den. Du tester tilfeldig positivt. Hvor sannsynlig er det at du faktisk er
+        syk?
       </>
     ),
     alternativer: [
@@ -202,19 +191,19 @@ const ANSLAG: Anslag[] = [
     riktigId: "d",
     fasit: (
       <>
-        Cirka <strong>9 %</strong>. Tenk på 100 000 personer. 500 er syke, og 495 av dem
-        tester positivt. 99 500 er friske, men 5 % av dem — altså 4 975 personer — tester
-        positivt likevel. Blant de 495 + 4 975 = 5 470 positive er bare 495 faktisk syke:
-        495 / 5 470 ≈ 0,0905. De falske positive drukner de ekte, rett og slett fordi det
-        er så mange flere friske å ta feil av.
+        Cirka <strong>9 %</strong>. Tenk på 100 000 personer. 500 er syke, og 495 av dem tester
+        positivt. 99 500 er friske, men 5 % av dem — altså 4 975 personer — tester positivt likevel.
+        Blant de 495 + 4 975 = 5 470 positive er bare 495 faktisk syke: 495 / 5 470 ≈ 0,0905. De
+        falske positive drukner de ekte, rett og slett fordi det er så mange flere friske å ta feil
+        av.
       </>
     ),
     hvorforBommerIntuisjonen: (
       <>
-        Vi hører «99 % sikker test» og leser det som «99 % sannsynlig at jeg er syk». Men
-        tallet 99 % er P(positiv | syk) — sannsynligheten for utslag <em>gitt</em> sykdom.
-        Spørsmålet ditt er P(syk | positiv), som er den motsatte betingingen. De to er
-        bare like når sykdommen er omtrent like vanlig som den er uvanlig.
+        Vi hører «99 % sikker test» og leser det som «99 % sannsynlig at jeg er syk». Men tallet 99
+        % er P(positiv | syk) — sannsynligheten for utslag <em>gitt</em> sykdom. Spørsmålet ditt er
+        P(syk | positiv), som er den motsatte betingingen. De to er bare like når sykdommen er
+        omtrent like vanlig som den er uvanlig.
       </>
     ),
   },
@@ -223,8 +212,8 @@ const ANSLAG: Anslag[] = [
     tema: "Kombinatorikk — bursdagsproblemet",
     sporsmal: (
       <>
-        Det er <strong>23 tilfeldige personer</strong> i et rom. Hvor sannsynlig er det at
-        minst to av dem har bursdag på samme dato?
+        Det er <strong>23 tilfeldige personer</strong> i et rom. Hvor sannsynlig er det at minst to
+        av dem har bursdag på samme dato?
       </>
     ),
     alternativer: [
@@ -236,19 +225,17 @@ const ANSLAG: Anslag[] = [
     riktigId: "d",
     fasit: (
       <>
-        Litt over <strong>50 %</strong> (50,7 %). Nøkkelen er at det ikke finnes 23
-        muligheter, men 23 over 2 = <strong>253 par</strong> av personer som kan matche.
-        Regnestykket går via komplementet: sannsynligheten for at <em>alle</em> har ulike
-        datoer er 365/365 · 364/365 · 363/365 · … · 343/365 ≈ 0,493, og svaret er
-        1 − 0,493.
+        Litt over <strong>50 %</strong> (50,7 %). Nøkkelen er at det ikke finnes 23 muligheter, men
+        23 over 2 = <strong>253 par</strong> av personer som kan matche. Regnestykket går via
+        komplementet: sannsynligheten for at <em>alle</em> har ulike datoer er 365/365 · 364/365 ·
+        363/365 · … · 343/365 ≈ 0,493, og svaret er 1 − 0,493.
       </>
     ),
     hvorforBommerIntuisjonen: (
       <>
-        Vi sammenligner ubevisst med et annet spørsmål: «hvor sannsynlig er det at noen har
-        bursdag samme dag som <em>meg</em>?» Der er det bare 22 sammenligninger, og svaret
-        er de ~6 % vi føler. Antall par vokser kvadratisk i antall personer, og intuisjonen
-        vår teller lineært.
+        Vi sammenligner ubevisst med et annet spørsmål: «hvor sannsynlig er det at noen har bursdag
+        samme dag som <em>meg</em>?» Der er det bare 22 sammenligninger, og svaret er de ~6 % vi
+        føler. Antall par vokser kvadratisk i antall personer, og intuisjonen vår teller lineært.
       </>
     ),
   },
@@ -257,8 +244,8 @@ const ANSLAG: Anslag[] = [
     tema: "Uavhengighet — myntkast",
     sporsmal: (
       <>
-        Du kaster en ærlig mynt åtte ganger, og får <strong>kron alle åtte gangene</strong>.
-        Hva er sannsynligheten for kron på det niende kastet?
+        Du kaster en ærlig mynt åtte ganger, og får <strong>kron alle åtte gangene</strong>. Hva er
+        sannsynligheten for kron på det niende kastet?
       </>
     ),
     alternativer: [
@@ -271,17 +258,17 @@ const ANSLAG: Anslag[] = [
     fasit: (
       <>
         Fortsatt nøyaktig <strong>50 %</strong>. Mynten har ingen hukommelse. Det er sant at
-        sannsynligheten for ni kron <em>på rad, sett på forhånd</em>, er 1/2⁹ ≈ 0,2 % — men
-        de åtte første har allerede skjedd, og de koster ingenting lenger. Formelt: kastene
-        er uavhengige, så P(kron | åtte kron før) = P(kron) = 0,5.
+        sannsynligheten for ni kron <em>på rad, sett på forhånd</em>, er 1/2⁹ ≈ 0,2 % — men de åtte
+        første har allerede skjedd, og de koster ingenting lenger. Formelt: kastene er uavhengige,
+        så P(kron | åtte kron før) = P(kron) = 0,5.
       </>
     ),
     hvorforBommerIntuisjonen: (
       <>
-        Dette er «gambler's fallacy». Vi vet at lange serier er sjeldne, og konkluderer at
-        serien «må» ta slutt. Men det som er sjeldent, er å <em>starte</em> en slik serie.
-        Når du allerede står midt i den, er du forbi det sjeldne. Alternativ d er
-        forresten svaret på et annet, gyldig spørsmål — bare ikke dette.
+        Dette er «gambler's fallacy». Vi vet at lange serier er sjeldne, og konkluderer at serien
+        «må» ta slutt. Men det som er sjeldent, er å <em>starte</em> en slik serie. Når du allerede
+        står midt i den, er du forbi det sjeldne. Alternativ d er forresten svaret på et annet,
+        gyldig spørsmål — bare ikke dette.
       </>
     ),
   },
@@ -290,8 +277,8 @@ const ANSLAG: Anslag[] = [
     tema: "Uordnet telling — håndtrykk",
     sporsmal: (
       <>
-        Ti personer møtes, og <strong>alle hilser på alle</strong> nøyaktig én gang. Hvor
-        mange håndtrykk blir det til sammen?
+        Ti personer møtes, og <strong>alle hilser på alle</strong> nøyaktig én gang. Hvor mange
+        håndtrykk blir det til sammen?
       </>
     ),
     alternativer: [
@@ -303,17 +290,17 @@ const ANSLAG: Anslag[] = [
     riktigId: "b",
     fasit: (
       <>
-        <strong>45.</strong> Hver person hilser på ni andre, som gir 10 · 9 = 90 — men da
-        har vi talt hvert håndtrykk to ganger (én gang fra hver hånd). Svaret er 90/2 = 45,
-        som er nøyaktig 10C2: antall måter å velge 2 av 10 når rekkefølgen ikke betyr noe.
-        Et håndtrykk mellom Ada og Bo er det samme som mellom Bo og Ada.
+        <strong>45.</strong> Hver person hilser på ni andre, som gir 10 · 9 = 90 — men da har vi
+        talt hvert håndtrykk to ganger (én gang fra hver hånd). Svaret er 90/2 = 45, som er nøyaktig
+        10C2: antall måter å velge 2 av 10 når rekkefølgen ikke betyr noe. Et håndtrykk mellom Ada
+        og Bo er det samme som mellom Bo og Ada.
       </>
     ),
     hvorforBommerIntuisjonen: (
       <>
-        90 er svaret på det ordnede spørsmålet — antall <em>par med retning</em>. Hele
-        forskjellen mellom nPk og nCk er faktoren k! som fjerner de rekkefølgene vi ikke
-        vil telle. Her er k = 2, så vi deler på 2! = 2.
+        90 er svaret på det ordnede spørsmålet — antall <em>par med retning</em>. Hele forskjellen
+        mellom nPk og nCk er faktoren k! som fjerner de rekkefølgene vi ikke vil telle. Her er k =
+        2, så vi deler på 2! = 2.
       </>
     ),
   },
@@ -337,18 +324,17 @@ const ANSLAG: Anslag[] = [
     fasit: (
       <>
         <strong>Nøyaktig like sannsynlige</strong> — begge har sannsynlighet 1 / 5 379 616.
-        Trekningen ser bare på hvilke kuler som kommer ut, ikke på om resultatet ser
-        mønstret ut for oss. Det som <em>er</em> sant, er at det finnes ekstremt mange flere
-        «spredte» rekker enn «pene» rekker, så du vil nesten alltid <em>se</em> en spredt
-        rekke. Men det er en påstand om en stor gruppe av rekker, ikke om én bestemt rekke.
+        Trekningen ser bare på hvilke kuler som kommer ut, ikke på om resultatet ser mønstret ut for
+        oss. Det som <em>er</em> sant, er at det finnes ekstremt mange flere «spredte» rekker enn
+        «pene» rekker, så du vil nesten alltid <em>se</em> en spredt rekke. Men det er en påstand om
+        en stor gruppe av rekker, ikke om én bestemt rekke.
       </>
     ),
     hvorforBommerIntuisjonen: (
       <>
-        Vi forveksler en <em>enkelt hendelse</em> med den <em>klassen</em> den tilhører. Det
-        er en generell felle i hele modulen, og den kommer igjen når vi skal telle: første
-        spørsmål er alltid «hvor mange enkeltutfall er det, og teller jeg dem én eller flere
-        ganger?».
+        Vi forveksler en <em>enkelt hendelse</em> med den <em>klassen</em> den tilhører. Det er en
+        generell felle i hele modulen, og den kommer igjen når vi skal telle: første spørsmål er
+        alltid «hvor mange enkeltutfall er det, og teller jeg dem én eller flere ganger?».
       </>
     ),
   },
@@ -357,9 +343,9 @@ const ANSLAG: Anslag[] = [
     tema: "Betinget — to barn",
     sporsmal: (
       <>
-        En familie har to barn. Du får vite at <strong>minst ett av dem er jente</strong>.
-        Hva er sannsynligheten for at begge er jenter? (Anta at gutt og jente er like
-        sannsynlig og uavhengig per barn.)
+        En familie har to barn. Du får vite at <strong>minst ett av dem er jente</strong>. Hva er
+        sannsynligheten for at begge er jenter? (Anta at gutt og jente er like sannsynlig og
+        uavhengig per barn.)
       </>
     ),
     alternativer: [
@@ -371,18 +357,17 @@ const ANSLAG: Anslag[] = [
     riktigId: "b",
     fasit: (
       <>
-        <strong>1/3.</strong> Skriv ut utfallsrommet med eldst først: JJ, JG, GJ, GG — fire
-        like sannsynlige utfall. Opplysningen «minst én jente» stryker GG, så vi står igjen
-        med tre like sannsynlige utfall: JJ, JG, GJ. Bare ett av dem har to jenter.
+        <strong>1/3.</strong> Skriv ut utfallsrommet med eldst først: JJ, JG, GJ, GG — fire like
+        sannsynlige utfall. Opplysningen «minst én jente» stryker GG, så vi står igjen med tre like
+        sannsynlige utfall: JJ, JG, GJ. Bare ett av dem har to jenter.
       </>
     ),
     hvorforBommerIntuisjonen: (
       <>
-        Vi hører opplysningen som «ett bestemt barn er jente» — og da <em>er</em> svaret
-        1/2, fordi det andre barnet er uavhengig. «Minst én» sier derimot ikke hvilket, og
-        beholder derfor to blandede utfall i stedet for ett. Dette er kjernen i betinging:
-        informasjon virker ved å <em>krympe utfallsrommet</em>, og nøyaktig hvilke utfall
-        som blir strøket avgjør svaret.
+        Vi hører opplysningen som «ett bestemt barn er jente» — og da <em>er</em> svaret 1/2, fordi
+        det andre barnet er uavhengig. «Minst én» sier derimot ikke hvilket, og beholder derfor to
+        blandede utfall i stedet for ett. Dette er kjernen i betinging: informasjon virker ved å{" "}
+        <em>krympe utfallsrommet</em>, og nøyaktig hvilke utfall som blir strøket avgjør svaret.
       </>
     ),
   },
@@ -398,8 +383,8 @@ const MALOPPGAVER: MaloppgaveData[] = [
     tittel: "Lotto — hvor mange rekker finnes?",
     oppgave: (
       <>
-        I Lotto trekkes <strong>7 tall blant 34</strong>. Rekkefølgen tallene trekkes i har
-        ingen betydning for om du har vunnet. Hvor mange ulike rekker finnes det?
+        I Lotto trekkes <strong>7 tall blant 34</strong>. Rekkefølgen tallene trekkes i har ingen
+        betydning for om du har vunnet. Hvor mange ulike rekker finnes det?
       </>
     ),
     data: <>n = 34, k = 7, rekkefølgen betyr ikke noe</>,
@@ -427,26 +412,24 @@ const MALOPPGAVER: MaloppgaveData[] = [
     utregning: (
       <>
         <p>
-          <strong>1. Velg formel.</strong> Uten tilbakelegging (en kule trekkes ikke to
-          ganger) og uten rekkefølge (7-3-1 er samme rekke som 1-3-7) ⇒ kombinasjoner.
+          <strong>1. Velg formel.</strong> Uten tilbakelegging (en kule trekkes ikke to ganger) og
+          uten rekkefølge (7-3-1 er samme rekke som 1-3-7) ⇒ kombinasjoner.
         </p>
         <p className="mt-1">
-          <strong>2. Sett inn:</strong>{" "}
-          <span className="font-mono">34C7 = 34! / (7! · 27!)</span>
+          <strong>2. Sett inn:</strong> <span className="font-mono">34C7 = 34! / (7! · 27!)</span>
         </p>
         <p className="mt-1">
-          <strong>3. Forkort før du regner.</strong> Alt fra 27! og ned stryker mot 34!, så
-          det som står igjen er{" "}
-          <span className="font-mono">(34·33·32·31·30·29·28) / (7·6·5·4·3·2·1)</span>.
+          <strong>3. Forkort før du regner.</strong> Alt fra 27! og ned stryker mot 34!, så det som
+          står igjen er <span className="font-mono">(34·33·32·31·30·29·28) / (7·6·5·4·3·2·1)</span>.
         </p>
         <p className="mt-1">
           <strong>4. Regn:</strong> teller = 27 113 264 640, nevner = 5 040, som gir{" "}
           <span className="font-mono">5 379 616</span>.
         </p>
         <p className="mt-2 text-muted-foreground">
-          Forkortingen i steg 3 er ikke et triks for å spare tid — den er nødvendig. 34! er
-          rundt 3·10³⁸, og en lommekalkulator mister presisjon eller gir overflyt hvis du
-          prøver å regne teller og nevner hver for seg.
+          Forkortingen i steg 3 er ikke et triks for å spare tid — den er nødvendig. 34! er rundt
+          3·10³⁸, og en lommekalkulator mister presisjon eller gir overflyt hvis du prøver å regne
+          teller og nevner hver for seg.
         </p>
       </>
     ),
@@ -486,17 +469,16 @@ const MALOPPGAVER: MaloppgaveData[] = [
       <>
         <p>
           <strong>1. Rekkefølgen teller</strong> (1234 ≠ 4321), og{" "}
-          <strong>gjentakelse er forbudt</strong> ⇒ ordnet utvalg uten tilbakelegging,
-          altså nPk.
+          <strong>gjentakelse er forbudt</strong> ⇒ ordnet utvalg uten tilbakelegging, altså nPk.
         </p>
         <p className="mt-1">
           <strong>2.</strong>{" "}
           <span className="font-mono">10P4 = 10! / 6! = 10 · 9 · 8 · 7 = 5040</span>
         </p>
         <p className="mt-2 text-muted-foreground">
-          Legg merke til at tellingen «10 valg, så 9, så 8, så 7» er hele utledningen av
-          formelen. Du trenger strengt tatt aldri å huske nPk — hvis du klarer å beskrive
-          valgene i rekkefølge, faller produktet ut av seg selv.
+          Legg merke til at tellingen «10 valg, så 9, så 8, så 7» er hele utledningen av formelen.
+          Du trenger strengt tatt aldri å huske nPk — hvis du klarer å beskrive valgene i
+          rekkefølge, faller produktet ut av seg selv.
         </p>
       </>
     ),
@@ -506,17 +488,16 @@ const MALOPPGAVER: MaloppgaveData[] = [
     tittel: "Bayes — hva betyr en positiv test?",
     oppgave: (
       <>
-        Dette er anslag 1, nå regnet ut. En sykdom rammer <strong>0,5 %</strong> av
-        befolkningen. Testen gir utslag hos <strong>99 %</strong> av de syke
-        (sensitiviteten), og gir riktig negativt svar hos <strong>95 %</strong> av de friske
-        (spesifisiteten). En tilfeldig person tester positivt. Regn ut sannsynligheten for
-        at personen faktisk er syk.
+        Dette er anslag 1, nå regnet ut. En sykdom rammer <strong>0,5 %</strong> av befolkningen.
+        Testen gir utslag hos <strong>99 %</strong> av de syke (sensitiviteten), og gir riktig
+        negativt svar hos <strong>95 %</strong> av de friske (spesifisiteten). En tilfeldig person
+        tester positivt. Regn ut sannsynligheten for at personen faktisk er syk.
       </>
     ),
     data: (
       <>
-        P(syk) = 0,005 · P(positiv | syk) = 0,99 · P(negativ | frisk) = 0,95, altså
-        P(positiv | frisk) = 0,05
+        P(syk) = 0,005 · P(positiv | syk) = 0,99 · P(negativ | frisk) = 0,95, altså P(positiv |
+        frisk) = 0,05
       </>
     ),
     metoder: [
@@ -548,22 +529,22 @@ const MALOPPGAVER: MaloppgaveData[] = [
           <span className="font-mono">P(positiv | syk) · P(syk) = 0,99 · 0,005 = 0,00495</span>
         </p>
         <p className="mt-1">
-          <strong>2. Nevner — alle positive, uansett årsak.</strong> Her brukes setningen om
-          total sannsynlighet: en positiv test kommer enten fra en syk eller fra en frisk.
+          <strong>2. Nevner — alle positive, uansett årsak.</strong> Her brukes setningen om total
+          sannsynlighet: en positiv test kommer enten fra en syk eller fra en frisk.
           <br />
           <span className="font-mono">
             P(positiv) = 0,99 · 0,005 + 0,05 · 0,995 = 0,00495 + 0,04975 = 0,0547
           </span>
         </p>
         <p className="mt-1">
-          <strong>3. Del:</strong>{" "}
-          <span className="font-mono">0,00495 / 0,0547 ≈ 0,0905</span>, altså cirka 9 %.
+          <strong>3. Del:</strong> <span className="font-mono">0,00495 / 0,0547 ≈ 0,0905</span>,
+          altså cirka 9 %.
         </p>
         <p className="mt-2 text-muted-foreground">
-          Se på de to leddene i nevneren: 0,00495 mot 0,04975. De falske positive er ti
-          ganger så mange som de ekte, utelukkende fordi det er 199 friske per syk. Det er
-          hele forklaringen på det kontraintuitive svaret — og grunnen til at prevalensen
-          aldri kan utelates fra regnestykket.
+          Se på de to leddene i nevneren: 0,00495 mot 0,04975. De falske positive er ti ganger så
+          mange som de ekte, utelukkende fordi det er 199 friske per syk. Det er hele forklaringen
+          på det kontraintuitive svaret — og grunnen til at prevalensen aldri kan utelates fra
+          regnestykket.
         </p>
       </>
     ),
@@ -573,8 +554,8 @@ const MALOPPGAVER: MaloppgaveData[] = [
     tittel: "Minst én komponent svikter",
     oppgave: (
       <>
-        Et system har <strong>fire komponenter</strong> som svikter uavhengig av hverandre.
-        Hver enkelt svikter med sannsynlighet <strong>0,03</strong> i løpet av et år. Hva er
+        Et system har <strong>fire komponenter</strong> som svikter uavhengig av hverandre. Hver
+        enkelt svikter med sannsynlighet <strong>0,03</strong> i løpet av et år. Hva er
         sannsynligheten for at <strong>minst én</strong> av dem svikter i løpet av året?
       </>
     ),
@@ -603,8 +584,8 @@ const MALOPPGAVER: MaloppgaveData[] = [
     utregning: (
       <>
         <p>
-          <strong>1. Snu spørsmålet.</strong> «Minst én» har mange utfall (én, to, tre eller
-          fire svikter). Komplementet har bare ett: ingen svikter. Det er alltid det lettere
+          <strong>1. Snu spørsmålet.</strong> «Minst én» har mange utfall (én, to, tre eller fire
+          svikter). Komplementet har bare ett: ingen svikter. Det er alltid det lettere
           regnestykket.
         </p>
         <p className="mt-1">
@@ -617,8 +598,8 @@ const MALOPPGAVER: MaloppgaveData[] = [
         </p>
         <p className="mt-2 text-muted-foreground">
           Regelen å ta med seg: når oppgaven sier «minst én», skriv{" "}
-          <span className="font-mono">1 − P(ingen)</span> før du gjør noe annet. Uten
-          uavhengighet gjelder derimot ikke steg 2 — da kan du ikke bare multiplisere.
+          <span className="font-mono">1 − P(ingen)</span> før du gjør noe annet. Uten uavhengighet
+          gjelder derimot ikke steg 2 — da kan du ikke bare multiplisere.
         </p>
       </>
     ),
@@ -629,8 +610,7 @@ const MALOPPGAVER: MaloppgaveData[] = [
     oppgave: (
       <>
         En urne inneholder <strong>12 kuler: 5 røde og 7 blå</strong>. Du trekker{" "}
-        <strong>to kuler uten tilbakelegging</strong>. Hva er sannsynligheten for at begge
-        er røde?
+        <strong>to kuler uten tilbakelegging</strong>. Hva er sannsynligheten for at begge er røde?
       </>
     ),
     data: <>N = 12 kuler, 5 røde, 2 trekk, ingen tilbakelegging</>,
@@ -658,25 +638,21 @@ const MALOPPGAVER: MaloppgaveData[] = [
     utregning: (
       <>
         <p>
-          <strong>1. Første trekk:</strong>{" "}
-          <span className="font-mono">P(rød₁) = 5/12</span>
+          <strong>1. Første trekk:</strong> <span className="font-mono">P(rød₁) = 5/12</span>
         </p>
         <p className="mt-1">
-          <strong>2. Andre trekk, gitt at det første var rødt.</strong> Nå er det 11 kuler
-          igjen, hvorav 4 røde:{" "}
-          <span className="font-mono">P(rød₂ | rød₁) = 4/11</span>
+          <strong>2. Andre trekk, gitt at det første var rødt.</strong> Nå er det 11 kuler igjen,
+          hvorav 4 røde: <span className="font-mono">P(rød₂ | rød₁) = 4/11</span>
         </p>
         <p className="mt-1">
           <strong>3. Multiplikasjonssetningen:</strong>{" "}
-          <span className="font-mono">
-            P(rød₁ ∩ rød₂) = (5/12) · (4/11) = 20/132 ≈ 0,1515
-          </span>
+          <span className="font-mono">P(rød₁ ∩ rød₂) = (5/12) · (4/11) = 20/132 ≈ 0,1515</span>
         </p>
         <p className="mt-2 text-muted-foreground">
           Samme svar via kombinatorikk:{" "}
-          <span className="font-mono">5C2 / 12C2 = 10 / 66 ≈ 0,1515</span>. At de to veiene
-          møtes er ikke tilfeldig — det er samme telling sett fra to kanter, og det er verdt
-          å kunne begge, fordi eksamensoppgaver er formulert i begge språk.
+          <span className="font-mono">5C2 / 12C2 = 10 / 66 ≈ 0,1515</span>. At de to veiene møtes er
+          ikke tilfeldig — det er samme telling sett fra to kanter, og det er verdt å kunne begge,
+          fordi eksamensoppgaver er formulert i begge språk.
         </p>
       </>
     ),
@@ -694,8 +670,8 @@ const FEILSOKING: Feilsoking[] = [
     feilnavn: "Omvendt betinging (P(A|B) forvekslet med P(B|A))",
     situasjon: (
       <>
-        En pasient har testet positivt på screeningtesten fra oppgave 3, og skriver følgende
-        i et innlegg. Konklusjonen er feil — hvor går det galt?
+        En pasient har testet positivt på screeningtesten fra oppgave 3, og skriver følgende i et
+        innlegg. Konklusjonen er feil — hvor går det galt?
       </>
     ),
     ledd: [
@@ -727,12 +703,14 @@ const FEILSOKING: Feilsoking[] = [
     feilLeddId: "l3",
     riktigResonnement: (
       <>
-        Regn ut nevneren først. Blant 100 000 personer tester 495 syke positivt og 4 975
-        friske positivt. Andelen ekte blant de positive er 495 / 5 470 ≈{" "}
-        <strong>9 %</strong>. Testen har altså flyttet troen på sykdom fra 0,5 % til 9 % —
-        en attendobling, som er mye, men langt fra «nesten sikkert». Huskeregelen:{" "}
-        <strong>så snart en oppgave gir deg P(B | A) og spør etter P(A | B), er det Bayes,
-        og prevalensen kan aldri utelates.</strong>
+        Regn ut nevneren først. Blant 100 000 personer tester 495 syke positivt og 4 975 friske
+        positivt. Andelen ekte blant de positive er 495 / 5 470 ≈ <strong>9 %</strong>. Testen har
+        altså flyttet troen på sykdom fra 0,5 % til 9 % — en attendobling, som er mye, men langt fra
+        «nesten sikkert». Huskeregelen:{" "}
+        <strong>
+          så snart en oppgave gir deg P(B | A) og spør etter P(A | B), er det Bayes, og prevalensen
+          kan aldri utelates.
+        </strong>
       </>
     ),
   },
@@ -742,8 +720,7 @@ const FEILSOKING: Feilsoking[] = [
     feilnavn: "Gambler's fallacy (uavhengighet oversett)",
     situasjon: (
       <>
-        En spiller har notert de siste spinnene på et rulettbord og skriver ned strategien
-        sin slik.
+        En spiller har notert de siste spinnene på et rulettbord og skriver ned strategien sin slik.
       </>
     ),
     ledd: [
@@ -782,12 +759,12 @@ const FEILSOKING: Feilsoking[] = [
     riktigResonnement: (
       <>
         Formelt: hendelsene er uavhengige, og da er{" "}
-        <span className="font-mono">P(A | B) = P(A)</span> per definisjon. Historikken er
-        irrelevant informasjon. Testen du kan bruke for å avsløre feilen hos deg selv:{" "}
-        <em>hvilken fysisk mekanisme skulle overføre informasjon fra forrige spinn til
-        neste?</em> Finnes den ikke, er hendelsene uavhengige. (Motsatt: trekker du kort fra
-        en kortstokk <em>uten</em> å legge tilbake, finnes mekanismen — kortet er borte — og
-        da er de ikke uavhengige.)
+        <span className="font-mono">P(A | B) = P(A)</span> per definisjon. Historikken er irrelevant
+        informasjon. Testen du kan bruke for å avsløre feilen hos deg selv:{" "}
+        <em>hvilken fysisk mekanisme skulle overføre informasjon fra forrige spinn til neste?</em>{" "}
+        Finnes den ikke, er hendelsene uavhengige. (Motsatt: trekker du kort fra en kortstokk{" "}
+        <em>uten</em> å legge tilbake, finnes mekanismen — kortet er borte — og da er de ikke
+        uavhengige.)
       </>
     ),
   },
@@ -797,20 +774,22 @@ const FEILSOKING: Feilsoking[] = [
     feilnavn: "Antatt uavhengighet der den ikke gjelder",
     situasjon: (
       <>
-        En sakkyndig skal vurdere om to plutselige spedbarnsdødsfall i samme familie kan
-        skyldes tilfeldighet, og resonnerer slik i retten.
+        En sakkyndig skal vurdere om to plutselige spedbarnsdødsfall i samme familie kan skyldes
+        tilfeldighet, og resonnerer slik i retten.
       </>
     ),
     ledd: [
       {
         id: "l1",
-        tekst: "Ett tilfelle av krybbedød forekommer hos omtrent 1 av 8500 spedbarn i denne gruppen.",
+        tekst:
+          "Ett tilfelle av krybbedød forekommer hos omtrent 1 av 8500 spedbarn i denne gruppen.",
         vurdering:
           "Dette holder som utgangspunkt — det er en marginal rate hentet fra statistikk, og den kan diskuteres empirisk, men den er ikke en logisk feil.",
       },
       {
         id: "l2",
-        tekst: "Sannsynligheten for to slike dødsfall i samme familie er derfor (1/8500)² ≈ 1 av 73 millioner.",
+        tekst:
+          "Sannsynligheten for to slike dødsfall i samme familie er derfor (1/8500)² ≈ 1 av 73 millioner.",
         vurdering:
           "Her er feilen. Å multiplisere krever uavhengighet, og to barn i samme familie deler gener, bomiljø, røykevaner i hjemmet og sovevaner. Hvis familien har en ukjent risikofaktor, er P(andre dødsfall | første dødsfall) mye høyere enn 1/8500 — kanskje ti ganger så høy. Riktig regnestykke er P(A) · P(B | A), og multiplikasjon med P(B) alene er et spesialtilfelle som må begrunnes, ikke antas.",
       },
@@ -830,14 +809,13 @@ const FEILSOKING: Feilsoking[] = [
     feilLeddId: "l2",
     riktigResonnement: (
       <>
-        Bruk <span className="font-mono">P(A ∩ B) = P(A) · P(B | A)</span> — den gjelder
-        alltid. Den forenklede formen{" "}
-        <span className="font-mono">P(A) · P(B)</span> gjelder kun når hendelsene faktisk er
-        uavhengige, og for søsken i samme hjem er de nesten sikkert ikke det. Sjekklisten
+        Bruk <span className="font-mono">P(A ∩ B) = P(A) · P(B | A)</span> — den gjelder alltid. Den
+        forenklede formen <span className="font-mono">P(A) · P(B)</span> gjelder kun når hendelsene
+        faktisk er uavhengige, og for søsken i samme hjem er de nesten sikkert ikke det. Sjekklisten
         før du multipliserer to sannsynligheter:{" "}
-        <strong>deler de to hendelsene noen felles årsak?</strong> Gjør de det, må du
-        betinge. Dette resonnementet er ikke konstruert for oppgavens skyld — varianter av
-        det har ført til reelle justismord.
+        <strong>deler de to hendelsene noen felles årsak?</strong> Gjør de det, må du betinge. Dette
+        resonnementet er ikke konstruert for oppgavens skyld — varianter av det har ført til reelle
+        justismord.
       </>
     ),
   },
@@ -847,8 +825,8 @@ const FEILSOKING: Feilsoking[] = [
     feilnavn: "Ordnet telling der rekkefølgen ikke betyr noe",
     situasjon: (
       <>
-        En studentforening skal velge en komité på tre personer blant åtte kandidater. Alle
-        tre får samme rolle. Sekretæren regner ut antall mulige komiteer slik.
+        En studentforening skal velge en komité på tre personer blant åtte kandidater. Alle tre får
+        samme rolle. Sekretæren regner ut antall mulige komiteer slik.
       </>
     ),
     ledd: [
@@ -881,11 +859,11 @@ const FEILSOKING: Feilsoking[] = [
     riktigResonnement: (
       <>
         Del på antall rekkefølger du har overtalt:{" "}
-        <span className="font-mono">8C3 = (8 · 7 · 6) / 3! = 336 / 6 = 56</span>. Spørsmålet
-        som avgjør hver eneste kombinatorikkoppgave er ett:{" "}
-        <strong>hvis jeg bytter om på to av de valgte, har jeg da fått noe nytt?</strong> Ja
-        ⇒ permutasjon (nPk). Nei ⇒ kombinasjon (nCk). Her ville en ombytting gitt samme
-        komité, så vi deler på k!.
+        <span className="font-mono">8C3 = (8 · 7 · 6) / 3! = 336 / 6 = 56</span>. Spørsmålet som
+        avgjør hver eneste kombinatorikkoppgave er ett:{" "}
+        <strong>hvis jeg bytter om på to av de valgte, har jeg da fått noe nytt?</strong> Ja ⇒
+        permutasjon (nPk). Nei ⇒ kombinasjon (nCk). Her ville en ombytting gitt samme komité, så vi
+        deler på k!.
       </>
     ),
   },
@@ -902,8 +880,8 @@ const RECALL: RecallKort[] = [
     sporsmal: "Skriv addisjonssetningen for P(A ∪ B).",
     svar: (
       <>
-        <span className="font-mono">P(A ∪ B) = P(A) + P(B) − P(A ∩ B)</span>. Snittet
-        trekkes fra fordi det ellers telles i begge leddene.
+        <span className="font-mono">P(A ∪ B) = P(A) + P(B) − P(A ∩ B)</span>. Snittet trekkes fra
+        fordi det ellers telles i begge leddene.
       </>
     ),
     hvorforUtenat:
@@ -915,8 +893,8 @@ const RECALL: RecallKort[] = [
     sporsmal: "Skriv definisjonen av betinget sannsynlighet P(A | B).",
     svar: (
       <>
-        <span className="font-mono">P(A | B) = P(A ∩ B) / P(B)</span>, forutsatt P(B) &gt; 0.
-        Vi krymper utfallsrommet til B, og spør hvor stor del av det nye rommet som er A.
+        <span className="font-mono">P(A | B) = P(A ∩ B) / P(B)</span>, forutsatt P(B) &gt; 0. Vi
+        krymper utfallsrommet til B, og spør hvor stor del av det nye rommet som er A.
       </>
     ),
     hvorforUtenat:
@@ -942,8 +920,8 @@ const RECALL: RecallKort[] = [
     sporsmal: "Skriv Bayes' teorem, med nevneren skrevet ut.",
     svar: (
       <>
-        <span className="font-mono">P(A | B) = P(B | A)·P(A) / P(B)</span>, der nevneren
-        oftest må bygges med setningen om total sannsynlighet:{" "}
+        <span className="font-mono">P(A | B) = P(B | A)·P(A) / P(B)</span>, der nevneren oftest må
+        bygges med setningen om total sannsynlighet:{" "}
         <span className="font-mono">P(B) = P(B | A)·P(A) + P(B | Aᶜ)·P(Aᶜ)</span>.
       </>
     ),
@@ -957,8 +935,8 @@ const RECALL: RecallKort[] = [
     svar: (
       <>
         <span className="font-mono">P(A ∩ B) = P(A) · P(B)</span>. Ekvivalent:{" "}
-        <span className="font-mono">P(A | B) = P(A)</span> — det å vite at B skjedde endrer
-        ikke troen på A.
+        <span className="font-mono">P(A | B) = P(A)</span> — det å vite at B skjedde endrer ikke
+        troen på A.
       </>
     ),
     hvorforUtenat:
@@ -970,10 +948,10 @@ const RECALL: RecallKort[] = [
     sporsmal: "nPk eller nCk — hvordan avgjør du?",
     svar: (
       <>
-        Spør: <strong>hvis jeg bytter om på to av de valgte, har jeg fått noe nytt?</strong>{" "}
-        Ja ⇒ rekkefølgen teller ⇒ <span className="font-mono">nPk = n!/(n−k)!</span>. Nei ⇒{" "}
-        <span className="font-mono">nCk = n!/(k!(n−k)!)</span>. Forholdet mellom dem er
-        alltid faktoren k!.
+        Spør: <strong>hvis jeg bytter om på to av de valgte, har jeg fått noe nytt?</strong> Ja ⇒
+        rekkefølgen teller ⇒ <span className="font-mono">nPk = n!/(n−k)!</span>. Nei ⇒{" "}
+        <span className="font-mono">nCk = n!/(k!(n−k)!)</span>. Forholdet mellom dem er alltid
+        faktoren k!.
       </>
     ),
     hvorforUtenat:
@@ -985,8 +963,8 @@ const RECALL: RecallKort[] = [
     sporsmal: "Oppgaven sier «minst én». Hva gjør du først?",
     svar: (
       <>
-        Skriv <span className="font-mono">P(minst én) = 1 − P(ingen)</span>. «Minst én» har
-        mange utfall, komplementet har ett. Ved uavhengighet blir P(ingen) et enkelt produkt.
+        Skriv <span className="font-mono">P(minst én) = 1 − P(ingen)</span>. «Minst én» har mange
+        utfall, komplementet har ett. Ved uavhengighet blir P(ingen) et enkelt produkt.
       </>
     ),
     hvorforUtenat:
@@ -998,9 +976,9 @@ const RECALL: RecallKort[] = [
     sporsmal: "Hvorfor er P(A | B) og P(B | A) ikke det samme?",
     svar: (
       <>
-        De har ulike nevnere: den ene deler på P(B), den andre på P(A). P(positiv | syk) =
-        0,99 og P(syk | positiv) ≈ 0,09 i samme eksempel. Bayes er nettopp{" "}
-        <em>vekslingskursen</em> mellom dem, og prevalensen er kursen.
+        De har ulike nevnere: den ene deler på P(B), den andre på P(A). P(positiv | syk) = 0,99 og
+        P(syk | positiv) ≈ 0,09 i samme eksempel. Bayes er nettopp <em>vekslingskursen</em> mellom
+        dem, og prevalensen er kursen.
       </>
     ),
     hvorforUtenat:
@@ -1013,9 +991,9 @@ const RECALL: RecallKort[] = [
     svar: (
       <>
         <strong>Disjunkte</strong> (uforenlige): kan ikke skje samtidig, P(A ∩ B) = 0.{" "}
-        <strong>Uavhengige</strong>: P(A ∩ B) = P(A)·P(B). To hendelser med positiv
-        sannsynlighet kan aldri være begge deler — er de disjunkte, gjør det å vite at B
-        skjedde A umulig, og det er maksimal avhengighet.
+        <strong>Uavhengige</strong>: P(A ∩ B) = P(A)·P(B). To hendelser med positiv sannsynlighet
+        kan aldri være begge deler — er de disjunkte, gjør det å vite at B skjedde A umulig, og det
+        er maksimal avhengighet.
       </>
     ),
     hvorforUtenat:
@@ -1035,23 +1013,22 @@ export function Modul2SannsynlighetPage() {
             Sannsynlighet — å regne på det som ennå ikke har skjedd
           </h1>
           <p className="mt-3 leading-relaxed text-muted-foreground">
-            Modul 1 beskrev data du allerede har målt. Denne modulen handler om det motsatte:
-            å si noe om utfall før de inntreffer. Formlene er få og korte. Det vanskelige er
-            å oppdage hvilken av dem situasjonen krever — og der bommer intuisjonen så
-            systematisk at flere av feilene har egne navn.
+            Modul 1 beskrev data du allerede har målt. Denne modulen handler om det motsatte: å si
+            noe om utfall før de inntreffer. Formlene er få og korte. Det vanskelige er å oppdage
+            hvilken av dem situasjonen krever — og der bommer intuisjonen så systematisk at flere av
+            feilene har egne navn.
           </p>
           <div className="mt-4 rounded-lg border border-brand/30 bg-brand/5 p-4 text-sm">
-            <strong className="text-foreground">Slik er modulen bygget:</strong> du{" "}
-            <em>anslår</em> først, uten hjelp. Så <em>ser</em> du hva som skjer i
-            simulatorene. Så <em>regner</em> du selv, med sjekk på både metodevalg og tall.
-            Til slutt <em>feilsøker</em> du ferdige resonnementer som er gale. Kortene
-            nederst er bare sluttsjekken — de er ikke der du lærer stoffet.
+            <strong className="text-foreground">Slik er modulen bygget:</strong> du <em>anslår</em>{" "}
+            først, uten hjelp. Så <em>ser</em> du hva som skjer i simulatorene. Så <em>regner</em>{" "}
+            du selv, med sjekk på både metodevalg og tall. Til slutt <em>feilsøker</em> du ferdige
+            resonnementer som er gale. Kortene nederst er bare sluttsjekken — de er ikke der du
+            lærer stoffet.
           </div>
           <div className="mt-3 rounded-lg border border-border bg-muted/30 p-4 text-sm text-muted-foreground">
-            <strong className="text-foreground">Forutsetter modul 1.</strong> Skillet mellom
-            utvalg og populasjon derfra er det samme skillet som går igjen her, i ny form:
-            forskjellen mellom det som <em>faktisk skjedde</em> og det som{" "}
-            <em>kunne ha skjedd</em>.
+            <strong className="text-foreground">Forutsetter modul 1.</strong> Skillet mellom utvalg
+            og populasjon derfra er det samme skillet som går igjen her, i ny form: forskjellen
+            mellom det som <em>faktisk skjedde</em> og det som <em>kunne ha skjedd</em>.
           </div>
           <ProvisoriskKapittelnote className="mt-3" />
         </header>
@@ -1067,10 +1044,9 @@ export function Modul2SannsynlighetPage() {
           anslag={ANSLAG}
           intro={
             <>
-              Gjett før du leser videre. Denne modulen er der statistisk intuisjon bommer
-              hardest — flere av spørsmålene under har svar som fortsatt overrasker folk som
-              har regnet på dem i årevis. Ingenting telles, og et bom her er mer verdt enn en
-              riktig gjetning.
+              Gjett før du leser videre. Denne modulen er der statistisk intuisjon bommer hardest —
+              flere av spørsmålene under har svar som fortsatt overrasker folk som har regnet på dem
+              i årevis. Ingenting telles, og et bom her er mer verdt enn en riktig gjetning.
             </>
           }
         />
@@ -1078,33 +1054,29 @@ export function Modul2SannsynlighetPage() {
         {/* --- Forklaring + type 2: guidede simuleringer ------------------- */}
         <section id="utfallsrom" className="mb-12 scroll-mt-28">
           <h2 className="mb-3 flex items-center gap-2 text-xl font-semibold">
-            <Layers className="h-5 w-5 text-brand" /> Utfallsrom, hendelser og de tre
-            grunnreglene
+            <Layers className="h-5 w-5 text-brand" /> Utfallsrom, hendelser og de tre grunnreglene
           </h2>
           <p className="leading-relaxed">
             <strong>Utfallsrommet Ω</strong> er lista over alt som kan skje. En{" "}
-            <strong>hendelse</strong> er en delmengde av den lista. Når alle enkeltutfall er
-            like sannsynlige — terning, kortstokk, lodd — reduseres hele sannsynlighetsregning
-            til telling:{" "}
-            <span className="font-mono">
-              P(A) = antall utfall i A / antall utfall i Ω
-            </span>
-            . Det er derfor kombinatorikk kommer først: du kan ikke regne brøken uten å kunne
-            telle teller og nevner.
+            <strong>hendelse</strong> er en delmengde av den lista. Når alle enkeltutfall er like
+            sannsynlige — terning, kortstokk, lodd — reduseres hele sannsynlighetsregning til
+            telling: <span className="font-mono">P(A) = antall utfall i A / antall utfall i Ω</span>
+            . Det er derfor kombinatorikk kommer først: du kan ikke regne brøken uten å kunne telle
+            teller og nevner.
           </p>
           <p className="mt-2 leading-relaxed">
-            Alt annet bygger på tre regler. <strong>Én:</strong> en sannsynlighet ligger
-            alltid mellom 0 og 1. <strong>To:</strong> P(Ω) = 1, altså skjer <em>noe</em>.{" "}
+            Alt annet bygger på tre regler. <strong>Én:</strong> en sannsynlighet ligger alltid
+            mellom 0 og 1. <strong>To:</strong> P(Ω) = 1, altså skjer <em>noe</em>.{" "}
             <strong>Tre:</strong> for hendelser som ikke kan inntreffe samtidig, legges
             sannsynlighetene sammen. Ut av den siste faller både addisjonssetningen{" "}
             <span className="font-mono">P(A ∪ B) = P(A) + P(B) − P(A ∩ B)</span> og
             komplementregelen <span className="font-mono">P(Aᶜ) = 1 − P(A)</span>.
           </p>
           <p className="mt-2 leading-relaxed">
-            Minusleddet i addisjonssetningen er ikke pynt: uten det telles utfallene som
-            ligger i både A og B to ganger, og du kan ende med en «sannsynlighet» over 1. Det
-            er en gratis feilsjekk å ta med seg gjennom hele faget — får du et tall utenfor
-            [0, 1], har du gjort noe galt, alltid.
+            Minusleddet i addisjonssetningen er ikke pynt: uten det telles utfallene som ligger i
+            både A og B to ganger, og du kan ende med en «sannsynlighet» over 1. Det er en gratis
+            feilsjekk å ta med seg gjennom hele faget — får du et tall utenfor [0, 1], har du gjort
+            noe galt, alltid.
           </p>
         </section>
 
@@ -1113,26 +1085,25 @@ export function Modul2SannsynlighetPage() {
             <Dice5 className="h-5 w-5 text-brand" /> Å telle muligheter
           </h2>
           <p className="mb-3 leading-relaxed">
-            To spørsmål avgjør hvilken telleformel du skal bruke, og de er de eneste to
-            spørsmålene som finnes:
+            To spørsmål avgjør hvilken telleformel du skal bruke, og de er de eneste to spørsmålene
+            som finnes:
           </p>
           <ol className="mb-4 space-y-2 pl-5 text-sm leading-relaxed">
             <li className="list-decimal">
-              <strong>Kan samme element velges flere ganger?</strong> Legges kula tilbake i
-              urnen, eller ikke?
+              <strong>Kan samme element velges flere ganger?</strong> Legges kula tilbake i urnen,
+              eller ikke?
             </li>
             <li className="list-decimal">
-              <strong>Betyr rekkefølgen noe?</strong> Hvis du bytter om på to av de valgte —
-              har du da fått noe nytt?
+              <strong>Betyr rekkefølgen noe?</strong> Hvis du bytter om på to av de valgte — har du
+              da fått noe nytt?
             </li>
           </ol>
           <p className="mb-4 leading-relaxed">
             Svarer du «nei, nei» får du <span className="font-mono">nCk</span> (håndtrykk,
-            lottorekker, komiteer). «Nei, ja» gir <span className="font-mono">nPk</span>{" "}
-            (PIN-koder uten gjentakelse, pallplasser). «Ja, ja» gir{" "}
-            <span className="font-mono">n^k</span> (vanlige PIN-koder). Simulatoren under
-            viser de to første side om side: samme n og k, ulikt svar, og du kan se nøyaktig
-            hvilke rekkefølger som slås sammen når k! deles bort.
+            lottorekker, komiteer). «Nei, ja» gir <span className="font-mono">nPk</span> (PIN-koder
+            uten gjentakelse, pallplasser). «Ja, ja» gir <span className="font-mono">n^k</span>{" "}
+            (vanlige PIN-koder). Simulatoren under viser de to første side om side: samme n og k,
+            ulikt svar, og du kan se nøyaktig hvilke rekkefølger som slås sammen når k! deles bort.
           </p>
           <PermutationVsCombinationTree />
         </section>
@@ -1142,12 +1113,12 @@ export function Modul2SannsynlighetPage() {
             Med eller uten tilbakelegging — hvorfor det endrer alt
           </h2>
           <p className="mb-4 leading-relaxed">
-            Legges kula tilbake, er trekkene <em>uavhengige</em>: urnen er identisk hver
-            gang, og du kan multiplisere de samme sannsynlighetene. Legges den ikke tilbake,
-            endrer det første trekket vilkårene for det andre, og du må bruke en{" "}
-            <em>betinget</em> sannsynlighet i andre faktor. Dette er det enkleste stedet i
-            faget å se hva betinging faktisk gjør, så bruk litt tid på simulatoren: skru
-            tilbakelegging av og på, og følg med på hvordan andre trekk endrer seg.
+            Legges kula tilbake, er trekkene <em>uavhengige</em>: urnen er identisk hver gang, og du
+            kan multiplisere de samme sannsynlighetene. Legges den ikke tilbake, endrer det første
+            trekket vilkårene for det andre, og du må bruke en <em>betinget</em> sannsynlighet i
+            andre faktor. Dette er det enkleste stedet i faget å se hva betinging faktisk gjør, så
+            bruk litt tid på simulatoren: skru tilbakelegging av og på, og følg med på hvordan andre
+            trekk endrer seg.
           </p>
           <UrnModelSimulator />
         </section>
@@ -1158,15 +1129,14 @@ export function Modul2SannsynlighetPage() {
           </h2>
           <p className="leading-relaxed">
             <span className="font-mono">P(A | B) = P(A ∩ B) / P(B)</span> ser ut som en
-            teknikalitet, men sier noe enkelt: <strong>kast bort alt som ikke er B</strong>,
-            og spør hvor stor del av det som er igjen, som er A. Ny informasjon virker ved å
-            krympe utfallsrommet — det er hele mekanismen, og det er også svaret på
-            to-barn-anslaget over.
+            teknikalitet, men sier noe enkelt: <strong>kast bort alt som ikke er B</strong>, og spør
+            hvor stor del av det som er igjen, som er A. Ny informasjon virker ved å krympe
+            utfallsrommet — det er hele mekanismen, og det er også svaret på to-barn-anslaget over.
           </p>
           <p className="mt-2 mb-4 leading-relaxed">
             I rutenettet under er hele kvadratet Ω. Klikk på en kolonne for å betinge på den:
-            kolonnen blir det nye utfallsrommet, og brøken regnes om. Legg spesielt merke til
-            at P(A | B) og P(B | A) leser <em>ulike</em> retninger i det samme nettet.
+            kolonnen blir det nye utfallsrommet, og brøken regnes om. Legg spesielt merke til at P(A
+            | B) og P(B | A) leser <em>ulike</em> retninger i det samme nettet.
           </p>
           <ConditionalProbabilityGrid />
         </section>
@@ -1174,23 +1144,18 @@ export function Modul2SannsynlighetPage() {
         <section id="uavhengighet" className="mb-12 scroll-mt-28">
           <h2 className="mb-3 text-xl font-semibold">Uavhengighet — og hva det ikke er</h2>
           <p className="leading-relaxed">
-            A og B er uavhengige når{" "}
-            <span className="font-mono">P(A ∩ B) = P(A) · P(B)</span>, som er det samme som
-            å si <span className="font-mono">P(A | B) = P(A)</span>: å få vite at B skjedde
-            forandrer ingenting. Dette er en <em>betingelse som må begrunnes</em>, ikke en
-            standardinnstilling. Praktisk test: finnes det en mekanisme som kan overføre
-            informasjon fra den ene hendelsen til den andre? Myntkast — nei. Korttrekk uten
-            tilbakelegging — ja, kortet er borte. To søsken i samme hjem — ja, de deler gener
-            og miljø.
+            A og B er uavhengige når <span className="font-mono">P(A ∩ B) = P(A) · P(B)</span>, som
+            er det samme som å si <span className="font-mono">P(A | B) = P(A)</span>: å få vite at B
+            skjedde forandrer ingenting. Dette er en <em>betingelse som må begrunnes</em>, ikke en
+            standardinnstilling. Praktisk test: finnes det en mekanisme som kan overføre informasjon
+            fra den ene hendelsen til den andre? Myntkast — nei. Korttrekk uten tilbakelegging — ja,
+            kortet er borte. To søsken i samme hjem — ja, de deler gener og miljø.
           </p>
           <div className="mt-3 rounded-lg border border-amber-500/30 bg-amber-500/5 p-4 text-sm">
-            <strong className="text-foreground">
-              Disjunkt er ikke det samme som uavhengig.
-            </strong>{" "}
-            Disjunkte hendelser kan ikke skje samtidig: P(A ∩ B) = 0. Det er ikke
-            uavhengighet — det er den sterkest mulige avhengigheten, for da gjør det å vite at
-            B skjedde A umulig. To hendelser med positiv sannsynlighet kan aldri være både
-            disjunkte og uavhengige.
+            <strong className="text-foreground">Disjunkt er ikke det samme som uavhengig.</strong>{" "}
+            Disjunkte hendelser kan ikke skje samtidig: P(A ∩ B) = 0. Det er ikke uavhengighet — det
+            er den sterkest mulige avhengigheten, for da gjør det å vite at B skjedde A umulig. To
+            hendelser med positiv sannsynlighet kan aldri være både disjunkte og uavhengige.
           </div>
         </section>
 
@@ -1199,11 +1164,11 @@ export function Modul2SannsynlighetPage() {
             <GitBranch className="h-5 w-5 text-brand" /> Sannsynlighetstreet — arbeidshesten
           </h2>
           <p className="mb-4 leading-relaxed">
-            Nesten alle flerstegsoppgaver løses av det samme bildet. Hver gren bærer en
-            betinget sannsynlighet, du <strong>multipliserer langs</strong> en gren for å få
-            sannsynligheten for hele forløpet, og du <strong>summerer på tvers</strong> av
-            grener som ender i samme utfall. Den summeringen er setningen om total
-            sannsynlighet, og det er akkurat den som blir nevneren i Bayes.
+            Nesten alle flerstegsoppgaver løses av det samme bildet. Hver gren bærer en betinget
+            sannsynlighet, du <strong>multipliserer langs</strong> en gren for å få sannsynligheten
+            for hele forløpet, og du <strong>summerer på tvers</strong> av grener som ender i samme
+            utfall. Den summeringen er setningen om total sannsynlighet, og det er akkurat den som
+            blir nevneren i Bayes.
           </p>
           <ProbabilityTreeDiagram />
         </section>
@@ -1211,26 +1176,24 @@ export function Modul2SannsynlighetPage() {
         <section id="bayes" className="mb-12 scroll-mt-28">
           <h2 className="mb-3 text-xl font-semibold">Bayes — å snu betingingen</h2>
           <p className="leading-relaxed">
-            Du kjenner ofte P(utslag | årsak), men vil vite P(årsak | utslag). Testen forteller
-            deg hvor ofte den slår ut hos syke; du vil vite hvor ofte et utslag betyr sykdom.
-            Bayes er vekslingskursen mellom de to:
+            Du kjenner ofte P(utslag | årsak), men vil vite P(årsak | utslag). Testen forteller deg
+            hvor ofte den slår ut hos syke; du vil vite hvor ofte et utslag betyr sykdom. Bayes er
+            vekslingskursen mellom de to:
           </p>
           <p className="my-3 rounded-lg border border-border bg-muted/40 p-3 text-center font-mono text-sm">
             P(A | B) = P(B | A) · P(A) / P(B)
           </p>
           <p className="leading-relaxed">
-            Nevneren P(B) er nesten aldri oppgitt direkte — den må bygges med total
-            sannsynlighet:{" "}
-            <span className="font-mono">P(B) = P(B | A)·P(A) + P(B | Aᶜ)·P(Aᶜ)</span>. Det er
-            der de fleste stopper, og det er også der forklaringen bor: når P(A) er svært
-            liten, dominerer det andre leddet nevneren, og svaret blir lite uansett hvor god
-            testen er.
+            Nevneren P(B) er nesten aldri oppgitt direkte — den må bygges med total sannsynlighet:{" "}
+            <span className="font-mono">P(B) = P(B | A)·P(A) + P(B | Aᶜ)·P(Aᶜ)</span>. Det er der de
+            fleste stopper, og det er også der forklaringen bor: når P(A) er svært liten, dominerer
+            det andre leddet nevneren, og svaret blir lite uansett hvor god testen er.
           </p>
           <p className="mt-3 mb-4 leading-relaxed">
-            Regn først i <strong>naturlige frekvenser</strong> — «av 100 000 personer …» —
-            ikke i desimaltall. Effekten er godt dokumentert: samme oppgave løses langt oftere
-            riktig når den formuleres i antall mennesker enn i sannsynligheter. Verktøyet
-            under gjør nettopp den oversettelsen for deg.
+            Regn først i <strong>naturlige frekvenser</strong> — «av 100 000 personer …» — ikke i
+            desimaltall. Effekten er godt dokumentert: samme oppgave løses langt oftere riktig når
+            den formuleres i antall mennesker enn i sannsynligheter. Verktøyet under gjør nettopp
+            den oversettelsen for deg.
           </p>
           <NaturligeFrekvenser />
           <p className="mt-6 mb-4 leading-relaxed">
@@ -1261,12 +1224,12 @@ export function Modul2SannsynlighetPage() {
               </span>
             </div>
             <p className="mb-4 text-sm leading-relaxed text-muted-foreground">
-              Alt over dette punktet er det du trenger til 14. desember. Monty Hall-problemet
-              er ikke pensum, men det er den reneste demonstrasjonen som finnes av modulens
-              hovedpoeng: at <em>hvordan</em> du fikk informasjonen avgjør hva den er verdt.
-              Verten åpner ikke en tilfeldig dør — han vet hvor gevinsten er, og det er
-              nettopp den kunnskapen som gjør at det lønner seg å bytte. Ti minutter her
-              skjerper betinget sannsynlighet mer enn ti oppgaver til.
+              Alt over dette punktet er det du trenger til 14. desember. Monty Hall-problemet er
+              ikke pensum, men det er den reneste demonstrasjonen som finnes av modulens hovedpoeng:
+              at <em>hvordan</em> du fikk informasjonen avgjør hva den er verdt. Verten åpner ikke
+              en tilfeldig dør — han vet hvor gevinsten er, og det er nettopp den kunnskapen som
+              gjør at det lønner seg å bytte. Ti minutter her skjerper betinget sannsynlighet mer
+              enn ti oppgaver til.
             </p>
             <MontyHallSimulator />
           </div>
