@@ -60,7 +60,11 @@ export const PHASES: readonly CurriculumPhase[] = [
     shortSummary: "Deskriptiv → sannsynlighet → fordelinger → CLT → inferens → regresjon",
     slugs: [
       "tek-1501",
-      // Modul 1–2: beskrive data, så telle muligheter
+      // Modul 1–2: beskrive data, så telle muligheter. Modul-sidene er
+      // inngangen (anslå → simulér → regn → feilsøk → recall); temasidene
+      // under dem er utdypning man går til etterpå.
+      "tek1-modul1-data",
+      "tek1-modul2-sannsynlighet",
       "tek1-deskriptiv",
       "tek1-sannsynlighet",
       "tek1-kombinatorikk",
