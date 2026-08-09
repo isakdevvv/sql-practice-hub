@@ -123,10 +123,15 @@ export const CANVAS_MODULER: CanvasModul[] = [
       "Installere, oppdatere og fjerne programmer med pakkeverktøyet apt (Advanced Package Tool)",
       "Skille «oppdater pakkelista» fra «oppgrader pakkene» — to helt ulike kommandoer",
     ],
-    dekning: "delvis",
-    mangler:
-      "Canvas-punkt 1.3 — installere programmer fra andre kilder enn standard-pakkelageret: PPA (Personal Package Archive), snap-pakker, løse .deb-filer og signeringsnøkler for pakkelagre. Det er pensum, men gir ingen oblig i år.",
+    dekning: "dekket",
     lenker: [
+      {
+        type: "stack",
+        slug: "dte2505-pakkekilder",
+        label: "Programvare fra andre kilder (punkt 1.3)",
+        dekker:
+          "Pakkearkiv og sources.list, PPA (Personal Package Archive), add-apt-repository, løse .deb-filer med dpkg mot apt, snap og flatpak, og GPG-signeringsnøkler. Pensum, men uten oblig i år.",
+      },
       {
         type: "forkurs",
         slug: "f01-virtualisering",

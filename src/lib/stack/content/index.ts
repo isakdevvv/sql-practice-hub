@@ -228,6 +228,8 @@ import { content as microkernelArkitektur } from "./microkernel-arkitektur";
 import { content as dte2505IoManagement } from "./dte2505-io-management";
 import { content as dte2505Lagring } from "./dte2505-lagring";
 import { content as dte2505Hjelpesystemer } from "./dte2505-hjelpesystemer";
+import { content as dte2505Pakkekilder } from "./dte2505-pakkekilder";
+import { content as dte2505Diverse } from "./dte2505-diverse";
 import { content as authFlows } from "./auth-flows";
 import { content as httpStatuskoder } from "./http-statuskoder";
 import { content as backupStrategier } from "./backup-strategier";
@@ -385,6 +387,10 @@ export const TRINN: TrinnContent[] = [
   dte2505Lagring,
   // DTE-2505 Modul 2 — hjelpesystemer og dokumentasjon (man, apropos, info, type)
   dte2505Hjelpesystemer,
+  // DTE-2505 Modul 1b, punkt 1.3 — pakkearkiv, PPA, .deb, snap/flatpak, GPG-nøkler
+  dte2505Pakkekilder,
+  // DTE-2505 Modul 6 — vi/vim-modussimulator, X Window System og SSH (Secure Shell)
+  dte2505Diverse,
   // Auth flows — Session vs JWT vs OAuth side ved side
   authFlows,
   // HTTP statuskoder — interaktiv lesjon (beslutningstre + response-builder + flow + quiz)
