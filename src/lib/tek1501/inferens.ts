@@ -335,6 +335,46 @@ export function bonferroni(alfa: number, m: number): number {
 }
 
 /**
+ * Simulerer m uavhengige tosidige tester der ALLE nullhypotesene er sanne, og
+ * rapporterer hvilke som likevel blir «signifikante».
+ *
+ * Poenget er å gjøre familievisFeilrate() konkret: du ser de falske funnene
+ * dukke opp, i stedet for å lese et tall. Helt deterministisk gitt `seed`, slik
+ * at samme tilstand alltid gir samme resultat og tallene kan etterprøves.
+ *
+ * Nøkkelfaktumet som gjør simuleringen gyldig: under en sann H₀ er p-verdien
+ * uniformt fordelt på [0, 1]. Derfor er en trukket uniform verdi en helt ekte
+ * p-verdi, og hver test har sannsynlighet α for å havne under grensen.
+ */
+export function simulerMultipleTester(opts: {
+  m: number;
+  alfa: number;
+  seed: number;
+  /** True gir Bonferroni-korrigert grense α/m i stedet for α. */
+  korrigert?: boolean;
+}): { pVerdier: number[]; signifikante: number[]; grense: number } {
+  const { m, alfa, seed, korrigert = false } = opts;
+  const grense = korrigert ? bonferroni(alfa, m) : alfa;
+  let s = seed >>> 0 || 1;
+  const rng = () => {
+    s ^= s << 13;
+    s >>>= 0;
+    s ^= s >> 17;
+    s ^= s << 5;
+    s >>>= 0;
+    return s / 4294967296;
+  };
+  const pVerdier: number[] = [];
+  const signifikante: number[] = [];
+  for (let i = 0; i < m; i++) {
+    const p = rng();
+    pVerdier.push(p);
+    if (p < grense) signifikante.push(i);
+  }
+  return { pVerdier, signifikante, grense };
+}
+
+/**
  * Styrken (1 − β) til en tosidig z-test for et gjennomsnitt, når den sanne
  * forskjellen fra H₀-verdien er `effekt` målt i samme enhet som σ.
  */
