@@ -204,10 +204,16 @@ rapportert.
 
 | # | Fag | Leveranse | Eier | Status |
 |---|---|---|---|---|
-| A | DTE-2505 | Modul-for-modul-visning, Canvas-korrekte obliger + frister | `dte-2505/`, `dte2505-obliger/` | ✅ ferdig, `feat/dte2505-moduler` (umerget) |
-| B | DTE-2505 | Modul 2 (hjelpesystemer) som pilot for de fem oppgavetypene | `dte2505-hjelpesystemer/` (ny) | ✅ ferdig, `feat/dte2505-hjelpesystemer` (umerget) |
-| C | TEK-1501 | Modul-ramme + Spor A/B med oppgavetypene | `tek-1501/`, `tek1-modul*/` (ny) | ⏸️ delvis — oppgave-arkitekturen committet (`4f55688`), modul 1 ucommittet |
-| D | DTE-2602 | Modul-ramme + Fase 1–2 med oppgavetypene | `dte-2602/`, `dte2602-modul*/` (ny) | ⏸️ påbegynt, ingenting committet |
+| A | DTE-2505 | Modul-for-modul-visning, Canvas-korrekte obliger + frister | `dte-2505/`, `dte2505-obliger/` | ✅ **merget** (`bddca26`) |
+| B | DTE-2505 | Modul 2 (hjelpesystemer) som pilot for de fem oppgavetypene | `dte2505-hjelpesystemer/` (ny) | ✅ **merget** (`80be4c5`) |
+| C | TEK-1501 | Modul-ramme + Modul 1–2 med oppgavetypene | `tek-1501/`, `tek1-modul*/` (ny) | ✅ **merget** |
+| D | DTE-2602 | Modul-ramme + Fase 1–2 med oppgavetypene | `dte-2602/`, `dte2602-modul*/` (ny) | ⏸️ avbrutt, ingenting committet — worktree `../sql-practice-hub-dte2602-moduler` har ucommittet arbeid |
+
+Bølge 1 er merget lokalt i main (ikke pushet). Rester som bør ryddes:
+- `EXAM_TOPICS` i `Tek1501Hub.tsx` peker fortsatt bare på de gamle temasidene,
+  ikke de nye modulsidene — liten inkonsistens etter C.
+- Modulsider for TEK-1501 modul 3 og 4 er ikke bygget (rammen viser dem ærlig
+  som «ikke bygget ennå»).
 
 **Bølge 2 (senere):** tilstandsbasert mock-shell, modul 1b + 6 i DTE-2505,
 DTE-2507 etter Canvas-gjennomgang, integrasjonsoppgaver, felles FSRS-kø.
