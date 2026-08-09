@@ -18,6 +18,8 @@ import { content as rekursjon } from "./rekursjon";
 import { content as sortering } from "./sortering";
 import { content as lenkedeStrukturer } from "./lenkede-strukturer";
 import { content as dte2507 } from "./dte-2507";
+import { content as dte2507Lag } from "./dte2507-lag";
+import { content as dte2507Skjelett } from "./dte2507-skjelett";
 import { content as osiTcpip } from "./osi-tcpip";
 import { content as transportlag } from "./transportlag";
 import { content as kryptografi } from "./kryptografi";
@@ -273,7 +275,7 @@ export const TRINN: TrinnContent[] = [
   subqueries, nokler, mysqlVsSqlite,
   transaksjoner, txIsolation, indekser, queryOptimisering,
   algoritmer, bigO, rekursjon, sortering, lenkedeStrukturer,
-  dte2507, osiTcpip, transportlag, kryptografi, tls, nettverkssikkerhet,
+  dte2507, dte2507Lag, dte2507Skjelett, osiTcpip, transportlag, kryptografi, tls, nettverkssikkerhet,
   dte2507Wireshark, dte2507Socket, dte2507Brannmur,
   dte2507Subnetting, dte2507TlsHandshake, dte2507TlsHandshakeLab, dte2507PaketDekoding, dte2507RsaMini, dte2507Praksis,
   dte2507Congestion, dte2507Ruting, dte2507DnsDyp,
