@@ -68,13 +68,17 @@ export const PHASES: readonly CurriculumPhase[] = [
       "tek1-deskriptiv",
       "tek1-sannsynlighet",
       "tek1-kombinatorikk",
-      // Modul 3: fordelinger — plotteren kommer som utforskning etter teorien
+      // Modul 3: fordelinger — modulsiden er inngangen, plotteren og
+      // temasidene er utforskning etter teorien
+      "tek1-modul3-fordelinger",
       "tek1-fordelinger",
       "tek1-diskrete-fordelinger",
       "tek1-kontinuerlige-fordelinger",
       "tek1-forventning-clt",
       "tek1-distribusjons-plotter",
-      // Modul 4: inferens — simulatoren bygger intuisjonen før formlene
+      // Modul 4: inferens — modulsiden først, så simulatorene som bygger
+      // intuisjonen før formlene
+      "tek1-modul4-inferens",
       "tek1-inferens-sampling",
       "tek1-statistisk-analyse",
       "tek1-estimering-ki",

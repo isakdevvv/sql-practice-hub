@@ -172,6 +172,8 @@ import { content as dte2501PsoVisualizer } from "./dte2501-pso-visualizer";
 import { content as tek1501 } from "./tek-1501";
 import { content as tek1Modul1Data } from "./tek1-modul1-data";
 import { content as tek1Modul2Sannsynlighet } from "./tek1-modul2-sannsynlighet";
+import { content as tek1Modul3Fordelinger } from "./tek1-modul3-fordelinger";
+import { content as tek1Modul4Inferens } from "./tek1-modul4-inferens";
 import { content as tek1Deskriptiv } from "./tek1-deskriptiv";
 import { content as tek1Sannsynlighet } from "./tek1-sannsynlighet";
 import { content as tek1Fordelinger } from "./tek1-fordelinger";
@@ -320,6 +322,7 @@ export const TRINN: TrinnContent[] = [
   aiHistorie,
   // TEK-1501 — statistikk
   tek1501, tek1Modul1Data, tek1Modul2Sannsynlighet,
+  tek1Modul3Fordelinger, tek1Modul4Inferens,
   tek1Deskriptiv, tek1Sannsynlighet, tek1Fordelinger,
   tek1StatistiskAnalyse, tek1Kombinatorikk, tek1DiskreteFordelinger,
   tek1KontinuerligeFordelinger, tek1ForventningClt, tek1EstimeringKi,

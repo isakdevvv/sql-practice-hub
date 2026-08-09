@@ -166,16 +166,23 @@ type ExamTopic = {
   slugs: { slug: string; label: string }[];
 };
 
+// Modulsiden står først i hver rad der den finnes — den er inngangen til temaet
+// (anslå → simulér → regn → feilsøk → recall), mens temasidene bak den er
+// utdypning man går til etterpå. Alle fire moduler har nå en modulside.
 const EXAM_TOPICS: ExamTopic[] = [
   {
     topic: "Modul 1 — Deskriptiv",
     Icon: BarChart3,
-    slugs: [{ slug: "tek1-deskriptiv", label: "Sentralmål & spredning" }],
+    slugs: [
+      { slug: "tek1-modul1-data", label: "Modul 1 (start her)" },
+      { slug: "tek1-deskriptiv", label: "Sentralmål & spredning" },
+    ],
   },
   {
     topic: "Modul 2 — Sannsynlighet",
     Icon: Dice5,
     slugs: [
+      { slug: "tek1-modul2-sannsynlighet", label: "Modul 2 (start her)" },
       { slug: "tek1-sannsynlighet", label: "P, Bayes, mengdelære" },
       { slug: "tek1-kombinatorikk", label: "Kombinatorikk" },
     ],
@@ -184,6 +191,7 @@ const EXAM_TOPICS: ExamTopic[] = [
     topic: "Modul 3 — Fordelinger",
     Icon: Sigma,
     slugs: [
+      { slug: "tek1-modul3-fordelinger", label: "Modul 3 (start her)" },
       { slug: "tek1-fordelinger", label: "Velger" },
       { slug: "tek1-diskrete-fordelinger", label: "Diskrete" },
       { slug: "tek1-kontinuerlige-fordelinger", label: "Kontinuerlige" },
@@ -195,6 +203,7 @@ const EXAM_TOPICS: ExamTopic[] = [
     topic: "Modul 4 — Inferens",
     Icon: Target,
     slugs: [
+      { slug: "tek1-modul4-inferens", label: "Modul 4 (start her)" },
       { slug: "tek1-estimering-ki", label: "KI" },
       { slug: "tek1-hypotesetest-regresjon", label: "Hypotesetest + regresjon" },
       { slug: "tek1-p-verdi-kalkulator", label: "p-verdi" },
