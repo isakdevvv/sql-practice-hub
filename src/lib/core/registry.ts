@@ -17,9 +17,10 @@
 // per-fag-filteret i due-køen og due-tallene på fag-sidene.
 // ---------------------------------------------------------------------------
 
-import { Brain, Code2, GitMerge, Layers, type LucideIcon } from "lucide-react";
+import { Brain, Code2, GitMerge, Layers, Library, type LucideIcon } from "lucide-react";
 
 import { flashcardFsrs, type FsrsStore } from "@/lib/learn/fsrs";
+import { MODUL_KORT_KILDER, finnModulKort } from "@/lib/learn/modulKort";
 import { dragFsrs } from "@/lib/learn/dragProgress";
 import { joinFsrs } from "@/lib/learn/joinProgress";
 import { problemFsrs } from "@/lib/progress/storage";
@@ -167,6 +168,34 @@ export const PRACTICE_MODULES: PracticeModule[] = [
       };
     },
   },
+  // Modulenes recall-kort (PLAN-HOST26-MODULER.md §3.4). Én oppføring per
+  // kortsamling, avledet av registeret i learn/modulKort.ts — nye moduler
+  // dukker opp her av seg selv når de melder inn kortene sine, uten at denne
+  // fila må røres igjen. Hver kilde beholder sin egen FSRS-store, så due-tall
+  // her og framdriften på modulsiden er samme tilstand.
+  //
+  // Grupperingen går på FSRS-store, ikke på kilde: to moduler i samme fag kan
+  // dele store, og da ville én oppføring per kilde talt de samme kortene to
+  // ganger i due-køen.
+  ...[...new Map(MODUL_KORT_KILDER.map((k) => [k.fsrs.storageKey, k])).values()].map(
+    (kilde): PracticeModule => ({
+      id: `modulkort-${kilde.fagSlug}`,
+      label: kilde.fagKode,
+      Icon: Library,
+      color: "text-brand",
+      href: "/repetisjon/kort",
+      fsrs: kilde.fsrs,
+      resolve(id) {
+        const kort = finnModulKort(id);
+        return {
+          id,
+          title: kort?.forside ?? id,
+          to: "/repetisjon/kort",
+          subjectSlug: kort?.kilde.fagSlug ?? kilde.fagSlug,
+        };
+      },
+    }),
+  ),
 ];
 
 export function getModule(id: string): PracticeModule | undefined {

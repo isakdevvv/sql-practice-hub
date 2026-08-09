@@ -85,11 +85,16 @@ function RepetisjonPage() {
               klart for repetisjon nå, sortert etter eldste due-dato først.
             </p>
           </div>
-          <Link to="/dashboard">
-            <Button variant="outline" size="sm">
-              Til dashboard
-            </Button>
-          </Link>
+          <div className="flex flex-wrap gap-2">
+            <Link to="/repetisjon/kort">
+              <Button size="sm">Modulkort — én kø for alle fag</Button>
+            </Link>
+            <Link to="/dashboard">
+              <Button variant="outline" size="sm">
+                Til dashboard
+              </Button>
+            </Link>
+          </div>
         </div>
 
         {/* Fag-filter — vises bare når køen inneholder fag-taggede items */}
