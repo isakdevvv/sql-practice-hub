@@ -113,14 +113,24 @@ const anslag: FaseOppgaver["anslag"] = [
     sporsmal:
       "Datasettet har 10 kolonner. I hver av dem mangler 5 % av verdiene, tilfeldig fordelt. Du sletter alle rader som mangler minst én verdi. Hvor stor andel av radene sitter du igjen med?",
     alternativer: [
-      { id: "95", tekst: "Rundt 95 % — det manglet jo bare 5 %.", respons: "5 % er andelen per kolonne, ikke per rad. En rad overlever bare hvis den er komplett i alle ti kolonnene samtidig." },
+      {
+        id: "95",
+        tekst: "Rundt 95 % — det manglet jo bare 5 %.",
+        respons:
+          "5 % er andelen per kolonne, ikke per rad. En rad overlever bare hvis den er komplett i alle ti kolonnene samtidig.",
+      },
       {
         id: "60",
         tekst: "Rundt 60 %.",
         respons:
           "Riktig. Sannsynligheten for at én kolonne er utfylt er 0,95. For at alle ti skal være det: 0,95 opphøyd i 10, altså cirka 0,60. Du mister fire av ti rader på noe som så ut som en bagatell.",
       },
-      { id: "50", tekst: "Rundt 50 % — halvparten.", respons: "Nær, men litt for pessimistisk. Det eksakte tallet er 0,95 opphøyd i 10 ≈ 0,60. Poenget står uansett: tapet er mangedobbelt større enn de 5 % man ser på hver enkelt kolonne." },
+      {
+        id: "50",
+        tekst: "Rundt 50 % — halvparten.",
+        respons:
+          "Nær, men litt for pessimistisk. Det eksakte tallet er 0,95 opphøyd i 10 ≈ 0,60. Poenget står uansett: tapet er mangedobbelt større enn de 5 % man ser på hver enkelt kolonne.",
+      },
     ],
     fasit: "60",
     hvorfor:
@@ -139,8 +149,7 @@ const anslag: FaseOppgaver["anslag"] = [
       },
       {
         id: "ja",
-        tekst:
-          "Ja — at feltet er tomt kan i seg selv henge sammen med det som skal forutsies.",
+        tekst: "Ja — at feltet er tomt kan i seg selv henge sammen med det som skal forutsies.",
         respons:
           "Riktig. Den som ikke har en arbeidsgiver å oppgi, er kanskje arbeidsledig, selvstendig eller nyankommet. Fyller du bare inn «ukjent» og går videre, kaster du dette signalet.",
       },
@@ -201,8 +210,7 @@ const maal: FaseOppgaver["maal"] = [
       "Du skal forutsi om en boligannonse fører til salg innen 30 dager. Kolonnen «postnummer» inneholder 2 400 ulike verdier fordelt på 18 000 annonser. Modellen du skal bruke er en logistisk regresjon.",
     kontekst:
       "postnummer   antall annonser\n0150                     41\n0151                     37\n...\n9990                      2\n\n2 400 unike verdier · 18 000 rader",
-    maal:
-      "Kolonnen skal ende opp i en form modellen kan bruke, uten at antall kolonner eksploderer og uten at tallene tolkes som en rangering.",
+    maal: "Kolonnen skal ende opp i en form modellen kan bruke, uten at antall kolonner eksploderer og uten at tallene tolkes som en rangering.",
     valg: [
       {
         id: "behandling",
@@ -260,7 +268,7 @@ const maal: FaseOppgaver["maal"] = [
         niva: "riktig",
         tittel: "Riktig — kardinaliteten ned først, deretter encoding",
         forklaring:
-          "De to første sifrene i et norsk postnummer angir et geografisk område. Det gir rundt 90 kategorier i stedet for 2 400: nok til å fange «hvor i landet», få nok til at hver kategori har mange rader bak seg. Og fordi det skjer inne i en pipeline, tilpasses grupperingen på treningsdelen alene. Husk å sette handle_unknown=\"ignore\" på encoderen, slik at en kategori som bare dukker opp i testsettet ikke stopper alt.",
+          'De to første sifrene i et norsk postnummer angir et geografisk område. Det gir rundt 90 kategorier i stedet for 2 400: nok til å fange «hvor i landet», få nok til at hver kategori har mange rader bak seg. Og fordi det skjer inne i en pipeline, tilpasses grupperingen på treningsdelen alene. Husk å sette handle_unknown="ignore" på encoderen, slik at en kategori som bare dukker opp i testsettet ikke stopper alt.',
       };
     },
   },
@@ -271,8 +279,7 @@ const maal: FaseOppgaver["maal"] = [
       "Kolonnen «alder» mangler verdi for 9 % av radene. Histogrammet er noenlunde symmetrisk med topp rundt 42 år. Du har mistanke om at det ikke er tilfeldig hvem som lar feltet stå tomt — de yngste ser ut til å hoppe over det oftere.",
     kontekst:
       "alder: 18–91 år · median 42 · gjennomsnitt 43,1\nmanglende: 1 620 av 18 000 rader (9 %)",
-    maal:
-      "Radene skal beholdes, hullene skal fylles på en måte som ikke skjuler at de var der, og ingenting skal læres fra testdataene.",
+    maal: "Radene skal beholdes, hullene skal fylles på en måte som ikke skjuler at de var der, og ingenting skal læres fra testdataene.",
     valg: [
       {
         id: "behandling",
@@ -342,8 +349,7 @@ const maal: FaseOppgaver["maal"] = [
     tittel: "Velg forbehandling: kolonnen «by» med åtte verdier",
     situasjon:
       "Kolonnen «by» har åtte verdier: Oslo, Bergen, Trondheim, Stavanger, Tromsø, Kristiansand, Drammen og Bodø. Fordelingen er skjev — Oslo har 44 % av radene, Bodø har 2 %. Modellen er en random forest.",
-    maal:
-      "Kolonnen skal bli brukbar for modellen uten at den innfører en rangering som ikke finnes.",
+    maal: "Kolonnen skal bli brukbar for modellen uten at den innfører en rangering som ikke finnes.",
     valg: [
       {
         id: "behandling",
@@ -356,7 +362,8 @@ const maal: FaseOppgaver["maal"] = [
           },
           {
             id: "target",
-            tekst: "Target encoding — erstatt hver by med gjennomsnittlig target-verdi for den byen",
+            tekst:
+              "Target encoding — erstatt hver by med gjennomsnittlig target-verdi for den byen",
           },
         ],
       },
@@ -398,7 +405,7 @@ const maal: FaseOppgaver["maal"] = [
         niva: "riktig",
         tittel: "Riktig",
         forklaring:
-          "One-hot encoding er standardvalget for kategoriske kolonner med lav kardinalitet: ingen oppdiktet rangering, og åtte ekstra kolonner er ingenting. Å beholde alle byene som egne kategorier er helt greit — med 2 % av 18 000 rader har selv Bodø flere hundre rader bak seg. Husk handle_unknown=\"ignore\" for det tilfellet at en ny by dukker opp senere.",
+          'One-hot encoding er standardvalget for kategoriske kolonner med lav kardinalitet: ingen oppdiktet rangering, og åtte ekstra kolonner er ingenting. Å beholde alle byene som egne kategorier er helt greit — med 2 % av 18 000 rader har selv Bodø flere hundre rader bak seg. Husk handle_unknown="ignore" for det tilfellet at en ny by dukker opp senere.',
       };
     },
   },
@@ -407,8 +414,7 @@ const maal: FaseOppgaver["maal"] = [
     tittel: "Sett stegene i riktig rekkefølge",
     situasjon:
       "Du har et datasett med både tallkolonner og kategoriske kolonner, hull i noen av tallkolonnene, og en modell som måler avstand (k nærmeste naboer). Fire operasjoner skal utføres: oppdeling i trening og test, utfylling av hull, skalering av tallkolonnene og one-hot encoding av kategoriene.",
-    maal:
-      "Ingen av stegene skal lære noe som helst fra testdataene, og modellen skal se kolonner på sammenlignbar skala.",
+    maal: "Ingen av stegene skal lære noe som helst fra testdataene, og modellen skal se kolonner på sammenlignbar skala.",
     valg: [
       {
         id: "rekkefolge",
@@ -416,7 +422,8 @@ const maal: FaseOppgaver["maal"] = [
         alternativer: [
           {
             id: "split-forst",
-            tekst: "Oppdeling først, deretter utfylling, encoding og skalering tilpasset på treningsdelen",
+            tekst:
+              "Oppdeling først, deretter utfylling, encoding og skalering tilpasset på treningsdelen",
           },
           {
             id: "rens-forst",
@@ -433,7 +440,10 @@ const maal: FaseOppgaver["maal"] = [
         sporsmal: "Hvordan sikrer du at rekkefølgen holdes også under kryssvalidering?",
         alternativer: [
           { id: "manuelt", tekst: "Passer på det manuelt hver gang" },
-          { id: "pipeline", tekst: "Legger alle stegene i en pipeline og kryssvaliderer pipelinen" },
+          {
+            id: "pipeline",
+            tekst: "Legger alle stegene i en pipeline og kryssvaliderer pipelinen",
+          },
         ],
       },
     ],
@@ -485,8 +495,8 @@ const feilsoking: FaseOppgaver["feilsoking"] = [
       "Modellen får 0,91 i testen, men rundt 0,86 når den kjøres på et helt nytt datasett fra samme kilde. Avviket er lite, men det går alltid samme vei.",
     format: "kode",
     linjer: [
-      { nr: 1, tekst: "X = df.drop(columns=[\"target\"])" },
-      { nr: 2, tekst: "y = df[\"target\"]" },
+      { nr: 1, tekst: 'X = df.drop(columns=["target"])' },
+      { nr: 2, tekst: 'y = df["target"]' },
       { nr: 3, tekst: "skaler = StandardScaler()" },
       { nr: 4, tekst: "X_skalert = skaler.fit_transform(X)" },
       { nr: 5, tekst: "X_tren, X_test, y_tren, y_test = train_test_split(" },
@@ -516,8 +526,7 @@ const feilsoking: FaseOppgaver["feilsoking"] = [
       },
       {
         id: "manuell",
-        tekst:
-          "Del først, kall fit_transform på treningsdelen og transform på testdelen.",
+        tekst: "Del først, kall fit_transform på treningsdelen og transform på testdelen.",
         riktig: true,
         respons:
           "Også riktig. fit_transform på treningen, transform (uten fit) på testen. Dette er den manuelle varianten, og den fungerer — men den må gjentas riktig hver gang du deler dataene på nytt, og det er nettopp der folk snubler.",
@@ -541,10 +550,10 @@ const feilsoking: FaseOppgaver["feilsoking"] = [
     format: "kode",
     linjer: [
       { nr: 1, tekst: "# «by» har 340 unike verdier — for mange til one-hot" },
-      { nr: 2, tekst: "snitt_per_by = df.groupby(\"by\")[\"sluttet\"].mean()" },
-      { nr: 3, tekst: "df[\"by_encoded\"] = df[\"by\"].map(snitt_per_by)" },
-      { nr: 4, tekst: "X = df[[\"by_encoded\", \"alder\", \"maanedspris\"]]" },
-      { nr: 5, tekst: "y = df[\"sluttet\"]" },
+      { nr: 2, tekst: 'snitt_per_by = df.groupby("by")["sluttet"].mean()' },
+      { nr: 3, tekst: 'df["by_encoded"] = df["by"].map(snitt_per_by)' },
+      { nr: 4, tekst: 'X = df[["by_encoded", "alder", "maanedspris"]]' },
+      { nr: 5, tekst: 'y = df["sluttet"]' },
       { nr: 6, tekst: "X_tren, X_test, y_tren, y_test = train_test_split(X, y, test_size=0.2)" },
       { nr: 7, tekst: "modell = RandomForestClassifier().fit(X_tren, y_tren)" },
       { nr: 8, tekst: "print(cross_val_score(modell, X_tren, y_tren, cv=5).mean())   # 0.98" },
@@ -595,12 +604,15 @@ const feilsoking: FaseOppgaver["feilsoking"] = [
       "Pipelinen ser ryddig ut, oppdelingen gjøres tidlig, og resultatet er stabilt. En medstudent påstår likevel at det lekker.",
     format: "kode",
     linjer: [
-      { nr: 1, tekst: "df[\"alder\"] = df[\"alder\"].fillna(df[\"alder\"].median())" },
-      { nr: 2, tekst: "X = df.drop(columns=[\"target\"])" },
-      { nr: 3, tekst: "y = df[\"target\"]" },
+      { nr: 1, tekst: 'df["alder"] = df["alder"].fillna(df["alder"].median())' },
+      { nr: 2, tekst: 'X = df.drop(columns=["target"])' },
+      { nr: 3, tekst: 'y = df["target"]' },
       { nr: 4, tekst: "X_tren, X_test, y_tren, y_test = train_test_split(" },
       { nr: 5, tekst: "    X, y, test_size=0.2, stratify=y, random_state=0)" },
-      { nr: 6, tekst: "pipe = Pipeline([(\"skaler\", StandardScaler()), (\"clf\", LogisticRegression())])" },
+      {
+        nr: 6,
+        tekst: 'pipe = Pipeline([("skaler", StandardScaler()), ("clf", LogisticRegression())])',
+      },
       { nr: 7, tekst: "pipe.fit(X_tren, y_tren)" },
       { nr: 8, tekst: "print(pipe.score(X_test, y_test))" },
     ],
@@ -618,7 +630,7 @@ const feilsoking: FaseOppgaver["feilsoking"] = [
     fikser: [
       {
         id: "imputer-i-pipe",
-        tekst: "Flytt utfyllingen inn i pipelinen med SimpleImputer(strategy=\"median\").",
+        tekst: 'Flytt utfyllingen inn i pipelinen med SimpleImputer(strategy="median").',
         riktig: true,
         respons:
           "Riktig. Da tilpasses medianen på treningsdelen inne i hver fit, og den samme verdien gjenbrukes på testdelen. Det gjelder også i hver runde av en kryssvalidering.",
@@ -650,16 +662,16 @@ const feilsoking: FaseOppgaver["feilsoking"] = [
     linjer: [
       { nr: 1, tekst: "X_tren, X_test, y_tren, y_test = train_test_split(X, y, test_size=0.2)" },
       { nr: 2, tekst: "enc = OneHotEncoder(sparse_output=False)" },
-      { nr: 3, tekst: "X_tren_enc = enc.fit_transform(X_tren[[\"by\"]])" },
-      { nr: 4, tekst: "X_test_enc = enc.transform(X_test[[\"by\"]])" },
+      { nr: 3, tekst: 'X_tren_enc = enc.fit_transform(X_tren[["by"]])' },
+      { nr: 4, tekst: 'X_test_enc = enc.transform(X_test[["by"]])' },
       { nr: 5, tekst: "modell = LogisticRegression().fit(X_tren_enc, y_tren)" },
       { nr: 6, tekst: "# tre uker senere, på nye data:" },
-      { nr: 7, tekst: "nye_enc = enc.transform(nye_data[[\"by\"]])   # ValueError" },
+      { nr: 7, tekst: 'nye_enc = enc.transform(nye_data[["by"]])   # ValueError' },
     ],
     feilLinje: 2,
     linjeRespons: {
       1: "Oppdelingen kommer først — det er riktig, og det er derfor denne oppgaven er lærerik: rekkefølgen er i orden, feilen er en annen.",
-      2: "Her er feilen. Encoderen opprettes uten handle_unknown=\"ignore\". Standardoppførselen er å kaste en feil når den møter en kategori den ikke så under tilpasningen. Det er en fornuftig standard, men den må håndteres bevisst.",
+      2: 'Her er feilen. Encoderen opprettes uten handle_unknown="ignore". Standardoppførselen er å kaste en feil når den møter en kategori den ikke så under tilpasningen. Det er en fornuftig standard, men den må håndteres bevisst.',
       3: "fit_transform på treningsdelen er nøyaktig riktig — encoderen skal lære hvilke kategorier som finnes, fra treningen alene.",
       4: "transform uten fit på testdelen er også riktig. At det gikk bra her var flaks: alle byene i testsettet fantes tilfeldigvis i treningssettet.",
       5: "Modellen trenes på de encodede treningsdataene. Ingen feil.",
@@ -669,14 +681,15 @@ const feilsoking: FaseOppgaver["feilsoking"] = [
     fikser: [
       {
         id: "handle-unknown",
-        tekst: "Opprett encoderen med handle_unknown=\"ignore\".",
+        tekst: 'Opprett encoderen med handle_unknown="ignore".',
         riktig: true,
         respons:
           "Riktig. Ukjente kategorier blir da til bare nuller i alle kolonnene — modellen får ingen informasjon fra den kolonnen for akkurat den raden, men den stopper ikke. Det er nesten alltid riktig avveining i drift.",
       },
       {
         id: "fit-alle",
-        tekst: "Tilpass encoderen på hele datasettet i stedet, slik at den kjenner alle kategoriene.",
+        tekst:
+          "Tilpass encoderen på hele datasettet i stedet, slik at den kjenner alle kategoriene.",
         riktig: false,
         respons:
           "Det bytter en ærlig krasj mot en stille lekkasje, og det løser ikke problemet uansett: byer som dukker opp om tre uker finnes ikke i datasettet ditt i dag heller. Aldri tilpass en encoder på testdata.",
@@ -702,7 +715,10 @@ const feilsoking: FaseOppgaver["feilsoking"] = [
       { nr: 1, tekst: "# 40 000 enheter, 700 av dem defekte (1,75 %)" },
       { nr: 2, tekst: "sm = SMOTE(random_state=0)   # lager syntetiske eksempler av minoriteten" },
       { nr: 3, tekst: "X_bal, y_bal = sm.fit_resample(X, y)" },
-      { nr: 4, tekst: "X_tren, X_test, y_tren, y_test = train_test_split(X_bal, y_bal, test_size=0.2)" },
+      {
+        nr: 4,
+        tekst: "X_tren, X_test, y_tren, y_test = train_test_split(X_bal, y_bal, test_size=0.2)",
+      },
       { nr: 5, tekst: "modell = RandomForestClassifier().fit(X_tren, y_tren)" },
       { nr: 6, tekst: "print(accuracy_score(y_test, modell.predict(X_test)))   # 0.98" },
     ],
@@ -726,16 +742,14 @@ const feilsoking: FaseOppgaver["feilsoking"] = [
       },
       {
         id: "recall",
-        tekst:
-          "Rapporter recall og presisjon for defekt-klassen i stedet for accuracy.",
+        tekst: "Rapporter recall og presisjon for defekt-klassen i stedet for accuracy.",
         riktig: true,
         respons:
           "Også riktig, og nødvendig i tillegg til det første. Med 1,75 % defekte sier accuracy nesten ingenting: å svare «ikke defekt» på alt gir 98,25 %. Kvalitetsavdelingen bryr seg om hvor stor andel av de faktiske feilene som fanges — det er recall.",
       },
       {
         id: "class-weight",
-        tekst:
-          "Dropp SMOTE og bruk class_weight=\"balanced\" på modellen i stedet.",
+        tekst: 'Dropp SMOTE og bruk class_weight="balanced" på modellen i stedet.',
         riktig: true,
         respons:
           "Fungerer også, og er ofte enklere å forsvare. class_weight gjør feil på minoritetsklassen dyrere under trening, uten å finne på nye datapunkter. Ingen syntetiske rader betyr ingen risiko for at de havner på begge sider av oppdelingen.",

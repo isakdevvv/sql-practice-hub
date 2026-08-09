@@ -31,8 +31,7 @@ const anslag: FaseOppgaver["anslag"] = [
       },
       {
         id: "nei-trivielt",
-        tekst:
-          "Nei — en modell som alltid svarer «frisk» får også 99 %, uten å ha lært noe.",
+        tekst: "Nei — en modell som alltid svarer «frisk» får også 99 %, uten å ha lært noe.",
         respons:
           "Riktig. Regn etter: svar «frisk» på alle 10 000, og du bommer bare på de 100 syke. 9 900 / 10 000 = 99 %. Modellen din har altså ikke bevist at den kan noe i det hele tatt — den har bevist at klassene er skjeve.",
       },
@@ -60,8 +59,7 @@ const anslag: FaseOppgaver["anslag"] = [
       },
       {
         id: "slutter",
-        tekst:
-          "Filteret slipper dem gjennom til et menneske skriver en ny regel.",
+        tekst: "Filteret slipper dem gjennom til et menneske skriver en ny regel.",
         respons:
           "Riktig. Og det er hele forskjellen: kunnskapen ligger i regelteksten, som bare endrer seg når en programmerer redigerer den. En ML-modell henter kunnskapen ut av eksemplene, så den kan oppdateres ved å trene på nyere e-poster.",
       },
@@ -89,8 +87,7 @@ const anslag: FaseOppgaver["anslag"] = [
       },
       {
         id: "belonning",
-        tekst:
-          "En belønning som sier hvor godt det gikk etter at den har prøvd noe.",
+        tekst: "En belønning som sier hvor godt det gikk etter at den har prøvd noe.",
         respons:
           "Riktig. Dette er reinforcement learning (forsterkende læring): roboten prøver, får et tall som forteller hvor bra det gikk, og justerer. Ingen sier hva den skulle gjort — bare hvor godt det den gjorde fungerte.",
       },
@@ -175,8 +172,7 @@ const anslag: FaseOppgaver["anslag"] = [
       },
       {
         id: "utenat",
-        tekst:
-          "Modellen lærer akkurat disse tolv bildene utenat, og bommer på nye bilder.",
+        tekst: "Modellen lærer akkurat disse tolv bildene utenat, og bommer på nye bilder.",
         respons:
           "Riktig. Dette har et navn — overtilpasning (overfitting) — og du møter det for alvor i Fase 3. Her holder det å se mekanismen: jo færre eksempler, jo lettere er det å finne en regel som passer dem perfekt uten å si noe om verden.",
       },
@@ -204,8 +200,7 @@ const maal: FaseOppgaver["maal"] = [
     tittel: "Sett opp problemet: reinnleggelse på sykehus",
     situasjon:
       "Et sykehus vil vite hvilke pasienter som sannsynligvis blir lagt inn igjen innen 30 dager etter utskrivning, slik at de kan følges opp ekstra. Sykehuset har fem år med journaldata, og for hver historisk utskrivning står det registrert om pasienten faktisk kom tilbake innen 30 dager.",
-    maal:
-      "Definer problemet slik at det kan løses med maskinlæring: velg læringstype, oppgavetype og hva som skal forutsies.",
+    maal: "Definer problemet slik at det kan løses med maskinlæring: velg læringstype, oppgavetype og hva som skal forutsies.",
     valg: [
       {
         id: "type",
@@ -280,8 +275,7 @@ const maal: FaseOppgaver["maal"] = [
     tittel: "Sett opp problemet: kundegrupper i en butikkjede",
     situasjon:
       "En butikkjede har kjøpshistorikk for 40 000 kunder: hvor ofte de handler, hva de handler og for hvor mye. Markedsavdelingen vil «forstå kundene bedre» og lage målrettede tilbud. Ingen har på forhånd delt kundene inn i typer.",
-    maal:
-      "Velg et oppsett som faktisk kan gjennomføres med dataene som finnes — ikke det du skulle ønske at du hadde.",
+    maal: "Velg et oppsett som faktisk kan gjennomføres med dataene som finnes — ikke det du skulle ønske at du hadde.",
     valg: [
       {
         id: "type",
@@ -399,8 +393,7 @@ const maal: FaseOppgaver["maal"] = [
     tittel: "Sett opp problemet: 200 merkede e-poster av 50 000",
     situasjon:
       "En bedrift vil filtrere ut e-poster som inneholder kundeklager, slik at de havner hos rett avdeling. De har 50 000 lagrede e-poster, men bare 200 av dem er merket av et menneske med «klage» eller «ikke klage».",
-    maal:
-      "Velg en framgangsmåte som er ærlig om hva dataene tillater akkurat nå.",
+    maal: "Velg en framgangsmåte som er ærlig om hva dataene tillater akkurat nå.",
     valg: [
       {
         id: "type",
@@ -428,7 +421,10 @@ const maal: FaseOppgaver["maal"] = [
             id: "holdt-tilbake",
             tekst: "Holder tilbake en del av de merkede e-postene som modellen aldri får se",
           },
-          { id: "alle-merkede", tekst: "Måler på alle de merkede e-postene, også de den trente på" },
+          {
+            id: "alle-merkede",
+            tekst: "Måler på alle de merkede e-postene, også de den trente på",
+          },
         ],
       },
     ],
@@ -549,8 +545,7 @@ const feilsoking: FaseOppgaver["feilsoking"] = [
     fikser: [
       {
         id: "fjern-fremtid",
-        tekst:
-          "Fjern alle features som ikke finnes på prediksjonstidspunktet, og tren på nytt.",
+        tekst: "Fjern alle features som ikke finnes på prediksjonstidspunktet, og tren på nytt.",
         riktig: true,
         respons:
           "Riktig. Gå gjennom hver kolonne og still ett spørsmål: kjenner jeg denne verdien i det øyeblikket jeg trenger svaret? Nei betyr ut. Scoren faller — og det er den ærlige scoren.",
@@ -600,8 +595,7 @@ const feilsoking: FaseOppgaver["feilsoking"] = [
     fikser: [
       {
         id: "supervised",
-        tekst:
-          "Bytt til supervised klassifikasjon med botanikerens merkelapper som target.",
+        tekst: "Bytt til supervised klassifikasjon med botanikerens merkelapper som target.",
         riktig: true,
         respons:
           "Riktig. Fasiten er den dyreste ressursen i prosjektet — en fagperson har brukt tid på hvert eneste bilde. Da bruker du den. Og du får noe klustering aldri gir: et tall som sier hvor ofte modellen har rett.",

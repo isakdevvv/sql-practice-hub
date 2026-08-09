@@ -32,6 +32,7 @@ import {
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { LearningPath } from "@/components/stack/LearningPath";
 import { MlPipelineFlow } from "./MlPipelineFlow";
+import { Dte2602ModulOversikt } from "./Dte2602ModulOversikt";
 import { Mermaid } from "@/components/Mermaid";
 import { ModulStatusBadge, ModulProgressBar } from "@/components/stack/HubShared";
 import { EXAM_META } from "@/lib/subjects/catalog";
@@ -398,6 +399,9 @@ export function Dte2602Hub() {
             </div>
           </div>
         </div>
+
+        {/* Modul-for-modul: fase 1–7 med sjekkpunkt per fase */}
+        <Dte2602ModulOversikt />
 
         {/* Læringssti */}
         <section className="mb-12">

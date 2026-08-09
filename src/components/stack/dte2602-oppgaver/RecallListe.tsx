@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Eye, EyeOff, Info } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { RecallKort } from "@/lib/dte2602/oppgaveTyper";
@@ -21,15 +21,22 @@ export function RecallListe({ kort }: { kort: RecallKort[] }) {
     modus === "laer" ? Object.fromEntries(kort.map((k) => [k.id, true])) : {},
   );
 
+  // Modusen settes ett sted øverst på siden og kan byttes når som helst.
+  // Uten dette ble kortene stående slik de var ved første render: bytter du til
+  // «test deg selv» etter å ha lest i læringsmodus, sto alle svarene fortsatt
+  // åpne, og selvtesten var verdiløs.
+  useEffect(() => {
+    setApne(modus === "laer" ? Object.fromEntries(kort.map((k) => [k.id, true])) : {});
+  }, [modus, kort]);
+
   return (
     <div className="space-y-3">
       <div className="flex items-start gap-2 rounded-lg border border-border bg-muted/30 px-3 py-2.5 text-xs text-muted-foreground">
         <Info className="h-3.5 w-3.5 mt-0.5 shrink-0" />
         <span>
-          Bare {kort.length} kort, og det er et bevisst valg. Vurderingen i dette
-          faget er hjemmeeksamen og mappe — du har notatene tilgjengelig. Disse
-          kortene er de beslutningene du tar mens du skriver kode, og derfor de
-          eneste som må ligge i hodet.
+          Bare {kort.length} kort, og det er et bevisst valg. Vurderingen i dette faget er
+          hjemmeeksamen og mappe — du har notatene tilgjengelig. Disse kortene er de beslutningene
+          du tar mens du skriver kode, og derfor de eneste som må ligge i hodet.
         </span>
       </div>
 

@@ -41,8 +41,8 @@ export function AnslagListe({ oppgaver }: { oppgaver: AnslagOppgave[] }) {
           {traff < besvart && (
             <>
               {" "}
-              De du bommet på er de mest verdifulle — det var der modellen din av
-              hvordan dette henger sammen ikke stemte med virkeligheten.
+              De du bommet på er de mest verdifulle — det var der modellen din av hvordan dette
+              henger sammen ikke stemte med virkeligheten.
             </>
           )}
         </div>
@@ -84,16 +84,15 @@ function AnslagKort({
               disabled={harSvart}
               className={cn(
                 "w-full text-left rounded-lg border px-3 py-2.5 text-sm transition-colors",
-                !harSvart && "border-border bg-background hover:border-violet-500/50 hover:bg-violet-500/5",
+                !harSvart &&
+                  "border-border bg-background hover:border-violet-500/50 hover:bg-violet-500/5",
                 harSvart && erFasit && "border-success/50 bg-success/5",
                 harSvart && erValgt && !erFasit && "border-amber-500/50 bg-amber-500/5",
                 harSvart && !erValgt && !erFasit && "border-border bg-background opacity-55",
               )}
             >
               <span className="flex items-start gap-2">
-                {harSvart && erFasit && (
-                  <Check className="h-4 w-4 text-success shrink-0 mt-0.5" />
-                )}
+                {harSvart && erFasit && <Check className="h-4 w-4 text-success shrink-0 mt-0.5" />}
                 <span className="text-foreground">{alt.tekst}</span>
               </span>
             </button>
@@ -103,8 +102,8 @@ function AnslagKort({
 
       {!harSvart && (
         <p className="mt-3 text-[11px] text-muted-foreground">
-          Velg før du leser videre. Et anslag du tør avgi gjør forklaringen langt
-          lettere å huske — også når anslaget bommer.
+          Velg før du leser videre. Et anslag du tør avgi gjør forklaringen langt lettere å huske —
+          også når anslaget bommer.
         </p>
       )}
 
@@ -125,17 +124,13 @@ function AnslagKort({
               {traff ? <Check className="h-4 w-4" /> : <Target className="h-4 w-4" />}
               {traff ? "Du traff" : "Du bommet — og det er den nyttige varianten"}
             </div>
-            <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
-              {valgtAlt.respons}
-            </p>
+            <p className="mt-2 text-sm text-muted-foreground leading-relaxed">{valgtAlt.respons}</p>
           </div>
           <div className="rounded-lg border border-border bg-background p-4">
             <div className="flex items-center gap-2 text-sm font-medium text-foreground">
               <Lightbulb className="h-4 w-4 text-brand" /> Poenget
             </div>
-            <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
-              {oppgave.hvorfor}
-            </p>
+            <p className="mt-2 text-sm text-muted-foreground leading-relaxed">{oppgave.hvorfor}</p>
           </div>
         </div>
       )}

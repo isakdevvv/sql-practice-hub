@@ -176,17 +176,47 @@ export const FASER: readonly Fase[] = [
     status: "stoff-finnes",
     byggerPa: [1, 2],
     atomer: [
-      { id: "A10", navn: "Train/test-oppdeling", dekkesAv: "dte2602-evaluering-metoder", mappe: true },
+      {
+        id: "A10",
+        navn: "Train/test-oppdeling",
+        dekkesAv: "dte2602-evaluering-metoder",
+        mappe: true,
+      },
       { id: "A11", navn: "Stratifisert oppdeling", dekkesAv: "dte2602-cv-varianter", mappe: true },
-      { id: "A12", navn: "Train, validering og test", dekkesAv: "dte2602-evaluering-metoder", mappe: false },
+      {
+        id: "A12",
+        navn: "Train, validering og test",
+        dekkesAv: "dte2602-evaluering-metoder",
+        mappe: false,
+      },
       { id: "A13", navn: "k-fold kryssvalidering", dekkesAv: "dte2602-cv-varianter", mappe: true },
       { id: "A14", navn: "Datalekkasje", dekkesAv: "dte2602-preprocessing-pipeline", mappe: true },
-      { id: "A15", navn: "Overtilpasning og undertilpasning", dekkesAv: "dte2602-bias-varians", mappe: true },
-      { id: "A16", navn: "Bias-varians-avveiningen", dekkesAv: "dte2602-bias-varians", mappe: false },
-      { id: "A17", navn: "Accuracy, presisjon, recall og F1", dekkesAv: "dte2602-evaluation-roc", mappe: true },
+      {
+        id: "A15",
+        navn: "Overtilpasning og undertilpasning",
+        dekkesAv: "dte2602-bias-varians",
+        mappe: true,
+      },
+      {
+        id: "A16",
+        navn: "Bias-varians-avveiningen",
+        dekkesAv: "dte2602-bias-varians",
+        mappe: false,
+      },
+      {
+        id: "A17",
+        navn: "Accuracy, presisjon, recall og F1",
+        dekkesAv: "dte2602-evaluation-roc",
+        mappe: true,
+      },
       { id: "A18", navn: "Forvirringsmatrise", dekkesAv: "dte2602-evaluation-roc", mappe: true },
       { id: "A19", navn: "ROC-kurve og AUC", dekkesAv: "dte2602-roc-curve-plotter", mappe: true },
-      { id: "A20", navn: "MAE, RMSE og R²", dekkesAv: "dte2602-regresjon-diagnostikk", mappe: true },
+      {
+        id: "A20",
+        navn: "MAE, RMSE og R²",
+        dekkesAv: "dte2602-regresjon-diagnostikk",
+        mappe: true,
+      },
     ],
     trinn: [
       {
@@ -238,17 +268,42 @@ export const FASER: readonly Fase[] = [
     byggerPa: [2, 3],
     atomer: [
       { id: "A21", navn: "Lineær regresjon", dekkesAv: "dte2602-lineaer-regresjon", mappe: true },
-      { id: "A22", navn: "Logistisk regresjon", dekkesAv: "dte2602-logistisk-regresjon", mappe: true },
+      {
+        id: "A22",
+        navn: "Logistisk regresjon",
+        dekkesAv: "dte2602-logistisk-regresjon",
+        mappe: true,
+      },
       { id: "A23", navn: "k nærmeste naboer (kNN)", dekkesAv: "supervised-learning", mappe: true },
       { id: "A24", navn: "Beslutningstre", dekkesAv: "dte2602-trees-rf", mappe: true },
       { id: "A25", navn: "Random forest", dekkesAv: "dte2602-trees-rf", mappe: true },
       { id: "A26", navn: "Støttevektormaskin (SVM)", dekkesAv: "dte2602-svm", mappe: false },
       { id: "A27", navn: "Naiv Bayes", dekkesAv: "dte2602-lda-qda-nb", mappe: true },
       { id: "A28", navn: "LDA og QDA", dekkesAv: "dte2602-lda-qda-nb", mappe: false },
-      { id: "A29", navn: "Regularisering: ridge og lasso", dekkesAv: "dte2602-bias-varians", mappe: true },
-      { id: "A30", navn: "Hyperparameter mot parameter", dekkesAv: "dte2602-evaluering-metoder", mappe: false },
-      { id: "A31", navn: "Rutenettsøk med kryssvalidering", dekkesAv: "dte2602-evaluering-metoder", mappe: true },
-      { id: "A32", navn: "Pipeline i scikit-learn", dekkesAv: "dte2602-preprocessing-pipeline", mappe: true },
+      {
+        id: "A29",
+        navn: "Regularisering: ridge og lasso",
+        dekkesAv: "dte2602-bias-varians",
+        mappe: true,
+      },
+      {
+        id: "A30",
+        navn: "Hyperparameter mot parameter",
+        dekkesAv: "dte2602-evaluering-metoder",
+        mappe: false,
+      },
+      {
+        id: "A31",
+        navn: "Rutenettsøk med kryssvalidering",
+        dekkesAv: "dte2602-evaluering-metoder",
+        mappe: true,
+      },
+      {
+        id: "A32",
+        navn: "Pipeline i scikit-learn",
+        dekkesAv: "dte2602-preprocessing-pipeline",
+        mappe: true,
+      },
     ],
     trinn: [
       {
@@ -300,10 +355,25 @@ export const FASER: readonly Fase[] = [
     byggerPa: [2],
     atomer: [
       { id: "A33", navn: "k-means-klustering", dekkesAv: "unsupervised-learning", mappe: true },
-      { id: "A34", navn: "Albuemetoden for å velge k", dekkesAv: "unsupervised-learning", mappe: true },
+      {
+        id: "A34",
+        navn: "Albuemetoden for å velge k",
+        dekkesAv: "unsupervised-learning",
+        mappe: true,
+      },
       { id: "A35", navn: "Hierarkisk klustering", dekkesAv: "unsupervised-learning", mappe: false },
-      { id: "A36", navn: "DBSCAN (tetthetsbasert)", dekkesAv: "unsupervised-learning", mappe: false },
-      { id: "A37", navn: "PCA — dimensjonsreduksjon", dekkesAv: "dte2501-pca-visualizer", mappe: true },
+      {
+        id: "A36",
+        navn: "DBSCAN (tetthetsbasert)",
+        dekkesAv: "unsupervised-learning",
+        mappe: false,
+      },
+      {
+        id: "A37",
+        navn: "PCA — dimensjonsreduksjon",
+        dekkesAv: "dte2501-pca-visualizer",
+        mappe: true,
+      },
     ],
     trinn: [
       {
@@ -338,7 +408,12 @@ export const FASER: readonly Fase[] = [
     atomer: [
       { id: "A38", navn: "Perceptron", dekkesAv: "nn-intro", mappe: false },
       { id: "A39", navn: "Aktiveringsfunksjoner", dekkesAv: "nn-intro", mappe: false },
-      { id: "A40", navn: "Gradient descent (intuisjon)", dekkesAv: "gradient-descent", mappe: false },
+      {
+        id: "A40",
+        navn: "Gradient descent (intuisjon)",
+        dekkesAv: "gradient-descent",
+        mappe: false,
+      },
       { id: "A41", navn: "Backpropagation (overflate)", dekkesAv: "backprop-dyp", mappe: false },
       { id: "A42", navn: "Flerlagsperceptron (MLP)", dekkesAv: "nn-intro", mappe: true },
     ],
@@ -381,16 +456,36 @@ export const FASER: readonly Fase[] = [
     merknad:
       "Innholdet i denne fasen bygges i en parallell sesjon (branch feat/dte2602-prosjektflyt-viz). Denne modul-visningen lenker til det, men bygger det ikke.",
     atomer: [
-      { id: "A43", navn: "Sjustegsflyten (CRISP-DM-aktig)", dekkesAv: "dte2602-prosjektflyt", mappe: true },
+      {
+        id: "A43",
+        navn: "Sjustegsflyten (CRISP-DM-aktig)",
+        dekkesAv: "dte2602-prosjektflyt",
+        mappe: true,
+      },
       { id: "A44", navn: "Baseline-modell", dekkesAv: "dte2602-prosjektflyt", mappe: true },
       { id: "A45", navn: "Klasseubalanse", dekkesAv: "dte2602-prosjektflyt", mappe: true },
-      { id: "A46", navn: "Reproduserbarhet (random_state)", dekkesAv: "dte2602-mappe-mal", mappe: true },
+      {
+        id: "A46",
+        navn: "Reproduserbarhet (random_state)",
+        dekkesAv: "dte2602-mappe-mal",
+        mappe: true,
+      },
       { id: "A47", navn: "AI-historie i korte trekk", dekkesAv: "ai-historie", mappe: false },
-      { id: "A48", navn: "Skjevhets-taksonomi i ML", dekkesAv: "dte2602-etikk-filosofi", mappe: true },
+      {
+        id: "A48",
+        navn: "Skjevhets-taksonomi i ML",
+        dekkesAv: "dte2602-etikk-filosofi",
+        mappe: true,
+      },
       { id: "A49", navn: "GDPR i maskinlæring", dekkesAv: "dte2602-etikk-filosofi", mappe: true },
       { id: "A50", navn: "Forklarbar AI", dekkesAv: "dte2602-etikk-filosofi", mappe: true },
       { id: "A51", navn: "Kinarommet, svak mot sterk AI", dekkesAv: "ai-etikk", mappe: false },
-      { id: "A52", navn: "EU AI Act — risikopyramiden", dekkesAv: "dte2602-etikk-filosofi", mappe: true },
+      {
+        id: "A52",
+        navn: "EU AI Act — risikopyramiden",
+        dekkesAv: "dte2602-etikk-filosofi",
+        mappe: true,
+      },
       { id: "A53", navn: "Struktur på mapperapporten", dekkesAv: "dte2602-mappe-mal", mappe: true },
     ],
     trinn: [

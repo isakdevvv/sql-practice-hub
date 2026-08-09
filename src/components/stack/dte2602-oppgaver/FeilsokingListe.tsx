@@ -29,15 +29,7 @@ export function FeilsokingListe({ oppgaver }: { oppgaver: Feilsoking[] }) {
   );
 }
 
-function FeilsokingKort({
-  oppgave,
-  nr,
-  av,
-}: {
-  oppgave: Feilsoking;
-  nr: number;
-  av: number;
-}) {
+function FeilsokingKort({ oppgave, nr, av }: { oppgave: Feilsoking; nr: number; av: number }) {
   const modus = useOppgaveModus();
   const [klikket, setKlikket] = useState<number[]>([]);
   const [valgtFiks, setValgtFiks] = useState<string | null>(null);
@@ -77,9 +69,7 @@ function FeilsokingKort({
           return (
             <button
               key={linje.nr}
-              onClick={() =>
-                setKlikket((k) => (k.includes(linje.nr) ? k : [...k, linje.nr]))
-              }
+              onClick={() => setKlikket((k) => (k.includes(linje.nr) ? k : [...k, linje.nr]))}
               className={cn(
                 "w-full text-left flex items-start gap-3 px-3 py-1.5 border-b border-border/60 last:border-b-0 transition-colors",
                 !erKlikket && !visSomFeil && "hover:bg-amber-500/5",
@@ -143,8 +133,8 @@ function FeilsokingKort({
           )}
           {klikket.length > 0 && (
             <span className="text-[11px] text-muted-foreground">
-              {klikket.length} linje{klikket.length === 1 ? "" : "r"} sjekket. Fortsett —
-              å eliminere de riktige linjene er halve jobben.
+              {klikket.length} linje{klikket.length === 1 ? "" : "r"} sjekket. Fortsett — å
+              eliminere de riktige linjene er halve jobben.
             </span>
           )}
         </div>

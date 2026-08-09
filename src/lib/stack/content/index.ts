@@ -145,6 +145,8 @@ import { content as dte2602Etikk } from "./dte2602-etikk-filosofi";
 import { content as dte2602MappeMal } from "./dte2602-mappe-mal";
 import { content as dte2602EdaPandas } from "./dte2602-eda-pandas";
 import { content as dte2602PreprocessingPipeline } from "./dte2602-preprocessing-pipeline";
+import { content as dte2602Modul1 } from "./dte2602-modul1";
+import { content as dte2602Modul2 } from "./dte2602-modul2";
 import { content as dte2602TreesRf } from "./dte2602-trees-rf";
 import { content as dte2602BiasVarians } from "./dte2602-bias-varians";
 import { content as dte2602EvaluationRoc } from "./dte2602-evaluation-roc";
@@ -278,6 +280,8 @@ export const TRINN: TrinnContent[] = [
   dte2507InniRuter, dte2507PacketScheduling,
   dte2507CrcKalkulator, dte2507AlohaKasino, dte2507ArpDetektiv, dte2507SwitchSelfLearning,
   dte2602, mlGrunnlag, supervisedLearning, unsupervisedLearning, nnIntro,
+  // DTE-2602 Fase 1 og 2 — modulsider med de fem oppgavetypene
+  dte2602Modul1, dte2602Modul2,
   dte2501, sokAlgoritmer, csp, logiskResonnering, planlegging, bayes,
   flaskLivssyklus, pythonDrill, httpAnatomi,
   dte2505, osHistorikk, osGrunnlag, linuxBruk, shellScripting, brukereRettigheter, virtualisering,

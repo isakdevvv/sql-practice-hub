@@ -30,15 +30,7 @@ export function MaloppgaveListe({ oppgaver }: { oppgaver: Maloppgave[] }) {
   );
 }
 
-function MaloppgaveKort({
-  oppgave,
-  nr,
-  av,
-}: {
-  oppgave: Maloppgave;
-  nr: number;
-  av: number;
-}) {
+function MaloppgaveKort({ oppgave, nr, av }: { oppgave: Maloppgave; nr: number; av: number }) {
   const modus = useOppgaveModus();
   const [valgt, setValgt] = useState<Record<string, string>>({});
   const [sjekket, setSjekket] = useState(false);
@@ -127,20 +119,25 @@ function MaloppgaveKort({
         )}
         {!alleValgt && (
           <span className="text-[11px] text-muted-foreground">
-            Ta stilling til alle {oppgave.valg.length} valgene — det er kombinasjonen
-            som sjekkes, ikke ett valg av gangen.
+            Ta stilling til alle {oppgave.valg.length} valgene — det er kombinasjonen som sjekkes,
+            ikke ett valg av gangen.
           </span>
         )}
       </div>
 
-      {vurdering && <VurderingBoks niva={vurdering.niva} tittel={vurdering.tittel} forklaring={vurdering.forklaring} />}
+      {vurdering && (
+        <VurderingBoks
+          niva={vurdering.niva}
+          tittel={vurdering.tittel}
+          forklaring={vurdering.forklaring}
+        />
+      )}
 
       {modus === "laer" && !sjekket && (
         <p className="mt-3 flex items-start gap-1.5 text-[11px] text-muted-foreground">
-          <Eye className="h-3.5 w-3.5 mt-px shrink-0" />
-          I læringsmodus koster det ingenting å prøve en kombinasjon du er usikker
-          på. Test gjerne et valg du mistenker er galt — tilbakemeldingen forklarer
-          hvorfor, og det er ofte den mest lærerike veien.
+          <Eye className="h-3.5 w-3.5 mt-px shrink-0" />I læringsmodus koster det ingenting å prøve
+          en kombinasjon du er usikker på. Test gjerne et valg du mistenker er galt —
+          tilbakemeldingen forklarer hvorfor, og det er ofte den mest lærerike veien.
         </p>
       )}
     </OppgaveRamme>

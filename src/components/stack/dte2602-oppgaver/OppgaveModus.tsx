@@ -81,15 +81,15 @@ export function ModusVelger({
       <p className="mt-3 text-xs text-muted-foreground leading-relaxed">
         {modus === "laer" ? (
           <>
-            <span className="text-foreground font-medium">Læringsmodus:</span> du kan
-            åpne forklaringen når som helst, og ingenting telles. Bruk denne første
-            gang du går gjennom modulen — poenget er å bygge modellen, ikke å prestere.
+            <span className="text-foreground font-medium">Læringsmodus:</span> du kan åpne
+            forklaringen når som helst, og ingenting telles. Bruk denne første gang du går gjennom
+            modulen — poenget er å bygge modellen, ikke å prestere.
           </>
         ) : (
           <>
-            <span className="text-foreground font-medium">Test deg selv:</span> du må
-            svare før forklaringen vises, og modulen teller hvor mange du traff på.
-            Bruk denne når du har lest gjennom én gang.
+            <span className="text-foreground font-medium">Test deg selv:</span> du må svare før
+            forklaringen vises, og modulen teller hvor mange du traff på. Bruk denne når du har lest
+            gjennom én gang.
           </>
         )}
       </p>
@@ -119,8 +119,7 @@ export function OppgaveRamme({
     anslag: {
       merke: "Anslå først",
       klasse: "border-violet-500/30 bg-violet-500/[0.04]",
-      merkeKlasse:
-        "bg-violet-500/10 text-violet-700 dark:text-violet-300 border-violet-500/30",
+      merkeKlasse: "bg-violet-500/10 text-violet-700 dark:text-violet-300 border-violet-500/30",
     },
     maal: {
       merke: "Måloppgave",
@@ -130,8 +129,7 @@ export function OppgaveRamme({
     feilsoking: {
       merke: "Feilsøking",
       klasse: "border-amber-500/30 bg-amber-500/[0.04]",
-      merkeKlasse:
-        "bg-amber-500/10 text-amber-700 dark:text-amber-300 border-amber-500/30",
+      merkeKlasse: "bg-amber-500/10 text-amber-700 dark:text-amber-300 border-amber-500/30",
     },
     recall: {
       merke: "Recall",
@@ -155,9 +153,7 @@ export function OppgaveRamme({
           {nr} av {av}
         </span>
         {tittel && (
-          <h3 className="w-full font-semibold text-foreground leading-tight mt-1">
-            {tittel}
-          </h3>
+          <h3 className="w-full font-semibold text-foreground leading-tight mt-1">{tittel}</h3>
         )}
       </div>
       {children}
