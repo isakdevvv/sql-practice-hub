@@ -31,6 +31,13 @@ export type SymbolRad = {
   uttale: string;
   betydning: ReactNode;
   verden: SymbolVerden;
+  /**
+   * Settes når symbolet allerede er innført i en tidligere modul, f.eks.
+   * "modul 1". Scaffolding-regelen krever at symbolet står i tavla uansett — men
+   * studenten skal se forskjell på «dette er nytt» og «dette har du sett før»,
+   * ellers drukner de nye tegnene i repetisjonen.
+   */
+  kjentFraFor?: string;
 };
 
 const VERDEN_STIL: Record<SymbolVerden, { label: string; cls: string }> = {
@@ -116,6 +123,11 @@ export function Symboltavle({
                     >
                       {stil.label}
                     </span>
+                    {s.kjentFraFor && (
+                      <span className="mt-1 block whitespace-nowrap text-[10px] text-muted-foreground">
+                        kjent fra {s.kjentFraFor}
+                      </span>
+                    )}
                   </td>
                 </tr>
               );
