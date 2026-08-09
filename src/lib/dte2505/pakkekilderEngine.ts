@@ -674,6 +674,10 @@ export function runApt(state: AptState, input: string): KjoreResultat {
         kilde: repo.id,
         kildeType: repo.type,
       };
+      // Selve flatpak-verktøyet er bare en helt vanlig .deb-pakke. At det å
+      // installere den er det som slår på flatpak-kommandoen, er hele poenget i
+      // måloppgave pg6: det ene pakkesystemet installerer det andre.
+      if (m === "flatpak") ny.flatpakInstallert = true;
       lines.push(
         gammel
           ? `${m} oppgraderes fra ${gammel.version} til ${oppf.version}`
@@ -804,6 +808,10 @@ export function runApt(state: AptState, input: string): KjoreResultat {
     if (!navn || !state.installert[navn]) return feil(state, cmd, `E: Pakken ${navn ?? ""} er ikke installert.`);
     const ny = klone(state);
     delete ny.installert[navn];
+    if (navn === "flatpak") {
+      ny.flatpakInstallert = false;
+      ny.flatpakRemotes = [];
+    }
     return {
       state: ny,
       cmd,
