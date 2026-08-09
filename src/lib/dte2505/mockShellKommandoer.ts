@@ -466,9 +466,13 @@ function utfør(t: ShellTilstand, a: Argumenter, linje: string): Kjoring {
     }
 
     case "echo": {
-      // echo skriver argumentene sine, adskilt med mellomrom.
-      const tokens = delOpp(linje, t.miljo).filter((tok) => !tok.operator);
-      const ord = tokens.slice(1).map((tok) => tok.tekst);
+      // echo skriver argumentene sine, adskilt med mellomrom. Alt fra og med
+      // det første omdirigeringstegnet hører til omdirigeringen, ikke til echo.
+      const tokens = delOpp(linje, t.miljo);
+      const grense = tokens.findIndex((tok) => tok.operator);
+      const ord = tokens
+        .slice(1, grense === -1 ? tokens.length : grense)
+        .map((tok) => tok.tekst);
       const utenN = ord[0] === "-n" ? ord.slice(1) : ord;
       return OK(linje, [utenN.join(" ")]);
     }
