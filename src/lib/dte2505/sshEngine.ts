@@ -251,6 +251,43 @@ export function runSsh(state: SshState, input: string): SshResultat {
     };
   }
 
+  // ---- skrive en Host-blokk til ~/.ssh/config ----------------------------
+  // Fila redigeres normalt i vim, men her skriver vi den med printf/tee slik at
+  // hele oppsettet blir én etterprøvbar kommando. Feltnavnene er de ekte.
+  if (cmd.includes(".ssh/config") && /Host\s+\S/.test(cmd) && !cmd.startsWith("cat")) {
+    const felt = (navn: string) => new RegExp(`${navn}\\s+([^\\s\\\\'"]+)`, "i").exec(cmd)?.[1];
+    const alias = /Host\s+([^\s\\'"]+)/.exec(cmd)?.[1];
+    if (!alias) return feil(state, cmd, "Fant ingen «Host <alias>» i teksten du skrev.");
+    const ny = klone(state);
+    const oppf: ConfigVert = {
+      alias,
+      hostName: felt("HostName") ?? TJENER.host,
+      user: felt("User"),
+      port: felt("Port") ? Number(felt("Port")) : undefined,
+      identityFile: felt("IdentityFile") ? nokkelnavn(felt("IdentityFile")!) : undefined,
+      forwardX11: /ForwardX11\s+yes/i.test(cmd),
+    };
+    ny.config = [...ny.config.filter((c) => c.alias !== alias), oppf];
+    return {
+      state: ny,
+      cmd,
+      utfall: "config",
+      pared: false,
+      lines: [
+        `Lagt til i ~/.ssh/config:`,
+        `Host ${oppf.alias}`,
+        `    HostName ${oppf.hostName}`,
+        ...(oppf.user ? [`    User ${oppf.user}`] : []),
+        ...(oppf.port ? [`    Port ${oppf.port}`] : []),
+        ...(oppf.identityFile ? [`    IdentityFile ~/.ssh/${oppf.identityFile}`] : []),
+        ...(oppf.forwardX11 ? [`    ForwardX11 yes`] : []),
+        "",
+        `(Nå holder det å skrive \`ssh ${oppf.alias}\`. Og fordi scp, sftp og rsync leser den samme`,
+        " fila, virker aliaset i alle sammen.)",
+      ],
+    };
+  }
+
   // ---- ~/.ssh/config -----------------------------------------------------
   if (t[0] === "cat" && cmd.includes(".ssh/config")) {
     if (!state.config.length) {
@@ -575,8 +612,11 @@ export const SSH_GOAL_TASKS: SshGoalTask[] = [
     prompt:
       "Du er lei av å skrive brukernavn, vertsnavn og nøkkelfil hver gang. Sett opp ~/.ssh/config slik at bare `ssh uit` er nok, og bruk det.",
     goal: "En Host-oppføring med alias «uit» finnes i konfigurasjonen, og du er logget inn ved å bruke aliaset.",
-    fasit: ["config uit", `ssh uit`],
-    hint: "Bruk skjemaet under terminalen til å legge inn oppføringen — det er en tekstfil du normalt redigerer i vim.",
+    fasit: [
+      `printf 'Host uit\\n HostName ${TJENER.host}\\n User ${TJENER.bruker}\\n IdentityFile ~/.ssh/id_ed25519\\n' >> ~/.ssh/config`,
+      `ssh uit`,
+    ],
+    hint: "Fila redigeres normalt i vim, men her holder det å skrive en Host-blokk til ~/.ssh/config. Feltene heter Host, HostName, User og IdentityFile.",
     takeaway:
       "~/.ssh/config er ren tekst med Host-blokker. Alt du kan gi ssh på kommandolinja kan stå der i stedet: HostName, User, Port, IdentityFile, ForwardX11. Og scp, sftp og rsync leser den samme fila — aliaset virker i alle sammen.",
     start: () => {
