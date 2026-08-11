@@ -215,8 +215,35 @@ rapportert.
 - Modulsider for TEK-1501 modul 3 og 4 er ikke bygget (rammen viser dem ærlig
   som «ikke bygget ennå»).
 
-**Bølge 2 (senere):** tilstandsbasert mock-shell, modul 1b + 6 i DTE-2505,
-DTE-2507 etter Canvas-gjennomgang, integrasjonsoppgaver, felles FSRS-kø.
+**Bølge 2 — merget.**
+
+| # | Leveranse | Status |
+|---|---|---|
+| E | DTE-2507 lag-ramme (9 lag) + Lag 0 som full modul | ✅ merget — **uverifisert mot Canvas** |
+| F | DTE-2505 modul 1b (pakkekilder) + modul 6 (vim, X, SSH) | ✅ merget |
+| G | Tilstandsbasert mock-shell (§3.1) + felles FSRS-kø (§3.4) | ✅ merget |
+| H | TEK-1501 modul 3–4 + `EXAM_TOPICS`-fiks | ✅ merget |
+
+Selvsjekker som kan kjøres fra kommandolinja (begge grønne per 2026-08-08):
+```
+bun run src/lib/dte2505/mockShellSelvsjekk.ts   # 74/74
+bun run src/lib/learn/modulKortSelvsjekk.ts     # 23/23
+```
+
+**Bølge 3 (gjenstår):**
+- **Canvas-verifisering av DTE-2507** — hele lag-rammen er bygget på Kurose-logikk,
+  ikke på emnets faktiske moduler. Ingen obliger/frister er oppgitt, med vilje.
+- **TEK-1501 på felles FSRS-kø** — recall-kortene der er modul-lokale `const` med
+  JSX-svar. Én registeroppføring den dagen de eksporteres med tekstsvar.
+- **Integrasjonsoppgavene (§3.2)** — nå finnes modulene å koble sammen.
+- **Hull i DTE-2507:** Go-Back-N/Selective Repeat, ICMP/traceroute, rå HTTP og
+  statuskoder, digital signatur + PKI-kjeden, IPv6.
+- **To preeksisterende feil**, begge eldre enn bølge 2: app-vid hydration-feil fra
+  `CourseOutline` som leser localStorage under render, og SVG-baner med dobbel «M»
+  i `Type1Type2ErrorAreas.tsx` som nettleseren avviser.
+- **Rettelse i atom-planen:** `plan-dte-2507.md` påstår at `dte2507-ap-progresjon`
+  dekker Go-Back-N/Selective Repeat. Det stemmer ikke — siden handler om
+  autentiseringsprotokollene ap 1.0–4.0 og hører til kryptografi-laget.
 
 Regel som gjelder alle: hver agent har egen worktree og egen ledger-fil under
 `.claude/agents/`. Delte registre (`src/lib/stack/content/index.ts`,
