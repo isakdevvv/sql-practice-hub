@@ -40,6 +40,11 @@ export function MultippelTestingSim() {
 
   const rader = Math.ceil(m / KOLONNER);
 
+  // Norsk tallformat: komma som desimalskille, i hele komponenten.
+  const grenseTekst =
+    grense < 0.001 ? grense.toExponential(1).replace(".", ",") : grense.toFixed(4).replace(".", ",");
+  const minstEnTekst = `${(minstEn * 100).toFixed(1).replace(".", ",")} %`;
+
   return (
     <div className="rounded-xl border border-border bg-card p-4">
       <div className="mb-1 text-sm font-semibold text-foreground">
@@ -119,7 +124,7 @@ export function MultippelTestingSim() {
       <div className="grid gap-2 sm:grid-cols-3">
         <Rute
           label="Signifikansgrense"
-          verdi={grense < 0.001 ? grense.toExponential(1) : grense.toFixed(4)}
+          verdi={grenseTekst}
           note={korrigert ? `α/m = 0,05/${m}` : "α = 0,05"}
         />
         <Rute
@@ -130,7 +135,7 @@ export function MultippelTestingSim() {
         />
         <Rute
           label="P(minst ett falskt funn)"
-          verdi={`${(minstEn * 100).toFixed(1)} %`}
+          verdi={minstEnTekst}
           note={korrigert ? "holdt nede av korreksjonen" : "1 − (1 − α)^m"}
           alarm={!korrigert && minstEn > 0.2}
         />
@@ -151,16 +156,16 @@ export function MultippelTestingSim() {
         <div className="leading-relaxed text-foreground">
           {korrigert ? (
             <>
-              Med Bonferroni kreves p under {grense < 0.001 ? grense.toExponential(1) : grense.toFixed(4)}{" "}
+              Med Bonferroni kreves p under {grenseTekst}{" "}
               for hver enkelt test. Sannsynligheten for <em>minst</em> ett falskt funn i hele serien
-              er nå {(minstEn * 100).toFixed(1)} % — altså tilbake på noe som ligner de 5 % du trodde
+              er nå {minstEnTekst} — altså tilbake på noe som ligner de 5 % du trodde
               du hadde. Prisen er at ekte, små effekter lettere blir oversett: styrken faller.
             </>
           ) : (
             <>
               Uten korreksjon har <em>hver</em> test 5 % sjanse for å slå ut ved ren tilfeldighet.
               Med m = {m} tester er sannsynligheten for minst ett falskt funn{" "}
-              <strong>{(minstEn * 100).toFixed(1)} %</strong>. Skru opp m og se hvor fort det
+              <strong>{minstEnTekst}</strong>. Skru opp m og se hvor fort det
               nærmer seg sikkerhet — og legg merke til at det ikke finnes én ekte effekt i hele
               rutenettet.
             </>
