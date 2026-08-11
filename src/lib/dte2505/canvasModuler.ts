@@ -458,10 +458,15 @@ export const CANVAS_MODULER: CanvasModul[] = [
       "Forklare hva X (X Window System — grunnlaget under det grafiske skrivebordet i Linux) gjør, og hvorfor det er delt i klient og tjener",
       "Logge inn på en annen maskin med SSH (Secure Shell) og bruke nøkler i stedet for passord",
     ],
-    dekning: "hull",
-    mangler:
-      "Ingenting bygget. Det finnes ingen modul for vi/vim, ingen for X, og SSH er kun nevnt i forbifarten i Linux-bruk og i den viderekomne kommandolinje-modulen. Hele modul 6 må bygges.",
+    dekning: "dekket",
     lenker: [
+      {
+        type: "stack",
+        slug: "dte2505-diverse",
+        label: "Diverse — vi/vim, X og SSH",
+        dekker:
+          "Hele modulen: vim-modussimulator (normal, insert, visual, kommandolinje), X-modellen med DISPLAY og X-videresending, Wayland, og SSH med nøkkelpar, ssh-agent, config, scp og sftp.",
+      },
       {
         type: "stack",
         slug: "linux-cli-advanced",
