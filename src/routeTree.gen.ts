@@ -58,6 +58,7 @@ import { Route as VizLesjonSlugRouteImport } from './routes/viz-lesjon.$slug'
 import { Route as StackSlugRouteImport } from './routes/stack.$slug'
 import { Route as SporSlugRouteImport } from './routes/spor.$slug'
 import { Route as SikkerhetSlugRouteImport } from './routes/sikkerhet.$slug'
+import { Route as RepetisjonKortRouteImport } from './routes/repetisjon_.kort'
 import { Route as PythonVisualizerRouteImport } from './routes/python_.visualizer'
 import { Route as PythonKjerneRouteImport } from './routes/python_.kjerne'
 import { Route as PythonComprehensionsRouteImport } from './routes/python_.comprehensions'
@@ -72,6 +73,7 @@ import { Route as FagSlugRouteImport } from './routes/fag.$slug'
 import { Route as EksamenTreningRouteImport } from './routes/eksamen.trening'
 import { Route as Dte2507PcapRouteImport } from './routes/dte2507.pcap'
 import { Route as Dte2505ShellDrillRouteImport } from './routes/dte2505.shell-drill'
+import { Route as Dte2505MalShellRouteImport } from './routes/dte2505.mal-shell'
 import { Route as DrillChar91_demoChar93RouteImport } from './routes/drill.[_demo]'
 import { Route as PythonKapIndexRouteImport } from './routes/python_.kap.index'
 import { Route as KarriereDebugJaktIndexRouteImport } from './routes/karriere.debug-jakt.index'
@@ -324,6 +326,11 @@ const SikkerhetSlugRoute = SikkerhetSlugRouteImport.update({
   path: '/sikkerhet/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const RepetisjonKortRoute = RepetisjonKortRouteImport.update({
+  id: '/repetisjon_/kort',
+  path: '/repetisjon/kort',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PythonVisualizerRoute = PythonVisualizerRouteImport.update({
   id: '/python_/visualizer',
   path: '/python/visualizer',
@@ -393,6 +400,11 @@ const Dte2507PcapRoute = Dte2507PcapRouteImport.update({
 const Dte2505ShellDrillRoute = Dte2505ShellDrillRouteImport.update({
   id: '/dte2505/shell-drill',
   path: '/dte2505/shell-drill',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const Dte2505MalShellRoute = Dte2505MalShellRouteImport.update({
+  id: '/dte2505/mal-shell',
+  path: '/dte2505/mal-shell',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DrillChar91_demoChar93Route = DrillChar91_demoChar93RouteImport.update({
@@ -466,6 +478,7 @@ export interface FileRoutesByFullPath {
   '/visualiseringer': typeof VisualiseringerRoute
   '/viz-lesjon': typeof VizLesjonRouteWithChildren
   '/drill/_demo': typeof DrillChar91_demoChar93Route
+  '/dte2505/mal-shell': typeof Dte2505MalShellRoute
   '/dte2505/shell-drill': typeof Dte2505ShellDrillRoute
   '/dte2507/pcap': typeof Dte2507PcapRoute
   '/eksamen/trening': typeof EksamenTreningRoute
@@ -480,6 +493,7 @@ export interface FileRoutesByFullPath {
   '/python/comprehensions': typeof PythonComprehensionsRoute
   '/python/kjerne': typeof PythonKjerneRoute
   '/python/visualizer': typeof PythonVisualizerRoute
+  '/repetisjon/kort': typeof RepetisjonKortRoute
   '/sikkerhet/$slug': typeof SikkerhetSlugRoute
   '/spor/$slug': typeof SporSlugRoute
   '/stack/$slug': typeof StackSlugRoute
@@ -532,6 +546,7 @@ export interface FileRoutesByTo {
   '/venv-drill': typeof VenvDrillRoute
   '/visualiseringer': typeof VisualiseringerRoute
   '/drill/_demo': typeof DrillChar91_demoChar93Route
+  '/dte2505/mal-shell': typeof Dte2505MalShellRoute
   '/dte2505/shell-drill': typeof Dte2505ShellDrillRoute
   '/dte2507/pcap': typeof Dte2507PcapRoute
   '/eksamen/trening': typeof EksamenTreningRoute
@@ -545,6 +560,7 @@ export interface FileRoutesByTo {
   '/python/comprehensions': typeof PythonComprehensionsRoute
   '/python/kjerne': typeof PythonKjerneRoute
   '/python/visualizer': typeof PythonVisualizerRoute
+  '/repetisjon/kort': typeof RepetisjonKortRoute
   '/sikkerhet/$slug': typeof SikkerhetSlugRoute
   '/spor/$slug': typeof SporSlugRoute
   '/stack/$slug': typeof StackSlugRoute
@@ -603,6 +619,7 @@ export interface FileRoutesById {
   '/visualiseringer': typeof VisualiseringerRoute
   '/viz-lesjon': typeof VizLesjonRouteWithChildren
   '/drill/_demo': typeof DrillChar91_demoChar93Route
+  '/dte2505/mal-shell': typeof Dte2505MalShellRoute
   '/dte2505/shell-drill': typeof Dte2505ShellDrillRoute
   '/dte2507/pcap': typeof Dte2507PcapRoute
   '/eksamen/trening': typeof EksamenTreningRoute
@@ -617,6 +634,7 @@ export interface FileRoutesById {
   '/python_/comprehensions': typeof PythonComprehensionsRoute
   '/python_/kjerne': typeof PythonKjerneRoute
   '/python_/visualizer': typeof PythonVisualizerRoute
+  '/repetisjon_/kort': typeof RepetisjonKortRoute
   '/sikkerhet/$slug': typeof SikkerhetSlugRoute
   '/spor/$slug': typeof SporSlugRoute
   '/stack/$slug': typeof StackSlugRoute
@@ -676,6 +694,7 @@ export interface FileRouteTypes {
     | '/visualiseringer'
     | '/viz-lesjon'
     | '/drill/_demo'
+    | '/dte2505/mal-shell'
     | '/dte2505/shell-drill'
     | '/dte2507/pcap'
     | '/eksamen/trening'
@@ -690,6 +709,7 @@ export interface FileRouteTypes {
     | '/python/comprehensions'
     | '/python/kjerne'
     | '/python/visualizer'
+    | '/repetisjon/kort'
     | '/sikkerhet/$slug'
     | '/spor/$slug'
     | '/stack/$slug'
@@ -742,6 +762,7 @@ export interface FileRouteTypes {
     | '/venv-drill'
     | '/visualiseringer'
     | '/drill/_demo'
+    | '/dte2505/mal-shell'
     | '/dte2505/shell-drill'
     | '/dte2507/pcap'
     | '/eksamen/trening'
@@ -755,6 +776,7 @@ export interface FileRouteTypes {
     | '/python/comprehensions'
     | '/python/kjerne'
     | '/python/visualizer'
+    | '/repetisjon/kort'
     | '/sikkerhet/$slug'
     | '/spor/$slug'
     | '/stack/$slug'
@@ -812,6 +834,7 @@ export interface FileRouteTypes {
     | '/visualiseringer'
     | '/viz-lesjon'
     | '/drill/_demo'
+    | '/dte2505/mal-shell'
     | '/dte2505/shell-drill'
     | '/dte2507/pcap'
     | '/eksamen/trening'
@@ -826,6 +849,7 @@ export interface FileRouteTypes {
     | '/python_/comprehensions'
     | '/python_/kjerne'
     | '/python_/visualizer'
+    | '/repetisjon_/kort'
     | '/sikkerhet/$slug'
     | '/spor/$slug'
     | '/stack/$slug'
@@ -883,6 +907,7 @@ export interface RootRouteChildren {
   VenvDrillRoute: typeof VenvDrillRoute
   VisualiseringerRoute: typeof VisualiseringerRoute
   VizLesjonRoute: typeof VizLesjonRouteWithChildren
+  Dte2505MalShellRoute: typeof Dte2505MalShellRoute
   Dte2505ShellDrillRoute: typeof Dte2505ShellDrillRoute
   Dte2507PcapRoute: typeof Dte2507PcapRoute
   FagSlugRoute: typeof FagSlugRoute
@@ -895,6 +920,7 @@ export interface RootRouteChildren {
   PythonComprehensionsRoute: typeof PythonComprehensionsRoute
   PythonKjerneRoute: typeof PythonKjerneRoute
   PythonVisualizerRoute: typeof PythonVisualizerRoute
+  RepetisjonKortRoute: typeof RepetisjonKortRoute
   SikkerhetSlugRoute: typeof SikkerhetSlugRoute
   ForkursIndexRoute: typeof ForkursIndexRoute
   SikkerhetIndexRoute: typeof SikkerhetIndexRoute
@@ -1248,6 +1274,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SikkerhetSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/repetisjon_/kort': {
+      id: '/repetisjon_/kort'
+      path: '/repetisjon/kort'
+      fullPath: '/repetisjon/kort'
+      preLoaderRoute: typeof RepetisjonKortRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/python_/visualizer': {
       id: '/python_/visualizer'
       path: '/python/visualizer'
@@ -1344,6 +1377,13 @@ declare module '@tanstack/react-router' {
       path: '/dte2505/shell-drill'
       fullPath: '/dte2505/shell-drill'
       preLoaderRoute: typeof Dte2505ShellDrillRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dte2505/mal-shell': {
+      id: '/dte2505/mal-shell'
+      path: '/dte2505/mal-shell'
+      fullPath: '/dte2505/mal-shell'
+      preLoaderRoute: typeof Dte2505MalShellRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/drill/_demo': {
@@ -1518,6 +1558,7 @@ const rootRouteChildren: RootRouteChildren = {
   VenvDrillRoute: VenvDrillRoute,
   VisualiseringerRoute: VisualiseringerRoute,
   VizLesjonRoute: VizLesjonRouteWithChildren,
+  Dte2505MalShellRoute: Dte2505MalShellRoute,
   Dte2505ShellDrillRoute: Dte2505ShellDrillRoute,
   Dte2507PcapRoute: Dte2507PcapRoute,
   FagSlugRoute: FagSlugRoute,
@@ -1530,6 +1571,7 @@ const rootRouteChildren: RootRouteChildren = {
   PythonComprehensionsRoute: PythonComprehensionsRoute,
   PythonKjerneRoute: PythonKjerneRoute,
   PythonVisualizerRoute: PythonVisualizerRoute,
+  RepetisjonKortRoute: RepetisjonKortRoute,
   SikkerhetSlugRoute: SikkerhetSlugRoute,
   ForkursIndexRoute: ForkursIndexRoute,
   SikkerhetIndexRoute: SikkerhetIndexRoute,
