@@ -521,6 +521,31 @@ export function Dte2507Hub() {
           <ArrowRight className="h-4 w-4 text-green-300 shrink-0 mt-2 group-hover:translate-x-0.5 transition-transform" />
         </Link>
 
+        {/* Lag-rammen — faget i faglig rekkefølge, med ærlige hull */}
+        <Link
+          to="/stack/$slug"
+          params={{ slug: "dte2507-lag" }}
+          className="mb-8 group flex items-start gap-4 rounded-xl border border-brand/30 bg-brand/5 hover:border-brand/60 transition-colors p-5"
+        >
+          <div className="rounded-lg bg-brand/15 p-2 shrink-0">
+            <Layers className="h-5 w-5 text-brand" />
+          </div>
+          <div className="flex-1">
+            <div className="text-[10px] uppercase tracking-wider font-semibold text-brand mb-1">
+              Lag for lag
+            </div>
+            <h3 className="font-semibold text-foreground leading-tight">
+              Faget i ni lag, nedenfra og opp
+            </h3>
+            <p className="text-sm text-muted-foreground leading-snug mt-1">
+              Hva hvert lag handler om, hva du skal klare uten hjelp, hvilket innhold som dekker
+              det — og hvor hullene fortsatt er. Inndelingen følger pensumlogikken; Canvas for
+              DTE-2507 er ikke gjennomgått ennå.
+            </p>
+          </div>
+          <ArrowRight className="h-4 w-4 text-brand shrink-0 mt-2 group-hover:translate-x-0.5 transition-transform" />
+        </Link>
+
         {/* Modus-rad */}
         <nav
           aria-label="Velg modus"
