@@ -98,7 +98,6 @@ function HypotheseTestVisual() {
         {/* H1 density (red) */}
         <path
           d={
-            "M" +
             data.map((p, i) => `${i === 0 ? "M" : "L"}${xPx(p.x)},${yPx(p.h1)}`).join("") +
             ` L${xPx(xMax)},${H} L${xPx(xMin)},${H} Z`
           }
@@ -109,7 +108,6 @@ function HypotheseTestVisual() {
         {/* H0 density (blue) */}
         <path
           d={
-            "M" +
             data.map((p, i) => `${i === 0 ? "M" : "L"}${xPx(p.x)},${yPx(p.h0)}`).join("") +
             ` L${xPx(xMax)},${H} L${xPx(xMin)},${H} Z`
           }
@@ -120,24 +118,20 @@ function HypotheseTestVisual() {
         {/* alpha: H0 right of crit (orange) */}
         <path
           d={
-            "M" +
             data
               .filter((p) => p.x >= crit)
               .map((p, i) => `${i === 0 ? "M" : "L"}${xPx(p.x)},${yPx(p.h0)}`)
-              .join("") +
-            ` L${xPx(xMax)},${H} L${xPx(crit)},${H} Z`
+              .join("") + ` L${xPx(xMax)},${H} L${xPx(crit)},${H} Z`
           }
           fill="hsl(30 90% 55% / 0.6)"
         />
         {/* beta: H1 left of crit (purple) */}
         <path
           d={
-            "M" +
             data
               .filter((p) => p.x <= crit)
               .map((p, i) => `${i === 0 ? "M" : "L"}${xPx(p.x)},${yPx(p.h1)}`)
-              .join("") +
-            ` L${xPx(crit)},${H} L${xPx(xMin)},${H} Z`
+              .join("") + ` L${xPx(crit)},${H} L${xPx(xMin)},${H} Z`
           }
           fill="hsl(280 70% 55% / 0.5)"
         />
