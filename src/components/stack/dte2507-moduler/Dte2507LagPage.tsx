@@ -15,7 +15,6 @@ import {
 } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { ModulStatusBadge, ModulProgressBar } from "@/components/stack/HubShared";
-import { useModulProgress } from "@/lib/stack/moduleProgress";
 import { getTrinnBySlug } from "@/lib/stack/content";
 import {
   LAG,
@@ -226,7 +225,6 @@ function TelleKort({
 
 function LagKort({ lag }: { lag: Lag }) {
   const slugs = useMemo(() => stackSlugsFor(lag), [lag]);
-  const { seen, total } = useModulProgress(slugs);
   const [apen, setApen] = useState(lag.nr === 0);
   const stil = dekningStil(lag.dekning);
   const telling = useMemo(() => atomTelling(lag), [lag]);
@@ -257,11 +255,6 @@ function LagKort({ lag }: { lag: Lag }) {
               {telling.delvis > 0 && ` · ${telling.delvis} delvis`}
               {telling.hull > 0 && ` · ${telling.hull} hull`}
             </span>
-            {slugs.length > 0 && (
-              <span className="rounded-full border border-border bg-muted px-2.5 py-1">
-                {seen} / {total} sider sett
-              </span>
-            )}
           </div>
           {slugs.length > 0 && (
             <div className="max-w-xs">
