@@ -198,16 +198,13 @@ export const CANVAS_MODULER: CanvasModul[] = [
       "Finne riktig kommando når du bare vet hva du vil oppnå (apropos, whatis)",
       "Bruke --help og info som raskere alternativ når du bare mangler ett flagg",
     ],
-    dekning: "hull",
-    mangler:
-      "Ingen egen modul for hjelpesystemene ennå. man, info, apropos, whatis og --help er kun nevnt spredt i andre leksjoner. Modulen er under bygging.",
+    dekning: "dekket",
     lenker: [
       {
         type: "stack",
         slug: "dte2505-hjelpesystemer",
         label: "Hjelpesystemer og dokumentasjon",
-        dekker: "Den dedikerte modulen for man, info, apropos, whatis og --help. Under bygging nå.",
-        kommer: true,
+        dekker: "Den dedikerte modulen for man, info, apropos, whatis og --help.",
       },
       {
         type: "stack",
