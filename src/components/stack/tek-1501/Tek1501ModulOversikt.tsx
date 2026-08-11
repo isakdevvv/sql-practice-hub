@@ -113,13 +113,18 @@ const MODULER: Modul[] = [
     sjekkpunkt:
       "Gitt en beskrevet situasjon: identifiser riktig fordeling og dens parametere, regn ut en sannsynlighet fra den, og forklar hvorfor gjennomsnittet av mange observasjoner blir normalfordelt uansett hvor skjev grunnfordelingen er.",
     spor: "Spor C (C1–C13)",
-    bygg: "temasider",
+    bygg: "modulside",
     lenker: [
+      {
+        slug: "tek1-modul3-fordelinger",
+        label: "Modul 3 — Stokastiske variabler og fordelinger",
+        rolle: "Selve modulen: anslå → simulér → regn → feilsøk → recall.",
+        primaer: true,
+      },
       {
         slug: "tek1-fordelinger",
         label: "Fordelings-velgeren",
-        rolle: "Start her: hvilken fordeling passer på hvilken situasjon?",
-        primaer: true,
+        rolle: "Utdypning: hvilken fordeling passer på hvilken situasjon?",
       },
       {
         slug: "tek1-diskrete-fordelinger",
@@ -152,13 +157,18 @@ const MODULER: Modul[] = [
     sjekkpunkt:
       "Gitt et datasett og et spørsmål: velg riktig test, sett opp hypotesene, regn ut testobservator og p-verdi, og tolk resultatet uten å påstå at p-verdien er sannsynligheten for at hypotesen er sann.",
     spor: "Spor D og E (D1–D14, E1–E5)",
-    bygg: "temasider",
+    bygg: "modulside",
     lenker: [
+      {
+        slug: "tek1-modul4-inferens",
+        label: "Modul 4 — Inferens og regresjon",
+        rolle: "Selve modulen: anslå → simulér → regn → feilsøk → recall.",
+        primaer: true,
+      },
       {
         slug: "tek1-inferens-sampling",
         label: "Fra utvalg til populasjon",
-        rolle: "Start her: standardfeil og hvorfor ett utvalg ikke er fasit.",
-        primaer: true,
+        rolle: "Utdypning: standardfeil og hvorfor ett utvalg ikke er fasit.",
       },
       {
         slug: "tek1-estimering-ki",
@@ -238,9 +248,9 @@ export function Tek1501ModulOversikt() {
       </div>
       <p className="mb-4 max-w-2xl text-sm text-muted-foreground">
         Fire moduler i undervisningsrekkefølge. Hver av dem er ferdig først når du kan gjøre det som
-        står under «du skal kunne» — ikke når temaet er lest. Modul 1 og 2 har egne modulsider som
-        tar deg gjennom hele runden: anslå, simulér, regn, feilsøk, repetér. Modul 3 og 4 har
-        foreløpig temasidene sine direkte.
+        står under «du skal kunne» — ikke når temaet er lest. Alle fire har nå en egen modulside som
+        tar deg gjennom hele runden: anslå, simulér, regn, feilsøk, repetér. Temasidene under hver
+        modul er utdypning du går til etterpå, når du vil grave dypere i én ting.
       </p>
 
       <div className="mb-6 rounded-xl border border-border bg-card p-4">
