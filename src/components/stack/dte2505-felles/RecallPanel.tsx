@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Brain, Eye, RotateCcw, CalendarClock, CheckCircle2 } from "lucide-react";
 import { Rating, type FsrsStore } from "@/lib/learn/fsrs";
 import { cn } from "@/lib/utils";
@@ -42,11 +42,20 @@ export function RecallPanel({
   const [show, setShow] = useState(false);
   const [tick, setTick] = useState(0); // tvinger ny lesing fra FSRS-butikken
 
+  // FSRS-butikken bor i localStorage, som ikke finnes under tjener-rendringen.
+  // Leser vi den under første rendring, blir tjenerens markup («0 forfalt») noe
+  // annet enn nettleserens, og React kaster hele siden og rendrer på nytt —
+  // en hydreringsfeil. Derfor venter vi til komponenten er montert, og rendrer
+  // nøyaktig samme nøytrale tall som tjeneren fram til da.
+  const [montert, setMontert] = useState(false);
+  useEffect(() => setMontert(true), []);
+
   const deck = useMemo(() => (tag === "alle" ? cards : cards.filter((c) => c.tag === tag)), [cards, tag]);
   const card = deck[pos % Math.max(deck.length, 1)];
 
   const stats = useMemo(() => {
     void tick;
+    if (!montert) return { nye: cards.length, forfalt: 0, planlagt: 0 };
     const now = Date.now();
     let nye = 0;
     let forfalt = 0;
@@ -58,17 +67,17 @@ export function RecallPanel({
       else planlagt++;
     }
     return { nye, forfalt, planlagt };
-  }, [cards, store, tick]);
+  }, [cards, montert, store, tick]);
 
   const previews = useMemo(() => {
     void tick;
-    return card ? store.previewRatings(card.id) : [];
-  }, [card, store, tick]);
+    return montert && card ? store.previewRatings(card.id) : [];
+  }, [card, montert, store, tick]);
 
   const state = useMemo(() => {
     void tick;
-    return card ? store.getCardState(card.id) : null;
-  }, [card, store, tick]);
+    return montert && card ? store.getCardState(card.id) : null;
+  }, [card, montert, store, tick]);
 
   if (!card) return null;
 
