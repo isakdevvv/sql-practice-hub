@@ -97,21 +97,27 @@ function LandingPage() {
 
           <div className="grid gap-4 md:grid-cols-3">
             <ExampleCard
+              link={{ to: "/practice" }}
               icon={<Database className="h-4 w-4" />}
               title="SQL-lab"
               body="Skriv spørringer, se tabeller og sammenlign resultatet mot fasit."
+              cta="Åpne SQL-oppgavene"
               visual="sql"
             />
             <ExampleCard
+              link={{ to: "/stack/$slug", params: { slug: "dte2507-ospf-dijkstra" } }}
               icon={<Network className="h-4 w-4" />}
               title="Nettverkssimulator"
-              body="Følg pakker gjennom ruter, brannmur og servere steg for steg."
+              body="Sett kostnader i ruternettet og se korteste vei bygge seg steg for steg."
+              cta="Åpne OSPF-simulatoren"
               visual="network"
             />
             <ExampleCard
+              link={{ to: "/stack/$slug", params: { slug: "dte2602-logistisk-regresjon" } }}
               icon={<BrainCircuit className="h-4 w-4" />}
               title="ML-visualisering"
-              body="Juster data og modeller og se hvordan beslutningsgrenser flytter seg."
+              body="Dra i data og modell, og se hvordan beslutningsgrensa flytter seg."
+              cta="Åpne beslutningsgrense-labben"
               visual="ml"
             />
           </div>
@@ -211,21 +217,32 @@ function PreviewTile({ label, value }: { label: string; value: string }) {
   );
 }
 
+// Kortene ser ut som knapper, så de skal også være det: hele kortet er én
+// lenke inn i den simulatoren/øvingen bildet viser.
+type ExampleLink = { to: "/practice" } | { to: "/stack/$slug"; params: { slug: string } };
+
 function ExampleCard({
+  link,
   icon,
   title,
   body,
+  cta,
   visual,
 }: {
+  link: ExampleLink;
   icon: React.ReactNode;
   title: string;
   body: string;
+  cta: string;
   visual: "sql" | "network" | "ml";
 }) {
   return (
-    <article className="overflow-hidden rounded-xl border border-border bg-card shadow-sm">
+    <Link
+      {...link}
+      className="group flex flex-col overflow-hidden rounded-xl border border-border bg-card shadow-sm transition-all hover:-translate-y-0.5 hover:border-brand/60 hover:shadow-md"
+    >
       <ExampleVisual kind={visual} />
-      <div className="p-4">
+      <div className="flex flex-1 flex-col p-4">
         <div className="mb-2 flex items-center gap-2 text-sm font-semibold">
           <span className="flex h-7 w-7 items-center justify-center rounded-md bg-brand/10 text-brand">
             {icon}
@@ -233,8 +250,12 @@ function ExampleCard({
           {title}
         </div>
         <p className="text-sm text-muted-foreground">{body}</p>
+        <span className="mt-3 inline-flex items-center gap-1 text-sm font-medium text-brand">
+          {cta}
+          <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+        </span>
       </div>
-    </article>
+    </Link>
   );
 }
 
