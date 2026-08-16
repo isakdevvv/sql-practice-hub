@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { OPPGAVER, type Oppgave, type Vurdering } from "@/lib/dte2507/nettverkOppgaver";
-import { alleLabber } from "@/lib/dte2507/canvasLab";
+import { MODULER_2507 } from "@/lib/dte2507/canvasModuler";
 import { dagerTil, formatDato } from "@/lib/dte2507/lagPlan";
 import { Terminal } from "./Terminal";
 
@@ -29,7 +29,8 @@ import { Terminal } from "./Terminal";
 // ---------------------------------------------------------------------------
 
 export function NettverksverktoyPage() {
-  const lab = alleLabber()[0];
+  // Lab 1 er den eneste quizen i modul 1, og den denne siden forbereder.
+  const lab = MODULER_2507.find((m) => m.nr === "1")?.quizer[0];
   const dager = lab ? dagerTil(lab.frist) : -1;
   const [lost, setLost] = useState<Set<string>>(new Set());
 
@@ -57,12 +58,12 @@ export function NettverksverktoyPage() {
             <CalendarClock className="h-5 w-5 shrink-0 text-amber-600 dark:text-amber-300" />
             <div className="flex-1 text-sm">
               <span className="font-medium text-foreground">
-                Lab {lab.nummer} — {lab.tittel}
+                {lab.navn}
               </span>{" "}
               <span className="text-muted-foreground">
-                har frist {formatDato(lab.frist)} kl. 23:59.
-                {lab.ubegrensedeForsok &&
-                  " Ubegrensede forsøk, og du får hint etter innlevering — du taper ingenting på å levere før du er sikker."}
+                har frist {formatDato(lab.frist)} kl. 23:59, og krever {lab.krav} av{" "}
+                {lab.poeng} poeng — altså full pott. Til gjengjeld er det ubegrensede forsøk med
+                hint etter innlevering, så du taper ingenting på å levere før du er sikker.
               </span>
             </div>
             <div className="shrink-0 text-right">

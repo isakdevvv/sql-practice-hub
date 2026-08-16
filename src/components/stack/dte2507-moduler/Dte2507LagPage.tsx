@@ -16,7 +16,7 @@ import {
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { ModulStatusBadge, ModulProgressBar } from "@/components/stack/HubShared";
 import { getTrinnBySlug } from "@/lib/stack/content";
-import { alleLabber } from "@/lib/dte2507/canvasLab";
+import { Dte2507Modultabell } from "./Dte2507Modultabell";
 import {
   LAG,
   EKSAMEN_ISO,
@@ -78,81 +78,17 @@ export function Dte2507LagPage() {
         <div className="mb-8 flex items-start gap-3 rounded-xl border border-sky-500/40 bg-sky-500/5 p-4">
           <Info className="mt-0.5 h-4 w-4 shrink-0 text-sky-600 dark:text-sky-400" />
           <div className="text-sm leading-relaxed">
-            <span className="font-medium">Om denne inndelingen.</span> Lagene under følger
-            pensumlogikken i Kurose &amp; Ross, ikke emnets egen modulrekkefølge — Canvas-sidene
-            for DTE-2507 er bare delvis gjennomgått. Derfor har lagene temanavn og ikke numre, og
-            derfor finner du ingen fullstendig fristrekke her: vi kjenner foreløpig bare Lab 1,
-            og oppdiktede frister er verre enn ingen.
+            <span className="font-medium">To rekkefølger, begge nyttige.</span> Canvas-modulene
+            er nå lest, og de står i tabellen under: seks moduler, uke 34–40, ett Kurose-kapittel
+            hver. Det er <em>undervisningsrekkefølgen</em> — den du må følge for å rekke fristene.
+            Lagene lenger nede er en <em>læringsrekkefølge</em>, nedenfra og opp, fordi du ikke kan
+            forstå hva TLS beskytter før du vet hva en TCP-forbindelse er. Bruk tabellen til å
+            planlegge og lagene til å forstå.
           </div>
         </div>
 
-        {/* Labbene vi faktisk har lest fra Canvas. */}
-        {alleLabber().map((lab) => {
-          const dager = dagerTil(lab.frist, naa);
-          if (dager < 0) return null;
-          return (
-            <div
-              key={lab.nummer}
-              className="mb-8 rounded-xl border border-amber-500/40 bg-amber-500/10 p-5"
-            >
-              <div className="flex flex-wrap items-start gap-4">
-                <div className="shrink-0 rounded-lg bg-amber-500/20 p-2">
-                  <CalendarClock className="h-5 w-5 text-amber-600 dark:text-amber-300" />
-                </div>
-                <div className="flex-1 min-w-[16rem]">
-                  <div className="mb-1 text-[10px] font-semibold uppercase tracking-wider text-amber-700 dark:text-amber-300">
-                    Neste frist · {lab.modul}
-                  </div>
-                  <h2 className="font-semibold leading-tight text-foreground">
-                    Lab {lab.nummer} — {lab.tittel}
-                  </h2>
-                  <p className="mt-1 text-sm text-muted-foreground">
-                    {formatDato(lab.frist)} kl. 23:59. {lab.hva}
-                    {lab.ubegrensedeForsok && " Ubegrensede forsøk."}
-                  </p>
-                  <div className="mt-2 flex flex-wrap gap-1.5">
-                    {lab.verktoy.map((v) => (
-                      <code
-                        key={v}
-                        className="rounded border border-border bg-background px-1.5 py-0.5 text-[11px]"
-                      >
-                        {v}
-                      </code>
-                    ))}
-                  </div>
-                </div>
-                <div className="shrink-0 text-right">
-                  <div className="text-3xl font-bold tabular-nums text-amber-600 dark:text-amber-300">
-                    {dager}
-                  </div>
-                  <div className="text-[10px] uppercase tracking-wider text-muted-foreground">
-                    dager igjen
-                  </div>
-                </div>
-              </div>
-              {lab.ovingSlug && (
-                <Link
-                  to="/stack/$slug"
-                  params={{ slug: lab.ovingSlug }}
-                  className="mt-4 flex items-center gap-2 rounded-lg border border-brand/40 bg-brand/5 px-3 py-2 text-sm font-medium text-brand transition-colors hover:border-brand"
-                >
-                  Øv på verktøyene i en terminal
-                  <ArrowRight className="ml-auto h-3.5 w-3.5" />
-                </Link>
-              )}
-              {/*
-                Ærlighet om hvor øvingen slutter. Simulatoren dekker verktøyene,
-                men ikke studentens egen maskin — og laben spør om begge deler.
-              */}
-              {lab.hull && (
-                <p className="mt-2 rounded-lg border border-border bg-background p-3 text-sm leading-relaxed text-muted-foreground">
-                  <strong className="text-foreground">Grensa for hva appen kan gjøre:</strong>{" "}
-                  {lab.hull}
-                </p>
-              )}
-            </div>
-          );
-        })}
+        <Dte2507Modultabell naa={naa} />
+
 
         {/* Eksamen — det ene harde faktumet. */}
         <div className="mb-8 flex flex-wrap items-center gap-4 rounded-xl border border-amber-500/40 bg-amber-500/10 p-5">

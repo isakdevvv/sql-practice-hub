@@ -16,7 +16,13 @@
  */
 
 import { CANVAS_MODULER, formatFrist } from "@/lib/dte2505/canvasModuler";
-import { alleLabber } from "@/lib/dte2507/canvasLab";
+import {
+  MODULER_2507,
+  OBLIGER_2507,
+  SIKKERHETSDELEN,
+  alleQuizer,
+  kravAndel,
+} from "@/lib/dte2507/canvasModuler";
 import { FRAMDRIFTSPLAN } from "@/lib/tek1501/framdriftsplan";
 import { EXAM_META, EXAM_SEASON_SLUGS } from "@/lib/subjects/catalog";
 import { SEMESTERUKER, ukeFor, type Uke } from "./uker";
@@ -95,17 +101,59 @@ function dte2505Hendelser(): Hendelse[] {
   return ut;
 }
 
+/**
+ * DTE-2507 har tre slags daterte hendelser: hvilken modul som undervises i
+ * uka, quizene med sine frister, og de tre obligene. Obligene er bare en
+ * bekreftelse på at modulenes quizer er godkjent — de vises likevel, fordi
+ * avkrysningen har en egen frist man kan glippe på.
+ */
 function dte2507Hendelser(): Hendelse[] {
-  return alleLabber().map((lab) => ({
-    fag: "dte-2507" as const,
-    slag: "frist" as const,
-    tittel: `Lab ${lab.nummer} — ${lab.tittel}`,
-    detalj: `${lab.modul}. ${lab.hva} Verktøy: ${lab.verktoy.join(", ")}.${
-      lab.ubegrensedeForsok ? " Ubegrensede forsøk." : ""
-    }`,
-    dato: lab.frist,
-    tilSlug: "dte2507-lag",
-  }));
+  const ut: Hendelse[] = [];
+
+  for (const { modul, quiz } of alleQuizer()) {
+    const andel = kravAndel(quiz);
+    ut.push({
+      fag: "dte-2507",
+      slag: "frist",
+      tittel: quiz.navn,
+      detalj: `Modul ${modul.nr}. ${quiz.hva} Krever ${quiz.krav} av ${quiz.poeng} poeng${
+        andel >= 1 ? " — altså full pott" : ` (${Math.round(andel * 100)} %)`
+      }. Frist kl. ${quiz.klokkeslett ?? "23:59"}.`,
+      dato: quiz.frist,
+      tilSlug: modul.ovingSlug ?? "dte2507-lag",
+    });
+  }
+
+  for (const oblig of OBLIGER_2507) {
+    ut.push({
+      fag: "dte-2507",
+      slag: "frist",
+      tittel: `Oblig ${oblig.nr} OK? — kryss av`,
+      detalj: `Bekrefter at alle quizer i modul ${oblig.moduler.join(" og ")} er godkjent. Ingen egen innlevering.${
+        oblig.konflikt ? ` Merk: ${oblig.konflikt}` : ""
+      }`,
+      dato: oblig.frist,
+      tilSlug: "dte2507-lag",
+    });
+  }
+
+  return ut;
+}
+
+/** Hvilken DTE-2507-modul som undervises i uka — pensum, ikke en frist. */
+function dte2507Pensum(): { uke: number; hendelse: Hendelse }[] {
+  return MODULER_2507.flatMap((m) =>
+    m.uker.map((uke) => ({
+      uke,
+      hendelse: {
+        fag: "dte-2507" as const,
+        slag: "pensum" as const,
+        tittel: `Modul ${m.nr} — ${m.tittel}`,
+        detalj: `Kurose kapittel ${m.kapitler.join(" og ")}. ${m.labber.join(". ")}.`,
+        tilSlug: m.ovingSlug ?? "dte2507-lag",
+      },
+    })),
+  );
 }
 
 /** Modulnummeret i appen → slug for modulsiden som dekker kapittelet. */
@@ -167,8 +215,7 @@ function eksamensHendelser(): Hendelse[] {
 export const UTEN_UKEPLAN: { fag: FagSlug; hvorfor: string }[] = [
   {
     fag: "dte-2507",
-    hvorfor:
-      "Bare modul 1 er lest fra Canvas, og bare labben i den — Lab 1 med frist 23.08. Resten av modulrekkefølgen er ukjent: lag-inndelingen i appen følger Kurose top-down, ikke emnets egen rekkefølge, og ingen frister etter Lab 1 er oppgitt.",
+    hvorfor: `Datakomm-delen er nå lest og lagt inn — seks moduler, uke 34–40. Men det Canvas-emnet er bare halve faget: sikkerhetsdelen går uke ${SIKKERHETSDELEN.uker[0]}–${SIKKERHETSDELEN.uker[SIKKERHETSDELEN.uker.length - 1]} på en egen Canvas-side som ikke er lest, med egne arbeidskrav i tillegg til de tre obligene under. De ukene ser derfor tommere ut enn de er.`,
   },
   {
     fag: "dte-2602",
@@ -185,7 +232,7 @@ export const UTEN_UKEPLAN: { fag: FagSlug; hvorfor: string }[] = [
  * som er viktigere enn at en modul åpner.
  */
 export function semesterPlan(): UkePlan[] {
-  const tek = tek1501Hendelser();
+  const ukebundet = [...tek1501Hendelser(), ...dte2507Pensum()];
   const datert = [...dte2505Hendelser(), ...dte2507Hendelser(), ...eksamensHendelser()];
 
   const RANG: Record<Slag, number> = { eksamen: 0, frist: 1, apner: 2, pensum: 3 };
@@ -193,7 +240,7 @@ export function semesterPlan(): UkePlan[] {
   return SEMESTERUKER.map((uke): UkePlan => {
     const hendelser: Hendelse[] = [
       ...datert.filter((h) => h.dato && ukeFor(h.dato) === uke.nr),
-      ...tek.filter((t) => t.uke === uke.nr).map((t) => t.hendelse),
+      ...ukebundet.filter((t) => t.uke === uke.nr).map((t) => t.hendelse),
     ].sort((a, b) => {
       // Udaterte (pensum) sist.
       if (Boolean(a.dato) !== Boolean(b.dato)) return a.dato ? -1 : 1;
