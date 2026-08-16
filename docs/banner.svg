@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 300" width="1200" height="300" role="img" aria-label="Kodeverkstedet - lek, lær og test deg selv">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#111827"/>
+      <stop offset="55%" stop-color="#1a1f3a"/>
+      <stop offset="100%" stop-color="#241a3a"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#38bdf8"/>
+      <stop offset="50%" stop-color="#818cf8"/>
+      <stop offset="100%" stop-color="#e879f9"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1200" height="300" rx="16" fill="url(#bg)"/>
+  <rect width="1200" height="4" rx="2" fill="url(#accent)"/>
+
+  <!-- Tekstblokk -->
+  <text x="64" y="106" font-family="ui-sans-serif, -apple-system, Segoe UI, Helvetica, Arial" font-size="44" font-weight="700" fill="#f8fafc">Kodeverkstedet</text>
+  <text x="64" y="146" font-family="ui-sans-serif, -apple-system, Segoe UI, Helvetica, Arial" font-size="19" fill="#94a3b8">Lek, lær og test deg selv — IT-fag som kjører rett i nettleseren.</text>
+
+  <g font-family="ui-sans-serif, -apple-system, Segoe UI, Helvetica, Arial" font-size="14" font-weight="600">
+    <rect x="64" y="182" width="88" height="30" rx="15" fill="#38bdf8" fill-opacity="0.14" stroke="#38bdf8" stroke-opacity="0.45"/>
+    <text x="108" y="202" fill="#7dd3fc" text-anchor="middle">SQL</text>
+    <rect x="162" y="182" width="98" height="30" rx="15" fill="#34d399" fill-opacity="0.14" stroke="#34d399" stroke-opacity="0.45"/>
+    <text x="211" y="202" fill="#6ee7b7" text-anchor="middle">Python</text>
+    <rect x="270" y="182" width="118" height="30" rx="15" fill="#818cf8" fill-opacity="0.14" stroke="#818cf8" stroke-opacity="0.45"/>
+    <text x="329" y="202" fill="#a5b4fc" text-anchor="middle">Nettverk</text>
+    <rect x="398" y="182" width="152" height="30" rx="15" fill="#e879f9" fill-opacity="0.14" stroke="#e879f9" stroke-opacity="0.45"/>
+    <text x="474" y="202" fill="#f0abfc" text-anchor="middle">Maskinlæring</text>
+    <rect x="560" y="182" width="128" height="30" rx="15" fill="#fbbf24" fill-opacity="0.14" stroke="#fbbf24" stroke-opacity="0.45"/>
+    <text x="624" y="202" fill="#fcd34d" text-anchor="middle">Statistikk</text>
+  </g>
+
+  <text x="64" y="252" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="14" fill="#64748b">320 oppgaver · 38 simulatorer · 18 mini-kurs · alt lokalt, ingen server</text>
+
+  <!-- Motiv 1: SQL-editor -->
+  <g transform="translate(748 56)">
+    <rect width="180" height="188" rx="12" fill="#0b1120" stroke="#1e293b"/>
+    <circle cx="18" cy="20" r="4" fill="#f87171"/><circle cx="32" cy="20" r="4" fill="#fbbf24"/><circle cx="46" cy="20" r="4" fill="#34d399"/>
+    <g font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11">
+      <text x="16" y="56" fill="#7dd3fc">SELECT<tspan fill="#e2e8f0"> kunde,</tspan></text>
+      <text x="16" y="74" fill="#e2e8f0">   SUM(total)</text>
+      <text x="16" y="92" fill="#7dd3fc">FROM<tspan fill="#e2e8f0"> ordre</tspan></text>
+      <text x="16" y="110" fill="#7dd3fc">GROUP BY<tspan fill="#e2e8f0"> kunde</tspan></text>
+    </g>
+    <rect x="16" y="128" width="60" height="18" rx="4" fill="#1e293b"/>
+    <rect x="82" y="128" width="42" height="18" rx="4" fill="#1e293b"/>
+    <rect x="130" y="128" width="34" height="18" rx="4" fill="#34d399" fill-opacity="0.35"/>
+    <rect x="16" y="152" width="60" height="18" rx="4" fill="#1e293b" fill-opacity="0.6"/>
+    <rect x="82" y="152" width="42" height="18" rx="4" fill="#1e293b" fill-opacity="0.6"/>
+    <rect x="130" y="152" width="34" height="18" rx="4" fill="#34d399" fill-opacity="0.18"/>
+  </g>
+
+  <!-- Motiv 2: ruternett -->
+  <g transform="translate(944 56)">
+    <rect width="100" height="188" rx="12" fill="#0f172a" stroke="#1e293b"/>
+    <line x1="26" y1="52" x2="74" y2="52" stroke="#818cf8" stroke-width="2.5" stroke-opacity="0.7"/>
+    <line x1="26" y1="52" x2="50" y2="120" stroke="#34d399" stroke-width="2.5" stroke-opacity="0.6"/>
+    <line x1="74" y1="52" x2="50" y2="120" stroke="#334155" stroke-width="2.5"/>
+    <line x1="50" y1="120" x2="30" y2="156" stroke="#334155" stroke-width="2.5"/>
+    <circle cx="26" cy="52" r="11" fill="#1e293b" stroke="#818cf8"/>
+    <circle cx="74" cy="52" r="11" fill="#1e293b" stroke="#334155"/>
+    <circle cx="50" cy="120" r="11" fill="#818cf8"/>
+    <circle cx="30" cy="156" r="9" fill="#1e293b" stroke="#334155"/>
+  </g>
+
+  <!-- Motiv 3: beslutningsgrense -->
+  <g transform="translate(1060 56)">
+    <rect width="100" height="188" rx="12" fill="#0f172a" stroke="#1e293b"/>
+    <line x1="18" y1="20" x2="82" y2="168" stroke="#e2e8f0" stroke-width="2.5" stroke-opacity="0.8"/>
+    <circle cx="26" cy="60" r="5" fill="#60a5fa"/>
+    <circle cx="40" cy="104" r="5" fill="#60a5fa"/>
+    <circle cx="24" cy="134" r="5" fill="#60a5fa"/>
+    <circle cx="70" cy="46" r="5" fill="#fbbf24"/>
+    <circle cx="80" cy="92" r="5" fill="#fbbf24"/>
+    <circle cx="62" cy="140" r="5" fill="#fbbf24"/>
+  </g>
+</svg>
