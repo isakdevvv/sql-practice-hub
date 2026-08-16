@@ -130,14 +130,24 @@ export function Dte2507LagPage() {
                   </div>
                 </div>
               </div>
+              {lab.ovingSlug && (
+                <Link
+                  to="/stack/$slug"
+                  params={{ slug: lab.ovingSlug }}
+                  className="mt-4 flex items-center gap-2 rounded-lg border border-brand/40 bg-brand/5 px-3 py-2 text-sm font-medium text-brand transition-colors hover:border-brand"
+                >
+                  Øv på verktøyene i en terminal
+                  <ArrowRight className="ml-auto h-3.5 w-3.5" />
+                </Link>
+              )}
               {/*
-                Ærlighet om hva appen ikke gir deg. Uten denne linja tror man
-                at DNS-dyp-siden er nok forberedelse — den dekker teorien, ikke
-                verktøyene laben faktisk spør om.
+                Ærlighet om hvor øvingen slutter. Simulatoren dekker verktøyene,
+                men ikke studentens egen maskin — og laben spør om begge deler.
               */}
               {lab.hull && (
-                <p className="mt-4 rounded-lg border border-border bg-background p-3 text-sm leading-relaxed text-muted-foreground">
-                  <strong className="text-foreground">Hva appen ikke dekker:</strong> {lab.hull}
+                <p className="mt-2 rounded-lg border border-border bg-background p-3 text-sm leading-relaxed text-muted-foreground">
+                  <strong className="text-foreground">Grensa for hva appen kan gjøre:</strong>{" "}
+                  {lab.hull}
                 </p>
               )}
             </div>

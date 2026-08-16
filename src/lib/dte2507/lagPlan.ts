@@ -678,6 +678,13 @@ export const LAG: Lag[] = [
     lenker: [
       {
         type: "stack",
+        slug: "dte2507-nettverksverktoy",
+        label: "Nettverksverktøy i terminalen (Lab 1)",
+        dekker:
+          "ifconfig/ipconfig, ping, traceroute/tracert, nslookup og netstat mot et etterlignet nett, med elleve måloppgaver som sjekker verdien du fant.",
+      },
+      {
+        type: "stack",
         slug: "dte2507-wireshark-analyse",
         label: "Wireshark- og pcap-analyse",
         dekker: "Opptaksfilter mot visningsfilter, og hvordan du følger én samtale.",
