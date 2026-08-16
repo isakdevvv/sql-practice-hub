@@ -9,6 +9,7 @@ import {
   Compass,
   Construction,
   Hammer,
+  Lock,
   Sparkles,
   Target,
 } from "lucide-react";
@@ -20,6 +21,8 @@ import {
   CANVAS_MODULER,
   alleObliger,
   dagerTil,
+  erApen,
+  formatApnes,
   formatFrist,
   stackSlugsFor,
   totalPoeng,
@@ -64,7 +67,7 @@ export function Dte2505ModulerPage() {
             skjules ikke.
           </p>
           <p className="mt-2 text-[11px] text-muted-foreground">
-            Modultabell og frister er verifisert mot Canvas 08.08.2026.
+            Modultabell og frister er verifisert mot Canvas 16.08.2026.
           </p>
         </header>
 
@@ -243,6 +246,17 @@ function ModulKort({ modul, naa }: { modul: CanvasModul; naa: Date }) {
           </div>
           <p className="text-sm text-muted-foreground leading-snug mt-1">{modul.kortOm}</p>
           <div className="mt-2 flex flex-wrap gap-2">
+            {/*
+              Canvas låser modulene opp på dato. Stoffet i appen er åpent
+              uansett — men det er verdt å vite at obligteksten og PDF-ene i
+              Canvas ikke finnes ennå, så du ikke leter etter dem forgjeves.
+            */}
+            {modul.apnes && !erApen(modul, naa) && (
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-border bg-muted px-2.5 py-1 text-[11px] text-muted-foreground">
+                <Lock className="h-3 w-3" />
+                Låst i Canvas til {formatApnes(modul.apnes)}
+              </span>
+            )}
             {modul.obliger.map((o) => {
               const dager = dagerTil(o.frist, naa);
               const passert = dager < 0;

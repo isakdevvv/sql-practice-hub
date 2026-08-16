@@ -933,7 +933,7 @@ export function Modul1DataPage() {
             resonnementer som er gale. Kortene nederst er bare sluttsjekken — de er ikke der du
             lærer stoffet.
           </div>
-          <ProvisoriskKapittelnote className="mt-3" />
+          <ProvisoriskKapittelnote className="mt-3" modul="1" />
         </header>
 
         <CourseOutline courseId="tek1-modul1-data" steps={STEPS} />

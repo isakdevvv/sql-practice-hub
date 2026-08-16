@@ -16,6 +16,7 @@ type HubLink = { label: string; to: string; params?: Record<string, string> };
 // som detalj-sider og åpnes via kort og lenker.
 const HUBS: HubLink[] = [
   { label: "Mine fag", to: "/mine-fag" },
+  { label: "Semesterplan", to: "/semesterplan" },
   { label: "Øv i dag", to: "/repetisjon" },
   { label: "Bibliotek", to: "/bibliotek" },
 ];

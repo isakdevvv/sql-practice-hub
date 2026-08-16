@@ -1328,7 +1328,7 @@ export function Modul4InferensPage() {
             P(A | B) og P(B | A) er forskjellige, som er hele nøkkelen til å tolke p-verdien riktig.
             Fra modul 3: standardisering og at gjennomsnittet har spredning σ/√n.
           </div>
-          <ProvisoriskKapittelnote className="mt-3" />
+          <ProvisoriskKapittelnote className="mt-3" modul="4" />
         </header>
 
         <CourseOutline courseId="tek1-modul4-inferens" steps={STEPS} />

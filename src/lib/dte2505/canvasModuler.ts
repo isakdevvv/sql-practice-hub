@@ -1,7 +1,7 @@
 /**
  * DTE-2505 Operativsystemer — Canvas-modulene som én kilde til sannhet.
  *
- * Tabellen under er verifisert mot UiT Canvas 2026-08-08. Alt annet i appen som
+ * Tabellen under er verifisert mot UiT Canvas 2026-08-16. Alt annet i appen som
  * snakker om «modul» eller «oblig» i DTE-2505 skal lese herfra, ikke ha sin egen
  * nummerering. (Det var nettopp doble nummereringer som gjorde at
  * `ObligerHub.tsx` viste feil oblig-numre uten frister.)
@@ -9,6 +9,11 @@
  * Merk fra Canvas: «Oblig 1.3 gis ikke i år.» Punkt 1.3 i modul 1b — å installere
  * programmer fra andre kilder enn standard-pakkelageret — er fortsatt pensum, men
  * det gis ingen innlevering på det.
+ *
+ * Rettelser 2026-08-16 mot gjennomgangen 2026-08-08, som hadde fem av sju frister
+ * feil. Fasit fra Canvas: 1.1 → 28.08, 1.2 → 30.08, 2 → 13.09, 3 → 27.09,
+ * 4 → 11.10, 5 → 25.10. Alle obligfrister faller på en søndag; det er et nyttig
+ * sanity-sjekk hvis noen skal legge inn en frist til senere.
  */
 
 /** Én obligatorisk innlevering, slik den står i Canvas. */
@@ -67,6 +72,17 @@ export interface CanvasModul {
   dekning: Dekning;
   /** Hva som mangler — kun satt når dekning er "delvis" eller "hull". */
   mangler?: string;
+  /**
+   * Når modulen låses opp i Canvas, som ISO-tidspunkt («2026-08-24T09:00»).
+   * Utelatt der Canvas ikke oppgir en dato — modul 1a/1b er styrt av
+   * forhåndskrav, ikke klokka, og modul 6 har ingen dato oppgitt ennå.
+   */
+  apnes?: string;
+  /**
+   * Modulene Canvas krever ferdige før denne åpner, som modul-ID-er.
+   * Canvas kaller dette «Forhåndskrav».
+   */
+  forhaandskrav?: string[];
   lenker: ModulLenke[];
   obliger: Oblig[];
   dypere: DypereLenke[];
@@ -175,7 +191,7 @@ export const CANVAS_MODULER: CanvasModul[] = [
         nummer: "1.2",
         tittel: "Installere og oppdatere programmer",
         poeng: 5,
-        frist: "2026-08-28",
+        frist: "2026-08-30",
         ovingId: "o1-2-programmer",
       },
     ],
@@ -199,6 +215,8 @@ export const CANVAS_MODULER: CanvasModul[] = [
       "Bruke --help og info som raskere alternativ når du bare mangler ett flagg",
     ],
     dekning: "dekket",
+    apnes: "2026-08-24T09:00",
+    forhaandskrav: ["1a", "1b"],
     lenker: [
       {
         type: "stack",
@@ -224,7 +242,7 @@ export const CANVAS_MODULER: CanvasModul[] = [
         nummer: "2",
         tittel: "Kommandobasert",
         poeng: 10,
-        frist: "2026-09-11",
+        frist: "2026-09-13",
         ovingId: "o2-kommandobasert",
       },
     ],
@@ -242,6 +260,8 @@ export const CANVAS_MODULER: CanvasModul[] = [
       "Forklare hvordan operativsystemet bytter mellom prosesser (kontekstbytte)",
     ],
     dekning: "dekket",
+    apnes: "2026-09-07T14:00",
+    forhaandskrav: ["2"],
     lenker: [
       {
         type: "stack",
@@ -285,7 +305,7 @@ export const CANVAS_MODULER: CanvasModul[] = [
         nummer: "3",
         tittel: "Prosesser",
         poeng: 10,
-        frist: "2026-10-02",
+        frist: "2026-09-27",
         ovingId: "o3-prosesser",
       },
     ],
@@ -328,6 +348,8 @@ export const CANVAS_MODULER: CanvasModul[] = [
       "Omdirigere inn- og utdata, og koble kommandoer sammen med rør (pipe)",
     ],
     dekning: "dekket",
+    apnes: "2026-09-14T06:00",
+    forhaandskrav: ["3"],
     lenker: [
       {
         type: "stack",
@@ -365,7 +387,7 @@ export const CANVAS_MODULER: CanvasModul[] = [
         nummer: "4",
         tittel: "Skall og filsystem",
         poeng: 10,
-        frist: "2026-10-23",
+        frist: "2026-10-11",
         ovingId: "o4-skall-filsystem",
       },
     ],
@@ -402,6 +424,8 @@ export const CANVAS_MODULER: CanvasModul[] = [
       "Skrive et skallskript med variabler, tester, løkker og avslutningskode",
     ],
     dekning: "dekket",
+    apnes: "2026-09-14T09:00",
+    forhaandskrav: ["4"],
     lenker: [
       {
         type: "stack",
@@ -439,7 +463,7 @@ export const CANVAS_MODULER: CanvasModul[] = [
         nummer: "5",
         tittel: "Rettigheter og skallprogram",
         poeng: 10,
-        frist: "2026-11-06",
+        frist: "2026-10-25",
         ovingId: "o5-rettigheter-skallprogram",
       },
     ],
@@ -456,6 +480,7 @@ export const CANVAS_MODULER: CanvasModul[] = [
       "Logge inn på en annen maskin med SSH (Secure Shell) og bruke nøkler i stedet for passord",
     ],
     dekning: "dekket",
+    forhaandskrav: ["2"],
     lenker: [
       {
         type: "stack",
@@ -509,4 +534,26 @@ export function dagerTil(iso: string, naa: Date = new Date()): number {
 /** Total poengsum på tvers av alle obliger — 60 i år. */
 export function totalPoeng(): number {
   return alleObliger().reduce((sum, { oblig }) => sum + oblig.poeng, 0);
+}
+
+/**
+ * Er modulen åpnet i Canvas ennå? Moduler uten `apnes` regnes som åpne —
+ * de er styrt av forhåndskrav, ikke av klokka, og appen har uansett ikke
+ * tilgang til om du har huket av forhåndskravene.
+ */
+export function erApen(modul: CanvasModul, naa: Date = new Date()): boolean {
+  if (!modul.apnes) return true;
+  return naa.getTime() >= new Date(modul.apnes).getTime();
+}
+
+/** Modulene du faktisk kan begynne på i dag. */
+export function apneModuler(naa: Date = new Date()): CanvasModul[] {
+  return CANVAS_MODULER.filter((m) => erApen(m, naa));
+}
+
+/** Norsk dato og klokkeslett for et `apnes`-tidspunkt, f.eks. "24.08 kl. 09:00". */
+export function formatApnes(iso: string): string {
+  const [dato, tid = "00:00"] = iso.split("T");
+  const [, m, d] = dato.split("-");
+  return `${d}.${m} kl. ${tid}`;
 }
