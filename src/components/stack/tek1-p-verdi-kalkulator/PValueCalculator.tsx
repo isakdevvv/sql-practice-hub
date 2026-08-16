@@ -316,7 +316,10 @@ export function PValueCalculator() {
       <div className="grid sm:grid-cols-2 gap-4">
         <div>
           <div className="text-xs font-semibold mb-1">Visualisering — rød hale er p-verdien</div>
-          <svg width={W} height={H} className="block bg-background rounded">
+          <svg
+            viewBox={`0 0 ${W} ${H}`}
+            className="block w-full h-auto bg-background rounded"
+          >
             <line x1={PAD} y1={H - PAD} x2={W - PAD} y2={H - PAD} stroke="#888" />
             <line x1={PAD} y1={PAD} x2={PAD} y2={H - PAD} stroke="#888" />
             {tailPath && <path d={tailPath} fill="rgba(244,63,94,0.5)" />}

@@ -238,7 +238,7 @@ export function RegresjonDiagnostikk() {
           <div className="text-xs font-semibold mb-1 text-center">
             Scatter + OLS-linje
           </div>
-          <svg width={W} height={H} className="block mx-auto">
+          <svg viewBox={`0 0 ${W} ${H}`} className="block mx-auto w-full h-auto">
             <line x1={PAD} y1={H - PAD} x2={W - PAD} y2={H - PAD} stroke="#888" />
             <line x1={PAD} y1={PAD} x2={PAD} y2={H - PAD} stroke="#888" />
             {/* OLS line */}
@@ -287,7 +287,7 @@ export function RegresjonDiagnostikk() {
           <div className="text-xs font-semibold mb-1 text-center">
             Residual vs ŷ
           </div>
-          <svg width={W} height={H} className="block mx-auto">
+          <svg viewBox={`0 0 ${W} ${H}`} className="block mx-auto w-full h-auto">
             <line x1={PAD} y1={H - PAD} x2={W - PAD} y2={H - PAD} stroke="#888" />
             <line x1={PAD} y1={PAD} x2={PAD} y2={H - PAD} stroke="#888" />
             {/* zero line */}
@@ -335,7 +335,7 @@ export function RegresjonDiagnostikk() {
           <div className="text-xs font-semibold mb-1 text-center">
             Q-Q plot (residualer)
           </div>
-          <svg width={W} height={H} className="block mx-auto">
+          <svg viewBox={`0 0 ${W} ${H}`} className="block mx-auto w-full h-auto">
             <line x1={PAD} y1={H - PAD} x2={W - PAD} y2={H - PAD} stroke="#888" />
             <line x1={PAD} y1={PAD} x2={PAD} y2={H - PAD} stroke="#888" />
             {/* y = x reference */}

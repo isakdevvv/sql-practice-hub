@@ -109,7 +109,10 @@ export function MontyHallSimulator() {
         <div className="text-xs font-semibold mb-2">Sannsynlighetstreet</div>
         <div className="space-y-2">
           {treeNodes.map((tn, i) => (
-            <div key={i} className="grid grid-cols-[1fr_120px_120px] gap-3 items-center text-xs">
+            <div
+              key={i}
+              className="grid grid-cols-[minmax(0,1fr)_64px_64px] sm:grid-cols-[1fr_120px_120px] gap-3 items-center text-xs"
+            >
               <div className="font-mono">
                 <span className="text-muted-foreground">p={tn.p.toFixed(3)} ·</span> {tn.label}
               </div>

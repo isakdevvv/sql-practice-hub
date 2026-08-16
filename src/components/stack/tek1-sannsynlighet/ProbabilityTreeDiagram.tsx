@@ -336,6 +336,23 @@ export function ProbabilityTreeDiagram() {
   }
 
   const svgHeight = Math.max(180, layout.leaves.length * 44);
+
+  // Nodenavnene tegnes utenfor selve tre-geometrien: rot-labelen til venstre for
+  // x=0, blad-labelene til høyre for siste node. viewBox-en må dekke dem, ellers
+  // klippes teksten når SVG-en skaleres ned. ~6.6px per tegn i font-mono 11px.
+  const viewBox = useMemo(() => {
+    const charW = 6.6;
+    let minX = 0;
+    let maxX = 460;
+    for (const pos of layout.positions) {
+      const textW = pos.node.label.length * charW;
+      if (pos.depth === 0) minX = Math.min(minX, pos.x - 8 - textW);
+      else maxX = Math.max(maxX, pos.x + 8 + textW);
+    }
+    const left = Math.floor(minX) - 4;
+    return `${left} 0 ${Math.ceil(maxX) + 4 - left} ${svgHeight}`;
+  }, [layout, svgHeight]);
+
   const totalOff = Math.abs(totalLeafSum - 1) > 0.01;
   const anyBadSibling = sums.some((s) => Math.abs(s.sum - 1) > 0.01);
 
@@ -359,9 +376,13 @@ export function ProbabilityTreeDiagram() {
       </div>
       <p className="text-xs text-muted-foreground">{preset.description}</p>
 
-      <div className="grid lg:grid-cols-[1fr_280px] gap-5">
+      <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_280px] gap-5">
         <div className="overflow-x-auto rounded-lg border border-border bg-background p-2">
-          <svg width={500} height={svgHeight} className="text-foreground">
+          <svg
+            viewBox={viewBox}
+            className="w-full h-auto text-foreground"
+            preserveAspectRatio="xMidYMid meet"
+          >
             {layout.links.map((l, i) => (
               <g key={`link-${i}`}>
                 <line

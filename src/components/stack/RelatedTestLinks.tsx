@@ -32,7 +32,7 @@ export function RelatedTestLinks({ slug }: { slug: string }) {
       <div className="mb-2 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
         Test deg på dette
       </div>
-      <div className="grid gap-2 sm:grid-cols-2">
+      <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
         {links.map((link) => {
           const meta = KIND_META[link.kind];
           return (
