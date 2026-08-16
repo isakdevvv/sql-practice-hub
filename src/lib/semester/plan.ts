@@ -16,6 +16,7 @@
  */
 
 import { CANVAS_MODULER, formatFrist } from "@/lib/dte2505/canvasModuler";
+import { alleLabber } from "@/lib/dte2507/canvasLab";
 import { FRAMDRIFTSPLAN } from "@/lib/tek1501/framdriftsplan";
 import { EXAM_META, EXAM_SEASON_SLUGS } from "@/lib/subjects/catalog";
 import { SEMESTERUKER, ukeFor, type Uke } from "./uker";
@@ -94,6 +95,19 @@ function dte2505Hendelser(): Hendelse[] {
   return ut;
 }
 
+function dte2507Hendelser(): Hendelse[] {
+  return alleLabber().map((lab) => ({
+    fag: "dte-2507" as const,
+    slag: "frist" as const,
+    tittel: `Lab ${lab.nummer} — ${lab.tittel}`,
+    detalj: `${lab.modul}. ${lab.hva} Verktøy: ${lab.verktoy.join(", ")}.${
+      lab.ubegrensedeForsok ? " Ubegrensede forsøk." : ""
+    }`,
+    dato: lab.frist,
+    tilSlug: "dte2507-lag",
+  }));
+}
+
 /** Modulnummeret i appen → slug for modulsiden som dekker kapittelet. */
 const MODUL_SLUG_TEK1501: Record<string, string> = {
   "1": "tek1-modul1-data",
@@ -154,7 +168,7 @@ export const UTEN_UKEPLAN: { fag: FagSlug; hvorfor: string }[] = [
   {
     fag: "dte-2507",
     hvorfor:
-      "Canvas-modulene for DTE-2507 er ikke lest ennå. Lag-inndelingen i appen følger Kurose top-down, ikke emnets egen rekkefølge, og ingen innleveringsfrister er kjent.",
+      "Bare modul 1 er lest fra Canvas, og bare labben i den — Lab 1 med frist 23.08. Resten av modulrekkefølgen er ukjent: lag-inndelingen i appen følger Kurose top-down, ikke emnets egen rekkefølge, og ingen frister etter Lab 1 er oppgitt.",
   },
   {
     fag: "dte-2602",
@@ -172,7 +186,7 @@ export const UTEN_UKEPLAN: { fag: FagSlug; hvorfor: string }[] = [
  */
 export function semesterPlan(): UkePlan[] {
   const tek = tek1501Hendelser();
-  const datert = [...dte2505Hendelser(), ...eksamensHendelser()];
+  const datert = [...dte2505Hendelser(), ...dte2507Hendelser(), ...eksamensHendelser()];
 
   const RANG: Record<Slag, number> = { eksamen: 0, frist: 1, apner: 2, pensum: 3 };
 

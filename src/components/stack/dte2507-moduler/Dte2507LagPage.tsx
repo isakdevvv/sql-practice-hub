@@ -16,6 +16,7 @@ import {
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { ModulStatusBadge, ModulProgressBar } from "@/components/stack/HubShared";
 import { getTrinnBySlug } from "@/lib/stack/content";
+import { alleLabber } from "@/lib/dte2507/canvasLab";
 import {
   LAG,
   EKSAMEN_ISO,
@@ -79,14 +80,69 @@ export function Dte2507LagPage() {
           <div className="text-sm leading-relaxed">
             <span className="font-medium">Om denne inndelingen.</span> Lagene under følger
             pensumlogikken i Kurose &amp; Ross, ikke emnets egen modulrekkefølge — Canvas-sidene
-            for DTE-2507 er ikke gjennomgått ennå. Derfor har lagene temanavn og ikke numre, og
-            derfor finner du ingen obligatoriske innleveringer eller innleveringsfrister her:
-            vi vet dem rett og slett ikke, og oppdiktede frister er verre enn ingen.{" "}
-            <span className="text-muted-foreground">
-              Det eneste bekreftede punktet i kalenderen er eksamensdatoen.
-            </span>
+            for DTE-2507 er bare delvis gjennomgått. Derfor har lagene temanavn og ikke numre, og
+            derfor finner du ingen fullstendig fristrekke her: vi kjenner foreløpig bare Lab 1,
+            og oppdiktede frister er verre enn ingen.
           </div>
         </div>
+
+        {/* Labbene vi faktisk har lest fra Canvas. */}
+        {alleLabber().map((lab) => {
+          const dager = dagerTil(lab.frist, naa);
+          if (dager < 0) return null;
+          return (
+            <div
+              key={lab.nummer}
+              className="mb-8 rounded-xl border border-amber-500/40 bg-amber-500/10 p-5"
+            >
+              <div className="flex flex-wrap items-start gap-4">
+                <div className="shrink-0 rounded-lg bg-amber-500/20 p-2">
+                  <CalendarClock className="h-5 w-5 text-amber-600 dark:text-amber-300" />
+                </div>
+                <div className="flex-1 min-w-[16rem]">
+                  <div className="mb-1 text-[10px] font-semibold uppercase tracking-wider text-amber-700 dark:text-amber-300">
+                    Neste frist · {lab.modul}
+                  </div>
+                  <h2 className="font-semibold leading-tight text-foreground">
+                    Lab {lab.nummer} — {lab.tittel}
+                  </h2>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    {formatDato(lab.frist)} kl. 23:59. {lab.hva}
+                    {lab.ubegrensedeForsok && " Ubegrensede forsøk."}
+                  </p>
+                  <div className="mt-2 flex flex-wrap gap-1.5">
+                    {lab.verktoy.map((v) => (
+                      <code
+                        key={v}
+                        className="rounded border border-border bg-background px-1.5 py-0.5 text-[11px]"
+                      >
+                        {v}
+                      </code>
+                    ))}
+                  </div>
+                </div>
+                <div className="shrink-0 text-right">
+                  <div className="text-3xl font-bold tabular-nums text-amber-600 dark:text-amber-300">
+                    {dager}
+                  </div>
+                  <div className="text-[10px] uppercase tracking-wider text-muted-foreground">
+                    dager igjen
+                  </div>
+                </div>
+              </div>
+              {/*
+                Ærlighet om hva appen ikke gir deg. Uten denne linja tror man
+                at DNS-dyp-siden er nok forberedelse — den dekker teorien, ikke
+                verktøyene laben faktisk spør om.
+              */}
+              {lab.hull && (
+                <p className="mt-4 rounded-lg border border-border bg-background p-3 text-sm leading-relaxed text-muted-foreground">
+                  <strong className="text-foreground">Hva appen ikke dekker:</strong> {lab.hull}
+                </p>
+              )}
+            </div>
+          );
+        })}
 
         {/* Eksamen — det ene harde faktumet. */}
         <div className="mb-8 flex flex-wrap items-center gap-4 rounded-xl border border-amber-500/40 bg-amber-500/10 p-5">
