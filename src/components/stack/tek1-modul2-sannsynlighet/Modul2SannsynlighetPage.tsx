@@ -14,6 +14,9 @@ import { RecallKortSeksjon, type RecallKort } from "@/components/stack/tek1-oppg
 
 // Gjenbrukte simulatorer fra de eksisterende temasidene. Modulen redigerer dem
 // ikke — den setter dem inn i riktig rekkefølge i forhold til anslagene.
+// Bygget for denne modulen: framdriftsplanen legger «mengdelære, Venn-diagram»
+// til uke 34, og modulen hadde bare prosa om det.
+import { VennMengdelab } from "./VennMengdelab";
 import { NaturligeFrekvenser } from "@/components/stack/tek1-sannsynlighet/NaturligeFrekvenser";
 import { ConditionalProbabilityGrid } from "@/components/stack/tek1-sannsynlighet/ConditionalProbabilityGrid";
 import { BayesUpdater } from "@/components/stack/tek1-sannsynlighet/BayesUpdater";
@@ -1072,11 +1075,20 @@ export function Modul2SannsynlighetPage() {
             <span className="font-mono">P(A ∪ B) = P(A) + P(B) − P(A ∩ B)</span> og
             komplementregelen <span className="font-mono">P(Aᶜ) = 1 − P(A)</span>.
           </p>
-          <p className="mt-2 leading-relaxed">
+          <p className="mt-2 mb-4 leading-relaxed">
             Minusleddet i addisjonssetningen er ikke pynt: uten det telles utfallene som ligger i
             både A og B to ganger, og du kan ende med en «sannsynlighet» over 1. Det er en gratis
             feilsjekk å ta med seg gjennom hele faget — får du et tall utenfor [0, 1], har du gjort
-            noe galt, alltid.
+            noe galt, alltid. Du trenger ikke tro meg på det: huk av «glem minusleddet» i laben
+            under og dra sirklene til summen sprekker.
+          </p>
+          <VennMengdelab />
+          <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+            Arealene i figuren er ikke skjematiske — de regnes ut fra tallene du setter, så
+            overlappet er nøyaktig P(A ∩ B). Dra snittet mot null, og sirklene glir fra hverandre av
+            seg selv: det er hva <em>disjunkt</em> betyr. Legg også merke til at snittet er låst til
+            et intervall. Nedre grense er ingen programmeringsdetalj — når P(A) + P(B) overstiger 1,{" "}
+            <em>må</em> mengdene overlappe, for det er ikke plass til noe annet i Ω.
           </p>
         </section>
 
