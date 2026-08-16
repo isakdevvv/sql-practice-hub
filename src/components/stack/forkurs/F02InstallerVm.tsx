@@ -11,6 +11,7 @@ import {
   AlertTriangle,
   Cpu,
   HardDrive,
+  Keyboard,
   MemoryStick,
   Network,
   BookOpen,
@@ -124,11 +125,51 @@ function EkteArbeid() {
       <p>
         Det er helt normalt at noe går litt skeivt første gang. Hvert steg under har et "vanlig feil"-felt. Hvis du sitter fast lenger enn 10 minutter på ett steg, gå videre eller spør — det er sjelden produktivt å brenne en time på et innstillingsvindu.
       </p>
+      {/*
+        Arkitektur-fella. Dette avsnittet sa tidligere «samme Ubuntu-ISO», og
+        det er direkte feil: en Mac med Apple Silicon har en ARM-prosessor, og
+        en ISO bygget for Intel/AMD booter ikke på den i det hele tatt. Det er
+        den enkeltfeilen som oftest spiser en hel kveld på dette steget — emnet
+        flagger den selv med «Sjekk at versjonen er rett!» ved nedlastingslenka.
+      */}
       <div className="rounded-md border border-orange-500/30 bg-orange-500/5 p-4 text-xs text-muted-foreground">
         <div className="flex items-center gap-2 text-orange-300 font-semibold mb-1">
           <AlertTriangle className="h-4 w-4" /> Hvis du har Apple Silicon (M1/M2/M3/M4)
         </div>
-        VirtualBox støttes nå på Apple Silicon, men er litt vinglete. Du kan bruke <em>UTM</em> eller <em>Parallels</em> som alternativ — samme prinsipp, samme Ubuntu-ISO. Resten av forkurset fungerer likt uansett.
+        <p className="mb-2">
+          Da må du laste ned en <strong>annen Ubuntu-fil</strong> enn resten av klassen — ikke den
+          samme. Maskinen din har en ARM-prosessor, og standardnedlastingen på ubuntu.com er bygget
+          for Intel og AMD. Prøver du den, starter ikke installeren i det hele tatt, og
+          feilmeldingen sier ingenting om hvorfor.
+        </p>
+        <p className="mb-2">
+          Du skal ha varianten merket <strong>arm64</strong> (også kalt AArch64). Emnet lenker til{" "}
+          <em>Ubuntu 25.04 arm64 Desktop</em> i Canvas — og merk at 25.04 <em>ikke</em> er en
+          LTS-versjon, så den lenka er et bevisst unntak fra «velg alltid LTS»-regelen i steg 2.
+        </p>
+        <p>
+          Til å kjøre den bruker du <em>UTM</em> (gratis) eller <em>Parallels</em>. VirtualBox har
+          en Apple Silicon-utgave, men den er fortsatt vinglete — velg UTM hvis du vil ha minst
+          motstand. Alt annet i forkurset fungerer likt.
+        </p>
+      </div>
+
+      <div className="rounded-md border border-border bg-card/40 p-4 text-xs text-muted-foreground">
+        <div className="mb-1 font-semibold text-foreground">Kort sagt: hvilken fil er din?</div>
+        <ul className="space-y-1">
+          <li>
+            <strong>Windows-PC, Linux-PC eller Mac med Intel:</strong> «64-bit PC (AMD64) desktop
+            image», siste LTS-versjon.
+          </li>
+          <li>
+            <strong>Mac med M1/M2/M3/M4:</strong> arm64 desktop image — bruk Canvas-lenka.
+          </li>
+        </ul>
+        <p className="mt-2">
+          Usikker på hvilken Mac du har? Eplemenyen → «Om denne maskinen». Står det{" "}
+          <em>Apple M</em> og et tall, er du på Apple Silicon. Står det <em>Intel</em>, bruker du
+          samme fil som Windows-folka.
+        </p>
       </div>
     </div>
   );
@@ -182,10 +223,10 @@ function Steg() {
     },
     {
       nr: 2,
-      tittel: "Last ned Ubuntu-ISO",
-      hva: "Gå til ubuntu.com/download/desktop og last ned siste LTS-versjon (Long Term Support). Filen er en ~5 GB ISO. Lagre den et sted du finner igjen — Downloads-mappen er greit.",
+      tittel: "Last ned Ubuntu-ISO — riktig arkitektur",
+      hva: "Har du Windows, Linux eller en Intel-Mac: gå til ubuntu.com/download/desktop og last ned siste LTS-versjon (Long Term Support), altså «64-bit PC (AMD64) desktop image». Har du en Mac med M1/M2/M3/M4, skal du i stedet ha arm64-varianten — bruk lenka i Canvas. Filen er ~5 GB uansett. Lagre den et sted du finner igjen.",
       vanligFeil:
-        "Hvis du laster ned 'server'-versjonen i stedet for 'desktop' får du ingen grafisk skjerm. For forkurset vil du ha desktop-versjonen.",
+        "To feil å gå i her. (1) Feil arkitektur: en AMD64-fil booter ikke på Apple Silicon, og du får ingen forklarende feilmelding — bare en VM som ikke starter. (2) Feil utgave: laster du ned 'server' i stedet for 'desktop', får du ingen grafisk skjerm i det hele tatt.",
       icon: <Disc3 className="h-4 w-4" />,
     },
     {
@@ -193,7 +234,7 @@ function Steg() {
       tittel: "Opprett ny VM i VirtualBox",
       hva: "Åpne VirtualBox. Klikk New. Gi den navn (f.eks. 'Ubuntu-forkurs'). Velg Type=Linux, Version=Ubuntu (64-bit). Pek den til ISO-en du nettopp lastet ned. På innstillingene under: minst 4096 MB RAM (8192 hvis du har 16+ GB totalt), 2 CPU-kjerner, 25 GB virtuell disk (dynamisk allokert), nettverk på NAT.",
       vanligFeil:
-        "Hvis VirtualBox bare lar deg velge 32-bit Ubuntu, har du ikke skrudd på virtualisering i BIOS/UEFI. Søk 'enable virtualization BIOS [din PC-modell]' og restart. På Mac er dette på som standard.",
+        "Hvis VirtualBox bare lar deg velge 32-bit Ubuntu, har du ikke skrudd på virtualisering i BIOS/UEFI. Søk 'enable virtualization BIOS [din PC-modell]' og restart. På Mac er dette på som standard. Bruker du UTM på Apple Silicon, velger du i stedet «Virtualize» (ikke «Emulate») og ARM64 som arkitektur — emulering av en Intel-maskin virker, men blir ubrukelig treg.",
       icon: <Settings className="h-4 w-4" />,
     },
     {
@@ -206,6 +247,14 @@ function Steg() {
     },
     {
       nr: 5,
+      tittel: "Sett norsk tastatur",
+      hva: "Ubuntu-installeren spør om tastaturoppsett, og standardvalget er amerikansk. Velg «Norwegian» der. Glemte du det, fikser du det etterpå: Settings → Keyboard → Input Sources → + → Norwegian. Legg gjerne igjen engelsk som andrevalg; du bytter med Super+mellomrom.",
+      vanligFeil:
+        "Med amerikansk oppsett ligger flere tegn du skal bruke mye et helt annet sted enn det står på tastene dine: rørtegnet |, bakstreken \\, krøllalfa @ og æ ø å. Rør og bakstrek er selve arbeidshestene i modul 2 og 4 — oppdager du dette først når du sitter fast midt i en kommando, tror du gjerne at kommandoen er feil og ikke tastaturet.",
+      icon: <Keyboard className="h-4 w-4" />,
+    },
+    {
+      nr: 6,
       tittel: "Installer Guest Additions",
       hva: "Etter første pålogging i Ubuntu: VirtualBox-menyen → Devices → Insert Guest Additions CD image. En CD dukker opp på Ubuntu-skrivebordet. Åpne en terminal (vi gjør dette i F-04) og kjør installeren. Gir deg bedre skjermoppløsning, mus-integrasjon, og kopier-mellom-host-og-guest.",
       vanligFeil:
@@ -259,7 +308,16 @@ function Resept() {
     { ikon: <Cpu className="h-4 w-4" />, navn: "CPU-kjerner", verdi: "2 minimum (host bør ha 4+)" },
     { ikon: <HardDrive className="h-4 w-4" />, navn: "Virtuell disk", verdi: "25 GB · dynamisk allokert (.vdi)" },
     { ikon: <Network className="h-4 w-4" />, navn: "Nettverk", verdi: "NAT (standard) — VM-en når internett, men er ikke synlig utenfra" },
-    { ikon: <Disc3 className="h-4 w-4" />, navn: "ISO", verdi: "Ubuntu Desktop LTS (siste)" },
+    {
+      ikon: <Disc3 className="h-4 w-4" />,
+      navn: "ISO",
+      verdi: "Ubuntu Desktop LTS (siste), AMD64 — eller arm64 på Apple Silicon",
+    },
+    {
+      ikon: <Keyboard className="h-4 w-4" />,
+      navn: "Tastatur",
+      verdi: "Norwegian — velges under installasjonen",
+    },
     { ikon: <Package className="h-4 w-4" />, navn: "Guest Additions", verdi: "Installeres etter første pålogging" },
   ];
   return (
