@@ -26,6 +26,27 @@ lar deg dra i parametere og se hva som skjer.
 
 > Ikke offisielt kursmateriale. Ment som forberedelse, ikke som fasit på pensum.
 
+## Slik ser det ut
+
+<table>
+  <tr>
+    <td width="50%"><img src="docs/screenshots/forside.png" alt="Forsiden med Lek, Lær og Test"></td>
+    <td width="50%"><img src="docs/screenshots/sql-lab.png" alt="SQL-laben med oppgaveliste, editor og skjema"></td>
+  </tr>
+  <tr>
+    <td><b>Forsiden</b> — tre veier inn, og hele biblioteket rett under.</td>
+    <td><b>SQL-laben</b> — 320 oppgaver, ekte SQLite, skjemaet ved siden av.</td>
+  </tr>
+  <tr>
+    <td><img src="docs/screenshots/anova.png" alt="Interaktiv ANOVA-visualisering med boxplots og F-verdi"></td>
+    <td><img src="docs/screenshots/bibliotek.png" alt="Biblioteket med fargekodede kort per fagområde"></td>
+  </tr>
+  <tr>
+    <td><b>Simulatorene</b> — dra i gruppesnittene, se F og p-verdien følge etter.</td>
+    <td><b>Biblioteket</b> — farget etter fagområde, filtrerbart på tema.</td>
+  </tr>
+</table>
+
 ## Tre måter å bruke appen på
 
 |  | Hva det er | Eksempler |
