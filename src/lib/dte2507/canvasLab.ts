@@ -44,6 +44,8 @@ export interface CanvasLab {
    * du skal vite hva du må finne andre steder, ikke tro at appen holder.
    */
   hull?: string;
+  /** Slug til øvingssiden som forbereder deg på laben, når vi har bygget en. */
+  ovingSlug?: string;
 }
 
 export const CANVAS_LABBER: CanvasLab[] = [
@@ -56,8 +58,9 @@ export const CANVAS_LABBER: CanvasLab[] = [
     verktoy: ["ipconfig / ifconfig", "netstat", "traceroute / tracert", "ping", "nslookup"],
     ubegrensedeForsok: true,
     lag: ["skjelett", "nettverkslag", "applikasjon"],
+    ovingSlug: "dte2507-nettverksverktoy",
     hull:
-      "Appen dekker teorien laben bygger på — IP-adressen som fire oktetter, DNS-hierarkiet, CNAME mot alias, og hva traceroute egentlig måler. Den dekker ikke selve verktøybruken: nslookup finnes ikke i appen i det hele tatt, og ipconfig/ifconfig, netstat og tracert er bare nevnt i forbifarten. Kjør kommandoene i din egen terminal mens du leser.",
+      "Alle fem verktøyene er nå dekket av en terminal-simulator med elleve måloppgaver. Det som ikke kan dekkes her, er din egen maskin: tallene i simulatoren er oppdiktede, så adressene laben ber om fra ditt eget nett må du hente i din egen terminal. Simulatoren lærer deg hvor i utdataen du skal se etter dem.",
   },
 ];
 

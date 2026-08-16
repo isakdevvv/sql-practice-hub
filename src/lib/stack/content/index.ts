@@ -45,6 +45,7 @@ import { content as dte2507ArpDetektiv } from "./dte2507-arp-detektiv";
 import { content as dte2507SwitchSelfLearning } from "./dte2507-switch-self-learning";
 import { content as dte2507Http2Hol } from "./dte2507-http2-hol";
 import { content as dte2507WebCachingMatte } from "./dte2507-web-caching-matte";
+import { content as dte2507Nettverksverktoy } from "./dte2507-nettverksverktoy";
 import { content as dte2602 } from "./dte-2602";
 import { content as mlGrunnlag } from "./ml-grunnlag";
 import { content as supervisedLearning } from "./supervised-learning";
@@ -339,6 +340,8 @@ export const TRINN: TrinnContent[] = [
   dte2507RdtProgresjon, dte2507ApProgresjon,
   // DTE-2507 — Kurose Ch 2 utdypning
   dte2507Http2Hol, dte2507WebCachingMatte,
+  // DTE-2507 — Lab 1: kommandolinjeverktøyene
+  dte2507Nettverksverktoy,
   // DTE-2507 — Kurose Ch 8 sikkerhet
   dte2507FraChecksumTilHmac, dte2507CbcIv, dte2507StatefulFirewall, dte2507IdsSnort,
   // DTE-2507 — Brannmur pakkeflyt (visualizer-lesjon: 4 interaktive verktøy)
