@@ -141,8 +141,8 @@ function SemesterplanPage() {
         </div>
         <p className="mb-6 max-w-2xl text-sm leading-relaxed text-muted-foreground">
           Alle fire fag på én tidsakse, så du ser når to frister lander i samme uke. Kildene er
-          Canvas-modulene i DTE-2505, framdriftsplanen i TEK-1501 og eksamensoppmeldingen. Der en
-          kilde mangler står det, i stedet for at uka ser tom ut.
+          Canvas-modulene i DTE-2505 og DTE-2507, framdriftsplanen i TEK-1501 og
+          eksamensoppmeldingen. Der en kilde mangler står det, i stedet for at uka ser tom ut.
         </p>
 
         {/* Det neste som skjer — den delen man ser på hver dag. */}
