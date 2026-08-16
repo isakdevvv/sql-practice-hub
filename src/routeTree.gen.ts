@@ -17,6 +17,7 @@ import { Route as TestRouteImport } from './routes/test'
 import { Route as StackRouteImport } from './routes/stack'
 import { Route as SporRouteImport } from './routes/spor'
 import { Route as SkillTreRouteImport } from './routes/skill-tre'
+import { Route as SemesterplanRouteImport } from './routes/semesterplan'
 import { Route as RepetisjonRouteImport } from './routes/repetisjon'
 import { Route as PythonNotebookRouteImport } from './routes/python-notebook'
 import { Route as PythonRouteImport } from './routes/python'
@@ -119,6 +120,11 @@ const SporRoute = SporRouteImport.update({
 const SkillTreRoute = SkillTreRouteImport.update({
   id: '/skill-tre',
   path: '/skill-tre',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SemesterplanRoute = SemesterplanRouteImport.update({
+  id: '/semesterplan',
+  path: '/semesterplan',
   getParentRoute: () => rootRouteImport,
 } as any)
 const RepetisjonRoute = RepetisjonRouteImport.update({
@@ -469,6 +475,7 @@ export interface FileRoutesByFullPath {
   '/python': typeof PythonRoute
   '/python-notebook': typeof PythonNotebookRoute
   '/repetisjon': typeof RepetisjonRoute
+  '/semesterplan': typeof SemesterplanRoute
   '/skill-tre': typeof SkillTreRoute
   '/spor': typeof SporRouteWithChildren
   '/stack': typeof StackRouteWithChildren
@@ -540,6 +547,7 @@ export interface FileRoutesByTo {
   '/python': typeof PythonRoute
   '/python-notebook': typeof PythonNotebookRoute
   '/repetisjon': typeof RepetisjonRoute
+  '/semesterplan': typeof SemesterplanRoute
   '/skill-tre': typeof SkillTreRoute
   '/test': typeof TestRoute
   '/tutor': typeof TutorRoute
@@ -610,6 +618,7 @@ export interface FileRoutesById {
   '/python': typeof PythonRoute
   '/python-notebook': typeof PythonNotebookRoute
   '/repetisjon': typeof RepetisjonRoute
+  '/semesterplan': typeof SemesterplanRoute
   '/skill-tre': typeof SkillTreRoute
   '/spor': typeof SporRouteWithChildren
   '/stack': typeof StackRouteWithChildren
@@ -685,6 +694,7 @@ export interface FileRouteTypes {
     | '/python'
     | '/python-notebook'
     | '/repetisjon'
+    | '/semesterplan'
     | '/skill-tre'
     | '/spor'
     | '/stack'
@@ -756,6 +766,7 @@ export interface FileRouteTypes {
     | '/python'
     | '/python-notebook'
     | '/repetisjon'
+    | '/semesterplan'
     | '/skill-tre'
     | '/test'
     | '/tutor'
@@ -825,6 +836,7 @@ export interface FileRouteTypes {
     | '/python'
     | '/python-notebook'
     | '/repetisjon'
+    | '/semesterplan'
     | '/skill-tre'
     | '/spor'
     | '/stack'
@@ -899,6 +911,7 @@ export interface RootRouteChildren {
   PythonRoute: typeof PythonRoute
   PythonNotebookRoute: typeof PythonNotebookRoute
   RepetisjonRoute: typeof RepetisjonRoute
+  SemesterplanRoute: typeof SemesterplanRoute
   SkillTreRoute: typeof SkillTreRoute
   SporRoute: typeof SporRouteWithChildren
   StackRoute: typeof StackRouteWithChildren
@@ -985,6 +998,13 @@ declare module '@tanstack/react-router' {
       path: '/skill-tre'
       fullPath: '/skill-tre'
       preLoaderRoute: typeof SkillTreRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/semesterplan': {
+      id: '/semesterplan'
+      path: '/semesterplan'
+      fullPath: '/semesterplan'
+      preLoaderRoute: typeof SemesterplanRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/repetisjon': {
@@ -1550,6 +1570,7 @@ const rootRouteChildren: RootRouteChildren = {
   PythonRoute: PythonRoute,
   PythonNotebookRoute: PythonNotebookRoute,
   RepetisjonRoute: RepetisjonRoute,
+  SemesterplanRoute: SemesterplanRoute,
   SkillTreRoute: SkillTreRoute,
   SporRoute: SporRouteWithChildren,
   StackRoute: StackRouteWithChildren,

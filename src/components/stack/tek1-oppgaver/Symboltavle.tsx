@@ -1,5 +1,11 @@
 import type { ReactNode } from "react";
+import { Link } from "@tanstack/react-router";
 import { BookMarked, Info } from "lucide-react";
+import {
+  kapitlerForModul,
+  ukespennForModul,
+  type Tek1501Modul,
+} from "@/lib/tek1501/framdriftsplan";
 
 // ---------------------------------------------------------------------------
 // Progressiv scaffolding for notasjon (brukerpreferanse
@@ -140,21 +146,53 @@ export function Symboltavle({
 }
 
 // ---------------------------------------------------------------------------
-// Diskré merknad om at kapittelmappingen mot læreboka er provisorisk.
+// Diskré merknad om forholdet mellom modulene her og kapitlene i læreboka.
 //
 // Faget bruker Kristensen & Wikan, «Sannsynlighetsregning og statistikk for
 // høyere utdanning» (2. utg. 2019). Boka er ikke tilgjengelig digitalt for oss
 // (PLAN-HOST26-MODULER.md §5), så modulene er bygget på temaprogresjon fra
-// atom-planen, ikke på bokas kapittelinndeling. Vi oppgir derfor temanavn og
-// ingen kapittelnumre eller sidetall — og sier det, én linje, uten å blåse det
-// opp til en advarsel.
+// atom-planen, ikke på bokas kapittelinndeling.
+//
+// Siden 2026-08-16 kjenner vi likevel *hvilke* kapitler faget bruker, og i
+// hvilke uker, fra framdriftsplanen i Canvas. Får noten et `modul`-nummer,
+// oppgir den kapittel og uker for akkurat den modulen. Uten nummer faller den
+// tilbake på den generelle formuleringen. Canvas presiserer selv at planen er
+// omtrentlig og kan endres — det står derfor med, én linje, uten å blåses opp
+// til en advarsel.
 // ---------------------------------------------------------------------------
-export function ProvisoriskKapittelnote({ className = "" }: { className?: string }) {
+export function ProvisoriskKapittelnote({
+  className = "",
+  modul,
+}: {
+  className?: string;
+  modul?: Tek1501Modul;
+}) {
+  const spenn = modul ? ukespennForModul(modul) : null;
+  const kapitler = modul ? kapitlerForModul(modul) : [];
+
   return (
     <p className={`text-[11px] leading-relaxed text-muted-foreground ${className}`}>
       <Info className="mr-1 inline h-3 w-3 align-[-1px]" />
-      Modulene er ordnet etter tema, ikke etter kapitlene i Kristensen &amp; Wikan. Rekkefølgen mot
-      boka er derfor foreløpig, og vi oppgir bevisst ingen kapittelnumre.
+      {spenn && kapitler.length > 0 ? (
+        <>
+          Framdriftsplanen legger dette til{" "}
+          <strong>
+            kapittel {kapitler.join(", ")}
+          </strong>{" "}
+          i {spenn}. Modulen er ordnet etter tema, ikke etter kapittelinndelingen i Kristensen
+          &amp; Wikan, så innholdet kan ligge litt annerledes i boka. Canvas oppgir selv at planen
+          er omtrentlig.
+        </>
+      ) : (
+        <>
+          Modulene er ordnet etter tema, ikke etter kapitlene i Kristensen &amp; Wikan.
+          Kapittelrekkefølgen faget faktisk følger står i{" "}
+          <Link to="/semesterplan" className="underline">
+            semesterplanen
+          </Link>
+          .
+        </>
+      )}
     </p>
   );
 }

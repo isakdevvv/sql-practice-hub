@@ -417,7 +417,7 @@ export function ObligerHub() {
           <h1 className="text-3xl font-bold tracking-tight">Obligatoriske innleveringer</h1>
           <p className="mt-3 text-muted-foreground">
             Seks obligatoriske innleveringer, {totalPoeng()} poeng til sammen. Numre, titler, poeng og
-            frister følger UiTs Canvas (verifisert 08.08.2026). Dette er øve-versjoner med
+            frister følger UiTs Canvas (verifisert 16.08.2026). Dette er øve-versjoner med
             automatisk svar-sjekk — den ekte innleveringen gjør du på din egen virtuelle
             maskin og leverer i Canvas.
           </p>

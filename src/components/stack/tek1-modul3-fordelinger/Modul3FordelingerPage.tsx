@@ -1136,7 +1136,7 @@ export function Modul3FordelingerPage() {
             å telle muligheter og å multiplisere uavhengige sannsynligheter — den binomiske formelen
             er bokstavelig talt en kombinasjon ganget med et produkt.
           </div>
-          <ProvisoriskKapittelnote className="mt-3" />
+          <ProvisoriskKapittelnote className="mt-3" modul="3" />
         </header>
 
         <CourseOutline courseId="tek1-modul3-fordelinger" steps={STEPS} />

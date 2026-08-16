@@ -2,6 +2,11 @@ import { Link } from "@tanstack/react-router";
 import { ArrowRight, BarChart3, CalendarClock, Dice5, Sigma, Sparkles, Target } from "lucide-react";
 import { ModulStatusBadge, ModulProgressBar } from "@/components/stack/HubShared";
 import { ProvisoriskKapittelnote } from "@/components/stack/tek1-oppgaver/Symboltavle";
+import {
+  kapitlerForModul,
+  ukespennForModul,
+  type Tek1501Modul,
+} from "@/lib/tek1501/framdriftsplan";
 
 // ---------------------------------------------------------------------------
 // Modul-for-modul-oversikt for TEK-1501 (PLAN-HOST26-MODULER.md §4.4 og §7, rad C).
@@ -219,6 +224,22 @@ const OVERBYGNING = {
   lenker: [{ slug: "tek1-estimering-ki", label: "Bootstrap-simulatoren (i estimering og KI)" }],
 };
 
+/**
+ * «Uke 34–35 · kap. 2» — når faget faktisk underviser modulen, fra
+ * framdriftsplanen i Canvas. `null` for moduler planen ikke plasserer.
+ *
+ * Merk at nummereringen her og undervisningsrekkefølgen ikke er den samme:
+ * faget tar kapittel 2 (sannsynlighet, appens modul 2) før kapittel 1
+ * (beskrivende statistikk, appens modul 1).
+ */
+function undervisesI(modulNr: string): string | null {
+  const modul = modulNr as Tek1501Modul;
+  const spenn = ukespennForModul(modul);
+  if (!spenn) return null;
+  const kapitler = kapitlerForModul(modul);
+  return kapitler.length > 0 ? `${spenn} · kap. ${kapitler.join(", ")}` : spenn;
+}
+
 const BYGG_STIL: Record<ByggStatus, { label: string; cls: string }> = {
   modulside: {
     label: "Bygget som modul",
@@ -253,6 +274,28 @@ export function Tek1501ModulOversikt() {
         modul er utdypning du går til etterpå, når du vil grave dypere i én ting.
       </p>
 
+      {/*
+        Den ene tingen som er lett å gå glipp av: modulnummeret her og
+        undervisningsrekkefølgen er ikke den samme. Framdriftsplanen tar
+        kapittel 2 først. Står dette ikke øverst, begynner man på modul 1 og
+        ligger to uker feil i forhold til forelesningene.
+      */}
+      <div className="mb-4 rounded-xl border border-amber-500/40 bg-amber-500/5 p-4 text-sm">
+        <div className="mb-1 text-[10px] font-semibold uppercase tracking-wider text-amber-700 dark:text-amber-300">
+          Rekkefølgen faget faktisk følger
+        </div>
+        <p className="leading-relaxed text-foreground">
+          Framdriftsplanen underviser <strong>kapittel 2 før kapittel 1</strong>:
+          sannsynlighetsregning i uke 34–35, beskrivende statistikk i uke 36–37. Begynn altså på{" "}
+          <strong>modul 2 — Sannsynlighet</strong>, ikke modul 1. Modulnummeret under er appens
+          egen tema-rekkefølge, og ukemerket til høyre viser når faget tar det.{" "}
+          <Link to="/semesterplan" className="text-brand underline">
+            Hele semesterplanen
+          </Link>
+          .
+        </p>
+      </div>
+
       <div className="mb-6 rounded-xl border border-border bg-card p-4">
         <div className="mb-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
           Framdrift på tvers av alle fire moduler
@@ -280,7 +323,7 @@ export function Tek1501ModulOversikt() {
                   {stil.label}
                 </span>
                 <span className="ml-auto text-[10px] uppercase tracking-wider text-muted-foreground">
-                  {m.spor}
+                  {undervisesI(m.nr) ?? m.spor}
                 </span>
               </div>
 

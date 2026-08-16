@@ -321,7 +321,7 @@ export function Dte2602Hub() {
             </span>
             <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-500/10 text-amber-700 dark:text-amber-300 border border-amber-500/30 px-2.5 py-1">
               <Calendar className="h-3 w-3" />
-              Eksamen {meta?.eksamen ?? "09.12.2026 (3t hjemme) + mappe 16.12"}
+              Eksamen {meta?.eksamen ?? "09.12.2026 (3t hjemme) + mappe 11.12"}
             </span>
             <span className="inline-flex items-center gap-1.5 rounded-full bg-muted text-muted-foreground border border-border px-2.5 py-1">
               sklearn i nettleseren
@@ -622,7 +622,7 @@ export function Dte2602Hub() {
             <ScrollText className="h-5 w-5 text-brand" />
             <h2 className="text-xl font-semibold">Eksamen-temaer</h2>
             <span className="text-[11px] text-muted-foreground">
-              {meta?.eksamen ?? "09.12.2026 + mappe 16.12"} · {meta?.stp ?? 10} stp
+              {meta?.eksamen ?? "09.12.2026 + mappe 11.12"} · {meta?.stp ?? 10} stp
             </span>
           </div>
           <p className="text-sm text-muted-foreground mb-4">

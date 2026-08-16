@@ -1030,7 +1030,7 @@ export function Modul2SannsynlighetPage() {
             og populasjon derfra er det samme skillet som går igjen her, i ny form: forskjellen
             mellom det som <em>faktisk skjedde</em> og det som <em>kunne ha skjedd</em>.
           </div>
-          <ProvisoriskKapittelnote className="mt-3" />
+          <ProvisoriskKapittelnote className="mt-3" modul="2" />
         </header>
 
         <CourseOutline courseId="tek1-modul2-sannsynlighet" steps={STEPS} />
