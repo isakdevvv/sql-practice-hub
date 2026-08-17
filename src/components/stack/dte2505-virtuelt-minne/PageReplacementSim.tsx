@@ -46,6 +46,36 @@ type Step = {
 
 const DEFAULT_STRING = "7 0 1 2 0 3 0 4 2 3 0 3 2 1 2 0 1 7 0 1";
 
+/**
+ * Ferdige reference-strenger.
+ *
+ * Merk om den første: standardstrengen fra Silberschatz er god til å
+ * sammenligne algoritmer, men den viser IKKE Beladys anomali — FIFO faller
+ * monotont 15 → 10 → 9 fault for 3/4/5 frames. Anomali-panelet nederst så
+ * derfor ut til å motbevise sin egen overskrift.
+ *
+ * Den andre strengen er det klassiske moteksempelet (Belady, Nelson & Shedler
+ * 1969). Der går FIFO 9 → 10 → 5: flere frames gir FLERE fault i steget fra 3
+ * til 4. LRU går 10 → 8 → 5, altså monotont, som stackalgoritmer alltid gjør.
+ */
+const REF_PRESETS: { label: string; refs: string; note: string }[] = [
+  {
+    label: "Standard (ingen anomali)",
+    refs: DEFAULT_STRING,
+    note: "Klassisk sammenligningsstreng. FIFO faller pent 15 → 10 → 9 — ingen anomali her.",
+  },
+  {
+    label: "Beladys anomali (FIFO 9 → 10)",
+    refs: "1 2 3 4 1 2 5 1 2 3 4 5",
+    note: "Moteksempelet fra 1969. FIFO får FLERE fault med 4 frames (10) enn med 3 (9). LRU går 10 → 8 → 5.",
+  },
+  {
+    label: "Løkke som er én for stor",
+    refs: "1 2 3 4 1 2 3 4 1 2 3 4",
+    note: "Fire sider som roterer. Med 3 frames kaster FIFO og LRU alltid ut nettopp den sida som trengs neste gang: 12 fault på 12 tilganger. Med 4 frames faller det til 4. Dette er working set-poenget i reindyrket form.",
+  },
+];
+
 function parseRefString(s: string): number[] {
   return s
     .split(/[\s,]+/)
@@ -344,6 +374,34 @@ export function PageReplacementSim() {
     }));
   }, [refs]);
 
+  const activePreset = useMemo(
+    () => REF_PRESETS.find((p) => p.refs === refText.trim()) ?? null,
+    [refText],
+  );
+
+  /**
+   * Viser denne strengen faktisk anomali? Anomali = flere frames gir flere
+   * fault, altså et steg oppover i kurven. Vi sjekker hver algoritme for seg,
+   * slik at panelet under kan si hva som faktisk står i grafen i stedet for å
+   * påstå noe generelt som kanskje ikke gjelder her.
+   */
+  const anomali = useMemo(() => {
+    const finnHopp = (key: "FIFO" | "LRU" | "Optimal") => {
+      for (let i = 1; i < beladyData.length; i++) {
+        if (beladyData[i][key] > beladyData[i - 1][key]) {
+          return {
+            fra: beladyData[i - 1].frames,
+            til: beladyData[i].frames,
+            for: beladyData[i - 1][key],
+            etter: beladyData[i][key],
+          };
+        }
+      }
+      return null;
+    };
+    return { FIFO: finnHopp("FIFO"), LRU: finnHopp("LRU") };
+  }, [beladyData]);
+
   function stepOne() {
     if (stepIdx < steps.length) setStepIdx((i) => i + 1);
   }
@@ -374,6 +432,34 @@ export function PageReplacementSim() {
 
   return (
     <div className="rounded-xl border border-border bg-card p-5">
+      {/* Ferdige strenger */}
+      <div className="mb-3">
+        <div className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1.5">
+          Prøv en ferdig streng
+        </div>
+        <div className="flex flex-wrap gap-1.5">
+          {REF_PRESETS.map((p) => (
+            <button
+              key={p.label}
+              type="button"
+              onClick={() => setRefText(p.refs)}
+              className={`text-xs rounded-md border px-2.5 py-1 transition-colors ${
+                refText.trim() === p.refs
+                  ? "border-brand bg-brand/10 text-brand"
+                  : "border-border bg-background text-muted-foreground hover:border-brand/40"
+              }`}
+            >
+              {p.label}
+            </button>
+          ))}
+        </div>
+        {activePreset && (
+          <div className="text-[11px] text-muted-foreground mt-1.5 leading-relaxed">
+            {activePreset.note}
+          </div>
+        )}
+      </div>
+
       {/* Controls */}
       <div className="grid sm:grid-cols-2 gap-3 mb-4">
         <label className="block text-xs text-muted-foreground">
@@ -668,9 +754,31 @@ export function PageReplacementSim() {
         </div>
         <div className="text-[11px] text-muted-foreground mb-2">
           Antall faults med 3 / 4 / 5 frames for denne reference-strengen.
-          FIFO kan oppvise anomali (kurven går opp). LRU og Optimal er
-          monotont fallende.
+          Anomali betyr at en søyle er <em>høyere</em> enn søyla til venstre for
+          den: du ga prosessen mer minne og fikk flere fault.
         </div>
+        {anomali.FIFO ? (
+          <div className="mb-2 rounded border border-amber-500/40 bg-amber-500/10 p-2 text-[11px] leading-relaxed text-foreground">
+            <span className="font-semibold">Anomali i denne strengen:</span> FIFO
+            går fra {anomali.FIFO.for} fault med {anomali.FIFO.fra} frames til{" "}
+            {anomali.FIFO.etter} fault med {anomali.FIFO.til} frames. Mer minne,
+            dårligere resultat.
+            {!anomali.LRU && (
+              <>
+                {" "}
+                LRU faller monotont — det er ikke tilfeldig, og forklaringen står
+                over.
+              </>
+            )}
+          </div>
+        ) : (
+          <div className="mb-2 rounded border border-border bg-muted/30 p-2 text-[11px] leading-relaxed text-muted-foreground">
+            Denne strengen viser <span className="font-semibold">ingen</span>{" "}
+            anomali — alle tre kurvene faller når du gir flere frames. Det er det
+            vanlige tilfellet. Velg «Beladys anomali» over for å se
+            moteksempelet.
+          </div>
+        )}
         <div className="h-[150px] w-full">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={beladyData}>

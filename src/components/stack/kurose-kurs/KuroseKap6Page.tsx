@@ -10,6 +10,7 @@ import {
   FolderOpen,
   ExternalLink,
 } from "lucide-react";
+import { AnslaSaSjekk, type Anslag } from "@/components/learn/AnslaSaSjekk";
 import { SectionPager, type SectionNavItem } from "./SectionPager";
 import { Section61Live } from "./Section61Live";
 import { Section62Live } from "./Section62Live";
@@ -906,6 +907,112 @@ function Section64() {
   );
 }
 
+/**
+ * Gjett-før-avsløring foran switch-simulatoren i 6.4.
+ *
+ * Svarene er verifisert mot logikken i Section64Live: LEARN-fasen skriver kun
+ * src-MAC til tabellen, LOOKUP flooder til alle porter unntatt inngangsporten
+ * ved miss, og i VLAN-modus gir mismatch tom floodPorts (drop, ikke flood).
+ */
+const ANSLAG_64: Anslag[] = [
+  {
+    id: "hva-laeres",
+    tema: "Hva switchen faktisk lærer",
+    sporsmal: (
+      <>
+        Tabellen er tom. A sender én ramme til B. Rett etter at switchen har behandlet den — hva
+        står i MAC-tabellen?
+      </>
+    ),
+    alternativer: [
+      { id: "begge", label: "Både A og B, med hver sin port" },
+      { id: "bare-a", label: "Bare A på port 1" },
+      { id: "bare-b", label: "Bare B på port 2 — det er jo B den skal finne" },
+      { id: "tom", label: "Fortsatt tom — den lærer først når B svarer" },
+    ],
+    riktigId: "bare-a",
+    fasit: (
+      <>
+        <strong>Bare A, på port 1.</strong> En switch lærer utelukkende av{" "}
+        <em>avsenderadressen</em> i rammer den mottar. Den leste AA:01 i src-feltet og vet dermed at
+        AA:01 er nåbar via port 1 — porten rammen kom inn på. Om B står den fortsatt uten
+        informasjon, og må floode.
+      </>
+    ),
+    hvorforBommerIntuisjonen: (
+      <>
+        Vi leser «switchen slår opp B» og antar at oppslaget også er en læring. Men switchen har
+        ingen måte å vite hvor B er før B selv sender noe — den har bare sett en ramme komme inn på
+        port 1. Læring skjer på src, oppslag på dst. Det er to forskjellige felt i samme ramme, og
+        de gjør to helt forskjellige ting. Konsekvensen er at trafikk i én retning aldri er nok:
+        tabellen fylles først når begge parter har snakket.
+      </>
+    ),
+  },
+  {
+    id: "hvem-far",
+    tema: "Flooding",
+    sporsmal: (
+      <>
+        Samme situasjon: A sender til B, og switchen kjenner ikke B. Den flooder. Hvilke porter får
+        rammen?
+      </>
+    ),
+    alternativer: [
+      { id: "alle", label: "Alle fire — 1, 2, 3 og 4" },
+      { id: "unntatt-inn", label: "Port 2, 3 og 4 — alle unntatt den rammen kom inn på" },
+      { id: "bare2", label: "Bare port 2, der B sitter" },
+    ],
+    riktigId: "unntatt-inn",
+    fasit: (
+      <>
+        <strong>Port 2, 3 og 4.</strong> Inngangsporten utelates alltid — å sende rammen tilbake dit
+        den kom fra ville vært meningsløst, og i verste fall starte en løkke. Merk konsekvensen: C og
+        D får en ramme som ikke er ment for dem. De forkaster den selv, i nettverkskortet, fordi
+        dst-MAC ikke er deres.
+      </>
+    ),
+    hvorforBommerIntuisjonen: (
+      <>
+        «Switchen sender bare dit den skal» er sant først <em>etter</em> at den har lært. Før det
+        oppfører den seg som en hub. Dette er også hvorfor en switch ikke er et sikkerhetstiltak:
+        i læringsfasen ser naboene trafikken din uansett.
+      </>
+    ),
+  },
+  {
+    id: "vlan-drop",
+    tema: "VLAN-grensen",
+    sporsmal: (
+      <>
+        Slå på VLAN-modus: A og B er på VLAN 10, C og D på VLAN 20. Tabellen er tom igjen. A sender
+        til C. Switchen kjenner ikke C — og ukjent destinasjon betyr normalt flooding. Hva skjer?
+      </>
+    ),
+    alternativer: [
+      { id: "flood-alle", label: "Flood til port 2, 3 og 4, som før" },
+      { id: "flood-vlan", label: "Flood, men bare til port 2 — resten av VLAN 10" },
+      { id: "drop", label: "Ingenting sendes ut i det hele tatt" },
+    ],
+    riktigId: "drop",
+    fasit: (
+      <>
+        <strong>Rammen forsvinner.</strong> Ingen porter får den. C ligger på et annet VLAN, og uten
+        en ruter mellom VLAN-ene finnes det ingen lovlig vei dit — så det er ikke noe å floode{" "}
+        <em>mot</em>. Prøv i stedet A→B i VLAN-modus: da flooder den til port 2, og bare port 2.
+      </>
+    ),
+    hvorforBommerIntuisjonen: (
+      <>
+        Det er fristende å tenke at flooding er switchens «gi opp og prøv alt»-oppførsel, og at den
+        derfor alltid gjør noe. Men VLAN-sjekken kommer <em>før</em> forwarding-avgjørelsen: en ramme
+        får aldri forlate sitt VLAN, uansett hva tabellen sier eller ikke sier. Det er nettopp derfor
+        VLAN er et brukbart isolasjonstiltak og en tom MAC-tabell ikke er et smutthull.
+      </>
+    ),
+  },
+];
+
 function Section64ArpSelfLearning() {
   return (
     <article className="space-y-4 text-sm">
@@ -917,6 +1024,21 @@ function Section64ArpSelfLearning() {
         tema: (1) ARP og hvordan switchen lærer hvor en MAC sitter, (2) selve Ethernet-rammen og
         switch-hierarkiet, og (3) hvordan VLAN gjør én fysisk switch til mange logiske nett.
       </p>
+
+      <AnslaSaSjekk
+        id="anslag-6-4"
+        tittel="Anslå først — så kjører du switchen"
+        intro={
+          <>
+            Simulatoren under lar deg sende rammer gjennom en switch og se MAC-tabellen fylle seg.
+            Men gjett først. Oppsettet er fire hosts — <strong>A</strong> (MAC AA:01, port 1),{" "}
+            <strong>B</strong> (BB:02, port 2), <strong>C</strong> (CC:03, port 3) og{" "}
+            <strong>D</strong> (DD:04, port 4) — og switchen er akkurat slått på, så MAC-tabellen er
+            tom.
+          </>
+        }
+        anslag={ANSLAG_64}
+      />
 
       <Section64Live />
 

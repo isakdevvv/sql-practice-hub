@@ -9,6 +9,123 @@ import { MemoryLayout } from "./MemoryLayout";
 import { PageReplacementSim } from "./PageReplacementSim";
 import { InodeStructure } from "./InodeStructure";
 import { VirtueltMinneVisualizer } from "./VirtueltMinneVisualizer";
+import { AnslaSaSjekk, type Anslag } from "@/components/learn/AnslaSaSjekk";
+
+/**
+ * Gjett-før-avsløring foran page-replacement-simulatoren.
+ *
+ * Alle tall under er regnet ut mot de samme algoritmene simulatoren kjører, for
+ * reference-strengen 1 2 3 4 1 2 5 1 2 3 4 5:
+ *
+ *            3 frames   4 frames   5 frames
+ *   FIFO         9         10          5
+ *   LRU         10          8          5
+ *   Optimal      7          6          5
+ *
+ * Og for løkkestrengen 1 2 3 4 1 2 3 4 1 2 3 4: FIFO og LRU gir begge 12 fault
+ * på 3 frames og 4 fault på 4 frames.
+ */
+const ANSLAG_PAGESIM: Anslag[] = [
+  {
+    id: "belady",
+    tema: "Beladys anomali",
+    sporsmal: (
+      <>
+        Med <strong>3 frames</strong> gir FIFO <strong>9 page faults</strong> på denne strengen. Du
+        gir prosessen mer minne — <strong>4 frames</strong>. Hva skjer med antall faults?
+      </>
+    ),
+    alternativer: [
+      { id: "faerre", label: "Færre — mer minne hjelper alltid" },
+      { id: "like", label: "Nøyaktig like mange" },
+      { id: "flere", label: "Flere" },
+      { id: "umulig", label: "Umulig å si uten å kjøre den" },
+    ],
+    riktigId: "flere",
+    fasit: (
+      <>
+        <strong>Flere: 10 faults.</strong> Dette er Beladys anomali. Du ga prosessen 33 % mer minne
+        og fikk dårligere resultat. Med 5 frames faller det til 5 — så kurven går opp og så ned
+        igjen, den er ikke monoton i det hele tatt.
+      </>
+    ),
+    hvorforBommerIntuisjonen: (
+      <>
+        «Mer minne kan ikke gjøre vondt» høres ut som en lov, men det er bare en lov for
+        <em> stackalgoritmer</em> — de der innholdet med n frames alltid er en delmengde av
+        innholdet med n+1 frames. LRU er en stackalgoritme. FIFO er det ikke: å legge til en frame
+        endrer <em>rekkefølgen</em> ting kastes ut i, ikke bare hvor mange som får plass. Da kan en
+        side som ville overlevd med 3 frames bli kastet ut med 4.
+      </>
+    ),
+  },
+  {
+    id: "fifo-vs-lru",
+    tema: "FIFO mot LRU",
+    sporsmal: (
+      <>
+        Fortsatt samme streng, nå med <strong>3 frames</strong>. LRU er den «smarte» algoritmen som
+        bruker faktisk bruksmønster, FIFO er den naive som bare teller ankomst. Hvem gjør det best?
+      </>
+    ),
+    alternativer: [
+      { id: "lru", label: "LRU — den bruker mer informasjon" },
+      { id: "fifo", label: "FIFO" },
+      { id: "likt", label: "Helt likt" },
+    ],
+    riktigId: "fifo",
+    fasit: (
+      <>
+        <strong>FIFO vinner: 9 mot LRUs 10.</strong> Den naive algoritmen slår den smarte på nettopp
+        denne strengen.
+      </>
+    ),
+    hvorforBommerIntuisjonen: (
+      <>
+        LRU er bedre <em>i gjennomsnitt over realistiske arbeidslaster</em>, fordi ekte programmer
+        har lokalitet. Det er en statistisk påstand, ikke en garanti per streng. En streng som er
+        konstruert til å straffe «kast ut den eldst brukte» vil straffe LRU. Merk hva som er
+        eksamenspoenget: LRU er ikke bedre <em>fordi den er smartere</em>, men fordi antagelsen den
+        bygger på — at det du brukte nylig, bruker du snart igjen — som regel stemmer.
+      </>
+    ),
+  },
+  {
+    id: "lokke",
+    tema: "Working set",
+    sporsmal: (
+      <>
+        Bytt til strengen{" "}
+        <code className="rounded bg-muted px-1 py-0.5 font-mono text-xs">1 2 3 4 1 2 3 4 1 2 3 4</code>{" "}
+        — fire sider i løkke, tolv tilganger. Med <strong>3 frames</strong> og LRU: hvor mange av de
+        tolv tilgangene blir page fault?
+      </>
+    ),
+    alternativer: [
+      { id: "4", label: "4 — bare de første, så ligger de i minnet" },
+      { id: "6", label: "Rundt 6 — omtrent annenhver" },
+      { id: "9", label: "9" },
+      { id: "12", label: "Alle 12" },
+    ],
+    riktigId: "12",
+    fasit: (
+      <>
+        <strong>Alle tolv.</strong> Ikke én eneste treff. LRU kaster hver gang ut nøyaktig den sida
+        som skal brukes neste gang, fordi den er den eldst brukte. FIFO gjør akkurat det samme feil
+        og får også 12. Øk til 4 frames og det faller til 4 — alle fire sidene får plass, og resten
+        er treff.
+      </>
+    ),
+    hvorforBommerIntuisjonen: (
+      <>
+        Dette er terskelen bak begrepet <em>working set</em>: så lenge minnet er én frame for lite
+        for løkka, hjelper det ikke å ha «nesten nok». Ytelsen faller ikke gradvis når minnet
+        krymper — den faller av et stup. Det er derfor thrashing kommer så brått, og hvorfor svaret
+        er å redusere antall prosesser i stedet for å optimalisere algoritmen.
+      </>
+    ),
+  },
+];
 
 const STEPS = [
   { title: "Hvorfor virtuelt minne", anchor: "hvorfor" },
@@ -399,6 +516,24 @@ PA = 7 * 4096 + 0x123
             total faults. Belady-insetten nederst varierer frame-tallet 3-5 og avslører om
             reference-strengen din viser <em>Beladys anomali</em> for FIFO.
           </p>
+
+          <AnslaSaSjekk
+            id="pagesim-anslag"
+            tittel="Anslå først — så kjører du simulatoren"
+            intro={
+              <>
+                Alle tre spørsmålene under gjelder reference-strengen{" "}
+                <code className="rounded bg-muted px-1 py-0.5 font-mono text-xs">
+                  1 2 3 4 1 2 5 1 2 3 4 5
+                </code>{" "}
+                — den ligger som ferdig valg i simulatoren rett under. Gjett først, og bruk så
+                simulatoren til å sjekke. Alle tre svarene bryter med noe som føles opplagt, og det
+                er hele poenget: det du gjetter feil på her, glemmer du ikke på eksamen.
+              </>
+            }
+            anslag={ANSLAG_PAGESIM}
+          />
+
           <PageReplacementSim />
         </Section>
 

@@ -10,6 +10,7 @@ import {
   FolderOpen,
   ExternalLink,
 } from "lucide-react";
+import { AnslaSaSjekk, type Anslag } from "@/components/learn/AnslaSaSjekk";
 import { SectionPager, type SectionNavItem } from "./SectionPager";
 import { Section31Live } from "./Section31Live";
 import { Section32Live } from "./Section32Live";
@@ -1029,6 +1030,119 @@ function Section34() {
 // ============================================================
 // 3.5 — TCP
 // ============================================================
+
+/**
+ * Gjett-før-avsløring foran TCP-simulatoren i 3.5.
+ *
+ * Verifisert mot buildFastRetransmitScenario() i Section34Live: segment 0–5
+ * sendes, segment 1 mistes, ACK-ene for 2/3/4/5 får alle ackNum = 1 (dup), og
+ * ACK-en etter fast retransmit av segment 1 har ackNum = 6.
+ */
+const ANSLAG_35: Anslag[] = [
+  {
+    id: "hva-ackes",
+    tema: "Kumulativ ACK",
+    sporsmal: (
+      <>
+        Segment 1 er borte. Segment 2, 3 og 4 kommer fram til mottakeren, pent og i rekkefølge. Hva
+        sender mottakeren tilbake for hver av dem?
+      </>
+    ),
+    alternativer: [
+      { id: "stigende", label: "ACK 2, så ACK 3, så ACK 4 — den kvitterer det den fikk" },
+      { id: "samme", label: "ACK 1 alle tre ganger" },
+      { id: "ingenting", label: "Ingenting — den venter på at 1 skal komme" },
+      { id: "nak", label: "En NAK som ber om segment 1 på nytt" },
+    ],
+    riktigId: "samme",
+    fasit: (
+      <>
+        <strong>ACK 1, tre ganger på rad.</strong> En ACK i TCP betyr «alt <em>før</em> dette
+        nummeret har jeg fått» — ikke «dette segmentet fikk jeg». Siden 1 mangler, er det høyeste
+        sammenhengende mottatte fortsatt 0, og svaret blir ACK 1 uansett hvor mange segmenter som
+        kommer etterpå. Det er disse gjentakelsene som kalles <em>duplikat-ACK</em>, og
+        dup-ACK-telleren i simulatoren teller nettopp dem.
+      </>
+    ),
+    hvorforBommerIntuisjonen: (
+      <>
+        Ordet «acknowledgement» får oss til å lese den som en kvittering for <em>den pakka som kom</em>.
+        TCP-ACK-en er i stedet en tilstandsmelding om bytestrømmen: «her er jeg kommet til».
+        Konsekvensen er at mottakeren ikke har noen måte å si «jeg mangler bare nummer 1» — den kan
+        bare gjenta hvor den står. Hele fast retransmit-mekanismen finnes fordi avsenderen må{" "}
+        <em>gjette</em> fra gjentakelsene hva som mangler. (Selective ACK, SACK, er en senere
+        utvidelse som løser akkurat dette.)
+      </>
+    ),
+  },
+  {
+    id: "etter-retx",
+    tema: "Hva ACK-en hopper til",
+    sporsmal: (
+      <>
+        Avsenderen får tre duplikat-ACK-er, gjør fast retransmit av segment 1, og det kommer fram.
+        Mottakeren har fra før segment 2, 3, 4 og 5 liggende i bufferet. Hvilket ACK-nummer sender
+        den nå?
+      </>
+    ),
+    alternativer: [
+      { id: "2", label: "ACK 2 — den kvitterer for segmentet som nettopp kom" },
+      { id: "6", label: "ACK 6" },
+      { id: "fem-acks", label: "Fem separate ACK-er, én per segment den nå kan levere" },
+    ],
+    riktigId: "6",
+    fasit: (
+      <>
+        <strong>ACK 6, i ett hopp.</strong> Idet hullet tettes, blir alt fra 0 til og med 5
+        sammenhengende, og den kumulative ACK-en hopper helt til toppen av det mottakeren allerede
+        satt på. Én ACK kvitterer for fem segmenter.
+      </>
+    ),
+    hvorforBommerIntuisjonen: (
+      <>
+        Vi tenker at segmentene 2–5 «allerede er behandlet» og at det som skjer nå bare gjelder
+        segment 1. Men de fire lå i mottakerens buffer <em>ukvitterte</em> — de kunne ikke kvitteres,
+        fordi ACK-en ikke kan hoppe over et hull. Dette er også hvorfor et enkelt tap er så billig
+        for TCP når det først oppdages: det koster én retransmisjon, ikke fem.
+      </>
+    ),
+  },
+  {
+    id: "hvorfor-tre",
+    tema: "Hvorfor akkurat tre",
+    sporsmal: (
+      <>
+        Avsenderen venter på <strong>tre</strong> duplikat-ACK-er før den retransmitterer. Hvorfor
+        ikke reagere allerede på den første?
+      </>
+    ),
+    alternativer: [
+      { id: "tid", label: "For å gi det tapte segmentet tid til å komme fram likevel" },
+      { id: "omstokking", label: "Fordi én-to duplikater like gjerne kan bety omstokking, ikke tap" },
+      { id: "standard", label: "Tre er et vilkårlig tall valgt i standarden" },
+    ],
+    riktigId: "omstokking",
+    fasit: (
+      <>
+        <strong>Fordi pakker kan komme i feil rekkefølge.</strong> Tar to segmenter ulik vei gjennom
+        nettet, kan de ankomme byttet om — det gir én eller to duplikat-ACK-er selv om ingenting er
+        tapt. Retransmitterte du på første duplikat, ville du fylle nettet med unødige kopier hver
+        gang noe ble litt omstokket. Tre er et empirisk kompromiss: nok til at omstokking er
+        usannsynlig, lite nok til at du slipper å vente på RTO-en (Retransmission Timeout), som er
+        mange ganger lengre.
+      </>
+    ),
+    hvorforBommerIntuisjonen: (
+      <>
+        «Gi det tid» høres fornuftig ut, men er feil mekanisme — det er nettopp <em>timeouten</em>
+        som gir tid, og fast retransmit finnes for å slippe å vente på den. Terskelen på tre handler
+        ikke om tid i det hele tatt, men om å skille to årsaker som ser like ut fra avsenderens side:
+        tapt pakke og omstokket pakke.
+      </>
+    ),
+  },
+];
+
 function Section35() {
   return (
     <article className="space-y-4 text-sm">
@@ -1039,6 +1153,21 @@ function Section35() {
         og congestion control (siste tema for seg). Det er stream-orientert (bytes, ikke meldinger),
         bruker kumulative ACK-er, og estimerer RTT dynamisk for å sette fornuftige timeout-verdier.
       </p>
+
+      <AnslaSaSjekk
+        id="anslag-3-5"
+        tittel="Anslå først — så kjører du TCP-simulatoren"
+        intro={
+          <>
+            Fane 3 i simulatoren under («Fast retransmit») kjører dette scenariet: avsenderen sender
+            segment 0, 1, 2, 3, 4 og 5 rett etter hverandre, og{" "}
+            <strong>segment 1 går tapt på lenken</strong>. De andre kommer fram. Gjett hva mottakeren
+            gjør, før du spiller av. Merk at simulatoren nummererer hele segmenter for lesbarhet —
+            ekte TCP teller byte-offset, ikke pakker.
+          </>
+        }
+        anslag={ANSLAG_35}
+      />
 
       <Section34Live />
 
