@@ -54,8 +54,35 @@ export interface Dte2507Modul {
   quizer: Quiz[];
   /** Slug i appen som er nærmest forberedelse. `null` der vi ikke har noe. */
   ovingSlug: string | null;
+  /**
+   * Modulen som en LØYPE — sidene i den rekkefølgen de skal tas, ikke bare den
+   * ene som ligner mest.
+   *
+   * Grunnen til at feltet finnes ved siden av `ovingSlug`: appen har hele tiden
+   * dekket mer enn én side per modul, men bare én av dem var registrert. Resten
+   * var umulig å finne uten å vite hva man lette etter, og ingen av dem hadde en
+   * «neste»-knapp. Med denne lista utledes både modulsiden og foten på hver
+   * enkelt side av samme kilde — se `src/lib/core/loype.ts`.
+   *
+   * Rekkefølgen er studierekkefølgen, ikke bokas.
+   */
+  steg?: ModulSteg[];
   /** Hva appen ikke dekker av modulen. */
   hull?: string;
+}
+
+/** Ett steg i en modul-løype. */
+export interface ModulSteg {
+  /** Slug i `src/lib/stack/content`. */
+  slug: string;
+  /**
+   * Tittelen slik den står på siden. Gjentatt her framfor slått opp i
+   * sideregisteret, fordi sidene selv rendrer navigasjonen — et oppslag ville
+   * gitt importsykelen side → skall → løype → sideregister → side.
+   */
+  tittel: string;
+  /** Én linje om hvorfor steget kommer akkurat her. Vises på modulsiden. */
+  hvorfor: string;
 }
 
 /**
@@ -106,6 +133,36 @@ export const MODULER_2507: Dte2507Modul[] = [
       },
     ],
     ovingSlug: "dte2507-nettverksverktoy",
+    // Laben ligger som steg 2, ikke sist. Den har frist 23.08 — den tidligste i
+    // hele faget — mens forsinkelse og gjennomstrømning kan tas i ro etterpå.
+    // Rekkefølgen er altså studiert etter når ting SKAL være gjort, ikke etter
+    // hvor de står i Kurose kap. 1.
+    steg: [
+      {
+        slug: "dte2507-skjelett",
+        tittel: "Protokollstakken, innkapsling og adresser",
+        hvorfor:
+          "Grunnlaget resten av modulen står på: hvilke lag som finnes, hva hvert lag legger på, og hvilken adresse som hører til hvilket lag. Uten dette er lab 1 bare kommandoer man skriver av.",
+      },
+      {
+        slug: "dte2507-nettverksverktoy",
+        tittel: "Nettverksverktøy i terminalen",
+        hvorfor:
+          "Selve Lab 1. Her leser du de samme adressene av på en ekte maskin — og skiller MAC fra IP, alias fra canonical name, og «svarer ikke» fra «er nede».",
+      },
+      {
+        slug: "dte2507-delay-modell",
+        tittel: "De fire forsinkelsene",
+        hvorfor:
+          "Kap. 1.4, første halvdel: hvorfor en pakke bruker tid. Prosessering, kø, transmisjon og propagering — fire ledd som ofte forveksles, og som eksamen spør om hver gang.",
+      },
+      {
+        slug: "dte2507-bottleneck-throughput",
+        tittel: "Flaskehals & throughput",
+        hvorfor:
+          "Kap. 1.4, andre halvdel: hvorfor en forbindelse er så rask som sitt tregeste ledd — og hvorfor det ikke er samme spørsmål som forsinkelse.",
+      },
+    ],
   },
   {
     nr: "2",

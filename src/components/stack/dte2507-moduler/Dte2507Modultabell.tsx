@@ -181,15 +181,28 @@ function ModulRad({
         })}
       </ul>
 
-      {modul.ovingSlug && (
+      {/* Har modulen en løype, er det den man skal inn i — ikke den ene siden
+          som lignet mest. Moduler uten løype beholder den gamle lenka. */}
+      {modul.steg && modul.steg.length > 0 ? (
         <Link
           to="/stack/$slug"
-          params={{ slug: modul.ovingSlug }}
-          className="mt-2 inline-flex items-center gap-1.5 text-xs text-brand hover:underline"
+          params={{ slug: `dte2507-modul${modul.nr}` }}
+          className="mt-2 inline-flex items-center gap-1.5 text-xs font-medium text-brand hover:underline"
         >
-          Forbered deg her
+          Gå gjennom modulen — {modul.steg.length} steg
           <ArrowRight className="h-3 w-3" />
         </Link>
+      ) : (
+        modul.ovingSlug && (
+          <Link
+            to="/stack/$slug"
+            params={{ slug: modul.ovingSlug }}
+            className="mt-2 inline-flex items-center gap-1.5 text-xs text-brand hover:underline"
+          >
+            Forbered deg her
+            <ArrowRight className="h-3 w-3" />
+          </Link>
+        )
       )}
 
       {modul.hull && (
