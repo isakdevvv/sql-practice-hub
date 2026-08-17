@@ -2,6 +2,7 @@ import { Link, useLocation } from "@tanstack/react-router";
 import { SiteHeader } from "@/components/SiteHeader";
 import { PrereqBanner } from "@/components/stack/PrereqBanner";
 import { KonseptSjekker } from "@/components/stack/KonseptSjekk";
+import { StegNavigasjon } from "@/components/stack/StegNavigasjon";
 import { CHECKS_BY_LESSON } from "@/lib/core/checks";
 import type { TrinnGroup } from "@/lib/stack/types";
 
@@ -32,6 +33,9 @@ export function StackPageShell({
       <PrereqBanner />
       <main>{children}</main>
       <LessonChecks />
+      {/* Forrige/neste for sider som hører til en modul-løype. Rendrer
+          ingenting for alle andre, så den er trygg å ha stående her. */}
+      <StegNavigasjon />
     </div>
   );
 }
