@@ -7,7 +7,8 @@ import {
   ProvisoriskKapittelnote,
   type SymbolRad,
 } from "@/components/stack/tek1-oppgaver/Symboltavle";
-import { AnslaSaSjekk, type Anslag } from "@/components/stack/tek1-oppgaver/AnslaSaSjekk";
+import { AnslagPanel } from "@/components/lab/AnslagPanel";
+import type { Anslag } from "@/lib/lab/anslag";
 import { Maloppgaver, type MaloppgaveData } from "@/components/stack/tek1-oppgaver/Maloppgave";
 import { Feilsokingsoppgaver, type Feilsoking } from "@/components/stack/tek1-oppgaver/Feilsoking";
 import { RecallKortSeksjon, type RecallKort } from "@/components/stack/tek1-oppgaver/RecallKort";
@@ -185,13 +186,13 @@ const ANSLAG: Anslag[] = [
         syk?
       </>
     ),
-    alternativer: [
-      { id: "a", label: "Rundt 99 % — testen er jo 99 % sikker" },
-      { id: "b", label: "Rundt 95 %" },
-      { id: "c", label: "Rundt 50 %" },
-      { id: "d", label: "Rundt 9 %" },
+    valg: [
+      "Rundt 99 % — testen er jo 99 % sikker",
+      "Rundt 95 %",
+      "Rundt 50 %",
+      "Rundt 9 %",
     ],
-    riktigId: "d",
+    riktig: 3,
     fasit: (
       <>
         Cirka <strong>9 %</strong>. Tenk på 100 000 personer. 500 er syke, og 495 av dem tester
@@ -219,13 +220,13 @@ const ANSLAG: Anslag[] = [
         av dem har bursdag på samme dato?
       </>
     ),
-    alternativer: [
-      { id: "a", label: "Rundt 5 % — 23 av 365 er jo veldig få" },
-      { id: "b", label: "Rundt 12 %" },
-      { id: "c", label: "Rundt 30 %" },
-      { id: "d", label: "Rundt 50 %" },
+    valg: [
+      "Rundt 5 % — 23 av 365 er jo veldig få",
+      "Rundt 12 %",
+      "Rundt 30 %",
+      "Rundt 50 %",
     ],
-    riktigId: "d",
+    riktig: 3,
     fasit: (
       <>
         Litt over <strong>50 %</strong> (50,7 %). Nøkkelen er at det ikke finnes 23 muligheter, men
@@ -251,13 +252,13 @@ const ANSLAG: Anslag[] = [
         sannsynligheten for kron på det niende kastet?
       </>
     ),
-    alternativer: [
-      { id: "a", label: "Under 50 % — mynten «skylder» oss en mynt nå" },
-      { id: "b", label: "Nøyaktig 50 %" },
-      { id: "c", label: "Over 50 % — den er tydeligvis skjev mot kron" },
-      { id: "d", label: "1 / 2⁹, altså under 0,2 %" },
+    valg: [
+      "Under 50 % — mynten «skylder» oss en mynt nå",
+      "Nøyaktig 50 %",
+      "Over 50 % — den er tydeligvis skjev mot kron",
+      "1 / 2⁹, altså under 0,2 %",
     ],
-    riktigId: "b",
+    riktig: 1,
     fasit: (
       <>
         Fortsatt nøyaktig <strong>50 %</strong>. Mynten har ingen hukommelse. Det er sant at
@@ -284,13 +285,13 @@ const ANSLAG: Anslag[] = [
         håndtrykk blir det til sammen?
       </>
     ),
-    alternativer: [
-      { id: "a", label: "20" },
-      { id: "b", label: "45" },
-      { id: "c", label: "90" },
-      { id: "d", label: "100" },
+    valg: [
+      "20",
+      "45",
+      "90",
+      "100",
     ],
-    riktigId: "b",
+    riktig: 1,
     fasit: (
       <>
         <strong>45.</strong> Hver person hilser på ni andre, som gir 10 · 9 = 90 — men da har vi
@@ -317,13 +318,13 @@ const ANSLAG: Anslag[] = [
         <strong>3-11-17-22-28-30-33</strong>?
       </>
     ),
-    alternativer: [
-      { id: "a", label: "Den spredte rekka — den ser mye mer tilfeldig ut" },
-      { id: "b", label: "1-2-3-4-5-6-7 — sammenhengende tall er lettere å trekke" },
-      { id: "c", label: "Nøyaktig like sannsynlige" },
-      { id: "d", label: "Den spredte, men bare marginalt" },
+    valg: [
+      "Den spredte rekka — den ser mye mer tilfeldig ut",
+      "1-2-3-4-5-6-7 — sammenhengende tall er lettere å trekke",
+      "Nøyaktig like sannsynlige",
+      "Den spredte, men bare marginalt",
     ],
-    riktigId: "c",
+    riktig: 2,
     fasit: (
       <>
         <strong>Nøyaktig like sannsynlige</strong> — begge har sannsynlighet 1 / 5 379 616.
@@ -351,13 +352,13 @@ const ANSLAG: Anslag[] = [
         uavhengig per barn.)
       </>
     ),
-    alternativer: [
-      { id: "a", label: "1/2" },
-      { id: "b", label: "1/3" },
-      { id: "c", label: "1/4" },
-      { id: "d", label: "2/3" },
+    valg: [
+      "1/2",
+      "1/3",
+      "1/4",
+      "2/3",
     ],
-    riktigId: "b",
+    riktig: 1,
     fasit: (
       <>
         <strong>1/3.</strong> Skriv ut utfallsrommet med eldst først: JJ, JG, GJ, GG — fire like
@@ -1042,14 +1043,13 @@ export function Modul2SannsynlighetPage() {
         <Symboltavle id="symboler" symboler={SYMBOLER} />
 
         {/* --- Type 1: anslå-så-sjekk, FØR forklaringen -------------------- */}
-        <AnslaSaSjekk
-          id="anslag"
+        <AnslagPanel
+          avsloring="knapp"
           anslag={ANSLAG}
           intro={
             <>
-              Gjett før du leser videre. Denne modulen er der statistisk intuisjon bommer hardest —
-              flere av spørsmålene under har svar som fortsatt overrasker folk som har regnet på dem
-              i årevis. Ingenting telles, og et bom her er mer verdt enn en riktig gjetning.
+              Denne modulen er der statistisk intuisjon bommer hardest — flere av spørsmålene under
+              har svar som fortsatt overrasker folk som har regnet på dem i årevis.
             </>
           }
         />

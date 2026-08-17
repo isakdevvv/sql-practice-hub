@@ -10,7 +10,8 @@ import {
   FolderOpen,
   ExternalLink,
 } from "lucide-react";
-import { AnslaSaSjekk, type Anslag } from "@/components/learn/AnslaSaSjekk";
+import { AnslagPanel } from "@/components/lab/AnslagPanel";
+import type { Anslag } from "@/lib/lab/anslag";
 import { SectionPager, type SectionNavItem } from "./SectionPager";
 import { Section31Live } from "./Section31Live";
 import { Section32Live } from "./Section32Live";
@@ -1048,13 +1049,13 @@ const ANSLAG_35: Anslag[] = [
         sender mottakeren tilbake for hver av dem?
       </>
     ),
-    alternativer: [
-      { id: "stigende", label: "ACK 2, så ACK 3, så ACK 4 — den kvitterer det den fikk" },
-      { id: "samme", label: "ACK 1 alle tre ganger" },
-      { id: "ingenting", label: "Ingenting — den venter på at 1 skal komme" },
-      { id: "nak", label: "En NAK som ber om segment 1 på nytt" },
+    valg: [
+      "ACK 2, så ACK 3, så ACK 4 — den kvitterer det den fikk",
+      "ACK 1 alle tre ganger",
+      "Ingenting — den venter på at 1 skal komme",
+      "En NAK som ber om segment 1 på nytt",
     ],
-    riktigId: "samme",
+    riktig: 1,
     fasit: (
       <>
         <strong>ACK 1, tre ganger på rad.</strong> En ACK i TCP betyr «alt <em>før</em> dette
@@ -1085,12 +1086,12 @@ const ANSLAG_35: Anslag[] = [
         den nå?
       </>
     ),
-    alternativer: [
-      { id: "2", label: "ACK 2 — den kvitterer for segmentet som nettopp kom" },
-      { id: "6", label: "ACK 6" },
-      { id: "fem-acks", label: "Fem separate ACK-er, én per segment den nå kan levere" },
+    valg: [
+      "ACK 2 — den kvitterer for segmentet som nettopp kom",
+      "ACK 6",
+      "Fem separate ACK-er, én per segment den nå kan levere",
     ],
-    riktigId: "6",
+    riktig: 1,
     fasit: (
       <>
         <strong>ACK 6, i ett hopp.</strong> Idet hullet tettes, blir alt fra 0 til og med 5
@@ -1116,12 +1117,12 @@ const ANSLAG_35: Anslag[] = [
         ikke reagere allerede på den første?
       </>
     ),
-    alternativer: [
-      { id: "tid", label: "For å gi det tapte segmentet tid til å komme fram likevel" },
-      { id: "omstokking", label: "Fordi én-to duplikater like gjerne kan bety omstokking, ikke tap" },
-      { id: "standard", label: "Tre er et vilkårlig tall valgt i standarden" },
+    valg: [
+      "For å gi det tapte segmentet tid til å komme fram likevel",
+      "Fordi én-to duplikater like gjerne kan bety omstokking, ikke tap",
+      "Tre er et vilkårlig tall valgt i standarden",
     ],
-    riktigId: "omstokking",
+    riktig: 1,
     fasit: (
       <>
         <strong>Fordi pakker kan komme i feil rekkefølge.</strong> Tar to segmenter ulik vei gjennom
@@ -1154,8 +1155,8 @@ function Section35() {
         bruker kumulative ACK-er, og estimerer RTT dynamisk for å sette fornuftige timeout-verdier.
       </p>
 
-      <AnslaSaSjekk
-        id="anslag-3-5"
+      <AnslagPanel
+        avsloring="knapp"
         tittel="Anslå først — så kjører du TCP-simulatoren"
         intro={
           <>

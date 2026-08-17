@@ -7,7 +7,8 @@ import {
   ProvisoriskKapittelnote,
   type SymbolRad,
 } from "@/components/stack/tek1-oppgaver/Symboltavle";
-import { AnslaSaSjekk, type Anslag } from "@/components/stack/tek1-oppgaver/AnslaSaSjekk";
+import { AnslagPanel } from "@/components/lab/AnslagPanel";
+import type { Anslag } from "@/lib/lab/anslag";
 import { Maloppgaver, type MaloppgaveData } from "@/components/stack/tek1-oppgaver/Maloppgave";
 import { Feilsokingsoppgaver, type Feilsoking } from "@/components/stack/tek1-oppgaver/Feilsoking";
 import { RecallKortSeksjon, type RecallKort } from "@/components/stack/tek1-oppgaver/RecallKort";
@@ -231,13 +232,13 @@ const ANSLAG: Anslag[] = [
         sannsynlig er det at du faktisk får <strong>nøyaktig 5</strong> kron?
       </>
     ),
-    alternativer: [
-      { id: "a", label: "Rundt 50 % — det er jo det forventede utfallet" },
-      { id: "b", label: "Rundt 35 %" },
-      { id: "c", label: "Rundt 25 %" },
-      { id: "d", label: "Rundt 10 %" },
+    valg: [
+      "Rundt 50 % — det er jo det forventede utfallet",
+      "Rundt 35 %",
+      "Rundt 25 %",
+      "Rundt 10 %",
     ],
-    riktigId: "c",
+    riktig: 2,
     fasit: (
       <>
         <strong>24,6 %.</strong> Regnestykket er 10C5 · 0,5⁵ · 0,5⁵ = 252/1024. Det mest sannsynlige
@@ -263,13 +264,13 @@ const ANSLAG: Anslag[] = [
         <strong>høyde over 1</strong>?
       </>
     ),
-    alternativer: [
-      { id: "a", label: "Nei — ingen sannsynlighet kan være over 1" },
-      { id: "b", label: "Ja, uten videre — høyden er ikke en sannsynlighet" },
-      { id: "c", label: "Bare for diskrete fordelinger" },
-      { id: "d", label: "Bare hvis fordelingen er skjev" },
+    valg: [
+      "Nei — ingen sannsynlighet kan være over 1",
+      "Ja, uten videre — høyden er ikke en sannsynlighet",
+      "Bare for diskrete fordelinger",
+      "Bare hvis fordelingen er skjev",
     ],
-    riktigId: "b",
+    riktig: 1,
     fasit: (
       <>
         <strong>Ja.</strong> Det som må være 1 er <em>arealet</em> under hele kurven, ikke høyden. En
@@ -296,13 +297,13 @@ const ANSLAG: Anslag[] = [
         sannsynlig er det at et tilfeldig døgn går <strong>helt uten</strong> alarm?
       </>
     ),
-    alternativer: [
-      { id: "a", label: "Nesten null — snittet er jo 1" },
-      { id: "b", label: "Rundt 10 %" },
-      { id: "c", label: "Rundt 37 %" },
-      { id: "d", label: "Rundt 50 %" },
+    valg: [
+      "Nesten null — snittet er jo 1",
+      "Rundt 10 %",
+      "Rundt 37 %",
+      "Rundt 50 %",
     ],
-    riktigId: "c",
+    riktig: 2,
     fasit: (
       <>
         <strong>36,8 %.</strong> Med Poisson og λ = 1 er P(X = 0) = e⁻¹. Mer enn hvert tredje døgn er
@@ -327,13 +328,13 @@ const ANSLAG: Anslag[] = [
         havner mer enn <strong>tre standardavvik</strong> fra forventningen (i en av retningene)?
       </>
     ),
-    alternativer: [
-      { id: "a", label: "Rundt 50" },
-      { id: "b", label: "Rundt 30" },
-      { id: "c", label: "Rundt 10" },
-      { id: "d", label: "Rundt 3" },
+    valg: [
+      "Rundt 50",
+      "Rundt 30",
+      "Rundt 10",
+      "Rundt 3",
     ],
-    riktigId: "d",
+    riktig: 3,
     fasit: (
       <>
         <strong>Cirka 2,7 av 1000.</strong> Innenfor ±1σ ligger 68 %, innenfor ±2σ ligger 95 %, og
@@ -360,13 +361,13 @@ const ANSLAG: Anslag[] = [
         gjentar det tusen ganger. Hvordan ser fordelingen av de tusen gjennomsnittene ut?
       </>
     ),
-    alternativer: [
-      { id: "a", label: "Like skjev som grunnfordelingen — skjevheten forsvinner ikke" },
-      { id: "b", label: "Litt mindre skjev, men fortsatt tydelig skjev" },
-      { id: "c", label: "Nesten symmetrisk og klokkeformet" },
-      { id: "d", label: "Flat — alle gjennomsnitt blir omtrent like sannsynlige" },
+    valg: [
+      "Like skjev som grunnfordelingen — skjevheten forsvinner ikke",
+      "Litt mindre skjev, men fortsatt tydelig skjev",
+      "Nesten symmetrisk og klokkeformet",
+      "Flat — alle gjennomsnitt blir omtrent like sannsynlige",
     ],
-    riktigId: "c",
+    riktig: 2,
     fasit: (
       <>
         <strong>Nesten symmetrisk og klokkeformet.</strong> Det er sentralgrenseteoremet: uansett
@@ -392,13 +393,13 @@ const ANSLAG: Anslag[] = [
         Hvor mange målinger må du ta, om du i dag tar <strong>25</strong>?
       </>
     ),
-    alternativer: [
-      { id: "a", label: "50 — dobbelt så mange" },
-      { id: "b", label: "75" },
-      { id: "c", label: "100 — fire ganger så mange" },
-      { id: "d", label: "625" },
+    valg: [
+      "50 — dobbelt så mange",
+      "75",
+      "100 — fire ganger så mange",
+      "625",
     ],
-    riktigId: "c",
+    riktig: 2,
     fasit: (
       <>
         <strong>100.</strong> Spredningen til gjennomsnittet er σ/√n. Skal den halveres, må √n
@@ -1145,14 +1146,13 @@ export function Modul3FordelingerPage() {
         <Symboltavle id="symboler" symboler={SYMBOLER} />
 
         {/* --- Type 1: anslå-så-sjekk, FØR forklaringen -------------------- */}
-        <AnslaSaSjekk
-          id="anslag"
+        <AnslagPanel
+          avsloring="knapp"
           anslag={ANSLAG}
           intro={
             <>
-              Gjett før du leser videre. Fordelinger er der tallene begynner å oppføre seg annerledes
-              enn magefølelsen — særlig når det gjelder haler, tetthet og hva som skjer med et
-              gjennomsnitt. Ingenting telles, og et bom her er mer verdt enn en riktig gjetning.
+              Fordelinger er der tallene begynner å oppføre seg annerledes enn magefølelsen —
+              særlig når det gjelder haler, tetthet og hva som skjer med et gjennomsnitt.
             </>
           }
         />
