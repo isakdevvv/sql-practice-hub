@@ -3,6 +3,7 @@ import { Lightbulb } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
 import { SubnetCalculator } from "./SubnetCalculator";
+import { SubnettPlanlegger } from "./SubnettPlanlegger";
 import { VlsmTrainer } from "./VlsmTrainer";
 
 const STEPS = [
@@ -208,6 +209,15 @@ net   11000000 10101000 00000001 10000000
               Hver subnet starter på en grense som er DELELIG MED størrelsen sin.
             </p>
           </div>
+
+          <p className="text-sm text-muted-foreground mt-4 mb-3">
+            Nå gjør du det selv, med andre tall. Under er det samme adresserommet tegnet som en
+            stripe der bredden er proporsjonal med hvor mange adresser hver blokk eier. Del opp
+            stripa og dra de fire avdelingene på plass. Legg særlig merke til to ting: at en blokk
+            bare kan deles på midten, og at kravet på 50 verter tvinger deg opp til /26 selv om
+            /27 «nesten» holder.
+          </p>
+          <SubnettPlanlegger />
         </section>
 
         <section id="tilhoerer" className="mb-10">
