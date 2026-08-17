@@ -73,8 +73,10 @@ export function AnslagPanel({
       <h2 className="mb-2 flex flex-wrap items-center gap-2 text-lg font-semibold">
         <HelpCircle className="h-5 w-5 text-brand" />
         {tittel}
+        {/* Merkelappen må matche modusen: i knapp-modus er det ofte ingenting å
+            kjøre — poenget er å svare før forklaringen står der. */}
         <span className="rounded-full border border-border bg-muted px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
-          før du kjører noe
+          {avsloring === "knapp" ? "før forklaringen" : "før du kjører noe"}
         </span>
       </h2>
       <div className="mb-4 max-w-2xl text-sm text-muted-foreground">

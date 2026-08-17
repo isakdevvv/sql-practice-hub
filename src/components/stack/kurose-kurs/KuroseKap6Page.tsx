@@ -1032,7 +1032,7 @@ function Section64ArpSelfLearning() {
         intro={
           <>
             Simulatoren under lar deg sende rammer gjennom en switch og se MAC-tabellen fylle seg.
-            Men gjett først. Oppsettet er fire hosts — <strong>A</strong> (MAC AA:01, port 1),{" "}
+            Oppsettet er fire hosts — <strong>A</strong> (MAC AA:01, port 1),{" "}
             <strong>B</strong> (BB:02, port 2), <strong>C</strong> (CC:03, port 3) og{" "}
             <strong>D</strong> (DD:04, port 4) — og switchen er akkurat slått på, så MAC-tabellen er
             tom.

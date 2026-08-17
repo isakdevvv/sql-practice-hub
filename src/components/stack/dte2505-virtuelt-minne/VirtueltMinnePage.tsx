@@ -527,9 +527,8 @@ PA = 7 * 4096 + 0x123
                 <code className="rounded bg-muted px-1 py-0.5 font-mono text-xs">
                   1 2 3 4 1 2 5 1 2 3 4 5
                 </code>{" "}
-                — den ligger som ferdig valg i simulatoren rett under. Gjett først, og bruk så
-                simulatoren til å sjekke. Alle tre svarene bryter med noe som føles opplagt, og det
-                er hele poenget: det du gjetter feil på her, glemmer du ikke på eksamen.
+                — den ligger som ferdig valg i simulatoren rett under, så du kan sjekke hvert svar
+                selv.
               </>
             }
             anslag={ANSLAG_PAGESIM}

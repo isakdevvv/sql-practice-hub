@@ -1162,8 +1162,7 @@ function Section35() {
           <>
             Fane 3 i simulatoren under («Fast retransmit») kjører dette scenariet: avsenderen sender
             segment 0, 1, 2, 3, 4 og 5 rett etter hverandre, og{" "}
-            <strong>segment 1 går tapt på lenken</strong>. De andre kommer fram. Gjett hva mottakeren
-            gjør, før du spiller av. Merk at simulatoren nummererer hele segmenter for lesbarhet —
+            <strong>segment 1 går tapt på lenken</strong>. De andre kommer fram. Merk at simulatoren nummererer hele segmenter for lesbarhet —
             ekte TCP teller byte-offset, ikke pakker.
           </>
         }
