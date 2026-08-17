@@ -7,6 +7,14 @@ import { DelaySim } from "./DelaySim";
 import { CaravanAnalogy } from "./CaravanAnalogy";
 import { TrafficIntensitySim } from "./TrafficIntensitySim";
 import { RelatedVisualizers } from "@/components/stack/RelatedVisualizers";
+import { LabSeksjoner } from "@/components/stack/dte2507-modul/LabSeksjoner";
+import {
+  ANSLAG,
+  DELAY_KORT,
+  delayAnslagLager,
+  delayFsrs,
+  OPPGAVER,
+} from "@/lib/dte2507/delayLab";
 import { lazy, Suspense } from "react";
 import { VisualizerSkeleton } from "@/components/visualizer-shell";
 
@@ -433,6 +441,25 @@ export function DelayModellPage() {
             </li>
           </ul>
         </div>
+        {/* Lab-delen: anslå før du regner, mål verdiene i simulatorene over,
+            og legg de fem formlene i den felles repetisjonskøen. */}
+        <LabSeksjoner
+          leksjon="dte2507-delay-modell"
+          anslag={ANSLAG}
+          anslagLager={delayAnslagLager}
+          anslagIntro="Fire påstander om forsinkelsene under."
+          oppgaver={OPPGAVER}
+          oppgaveIntro="Ni oppgaver, alle med et tall du kan lese av i simulatorene over. Regner du dem i hodet er det like riktig — men kjør dem etterpå og se om du traff. Svarene godtas med litt slingringsmonn; det er forståelsen som måles, ikke tredje desimal."
+          feilTekst="Ikke riktig ennå. Sett verdiene i simulatoren over og les av søylen."
+          kort={DELAY_KORT}
+          kortTagger={[
+            { id: "formler", label: "Formler" },
+            { id: "skiller", label: "Skiller" },
+          ]}
+          kortStore={delayFsrs}
+          oppsummering="Alle ni. Det du egentlig har trent på er å holde de fire leddene fra hverandre — og å vite hvilket av dem en endring faktisk treffer. Det er det eksamen spør om, hver gang."
+        />
+
         <RelatedVisualizers slug="delay-modell" />
       </article>
     </StackPageShell>

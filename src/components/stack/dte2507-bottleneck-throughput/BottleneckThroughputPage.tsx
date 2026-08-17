@@ -4,6 +4,14 @@ import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
 import { Tex, TexBlock } from "@/components/Tex";
 import { BottleneckSim } from "./BottleneckSim";
+import { LabSeksjoner } from "@/components/stack/dte2507-modul/LabSeksjoner";
+import {
+  ANSLAG,
+  BOTTLENECK_KORT,
+  bottleneckAnslagLager,
+  bottleneckFsrs,
+  OPPGAVER,
+} from "@/lib/dte2507/bottleneckLab";
 
 const STEPS = [
   { title: "Latency vs throughput", anchor: "lat-vs-thp" },
@@ -346,6 +354,25 @@ export function BottleneckThroughputPage() {
             </li>
           </ul>
         </div>
+
+        {/* Lab-delen: gjett før du drar i sliderne, mål throughputen i
+            simulatoren over, og legg de fem faktaene i den felles køen. */}
+        <LabSeksjoner
+          leksjon="dte2507-bottleneck-throughput"
+          anslag={ANSLAG}
+          anslagLager={bottleneckAnslagLager}
+          anslagIntro="Tre påstander om kjeden under."
+          oppgaver={OPPGAVER}
+          oppgaveIntro="Sju oppgaver. De fleste går ut på å dra i én slider og se hva som skjer med min() — særlig de to der du oppgraderer feil ledd og ingenting endrer seg. Svarene godtas med litt slingringsmonn."
+          feilTekst="Ikke riktig ennå. Sett verdiene i flaskehals-simulatoren over og les av hvilket ledd som er markert."
+          kort={BOTTLENECK_KORT}
+          kortTagger={[
+            { id: "formler", label: "Formler" },
+            { id: "skiller", label: "Skiller" },
+          ]}
+          kortStore={bottleneckFsrs}
+          oppsummering="Alle sju. Kjernen er at min() ikke bryr seg om hvor mye du forbedrer et ledd som ikke var tregest — og at «rask» og «kort forsinkelse» er to ulike spørsmål med to ulike svar."
+        />
       </article>
     </StackPageShell>
   );
