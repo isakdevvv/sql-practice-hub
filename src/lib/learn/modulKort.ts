@@ -19,10 +19,17 @@
 // ---------------------------------------------------------------------------
 
 import { createFsrsStore, type CardState, type FsrsStore } from "./fsrs";
-import { RECALL_CARDS as HJELPESYSTEMER_KORT, hjelpesystemerFsrs } from "../dte2505/hjelpesystemerKort";
+import {
+  RECALL_CARDS as HJELPESYSTEMER_KORT,
+  hjelpesystemerFsrs,
+} from "../dte2505/hjelpesystemerKort";
 import { FASE1_OPPGAVER } from "../dte2602/oppgaverFase1";
 import { FASE2_OPPGAVER } from "../dte2602/oppgaverFase2";
 import { NETTVERK_KORT, nettverkFsrs } from "../dte2507/nettverkKort";
+import { RECALL_KORT as SKJELETT_KORT } from "../dte2507/skjelettEngine";
+import { skjelettFsrs } from "../dte2507/skjelettKortStore";
+import { DELAY_KORT, delayFsrs } from "../dte2507/delayLab";
+import { BOTTLENECK_KORT, bottleneckFsrs } from "../dte2507/bottleneckLab";
 import { LOKKE_KORT, lokkeFsrs } from "../python/lokkeLab";
 
 /** Ett kort, uavhengig av hvilken modul det kom fra. Ren tekst, ingen JSX. */
@@ -77,6 +84,20 @@ export const MODUL_KORT_KILDER: ModulKortKilde[] = [
     fsrs: hjelpesystemerFsrs,
     kort: HJELPESYSTEMER_KORT.map((k) => ({ id: k.id, forside: k.front, bakside: k.back })),
   },
+  // DTE-2507 modul 1, i løypas rekkefølge. Skjelett-kortene fantes lenge, men
+  // bare i sin egen kø på modulsiden — altså en kø ingen åpner igjen, som er
+  // nøyaktig det denne fila ble skrevet for å hindre.
+  {
+    id: "dte2507-skjelett",
+    fagKode: "DTE-2507",
+    fagSlug: "dte-2507",
+    modul: "Modul 1 · steg 1 — Protokollstakken",
+    href: "/stack/dte2507-skjelett",
+    // Samme store som SkjelettKort.tsx bruker. Ikke bytt den ut — gjør du det,
+    // starter framdriften på null ett av de to stedene.
+    fsrs: skjelettFsrs,
+    kort: SKJELETT_KORT.map((k) => ({ id: k.id, forside: k.front, bakside: k.back })),
+  },
   {
     id: "dte2507-nettverksverktoy",
     fagKode: "DTE-2507",
@@ -86,6 +107,24 @@ export const MODUL_KORT_KILDER: ModulKortKilde[] = [
     // Samme store som RecallPanel på lab-siden bruker. Ikke bytt den ut.
     fsrs: nettverkFsrs,
     kort: NETTVERK_KORT.map((k) => ({ id: k.id, forside: k.front, bakside: k.back })),
+  },
+  {
+    id: "dte2507-delay-modell",
+    fagKode: "DTE-2507",
+    fagSlug: "dte-2507",
+    modul: "Modul 1 · steg 3 — De fire forsinkelsene",
+    href: "/stack/dte2507-delay-modell",
+    fsrs: delayFsrs,
+    kort: DELAY_KORT.map((k) => ({ id: k.id, forside: k.front, bakside: k.back })),
+  },
+  {
+    id: "dte2507-bottleneck-throughput",
+    fagKode: "DTE-2507",
+    fagSlug: "dte-2507",
+    modul: "Modul 1 · steg 4 — Flaskehals & throughput",
+    href: "/stack/dte2507-bottleneck-throughput",
+    fsrs: bottleneckFsrs,
+    kort: BOTTLENECK_KORT.map((k) => ({ id: k.id, forside: k.front, bakside: k.back })),
   },
   {
     id: "python-lokker-lab",
