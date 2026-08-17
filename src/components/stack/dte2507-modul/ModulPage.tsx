@@ -17,29 +17,36 @@ import { isTrinnSeen } from "@/lib/stack/moduleProgress";
 import { lessonMastery } from "@/lib/core/mastery";
 
 // ---------------------------------------------------------------------------
-// Modulsiden til DTE-2507 modul 1 — pilot for «modulen som løype».
+// Modulsiden til DTE-2507 — én komponent for alle seks modulene.
 //
-// Hullet den fyller: stoffet til modul 1 fantes, men lå spredt på fire sider
-// uten noe som bandt dem sammen. Modulen var registrert med ÉN slug
-// (`ovingSlug`), og de tre andre sidene var i praksis uoppdagelige. Nå er
-// rekkefølgen data — `steg` på modulen i canvasModuler.ts — og både denne
-// siden og forrige/neste-foten på hver enkelt side leser den samme lista.
+// Hullet den fyller: stoffet fantes, men lå spredt på sider uten noe som bandt
+// dem sammen. Hver modul var registrert med ÉN slug (`ovingSlug`), og resten av
+// sidene var i praksis uoppdagelige. Nå er rekkefølgen data — `steg` på modulen
+// i canvasModuler.ts — og både denne siden og forrige/neste-foten på hver enkelt
+// side leser den samme lista.
 //
-// Siden er en oversikt, ikke en leksjon. Den skal svare på fire ting og så
-// komme seg ut av veien: hva modulen krever, hva som er gjort, hva som er
-// neste steg, og hva appen IKKE dekker.
+// Siden er en oversikt, ikke en leksjon. Den skal svare på fire ting og så komme
+// seg ut av veien: hva modulen krever, hva som er gjort, hva som er neste steg,
+// og hva appen IKKE dekker.
+//
+// Den er generisk med vilje. Modul 1 var pilot, og fristelsen var å kopiere den
+// fem ganger; da ville en rettelse måttet gjøres seks steder. Alt som skiller
+// modulene er data.
 // ---------------------------------------------------------------------------
 
-const MODUL_NR = "1";
-
-export function Dte2507Modul1Page() {
-  const modul = MODULER_2507.find((m) => m.nr === MODUL_NR);
+export function Dte2507ModulPage({ nr }: { nr: string }) {
+  const modul = MODULER_2507.find((m) => m.nr === nr);
   const steg = modul?.steg ?? [];
-  const oblig = OBLIGER_2507.find((o) => o.moduler.includes(MODUL_NR));
+  const oblig = OBLIGER_2507.find((o) => o.moduler.includes(nr));
 
   // Framdrift bor i localStorage og finnes ikke under tjener-rendringen.
   const [montert, setMontert] = useState(false);
   useEffect(() => setMontert(true), []);
+
+  // Steget som er modulens egen lab — merkes i lista, og navngis i
+  // verktøy-seksjonen så «verktøyene» ikke henger i løse lufta.
+  const labIndeks = steg.findIndex((s) => s.slug === modul?.ovingSlug);
+  const labSteg = labIndeks >= 0 ? { nr: labIndeks + 1, tittel: steg[labIndeks].tittel } : null;
 
   const sett = montert ? steg.filter((s) => isTrinnSeen(s.slug)).length : 0;
   const neste = montert ? (steg.find((s) => !isTrinnSeen(s.slug)) ?? steg[0]) : steg[0];
@@ -57,9 +64,11 @@ export function Dte2507Modul1Page() {
             {modul.tittel}
           </h1>
           <p className="max-w-2xl text-lg leading-relaxed text-muted-foreground">
-            Kurose kapittel {modul.kapitler.join(" og ")}: hva et nett er satt sammen av, hvordan du
-            leser det av på din egen maskin, og hvorfor en pakke bruker den tiden den gjør. Fire
-            steg, i den rekkefølgen de skal tas.
+            Kurose kapittel {modul.kapitler.join(" og ")}
+            {modul.ingress ? `: ${modul.ingress}` : "."}{" "}
+            {steg.length > 1
+              ? `${steg.length} steg, i den rekkefølgen de skal tas.`
+              : "Ett steg i appen — se hullet nederst."}
           </p>
         </header>
 
@@ -114,8 +123,7 @@ export function Dte2507Modul1Page() {
           </h2>
           <p className="mb-4 max-w-2xl text-sm text-muted-foreground">
             Hvert steg har en «neste»-knapp i foten, så du kan gå gjennom hele modulen uten å komme
-            tilbake hit. Rekkefølgen er studierekkefølgen: laben ligger som steg 2 fordi den har den
-            tidligste fristen i hele faget, ikke fordi den er lettest.
+            tilbake hit.{modul.rekkefolgeMerknad ? ` ${modul.rekkefolgeMerknad}` : ""}
           </p>
 
           <ol className="space-y-3">
@@ -187,7 +195,9 @@ export function Dte2507Modul1Page() {
         <section className="mb-10">
           <h2 className="mb-2 text-lg font-semibold">Verktøyene modulen krever</h2>
           <p className="mb-3 max-w-2xl text-sm text-muted-foreground">
-            Alle fem øves i steg 2, mot et etterlignet nett der kommandoene er enige med hverandre.
+            {labSteg
+              ? `Øves i steg ${labSteg.nr}: ${labSteg.tittel}.`
+              : "Verktøyene modulens labber bruker."}
           </p>
           <div className="flex flex-wrap gap-2">
             {modul.verktoy.map((v) => (

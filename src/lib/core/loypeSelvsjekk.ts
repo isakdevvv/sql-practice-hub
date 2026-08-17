@@ -14,6 +14,7 @@
  * frittstående skript, ikke noe som lastes av en side.
  */
 
+import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { LOYPER } from "./loype";
 import { getTrinnBySlug } from "../stack/content";
 
@@ -34,7 +35,14 @@ console.log("Løyper — selvsjekk\n");
 sjekk("det finnes minst én løype", LOYPER.length > 0);
 
 for (const loype of LOYPER) {
-  sjekk(`«${loype.tittel}» har minst to steg`, loype.steg.length >= 2, `${loype.steg.length} steg`);
+  // Ett steg er lov. Modul 6 har bare én side om trådløst i appen, og
+  // alternativet ville vært at modulen er det eneste stedet i faget uten en vei
+  // inn. Hullet står i stedet skrevet på modulsiden.
+  sjekk(
+    `«${loype.tittel}» har minst ett steg`,
+    loype.steg.length >= 1,
+    `${loype.steg.length} steg`,
+  );
 
   // Modulsiden løypa lenker tilbake til må selv være en registrert rute.
   const modulSlug = loype.href.replace("/stack/", "");
@@ -63,6 +71,21 @@ for (const loype of LOYPER) {
     settSlugs.add(steg.slug);
 
     sjekk(`steg ${i + 1} har en begrunnelse`, steg.hvorfor.trim().length > 20);
+
+    // Foten rendres av StackPageShell. En side som bygger sitt eget skall får
+    // derfor ingen «neste»-knapp, og kjeden stopper der — uten feilmelding,
+    // uten noe som ser galt ut. Tre sider i DTE-2507 gjorde nøyaktig det, og to
+    // av dem sto midt i en løype.
+    const mappe = `src/components/stack/${steg.slug}`;
+    if (existsSync(mappe)) {
+      const brukerSkallet = readdirSync(mappe)
+        .filter((f) => f.endsWith(".tsx"))
+        .some((f) => readFileSync(`${mappe}/${f}`, "utf8").includes("StackPageShell"));
+      sjekk(
+        `steg ${i + 1} «${steg.slug}» rendrer StackPageShell (ellers ingen neste-knapp)`,
+        brukerSkallet,
+      );
+    }
   }
 }
 

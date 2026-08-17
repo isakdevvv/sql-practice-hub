@@ -67,6 +67,14 @@ export interface Dte2507Modul {
    * Rekkefølgen er studierekkefølgen, ikke bokas.
    */
   steg?: ModulSteg[];
+  /** Én til to setninger om hva modulen handler om. Vises øverst på modulsiden. */
+  ingress?: string;
+  /**
+   * Hvorfor stegene står i akkurat denne rekkefølgen, når det ikke er
+   * selvforklarende. Satt der frister eller pedagogikk overstyrer bokas
+   * kapittelrekkefølge — se modul 1 og 4.
+   */
+  rekkefolgeMerknad?: string;
   /** Hva appen ikke dekker av modulen. */
   hull?: string;
 }
@@ -133,10 +141,10 @@ export const MODULER_2507: Dte2507Modul[] = [
       },
     ],
     ovingSlug: "dte2507-nettverksverktoy",
-    // Laben ligger som steg 2, ikke sist. Den har frist 23.08 — den tidligste i
-    // hele faget — mens forsinkelse og gjennomstrømning kan tas i ro etterpå.
-    // Rekkefølgen er altså studiert etter når ting SKAL være gjort, ikke etter
-    // hvor de står i Kurose kap. 1.
+    ingress:
+      "Hva et nett er satt sammen av, hvordan du leser det av på din egen maskin, og hvorfor en pakke bruker den tiden den gjør.",
+    rekkefolgeMerknad:
+      "Laben ligger som steg 2 fordi den har fagets tidligste frist, ikke fordi den er lettest. Forsinkelse og gjennomstrømning kan tas i ro etterpå.",
     steg: [
       {
         slug: "dte2507-skjelett",
@@ -188,6 +196,44 @@ export const MODULER_2507: Dte2507Modul[] = [
       },
     ],
     ovingSlug: "dte2507-wireshark-analyse",
+    ingress:
+      "Protokollene du faktisk bruker hver dag: web, DNS og programmene som snakker med dem. Kapittelet med flest poeng på quizen i hele faget.",
+    rekkefolgeMerknad:
+      "Wireshark først: modulens tre labber bruker det, og resten blir langt mer konkret når du har sett protokollene i en ekte fangst.",
+    steg: [
+      {
+        slug: "dte2507-wireshark-analyse",
+        tittel: "Wireshark / pcap-analyse",
+        hvorfor:
+          "Verktøyet lab 2, 3 og 4 hviler på. Å lese en fangst — filtrere, følge en strøm, finne forespørselen som hører til svaret — er ferdigheten laboppgavene faktisk måler.",
+      },
+      {
+        slug: "dte2507-http2-hol",
+        tittel: "HTTP/1.1 vs HTTP/2 — HOL-blokkering",
+        hvorfor:
+          "Web er det største enkelttemaet i kapittelet. Her ser du hvorfor HTTP/1.1 måtte stå i kø, og nøyaktig hva HTTP/2 gjorde med problemet.",
+      },
+      {
+        slug: "dte2507-web-caching-matte",
+        tittel: "Web-caching matematikk",
+        hvorfor:
+          "Regnestykket Kurose bruker på cache: trafikkintensitet, forsinkelse og treffrate. En av de få oppgavetypene i kapittelet med et tall som fasit — og den kommer på quizen.",
+      },
+      {
+        slug: "dte2507-dns-dyp",
+        tittel: "DNS-dyp og DNSSEC",
+        hvorfor:
+          "Lab 4 er DNS. Du så oppslaget virke i modul 1; her ser du hvorfor det virker — hierarkiet, hvem som svarer hva, og hvor svaret mellomlagres.",
+      },
+      {
+        slug: "dte2507-socket-programmering",
+        tittel: "Socket-programmering (TCP/UDP/TLS)",
+        hvorfor:
+          "Kap. 2.7: applikasjonslaget sett fra programmet som skriver koden. Bind, listen, accept, connect — og hvorfor TCP og UDP krever ulik struktur.",
+      },
+    ],
+    hull:
+      "E-post (SMTP, IMAP) og FTP har ingen egne sider, og modulquizen dekker begge. Les dem i Kurose kap. 2.3 og 2.4 ved siden av.",
   },
   {
     nr: "3",
@@ -214,6 +260,30 @@ export const MODULER_2507: Dte2507Modul[] = [
       },
     ],
     ovingSlug: "dte2507-rdt-progresjon",
+    ingress:
+      "Hvordan to maskiner blir enige om at noe faktisk kom fram, over et nett som ikke lover noe som helst. Fagets tyngste kapittel.",
+    rekkefolgeMerknad:
+      "Den korteste løypa i faget, og den tetteste. Modulquizen her er også den eneste som ikke krever full pott (24 av 29) — emnet vet at kapittelet er tungt.",
+    steg: [
+      {
+        slug: "transportlag",
+        tittel: "Transportlag — TCP og UDP",
+        hvorfor:
+          "Hva transportlaget i det hele tatt gjør: multipleksing på portnumre, og det ene valget alt annet følger av — vil du ha pålitelighet eller vil du ha fart?",
+      },
+      {
+        slug: "dte2507-rdt-progresjon",
+        tittel: "rdt 1.0 → 3.0 — bygge pålitelighet steg for steg",
+        hvorfor:
+          "Kapittelets kjerne, og grunnen til at det er tungt: hver versjon legger til ÉN mekanisme fordi den forrige hadde ett hull. Ser du kjeden, husker du hvorfor TCP ser ut som den gjør.",
+      },
+      {
+        slug: "dte2507-congestion-control",
+        tittel: "TCP Congestion Control",
+        hvorfor:
+          "Det siste laget oppå pålitelighet: hvor fort tør du sende når du ikke vet hva nettet tåler? Slow start, AIMD og sagtannmønsteret som følger av dem.",
+      },
+    ],
   },
   {
     nr: "4",
@@ -239,6 +309,66 @@ export const MODULER_2507: Dte2507Modul[] = [
       },
     ],
     ovingSlug: "dte2507-subnetting",
+    ingress:
+      "Adresser, veivalg og maskinene som tar dem: hvordan en pakke finner fram gjennom et nett den aldri har sett før.",
+    rekkefolgeMerknad:
+      "Fagets lengste løype — to uker, to kapitler. Rekkefølgen er adressering → videresending → ruteberegning → det som får nett til å virke i praksis. Steg 5 (Dijkstra) har sin egen frist 20.09, en uke før modulquizen: ta det tidlig hvis du er presset.",
+    steg: [
+      {
+        slug: "dte2507-subnetting",
+        tittel: "Subnetting — del opp nettverket",
+        hvorfor:
+          "Adressering før alt annet. Maske, nettadresse, kringkastingsadresse og antall verter — regnestykket hele resten av modulen forutsetter at du kan.",
+      },
+      {
+        slug: "dte2507-ruting",
+        tittel: "IP-forwarding og ruting",
+        hvorfor:
+          "Skillet som gir hele kapittelet mening: videresending er hva én ruter gjør med én pakke akkurat nå, ruting er hvordan tabellen den slår opp i ble til.",
+      },
+      {
+        slug: "dte2507-inni-ruter",
+        tittel: "Inni en ruter — switch fabric og HOL-blocking",
+        hvorfor:
+          "Kap. 4.2: hva som fysisk skjer mellom inn- og utport. Her møter du HOL-blokkering igjen, denne gangen i maskinvaren i stedet for i HTTP.",
+      },
+      {
+        slug: "dte2507-packet-scheduling",
+        tittel: "Packet scheduling — FIFO, Priority, Round Robin, WFQ",
+        hvorfor:
+          "Når køen er full, må noen velge hvem som slipper fram. De fire disiplinene, og hva hver av dem gjør med forsinkelsen du regnet på i modul 1.",
+      },
+      {
+        slug: "dte2507-ospf-dijkstra",
+        tittel: "OSPF — link-state ruting",
+        hvorfor:
+          "Dijkstras algoritme, som har sitt EGET kontrollspørsmål med frist 20.09 — en uke før modulquizen. Ta dette steget tidlig hvis du er presset på tid.",
+      },
+      {
+        slug: "dte2507-count-to-infinity",
+        tittel: "Count-to-infinity",
+        hvorfor:
+          "Den andre familien: distansevektor. Og feilen som gjorde at den trengte lapper — nyheten om et brutt samband sprer seg langsommere enn nyheten om en vei.",
+      },
+      {
+        slug: "dte2507-bgp-stige",
+        tittel: "BGP-rutevelger-stige",
+        hvorfor:
+          "Ruting mellom autonome systemer, der politikk slår korteste vei. Stigen viser i hvilken rekkefølge kriteriene faktisk vurderes.",
+      },
+      {
+        slug: "dte2507-dhcp",
+        tittel: "DHCP — DORA-prosessen",
+        hvorfor:
+          "Hvordan maskinen fikk adressen du leste av i modul 1. Fire meldinger, og hvorfor de to første må gå til kringkastingsadressen.",
+      },
+      {
+        slug: "dte2507-nat",
+        tittel: "NAT — én offentlig IP, mange private",
+        hvorfor:
+          "Sluttstykket: hvorfor 10.0.5.37 kan snakke med verden selv om ingen utenfor nettet ditt kan se den adressen. Oversettelsen som gjorde IPv4 holdbar i tjue ekstra år.",
+      },
+    ],
     hull:
       "GNS3 finnes ikke i appen i det hele tatt, og det er tre av modulens labber. Det samme gjelder Cisco IOS-kommandolinja, som GNS3-labbene og den praktiske laben bygger på — Canvas legger ved både et IOS-image og et cheat sheet. Teorien (subnetting, Dijkstra, ruterens innside) er godt dekket.",
   },
@@ -259,6 +389,48 @@ export const MODULER_2507: Dte2507Modul[] = [
       },
     ],
     ovingSlug: "dte2507-arp-detektiv",
+    ingress:
+      "Det nederste laget som faktisk flytter bitene: rammer, MAC-adresser, svitsjer og feildeteksjon — og til slutt alle lagene i én hendelse.",
+    rekkefolgeMerknad:
+      "Slutter med «A Day in the Life» med vilje. Den er siste delkapittel i Kurose kap. 6, og den eneste siden i faget som knytter alle lagene sammen i én forespørsel.",
+    steg: [
+      {
+        slug: "dte2507-arp-detektiv",
+        tittel: "ARP-detektiv — postadresse vs. personnummer",
+        hvorfor:
+          "Broen mellom lagene: du har IP-adressen, men rammen trenger en MAC. Det er nøyaktig det skillet du målte i lab 1 — nå fra den andre siden.",
+      },
+      {
+        slug: "dte2507-paket-dekoding",
+        tittel: "Paket-dekoding — fra hex til mening",
+        hvorfor:
+          "Modulens labber leser ICMP- og ARP-pakker i Wireshark. Her øver du på å ta bytene rå og finne feltgrensene selv, uten at et verktøy har tygget dem for deg.",
+      },
+      {
+        slug: "dte2507-switch-self-learning",
+        tittel: "Switchen husker hvem du så snakke",
+        hvorfor:
+          "Hvorfor en switch ikke trenger konfigurasjon: den lærer av avsenderadressen på det som passerer. Og hva som skjer i det korte øyeblikket den ennå ikke vet.",
+      },
+      {
+        slug: "dte2507-crc-kalkulator",
+        tittel: "CRC modulo-2-divisjon",
+        hvorfor:
+          "Feildeteksjon som håndregning. CRC er en av oppgavetypene som er lett å få full pott på hvis du har gjort den én gang, og umulig hvis du ikke har.",
+      },
+      {
+        slug: "dte2507-aloha-kasino",
+        tittel: "ALOHA-kasinoet",
+        hvorfor:
+          "Mediumtilgang når flere vil sende samtidig: kollisjoner, tilfeldig venting og effektiviteten som følger av dem. Grunnlaget for CSMA/CA i modul 6.",
+      },
+      {
+        slug: "dte2507-day-in-the-life",
+        tittel: "A Day in the Life of a Web Page Request",
+        hvorfor:
+          "Kap. 6.7, og det naturlige sluttpunktet: én enkelt nettsideforespørsel, fra DHCP og ARP til DNS, TCP og HTTP. Alt du har bygget siden modul 1, i én hendelse.",
+      },
+    ],
     hull:
       "ICMP er dekket spredt (pakke-dekoding, ruting), men har ingen egen side — og modulen har tre labber på det.",
   },
@@ -279,6 +451,21 @@ export const MODULER_2507: Dte2507Modul[] = [
       },
     ],
     ovingSlug: "dte2507-wifi-csma-ca",
+    ingress:
+      "Hva som endrer seg når kabelen forsvinner: du kan ikke lenger høre din egen kollisjon, og hele mediumtilgangen må bygges om.",
+    // Løypa er på ett steg, og det er ikke en forglemmelse — appen har bare én
+    // side om trådløst. Modulen får likevel en modulside, fordi alternativet er
+    // at modul 6 er det eneste stedet i faget uten en vei inn. Se `hull`.
+    steg: [
+      {
+        slug: "dte2507-wifi-csma-ca",
+        tittel: "WiFi — CSMA/CA og RTS/CTS",
+        hvorfor:
+          "Hvorfor trådløst ikke kan bruke kollisjonsdeteksjon slik Ethernet gjør, og hva det tvinger fram: unnvikelse i stedet for deteksjon, og en håndhilsen for de skjulte nodene.",
+      },
+    ],
+    hull:
+      "Mobilitet og handover mellom aksesspunkter — den andre halvdelen av modulquizen — har ingen side i appen. Kurose kap. 7.4–7.6 må leses ved siden av.",
   },
 ];
 
