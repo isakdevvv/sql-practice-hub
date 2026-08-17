@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import {
   ArrowRight,
+  Brain,
   CalendarClock,
   CheckCircle2,
   ChevronDown,
@@ -10,9 +11,16 @@ import {
   Target,
 } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
+// RecallPanel bor i dte2505-mappa fordi den ble skrevet der først, men den er
+// skrevet generisk (den kjenner bare kort + en FSRS-butikk) og brukes derfor
+// som den er her. Flyttes den til en felles mappe senere, er det ett import-bytte.
+import { RecallPanel } from "@/components/stack/dte2505-felles/RecallPanel";
 import { OPPGAVER, type Oppgave, type Vurdering } from "@/lib/dte2507/nettverkOppgaver";
+import { NETTVERK_KORT, nettverkFsrs } from "@/lib/dte2507/nettverkKort";
 import { MODULER_2507 } from "@/lib/dte2507/canvasModuler";
 import { dagerTil, formatDato } from "@/lib/dte2507/lagPlan";
+import { masteredSections, markSectionMastered } from "@/lib/core/mastery";
+import { AnslagPanel } from "./AnslagPanel";
 import { Terminal } from "./Terminal";
 
 // ---------------------------------------------------------------------------
@@ -22,17 +30,42 @@ import { Terminal } from "./Terminal";
 // men hadde ingenting om å *kjøre* kommandoene og lese utdataen. Laben tester
 // nettopp det. nslookup fantes ikke i repoet i det hele tatt før denne siden.
 //
-// Formen følger §3 i PLAN-HOST26-MODULER.md: terminalen er den guidede
-// simuleringen (type 2, null prestasjonskrav — utforsk fritt), og oppgavene
-// under er måloppgaver med tilstandssjekk (type 3). Det finnes med vilje ingen
-// «riktig kommando» — flere veier gir samme svar, og det er svaret som sjekkes.
+// Formen følger §3 i PLAN-HOST26-MODULER.md, og siden kjører nå alle fire
+// oppgavetypene den kan kjøre, i rekkefølge:
+//
+//   type 1  anslagene øverst — gjett før du har sett noe (AnslagPanel)
+//   type 2  terminalen — fri utforsking, null prestasjonskrav
+//   type 3  måloppgavene — verdien du fant sjekkes, ikke kommandoen du skrev
+//   type 5  recall-kortene nederst, meldt inn i den FELLES FSRS-køen
+//
+// Det finnes med vilje ingen «riktig kommando» — flere veier gir samme svar, og
+// det er svaret som sjekkes. Type 4 (feilsøking) mangler fortsatt; den hører
+// hjemme etter TLS-modulen, se PLAN-LABOPPGAVER.md §4.1.
 // ---------------------------------------------------------------------------
+
+/** Leksjonsnøkkelen framgangen lagres under. Må matche slugen i stack-ruta. */
+const LEKSJON = "dte2507-nettverksverktoy";
 
 export function NettverksverktoyPage() {
   // Lab 1 er den eneste quizen i modul 1, og den denne siden forbereder.
   const lab = MODULER_2507.find((m) => m.nr === "1")?.quizer[0];
   const dager = lab ? dagerTil(lab.frist) : -1;
   const [lost, setLost] = useState<Set<string>>(new Set());
+
+  // Framgangen lever i localStorage, som ikke finnes under tjener-rendringen —
+  // derfor leses den etter montering, ikke i initialverdien over. Uten dette
+  // forsvant elleve løste oppgaver ved første F5, og den som kom tilbake dagen
+  // etter måtte gjøre alt om igjen.
+  useEffect(() => {
+    const lagret = masteredSections(LEKSJON);
+    const mine = OPPGAVER.filter((o) => lagret.has(o.id)).map((o) => o.id);
+    if (mine.length > 0) setLost(new Set(mine));
+  }, []);
+
+  function marker(id: string) {
+    markSectionMastered(LEKSJON, id);
+    setLost((s) => new Set(s).add(id));
+  }
 
   return (
     <StackPageShell title="Nettverksverktøy i terminalen" group="eksamen">
@@ -88,6 +121,10 @@ export function NettverksverktoyPage() {
           </div>
         </div>
 
+        {/* Anslagene — type 1. Skal stå FØR terminalen; hele poenget er at de
+            besvares uten data. */}
+        <AnslagPanel lost={lost} />
+
         {/* Terminalen — fri utforsking, ingen fasit. */}
         <section className="mb-10">
           <h2 className="mb-2 flex items-center gap-2 text-lg font-semibold">
@@ -126,7 +163,7 @@ export function NettverksverktoyPage() {
                 nr={i + 1}
                 oppgave={o}
                 lost={lost.has(o.id)}
-                onLost={() => setLost((s) => new Set(s).add(o.id))}
+                onLost={() => marker(o.id)}
               />
             ))}
           </div>
@@ -138,10 +175,32 @@ export function NettverksverktoyPage() {
                 <strong className="text-foreground">Alle elleve.</strong> Det som er verdt å ta med
                 seg videre i faget er ikke kommandoene, men de tre skillene du nettopp brukte: MAC
                 mot IP (lokalt mot hele veien), alias mot canonical name, og «svarer ikke» mot
-                «er nede». Alle tre kommer igjen på eksamen.
+                «er nede». Alle tre kommer igjen på eksamen — og ligger som kort under.
               </div>
             </div>
           )}
+        </section>
+
+        {/* Recall — type 5. Kortene er meldt inn i den felles køen, så de dukker
+            opp igjen i november uten at noen må huske å åpne denne siden. */}
+        <section className="mb-10">
+          <h2 className="mb-2 flex items-center gap-2 text-lg font-semibold">
+            <Brain className="h-5 w-5 text-brand" />
+            Det som må sitte i hodet
+          </h2>
+          <p className="mb-4 max-w-2xl text-sm text-muted-foreground">
+            Alt du kan slå opp i en terminal står ikke her — du har jo terminalen. Det som står her
+            er skillene, og de to feltnavnene som stopper deg helt hvis du glemmer dem. Kortene
+            ligger i den felles repetisjonskøen, så de kommer tilbake av seg selv utover høsten.
+          </p>
+          <RecallPanel
+            cards={NETTVERK_KORT}
+            tags={[
+              { id: "skiller", label: "Skiller" },
+              { id: "verktøyvalg", label: "Verktøy og felt" },
+            ]}
+            store={nettverkFsrs}
+          />
         </section>
 
         <div className="flex flex-wrap gap-3">
