@@ -2,16 +2,16 @@ import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
-  id: "eksamen-dte2507-modul1",
-  slug: "dte2507-modul1",
-  title: "Modul 1 — Introduksjon",
+  id: "eksamen-dte2507-modul2",
+  slug: "dte2507-modul2",
+  title: "Modul 2 — Applikasjonslaget",
   group: "eksamen",
-  order: 30,
+  order: 31,
   status: "ready",
   shortDescription:
-    "DTE-2507 modul 1 som én løype: protokollstakken, Lab 1 i terminalen, og de fire forsinkelsene. Fire steg med frist, framdrift og neste-knapp hele veien.",
+    "Modul 2 i fem steg: Wireshark, HTTP/2 og HOL-blokkering, web-caching-matematikken, DNS i dybden og socket-programmering.",
   prerequisites: [],
-  Component: () => <ModulSide nr="1" />,
+  Component: () => <ModulSide nr="2" />,
 };
 
 const ModulPage = lazy(() =>

@@ -2,16 +2,16 @@ import { lazy } from "react";
 import type { TrinnContent } from "../types";
 
 export const content: TrinnContent = {
-  id: "eksamen-dte2507-modul1",
-  slug: "dte2507-modul1",
-  title: "Modul 1 — Introduksjon",
+  id: "eksamen-dte2507-modul6",
+  slug: "dte2507-modul6",
+  title: "Modul 6 — Trådløse nettverk og WiFi",
   group: "eksamen",
-  order: 30,
+  order: 35,
   status: "ready",
   shortDescription:
-    "DTE-2507 modul 1 som én løype: protokollstakken, Lab 1 i terminalen, og de fire forsinkelsene. Fire steg med frist, framdrift og neste-knapp hele veien.",
+    "Modul 6: CSMA/CA og RTS/CTS — hvorfor trådløst ikke kan oppdage sine egne kollisjoner, og hva det tvinger fram.",
   prerequisites: [],
-  Component: () => <ModulSide nr="1" />,
+  Component: () => <ModulSide nr="6" />,
 };
 
 const ModulPage = lazy(() =>

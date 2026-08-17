@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { SiteHeader } from "@/components/SiteHeader";
+import { StackPageShell } from "@/components/stack/StackPageShell";
 import { Button } from "@/components/ui/button";
 import { BookOpen, Network, ChevronLeft, ChevronRight, RotateCcw } from "lucide-react";
 
@@ -8,9 +8,8 @@ type Tab = "intro" | "dijkstra";
 export function Dte2507OspfDijkstraPage() {
   const [tab, setTab] = useState<Tab>("intro");
   return (
-    <div className="min-h-screen bg-background">
-      <SiteHeader />
-      <main className="container mx-auto px-4 py-8 max-w-4xl">
+    <StackPageShell title="OSPF — link-state ruting" group="eksamen">
+      <div className="container mx-auto px-4 py-8 max-w-4xl">
         <header className="mb-6">
           <h1 className="text-2xl font-bold tracking-tight">
             OSPF — link-state ruting (Dijkstra på nettverket)
@@ -43,8 +42,8 @@ export function Dte2507OspfDijkstraPage() {
         {tab === "dijkstra" && <OspfModule />}
 
         <Lessons />
-      </main>
-    </div>
+      </div>
+    </StackPageShell>
   );
 }
 

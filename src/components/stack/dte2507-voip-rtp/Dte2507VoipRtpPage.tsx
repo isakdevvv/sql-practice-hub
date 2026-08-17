@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { SiteHeader } from "@/components/SiteHeader";
+import { StackPageShell } from "@/components/stack/StackPageShell";
 import { Button } from "@/components/ui/button";
 import { BookOpen, Phone } from "lucide-react";
 
@@ -8,9 +8,8 @@ type Tab = "intro" | "live";
 export function Dte2507VoipRtpPage() {
   const [tab, setTab] = useState<Tab>("intro");
   return (
-    <div className="min-h-screen bg-background">
-      <SiteHeader />
-      <main className="container mx-auto px-4 py-8 max-w-4xl">
+    <StackPageShell title="VoIP & RTP — jitter, loss og MOS" group="eksamen">
+      <div className="container mx-auto px-4 py-8 max-w-4xl">
         <header className="mb-6">
           <h1 className="text-2xl font-bold tracking-tight">VoIP & RTP — jitter, loss og MOS</h1>
           <p className="mt-1 text-sm text-muted-foreground max-w-2xl">
@@ -37,8 +36,8 @@ export function Dte2507VoipRtpPage() {
         {tab === "intro" && <Intro onPick={setTab} />}
         {tab === "live" && <VoipModule />}
         <Lessons />
-      </main>
-    </div>
+      </div>
+    </StackPageShell>
   );
 }
 
