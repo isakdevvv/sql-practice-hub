@@ -13,73 +13,9 @@
  * antall hopp er antall hopp.
  */
 
-export interface Oppgave {
-  id: string;
-  /** Kort tittel til lista. */
-  tittel: string;
-  /** Selve oppdraget, formulert som noe du skal finne ut. */
-  oppdrag: string;
-  /** Verktøyet oppgaven trener. Vises som merkelapp. */
-  verktoy: string;
-  /** Hint, vist først når du ber om det. */
-  hint: string;
-  /**
-   * Hvorfor svaret er som det er. Vises etter riktig svar — det er her
-   * forståelsen sitter, ikke i selve tallet.
-   */
-  forklaring: string;
-  /** Én fasit, brukt av selvsjekken for å bevise at oppgaven er løsbar. */
-  fasit: string;
-  /** Sjekker et svar. */
-  sjekk: (svar: string) => Vurdering;
-}
+import { eksakt, macRens, rens, tall, type Oppgave, type Vurdering } from "../lab/typer";
 
-export interface Vurdering {
-  riktig: boolean;
-  /**
-   * Hva som var galt, når vi kan si det presist. En feilmelding som sier
-   * «nesten — det er gatewayen, ikke maskinen din» lærer mer enn «feil».
-   */
-  tilbakemelding?: string;
-}
-
-/* ------------------------------------------------------------ normalisering */
-
-const rens = (s: string) => s.trim().toLowerCase();
-
-/** MAC-adresse: kolon og bindestrek er samme adresse. */
-const macRens = (s: string) => rens(s).replace(/[-.]/g, ":").replace(/\s/g, "");
-
-/** Tall ut av en streng som kan inneholde «hopp», «stk» og lignende. */
-function somTall(s: string): number | null {
-  const m = rens(s).match(/-?\d+/);
-  return m ? Number(m[0]) : null;
-}
-
-/** Enkel likhet etter rens, med en valgfri liste over vanlige feilsvar. */
-function eksakt(
-  fasit: string,
-  normaliser: (s: string) => string = rens,
-  feller: { verdi: string; si: string }[] = [],
-): (svar: string) => Vurdering {
-  return (svar) => {
-    const s = normaliser(svar);
-    if (s === normaliser(fasit)) return { riktig: true };
-    const felle = feller.find((f) => normaliser(f.verdi) === s);
-    if (felle) return { riktig: false, tilbakemelding: felle.si };
-    return { riktig: false };
-  };
-}
-
-function tall(fasit: number, feller: { verdi: number; si: string }[] = []): (s: string) => Vurdering {
-  return (svar) => {
-    const n = somTall(svar);
-    if (n === null) return { riktig: false, tilbakemelding: "Svar med et tall." };
-    if (n === fasit) return { riktig: true };
-    const felle = feller.find((f) => f.verdi === n);
-    return { riktig: false, tilbakemelding: felle?.si };
-  };
-}
+export type { Oppgave, Vurdering };
 
 /* ------------------------------------------------------------------ oppgaver */
 

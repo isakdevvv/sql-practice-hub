@@ -15,12 +15,14 @@ import { StackPageShell } from "@/components/stack/StackPageShell";
 // skrevet generisk (den kjenner bare kort + en FSRS-butikk) og brukes derfor
 // som den er her. Flyttes den til en felles mappe senere, er det ett import-bytte.
 import { RecallPanel } from "@/components/stack/dte2505-felles/RecallPanel";
-import { OPPGAVER, type Oppgave, type Vurdering } from "@/lib/dte2507/nettverkOppgaver";
+import { OPPGAVER } from "@/lib/dte2507/nettverkOppgaver";
+import { ANSLAG, nettverkAnslagLager } from "@/lib/dte2507/nettverkAnslag";
 import { NETTVERK_KORT, nettverkFsrs } from "@/lib/dte2507/nettverkKort";
 import { MODULER_2507 } from "@/lib/dte2507/canvasModuler";
 import { dagerTil, formatDato } from "@/lib/dte2507/lagPlan";
 import { masteredSections, markSectionMastered } from "@/lib/core/mastery";
-import { AnslagPanel } from "./AnslagPanel";
+import { AnslagPanel } from "@/components/lab/AnslagPanel";
+import { MaalOppgaveKort } from "@/components/lab/MaalOppgaveKort";
 import { Terminal } from "./Terminal";
 
 // ---------------------------------------------------------------------------
@@ -123,7 +125,12 @@ export function NettverksverktoyPage() {
 
         {/* Anslagene — type 1. Skal stå FØR terminalen; hele poenget er at de
             besvares uten data. */}
-        <AnslagPanel lost={lost} />
+        <AnslagPanel
+          anslag={ANSLAG}
+          lager={nettverkAnslagLager}
+          lost={lost}
+          intro="Fire påstander om nettet under."
+        />
 
         {/* Terminalen — fri utforsking, ingen fasit. */}
         <section className="mb-10">
@@ -158,12 +165,13 @@ export function NettverksverktoyPage() {
 
           <div className="space-y-3">
             {OPPGAVER.map((o, i) => (
-              <OppgaveKort
+              <MaalOppgaveKort
                 key={o.id}
                 nr={i + 1}
                 oppgave={o}
                 lost={lost.has(o.id)}
                 onLost={() => marker(o.id)}
+                feilTekst="Ikke riktig ennå. Kjør kommandoen i terminalen over og les svaret linje for linje."
               />
             ))}
           </div>
@@ -226,108 +234,3 @@ export function NettverksverktoyPage() {
   );
 }
 
-/* ------------------------------------------------------------ delkomponent */
-
-function OppgaveKort({
-  nr,
-  oppgave,
-  lost,
-  onLost,
-}: {
-  nr: number;
-  oppgave: Oppgave;
-  lost: boolean;
-  onLost: () => void;
-}) {
-  const [svar, setSvar] = useState("");
-  const [vurdering, setVurdering] = useState<Vurdering | null>(null);
-  const [visHint, setVisHint] = useState(false);
-
-  function prov() {
-    if (!svar.trim()) return;
-    const v = oppgave.sjekk(svar);
-    setVurdering(v);
-    if (v.riktig) onLost();
-  }
-
-  return (
-    <div
-      className={`rounded-xl border p-4 ${
-        lost ? "border-success/40 bg-success/5" : "border-border bg-card"
-      }`}
-    >
-      <div className="mb-1 flex flex-wrap items-center gap-2">
-        <span
-          className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs font-bold ${
-            lost ? "bg-success/20 text-success" : "bg-brand/15 text-brand"
-          }`}
-        >
-          {lost ? <CheckCircle2 className="h-3.5 w-3.5" /> : nr}
-        </span>
-        <h3 className="font-medium text-foreground">{oppgave.tittel}</h3>
-        <code className="ml-auto rounded border border-border bg-background px-1.5 py-0.5 text-[11px] text-muted-foreground">
-          {oppgave.verktoy}
-        </code>
-      </div>
-
-      <p className="mb-3 text-sm leading-relaxed text-muted-foreground">{oppgave.oppdrag}</p>
-
-      {!lost && (
-        <>
-          <div className="flex flex-wrap gap-2">
-            <input
-              value={svar}
-              onChange={(e) => {
-                setSvar(e.target.value);
-                setVurdering(null);
-              }}
-              onKeyDown={(e) => e.key === "Enter" && prov()}
-              spellCheck={false}
-              autoCapitalize="off"
-              aria-label={`Svar på oppgave ${nr}`}
-              placeholder="skriv svaret du fant"
-              className="min-w-[12rem] flex-1 rounded-md border border-border bg-background px-3 py-1.5 font-mono text-sm outline-none focus:border-brand"
-            />
-            <button
-              type="button"
-              onClick={prov}
-              className="rounded-md bg-brand px-3 py-1.5 text-sm font-medium text-brand-foreground transition-opacity hover:opacity-90"
-            >
-              Sjekk
-            </button>
-            <button
-              type="button"
-              onClick={() => setVisHint((v) => !v)}
-              className="inline-flex items-center gap-1.5 rounded-md border border-border px-3 py-1.5 text-sm text-muted-foreground transition-colors hover:border-brand/40 hover:text-foreground"
-            >
-              <Lightbulb className="h-3.5 w-3.5" />
-              Hint
-              <ChevronDown
-                className={`h-3 w-3 transition-transform ${visHint ? "rotate-180" : ""}`}
-              />
-            </button>
-          </div>
-
-          {visHint && (
-            <p className="mt-3 rounded-lg border border-amber-500/30 bg-amber-500/5 p-3 text-sm leading-relaxed text-muted-foreground">
-              {oppgave.hint}
-            </p>
-          )}
-
-          {vurdering && !vurdering.riktig && (
-            <p className="mt-3 rounded-lg border border-rose-500/30 bg-rose-500/5 p-3 text-sm leading-relaxed text-rose-700 dark:text-rose-300">
-              {vurdering.tilbakemelding ??
-                "Ikke riktig ennå. Kjør kommandoen i terminalen over og les svaret linje for linje."}
-            </p>
-          )}
-        </>
-      )}
-
-      {lost && (
-        <p className="rounded-lg border border-success/30 bg-success/5 p-3 text-sm leading-relaxed text-foreground">
-          {oppgave.forklaring}
-        </p>
-      )}
-    </div>
-  );
-}

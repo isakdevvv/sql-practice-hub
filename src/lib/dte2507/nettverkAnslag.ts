@@ -1,18 +1,8 @@
 // ---------------------------------------------------------------------------
-// Oppgavetype 1 — ANSLÅ-SÅ-SJEKK, for nettverksterminalen.
+// Anslagene til nettverksterminalen — oppgavetype 1.
 //
-// PLAN-LABOPPGAVER.md §6.1: et anslag skrevet ned FØR verktøyet kjøres lager en
-// forventning som enten bekreftes eller brytes. Uten anslag går observasjonen
-// inn som «jaha», og den gamle modellen står urørt. Med anslag blir bruddet
-// synlig, og det er bruddet som retter en misoppfatning.
-//
-// Derfor to regler her:
-//
-//   1. Anslaget LÅSES når du har svart. Du skal ikke kunne stille om historien
-//      i ettertid — hele verdien ligger i at det gale anslaget står igjen.
-//   2. Fasiten vises IKKE med en gang. Den vises først når måloppgaven anslaget
-//      henger på er løst. Ellers blir panelet en quiz som røper svarene til
-//      oppgavene under.
+// Reglene (låsen, og at fasiten venter på måloppgaven) er felles for alle
+// labene og bor i `src/lib/lab/anslag.ts`. Her står bare innholdet.
 //
 // De fire anslagene er ikke tilfeldig valgt. Tre av dem er nøyaktig de tre
 // skillene oppsummeringen nederst på siden sier at faget kommer tilbake til
@@ -21,22 +11,7 @@
 // recall-kort i nettverkKort.ts.
 // ---------------------------------------------------------------------------
 
-export interface Anslag {
-  id: string;
-  /** Spørsmålet, stilt før terminalen er åpnet. */
-  sporsmal: string;
-  /** Svaralternativene, i vist rekkefølge. */
-  valg: string[];
-  /** Indeks i `valg` som er riktig. */
-  riktig: number;
-  /**
-   * Måloppgaven anslaget henger på. Fasiten vises først når den er løst — da
-   * har studenten sett svaret i terminalen med egne øyne.
-   */
-  knyttetTil: string;
-  /** Vises sammen med fasiten. Skal navngi forvekslingen, ikke gjenta svaret. */
-  fasit: string;
-}
+import { lagAnslagLager, type Anslag } from "../lab/anslag";
 
 export const ANSLAG: Anslag[] = [
   {
@@ -89,35 +64,8 @@ export const ANSLAG: Anslag[] = [
 
 /* ------------------------------------------------------------------ lagring */
 
-const NØKKEL = "dte2507-nettverk-anslag-v1";
-
-/** Lagrede anslag: anslag-id → valgt indeks. */
-export type LagredeAnslag = Record<string, number>;
-
-export function lesAnslag(): LagredeAnslag {
-  if (typeof window === "undefined") return {};
-  try {
-    const rå = window.localStorage.getItem(NØKKEL);
-    return rå ? (JSON.parse(rå) as LagredeAnslag) : {};
-  } catch {
-    return {};
-  }
-}
-
 /**
- * Lagrer et anslag. Er anslaget allerede satt, skjer ingenting — låsen er
- * poenget, se toppen av fila.
+ * Nøkkelen er uendret fra før løftet til lib/lab/anslag.ts — bytter du den,
+ * mister alle som har svart anslagene sine, og da er låsen brutt.
  */
-export function lagreAnslag(id: string, valgt: number): LagredeAnslag {
-  const nå = lesAnslag();
-  if (id in nå) return nå;
-  const neste = { ...nå, [id]: valgt };
-  if (typeof window !== "undefined") {
-    try {
-      window.localStorage.setItem(NØKKEL, JSON.stringify(neste));
-    } catch {
-      // full kvote o.l. — anslaget lever i minnet ut økta, og det holder
-    }
-  }
-  return neste;
-}
+export const nettverkAnslagLager = lagAnslagLager("dte2507-nettverk-anslag-v1");
