@@ -14,6 +14,9 @@
 import { kjor } from "./nettverkKommandoer";
 import { OPPGAVER } from "./nettverkOppgaver";
 import { GRENSESNITT, aktivtGrensesnitt } from "./nettverkTilstand";
+import { ANSLAG } from "./nettverkAnslag";
+import { NETTVERK_KORT } from "./nettverkKort";
+import { MODUL_KORT_KILDER } from "../learn/modulKort";
 
 let bestatt = 0;
 let stroket = 0;
@@ -147,6 +150,32 @@ sjekk(
 /** Antall nummererte hoppelinjer i en traceroute-utdata. */
 function tellHopp(ut: string): number {
   return ut.split("\n").filter((l) => /^\s*\d+\s+\S/.test(l)).length;
+}
+
+/* -------------------------------------------- anslagene og kortene henger på */
+
+// Et anslag som peker på en måloppgave som ikke finnes, får aldri vist fasiten
+// sin — panelet venter på en oppgave som aldri kan løses. Det er usynlig i
+// grensesnittet og fanges bare her.
+for (const a of ANSLAG) {
+  sjekk(
+    `anslag «${a.id}» peker på en ekte oppgave`,
+    OPPGAVER.some((o) => o.id === a.knyttetTil),
+    a.knyttetTil,
+  );
+  sjekk(`anslag «${a.id}» har gyldig riktig-indeks`, a.riktig >= 0 && a.riktig < a.valg.length);
+}
+
+// Kortene skal ligge i den FELLES køen, ikke bare i panelet på siden. Glemmes
+// registreringen, virker alt som normalt på lab-siden — og kortene forsvinner
+// fra repetisjonen. Derfor sjekkes registeret, ikke bare lista.
+const iKoen = new Set(
+  MODUL_KORT_KILDER.filter((k) => k.id === "dte2507-nettverksverktoy").flatMap((k) =>
+    k.kort.map((x) => x.id),
+  ),
+);
+for (const k of NETTVERK_KORT) {
+  sjekk(`recall-kort «${k.id}» er meldt inn i den felles køen`, iKoen.has(k.id));
 }
 
 console.log("\n====================================================");

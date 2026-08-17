@@ -22,6 +22,7 @@ import { createFsrsStore, type CardState, type FsrsStore } from "./fsrs";
 import { RECALL_CARDS as HJELPESYSTEMER_KORT, hjelpesystemerFsrs } from "../dte2505/hjelpesystemerKort";
 import { FASE1_OPPGAVER } from "../dte2602/oppgaverFase1";
 import { FASE2_OPPGAVER } from "../dte2602/oppgaverFase2";
+import { NETTVERK_KORT, nettverkFsrs } from "../dte2507/nettverkKort";
 
 /** Ett kort, uavhengig av hvilken modul det kom fra. Ren tekst, ingen JSX. */
 export interface ModulKort {
@@ -74,6 +75,16 @@ export const MODUL_KORT_KILDER: ModulKortKilde[] = [
     // gjør du det, starter framdriften på null ett av de to stedene.
     fsrs: hjelpesystemerFsrs,
     kort: HJELPESYSTEMER_KORT.map((k) => ({ id: k.id, forside: k.front, bakside: k.back })),
+  },
+  {
+    id: "dte2507-nettverksverktoy",
+    fagKode: "DTE-2507",
+    fagSlug: "dte-2507",
+    modul: "Lab 1 — Nettverksverktøy i terminalen",
+    href: "/stack/dte2507-nettverksverktoy",
+    // Samme store som RecallPanel på lab-siden bruker. Ikke bytt den ut.
+    fsrs: nettverkFsrs,
+    kort: NETTVERK_KORT.map((k) => ({ id: k.id, forside: k.front, bakside: k.back })),
   },
   {
     id: "dte2602-fase1",
