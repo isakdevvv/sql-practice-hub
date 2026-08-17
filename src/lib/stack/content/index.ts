@@ -59,6 +59,7 @@ import { content as planlegging } from "./planlegging";
 import { content as bayes } from "./bayes";
 import { content as flaskLivssyklus } from "./flask-livssyklus";
 import { content as pythonDrill } from "./python-drill";
+import { content as pythonLokkerLab } from "./python-lokker-lab";
 import { content as httpAnatomi } from "./http-anatomi";
 import { content as dte2505 } from "./dte-2505";
 import { content as osGrunnlag } from "./os-grunnlag";
@@ -290,7 +291,7 @@ export const TRINN: TrinnContent[] = [
   // DTE-2602 Fase 1 og 2 — modulsider med de fem oppgavetypene
   dte2602Modul1, dte2602Modul2,
   dte2501, sokAlgoritmer, csp, logiskResonnering, planlegging, bayes,
-  flaskLivssyklus, pythonDrill, httpAnatomi,
+  flaskLivssyklus, pythonDrill, pythonLokkerLab, httpAnatomi,
   dte2505, osHistorikk, osGrunnlag, linuxBruk, shellScripting, brukereRettigheter, virtualisering,
   dte2505ObligerGuide,
   dte2505SchedulingDrill, dte2505ThreadState, dte2505VirtueltMinne, dte2505Konkurrens,

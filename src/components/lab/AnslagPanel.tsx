@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { CheckCircle2, HelpCircle, Lock, XCircle } from "lucide-react";
-import { ANSLAG, lagreAnslag, lesAnslag, type LagredeAnslag } from "@/lib/dte2507/nettverkAnslag";
+import type { Anslag, AnslagLager, LagredeAnslag } from "@/lib/lab/anslag";
 
 /**
- * Anslå-så-sjekk, plassert FØR terminalen.
+ * Anslå-så-sjekk, plassert FØR sandkassen — type 1 i PLAN-HOST26-MODULER.md §3.
  *
  * Panelet er med vilje ikke en quiz: du får ikke vite om du traff før den
  * tilhørende måloppgaven er løst nede på siden. Fram til da står anslaget ditt
@@ -13,15 +13,26 @@ import { ANSLAG, lagreAnslag, lesAnslag, type LagredeAnslag } from "@/lib/dte250
  * `lost` er id-ene til de måloppgavene som er løst. Panelet eier ikke den
  * tilstanden; siden gjør, fordi oppgavekortene og dette panelet må være enige.
  */
-export function AnslagPanel({ lost }: { lost: Set<string> }) {
+export function AnslagPanel({
+  anslag,
+  lager,
+  lost,
+  intro,
+}: {
+  anslag: Anslag[];
+  lager: AnslagLager;
+  lost: Set<string>;
+  /** Én setning om hva som skal anslås. Resten av rammen er lik i alle laber. */
+  intro: string;
+}) {
   const [valgt, setValgt] = useState<LagredeAnslag>({});
 
   // localStorage finnes ikke under tjener-rendringen. Leses den i første
   // rendring, blir tjenerens markup en annen enn nettleserens og React
   // forkaster hele treet — derfor etter montering.
-  useEffect(() => setValgt(lesAnslag()), []);
+  useEffect(() => setValgt(lager.les()), [lager]);
 
-  const antallSvart = ANSLAG.filter((a) => a.id in valgt).length;
+  const antallSvart = anslag.filter((a) => a.id in valgt).length;
 
   return (
     <section className="mb-10">
@@ -33,16 +44,16 @@ export function AnslagPanel({ lost }: { lost: Set<string> }) {
         </span>
       </h2>
       <p className="mb-4 max-w-2xl text-sm text-muted-foreground">
-        Fire påstander om nettet under. Gjett før du åpner terminalen — det er gratis å bomme, og et
-        anslag som viser seg å være feil er den beste grunnen hjernen har til å endre mening. Svaret
-        ditt låses, og fasiten kommer først når du har funnet den i terminalen selv.{" "}
+        {intro} Gjett før du kjører noe — det er gratis å bomme, og et anslag som viser seg å være
+        feil er den beste grunnen hjernen har til å endre mening. Svaret ditt låses, og fasiten
+        kommer først når du har funnet den selv.{" "}
         <span className="tabular-nums">
-          {antallSvart} av {ANSLAG.length} anslått.
+          {antallSvart} av {anslag.length} anslått.
         </span>
       </p>
 
       <div className="space-y-3">
-        {ANSLAG.map((a) => {
+        {anslag.map((a) => {
           const mitt = valgt[a.id];
           const harSvart = mitt !== undefined;
           const avslort = harSvart && lost.has(a.knyttetTil);
@@ -72,7 +83,7 @@ export function AnslagPanel({ lost }: { lost: Set<string> }) {
                       key={v}
                       type="button"
                       disabled={harSvart}
-                      onClick={() => setValgt(lagreAnslag(a.id, i))}
+                      onClick={() => setValgt(lager.lagre(a.id, i))}
                       className={`rounded-lg border px-3 py-1.5 text-left text-sm transition-colors ${
                         vissRiktig
                           ? "border-success bg-success/10 text-foreground"

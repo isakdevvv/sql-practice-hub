@@ -23,6 +23,7 @@ import { RECALL_CARDS as HJELPESYSTEMER_KORT, hjelpesystemerFsrs } from "../dte2
 import { FASE1_OPPGAVER } from "../dte2602/oppgaverFase1";
 import { FASE2_OPPGAVER } from "../dte2602/oppgaverFase2";
 import { NETTVERK_KORT, nettverkFsrs } from "../dte2507/nettverkKort";
+import { LOKKE_KORT, lokkeFsrs } from "../python/lokkeLab";
 
 /** Ett kort, uavhengig av hvilken modul det kom fra. Ren tekst, ingen JSX. */
 export interface ModulKort {
@@ -85,6 +86,19 @@ export const MODUL_KORT_KILDER: ModulKortKilde[] = [
     // Samme store som RecallPanel på lab-siden bruker. Ikke bytt den ut.
     fsrs: nettverkFsrs,
     kort: NETTVERK_KORT.map((k) => ({ id: k.id, forside: k.front, bakside: k.back })),
+  },
+  {
+    id: "python-lokker-lab",
+    fagKode: "Python",
+    // Python har ingen egen oppføring i subjects/catalog.ts — språket går på
+    // tvers av flere fag. Slugen brukes bare til fag-filteret i køen, som
+    // bygges fra kildene her, så den trenger ikke finnes i katalogen.
+    fagSlug: "python",
+    modul: "Kap. 5 — Løkker: tell iterasjonene",
+    href: "/stack/python-lokker-lab",
+    // Samme store som RecallPanel på lab-siden bruker. Ikke bytt den ut.
+    fsrs: lokkeFsrs,
+    kort: LOKKE_KORT.map((k) => ({ id: k.id, forside: k.front, bakside: k.back })),
   },
   {
     id: "dte2602-fase1",
