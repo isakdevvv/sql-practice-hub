@@ -9,7 +9,8 @@ import { MemoryLayout } from "./MemoryLayout";
 import { PageReplacementSim } from "./PageReplacementSim";
 import { InodeStructure } from "./InodeStructure";
 import { VirtueltMinneVisualizer } from "./VirtueltMinneVisualizer";
-import { AnslaSaSjekk, type Anslag } from "@/components/learn/AnslaSaSjekk";
+import { AnslagPanel } from "@/components/lab/AnslagPanel";
+import type { Anslag } from "@/lib/lab/anslag";
 
 /**
  * Gjett-før-avsløring foran page-replacement-simulatoren.
@@ -35,13 +36,13 @@ const ANSLAG_PAGESIM: Anslag[] = [
         gir prosessen mer minne — <strong>4 frames</strong>. Hva skjer med antall faults?
       </>
     ),
-    alternativer: [
-      { id: "faerre", label: "Færre — mer minne hjelper alltid" },
-      { id: "like", label: "Nøyaktig like mange" },
-      { id: "flere", label: "Flere" },
-      { id: "umulig", label: "Umulig å si uten å kjøre den" },
+    valg: [
+      "Færre — mer minne hjelper alltid",
+      "Nøyaktig like mange",
+      "Flere",
+      "Umulig å si uten å kjøre den",
     ],
-    riktigId: "flere",
+    riktig: 2,
     fasit: (
       <>
         <strong>Flere: 10 faults.</strong> Dette er Beladys anomali. Du ga prosessen 33 % mer minne
@@ -68,12 +69,12 @@ const ANSLAG_PAGESIM: Anslag[] = [
         bruker faktisk bruksmønster, FIFO er den naive som bare teller ankomst. Hvem gjør det best?
       </>
     ),
-    alternativer: [
-      { id: "lru", label: "LRU — den bruker mer informasjon" },
-      { id: "fifo", label: "FIFO" },
-      { id: "likt", label: "Helt likt" },
+    valg: [
+      "LRU — den bruker mer informasjon",
+      "FIFO",
+      "Helt likt",
     ],
-    riktigId: "fifo",
+    riktig: 1,
     fasit: (
       <>
         <strong>FIFO vinner: 9 mot LRUs 10.</strong> Den naive algoritmen slår den smarte på nettopp
@@ -101,13 +102,13 @@ const ANSLAG_PAGESIM: Anslag[] = [
         tolv tilgangene blir page fault?
       </>
     ),
-    alternativer: [
-      { id: "4", label: "4 — bare de første, så ligger de i minnet" },
-      { id: "6", label: "Rundt 6 — omtrent annenhver" },
-      { id: "9", label: "9" },
-      { id: "12", label: "Alle 12" },
+    valg: [
+      "4 — bare de første, så ligger de i minnet",
+      "Rundt 6 — omtrent annenhver",
+      "9",
+      "Alle 12",
     ],
-    riktigId: "12",
+    riktig: 3,
     fasit: (
       <>
         <strong>Alle tolv.</strong> Ikke én eneste treff. LRU kaster hver gang ut nøyaktig den sida
@@ -517,8 +518,8 @@ PA = 7 * 4096 + 0x123
             reference-strengen din viser <em>Beladys anomali</em> for FIFO.
           </p>
 
-          <AnslaSaSjekk
-            id="pagesim-anslag"
+          <AnslagPanel
+            avsloring="knapp"
             tittel="Anslå først — så kjører du simulatoren"
             intro={
               <>

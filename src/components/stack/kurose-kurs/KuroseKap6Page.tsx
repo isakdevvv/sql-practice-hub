@@ -10,7 +10,8 @@ import {
   FolderOpen,
   ExternalLink,
 } from "lucide-react";
-import { AnslaSaSjekk, type Anslag } from "@/components/learn/AnslaSaSjekk";
+import { AnslagPanel } from "@/components/lab/AnslagPanel";
+import type { Anslag } from "@/lib/lab/anslag";
 import { SectionPager, type SectionNavItem } from "./SectionPager";
 import { Section61Live } from "./Section61Live";
 import { Section62Live } from "./Section62Live";
@@ -924,13 +925,13 @@ const ANSLAG_64: Anslag[] = [
         står i MAC-tabellen?
       </>
     ),
-    alternativer: [
-      { id: "begge", label: "Både A og B, med hver sin port" },
-      { id: "bare-a", label: "Bare A på port 1" },
-      { id: "bare-b", label: "Bare B på port 2 — det er jo B den skal finne" },
-      { id: "tom", label: "Fortsatt tom — den lærer først når B svarer" },
+    valg: [
+      "Både A og B, med hver sin port",
+      "Bare A på port 1",
+      "Bare B på port 2 — det er jo B den skal finne",
+      "Fortsatt tom — den lærer først når B svarer",
     ],
-    riktigId: "bare-a",
+    riktig: 1,
     fasit: (
       <>
         <strong>Bare A, på port 1.</strong> En switch lærer utelukkende av{" "}
@@ -958,12 +959,12 @@ const ANSLAG_64: Anslag[] = [
         rammen?
       </>
     ),
-    alternativer: [
-      { id: "alle", label: "Alle fire — 1, 2, 3 og 4" },
-      { id: "unntatt-inn", label: "Port 2, 3 og 4 — alle unntatt den rammen kom inn på" },
-      { id: "bare2", label: "Bare port 2, der B sitter" },
+    valg: [
+      "Alle fire — 1, 2, 3 og 4",
+      "Port 2, 3 og 4 — alle unntatt den rammen kom inn på",
+      "Bare port 2, der B sitter",
     ],
-    riktigId: "unntatt-inn",
+    riktig: 1,
     fasit: (
       <>
         <strong>Port 2, 3 og 4.</strong> Inngangsporten utelates alltid — å sende rammen tilbake dit
@@ -989,12 +990,12 @@ const ANSLAG_64: Anslag[] = [
         til C. Switchen kjenner ikke C — og ukjent destinasjon betyr normalt flooding. Hva skjer?
       </>
     ),
-    alternativer: [
-      { id: "flood-alle", label: "Flood til port 2, 3 og 4, som før" },
-      { id: "flood-vlan", label: "Flood, men bare til port 2 — resten av VLAN 10" },
-      { id: "drop", label: "Ingenting sendes ut i det hele tatt" },
+    valg: [
+      "Flood til port 2, 3 og 4, som før",
+      "Flood, men bare til port 2 — resten av VLAN 10",
+      "Ingenting sendes ut i det hele tatt",
     ],
-    riktigId: "drop",
+    riktig: 2,
     fasit: (
       <>
         <strong>Rammen forsvinner.</strong> Ingen porter får den. C ligger på et annet VLAN, og uten
@@ -1025,8 +1026,8 @@ function Section64ArpSelfLearning() {
         switch-hierarkiet, og (3) hvordan VLAN gjør én fysisk switch til mange logiske nett.
       </p>
 
-      <AnslaSaSjekk
-        id="anslag-6-4"
+      <AnslagPanel
+        avsloring="knapp"
         tittel="Anslå først — så kjører du switchen"
         intro={
           <>

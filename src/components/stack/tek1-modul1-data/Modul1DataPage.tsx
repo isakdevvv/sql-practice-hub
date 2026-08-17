@@ -7,7 +7,8 @@ import {
   ProvisoriskKapittelnote,
   type SymbolRad,
 } from "@/components/stack/tek1-oppgaver/Symboltavle";
-import { AnslaSaSjekk, type Anslag } from "@/components/stack/tek1-oppgaver/AnslaSaSjekk";
+import { AnslagPanel } from "@/components/lab/AnslagPanel";
+import type { Anslag } from "@/lib/lab/anslag";
 import { Maloppgaver, type MaloppgaveData } from "@/components/stack/tek1-oppgaver/Maloppgave";
 import { Feilsokingsoppgaver, type Feilsoking } from "@/components/stack/tek1-oppgaver/Feilsoking";
 import { RecallKortSeksjon, type RecallKort } from "@/components/stack/tek1-oppgaver/RecallKort";
@@ -160,13 +161,13 @@ const ANSLAG: Anslag[] = [
         skjer med <strong>medianen</strong>?
       </>
     ),
-    alternativer: [
-      { id: "a", label: "Den mangedobles — den drar med seg hele utvalget" },
-      { id: "b", label: "Den øker kraftig, til godt over en million" },
-      { id: "c", label: "Den flytter seg ett hakk, altså noen få tusen kroner" },
-      { id: "d", label: "Den blir nøyaktig uendret" },
+    valg: [
+      "Den mangedobles — den drar med seg hele utvalget",
+      "Den øker kraftig, til godt over en million",
+      "Den flytter seg ett hakk, altså noen få tusen kroner",
+      "Den blir nøyaktig uendret",
     ],
-    riktigId: "c",
+    riktig: 2,
     fasit: (
       <>
         Nesten ingenting skjer. Medianen er posisjonen midt i den sorterte rekka. Med 10 personer lå
@@ -193,13 +194,13 @@ const ANSLAG: Anslag[] = [
         millioner. Hva blir det nye gjennomsnittet, omtrent?
       </>
     ),
-    alternativer: [
-      { id: "a", label: "Rundt 545 000 — knapt merkbart" },
-      { id: "b", label: "Rundt 5 millioner" },
-      { id: "c", label: "Rundt 25 millioner" },
-      { id: "d", label: "Rundt 50 millioner" },
+    valg: [
+      "Rundt 545 000 — knapt merkbart",
+      "Rundt 5 millioner",
+      "Rundt 25 millioner",
+      "Rundt 50 millioner",
     ],
-    riktigId: "b",
+    riktig: 1,
     fasit: (
       <>
         Summen var 10 × 540 000 = 5,4 millioner. Nå blir den 55,4 millioner, fordelt på 11 personer:
@@ -224,13 +225,13 @@ const ANSLAG: Anslag[] = [
         <strong>kvartilbredden IQR</strong> — bredden på den midterste halvparten av dataene?
       </>
     ),
-    alternativer: [
-      { id: "a", label: "Den mangedobles, som gjennomsnittet" },
-      { id: "b", label: "Den endrer seg bare marginalt" },
-      { id: "c", label: "Den blir negativ" },
-      { id: "d", label: "Den halveres" },
+    valg: [
+      "Den mangedobles, som gjennomsnittet",
+      "Den endrer seg bare marginalt",
+      "Den blir negativ",
+      "Den halveres",
     ],
-    riktigId: "b",
+    riktig: 1,
     fasit: (
       <>
         Knapt noe skjer. IQR er avstanden fra Q1 til Q3 — altså mellom personen 25 % inn i køen og
@@ -249,13 +250,13 @@ const ANSLAG: Anslag[] = [
         beløpet. Hva skjer med <strong>standardavviket s</strong>?
       </>
     ),
-    alternativer: [
-      { id: "a", label: "Det øker med 10 000" },
-      { id: "b", label: "Det øker, men med mindre enn 10 000" },
-      { id: "c", label: "Det er helt uendret" },
-      { id: "d", label: "Det avhenger av hvor mange ansatte det er" },
+    valg: [
+      "Det øker med 10 000",
+      "Det øker, men med mindre enn 10 000",
+      "Det er helt uendret",
+      "Det avhenger av hvor mange ansatte det er",
     ],
-    riktigId: "c",
+    riktig: 2,
     fasit: (
       <>
         Helt uendret. Standardavviket måler <em>avstandene mellom</em> observasjonene, ikke hvor de
@@ -281,13 +282,13 @@ const ANSLAG: Anslag[] = [
         skjer med <strong>variansen s²</strong>?
       </>
     ),
-    alternativer: [
-      { id: "a", label: "Den ganges med 1,1" },
-      { id: "b", label: "Den ganges med 1,21" },
-      { id: "c", label: "Den er uendret" },
-      { id: "d", label: "Den ganges med 0,1" },
+    valg: [
+      "Den ganges med 1,1",
+      "Den ganges med 1,21",
+      "Den er uendret",
+      "Den ganges med 0,1",
     ],
-    riktigId: "b",
+    riktig: 1,
     fasit: (
       <>
         Variansen ganges med <strong>1,1² = 1,21</strong>. Grunnen er kvadreringen: hvert ledd (x −
@@ -307,13 +308,13 @@ const ANSLAG: Anslag[] = [
         gjennomsnittet av alle disse svarene?
       </>
     ),
-    alternativer: [
-      { id: "a", label: "Det ligger rundt 225 — bommene går like ofte over som under" },
-      { id: "b", label: "Det ligger systematisk under 225" },
-      { id: "c", label: "Det ligger systematisk over 225" },
-      { id: "d", label: "Det spriker helt tilfeldig, uten mønster" },
+    valg: [
+      "Det ligger rundt 225 — bommene går like ofte over som under",
+      "Det ligger systematisk under 225",
+      "Det ligger systematisk over 225",
+      "Det spriker helt tilfeldig, uten mønster",
     ],
-    riktigId: "b",
+    riktig: 1,
     fasit: (
       <>
         Systematisk under — og det er ikke uflaks, det er innebygd i regnestykket. Vi måler
@@ -943,7 +944,11 @@ export function Modul1DataPage() {
         <Symboltavle id="symboler" symboler={SYMBOLER} />
 
         {/* --- Type 1: anslå-så-sjekk, FØR forklaringen -------------------- */}
-        <AnslaSaSjekk id="anslag" anslag={ANSLAG} />
+        <AnslagPanel
+          avsloring="knapp"
+          anslag={ANSLAG}
+          intro="Statistisk intuisjon bommer systematisk — om medianer, om betingede sannsynligheter og om hvor mye tilfeldighet som finnes i små utvalg. Det er nettopp derfor faget finnes."
+        />
 
         {/* --- Forklaring + type 2: guidede simuleringer ------------------- */}
         <section id="utvalg" className="mb-12 scroll-mt-28">

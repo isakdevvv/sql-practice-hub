@@ -15,7 +15,8 @@ import {
   ProvisoriskKapittelnote,
   type SymbolRad,
 } from "@/components/stack/tek1-oppgaver/Symboltavle";
-import { AnslaSaSjekk, type Anslag } from "@/components/stack/tek1-oppgaver/AnslaSaSjekk";
+import { AnslagPanel } from "@/components/lab/AnslagPanel";
+import type { Anslag } from "@/lib/lab/anslag";
 import { Maloppgaver, type MaloppgaveData } from "@/components/stack/tek1-oppgaver/Maloppgave";
 import { Feilsokingsoppgaver, type Feilsoking } from "@/components/stack/tek1-oppgaver/Feilsoking";
 import { RecallKortSeksjon, type RecallKort } from "@/components/stack/tek1-oppgaver/RecallKort";
@@ -277,13 +278,13 @@ const ANSLAG: Anslag[] = [
         nullhypotesen er sann?
       </>
     ),
-    alternativer: [
-      { id: "a", label: "3 %" },
-      { id: "b", label: "97 %" },
-      { id: "c", label: "Under 5 %, men vi vet ikke nøyaktig" },
-      { id: "d", label: "Kan ikke leses av p-verdien i det hele tatt" },
+    valg: [
+      "3 %",
+      "97 %",
+      "Under 5 %, men vi vet ikke nøyaktig",
+      "Kan ikke leses av p-verdien i det hele tatt",
     ],
-    riktigId: "d",
+    riktig: 3,
     fasit: (
       <>
         <strong>Kan ikke leses av p-verdien.</strong> p = 0,03 betyr: <em>hvis</em> H₀ er sann, ville
@@ -310,13 +311,13 @@ const ANSLAG: Anslag[] = [
         sannsynligheten for at den sanne μ ligger inne i akkurat dette intervallet?
       </>
     ),
-    alternativer: [
-      { id: "a", label: "95 %" },
-      { id: "b", label: "Enten 0 eller 1 — vi vet bare ikke hvilken" },
-      { id: "c", label: "Litt under 95 %, fordi vi brukte s og ikke σ" },
-      { id: "d", label: "5 %" },
+    valg: [
+      "95 %",
+      "Enten 0 eller 1 — vi vet bare ikke hvilken",
+      "Litt under 95 %, fordi vi brukte s og ikke σ",
+      "5 %",
     ],
-    riktigId: "b",
+    riktig: 1,
     fasit: (
       <>
         <strong>Enten 0 eller 1.</strong> μ er et fast tall, og intervallet er nå også fast — enten
@@ -344,13 +345,13 @@ const ANSLAG: Anslag[] = [
         effekt. Hvor sterkt motsier de hverandre?
       </>
     ),
-    alternativer: [
-      { id: "a", label: "Sterkt — den ene fant effekt, den andre ikke" },
-      { id: "b", label: "Moderat — de peker i ulik retning" },
-      { id: "c", label: "Nesten ikke i det hele tatt — dataene er svært like" },
-      { id: "d", label: "Umulig å si uten å vite utvalgsstørrelsene" },
+    valg: [
+      "Sterkt — den ene fant effekt, den andre ikke",
+      "Moderat — de peker i ulik retning",
+      "Nesten ikke i det hele tatt — dataene er svært like",
+      "Umulig å si uten å vite utvalgsstørrelsene",
     ],
-    riktigId: "c",
+    riktig: 2,
     fasit: (
       <>
         <strong>Nesten ikke i det hele tatt.</strong> p = 0,04 og p = 0,06 svarer til nesten identiske
@@ -377,13 +378,13 @@ const ANSLAG: Anslag[] = [
         én av dem blir «signifikant»?
       </>
     ),
-    alternativer: [
-      { id: "a", label: "5 % — det er jo nivået vi valgte" },
-      { id: "b", label: "Rundt 20 %" },
-      { id: "c", label: "Rundt 40 %" },
-      { id: "d", label: "Rundt 64 %" },
+    valg: [
+      "5 % — det er jo nivået vi valgte",
+      "Rundt 20 %",
+      "Rundt 40 %",
+      "Rundt 64 %",
     ],
-    riktigId: "d",
+    riktig: 3,
     fasit: (
       <>
         <strong>64,2 %.</strong> Regnestykket er komplementet fra modul 2:{" "}
@@ -408,13 +409,13 @@ const ANSLAG: Anslag[] = [
         konkludere?
       </>
     ),
-    alternativer: [
-      { id: "a", label: "Variablene er uavhengige" },
-      { id: "b", label: "Det finnes ingen sammenheng mellom dem" },
-      { id: "c", label: "Det finnes ingen lineær sammenheng — men gjerne en annen" },
-      { id: "d", label: "Datasettet er for lite til å si noe" },
+    valg: [
+      "Variablene er uavhengige",
+      "Det finnes ingen sammenheng mellom dem",
+      "Det finnes ingen lineær sammenheng — men gjerne en annen",
+      "Datasettet er for lite til å si noe",
     ],
-    riktigId: "c",
+    riktig: 2,
     fasit: (
       <>
         <strong>Ingen lineær sammenheng.</strong> r måler bare hvor godt en rett linje beskriver
@@ -440,13 +441,13 @@ const ANSLAG: Anslag[] = [
         <strong>halvparten så bredt</strong>. Omtrent hvor mange målinger trenger du?
       </>
     ),
-    alternativer: [
-      { id: "a", label: "50" },
-      { id: "b", label: "75" },
-      { id: "c", label: "100" },
-      { id: "d", label: "625" },
+    valg: [
+      "50",
+      "75",
+      "100",
+      "625",
     ],
-    riktigId: "c",
+    riktig: 2,
     fasit: (
       <>
         <strong>Cirka 100.</strong> Bredden er proporsjonal med SE = s/√n, så halvering krever at √n
@@ -1337,15 +1338,14 @@ export function Modul4InferensPage() {
         <Symboltavle id="symboler" symboler={SYMBOLER} />
 
         {/* --- Type 1: anslå-så-sjekk, FØR forklaringen -------------------- */}
-        <AnslaSaSjekk
-          id="anslag"
+        <AnslagPanel
+          avsloring="knapp"
           anslag={ANSLAG}
           intro={
             <>
-              Gjett før du leser videre. Spørsmålene under er ikke regneoppgaver — de handler om hva
+              Spørsmålene under er ikke regneoppgaver — de handler om hva
               tallene <em>betyr</em>, og det er nettopp der de fleste bommer. Flere av dem er
-              feiltolkninger som fortsatt står på trykk i publiserte rapporter. Ingenting telles, og
-              et bom her er mer verdt enn en riktig gjetning.
+              feiltolkninger som fortsatt står på trykk i publiserte rapporter.
             </>
           }
         />
