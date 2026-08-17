@@ -117,12 +117,15 @@ Sju av dem gjør nøyaktig det samme: dra et punkt i et SVG-koordinatsystem.
 egen `dragIdx`-state, sin egen `getBoundingClientRect()`-til-datakoordinat-
 konvertering, sitt eget `setPointerCapture`-oppsett. Ingen delt hook.
 
-Verre: **11 av 13 har ingen visuell affordans.** Ingen `cursor-grab`,
-`cursor-move` eller `cursor-pointer` på det dragbare elementet. Kun
-`KvartilProkkrekke` og `kap7/CellulaViz` har det. Punktene *er* dragbare, men
-ingenting på skjermen sier det. Dette er nøyaktig samme feil som
-eksempelkortene på forsiden hadde (så ut som knapper, var `<article>`) — bare
-speilvendt: de *oppfører* seg som kontroller, men *ser ut* som pynt.
+> **Rettelse (etter implementering).** Denne seksjonen påsto opprinnelig at 11 av
+> 13 manglet visuell affordans. Det var feil, og feilen var min: jeg grep-et kun
+> etter Tailwind-klassene (`cursor-grab` o.l.). Alle 13 setter faktisk
+> `style={{ cursor: "grab" }}` inline. Affordansen er på plass overalt.
+>
+> Det som *faktisk* mangler er smått: `cursor-grabbing` mens man drar, og
+> hover-tilbakemelding på selve punktet — begge deler finnes kun i
+> `KvartilProkkrekke`. Det er kosmetisk finpuss, ikke det billigste store løftet
+> jeg opprinnelig kalte det. **Forslag F7 er trukket**; se §4.
 
 ### 1.6 Gjett-før-avsløring finnes allerede — og er låst til ett fag
 
@@ -280,23 +283,12 @@ Ingen ny mekanikk. **Innsats: S.** **Fag: DTE-2505.**
 
 ---
 
-### F7 — Synlig affordans på alle 13 dragbare visualiseringene
+### ~~F7 — Synlig affordans på alle 13 dragbare visualiseringene~~ (TRUKKET)
 
-**Konsept:** Ikke et fagkonsept — en ren oppdagbarhetsfeil.
-
-**Hvorfor:** 11 av 13 dragbare komponenter har verken `cursor-grab`, hover-state
-eller synlig håndtak. `DecisionBoundaryWithLogReg`, `MulticlassSoftmaxViz` og
-`GmmVisualizer` har heller ikke instruksjonstekst. En bruker som ikke tilfeldigvis
-drar i et punkt, ser en statisk figur og går videre — hele
-interaksjonsinvesteringen er usynlig.
-
-**Hva brukeren gjør:** Ser `cursor-grab` over punkter, `cursor-grabbing` under
-drag, en subtil ring på hover, og én linje hjelpetekst («dra punktene for å se
-regresjonslinja følge etter»).
-
-**Filer:** de 13 filene i §1.5. Rent kosmetisk, null logikkendring.
-**Innsats: S.** **Fag: DTE-2602 + TEK-1501.** Beste forhold gevinst/innsats i
-hele dokumentet.
+Forslaget bygget på en feilslutning fra en for smal grep — se rettelsen i §1.5.
+Alle 13 har allerede `cursor: grab`. Det som gjenstår er `cursor-grabbing` under
+drag og hover-tilbakemelding, som er finpuss til **XS** og ikke fortjener en
+plass på en prioritert liste før fire eksamener.
 
 ---
 
@@ -401,7 +393,7 @@ toggle, reset }` med opprydding i `useEffect`-cleanup — dekker begge, og fjern
 
 | | Løft | Innsats | |
 |---|---|---|---|
-| **F7** affordans | Middels | S | Gevinsten er at eksisterende arbeid blir *funnet* |
+| ~~**F7** affordans~~ | — | — | Trukket — affordansen fantes allerede (§1.5) |
 | **F2** flytt `AnslaSaSjekk` | (muliggjør) | S | Én fil |
 | **F6** Béládys anslag | Høyt | S | Kontraintuitivt konsept, komponent finnes |
 | **F1** anslag i Kurose | Høyt | S–M | Treffer faget med tidligst eksamen |
@@ -414,16 +406,41 @@ toggle, reset }` med opprydding i `useEffect`-cleanup — dekker begge, og fjern
 
 ### Hvis jeg hadde én dag
 
-**F2 → F7 → F6 → F1 på to Kurose-seksjoner.**
+**F2 → F6 → F1 på to Kurose-seksjoner.** *(Dette er gjennomført — se §6.)*
 
-Begrunnelse: alle fire er S, ingen krever ny mekanikk, og til sammen treffer de
-begge fagene med eksamen i november/desember. F7 alene gjør 13 eksisterende
-visualiseringer oppdagbare — det er den billigste måten å øke den *faktiske*
-interaktiviteten i appen uten å skrive én ny simulator. F6 er dagens enkeltvis
-sterkeste pedagogiske treff: Béládys anomali er akkurat den typen påstand som
-ikke fester seg før du har gjettet feil på den.
+Begrunnelse: alle tre er S, ingen krever ny mekanikk, og til sammen treffer de
+begge fagene med eksamen i november/desember. F6 er dagens enkeltvis sterkeste
+pedagogiske treff: Béládys anomali er akkurat den typen påstand som ikke fester
+seg før du har gjettet feil på den.
 
 Rekkefølgen er ikke tilfeldig — F2 låser opp F1 og F6.
+
+---
+
+## 6. Gjennomført
+
+Branch `feat/interaksjon-loft`, commit `3e2e1e0`. Ingen nye `tsc`-feil (82 før,
+82 etter — identisk med main). Verifisert i nettleser på port 5473.
+
+- **F2** — `AnslaSaSjekk` flyttet til `src/components/learn/`. `tek1-oppgaver/`
+  er nå en tynn wrapper som holder på TEK-1501s statistikk-intro, så modul 1–4
+  er uendret (verifisert: standard-introen står fortsatt på modul 1, og den
+  fagnøytrale lekker ikke inn).
+- **F6** — tre anslag foran page-replacement-simulatoren.
+- **F1** — tre anslag foran Kurose 6.4 (switch), tre foran 3.5 (TCP).
+
+**Funn underveis, utenfor opprinnelig scope:** Belady-panelet i
+`PageReplacementSim` var faktisk feil. Standardstrengen viser *ingen* anomali —
+FIFO faller 15 → 10 → 9 — men panelet het «Beladys anomali» og påsto at kurven
+kan gå opp. Studenten fikk altså en graf som motbeviste sin egen overskrift.
+Lagt til det klassiske moteksempelet `1 2 3 4 1 2 5 1 2 3 4 5` (FIFO 9 → **10**
+→ 5) som ferdig valg, pluss en levende vurdering som sier hva grafen faktisk
+viser for den valgte strengen. Alle tall i fasitene er regnet ut mot de samme
+algoritmene simulatoren kjører.
+
+**Merk også:** `Section34Live.tsx` rendrer seksjon **3.5**, ikke 3.4 — filnavnet
+er misvisende. Ikke endret, siden filnavn er billig å ta feil av og dyrt å endre
+med flere agenter i flyt.
 
 ### Hva jeg ville droppet
 
