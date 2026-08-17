@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { Tex } from "@/components/Tex";
 
 type Job = {
@@ -348,10 +348,89 @@ export function SchedulingSimulator() {
   const throughput = totalTime === 0 ? 0 : jobs.length / totalTime;
 
   const tickWidth = 28;
-  const rowHeight = 36;
+  const rowHeight = 46;
   const labelWidth = 56;
-  const svgWidth = labelWidth + totalTime * tickWidth + 20;
+  // Aksen må rekke forbi det seneste av «sist kjørte» og «sist etterspurte».
+  // Uten det andre leddet forsvinner kravlinja ut av bildet mens man drar en
+  // jobb mot høyre, og da er den ikke til å få tak i igjen.
+  const senesteKrav = jobs.reduce((m, j) => Math.max(m, j.arrival + j.burst), 0);
+  const aksLengde = Math.max(totalTime, senesteKrav);
+  const svgWidth = labelWidth + aksLengde * tickWidth + 20;
   const svgHeight = rowHeight * jobs.length + 40;
+
+  // Geometri innad i en rad: kravlinja øverst, faktisk kjøring under.
+  const kravY = (row: number) => row * rowHeight + 4;
+  const kravH = 11;
+  const kjorY = (row: number) => row * rowHeight + 20;
+  const kjorH = 20;
+
+  /**
+   * Dra-tilstand for kravlinjene.
+   *
+   * `mode` avgjør hva som endres: venstre kant flytter ankomsttiden og lar
+   * kjøretiden stå, høyre kant endrer kjøretiden, og midten flytter hele jobben
+   * i tid. `gripTid` er tidspunktet under fingeren da draget startet, slik at
+   * baren ikke hopper når man tar tak et stykke inn i den.
+   */
+  const [drag, setDrag] = useState<{
+    jobIdx: number;
+    mode: "arrival" | "burst" | "move";
+    gripTid: number;
+    origArrival: number;
+    origBurst: number;
+  } | null>(null);
+  const svgRef = useRef<SVGSVGElement | null>(null);
+
+  /** Klient-piksler → tid på aksen. Ikke avrundet; kallerne avrunder selv. */
+  function tidFraPeker(clientX: number): number {
+    const rect = svgRef.current?.getBoundingClientRect();
+    if (!rect) return 0;
+    return (clientX - rect.left - labelWidth) / tickWidth;
+  }
+
+  function startDrag(
+    e: React.PointerEvent,
+    jobIdx: number,
+    mode: "arrival" | "burst" | "move",
+  ) {
+    e.preventDefault();
+    e.stopPropagation();
+    // Pekerfangst gjør at draget overlever at musa forlater det lille
+    // håndtaket. Den kan kaste (peker allerede sluppet, element byttet ut) —
+    // og da skal draget likevel starte, ikke dø her.
+    try {
+      (e.target as Element).setPointerCapture?.(e.pointerId);
+    } catch {
+      // uten fangst virker draget fortsatt, så lenge musa er over SVG-en
+    }
+    setPresetIdx(-1); // fra nå er dette brukerens eget scenario, ikke forvalget
+    setDrag({
+      jobIdx,
+      mode,
+      gripTid: tidFraPeker(e.clientX),
+      origArrival: jobs[jobIdx].arrival,
+      origBurst: jobs[jobIdx].burst,
+    });
+  }
+
+  function underDrag(e: React.PointerEvent) {
+    if (!drag) return;
+    // Heltallssteg: scheduling-modellen har ingen mening om halve tidsenheter,
+    // og snappingen gjør at man kjenner rutenettet i fingrene.
+    const delta = Math.round(tidFraPeker(e.clientX) - drag.gripTid);
+    setJobs((js) =>
+      js.map((j, i) => {
+        if (i !== drag.jobIdx) return j;
+        if (drag.mode === "burst") {
+          // Høyre kant: kjøretid. Minst 1 — en jobb på 0 finnes ikke.
+          return { ...j, burst: Math.max(1, drag.origBurst + delta) };
+        }
+        // Venstre kant og midten flytter begge ankomsttiden; forskjellen er
+        // bare hvor man tar tak.
+        return { ...j, arrival: Math.max(0, drag.origArrival + delta) };
+      }),
+    );
+  }
 
   return (
     <div className="rounded-xl border border-border bg-card">
@@ -485,19 +564,38 @@ export function SchedulingSimulator() {
         </div>
 
         <div className="p-4">
-          <div className="text-[10px] uppercase tracking-wider text-muted-foreground mb-2">
+          <div className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1">
             Gantt-chart
+          </div>
+          <div className="mb-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px] text-muted-foreground">
+            <span className="flex items-center gap-1.5">
+              <span className="inline-block h-2.5 w-5 rounded-sm bg-current opacity-25" />
+              krav: ankomst → kjøretid <span className="text-foreground">(dra meg)</span>
+            </span>
+            <span className="flex items-center gap-1.5">
+              <span className="inline-block h-2.5 w-5 rounded-sm bg-current opacity-80" />
+              faktisk kjøring
+            </span>
+            <span>
+              Dra midten for å endre <em>når</em> jobben kommer, kantene for å endre{" "}
+              <em>hvor lenge</em> den trenger CPU-en.
+            </span>
           </div>
           <div className="overflow-x-auto rounded-md border border-border bg-background">
             <svg
+              ref={svgRef}
               width={svgWidth}
               height={svgHeight}
               role="img"
               aria-label="Gantt-chart for valgt algoritme"
+              onPointerMove={underDrag}
+              onPointerUp={() => setDrag(null)}
+              onPointerCancel={() => setDrag(null)}
+              className={drag ? "cursor-grabbing select-none" : undefined}
             >
               {/* Time axis */}
               <g>
-                {Array.from({ length: totalTime + 1 }).map((_, t) => (
+                {Array.from({ length: aksLengde + 1 }).map((_, t) => (
                   <g key={t}>
                     <line
                       x1={labelWidth + t * tickWidth}
@@ -518,34 +616,98 @@ export function SchedulingSimulator() {
                 ))}
               </g>
 
-              {jobs.map((j, rowIdx) => (
-                <g key={j.id}>
-                  <text
-                    x={labelWidth - 8}
-                    y={rowIdx * rowHeight + rowHeight / 2 + 4}
-                    textAnchor="end"
-                    className="fill-foreground text-[11px] font-mono"
-                  >
-                    {j.id}
-                  </text>
-                  <line
-                    x1={labelWidth}
-                    y1={rowIdx * rowHeight + rowHeight / 2}
-                    x2={labelWidth + totalTime * tickWidth}
-                    y2={rowIdx * rowHeight + rowHeight / 2}
-                    className="stroke-border"
-                    strokeDasharray="2 2"
-                  />
-                </g>
-              ))}
+              {jobs.map((j, rowIdx) => {
+                const kx = labelWidth + j.arrival * tickWidth;
+                const kw = j.burst * tickWidth;
+                const drasNa = drag?.jobIdx === rowIdx;
+                return (
+                  <g key={j.id}>
+                    <text
+                      x={labelWidth - 8}
+                      y={kjorY(rowIdx) + kjorH / 2 + 4}
+                      textAnchor="end"
+                      className="fill-foreground text-[11px] font-mono"
+                    >
+                      {j.id}
+                    </text>
+                    <line
+                      x1={labelWidth}
+                      y1={kjorY(rowIdx) + kjorH / 2}
+                      x2={labelWidth + aksLengde * tickWidth}
+                      y2={kjorY(rowIdx) + kjorH / 2}
+                      className="stroke-border"
+                      strokeDasharray="2 2"
+                    />
+
+                    {/* Kravlinja: når jobben ankommer, og hvor mye CPU den ber
+                        om. Dette er inndata — den ligger her nettopp for å
+                        kunne sammenlignes med raden under, som er hva
+                        algoritmen faktisk gjorde. */}
+                    <rect
+                      x={kx}
+                      y={kravY(rowIdx)}
+                      width={kw}
+                      height={kravH}
+                      rx={3}
+                      onPointerDown={(e) => startDrag(e, rowIdx, "move")}
+                      className={`${colorFor(j.id, jobs)} ${
+                        drasNa ? "opacity-50" : "opacity-25 hover:opacity-40"
+                      } cursor-grab`}
+                    />
+                    {/* Håndtak: venstre kant = ankomst, høyre kant = kjøretid.
+                        Egne, brede treffflater — 6 px rundt kanten er for lite
+                        å sikte på med mus. */}
+                    <rect
+                      x={kx - 5}
+                      y={kravY(rowIdx) - 2}
+                      width={10}
+                      height={kravH + 4}
+                      onPointerDown={(e) => startDrag(e, rowIdx, "arrival")}
+                      className="fill-transparent cursor-ew-resize"
+                    />
+                    <rect
+                      x={kx + kw - 5}
+                      y={kravY(rowIdx) - 2}
+                      width={10}
+                      height={kravH + 4}
+                      onPointerDown={(e) => startDrag(e, rowIdx, "burst")}
+                      className="fill-transparent cursor-ew-resize"
+                    />
+                    {/* Synlige kantstreker, så det er tydelig hvor man tar tak. */}
+                    {[kx, kx + kw].map((hx, i) => (
+                      <line
+                        key={i}
+                        x1={hx}
+                        y1={kravY(rowIdx) - 1}
+                        x2={hx}
+                        y2={kravY(rowIdx) + kravH + 1}
+                        strokeWidth={2}
+                        className={`${
+                          drasNa ? "stroke-foreground" : "stroke-muted-foreground/60"
+                        } pointer-events-none`}
+                      />
+                    ))}
+                    {drasNa && (
+                      <text
+                        x={kx + kw / 2}
+                        y={kravY(rowIdx) - 3}
+                        textAnchor="middle"
+                        className="fill-foreground text-[9px] font-mono pointer-events-none"
+                      >
+                        ank {j.arrival} · kjør {j.burst}
+                      </text>
+                    )}
+                  </g>
+                );
+              })}
 
               {slices.map((s, i) => {
                 const rowIdx = jobs.findIndex((j) => j.id === s.jobId);
                 if (rowIdx < 0) return null;
                 const x = labelWidth + s.start * tickWidth;
-                const y = rowIdx * rowHeight + 6;
+                const y = kjorY(rowIdx);
                 const w = (s.end - s.start) * tickWidth;
-                const h = rowHeight - 12;
+                const h = kjorH;
                 return (
                   <g key={i}>
                     <rect
@@ -619,8 +781,17 @@ export function SchedulingSimulator() {
           </p>
 
           <div className="mt-3 rounded-md border border-brand/30 bg-brand/5 p-3 text-xs text-foreground">
-            <span className="font-semibold">Preset-notat:</span>{" "}
-            {PRESETS[presetIdx].note}
+            {PRESETS[presetIdx] ? (
+              <>
+                <span className="font-semibold">Preset-notat:</span> {PRESETS[presetIdx].note}
+              </>
+            ) : (
+              <>
+                <span className="font-semibold">Ditt eget scenario.</span> Du har flyttet på
+                jobbene, så notatet til forvalget gjelder ikke lenger. Velg et forvalg over for å
+                gå tilbake til et kjent utgangspunkt.
+              </>
+            )}
           </div>
         </div>
       </div>

@@ -429,6 +429,28 @@ Branch `feat/interaksjon-loft`, commit `3e2e1e0`. Ingen nye `tsc`-feil (82 før,
 - **F6** — tre anslag foran page-replacement-simulatoren.
 - **F1** — tre anslag foran Kurose 6.4 (switch), tre foran 3.5 (TCP).
 
+Senere, på egne brancher:
+
+- **F4** — subnett-planleggeren (`feat/dte2507-subnettplan`). Merk at analysen
+  over undervurderte hva som fantes: `SubnetCalculator` og `VlsmTrainer` var der
+  allerede. Kalkulatoren regner uten å vise hvor et subnett *ligger*, og
+  «VlsmTrainer» inneholder ingen VLSM — åtte tekstspørsmål om enkeltsubnett.
+  Hullet var romlig modell + faktisk allokering. Designet ble også endret
+  underveis: å dra i delelinjer ble forkastet, fordi en aligned 2^k-blokk bare
+  kan deles på midten, og en delelinje mellom søsken derfor har nøyaktig én
+  lovlig posisjon. Klikk deler; drag tildeler vertskrav.
+- **F5** — Gantt-drag (`feat/gantt-drag`). Hver jobb fikk en «kravlinje»
+  (ankomst → kjøretid) over sin egen kjørerad. Dra midten for å endre når
+  jobben kommer, kantene for hvor lenge den trenger CPU-en. Slice-kantene selv
+  er ikke dragbare — under Round-Robin og MLFQ er én jobb mange slices, så det
+  ville vært tvetydig hvilken egenskap man endret. Gevinsten er at gapet mellom
+  *etterspurt* og *faktisk kjørt* blir synlig: drar du den lange jobben fra
+  ankomst 5 til 0, går snitt-turnaround fra 4.00 til 10.00 mens du holder musa
+  nede. Det er convoy-effekten, følt i stedet for lest.
+- **Fortsatt ugjort:** F3 (kabler i 6.4, som jeg fraråder), F8 (øvinger inline),
+  F9 (delt drag-hook — se §3a; F4 og F5 rullet hver sin lokale løsning, så
+  argumentet for å samle dem er blitt sterkere, ikke svakere).
+
 **Funn underveis, utenfor opprinnelig scope:** Belady-panelet i
 `PageReplacementSim` var faktisk feil. Standardstrengen viser *ingen* anomali —
 FIFO faller 15 → 10 → 9 — men panelet het «Beladys anomali» og påsto at kurven
