@@ -17,7 +17,7 @@ export function OsGrunnlagPage() {
       <div className="container mx-auto px-4 py-12 max-w-3xl">
         <div className="mb-8">
           <div className="text-xs uppercase tracking-wider text-brand font-semibold mb-2">
-            DTE-2505 · Grunnlag
+            DTE-2505 · O'Gorman kap. 1
           </div>
           <h1 className="text-3xl font-bold tracking-tight">
             OS-grunnlag — hva et operativsystem faktisk gjør
@@ -67,6 +67,42 @@ export function OsGrunnlagPage() {
             Et userspace-program som prøver å lese fra disk direkte vil få en
             <code> segmentation fault</code>. Det MÅ gå via en syscall.
           </p>
+
+          <div className="mt-4 rounded-xl border border-border bg-card p-5">
+            <div className="text-xs uppercase tracking-wider text-brand font-semibold mb-2">
+              Lagene i et operativsystem — og HAL nederst
+            </div>
+            <p className="text-sm text-muted-foreground leading-relaxed mb-3">
+              Tegner man hele systemet, ligger brukeren øverst og maskinvaren nederst, med
+              operativsystemet som en stabel av lag imellom:
+            </p>
+            <pre className="font-mono text-xs overflow-x-auto whitespace-pre">{`   BRUKER
+      │  brukergrensesnitt (GUI eller kommandolinje)
+      ▼
+   APPLIKASJONER
+      │  systemkall, via systembiblioteker (API/libc)
+      ▼
+ ┌─ OPERATIVSYSTEM ──────────────────────────────┐
+ │  System Service Interface                     │
+ │  Management av: prosess · minne · I/O ·       │
+ │                 filer · nettverk              │
+ │  HAL — Hardware Abstraction Layer             │
+ └───────────────────────────────────────────────┘
+      ▼
+   MASKINVARE`}</pre>
+            <p className="mt-3 text-sm text-muted-foreground leading-relaxed">
+              <strong className="text-foreground">HAL</strong> er det nederste laget, og jobben
+              er å skjule at maskinvare er forskjellig. Resten av kjernen sier «skriv denne
+              blokka til disk» uten å vite om disken er NVMe, SATA eller virtuell — HAL og
+              driverne oversetter til de konkrete registrene og avbruddene.
+            </p>
+            <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
+              Det er derfor samme Linux-kjerne kjører på en telefon, en bærbar og en tjener: alt
+              over HAL er uendret, og det er HAL og driverne som byttes ut. Samme idé som
+              syscall-grensa, ett hakk lenger ned — begge er grensesnitt som lar det ene laget
+              endre seg uten at det andre merker det.
+            </p>
+          </div>
         </section>
 
         <section id="prosesser" className="mb-10">
@@ -213,6 +249,60 @@ if (pid == 0) {
  18.0          4     openat
  15.3          5     mmap
  ...`}</pre>
+          </div>
+
+          <div className="mt-4 rounded-xl border border-border bg-card p-5">
+            <div className="text-xs uppercase tracking-wider text-brand font-semibold mb-2">
+              POSIX — hvorfor <code className="font-mono">open()</code> heter det samme overalt
+            </div>
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              Før i tiden hadde hvert operativsystem sitt eget sett med syscalls. Et program
+              skrevet for det ene måtte skrives om for det andre — omtrent som å bytte
+              programmeringsspråk. <strong>POSIX</strong> (Portable Operating System Interface)
+              standardiserer navnene, parameterne og oppførselen, beskrevet som C-funksjoner i{" "}
+              <code className="font-mono">libc</code> og dokumentert i manualsidene.
+            </p>
+            <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
+              Derfor finnes <code className="font-mono">fork()</code>,{" "}
+              <code className="font-mono">open()</code>, <code className="font-mono">rename()</code>,{" "}
+              <code className="font-mono">gettimeofday()</code>,{" "}
+              <code className="font-mono">getuid()</code> og{" "}
+              <code className="font-mono">reboot()</code> med samme signatur på Linux, macOS og
+              BSD. Det er standarden som gjør kildekode portabel — ikke at systemene er like
+              innvendig.
+            </p>
+          </div>
+
+          <div className="mt-4 rounded-xl border border-border bg-card p-5">
+            <div className="text-xs uppercase tracking-wider text-brand font-semibold mb-2">
+              POSIX på Windows — tre forsøk
+            </div>
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              Windows er ikke et POSIX-system, og Microsoft har prøvd å bygge bro tre ganger:
+            </p>
+            <ol className="mt-2 space-y-1.5 text-sm text-muted-foreground list-decimal pl-5">
+              <li>
+                <strong className="text-foreground">Microsoft POSIX subsystem</strong> — et eget
+                delsystem ved siden av Win32. Lite brukt, og lagt ned.
+              </li>
+              <li>
+                <strong className="text-foreground">Windows Services for UNIX (SFU)</strong> —
+                erstatteren. Også lagt ned.
+              </li>
+              <li>
+                <strong className="text-foreground">
+                  Windows Subsystem for Linux (WSL)
+                </strong>{" "}
+                — fra Windows 10 Anniversary Update. Kjører ekte Linux-binærfiler, i utgangspunktet
+                bare tekst (GUI krever en X11-tjener), og bruker mindre ressurser enn en virtuell
+                maskin. Ubuntu, openSUSE, Fedora, Arch m.fl.
+              </li>
+            </ol>
+            <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
+              Poenget med WSL 2 er verdt å merke seg: Microsoft ga opp å oversette syscalls, og
+              sender i stedet <em>en ekte Linux-kjerne</em> med Windows. Det er den enkleste måten
+              å være POSIX-kompatibel på — å faktisk kjøre Linux.
+            </p>
           </div>
         </section>
 

@@ -79,10 +79,16 @@ const ERAS: Era[] = [
     challenge:
       "Maskiner ble billige nok til at folk eide sine egne. Men hver bruker var ikke en programmerer — kommandolinje var en barriere. Samtidig begynte maskiner å snakke sammen via lokale nettverk.",
     solution:
-      "Personlige OS for én bruker: MS-DOS (1981), klassisk Mac OS (1984), Windows (1985). Grafiske brukergrensesnitt — vinduer, mus, ikoner — gjorde datamaskinen tilgjengelig for ikke-teknikere. Network stack (TCP/IP) ble bakt inn i UNIX-derivater.",
+      "Personlige OS for én bruker: MS-DOS (1981), klassisk Mac OS (1984), Windows (1985). Grafiske brukergrensesnitt — vinduer, mus, ikoner — gjorde datamaskinen tilgjengelig for ikke-teknikere. Ideene kom fra Xerox PARC: Xerox 8010 Star Information System (1981) var den første kommersielle maskinen med skrivebord, ikoner, vinduer, mapper og mus samlet i ett — Apple og Microsoft bygget videre på det Xerox hadde vist. Network stack (TCP/IP) ble bakt inn i UNIX-derivater.",
     diffFromPrev:
-      "Fra delt mainframe med mange brukere → én bruker per maskin. Fra terminal-tekst → grafisk pek-og-klikk. Fra isolert maskin → koblet til lokalt nettverk.",
-    examples: ["MS-DOS (1981)", "Mac System 1 (1984)", "Windows 1.0 (1985)", "BSD 4.2 m/ TCP/IP"],
+      "Fra delt mainframe med mange brukere → én bruker per maskin. Fra terminal-tekst → grafisk pek-og-klikk. Fra isolert maskin → koblet til lokalt nettverk. Grensesnittet ble en egen del av OS-et: det er brukergrensesnittet som gir mening til skjerm, tastatur og mus.",
+    examples: [
+      "Xerox 8010 Star (1981)",
+      "MS-DOS (1981)",
+      "Mac System 1 (1984)",
+      "Windows 1.0 (1985)",
+      "BSD 4.2 m/ TCP/IP",
+    ],
   },
   {
     id: "1990s",
