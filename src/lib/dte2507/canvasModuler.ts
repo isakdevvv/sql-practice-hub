@@ -144,8 +144,14 @@ export const MODULER_2507: Dte2507Modul[] = [
     ingress:
       "Hva et nett er satt sammen av, hvordan du leser det av på din egen maskin, og hvorfor en pakke bruker den tiden den gjør.",
     rekkefolgeMerknad:
-      "Laben ligger som steg 2 fordi den har fagets tidligste frist, ikke fordi den er lettest. Forsinkelse og gjennomstrømning kan tas i ro etterpå.",
+      "Laben ligger som steg 3 fordi den har fagets tidligste frist, ikke fordi den er lettest. Forsinkelse og gjennomstrømning kan tas i ro etterpå.",
     steg: [
+      {
+        slug: "kurose-kap-1",
+        tittel: "Kurose kap. 1 — Internett og nettverks-grunnleggende",
+        hvorfor:
+          "Fem av modulens elleve læringsmål bor bare her: kjerne mot kant (1.2), pakke- mot linjesvitsjing (1.3), datagram mot virtuell krets, hva en RFC er, og de fysiske mediene. Resten av løypa går dypere i utvalgte deler, men dette er kapitlet Canvas ber deg lese.",
+      },
       {
         slug: "dte2507-skjelett",
         tittel: "Protokollstakken, innkapsling og adresser",

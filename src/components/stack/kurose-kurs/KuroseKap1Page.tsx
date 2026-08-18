@@ -249,6 +249,27 @@ function Section11() {
         vite om kablene.
       </p>
 
+      <div className="rounded-xl border border-brand/30 bg-brand/5 p-4">
+        <div className="mb-1.5 text-xs font-semibold uppercase tracking-wider text-brand">
+          Internett er ikke det samme som weben
+        </div>
+        <p className="text-sm leading-relaxed text-foreground">
+          De to ordene brukes om hverandre i dagligtale, men de er ikke samme lag.{" "}
+          <strong>Internett</strong> er nettet selv: maskinene, lenkene og protokollene som får en
+          pakke fram fra A til B. <strong>World Wide Web</strong> (WWW) er én av mange{" "}
+          <em>tjenester</em> som kjører oppå det — sider knyttet sammen med lenker, hentet med
+          HTTP over TCP.
+        </p>
+        <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+          Prøven på at de er forskjellige: e-post, DNS, videosamtaler, spill og{" "}
+          <code className="rounded bg-muted px-1 py-0.5 font-mono text-xs">ssh</code> bruker
+          internett uten å røre weben i det hele tatt. Weben kom dessuten to tiår etter nettet —
+          ARPANET sendte sin første pakke i 1969, mens Tim Berners-Lee foreslo weben i 1989. Sier
+          noen «internett er nede» når en nettside ikke laster, er det som regel weben eller DNS
+          som svikter, ikke nettet.
+        </p>
+      </div>
+
       <Section11Live />
 
       <VisualDefs
