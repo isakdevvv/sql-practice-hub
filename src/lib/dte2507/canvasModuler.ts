@@ -139,6 +139,13 @@ export const MODULER_2507: Dte2507Modul[] = [
         krav: 11,
         hva: "Orientere seg i et IP-nettverk fra terminalen. Ubegrensede forsøk, og hint etter innlevering.",
       },
+      {
+        navn: "Modulquiz-Modul 1",
+        frist: "2026-08-23",
+        poeng: 22,
+        krav: 22,
+        hva: "Hele kapittel 1. Krever full pott — 22 av 22 — for godkjent. Ubegrensede forsøk og ingen tidsbegrensning, så den tas om igjen til den sitter.",
+      },
     ],
     ovingSlug: "dte2507-nettverksverktoy",
     ingress:

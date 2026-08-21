@@ -194,6 +194,15 @@ export const CANVAS_MODULER: CanvasModul[] = [
         frist: "2026-08-30",
         ovingId: "o1-2-programmer",
       },
+      {
+        // Ikke en innlevering, men en Canvas-quiz med godkjenningskrav 5,0.
+        // Den ligger her fordi dette er det eneste sporet vi har for «noe med
+        // frist som må bestås», og fristen er det som må være synlig.
+        nummer: "Quiz 1",
+        tittel: "Quiz 1 — modul 1a og 1b",
+        poeng: 5,
+        frist: "2026-08-31",
+      },
     ],
     dypere: [
       {
@@ -496,7 +505,21 @@ export const CANVAS_MODULER: CanvasModul[] = [
         dekker: "Nevner SSH i forbifarten. Dekker ikke vi/vim eller X i det hele tatt.",
       },
     ],
-    obliger: [],
+    obliger: [
+      {
+        // Fristen står i Canvas' emnesammendrag, men selve oppgaven er ikke
+        // lagt inn i modulen ennå («Oppgaven kommer her etter hvert»). Vi tar
+        // med fristen likevel — det er den som er dyr å oppdage sent.
+        //
+        // KONFLIKT: emnesammendraget sier fredag 06.11, mens Ukeplan-fanen på
+        // emnets forside sier «Frist arbeidskrav: mandag 9. november». Vi
+        // bruker den tidligste av de to.
+        nummer: "6",
+        tittel: "Diverse",
+        poeng: 10,
+        frist: "2026-11-06",
+      },
+    ],
     dypere: [],
   },
 ];
