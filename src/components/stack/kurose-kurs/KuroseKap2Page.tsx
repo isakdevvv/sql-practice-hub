@@ -277,6 +277,105 @@ function Section21() {
 
       <Section21Live />
 
+      <LectureNote title="Hvorfor det er lett å skrive en nettverks-app">
+        <p>
+          Applikasjonslaget er nettets <em>raison d'être</em> — grunnen til at nettet finnes i det
+          hele tatt. Det er også et godt sted å begynne å lære, fordi protokollene her er
+          menneskelesbare og handler om ting vi bruker daglig.
+        </p>
+        <p>
+          Noe verdt å stoppe ved: nesten alle applikasjonene vi bruker — sosiale medier, weben,
+          meldinger, spill, strømming, videomøter, søk — ble utviklet <em>lenge etter</em> at
+          arkitekturen og transportlagets abstraksjoner var definert. Bare e-post og fjerninnlogging
+          er eldre. At nettet bærer applikasjoner designerne aldri drømte om, er kanskje det
+          sterkeste argumentet for at de traff riktig.
+        </p>
+        <p>
+          Og til tross for alt som skjer under panseret fra kilde til destinasjon, er det faktisk
+          ganske enkelt å skrive en nettverks-app: all kompleksiteten kan abstraheres bort, og du
+          trenger bare å forholde deg til to ting — <strong>hvilke tjenester transportlaget
+          tilbyr</strong>, og <strong>hvordan grensesnittet mot dem ser ut</strong>.
+        </p>
+
+        <LectureBeat>To måter å strukturere delene på</LectureBeat>
+        <p>
+          I <strong>klient-server</strong>-paradigmet er serveren en alltid-på vert med permanent
+          IP-adresse, slik at klientene vet hvor de skal ta kontakt. Klientene er koblet til av og
+          på, har ikke fast IP — og, viktigst:{" "}
+          <strong>klienter snakker ikke med hverandre</strong>. De går alltid via serveren.
+        </p>
+        <p>
+          I <strong>peer-to-peer</strong> finnes ingen server. Likeverdige noder snakker direkte
+          sammen: de ber om tjeneste fra andre peers og yter tjeneste tilbake — som i fildeling, der
+          en peer både henter filer fra og serverer filer til andre. Siden peers kommer og går og
+          bytter IP-adresse, blir <em>administrasjonen</em> av dem langt mer krevende enn i
+          klient-server.
+        </p>
+
+        <LectureBeat>Prosesser, sockets og adressering</LectureBeat>
+        <p>
+          En nettverks-app er ikke ett program du kompilerer og kjører, men flere programmer som
+          hver kjører som en <strong>prosess</strong> — den kjørende utgaven av et program. Snakker
+          to prosesser sammen på samme maskin, kaller vi det interprosess-kommunikasjon; er de på
+          hver sin maskin, må de bruke <strong>meldinger</strong>, og det er det vi er ute etter.
+        </p>
+        <p>
+          Presis språkbruk fra nå av: prosessen som <em>tar kontakt først</em> er{" "}
+          <strong>klienten</strong>, den som blir kontaktet er <strong>serveren</strong>.
+          Grensesnittet ned til transportlaget kalles en <strong>socket</strong>, og bildet å ha i
+          hodet er en <em>dør</em>: du lager døren, sender meldinger inn i den og tar imot meldinger
+          ut av den. Det er alltid <strong>to sockets</strong> involvert — én i hver ende.
+        </p>
+        <p>
+          For at en melding skal finne fram, trengs adresseinformasjon — akkurat som et brev trenger
+          gateadresse og poststed, og leilighetsnummer om det er en blokk. En socket har to slike
+          opplysninger: vertens <strong>IP-adresse</strong> og et <strong>portnummer</strong>. Noen
+          portnumre er knyttet til en bestemt tjeneste — kobler du til port 80 havner du på
+          webserveren, port 25 gir deg e-postserveren.
+        </p>
+
+        <LectureBeat>Åpne og lukkede protokoller</LectureBeat>
+        <p>
+          Å definere en applikasjonsprotokoll er å definere hvilke meldingstyper som utveksles, deres{" "}
+          <em>syntaks</em> (hvilke felt finnes), deres <em>semantikk</em> (hva betyr feltene), og
+          hvilke handlinger som utføres før og etter sending og mottak.{" "}
+          <strong>Åpne</strong> protokoller har alt dette offentlig tilgjengelig — internett sine er
+          spesifisert i RFC-er. <strong>Proprietære</strong> protokoller eies av et selskap og
+          virkemåten er ikke offentlig kjent; Zoom og Skype er eksempler.
+        </p>
+
+        <LectureBeat>Hva kan man be transportlaget om?</LectureBeat>
+        <p>
+          Fire dimensjoner. <strong>Pålitelig dataoverføring</strong> trengs av filoverføring og
+          web-transaksjoner — men ikke av alt: lyd og video tåler en del tap.{" "}
+          <strong>Timing</strong> betyr noe for telefoni og interaktive spill, som krever lav
+          forsinkelse for å fungere. <strong>Throughput</strong> kreves i en bestemt mengde av
+          strømmet video, mens <em>elastiske</em> applikasjoner tar til takke med det de får. Og til
+          slutt <strong>sikkerhet</strong>, for eksempel kryptering.
+        </p>
+        <p>
+          Internettets transportlag tilbyr bare to varer. <strong>TCP</strong> gir pålitelig
+          overføring, flytkontroll (avsenderen overfyller ikke mottakerens buffere), metningskontroll,
+          og er forbindelsesorientert — det kreves en håndtrykksrunde før data flyter. Det gir{" "}
+          <em>ingen</em> garantier om timing, throughput eller sikkerhet. <strong>UDP</strong> gir
+          enda mindre: upålitelig overføring uten flytkontroll, metningskontroll, timing, throughput
+          eller sikkerhet.
+        </p>
+        <p>
+          Da er det rimelig å spørre hvorfor UDP finnes. Svaret — og det er en strategi mange
+          applikasjonsprotokoller faktisk velger — er at man kan{" "}
+          <strong>bygge akkurat de tjenestene man trenger oppå UDP, i applikasjonslaget selv</strong>,
+          i stedet for å ta imot hele TCP-pakken med det den koster.
+        </p>
+        <p>
+          Til slutt sikkerhet: socket-abstraksjonen fra 80-tallet hadde ingen sikkerhet i seg — ingen
+          kryptering, ingen autentisering av motparten. Ville du ha det, måtte du bygge det selv i
+          applikasjonen. I dag finnes <strong>TLS</strong>, et tynt lag som ligger i brukerrommet
+          oppå TCP-socketene og gir kryptering, dataintegritet og endepunkt-autentisering.
+        </p>
+      </LectureNote>
+
+
       <div className="grid gap-3 lg:grid-cols-2">
         <VisualDefs
           items={[
@@ -1188,6 +1287,80 @@ function Section24() {
       </p>
 
       <Section24Live />
+
+      <LectureNote title="SMTP: push-protokollen, og hva den lærer oss">
+        <p>
+          E-post har vært i drift siden 1972 og er ikke den mest spennende applikasjonen i
+          kapittelet — men den er et rent og enkelt eksempel på klient-server-modellen, og
+          forskjellene fra HTTP er lærerike i seg selv.
+        </p>
+        <p>
+          Tre komponenter. <strong>Brukeragenten</strong> — e-postklienten din — brukes til å skrive,
+          redigere og lese. <strong>E-postserveren</strong> holder to ting per bruker: en{" "}
+          <em>postkasse</em> med innkommende og tidligere mottatte meldinger, og en{" "}
+          <em>utgående kø</em> med meldinger som venter på å sendes til mottakerens server. Og{" "}
+          <strong>SMTP</strong> er protokollen som dytter meldinger fra brukeragent til server, og
+          fra server til server.
+        </p>
+
+        <LectureBeat>Fra Alice til Bob, steg for steg</LectureBeat>
+        <p>
+          Alice skriver meldingen i klienten sin og trykker send. Klienten kontakter{" "}
+          <em>Alices egen</em> e-postserver og overfører meldingen dit med SMTP. Alices server åpner
+          så en TCP-forbindelse til <em>Bobs</em> server, og sender — nå i rollen som klient —
+          meldingen over. Bobs server legger den i Bobs postkasse. Og på et helt annet tidspunkt,
+          asynkront, åpner Bob klienten sin og leser meldingen fra sin server.
+        </p>
+        <p>
+          Legg merke til at meldingen går <strong>direkte fra avsendende til mottakende server</strong>
+          — ingen mellomledd. SMTP kjører på TCP, og standard serverport er{" "}
+          <strong>25</strong>, slik at klienten alltid vet hvor den skal ta kontakt.
+        </p>
+
+        <LectureBeat>Dialogen, som er til å lese</LectureBeat>
+        <p>
+          Etter at TCP-forbindelsen står, er det tre faser. Først et <strong>håndtrykk</strong> på
+          tre meldinger: mottakerserveren melder seg med kode <code className="rounded bg-muted px-1 py-0.5 font-mono text-xs">220</code> og
+          vertsnavnet sitt, klienten hilser med sitt eget vertsnavn, og serveren hilser tilbake med
+          kode <code className="rounded bg-muted px-1 py-0.5 font-mono text-xs">250</code>. Så{" "}
+          <strong>overføringen</strong>: hvem meldingen er fra, hvem den skal til, kommandoen{" "}
+          <code className="rounded bg-muted px-1 py-0.5 font-mono text-xs">DATA</code> som varsler
+          at selve meldingen kommer, meldingen — og en linje som inneholder{" "}
+          <strong>bare et punktum</strong> som avslutning. Til slutt sier klienten fra at den er
+          ferdig, serveren svarer{" "}
+          <code className="rounded bg-muted px-1 py-0.5 font-mono text-xs">221</code>, og
+          forbindelsen lukkes.
+        </p>
+
+        <LectureBeat>SMTP mot HTTP</LectureBeat>
+        <p>
+          Den viktigste forskjellen: HTTP er en <strong>pull</strong>-protokoll — klienten drar data
+          ut av serveren. SMTP er en <strong>push</strong>-protokoll — klienten dytter en melding inn
+          til serveren. Ellers er slektskapet tydelig: begge er ASCII-kodet og lesbare, begge bruker
+          statuskoder med en kort forklarende frase (ikke de samme kodene, men samme idé), og HTTP
+          hentet faktisk noe av inspirasjonen sin fra SMTP.
+        </p>
+        <p>
+          To forskjeller til. SMTP kan pakke <strong>flere objekter inn i én melding</strong>, mens
+          HTTP håndterer ett objekt per forespørsel. Og SMTP bruker{" "}
+          <strong>persistente forbindelser</strong>, slik at flere e-poster kan gå over samme
+          forbindelse.
+        </p>
+        <p>
+          Én ting som forvirrer nesten alle: <em>meldingsformatet</em> og{" "}
+          <em>SMTP-kommandoene</em> er to forskjellige ting. Selve e-postmeldingen har sin egen
+          header med From- og Subject-linjer, deretter en blank linje og så kroppen — og de linjene
+          er noe helt annet enn SMTP-kommandoene som sier hvem meldingen er fra og til. Formatet er
+          definert i sin egen RFC, omtrent slik HTML definerer hvordan et webdokument ser ut.
+        </p>
+        <p>
+          Alt over handler om å <em>dytte</em> meldingen fram til destinasjonsserveren. Å{" "}
+          <em>hente</em> den derfra er en annen jobb, med sin egen protokoll:{" "}
+          <strong>IMAP</strong> er den mest utbredte. Og man kan naturligvis også hente e-post over{" "}
+          <strong>HTTP</strong> fra en webserver som er satt opp for det — det er webmail.
+        </p>
+      </LectureNote>
+
 
       <div className="grid gap-3 lg:grid-cols-2">
         <VisualDefs
