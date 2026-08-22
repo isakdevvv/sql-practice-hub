@@ -79,7 +79,7 @@ import {
   EndToEndIcon,
 } from "./visualDefIcons";
 
-type Tab = "intro" | "1.1" | "1.2" | "1.3" | "1.4" | "1.5" | "1.6" | "1.7";
+type Tab = "intro" | "1.1" | "1.2" | "1.3" | "1.4" | "1.5" | "1.6" | "1.7" | "1.8";
 
 const SECTIONS_1: SectionNavItem[] = [
   { id: "intro", label: "Start her" },
@@ -88,13 +88,14 @@ const SECTIONS_1: SectionNavItem[] = [
   { id: "1.3", label: "1.3 Pakker vs kretser" },
   { id: "1.4", label: "1.4 Forsinkelse" },
   { id: "1.5", label: "1.5 Lagene" },
-  { id: "1.6", label: "1.6 Oppgaver" },
-  { id: "1.7", label: "1.7 Eksamen-fokus" },
+  { id: "1.6", label: "1.6 Sikkerhet, historie & styring" },
+  { id: "1.7", label: "1.7 Oppgaver" },
+  { id: "1.8", label: "1.8 Eksamen-fokus" },
 ];
 const NEXT_CHAPTER_1 = { slug: "kurose-kap-2", title: "Applikasjonslaget" };
 
 export function KuroseKap1Page() {
-  const [tab, setTab] = useState<Tab>("intro");
+  const [tab, setTab] = useState<Tab>("1.6");
   return (
     <div className="min-h-screen bg-background">
       <SiteHeader />
@@ -135,10 +136,17 @@ export function KuroseKap1Page() {
             <TabBtn active={tab === "1.5"} onClick={() => setTab("1.5")} title="Lagene">
               1.5
             </TabBtn>
-            <TabBtn active={tab === "1.6"} onClick={() => setTab("1.6")} title="Oppgaver">
+            <TabBtn
+              active={tab === "1.6"}
+              onClick={() => setTab("1.6")}
+              title="Sikkerhet, historie & styring"
+            >
+              1.6
+            </TabBtn>
+            <TabBtn active={tab === "1.7"} onClick={() => setTab("1.7")} title="Oppgaver">
               Oppg.
             </TabBtn>
-            <TabBtn active={tab === "1.7"} onClick={() => setTab("1.7")} title="Eksamen-fokus">
+            <TabBtn active={tab === "1.8"} onClick={() => setTab("1.8")} title="Eksamen-fokus">
               Eksamen
             </TabBtn>
           </nav>
@@ -150,8 +158,9 @@ export function KuroseKap1Page() {
         {tab === "1.3" && <Section13 />}
         {tab === "1.4" && <Section14 />}
         {tab === "1.5" && <Section15 />}
-        {tab === "1.6" && <Section16 />}
-        {tab === "1.7" && <SectionEksamen />}
+        {tab === "1.6" && <Section16Kontekst />}
+        {tab === "1.7" && <Section16 />}
+        {tab === "1.8" && <SectionEksamen />}
 
         <SectionPager
           tabs={SECTIONS_1}
@@ -223,6 +232,7 @@ function Intro({ onPick }: { onPick: (t: Tab) => void }) {
           <li>Pakke-svitsjing vs krets-svitsjing</li>
           <li>Forsinkelse, throughput og pakketap</li>
           <li>Lag-modellen — hvorfor og hvordan</li>
+          <li>Sikkerhet, historie og styring — konteksten rundt teknikken</li>
           <li>Oppgaver — sjekk forståelsen din</li>
         </ol>
         <div className="mt-3 flex gap-2">
@@ -1031,6 +1041,95 @@ function Section14() {
 
       <Section14Live />
 
+      <LectureNote title="Bomstasjons-analogien: transmisjon er ikke propagasjon">
+        <p>
+          Erfaringen fra forelesningen er at akkurat disse to blandes oftere enn noe annet i
+          kapittelet, så det er verdt en analogi. Tenk deg en kolonne biler:{" "}
+          <strong>bilene er bits</strong>, <strong>kolonnen er pakken</strong>, og{" "}
+          <strong>å ekspedere én bil gjennom bomstasjonen er å transmittere én bit</strong>. Bilen
+          kjører deretter — propagerer — videre til neste bomstasjon.
+        </p>
+        <p>
+          Sett tall på det: bomstasjonen bruker 12 sekunder per bil, kolonnen er 10 biler, bilene
+          kjører 100 km/t, og bomstasjonene står 100 km fra hverandre. Spørsmålet er hvor lang tid
+          det tar før hele kolonnen står oppstilt foran <em>neste</em> bomstasjon.
+        </p>
+        <p>
+          <strong>Transmisjon:</strong> 12 s × 10 biler = 120 sekunder, altså 2 minutter for å få
+          hele kolonnen ut på veien. <strong>Propagasjon:</strong> siste bil skal 100 km i 100
+          km/t = 1 time. Totalt <strong>62 minutter</strong> — og legg merke til hvor voldsomt
+          skjevfordelt de to bidragene er. Poenget analogien får fram: transmisjonstiden avhenger
+          av <em>hvor bred porten er</em> (R) og hvor mye du skal gjennom (L). Propagasjonstiden
+          avhenger av <em>hvor langt det er</em>, og av ingenting annet.
+        </p>
+        <p>
+          Derfor merker du propagasjon i praksis selv om bits beveger seg nær lysets hastighet:
+          cirka 270 ms opp til en geostasjonær satellitt, og rundt 30 ms over Atlanteren mellom
+          USAs østkyst og Europa.
+        </p>
+
+        <LectureBeat>Trafikkintensitet: hvorfor køen eksploderer</LectureBeat>
+        <p>
+          La <strong>a</strong> være gjennomsnittlig ankomstrate for pakker og <strong>L</strong>{" "}
+          pakkelengden, slik at <strong>L·a</strong> er ankomstraten målt i bits. Del det på
+          lenkens transmisjonsrate <strong>R</strong>, og du får{" "}
+          <strong>trafikkintensiteten L·a/R</strong> — forholdet mellom hvor mye arbeid som kommer
+          inn og systemets evne til å gjøre det arbeidet.
+        </p>
+        <p>
+          Er L·a/R liten, er det sjelden kø. Er den <em>større enn 1</em>, kommer det inn mer
+          arbeid enn systemet klarer, og køen vokser uten grense — forsinkelsen går mot uendelig.
+          Det interessante er formen på kurven i mellom: når intensiteten nærmer seg 1, stiger
+          forsinkelsen ikke jevnt, den skyter i været. Du kjenner fenomenet fra veitrafikk — en vei
+          som er 95 % full oppfører seg helt annerledes enn en som er 70 % full.
+        </p>
+
+        <LectureBeat>traceroute: mål det selv i det levende internettet</LectureBeat>
+        <p>
+          <code className="rounded bg-muted px-1 py-0.5 font-mono text-xs">traceroute</code> sender
+          tre pakker til første-hop-ruteren, måler rundturstiden for hver, viser de tre målingene —
+          og gjentar så for andre hop, tredje hop, og videre til destinasjonen er nådd.
+        </p>
+        <p>
+          I en kjøring fra et universitet i Massachusetts mot en vert i Frankrike ser man mønsteret
+          tydelig: 1–2 ms til de første ruterne inne på campus, 22 ms til en ruter i Washington DC
+          — og så over 100 ms til neste ruter, som ligger i Frankrike. Hoppet fra 22 til 105 ms er
+          rett og slett Atlanterhavet.
+        </p>
+        <p>
+          To ting som forvirrer når du kjører det selv. Målt RTT kan <em>synke</em> selv om pakken
+          går lenger — fordi køforsinkelsen lenger oppe i stien varierer over tid. Og du får noen
+          ganger <strong>stjerner</strong> i stedet for tall: det er rutere som nekter å svare på
+          traceroute-pakker, så ingen måling kan gjøres.
+        </p>
+
+        <LectureBeat>Throughput: tenk væske i rør</LectureBeat>
+        <p>
+          Throughput er raten i bits per sekund fra sender til mottaker, og må alltid defineres over
+          et tidsintervall — øyeblikkelig, eller gjennomsnittlig over lang tid. Bildet som gjør det
+          intuitivt er væske gjennom rør: senderen presser væske inn, og hver lenke på veien er et
+          rør med en gitt kapasitet. Noen rør er tykke, noen er tynne.
+        </p>
+        <p>
+          Sender du gjennom et tynt rør R<sub>s</sub> etterfulgt av et tykt R<sub>c</sub>,
+          begrenses du av R<sub>s</sub>. Snu på det, og du begrenses av R<sub>c</sub>. Generelt:{" "}
+          <strong>throughput settes av det tynneste røret</strong> — <em>flaskehals-lenken</em>.
+        </p>
+        <p>
+          Så det virkelig lærerike tilfellet: 10 servere som hver sender til hver sin klient, der
+          alle ti flytene deler én felles lenke med kapasitet R i midten. Deles den rettferdig, får
+          hver flyt R/10 der. Hver økt går altså gjennom tre rør — R<sub>s</sub>, R/10 og R
+          <sub>c</sub> — og throughput per forbindelse blir{" "}
+          <strong>minimum av de tre</strong>.
+        </p>
+        <p>
+          Og poenget som er verdt å ta med seg videre: i praksis er R<sub>s</sub> eller R
+          <sub>c</sub> som regel mindre enn R/n. <strong>Flaskehalsene sitter i ytterkantene av
+          nettet</strong>, ikke i kjernen.
+        </p>
+      </LectureNote>
+
+
       <VisualDefs
         items={[
           {
@@ -1277,6 +1376,83 @@ function Section15() {
 
       <Section15Live />
 
+      <LectureNote title="Flyreisen: hvor lag-tenkningen kommer fra">
+        <p>
+          Problemet lag-modellen løser er egentlig et <em>pedagogisk</em> og{" "}
+          <em>ingeniørmessig</em> problem på én gang: hvordan diskuterer, designer og lærer man et
+          system med milliarder av samvirkende deler? Analogien forelesningen bruker er flyreiser —
+          også et system med fly, rullebaner, tårn, bagasje, bagasjebånd, billettluker, sikkerhet,
+          reisende og gate-verter.
+        </p>
+        <p>
+          Første forsøk er å liste stegene: kjøp billett, sjekk inn, sjekk bagasje, gjennom
+          sikkerhetskontrollen, til gaten, ombordstigning, taxi, take-off, ruting i lufta, landing —
+          og så alle stegene i motsatt rekkefølge på destinasjonen. Nyttig, men ikke abstrakt nok.
+        </p>
+        <p>
+          Det virkelige grepet er å <strong>tenke horisontalt</strong>. Det finnes en funksjon på
+          avreisesiden og en tilhørende funksjon på ankomstsiden som{" "}
+          <strong>sammen realiserer én tjeneste</strong>: innsjekking + bagasjeutlevering leverer
+          «bagasjen din fra A til B». Take-off + landing leverer «flyet fra A til B». Og for å
+          klare det, støtter hvert lag seg på tjenestene fra laget under.
+        </p>
+
+        <LectureBeat>Hvorfor det lønner seg</LectureBeat>
+        <p>
+          To gevinster. Den <strong>eksplisitte strukturen</strong> gir oss en referansemodell — vi
+          kan peke på delene og på hvordan de forholder seg til hverandre. Og{" "}
+          <strong>modulariseringen</strong> gjør at en endring kan lokaliseres: bytter du ut{" "}
+          <em>hvordan</em> en tjeneste realiseres, men lar grensesnittet stå, merker ingen andre
+          lag det. Endrer flyplassen hvordan gate-vertene jobber, påvirker ikke det billettsalget,
+          bagasjehåndteringen eller take-off.
+        </p>
+
+        <LectureBeat>De fem lagene — og hva som faktisk er forskjellen</LectureBeat>
+        <p>
+          Applikasjonslaget styrer meldingene mellom de distribuerte delene av applikasjonen.
+          Transportlaget frakter applikasjonsmeldinger <strong>fra prosess til prosess</strong> —
+          og kan velge å gi pålitelighet (TCP) oppå et nettlag som kan miste pakker, eller la være.
+          Nettverkslaget frakter data <strong>fra host til host</strong>, i internettet med en
+          tjenestemodell som heter <strong>best effort</strong>: vi gjør vårt beste, men lover
+          ingenting. Lenkelaget flytter data mellom to naboenheter på samme lenke, og fysisk lag
+          får bitene ut på lenken.
+        </p>
+        <p className="rounded-lg border border-amber-500/30 bg-background/60 px-3 py-2">
+          Legg merke til den subtile, men viktige forskjellen: nettverkslaget leverer{" "}
+          <strong>host til host</strong>, transportlaget leverer <strong>prosess til prosess</strong>.
+          Det er nettopp derfor transportlaget trenger portnumre.
+        </p>
+
+        <LectureBeat>Innkapsling og de fire navnene</LectureBeat>
+        <p>
+          På hvert lag har dataenheten — <em>protocol data unit</em> — sitt eget navn. På
+          applikasjonslaget utveksles <strong>meldinger</strong>. Transportlaget tar meldingen, legger
+          på egen informasjon, og lager et <strong>segment</strong>. Hva slags informasjon? Noe som
+          identifiserer hvilken prosess meldingen skal til (det kan kjøre mange der), og — for en
+          protokoll som TCP — alt som trengs for å realisere pålitelig overføring.
+        </p>
+        <p>
+          Nettverkslaget kapsler inn segmentet med sin egen header og lager et{" "}
+          <strong>datagram</strong>; i internettets IP-protokoll er det her avsender- og
+          mottaker-IP-adressen ligger. Lenkelaget kapsler inn datagrammet og lager en{" "}
+          <strong>ramme</strong>. Denne operasjonen — ta en dataenhet ovenfra, legg på egen
+          informasjon, lag en ny dataenhet — er <strong>innkapsling</strong>, og den skjer overalt i
+          nettet.
+        </p>
+        <p>
+          Bildet å ha i hodet er data som faller <em>ned</em> gjennom stakken hos avsenderen mens
+          headere legges på lag for lag, går over lenken, og klatrer <em>opp</em> gjennom stakken
+          hos mottakeren mens headerne leses, handles på og fjernes én etter én.
+        </p>
+        <p>
+          Én ting til, som er lett å overse i animasjonen: <strong>svitsjer og rutere inne i nettet
+          implementerer bare de nederste lagene</strong>. Jobben deres er å videresende rammer og
+          datagram — de har ingen grunn til å røre transportlagets segment eller applikasjonens
+          melding inni.
+        </p>
+      </LectureNote>
+
+
       <VisualDefs
         items={[
           {
@@ -1482,6 +1658,229 @@ function Section15() {
 // ============================================================
 // 1.6 — Oppgaver
 // ============================================================
+function Section16Kontekst() {
+  return (
+    <article className="space-y-4 text-sm">
+      <Header num="1.6" title="Sikkerhet, historie og styring" />
+
+      <p className="text-muted-foreground">
+        Kapittel 1 avsluttes med tre temaer som ikke er protokoll-teknikk, men som forklarer{" "}
+        <em>hvorfor</em> teknikken ser ut som den gjør: hvilke angrep nettet er utsatt for, hvordan
+        det ble til, og hvem som egentlig bestemmer over det. Alle tre kommer tilbake senere —
+        sikkerhet får sitt eget kapittel — men konteksten er verdt å ha på plass tidlig.
+      </p>
+
+      <LectureNote title="Nettverk under angrep" defaultOpen>
+        <p>
+          Startpunktet er en innrømmelse: den opprinnelige internett-arkitekturen ble ikke designet
+          med sikkerhet for øyet. Designvisjonen var «en gruppe gjensidig tillitsfulle brukere
+          koblet til et transparent nett». Designerne var ikke naive — sikkerhet var bare ikke et
+          bevisst kritisk designkriterium gitt bruken man så for seg. Konsekvensen er at vi den dag
+          i dag delvis spiller catch-up.
+        </p>
+        <p>
+          Tre spørsmål å ha med seg gjennom hele kurset: hvordan <em>kan</em> en angriper
+          kompromittere et nett, hvordan forsvarer vi oss, og — mest ambisiøst — kan vi designe
+          arkitekturer som er immune fra starten? Det siste kalles <strong>security by design</strong>,
+          samme idé som når en bygning planlegges for sikkerhet fra tegnebrettet, og er et aktivt
+          forskningsfelt.
+        </p>
+
+        <LectureBeat>Hva en angriper kan gjøre</LectureBeat>
+        <p>
+          <strong>Avlytting.</strong> Anta at den som vil, kan få kopier av pakker som suser forbi
+          på et delt medium — en trådløs kanal er det åpenbare eksempelet. Verktøyene finnes og er
+          helt vanlige; <strong>Wireshark</strong> er den mest brukte, og du kommer til å bruke den
+          selv for å se protokoller i aksjon.
+        </p>
+        <p>
+          <strong>Forfalskning (spoofing).</strong> Anta også at en angriper kan sprøyte inn pakker
+          med hvilket som helst innhold — for eksempel en pakke til A med falsk avsenderadresse som
+          får den til å se ut som den kom fra B. Analogien er en phishing-e-post som utgir seg for å
+          være banken din: du tror ikke på den, og et nettverksutstyr eller et program har like lite
+          grunn til å tro på det en pakke <em>påstår</em> bare fordi pakken dukket opp.
+        </p>
+        <p>
+          <strong>Tjenestenekt.</strong> Legg på så mye arbeid at en enhet knekker sammen: bombarder
+          en HTTP-server med falske forespørsler, eller en ruter med pakker som krever
+          spesialbehandling. Slikt gjøres gjerne ved først å bryte seg inn i mange verter rundt om i
+          nettet og så la dem angripe koordinert — et <strong>DDoS</strong>-angrep.
+        </p>
+
+        <LectureBeat>Hva vi kan gjøre med det</LectureBeat>
+        <p>
+          Mot forfalskning: <strong>autentisering</strong> — bevis hvem du er før du får tjenesten.
+          Et passord er den enkleste formen; SIM-kortet i mobilen din er en maskinvare-identitet.
+          Mot avlytting: <strong>kryptering</strong> av innholdet. Mot manipulering underveis:{" "}
+          <strong>digitale signaturer</strong>, som lar mottakeren vite både hvem dataene kom fra og
+          at de ikke er endret på veien. Mot uautorisert bruk av ressurser:{" "}
+          <strong>aksesskontroll</strong> — hvem får gjøre hva. Og til slutt{" "}
+          <strong>brannmurer</strong>, spesialisert utstyr som står både i ytterkant og i kjernen og
+          kan programmeres til å slippe bare bestemte brukere eller trafikktyper inn og ut.
+        </p>
+      </LectureNote>
+
+      <LectureNote title="Historien i fem epoker">
+        <p>
+          Noen av prinsippene i dette faget er ferske. Andre hviler på forskning gjort for 60 år
+          siden — 30 år før internettet i det hele tatt fantes. Og noen nettverksideer er eldre
+          enn som så: telefonnettet er over hundre år gammelt og måtte løse svitsjing og ruting,
+          og semafor-nettverk relesendte ende-til-ende-krypterte meldinger lenge før det igjen.
+        </p>
+
+        <LectureBeat>1961–72: pakkesvitsjing blir til</LectureBeat>
+        <p>
+          Telefonnettet dominerte, og det er <em>kretssvitsjet</em> — fornuftig nok, siden tale
+          genereres med konstant rate. Men etter hvert som datamaskiner, særlig tidsdelte maskiner,
+          ble viktige, ble spørsmålet: hvordan knytter vi maskiner sammen slik at geografisk spredte
+          brukere kan dele dem? Den trafikken er <strong>burstete</strong> — aktivitet, så stillhet,
+          så aktivitet.
+        </p>
+        <p>
+          Den første artikkelen om pakkesvitsjing kom fra <strong>Leonard Kleinrock</strong>, som
+          brukte køteori til å vise hvor effektivt pakkesvitsjing håndterer nettopp burstete trafikk.
+          Rundt 1964 undersøkte <strong>Paul Baran</strong> pakkesvitsjing for militære nett, og ved
+          National Physical Laboratory i England jobbet en tredje gruppe med de samme ideene — alle
+          tre uvitende om hverandre. I 1967 la ARPA fram planen for <strong>ARPANET</strong>, verdens
+          første pakkesvitsjede datanett og den direkte forfaren til internettet. I 1972 var den
+          første vert-til-vert-protokollen (NCP) ferdig, <strong>Ray Tomlinson</strong> skrev det
+          første e-postprogrammet, og nettet hadde vokst til 15 noder.
+        </p>
+
+        <LectureBeat>1972–80: mange nett, og ideen om å koble dem sammen</LectureBeat>
+        <p>
+          Flere frittstående pakkesvitsjede nett dukket opp: ALOHAnet mellom universitetene på
+          Hawaii, et pakkesatellitt-nett og et pakkeradio-nett (forfaren til dagens mobile
+          datanett), og franske Cyclades. Med fasit i hånd ser man at tiden var moden for en
+          altomfattende arkitektur som kunne binde nett sammen.
+        </p>
+        <p>
+          <strong>Vint Cerf</strong> og <strong>Bob Kahn</strong> publiserte i 1974 prinsippene for
+          det de kalte <em>internetting</em> — å bygge et nettverk av nettverk. Fire punkter, og de
+          definerer arkitekturen vi har i dag: <strong>minimalisme og autonomi</strong> (nett skal
+          kunne kobles sammen uten interne endringer), <strong>best effort</strong> som
+          tjenestemodell (pakker kan gå tapt eller bli forsinket), <strong>tilstandsløs ruting</strong>,
+          og en gjennomgående <strong>desentralisert</strong> tilnærming til kontroll. I 1976 fant{" "}
+          <strong>Bob Metcalfe</strong> opp Ethernet i doktoravhandlingen sin. Ved tiårsskiftet hadde
+          ARPANET 200 noder.
+        </p>
+
+        <LectureBeat>1980-tallet: standardisering</LectureBeat>
+        <p>
+          Bitene som fortsatt bærer nettet falt på plass. TCP og IP ble standardisert tidlig på
+          80-tallet. <strong>SMTP</strong> kom i 1982 og er fortsatt den definerende
+          e-postprotokollen. <strong>DNS</strong> kom i 1983 for å oversette mellom lesbare navn og
+          IP-adresser. Sent på tiåret kom de viktige utvidelsene til TCP for{" "}
+          <strong>vertsbasert metningskontroll</strong> — at en avsender senker sendraten når den
+          merker tap eller forsinkelse. Parallelt vokste universitetsnett fram: BITNET, CSNET, og fra
+          1986 <strong>NSFNET</strong>, som endte som ryggrad for regionale nett. Ved tiårets slutt:
+          rundt 100 000 verter.
+        </p>
+
+        <LectureBeat>1990-tallet: kommersialisering og weben</LectureBeat>
+        <p>
+          ARPANET ble lagt ned i 1991. NSFNET opphevet forbudet mot kommersiell bruk — fram til da
+          var reklame rett og slett ikke tillatt på nettet — og ble selv lagt ned i 1995, mens
+          kommersielle ISP-er overtok ryggradstrafikken. Og hovedbegivenheten:{" "}
+          <strong>Tim Berners-Lee</strong> fant opp weben ved CERN, med HTML, HTTP, en webserver og
+          en nettleser som de fire byggeklossene, bygget på hypertekst-ideer fra 1940-tallet. Fra
+          1989 til 1999 gikk antall verter fra 100 000 til 50 millioner, og ryggradshastighetene fra
+          noen få Mb/s til Gb/s.
+        </p>
+
+        <LectureBeat>2000 til i dag</LectureBeat>
+        <p>
+          Aggressiv utrulling av bredbånd i hjemmene, <strong>software-defined networking</strong>{" "}
+          definert i 2008 (kapittel 5), stadig mer allestedsnærværende høyhastighets trådløst — først
+          WiFi, så 4G og 5G. Innholdsleverandørene bygde sine <em>egne</em> globale ryggradsnett for
+          å komme nær sluttbrukerne og omgå tier-1-nettene. Bedrifter flyttet tjenestene sine til
+          skyen. Og smarttelefonen: <strong>siden 2017 er det flere mobile enn faste enheter koblet
+          til internett</strong>.
+        </p>
+      </LectureNote>
+
+      <LectureNote title="Hvem bruker internettet — og hvem styrer det?">
+        <p>
+          Av rundt 7,89 milliarder mennesker på planeten hadde nær 5 milliarder — cirka 62 % —
+          internett-tilgang i 2022. I år 2000 var tallet 360 millioner, altså femtengangen på 22 år.
+          Samtidig: <strong>tre milliarder mennesker er fortsatt ikke koblet til</strong>, og
+          dekningen varierer kraftig — fra opp mot 100 % i Nord-Europa til langt lavere i deler av
+          Afrika og Sørøst-Asia.
+        </p>
+        <p>
+          Ja/nei-statistikk er grovkornet. De interessante spørsmålene ligger under:{" "}
+          <strong>rimelighet</strong> (målet om 1 GB data for under 2 % av månedsinntekten nås bare
+          av rundt halvparten av landene som måles), <strong>kjønnsgap</strong> i tilgang, og{" "}
+          <em>meningsfull</em> tilgang — å faktisk kunne bruke nettet daglig, på en egnet enhet, med
+          nok data og rask nok forbindelse. Der det digitale skillet i USA mellom by og bygd har
+          krympet fra over 20 til rundt 6 prosentpoeng på ti år, har skillet mellom etniske grupper
+          knapt beveget seg.
+        </p>
+
+        <LectureBeat>Styring i tre lag</LectureBeat>
+        <p>
+          Spørsmålet «hvem styrer internettet?» har ikke ett svar — det er hundretalls millioner av
+          nett med hver sin lokale autonomi. Dette kalles en{" "}
+          <strong>multi-stakeholder-situasjon</strong>: mange aktører med interesser som ofte er
+          direkte motstridende. Dave Clark og kollegene hans døpte dragkampen mellom dem{" "}
+          <em>the tussle</em>, og argumenterte for at nettopp den dragkampen er avgjørende for at
+          nettet skal utvikle seg. Bryt spørsmålet ned i tre lag, så blir det håndterbart:{" "}
+          <strong>teknisk infrastruktur</strong>, <strong>navn og numre</strong>, og{" "}
+          <strong>innhold</strong>.
+        </p>
+        <p>
+          <strong>Hvorfor standarder i det hele tatt?</strong> Tenk på strømuttak: i ett land
+          fungerer enheten din overalt, men det finnes 15 ulike verdensstandarder, og derfor
+          fungerer den <em>ikke</em> når du reiser. Eller jernbane: i 1860-årenes USA var det 20
+          ulike sporvidder i drift, som betød at ett tog ikke kunne kjøre fra den ene enden av landet
+          til den andre. Etter at selskapene satte seg ned sammen, var det innen 1886 én standard
+          sporvidde — og de mange separate banene kunne fungere som ett sammenhengende nett.
+          Analogien til et nettverk av nettverk skriver seg selv: tenk om en internett-pakke ikke
+          kunne komme fra den ene enden av nettet til den andre.
+        </p>
+        <p>
+          <strong>Lag 1 — teknikken.</strong> <strong>IETF</strong> beskriver seg selv som et stort,
+          åpent, internasjonalt fellesskap av nettverksdesignere, operatører, leverandører og
+          forskere; møtene er åpne, og standardene er de over 9000{" "}
+          <strong>RFC</strong>-ene. <strong>3GPP</strong> — egentlig en allianse av sju
+          standardorganer — setter standardene for 3G, 4G og 5G. <strong>IEEE</strong> står bak
+          Ethernet-familien (802.3) og WiFi-familien (802.11). Og{" "}
+          <strong>ITU</strong> er det eldste av dem alle, FN-særorgan siden 1949.
+        </p>
+        <p>
+          <strong>Lag 2 — navn og numre.</strong> Her rår <strong>ICANN</strong>, en ideell
+          multi-stakeholder-organisasjon fra 1998, opprettet for å internasjonalisere navngiving og
+          adressering som tidligere lå under amerikanske myndigheter. At et universitets navn skal
+          tilhøre universitetet er ukontroversielt — men skal et navn som ender på{" "}
+          <em>.patagonia</em> tilhøre klesprodusenten eller regionen i Sør-Amerika? ICANN har
+          regler for slike konflikter og en egen tvisteløsningsordning for misbruk. Og navn er
+          verdifulle: domenet <em>voice.com</em> ble solgt for 30 millioner dollar i 2019. ICANN
+          forvalter også IP-adresser og oversettelsen fra navn til adresse — som gjøres av DNS, som
+          vi går løs på i neste kapittel.
+        </p>
+        <p>
+          <strong>Lag 3 — innhold.</strong> Her er det økonomi, politikk og samfunn mer enn teknikk.{" "}
+          <strong>Internet Governance Forum</strong>, sammenkalt av FNs generalsekretær, er ikke et
+          besluttende organ, men et forum som skal informere og inspirere dem som{" "}
+          <em>tar</em> beslutninger. Plattformene selv avgjør i praksis mye av hva du møter; i USA
+          gir Section 230 nettplattformer et rettslig vern mot å bli behandlet som utgiver av det
+          tredjeparter publiserer hos dem. Og til slutt myndighetene, som setter lover innenfor sine
+          grenser.
+        </p>
+        <p>
+          Det tekniske virkemiddelet er verdt å merke seg, for vi har allerede møtt boksen:{" "}
+          <strong>brannmuren</strong>. En vanlig ruter har videresendingsregler; en brannmur kan i
+          tillegg ha <em>blokkeringsregler</em> — «ikke videresend pakker med denne
+          mål-IP-adressen», slik at ingen bak brannmuren når innholdet på den adressen. Mer
+          inngripende varianter gjør <strong>deep packet inspection</strong>: de ser inn i selve
+          pakken og bestemmer ut fra innholdet, for eksempel «ikke videresend pakker som inneholder
+          denne frasen».
+        </p>
+      </LectureNote>
+    </article>
+  );
+}
+
 function Section16() {
   return (
     <article className="space-y-4 text-sm">

@@ -277,6 +277,105 @@ function Section21() {
 
       <Section21Live />
 
+      <LectureNote title="Hvorfor det er lett å skrive en nettverks-app">
+        <p>
+          Applikasjonslaget er nettets <em>raison d'être</em> — grunnen til at nettet finnes i det
+          hele tatt. Det er også et godt sted å begynne å lære, fordi protokollene her er
+          menneskelesbare og handler om ting vi bruker daglig.
+        </p>
+        <p>
+          Noe verdt å stoppe ved: nesten alle applikasjonene vi bruker — sosiale medier, weben,
+          meldinger, spill, strømming, videomøter, søk — ble utviklet <em>lenge etter</em> at
+          arkitekturen og transportlagets abstraksjoner var definert. Bare e-post og fjerninnlogging
+          er eldre. At nettet bærer applikasjoner designerne aldri drømte om, er kanskje det
+          sterkeste argumentet for at de traff riktig.
+        </p>
+        <p>
+          Og til tross for alt som skjer under panseret fra kilde til destinasjon, er det faktisk
+          ganske enkelt å skrive en nettverks-app: all kompleksiteten kan abstraheres bort, og du
+          trenger bare å forholde deg til to ting — <strong>hvilke tjenester transportlaget
+          tilbyr</strong>, og <strong>hvordan grensesnittet mot dem ser ut</strong>.
+        </p>
+
+        <LectureBeat>To måter å strukturere delene på</LectureBeat>
+        <p>
+          I <strong>klient-server</strong>-paradigmet er serveren en alltid-på vert med permanent
+          IP-adresse, slik at klientene vet hvor de skal ta kontakt. Klientene er koblet til av og
+          på, har ikke fast IP — og, viktigst:{" "}
+          <strong>klienter snakker ikke med hverandre</strong>. De går alltid via serveren.
+        </p>
+        <p>
+          I <strong>peer-to-peer</strong> finnes ingen server. Likeverdige noder snakker direkte
+          sammen: de ber om tjeneste fra andre peers og yter tjeneste tilbake — som i fildeling, der
+          en peer både henter filer fra og serverer filer til andre. Siden peers kommer og går og
+          bytter IP-adresse, blir <em>administrasjonen</em> av dem langt mer krevende enn i
+          klient-server.
+        </p>
+
+        <LectureBeat>Prosesser, sockets og adressering</LectureBeat>
+        <p>
+          En nettverks-app er ikke ett program du kompilerer og kjører, men flere programmer som
+          hver kjører som en <strong>prosess</strong> — den kjørende utgaven av et program. Snakker
+          to prosesser sammen på samme maskin, kaller vi det interprosess-kommunikasjon; er de på
+          hver sin maskin, må de bruke <strong>meldinger</strong>, og det er det vi er ute etter.
+        </p>
+        <p>
+          Presis språkbruk fra nå av: prosessen som <em>tar kontakt først</em> er{" "}
+          <strong>klienten</strong>, den som blir kontaktet er <strong>serveren</strong>.
+          Grensesnittet ned til transportlaget kalles en <strong>socket</strong>, og bildet å ha i
+          hodet er en <em>dør</em>: du lager døren, sender meldinger inn i den og tar imot meldinger
+          ut av den. Det er alltid <strong>to sockets</strong> involvert — én i hver ende.
+        </p>
+        <p>
+          For at en melding skal finne fram, trengs adresseinformasjon — akkurat som et brev trenger
+          gateadresse og poststed, og leilighetsnummer om det er en blokk. En socket har to slike
+          opplysninger: vertens <strong>IP-adresse</strong> og et <strong>portnummer</strong>. Noen
+          portnumre er knyttet til en bestemt tjeneste — kobler du til port 80 havner du på
+          webserveren, port 25 gir deg e-postserveren.
+        </p>
+
+        <LectureBeat>Åpne og lukkede protokoller</LectureBeat>
+        <p>
+          Å definere en applikasjonsprotokoll er å definere hvilke meldingstyper som utveksles, deres{" "}
+          <em>syntaks</em> (hvilke felt finnes), deres <em>semantikk</em> (hva betyr feltene), og
+          hvilke handlinger som utføres før og etter sending og mottak.{" "}
+          <strong>Åpne</strong> protokoller har alt dette offentlig tilgjengelig — internett sine er
+          spesifisert i RFC-er. <strong>Proprietære</strong> protokoller eies av et selskap og
+          virkemåten er ikke offentlig kjent; Zoom og Skype er eksempler.
+        </p>
+
+        <LectureBeat>Hva kan man be transportlaget om?</LectureBeat>
+        <p>
+          Fire dimensjoner. <strong>Pålitelig dataoverføring</strong> trengs av filoverføring og
+          web-transaksjoner — men ikke av alt: lyd og video tåler en del tap.{" "}
+          <strong>Timing</strong> betyr noe for telefoni og interaktive spill, som krever lav
+          forsinkelse for å fungere. <strong>Throughput</strong> kreves i en bestemt mengde av
+          strømmet video, mens <em>elastiske</em> applikasjoner tar til takke med det de får. Og til
+          slutt <strong>sikkerhet</strong>, for eksempel kryptering.
+        </p>
+        <p>
+          Internettets transportlag tilbyr bare to varer. <strong>TCP</strong> gir pålitelig
+          overføring, flytkontroll (avsenderen overfyller ikke mottakerens buffere), metningskontroll,
+          og er forbindelsesorientert — det kreves en håndtrykksrunde før data flyter. Det gir{" "}
+          <em>ingen</em> garantier om timing, throughput eller sikkerhet. <strong>UDP</strong> gir
+          enda mindre: upålitelig overføring uten flytkontroll, metningskontroll, timing, throughput
+          eller sikkerhet.
+        </p>
+        <p>
+          Da er det rimelig å spørre hvorfor UDP finnes. Svaret — og det er en strategi mange
+          applikasjonsprotokoller faktisk velger — er at man kan{" "}
+          <strong>bygge akkurat de tjenestene man trenger oppå UDP, i applikasjonslaget selv</strong>,
+          i stedet for å ta imot hele TCP-pakken med det den koster.
+        </p>
+        <p>
+          Til slutt sikkerhet: socket-abstraksjonen fra 80-tallet hadde ingen sikkerhet i seg — ingen
+          kryptering, ingen autentisering av motparten. Ville du ha det, måtte du bygge det selv i
+          applikasjonen. I dag finnes <strong>TLS</strong>, et tynt lag som ligger i brukerrommet
+          oppå TCP-socketene og gir kryptering, dataintegritet og endepunkt-autentisering.
+        </p>
+      </LectureNote>
+
+
       <div className="grid gap-3 lg:grid-cols-2">
         <VisualDefs
           items={[
@@ -938,6 +1037,103 @@ function Section23() {
 
       <Section23Live />
 
+      <LectureNote title="DNS: en distribuert database som må klare alt">
+        <p>
+          Et rimelig spørsmål først: hvorfor studerer vi noe så grunnleggende som navneoppslag på{" "}
+          <em>applikasjonslaget</em>? Fordi det <strong>er</strong> en applikasjon — DNS er
+          implementert av servere som står i ytterkanten av nettet, ikke inne i ruterne, og den
+          bruker tjenestene til UDP og TCP som enhver annen app. Det er internettets designfilosofi
+          i praksis: <strong>hold kjernen enkel, legg kompleksiteten i kanten</strong>. Den setningen
+          kommer til å gå igjen i resten av kurset.
+        </p>
+        <p>
+          Akkurat som et menneske har flere identifikatorer — navn, fødselsnummer, passnummer,
+          ansattnummer — har en vert minst to: et navn og en IP-adresse. DNS oversetter mellom dem.
+          Men den gjør mer enn det: den gir <strong>aliasing</strong> (et pent utadvendt navn peker
+          på et stygt internt), <strong>tjeneste-oppslag</strong> (hvilken maskin tar imot e-post for
+          dette domenet?) og <strong>lastbalansering</strong> (finnes det flere IP-adresser som kan
+          levere tjenesten, roterer DNS mellom dem).
+        </p>
+
+        <LectureBeat>Hvorfor ikke bare én stor server?</LectureBeat>
+        <p>
+          Fire grunner, og de er verdt å kunne. Ett <strong>enkelt feilpunkt</strong> i noe så
+          kritisk. En absurd <strong>trafikkonsentrasjon</strong>. Uunngåelig{" "}
+          <strong>lang RTT</strong> til halve planeten — og her teller millisekunder. Og til slutt:
+          det <strong>skalerer ikke</strong>. Akamai alene håndterer over en billion DNS-oppslag i
+          døgnet.
+        </p>
+        <p>
+          Måten å tenke på DNS: en distribuert database med enorm skala, veldig enkle poster,
+          overveldende leseandel, millisekund-krav — og organisatorisk desentralisert, med
+          hundretusenvis av organisasjoner som hver eier sin bit. Ikke et lett problem.
+        </p>
+
+        <LectureBeat>Hierarkiet og oppslaget</LectureBeat>
+        <p>
+          Øverst står <strong>rot-serverne</strong> — ikke siste utvei, men stedet du går for å{" "}
+          <em>starte</em> et oppslag. De forvaltes under ICANN; det er 13 logiske rot-servere, men
+          hver av dem er replikert, så det finnes nær tusen fysiske maskiner. Under dem ligger{" "}
+          <strong>TLD-serverne</strong> for .com, .edu, .no og resten, drevet av registrarene der du
+          også registrerer nye navn. Under dem igjen står de{" "}
+          <strong>autoritative navneserverne</strong>: her stopper kjøpet — det denne serveren sier
+          om organisasjonens navn, <em>er</em> svaret.
+        </p>
+        <p>
+          Og så er det den serveren du faktisk snakker med:{" "}
+          <strong>den lokale DNS-serveren</strong>. Alle verter har en. Har den svaret i cachen,
+          svarer den med en gang; ellers starter den oppslaget for deg.
+        </p>
+        <p>
+          Et fullt <strong>iterativt</strong> oppslag ser slik ut: din lokale server spør
+          rot-serveren, som svarer «jeg vet ikke, men prøv .edu-TLD-serverne». Den spør TLD-serveren,
+          som svarer «prøv den autoritative serveren for dette universitetet». Den spør den
+          autoritative serveren, som gir IP-adressen. Legg merke til hvem som gjør jobben:{" "}
+          <strong>den lokale serveren itererer</strong>, de andre svarer bare «vet ikke, prøv der».
+          Til sammen åtte meldinger — fire spørsmål og fire svar — for ett eneste navn.
+        </p>
+        <p>
+          Alternativet er <strong>rekursivt</strong> oppslag, der hver server tar på seg å løse
+          spørringen videre og returnere et endelig svar. Det gjøres sjelden i praksis, av en enkel
+          grunn: det legger byrden på serverne øverst i hierarkiet, og de har nok å gjøre.
+        </p>
+
+        <LectureBeat>Cache — og den bevisst slurvete konsistensen</LectureBeat>
+        <p>
+          Så mye arbeid for ett oppslag betyr at det lønner seg å <strong>cache</strong>. Har en
+          server først lært en oversettelse, holder den på den en stund og svarer umiddelbart neste
+          gang. Raskere svar og mindre last på infrastrukturen.
+        </p>
+        <p>
+          Men caching gir foreldede data: endrer en vert IP-adresse, vet ikke resten av verden det
+          før alle <strong>TTL</strong>-ene har løpt ut. DNS <em>bekymrer seg ikke</em> for det. Det
+          er et bevisst valg — prisen er litt unøyaktig informasjon i omløp en periode, gevinsten er
+          at man slipper en kostbar og komplisert mekanisme for å finne og slette utdaterte
+          oppføringer i cacher over hele planeten.
+        </p>
+
+        <LectureBeat>Postene, meldingene, og å registrere et domene</LectureBeat>
+        <p>
+          En DNS-post er en firer: <strong>navn, verdi, type, TTL</strong>. Type{" "}
+          <strong>A</strong> er navn → IP-adresse. Type <strong>NS</strong> gir navnet på den
+          autoritative serveren for et domene. <strong>CNAME</strong> er alias, og{" "}
+          <strong>MX</strong> peker på e-postserveren for domenet.
+        </p>
+        <p>
+          Spørring og svar har samme meldingsformat. Merk <strong>ID-feltet</strong>: spørreren
+          velger et 16-bits tall, og svaret bærer samme ID — slik kobles svar til spørsmål. Flagg
+          forteller om dette er spørring eller svar, om rekursjon ønskes, og om svaret er autoritativt.
+        </p>
+        <p>
+          Og til slutt det praktiske: skal du gi firmaet ditt en nettilstedeværelse, registrerer du
+          navnet hos en registrar, og gir dem <em>navnet og adressen på din autoritative
+          navneserver</em>. Registraren legger inn en NS-post og en A-post for den i den globale
+          databasen. Alt annet — adressene til alle de andre maskinene dine — leverer din egen
+          autoritative server til dem som spør. Det er hele avtalen.
+        </p>
+      </LectureNote>
+
+
       <div className="grid gap-3 lg:grid-cols-2">
         <VisualDefs
           items={[
@@ -1189,6 +1385,147 @@ function Section24() {
 
       <Section24Live />
 
+      <LectureNote title="P2P og BitTorrent: hvorfor det skalerer">
+        <p>
+          Det som kjennetegner en P2P-applikasjon er at den <em>ikke</em> hviler på en alltid-på
+          server som lytter etter forbindelser. Vilkårlige endesystemer snakker direkte sammen, ber
+          om tjeneste fra hverandre og yter tjeneste tilbake. For at nettverket skal være
+          bærekraftig, må tjenesten som <em>ytes</em> skalere minst like godt som den som{" "}
+          <em>etterspørres</em>. To ting gjør det vanskelig: peers kommer og går, og IP-adressene
+          deres endrer seg over tid.
+        </p>
+
+        <LectureBeat>Regnestykket som viser poenget</LectureBeat>
+        <p>
+          <strong>Klient-server.</strong> Fila ligger på serveren og skal til N klienter. Serveren
+          må laste opp N kopier, så tiden er minst N·F delt på serverens opplastningsbåndbredde. I
+          tillegg må den tregeste klienten rekke å laste ned én kopi. Den samlede tiden vokser{" "}
+          <strong>lineært med N</strong>.
+        </p>
+        <p>
+          <strong>P2P.</strong> Serveren må fortsatt laste opp minst én hel kopi, og den tregeste
+          klienten må fortsatt laste ned én kopi — de to grensene står. Men nå bidrar{" "}
+          <em>klientenes egne opplastningsbåndbredder</em> til distribusjonen. Telleren vokser
+          fortsatt lineært med N, men <strong>nevneren vokser også</strong>, fordi hver nye peer tar
+          med seg opplastningskapasitet inn i nettet. Marginalkostnaden per ekstra peer synker i
+          stedet for å stå stille.
+        </p>
+
+        <LectureBeat>BitTorrent i praksis</LectureBeat>
+        <p>
+          Fila deles i biter (chunks) på 256 kbit. Poenget med å dele opp er at en peer kan{" "}
+          <strong>begynne å dele før den er ferdig med å laste ned</strong> — så snart den har sin
+          første bit, kan den sende den videre mens den henter neste.
+        </p>
+        <p>
+          To begreper: en <strong>torrent</strong> er mengden peers som utveksler én bestemt fil (en
+          peer kan delta i mange torrenter samtidig), og <strong>trackeren</strong> er en server som
+          holder lista over hvem som deltar. Det betyr at BitTorrent strengt tatt{" "}
+          <em>ikke er ren P2P</em> — trackeren er en alltid-på server, og forsvinner den, stopper
+          det opp. (Det finnes senere utvidelser med distribuert tracker.)
+        </p>
+        <p>
+          Når en ny peer vil bli med, kontakter den først trackeren for å få lista over deltakere.
+          Så begynner utvekslingen. Den kontinuerlige inn- og utstrømmen av peers kalles{" "}
+          <strong>churn</strong>, og jo mer churn, jo vanskeligere er det å få alle biter fram til
+          alle i tide. Blir en peer værende etter at den har hele fila, kalles det{" "}
+          <strong>seeding</strong>; å forlate torrenten før man har lastet opp minst like mye som man
+          lastet ned, regnes som egoistisk.
+        </p>
+
+        <LectureBeat>To smarte regler</LectureBeat>
+        <p>
+          <strong>Be om det sjeldneste først.</strong> Peers spør jevnlig naboene om hvilke biter de
+          har, og ber om de bitene som finnes i færrest kopier. Finnes det bare én kopi av en bit,
+          og du henter den, finnes det plutselig to. Det verner torrenten mot det verste
+          scenarioet: at den eneste kopien av en bit sitter hos en peer som forlater torrenten, og
+          ingen kan bli ferdige.
+        </p>
+        <p>
+          <strong>Tit-for-tat.</strong> Hver peer prioriterer å sende til de naboene som for tiden
+          sender <em>til den</em> raskest, og revurderer jevnlig hvem de er. Det gir alle en direkte
+          egeninteresse i å laste opp raskt. Men hvordan kommer en helt fersk peer uten biter i gang?
+          Gjennom <strong>optimistic unchoke</strong>: hver peer velger med jevne mellomrom en
+          tilfeldig nabo og sender den en bit uten motytelse. Får den noe tilbake, kan de to raskt
+          havne på hverandres topplister — og begge tjener på det.
+        </p>
+      </LectureNote>
+
+
+      <LectureNote title="SMTP: push-protokollen, og hva den lærer oss">
+        <p>
+          E-post har vært i drift siden 1972 og er ikke den mest spennende applikasjonen i
+          kapittelet — men den er et rent og enkelt eksempel på klient-server-modellen, og
+          forskjellene fra HTTP er lærerike i seg selv.
+        </p>
+        <p>
+          Tre komponenter. <strong>Brukeragenten</strong> — e-postklienten din — brukes til å skrive,
+          redigere og lese. <strong>E-postserveren</strong> holder to ting per bruker: en{" "}
+          <em>postkasse</em> med innkommende og tidligere mottatte meldinger, og en{" "}
+          <em>utgående kø</em> med meldinger som venter på å sendes til mottakerens server. Og{" "}
+          <strong>SMTP</strong> er protokollen som dytter meldinger fra brukeragent til server, og
+          fra server til server.
+        </p>
+
+        <LectureBeat>Fra Alice til Bob, steg for steg</LectureBeat>
+        <p>
+          Alice skriver meldingen i klienten sin og trykker send. Klienten kontakter{" "}
+          <em>Alices egen</em> e-postserver og overfører meldingen dit med SMTP. Alices server åpner
+          så en TCP-forbindelse til <em>Bobs</em> server, og sender — nå i rollen som klient —
+          meldingen over. Bobs server legger den i Bobs postkasse. Og på et helt annet tidspunkt,
+          asynkront, åpner Bob klienten sin og leser meldingen fra sin server.
+        </p>
+        <p>
+          Legg merke til at meldingen går <strong>direkte fra avsendende til mottakende server</strong>
+          — ingen mellomledd. SMTP kjører på TCP, og standard serverport er{" "}
+          <strong>25</strong>, slik at klienten alltid vet hvor den skal ta kontakt.
+        </p>
+
+        <LectureBeat>Dialogen, som er til å lese</LectureBeat>
+        <p>
+          Etter at TCP-forbindelsen står, er det tre faser. Først et <strong>håndtrykk</strong> på
+          tre meldinger: mottakerserveren melder seg med kode <code className="rounded bg-muted px-1 py-0.5 font-mono text-xs">220</code> og
+          vertsnavnet sitt, klienten hilser med sitt eget vertsnavn, og serveren hilser tilbake med
+          kode <code className="rounded bg-muted px-1 py-0.5 font-mono text-xs">250</code>. Så{" "}
+          <strong>overføringen</strong>: hvem meldingen er fra, hvem den skal til, kommandoen{" "}
+          <code className="rounded bg-muted px-1 py-0.5 font-mono text-xs">DATA</code> som varsler
+          at selve meldingen kommer, meldingen — og en linje som inneholder{" "}
+          <strong>bare et punktum</strong> som avslutning. Til slutt sier klienten fra at den er
+          ferdig, serveren svarer{" "}
+          <code className="rounded bg-muted px-1 py-0.5 font-mono text-xs">221</code>, og
+          forbindelsen lukkes.
+        </p>
+
+        <LectureBeat>SMTP mot HTTP</LectureBeat>
+        <p>
+          Den viktigste forskjellen: HTTP er en <strong>pull</strong>-protokoll — klienten drar data
+          ut av serveren. SMTP er en <strong>push</strong>-protokoll — klienten dytter en melding inn
+          til serveren. Ellers er slektskapet tydelig: begge er ASCII-kodet og lesbare, begge bruker
+          statuskoder med en kort forklarende frase (ikke de samme kodene, men samme idé), og HTTP
+          hentet faktisk noe av inspirasjonen sin fra SMTP.
+        </p>
+        <p>
+          To forskjeller til. SMTP kan pakke <strong>flere objekter inn i én melding</strong>, mens
+          HTTP håndterer ett objekt per forespørsel. Og SMTP bruker{" "}
+          <strong>persistente forbindelser</strong>, slik at flere e-poster kan gå over samme
+          forbindelse.
+        </p>
+        <p>
+          Én ting som forvirrer nesten alle: <em>meldingsformatet</em> og{" "}
+          <em>SMTP-kommandoene</em> er to forskjellige ting. Selve e-postmeldingen har sin egen
+          header med From- og Subject-linjer, deretter en blank linje og så kroppen — og de linjene
+          er noe helt annet enn SMTP-kommandoene som sier hvem meldingen er fra og til. Formatet er
+          definert i sin egen RFC, omtrent slik HTML definerer hvordan et webdokument ser ut.
+        </p>
+        <p>
+          Alt over handler om å <em>dytte</em> meldingen fram til destinasjonsserveren. Å{" "}
+          <em>hente</em> den derfra er en annen jobb, med sin egen protokoll:{" "}
+          <strong>IMAP</strong> er den mest utbredte. Og man kan naturligvis også hente e-post over{" "}
+          <strong>HTTP</strong> fra en webserver som er satt opp for det — det er webmail.
+        </p>
+      </LectureNote>
+
+
       <div className="grid gap-3 lg:grid-cols-2">
         <VisualDefs
           items={[
@@ -1430,6 +1767,94 @@ function Section25() {
 
       <Section25Live />
 
+      <LectureNote title="Streaming: buffer mot jitter, DASH mot båndbredde">
+        <p>
+          Her flytter vi blikket fra protokoller til <em>infrastruktur</em>. Strømmet video er en
+          av de største konsumentene av internettkapasitet — anslag på rundt 80 % av trafikken til
+          private ISP-kunder — og den har to utfordringer: <strong>skala</strong> (titalls til
+          hundretalls millioner brukere) og <strong>heterogenitet</strong> (noen på fiber, noen på
+          dårlig mobildekning). Svaret på begge er en sofistikert distribuert infrastruktur.
+        </p>
+        <p>
+          En video er en sekvens av kodede bilder — 24 eller 30 i sekundet — der hvert bilde er en
+          matrise av piksler. Kompresjonen utnytter redundans på to måter:{" "}
+          <strong>romlig</strong> koding <em>innenfor</em> ett bilde (i stedet for å lagre tusen
+          like blå himmelpiksler, lagre «blå» og «tusen ganger»), og{" "}
+          <strong>temporal</strong> koding <em>mellom</em> bilder (send bare det som har endret seg
+          siden forrige bilde). Kodingen kan ha <strong>konstant</strong> eller{" "}
+          <strong>variabel</strong> bitrate — det siste når mengden korrelasjon varierer gjennom
+          filmen.
+        </p>
+
+        <LectureBeat>Hvorfor det heter streaming</LectureBeat>
+        <p>
+          Tegn tid bortover og akkumulert datamengde oppover. Video spilles inn i én takt, sendes av
+          serveren i en annen, og spilles av hos klienten i en tredje. Poenget ser du med én gang:
+          klienten spiller av bilde 2 mens serveren fortsatt sender bilde 10. Man laster ikke ned
+          hele filmen først. Fordelene er åpenbare — avspillingen kan starte tidlig, og ser du bare
+          ti minutter, har du ikke sløst båndbredde på resten.
+        </p>
+        <p>
+          Men det gir en hard begrensning: <strong>kontinuerlig avspilling</strong>. Når det er tid
+          for å vise et bilde, <em>må</em> det bildet ha kommet fram. Har det ikke det, får du
+          snurrehjulet. Og problemet er at internettforsinkelsen varierer — det finnes ingen krets
+          med fast forsinkelse fra server til klient.
+        </p>
+        <p>
+          Løsningen er <strong>buffer</strong>. Klienten venter litt før avspillingen starter, og
+          spiller så av i jevn takt mens bufferet absorberer svingningene i ankomsttid. Hvor lenge
+          skal den vente? Det er millionspørsmålet:{" "}
+          <strong>for kort</strong>, og et bilde rekker ikke fram i tide — <em>starvation</em>, og
+          bildet fryser. <strong>For lenge</strong>, og brukeren må sitte og vente før noe skjer.
+          Brukere hater å vente.
+        </p>
+
+        <LectureBeat>DASH: når det ikke er nok båndbredde i det hele tatt</LectureBeat>
+        <p>
+          Buffer løser variabel <em>forsinkelse</em>. Men hva om den tilgjengelige{" "}
+          <em>båndbredden</em> rett og slett ikke holder til bitraten videoen sendes med? Da trengs
+          noe annet, og det er <strong>DASH</strong> — Dynamic Adaptive Streaming over HTTP.
+        </p>
+        <p>
+          På serversiden deles videoen i biter, og <strong>hver bit kodes i flere kvaliteter</strong>{" "}
+          og lagres som separate filer. Høyere kvalitet = større fil = mer båndbredde. Bitene
+          fordeles utover nodene i et distribusjonsnett, og en{" "}
+          <strong>manifest-fil</strong> forteller klienten hvilke varianter som finnes og hvor de
+          ligger.
+        </p>
+        <p>
+          På klientsiden ligger all intelligensen. Klienten estimerer løpende hvor mye båndbredde som
+          er tilgjengelig, slår opp i manifestet, og ber om neste bit med{" "}
+          <strong>den høyeste kodingsraten den tror den kan holde</strong> — og velger i tillegg
+          hvilken server den vil hente fra. Blir stien dårligere, senker den kvaliteten på neste bit
+          i stedet for å fryse.
+        </p>
+
+        <LectureBeat>CDN — og hvorfor mega-serveren ikke går</LectureBeat>
+        <p>
+          Hvordan bygger man en tjeneste som skal levere fra en katalog på millioner av videoer til
+          hundretusener av samtidige seere? Den naive løsningen — én diger server — feiler på alle
+          punkter: enkelt feilpunkt, metning både i nettet og i serveren, og lang forsinkelse til
+          store deler av kloden. Den skalerer ikke.
+        </p>
+        <p>
+          Løsningen som faktisk brukes er et <strong>CDN</strong>: en stor, geografisk fordelt
+          infrastruktur som lagrer og serverer kopier av bitene. To skoler.{" "}
+          <strong>Enter deep</strong> dytter mange servere langt ut i aksessnettene, tett på
+          brukerne — Akamai hadde i 2015 rundt en kvart million servere ute i felten.{" "}
+          <strong>Bring home</strong> bruker færre, men større serverklynger plassert i
+          samtrafikkpunkter.
+        </p>
+        <p>
+          Gangen når du trykker play: klienten spør tjenestens sentrale system, får en manifest-fil
+          med biter og plasseringer, henter fra en CDN-node i nærheten, buffrer og spiller av — og
+          bytter til en annen node hvis stien blir dårlig. En slik tjeneste er ikke en ISP; den er en{" "}
+          <strong>over-the-top-tjeneste</strong>, en applikasjon som rir oppå IP-infrastrukturen. Og
+          det er nøyaktig det tjeneste-perspektivet vi startet kurset med i 1.1.
+        </p>
+      </LectureNote>
+
+
       <div className="grid gap-3 lg:grid-cols-2">
         <VisualDefs
           items={[
@@ -1670,6 +2095,75 @@ function Section26() {
       </p>
 
       <Section26Live />
+
+      <LectureNote title="Sockets: den eneste døra ut">
+        <p>
+          Sockets er <strong>det ene og eneste API-et</strong> mellom applikasjonslaget og
+          transportlaget. Vil du sende applikasjonsmeldinger fra én del av en distribuert app til en
+          annen, må du gjennom en socket. Sett fra operativsystemet er applikasjonen din skrevet i{" "}
+          <em>brukerrommet</em>, mens transportlaget og alt under ligger <em>inne i</em>{" "}
+          operativsystemet — og socketen er døra mellom dem.
+        </p>
+        <p>
+          Og API-et gir deg bare to varer: <strong>TCP</strong>, som gir pålitelig,
+          metningskontrollert, flytkontrollert og bytestrøm-orientert overføring mellom to prosesser,
+          og <strong>UDP</strong>, som gir datagram-orientert, upålitelig overføring.
+        </p>
+
+        <LectureBeat>UDP-sockets: enklest, og derfor først</LectureBeat>
+        <p>
+          Med UDP finnes det <strong>ingen forbindelse</strong> mellom klient og server — ingen
+          håndtrykk før data kan flyte. Konsekvensen er konkret: når klienten sender, må den{" "}
+          <strong>selv legge ved serverens IP-adresse og portnummer på hvert eneste datagram</strong>.
+          Og på serversiden må serveren hente ut klientens IP og port fra det mottatte datagrammet
+          for å vite hvem den snakker med. Data kan gå tapt, og kan komme i feil rekkefølge.
+        </p>
+        <p>
+          Når du oppretter socketen, sier du to ting: at det er en internett-socket over IPv4, og at
+          det er en datagram-socket (UDP) og ikke en strøm-socket. På klientsiden angir du ikke noe
+          portnummer — operativsystemet gir deg et. På serversiden gjør du det motsatte og{" "}
+          <strong>binder</strong> socketen til et bestemt portnummer, fordi klienten må vite hvor den
+          skal ta kontakt.
+        </p>
+        <p className="rounded-lg border border-amber-500/30 bg-background/60 px-3 py-2">
+          Et poeng verdt å stoppe ved: <strong>hvordan vet klienten serverens adresse og port?</strong>{" "}
+          Svaret er at den bare må vite det. Internett har ingen katalogtjeneste der servere
+          registrerer tjenestene sine — andre nettverksarkitekturer har hatt det, men ikke denne. Du
+          må kjenne vertsnavnet (som DNS oversetter for deg) og portnummeret. Derfor finnes{" "}
+          <em>velkjente</em> portnumre: 80 for HTTP, 25 for SMTP, 53 for DNS.
+        </p>
+
+        <LectureBeat>TCP-sockets: og de to socketene som forvirrer alle</LectureBeat>
+        <p>
+          TCP er forbindelsesorientert, så serveren må være oppe og ha en{" "}
+          <strong>velkomst-socket</strong> (også kalt lytte-socket) åpen før klienten tar kontakt.
+          Serveren kaller <em>accept</em> på den — et blokkerende kall som får serveren til å vente.
+        </p>
+        <p>
+          Klienten oppretter så sin egen socket med serverens navn og portnummer. Og her skjer
+          magien: <strong>selve opprettelsen sender en forbindelsesforespørsel</strong> — sendt av
+          transportlaget, ikke av applikasjonskoden din. Når den kommer fram, skjer to ting hos
+          serveren. Transportlaget sender en bekreftelse tilbake til klienten, og — dette er det
+          viktige — <strong>operativsystemet lager en helt ny socket</strong>, dedikert til akkurat
+          denne klienten, og returnerer den fra <em>accept</em>.
+        </p>
+        <p>
+          Dette er punktet der de fleste går seg vill første gang. Det finnes{" "}
+          <strong>to</strong> sockets på serversiden: velkomst-socketen, som er kontaktpunktet for
+          alle klienter som vil snakke med serveren på den porten, og den nye socketen, som brukes
+          til all videre kommunikasjon med <em>denne ene</em> klienten. Og et spørsmål som gjør det
+          verre før det blir bedre: hvilket portnummer har den nye socketen?{" "}
+          <strong>Det samme som velkomst-socketen.</strong> Hvordan det kan gå bra, får du svaret på
+          i 3.2 om multipleksing og demultipleksing.
+        </p>
+        <p>
+          Når forbindelsen står, oppfører den seg som et rør mellom prosessene, med serverens ende av
+          røret festet i den nye socketen. Og legg merke til forskjellen fra UDP:{" "}
+          <strong>når klienten sender, trenger den ikke oppgi hvem meldingen skal til</strong> —
+          forbindelsen er allerede etablert, så det er gitt hvem som er i andre enden.
+        </p>
+      </LectureNote>
+
 
       <div className="grid gap-3 lg:grid-cols-2">
         <VisualDefs
