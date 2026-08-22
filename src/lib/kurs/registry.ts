@@ -1,8 +1,12 @@
 // Oppslag mot skjerm-kursene. Ingen fag er hardkodet her — alt kommer fra
 // `fag/index.ts`, som innholdsagentene eier.
 
-import { FAG } from "./fag";
+import { FAG as FAG_INNHOLD } from "./fag";
+import { DEMO_FAG } from "./demoFag";
 import { finnUndertema, undertemaerIFag, type Fag, type Undertema, type Emne } from "./types";
+
+// Demo-faget er alltid med: det er den kjørende dokumentasjonen av kontrakten.
+const FAG = [...FAG_INNHOLD, DEMO_FAG] as const;
 
 export const FAG_BY_SLUG: Record<string, Fag> = Object.fromEntries(
   FAG.map((f) => [f.slug, f]),
