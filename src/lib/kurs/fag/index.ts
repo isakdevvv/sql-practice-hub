@@ -3,5 +3,6 @@
 // `registry.ts` plukker opp alt som ligger i FAG uten flere endringer.
 
 import type { Fag } from "../types";
+import { dte2505 } from "./dte-2505";
 
-export const FAG: readonly Fag[] = [];
+export const FAG: readonly Fag[] = [dte2505];
