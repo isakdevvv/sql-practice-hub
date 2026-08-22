@@ -1,6 +1,7 @@
 import { Outlet, Link, createRootRoute, HeadContent, Scripts } from "@tanstack/react-router";
 
 import appCss from "../styles.css?url";
+import { BottomTabBar, TABBAR_PADDING } from "@/components/nav/BottomTabBar";
 
 function NotFoundComponent() {
   return (
@@ -81,5 +82,14 @@ function RootShell({ children }: { children: React.ReactNode }) {
 }
 
 function RootComponent() {
-  return <Outlet />;
+  // Padding nederst tilsvarer tabbarens høyde, så sideinnhold aldri havner
+  // under den på mobil. Fullskjerm-ruter (skjerm-spilleren) skjuler tabbaren
+  // selv og setter sin egen 100dvh-høyde — paddingen her er da uten effekt
+  // fordi de ikke scroller.
+  return (
+    <div className={TABBAR_PADDING}>
+      <Outlet />
+      <BottomTabBar />
+    </div>
+  );
 }

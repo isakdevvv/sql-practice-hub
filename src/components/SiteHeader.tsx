@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Search, Menu, X, Sparkles } from "lucide-react";
+import { Search, Sparkles } from "lucide-react";
 import { searchEntries, type SearchEntry, type SearchKind } from "@/lib/search";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { ProfileButton } from "@/components/ProfileButton";
@@ -22,19 +22,17 @@ const HUBS: HubLink[] = [
 ];
 
 export function SiteHeader() {
-  const [mobileOpen, setMobileOpen] = useState(false);
-
-  // Lukk mobil-meny ved navigasjon (route-bytte)
-  useEffect(() => {
-    if (!mobileOpen) return;
-    const close = () => setMobileOpen(false);
-    window.addEventListener("popstate", close);
-    return () => window.removeEventListener("popstate", close);
-  }, [mobileOpen]);
+  // Under `sm` er det ikke plass til både søkefelt og de fire ikonene til
+  // høyre — feltet ble 120px bredt og klemte hamburgeren. Søket kollapser
+  // derfor til et ikon som folder ut en egen rad. Hamburgeren er borte helt:
+  // bunn-tabbaren har nøyaktig de samme fire destinasjonene, og to
+  // navigasjoner med samme innhold gjør bare at man må velge hvilken man
+  // stoler på.
+  const [sokApen, setSokApen] = useState(false);
 
   return (
     <header className="sticky top-0 z-40 w-full border-b border-border bg-background/80 backdrop-blur-md">
-      <div className="container mx-auto flex h-14 items-center gap-3 px-4">
+      <div className="container mx-auto flex h-14 items-center gap-2 px-4 sm:gap-3">
         <Link to="/" className="flex items-center gap-2 shrink-0">
           <div className="flex h-7 w-7 items-center justify-center rounded-md bg-brand text-brand-foreground font-bold text-xs">
             KV
@@ -42,9 +40,22 @@ export function SiteHeader() {
           <span className="font-semibold hidden sm:inline">Kodeverkstedet</span>
         </Link>
 
-        <GlobalSearch />
+        {/* Søk: fullt felt fra sm, ikon under. */}
+        <div className="hidden sm:flex flex-1 min-w-0">
+          <GlobalSearch />
+        </div>
+        <button
+          type="button"
+          onClick={() => setSokApen((o) => !o)}
+          aria-label={sokApen ? "Lukk søk" : "Åpne søk"}
+          aria-expanded={sokApen}
+          className="sm:hidden ml-auto flex h-11 w-11 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+        >
+          <Search className="h-5 w-5" />
+        </button>
 
-        {/* Desktop-navigasjon — md og oppover */}
+        {/* Desktop-navigasjon — md og oppover. På mobil ligger de samme fire
+            destinasjonene i bunn-tabbaren. */}
         <nav className="hidden md:flex items-center gap-1 text-sm shrink-0">
           {HUBS.map((p) => (
             <Link
@@ -61,17 +72,6 @@ export function SiteHeader() {
           ))}
         </nav>
 
-        {/* Mobil hamburger-knapp — under md */}
-        <button
-          type="button"
-          onClick={() => setMobileOpen((o) => !o)}
-          aria-label={mobileOpen ? "Lukk meny" : "Åpne meny"}
-          aria-expanded={mobileOpen}
-          className="md:hidden rounded-md p-2 text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
-        >
-          {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-        </button>
-
         {/* AI-tutor — åpner i ny tab så pågående oppgavearbeid ikke avbrytes. */}
         <a
           href="/tutor"
@@ -79,39 +79,26 @@ export function SiteHeader() {
           rel="noopener noreferrer"
           aria-label="Spør AI-tutor"
           title="Spør AI-tutor"
-          className="rounded-md p-2 text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
+          className="flex h-11 w-11 items-center justify-center rounded-full text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
         >
           <Sparkles className="h-4 w-4" />
         </a>
 
-        <XpBar />
+        {/* XP-teller tar 90px og er ren status — den viker på de smaleste
+            skjermene til fordel for handlingene. */}
+        <div className="hidden min-[400px]:flex">
+          <XpBar />
+        </div>
         <ProfileButton />
         <ThemeToggle />
       </div>
       <XpToast />
 
-      {/* Mobil-meny dropdown — vises kun når mobileOpen og under md */}
-      {mobileOpen && (
-        <nav className="md:hidden border-t border-border bg-background">
-          <div className="container mx-auto px-4 py-2 flex flex-col gap-0.5">
-            {HUBS.map((p) => (
-              <Link
-                key={p.label}
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                to={p.to as any}
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                params={p.params as any}
-                onClick={() => setMobileOpen(false)}
-                className="rounded-md px-3 py-2 text-sm text-foreground hover:bg-accent transition-colors"
-                activeProps={{
-                  className: "rounded-md px-3 py-2 text-sm text-foreground bg-accent font-semibold",
-                }}
-              >
-                {p.label}
-              </Link>
-            ))}
-          </div>
-        </nav>
+      {/* Utfoldet søk på mobil — egen rad, full bredde. */}
+      {sokApen && (
+        <div className="sm:hidden border-t border-border px-4 py-2">
+          <GlobalSearch kompakt />
+        </div>
       )}
     </header>
   );
@@ -164,7 +151,7 @@ function groupAndCap(results: SearchEntry[]): SearchEntry[] {
   return out;
 }
 
-function GlobalSearch() {
+function GlobalSearch({ kompakt = false }: { kompakt?: boolean } = {}) {
   const [query, setQuery] = useState("");
   const [open, setOpen] = useState(false);
   const [activeIdx, setActiveIdx] = useState(0);
@@ -277,7 +264,8 @@ function GlobalSearch() {
             setActiveIdx((i) => Math.max(0, i - 1));
           }
         }}
-        placeholder="Søk på alt — http, JOIN, NULL, transistor, opg9…  ( /  eller  ⌘K )"
+        placeholder={kompakt ? "Søk på alt…" : "Søk på alt — http, JOIN, NULL, transistor, opg9…  ( /  eller  ⌘K )"}
+        autoFocus={kompakt}
         aria-label="Globalt søk"
         className="h-9 w-full rounded-md border border-border bg-card pl-8 pr-12 text-xs focus:outline-none focus:ring-2 focus:ring-brand/40 focus:border-brand/60"
       />
