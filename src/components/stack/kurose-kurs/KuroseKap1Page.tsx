@@ -9,6 +9,7 @@ import { Section13Live } from "./Section13Live";
 import { Section14Live } from "./Section14Live";
 import { Section15Live } from "./Section15Live";
 import { VisualDefs } from "./VisualDefs";
+import { LectureNote, LectureBeat } from "./LectureNote";
 import {
   HostIcon,
   ClientServerIcon,
@@ -272,6 +273,68 @@ function Section11() {
 
       <Section11Live />
 
+      <LectureNote title="To måter å svare på «hva er internett?»">
+        <p>
+          Spørsmålet har to helt legitime svar, og forelesningen tar begge. Det{" "}
+          <strong>første er nuts-and-bolts-svaret</strong>: fortell meg hvilke deler tingen består
+          av. Da starter man ytterst, der brukerne er, og jobber seg innover.
+        </p>
+        <p>
+          Ytterst sitter milliarder av <strong>hosts</strong> (end-systemer) — maskiner som kjører
+          nettverks-apper. Ikke bare PC-er, mobiler og servere: også spillkonsoller, kameraer,
+          høyttalere, biler, sparkesykler, kjøleskap, treningsklokker og VR-briller. Poenget med
+          den lange lista er at «alt som er digitalt har en verdi av å være koblet til», og at
+          ting som før var rent analoge (en bysykkel, en strømmåler) får helt nye bruksområder når
+          de får et digitalt fotavtrykk.
+        </p>
+        <p>
+          Innenfor dem finner vi maskinene som gjør nettet til et <em>nett</em>:{" "}
+          <strong>pakkesvitsjer</strong>, som videresender pakker mellom hverandre og ut til
+          hostene. De kommer i to varianter — rutere og svitsjer — og de er koblet sammen av{" "}
+          <strong>lenker</strong>. Alt dette er igjen samlet i nettverk som hver eies og driftes av
+          én aktør: campusnettet på et universitet er et annet nettverk enn ryggradsnettet som
+          kobler campus til omverdenen. Det er nettopp derfor uttrykket «internett er et{" "}
+          <strong>nettverk av nettverk</strong>» gir mening.
+        </p>
+        <p>
+          Det <strong>andre svaret er tjeneste-svaret</strong>: internett er en plattform
+          applikasjoner kan bygges på. Plattformen tilbyr ett grensesnitt — send informasjon
+          herfra til dit — og all den voldsomme kompleksiteten (at du snakker til fjernkontrollen
+          og en film begynner å spille) ligger i applikasjonene i endepunktene, ikke i
+          leveransetjenesten under. Dette kurset handler mest om leveransen; applikasjons-siden
+          tar vi i kapittel 2.
+        </p>
+
+        <LectureBeat>Protokoller: start med de menneskelige</LectureBeat>
+        <p>
+          Den enkleste veien inn i «hva er en protokoll?» er å se at mennesker kjører protokoller
+          hele tiden. Klokke-protokollen: du sier «unnskyld, vet du hva klokka er?», den andre ser
+          på klokka og svarer. Én forespørsel, ett svar. Spørsmåls-protokollen i et klasserom:
+          foreleseren spør «noen spørsmål?», studenten enten stirrer ned i notatene eller rekker
+          opp hånda, foreleseren gir ordet, spørsmålet kommer, svaret kommer.
+        </p>
+        <p>
+          Fellesnevneren er: <strong>bestemte meldinger sendes</strong>, og{" "}
+          <strong>bestemte handlinger utføres når de mottas</strong>. Nettverksprotokoller er
+          nøyaktig det samme, bare at det er maskiner, apper, rutere og lenker som utveksler
+          meldingene. Legg merke til at klokke-protokollen har to faser — en kontaktfase («vil du
+          snakke med meg?») og en forespørsel/svar-fase — helt som HTTP, der TCP-forbindelsen
+          settes opp først og request/response kommer etterpå.
+        </p>
+        <p className="rounded-lg border border-amber-500/30 bg-background/60 px-3 py-2">
+          <strong>Definisjonen som blir stående:</strong> en protokoll definerer{" "}
+          <em>formatet på</em> og <em>rekkefølgen av</em> meldinger som sendes og mottas mellom
+          nettverks-enheter, samt <em>hvilke handlinger</em> som utføres når en melding sendes
+          eller mottas.
+        </p>
+        <p>
+          Og siden protokoller er avtaler, må noen skrive dem ned. For internett er det{" "}
+          <strong>IETF</strong> (Internet Engineering Task Force) som standardiserer, og
+          standardene heter <strong>RFC</strong>-er (Request For Comments).
+        </p>
+      </LectureNote>
+
+
       <VisualDefs
         items={[
           {
@@ -473,6 +536,109 @@ function Section12() {
       </p>
 
       <Section12Live />
+
+      <LectureNote title="Aksessnett: still alltid to spørsmål">
+        <p>
+          Aksessnettet er lenken som kobler end-systemet ditt (eller hele hjemmenettet ditt) til{" "}
+          <strong>første-hop-ruteren</strong> på veien mot destinasjonen. Det finnes i tre
+          familier: <strong>hjemme-aksess</strong>, <strong>institusjons-aksess</strong> (bedrift,
+          skole, kommune) og <strong>mobil aksess</strong> (mobiloperatør eller WiFi).
+        </p>
+        <p>
+          Uansett hvilken du ser på, still de samme to spørsmålene:{" "}
+          <strong>hvor mange bits i sekundet</strong> kan sendes over den — og{" "}
+          <strong>i hvilken grad må du dele</strong> den kapasiteten med andre? Det andre
+          spørsmålet er det folk glemmer, og det er ofte det som avgjør hvordan nettet føles.
+        </p>
+
+        <LectureBeat>Kabel-TV-nett (HFC) — delt medium</LectureBeat>
+        <p>
+          Én fysisk koaks-kabel går forbi mange hus og opp til en <em>head end</em>. Signalene til
+          og fra husene ligger på <strong>ulike frekvenser</strong> på den samme kabelen, akkurat
+          som FM-radio der stasjonene sender på hver sin frekvens og du stiller inn på den du vil
+          ha. Det heter <strong>frekvensdeling</strong> (FDM). Men det er begrenset hvor mange
+          frekvenser som finnes, så du deler gjerne én frekvens med naboene: sitter naboen og
+          fyrer løs med trafikk, spiser det av din kapasitet.
+        </p>
+        <p>
+          Kabel-aksess er <strong>asymmetrisk</strong> — designet for å levere raskere{" "}
+          <em>ned</em> enn <em>opp</em>, fordi vi konsumerer mer data enn vi produserer. Typisk
+          40 Mb/s–1,2 Gb/s ned og 30–100 Mb/s opp, og modemet ditt begrenser deg uansett til det
+          abonnementet du betaler for. Standarden heter DOCSIS og kommer igjen i kapittel 6.
+        </p>
+
+        <LectureBeat>DSL — dedikert, men avstandsfølsom</LectureBeat>
+        <p>
+          DSL bruker den samme kobber-parkabelen (<em>twisted pair</em> — to kobbertråder tvinnet
+          rundt hverandre) som telefonen brukte, og går <strong>direkte til en sentral</strong>.
+          Der deler du ikke kapasitet med naboene. Også asymmetrisk: typisk 24–52 Mb/s ned og
+          3,5–16 Mb/s opp — men tallene henger tett sammen med{" "}
+          <strong>avstanden til sentralen</strong>. Bor du lenger unna enn omtrent fem kilometer,
+          får du rett og slett ikke DSL i det hele tatt.
+        </p>
+
+        <LectureBeat>Hjemmenettet og de andre</LectureBeat>
+        <p>
+          I hjemmet kommer kabel- eller DSL-lenken inn i et <strong>modem</strong>{" "}
+          (modulator/demodulator), som henger sammen med en ruter som igjen har både kablede og
+          trådløse lenker ut til enhetene. I praksis er modem, ruter, svitsj og WiFi-aksesspunkt
+          samme boks. Kabelen er som regel Ethernet på 100 Mb/s til 1 Gb/s; WiFi ligger på titalls
+          til hundretalls Mb/s.
+        </p>
+        <p>
+          Et <strong>bedriftsnett</strong> er langt på vei et hjemmenett på steroider — samme
+          blanding av Ethernet og WiFi, men med mange svitsjer og rutere fordi antallet enheter er
+          så mye større. <strong>Datasenternett</strong> er en helt egen sjanger: enorme antall
+          servere koblet til hverandre og til nettet på hundrevis av Gb/s.
+        </p>
+        <p>
+          Trådløst deles i to klasser. <strong>WiFi / trådløst LAN</strong> (IEEE 802.11, ikke
+          IETF) rekker 10–100 meter og gir 11–450+ Mb/s. <strong>Mobilnett</strong> (4G/5G) rekker
+          titalls kilometer fra basestasjonen og gir fra noen få til titalls Mb/s per bruker. Både
+          WiFi og mobilnett har en fast enhet — aksesspunkt eller basestasjon — som endeenhetene
+          snakker med.
+        </p>
+
+        <LectureBeat>Hva «en pakke» faktisk er — og L/R</LectureBeat>
+        <p>
+          Når en host skal sende en stor fil, deler den den opp i mindre biter. Til hver bit legger
+          den på en <strong>header</strong> med ekstra informasjon; protokollen bestemmer hva som
+          skal stå der. Data pluss header er <strong>pakken</strong>, og den har en lengde{" "}
+          <strong>L</strong> bits — en typisk verdi er 1500 byte.
+        </p>
+        <p>
+          Lenken har en <strong>transmisjonsrate R</strong> målt i bits per sekund (også kalt
+          kapasitet eller båndbredde, litt upresist). Da er tiden det tar å få pakken ut på lenken
+          rett og slett{" "}
+          <code className="rounded bg-muted px-1 py-0.5 font-mono text-xs">L / R</code>. Den lille
+          brøken kommer tilbake igjen og igjen i resten av kurset.
+        </p>
+
+        <LectureBeat>Fysisk medium — kort versjon</LectureBeat>
+        <p>
+          Media deles i <strong>guided</strong> (signalet føres i noe fysisk: kobber, koaks, fiber)
+          og <strong>unguided</strong> (signalet forplanter seg fritt: radio). Parkabel gir
+          hundrevis av Mb/s til Gb/s, men er følsom for elektromagnetisk støy. Koaks brukes til
+          kabel-aksess og gir hundrevis av Mb/s. Fiber sender lyspulser, gir hundrevis av Gb/s og
+          oppover med svært lav feilrate — nesten ideelt, bortsett fra at sender- og
+          mottakerkomponentene koster mer enn kobber.
+        </p>
+        <p>
+          Trådløst er et notorisk vanskelig miljø. Signalet <strong>svekkes med avstand</strong>,{" "}
+          <strong>reflekteres</strong> av gjenstander, <strong>blokkeres</strong> av vegger (eller
+          går rett gjennom, avhengig av frekvens), og forstyrres av motorer, mikrobølgeovner og
+          alt annet som stråler i samme bånd. I tillegg er trådløst per definisjon{" "}
+          <strong>kringkasting</strong>: alle nær senderen kan i prinsippet motta — derav både
+          avlyttings- og interferensproblemet.
+        </p>
+        <p>
+          Til slutt en som overrasker: en geostasjonær <strong>satellitt</strong> gir omtrent samme
+          rate som terrestrisk mikrobølge (titalls Mb/s), men har en{" "}
+          <strong>propagasjonsforsinkelse på cirka 270 ms</strong> hver vei. Det er ikke
+          kapasiteten som ødelegger for interaktiv bruk der — det er lysets hastighet.
+        </p>
+      </LectureNote>
+
 
       <VisualDefs
         items={[

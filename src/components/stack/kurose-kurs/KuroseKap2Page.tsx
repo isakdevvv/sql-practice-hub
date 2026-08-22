@@ -18,6 +18,7 @@ import { Section24Live } from "./Section24Live";
 import { Section25Live } from "./Section25Live";
 import { Section26Live } from "./Section26Live";
 import { VisualDefs } from "./VisualDefs";
+import { LectureNote, LectureBeat } from "./LectureNote";
 import {
   ClientServerArchIcon,
   P2PArchIcon,
@@ -499,6 +500,186 @@ function Section22() {
       </p>
 
       <Section22Live />
+
+      <LectureNote title="Stateless, og de to forbindelsestypene">
+        <p>
+          En webside består av en <strong>base-HTML-fil</strong> pluss et sett refererte objekter —
+          bilder, stilark, skript, lyd — og objektene kan godt ligge på helt andre servere. Hvert
+          av dem har sin egen URL: et vertsnavn pluss en sti på den verten.
+        </p>
+        <p>
+          HTTP kjører på klient/tjener-modellen og bruker TCP under seg. Én transaksjon er: klient
+          åpner TCP-forbindelse til serveren (port 80), en eller flere HTTP-meldinger utveksles,
+          forbindelsen lukkes. Både Firefox på en PC og Safari på en mobil snakker samme protokoll
+          med den samme webserveren.
+        </p>
+        <p>
+          HTTP er <strong>stateless</strong>: serveren husker ingenting om forespørselen etterpå.
+          Én forespørsel, ett svar, ferdig. Grunnen er <em>enkelhet</em>. Protokoller som holder
+          tilstand må håndtere det vonde tilfellet — «vi var i steg 3 av 5 og så krasjet det, nå må
+          jeg rulle tilbake og rydde opp i inkonsistent tilstand». Det slipper HTTP helt.
+        </p>
+
+        <LectureBeat>Ikke-persistent vs. persistent</LectureBeat>
+        <p>
+          Merk først at HTTP-forbindelsen mellom nettleser og server er noe annet enn{" "}
+          <strong>TCP</strong>-forbindelsen under. Med{" "}
+          <strong>ikke-persistent HTTP</strong> åpnes en TCP-forbindelse, høyst ett objekt sendes,
+          og forbindelsen lukkes. Skal du ha ti bilder, må du gjennom det ti ganger.
+        </p>
+        <p>
+          Definer <strong>RTT</strong> (round-trip time) som tiden en bitte liten pakke bruker fra
+          klient til server og tilbake. Da blir responstiden per objekt:{" "}
+          <strong>én RTT for å sette opp TCP-forbindelsen</strong>,{" "}
+          <strong>én RTT til for forespørselen og de første bytene av svaret</strong>, pluss tiden
+          serveren bruker på å sende selve fila ut på lenken. Altså{" "}
+          <code className="rounded bg-muted px-1 py-0.5 font-mono text-xs">2·RTT + filtid</code>.
+        </p>
+        <p>
+          <strong>Persistent HTTP</strong> (HTTP/1.1) lar forbindelsen stå åpen etter svaret. Nye
+          forespørsler sendes over den samme åpne forbindelsen med én gang nettleseren støter på et
+          referert objekt — ingen ny oppsettsrunde. Det halverer responstiden til{" "}
+          <strong>én RTT</strong> per objekt, og det er slik nesten alle webservere kjører i dag.
+        </p>
+
+        <LectureBeat>Meldingene, i praksis</LectureBeat>
+        <p>
+          En <strong>request</strong> starter med én forespørselslinje: metode, URL, HTTP-versjon.
+          Så følger header-linjer med tilleggsinfo — hvilken vert forespørselen gjelder, hvilken
+          nettleser som spør, hvilke innholdstyper og språk som foretrekkes, om forbindelsen skal
+          holdes åpen — og meldingen avsluttes med en tom linje. Noen metoder har i tillegg en{" "}
+          <strong>body</strong> med data som ikke passer i headerne.
+        </p>
+        <p>
+          Fire metoder å kjenne: <strong>GET</strong> henter et objekt, <strong>POST</strong>{" "}
+          laster opp skjemadata, <strong>PUT</strong> legger opp et nytt objekt på en gitt URL (og
+          kan erstatte et eksisterende), og <strong>HEAD</strong> ber om nøyaktig det svaret et GET
+          ville gitt, bare uten kroppen — nyttig for å finne ut hvor stort et objekt er uten å
+          laste det ned.
+        </p>
+        <p>
+          Et <strong>response</strong> starter med en statuslinje: versjon, statuskode og en kort
+          frase — <code className="rounded bg-muted px-1 py-0.5 font-mono text-xs">200 OK</code>{" "}
+          når alt gikk bra,{" "}
+          <code className="rounded bg-muted px-1 py-0.5 font-mono text-xs">404 Not Found</code> når
+          objektet ikke finnes. Så header-linjer (dato, servertype, når dokumentet sist ble endret,
+          hvor langt det er, hvilken type det er) og til slutt selve objektet.
+        </p>
+        <p>
+          Det fine er at alt dette er <strong>lesbart for mennesker</strong>. Spesifikasjonen er
+          85 sider og du må kunne hver detalj hvis du skal <em>implementere</em> en klient eller
+          server — men som nettverksstudent holder det å kjenne strukturen og kunne slå opp resten
+          i RFC-en.
+        </p>
+      </LectureNote>
+
+      <LectureNote title="Cookies — hvordan en stateless protokoll likevel husker deg">
+        <p>
+          Selv om HTTP er tilstandsløst, kan en webserver holde tilstand om en bruker — mer presist
+          om en <em>nettleser</em> — mellom transaksjoner. Mekanismen har{" "}
+          <strong>fire deler</strong>: en cookie-header-linje i svaret, en cookie-header-linje i
+          neste forespørsel, en cookie-fil hos klienten, og en database bak serveren.
+        </p>
+        <p>
+          Gangen er enkel. Klienten spør første gang uten cookie. Serveren lager en cookie — i
+          bunn og grunn bare et tall — lagrer den sammen med transaksjonen i databasen sin, og
+          sender den med i svaret. Neste gang klienten spør, sender den tallet med, og nå kan
+          serveren gjøre noe <em>cookie-spesifikt</em>: så du på én vare forrige gang og en annen
+          nå, kan svaret inneholde et tilbud på begge samlet. Kommer du tilbake en uke senere med
+          det samme tallet, kan serveren fortsatt si «du så på disse — skal du ikke ha dem?»
+        </p>
+        <p>
+          Derfor brukes cookies til å huske at du er innlogget, hva som ligger i handlekurven, og
+          til anbefalinger basert på tidligere oppførsel. Legg merke til at klienten samtidig har
+          cookies fra alle andre nettsteder den har besøkt.
+        </p>
+        <p>
+          Det er også her personvernet kommer inn. Cookies lar nettsteder lære mye om deg, og{" "}
+          <strong>tredjeparts-cookies</strong> lar flere nettsteder gjenkjenne{" "}
+          <em>den samme identiteten</em> på tvers. Under <strong>GDPR</strong> kan cookies som
+          ikke er strengt nødvendige for at nettstedet skal fungere først aktiveres etter at du har
+          gitt eksplisitt samtykke — det er derfor du må ta stilling til en cookie-boks før du får
+          bruke halve internett.
+        </p>
+      </LectureNote>
+
+      <LectureNote title="Web-cache og betinget GET — regnestykket">
+        <p>
+          En institusjon setter opp en <strong>web-cache</strong> og nettleserne peker på den. Alle
+          forespørsler går til cachen først: har den objektet, svarer den selv og{" "}
+          <strong>origin-serveren er ikke engang involvert</strong>; har den det ikke, henter den
+          objektet fra origin-serveren, lagrer det, og leverer videre. Cachen er altså{" "}
+          <em>server</em> mot klienten og <em>klient</em> mot origin-serveren. Origin-serveren kan
+          styre hvor lenge — eller om — objektet får caches, via{" "}
+          <code className="rounded bg-muted px-1 py-0.5 font-mono text-xs">Cache-Control</code>.
+        </p>
+        <p>
+          Regn på det. Institusjonsnettet har en aksesslenke på{" "}
+          <strong>1,544 Mb/s</strong> ut mot internett, RTT fra institusjonsruteren til
+          origin-serverne er <strong>2 s</strong>, gjennomsnittlig objektstørrelse{" "}
+          <strong>100 kbit</strong>, og nettleserne gjør <strong>15 forespørsler i sekundet</strong>.
+          Da strømmer det inn 15 × 100 kbit = <strong>1,50 Mb/s</strong> over en lenke som tåler
+          1,544. Utnyttelsesgraden blir <strong>0,97</strong> — og på en lenke som er 97 % full blir
+          køforsinkelsen katastrofal, i minutt-klassen. LAN-et internt ligger på 0,0015 og bidrar
+          med mikrosekunder. <strong>Aksesslenken er flaskehalsen.</strong>
+        </p>
+        <p>
+          <strong>Alternativ 1: kjøp raskere lenke.</strong> 154 Mb/s gir utnyttelse 0,0097 og
+          køene forsvinner. Problemet er prislappen — det er en fast månedlig kostnad.
+        </p>
+        <p>
+          <strong>Alternativ 2: sett opp cachen.</strong> Si at 40 % av forespørslene treffer i
+          cachen. De 40 % besvares lokalt på millisekunder. De resterende 60 % må ut, så trafikken
+          på aksesslenken blir 0,6 × 1,5 Mb/s = <strong>0,9 Mb/s</strong>, og utnyttelsen faller til{" "}
+          <strong>0,58</strong> — der er køforsinkelsen minimal. Snitt-responstiden blir omtrent
+          0,6 × 2,01 s + 0,4 × (noen få ms) ≈ <strong>1,2 sekunder</strong>. Du har altså halvert
+          lastetiden <em>og</em> spart lenke-oppgraderingen — samtidig som origin-serveren
+          avlastes. Tre gevinster på én investering.
+        </p>
+
+        <LectureBeat>Betinget GET</LectureBeat>
+        <p>
+          Den andre cache-formen sitter i din egen maskin og nettleser: har klienten allerede en
+          fersk kopi, er det ingen grunn til å sende objektet på nytt. Men hvordan vet klienten at
+          kopien er fersk? Den sender med feltet{" "}
+          <code className="rounded bg-muted px-1 py-0.5 font-mono text-xs">If-Modified-Since</code>{" "}
+          med datoen kopien ble hentet. Serveren svarer da på én av to måter:{" "}
+          <code className="rounded bg-muted px-1 py-0.5 font-mono text-xs">304 Not Modified</code>{" "}
+          uten kropp hvis kopien fortsatt gjelder, eller vanlig{" "}
+          <code className="rounded bg-muted px-1 py-0.5 font-mono text-xs">200 OK</code> med en
+          nyere versjon hvis objektet er endret. Begge cache-formene gir både bedre opplevd ytelse
+          og lavere ressursbruk i nettet.
+        </p>
+      </LectureNote>
+
+      <LectureNote title="HTTP/2: rammer og head-of-line blocking">
+        <p>
+          Hovedmålet med HTTP/2 var å kutte forsinkelsen når en side består av mange objekter.
+          Metoder, statuskoder og de fleste header-feltene er stort sett uendret fra 1.1. Det som
+          er nytt: klienten kan <strong>angi prioritet</strong> på objektene så rekkefølgen ikke
+          må være først-til-mølla, serveren kan <strong>pushe</strong> objekter klienten trolig vil
+          be om snart — og, viktigst, store objekter kan deles i{" "}
+          <strong>rammer</strong> (frames) som kan planlegges mot hverandre.
+        </p>
+        <p>
+          Poenget med rammene er å unngå <strong>head-of-line blocking</strong>. Tenk at klienten
+          ber om én stor videofil og deretter tre små objekter. I HTTP/1.1 leveres de i tur og
+          orden: den store først, og de tre små må vente. Det er kassa på butikken — du står med ett
+          brød bak noen med full handlevogn, og alle taper på at vogna må ekspederes ferdig først.
+        </p>
+        <p>
+          HTTP/2 deler den store fila i rammer og fletter rammene fra de ulike objektene inn i
+          hverandre. Resultatet: de tre små objektene kommer raskt fram, den store blir bare
+          marginalt forsinket, og gjennomsnittlig objektforsinkelse går klart ned.
+        </p>
+        <p>
+          Det som gjenstår å fikse — effekten av <strong>pakketap</strong> og manglende sikkerhet i
+          bunnen av TCP-forbindelsen — er nettopp det <strong>HTTP/3</strong> tar tak i, ved å
+          kjøre på QUIC over UDP. Detaljene der gir mest mening når vi har vært gjennom
+          transportlaget i kapittel 3.
+        </p>
+      </LectureNote>
+
 
       <div className="grid gap-3 lg:grid-cols-2">
         <VisualDefs
