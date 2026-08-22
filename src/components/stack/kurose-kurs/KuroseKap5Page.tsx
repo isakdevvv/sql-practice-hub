@@ -17,6 +17,7 @@ import { Section53Live } from "./Section53Live";
 import { Section54Live } from "./Section54Live";
 import { Section55Live } from "./Section55Live";
 import { VisualDefs } from "./VisualDefs";
+import { LectureNote, LectureBeat } from "./LectureNote";
 import {
   DataPlaneIcon,
   ControlPlaneIcon,
@@ -463,6 +464,61 @@ function Section51() {
         hvorfor distance-vector er sårbar for count-to-infinity.
       </p>
       <Section51Live />
+
+      <LectureNote title="Kontrollplanet: to familier, to måter å kjøre dem på">
+        <p>
+          Vi blir værende i nettverkslaget, men flytter blikket. Der dataplanet handlet om{" "}
+          <em>én ruter</em> og hvordan en pakke kommer fra en inngangsport til en utgangsport,
+          handler kontrollplanet om <strong>nettverksvid</strong> logikk: hvilke stier tas fra kilde
+          til destinasjon, og hvordan nettet driftes og konfigureres.
+        </p>
+        <p className="rounded-lg border border-amber-500/30 bg-background/60 px-3 py-2">
+          Hold skillet klart hele kapittelet:{" "}
+          <strong>forwarding</strong> er ruter-lokalt og hører til dataplanet.{" "}
+          <strong>Routing</strong> bestemmer stien pakker tar fra kilde til destinasjon og er en
+          nettverksvid funksjon.
+        </p>
+
+        <LectureBeat>To familier av algoritmer</LectureBeat>
+        <p>
+          Det er verdt å vite hvor lite man egentlig trenger å lære her, for det finnes i praksis bare
+          to familier: mer sentraliserte <strong>link state</strong>-algoritmer av
+          Dijkstra-typen, og distribuerte <strong>distance vector</strong>-algoritmer av
+          Bellman–Ford-typen. Så godt som enhver rutingalgoritme i internettet er den ene eller den
+          andre.
+        </p>
+        <p>
+          Og de dukker opp igjen som konkrete protokoller: <strong>OSPF</strong> bruker link
+          state-tilnærmingen for ruting <em>inne i</em> ett nettverk — det kalles intra-domene-ruting.{" "}
+          <strong>BGP</strong> er inter-domene: ruting <em>mellom</em> administrative systemer, altså
+          mellom nettverk. Siden internettet nettopp er et nettverk av nettverk, er det BGP som gjør
+          at alle bitene kan rute til hverandre — derfor kalles BGP gjerne{" "}
+          <strong>limet som holder internettet sammen</strong>.
+        </p>
+
+        <LectureBeat>To måter å kjøre dem på</LectureBeat>
+        <p>
+          Uansett hvilken algoritme, finnes det to måter å <em>implementere</em> den på — og det er
+          her forskjellen sitter, ikke i selve algoritmen.
+        </p>
+        <p>
+          I den <strong>per-ruter</strong>-tilnærmingen ligger en bit av kontrollplanet i hver eneste
+          ruter, og rutingalgoritmen kjøres distribuert: rutingfunksjonen i én ruter snakker med
+          rutingfunksjonene i naboruterne for å regne ut forwarding-tabellene.
+        </p>
+        <p>
+          I <strong>SDN</strong>-tilnærmingen er beregningen <em>logisk sentralisert</em>: en fysisk
+          adskilt fjernkontroller regner ut tabellene og dytter dem ut til ruterne, som installerer
+          dem. Her snakker ruterne <strong>ikke</strong> med hverandre for å finne stiene.
+        </p>
+        <p>
+          Det viktige å ta med seg:{" "}
+          <strong>selve algoritmen for å finne korteste sti er den samme i begge tilfeller</strong> —
+          Dijkstra er Dijkstra. Det som skiller er hvor beregningen kjøres. Mye av innovasjonen i
+          nettverksfaget de siste ti–femten årene har skjedd nettopp her.
+        </p>
+      </LectureNote>
+
       <RoutingAlgsContent />
     </article>
   );

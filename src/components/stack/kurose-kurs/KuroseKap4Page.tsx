@@ -15,6 +15,7 @@ import { Section43Live } from "./Section43Live";
 import { Section44Live } from "./Section44Live";
 import { Section45Live } from "./Section45Live";
 import { VisualDefs } from "./VisualDefs";
+import { LectureNote, LectureBeat } from "./LectureNote";
 import {
   ForwardingIcon,
   RoutingIcon,
@@ -242,6 +243,79 @@ function Section41() {
 
       <Section41Live />
 
+      <LectureNote title="Lokalt vs. globalt — og hvorfor best effort vant">
+        <p>
+          Nettverkslaget er limet som holder internettet sammen, og det som gjør det spesielt er at
+          det er implementert i <strong>hver eneste</strong> internett-tilkoblede enhet — milliarder
+          av verter og rutere. Det er også derfor det er så stort at det ikke får plass i ett
+          kapittel: vi deler i <strong>dataplanet</strong> (det hver enkelt ruter gjør lokalt) og{" "}
+          <strong>kontrollplanet</strong> (den nettverksvide logikken).
+        </p>
+        <p>
+          Skillet lokalt/globalt er nøkkelen til hele kapittelet.{" "}
+          <strong>Forwarding</strong> er den lokale handlingen: flytt pakken fra en inngangsport til
+          riktig utgangsport. Det skjer på nanosekund-skala og er implementert i maskinvare.{" "}
+          <strong>Routing</strong> er den nettverksvide aktiviteten: bestem hvilken sti pakker skal ta
+          fra kilde til destinasjon. Det skjer på sekund-skala og er implementert i programvare.
+        </p>
+        <p>
+          Analogien er en biltur: forwarding er å komme seg gjennom <em>ett</em> kryss eller én
+          rundkjøring. Routing er å planlegge og gjennomføre hele turen fra by til by, gjennom mange
+          kryss.
+        </p>
+
+        <LectureBeat>Hvor kommer forwarding-tabellen fra?</LectureBeat>
+        <p>
+          Ruteren matcher bits i pakkens header mot en oppføring i en lokal forwarding-tabell som sier
+          hvilken utgangslenke pakken skal på. Det virkelige spørsmålet er hvordan den tabellen
+          fylles. Helt i starten ble tabellene <em>skrevet inn for hånd</em> av en nettverksansvarlig.
+          Med hundrevis av millioner rutere er det ikke lenger en mulighet.
+        </p>
+        <p>
+          Derfor to tilnærminger, og det er de vi skal studere.{" "}
+          <strong>Tradisjonelt</strong> kjører en distribuert rutingalgoritme i hver eneste ruter, og
+          bitene snakker sammen for å regne ut tabellene. Med{" "}
+          <strong>software-defined networking</strong> ligger en fysisk adskilt fjernkontroller — som
+          regel i et datasenter — som regner ut tabellene og <em>dytter dem ut</em> til ruterne.
+          Ruteren gjør fortsatt den samme lokale forwardingen; forskjellen er hvor tabellen ble
+          laget.
+        </p>
+
+        <LectureBeat>Tjenestemodellen — og en påstand verdt å tygge på</LectureBeat>
+        <p>
+          Hva <em>kunne</em> nettverkslaget lovet? Garantert levering. Garantert levering med
+          forsinkelsestak, for eksempel under 40 ms. Garantert rekkefølge. Garantert minimum
+          båndbredde per strøm.
+        </p>
+        <p>
+          Internettets svar er <strong>best effort</strong>: sendte pakker er ikke engang garantert
+          å komme fram, langt mindre innen en frist eller med en båndbreddegaranti. Man kan nesten
+          kalle det en eufemisme for ingen tjeneste i det hele tatt — et nett som leverte null pakker
+          ville teknisk sett oppfylt definisjonen.
+        </p>
+        <p>
+          På 1990-tallet ble langt mer sofistikerte tjenestemodeller foreslått, standardisert i
+          RFC-er og til og med bygget inn i rutere. De brukes knapt. Hvorfor vant den minimale
+          modellen? Fire grunner er verdt å huske:
+        </p>
+        <p>
+          <strong>Enkelheten</strong> gjorde det trivielt å koble til en ny vert eller et nytt nett,
+          og overkommelig å drifte et IP-nett — noe som slett ikke gjaldt de konkurrerende
+          nettteknologiene på samme tid. <strong>Nok kapasitet</strong> ble etter hvert mulig å kjøpe,
+          så sanntidstjenester fungerer godt nok mesteparten av tiden. Den enorme mengden{" "}
+          <strong>distribuert applikasjonsinfrastruktur</strong> (CDN-er og lignende) kompenserer for
+          det nettet ikke lover — og oppsto trolig <em>nettopp fordi</em> tjenestemodellen var så
+          mager. Og til slutt kan <strong>TCPs metningskontroll</strong> trekke seg tilbake når det
+          butter.
+        </p>
+        <p>
+          Poenget er verdt å ta med seg som ingeniør: vi henger oss ofte så opp i mekanismene at vi
+          mister de store spørsmålene av syne — og valget av tjenestemodell var trolig en av de
+          viktigste beslutningene i hele det opprinnelige internett-designet.
+        </p>
+      </LectureNote>
+
+
       <VisualDefs
         items={[
           {
@@ -368,6 +442,186 @@ function Section42() {
       </p>
 
       <Section42Live />
+
+      <LectureNote title="Inne i ruteren: portene, veven og det lengste prefikset">
+        <p>
+          En ruter har fire deler: <strong>inngangsporter</strong>,{" "}
+          <strong>utgangsporter</strong>, en <strong>svitsjevev</strong> og en{" "}
+          <strong>ruteprosessor</strong>. Antall porter spenner fra en håndfull i en hjemmeruter til
+          mange hundre i en ryggradsruter, hver på mange Gb/s. Skillet mellom dataplan og
+          kontrollplan er fysisk synlig her: portene og veven går i maskinvare i høy hastighet,
+          ruteprosessoren kjører programvare på langt roligere tidsskala.
+        </p>
+        <p>
+          Går du inn i en inngangsport fra venstre, møter du først{" "}
+          <strong>linjeterminering</strong> (fysisk lag: ta imot bits fra kobber, fiber eller
+          radio), så <strong>lenkelaget</strong> (sett bitene sammen til rammer), og så
+          nettverkslaget. Og den kritiske funksjonen der er{" "}
+          <strong>oppslag og videresending</strong>: hvilken utgangsport skal denne pakken til? Det
+          er <em>match + action</em> i sin enkleste form.
+        </p>
+
+        <LectureBeat>Longest prefix match</LectureBeat>
+        <p>
+          Det finnes nesten fire milliarder mulige måladresser. Vi vil åpenbart ikke ha én
+          tabelloppføring per adresse, så oppføringene dekker <em>områder</em>. Men adresseområder
+          blir stygge så snart en liten del av et område skal et annet sted — skal vi da splitte
+          området i biter?
+        </p>
+        <p>
+          Nei. Man bruker <strong>prefikser</strong> i stedet, og regelen er:{" "}
+          <em>alle</em> bitene i prefikset må stemme med adressens venstre bits, og blant alle
+          prefikser som matcher, velger man <strong>det lengste</strong>. Det kalles også{" "}
+          <em>mest spesifikke match</em>, siden det er det som matcher flest av adressens
+          venstrebits. En adresse kan altså matche to oppføringer der den ene har 21 bits og den
+          andre 24 — og da vinner 24-bits-oppføringen. Adresseområder og prefikser er egentlig samme
+          sak, men prefikser er langt greiere å regne med.
+        </p>
+        <p>
+          I praksis gjøres oppslaget i maskinvare, ofte i{" "}
+          <strong>TCAM</strong>-minne, der du presenterer adressen og får treffet tilbake på{" "}
+          <em>én klokkesyklus uansett tabellstørrelse</em>.
+        </p>
+
+        <LectureBeat>Svitsjeveven — hjertet</LectureBeat>
+        <p>
+          Vevens viktigste egenskap er <strong>svitsjeraten</strong>. Har du n innganger med rate R
+          og veven klarer n·R, kan alt som kommer inn svitsjes videre uten nevneverdig venting — det
+          kalles en <strong>ikke-blokkerende</strong> vev. Slike er dyrere, så ikke alle rutere har
+          dem; blokkerer veven, må pakker vente i kø på <em>inngangssiden</em>.
+        </p>
+        <p>
+          Tre måter å bygge veven på. <strong>Via minne</strong> — de aller første ruterne var i
+          praksis vanlige datamaskiner der CPU-en kopierte pakken fra inngangsport til minne og fra
+          minne til utgangsport; nettverksportene var bare enda en I/O-enhet.{" "}
+          <strong>Via buss</strong> — hopp over minnet, la inngangsporten skrive rett inn i
+          utgangsportens buffer, så pakken bare krysser bussen én gang; da er bussens båndbredde
+          taket. <strong>Via sammenkoblingsnett</strong> — den mest brukte i dag, og den mest
+          interessante.
+        </p>
+        <p>
+          Sammenkoblingsnett i rutere deler mye med de som i tiår har koblet prosessorer sammen i
+          flerprosessormaskiner. En krysskobling forbinder n innganger og n utganger gjennom n²
+          koblingspunkter; mer typisk brukes <strong>flertrinns svitsjenett</strong> bygget av mange
+          små svitsjelementer, både i serie (flere trinn) og parallelt (innen et trinn). Fordi slike
+          vever har <em>parallelle stier</em>, er det vanlig å dele ett datagram opp i mindre biter
+          av fast lengde, sende dem parallelt, og sette datagrammet sammen igjen på utgangssiden. Og
+          parallelliteten kan skaleres videre ved å kjøre flere hele svitsjeplan side om side — slik
+          når man hundrevis av terabit svitsjekapasitet i én ruter.
+        </p>
+        <p>
+          En kø-effekt som er unik for inngangssiden er{" "}
+          <strong>head-of-line blocking</strong>: vil pakker fra flere inngangsporter til{" "}
+          <em>samme</em> utgangsport, må alle unntatt én vente — og en ventende pakke fremst i køen
+          blokkerer pakkene bak seg, selv om de skulle til en helt ledig utgangsport.
+        </p>
+      </LectureNote>
+
+      <LectureNote title="Buffer og køordninger — og nettnøytralitet">
+        <p>
+          På utgangssiden ser du hvorfor buffere i det hele tatt finnes: bits kan ankomme i rate n·R
+          fra veven, men kan bare tømmes ut på lenken i rate R. Overstiger ankomstraten
+          avgangsraten, fylles bufferet — og siden buffere er endelige, må pakker til slutt{" "}
+          <strong>kastes</strong>. Det er her metningstap oppstår.
+        </p>
+        <p>
+          Det er fristende å skylde på veven som leverer for fort. Men det er feil diagnose. Den
+          egentlige årsaken er at det er <strong>for mange avsendere ute i kanten som sender for
+          mye, for fort</strong>, og at stiene deres krysser hverandre akkurat her.
+        </p>
+
+        <LectureBeat>Hvor mye buffer er riktig?</LectureBeat>
+        <p>
+          Femti år etter er dette fortsatt ikke avklart. Den klassiske tommelfingerregelen sier{" "}
+          <strong>typisk RTT × lenkekapasitet</strong>. Nyere teoretisk arbeid, som antar at
+          avsenderne er uavhengige av hverandre, foreslår å dele det på <strong>√n</strong> der n er
+          antall strømmer over lenken — altså <em>langt</em> mindre.
+        </p>
+        <p>
+          For mye buffer har nemlig en bakside: store buffere betyr{" "}
+          <strong>store forsinkelser</strong>. Det er dårlig for spillere og for videomøter der
+          titalls millisekunder betyr noe — men verre: lang RTT betyr at TCP-avsendere{" "}
+          <em>oppdager og reagerer på metning senere</em>, så reguleringen blir treg og sløv. Vi vil
+          ha nok buffer til å absorbere kortvarige svingninger og holde lenken opptatt, men ikke mer.
+          Buffer er som salt i matlagingen: riktig mengde gjør retten bedre, for mye ødelegger den.
+        </p>
+        <p className="rounded-lg border border-amber-500/30 bg-background/60 px-3 py-2">
+          Hvorfor er noe så tilsynelatende enkelt som en utgangskø så subtilt? Fordi det er nettopp{" "}
+          <em>her</em> at oppførselen til potensielt tusenvis av aktive avsendere over hele verden
+          konvergerer, når strømmene deres alle skal gjennom den samme lenken. Globalt samspill,
+          synlig på ett enkelt sted dypt inne i nettet.
+        </p>
+
+        <LectureBeat>Fire køordninger</LectureBeat>
+        <p>
+          <strong>FIFO</strong> — sendes i den rekkefølgen de kom. Det vi mennesker gjør mest.{" "}
+          <strong>Prioritetskø</strong> — pakker klassifiseres ved ankomst, og den høyeste
+          ikke-tomme klassen betjenes først (innen klassen: FIFO). Du kjenner det fra flyselskapenes
+          bonusklasser, gjerne fra feil side av skranken.{" "}
+          <strong>Round robin</strong> — ingen streng prioritet, men bytt på: én fra klasse 1, én fra
+          klasse 2, én fra klasse 3, og videre rundt.
+        </p>
+        <p>
+          <strong>Weighted fair queuing (WFQ)</strong> er den generaliserte varianten som faktisk er
+          utbredt i rutere. Den går rundt som round robin, men hver klasse i har en{" "}
+          <strong>vekt w<sub>i</sub></strong>, og i ethvert intervall der klassen har pakker å
+          sende, er den garantert andelen w<sub>i</sub> av kapasiteten — altså en garantert minimum
+          båndbredde w<sub>i</sub>·R. Det er slik man gir båndbreddegarantier per trafikklasse.
+        </p>
+        <p>
+          Ved full buffer må man også velge <em>hva</em> som skal kastes:{" "}
+          <strong>tail drop</strong> (dropp den nyankomne) eller å kaste en allerede køet pakke med
+          lavere prioritet for å gi plass — for eksempel å ofre sluttbrukertrafikk framfor
+          nettverksadministrasjonstrafikk. Alternativt kan pakken <em>merkes</em> med en
+          metningsindikasjon i stedet for å kastes; det er nettopp her ECN-bitene i IP-headeren
+          settes.
+        </p>
+
+        <LectureBeat>Og så det politiske</LectureBeat>
+        <p>
+          Hvem bestemmer hva som havner i hvilken prioritetsklasse? Det gjør{" "}
+          <strong>nettverksoperatøren</strong>. Klassifiseringen kan skje på trafikktype (portnumre
+          avslører hva datagrammet bærer), eller på kilde- og måladresse. Og da er vi framme ved
+          spørsmålet: skal et selskap kunne <em>betale</em> for at pakkene deres får bedre
+          behandling? Mekanismene finnes — vi har akkurat sett dem.
+        </p>
+        <p>
+          Det er dette <strong>nettnøytralitet</strong> handler om: lovene og reglene for hvordan en
+          ISP får lov til å bruke disse mekanismene. Det berører ytringsfrihet (kan en ISP nekte å
+          frakte bestemte typer nyheter eller meninger?), innovasjon og konkurranse (må små og store
+          behandles likt?). USAs regulering fra 2015 satte tre klare grenser, og de er lærerike
+          uansett jurisdiksjon:
+        </p>
+        <p>
+          <strong>Ingen blokkering</strong> av lovlig innhold, applikasjoner, tjenester eller
+          uskadelige enheter — med forbehold om <em>rimelig nettverksdrift</em>. Det forbeholdet er
+          reelt: skal nettet reddes når det er nedkjørt, må driftstrafikk fram. Hva som er «rimelig»
+          er selvsagt åpent for tolkning. En kjent sak gjaldt en ISP som blokkerte kundenes bruk av
+          en IP-telefonitjeneste som konkurrerte med ISP-ens egen telefoni.
+        </p>
+        <p>
+          <strong>Ingen struping</strong> — ikke forringe lovlig trafikk basert på innhold,
+          applikasjon eller tjeneste. En sak her gjaldt en ISP som forstyrret fildelingstrafikk ved
+          selv å lage og sende TCP reset-pakker til klientene, slik at applikasjonens forbindelser
+          ble revet ned nedenfra.
+        </p>
+        <p>
+          <strong>Ingen betalt prioritering</strong> — én strømmetjeneste skal ikke kunne betale for
+          at pakkene sine får bedre behandling enn en annens. Argumentet er at etablerte aktører med
+          dype lommer ellers reiser en høy terskel for nye konkurrenter. Motargumentet er at
+          inntektene ville gjort ISP-markedet mer attraktivt og utløst mer investering i
+          infrastruktur.
+        </p>
+        <p>
+          Og under det hele ligger et definisjonsspørsmål med hundre år gamle røtter: er en ISP en{" "}
+          <em>telekomtilbyder</em> (strengt regulert) eller en <em>informasjonstjenestetilbyder</em>{" "}
+          (langt mindre regulert)? Reguleringen er skrevet om flere ganger siden 2015, og situasjonen
+          er fortsatt i bevegelse. Det er tankevekkende: vi har hatt teknisk mulighet til
+          prioritering siden internettet ble offentlig for tretti år siden, men de sosiale, politiske
+          og økonomiske reglene rundt oppfinnelsen er ennå ikke ferdig skrevet.
+        </p>
+      </LectureNote>
+
 
       <VisualDefs
         items={[
@@ -496,6 +750,178 @@ function Section43() {
       </p>
 
       <Section43Live />
+
+      <LectureNote title="IPv4: hvor adressen kommer fra, og hvorfor det henger sammen med ruting">
+        <p>
+          Først en avgrensning: IP-protokollen handler <em>ikke</em> om rutingalgoritmer eller
+          SDN-kontrollere — det er kontrollplan. IP handler om tre ting:{" "}
+          <strong>datagramformatet</strong>, <strong>hvordan adresser er bygget opp og tolkes</strong>,
+          og <strong>konvensjoner for pakkehåndtering</strong>.
+        </p>
+        <p>
+          Et par header-felt er verdt å stoppe ved.{" "}
+          <strong>Headerlengden</strong> trengs fordi IPv4 kan bære et variabelt antall opsjoner, så
+          mottakeren må få vite hvor nyttelasten begynner (uten opsjoner: 20 byte).{" "}
+          <strong>Datagramlengden</strong> er 16 bits, så teoretisk maks er 64 kB — men i praksis
+          holder man seg rundt 1500 byte, slik at datagrammet passer pent inni en maksimal
+          Ethernet-ramme. <strong>TTL</strong> telles ned ett hakk per ruter og sikrer at pakker ikke
+          sirkler i evig tid ved rutingsløyfer. Og <strong>header-sjekksummen</strong> må regnes ut
+          på nytt i <em>hver</em> ruter, fordi TTL-en nettopp endret seg — det er tidkrevende, og er
+          trolig grunnen til at feltet ble fjernet helt i IPv6.
+        </p>
+
+        <LectureBeat>En adresse identifiserer et grensesnitt</LectureBeat>
+        <p>
+          Det mest oversette punktet i hele adresseringen: en IP-adresse identifiserer{" "}
+          <strong>ikke en maskin</strong>, den identifiserer et <strong>grensesnitt</strong>. Rutere
+          har nesten alltid flere; en laptop har gjerne både kablet Ethernet og trådløst, hver med sin
+          egen adresse.
+        </p>
+        <p>
+          Et <strong>subnett</strong> er den delen av nettet der grensesnitt når hverandre{" "}
+          <em>uten</em> å gå gjennom en ruter. Og det knytter seg direkte til adressen: en IP-adresse
+          har en <strong>subnett-del</strong> og en <strong>vert-del</strong>, og grensesnitt på samme
+          subnett må ha samme subnett-del. Vil du finne subnettene i en tegning, er trikset å{" "}
+          <em>klippe hvert grensesnitt løs</em> fra verten eller ruteren sin — det som blir igjen som
+          isolerte øyer, er subnettene. <strong>CIDR</strong>-notasjonen{" "}
+          <code className="rounded bg-muted px-1 py-0.5 font-mono text-xs">a.b.c.d/x</code> sier at x
+          er antall bits i subnett-delen.
+        </p>
+
+        <LectureBeat>Hvordan en vert får adresse: DHCP</LectureBeat>
+        <p>
+          Før i tiden skrev en systemansvarlig adressen manuelt inn i en fil på maskinen. Med
+          milliarder av verter, over halvparten mobile, som kobler seg til og fra igjen og igjen, er
+          det utenkelig. Derfor <strong>DHCP</strong> — plug and play.
+        </p>
+        <p>
+          Fire meldinger. <strong>Discover</strong>: den nyankomne klienten kringkaster «finnes det
+          en DHCP-server her ute?» — merk at dette er <em>tjeneste-oppdagelse</em>; kilde-IP er 0
+          fordi klienten ikke har noen ennå, og målet er kringkastingsadressen. DHCP kjører over UDP,
+          klienten på port 68, serveren lytter på port 67. <strong>Offer</strong>: en (eller flere)
+          server svarer med en adresse klienten kan bruke og hvor lenge den gjelder.{" "}
+          <strong>Request</strong>: klienten ber formelt om adressen — den kan også være en adresse
+          den allerede har og bare vil fornye. <strong>Ack</strong>: serveren bekrefter.{" "}
+          <strong>Transaksjons-ID-feltet</strong> er det som knytter svar til spørsmål.
+        </p>
+        <p>
+          Og en vert trenger mer enn adressen for å fungere: den må vite{" "}
+          <strong>IP-adressen til første-hop-ruteren</strong> (alt utgående skal dit), gjerne en{" "}
+          <strong>DNS-server</strong>, og <strong>nettmasken</strong>. Alt dette kan følge med i
+          DHCP-meldingene, og gjør det som regel.
+        </p>
+
+        <LectureBeat>Hvordan et nett får et adresseområde — og aggregering</LectureBeat>
+        <p>
+          Et kundenett får som regel et område ut av ISP-ens eget område. Har ISP-en en /20, kan den
+          dele den i åtte /23-er og gi én til hver kunde. Og her kommer det virkelig fine:
+          ISP-en trenger bare å <strong>annonsere ett eneste prefiks</strong> — sin /20 — ut til
+          resten av verden. Det holder for at hele internettet skal kunne rute til alle adressene
+          bak den. Dette kalles <strong>adresseaggregering</strong>.
+        </p>
+        <p className="rounded-lg border border-amber-500/30 bg-background/60 px-3 py-2">
+          Så det virkelig lærerike tilfellet. En kunde bytter ISP, men vil{" "}
+          <em>beholde adresseområdet sitt</em>. Den gamle ISP-en annonserer fortsatt sin /20, som
+          fortsatt inneholder kundens adresser. Den nye ISP-en annonserer i tillegg kundens{" "}
+          <strong>/23</strong>. Hvordan går det bra? Fordi /23 er et{" "}
+          <strong>lengre prefiks</strong> enn /20 — og ruterne bruker longest prefix match. Pakkene
+          til kunden går til den nye ISP-en. Der klikker adressetildeling,
+          forwarding-tabelloppslag og BGP-annonsering sammen til én mekanisme.
+        </p>
+        <p>
+          Og helt øverst: adresserommet eies og fordeles av <strong>ICANN</strong>, som deler ut til
+          fem regionale registre, som deler videre til ISP-ene. I 2011 delte ICANN ut sin{" "}
+          <em>siste</em> ledige blokk med 32-bits adresserom.
+        </p>
+        <p>
+          Hvorfor ble det bare 32 bits? Regnestykket fra 1970-tallet er nesten rørende i sin
+          beskjedenhet: dette skulle bli et forsvarsprosjekt som måtte virke overalt, kanskje to nett
+          per land, kanskje 128 land (fordi det er en toerpotens) — 256 nett, altså 8 bits. Og
+          maskiner per nett? Dette var digre klimaanleggskjølte tidsdelte maskiner; sett 16 millioner,
+          altså 24 bits. Til sammen 32 bits og 4,3 milliarder endepunkter — flere enn det fantes
+          mennesker på jorda. Mer enn nok for et eksperiment.
+        </p>
+      </LectureNote>
+
+      <LectureNote title="NAT og IPv6 — og tunnelering">
+        <p>
+          <strong>NAT</strong> er enkelt i idé: alle enheter i et lokalnett får adresser fra et av de
+          reserverte <em>private</em> adresseområdene, og all trafikk <em>ut</em> av nettet bruker
+          én og samme offentlige adresse. NAT-ruteren gjør tre ting: den bytter ut kilde-IP og
+          kildeport på hvert utgående datagram, den <strong>husker oversettelsen</strong> i en
+          NAT-tabell, og den gjør den omvendte utbyttingen på hvert innkommende datagram ved å slå
+          opp måladresse og målport i tabellen.
+        </p>
+        <p>
+          Det viktige er at NAT er <strong>usynlig for begge sider</strong>. Fjernverten ser bare et
+          datagram med en adresse og en port, og svarer dit, som vanlig. Fordelene er reelle: du
+          sparer adresser, du kan endre adressene inne i nettet uten å varsle noen, du kan bytte ISP
+          uten å omadressere, og enhetene innenfor er ikke direkte synlige utenfra.
+        </p>
+        <p>
+          NAT var i starten <em>kontroversielt</em> — her har vi en nettlagsenhet som roter med
+          portnumre, som strengt tatt er endesystemenes sak. En purist ville sagt: vil du løse
+          adressemangelen, gjør det med IPv6, det var jo derfor IPv6 ble laget. Og det skaper reelle
+          problemer, som når en ekstern vert vil ta kontakt <em>inn</em> gjennom en NAT-boks — kjent
+          som NAT-traversering, og det er ærlig talt et ganske stygt hack. Men operatørene har stemt
+          med føttene: NAT er utbredt og blir værende.
+        </p>
+
+        <LectureBeat>IPv6 — mer enn bare flere bits</LectureBeat>
+        <p>
+          Adresserommet var hovedmotivasjonen, men ikke den eneste. IP-headere må behandles på
+          nanosekunder — noe som ikke var sant i 1981, men har vært det lenge. IPv6 gjør
+          videresendingen raskere ved å fjerne det som gjorde IPv4-behandlingen tung:{" "}
+          <strong>ingen sjekksum</strong> (slipper omregning i hver ruter),{" "}
+          <strong>ingen fragmentering og reassemblering</strong> underveis (det gjøres i endepunktene),
+          og <strong>ingen opsjonsfelt</strong> i selve headeren — så headeren får{" "}
+          <strong>fast lengde</strong>.
+        </p>
+        <p>
+          I tillegg: fram til 90-tallet var datagrammet <em>den</em> abstraksjonen. Siden har
+          begrepet <strong>strøm</strong> — en forbindelse mellom endepunkter — blitt stadig
+          viktigere, og ønsket om å gi tjenester per strøm framfor per datagram med det. IPv6 løfter
+          dette til førsteklasses borger med et <strong>flow label</strong>-felt. Merk nyansen: IPv6
+          sier <em>ingenting</em> om hva en strøm er eller hvordan feltet skal brukes. Det er politikk,
+          og overlatt til operatøren. IPv6 gir mekanisme, ikke policy.
+        </p>
+
+        <LectureBeat>Tunnelering: et datagram inni et datagram</LectureBeat>
+        <p>
+          Hvordan går man fra et IPv4-nett til et IPv6-nett? En «flaggdag» der alle i verden skrur av
+          det ene og på det andre samtidig er utenkelig. De to må{" "}
+          <strong>sameksistere</strong> mens utstyr byttes ut gradvis — litt som å skifte motor på et
+          fly som er i lufta.
+        </p>
+        <p>
+          Teknikken heter <strong>tunnelering</strong>, og nøkkelen er å tenke tilbake på innkapsling
+          fra kapittel 1. To IPv6-rutere koblet med Ethernet legger IPv6-datagrammet som{" "}
+          <em>nyttelast</em> i en Ethernet-ramme. Helt uproblematisk. Er de i stedet koblet sammen{" "}
+          <em>gjennom et IPv4-nett</em>, gjør de nøyaktig det samme — de legger IPv6-datagrammet som
+          nyttelast i et <strong>IPv4-datagram</strong> adressert til hverandre.
+        </p>
+        <p>
+          Følg adressene, det er der forståelsen sitter. Det ytre IPv4-datagrammet har{" "}
+          <em>tunnelendepunktene</em> som kilde og mål. Inni ligger det opprinnelige
+          IPv6-datagrammet med den <em>egentlige</em> avsenderen og mottakeren. Inne i IPv4-nettet er
+          dette bare enda et helt vanlig IPv4-datagram. Når det når tunnelens ende, ser ruteren at den
+          selv er mottakeren, pakker opp, finner et IPv6-datagram, slår opp den <em>ytre</em>{" "}
+          IPv6-destinasjonen og sender videre.
+        </p>
+        <p>
+          Sett slik fungerer IPv4-nettet nesten som en lenkelagsteknologi som direkte forbinder to
+          IPv6-rutere. Tunnelering er et generelt begrep som dukker opp igjen — blant annet i
+          mobilnett for å støtte mobilitet — så det er verdt å bruke litt tid på.
+        </p>
+        <p>
+          Og statusen? Rundt 25 år etter standardiseringen kommer omtrent 30 % av trafikken til de
+          store tjenestene over IPv6. Det er framgang, men IPv4 dominerer fortsatt. NAT tok mye av
+          presset bort. Kontrasten er tankevekkende: på samme 25 år fikk vi weben, sosiale medier,
+          strømming, spill og videomøter. Det sier alt om hvor lett det er å innovere{" "}
+          <em>i kanten</em>, og hvor tungt det er å bytte ut rørene i midten.
+        </p>
+      </LectureNote>
+
 
       <VisualDefs
         items={[
@@ -784,6 +1210,84 @@ function Section45() {
       </p>
 
       <Section45Live />
+
+      <LectureNote title="Middlebokser og timeglasset som la på seg">
+        <p>
+          En <strong>middleboks</strong> er, litt fritt etter definisjonen i RFC 3234, enhver
+          mellomliggende boks som utfører funksjoner utover en IP-ruters vanlige standardfunksjoner,
+          plassert på datastien mellom avsender- og mottakervert. To ting er flagget der:
+          «vanlige standardfunksjoner» betyr i praksis destinasjonsbasert videresending, og «på
+          datastien» betyr at dette er en dataplan-funksjon <em>inne i nettet</em>, ikke i en
+          endevert.
+        </p>
+        <p>
+          Vi har allerede sett NAT og brannmurer bygget på match+action. Legg til{" "}
+          <strong>lastbalansere</strong> — som fordeler forespørsler over speilkopier av en server, og
+          som kalles lag-7-svitsjer fordi de faktisk leser applikasjonslagets headere —{" "}
+          <strong>webcacher</strong> (der det også er lagring og prosessering inne i bildet), og i
+          videste forstand <strong>innholdsdistribusjonsnett</strong>.
+        </p>
+        <p>
+          Utviklingen er verdt å merke seg: for ti år siden kjøpte man middlebokser som proprietær,
+          lukket maskinvare, akkurat som man kjøpte rutere. Nå går det mot{" "}
+          <strong>white box</strong>-maskinvare som eieren selv kan spesialisere via et API — og
+          funksjonaliteten ligger i programvaren oppå. Programvaren spiser verden, også her.
+          Bevegelsen har fått navnet <strong>NFV</strong>, network functions virtualization: samme
+          idé som SDN — skille kontroll fra data, generisk maskinvare spesialisert av programvare —
+          men utvidet til tjenester i nettet som trenger både beregning og lagring, ikke bare
+          videresending.
+        </p>
+
+        <LectureBeat>Timeglasset</LectureBeat>
+        <p>
+          Tegn protokollstakken som et <strong>timeglass</strong> i stedet for et rektangel, så ser
+          du poenget: mange protokoller i fysisk, lenke-, transport- og applikasjonslaget — men{" "}
+          <strong>én eneste nettverkslagsprotokoll</strong>. IP er det ene som absolutt må finnes i
+          hver eneste av milliardene av tilkoblede enheter.
+        </p>
+        <p>
+          Den tynne midjen skjuler at nett med helt ulike lenketeknologier — Ethernet, WiFi, mobil,
+          optikk — alle er del av det samme internettet. IP skjuler heterogeniteten nedover, og
+          tilbyr oppover et enkelt underlag som applikasjonstjenester kan bygges på.
+        </p>
+        <p>
+          Timeglasset er nå rundt 40 år gammelt, altså middelaldrende i menneskeår — og som kjent har
+          slanke midjer en tendens til å gå seg litt ut i den alderen. Det er nettopp det som skjer:
+          NAT-bokser, brannmurer, cacher, lastbalanserere og NFV gjør ting langt hinsides enkel
+          destinasjonsbasert videresending.
+        </p>
+
+        <LectureBeat>Hva var egentlig arkitekturprinsippene?</LectureBeat>
+        <p>
+          RFC 1958 er ærlig på dette: mange i internett-miljøet ville hevdet at det ikke{" "}
+          <em>finnes</em> en arkitektur, bare en tradisjon som ikke ble skrevet ned de første 25
+          årene. Men i grove trekk mente miljøet at målet er{" "}
+          <strong>tilkobling</strong>, verktøyet er <strong>IP-protokollen</strong>, og
+          intelligensen ligger <strong>ende-til-ende</strong> heller enn skjult i nettet.
+        </p>
+        <p>
+          Det siste punktet er <strong>ende-til-ende-prinsippet</strong>. Det svarer på spørsmålet om
+          <em>hvor</em> funksjonalitet som pålitelig overføring og metningskontroll bør ligge. Det{" "}
+          <em>kunne</em> ligget hopp for hopp i hver ruter — og i spesialtilfeller gjør det det. Men
+          det finnes feilscenarier som bare kan håndteres i endepunktene, og argumentet er: når en
+          funksjon uansett bare kan implementeres fullstendig og korrekt med kunnskap som finnes hos
+          applikasjonen i endepunktene, hører den hjemme <em>der</em> — ikke inne i nettet.
+        </p>
+        <p>
+          Sammenlign med telefonnettet. Det hadde dumme endepunkter — dreieskiver, ikke datamaskiner
+          — og derfor <em>måtte</em> all intelligens ligge i de programmerbare sentralene inne i
+          nettet. Da internettet kom, var både endepunktene og svitsjene programmerbare
+          datamaskiner, og valget falt på å legge intelligensen i kanten. Det gikk an fordi
+          endeenhetene var smarte.
+        </p>
+        <p>
+          Men bildet har endret seg igjen. Med middlebokser og SDN er det nå programvare-intelligens
+          oppå enkle white box-er <em>inne</em> i nettet, og med datasentre og CDN-er er det koblet
+          på svært tunge, sofistikerte «endepunkter» på steder midt inne i nettet. Hjernen sitter
+          ikke lenger bare i kanten.
+        </p>
+      </LectureNote>
+
 
       <VisualDefs
         items={[
