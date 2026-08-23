@@ -11,6 +11,7 @@ import {
   ExternalLink,
 } from "lucide-react";
 import { AnslagPanel } from "@/components/lab/AnslagPanel";
+import { CubicAimdViz } from "./CubicAimdViz";
 import type { Anslag } from "@/lib/lab/anslag";
 import { SectionPager, type SectionNavItem } from "./SectionPager";
 import { Section31Live } from "./Section31Live";
@@ -1665,6 +1666,94 @@ function Section35() {
 // ============================================================
 // 3.6 — Congestion control
 // ============================================================
+const ANSLAG_36: Anslag[] = [
+  {
+    id: "k3-cubic-snitt",
+    tema: "AIMD mot CUBIC",
+    sporsmal: (
+      <>
+        AIMD og CUBIC deler samme lenke og samme kapasitetstak, og begge halverer-ish ved tap.
+        Forskjellen er bare <em>formen</em> på oppramingen. Hvem får høyest gjennomsnittlig vindu?
+      </>
+    ),
+    valg: [
+      "Like høyt — de treffer jo samme tak",
+      "AIMD, fordi den øker jevnt og aldri bommer",
+      "CUBIC, fordi den ligger lenger nær taket",
+      "Kommer an på RTT-en, ikke på formen",
+    ],
+    riktig: 2,
+    fasit: (
+      <>
+        Gjennomstrømming er <strong>arealet under kurven</strong>, ikke topp-punktet. CUBIC spurter opp
+        mot forrige tapspunkt og blir liggende der, mens AIMD bruker like lang tid på hvert eneste
+        segment hele veien opp. Samme tak, mye mer areal.
+      </>
+    ),
+    hvorforBommerIntuisjonen: (
+      <>
+        Fordi vi leser grafen som «hvor høyt kommer den?» når spørsmålet er «hvor lenge er den høyt
+        oppe?». Toppunktet er identisk — det er tiden tilbrakt nær toppen som skiller dem.
+      </>
+    ),
+  },
+  {
+    id: "k3-tap-signal",
+    tema: "To slags tapssignal",
+    sporsmal: <>Hva skiller reaksjonen på tre duplikat-ACK-er fra reaksjonen på en timeout?</>,
+    valg: [
+      "Ingenting — begge halverer cwnd",
+      "Duplikat-ACK-er halverer cwnd; timeout setter den til ett segment",
+      "Timeout halverer cwnd; duplikat-ACK-er setter den til ett segment",
+      "Duplikat-ACK-er ignoreres av congestion control",
+    ],
+    riktig: 1,
+    fasit: (
+      <>
+        Tre duplikat-ACK-er betyr at <em>senere</em> segmenter faktisk kom fram — nettet virker, det
+        mangler bare ett. Da holder det å halvere. En timeout gir ingen slik trøst: det kan ha skjedd
+        hva som helst, og TCP går helt ned til <strong>ett segment</strong>.
+      </>
+    ),
+    hvorforBommerIntuisjonen: (
+      <>
+        «Tap er tap» er en naturlig forenkling. Men de to signalene bærer ulik mengde informasjon, og
+        TCP utnytter nettopp den forskjellen — det er derfor sagtannen ser ulik ut i de to tilfellene.
+      </>
+    ),
+  },
+  {
+    id: "k3-bbr-maaling",
+    tema: "Forsinkelsesbasert",
+    sporsmal: (
+      <>
+        En forsinkelsesbasert algoritme som BBR oppdager trengsel <em>uten</em> at en eneste pakke går
+        tapt. Hva er det den sammenligner?
+      </>
+    ),
+    valg: [
+      "Antall ACK-er mot antall sendte segmenter",
+      "Målt RTT mot den minste RTT-en den noen gang har sett",
+      "cwnd mot mottakerens annonserte vindu",
+      "Sjekksummen i hvert segment",
+    ],
+    riktig: 1,
+    fasit: (
+      <>
+        RTT<sub>min</sub> er banen <em>uten kø</em>. Vokser den målte RTT-en over den, står det pakker
+        og venter i en buffer et sted — og det skjer lenge før bufferen renner over og noe faktisk går
+        tapt.
+      </>
+    ),
+    hvorforBommerIntuisjonen: (
+      <>
+        Fordi hele kapittelet har lært deg at tap ER signalet. Poenget med den forsinkelsesbaserte
+        familien er at tap er et <em>sent</em> signal: da har du allerede fylt køen du prøvde å unngå.
+      </>
+    ),
+  },
+];
+
 function Section36() {
   return (
     <article className="space-y-4 text-sm">
@@ -1678,6 +1767,20 @@ function Section36() {
       </p>
 
       <Section35Live />
+
+      <AnslagPanel
+        avsloring="knapp"
+        tittel="Anslå først — så sammenligner du kurvene"
+        intro={
+          <>
+            Grafen under kjører AIMD og CUBIC mot samme kapasitetstak, og regner ut snitt-vinduet for
+            begge. Ta stilling før du ser tallene.
+          </>
+        }
+        anslag={ANSLAG_36}
+      />
+
+      <CubicAimdViz />
 
       <LectureNote title="Congestion control: sagtannen, og de tre familiene">
         <p>

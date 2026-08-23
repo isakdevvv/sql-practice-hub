@@ -9,6 +9,9 @@ import { Section13Live } from "./Section13Live";
 import { Section14Live } from "./Section14Live";
 import { Section15Live } from "./Section15Live";
 import { VisualDefs } from "./VisualDefs";
+import { BomstasjonViz } from "./BomstasjonViz";
+import { AnslagPanel } from "@/components/lab/AnslagPanel";
+import type { Anslag } from "@/lib/lab/anslag";
 import { LectureNote, LectureBeat } from "./LectureNote";
 import {
   HostIcon,
@@ -95,7 +98,7 @@ const SECTIONS_1: SectionNavItem[] = [
 const NEXT_CHAPTER_1 = { slug: "kurose-kap-2", title: "Applikasjonslaget" };
 
 export function KuroseKap1Page() {
-  const [tab, setTab] = useState<Tab>("1.6");
+  const [tab, setTab] = useState<Tab>("intro");
   return (
     <div className="min-h-screen bg-background">
       <SiteHeader />
@@ -1029,6 +1032,98 @@ function Section13() {
 // ============================================================
 // 1.4 — Forsinkelse
 // ============================================================
+const ANSLAG_14: Anslag[] = [
+  {
+    id: "k1-bom-total",
+    tema: "Transmisjon vs. propagasjon",
+    sporsmal: (
+      <>
+        En kolonne på <strong>10 biler</strong> skal gjennom bom 1 og fram til bom 2. Bommen bruker{" "}
+        <strong>12 sekunder per bil</strong>. Det er <strong>100 km</strong> mellom bommene, og bilene
+        kjører <strong>100 km/t</strong>. Hvor lang tid går det før hele kolonnen står ved bom 2?
+      </>
+    ),
+    valg: ["2 minutter", "60 minutter", "62 minutter", "10 timer"],
+    riktig: 2,
+    fasit: (
+      <>
+        120 sekunder på å ekspedere kolonnen gjennom bommen, pluss én time på veien for den siste bilen
+        = <strong>62 minutter</strong>. De to leddene legges sammen — de skjer ikke samtidig for den{" "}
+        <em>siste</em> bilen, som må vente på tur før den i det hele tatt får begynne å kjøre.
+      </>
+    ),
+    hvorforBommerIntuisjonen: (
+      <>
+        Fordi «det tar en time å kjøre 100 km» er så dominerende at ekspederingen føles som avrunding.
+        I nettverk er forholdet ofte motsatt: på en treg lenke kan transmisjonstiden være det store
+        leddet, og propagasjonen forsvinne i støy. Poenget er at du må regne på begge — ikke gjette
+        hvilken som dominerer.
+      </>
+    ),
+  },
+  {
+    id: "k1-bom-uavhengig",
+    tema: "Hva henger sammen med hva",
+    sporsmal: (
+      <>
+        Du oppgraderer bomstasjonen så den bruker <strong>6 sekunder per bil</strong> i stedet for 12.
+        Hva skjer med <strong>propagasjonstiden</strong>?
+      </>
+    ),
+    valg: [
+      "Den halveres også",
+      "Den er uendret",
+      "Den dobles, siden bilene kommer tettere",
+      "Kommer an på hvor mange biler det er",
+    ],
+    riktig: 1,
+    fasit: (
+      <>
+        Uendret. Propagasjonstiden er <strong>avstand delt på fart</strong> — den vet ingenting om hvor
+        fort bitene ble lagt ut på lenken. I nettverkstermer: å øke R endrer L/R, aldri d/s.
+      </>
+    ),
+    hvorforBommerIntuisjonen: (
+      <>
+        «Raskere linje = alt går raskere» er en rimelig hverdagsmodell, og den er riktig for
+        transmisjonsdelen. Men lyshastigheten over Atlanterhavet bryr seg ikke om at du kjøpte
+        gigabit. Det er derfor en fiberlenke til Australia fortsatt har elendig ping.
+      </>
+    ),
+  },
+  {
+    id: "k1-trafikkintensitet",
+    tema: "Køforsinkelse",
+    sporsmal: (
+      <>
+        Trafikkintensiteten <code className="rounded bg-muted px-1 py-0.5 font-mono text-xs">L·a/R</code>{" "}
+        kryper fra 0,8 mot 0,98. Hva skjer med den gjennomsnittlige køforsinkelsen?
+      </>
+    ),
+    valg: [
+      "Den vokser omtrent 20 %, som belastningen",
+      "Den vokser eksplosivt — kurven går mot uendelig",
+      "Den er uendret helt til intensiteten passerer 1",
+      "Den synker, fordi lenken utnyttes bedre",
+    ],
+    riktig: 1,
+    fasit: (
+      <>
+        Køforsinkelsen vokser <strong>ikke lineært</strong>. Nær 1 stiger kurven nesten loddrett — det
+        er derfor en lenke på 97 % belastning oppfører seg dramatisk verre enn én på 80 %, ikke litt
+        verre.
+      </>
+    ),
+    hvorforBommerIntuisjonen: (
+      <>
+        Vi behandler «utnyttelse» som en lineær skala fordi prosenter ser lineære ut. Du kjenner
+        egentlig fenomenet fra veien: forskjellen på en motorvei som er 80 % og 98 % full er ikke 18
+        prosentpoeng saktere — det er flytende trafikk mot full stopp.
+      </>
+    ),
+  },
+];
+
 function Section14() {
   return (
     <article className="space-y-4 text-sm">
@@ -1040,6 +1135,20 @@ function Section14() {
       </p>
 
       <Section14Live />
+
+      <AnslagPanel
+        avsloring="knapp"
+        tittel="Anslå først — så kjører du bomstasjonene"
+        intro={
+          <>
+            Simulatoren under lar deg kjøre en bilkolonne gjennom to bomstasjoner, og bytte til
+            nettverks-merkelapper når du vil se hva analogien tilsvarer. Ta stilling først.
+          </>
+        }
+        anslag={ANSLAG_14}
+      />
+
+      <BomstasjonViz />
 
       <LectureNote title="Bomstasjons-analogien: transmisjon er ikke propagasjon">
         <p>

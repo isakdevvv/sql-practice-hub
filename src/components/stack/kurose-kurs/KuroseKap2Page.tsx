@@ -18,6 +18,8 @@ import { Section24Live } from "./Section24Live";
 import { Section25Live } from "./Section25Live";
 import { Section26Live } from "./Section26Live";
 import { VisualDefs } from "./VisualDefs";
+import { AnslagPanel } from "@/components/lab/AnslagPanel";
+import type { Anslag } from "@/lib/lab/anslag";
 import { LectureNote, LectureBeat } from "./LectureNote";
 import {
   ClientServerArchIcon,
@@ -586,6 +588,98 @@ function Section21() {
 // ============================================================
 // 2.2 — Web og HTTP
 // ============================================================
+const ANSLAG_22: Anslag[] = [
+  {
+    id: "k2-betinget-get",
+    tema: "Betinget GET",
+    sporsmal: (
+      <>
+        Nettleseren har en kopi av et bilde fra i går, og sender en GET med{" "}
+        <code className="rounded bg-muted px-1 py-0.5 font-mono text-xs">If-Modified-Since: i går</code>.
+        Bildet er <strong>ikke</strong> endret siden. Hva svarer serveren?
+      </>
+    ),
+    valg: [
+      "200 OK med bildet, som vanlig",
+      "304 Not Modified, uten kropp",
+      "404 Not Found, siden ingenting er nytt",
+      "Ingenting — den lar forespørselen gå i timeout",
+    ],
+    riktig: 1,
+    fasit: (
+      <>
+        <strong>304 Not Modified</strong>, og — dette er hele poenget —{" "}
+        <strong>uten objektet i kroppen</strong>. Nettleseren bruker kopien den allerede har. Er bildet
+        derimot endret, kommer et helt vanlig 200 OK med den nye versjonen.
+      </>
+    ),
+    hvorforBommerIntuisjonen: (
+      <>
+        «Not Modified» høres ut som en feilmelding fordi den ligger i 300-serien og har et negativt
+        navn. Men det er et <em>suksess</em>-svar: det betyr «du har den allerede, spar deg nedlastingen».
+      </>
+    ),
+  },
+  {
+    id: "k2-cache-utnyttelse",
+    tema: "Web-cache",
+    sporsmal: (
+      <>
+        En aksesslenke på 1,544 Mb/s ligger på <strong>97 % utnyttelse</strong>, og køforsinkelsen der
+        er i minutt-klassen. Dere setter opp en web-cache som treffer på{" "}
+        <strong>40 % av forespørslene</strong>. Hva blir utnyttelsen?
+      </>
+    ),
+    valg: ["0,97 — cachen ligger jo bak lenken", "0,78", "0,58", "0,40"],
+    riktig: 2,
+    fasit: (
+      <>
+        Bare 60 % av trafikken må fortsatt over lenken: 0,6 × 1,5 Mb/s = 0,9 Mb/s, altså{" "}
+        <strong>0,58</strong> utnyttelse. Og siden køkurven er så bratt nær 1, er det ikke en «40 %
+        forbedring» — det er forskjellen på minutter og millisekunder i kø.
+      </>
+    ),
+    hvorforBommerIntuisjonen: (
+      <>
+        Man regner instinktivt lineært: 40 % færre forespørsler burde gi 40 % bedre. Men gevinsten
+        kommer av <em>hvor på køkurven</em> du havner. Å falle fra 0,97 til 0,58 flytter deg fra den
+        loddrette delen av kurven til den flate.
+      </>
+    ),
+  },
+  {
+    id: "k2-hol",
+    tema: "HTTP/2",
+    sporsmal: (
+      <>
+        En klient ber om én stor videofil og deretter tre bittesmå objekter. Hva gjør HTTP/2 som
+        HTTP/1.1 ikke gjør?
+      </>
+    ),
+    valg: [
+      "Åpner én TCP-forbindelse per objekt så de går parallelt",
+      "Deler den store fila i rammer og fletter dem med de små objektenes rammer",
+      "Komprimerer videofila så den blir like liten som de andre",
+      "Sender de tre små først og dropper den store",
+    ],
+    riktig: 1,
+    fasit: (
+      <>
+        Rammene fra ulike objekter <strong>flettes</strong> inn i hverandre. De tre små kommer raskt
+        fram, den store blir bare marginalt forsinket, og snitt-forsinkelsen faller. Alternativ 1 er
+        HTTP/1.1-trikset med parallelle forbindelser — det hjelper, men er noe helt annet.
+      </>
+    ),
+    hvorforBommerIntuisjonen: (
+      <>
+        Køen i kassa er den rette modellen, men folk hopper til feil løsning: å åpne flere kasser
+        (parallelle forbindelser) i stedet for å la kundene <em>bytte på</em> å legge varer på båndet.
+        Det siste er det HTTP/2 faktisk gjør.
+      </>
+    ),
+  },
+];
+
 function Section22() {
   return (
     <article className="space-y-4 text-sm">
@@ -599,6 +693,18 @@ function Section22() {
       </p>
 
       <Section22Live />
+
+      <AnslagPanel
+        avsloring="knapp"
+        tittel="Anslå først — tre ting som avgjør hvor rask weben føles"
+        intro={
+          <>
+            Tre mekanismer i HTTP handler om det samme: å slippe å sende noe du ikke trenger å sende.
+            Ta stilling til hver av dem før du leser videre.
+          </>
+        }
+        anslag={ANSLAG_22}
+      />
 
       <LectureNote title="Stateless, og de to forbindelsestypene">
         <p>
