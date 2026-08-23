@@ -18,6 +18,8 @@ import { MobilitetsTracer } from "./kap7/MobilitetsTracer";
 import { HandoverTidslinje } from "./kap7/HandoverTidslinje";
 import { TCPRadioLab } from "./kap7/TCPRadioLab";
 import { VisualDefs } from "./VisualDefs";
+import { Forberedelse } from "./Forberedelse";
+import { FORBEREDELSE_7 } from "./forberedelseData";
 import {
   // 7.1
   PathLossIcon,
@@ -1373,6 +1375,11 @@ function Section77() {
         Sjekk forståelsen din med disse oppgavene. Klikk «Vis svar» for å se vår løsning etter du
         har prøvd selv.
       </p>
+
+      <Forberedelse
+        intro="Trådløst-oppgavene krever at du regner på fysikk og radio, ikke bare protokoller. Her er de fire framgangsmåtene."
+        metoder={FORBEREDELSE_7}
+      />
 
       <Exercise
         question="Forklar hvorfor CSMA/CD (slik Ethernet bruker) ikke duger i radio, og hvordan CSMA/CA løser det med backoff."

@@ -20,6 +20,8 @@ import { Section33Live } from "./Section33Live";
 import { Section34Live } from "./Section34Live";
 import { Section35Live } from "./Section35Live";
 import { VisualDefs } from "./VisualDefs";
+import { Forberedelse } from "./Forberedelse";
+import { FORBEREDELSE_3 } from "./forberedelseData";
 import { LectureNote, LectureBeat } from "./LectureNote";
 import {
   SegmentIcon,
@@ -2395,6 +2397,11 @@ function Section37() {
       <p className="text-muted-foreground">
         Sjekk forståelsen din. Klikk «Vis svar» for å se vår løsning etter du har prøvd selv.
       </p>
+
+      <Forberedelse
+        intro="Transportlaget er kapittelet med mest formelbruk. Disse fem framgangsmåtene dekker oppgavene under — les dem som oppskrifter, ikke som fasit."
+        metoder={FORBEREDELSE_3}
+      />
 
       <Exercise
         question="En TCP-avsender bruker et vindu på 10 MSS, MSS = 1460 bytes, RTT = 100 ms, over en 100 Mbps lenke. Hva er oppnådd throughput? Er vinduet bredt nok til å utnytte lenken?"

@@ -18,6 +18,8 @@ import { Section24Live } from "./Section24Live";
 import { Section25Live } from "./Section25Live";
 import { Section26Live } from "./Section26Live";
 import { VisualDefs } from "./VisualDefs";
+import { Forberedelse } from "./Forberedelse";
+import { FORBEREDELSE_2 } from "./forberedelseData";
 import { AnslagPanel } from "@/components/lab/AnslagPanel";
 import type { Anslag } from "@/lib/lab/anslag";
 import { LectureNote, LectureBeat } from "./LectureNote";
@@ -2846,6 +2848,11 @@ function Section27() {
         Regne-oppgaver og scenario-oppgaver. Prøv å løse hver oppgave på papir før du klikker «Vis
         svar».
       </p>
+
+      <Forberedelse
+        intro="Oppgavene her handler om å telle riktig: RTT-er, spørringer, kapasiteter og andeler. Fem framgangsmåter dekker dem alle. Eksemplene bruker andre tall enn oppgavene."
+        metoder={FORBEREDELSE_2}
+      />
 
       <Exercise
         question="En webside består av 1 HTML + 20 ressurser (alle på samme server). RTT er 50 ms. TCP-handshake er 1 RTT, TLS-handshake er 1 RTT, og hver request/response tar 1 RTT (vi neglisjerer transmisjons-tid). Hvor mange ms bruker (a) HTTP/1.1 med én seriell forbindelse, (b) HTTP/1.1 med 6 parallelle forbindelser, og (c) HTTP/2 over én forbindelse?"
