@@ -16,6 +16,8 @@ import { Section93Live } from "./Section93Live";
 import { Section94Live } from "./Section94Live";
 import { Section95Live } from "./Section95Live";
 import { VisualDefs } from "./VisualDefs";
+import { Forberedelse } from "./Forberedelse";
+import { FORBEREDELSE_9 } from "./forberedelseData";
 import {
   VodStreamIcon,
   VoipCallIcon,
@@ -1387,6 +1389,11 @@ function Section96() {
       <p className="text-muted-foreground">
         Test forståelsen din. Prøv først selv — bruk hint hvis du står fast — og se svar til slutt.
       </p>
+
+      <Forberedelse
+        intro="Multimedia-oppgavene er nesten alle regneoppgaver med en fast oppskrift. Fem framgangsmåter dekker dem."
+        metoder={FORBEREDELSE_9}
+      />
 
       <Exercise
         question="Bruk en forenklet E-modell der MOS ≈ 4.5 − 0.025·delay_ms/10 − 0.5·loss% − 0.02·jitter_ms. Beregn MOS for en VoIP-samtale med 50 ms delay, 5 % tap og 20 ms jitter."

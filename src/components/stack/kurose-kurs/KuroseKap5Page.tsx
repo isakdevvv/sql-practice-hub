@@ -17,6 +17,8 @@ import { Section53Live } from "./Section53Live";
 import { Section54Live } from "./Section54Live";
 import { Section55Live } from "./Section55Live";
 import { VisualDefs } from "./VisualDefs";
+import { Forberedelse } from "./Forberedelse";
+import { FORBEREDELSE_5 } from "./forberedelseData";
 import { LectureNote, LectureBeat } from "./LectureNote";
 import {
   DataPlaneIcon,
@@ -1658,6 +1660,11 @@ function Section58() {
         Sjekk forståelsen din. Hvert problem her er bygget for å være øvelses-versjonen av et
         eksamens-spørsmål — prøv selv før du åpner svaret.
       </p>
+
+      <Forberedelse
+        intro="Kontrollplan-oppgavene er mer resonnement enn regning. Her er de fire framgangsmåtene de bygger på."
+        metoder={FORBEREDELSE_5}
+      />
 
       <Exercise
         question={

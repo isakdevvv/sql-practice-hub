@@ -20,6 +20,8 @@ import { Section64Live } from "./Section64Live";
 import { Section65Live } from "./Section65Live";
 import { Section66Live } from "./Section66Live";
 import { VisualDefs } from "./VisualDefs";
+import { Forberedelse } from "./Forberedelse";
+import { FORBEREDELSE_6 } from "./forberedelseData";
 import {
   FrameIcon,
   EthernetFrameIcon,
@@ -2004,6 +2006,11 @@ function SectionOppgaver() {
         Ti oppgaver som tester at du faktisk kan regne og resonere — ikke bare gjenkjenne ordene.
         Klikk «Vis svar» etter du har prøvd selv.
       </p>
+
+      <Forberedelse
+        intro="Lenkelaget blander bit-manipulasjon med kapasitetsregning. Fire framgangsmåter dekker oppgavene under."
+        metoder={FORBEREDELSE_6}
+      />
 
       <Exercise
         question="Beregn CRC-3 for databitene D = 11010 med generator G = 1001."

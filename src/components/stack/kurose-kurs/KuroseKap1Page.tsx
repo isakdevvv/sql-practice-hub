@@ -9,6 +9,8 @@ import { Section13Live } from "./Section13Live";
 import { Section14Live } from "./Section14Live";
 import { Section15Live } from "./Section15Live";
 import { VisualDefs } from "./VisualDefs";
+import { Forberedelse } from "./Forberedelse";
+import { FORBEREDELSE_1 } from "./forberedelseData";
 import { BomstasjonViz } from "./BomstasjonViz";
 import { InnkapslingViz } from "./InnkapslingViz";
 import { AnslagPanel } from "@/components/lab/AnslagPanel";
@@ -2344,6 +2346,11 @@ function Section16() {
         Sjekk forståelsen din med disse oppgavene. Klikk «Vis svar» for å se vår løsning etter du
         har prøvd selv.
       </p>
+
+      <Forberedelse
+        intro="Oppgavene under er stort sett regneoppgaver. De trekker på fem framgangsmåter — kjenner du igjen hvilken en oppgave krever, er halve jobben gjort. Eksemplene her bruker andre tall enn oppgavene."
+        metoder={FORBEREDELSE_1}
+      />
 
       <Exercise
         question="Hva er den dominerende forsinkelsen mellom Oslo og San Francisco (~8800 km) for en 1500-byte pakke på en 10 Gbps lenke uten kø?"

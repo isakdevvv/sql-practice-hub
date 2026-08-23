@@ -20,6 +20,8 @@ import { Section86Live } from "./Section86Live";
 import { Section87Live } from "./Section87Live";
 import { Section88Live } from "./Section88Live";
 import { VisualDefs } from "./VisualDefs";
+import { Forberedelse } from "./Forberedelse";
+import { FORBEREDELSE_8 } from "./forberedelseData";
 import {
   ConfidentialityIcon,
   IntegrityIcon,
@@ -1846,6 +1848,11 @@ function Section810() {
         Fem oppgaver som binder sammen kapittelets temaer. Skjul svaret først og prøv selv — det er
         der læringen sitter.
       </p>
+
+      <Forberedelse
+        intro="Sikkerhets-oppgavene tester mest at du holder tunga rett i munnen om hvem som har hvilken nøkkel — og at du kan regne på sjeldne hendelser."
+        metoder={FORBEREDELSE_8}
+      />
 
       <Exercise
         question="Alice vil sende en konfidensiell OG autentisert melding m til Bob, hvor hun også kan bevises å være avsender (ikke-avvisning). Hun har Bobs RSA-offentlige nøkkel og sitt eget RSA-nøkkel-par. Tegn meldings-flyten med RSA + AES + HMAC."
