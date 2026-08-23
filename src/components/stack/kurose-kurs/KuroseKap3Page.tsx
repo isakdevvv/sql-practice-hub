@@ -300,6 +300,68 @@ function Intro({ onPick }: { onPick: (t: Tab) => void }) {
 // ============================================================
 // 3.1 — Innledning og transport-tjenester
 // ============================================================
+const ANSLAG_31: Anslag[] = [
+  {
+    id: "k3-hva-legger-transport-til",
+    tema: "Transport vs. nettverk",
+    sporsmal: (
+      <>
+        IP får allerede et datagram fram til riktig <em>maskin</em>. Hva er det transportlaget legger til
+        som er helt uunnværlig?
+      </>
+    ),
+    valg: [
+      "Pålitelighet — uten TCP kommer ingenting fram",
+      "Å finne fram til riktig prosess på maskinen, via portnumre",
+      "Kryptering av innholdet",
+      "Å velge ruten gjennom nettet",
+    ],
+    riktig: 1,
+    fasit: (
+      <>
+        Kjernen er <strong>prosess-til-prosess</strong>. Maskinen din kjører hundrevis av apper på én
+        IP-adresse; uten portnumre vet ingen hvem datagrammet skal til. Pålitelighet er noe TCP{" "}
+        <em>i tillegg</em> tilbyr — UDP dropper det og er fortsatt et fullverdig transportlag.
+      </>
+    ),
+    hvorforBommerIntuisjonen: (
+      <>
+        Vi lærer TCP først, og setter likhetstegn mellom transport og pålitelighet. Men den minste
+        felles nevneren for <em>alle</em> transportprotokoller er multipleksing — ikke garantier.
+      </>
+    ),
+  },
+  {
+    id: "k3-logisk-kommunikasjon",
+    tema: "Logisk kommunikasjon",
+    sporsmal: (
+      <>
+        Vi sier at transportlaget gir «logisk kommunikasjon» mellom prosesser. Hva betyr «logisk» her?
+      </>
+    ),
+    valg: [
+      "At forbindelsen er kryptert",
+      "At det ser ut som prosessene er direkte koblet, selv om det ligger et helt nett imellom",
+      "At forbindelsen følger en fast, forhåndsberegnet rute",
+      "At kommunikasjonen er feilfri",
+    ],
+    riktig: 1,
+    fasit: (
+      <>
+        «Logisk» betyr <strong>som om</strong>. Fra applikasjonens side ser det ut som en direkte kobling
+        til motparten — all ruting, kø og hopp mellom rutere er skjult. Transportlaget kjører bare på
+        endesystemene; nettet imellom vet ingenting om det.
+      </>
+    ),
+    hvorforBommerIntuisjonen: (
+      <>
+        Ordet «logisk» leses som «kryptert» eller «virtuell krets». Det det egentlig peker på er en
+        <em> illusjon</em> — og hele poenget med lagdeling er å lage nyttige illusjoner.
+      </>
+    ),
+  },
+];
+
 function Section31() {
   return (
     <article className="space-y-4 text-sm">
@@ -314,6 +376,13 @@ function Section31() {
       </p>
 
       <Section31Live />
+
+      <AnslagPanel
+        avsloring="knapp"
+        tittel="Anslå først — hva laget er til for"
+        intro={<>To spørsmål om hva transportlaget egentlig bidrar med.</>}
+        anslag={ANSLAG_31}
+      />
 
       <LectureNote title="Logisk kommunikasjon — og huset med tolv unger">
         <p>
@@ -532,6 +601,60 @@ function Section31() {
 // ============================================================
 // 3.2 — Multipleksing og demultipleksing
 // ============================================================
+const ANSLAG_32: Anslag[] = [
+  {
+    id: "k3-udp-demux",
+    tema: "UDP-demultipleksing",
+    sporsmal: (
+      <>
+        To datagram kommer inn til samme maskin med <strong>samme mål-port</strong>, men fra{" "}
+        <strong>ulike avsendere</strong>. De skal til en <strong>UDP</strong>-socket. Havner de i samme
+        socket?
+      </>
+    ),
+    valg: [
+      "Ja — UDP ser bare på mål-IP og mål-port",
+      "Nei — ulik avsender gir ulik socket",
+      "Bare hvis avsenderne er i samme nett",
+      "Nei — UDP forkaster det andre datagrammet",
+    ],
+    riktig: 0,
+    fasit: (
+      <>
+        <strong>Ja.</strong> En UDP-socket identifiseres av <em>to</em> ting: mål-IP og mål-port. Hvem som
+        sendte spiller ingen rolle for hvor det havner — appen må selv se på avsenderadressen hvis den
+        bryr seg.
+      </>
+    ),
+    hvorforBommerIntuisjonen: (
+      <>
+        Man overfører TCP-modellen til UDP. Men UDP har ingen forbindelse å skille partene med — derfor
+        holder to felter, ikke fire.
+      </>
+    ),
+  },
+  {
+    id: "k3-tcp-demux",
+    tema: "TCP-demultipleksing",
+    sporsmal: <>Hvor mange felter skal til for å bestemme hvilken <strong>TCP</strong>-socket et segment hører til?</>,
+    valg: ["To: mål-IP og mål-port", "Tre", "Fire: kilde-IP, kilde-port, mål-IP og mål-port", "Ett: portnummeret"],
+    riktig: 2,
+    fasit: (
+      <>
+        <strong>Firertuppelen.</strong> Det er derfor en webserver kan ha tusenvis av samtidige
+        forbindelser på port 443 uten å blande dem: hver klient bidrar med sin egen kilde-IP og
+        kilde-port.
+      </>
+    ),
+    hvorforBommerIntuisjonen: (
+      <>
+        «Én port = én tjeneste = én socket» er en rimelig forenkling helt til du spør hvordan serveren
+        håndterer to brukere samtidig. Da må noe skille dem, og det er avsendersiden.
+      </>
+    ),
+  },
+];
+
 function Section32() {
   return (
     <article className="space-y-4 text-sm">
@@ -545,6 +668,13 @@ function Section32() {
       </p>
 
       <Section31Live />
+
+      <AnslagPanel
+        avsloring="knapp"
+        tittel="Anslå først — hvem havner hvor"
+        intro={<>To datagram, to protokoller, og spørsmålet om hva som skiller sockets.</>}
+        anslag={ANSLAG_32}
+      />
 
       <LectureNote title="Demultipleksing: flyplassen, og de to reglene">
         <p>
@@ -767,6 +897,59 @@ function Section32() {
 // ============================================================
 // 3.3 — UDP
 // ============================================================
+const ANSLAG_33: Anslag[] = [
+  {
+    id: "k3-udp-sjekksum",
+    tema: "Sjekksum",
+    sporsmal: <>Har UDP feildeteksjon?</>,
+    valg: [
+      "Nei — UDP har ingen form for feilsjekk",
+      "Ja, en sjekksum som avdekker bitfeil, men den retter ingenting",
+      "Ja, og den retter bitfeil automatisk",
+      "Bare når den brukes sammen med TCP",
+    ],
+    riktig: 1,
+    fasit: (
+      <>
+        UDP har en <strong>sjekksum</strong>. Den <em>oppdager</em> at noe er endret underveis, men kan
+        ikke rette det — segmentet forkastes bare. Å «ikke love pålitelighet» er altså ikke det samme som
+        å «ikke sjekke noe».
+      </>
+    ),
+    hvorforBommerIntuisjonen: (
+      <>
+        Vi setter UDP i bås som «protokollen uten noe som helst». Men den har akkurat det minimum som
+        trengs for å slippe å levere åpenbart ødelagte data videre.
+      </>
+    ),
+  },
+  {
+    id: "k3-dns-udp",
+    tema: "Hvorfor DNS bruker UDP",
+    sporsmal: <>Hvorfor kjører DNS-oppslag typisk over UDP og ikke TCP?</>,
+    valg: [
+      "Fordi DNS-svar er for store for TCP",
+      "Fordi et oppslag er én liten spørring og ett lite svar — håndtrykket ville kostet mer enn selve utvekslingen",
+      "Fordi TCP ikke støtter port 53",
+      "Fordi UDP er kryptert",
+    ],
+    riktig: 1,
+    fasit: (
+      <>
+        Et oppslag er én forespørsel og ett svar. Med TCP ville du brukt en hel rundtur bare på å sette
+        opp forbindelsen — og så en til på selve spørsmålet. Går svaret tapt, er det billigere å spørre
+        på nytt enn å ha betalt for et håndtrykk.
+      </>
+    ),
+    hvorforBommerIntuisjonen: (
+      <>
+        Fordi «viktig data bør bruke TCP» er en god tommelfingerregel. Men når meldingen er mindre enn
+        oppsettskostnaden, snur regnestykket.
+      </>
+    ),
+  },
+];
+
 function Section33() {
   return (
     <article className="space-y-4 text-sm">
@@ -780,6 +963,13 @@ function Section33() {
       </p>
 
       <Section32Live />
+
+      <AnslagPanel
+        avsloring="knapp"
+        tittel="Anslå først — UDP"
+        intro={<>To spørsmål om hva UDP faktisk har, og når det er riktig valg.</>}
+        anslag={ANSLAG_33}
+      />
 
       <LectureNote title="UDP: hvorfor det minimale finnes">
         <p>
@@ -1003,6 +1193,64 @@ function Section33() {
 // ============================================================
 // 3.4 — Pålitelig data-transport
 // ============================================================
+const ANSLAG_34: Anslag[] = [
+  {
+    id: "k3-hvorfor-seknr",
+    tema: "Sekvensnumre",
+    sporsmal: (
+      <>
+        Avsenderen sender en pakke, mottakeren kvitterer — men <strong>kvitteringen</strong> går tapt.
+        Avsenderen sender pakken på nytt. Hvilket problem oppstår, og hva løser det?
+      </>
+    ),
+    valg: [
+      "Ingen problem — mottakeren merker ikke noe",
+      "Mottakeren får en duplikat den ikke kan skille fra ny data. Sekvensnumre løser det",
+      "Pakken går i evig løkke. Timeout løser det",
+      "Forbindelsen brytes. Håndtrykk løser det",
+    ],
+    riktig: 1,
+    fasit: (
+      <>
+        Uten sekvensnummer ser retransmisjonen ut som <em>ny</em> data, og mottakeren leverer den samme
+        byten to ganger opp til appen. <strong>Sekvensnummeret</strong> gjør duplikaten gjenkjennelig —
+        og det er nettopp derfor det ble innført i RDT-progresjonen.
+      </>
+    ),
+    hvorforBommerIntuisjonen: (
+      <>
+        Man tenker på tap som «noe forsvant», og glemmer at et tapt <em>kvitteringsbrev</em> gir
+        dobbeltsending i stedet. Feilen flytter seg fra manglende data til for mye data.
+      </>
+    ),
+  },
+  {
+    id: "k3-gbn-sr",
+    tema: "GBN mot SR",
+    sporsmal: (
+      <>
+        Fem pakker er sendt. Nummer 2 går tapt, de andre kommer fram. Hva sender avsenderen på nytt med{" "}
+        <strong>Go-Back-N</strong>?
+      </>
+    ),
+    valg: ["Bare pakke 2", "Pakke 2, 3, 4 og 5", "Alle fem på nytt", "Ingenting — GBN venter på timeout for hver"],
+    riktig: 1,
+    fasit: (
+      <>
+        GBN sender <strong>alt fra og med den tapte</strong> på nytt — også de tre som faktisk kom fram.
+        Selective Repeat sender bare pakke 2, men må til gjengjeld bufre de andre hos mottakeren og holde
+        styr på hver enkelt. Enkelhet mot båndbredde.
+      </>
+    ),
+    hvorforBommerIntuisjonen: (
+      <>
+        Å sende om igjen data som kom fram virker åpenbart dumt. Poenget er at GBN slipper å bufre og
+        bokføre noe som helst hos mottakeren — den betaler med båndbredde for å slippe kompleksitet.
+      </>
+    ),
+  },
+];
+
 function Section34() {
   return (
     <article className="space-y-4 text-sm">
@@ -1016,6 +1264,13 @@ function Section34() {
       </p>
 
       <Section33Live />
+
+      <AnslagPanel
+        avsloring="knapp"
+        tittel="Anslå først — pålitelighet fra bunnen"
+        intro={<>To spørsmål som RDT-progresjonen under er bygget for å svare på.</>}
+        anslag={ANSLAG_34}
+      />
 
       <LectureNote title="Pålitelig overføring: bygg protokollen steg for steg">
         <p>
