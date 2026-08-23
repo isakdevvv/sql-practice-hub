@@ -545,6 +545,54 @@ function Section32() {
 
       <Section31Live />
 
+      <LectureNote title="Demultipleksing: flyplassen, og de to reglene">
+        <p>
+          Tenk på det slik: datagram kommer inn til en vert, og nyttelastene skal til ulike
+          applikasjoner eller protokoller på den verten. Å styre hver nyttelast til rett mottaker er{" "}
+          <strong>demultipleksing</strong>. Motsatt vei: mange applikasjoner sender ned gjennom hver
+          sin socket, og transportlaget trakter alt sammen ned i IP — det er{" "}
+          <strong>multipleksing</strong>. Og merk deg: dette skjer i <em>alle</em> lag i stakken, vi
+          ser bare på transportlaget her.
+        </p>
+        <p>
+          Analogien er flyplassen. Du kommer inn og blir umiddelbart delt: business hit, økonomi
+          dit. Ved sikkerhetskontrollen deles du igjen. Ved gaten er det egen kø for prioritetsklasse
+          og flere for resten. Å bli sortert og styrt til en bestemt tjenesteklasse — det er
+          demultipleksing i et nøtteskall.
+        </p>
+        <p>
+          Verktøyene er fire verdier: datagrammets <strong>kilde-IP</strong> og{" "}
+          <strong>mål-IP</strong>, og segmentets <strong>kildeport</strong> og{" "}
+          <strong>målport</strong>. Og her skiller de to protokollene lag.
+        </p>
+
+        <LectureBeat>UDP: kun målporten</LectureBeat>
+        <p>
+          En UDP-socket identifiseres av vertens lokale portnummer. Når et segment kommer inn, ser
+          verten på <strong>målportnummeret alene</strong> og leverer til socketen som har den
+          porten. Konsekvensen er verdt å tenke gjennom:{" "}
+          <strong>to datagram fra helt forskjellige kilder — ulik kilde-IP og ulik kildeport — havner
+          i samme socket</strong>, så lenge målporten er den samme. Det er ikke en feil, det er
+          definisjonen.
+        </p>
+
+        <LectureBeat>TCP: hele firertuppelen</LectureBeat>
+        <p>
+          TCP er forbindelsesorientert, og en TCP-socket identifiseres av{" "}
+          <strong>alle fire</strong>: kilde-IP, kildeport, mål-IP og målport. Mottakeren bruker alle
+          fire til å velge socket. Derfor kan en server ha mange samtidige TCP-sockets, én per
+          tilkoblet klientprosess.
+        </p>
+        <p className="rounded-lg border border-amber-500/30 bg-background/60 px-3 py-2">
+          Og her får du svaret på gåten fra socket-programmeringen: tre datagram kan komme inn til
+          en webserver alle med <strong>målport 80</strong> — det er ikke tilfeldig, det{" "}
+          <em>skal</em> være slik. Med UDP hadde de havnet i samme socket. Med TCP skiller
+          firertuppelen dem, fordi kilde-IP og/eller kildeport er ulike, og de demultiplekses korrekt
+          til hver sin dedikerte socket. Det er derfor den nye socketen kan ha samme portnummer som
+          velkomst-socketen.
+        </p>
+      </LectureNote>
+
       <div className="grid gap-3 lg:grid-cols-2">
         <VisualDefs
           items={[
@@ -732,54 +780,57 @@ function Section33() {
 
       <Section32Live />
 
-      <LectureNote title="Demultipleksing: flyplassen, og de to reglene">
+      <LectureNote title="UDP: hvorfor det minimale finnes">
         <p>
-          Tenk på det slik: datagram kommer inn til en vert, og nyttelastene skal til ulike
-          applikasjoner eller protokoller på den verten. Å styre hver nyttelast til rett mottaker er{" "}
-          <strong>demultipleksing</strong>. Motsatt vei: mange applikasjoner sender ned gjennom hver
-          sin socket, og transportlaget trakter alt sammen ned i IP — det er{" "}
-          <strong>multipleksing</strong>. Og merk deg: dette skjer i <em>alle</em> lag i stakken, vi
-          ser bare på transportlaget her.
+          UDP kan være så enkel nettopp fordi tjenesten den lover er så beskjeden:{" "}
+          <em>best effort</em>. Den sender segmenter og håper de kommer fram. De kan gå tapt, de kan
+          komme i feil rekkefølge — og da er det ikke så mye igjen å gjøre. Ingen håndtrykk trengs,
+          ingen delt tilstand mellom sender og mottaker (derfor{" "}
+          <strong>forbindelsesløs</strong>), og hvert segment håndteres helt uavhengig av alle andre.
         </p>
         <p>
-          Analogien er flyplassen. Du kommer inn og blir umiddelbart delt: business hit, økonomi
-          dit. Ved sikkerhetskontrollen deles du igjen. Ved gaten er det egen kø for prioritetsklasse
-          og flere for resten. Å bli sortert og styrt til en bestemt tjenesteklasse — det er
-          demultipleksing i et nøtteskall.
+          Så hvorfor finnes den? Fire gode grunner.{" "}
+          <strong>Ingen oppsettsforsinkelse</strong> — en UDP-avsender sender bare, uten å vente på
+          en håndtrykksrunde. <strong>Ingen forbindelsestilstand</strong> å holde styr på.{" "}
+          <strong>Liten header</strong>, altså lite overhead. Og kanskje viktigst:{" "}
+          <strong>ingen metningskontroll</strong> — en UDP-avsender kan fyre løs så fort den vil, og
+          fortsetter å fungere selv når nettet er overbelastet, noe TCP har det verre med.
         </p>
         <p>
-          Verktøyene er fire verdier: datagrammets <strong>kilde-IP</strong> og{" "}
-          <strong>mål-IP</strong>, og segmentets <strong>kildeport</strong> og{" "}
-          <strong>målport</strong>. Og her skiller de to protokollene lag.
-        </p>
-
-        <LectureBeat>UDP: kun målporten</LectureBeat>
-        <p>
-          En UDP-socket identifiseres av vertens lokale portnummer. Når et segment kommer inn, ser
-          verten på <strong>målportnummeret alene</strong> og leverer til socketen som har den
-          porten. Konsekvensen er verdt å tenke gjennom:{" "}
-          <strong>to datagram fra helt forskjellige kilder — ulik kilde-IP og ulik kildeport — havner
-          i samme socket</strong>, så lenge målporten er den samme. Det er ikke en feil, det er
-          definisjonen.
+          Nettopp de egenskapene gjør den nyttig for bestemte ting. Strømmet multimedia tåler litt
+          tap, men er ratefølsom og vil ikke bremses hardt. DNS og SNMP <em>må</em> fungere når nettet
+          er i dårlig forfatning. Og trenger du pålitelighet, kan du bygge den selv i
+          applikasjonslaget — som er nøyaktig det HTTP/3 gjør.
         </p>
 
-        <LectureBeat>TCP: hele firertuppelen</LectureBeat>
+        <LectureBeat>Segmentet: fire felt, og hvorfor hvert av dem er der</LectureBeat>
         <p>
-          TCP er forbindelsesorientert, og en TCP-socket identifiseres av{" "}
-          <strong>alle fire</strong>: kilde-IP, kildeport, mål-IP og målport. Mottakeren bruker alle
-          fire til å velge socket. Derfor kan en server ha mange samtidige TCP-sockets, én per
-          tilkoblet klientprosess.
+          <strong>Kildeport</strong> og <strong>målport</strong> til multipleksing og
+          demultipleksing. <strong>Lengde</strong>, fordi nyttelasten har variabel størrelse og
+          mottakeren må vite hvor segmentet slutter. Og <strong>sjekksum</strong>. Det er alt.
+        </p>
+
+        <LectureBeat>Internett-sjekksummen — følg med, den kommer igjen</LectureBeat>
+        <p>
+          Ideen er enkel. Tenk at jeg sender deg to tall <em>og</em> summen av dem. Du legger sammen
+          de to tallene du mottok og sammenligner med summen du mottok. Sender jeg 5, 6 og 11, men du
+          mottar 4, 6 og 11, blir din sum 10 mot mottatt sjekksum 11 — og du vet at noe er galt.
+        </p>
+        <p>
+          UDP gjør nøyaktig dette: avsenderen behandler segmentets innhold — inkludert
+          header-feltene og IP-adressene — som en rekke 16-bits heltall, legger dem sammen, tar
+          én-komplementet og legger resultatet i sjekksumfeltet. Mottakeren regner det samme og
+          sammenligner. Ulikt betyr feil.
         </p>
         <p className="rounded-lg border border-amber-500/30 bg-background/60 px-3 py-2">
-          Og her får du svaret på gåten fra socket-programmeringen: tre datagram kan komme inn til
-          en webserver alle med <strong>målport 80</strong> — det er ikke tilfeldig, det{" "}
-          <em>skal</em> være slik. Med UDP hadde de havnet i samme socket. Med TCP skiller
-          firertuppelen dem, fordi kilde-IP og/eller kildeport er ulike, og de demultiplekses korrekt
-          til hver sin dedikerte socket. Det er derfor den nye socketen kan ha samme portnummer som
-          velkomst-socketen.
+          Men her er poenget som er verdt å ta med seg:{" "}
+          <strong>lik sjekksum betyr ikke at alt er i orden.</strong> To bit-feil kan oppveie
+          hverandre — vipp to bits i det ene tallet og to i det andre på riktig måte, og summen blir
+          identisk. Feilen går uoppdaget gjennom. Internett-sjekksummen er en form for beskyttelse,
+          ikke en garanti. Sterkere metoder for både å oppdage og rette feil møter vi i lenkelaget og
+          i sikkerhet.
         </p>
       </LectureNote>
-
 
       <div className="grid gap-3 lg:grid-cols-2">
         <VisualDefs
@@ -965,58 +1016,74 @@ function Section34() {
 
       <Section33Live />
 
-      <LectureNote title="UDP: hvorfor det minimale finnes">
+      <LectureNote title="Pålitelig overføring: bygg protokollen steg for steg">
         <p>
-          UDP kan være så enkel nettopp fordi tjenesten den lover er så beskjeden:{" "}
-          <em>best effort</em>. Den sender segmenter og håper de kommer fram. De kan gå tapt, de kan
-          komme i feil rekkefølge — og da er det ikke så mye igjen å gjøre. Ingen håndtrykk trengs,
-          ingen delt tilstand mellom sender og mottaker (derfor{" "}
-          <strong>forbindelsesløs</strong>), og hvert segment håndteres helt uavhengig av alle andre.
+          Dette er en av de virkelig fundamentale utfordringene i hele faget: hvordan kan to parter
+          kommunisere <em>pålitelig</em> over en kanal som selv er upålitelig — som mister, vrenger og
+          stokker om meldinger? Metoden er å starte med en perfekt kanal, og så innføre én realistisk
+          antakelse om gangen og se hvilken mekanisme som må til for å bøte på den.
         </p>
         <p>
-          Så hvorfor finnes den? Fire gode grunner.{" "}
-          <strong>Ingen oppsettsforsinkelse</strong> — en UDP-avsender sender bare, uten å vente på
-          en håndtrykksrunde. <strong>Ingen forbindelsestilstand</strong> å holde styr på.{" "}
-          <strong>Liten header</strong>, altså lite overhead. Og kanskje viktigst:{" "}
-          <strong>ingen metningskontroll</strong> — en UDP-avsender kan fyre løs så fort den vil, og
-          fortsetter å fungere selv når nettet er overbelastet, noe TCP har det verre med.
-        </p>
-        <p>
-          Nettopp de egenskapene gjør den nyttig for bestemte ting. Strømmet multimedia tåler litt
-          tap, men er ratefølsom og vil ikke bremses hardt. DNS og SNMP <em>må</em> fungere når nettet
-          er i dårlig forfatning. Og trenger du pålitelighet, kan du bygge den selv i
-          applikasjonslaget — som er nøyaktig det HTTP/3 gjør.
-        </p>
-
-        <LectureBeat>Segmentet: fire felt, og hvorfor hvert av dem er der</LectureBeat>
-        <p>
-          <strong>Kildeport</strong> og <strong>målport</strong> til multipleksing og
-          demultipleksing. <strong>Lengde</strong>, fordi nyttelasten har variabel størrelse og
-          mottakeren må vite hvor segmentet slutter. Og <strong>sjekksum</strong>. Det er alt.
-        </p>
-
-        <LectureBeat>Internett-sjekksummen — følg med, den kommer igjen</LectureBeat>
-        <p>
-          Ideen er enkel. Tenk at jeg sender deg to tall <em>og</em> summen av dem. Du legger sammen
-          de to tallene du mottok og sammenligner med summen du mottok. Sender jeg 5, 6 og 11, men du
-          mottar 4, 6 og 11, blir din sum 10 mot mottatt sjekksum 11 — og du vet at noe er galt.
-        </p>
-        <p>
-          UDP gjør nøyaktig dette: avsenderen behandler segmentets innhold — inkludert
-          header-feltene og IP-adressene — som en rekke 16-bits heltall, legger dem sammen, tar
-          én-komplementet og legger resultatet i sjekksumfeltet. Mottakeren regner det samme og
-          sammenligner. Ulikt betyr feil.
+          Merk oppsettet: tjenesten vi tilbyr applikasjonene er <strong>enveis</strong> — data fra
+          avsender til mottaker. Men <em>inne i</em> protokollen må meldinger gå{" "}
+          <strong>begge veier</strong>, fordi mottakersiden må kunne svare avsendersiden.
         </p>
         <p className="rounded-lg border border-amber-500/30 bg-background/60 px-3 py-2">
-          Men her er poenget som er verdt å ta med seg:{" "}
-          <strong>lik sjekksum betyr ikke at alt er i orden.</strong> To bit-feil kan oppveie
-          hverandre — vipp to bits i det ene tallet og to i det andre på riktig måte, og summen blir
-          identisk. Feilen går uoppdaget gjennom. Internett-sjekksummen er en form for beskyttelse,
-          ikke en garanti. Sterkere metoder for både å oppdage og rette feil møter vi i lenkelaget og
-          i sikkerhet.
+          Det viktigste tankeskiftet: det er lett for <em>oss</em> å se begge sider samtidig og si «der
+          gikk pakken tapt, altså må denne parten gjøre sånn». Men avsenderen ser ikke det. Den vet
+          ingenting om hva som skjedde med det den sendte — med mindre mottakeren{" "}
+          <strong>signaliserer tilbake</strong>. Tenk deg et forheng mellom dem: alt den ene vet om den
+          andre, er lært gjennom meldinger.
+        </p>
+
+        <LectureBeat>Tilstandsmaskiner, og hvorfor ikke bare skrive tekst</LectureBeat>
+        <p>
+          Skal vi spesifisere en protokoll, duger ikke prosa — den kan mistolkes og den blir lett
+          ufullstendig («å ja, det tilfellet glemte jeg»). Derfor{" "}
+          <strong>endelige tilstandsmaskiner</strong>: tilstander, <em>hendelser</em> som utløser
+          overganger mellom dem, og <em>handlinger</em> som utføres. En lysbryter er det minimale
+          eksempelet: to tilstander, to hendelser, og en handling (lyset tennes).
+        </p>
+
+        <LectureBeat>Steg for steg</LectureBeat>
+        <p>
+          <strong>Perfekt kanal.</strong> Latterlig enkelt: avsenderen pakker og sender, mottakeren
+          leser og leverer opp. Én tilstand hver.
+        </p>
+        <p>
+          <strong>Bits kan vippe.</strong> Nå trengs mekanismer — og her hjelper det å tenke på hvordan{" "}
+          <em>mennesker</em> gjør det når noe blir uforståelig i en samtale. Vi bekrefter («ja, jeg
+          hørte»), vi avkrefter («nei, det fikk jeg ikke med meg»), og vi ber om at det gjentas. Det
+          gir <strong>ACK</strong>, <strong>NAK</strong> og <strong>retransmisjon</strong> — pluss{" "}
+          <strong>sjekksum</strong> for i det hele tatt å oppdage feilen. Avsenderen sender og venter
+          på svar før den går videre: <strong>stopp-og-vent</strong>.
+        </p>
+        <p>
+          <strong>Men så den fatale feilen.</strong> Hva om <em>kvitteringen</em> blir ødelagt? Nå
+          vet ikke avsenderen om mottakeren fikk pakken riktig eller ikke. Retransmitterer den, kan
+          mottakeren få <em>to kopier</em> og tro at den andre er nye data. Lar den være, risikerer
+          den at pakken aldri kom fram.
+        </p>
+        <p>
+          Løsningen er å retransmittere <em>uansett</em>, og gi hver pakke et{" "}
+          <strong>sekvensnummer</strong> så mottakeren kan kjenne igjen duplikater og kaste dem — det
+          vil si, ikke levere dem opp til applikasjonen, som slett ikke vil ha to eksemplarer av det
+          samme. For en stopp-og-vent-protokoll holder det med{" "}
+          <strong>ett bit</strong> sekvensnummer, siden det bare finnes én pakke i lufta av gangen.
+        </p>
+        <p>
+          Dermed har vi fire mekanismer, og de er nøyaktig de samme som TCP bruker i praksis:{" "}
+          <strong>feildeteksjonsbits</strong> (sjekksum), <strong>kvitteringer</strong>,{" "}
+          <strong>retransmisjon</strong> ved oppdaget feil, og{" "}
+          <strong>sekvensnumre</strong> for å avsløre retransmisjoner. Det er for øvrig mulig å klare
+          seg helt uten NAK og bare bruke ACK — ingen ny mekanisme, bare de samme brukt litt
+          annerledes. Det er den varianten TCP har valgt.
+        </p>
+        <p>
+          Ett tilfelle står fortsatt igjen: hva om pakker faktisk går <em>tapt</em> i kanalen? Da
+          trengs en mekanisme til — en tidtaker.
         </p>
       </LectureNote>
-
 
       <div className="grid gap-3 lg:grid-cols-2">
         <VisualDefs
@@ -1329,75 +1396,71 @@ function Section35() {
 
       <Section34Live />
 
-      <LectureNote title="Pålitelig overføring: bygg protokollen steg for steg">
+      <LectureNote title="TCP: prinsippene satt i praksis">
         <p>
-          Dette er en av de virkelig fundamentale utfordringene i hele faget: hvordan kan to parter
-          kommunisere <em>pålitelig</em> over en kanal som selv er upålitelig — som mister, vrenger og
-          stokker om meldinger? Metoden er å starte med en perfekt kanal, og så innføre én realistisk
-          antakelse om gangen og se hvilken mekanisme som må til for å bøte på den.
+          Det fine her er at det ikke kommer noe nytt: TCP bruker nøyaktig de mekanismene vi bygget
+          opp i 3.4 — sjekksum, kvitteringer, sekvensnumre, timeout og retransmisjon — pluss
+          pipelining. Men det er tre særegenheter å ha klart for seg.
         </p>
         <p>
-          Merk oppsettet: tjenesten vi tilbyr applikasjonene er <strong>enveis</strong> — data fra
-          avsender til mottaker. Men <em>inne i</em> protokollen må meldinger gå{" "}
-          <strong>begge veier</strong>, fordi mottakersiden må kunne svare avsendersiden.
+          TCP er <strong>punkt-til-punkt</strong> mellom én avsender og én mottaker, det er{" "}
+          <strong>full duplex</strong> (data kan flyte begge veier), og — viktigst —
+          semantikken er en <strong>ordnet bytestrøm</strong>, ikke meldinger. Kontrast med UDP, som
+          er meldingsorientert. Det er derfor{" "}
+          <strong>sekvensnummeret er byte-nummeret til den første byten i nyttelasten</strong>, ikke
+          et pakkenummer, og <strong>ack-nummeret er nummeret på den neste byten mottakeren
+          venter</strong> — som samtidig kvitterer kumulativt for alt før den.
         </p>
-        <p className="rounded-lg border border-amber-500/30 bg-background/60 px-3 py-2">
-          Det viktigste tankeskiftet: det er lett for <em>oss</em> å se begge sider samtidig og si «der
-          gikk pakken tapt, altså må denne parten gjøre sånn». Men avsenderen ser ikke det. Den vet
-          ingenting om hva som skjedde med det den sendte — med mindre mottakeren{" "}
-          <strong>signaliserer tilbake</strong>. Tenk deg et forheng mellom dem: alt den ene vet om den
-          andre, er lært gjennom meldinger.
-        </p>
-
-        <LectureBeat>Tilstandsmaskiner, og hvorfor ikke bare skrive tekst</LectureBeat>
         <p>
-          Skal vi spesifisere en protokoll, duger ikke prosa — den kan mistolkes og den blir lett
-          ufullstendig («å ja, det tilfellet glemte jeg»). Derfor{" "}
-          <strong>endelige tilstandsmaskiner</strong>: tilstander, <em>hendelser</em> som utløser
-          overganger mellom dem, og <em>handlinger</em> som utføres. En lysbryter er det minimale
-          eksempelet: to tilstander, to hendelser, og en handling (lyset tennes).
+          Et lite kuriosum verdt å vite: hva en TCP-mottaker skal gjøre med segmenter som kommer{" "}
+          <em>ut av rekkefølge</em>, sier spesifikasjonen ingenting om. Det er opp til den som
+          implementerer.
         </p>
 
-        <LectureBeat>Steg for steg</LectureBeat>
+        <LectureBeat>Hvor lenge skal timeren stå?</LectureBeat>
         <p>
-          <strong>Perfekt kanal.</strong> Latterlig enkelt: avsenderen pakker og sender, mottakeren
-          leser og leverer opp. Én tilstand hver.
+          For kort, og du får <strong>prematur timeout</strong> — du retransmitterer segmenter som
+          ikke var tapt i det hele tatt. For lang, og TCP reagerer altfor tregt på faktiske tap.
+          Verdien må åpenbart henge sammen med rundturstiden, men målte RTT-verdier spriker mye fra
+          måling til måling.
         </p>
         <p>
-          <strong>Bits kan vippe.</strong> Nå trengs mekanismer — og her hjelper det å tenke på hvordan{" "}
-          <em>mennesker</em> gjør det når noe blir uforståelig i en samtale. Vi bekrefter («ja, jeg
-          hørte»), vi avkrefter («nei, det fikk jeg ikke med meg»), og vi ber om at det gjentas. Det
-          gir <strong>ACK</strong>, <strong>NAK</strong> og <strong>retransmisjon</strong> — pluss{" "}
-          <strong>sjekksum</strong> for i det hele tatt å oppdage feilen. Avsenderen sender og venter
-          på svar før den går videre: <strong>stopp-og-vent</strong>.
+          Derfor glattes de: TCP holder en{" "}
+          <strong>eksponentielt vektet glidende gjennomsnitt</strong> av RTT, der hver ny måling
+          teller med en vekt (typisk 0,125) og den gamle estimatet med resten. Timeout settes så til
+          estimert RTT <em>pluss en sikkerhetsmargin</em> — og marginen er fire ganger et mål på hvor
+          mye RTT-en varierer. Logikken er grei: svinger målingene mye, trenger du større margin.
+        </p>
+
+        <LectureBeat>Kvitteringene i praksis</LectureBeat>
+        <p>
+          Mottakeren gjør ikke alltid det enkleste. Kommer et segment i riktig rekkefølge og alt
+          tidligere er kvittert, venter mange implementasjoner{" "}
+          <strong>opptil et halvt sekund</strong> på om det kommer ett til — og sender så{" "}
+          <em>én</em> kumulativ kvittering for begge. Det halverer ack-trafikken.
         </p>
         <p>
-          <strong>Men så den fatale feilen.</strong> Hva om <em>kvitteringen</em> blir ødelagt? Nå
-          vet ikke avsenderen om mottakeren fikk pakken riktig eller ikke. Retransmitterer den, kan
-          mottakeren få <em>to kopier</em> og tro at den andre er nye data. Lar den være, risikerer
-          den at pakken aldri kom fram.
+          Kommer det derimot et segment med <em>høyere</em> sekvensnummer enn ventet, er det oppdaget
+          et hull, og mottakeren sender en <strong>duplikat-ACK</strong> som gjentar hvilken byte den
+          fortsatt venter på. Fylles hullet senere, sendes en kumulativ ACK for alt som nå er på
+          plass.
+        </p>
+
+        <LectureBeat>Fast retransmit — slutt å vente</LectureBeat>
+        <p>
+          Se for deg fem segmenter sendt, der det andre går tapt. Mottakeren kvitterer det første.
+          Så kommer segment tre, fire og fem — og for hvert av dem sender mottakeren{" "}
+          <em>samme</em> kvittering på nytt, fordi hullet fortsatt er der.
         </p>
         <p>
-          Løsningen er å retransmittere <em>uansett</em>, og gi hver pakke et{" "}
-          <strong>sekvensnummer</strong> så mottakeren kan kjenne igjen duplikater og kaste dem — det
-          vil si, ikke levere dem opp til applikasjonen, som slett ikke vil ha to eksemplarer av det
-          samme. For en stopp-og-vent-protokoll holder det med{" "}
-          <strong>ett bit</strong> sekvensnummer, siden det bare finnes én pakke i lufta av gangen.
-        </p>
-        <p>
-          Dermed har vi fire mekanismer, og de er nøyaktig de samme som TCP bruker i praksis:{" "}
-          <strong>feildeteksjonsbits</strong> (sjekksum), <strong>kvitteringer</strong>,{" "}
-          <strong>retransmisjon</strong> ved oppdaget feil, og{" "}
-          <strong>sekvensnumre</strong> for å avsløre retransmisjoner. Det er for øvrig mulig å klare
-          seg helt uten NAK og bare bruke ACK — ingen ny mekanisme, bare de samme brukt litt
-          annerledes. Det er den varianten TCP har valgt.
-        </p>
-        <p>
-          Ett tilfelle står fortsatt igjen: hva om pakker faktisk går <em>tapt</em> i kanalen? Da
-          trengs en mekanisme til — en tidtaker.
+          Avsenderen ser altså den opprinnelige kvitteringen pluss{" "}
+          <strong>tre duplikat-ACK-er</strong>. Det er et sterkt signal: senere segmenter{" "}
+          <em>kom fram</em>, men noe mangler foran dem. Da er det liten grunn til å sitte og vente på
+          at timeren skal løpe ut. <strong>Fast retransmit</strong> sier: ved tre duplikat-ACK-er,
+          send det eldste ukvitterte segmentet på nytt med én gang. Det lar TCP komme seg etter et tap
+          langt raskere.
         </p>
       </LectureNote>
-
 
       <div className="grid gap-3 lg:grid-cols-2">
         <VisualDefs
@@ -1616,72 +1679,167 @@ function Section36() {
 
       <Section35Live />
 
-      <LectureNote title="TCP: prinsippene satt i praksis">
+      <LectureNote title="Congestion control: sagtannen, og de tre familiene">
         <p>
-          Det fine her er at det ikke kommer noe nytt: TCP bruker nøyaktig de mekanismene vi bygget
-          opp i 3.4 — sjekksum, kvitteringer, sekvensnumre, timeout og retransmisjon — pluss
-          pipelining. Men det er tre særegenheter å ha klart for seg.
+          Det som gjør denne delen elegant er at det knapt kommer noe nytt maskineri. TCP bruker
+          signalene den allerede har — kvitteringer og tap — til å svare på et helt annet spørsmål
+          enn før: ikke «kom dataene fram?», men «tåler nettet at jeg sender fortere?»
         </p>
         <p>
-          TCP er <strong>punkt-til-punkt</strong> mellom én avsender og én mottaker, det er{" "}
-          <strong>full duplex</strong> (data kan flyte begge veier), og — viktigst —
-          semantikken er en <strong>ordnet bytestrøm</strong>, ikke meldinger. Kontrast med UDP, som
-          er meldingsorientert. Det er derfor{" "}
-          <strong>sekvensnummeret er byte-nummeret til den første byten i nyttelasten</strong>, ikke
-          et pakkenummer, og <strong>ack-nummeret er nummeret på den neste byten mottakeren
-          venter</strong> — som samtidig kvitterer kumulativt for alt før den.
-        </p>
-        <p>
-          Et lite kuriosum verdt å vite: hva en TCP-mottaker skal gjøre med segmenter som kommer{" "}
-          <em>ut av rekkefølge</em>, sier spesifikasjonen ingenting om. Det er opp til den som
-          implementerer.
+          Bakteppet er <strong>congestion collapse</strong> fra forrige seksjon: den ikke-intuitive
+          oppførselen der samlet gjennomstrømming <em>faller</em> når avsenderne presser på hardere.
+          Det var ikke teori — det begynte å skje i nettet på 1980-tallet, før TCP hadde noen
+          congestion control i det hele tatt. I 1988 publiserte Van Jacobson artikkelen som la
+          grunnlaget for alt vi ser på her. Legg merke til hvor bemerkelsesverdig det er: den samme
+          grunnmekanismen har stått i over 30 år, mens trafikkmengden i nettet har vokst med en
+          faktor på over en milliard.
         </p>
 
-        <LectureBeat>Hvor lenge skal timeren stå?</LectureBeat>
+        <LectureBeat>AIMD — og barnet som spør om mer</LectureBeat>
         <p>
-          For kort, og du får <strong>prematur timeout</strong> — du retransmitterer segmenter som
-          ikke var tapt i det hele tatt. For lang, og TCP reagerer altfor tregt på faktiske tap.
-          Verdien må åpenbart henge sammen med rundturstiden, men målte RTT-verdier spriker mye fra
-          måling til måling.
+          TCP tar en <strong>ende-til-ende</strong>-tilnærming: ingen ruter forteller avsenderen at
+          det er trengsel — avsenderen <em>slutter</em> seg til det fra tap. Regelen er så enkel som
+          den kan bli: går det bra, send litt fortere; kommer det tap, senk farten kraftig.
         </p>
         <p>
-          Derfor glattes de: TCP holder en{" "}
-          <strong>eksponentielt vektet glidende gjennomsnitt</strong> av RTT, der hver ny måling
-          teller med en vekt (typisk 0,125) og den gamle estimatet med resten. Timeout settes så til
-          estimert RTT <em>pluss en sikkerhetsmargin</em> — og marginen er fire ganger et mål på hvor
-          mye RTT-en varierer. Logikken er grei: svinger målingene mye, trenger du større margin.
+          Konkret er det <strong>additiv økning, multiplikativ reduksjon</strong> (AIMD): opp med{" "}
+          <em>ett segment per RTT</em> når det går bra, og <em>halver</em> raten ved tap. Plotter du
+          sendraten over tid, får du den karakteristiske <strong>sagtannen</strong>.
+        </p>
+        <p>
+          Måten å forstå den på: avsenderen leter kontinuerlig etter den høyeste raten den kommer
+          unna med uten tap. Den vet ikke hvor grensa går, så den må føle seg fram — presse litt til,
+          litt til, litt til, helt til det smeller, og så trekke seg kraftig tilbake og begynne å
+          føle seg fram på nytt. Det er nøyaktig samme forhandling som når et barn ber om «litt til,
+          litt til» inntil en voksen setter foten ned — barnet gir seg med det samme, men begynner å
+          prøve seg igjen etter en stund, for grensa kan jo ha flyttet seg.
+        </p>
+        <p className="rounded-lg border border-amber-500/30 bg-background/60 px-3 py-2">
+          <strong>Detalj som er lett å bomme på:</strong> halveringen gjelder når tap oppdages ved{" "}
+          <strong>tre duplikat-ACK-er</strong>. Ved <strong>timeout</strong> er signalet mye mer
+          alvorlig — da settes vinduet helt ned til <strong>ett segment</strong>.
+        </p>
+        <p>
+          Hvorfor <em>additiv</em> økning og ikke multiplikativ? Fordi rask økning gir ustabilitet.
+          Og dette er ikke bare magefølelse: det er senere vist formelt at AIMD fungerer som en{" "}
+          <strong>distribuert, asynkron optimeringsalgoritme</strong> — hver avsender setter sin egen
+          rate ut fra sine egne tapssignaler, uten å vite om de andre, og likevel konvergerer
+          systemet til fornuftige rater med gode stabilitetsegenskaper. Det er en ganske
+          bemerkelsesverdig egenskap for en regel som er så enkel å skrive ned.
         </p>
 
-        <LectureBeat>Kvitteringene i praksis</LectureBeat>
+        <LectureBeat>cwnd og slow start</LectureBeat>
         <p>
-          Mottakeren gjør ikke alltid det enkleste. Kommer et segment i riktig rekkefølge og alt
-          tidligere er kvittert, venter mange implementasjoner{" "}
-          <strong>opptil et halvt sekund</strong> på om det kommer ett til — og sender så{" "}
-          <em>én</em> kumulativ kvittering for begge. Det halverer ack-trafikken.
+          Mekanisk styres dette av <strong>congestion-vinduet</strong> (cwnd) — et vindu over
+          sekvensnummer-rommet, ved siden av det du allerede kjenner fra go-back-N og selective
+          repeat. Sammenhengen med farten er direkte: har du cwnd bytes ute samtidig og de kvitteres
+          i løpet av en rundtur, leverer TCP omtrent{" "}
+          <code className="rounded bg-muted px-1 py-0.5 font-mono text-xs">cwnd / RTT</code> bytes per
+          sekund.
         </p>
         <p>
-          Kommer det derimot et segment med <em>høyere</em> sekvensnummer enn ventet, er det oppdaget
-          et hull, og mottakeren sender en <strong>duplikat-ACK</strong> som gjentar hvilken byte den
-          fortsatt venter på. Fylles hullet senere, sendes en kumulativ ACK for alt som nå er på
-          plass.
+          Men AIMD beskriver bare en <em>etablert</em> forbindelse. Hvordan kommer en fersk
+          forbindelse i gang? Med <strong>slow start</strong>: den begynner på ett MSS per RTT og{" "}
+          <strong>dobler</strong> hver RTT. La ikke navnet lure deg — dette er eksponentiell vekst,
+          altså det motsatte av langsomt. «Slow» viser til at den <em>starter</em> lavt, ikke til
+          takten.
+        </p>
+        <p>
+          Overgangen mellom de to fasene styres av <strong>ssthresh</strong>: ved et tap settes den
+          til halvparten av cwnd-verdien der tapet skjedde, og det er der TCP bytter fra dobling til
+          den forsiktige +1-per-RTT-oppførselen.
         </p>
 
-        <LectureBeat>Fast retransmit — slutt å vente</LectureBeat>
+        <LectureBeat>CUBIC — smartere vei tilbake</LectureBeat>
         <p>
-          Se for deg fem segmenter sendt, der det andre går tapt. Mottakeren kvitterer det første.
-          Så kommer segment tre, fire og fem — og for hvert av dem sender mottakeren{" "}
-          <em>samme</em> kvittering på nytt, fordi hullet fortsatt er der.
+          Mange endringer er foreslått gjennom tre tiår, men én har fått virkelig utbredelse:{" "}
+          <strong>TCP CUBIC</strong>. Den gjør alt likt bortsett fra <em>hvordan</em> vinduet vokser.
         </p>
         <p>
-          Avsenderen ser altså den opprinnelige kvitteringen pluss{" "}
-          <strong>tre duplikat-ACK-er</strong>. Det er et sterkt signal: senere segmenter{" "}
-          <em>kom fram</em>, men noe mangler foran dem. Da er det liten grunn til å sitte og vente på
-          at timeren skal løpe ut. <strong>Fast retransmit</strong> sier: ved tre duplikat-ACK-er,
-          send det eldste ukvitterte segmentet på nytt med én gang. Det lar TCP komme seg etter et tap
-          langt raskere.
+          Innsikten: kall <strong>W<sub>max</sub></strong> raten der du sist opplevde tap. Trengselen
+          på lenken har neppe endret seg dramatisk siden i sted — så hvorfor krype lineært tilbake
+          dit? CUBIC øker <em>raskt</em> så lenge den er langt under W<sub>max</sub>, og{" "}
+          <em>forsiktig</em> når den nærmer seg. Formelt vokser vinduet som{" "}
+          <strong>kuben</strong> av avstanden i tid til punktet der den skal treffe W<sub>max</sub> —
+          derav navnet.
+        </p>
+        <p>
+          Resultatet er høyere gjennomsnittlig gjennomstrømming enn ren AIMD. CUBIC er i dag
+          standardalgoritmen i Linux' TCP-implementasjon, og en måling av de 5000 mest brukte
+          webserverne fant at nærmere halvparten kjørte en variant av den.
+        </p>
+
+        <LectureBeat>Forsinkelsesbasert: hold røret akkurat fullt</LectureBeat>
+        <p>
+          Her er en innvending mot hele den tapsbaserte familien. Tapet skjer på{" "}
+          <strong>flaskehals-lenken</strong> — de andre ruterne på veien er ikke problemet. Og når
+          flaskehalsen først er travel nok til at den nesten alltid sender, hjelper det{" "}
+          <em>ingenting</em> at avsenderne øker farten: ruteren kan uansett bare levere R bits per
+          sekund ut. Alt du oppnår er å fylle køene til de renner over.
+        </p>
+        <p>
+          Målet burde altså være å holde røret <strong>akkurat fullt — men ikke fullere</strong>:
+          ruteren skal aldri gå tom for arbeid, men heller ikke bygge kø. Det er ideen bak{" "}
+          <strong>forsinkelsesbasert</strong> congestion control, og den bruker RTT-målingene TCP
+          allerede gjør.
+        </p>
+        <p>
+          Avsenderen kjenner sin <strong>målte</strong> gjennomstrømming (bytes sendt siste runde delt
+          på målt RTT) og sin <strong>ustuvede</strong> gjennomstrømming (cwnd delt på{" "}
+          <strong>RTT<sub>min</sub></strong>, den minste RTT-en den noen gang har sett — altså banen
+          uten kø). Ligger de to tett, er det ingen kø å snakke om, og avsenderen kan øke cwnd. Har
+          den målte falt under, betyr det at RTT har vokst — det står pakker og venter i en kø et
+          sted — og avsenderen bør senke cwnd. Merk at dette skjer{" "}
+          <em>uten at et eneste pakketap trengs</em>. Google bruker en slik variant, <strong>BBR</strong>{" "}
+          (bottleneck bandwidth and RTT), både internt mellom datasentrene sine og på web- og
+          YouTube-serverne.
+        </p>
+
+        <LectureBeat>ECN: la nettverket si fra</LectureBeat>
+        <p>
+          Den tredje familien er <strong>nettverksassistert</strong>. Med{" "}
+          <strong>explicit congestion notification</strong> setter en overbelastet ruter et bit i
+          IP-headeren i stedet for å kaste pakken. Mottakeren ser markeringen og varsler avsenderen
+          ved å sette et ECE-bit i kvitteringen tilbake. Avsenderen reagerer så som om det hadde vært
+          et tap — halverer vinduet — men <em>uten</em> at noe faktisk gikk tapt.
+        </p>
+        <p>
+          En pussighet verdt å merke seg: <strong>hva som teller som «overbelastet» står ikke i noen
+          RFC</strong>. Selve mekanismen (bitene i IP- og TCP-headeren) er standardisert, men
+          politikken for når de settes er opp til den som drifter nettet.
+        </p>
+
+        <LectureBeat>Rettferdighet — og fraværet av et internett-politi</LectureBeat>
+        <p>
+          Et rimelig krav: deler K TCP-forbindelser en flaskehals med rate R, bør hver få omtrent{" "}
+          <strong>R/K</strong>. Gjør AIMD det?
+        </p>
+        <p>
+          Se det for to strømmer i et diagram der aksene er de to strømmenes gjennomstrømming.
+          Rettferdig deling er 45-graderslinja. Start hvor som helst under kapasitetsgrensa: begge
+          øker med ett MSS per RTT, altså like mye, så tilstanden beveger seg{" "}
+          <em>parallelt med 45-graderslinja</em> til kapasiteten sprekker og det blir tap. Da halverer
+          begge — og halvering trekker punktet <em>mot origo langs en linje gjennom origo</em>, som
+          flytter det nærmere 45-graderslinja. Gjenta: opp parallelt, inn mot midten, opp parallelt,
+          inn mot midten. Uansett hvor skjevt du starter, konvergerer det mot lik deling. Det er
+          verdt å bruke et minutt på å overbevise seg selv om at dette gjelder for et vilkårlig
+          startpunkt.
+        </p>
+        <p>
+          Men rettferdigheten hviler på frivillighet. TCP pakker sammen pålitelighet, flow control og
+          congestion control. Vil du, kan du bygge en app på UDP med pålitelighet og flow control
+          men <em>uten</em> congestion control — den vil ikke senke farten ved tap, og kan dermed
+          sulte ut TCP-forbindelsene den deler flaskehalsen med. Det finnes{" "}
+          <strong>ingen instans som håndhever</strong> rettferdig deling. At vi likevel ikke ser
+          utbredt juks skyldes nok mest at den som trenger pålitelighet uansett bare bygger på TCP.
+        </p>
+        <p>
+          Og en gråsone du allerede har møtt: webservere som åpner <strong>flere parallelle
+          forbindelser</strong> mellom samme klient og server får en større andel av flaskehalsen enn
+          én forbindelse ville gitt. Er det rettferdig? Det får du avgjøre selv — men det finnes
+          altså heller ikke her noen å ringe.
         </p>
       </LectureNote>
-
 
       <div className="grid gap-3 lg:grid-cols-2">
         <VisualDefs
