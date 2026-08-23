@@ -265,6 +265,79 @@ function Intro({ onPick }: { onPick: (t: Tab) => void }) {
 // ============================================================
 // 2.1 — Prinsipper for nettverks-applikasjoner
 // ============================================================
+const ANSLAG_21: Anslag[] = [
+  {
+    id: "k2-tcp-gir-ikke",
+    tema: "Hva TCP faktisk lover",
+    sporsmal: <>Hvilken av disse tjenestene gir TCP deg <strong>ikke</strong>?</>,
+    valg: [
+      "Pålitelig overføring i riktig rekkefølge",
+      "Flytkontroll så mottakeren ikke druknes",
+      "Garantert minimum båndbredde og maks forsinkelse",
+      "Congestion control",
+    ],
+    riktig: 2,
+    fasit: (
+      <>
+        TCP gir pålitelighet, flytkontroll og congestion control — men{" "}
+        <strong>ingen garantier om tid eller rate</strong>. Trenger appen din at pakken er framme innen
+        50 ms, finnes det ingen transportprotokoll i internett som lover deg det.
+      </>
+    ),
+    hvorforBommerIntuisjonen: (
+      <>
+        «Pålitelig» smitter over på alt annet: hvis den garanterer at data kommer fram, føles det som om
+        den garanterer <em>når</em>. Men rekkefølge og tidsfrist er to helt ulike løfter.
+      </>
+    ),
+  },
+  {
+    id: "k2-hvorfor-udp",
+    tema: "Hvorfor UDP finnes",
+    sporsmal: <>Hvorfor velger noen applikasjoner UDP, når TCP gir så mye mer?</>,
+    valg: [
+      "UDP er raskere per bit på lenken",
+      "Fordi de vil unngå håndtrykk og retransmisjoner, og heller bygge det de trenger selv",
+      "Fordi UDP har bedre sikkerhet",
+      "Fordi TCP ikke virker gjennom brannmurer",
+    ],
+    riktig: 1,
+    fasit: (
+      <>
+        Bitene går like fort uansett. Gevinsten er at UDP{" "}
+        <strong>ikke tvinger på deg noe du ikke vil ha</strong>: ingen oppsettsrunde før første byte,
+        ingen retransmisjon som kommer for sent til å hjelpe uansett, og ingen congestion control som
+        struper deg. Trenger appen noe av det, bygger den det selv i applikasjonslaget.
+      </>
+    ),
+    hvorforBommerIntuisjonen: (
+      <>
+        «UDP er raskere» sitter dypt, men er upresist. Det som er raskere er <em>oppstarten</em> og
+        <em> gjenopprettingen</em> — ikke selve overføringen.
+      </>
+    ),
+  },
+  {
+    id: "k2-to-sockets",
+    tema: "Sockets",
+    sporsmal: <>Hvor mange sockets er involvert når nettleseren din snakker med en webserver?</>,
+    valg: ["Én, som begge deler", "To — én i hver ende", "Én per pakke", "Fire, én per lag"],
+    riktig: 1,
+    fasit: (
+      <>
+        <strong>To</strong> — én dør i hver ende. Socketen er grensesnittet mellom applikasjonen og
+        transportlaget på <em>den ene</em> maskinen; den andre maskinen har sin egen.
+      </>
+    ),
+    hvorforBommerIntuisjonen: (
+      <>
+        Vi tenker på forbindelsen som ett rør, og da føles det som ett objekt. Men røret er noe
+        transportlaget lager <em>mellom</em> to dører — dørene er lokale.
+      </>
+    ),
+  },
+];
+
 function Section21() {
   return (
     <article className="space-y-4 text-sm">
@@ -278,6 +351,13 @@ function Section21() {
       </p>
 
       <Section21Live />
+
+      <AnslagPanel
+        avsloring="knapp"
+        tittel="Anslå først — hva laget under lover deg"
+        intro={<>Tre spørsmål om grensesnittet all applikasjonskode må forholde seg til.</>}
+        anslag={ANSLAG_21}
+      />
 
       <LectureNote title="Hvorfor det er lett å skrive en nettverks-app">
         <p>
@@ -1129,6 +1209,64 @@ Access-Control-Request-Headers: authorization
 // ============================================================
 // 2.3 — DNS
 // ============================================================
+const ANSLAG_23: Anslag[] = [
+  {
+    id: "k2-dns-sentral",
+    tema: "Hvorfor distribuert",
+    sporsmal: <>Hva er det <strong>ikke</strong> et problem med å ha én eneste, sentral DNS-server?</>,
+    valg: [
+      "Den blir et enkeltpunkt som kan feile",
+      "Trafikkvolumet blir uhåndterlig",
+      "Avstanden blir stor for de fleste brukerne",
+      "Navnene ville blitt for lange",
+    ],
+    riktig: 3,
+    fasit: (
+      <>
+        Navnelengde har ingenting med saken å gjøre. De tre andre er nettopp grunnene til at DNS er et{" "}
+        <strong>hierarki</strong> av servere: robusthet, volum og nærhet — pluss at vedlikeholdet av én
+        gigantisk fil ville vært umulig.
+      </>
+    ),
+    hvorforBommerIntuisjonen: (
+      <>
+        Én sentral tabell høres enklest ut, og for en liten database er det riktig. DNS er et av de
+        klareste eksemplene på at skala i seg selv tvinger fram en annen arkitektur.
+      </>
+    ),
+  },
+  {
+    id: "k2-dns-ttl",
+    tema: "Caching og TTL",
+    sporsmal: (
+      <>
+        Du flytter nettstedet ditt til en ny IP og oppdaterer DNS med én gang. Hvorfor havner noen brukere
+        fortsatt på den gamle adressen i timevis?
+      </>
+    ),
+    valg: [
+      "Fordi endringen må godkjennes av ICANN",
+      "Fordi mellomliggende DNS-servere har svaret cachet til TTL-en løper ut",
+      "Fordi TCP holder gamle forbindelser åpne",
+      "Fordi nettleseren ikke støtter endringer",
+    ],
+    riktig: 1,
+    fasit: (
+      <>
+        Caching er grunnen til at DNS i det hele tatt skalerer — men prisen er at et svar lever videre
+        til <strong>TTL-en</strong> går ut. Vet du at en flytting kommer, senker du TTL-en i god tid
+        først.
+      </>
+    ),
+    hvorforBommerIntuisjonen: (
+      <>
+        Vi forventer at «oppdatert» betyr «oppdatert overalt, nå». I et system bygget på kopier er
+        endring alltid noe som <em>sprer seg</em>, aldri noe som skjer samtidig.
+      </>
+    ),
+  },
+];
+
 function Section23() {
   return (
     <article className="space-y-4 text-sm">
@@ -1142,6 +1280,13 @@ function Section23() {
       </p>
 
       <Section23Live />
+
+      <AnslagPanel
+        avsloring="knapp"
+        tittel="Anslå først — DNS"
+        intro={<>To spørsmål om hvorfor DNS ser ut som den gjør, og hva det koster.</>}
+        anslag={ANSLAG_23}
+      />
 
       <LectureNote title="DNS: en distribuert database som må klare alt">
         <p>
@@ -1478,6 +1623,69 @@ eksempel.no.  3600  IN  MX  50 last-resort.fjern-by.no.`}</pre>
 // ============================================================
 // 2.4 — E-post og P2P
 // ============================================================
+const ANSLAG_24: Anslag[] = [
+  {
+    id: "k2-smtp-push",
+    tema: "Push mot pull",
+    sporsmal: (
+      <>
+        HTTP og SMTP er begge tekstbaserte forespørsel/svar-protokoller over TCP. Hva er den viktigste
+        forskjellen i hvordan de brukes?
+      </>
+    ),
+    valg: [
+      "HTTP dytter data til serveren; SMTP henter fra den",
+      "SMTP dytter meldingen mot mottakeren; HTTP henter innhold fra en server",
+      "SMTP bruker UDP, HTTP bruker TCP",
+      "Ingen — de gjør det samme",
+    ],
+    riktig: 1,
+    fasit: (
+      <>
+        SMTP er en <strong>push</strong>-protokoll: avsenderen tar initiativet og dytter meldingen mot
+        mottakerens server. HTTP er <strong>pull</strong>: klienten ber om noe som allerede ligger der.
+        Det er derfor du trenger en <em>egen</em> protokoll (IMAP) for å hente e-posten ned igjen.
+      </>
+    ),
+    hvorforBommerIntuisjonen: (
+      <>
+        Begge ser like ut på tråden — ASCII-kommandoer og statuskoder — så man venter samme rollefordeling.
+        Men hvem som starter samtalen bestemmer hele arkitekturen rundt.
+      </>
+    ),
+  },
+  {
+    id: "k2-bittorrent",
+    tema: "Hvorfor P2P skalerer",
+    sporsmal: (
+      <>
+        Antall brukere som vil ha samme fil tidobles. Hva skjer med tiden det tar å distribuere den i et
+        <strong> P2P</strong>-system, sammenlignet med klient/tjener?
+      </>
+    ),
+    valg: [
+      "Den tidobles i begge tilfeller",
+      "Den vokser kraftig i klient/tjener, men mye saktere i P2P",
+      "Den er lik i begge, siden lenkene er de samme",
+      "Den blir kortere i klient/tjener",
+    ],
+    riktig: 1,
+    fasit: (
+      <>
+        I klient/tjener må serverens opplenke bære <em>hele</em> byrden, og den vokser lineært med
+        antall brukere. I P2P blir hver ny deltaker også en ny <strong>opplaster</strong> — etterspørselen
+        og kapasiteten vokser sammen.
+      </>
+    ),
+    hvorforBommerIntuisjonen: (
+      <>
+        Vi teller bare etterspørselssiden, fordi det er den vi ser. P2P sin hele idé er at den andre siden
+        av regnestykket vokser samtidig.
+      </>
+    ),
+  },
+];
+
 function Section24() {
   return (
     <article className="space-y-4 text-sm">
@@ -1490,6 +1698,13 @@ function Section24() {
       </p>
 
       <Section24Live />
+
+      <AnslagPanel
+        avsloring="knapp"
+        tittel="Anslå først — e-post og P2P"
+        intro={<>To arkitekturer med hver sin logikk for hvem som tar initiativet.</>}
+        anslag={ANSLAG_24}
+      />
 
       <LectureNote title="P2P og BitTorrent: hvorfor det skalerer">
         <p>
@@ -1859,6 +2074,59 @@ S: 221 Ha det`}</pre>
 // ============================================================
 // 2.5 — Video-streaming og CDN
 // ============================================================
+const ANSLAG_25: Anslag[] = [
+  {
+    id: "k2-dash-hvem",
+    tema: "DASH",
+    sporsmal: <>I DASH-streaming: hvem bestemmer hvilken kvalitet neste videobit skal ha?</>,
+    valg: [
+      "Serveren, som måler nettverket",
+      "Klienten, ut fra egen måling av båndbredde og bufferfylde",
+      "ISP-en, som prioriterer trafikken",
+      "Det er fast bestemt når videoen lastes opp",
+    ],
+    riktig: 1,
+    fasit: (
+      <>
+        <strong>Klienten</strong> velger. Serveren tilbyr bare samme video kodet i flere rater, oppdelt i
+        biter, og klienten ber om den varianten den tror den klarer akkurat nå. Derfor kan kvaliteten
+        endre seg midt i en scene.
+      </>
+    ),
+    hvorforBommerIntuisjonen: (
+      <>
+        Vi er vant til at serveren «sender oss» en video, som en TV-sending. I DASH er det klienten som
+        styrer — den henter, bit for bit, og tar avgjørelsen hver gang.
+      </>
+    ),
+  },
+  {
+    id: "k2-buffer-jitter",
+    tema: "Hvorfor buffer",
+    sporsmal: <>Hva er hovedgrunnen til at en videospiller bufrer noen sekunder før den starter?</>,
+    valg: [
+      "For å spare batteri",
+      "For å absorbere variasjon i ankomsttid, så avspillingen kan gå jevnt",
+      "Fordi TCP krever det",
+      "For å komprimere videoen",
+    ],
+    riktig: 1,
+    fasit: (
+      <>
+        Avspilling må skje i <strong>jevn takt</strong>, mens pakker ankommer i ujevn takt. Bufferet er
+        støtdemperen mellom de to — det er variasjonen (jitter), ikke forsinkelsen i seg selv, som er
+        fienden.
+      </>
+    ),
+    hvorforBommerIntuisjonen: (
+      <>
+        Buffring oppleves som ren venting, altså noe negativt. Men uten den ville du fått jevnlige
+        frysninger i stedet — noen sekunders forsinkelse er byttet du gjør for jevn avspilling.
+      </>
+    ),
+  },
+];
+
 function Section25() {
   return (
     <article className="space-y-4 text-sm">
@@ -1872,6 +2140,13 @@ function Section25() {
       </p>
 
       <Section25Live />
+
+      <AnslagPanel
+        avsloring="knapp"
+        tittel="Anslå først — streaming"
+        intro={<>To spørsmål om hvem som styrer, og hva bufferet er til for.</>}
+        anslag={ANSLAG_25}
+      />
 
       <LectureNote title="Streaming: buffer mot jitter, DASH mot båndbredde">
         <p>
@@ -2188,6 +2463,65 @@ video.eksempel.cdn-leverandor.net.  60  IN  A  10.20.30.40
 // ============================================================
 // 2.6 — Socket-programmering
 // ============================================================
+const ANSLAG_26: Anslag[] = [
+  {
+    id: "k2-velkomstsocket",
+    tema: "TCP-serverens to sockets",
+    sporsmal: (
+      <>
+        En TCP-server kjører. Tre klienter kobler seg til samtidig. Hvor mange sockets har serveren?
+      </>
+    ),
+    valg: [
+      "Én — alle deler den samme",
+      "Tre — én per klient",
+      "Fire — én velkomstsocket pluss én per forbindelse",
+      "Seks — to per klient",
+    ],
+    riktig: 2,
+    fasit: (
+      <>
+        <strong>Velkomstsocketen</strong> tar bare imot forbindelsesforespørsler. For hver klient som
+        slipper inn, lager serveren en <strong>ny, dedikert socket</strong>. Én pluss tre = fire.
+      </>
+    ),
+    hvorforBommerIntuisjonen: (
+      <>
+        Man tenker at socketen «er» porten, og at det bare finnes én port 80. Men porten identifiserer
+        tjenesten; socketen identifiserer <em>samtalen</em> — og de er det én av per klient.
+      </>
+    ),
+  },
+  {
+    id: "k2-udp-adresse",
+    tema: "UDP-socket",
+    sporsmal: (
+      <>
+        Med en <strong>UDP</strong>-socket: hvor ofte må du oppgi mottakerens adresse?
+      </>
+    ),
+    valg: [
+      "Én gang, når socketen opprettes",
+      "På hvert eneste datagram du sender",
+      "Aldri — UDP finner mottakeren selv",
+      "Én gang per forbindelse",
+    ],
+    riktig: 1,
+    fasit: (
+      <>
+        UDP har ingen forbindelse å henge adressen på, så <strong>hvert datagram bærer den selv</strong>.
+        Med TCP oppgir du adressen én gang ved oppsett, og skriver deretter bare bytes inn i strømmen.
+      </>
+    ),
+    hvorforBommerIntuisjonen: (
+      <>
+        «Forbindelsesløs» høres ut som en detalj om oppsett. Men det er nettopp fraværet av delt tilstand
+        som tvinger hver melding til å være selvstendig adressert — som et postkort mot en telefonsamtale.
+      </>
+    ),
+  },
+];
+
 function Section26() {
   return (
     <article className="space-y-4 text-sm">
@@ -2201,6 +2535,13 @@ function Section26() {
       </p>
 
       <Section26Live />
+
+      <AnslagPanel
+        avsloring="knapp"
+        tittel="Anslå først — sockets i praksis"
+        intro={<>To spørsmål du må ha klart før du skriver koden under.</>}
+        anslag={ANSLAG_26}
+      />
 
       <LectureNote title="Sockets: den eneste døra ut">
         <p>

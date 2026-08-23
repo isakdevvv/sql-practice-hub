@@ -10,6 +10,7 @@ import { Section14Live } from "./Section14Live";
 import { Section15Live } from "./Section15Live";
 import { VisualDefs } from "./VisualDefs";
 import { BomstasjonViz } from "./BomstasjonViz";
+import { InnkapslingViz } from "./InnkapslingViz";
 import { AnslagPanel } from "@/components/lab/AnslagPanel";
 import type { Anslag } from "@/lib/lab/anslag";
 import { LectureNote, LectureBeat } from "./LectureNote";
@@ -251,6 +252,84 @@ function Intro({ onPick }: { onPick: (t: Tab) => void }) {
 // ============================================================
 // 1.1 — Hva er internett?
 // ============================================================
+const ANSLAG_11: Anslag[] = [
+  {
+    id: "k1-nett-vs-web",
+    tema: "Internett ≠ weben",
+    sporsmal: (
+      <>
+        Nettsidene dine laster ikke, og du sier «internett er nede». Samtidig spiller Spotify videre og
+        en <code className="rounded bg-muted px-1 py-0.5 font-mono text-xs">ssh</code>-økt står oppe. Hva
+        er mest sannsynlig galt?
+      </>
+    ),
+    valg: [
+      "Hele internett er nede, men app-ene bruker mellomlagrede data",
+      "DNS eller weben svikter — nettet under virker fint",
+      "TCP er nede, men UDP virker",
+      "Aksesslenken din er full",
+    ],
+    riktig: 1,
+    fasit: (
+      <>
+        At noe annet fungerer beviser at pakkene kommer fram. Weben er én <em>tjeneste</em> oppå nettet,
+        og DNS er en annen. Svikter en av dem, er det tjenesten som er nede — ikke infrastrukturen.
+      </>
+    ),
+    hvorforBommerIntuisjonen: (
+      <>
+        Fordi vi møter nettet gjennom nettleseren, og gjør nettleseren til hele nettet. Weben kom to tiår
+        etter at nettet begynte å frakte pakker — de er ikke samme lag, og de feiler uavhengig.
+      </>
+    ),
+  },
+  {
+    id: "k1-protokoll-def",
+    tema: "Hva en protokoll er",
+    sporsmal: <>Hva må en protokollspesifikasjon fastsette for å være komplett?</>,
+    valg: [
+      "Bare formatet på meldingene — resten er implementasjonsdetaljer",
+      "Formatet på og rekkefølgen av meldinger, pluss handlingene ved sending og mottak",
+      "Hvilken programmeringsspråk som skal brukes",
+      "Hvor raskt meldingene må sendes",
+    ],
+    riktig: 1,
+    fasit: (
+      <>
+        Tre deler: <strong>format</strong> (hva står hvor), <strong>rekkefølge</strong> (hva kommer etter
+        hva) og <strong>handlinger</strong> (hva gjør du når meldingen kommer). Utelater du rekkefølgen,
+        har du et filformat — ikke en protokoll.
+      </>
+    ),
+    hvorforBommerIntuisjonen: (
+      <>
+        «Protokoll» høres ut som et dokumentformat. Men det er samtalen som er protokollen: i «unnskyld,
+        vet du hva klokka er?» ligger halve avtalen i at spørsmålet kommer <em>før</em> svaret.
+      </>
+    ),
+  },
+  {
+    id: "k1-hvem-standardiserer",
+    tema: "Hvem bestemmer",
+    sporsmal: <>Hvem standardiserer HTTP, TCP og IP?</>,
+    valg: ["ICANN", "IETF, gjennom RFC-er", "IEEE", "FN, gjennom ITU"],
+    riktig: 1,
+    fasit: (
+      <>
+        <strong>IETF</strong> lager protokollstandardene og gir dem ut som <strong>RFC</strong>-er.
+        ICANN styrer navn og adresser, IEEE står bak WiFi og Ethernet, og ITU er FN-særorganet. Fire
+        ulike organer med fire ulike mandater.
+      </>
+    ),
+    hvorforBommerIntuisjonen: (
+      <>
+        Man venter seg én sjef for noe så stort. Men internett styres i lag: hvem som eier navnet
+        <em> vg.no</em> er et helt annet spørsmål enn hvordan en TCP-forbindelse settes opp.
+      </>
+    ),
+  },
+];
+
 function Section11() {
   return (
     <article className="space-y-4 text-sm">
@@ -285,6 +364,13 @@ function Section11() {
       </div>
 
       <Section11Live />
+
+      <AnslagPanel
+        avsloring="knapp"
+        tittel="Anslå først — tre grunnbegreper"
+        intro={<>Tre spørsmål som går igjen på eksamen, og som er lette å svare feil på i fart.</>}
+        anslag={ANSLAG_11}
+      />
 
       <LectureNote title="To måter å svare på «hva er internett?»">
         <p>
@@ -537,6 +623,63 @@ function Section11() {
 // ============================================================
 // 1.2 — Edge & core
 // ============================================================
+const ANSLAG_12: Anslag[] = [
+  {
+    id: "k1-delt-medium",
+    tema: "Delt vs. dedikert aksess",
+    sporsmal: (
+      <>
+        Naboen laster ned døgnet rundt. Hvem av dere merker det på egen hastighet — du med{" "}
+        <strong>kabel (HFC)</strong>, eller du med <strong>DSL</strong>?
+      </>
+    ),
+    valg: [
+      "Begge like mye — de deler jo ISP",
+      "Kabel-kunden. DSL-linjen går dedikert til sentralen",
+      "DSL-kunden, fordi kobber er tregere",
+      "Ingen av dem — ISP-en garanterer hastigheten",
+    ],
+    riktig: 1,
+    fasit: (
+      <>
+        Kabel er et <strong>delt medium</strong>: én koaks passerer mange hus, og du kan dele frekvens med
+        naboene. DSL gir deg din egen kobberpar helt inn til sentralen — der deler du ingenting med
+        naboen (flaskehalsen flytter seg bare lenger inn i nettet).
+      </>
+    ),
+    hvorforBommerIntuisjonen: (
+      <>
+        Begge kommer inn i veggen som «bredbånd», så de føles like. Forskjellen ligger i topologien du
+        aldri ser: en buss forbi huset ditt, eller en egen tråd til sentralen.
+      </>
+    ),
+  },
+  {
+    id: "k1-lr",
+    tema: "L/R",
+    sporsmal: (
+      <>
+        En pakke på <strong>1500 byte</strong> skal ut på en lenke med transmisjonsrate{" "}
+        <strong>1 Mb/s</strong>. Hvor lang tid tar det å få alle bitene ut på lenken?
+      </>
+    ),
+    valg: ["1,5 ms", "12 ms", "1,5 s", "Kommer an på hvor lang lenken er"],
+    riktig: 1,
+    fasit: (
+      <>
+        1500 byte = 12 000 bit. 12 000 / 1 000 000 = <strong>12 ms</strong>. Merk at lenkens{" "}
+        <em>lengde</em> ikke er med i regnestykket i det hele tatt — det er propagasjon, en annen sak.
+      </>
+    ),
+    hvorforBommerIntuisjonen: (
+      <>
+        Byte og bit blandes under press, og en faktor 8 forsvinner. Skriv alltid om til bit før du deler
+        på en rate oppgitt i bit per sekund.
+      </>
+    ),
+  },
+];
+
 function Section12() {
   return (
     <article className="space-y-4 text-sm">
@@ -549,6 +692,13 @@ function Section12() {
       </p>
 
       <Section12Live />
+
+      <AnslagPanel
+        avsloring="knapp"
+        tittel="Anslå først — aksessnettet"
+        intro={<>To spørsmål om hva som faktisk begrenser farten hjem til deg.</>}
+        anslag={ANSLAG_12}
+      />
 
       <LectureNote title="Aksessnett: still alltid to spørsmål">
         <p>
@@ -831,6 +981,63 @@ function Section12() {
 // ============================================================
 // 1.3 — Packet vs circuit switching
 // ============================================================
+const ANSLAG_13: Anslag[] = [
+  {
+    id: "k1-statmux",
+    tema: "Statistisk multipleksing",
+    sporsmal: (
+      <>
+        En lenke på <strong>1 Mb/s</strong> deles av brukere som hver sender <strong>100 kb/s</strong> —
+        men bare <strong>10 % av tiden</strong>. Krets-svitsjing klarer 10 brukere. Omtrent hvor mange
+        klarer pakke-svitsjing før overbelastning blir sannsynlig?
+      </>
+    ),
+    valg: ["De samme 10", "Rundt 12–15", "Rundt 35", "Ubegrenset mange"],
+    riktig: 2,
+    fasit: (
+      <>
+        Rundt <strong>35</strong>. Poenget er at det er lite sannsynlig at mange nok er aktive samtidig:
+        med 35 brukere som hver er aktive 10 % av tiden, er sjansen for at over 10 sender samtidig
+        forsvinnende liten. Krets-svitsjing må reservere kapasitet til <em>alle</em>, hele tiden — også
+        for de 90 % av tiden de er stille.
+      </>
+    ),
+    hvorforBommerIntuisjonen: (
+      <>
+        Vi regner «10 brukere × 100 kb/s = kapasiteten er brukt opp», som om alle sender samtidig. Det er
+        nettopp den antakelsen statistisk multipleksing river ned — og hele grunnen til at
+        pakke-svitsjing vant.
+      </>
+    ),
+  },
+  {
+    id: "k1-nar-krets",
+    tema: "Når krets er best",
+    sporsmal: <>I hvilket tilfelle er krets-svitsjing faktisk det bedre valget?</>,
+    valg: [
+      "Websurfing, der trafikken kommer i rykk",
+      "Trafikk med konstant rate som trenger garantert kapasitet",
+      "Alltid — den er mer moderne",
+      "Når mange brukere skal dele én lenke",
+    ],
+    riktig: 1,
+    fasit: (
+      <>
+        Reservert kapasitet er sløsing når trafikken er <em>burstete</em>, men akkurat det du vil ha når
+        raten er konstant og jevn — som en telefonsamtale. Da er det ingen stille perioder å utnytte, og
+        garantien er verdt prisen.
+      </>
+    ),
+    hvorforBommerIntuisjonen: (
+      <>
+        Siden pakke-svitsjing «vant», leses krets-svitsjing som utdatert. Men den tapte på{" "}
+        <em>trafikkmønster</em>, ikke på kvalitet — og reservasjonstanken lever videre der garantier
+        betyr noe.
+      </>
+    ),
+  },
+];
+
 function Section13() {
   return (
     <article className="space-y-4 text-sm">
@@ -843,6 +1050,13 @@ function Section13() {
       </p>
 
       <Section13Live />
+
+      <AnslagPanel
+        avsloring="knapp"
+        tittel="Anslå først — hvorfor pakker vant"
+        intro={<>Hele kapittelets viktigste sammenligning, i to spørsmål.</>}
+        anslag={ANSLAG_13}
+      />
 
       <VisualDefs
         items={[
@@ -1472,6 +1686,69 @@ function Section14() {
 // ============================================================
 // 1.5 — Lagene
 // ============================================================
+const ANSLAG_15: Anslag[] = [
+  {
+    id: "k1-ruter-lag",
+    tema: "Hvem leser hva",
+    sporsmal: (
+      <>
+        En pakke passerer en ruter midt inne i nettet. Hvor langt opp i lagene må ruteren pakke opp for å
+        gjøre jobben sin?
+      </>
+    ),
+    valg: [
+      "Helt opp til applikasjonslaget",
+      "Opp til transportlaget, for å se portnummeret",
+      "Opp til nettverkslaget — den trenger bare IP-adressen",
+      "Ingen lag — den videresender bitene rått",
+    ],
+    riktig: 2,
+    fasit: (
+      <>
+        Ruteren leser <strong>lenkelaget</strong> for å ta imot rammen og{" "}
+        <strong>nettverkslaget</strong> for å se hvor datagrammet skal. Segmentet og applikasjonsmeldingen
+        inni rører den ikke — de er bare nyttelast. Det er nettopp derfor nettet kan bære apper som ikke
+        fantes da det ble bygget.
+      </>
+    ),
+    hvorforBommerIntuisjonen: (
+      <>
+        Når man har lært at det finnes fem lag, føles det som om alle må åpnes hver gang. Men lagene er
+        et <em>skall</em>: hver boks åpner bare så mange lag som jobben krever.
+      </>
+    ),
+  },
+  {
+    id: "k1-pdu-navn",
+    tema: "Navn på dataenheten",
+    sporsmal: (
+      <>
+        Hva heter dataenheten på henholdsvis transport-, nettverks- og lenkelaget?
+      </>
+    ),
+    valg: [
+      "Pakke, pakke, pakke — det er samme sak",
+      "Segment, datagram, ramme",
+      "Datagram, segment, ramme",
+      "Ramme, datagram, segment",
+    ],
+    riktig: 1,
+    fasit: (
+      <>
+        Applikasjonen sender en <strong>melding</strong>, transportlaget pakker den i et{" "}
+        <strong>segment</strong>, nettverkslaget i et <strong>datagram</strong>, og lenkelaget i en{" "}
+        <strong>ramme</strong>. Hvert lag legger på sin egen header — det er det som kalles innkapsling.
+      </>
+    ),
+    hvorforBommerIntuisjonen: (
+      <>
+        I dagligtale heter alt «pakke», og det holder helt fint der. På eksamen skiller navnet hvilket lag
+        du snakker om — og dermed hvilken header som er relevant.
+      </>
+    ),
+  },
+];
+
 function Section15() {
   return (
     <article className="space-y-4 text-sm">
@@ -1484,6 +1761,15 @@ function Section15() {
       </p>
 
       <Section15Live />
+
+      <AnslagPanel
+        avsloring="knapp"
+        tittel="Anslå først — lagene i praksis"
+        intro={<>Innkapsling er lett å nikke til og vanskelig å bruke. Ta stilling.</>}
+        anslag={ANSLAG_15}
+      />
+
+      <InnkapslingViz />
 
       <LectureNote title="Flyreisen: hvor lag-tenkningen kommer fra">
         <p>
@@ -1779,6 +2065,13 @@ function Section16Kontekst() {
         sikkerhet får sitt eget kapittel — men konteksten er verdt å ha på plass tidlig.
       </p>
 
+      <AnslagPanel
+        avsloring="knapp"
+        tittel="Anslå først — angrep og styring"
+        intro={<>To spørsmål: ett om angrep, ett om hvem som egentlig bestemmer.</>}
+        anslag={ANSLAG_16}
+      />
+
       <LectureNote title="Nettverk under angrep" defaultOpen>
         <p>
           Startpunktet er en innrømmelse: den opprinnelige internett-arkitekturen ble ikke designet
@@ -1990,10 +2283,63 @@ function Section16Kontekst() {
   );
 }
 
+const ANSLAG_16: Anslag[] = [
+  {
+    id: "k1-sniff-spoof",
+    tema: "To ulike angrep",
+    sporsmal: (
+      <>
+        En angriper sender en pakke som utgir seg for å komme fra en annen maskin. Hva kalles det, og hva
+        hjelper mot det?
+      </>
+    ),
+    valg: [
+      "Sniffing — kryptering hjelper",
+      "Spoofing — autentisering hjelper",
+      "Tjenestenekt — brannmur hjelper",
+      "Spoofing — kryptering hjelper",
+    ],
+    riktig: 1,
+    fasit: (
+      <>
+        Å forfalske avsenderadressen er <strong>spoofing</strong>, og motgiften er{" "}
+        <strong>autentisering</strong>: å tvinge fram bevis for hvem du er. Kryptering skjuler{" "}
+        <em>innholdet</em> og hjelper mot avlytting (sniffing) — men en kryptert løgn er fortsatt en løgn.
+      </>
+    ),
+    hvorforBommerIntuisjonen: (
+      <>
+        «Sikkerhet = kryptering» er standardsvaret. Men de to angrepene rammer ulike egenskaper:
+        konfidensialitet mot identitet. Å bytte motgift gir null beskyttelse.
+      </>
+    ),
+  },
+  {
+    id: "k1-styring-lag",
+    tema: "Hvem styrer hva",
+    sporsmal: <>Hvem avgjør hvilken organisasjon som eier domenenavnet ditt?</>,
+    valg: ["IETF", "ICANN", "IEEE", "Den nasjonale regjeringen"],
+    riktig: 1,
+    fasit: (
+      <>
+        <strong>ICANN</strong> styrer navn og adresser, inkludert reglene for navnekonflikter. IETF lager
+        protokollene, IEEE står bak WiFi og Ethernet. Innhold — hva som får ligge på nettet — er igjen et
+        fjerde spørsmål, der nasjonale myndigheter er den viktigste aktøren.
+      </>
+    ),
+    hvorforBommerIntuisjonen: (
+      <>
+        Alt oppleves som «internettet bestemmer». Men styringen har minst tre etasjer — teknikk, navn og
+        innhold — og de har ulike aktører, ulike prosesser og ulike konflikter.
+      </>
+    ),
+  },
+];
+
 function Section16() {
   return (
     <article className="space-y-4 text-sm">
-      <Header num="1.6" title="Oppgaver" />
+      <Header num="1.7" title="Oppgaver" />
       <p className="text-muted-foreground">
         Sjekk forståelsen din med disse oppgavene. Klikk «Vis svar» for å se vår løsning etter du
         har prøvd selv.
@@ -2235,7 +2581,7 @@ function Section16() {
 function SectionEksamen() {
   return (
     <article className="space-y-4 text-sm">
-      <Header num="1.7" title="Eksamen-fokus" />
+      <Header num="1.8" title="Eksamen-fokus" />
 
       <p className="text-muted-foreground">
         Komprimert studie-pakke for siste runde før eksamen. Bla deg ned: cheat sheet, en
