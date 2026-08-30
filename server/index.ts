@@ -1,5 +1,4 @@
 import { Hono } from "hono";
-import { cors } from "hono/cors";
 import { Database } from "bun:sqlite";
 import { DATASETS, type DatasetId } from "../src/lib/db/datasets";
 
@@ -20,6 +19,7 @@ const FORBIDDEN_SELECT = [
 // In DDL mode users can write CREATE/INSERT/UPDATE/DELETE/ALTER/DROP/REPLACE.
 // Only block escape-hatches that touch the host process or other databases.
 const FORBIDDEN_DDL = ["ATTACH", "DETACH", "VACUUM", "PRAGMA"];
+const MAX_SQL_LENGTH = 100_000;
 
 function isUnsafe(sql: string, allowMutations = false): string | null {
   const list = allowMutations ? FORBIDDEN_DDL : FORBIDDEN_SELECT;
@@ -32,6 +32,13 @@ function isUnsafe(sql: string, allowMutations = false): string | null {
     if (new RegExp(`\\b${word}\\b`).test(stripped)) return word;
   }
   return null;
+}
+
+function validateSqlField(sql: unknown, allowMutations: boolean): string | null {
+  if (sql === undefined) return null;
+  if (typeof sql !== "string") return "invalid SQL input";
+  if (sql.length > MAX_SQL_LENGTH) return "SQL input is too large";
+  return isUnsafe(sql, allowMutations);
 }
 
 const dbCache = new Map<DatasetId, Database>();
@@ -82,8 +89,6 @@ function execDdl(db: Database, userSql: string, verifySql: string): QueryResult 
 
 const app = new Hono();
 
-app.use("*", cors());
-
 app.get("/api/health", (c) => c.json({ ok: true, datasets: Object.keys(DATASETS) }));
 
 app.get("/api/datasets", (c) => {
@@ -106,18 +111,26 @@ app.post("/api/reset", async (c) => {
 
 app.post("/api/query", async (c) => {
   const body = await c.req.json<{
-    sql: string;
+    sql: unknown;
     datasetId: DatasetId;
     mode?: "select" | "ddl";
-    preSql?: string;
-    verifySql?: string;
+    preSql?: unknown;
+    verifySql?: unknown;
   }>();
   const { sql, datasetId } = body;
   const mode = body.mode ?? "select";
-  const trimmed = (sql ?? "").trim().replace(/;+\s*$/g, "");
+  if (typeof sql !== "string" || sql.length > MAX_SQL_LENGTH) {
+    return c.json({ success: false, error: "Invalid or oversized SQL input." }, 400);
+  }
+  const trimmed = sql.trim().replace(/;+\s*$/g, "");
   if (!trimmed) return c.json({ success: false, error: "Empty query" });
   const bad = isUnsafe(trimmed, mode === "ddl");
   if (bad) return c.json({ success: false, error: `Unsafe keyword "${bad}" is blocked.` });
+  const badPreSql = validateSqlField(body.preSql, true);
+  if (badPreSql) return c.json({ success: false, error: `Unsafe keyword "${badPreSql}" is blocked in preSql.` });
+  const badVerifySql = validateSqlField(body.verifySql, false);
+  if (badVerifySql)
+    return c.json({ success: false, error: `Unsafe keyword "${badVerifySql}" is blocked in verifySql.` });
   if (!DATASETS[datasetId]) return c.json({ success: false, error: "Unknown dataset" }, 400);
 
   try {
@@ -147,8 +160,11 @@ app.post("/api/query", async (c) => {
 });
 
 app.post("/api/explain", async (c) => {
-  const { sql, datasetId } = await c.req.json<{ sql: string; datasetId: DatasetId }>();
-  const trimmed = (sql ?? "").trim().replace(/;+\s*$/g, "");
+  const { sql, datasetId } = await c.req.json<{ sql: unknown; datasetId: DatasetId }>();
+  if (typeof sql !== "string" || sql.length > MAX_SQL_LENGTH) {
+    return c.json({ plan: [], hints: [], error: "Invalid or oversized SQL input." }, 400);
+  }
+  const trimmed = sql.trim().replace(/;+\s*$/g, "");
   if (!trimmed) return c.json({ plan: [], hints: [] });
   if (isUnsafe(trimmed)) return c.json({ plan: [], hints: [] });
   if (!DATASETS[datasetId]) return c.json({ plan: [], hints: [] });
@@ -167,6 +183,56 @@ app.post("/api/explain", async (c) => {
   } finally {
     db.close();
   }
+});
+
+app.post("/api/tutor", async (c) => {
+  const key = process.env.ANTHROPIC_API_KEY;
+  if (!key) return c.json({ error: "Tutor API is not configured." }, 503);
+
+  const body = await c.req.json<{
+    model?: string;
+    system: string;
+    messages: { role: "user" | "assistant"; content: string }[];
+  }>();
+  const allowedModels = new Set(["claude-sonnet-4-5"]);
+  if (body.model && !allowedModels.has(body.model)) {
+    return c.json({ error: "Unsupported tutor model." }, 400);
+  }
+  if (
+    typeof body.system !== "string" ||
+    body.system.length > 20_000 ||
+    !Array.isArray(body.messages) ||
+    body.messages.length > 40 ||
+    body.messages.some(
+      (message) =>
+        !message ||
+        (message.role !== "user" && message.role !== "assistant") ||
+        typeof message.content !== "string" ||
+        message.content.length > 10_000,
+    )
+  ) {
+    return c.json({ error: "Invalid tutor request." }, 400);
+  }
+  const res = await fetch("https://api.anthropic.com/v1/messages", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "x-api-key": key,
+      "anthropic-version": "2023-06-01",
+    },
+    body: JSON.stringify({
+      model: body.model ?? "claude-sonnet-4-5",
+      max_tokens: 2000,
+      temperature: 0.7,
+      system: body.system,
+      messages: body.messages,
+    }),
+  });
+  const text = await res.text();
+  return new Response(text, {
+    status: res.status,
+    headers: { "Content-Type": "application/json" },
+  });
 });
 
 const port = Number(process.env.PORT ?? 3001);

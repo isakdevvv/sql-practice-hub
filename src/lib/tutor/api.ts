@@ -1,11 +1,5 @@
-// Tutor API wrapper. Calls Claude directly from the browser if a key is
-// configured, otherwise returns a deterministic placeholder so the chat UI
-// still works for screenshots/onboarding.
-//
-// Single-user platform: the Anthropic key lives in .env.local exposed as
-// VITE_ANTHROPIC_API_KEY. This is fine here because the deployed build runs
-// only locally for one user — DO NOT deploy this file as-is to a multi-user
-// host, the key would be readable in the bundle.
+// Tutor API wrapper. The server proxies requests so the Anthropic credential
+// never reaches the browser or the built client bundle.
 
 import type { TutorContext } from "./context";
 
@@ -67,23 +61,7 @@ function extractSuggestedActions(content: string): TutorResponse["suggestedActio
   return actions.length > 0 ? actions : undefined;
 }
 
-function getApiKey(): string | undefined {
-  // Vite exposes VITE_-prefixed env vars on import.meta.env.
-  // typeof check keeps this safe in SSR/test environments.
-  if (typeof import.meta === "undefined") return undefined;
-  const env = (import.meta as unknown as { env?: Record<string, string> }).env;
-  return env?.VITE_ANTHROPIC_API_KEY;
-}
-
 export async function sendToTutor(opts: SendOpts): Promise<TutorResponse> {
-  const key = getApiKey();
-  if (!key) {
-    return {
-      content:
-        "AI-tutor er konfigurert men trenger API-nøkkel. Se README for hvordan du legger VITE_ANTHROPIC_API_KEY i .env.local.",
-    };
-  }
-
   // Strip any system messages from the message list — Anthropic's API takes
   // system as a top-level field, not inside messages[].
   const userTurns = opts.messages
@@ -98,14 +76,10 @@ export async function sendToTutor(opts: SendOpts): Promise<TutorResponse> {
     messages: userTurns,
   };
 
-  const res = await fetch("https://api.anthropic.com/v1/messages", {
+  const res = await fetch("/api/tutor", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "x-api-key": key,
-      "anthropic-version": "2023-06-01",
-      // Required when calling the API directly from a browser.
-      "anthropic-dangerous-direct-browser-access": "true",
     },
     body: JSON.stringify(body),
     signal: opts.signal,
