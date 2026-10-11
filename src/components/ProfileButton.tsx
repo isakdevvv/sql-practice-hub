@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Download, Upload, User, Zap, Pin, LayoutDashboard, Wrench } from "lucide-react";
+import { Download, Upload, User, Zap, LayoutDashboard } from "lucide-react";
 import {
   Popover,
   PopoverContent,
@@ -151,25 +151,11 @@ export function ProfileButton() {
 
           <nav className="flex flex-col gap-0.5 border-t border-border pt-2 -mx-1">
             <a
-              href="/mine-fag"
-              className="flex items-center gap-2 rounded-md px-2 py-1.5 text-xs hover:bg-accent"
-            >
-              <Pin className="h-3.5 w-3.5 text-muted-foreground" />
-              Mine fag
-            </a>
-            <a
               href="/dashboard"
               className="flex items-center gap-2 rounded-md px-2 py-1.5 text-xs hover:bg-accent"
             >
               <LayoutDashboard className="h-3.5 w-3.5 text-muted-foreground" />
               Dashboard
-            </a>
-            <a
-              href="/lar"
-              className="flex items-center gap-2 rounded-md px-2 py-1.5 text-xs hover:bg-accent"
-            >
-              <Wrench className="h-3.5 w-3.5 text-muted-foreground" />
-              Alle verktøy
             </a>
           </nav>
 

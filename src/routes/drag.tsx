@@ -41,7 +41,11 @@ function saveSubjectFilter(v: SubjectFilter) {
   window.localStorage.setItem(SUBJECT_STORAGE_KEY, v);
 }
 
+type DragSearch = { fag?: SubjectId };
+
 export const Route = createFileRoute("/drag")({
+  validateSearch: (search: Record<string, unknown>): DragSearch =>
+    SUBJECTS.some((s) => s.id === search.fag) ? { fag: search.fag as SubjectId } : {},
   head: () => ({
     meta: [
       { title: "Drag-oppgaver — Kodeverkstedet" },
@@ -71,10 +75,13 @@ function DragPage() {
   const [subjectFilter, setSubjectFilterState] = useState<SubjectFilter>("all");
   const [progress, setProgress] = useState<DragProgress>(() => loadDragProgress());
 
-  // Hydrate subject filter from localStorage on mount (avoids SSR mismatch).
+  // Hydrate subject filter on mount (avoids SSR mismatch). ?fag= fra
+  // Øv-lista vinner over det lagrede valget.
+  const { fag } = Route.useSearch();
   useEffect(() => {
-    setSubjectFilterState(loadSubjectFilter());
-  }, []);
+    if (fag) setSubjectFilter(fag);
+    else setSubjectFilterState(loadSubjectFilter());
+  }, [fag]);
 
   function setSubjectFilter(v: SubjectFilter) {
     setSubjectFilterState(v);
