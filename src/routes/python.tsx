@@ -40,7 +40,13 @@ import {
   GraduationCap,
 } from "lucide-react";
 
+type PythonSearch = { kategori?: PyCategoryId };
+
 export const Route = createFileRoute("/python")({
+  validateSearch: (search: Record<string, unknown>): PythonSearch =>
+    PY_CATEGORIES.some((c) => c.id === search.kategori)
+      ? { kategori: search.kategori as PyCategoryId }
+      : {},
   head: () => ({
     meta: [
       { title: "Python — Kodeverkstedet" },
@@ -59,7 +65,9 @@ function PythonPage() {
   // Level filter: "all" means show everything; a number filters by PY_TOPIC_LEVEL.
   const [levelFilter, setLevelFilter] = useState<"all" | PyLevel>("all");
   // Category filter — null = vis alle kategorier (sidebar grupperes), ellers vis kun valgt.
-  const [categoryFilter, setCategoryFilter] = useState<PyCategoryId | null>(null);
+  // ?kategori= fra Øv-lista forhåndsvelger kategorien.
+  const { kategori } = Route.useSearch();
+  const [categoryFilter, setCategoryFilter] = useState<PyCategoryId | null>(kategori ?? null);
 
   const filteredExercises = useMemo(
     () =>

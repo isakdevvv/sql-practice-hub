@@ -1,133 +1,198 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useMemo, useState } from "react";
+import { ArrowRight, Layers } from "lucide-react";
 import { SiteHeader } from "@/components/SiteHeader";
-import { PROBLEMS } from "@/lib/problems/data";
-import { PY_EXERCISES } from "@/lib/python/exercises";
-import { GIT_SCENARIOS } from "@/lib/git/scenarios";
-import { VENV_SCENARIOS } from "@/lib/venv/scenarios";
-import { DRILLS } from "@/lib/learn/drills";
+import { OV_RADER, OV_TYPER, type OvRad, type OvType } from "@/lib/nav/ov";
+import { EXAM_SEASON_SLUGS, SUBJECT_BY_SLUG } from "@/lib/subjects/catalog";
+import { cn } from "@/lib/utils";
+
+/** `annet` = rader uten fag (Python-kjerne, verktøy, tverrgående). */
+type OvSearch = { fag?: string; type?: OvType };
 
 export const Route = createFileRoute("/ov")({
+  validateSearch: (search: Record<string, unknown>): OvSearch => {
+    const out: OvSearch = {};
+    if (typeof search.fag === "string" && (search.fag === "annet" || SUBJECT_BY_SLUG[search.fag])) {
+      out.fag = search.fag;
+    }
+    if (OV_TYPER.some((t) => t.id === search.type)) out.type = search.type as OvType;
+    return out;
+  },
   head: () => ({
     meta: [
-      { title: "Øv — SQL, Python, JOIN, ER og quiz" },
+      { title: "Øv — alle øvinger på ett sted" },
       {
         name: "description",
-        content:
-          "Alle øvingsmodusene samlet: SQL-oppgaver, JOIN-trening, ER-tegner, Python i Pyodide, drag-and-drop og multiple-choice quiz.",
+        content: "Alle oppgaver, drills, puslespill og kort i én liste. Filtrer på fag og type.",
       },
     ],
   }),
-  component: OvHub,
+  component: OvPage,
 });
 
-function OvHub() {
+// Fag-filteret viser bare fag som faktisk har øvinger. Eksamensfagene står
+// alltid framme; resten ligger bak «Flere fag», som på Lær-siden.
+const FAG_MED_RADER = new Set(OV_RADER.map((r) => r.fag).filter((f): f is string => !!f));
+const EKSAMENSFAG = EXAM_SEASON_SLUGS.filter((s) => FAG_MED_RADER.has(s));
+const ANDRE_FAG = [...FAG_MED_RADER].filter((s) => !EXAM_SEASON_SLUGS.includes(s)).sort();
+
+function OvPage() {
+  const { fag, type } = Route.useSearch();
+  const [visAndre, setVisAndre] = useState(() => !!fag && ANDRE_FAG.includes(fag));
+
+  const etterFag = useMemo(
+    () => OV_RADER.filter((r) => !fag || (fag === "annet" ? !r.fag : r.fag === fag)),
+    [fag],
+  );
+  const rader = useMemo(() => etterFag.filter((r) => !type || r.type === type), [etterFag, type]);
+
   return (
     <div className="min-h-screen bg-background">
       <SiteHeader />
-      <main className="container mx-auto px-4 py-12 max-w-4xl">
-        <div className="mb-10">
-          <div className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-3 py-1 text-xs text-muted-foreground mb-4">
-            Hub
-          </div>
-          <h1 className="text-4xl font-bold tracking-tight">
-            Øv —{" "}
-            <span className="bg-gradient-to-r from-brand to-success bg-clip-text text-transparent">
-              gjør, ikke bare les
-            </span>
-          </h1>
-          <p className="mt-4 text-muted-foreground max-w-2xl">
-            Seks måter å trene på det samme stoffet. Skriv ekte SQL, dra brikker, ta quiz, eller
-            kjør Python i nettleseren — velg formatet som hjelper deg lære best akkurat nå.
+      <main className="container mx-auto max-w-3xl px-4 py-8">
+        <header className="mb-6">
+          <h1 className="text-2xl font-bold tracking-tight">Øv</h1>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Alle øvinger i én liste. Velg fag og type, og gå rett inn.
           </p>
+        </header>
+
+        <Link
+          to="/repetisjon"
+          className="mb-6 flex items-center gap-3 rounded-lg border border-brand/40 bg-brand/5 px-4 py-3 transition-colors hover:border-brand"
+        >
+          <Layers className="h-5 w-5 shrink-0 text-brand" />
+          <span className="min-w-0 flex-1">
+            <span className="block font-medium leading-tight">Dagens repetisjon</span>
+            <span className="block text-xs text-muted-foreground">
+              Køen med det du er i ferd med å glemme, på tvers av fag.
+            </span>
+          </span>
+          <ArrowRight className="h-4 w-4 shrink-0 text-muted-foreground" />
+        </Link>
+
+        <div className="mb-5 space-y-3">
+          <FilterRad label="Fag">
+            <Chip aktiv={!fag} search={{ type }}>
+              Alle
+            </Chip>
+            {EKSAMENSFAG.map((slug) => (
+              <Chip key={slug} aktiv={fag === slug} search={{ fag: slug, type }}>
+                {SUBJECT_BY_SLUG[slug]?.code ?? slug}
+              </Chip>
+            ))}
+            <Chip aktiv={fag === "annet"} search={{ fag: "annet", type }}>
+              Tverrgående
+            </Chip>
+            {visAndre ? (
+              ANDRE_FAG.map((slug) => (
+                <Chip key={slug} aktiv={fag === slug} search={{ fag: slug, type }}>
+                  {SUBJECT_BY_SLUG[slug]?.code ?? slug}
+                </Chip>
+              ))
+            ) : (
+              <button
+                type="button"
+                onClick={() => setVisAndre(true)}
+                className="rounded-full px-2 py-1.5 text-xs text-muted-foreground underline-offset-2 hover:text-foreground hover:underline"
+              >
+                Flere fag
+              </button>
+            )}
+          </FilterRad>
+          <FilterRad label="Type">
+            <Chip aktiv={!type} search={{ fag }}>
+              Alle
+            </Chip>
+            {OV_TYPER.filter((t) => etterFag.some((r) => r.type === t.id)).map((t) => (
+              <Chip key={t.id} aktiv={type === t.id} search={{ fag, type: t.id }}>
+                {t.label}
+              </Chip>
+            ))}
+          </FilterRad>
         </div>
 
-        <div className="grid sm:grid-cols-2 gap-3">
-          <HubCard
-            href="/drill"
-            title="Drill-hub"
-            badge={`${DRILLS.length} drills`}
-            body="Alle interaktive drill-øvinger samlet på ett sted — søk, fag-filter og lokal progress."
-            prominent
-          />
-          <HubCard
-            href="/practice"
-            title="SQL-oppgaver"
-            badge={`${PROBLEMS.length} oppgaver`}
-            body="Skriv ekte spørringer mot et realistisk skjema. Resultatbasert vurdering, hint underveis."
-            prominent
-          />
-          <HubCard
-            href="/python"
-            title="Python (Pyodide)"
-            badge={`${PY_EXERCISES.length} oppgaver`}
-            body="Ekte Python kjørt i nettleseren — inkludert Flask. Akkurat eksamenstypen."
-            prominent
-          />
-          <HubCard
-            href="/joins"
-            title="JOIN-trening"
-            body="Visuell trening på INNER, LEFT, RIGHT, FULL — se hva som skjer med radene."
-          />
-          <HubCard
-            href="/er-tegner"
-            title="ER-tegner"
-            body="Tegn krakefot-diagram fra scratch. Kobler rett opp mot ER → DDL drillen."
-          />
-          <HubCard
-            href="/cards"
-            title="Quiz"
-            body="Multiple-choice med 4 alternativer per spørsmål. Rask repetisjon."
-          />
-          <HubCard
-            href="/drag"
-            title="Drag-and-drop"
-            body="Sett sammen spørringer ved å dra klausuler på plass. Bra for å låse rekkefølgen."
-          />
-          <HubCard
-            href="/git-drill"
-            title="Git-drill"
-            badge={`${GIT_SCENARIOS.length} scenarier`}
-            body="Skriv git-kommandoer i en simulert terminal — init, add, commit, branch, merge, reset. Ingen ekte git, alt kjører lokalt."
-          />
-          <HubCard
-            href="/venv-drill"
-            title="Venv-drill"
-            badge={`${VENV_SCENARIOS.length} scenarier`}
-            body="Øv Python virtuelle miljø: lag venv, aktiver, pip install, requirements.txt, ModuleNotFoundError. Simulert terminal, ingen ekte python."
-          />
-        </div>
+        {rader.length === 0 ? (
+          <p className="rounded-lg border border-dashed border-border px-4 py-10 text-center text-sm text-muted-foreground">
+            Ingen øvinger med dette filteret.
+          </p>
+        ) : (
+          <ul className="divide-y divide-border rounded-lg border border-border bg-card">
+            {rader.map((r) => (
+              <li key={r.id}>
+                <OvLenke rad={r} visFag={!fag} />
+              </li>
+            ))}
+          </ul>
+        )}
+        <p className="mt-3 text-xs text-muted-foreground">
+          Viser {rader.length} av {OV_RADER.length} øvingssett
+        </p>
       </main>
     </div>
   );
 }
 
-function HubCard({
-  href,
-  title,
-  body,
-  badge,
-  prominent = false,
-}: {
-  href: string;
-  title: string;
-  body: string;
-  badge?: string;
-  prominent?: boolean;
-}) {
-  const accent = prominent
-    ? "border-brand/50 bg-brand/5 hover:border-brand"
-    : "border-border bg-card hover:border-brand/40";
+function FilterRad({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <Link to={href} className={`group rounded-xl border p-5 transition-colors block ${accent}`}>
-      <div className="flex items-start justify-between gap-2 flex-wrap mb-2">
-        <h3 className="font-semibold text-foreground leading-tight">{title}</h3>
-        {badge && (
-          <span className="text-[10px] uppercase tracking-wider font-semibold px-1.5 py-0.5 rounded bg-muted text-muted-foreground">
-            {badge}
+    <div className="flex items-start gap-3">
+      <span className="w-9 shrink-0 pt-1.5 text-xs font-medium text-muted-foreground">{label}</span>
+      <div className="flex flex-wrap gap-1.5">{children}</div>
+    </div>
+  );
+}
+
+function Chip({
+  aktiv,
+  search,
+  children,
+}: {
+  aktiv: boolean;
+  search: OvSearch;
+  children: React.ReactNode;
+}) {
+  return (
+    <Link
+      to="/ov"
+      search={search}
+      replace
+      className={cn(
+        "rounded-full border px-3 py-1.5 text-xs font-medium transition-colors",
+        aktiv
+          ? "border-brand bg-brand text-brand-foreground"
+          : "border-border bg-card text-foreground hover:bg-accent",
+      )}
+      aria-pressed={aktiv}
+    >
+      {children}
+    </Link>
+  );
+}
+
+function OvLenke({ rad, visFag }: { rad: OvRad; visFag: boolean }) {
+  const typeLabel = OV_TYPER.find((t) => t.id === rad.type)?.label;
+  const fagKode = rad.fag ? SUBJECT_BY_SLUG[rad.fag]?.code : undefined;
+  // Vanlig <a>: radene peker på ruter med egne søkeparametre og #anker, og
+  // en full navigasjon lar målsiden lese dem som ved en direkte lenke.
+  return (
+    <a href={rad.href} className="flex min-h-14 items-center gap-3 px-4 py-3 hover:bg-accent">
+      <span className="min-w-0 flex-1">
+        <span className="block font-medium leading-tight">{rad.tittel}</span>
+        <span className="mt-0.5 line-clamp-2 block text-xs text-muted-foreground">
+          {rad.beskrivelse}
+        </span>
+      </span>
+      <span className="shrink-0 text-right text-[11px] leading-tight text-muted-foreground">
+        <span className="block">
+          {visFag && fagKode ? `${fagKode} · ` : ""}
+          {typeLabel}
+        </span>
+        {rad.antall != null && (
+          <span className="block tabular-nums">
+            {rad.antall} {rad.enhet}
           </span>
         )}
-      </div>
-      <p className="text-sm text-muted-foreground leading-relaxed">{body}</p>
-    </Link>
+      </span>
+    </a>
   );
 }

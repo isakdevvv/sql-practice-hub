@@ -1,16 +1,14 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { BookOpen, GraduationCap, Layers, User } from "lucide-react";
+import { BookOpen, Target } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 type Tab = { label: string; to: string; Icon: typeof BookOpen };
 
-// Fire faste tabs. Fire er taket: med fem blir treffflaten på en 360px-skjerm
-// under 44px per tab, og etikettene må forkortes til noe uleselig.
+// To tabs, de samme to inngangene som i headeren. Profil og dashboard ligger
+// bak profilknappen øverst og trenger ingen egen tab.
 const TABS: Tab[] = [
-  { label: "Fag", to: "/mine-fag", Icon: GraduationCap },
-  { label: "Øv", to: "/repetisjon", Icon: Layers },
-  { label: "Bibliotek", to: "/bibliotek", Icon: BookOpen },
-  { label: "Du", to: "/dashboard", Icon: User },
+  { label: "Lær", to: "/laer", Icon: BookOpen },
+  { label: "Øv", to: "/ov", Icon: Target },
 ];
 
 /** Ruter som spiller av innhold i fullskjerm og derfor ikke skal ha tabbar:

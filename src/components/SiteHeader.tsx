@@ -9,23 +9,20 @@ import { XpToast } from "@/components/XpToast";
 
 type HubLink = { label: string; to: string; params?: Record<string, string> };
 
-// Fag-først-navigasjon: Mine fag er hjemmet (fag-sider med alt per emne),
-// Øv i dag er den samlede repetisjonskøen fra core-enginen, og Bibliotek
-// er alt innhold med Lek/Lær/Test som filter i stedet for topp-nivå.
-// Gamle ruter (/lek, /laer, /test, /stack, /practice etc.) lever videre
-// som detalj-sider og åpnes via kort og lenker.
+// To innganger: Lær (fag → emne → steg) og Øv (én filtrerbar liste over alle
+// øvinger). De gamle hubene (/mine-fag, /bibliotek, /semesterplan, /lek,
+// /test, /stack osv.) er tatt ut av navigasjonen, men rutene lever videre
+// og nås via søket og via lenker fra stegene.
 const HUBS: HubLink[] = [
-  { label: "Mine fag", to: "/mine-fag" },
-  { label: "Semesterplan", to: "/semesterplan" },
-  { label: "Øv i dag", to: "/repetisjon" },
-  { label: "Bibliotek", to: "/bibliotek" },
+  { label: "Lær", to: "/laer" },
+  { label: "Øv", to: "/ov" },
 ];
 
 export function SiteHeader() {
   // Under `sm` er det ikke plass til både søkefelt og de fire ikonene til
   // høyre — feltet ble 120px bredt og klemte hamburgeren. Søket kollapser
   // derfor til et ikon som folder ut en egen rad. Hamburgeren er borte helt:
-  // bunn-tabbaren har nøyaktig de samme fire destinasjonene, og to
+  // bunn-tabbaren har nøyaktig de samme to destinasjonene, og to
   // navigasjoner med samme innhold gjør bare at man må velge hvilken man
   // stoler på.
   const [sokApen, setSokApen] = useState(false);
@@ -54,7 +51,7 @@ export function SiteHeader() {
           <Search className="h-5 w-5" />
         </button>
 
-        {/* Desktop-navigasjon — md og oppover. På mobil ligger de samme fire
+        {/* Desktop-navigasjon — md og oppover. På mobil ligger de samme to
             destinasjonene i bunn-tabbaren. */}
         <nav className="hidden md:flex items-center gap-1 text-sm shrink-0">
           {HUBS.map((p) => (
