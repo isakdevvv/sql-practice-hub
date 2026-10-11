@@ -82,14 +82,12 @@ export function Type1Type2ErrorAreas() {
 
   // Build polygons
   const buildPath = (key: "h0" | "h1") =>
-    "M" +
     data
       .map((p, i) => `${i === 0 ? "M" : "L"}${xPx(p.x).toFixed(1)},${yPx(p[key]).toFixed(1)}`)
       .join(" ") +
     ` L${xPx(xMax).toFixed(1)},${yPx(0).toFixed(1)} L${xPx(xMin).toFixed(1)},${yPx(0).toFixed(1)} Z`;
 
   const alphaPath =
-    "M" +
     data
       .filter((p) => p.x >= crit)
       .map((p, i) => `${i === 0 ? "M" : "L"}${xPx(p.x).toFixed(1)},${yPx(p.h0).toFixed(1)}`)
@@ -97,7 +95,6 @@ export function Type1Type2ErrorAreas() {
     ` L${xPx(xMax).toFixed(1)},${yPx(0).toFixed(1)} L${xPx(crit).toFixed(1)},${yPx(0).toFixed(1)} Z`;
 
   const betaPath =
-    "M" +
     data
       .filter((p) => p.x <= crit)
       .map((p, i) => `${i === 0 ? "M" : "L"}${xPx(p.x).toFixed(1)},${yPx(p.h1).toFixed(1)}`)
