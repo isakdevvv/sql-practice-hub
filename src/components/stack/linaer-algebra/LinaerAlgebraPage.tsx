@@ -2,6 +2,10 @@ import { Link } from "@tanstack/react-router";
 import { ArrowRight, Lightbulb } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
+import { VectorAddition2D } from "./VectorAddition2D";
+import { MatrixTransformGrid } from "./MatrixTransformGrid";
+import { DotProductGeometry } from "./DotProductGeometry";
+import { EigenvectorViz } from "./EigenvectorViz";
 
 const STEPS = [
   { title: "Vektorer — notasjon, addisjon, skalar-multiplikasjon", anchor: "vektorer" },
@@ -70,22 +74,11 @@ Lengde (norm):
   ||v|| = √(v₁² + v₂² + ... + vₙ²)
   ||(3, 2)|| = √(9 + 4) = √13`}</pre>
           </div>
-          <div className="mt-4 rounded-xl border border-border bg-card p-5">
+          <div className="mt-4">
             <div className="text-xs uppercase tracking-wider text-brand font-semibold mb-2">
-              Geometrisk bilde
+              Geometrisk bilde — dra spissene
             </div>
-            <pre className="font-mono text-xs overflow-x-auto whitespace-pre">{`        y
-        │       v+w
-      6 │        ▲ (4,6)
-        │       ╱
-      4 │     w▲ (1,4)
-        │   ╱ ╱
-      2 │ ╱ v▲ (3,2)
-        │╱  ╱
-        └─────────► x
-        O   3  4
-
-Vektor-addisjon = "parallellogram-regelen": legg piler ende mot ende.`}</pre>
+            <VectorAddition2D />
           </div>
         </section>
 
@@ -112,6 +105,12 @@ Eksempel:
 
 Kosinus-likhet (brukes i ML, NLP):
   cos_sim(v, w) = (v · w) / (||v|| · ||w||)`}</pre>
+          </div>
+          <div className="mt-4">
+            <div className="text-xs uppercase tracking-wider text-brand font-semibold mb-2">
+              Geometrisk dot product — dra og se cos θ
+            </div>
+            <DotProductGeometry />
           </div>
           <div className="mt-4 rounded-xl border border-border bg-card p-5">
             <div className="text-xs uppercase tracking-wider text-brand font-semibold mb-2">
@@ -266,6 +265,12 @@ Eksempel: skalér 2x, så rotér 90°:
 Anvendt på (1, 0):  (R·S)·(1, 0)ᵀ = (0, 2)ᵀ
                     (skalering ga (2,0), rotasjon ga (0,2)).`}</pre>
           </div>
+          <div className="mt-4">
+            <div className="text-xs uppercase tracking-wider text-brand font-semibold mb-2">
+              Lek med A — se hva enhetsruta blir
+            </div>
+            <MatrixTransformGrid />
+          </div>
         </section>
 
         <section id="egen" className="mb-10">
@@ -290,6 +295,12 @@ Hvordan finne dem? Løs det(A - λI) = 0 (karakteristisk likning).
 
 For 2×2:
   det(A - λI) = (a-λ)(d-λ) - bc = λ² - (a+d)λ + (ad-bc) = 0`}</pre>
+          </div>
+          <div className="mt-4">
+            <div className="text-xs uppercase tracking-wider text-brand font-semibold mb-2">
+              Finn egenvektorene visuelt
+            </div>
+            <EigenvectorViz />
           </div>
           <div className="mt-4 rounded-xl border border-border bg-card p-5">
             <div className="text-xs uppercase tracking-wider text-brand font-semibold mb-2">
