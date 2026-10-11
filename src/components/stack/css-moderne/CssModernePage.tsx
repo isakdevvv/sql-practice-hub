@@ -5,6 +5,7 @@ import { CourseOutline } from "@/components/stack/CourseOutline";
 import { SectionQuiz } from "@/components/stack/diskret-matte/figures/SectionQuiz";
 import { CssCheckpoint } from "./CssCheckpoint";
 import { CssLivePreview } from "./CssLivePreview";
+import { CssEditorPreview } from "./CssEditorPreview";
 
 // Course page covering modern CSS: starts from zero (what CSS is, syntax,
 // selectors) and walks through box model, flexbox, grid, responsive design,
@@ -413,6 +414,14 @@ h1, h2, h3 { font-family: sans-serif; }`}</pre>
 /* Flex/Grid-barn har IKKE margin collapsing — bruk gap istedenfor */`}</pre>
           </div>
 
+          <CssEditorPreview
+            title="Live: margin collapsing — endre verdiene"
+            html={`<div class="a">A — margin-bottom under</div>\n<div class="b">B — margin-top over</div>`}
+            initialCss={`.a, .b {\n  background: #dbeafe;\n  padding: 12px;\n}\n.a { margin-bottom: 40px; }\n.b { margin-top:    20px; }`}
+            hint="Avstanden mellom A og B er 40px (den største), ikke 60px (summen). Sett begge til 10/40 — fortsatt 40. Sett en til 0 — da ser du den andre rent."
+            height={180}
+          />
+
           <CssCheckpoint
             kind="quiz"
             title="Sjekkpunkt — boks-bredde"
@@ -632,6 +641,14 @@ main    { grid-area: main; }
 footer  { grid-area: footer; }`}</pre>
           </div>
 
+          <CssEditorPreview
+            title="Live: grid-template-areas — flytt bokser ved å skrive om malen"
+            html={`<div class="layout">\n  <header>header</header>\n  <nav>sidebar</nav>\n  <main>main</main>\n  <footer>footer</footer>\n</div>`}
+            initialCss={`.layout {\n  display: grid;\n  grid-template-columns: 120px 1fr;\n  grid-template-rows: 36px 1fr 36px;\n  grid-template-areas:\n    "header header"\n    "sidebar main"\n    "footer footer";\n  gap: 6px;\n  height: 220px;\n}\nheader { grid-area: header;  background: #c7d2fe; padding: 8px; }\nnav    { grid-area: sidebar; background: #fde68a; padding: 8px; }\nmain   { grid-area: main;    background: #d1fae5; padding: 8px; }\nfooter { grid-area: footer;  background: #fecaca; padding: 8px; }`}
+            hint={`Prøv å bytte "sidebar main" til "main sidebar" — sidebaren hopper over. Eller la footer bare dekke én kolonne: "footer ."`}
+            height={260}
+          />
+
           <CssCheckpoint
             kind="fill"
             title="Fyll inn — responsivt grid uten media queries"
@@ -703,6 +720,16 @@ footer  { grid-area: footer; }`}</pre>
    xl: 1280px   desktop
    2xl: 1536px  large desktop */`}</pre>
           </div>
+
+          <CssEditorPreview
+            title="Live: mobile-first — bytt iframe-bredden"
+            html={`<nav class="nav">\n  <a>Hjem</a><a>Produkter</a><a>Om</a><a>Kontakt</a>\n</nav>\n<div class="boks">Base = mobil. Media queries legger til.</div>`}
+            initialCss={`.boks {\n  padding: 12px;\n  font-size: 14px;\n  background: #eff6ff;\n  border: 1px solid #93c5fd;\n  border-radius: 6px;\n}\n.nav { display: flex; flex-direction: column; gap: 4px; margin-bottom: 8px; }\n.nav a {\n  background: #2563eb;\n  color: white;\n  padding: 6px 12px;\n  border-radius: 4px;\n  text-align: center;\n}\n\n@media (min-width: 640px) {\n  .boks { padding: 16px; font-size: 15px; }\n  .nav  { flex-direction: row; }\n}\n@media (min-width: 1024px) {\n  .boks { padding: 24px; font-size: 16px; background: #dbeafe; }\n}`}
+            widthOptions={[360, 640, 1024]}
+            hint="Klikk bredde-knappene over preview-en. Ved 640px+ blir nav horisontal; ved 1024px+ får boksen mer luft og en dypere bakgrunn."
+            height={220}
+          />
+
           <div className="rounded-xl border border-border bg-card p-5 mb-3">
             <div className="text-xs uppercase tracking-wider text-muted-foreground mb-2">
               Husk viewport-meta i HTML
@@ -884,6 +911,15 @@ body {
 }
 a { color: var(--link); }`}</pre>
           </div>
+
+          <CssLivePreview
+            title="Live: dark/light via CSS-variabler"
+            html={`<div class="page" data-theme="{{value}}">\n  <h2>Tittel</h2>\n  <p>Et avsnitt med en <a href="#">lenke</a> som følger temaet.</p>\n  <button class="cta">Knapp</button>\n</div>`}
+            css={`.page[data-theme="light"] {\n  --bg: #ffffff; --text: #0f172a; --link: #2563eb;\n}\n.page[data-theme="dark"] {\n  --bg: #0f172a; --text: #f8fafc; --link: #60a5fa;\n}\n.page {\n  background: var(--bg);\n  color: var(--text);\n  padding: 16px;\n  min-height: 100%;\n}\nh2 { margin: 0 0 6px; }\np  { margin: 0 0 10px; }\na  { color: var(--link); }\n.cta {\n  background: var(--link);\n  color: var(--bg);\n  border: 0;\n  padding: 6px 12px;\n  border-radius: 4px;\n  font-weight: 600;\n}`}
+            toggle={{ label: "data-theme (simulert prefers-color-scheme)", values: ["light", "dark"] }}
+            height={180}
+          />
+
           <div className="rounded-xl border border-border bg-card p-5 mb-3">
             <div className="text-xs uppercase tracking-wider text-muted-foreground mb-2">
               Manuell veksler — class-basert (overstyrer OS)
@@ -903,6 +939,14 @@ html.light { --bg: white; --text: black; }
 // JS-bryter
 document.documentElement.classList.toggle("dark");`}</pre>
           </div>
+
+          <CssLivePreview
+            title="Live: manuell class-veksel"
+            html={`<div class="page {{value}}">\n  <h2>Tittel</h2>\n  <p>Class på wrapper-en overstyrer OS-temaet — vinner via spesifisitet.</p>\n</div>`}
+            css={`.page { padding: 16px; min-height: 100%; }\n.page.light { background: #ffffff; color: #0f172a; }\n.page.dark  { background: #0f172a; color: #f8fafc; }\nh2 { margin: 0 0 6px; }\np  { margin: 0; }`}
+            toggle={{ label: "class på .page", values: ["light", "dark"] }}
+            height={160}
+          />
 
           <CssCheckpoint
             kind="fill"
@@ -1000,6 +1044,14 @@ const Knapp = styled.button\`
             Tailwind-utilities som blir til ekte CSS på build.
           </p>
 
+          <CssLivePreview
+            title="Live: hva Tailwind-klassene faktisk produserer"
+            html={`<button class="primary">Lagre</button>\n<button class="secondary">Avbryt</button>`}
+            css={`button {\n  font-family: inherit;\n  font-size: 14px;\n  cursor: pointer;\n  padding: 0.5rem 1rem;   /* px-4 py-2 */\n  border-radius: 6px;     /* rounded-md */\n  border: 0;\n  margin-right: 8px;\n  font-weight: 500;\n}\n.primary   { background: #2563eb; color: white; }       /* bg-blue-600 text-white  */\n.primary:hover  { background: #1d4ed8; }                /* hover:bg-blue-700       */\n.secondary { background: #e5e7eb; color: #111827; }     /* bg-gray-200 text-black  */`}
+            height={100}
+          />
+
+
           <CssCheckpoint
             kind="quiz"
             title="Sjekkpunkt — utility classes"
@@ -1085,6 +1137,14 @@ button:focus-visible {
 /* :focus-visible vises BARE ved tastatur-navigasjon (ikke mus-klikk),
    så designet ditt forblir rent. Støttes i alle moderne nettlesere. */`}</pre>
           </div>
+
+          <CssEditorPreview
+            title="Live: focus-styles — klikk i preview og bruk Tab"
+            html={`<button class="wrong">outline: none (feil)</button>\n<button class="right">focus-visible (riktig)</button>`}
+            initialCss={`button {\n  font-size: 14px;\n  padding: 8px 14px;\n  border-radius: 6px;\n  border: 1px solid #cbd5e1;\n  background: white;\n  cursor: pointer;\n  margin-right: 8px;\n}\n\n/* Feil: tastatur-brukere ser ingenting */\n.wrong:focus { outline: none; }\n\n/* Riktig: synlig kun ved tastatur-fokus */\n.right:focus-visible {\n  outline: 2px solid #2563eb;\n  outline-offset: 2px;\n}`}
+            hint="Klikk på preview-flaten først (gi iframe fokus), så trykk Tab gjentatte ganger. Den venstre knappen får usynlig fokus; den høyre får en tydelig blå ring. Prøv å fjerne :focus-visible-regelen."
+            height={160}
+          />
 
           <CssCheckpoint
             kind="quiz"
