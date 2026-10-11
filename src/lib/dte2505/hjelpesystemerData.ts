@@ -474,7 +474,23 @@ export const MAN_DB: ManDbEntry[] = [
   { name: "fortune", section: 6, oneLiner: "skriv ut et tilfeldig visdomsord", english: "print a random, hopefully interesting adage" },
   { name: "open", section: 2, oneLiner: "åpne eller opprette en fil", english: "open and possibly create a file" },
   { name: "stdio", section: 3, oneLiner: "standard inn- og utbibliotek i C", english: "standard input/output library functions" },
+  { name: "chpasswd", section: 8, oneLiner: "sett passord for mange brukere om gangen", english: "update passwords in batch mode" },
+  { name: "group", section: 5, oneLiner: "gruppefilen og formatet dens", english: "the group file" },
+  { name: "getent", section: 1, oneLiner: "slå opp i systemdatabasene", english: "get entries from Name Service Switch libraries" },
+  { name: "dir", section: 1, oneLiner: "list katalogen kolonnevis", english: "briefly list directory contents" },
+  { name: "find", section: 1, oneLiner: "søk etter filer i et katalogtre", english: "search for files in a directory hierarchy" },
+  { name: "echo", section: 1, oneLiner: "skriv ut en tekstlinje", english: "display a line of text" },
+  { name: "fprintf", section: 3, oneLiner: "formatert utskrift til en strøm", english: "formatted output conversion" },
+  { name: "write", section: 2, oneLiner: "systemkallet som skriver til en fildeskriptor", english: "write to a file descriptor" },
 ];
+
+/**
+ * Oppslag på nøyaktig navn OG seksjon — det SEE ALSO-henvisningene peker på.
+ * Brukes når utforskeren ikke har hele siden, men databasen kjenner NAME-linja.
+ */
+export function manDbEntry(name: string, section: ManSectionNum): ManDbEntry | undefined {
+  return MAN_DB.find((e) => e.name === name && e.section === section);
+}
 
 /** apropos / man -k: søker delstreng i navn OG i den engelske beskrivelsen. */
 export function aproposSearch(term: string): ManDbEntry[] {

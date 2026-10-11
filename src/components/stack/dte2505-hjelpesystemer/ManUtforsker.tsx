@@ -6,6 +6,7 @@ import {
   SYNOPSIS_LEGEND,
   EXPLORER_NAMES,
   pagesForName,
+  manDbEntry,
   type ManSectionNum,
   type SynopsisToken,
   type MockManPage,
@@ -58,9 +59,16 @@ export function ManUtforsker() {
   const [term, setTerm] = useState("");
   const [activeHit, setActiveHit] = useState(0);
   const [pageSectionNote, setPageSectionNote] = useState<string | null>(null);
+  /** SEE ALSO-henvisningen som viser whatis-linja si akkurat nå. */
+  const [peek, setPeek] = useState<string | null>(null);
 
   const viewport = useRef<HTMLDivElement>(null);
   const activeMark = useRef<HTMLElement | null>(null);
+
+  const peekEntry = useMemo(() => {
+    const m = peek?.match(/^(\w+)\((\d)\)$/);
+    return m ? manDbEntry(m[1], Number(m[2]) as ManSectionNum) : undefined;
+  }, [peek]);
 
   const available = useMemo(() => pagesForName(name), [name]);
   const page: MockManPage | undefined = available.find((p) => p.section === section) ?? available[0];
@@ -71,6 +79,7 @@ export function ManUtforsker() {
     if (first) setSection(first.section);
     setToken(null);
     setTerm("");
+    setPeek(null);
   }, [name]);
 
   useEffect(() => {
@@ -409,29 +418,62 @@ export function ManUtforsker() {
             <div className="flex flex-wrap gap-1.5">
               {page.seeAlso.map((s) => {
                 const m = s.match(/^(\w+)\((\d)\)$/);
+                const refSection = m ? (Number(m[2]) as ManSectionNum) : null;
                 const canOpen = m && pagesForName(m[1]).some((p) => String(p.section) === m[2]);
+                const peeked = peek === s;
                 return (
                   <button
                     key={s}
-                    disabled={!canOpen}
                     onClick={() => {
-                      if (!m) return;
-                      setName(m[1]);
-                      setTimeout(() => setSection(Number(m[2]) as ManSectionNum), 0);
+                      if (!m || !refSection) return;
+                      if (canOpen) {
+                        setPeek(null);
+                        setName(m[1]);
+                        setTimeout(() => setSection(refSection), 0);
+                        return;
+                      }
+                      // Siden er ikke skrevet ut i utforskeren, men manualdatabasen
+                      // kjenner NAME-linja. Det er nøyaktig det whatis ville svart.
+                      setPeek(peeked ? null : s);
                     }}
                     className={cn(
-                      "rounded-md border px-2 py-1 font-mono text-xs",
-                      canOpen ? "hover:bg-accent" : "opacity-50",
+                      "rounded-md border px-2 py-1 font-mono text-xs hover:bg-accent",
+                      canOpen && "border-brand/50 bg-brand/5",
+                      peeked && "border-brand bg-brand/10",
                     )}
+                    title={canOpen ? `Åpne ${s} her` : `Vis whatis-linja for ${s}`}
                   >
                     <Hl text={s} />
                   </button>
                 );
               })}
             </div>
+            {peekEntry && (
+              <div className="mt-2 rounded-lg border border-brand/40 bg-brand/5 p-2.5 text-xs leading-relaxed">
+                <div className="font-mono">
+                  $ whatis {peekEntry.name}
+                </div>
+                <div className="mt-1 font-mono">
+                  {peekEntry.name} ({peekEntry.section}) — {peekEntry.english}
+                </div>
+                <p className="mt-1.5 text-muted-foreground">
+                  {peekEntry.oneLiner}. Selve siden er ikke skrevet ut i utforskeren — på et ekte
+                  system ville <code className="font-mono">man {peekEntry.section} {peekEntry.name}</code>{" "}
+                  åpnet den.
+                </p>
+              </div>
+            )}
+            {peek && !peekEntry && (
+              <div className="mt-2 rounded-lg border bg-muted/40 p-2.5 text-xs leading-relaxed">
+                <span className="font-mono">{peek}</span> finnes verken som side eller i
+                manualdatabasen her. Slik er det på ekte systemer også: en henvisning peker på en side
+                som bare finnes hvis pakken er installert.
+              </div>
+            )}
             <p className="mt-2 text-xs text-muted-foreground">
               Legg merke til at hver henvisning har seksjonsnummer. Det er slik manualen skiller to
-              sider med samme navn. De som kan åpnes her, er klikkbare.
+              sider med samme navn. Rammede henvisninger åpnes her i utforskeren; de øvrige svarer med
+              whatis-linja si.
             </p>
           </Blokk>
         )}
