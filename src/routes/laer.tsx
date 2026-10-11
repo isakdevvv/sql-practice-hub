@@ -46,7 +46,7 @@ function LaerPage() {
   useEffect(() => {
     const ny = new Set<string>();
     for (const e of emner) {
-      for (const s of e.steg) {
+      for (const s of [...e.steg, ...(e.fordypning ?? [])]) {
         const sett = s.kind === "skjerm" ? erFullfort(s.fag, s.undertema) : isTrinnSeen(s.slug);
         if (sett) ny.add(s.id);
       }
@@ -190,6 +190,20 @@ function EmneBoks({
           </li>
         ))}
       </ol>
+      {emne.fordypning && emne.fordypning.length > 0 && (
+        <details className="border-t border-border">
+          <summary className="cursor-pointer px-4 py-2.5 text-xs text-muted-foreground hover:text-foreground">
+            Fordypning: {emne.fordypning.length} lengre sider om samme emne
+          </summary>
+          <ul className="pb-1">
+            {emne.fordypning.map((s) => (
+              <li key={s.id}>
+                <StegLenke steg={s} ferdig={ferdig.has(s.id)} />
+              </li>
+            ))}
+          </ul>
+        </details>
+      )}
     </details>
   );
 }
