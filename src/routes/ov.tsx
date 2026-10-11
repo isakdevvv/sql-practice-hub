@@ -1,8 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { ArrowRight, Layers } from "lucide-react";
 import { SiteHeader } from "@/components/SiteHeader";
 import { OV_RADER, OV_TYPER, type OvRad, type OvType } from "@/lib/nav/ov";
+import { erSynligFag, useVisAlt } from "@/lib/nav/synlighet";
 import { EXAM_SEASON_SLUGS, SUBJECT_BY_SLUG } from "@/lib/subjects/catalog";
 import { cn } from "@/lib/utils";
 
@@ -38,11 +39,15 @@ const ANDRE_FAG = [...FAG_MED_RADER].filter((s) => !EXAM_SEASON_SLUGS.includes(s
 
 function OvPage() {
   const { fag, type } = Route.useSearch();
-  const [visAndre, setVisAndre] = useState(() => !!fag && ANDRE_FAG.includes(fag));
+  // Øvinger utenfor eksamensfagene er skjult til «vis alt» slås på. Et filter
+  // i adressen på et skjult fag viser dem likevel.
+  const [alt, settAlt] = useVisAlt();
+  const visAndre = alt || fag === "annet" || (!!fag && ANDRE_FAG.includes(fag));
+  const synlige = useMemo(() => OV_RADER.filter((r) => erSynligFag(r.fag, visAndre)), [visAndre]);
 
   const etterFag = useMemo(
-    () => OV_RADER.filter((r) => !fag || (fag === "annet" ? !r.fag : r.fag === fag)),
-    [fag],
+    () => synlige.filter((r) => !fag || (fag === "annet" ? !r.fag : r.fag === fag)),
+    [synlige, fag],
   );
   const rader = useMemo(() => etterFag.filter((r) => !type || r.type === type), [etterFag, type]);
 
@@ -81,23 +86,17 @@ function OvPage() {
                 {SUBJECT_BY_SLUG[slug]?.code ?? slug}
               </Chip>
             ))}
-            <Chip aktiv={fag === "annet"} search={{ fag: "annet", type }}>
-              Tverrgående
-            </Chip>
-            {visAndre ? (
-              ANDRE_FAG.map((slug) => (
-                <Chip key={slug} aktiv={fag === slug} search={{ fag: slug, type }}>
-                  {SUBJECT_BY_SLUG[slug]?.code ?? slug}
+            {visAndre && (
+              <>
+                <Chip aktiv={fag === "annet"} search={{ fag: "annet", type }}>
+                  Tverrgående
                 </Chip>
-              ))
-            ) : (
-              <button
-                type="button"
-                onClick={() => setVisAndre(true)}
-                className="rounded-full px-2 py-1.5 text-xs text-muted-foreground underline-offset-2 hover:text-foreground hover:underline"
-              >
-                Flere fag
-              </button>
+                {ANDRE_FAG.map((slug) => (
+                  <Chip key={slug} aktiv={fag === slug} search={{ fag: slug, type }}>
+                    {SUBJECT_BY_SLUG[slug]?.code ?? slug}
+                  </Chip>
+                ))}
+              </>
             )}
           </FilterRad>
           <FilterRad label="Type">
@@ -126,7 +125,16 @@ function OvPage() {
           </ul>
         )}
         <p className="mt-3 text-xs text-muted-foreground">
-          Viser {rader.length} av {OV_RADER.length} øvingssett
+          Viser {rader.length} av {synlige.length} øvingssett.{" "}
+          <button
+            type="button"
+            onClick={() => settAlt(!alt)}
+            className="underline underline-offset-2 hover:text-foreground"
+          >
+            {alt
+              ? "Skjul øvinger utenfor eksamensfagene"
+              : `Vis også ${OV_RADER.length - synlige.length} sett utenfor eksamensfagene`}
+          </button>
         </p>
       </main>
     </div>

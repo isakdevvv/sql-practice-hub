@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Search, Sparkles } from "lucide-react";
 import { searchEntries, type SearchEntry, type SearchKind } from "@/lib/search";
+import { visAlt } from "@/lib/nav/synlighet";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { ProfileButton } from "@/components/ProfileButton";
 import { XpBar } from "@/components/XpBar";
@@ -211,8 +212,9 @@ function GlobalSearch({ kompakt = false }: { kompakt?: boolean } = {}) {
     if (!q) return;
     if (suggestions.length > 0) {
       go(suggestions[Math.min(activeIdx, suggestions.length - 1)]);
-    } else {
-      // Fallback: hand the query to /practice search.
+    } else if (visAlt()) {
+      // Fallback: hand the query to /practice search. Bare når skjult innhold
+      // er slått på — SQL-oppgavene hører ikke til eksamensfagene.
       window.location.href = `/practice?q=${encodeURIComponent(q)}`;
     }
   }
@@ -261,7 +263,7 @@ function GlobalSearch({ kompakt = false }: { kompakt?: boolean } = {}) {
             setActiveIdx((i) => Math.max(0, i - 1));
           }
         }}
-        placeholder={kompakt ? "Søk på alt…" : "Søk på alt — http, JOIN, NULL, transistor, opg9…  ( /  eller  ⌘K )"}
+        placeholder={kompakt ? "Søk på alt…" : "Søk — tcp, subnetting, scheduling, p-verdi…  ( /  eller  ⌘K )"}
         autoFocus={kompakt}
         aria-label="Globalt søk"
         className="h-9 w-full rounded-md border border-border bg-card pl-8 pr-12 text-xs focus:outline-none focus:ring-2 focus:ring-brand/40 focus:border-brand/60"
@@ -274,7 +276,7 @@ function GlobalSearch({ kompakt = false }: { kompakt?: boolean } = {}) {
         <div className="absolute left-0 right-0 top-[calc(100%+4px)] rounded-lg border border-border bg-popover shadow-lg overflow-hidden z-50 max-h-[70vh] overflow-y-auto">
           {flatItems.length === 0 ? (
             <div className="px-3 py-3 text-xs text-muted-foreground">
-              Ingen treff på «{query}». Trykk Enter for å søke videre i oppgaver.
+              Ingen treff på «{query}».
             </div>
           ) : (
             <div className="py-1">

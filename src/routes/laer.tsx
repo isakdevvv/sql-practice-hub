@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Check, ChevronDown } from "lucide-react";
 import { SiteHeader } from "@/components/SiteHeader";
 import { emnerForFag, type LaerEmne, type LaerSteg } from "@/lib/nav/laer";
+import { useVisAlt } from "@/lib/nav/synlighet";
 import { erFullfort } from "@/lib/kurs/fremdrift";
 import { isTrinnSeen } from "@/lib/stack/moduleProgress";
 import { EXAM_META, EXAM_SEASON_SLUGS, SEKTORER, SUBJECT_BY_SLUG } from "@/lib/subjects/catalog";
@@ -33,7 +34,10 @@ const ANDRE_FAG = SEKTORER.flatMap((s) => s.subjects)
 function LaerPage() {
   const search = Route.useSearch();
   const fag = search.fag ?? EXAM_SEASON_SLUGS[0];
-  const [visAndre, setVisAndre] = useState(() => ANDRE_FAG.includes(fag));
+  // Fag uten eksamen i høst er skjult til «vis alt» slås på. En direkte lenke
+  // til et slikt fag viser dem likevel, så man ikke står på en usynlig side.
+  const [alt, settAlt] = useVisAlt();
+  const visAndre = alt || ANDRE_FAG.includes(fag);
   const emner = useMemo(() => emnerForFag(fag), [fag]);
 
   // Sett-status ligger i localStorage og leses etter mount, så server og
@@ -71,15 +75,26 @@ function LaerPage() {
             ))}
           </div>
           {visAndre ? (
-            <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-              {ANDRE_FAG.map((slug) => (
-                <FagKnapp key={slug} slug={slug} aktiv={slug === fag} />
-              ))}
-            </div>
+            <>
+              <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+                {ANDRE_FAG.map((slug) => (
+                  <FagKnapp key={slug} slug={slug} aktiv={slug === fag} />
+                ))}
+              </div>
+              {alt && (
+                <button
+                  type="button"
+                  onClick={() => settAlt(false)}
+                  className="text-xs text-muted-foreground underline-offset-2 hover:text-foreground hover:underline"
+                >
+                  Skjul fag uten eksamen denne høsten
+                </button>
+              )}
+            </>
           ) : (
             <button
               type="button"
-              onClick={() => setVisAndre(true)}
+              onClick={() => settAlt(true)}
               className="text-xs text-muted-foreground underline-offset-2 hover:text-foreground hover:underline"
             >
               Vis {ANDRE_FAG.length} fag uten eksamen denne høsten
