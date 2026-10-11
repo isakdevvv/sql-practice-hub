@@ -2,6 +2,10 @@ import { Link } from "@tanstack/react-router";
 import { Lightbulb } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
+import { ReactPlayground } from "./ReactPlayground";
+import { HooksLifecycleViz } from "./HooksLifecycleViz";
+import { PropsVsStateViz } from "./PropsVsStateViz";
+import { VirtualDomDiff } from "./VirtualDomDiff";
 
 // Course page covering React fundamentals: components, JSX, props, hooks,
 // effects, lifting state, controlled forms, useMemo/useCallback, useRef,
@@ -78,6 +82,26 @@ export function Hello() {
 //  - kun ÉN rotelement — bruk <>...</> (fragment) hvis trengs
 //  - {uttrykk} kan settes inn — IKKE statements`}</pre>
           </div>
+
+          <ReactPlayground
+            title="Prøv selv — skriv JSX, se live"
+            initialCode={`function App() {
+  const navn = "Ada";
+  return (
+    <div>
+      <h1>Hei, {navn}!</h1>
+      <p>Tall: {1 + 2}</p>
+      <button onClick={() => alert("klikk")}>Trykk</button>
+    </div>
+  );
+}`}
+            hints={[
+              "Endre navn-variabelen",
+              "Legg til en <ul> med tre <li>",
+              "Bytt {1+2} til en ternær: {n > 0 ? 'positiv' : 'null'}",
+            ]}
+          />
+
           <div className="rounded-xl border border-border bg-card p-5">
             <div className="text-xs uppercase tracking-wider text-muted-foreground mb-2">
               Conditional og lister
@@ -137,6 +161,8 @@ function Knapp({ tekst, variant = "primary", onClick, children }: KnappProps) {
             sine egne props. Hvis verdien må endres, hører den hjemme i state —
             enten i denne komponenten eller en forfar.
           </p>
+
+          <PropsVsStateViz />
         </section>
 
         {/* 3. useState */}
@@ -185,6 +211,38 @@ function Buggy() {
               <li>Custom hooks må starte med <code>use</code> — det er hvordan React vet at de bruker hooks.</li>
             </ul>
           </div>
+
+          <ReactPlayground
+            title="Live useState — bygg din egen teller"
+            initialCode={`function App() {
+  const [n, setN] = useState(0);
+  return (
+    <div>
+      <p style={{ fontSize: 24 }}>Tall: {n}</p>
+      <button onClick={() => setN(n + 1)}>+1</button>
+      <button onClick={() => setN(0)}>Nullstill</button>
+      <button onClick={() => {
+        // Bug: tre setN(n+1) etter hverandre — gir bare +1!
+        setN(n + 1);
+        setN(n + 1);
+        setN(n + 1);
+      }}>+3 (buggy)</button>
+      <button onClick={() => {
+        // Riktig: funksjons-form
+        setN(p => p + 1);
+        setN(p => p + 1);
+        setN(p => p + 1);
+      }}>+3 (riktig)</button>
+    </div>
+  );
+}`}
+            hints={[
+              "Sammenlign +3 (buggy) vs +3 (riktig) — se forskjellen",
+              "Legg til en input med egen useState",
+              "Vis 'Stor!' når n > 10 med betinget render",
+            ]}
+            height={300}
+          />
         </section>
 
         {/* 4. useEffect */}
@@ -246,6 +304,8 @@ function Bruker({ id }: { id: number }) {
             websocket). Glem cleanup, og du får memory leaks og
             «<code>Can't perform a React state update on an unmounted component</code>».
           </p>
+
+          <HooksLifecycleViz />
         </section>
 
         {/* 5. Lifting state + controlled */}
@@ -499,6 +559,11 @@ setBruker({ ...bruker, navn: "Nytt" });`}</pre>
 
 // RIKTIG — bruk en STABIL identitet fra dataene
 {items.map(x => <Rad key={x.id} data={x} />)}`}</pre>
+              <VirtualDomDiff />
+              <p className="text-xs text-muted-foreground mt-2">
+                Toggle «Bruk stabile <code>key</code>» og prøv «Legg til på starten» — se
+                hvordan jobben for React eksploderer uten stabile nøkler.
+              </p>
             </div>
           </div>
         </section>
