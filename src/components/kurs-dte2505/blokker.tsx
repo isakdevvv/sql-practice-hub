@@ -12,15 +12,15 @@
 
 import { useState, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
+import { SkjermFlate } from "@/components/skjerm/SkjermFlate";
 
 /* ---------------- ramme og typografi ---------------- */
 
+/** Alle DTE-2505-skjermer ligger på standardflaten fra skjerm-shellet, som
+ *  gir sidemarg, lesebredde og intern scroll når innholdet er høyere enn
+ *  skjermen. */
 export function Ramme({ children }: { children: ReactNode }) {
-  return (
-    <div className="flex h-full w-full flex-col gap-3 text-sm leading-relaxed">
-      {children}
-    </div>
-  );
+  return <SkjermFlate className="gap-3 text-sm leading-relaxed">{children}</SkjermFlate>;
 }
 
 export function Ingress({ children }: { children: ReactNode }) {

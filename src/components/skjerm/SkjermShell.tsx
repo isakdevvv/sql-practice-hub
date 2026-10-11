@@ -123,7 +123,10 @@ export function SkjermShell({
 
   return (
     <SkjermCtx.Provider value={api}>
-      <div className="flex h-[100dvh] flex-col bg-background">
+      {/* `fixed` og ikke bare 100dvh: rot-layouten legger tabbar-padding under
+          alt innhold, og en 100dvh-boks i flyten ville da gjort siden 56px for
+          høy og latt hele spilleren scrolle ut av syne. */}
+      <div className="fixed inset-0 z-50 flex flex-col bg-background">
         {/* Topplinje: kontekst + framdrift. Står stille. */}
         <header className="shrink-0 border-b border-border px-3 pt-[env(safe-area-inset-top)]">
           <div className="flex h-12 items-center gap-2">

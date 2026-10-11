@@ -27,6 +27,7 @@ import {
 } from "@/lib/subjects/examDate";
 import { useModulProgress } from "@/lib/stack/moduleProgress";
 import { usePinnedSubjects, toggleSubject } from "@/lib/userSubjects";
+import { fagBySlug } from "@/lib/kurs/registry";
 import { subjectSnapshot, type SubjectSnapshot } from "@/lib/core/subjectProgress";
 import {
   blocksForSubject,
@@ -230,6 +231,18 @@ function FagPage() {
                   <GraduationCap className="h-4 w-4" />
                   Åpne kurset
                   <ArrowRight className="h-3.5 w-3.5" />
+                </Link>
+              )}
+
+              {/* Fag som også finnes i skjerm-format (én skjerm om gangen,
+                  laget for telefon) får en egen inngang hit. */}
+              {fagBySlug(slug) && (
+                <Link
+                  to="/kurs/$fag"
+                  params={{ fag: slug }}
+                  className="inline-flex items-center gap-1 rounded-lg border border-border bg-card px-3 py-2 text-sm text-foreground hover:border-brand/60 transition-colors"
+                >
+                  Skjerm for skjerm
                 </Link>
               )}
 
