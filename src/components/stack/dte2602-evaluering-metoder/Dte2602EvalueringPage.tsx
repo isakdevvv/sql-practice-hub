@@ -2,6 +2,10 @@ import { Link } from "@tanstack/react-router";
 import {ArrowRight, Lightbulb, ArrowLeft } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
+import { ConfusionMatrixExplorer } from "./ConfusionMatrixExplorer";
+import { DataSplitVisualizer } from "./DataSplitVisualizer";
+import { KFoldCrossValidationAnim } from "./KFoldCrossValidationAnim";
+import { BiasVarianceTradeoffPlot } from "./BiasVarianceTradeoffPlot";
 
 const STEPS = [
   { title: "Train / val / test — hvorfor 3 sett?", anchor: "splits" },
@@ -71,6 +75,15 @@ I sklearn:
             Hver gang du «kikker» på test-settet for å velge noe, har du brukt det opp.
             Du har ikke lenger et uavhengig estimat — du har et nytt val-sett.
           </div>
+
+          <div className="mt-4">
+            <div className="text-xs text-muted-foreground mb-2">
+              <strong className="text-foreground">Sim:</strong> bytt split-strategi
+              og slå stratifisering av/på. Skyv positiv-andelen ned mot 5 % og se
+              hvordan ett av settene ender med 0 positive uten stratify.
+            </div>
+            <DataSplitVisualizer />
+          </div>
         </section>
 
         <section id="kfold" className="mb-10">
@@ -103,6 +116,15 @@ I sklearn:
             modeller med stor variance. Husk: test-settet er fortsatt urørt — k-fold
             erstatter VAL, ikke TEST.
           </p>
+
+          <div className="mt-4">
+            <div className="text-xs text-muted-foreground mb-2">
+              <strong className="text-foreground">Sim:</strong> rull gjennom foldene
+              med play-knappen. Velg «ustabil» modell og se hvor mye fold-scoren
+              spriker — én tilfeldig train/test ville gitt et villedende tall.
+            </div>
+            <KFoldCrossValidationAnim />
+          </div>
         </section>
 
         <section id="stratified" className="mb-10">
@@ -271,6 +293,16 @@ I sklearn (eksempel-figur):
 For multi-klasse: NxN-matrise. Sjekk diagonalen — det er der modellen treffer.
 Off-diagonal = forveksling: «kalla setosa for versicolor 3 ganger».`}</pre>
           </div>
+
+          <div className="mt-4">
+            <div className="text-xs text-muted-foreground mb-2">
+              <strong className="text-foreground">Sim:</strong> dra terskelen over
+              score-fordelingen og se hvordan TP / FP / FN / TN bytter plass live.
+              Bytt til «ubalansert» og oppdag hvorfor accuracy lyver — MCC ser
+              gjennom.
+            </div>
+            <ConfusionMatrixExplorer />
+          </div>
         </section>
 
         <section id="tuning" className="mb-10">
@@ -353,6 +385,16 @@ Valideringskurve: ytelse vs en hyperparameter (f.eks. max_depth)
 
 I sklearn:
   from sklearn.model_selection import learning_curve, validation_curve`}</pre>
+          </div>
+
+          <div className="mt-4">
+            <div className="text-xs text-muted-foreground mb-2">
+              <strong className="text-foreground">Sim:</strong> dra valgt modell-
+              kompleksitet og se bias² ↓ mens variance ↑. Bytt datasett-størrelse:
+              med mer data flytter optimum seg til høyere kompleksitet — det er
+              hvorfor «få mer data» faktisk reduserer overfit.
+            </div>
+            <BiasVarianceTradeoffPlot />
           </div>
         </section>
 
