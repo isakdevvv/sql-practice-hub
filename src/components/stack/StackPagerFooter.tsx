@@ -60,7 +60,7 @@ export function StackPagerFooter({ slug }: { slug: string }) {
           </a>
         )}
 
-        <div className="grid gap-3 sm:grid-cols-2">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           {prevTrinn ? (
             <a
               href={`/stack/${prevTrinn.slug}`}

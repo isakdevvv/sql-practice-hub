@@ -366,7 +366,10 @@ export function DistributionPlotter() {
           <div className="text-xs font-semibold mb-1">
             {data.kind === "continuous" ? "PDF f(x)" : "PMF P(X = k)"}
           </div>
-          <svg width={W} height={H} className="block bg-background rounded">
+          <svg
+            viewBox={`0 0 ${W} ${H}`}
+            className="block w-full h-auto bg-background rounded"
+          >
             {/* axes */}
             <line x1={PAD} y1={H - PAD} x2={W - PAD} y2={H - PAD} stroke="#888" />
             <line x1={PAD} y1={PAD} x2={PAD} y2={H - PAD} stroke="#888" />
@@ -442,7 +445,10 @@ export function DistributionPlotter() {
         {/* CDF */}
         <div>
           <div className="text-xs font-semibold mb-1">CDF F(x) = P(X ≤ x)</div>
-          <svg width={W} height={H} className="block bg-background rounded">
+          <svg
+            viewBox={`0 0 ${W} ${H}`}
+            className="block w-full h-auto bg-background rounded"
+          >
             <line x1={PAD} y1={H - PAD} x2={W - PAD} y2={H - PAD} stroke="#888" />
             <line x1={PAD} y1={PAD} x2={PAD} y2={H - PAD} stroke="#888" />
             {/* 0.95 and 0.025 reference lines */}
