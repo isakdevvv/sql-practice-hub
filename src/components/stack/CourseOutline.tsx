@@ -49,8 +49,18 @@ function saveVisited(courseId: string, set: Set<string>) {
 
 export function CourseOutline({ courseId, steps }: CourseOutlineProps) {
   const [activeAnchor, setActiveAnchor] = useState<string | null>(null);
-  const [visited, setVisited] = useState<Set<string>>(() => loadKey(VISITED_PREFIX, courseId));
-  const [mastered, setMastered] = useState<Set<string>>(() => loadKey(MASTERED_PREFIX, courseId));
+  // localStorage finnes ikke under tjener-rendringen. Leser vi den allerede i
+  // useState-initialisatoren, rendrer tjeneren «0 mestret · 0 sett» mens
+  // nettleserens første rendring viser de lagrede tallene — React kaster da
+  // tjenerens markup og rendrer hele siden på nytt (hydreringsfeil). Derfor
+  // starter vi tomt, likt tjeneren, og henter det lagrede etter montering.
+  const [visited, setVisited] = useState<Set<string>>(() => new Set());
+  const [mastered, setMastered] = useState<Set<string>>(() => new Set());
+
+  useEffect(() => {
+    setVisited(loadKey(VISITED_PREFIX, courseId));
+    setMastered(loadKey(MASTERED_PREFIX, courseId));
+  }, [courseId]);
 
   // IntersectionObserver for «visited» tracking.
   useEffect(() => {
