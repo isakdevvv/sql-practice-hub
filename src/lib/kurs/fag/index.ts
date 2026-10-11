@@ -4,5 +4,6 @@
 
 import type { Fag } from "../types";
 import { dte2505 } from "./dte-2505";
+import { dte2507 } from "./dte-2507";
 
-export const FAG: readonly Fag[] = [dte2505];
+export const FAG: readonly Fag[] = [dte2505, dte2507];

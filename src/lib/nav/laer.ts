@@ -4,7 +4,7 @@
 // Lær-inngangen viser det samme treet uansett hvordan faget er bygd under
 // panseret. Tre kilder oversettes hit, i prioritert rekkefølge:
 //
-//  1. Skjerm-kurs (`lib/kurs`): faget har ekte emner og undertemaer.
+//  1. Skjerm-kurs (`lib/kurs`): faget har ekte emner og undertemaer (kort).
 //  2. Emneinndelingen i `nav/emner.ts`: fagets leksjoner gruppert for hånd.
 //  3. Løyper (`core/loype`): modulene i faget er emner, stegene er stack-sider.
 //  4. Curriculum-fasen (`core/path`): fagets leksjoner i studierekkefølge,
@@ -17,7 +17,7 @@
 import { LOYPER } from "@/lib/core/loype";
 import { lessonSlugsForSubject } from "@/lib/core/path";
 import { fagBySlug } from "@/lib/kurs/registry";
-import { minutter } from "@/lib/kurs/types";
+import { minutter, type Emne } from "@/lib/kurs/types";
 import { getTrinnBySlug } from "@/lib/stack/content";
 import { SUBJECT_BY_SLUG } from "@/lib/subjects/catalog";
 import { EMNER } from "./emner";
@@ -32,6 +32,9 @@ export interface LaerEmne {
   /** Spørsmålet emnet svarer på, der kilden har et. */
   undertittel?: string;
   steg: LaerSteg[];
+  /** De lange sidene om samme emne, når emnet også finnes som kort. Kortene er
+   *  veien gjennom stoffet; disse er oppslag og dybde, og teller ikke i fremdrift. */
+  fordypning?: LaerSteg[];
 }
 
 const MODUL_RE = /^Modul (\d+)\w?\s*[—–-]\s*(.+)$/;
@@ -46,38 +49,55 @@ function stackSteg(slug: string, tittel: string): LaerSteg {
   return { kind: "stack", id: slug, tittel, slug };
 }
 
+function kortSteg(fagSlug: string, emne: Emne): LaerSteg[] {
+  return emne.undertemaer.map((u) => ({
+    kind: "skjerm",
+    id: u.slug,
+    tittel: u.tittel,
+    fag: fagSlug,
+    undertema: u.slug,
+    minutter: minutter(u),
+  }));
+}
+
 export function emnerForFag(fagSlug: string): LaerEmne[] {
   const kurs = fagBySlug(fagSlug);
-  if (kurs) {
+  const inndeling = EMNER[fagSlug];
+  if (kurs && !inndeling) {
     return kurs.emner.map((e) => ({
       id: e.slug,
       tittel: e.tittel,
       undertittel: e.sporsmal,
-      steg: e.undertemaer.map((u) => ({
-        kind: "skjerm",
-        id: u.slug,
-        tittel: u.tittel,
-        fag: fagSlug,
-        undertema: u.slug,
-        minutter: minutter(u),
-      })),
+      steg: kortSteg(fagSlug, e),
     }));
   }
 
   const emner: LaerEmne[] = [];
   const brukt = new Set<string>();
 
-  const inndeling = EMNER[fagSlug];
   if (inndeling) {
     for (const e of inndeling.emner) {
-      const steg: LaerSteg[] = [];
+      const sider: LaerSteg[] = [];
       for (const slug of e.slugs) {
         const trinn = getTrinnBySlug(slug);
         brukt.add(slug);
-        if (trinn) steg.push(stackSteg(slug, utenFagkode(trinn.title)));
+        if (trinn) sider.push(stackSteg(slug, utenFagkode(trinn.title)));
       }
-      if (steg.length > 0)
-        emner.push({ id: e.id, tittel: e.tittel, undertittel: e.sporsmal, steg });
+      // Et fag bygges om til kort ett emne om gangen. Emner som finnes som
+      // kort (samme slug som id-en her) viser kortene som steg og de lange
+      // sidene som fordypning; resten viser de lange sidene som før.
+      const somKort = kurs?.emner.find((k) => k.slug === e.id);
+      if (somKort) {
+        emner.push({
+          id: e.id,
+          tittel: e.tittel,
+          undertittel: e.sporsmal,
+          steg: kortSteg(fagSlug, somKort),
+          fordypning: sider,
+        });
+      } else if (sider.length > 0) {
+        emner.push({ id: e.id, tittel: e.tittel, undertittel: e.sporsmal, steg: sider });
+      }
     }
     for (const slug of inndeling.utelat ?? []) brukt.add(slug);
     // Leksjoner som er lagt til i fasen etter at inndelingen ble skrevet.
