@@ -2,6 +2,11 @@ import { Link } from "@tanstack/react-router";
 import { Lightbulb } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
+import { SedPlayground } from "./SedPlayground";
+import { AwkColumnPicker } from "./AwkColumnPicker";
+import { JqQueryBuilder } from "./JqQueryBuilder";
+import { RegexExplorer } from "./RegexExplorer";
+import { PipelineFlowAnim } from "./PipelineFlowAnim";
 
 const STEPS = [
   { title: "sed — substitusjon og in-place", anchor: "sed" },
@@ -79,11 +84,12 @@ sed -i.bak 's/foo/bar/g' fil.txt              # fil.txt.bak beholdes
 # Rekursivt i et helt prosjekt:
 grep -rl "gammel-versjon" . | xargs sed -i 's/gammel-versjon/ny-versjon/g'`}</pre>
           </div>
-          <p className="text-xs text-muted-foreground">
+          <p className="text-xs text-muted-foreground mb-4">
             <strong>Hvorfor in-place er farlig:</strong> du har ingen «angre»
             uten backup. Test alltid uten <code>-i</code> først, og lag backup
             (<code>-i.bak</code>) til du stoler på regelen.
           </p>
+          <SedPlayground />
         </section>
 
         <section id="awk" className="mb-10">
@@ -125,6 +131,9 @@ awk 'BEGIN { print "start" } { print NR, $0 } END { print "linjer:", NR }' fil.t
 #  9214 5.6.7.8
 #  7102 9.10.11.12
 #  ...`}</pre>
+          </div>
+          <div className="mt-4">
+            <AwkColumnPicker />
           </div>
         </section>
 
@@ -250,6 +259,9 @@ jq -r '.[] | [.id, .name, .email] | @csv' users.json`}</pre>
 
 # -c = compact (én per linje)`}</pre>
           </div>
+          <div className="mt-4">
+            <JqQueryBuilder />
+          </div>
         </section>
 
         <section id="grep-cut" className="mb-10">
@@ -305,6 +317,10 @@ sort fil.txt | uniq -c | sort -rn       # mest frekvente øverst
 
 # Hele pipelinen — top 10 hyppigste linjer i en log:
 cat access.log | awk '{ print $7 }' | sort | uniq -c | sort -rn | head -10`}</pre>
+          </div>
+          <div className="mt-4 space-y-4">
+            <RegexExplorer />
+            <PipelineFlowAnim />
           </div>
         </section>
 
