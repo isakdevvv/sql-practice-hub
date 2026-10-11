@@ -2,6 +2,9 @@ import { Link } from "@tanstack/react-router";
 import { Lightbulb } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
+import { TsPlayground } from "./TsPlayground";
+import { TypeWidener } from "./TypeWidener";
+import { GenericsBuilder } from "./GenericsBuilder";
 
 // Course page covering TypeScript fundamentals: types, type vs interface,
 // generics, narrowing, utility types, strict mode, declaration files.
@@ -83,6 +86,15 @@ function pris(produkt: { pris: number; antall: number }): number {
 pris({ pris: 10 });   // Error: Property 'antall' is missing
                       //        in type '{ pris: number }'`}</pre>
           </div>
+
+          <div className="mt-6">
+            <div className="text-xs text-muted-foreground mb-2">
+              <strong className="text-foreground">Prøv det:</strong> ekte
+              TypeScript-kompilator kjører i nettleseren. Bytt presets, rediger
+              koden, og se diagnostics oppdatere seg live.
+            </div>
+            <TsPlayground />
+          </div>
         </section>
 
         {/* 2. Basis-typer */}
@@ -127,12 +139,20 @@ let x: unknown = JSON.parse("{}");
 if (typeof x === "string") {
   x.toUpperCase();                 // OK her — TS vet x er string`}</pre>
           </div>
-          <p className="text-xs text-muted-foreground">
+          <p className="text-xs text-muted-foreground mb-6">
             Type-inferens betyr at du ofte slipper å skrive typen:{" "}
             <code>let n = 1</code> blir <code>number</code> automatisk. Skriv
             bare eksplisitte typer på funksjons-parametre/-retur og «tomme»
             startverdier.
           </p>
+
+          <div className="text-xs text-muted-foreground mb-2">
+            <strong className="text-foreground">Klikk gjennom:</strong> samme
+            verdi (<code>3</code> eller <code>{`[1,2,3]`}</code>) får ulik type
+            avhengig av om du bruker <code>const</code>, <code>let</code> eller{" "}
+            <code>as const</code>. Se hvilke operasjoner som blir lovlige.
+          </div>
+          <TypeWidener />
         </section>
 
         {/* 3. type vs interface */}
@@ -233,6 +253,16 @@ function lengde<T extends { length: number }>(x: T): number {
 lengde("hei");                    // OK — string har .length
 lengde([1, 2]);                   // OK
 // lengde(42);                    // FEIL — number har ikke .length`}</pre>
+          </div>
+
+          <div className="mt-6">
+            <div className="text-xs text-muted-foreground mb-2">
+              <strong className="text-foreground">Bygg din egen:</strong> velg
+              en generisk sjablong, sett T (og evt. U) til konkrete typer, og
+              se den resulterende signaturen. Prøv å sette T = <code>number</code>{" "}
+              på constraint-eksempelet og se hva TS sier.
+            </div>
+            <GenericsBuilder />
           </div>
         </section>
 
