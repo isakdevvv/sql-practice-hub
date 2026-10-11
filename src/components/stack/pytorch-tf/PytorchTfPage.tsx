@@ -2,6 +2,10 @@ import { Link } from "@tanstack/react-router";
 import { Lightbulb } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
+import { AutogradGraph } from "./AutogradGraph";
+import { TensorShapeExplorer } from "./TensorShapeExplorer";
+import { TrainingLoopAnimator } from "./TrainingLoopAnimator";
+import { EagerVsGraphVisualizer } from "./EagerVsGraphVisualizer";
 
 const STEPS = [
   { title: "PyTorch vs TensorFlow — kort historikk", anchor: "historikk" },
@@ -100,6 +104,14 @@ t    = torch.from_numpy(a_np)             # ndarray → tensor (samme minne!)
 # TensorFlow bruker:
 #   (Batch, Height, Width, Channels)  ← "NHWC"`}</pre>
           </div>
+          <p className="mt-4 text-xs text-muted-foreground">
+            <strong>Sim:</strong> velg en operasjon og se hvordan SAMME 24 elementer
+            tolkes som ulike shapes — pluss hva broadcast egentlig betyr når
+            <code> (3,1) + (1,4)</code> uventet blir <code>(3,4)</code>.
+          </p>
+          <div className="mt-3">
+            <TensorShapeExplorer />
+          </div>
         </section>
 
         <section id="autograd" className="mb-10">
@@ -138,6 +150,14 @@ x_const = x.detach()`}</pre>
             <code> .step()</code> — «gradient accumulation» for å trene med større effektiv
             batch enn GPU-en tåler.
           </p>
+          <p className="mt-4 text-xs text-muted-foreground">
+            <strong>Sim:</strong> klikk gjennom forward- og backward-pass for{" "}
+            <code>L = (w·x − t)²</code>. Hver kant viser den lokale deriverten autograd
+            lagrer — backprop er bare produktet av alle disse langs stien fra L til w.
+          </p>
+          <div className="mt-3">
+            <AutogradGraph />
+          </div>
         </section>
 
         <section id="module" className="mb-10">
@@ -226,6 +246,14 @@ for epoch in range(50):
             backward → step. Hvis du blander rekkefølgen får du tause feil (f.eks. å
             glemme zero_grad gjør at gradienter akkumulerer og loss blir kaos).
           </p>
+          <p className="mt-4 text-xs text-muted-foreground">
+            <strong>Sim:</strong> kjør loopen steg-for-steg og se w nærme seg
+            løsningen. Slå på <em>«Glem zero_grad()»</em>-toggelen og se hva som faktisk
+            skjer når gradientene akkumulerer på tvers av iterasjoner.
+          </p>
+          <div className="mt-3">
+            <TrainingLoopAnimator />
+          </div>
         </section>
 
         <section id="modes" className="mb-10">
@@ -277,6 +305,14 @@ for epoch in range(50):
             <pre className="font-mono text-xs overflow-x-auto whitespace-pre">{`# PyTorch 2.0+ — kompiler ned til graph for ytelse:
 model = torch.compile(model)            # transparent JIT-kompilering
 # Resten av training-loopen er uendret.`}</pre>
+          </div>
+          <p className="mt-4 text-xs text-muted-foreground">
+            <strong>Sim:</strong> kjør samme operasjon-sekvens i begge moduser side-ved-side.
+            Skru på antall kall og se hvor mange iterasjoner som må til før graph-modus
+            betaler ned kompileringskostnaden.
+          </p>
+          <div className="mt-3">
+            <EagerVsGraphVisualizer />
           </div>
         </section>
 
