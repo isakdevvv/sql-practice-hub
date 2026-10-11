@@ -22,6 +22,11 @@ import { FunctionOutputMatch } from "./funksjons-ovinger/FunctionOutputMatch";
 import { ImageSetPartitioner } from "./funksjons-ovinger/ImageSetPartitioner";
 import { FiberPicker } from "./funksjons-ovinger/FiberPicker";
 import { CompositionTracer } from "./funksjons-ovinger/CompositionTracer";
+import { DeMorganViz } from "./figures/DeMorganViz";
+import { InclusionExclusion3 } from "./figures/InclusionExclusion3";
+import { HandshakingViz } from "./figures/HandshakingViz";
+import { ModExpTrace } from "./figures/ModExpTrace";
+import { HashCollisionViz } from "./figures/HashCollisionViz";
 
 const STEPS = [
   { title: "Mattens ABC — mengder, ∈ ⊆ ∀ ∃, tallmengder", anchor: "abc" },
@@ -207,6 +212,13 @@ Eksempel — kode:
   ekvivalent med:
   if a <= 0 or b <= 0:          # «hvis MINST ÉN ikke-positiv»`}</pre>
           </div>
+
+          <h3 className="text-sm font-semibold mb-2 mt-4">De Morgan — interaktiv ekvivalens-sjekk</h3>
+          <p className="text-xs text-muted-foreground mb-3">
+            Velg ¬(p ∧ q) eller ¬(p ∨ q), og se LHS og RHS evaluere likt for hver rad i
+            sannhetstabellen — sammen med et Venn-bilde av hva som er skraver.
+          </p>
+          <DeMorganViz />
 
           <ProblemBox
             title="Mini-oppgave — sannhetstabell"
@@ -593,6 +605,14 @@ Eksempel — kurs-overlapp:
   |M ∪ F| = 18 + 15 − 8 = 25
   Hvor mange tar ingen? 30 − 25 = 5.`}</pre>
           </div>
+
+          <h3 className="text-sm font-semibold mb-2 mt-4">3-mengde Venn — bygg formelen selv</h3>
+          <p className="text-xs text-muted-foreground mb-3">
+            Dra slidere for hver av de 7 regionene. Sammenlign den direkte summen
+            (regionene er disjunkte) med inkluderings-eksklusjons-formelen — de skal
+            alltid være like.
+          </p>
+          <InclusionExclusion3 />
 
           <FallBox>
             <strong>Bro til SQL:</strong> <code>UNION</code> = ∪, <code>INTERSECT</code> =
@@ -1317,6 +1337,14 @@ Hver kant bidrar 1 til grad-summen i hver ende.
 Konsekvens: antallet noder med oddetalls-grad er alltid PARTALL.`}</pre>
           </div>
 
+          <h3 className="text-sm font-semibold mb-2 mt-4">Toggle kanter — se Σ deg = 2|E| holde</h3>
+          <p className="text-xs text-muted-foreground mb-3">
+            Klikk en kant for å legge til/fjerne. Grad-summen og 2·|E| må alltid være
+            like — og antallet noder med oddetalls-grad (gule ringer) er alltid
+            partall.
+          </p>
+          <HandshakingViz />
+
           <FallBox>
             <strong>Bro til AI og OS:</strong> BFS, DFS, Dijkstra, A* — alle opererer på
             grafer. Status-rommet i AI-søk ER en graf. Avhengighets-grafer i build-systemer.
@@ -1426,6 +1454,14 @@ Klokke-aritmetikk: hva er kl 23 + 5 timer?
 # Løsning: chaining (liste i bucket), eller open addressing (prøv neste).`}</pre>
           </div>
 
+          <h3 className="text-sm font-semibold mb-2 mt-4">Hash-tabell — se mod n live</h3>
+          <p className="text-xs text-muted-foreground mb-3">
+            Sett inn nøkler, juster tabellstørrelsen, og bytt mellom chaining og linear
+            probing. Gule bucket-rammer markerer kollisjoner. Prøv samme nøkler med
+            prim- vs sammensatt størrelse.
+          </p>
+          <HashCollisionViz />
+
           <div className="mt-4 rounded-xl border border-border bg-card p-5">
             <div className="text-xs uppercase tracking-wider text-brand font-semibold mb-2">
               Fast eksponentiering — beregne a^k mod n raskt
@@ -1444,6 +1480,13 @@ Klokke-aritmetikk: hva er kl 23 + 5 timer?
 # pow_mod(3, 1000, 7) = 4  — uten å regne 3^1000 (et tall med 478 sifre).
 # Dette er hjørnesteinen i RSA-kryptering.`}</pre>
           </div>
+
+          <h3 className="text-sm font-semibold mb-2 mt-4">pow_mod — step-by-step trace</h3>
+          <p className="text-xs text-muted-foreground mb-3">
+            Sett a, k, n og bla gjennom iterasjonene. Eksponentens binær-representasjon
+            avgjør hvilke iterasjoner som faktisk multipliserer inn i result.
+          </p>
+          <ModExpTrace />
 
           <h3 className="text-sm font-semibold mb-2 mt-6">Euklids algoritme — gcd steg-for-steg</h3>
           <p className="text-xs text-muted-foreground mb-3">
