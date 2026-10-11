@@ -3,6 +3,10 @@ import { Lightbulb, ArrowLeft } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { InferensMaskinen } from "./InferensMaskinen";
 import { CourseOutline } from "@/components/stack/CourseOutline";
+import { BootstrapResampler } from "./BootstrapResampler";
+import { KonfidensintervallSim } from "./KonfidensintervallSim";
+import { HypotesetestViz } from "./HypotesetestViz";
+import { ResidualScatter } from "./ResidualScatter";
 
 const STEPS = [
   { title: "Estimatorer og punktestimat", anchor: "estimator" },
@@ -77,6 +81,12 @@ Punktestimat:  bare ett tall.
 Intervallestimat: et intervall (CI) som med høy sannsynlighet
                   inneholder den sanne parameteren.`}</pre>
           </div>
+          <div className="mt-4">
+            <div className="text-xs uppercase tracking-wider text-brand font-semibold mb-2">
+              Simulator — sentralgrenseteoremet
+            </div>
+            <BootstrapResampler />
+          </div>
         </section>
 
         <section id="ci-mu" className="mb-10">
@@ -120,6 +130,12 @@ Python:
   import scipy.stats as st
   t_crit = st.t.ppf(0.975, df=n-1)
   ci = (x_bar - t_crit*s/np.sqrt(n), x_bar + t_crit*s/np.sqrt(n))`}</pre>
+          </div>
+          <div className="mt-4">
+            <div className="text-xs uppercase tracking-wider text-brand font-semibold mb-2">
+              Simulator — hva "95 % konfidens" virkelig betyr
+            </div>
+            <KonfidensintervallSim />
           </div>
         </section>
 
@@ -185,6 +201,12 @@ Behold H₀    │  KORREKT       Type II (β)
 
 Trade-off: lavere α → høyere β (vanligvis).
 Mer data (større n) reduserer BÅDE α og β.`}</pre>
+          </div>
+          <div className="mt-4">
+            <div className="text-xs uppercase tracking-wider text-brand font-semibold mb-2">
+              Simulator — null-fordeling, avvisningsområde og p-verdi
+            </div>
+            <HypotesetestViz />
           </div>
         </section>
 
@@ -334,6 +356,12 @@ Modell:  ŷ = -0.4 + 2.0 · x
 
 Tolkning: hver ekstra etasje gir ~2 mnd ekstra byggetid.
 Prediksjon for 8 etasjer: ŷ = -0.4 + 16 = 15.6 mnd.`}</pre>
+          </div>
+          <div className="mt-4">
+            <div className="text-xs uppercase tracking-wider text-brand font-semibold mb-2">
+              Simulator — drag punkter, se OLS-linja og residualene oppdatere seg
+            </div>
+            <ResidualScatter />
           </div>
         </section>
 
