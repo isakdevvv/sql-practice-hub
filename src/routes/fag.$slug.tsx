@@ -25,11 +25,16 @@ import {
   nextExamEvent,
   type ExamUrgency,
 } from "@/lib/subjects/examDate";
-import { phaseOfSlug } from "@/lib/stack/curriculum";
 import { useModulProgress } from "@/lib/stack/moduleProgress";
 import { usePinnedSubjects, toggleSubject } from "@/lib/userSubjects";
 import { subjectSnapshot, type SubjectSnapshot } from "@/lib/core/subjectProgress";
-import { blocksForSubject, phaseFoundations, type Block, type Foundation } from "@/lib/core/path";
+import {
+  blocksForSubject,
+  lessonSlugsForSubject,
+  phaseFoundations,
+  type Block,
+  type Foundation,
+} from "@/lib/core/path";
 
 export const Route = createFileRoute("/fag/$slug")({
   head: () => ({
@@ -114,13 +119,9 @@ function FagPage() {
   const u = examUrgency(meta?.eksamen);
   const nextEvent = useMemo(() => nextExamEvent(meta?.events), [meta]);
 
-  // Fagets curriculum-fase — brukes til fremdrift ("X av Y sider sett").
-  // Kun meningsfullt når faget selv er hub-en (første slug) i fasen.
-  const phase = useMemo(() => {
-    const p = phaseOfSlug(slug);
-    return p && p.slugs[0] === slug ? p : null;
-  }, [slug]);
-  const progress = useModulProgress(phase ? [...phase.slugs] : []);
+  // Fagets curriculum-faser — brukes til fremdrift ("X av Y sider sett").
+  const lessonSlugs = useMemo(() => lessonSlugsForSubject(slug), [slug]);
+  const progress = useModulProgress(lessonSlugs);
 
   const itemsByKind = useMemo(() => {
     const map = new Map<LibraryKind, LibraryItem[]>();
@@ -281,7 +282,7 @@ function FagPage() {
             )}
 
             {/* Fremdrift i fagets læringsløp */}
-            {phase && progress.total > 0 && (
+            {progress.total > 0 && (
               <div className="mt-5 max-w-md">
                 <div className="flex items-baseline justify-between text-xs mb-1.5">
                   <span className="text-muted-foreground">Fremdrift i læringsløpet</span>
