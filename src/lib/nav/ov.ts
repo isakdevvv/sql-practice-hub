@@ -17,6 +17,7 @@ import { PROBLEMS } from "@/lib/problems/data";
 import { PY_EXERCISES } from "@/lib/python/exercises";
 import { PY_CATEGORIES, categoryOf, type PyCategoryId } from "@/lib/python/types";
 import { EXAM_SEASON_SLUGS } from "@/lib/subjects/catalog";
+import { PY_FAG } from "./synlighet";
 
 export const OV_TYPER = [
   { id: "oppgaver", label: "Oppgaver" },
@@ -58,17 +59,6 @@ const DRAG_FAG: Partial<Record<SubjectId, string>> = {
   webapps2: "dte-2802",
   systemutvikling: "dte-2604",
   mobil: "dte-2603",
-};
-
-const PY_FAG: Partial<Record<PyCategoryId, string>> = {
-  dte2507: "dte-2507",
-  kurose: "dte-2507",
-  dte2602: "dte-2602",
-  "dte2501-ml": "dte-2501",
-  "dte2505-os": "dte-2505",
-  web: "dte-2509",
-  "db-data": "dte-2509",
-  "api-sec": "dte-2509",
 };
 
 function byggRader(): OvRad[] {

@@ -8,6 +8,10 @@ import { PROBLEMS } from "@/lib/problems/data";
 import { LEVEL_NAMES, type Level } from "@/lib/problems/types";
 import { PY_EXERCISES } from "@/lib/python/exercises";
 import { TRINN } from "@/lib/stack/content";
+import { lessonSlugsForSubject } from "@/lib/core/path";
+import { PY_FAG, erSynligFag, visAlt } from "@/lib/nav/synlighet";
+import { categoryOf } from "@/lib/python/types";
+import { EXAM_SEASON_SLUGS } from "@/lib/subjects/catalog";
 
 export type SearchKind =
   | "Stack — eksamen"
@@ -46,7 +50,7 @@ const HUSKELAPP_SECTIONS: Array<{ id: string; title: string; keywords: string }>
 
 const STATIC_PAGES: SearchEntry[] = [
   { id: "page-lar", title: "Lær (hub)", kind: "Side", description: "Hub: kurs, konsepter og hele stacken.", href: "/lar", keywords: "lar laer hub teori learn pensum" },
-  { id: "page-ov", title: "Øv (hub)", kind: "Side", description: "Hub: SQL, Python, JOIN, ER, quiz, drag.", href: "/ov", keywords: "ov ove hub trening practice exercise" },
+  { id: "page-ov", title: "Øv", kind: "Side", description: "Alle øvinger i én liste.", href: "/ov", keywords: "ov ove trening practice exercise oppgaver drill" },
   { id: "page-eksamen-hub", title: "Eksamen (hub)", kind: "Side", description: "Hub: tidstrening, prosjekt og eksamen-trinn.", href: "/eksamen", keywords: "eksamen hub innspurt prove" },
   { id: "page-kurs", title: "Kurs", kind: "Side", description: "Stegvis SQL-læring i 6 nivåer.", href: "/kurs", keywords: "stegvis nivå levels" },
   { id: "page-stack", title: "Stack", kind: "Side", description: "Fra bytes til Flask — eksamensforberedelse og hele stacken.", href: "/stack", keywords: "stack bytes flask sockets http" },
@@ -146,6 +150,41 @@ export function getSearchEntries(): SearchEntry[] {
   return entries;
 }
 
+// Sidene som alltid er søkbare: de to inngangene og dashbordet.
+const SYNLIGE_SIDER = new Set(["page-ov", "page-dashboard"]);
+
+let cachedSynlige: SearchEntry[] | null = null;
+
+/** Søkeindeksen slik den vises nå: bare eksamensfagene, med mindre «vis alt»
+ *  er slått på (se nav/synlighet.ts). SQL, kurs-nivåene og huskelappen hører
+ *  til DTE-2509 og følger derfor med ut. */
+function getSynligeEntries(): SearchEntry[] {
+  if (visAlt()) return getSearchEntries();
+  if (cachedSynlige) return cachedSynlige;
+
+  const eksamensSlugs = new Set(EXAM_SEASON_SLUGS.flatMap((s) => lessonSlugsForSubject(s)));
+  const synligePy = new Set(
+    PY_EXERCISES.filter((e) => erSynligFag(PY_FAG[categoryOf(e)], false)).map((e) => `py-${e.id}`),
+  );
+  cachedSynlige = getSearchEntries().filter((e) => {
+    if (e.kind === "Stack" || e.kind === "Stack — eksamen") {
+      return eksamensSlugs.has(e.href.replace("/stack/", ""));
+    }
+    if (e.kind === "Python-oppgave") return synligePy.has(e.id);
+    if (e.kind === "Side") return SYNLIGE_SIDER.has(e.id);
+    return false;
+  });
+  cachedSynlige.push({
+    id: "page-laer",
+    title: "Lær",
+    kind: "Side",
+    description: "Fag, emne og steg.",
+    href: "/laer",
+    keywords: "lar laer teori pensum emne",
+  });
+  return cachedSynlige;
+}
+
 /** Lowercase substring score: 3 if title hits, +1 per other field hit, 0 = miss. */
 export function scoreEntry(entry: SearchEntry, query: string): number {
   if (!query) return 1;
@@ -159,7 +198,7 @@ export function scoreEntry(entry: SearchEntry, query: string): number {
 }
 
 export function searchEntries(query: string, limit = 50): SearchEntry[] {
-  const entries = getSearchEntries();
+  const entries = getSynligeEntries();
   if (!query.trim()) {
     return entries.slice(0, limit);
   }
