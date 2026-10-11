@@ -8,10 +8,13 @@ import { BayesUpdater } from "./BayesUpdater";
 import { MontyHallSimulator } from "./MontyHallSimulator";
 import { ConditionalProbabilityGrid } from "./ConditionalProbabilityGrid";
 import { ProbabilityQuiz } from "./ProbabilityQuiz";
+import { VennDiagramSandbox } from "./VennDiagramSandbox";
+import { MonteCarloSim } from "./MonteCarloSim";
 
 const STEPS = [
   { title: "Hvorfor sannsynlighet?", anchor: "motivasjon" },
   { title: "Utfallsrom, hendelser, mengdelære", anchor: "utfallsrom" },
+  { title: "Interaktivt: Venn-sandbox med areal som sannsynlighet", anchor: "viz-venn" },
   { title: "Kolmogorovs aksiomer", anchor: "aksiomer" },
   { title: "Betinget sannsynlighet og uavhengighet", anchor: "betinget" },
   { title: "Interaktivt: betinget sannsynlighet i 100-grid", anchor: "viz-grid" },
@@ -21,6 +24,7 @@ const STEPS = [
   { title: "Interaktivt: Monty Hall-simulator", anchor: "viz-monty" },
   { title: "Kombinatorikk — telle muligheter", anchor: "kombinatorikk" },
   { title: "Trekninger med/uten tilbakelegging", anchor: "trekning" },
+  { title: "Interaktivt: Monte Carlo — empirisk konvergens", anchor: "viz-monte-carlo" },
   { title: "Eksamen-feller", anchor: "feller" },
   { title: "Quiz: 10 scenarier (klassiske og kontraintuitive)", anchor: "quiz" },
 ];
@@ -111,6 +115,21 @@ A ∩ B = {6},                  P(A∩B) = 1/6
 A ∪ B = {2, 4, 5, 6},         P(A∪B) = 4/6 = 2/3
 Aᶜ = "oddetall"   = {1, 3, 5}, P(Aᶜ) = 1/2`}</pre>
           </div>
+        </section>
+
+        <section id="viz-venn" className="mb-10">
+          <h2 className="text-xl font-semibold mb-3">
+            2b. Interaktivt — Venn-sandbox med areal som sannsynlighet
+          </h2>
+          <p className="text-sm text-muted-foreground mb-3">
+            Sirklenes areal er proporsjonalt med P(A) og P(B), og overlappet
+            tilsvarer P(A∩B) direkte — du ser sannsynlighet i stedet for å
+            telle. Klikk regionknappene for å høylyse A∪B, A∩B, Aᶜ, A\B og
+            symmetrisk differanse. «Vis P(A|B)-vinkling» gjør B til det nye
+            universet og forklarer hvorfor betinging «zoomer inn». Skyv
+            P(A∩B) opp og se sirklene smelte sammen.
+          </p>
+          <VennDiagramSandbox />
         </section>
 
         <section id="aksiomer" className="mb-10">
@@ -377,6 +396,22 @@ Hva med 6 rette (av 7 mulige rette)?
   Gunstige = 7 · 27 = 189
   P(6 rette) = 189 / 5 379 616 ≈ 3.51 · 10⁻⁵`}</pre>
           </div>
+        </section>
+
+        <section id="viz-monte-carlo" className="mb-10">
+          <h2 className="text-xl font-semibold mb-3">
+            7b. Interaktivt — Monte Carlo: empirisk frekvens vs teoretisk p
+          </h2>
+          <p className="text-sm text-muted-foreground mb-3">
+            Loven om store tall i praksis. Kast en mynt, en terning, eller
+            simulér bursdag-paradokset 5000 ganger og se hvordan relativ
+            frekvens nærmer seg den teoretiske sannsynligheten. 95 %-båndet
+            krymper som 1/√N, så du ser konkret hvorfor «små» eksperimenter
+            kan lyve. Bursdag-presetet er kontraintuitivt: ved 23 personer
+            er det allerede ~50 % sjanse for to like — vri opp k for å se
+            sannsynligheten klatre mot 1.
+          </p>
+          <MonteCarloSim />
         </section>
 
         <section id="feller" className="mb-10">
