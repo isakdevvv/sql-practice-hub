@@ -2,15 +2,21 @@ import { Link } from "@tanstack/react-router";
 import {ArrowRight, Lightbulb, ArrowLeft } from "lucide-react";
 import { StackPageShell } from "@/components/stack/StackPageShell";
 import { CourseOutline } from "@/components/stack/CourseOutline";
+import { CrispDmDiagram } from "./CrispDmDiagram";
+import { DataLeakageCheck } from "./DataLeakageCheck";
+import { ModelCardBuilder } from "./ModelCardBuilder";
 
 const STEPS = [
+  { title: "CRISP-DM-syklusen", anchor: "crisp-dm" },
   { title: "Forstå problemet", anchor: "forstaa" },
   { title: "Hent data", anchor: "data" },
   { title: "EDA — utforsk dataene", anchor: "eda" },
   { title: "Feature engineering", anchor: "features" },
+  { title: "Lekkasje-sjekk", anchor: "lekkasje" },
   { title: "Tren modell", anchor: "tren" },
   { title: "Evaluér modell", anchor: "evaluer" },
   { title: "Deploy & vedlikehold", anchor: "deploy" },
+  { title: "Model-card", anchor: "model-card" },
   { title: "Eksempel: Titanic ende-til-ende", anchor: "titanic" },
   { title: "Slik strukturerer du mappe-oppgaven", anchor: "mappe" },
 ];
@@ -46,6 +52,17 @@ export function Dte2602ProsjektflytPage() {
         </div>
 
         <CourseOutline courseId="dte2602-prosjektflyt" steps={STEPS} />
+
+        <section id="crisp-dm" className="mb-10">
+          <h2 className="text-xl font-semibold mb-3">CRISP-DM-syklusen</h2>
+          <p className="text-sm text-muted-foreground mb-4">
+            CRISP-DM (Cross-Industry Standard Process for Data Mining) er
+            standard-modellen for hvordan ML-prosjekter struktureres. De 7
+            stegene under er den praktiske utfoldelsen av disse 6 fasene —
+            men det viktigste å huske er at sløyfen ALDRI er lineær.
+          </p>
+          <CrispDmDiagram />
+        </section>
 
         <section id="forstaa" className="mb-10">
           <h2 className="text-xl font-semibold mb-3">1. Forstå problemet</h2>
@@ -188,6 +205,15 @@ pipe = Pipeline([("prep", preprocess), ("model", LogisticRegression())])`}</pre>
           </div>
         </section>
 
+        <section id="lekkasje" className="mb-10">
+          <h2 className="text-xl font-semibold mb-3">Lekkasje-sjekk — øv deg</h2>
+          <p className="text-sm text-muted-foreground mb-4">
+            Data-lekkasje er det enkleste å gjøre feil og det vanskeligste å oppdage.
+            Test deg selv på 10 konkrete scenarier nedenfor — er det lekkasje eller ok?
+          </p>
+          <DataLeakageCheck />
+        </section>
+
         <section id="tren" className="mb-10">
           <h2 className="text-xl font-semibold mb-3">5. Tren modell</h2>
           <p className="text-sm text-muted-foreground mb-4">
@@ -279,6 +305,17 @@ joblib.dump(pipe, "pipeline.joblib")
 # Verden endres → modellens features representerer en virkelighet som
 # kan flytte seg. Etter 6 mnd kan ytelsen være halvert. Mål regelmessig.`}</pre>
           </div>
+        </section>
+
+        <section id="model-card" className="mb-10">
+          <h2 className="text-xl font-semibold mb-3">Bygg en model-card</h2>
+          <p className="text-sm text-muted-foreground mb-4">
+            En model-card er en kort dokumentasjon av modellen — det sensor
+            (eller en kollega) trenger for å vurdere om de kan stole på den.
+            Fyll inn feltene under for å se hva en typisk model-card inneholder,
+            og legg merke til hvor mye man IKKE har tenkt på når feltene er tomme.
+          </p>
+          <ModelCardBuilder />
         </section>
 
         <section id="titanic" className="mb-10">
